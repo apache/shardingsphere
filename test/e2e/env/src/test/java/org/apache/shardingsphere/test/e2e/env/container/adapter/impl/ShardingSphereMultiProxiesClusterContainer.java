@@ -30,8 +30,8 @@ import java.io.PrintWriter;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.SQLFeatureNotSupportedException;
+import java.util.Arrays;
 import java.util.Collection;
-import java.util.LinkedList;
 import java.util.Set;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.atomic.AtomicReference;
@@ -45,17 +45,17 @@ public final class ShardingSphereMultiProxiesClusterContainer implements Adapter
     
     private final AtomicReference<DataSource> targetDataSourceProvider = new AtomicReference<>();
     
-    private final Collection<ShardingSphereProxyClusterContainer> proxyClusterContainers = new LinkedList<>();
+    private final Collection<ShardingSphereProxyClusterContainer> proxyClusterContainers;
     
     public ShardingSphereMultiProxiesClusterContainer(final DatabaseType databaseType, final AdaptorContainerConfiguration config) {
-        ShardingSphereProxyClusterContainer proxy1 = new ShardingSphereProxyClusterContainer(databaseType, config);
-        proxy1.setAbbreviation("proxy1");
-        proxy1.setName("proxy1");
-        proxyClusterContainers.add(proxy1);
-        ShardingSphereProxyClusterContainer proxy2 = new ShardingSphereProxyClusterContainer(databaseType, config);
-        proxy1.setAbbreviation("proxy2");
-        proxy1.setName("proxy2");
-        proxyClusterContainers.add(proxy2);
+        proxyClusterContainers = Arrays.asList(createProxyClusterContainer(databaseType, config, "proxy1"), createProxyClusterContainer(databaseType, config, "proxy2"));
+    }
+    
+    private ShardingSphereProxyClusterContainer createProxyClusterContainer(final DatabaseType databaseType, final AdaptorContainerConfiguration config, final String name) {
+        ShardingSphereProxyClusterContainer result = new ShardingSphereProxyClusterContainer(databaseType, config);
+        result.setAbbreviation(name);
+        result.setName(name);
+        return result;
     }
     
     @Override
