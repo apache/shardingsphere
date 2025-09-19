@@ -187,7 +187,8 @@ public final class DockerStorageContainer extends DockerITContainer implements S
      */
     public String getJdbcUrl(final String dataSourceName) {
         DataSourceEnvironment dataSourceEnvironment = DatabaseTypedSPILoader.getService(DataSourceEnvironment.class, option.getType());
-        return dataSourceEnvironment.getURL(getHost(), getMappedPort(), Strings.isNullOrEmpty(dataSourceName) ? option.getDefaultDatabaseName(majorVersion).orElse("") : dataSourceName);
+        String toBeConnectedDataSourceName = Strings.isNullOrEmpty(dataSourceName) ? option.getDefaultDatabaseName(majorVersion).orElse("") : dataSourceName;
+        return dataSourceEnvironment.getURL(getHost(), getMappedPort(), toBeConnectedDataSourceName);
     }
     
     /**
