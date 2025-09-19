@@ -58,7 +58,7 @@ public final class DriverTransactionalExecutor {
     
     private <T> T executeWithImplicitCommit(final ShardingSphereDatabase database, final ImplicitTransactionCallback<T> callback) throws SQLException {
         try {
-            connection.setAutoCommit(false);
+            connection.getDatabaseConnectionManager().begin();
             T result = callback.execute();
             connection.commit();
             return result;
@@ -67,8 +67,6 @@ public final class DriverTransactionalExecutor {
             // CHECKSTYLE:ON
             connection.rollback();
             throw SQLExceptionTransformEngine.toSQLException(ex, database.getProtocolType());
-        } finally {
-            connection.setAutoCommit(true);
         }
     }
 }

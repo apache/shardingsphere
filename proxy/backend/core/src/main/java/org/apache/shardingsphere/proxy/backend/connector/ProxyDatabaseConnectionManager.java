@@ -132,7 +132,7 @@ public final class ProxyDatabaseConnectionManager implements DatabaseConnectionM
         for (Connection each : result) {
             replayTransactionOption(each);
         }
-        if (connectionSession.getTransactionStatus().isInTransaction()) {
+        if (connectionSession.getConnectionContext().getTransactionContext().isTransactionStarted()) {
             for (Connection each : result) {
                 replayMethodsInvocation(each);
             }

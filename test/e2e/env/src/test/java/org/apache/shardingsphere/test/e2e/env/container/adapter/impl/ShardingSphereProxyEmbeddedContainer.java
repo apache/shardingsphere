@@ -37,8 +37,8 @@ import org.apache.shardingsphere.test.e2e.env.container.adapter.config.AdaptorCo
 import org.apache.shardingsphere.test.e2e.env.container.constants.ProxyContainerConstants;
 import org.apache.shardingsphere.test.e2e.env.container.constants.StorageContainerConstants;
 import org.apache.shardingsphere.test.e2e.env.container.storage.type.NativeStorageContainer;
-import org.apache.shardingsphere.test.e2e.env.container.util.StorageContainerUtils;
 import org.apache.shardingsphere.test.e2e.env.container.util.JdbcConnectCheckingWaitStrategy;
+import org.apache.shardingsphere.test.e2e.env.container.util.StorageContainerUtils;
 import org.apache.shardingsphere.test.e2e.env.runtime.E2ETestEnvironment;
 import org.apache.shardingsphere.test.e2e.env.runtime.datasource.DataSourceEnvironment;
 import org.testcontainers.containers.GenericContainer;

@@ -113,7 +113,7 @@ class BackendTransactionManagerTest {
         newBackendTransactionManager(TransactionType.XA, true);
         backendTransactionManager.begin();
         verify(transactionStatus, times(0)).setInTransaction(true);
-        verify(databaseConnectionManager, times(0)).closeConnections(false);
+        verify(databaseConnectionManager, times(1)).closeConnections(false);
         verify(distributedTransactionManager).begin();
     }
     

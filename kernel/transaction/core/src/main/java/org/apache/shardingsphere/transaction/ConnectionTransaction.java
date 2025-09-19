@@ -57,7 +57,7 @@ public final class ConnectionTransaction {
      * @return in distributed transaction or not
      */
     public boolean isInDistributedTransaction(final TransactionConnectionContext transactionContext) {
-        return transactionContext.isInTransaction() && isInDistributedTransaction();
+        return transactionContext.isTransactionStarted() && isInDistributedTransaction();
     }
     
     /**
