@@ -15,24 +15,31 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.spi;
+package org.apache.shardingsphere.infra.rewrite.sql.token.common.pojo;
 
-import org.apache.shardingsphere.infra.algorithm.core.ShardingSphereAlgorithm;
-import java.util.Optional;
+import org.apache.shardingsphere.infra.route.context.RouteUnit;
+
+import java.util.Set;
 
 /**
- * Sharding algorithm.
+ * Interface for SQL tokens that support parameter filtering.
  */
-public interface ShardingAlgorithm extends ShardingSphereAlgorithm {
+public interface ParameterFilterable {
     
     /**
-     * Get algorithm structure.
+     * Gets parameter indices that should be removed for the specified route unit.
      *
-     * @param dataNodePrefix data node prefix
-     * @param shardingColumn sharding column
-     * @return algorithm structure
+     * @param routeUnit the route unit.
+     * @return set of parameter indices to remove.
      */
-    default Optional<String> getAlgorithmStructure(final String dataNodePrefix, final String shardingColumn) {
-        return Optional.empty();
+    Set<Integer> getRemovedParameterIndices(RouteUnit routeUnit);
+    
+    /**
+     * Determine whether parameter filtering is supported.
+     *
+     * @return true If parameter filtering is supported.
+     */
+    default boolean isParameterFilterable() {
+        return true;
     }
 }
