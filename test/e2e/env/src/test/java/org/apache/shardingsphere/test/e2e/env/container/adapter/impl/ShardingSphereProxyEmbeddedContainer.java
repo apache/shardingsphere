@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.test.e2e.env.container.adapter.impl;
 
-import lombok.Setter;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
@@ -80,9 +79,6 @@ public final class ShardingSphereProxyEmbeddedContainer implements AdapterContai
     
     private final Set<Startable> dependencies = new HashSet<>();
     
-    @Setter
-    private String abbreviation = ProxyContainerConstants.PROXY_CONTAINER_ABBREVIATION;
-    
     private ShardingSphereProxy proxy;
     
     public ShardingSphereProxyEmbeddedContainer(final DatabaseType databaseType, final AdaptorContainerConfiguration config) {
@@ -103,7 +99,7 @@ public final class ShardingSphereProxyEmbeddedContainer implements AdapterContai
     
     @Override
     public String getAbbreviation() {
-        return abbreviation;
+        return ProxyContainerConstants.PROXY_CONTAINER_ABBREVIATION;
     }
     
     @Override
