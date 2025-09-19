@@ -35,7 +35,7 @@ workflow:
     matrix:
       - TYPE: ["static", "mostly", "dynamic"]
   dependencies:
-    - prepare_build_env
+    - build_environment
   variables:
     DOCKERFILES: "distribution/proxy-native"
     OUT_IMAGE: registry.red-soft.biz:5000/red-sharding/proxy-native:${PROJECT_VERSION}-${TYPE}
