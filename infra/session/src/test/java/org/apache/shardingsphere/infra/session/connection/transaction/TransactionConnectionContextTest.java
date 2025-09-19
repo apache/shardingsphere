@@ -40,25 +40,25 @@ class TransactionConnectionContextTest {
     
     @Test
     void assertIsNotInDistributedTransactionWhenNotBegin() {
-        assertFalse(transactionConnectionContext.isInDistributedTransaction());
+        assertFalse(transactionConnectionContext.isDistributedTransactionStarted());
     }
     
     @Test
     void assertIsNotInDistributedTransactionWithLocal() {
         transactionConnectionContext.beginTransaction("LOCAL", mock(TransactionManager.class));
-        assertFalse(transactionConnectionContext.isInDistributedTransaction());
+        assertFalse(transactionConnectionContext.isDistributedTransactionStarted());
     }
     
     @Test
     void assertIsInDistributedTransactionWithXA() {
         transactionConnectionContext.beginTransaction("XA", mock(TransactionManager.class));
-        assertTrue(transactionConnectionContext.isInDistributedTransaction());
+        assertTrue(transactionConnectionContext.isDistributedTransactionStarted());
     }
     
     @Test
     void assertIsInDistributedTransactionWithBASE() {
         transactionConnectionContext.beginTransaction("BASE", mock(TransactionManager.class));
-        assertTrue(transactionConnectionContext.isInDistributedTransaction());
+        assertTrue(transactionConnectionContext.isDistributedTransactionStarted());
     }
     
     @Test

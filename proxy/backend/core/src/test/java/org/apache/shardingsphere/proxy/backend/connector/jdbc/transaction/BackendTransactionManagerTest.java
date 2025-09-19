@@ -20,6 +20,7 @@ package org.apache.shardingsphere.proxy.backend.connector.jdbc.transaction;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 import lombok.SneakyThrows;
+import org.apache.shardingsphere.infra.config.props.temporary.TemporaryConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.session.connection.ConnectionContext;
 import org.apache.shardingsphere.infra.session.connection.transaction.TransactionConnectionContext;
@@ -113,7 +114,7 @@ class BackendTransactionManagerTest {
         newBackendTransactionManager(TransactionType.XA, true);
         backendTransactionManager.begin();
         verify(transactionStatus, times(0)).setInTransaction(true);
-        verify(databaseConnectionManager, times(0)).closeConnections(false);
+        verify(databaseConnectionManager, times(1)).closeConnections(false);
         verify(distributedTransactionManager).begin();
     }
     

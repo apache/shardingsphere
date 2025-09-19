@@ -18,7 +18,9 @@
 package org.apache.shardingsphere.proxy.backend.handler.tcl;
 
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.config.props.temporary.TemporaryConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
+import org.apache.shardingsphere.infra.session.connection.transaction.TransactionConnectionContext;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.proxy.backend.connector.ProxyDatabaseConnectionManager;
@@ -57,8 +59,11 @@ class TCLBackendHandlerTest {
         when(connectionSession.getDatabaseConnectionManager()).thenReturn(databaseConnectionManager);
         when(connectionSession.getProtocolType()).thenReturn(databaseType);
         when(databaseConnectionManager.getConnectionSession()).thenReturn(connectionSession);
+        when(connectionSession.getConnectionContext().getTransactionContext()).thenReturn(new TransactionConnectionContext());
         ContextManager contextManager = mockContextManager();
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
+        when(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getSingleRule(TransactionRule.class).getDefaultType())
+                .thenReturn(TransactionType.LOCAL);
         assertThat(new TCLBackendHandler(mock(TCLStatement.class), TransactionOperationType.BEGIN, connectionSession).execute(), isA(UpdateResponseHeader.class));
     }
     
