@@ -63,7 +63,7 @@ public final class ContainerComposerRegistry implements AutoCloseable {
     }
     
     private boolean isClusterMode(final AdapterMode adapterMode, final AdapterType adapterType) {
-        return AdapterMode.CLUSTER == adapterMode && AdapterType.PROXY == adapterType || AdapterType.PROXY_RANDOM == adapterType;
+        return AdapterMode.CLUSTER == adapterMode && AdapterType.PROXY == adapterType;
     }
     
     private ContainerComposer createContainerComposer(final boolean clusterMode, final String scenario, final DatabaseType databaseType, final AdapterMode adapterMode, final AdapterType adapterType) {
