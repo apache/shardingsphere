@@ -28,7 +28,7 @@ public final class StorageContainerConstants {
     
     public static final String OPERATION_USER = "test_user";
     
-    public static final String OPERATION_PASSWORD = "Test@123";
+    public static final String OPERATION_PASSWORD = "Test@9876";
     
     public static final String CHECK_READY_USER = "ready_user";
     
