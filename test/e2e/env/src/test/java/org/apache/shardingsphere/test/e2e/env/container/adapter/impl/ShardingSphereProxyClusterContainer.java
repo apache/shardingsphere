@@ -18,15 +18,14 @@
 package org.apache.shardingsphere.test.e2e.env.container.adapter.impl;
 
 import com.google.common.base.Strings;
-import lombok.Setter;
 import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.test.e2e.env.container.DockerITContainer;
 import org.apache.shardingsphere.test.e2e.env.container.adapter.AdapterContainer;
 import org.apache.shardingsphere.test.e2e.env.container.adapter.config.AdaptorContainerConfiguration;
 import org.apache.shardingsphere.test.e2e.env.container.constants.ProxyContainerConstants;
-import org.apache.shardingsphere.test.e2e.env.container.util.StorageContainerUtils;
 import org.apache.shardingsphere.test.e2e.env.container.util.JdbcConnectCheckingWaitStrategy;
+import org.apache.shardingsphere.test.e2e.env.container.util.StorageContainerUtils;
 import org.apache.shardingsphere.test.e2e.env.runtime.datasource.DataSourceEnvironment;
 
 import javax.sql.DataSource;
@@ -45,9 +44,6 @@ public final class ShardingSphereProxyClusterContainer extends DockerITContainer
     private final DataSourceEnvironment dataSourceEnvironment;
     
     private final AtomicReference<DataSource> targetDataSourceProvider = new AtomicReference<>();
-    
-    @Setter
-    private String abbreviation = ProxyContainerConstants.PROXY_CONTAINER_ABBREVIATION;
     
     public ShardingSphereProxyClusterContainer(final DatabaseType databaseType, final AdaptorContainerConfiguration config) {
         super(ProxyContainerConstants.PROXY_CONTAINER_NAME_PREFIX, config.getAdapterContainerImage());
@@ -83,6 +79,6 @@ public final class ShardingSphereProxyClusterContainer extends DockerITContainer
     
     @Override
     public String getAbbreviation() {
-        return abbreviation;
+        return ProxyContainerConstants.PROXY_CONTAINER_ABBREVIATION;
     }
 }
