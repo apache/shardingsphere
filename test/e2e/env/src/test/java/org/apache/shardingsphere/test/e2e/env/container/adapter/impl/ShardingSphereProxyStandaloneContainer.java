@@ -32,35 +32,34 @@ import java.sql.DriverManager;
 import java.util.concurrent.atomic.AtomicReference;
 
 /**
- * ShardingSphere proxy container.
+ * ShardingSphere proxy container for standalone mode.
  */
 public final class ShardingSphereProxyStandaloneContainer extends DockerITContainer implements AdapterContainer {
     
-    private final DatabaseType databaseType;
-    
     private final AdaptorContainerConfiguration config;
+    
+    private final DataSourceEnvironment dataSourceEnvironment;
     
     private final AtomicReference<DataSource> targetDataSourceProvider = new AtomicReference<>();
     
     public ShardingSphereProxyStandaloneContainer(final DatabaseType databaseType, final AdaptorContainerConfiguration config) {
         super(ProxyContainerConstants.PROXY_CONTAINER_NAME_PREFIX, config.getAdapterContainerImage());
-        this.databaseType = databaseType;
         this.config = config;
+        dataSourceEnvironment = DatabaseTypedSPILoader.getService(DataSourceEnvironment.class, databaseType);
     }
     
     @Override
     protected void configure() {
         withExposedPorts(3307, 3308);
         mapResources(config.getMountedResources());
-        setWaitStrategy(new JdbcConnectCheckingWaitStrategy(() -> DriverManager.getConnection(DatabaseTypedSPILoader.getService(DataSourceEnvironment.class, databaseType)
-                .getURL(getHost(), getMappedPort(3307), config.getProxyDataSourceName()), ProxyContainerConstants.USER, ProxyContainerConstants.PASSWORD)));
+        setWaitStrategy(new JdbcConnectCheckingWaitStrategy(() -> DriverManager.getConnection(
+                dataSourceEnvironment.getURL(getHost(), getMappedPort(3307), config.getProxyDataSourceName()), ProxyContainerConstants.USER, ProxyContainerConstants.PASSWORD)));
     }
     
     @Override
     public DataSource getTargetDataSource(final String serverLists) {
         DataSource dataSource = targetDataSourceProvider.get();
         if (null == dataSource) {
-            DataSourceEnvironment dataSourceEnvironment = DatabaseTypedSPILoader.getService(DataSourceEnvironment.class, databaseType);
             targetDataSourceProvider.set(StorageContainerUtils.generateDataSource(
                     dataSourceEnvironment.getURL(getHost(), getMappedPort(3307), config.getProxyDataSourceName()), ProxyContainerConstants.USER, ProxyContainerConstants.PASSWORD, 2));
         }
