@@ -33,7 +33,7 @@ workflow:
   image: registry.red-soft.biz:5000/docker-images/3rdparty/docker:27.3.1
   parallel:
     matrix:
-      - TYPE: ["static", "mostly", "dynamic"]
+      - TYPE: [ "mostly", "dynamic"] # 'static' is currently not compiling
   dependencies:
     - build_environment
   variables:
@@ -72,10 +72,10 @@ proxy-native-docker:
     - docker build . -f ${DOCKERFILES}/Dockerfile-linux-${TYPE} --build-arg PROJECT_VERSION=${PROJECT_VERSION} -t ${OUT_IMAGE}
     - docker push ${OUT_IMAGE}
     - docker rmi ${OUT_IMAGE}
-    - echo ${OUT_IMAGE} >> ci/docker-containers-${PROJECT_VERSION}.txt
-  artifacts:
-    paths:
-      - ci/docker-containers.txt
+    #- echo ${OUT_IMAGE} >> ci/docker-containers-${PROJECT_VERSION}.txt
+  #artifacts:
+  #  paths:
+  #    - ci/docker-containers-${PROJECT_VERSION}.txt
 
 java11:
   tags: ["docker", "linux", "x86_64"]
@@ -118,7 +118,7 @@ release_hub:
   tags: ["docker", "x86_64", "linux"]
   image: $RELEASEHUB_CLIENT_IMAGE
   script:
-    - relmanager_client deploy rshrd ${PROJECT_VERSION} --artifacts ci/artifacts --ci-url ${CI_URL} #--context ${BUILD_TYPE}
+    - relmanager_client deploy rshrd ${PROJECT_VERSION} --artifacts ci/artifacts --ci-url ${CI_URL} --context ${BUILD_TYPE}
   only:
     variables:
       - $RELEASE_HUB_KEY
