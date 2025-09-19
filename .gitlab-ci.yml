@@ -44,7 +44,7 @@ workflow:
 # Preparation
 ######
 
-prepare_build_env:
+build_environment:
   tags: ["docker", "linux", "x86_64"]
   stage: prepare
   image: $JDK_BUILD_IMAGE
@@ -63,7 +63,7 @@ prepare_build_env:
 ######
 # Building
 ######
-build:proxy-native-docker:
+proxy-native-docker:
   extends: .build-proxy-native-template
   stage: build
   script:
@@ -71,7 +71,7 @@ build:proxy-native-docker:
     # TODO: push to registry
     - docker rmi ${OUT_IMAGE}
 
-build:java11:
+java11:
   tags: ["docker", "linux", "x86_64"]
   stage: build
   image: $JDK_BUILD_IMAGE
@@ -85,19 +85,19 @@ build:java11:
     #paths:
     #  - ${ARTIFACTS_DIR}
   dependencies:
-    - prepare_build_env
+    - build_environment
 
 ######
 # Testing
 ######
-test:java8:
+java8:
   tags: ["docker", "linux", "x86_64"]
   stage: test
   rules:
     - if: $CI_COMMIT_BRANCH == "master"
   image: $JDK_TEST_IMAGE
   dependencies:
-    - build:java11
+    - java11
   script:
     - ./mvnw -s ${M2_SETTINGSFILE} install -T1C -B -ntp -fae
   allow_failure: true
@@ -106,7 +106,7 @@ test:java8:
 # Deploying
 ######
 # Auth key for release hub is pulled from group envvars
-deploy_to_release_hub:
+release_hub:
   stage: deploy
   tags: ["docker", "x86_64", "linux"]
   image: $RELEASEHUB_CLIENT_IMAGE
