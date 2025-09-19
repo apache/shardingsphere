@@ -6,6 +6,8 @@ variables:
   JDK_TEST_IMAGE: registry.red-soft.biz:5000/jdk/temurin-8-jdk
   RELEASEHUB_CLIENT_IMAGE: registry.red-soft.biz:5000/utils/red-release-manager/client:master
   M2_SETTINGSFILE: ${CI_PROJECT_DIR}/ci/settings.xml
+  CI_URL: ${CI_PROJECT_URL}/pipelines/${CI_PIPELINE_ID}
+  BUILD_TYPE: commit
   MAVEN_OPTS: "-Dhttp.keepAlive=false -Dmaven.wagon.http.pool=false -Dmaven.wagon.http.retryHandler.class=standard -Dmaven.wagon.http.retryHandler.count=3 -Dspotless.apply.skip=true"
 
 stages:
@@ -68,8 +70,12 @@ proxy-native-docker:
   stage: build
   script:
     - docker build . -f ${DOCKERFILES}/Dockerfile-linux-${TYPE} --build-arg PROJECT_VERSION=${PROJECT_VERSION} -t ${OUT_IMAGE}
-    # TODO: push to registry
+    - docker push ${OUT_IMAGE}
     - docker rmi ${OUT_IMAGE}
+    - echo ${OUT_IMAGE} >> ci/docker-containers-${PROJECT_VERSION}.txt
+  artifacts:
+    paths:
+      - ci/docker-containers.txt
 
 java11:
   tags: ["docker", "linux", "x86_64"]
@@ -78,12 +84,13 @@ java11:
   variables:
     ARTIFACTS_DIR: ${CI_PROJECT_DIR}/${PROJECT_VERSION}
   script:
-    - ./mvnw -s ${M2_SETTINGSFILE} clean install -Prelease -T1C -DskipTests -Djacoco.skip=true -Dcheckstyle.skip=true -Drat.skip=true -Dmaven.javadoc.skip=true -B
+    - ./mvnw -s ${M2_SETTINGSFILE} clean package -Prelease,db-firebird -T1C -DskipTests -Djacoco.skip=true -Dcheckstyle.skip=true -Drat.skip=true -Dmaven.javadoc.skip=true -B
     - mkdir -pv ${ARTIFACTS_DIR}
     - cp -v distribution/{jdbc,proxy,agent}/target/*.{tar.gz,tar.gz.sha512} ${ARTIFACTS_DIR}
+    # Package command: .\mvnw.cmd clean package -P release,db-firebird -D skipTests -f pom.xml
   artifacts:
-    #paths:
-    #  - ${ARTIFACTS_DIR}
+    paths:
+      - ${ARTIFACTS_DIR}
   dependencies:
     - build_environment
 
@@ -93,13 +100,13 @@ java11:
 java8:
   tags: ["docker", "linux", "x86_64"]
   stage: test
-  rules:
-    - if: $CI_COMMIT_BRANCH == "master"
+  #rules:
+    #- if: $CI_COMMIT_BRANCH == "master"
   image: $JDK_TEST_IMAGE
   dependencies:
     - java11
   script:
-    - ./mvnw -s ${M2_SETTINGSFILE} install -T1C -B -ntp -fae
+    - ./mvnw -s ${M2_SETTINGSFILE} test -P release,db-firebird -f pom.xml
   allow_failure: true
 
 ######
@@ -111,7 +118,7 @@ release_hub:
   tags: ["docker", "x86_64", "linux"]
   image: $RELEASEHUB_CLIENT_IMAGE
   script:
-    - relmanager_client deploy rshrd ${PROJECT_VERSION} --artifacts ci/artifacts #--ci-url ${CI_URL} #--context ${BUILD_TYPE}
+    - relmanager_client deploy rshrd ${PROJECT_VERSION} --artifacts ci/artifacts --ci-url ${CI_URL} #--context ${BUILD_TYPE}
   only:
     variables:
       - $RELEASE_HUB_KEY
