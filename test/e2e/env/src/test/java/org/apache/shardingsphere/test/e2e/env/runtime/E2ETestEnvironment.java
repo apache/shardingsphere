@@ -61,7 +61,7 @@ public final class E2ETestEnvironment {
     
     private E2ETestEnvironment() {
         Properties props = loadProperties();
-        runModes = Splitter.on(",").trimResults().splitToList(props.getProperty("it.run.modes")).stream().map(AdapterMode::valueOf).collect(Collectors.toList());
+        runModes = Splitter.on(",").trimResults().splitToList(props.getProperty("it.run.modes", "")).stream().filter(each -> !each.isEmpty()).map(AdapterMode::valueOf).collect(Collectors.toList());
         runAdditionalTestCases = Boolean.parseBoolean(props.getProperty("it.run.additional.cases"));
         TimeZone.setDefault(TimeZone.getTimeZone(props.getProperty("it.timezone", "UTC")));
         scenarios = getScenarios(props);
