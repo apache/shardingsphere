@@ -17,19 +17,10 @@
 
 package org.apache.shardingsphere.test.e2e.env.container.adapter.enums;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-
 /**
  * Adapter mode.
  */
-@RequiredArgsConstructor
-@Getter
 public enum AdapterMode {
     
-    STANDALONE("Standalone"),
-    
-    CLUSTER("Cluster");
-    
-    private final String value;
+    STANDALONE, CLUSTER
 }

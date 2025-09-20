@@ -46,7 +46,6 @@ import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.lifecycle.Startable;
 import org.testcontainers.utility.Base58;
 
-import javax.net.ssl.SSLException;
 import javax.sql.DataSource;
 import java.io.File;
 import java.io.FileWriter;
@@ -105,7 +104,7 @@ public final class ShardingSphereProxyEmbeddedContainer implements EmbeddedITCon
         new JdbcConnectCheckingWaitStrategy(() -> getTargetDataSource(null).getConnection()).waitUntilReady(null);
     }
     
-    @SneakyThrows({SQLException.class, IOException.class, SSLException.class, InterruptedException.class})
+    @SneakyThrows({SQLException.class, IOException.class, InterruptedException.class})
     private void startProxy() {
         YamlProxyConfiguration yamlConfig = ProxyConfigurationLoader.load(getTempConfigurationDirectory().toString());
         int port = Integer.parseInt(ConfigurationPropertyKey.PROXY_DEFAULT_PORT.getDefaultValue());
