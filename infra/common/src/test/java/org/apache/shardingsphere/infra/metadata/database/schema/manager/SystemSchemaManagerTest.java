@@ -20,67 +20,32 @@ package org.apache.shardingsphere.infra.metadata.database.schema.manager;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collection;
+import java.io.InputStream;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class SystemSchemaManagerTest {
     
     @Test
-    void assertValueOfSchemaPathSuccess() {
-        Collection<String> actualInformationSchema = SystemSchemaManager.getTables("MySQL", "information_schema");
+    void assertGetAllInputStreams() {
+        Collection<InputStream> actualInformationSchema = SystemSchemaManager.getAllInputStreams("MySQL", "information_schema");
         assertThat(actualInformationSchema.size(), is(95));
-        Collection<String> actualMySQLSchema = SystemSchemaManager.getTables("MySQL", "mysql");
+        Collection<InputStream> actualMySQLSchema = SystemSchemaManager.getAllInputStreams("MySQL", "mysql");
         assertThat(actualMySQLSchema.size(), is(40));
-        Collection<String> actualPerformanceSchema = SystemSchemaManager.getTables("MySQL", "performance_schema");
+        Collection<InputStream> actualPerformanceSchema = SystemSchemaManager.getAllInputStreams("MySQL", "performance_schema");
         assertThat(actualPerformanceSchema.size(), is(114));
-        Collection<String> actualSysSchema = SystemSchemaManager.getTables("MySQL", "sys");
+        Collection<InputStream> actualSysSchema = SystemSchemaManager.getAllInputStreams("MySQL", "sys");
         assertThat(actualSysSchema.size(), is(53));
-        Collection<String> actualShardingSphereSchema = SystemSchemaManager.getTables("MySQL", "shardingsphere");
+        Collection<InputStream> actualShardingSphereSchema = SystemSchemaManager.getAllInputStreams("MySQL", "shardingsphere");
         assertThat(actualShardingSphereSchema.size(), is(1));
-        Collection<String> actualPgInformationSchema = SystemSchemaManager.getTables("PostgreSQL", "information_schema");
+        Collection<InputStream> actualPgInformationSchema = SystemSchemaManager.getAllInputStreams("PostgreSQL", "information_schema");
         assertThat(actualPgInformationSchema.size(), is(69));
-        Collection<String> actualPgCatalog = SystemSchemaManager.getTables("PostgreSQL", "pg_catalog");
+        Collection<InputStream> actualPgCatalog = SystemSchemaManager.getAllInputStreams("PostgreSQL", "pg_catalog");
         assertThat(actualPgCatalog.size(), is(134));
-        Collection<String> actualOgInformationSchema = SystemSchemaManager.getTables("openGauss", "information_schema");
+        Collection<InputStream> actualOgInformationSchema = SystemSchemaManager.getAllInputStreams("openGauss", "information_schema");
         assertThat(actualOgInformationSchema.size(), is(66));
-        Collection<String> actualOgPgCatalog = SystemSchemaManager.getTables("openGauss", "pg_catalog");
+        Collection<InputStream> actualOgPgCatalog = SystemSchemaManager.getAllInputStreams("openGauss", "pg_catalog");
         assertThat(actualOgPgCatalog.size(), is(240));
-    }
-    
-    @Test
-    void assertIsisSystemTable() {
-        assertTrue(SystemSchemaManager.isSystemTable("information_schema", "columns"));
-        assertTrue(SystemSchemaManager.isSystemTable("pg_catalog", "pg_database"));
-        assertTrue(SystemSchemaManager.isSystemTable("pg_catalog", "pg_tables"));
-        assertTrue(SystemSchemaManager.isSystemTable("pg_catalog", "pg_aggregate"));
-        assertTrue(SystemSchemaManager.isSystemTable("pg_catalog", "pg_am"));
-        assertTrue(SystemSchemaManager.isSystemTable("pg_catalog", "pg_amop"));
-        assertTrue(SystemSchemaManager.isSystemTable("pg_catalog", "pg_amproc"));
-        assertTrue(SystemSchemaManager.isSystemTable("pg_catalog", "pg_attrdef"));
-        assertTrue(SystemSchemaManager.isSystemTable("pg_catalog", "pg_attribute"));
-        assertTrue(SystemSchemaManager.isSystemTable("pg_catalog", "pg_auth_members"));
-        assertTrue(SystemSchemaManager.isSystemTable("pg_catalog", "pg_authid"));
-        assertTrue(SystemSchemaManager.isSystemTable("pg_catalog", "pg_available_extension_versions"));
-        assertTrue(SystemSchemaManager.isSystemTable("pg_catalog", "pg_available_extensions"));
-        assertTrue(SystemSchemaManager.isSystemTable("pg_catalog", "pg_backend_memory_contexts"));
-        assertTrue(SystemSchemaManager.isSystemTable("pg_catalog", "pg_cast"));
-        assertTrue(SystemSchemaManager.isSystemTable("pg_catalog", "pg_range"));
-        assertTrue(SystemSchemaManager.isSystemTable("pg_catalog", "pg_replication_origin"));
-        assertTrue(SystemSchemaManager.isSystemTable("pg_catalog", "pg_rewrite"));
-        assertTrue(SystemSchemaManager.isSystemTable("pg_catalog", "pg_seclabel"));
-        assertTrue(SystemSchemaManager.isSystemTable("pg_catalog", "pg_sequence"));
-        assertTrue(SystemSchemaManager.isSystemTable("pg_catalog", "pg_roles"));
-        assertTrue(SystemSchemaManager.isSystemTable("pg_catalog", "pg_user_mapping"));
-        assertTrue(SystemSchemaManager.isSystemTable("pg_catalog", "pg_stat_database_conflicts"));
-        assertTrue(SystemSchemaManager.isSystemTable("pg_catalog", "pg_stat_gssapi"));
-        assertTrue(SystemSchemaManager.isSystemTable("pg_catalog", "pg_stat_progress_analyze"));
-        assertTrue(SystemSchemaManager.isSystemTable("pg_catalog", "pg_stat_progress_basebackup"));
-        assertTrue(SystemSchemaManager.isSystemTable("pg_catalog", "pg_stat_progress_cluster"));
-        assertFalse(SystemSchemaManager.isSystemTable("sharding_db", "t_order"));
-        assertTrue(SystemSchemaManager.isSystemTable("shardingsphere", "cluster_information"));
-        assertFalse(SystemSchemaManager.isSystemTable("shardingsphere", "nonexistent"));
     }
 }
