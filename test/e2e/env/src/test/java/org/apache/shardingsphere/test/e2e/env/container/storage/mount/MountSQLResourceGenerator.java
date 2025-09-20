@@ -28,6 +28,7 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Optional;
+import java.util.TreeMap;
 import java.util.stream.Collectors;
 
 /**
@@ -68,7 +69,7 @@ public final class MountSQLResourceGenerator {
         for (String each : getToBeMountedScenarioSQLFiles(scenario)) {
             toBeMountedSQLFiles.add("/" + each);
         }
-        return toBeMountedSQLFiles.stream().collect(Collectors.toMap(each -> each, each -> "/docker-entrypoint-initdb.d/" + new File(each).getName()));
+        return new TreeMap<>(toBeMountedSQLFiles.stream().collect(Collectors.toMap(each -> each, each -> "/docker-entrypoint-initdb.d/" + new File(each).getName())));
     }
     
     private Optional<String> findToBeMountedCommonSQLFile(final String toBeMountedSQLFile) {

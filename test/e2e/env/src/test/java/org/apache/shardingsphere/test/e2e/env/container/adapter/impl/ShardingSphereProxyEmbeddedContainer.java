@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.test.e2e.env.container.adapter.impl;
 
+import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
@@ -62,9 +63,10 @@ import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * ShardingSphere proxy embedded container.
- * todo Reset static properties when closing the class., like PipelineAPIFactory#GOVERNANCE_FACADE_MAP
  */
+@RequiredArgsConstructor
 @Slf4j
+// TODO Reset static properties when closing the class., like PipelineAPIFactory#GOVERNANCE_FACADE_MAP
 public final class ShardingSphereProxyEmbeddedContainer implements AdapterContainer, EmbeddedITContainer {
     
     private static final String OS_MAC_TMP_DIR = "/tmp";
@@ -80,11 +82,6 @@ public final class ShardingSphereProxyEmbeddedContainer implements AdapterContai
     private final Set<Startable> dependencies = new HashSet<>();
     
     private ShardingSphereProxy proxy;
-    
-    public ShardingSphereProxyEmbeddedContainer(final DatabaseType databaseType, final AdaptorContainerConfiguration config) {
-        this.databaseType = databaseType;
-        this.config = config;
-    }
     
     @Override
     public DataSource getTargetDataSource(final String serverLists) {
