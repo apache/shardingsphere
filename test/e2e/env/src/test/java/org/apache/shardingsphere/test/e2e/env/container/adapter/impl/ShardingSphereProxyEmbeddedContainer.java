@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.test.e2e.env.container.adapter.impl;
 
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -45,6 +46,7 @@ import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.lifecycle.Startable;
 import org.testcontainers.utility.Base58;
 
+import javax.net.ssl.SSLException;
 import javax.sql.DataSource;
 import java.io.File;
 import java.io.FileWriter;
@@ -53,13 +55,16 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.sql.SQLException;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.stream.Collectors;
 
 /**
  * ShardingSphere proxy embedded container.
@@ -67,7 +72,7 @@ import java.util.concurrent.atomic.AtomicReference;
 @RequiredArgsConstructor
 @Slf4j
 // TODO Reset static properties when closing the class., like PipelineAPIFactory#GOVERNANCE_FACADE_MAP
-public final class ShardingSphereProxyEmbeddedContainer implements AdapterContainer, EmbeddedITContainer {
+public final class ShardingSphereProxyEmbeddedContainer implements EmbeddedITContainer, AdapterContainer {
     
     private static final String OS_MAC_TMP_DIR = "/tmp";
     
@@ -79,9 +84,19 @@ public final class ShardingSphereProxyEmbeddedContainer implements AdapterContai
     
     private final AtomicReference<DataSource> targetDataSourceProvider = new AtomicReference<>();
     
+    @Getter
     private final Set<Startable> dependencies = new HashSet<>();
     
     private ShardingSphereProxy proxy;
+    
+    /**
+     * Depends on.
+     *
+     * @param dependencies dependencies
+     */
+    public void dependsOn(final Startable... dependencies) {
+        Collections.addAll(this.dependencies, dependencies);
+    }
     
     @Override
     public DataSource getTargetDataSource(final String serverLists) {
@@ -100,32 +115,13 @@ public final class ShardingSphereProxyEmbeddedContainer implements AdapterContai
     }
     
     @Override
-    public Set<Startable> getDependencies() {
-        return dependencies;
-    }
-    
-    /**
-     * Depends on.
-     *
-     * @param dependencies dependencies
-     */
-    public void dependsOn(final Startable... dependencies) {
-        Collections.addAll(this.dependencies, dependencies);
-    }
-    
-    private void startDependencies() {
-        getDependencies().forEach(Startable::start);
-    }
-    
-    @SneakyThrows
-    @Override
     public void start() {
-        startDependencies();
+        dependencies.forEach(Startable::start);
         startInternalProxy();
         new JdbcConnectCheckingWaitStrategy(() -> getTargetDataSource(null).getConnection()).waitUntilReady(null);
     }
     
-    @SneakyThrows
+    @SneakyThrows({SQLException.class, IOException.class, SSLException.class, InterruptedException.class})
     private void startInternalProxy() {
         YamlProxyConfiguration yamlConfig = ProxyConfigurationLoader.load(getTempConfigDirectory().toString());
         int port = Integer.parseInt(ConfigurationPropertyKey.PROXY_DEFAULT_PORT.getDefaultValue());
@@ -141,7 +137,7 @@ public final class ShardingSphereProxyEmbeddedContainer implements AdapterContai
         Map<String, String> storageConnectionInfoMap = getStorageConnectionInfoMap();
         Path result = createTempDirectory().toPath();
         for (Entry<String, String> each : config.getMountedResources().entrySet()) {
-            File file = new File(ShardingSphereProxyEmbeddedContainer.class.getResource(each.getKey()).getFile());
+            File file = new File(Objects.requireNonNull(ShardingSphereProxyEmbeddedContainer.class.getResource(each.getKey())).getFile());
             if (file.isDirectory()) {
                 writeDirectoryToTempFile(each.getKey(), file, networkAliasAndHostLinkMap, storageConnectionInfoMap, result);
             } else {
@@ -153,8 +149,27 @@ public final class ShardingSphereProxyEmbeddedContainer implements AdapterContai
         return result;
     }
     
-    private void writeDirectoryToTempFile(final String originalKey, final File file, final Map<String, String> aliasAndHostLinkMap, final Map<String, String> storageConnectionInfoMap,
-                                          final Path tempDirectory) throws IOException {
+    private Map<String, String> getNetworkAliasAndHostLinkMap() {
+        Map<String, String> result = new HashMap<>();
+        for (Startable each : dependencies) {
+            if (each instanceof GenericContainer) {
+                result.putAll(getNetworkAliasAndHostLinkMap((GenericContainer<?>) each));
+            }
+        }
+        return result;
+    }
+    
+    private Map<String, String> getNetworkAliasAndHostLinkMap(final GenericContainer<?> genericContainer) {
+        Map<String, String> result = new HashMap<>();
+        for (String each : genericContainer.getNetworkAliases()) {
+            result.putAll(genericContainer.getExposedPorts().stream()
+                    .collect(Collectors.toMap(exposedPort -> each + ":" + exposedPort, exposedPort -> "127.0.0.1:" + genericContainer.getMappedPort(exposedPort))));
+        }
+        return result;
+    }
+    
+    private void writeDirectoryToTempFile(final String originalKey, final File file,
+                                          final Map<String, String> aliasAndHostLinkMap, final Map<String, String> storageConnectionInfoMap, final Path tempDirectory) throws IOException {
         for (File each : file.listFiles()) {
             String content = IOUtils.toString(Files.newInputStream(each.toPath()), StandardCharsets.UTF_8);
             content = replaceContent(aliasAndHostLinkMap, storageConnectionInfoMap, content);
@@ -184,12 +199,8 @@ public final class ShardingSphereProxyEmbeddedContainer implements AdapterContai
     private Map<String, String> getStorageConnectionInfoMap() {
         Map<String, String> result = new HashMap<>();
         for (Startable each : dependencies) {
-            if (!(each instanceof NativeStorageContainer)) {
-                continue;
-            }
-            NativeStorageContainer storageContainer = (NativeStorageContainer) each;
-            for (String network : storageContainer.getNetworkAliases()) {
-                result.put(network + ":" + storageContainer.getExposedPort(), E2ETestEnvironment.getInstance().getNativeStorageHost() + ":" + E2ETestEnvironment.getInstance().getNativeStoragePort());
+            if (each instanceof NativeStorageContainer) {
+                result.putAll(getStorageConnectionInfoMap((NativeStorageContainer) each));
             }
         }
         result.put("username: " + StorageContainerConstants.OPERATION_USER, "username: " + E2ETestEnvironment.getInstance().getNativeStorageUsername());
@@ -197,32 +208,15 @@ public final class ShardingSphereProxyEmbeddedContainer implements AdapterContai
         return result;
     }
     
-    private Map<String, String> getNetworkAliasAndHostLinkMap() {
-        Map<String, String> result = new HashMap<>();
-        for (Startable each : dependencies) {
-            if (each instanceof GenericContainer) {
-                result.putAll(getNetworkAliasAndHostLinkMap((GenericContainer<?>) each));
-            }
-        }
-        return result;
-    }
-    
-    private Map<String, String> getNetworkAliasAndHostLinkMap(final GenericContainer<?> genericContainer) {
-        Map<String, String> result = new HashMap<>();
-        for (String each : genericContainer.getNetworkAliases()) {
-            for (Integer exposedPort : genericContainer.getExposedPorts()) {
-                result.put(each + ":" + exposedPort, "127.0.0.1:" + genericContainer.getMappedPort(exposedPort));
-            }
-        }
-        return result;
+    private Map<String, String> getStorageConnectionInfoMap(final NativeStorageContainer container) {
+        return container.getNetworkAliases().stream().collect(Collectors.toMap(
+                each -> each + ":" + container.getExposedPort(), each -> E2ETestEnvironment.getInstance().getNativeStorageHost() + ":" + E2ETestEnvironment.getInstance().getNativeStoragePort()));
     }
     
     private File createTempDirectory() {
         try {
-            if (SystemUtils.IS_OS_MAC) {
-                return Files.createTempDirectory(Paths.get(OS_MAC_TMP_DIR), E2E_PROXY_CONFIG_TMP_DIR_PREFIX).toFile();
-            }
-            return Files.createTempDirectory(E2E_PROXY_CONFIG_TMP_DIR_PREFIX).toFile();
+            Path result = SystemUtils.IS_OS_MAC ? Files.createTempDirectory(Paths.get(OS_MAC_TMP_DIR), E2E_PROXY_CONFIG_TMP_DIR_PREFIX) : Files.createTempDirectory(E2E_PROXY_CONFIG_TMP_DIR_PREFIX);
+            return result.toFile();
         } catch (final IOException ex) {
             return new File(E2E_PROXY_CONFIG_TMP_DIR_PREFIX + Base58.randomString(5));
         }
