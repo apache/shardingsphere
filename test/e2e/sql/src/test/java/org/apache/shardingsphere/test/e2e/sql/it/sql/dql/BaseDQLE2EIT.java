@@ -21,6 +21,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.infra.util.datetime.DateTimeFormatterFactory;
+import org.apache.shardingsphere.test.e2e.env.container.adapter.enums.AdapterMode;
 import org.apache.shardingsphere.test.e2e.env.runtime.scenario.path.ScenarioDataPath;
 import org.apache.shardingsphere.test.e2e.env.runtime.scenario.path.ScenarioDataPath.Type;
 import org.apache.shardingsphere.test.e2e.sql.cases.dataset.metadata.DataSetColumn;
@@ -133,7 +134,7 @@ public abstract class BaseDQLE2EIT implements SQLE2EIT {
             if ("db_tbl_sql_federation".equals(testParam.getScenario())) {
                 continue;
             }
-            if ("jdbc".equals(testParam.getAdapter()) && "Cluster".equals(testParam.getMode()) && "encrypt".equals(testParam.getScenario())
+            if ("jdbc".equals(testParam.getAdapter()) && AdapterMode.CLUSTER == testParam.getMode() && "encrypt".equals(testParam.getScenario())
                     || "MySQL".equals(testParam.getDatabaseType().getType()) && "passthrough".equals(testParam.getScenario())) {
                 // FIXME correct columnType with proxy adapter and other jdbc scenario
                 assertThat(actualResultSetMetaData.getColumnType(i + 1), is(expectedResultSetMetaData.getColumnType(i + 1)));

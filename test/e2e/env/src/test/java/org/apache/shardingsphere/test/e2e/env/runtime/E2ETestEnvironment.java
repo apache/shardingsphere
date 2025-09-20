@@ -19,6 +19,7 @@ package org.apache.shardingsphere.test.e2e.env.runtime;
 
 import com.google.common.base.Splitter;
 import lombok.Getter;
+import org.apache.shardingsphere.test.e2e.env.container.adapter.enums.AdapterMode;
 import org.apache.shardingsphere.test.e2e.env.container.constants.StorageContainerConstants;
 import org.apache.shardingsphere.test.e2e.env.runtime.cluster.ClusterEnvironment;
 import org.apache.shardingsphere.test.e2e.env.runtime.scenario.path.ScenarioCommonPath;
@@ -28,6 +29,7 @@ import java.io.InputStream;
 import java.util.Collection;
 import java.util.Properties;
 import java.util.TimeZone;
+import java.util.stream.Collectors;
 
 /**
  * E2E test environment.
@@ -37,7 +39,7 @@ public final class E2ETestEnvironment {
     
     private static final E2ETestEnvironment INSTANCE = new E2ETestEnvironment();
     
-    private final Collection<String> runModes;
+    private final Collection<AdapterMode> runModes;
     
     private final boolean runAdditionalTestCases;
     
@@ -59,7 +61,7 @@ public final class E2ETestEnvironment {
     
     private E2ETestEnvironment() {
         Properties props = loadProperties();
-        runModes = Splitter.on(",").trimResults().splitToList(props.getProperty("it.run.modes"));
+        runModes = Splitter.on(",").trimResults().splitToList(props.getProperty("it.run.modes")).stream().map(AdapterMode::valueOf).collect(Collectors.toList());
         runAdditionalTestCases = Boolean.parseBoolean(props.getProperty("it.run.additional.cases"));
         TimeZone.setDefault(TimeZone.getTimeZone(props.getProperty("it.timezone", "UTC")));
         scenarios = getScenarios(props);

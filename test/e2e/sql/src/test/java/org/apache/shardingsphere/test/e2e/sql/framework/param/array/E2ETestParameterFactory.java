@@ -44,12 +44,12 @@ public final class E2ETestParameterFactory {
      */
     public static Collection<AssertionTestParameter> getAssertionTestParameters(final SQLCommandType sqlCommandType) {
         Collection<AssertionTestParameter> result = new LinkedList<>();
-        for (String each : ENV.getRunModes()) {
-            if (AdapterMode.STANDALONE.name().equalsIgnoreCase(each)) {
+        for (AdapterMode each : ENV.getRunModes()) {
+            if (AdapterMode.STANDALONE == each) {
                 result.addAll(isDistSQLCommandType(sqlCommandType)
                         ? ProxyStandaloneTestParameterGenerator.getAssertionTestParameter(sqlCommandType)
                         : JdbcStandaloneTestParameterGenerator.getAssertionTestParameter(sqlCommandType));
-            } else if (AdapterMode.CLUSTER.name().equalsIgnoreCase(each)) {
+            } else if (AdapterMode.CLUSTER == each) {
                 result.addAll(ClusterTestParameterArrayGenerator.getAssertionTestParameter(sqlCommandType));
             }
         }
@@ -64,12 +64,12 @@ public final class E2ETestParameterFactory {
      */
     public static Collection<E2ETestParameter> getCaseTestParameters(final SQLCommandType sqlCommandType) {
         Collection<E2ETestParameter> result = new LinkedList<>();
-        for (String each : ENV.getRunModes()) {
-            if (AdapterMode.STANDALONE.name().equalsIgnoreCase(each)) {
+        for (AdapterMode each : ENV.getRunModes()) {
+            if (AdapterMode.STANDALONE == each) {
                 result.addAll(isDistSQLCommandType(sqlCommandType)
                         ? ProxyStandaloneTestParameterGenerator.getCaseTestParameter(sqlCommandType)
                         : JdbcStandaloneTestParameterGenerator.getCaseTestParameter(sqlCommandType));
-            } else if (AdapterMode.CLUSTER.name().equalsIgnoreCase(each)) {
+            } else if (AdapterMode.CLUSTER == each) {
                 result.addAll(ClusterTestParameterArrayGenerator.getCaseTestParameter(sqlCommandType));
             }
         }
@@ -86,7 +86,6 @@ public final class E2ETestParameterFactory {
      * @return contains or not
      */
     public static boolean containsTestParameter() {
-        return E2ETestEnvironment.getInstance().getRunModes().stream()
-                .anyMatch(each -> AdapterMode.STANDALONE.name().equalsIgnoreCase(each) || AdapterMode.CLUSTER.name().equalsIgnoreCase(each));
+        return !E2ETestEnvironment.getInstance().getRunModes().isEmpty();
     }
 }

@@ -25,6 +25,7 @@ import org.apache.shardingsphere.distsql.statement.type.ral.RALStatement;
 import org.apache.shardingsphere.distsql.statement.type.rdl.RDLStatement;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
+import org.apache.shardingsphere.test.e2e.env.container.adapter.enums.AdapterMode;
 import org.apache.shardingsphere.test.e2e.sql.cases.SQLE2ETestCasesXMLLoader;
 import org.apache.shardingsphere.test.e2e.sql.cases.casse.SQLE2ETestCaseContext;
 import org.apache.shardingsphere.test.e2e.sql.cases.casse.assertion.SQLE2ETestCaseAssertion;
@@ -52,7 +53,7 @@ public final class E2ETestParameterGenerator {
     
     private final Collection<String> envScenarios;
     
-    private final String envMode;
+    private final AdapterMode adapterMode;
     
     private final Collection<DatabaseType> envDatabaseTypes;
     
@@ -123,7 +124,7 @@ public final class E2ETestParameterGenerator {
                                                                          final SQLExecuteType sqlExecuteType, final SQLCommandType sqlCommandType) {
         Collection<String> scenarios = null == testCaseContext.getTestCase().getScenarioTypes() ? Collections.emptyList() : Arrays.asList(testCaseContext.getTestCase().getScenarioTypes().split(","));
         return envScenarios.stream().filter(each -> filterScenarios(each, scenarios, sqlCommandType.getSqlStatementClass()))
-                .map(each -> new AssertionTestParameter(testCaseContext, assertion, adapter, each, envMode, databaseType, sqlExecuteType, sqlCommandType)).collect(Collectors.toList());
+                .map(each -> new AssertionTestParameter(testCaseContext, assertion, adapter, each, adapterMode, databaseType, sqlExecuteType, sqlCommandType)).collect(Collectors.toList());
     }
     
     private Collection<AssertionTestParameter> getAssertionTestParameterFilterBySmoke(final SQLE2ETestCaseContext testCaseContext, final SQLCommandType sqlCommandType) {
@@ -190,7 +191,7 @@ public final class E2ETestParameterGenerator {
         }
         Collection<String> scenarios = null == testCaseContext.getTestCase().getScenarioTypes() ? Collections.emptyList() : Arrays.asList(testCaseContext.getTestCase().getScenarioTypes().split(","));
         return envScenarios.stream().filter(each -> scenarios.isEmpty() || scenarios.contains(each))
-                .map(each -> new CaseTestParameter(testCaseContext, adapter, each, envMode, databaseType, sqlCommandType)).collect(Collectors.toList());
+                .map(each -> new CaseTestParameter(testCaseContext, adapter, each, adapterMode, databaseType, sqlCommandType)).collect(Collectors.toList());
     }
     
     private Collection<DatabaseType> getDatabaseTypes(final String databaseTypes) {
