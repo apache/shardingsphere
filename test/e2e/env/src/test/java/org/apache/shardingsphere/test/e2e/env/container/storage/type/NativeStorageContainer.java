@@ -29,6 +29,7 @@ import org.apache.shardingsphere.test.e2e.env.container.util.SQLScriptUtils;
 import org.apache.shardingsphere.test.e2e.env.container.util.StorageContainerUtils;
 import org.apache.shardingsphere.test.e2e.env.runtime.E2ETestEnvironment;
 import org.apache.shardingsphere.test.e2e.env.runtime.datasource.DataSourceEnvironment;
+import org.apache.shardingsphere.test.e2e.env.runtime.natived.NativeStorageEnvironment;
 import org.apache.shardingsphere.test.e2e.env.runtime.scenario.database.DatabaseEnvironmentManager;
 import org.apache.shardingsphere.test.e2e.env.runtime.scenario.path.ScenarioDataPath.Type;
 
@@ -46,7 +47,7 @@ import java.util.stream.Collectors;
  */
 public final class NativeStorageContainer implements StorageContainer {
     
-    private final E2ETestEnvironment env;
+    private final NativeStorageEnvironment env;
     
     private final DatabaseType databaseType;
     
@@ -65,7 +66,7 @@ public final class NativeStorageContainer implements StorageContainer {
     private List<String> networkAliases;
     
     public NativeStorageContainer(final DatabaseType databaseType, final String scenario) {
-        env = E2ETestEnvironment.getInstance();
+        env = E2ETestEnvironment.getInstance().getNativeStorageEnvironment();
         this.databaseType = databaseType;
         this.scenario = scenario;
         option = DatabaseTypedSPILoader.findService(StorageContainerOption.class, databaseType).orElse(null);
@@ -77,8 +78,7 @@ public final class NativeStorageContainer implements StorageContainer {
     private void initDatabase() {
         if (null != option) {
             DataSourceEnvironment dataSourceEnvironment = DatabaseTypedSPILoader.getService(DataSourceEnvironment.class, databaseType);
-            DataSource dataSource = StorageContainerUtils.generateDataSource(
-                    dataSourceEnvironment.getURL(env.getNativeStorageHost(), env.getNativeStoragePort()), env.getNativeStorageUsername(), env.getNativeStoragePassword(), 2);
+            DataSource dataSource = StorageContainerUtils.generateDataSource(dataSourceEnvironment.getURL(env.getHost(), env.getPort()), env.getUser(), env.getPassword(), 2);
             new MountSQLResourceGenerator(option).generate(0, scenario).keySet().forEach(each -> SQLScriptUtils.execute(dataSource, each));
         }
     }
@@ -94,8 +94,7 @@ public final class NativeStorageContainer implements StorageContainer {
         DataSourceEnvironment dataSourceEnvironment = DatabaseTypedSPILoader.getService(DataSourceEnvironment.class, databaseType);
         Map<String, DataSource> result = new HashMap<>(databaseNames.size(), 1F);
         for (String each : databaseNames) {
-            DataSource dataSource = StorageContainerUtils.generateDataSource(
-                    dataSourceEnvironment.getURL(env.getNativeStorageHost(), env.getNativeStoragePort(), each), env.getNativeStorageUsername(), env.getNativeStoragePassword(), 2);
+            DataSource dataSource = StorageContainerUtils.generateDataSource(dataSourceEnvironment.getURL(env.getHost(), env.getPort(), each), env.getUser(), env.getPassword(), 2);
             result.put(each, dataSource);
         }
         return result;
@@ -123,10 +122,10 @@ public final class NativeStorageContainer implements StorageContainer {
     public Map<String, String> getLinkReplacements() {
         Map<String, String> result = new HashMap<>(getNetworkAliases().size() + 2, 1F);
         for (String each : getNetworkAliases()) {
-            result.put(each + ":" + getExposedPort(), env.getNativeStorageHost() + ":" + env.getNativeStoragePort());
+            result.put(each + ":" + getExposedPort(), env.getHost() + ":" + env.getPort());
         }
-        result.put(StorageContainerConstants.OPERATION_USER, env.getNativeStorageUsername());
-        result.put(StorageContainerConstants.OPERATION_PASSWORD, env.getNativeStoragePassword());
+        result.put(StorageContainerConstants.OPERATION_USER, env.getUser());
+        result.put(StorageContainerConstants.OPERATION_PASSWORD, env.getPassword());
         return result;
     }
 }
