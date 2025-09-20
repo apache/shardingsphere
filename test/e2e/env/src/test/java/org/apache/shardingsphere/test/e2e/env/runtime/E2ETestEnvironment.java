@@ -19,6 +19,7 @@ package org.apache.shardingsphere.test.e2e.env.runtime;
 
 import com.google.common.base.Splitter;
 import lombok.Getter;
+import lombok.SneakyThrows;
 import org.apache.shardingsphere.test.e2e.env.container.adapter.enums.AdapterMode;
 import org.apache.shardingsphere.test.e2e.env.container.constants.StorageContainerConstants;
 import org.apache.shardingsphere.test.e2e.env.runtime.cluster.ClusterEnvironment;
@@ -43,13 +44,13 @@ public final class E2ETestEnvironment {
     
     private final boolean runAdditionalTestCases;
     
+    private final boolean smoke;
+    
     private final Collection<String> scenarios;
     
     private final String governanceCenter;
     
     private final ClusterEnvironment clusterEnvironment;
-    
-    private final boolean smoke;
     
     private final String nativeStorageHost;
     
@@ -61,26 +62,25 @@ public final class E2ETestEnvironment {
     
     private E2ETestEnvironment() {
         Properties props = loadProperties();
+        TimeZone.setDefault(TimeZone.getTimeZone(props.getProperty("it.timezone", "UTC")));
         runModes = Splitter.on(",").trimResults().splitToList(props.getProperty("it.run.modes", "")).stream()
                 .filter(each -> !each.isEmpty()).map(each -> AdapterMode.valueOf(each.toUpperCase())).collect(Collectors.toList());
         runAdditionalTestCases = Boolean.parseBoolean(props.getProperty("it.run.additional.cases"));
-        TimeZone.setDefault(TimeZone.getTimeZone(props.getProperty("it.timezone", "UTC")));
-        scenarios = getScenarios(props);
         smoke = Boolean.parseBoolean(props.getProperty("it.run.smoke"));
+        scenarios = getScenarios(props);
+        governanceCenter = props.getProperty("it.env.governance.center");
         clusterEnvironment = new ClusterEnvironment(props);
         nativeStorageHost = props.getProperty("it.native.storage.host", "127.0.0.1");
         nativeStoragePort = Integer.parseInt(props.getProperty("it.native.storage.port", "0"));
         nativeStorageUsername = props.getProperty("it.native.storage.username", StorageContainerConstants.OPERATION_USER);
         nativeStoragePassword = props.getProperty("it.native.storage.password", StorageContainerConstants.OPERATION_PASSWORD);
-        governanceCenter = props.getProperty("it.env.governance.center");
     }
     
+    @SneakyThrows(IOException.class)
     private Properties loadProperties() {
         Properties result = new Properties();
         try (InputStream inputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream("env/it-env.properties")) {
             result.load(inputStream);
-        } catch (final IOException ex) {
-            throw new RuntimeException(ex);
         }
         for (String each : System.getProperties().stringPropertyNames()) {
             result.setProperty(each, System.getProperty(each));
