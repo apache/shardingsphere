@@ -86,6 +86,6 @@ public final class E2ETestParameterFactory {
      * @return contains or not
      */
     public static boolean containsTestParameter() {
-        return !E2ETestEnvironment.getInstance().getRunModes().isEmpty();
+        return E2ETestEnvironment.getInstance().getRunModes().stream().anyMatch(each -> AdapterMode.STANDALONE == each || AdapterMode.CLUSTER == each);
     }
 }
