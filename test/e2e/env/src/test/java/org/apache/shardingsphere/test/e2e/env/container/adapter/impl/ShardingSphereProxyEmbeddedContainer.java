@@ -107,7 +107,7 @@ public final class ShardingSphereProxyEmbeddedContainer implements EmbeddedITCon
     
     @SneakyThrows({SQLException.class, IOException.class, SSLException.class, InterruptedException.class})
     private void startProxy() {
-        YamlProxyConfiguration yamlConfig = ProxyConfigurationLoader.load(getTempConfigDirectory().toString());
+        YamlProxyConfiguration yamlConfig = ProxyConfigurationLoader.load(getTempConfigurationDirectory().toString());
         int port = Integer.parseInt(ConfigurationPropertyKey.PROXY_DEFAULT_PORT.getDefaultValue());
         new BootstrapInitializer().init(yamlConfig, port);
         ProxySSLContext.init();
@@ -116,7 +116,7 @@ public final class ShardingSphereProxyEmbeddedContainer implements EmbeddedITCon
         log.info("ShardingSphere-Proxy {} mode started successfully", ProxyContext.getInstance().getContextManager().getComputeNodeInstanceContext().getModeConfiguration().getType());
     }
     
-    private Path getTempConfigDirectory() throws IOException {
+    private Path getTempConfigurationDirectory() throws IOException {
         Map<String, String> networkAliasAndHostLinkMap = getNetworkAliasAndHostLinkMap();
         Map<String, String> storageConnectionInfoMap = getStorageConnectionInfoMap();
         Path result = createTempDirectory().toPath();
