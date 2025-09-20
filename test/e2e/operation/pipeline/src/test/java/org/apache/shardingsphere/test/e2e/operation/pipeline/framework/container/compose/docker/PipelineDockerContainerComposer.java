@@ -65,18 +65,18 @@ public final class PipelineDockerContainerComposer extends PipelineBaseContainer
         }
         AdaptorContainerConfiguration containerConfig = PipelineProxyContainerConfigurationFactory.newInstance(databaseType);
         DatabaseType proxyDatabaseType = ProxyDatabaseTypeUtils.getProxyDatabaseType(databaseType);
-        if (PipelineE2EEnvironment.getInstance().getItProxyType() == PipelineProxyTypeEnum.INTERNAL) {
+        if (PipelineProxyTypeEnum.INTERNAL == PipelineE2EEnvironment.getInstance().getItProxyType()) {
             ShardingSphereProxyEmbeddedContainer proxyContainer = new ShardingSphereProxyEmbeddedContainer(proxyDatabaseType, containerConfig);
             for (DockerStorageContainer each : storageContainers) {
                 proxyContainer.dependsOn(governanceContainer, each);
             }
             getContainers().registerContainer(proxyContainer);
         } else {
-            ShardingSphereProxyDockerContainer proxyClusterContainer = new ShardingSphereProxyDockerContainer(proxyDatabaseType, containerConfig);
+            ShardingSphereProxyDockerContainer proxyContainer = new ShardingSphereProxyDockerContainer(proxyDatabaseType, containerConfig);
             for (DockerStorageContainer each : storageContainers) {
-                proxyClusterContainer.dependsOn(governanceContainer, each);
+                proxyContainer.dependsOn(governanceContainer, each);
             }
-            proxyContainer = getContainers().registerContainer(proxyClusterContainer);
+            this.proxyContainer = getContainers().registerContainer(proxyContainer);
         }
     }
     
