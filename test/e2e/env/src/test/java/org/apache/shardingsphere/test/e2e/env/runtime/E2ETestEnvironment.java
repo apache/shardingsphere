@@ -89,7 +89,7 @@ public final class E2ETestEnvironment {
     }
     
     private Collection<String> getScenarios(final Properties props) {
-        Collection<String> result = Splitter.on(",").trimResults().splitToList(props.getProperty("it.scenarios"));
+        Collection<String> result = Splitter.on(",").trimResults().splitToList(props.getProperty("it.scenarios", ""));
         for (String each : result) {
             new ScenarioCommonPath(each).checkFolderExist();
         }
