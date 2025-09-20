@@ -92,7 +92,7 @@
         <asm.version>9.3</asm.version>
         <groovy.version>4.0.22</groovy.version>
         <freemarker.version>2.3.31</freemarker.version>
-        <bytebuddy.version>1.15.4</bytebuddy.version>
+        <bytebuddy.version>1.17.7</bytebuddy.version>
         
         <jakarta.jakartaee-bom.version>8.0.0</jakarta.jakartaee-bom.version>
         
@@ -167,7 +167,7 @@
         <maven-release-plugin.version>3.0.0</maven-release-plugin.version>
         <maven-assembly-plugin.version>3.5.0</maven-assembly-plugin.version>
         
-        <maven-shade-plugin.version>3.5.1</maven-shade-plugin.version>
+        <maven-shade-plugin.version>3.6.1</maven-shade-plugin.version>
         <checksum-maven-plugin.version>1.10</checksum-maven-plugin.version>
         
         <!-- Check plugin versions -->

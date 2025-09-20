@@ -30,6 +30,7 @@
 ### Enhancements
 
 1. Build: Support compiling and using ShardingSphere under OpenJDK 24 - [#35145](https://github.com/apache/shardingsphere/pull/35145)
+1. Build: Support compiling and using ShardingSphere under OpenJDK 25 - [#36643](https://github.com/apache/shardingsphere/pull/36643)
 1. Infra: Support for connecting to Presto's Memory Connector in ShardingSphere config - [#34432](https://github.com/apache/shardingsphere/pull/34432)
 1. Infra: Eliminate HiveServer2 integration's dependency on Hive Metastore Client - [#36114](https://github.com/apache/shardingsphere/pull/36114)
 1. Infra: Support IPv6 for JDBC connection URL - [#35289](https://github.com/apache/shardingsphere/issues/35289)
