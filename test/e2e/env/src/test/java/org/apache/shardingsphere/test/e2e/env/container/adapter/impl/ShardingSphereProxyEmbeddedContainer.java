@@ -101,12 +101,12 @@ public final class ShardingSphereProxyEmbeddedContainer implements EmbeddedITCon
     @Override
     public void start() {
         dependencies.forEach(Startable::start);
-        startInternalProxy();
+        startProxy();
         new JdbcConnectCheckingWaitStrategy(() -> getTargetDataSource(null).getConnection()).waitUntilReady(null);
     }
     
     @SneakyThrows({SQLException.class, IOException.class, SSLException.class, InterruptedException.class})
-    private void startInternalProxy() {
+    private void startProxy() {
         YamlProxyConfiguration yamlConfig = ProxyConfigurationLoader.load(getTempConfigDirectory().toString());
         int port = Integer.parseInt(ConfigurationPropertyKey.PROXY_DEFAULT_PORT.getDefaultValue());
         new BootstrapInitializer().init(yamlConfig, port);
