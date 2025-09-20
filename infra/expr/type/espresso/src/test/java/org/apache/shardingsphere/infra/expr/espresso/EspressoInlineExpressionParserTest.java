@@ -37,9 +37,9 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-@EnabledOnJre(value = {JRE.JAVA_21, JRE.JAVA_23}, disabledReason = "This is used to match the requirement of `org.graalvm.polyglot:polyglot:24.1.2`")
+@EnabledOnJre(value = {JRE.JAVA_21, JRE.JAVA_23}, disabledReason = "See `org.graalvm.polyglot:polyglot:24.1.2` and https://medium.com/graalvm/40027a59c401")
 @EnabledIfSystemProperty(named = "java.vm.vendor", matches = "GraalVM Community", disabledReason = "Github Actions device performance is too low")
-@EnabledOnOs(value = OS.LINUX, architectures = "amd64", disabledReason = "See https://www.graalvm.org/jdk21/reference-manual/java-on-truffle/faq/#does-java-running-on-truffle-run-on-hotspot-too")
+@EnabledOnOs(value = OS.LINUX, architectures = "amd64", disabledReason = "See https://www.graalvm.org/latest/reference-manual/espresso/faq/#does-java-running-on-truffle-run-on-the-hotspot-jvm-too")
 class EspressoInlineExpressionParserTest {
     
     @Test
