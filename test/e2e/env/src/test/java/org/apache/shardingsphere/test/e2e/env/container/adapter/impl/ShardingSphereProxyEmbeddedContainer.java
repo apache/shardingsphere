@@ -99,31 +99,15 @@ public final class ShardingSphereProxyEmbeddedContainer implements EmbeddedITCon
     }
     
     @Override
-    public DataSource getTargetDataSource(final String serverLists) {
-        DataSource dataSource = targetDataSourceProvider.get();
-        if (null == dataSource) {
-            DataSourceEnvironment dataSourceEnvironment = DatabaseTypedSPILoader.getService(DataSourceEnvironment.class, databaseType);
-            targetDataSourceProvider.set(StorageContainerUtils.generateDataSource(dataSourceEnvironment.getURL(
-                    "127.0.0.1", 3307, config.getProxyDataSourceName()), ProxyContainerConstants.USER, ProxyContainerConstants.PASSWORD, 2));
-        }
-        return targetDataSourceProvider.get();
-    }
-    
-    @Override
-    public String getAbbreviation() {
-        return "proxy";
-    }
-    
-    @Override
     public void start() {
         dependencies.forEach(Startable::start);
-        startInternalProxy();
+        startProxy();
         new JdbcConnectCheckingWaitStrategy(() -> getTargetDataSource(null).getConnection()).waitUntilReady(null);
     }
     
     @SneakyThrows({SQLException.class, IOException.class, SSLException.class, InterruptedException.class})
-    private void startInternalProxy() {
-        YamlProxyConfiguration yamlConfig = ProxyConfigurationLoader.load(getTempConfigDirectory().toString());
+    private void startProxy() {
+        YamlProxyConfiguration yamlConfig = ProxyConfigurationLoader.load(getTempConfigurationDirectory().toString());
         int port = Integer.parseInt(ConfigurationPropertyKey.PROXY_DEFAULT_PORT.getDefaultValue());
         new BootstrapInitializer().init(yamlConfig, port);
         ProxySSLContext.init();
@@ -132,7 +116,7 @@ public final class ShardingSphereProxyEmbeddedContainer implements EmbeddedITCon
         log.info("ShardingSphere-Proxy {} mode started successfully", ProxyContext.getInstance().getContextManager().getComputeNodeInstanceContext().getModeConfiguration().getType());
     }
     
-    private Path getTempConfigDirectory() throws IOException {
+    private Path getTempConfigurationDirectory() throws IOException {
         Map<String, String> networkAliasAndHostLinkMap = getNetworkAliasAndHostLinkMap();
         Map<String, String> storageConnectionInfoMap = getStorageConnectionInfoMap();
         Path result = createTempDirectory().toPath();
@@ -168,6 +152,32 @@ public final class ShardingSphereProxyEmbeddedContainer implements EmbeddedITCon
         return result;
     }
     
+    private Map<String, String> getStorageConnectionInfoMap() {
+        Map<String, String> result = new HashMap<>();
+        for (Startable each : dependencies) {
+            if (each instanceof NativeStorageContainer) {
+                result.putAll(getStorageConnectionInfoMap((NativeStorageContainer) each));
+            }
+        }
+        result.put("username: " + StorageContainerConstants.OPERATION_USER, "username: " + E2ETestEnvironment.getInstance().getNativeStorageUsername());
+        result.put("password: " + StorageContainerConstants.OPERATION_PASSWORD, "password: " + E2ETestEnvironment.getInstance().getNativeStoragePassword());
+        return result;
+    }
+    
+    private Map<String, String> getStorageConnectionInfoMap(final NativeStorageContainer container) {
+        return container.getNetworkAliases().stream().collect(Collectors.toMap(
+                each -> each + ":" + container.getExposedPort(), each -> E2ETestEnvironment.getInstance().getNativeStorageHost() + ":" + E2ETestEnvironment.getInstance().getNativeStoragePort()));
+    }
+    
+    private File createTempDirectory() {
+        try {
+            Path result = SystemUtils.IS_OS_MAC ? Files.createTempDirectory(Paths.get(OS_MAC_TMP_DIR), E2E_PROXY_CONFIG_TMP_DIR_PREFIX) : Files.createTempDirectory(E2E_PROXY_CONFIG_TMP_DIR_PREFIX);
+            return result.toFile();
+        } catch (final IOException ex) {
+            return new File(E2E_PROXY_CONFIG_TMP_DIR_PREFIX + Base58.randomString(5));
+        }
+    }
+    
     private void writeDirectoryToTempFile(final String originalKey, final File file,
                                           final Map<String, String> aliasAndHostLinkMap, final Map<String, String> storageConnectionInfoMap, final Path tempDirectory) throws IOException {
         for (File each : file.listFiles()) {
@@ -196,30 +206,20 @@ public final class ShardingSphereProxyEmbeddedContainer implements EmbeddedITCon
         }
     }
     
-    private Map<String, String> getStorageConnectionInfoMap() {
-        Map<String, String> result = new HashMap<>();
-        for (Startable each : dependencies) {
-            if (each instanceof NativeStorageContainer) {
-                result.putAll(getStorageConnectionInfoMap((NativeStorageContainer) each));
-            }
+    @Override
+    public DataSource getTargetDataSource(final String serverLists) {
+        DataSource dataSource = targetDataSourceProvider.get();
+        if (null == dataSource) {
+            DataSourceEnvironment dataSourceEnvironment = DatabaseTypedSPILoader.getService(DataSourceEnvironment.class, databaseType);
+            targetDataSourceProvider.set(StorageContainerUtils.generateDataSource(dataSourceEnvironment.getURL(
+                    "127.0.0.1", 3307, config.getProxyDataSourceName()), ProxyContainerConstants.USER, ProxyContainerConstants.PASSWORD, 2));
         }
-        result.put("username: " + StorageContainerConstants.OPERATION_USER, "username: " + E2ETestEnvironment.getInstance().getNativeStorageUsername());
-        result.put("password: " + StorageContainerConstants.OPERATION_PASSWORD, "password: " + E2ETestEnvironment.getInstance().getNativeStoragePassword());
-        return result;
+        return targetDataSourceProvider.get();
     }
     
-    private Map<String, String> getStorageConnectionInfoMap(final NativeStorageContainer container) {
-        return container.getNetworkAliases().stream().collect(Collectors.toMap(
-                each -> each + ":" + container.getExposedPort(), each -> E2ETestEnvironment.getInstance().getNativeStorageHost() + ":" + E2ETestEnvironment.getInstance().getNativeStoragePort()));
-    }
-    
-    private File createTempDirectory() {
-        try {
-            Path result = SystemUtils.IS_OS_MAC ? Files.createTempDirectory(Paths.get(OS_MAC_TMP_DIR), E2E_PROXY_CONFIG_TMP_DIR_PREFIX) : Files.createTempDirectory(E2E_PROXY_CONFIG_TMP_DIR_PREFIX);
-            return result.toFile();
-        } catch (final IOException ex) {
-            return new File(E2E_PROXY_CONFIG_TMP_DIR_PREFIX + Base58.randomString(5));
-        }
+    @Override
+    public String getAbbreviation() {
+        return "proxy";
     }
     
     @Override

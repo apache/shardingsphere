@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.test.e2e.env.container.adapter.impl;
 
 import com.zaxxer.hikari.HikariDataSource;
+import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.test.e2e.env.container.EmbeddedITContainer;
 import org.apache.shardingsphere.test.e2e.env.container.adapter.AdapterContainer;
@@ -37,6 +38,7 @@ import java.util.concurrent.atomic.AtomicReference;
 /**
  * ShardingSphere JDBC embedded container.
  */
+@RequiredArgsConstructor
 public final class ShardingSphereJdbcEmbeddedContainer implements EmbeddedITContainer, AdapterContainer {
     
     private final StorageContainer storageContainer;
@@ -44,11 +46,6 @@ public final class ShardingSphereJdbcEmbeddedContainer implements EmbeddedITCont
     private final AtomicReference<DataSource> targetDataSourceProvider = new AtomicReference<>();
     
     private final String configPath;
-    
-    public ShardingSphereJdbcEmbeddedContainer(final StorageContainer storageContainer, final String configPath) {
-        this.configPath = configPath;
-        this.storageContainer = storageContainer;
-    }
     
     @Override
     public void start() {
@@ -63,7 +60,6 @@ public final class ShardingSphereJdbcEmbeddedContainer implements EmbeddedITCont
         return targetDataSourceProvider.get();
     }
     
-    @SneakyThrows(IOException.class)
     private DataSource createTargetDataSource() {
         HikariDataSource result = new HikariDataSource();
         result.setDriverClassName("org.apache.shardingsphere.driver.ShardingSphereDriver");
@@ -74,7 +70,8 @@ public final class ShardingSphereJdbcEmbeddedContainer implements EmbeddedITCont
         return result;
     }
     
-    private String processFile(final String filePath, final Map<String, String> replacements) throws IOException {
+    @SneakyThrows(IOException.class)
+    private String processFile(final String filePath, final Map<String, String> replacements) {
         Path path = Paths.get(filePath);
         String content = new String(Files.readAllBytes(path));
         for (Entry<String, String> entry : replacements.entrySet()) {
