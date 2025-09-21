@@ -256,6 +256,6 @@ class AdditionalDQLE2EIT extends BaseDQLE2EIT {
     }
     
     private static boolean isEnabled() {
-        return E2ETestParameterFactory.containsTestParameter() && E2ETestEnvironment.getInstance().isRunAdditionalTestCases();
+        return E2ETestParameterFactory.containsTestParameter() && E2ETestEnvironment.getInstance().getRunEnvironment().isRunAdditionalCases();
     }
 }

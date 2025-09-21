@@ -21,6 +21,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.test.e2e.env.container.adapter.enums.AdapterMode;
 import org.apache.shardingsphere.test.e2e.env.runtime.E2ETestEnvironment;
+import org.apache.shardingsphere.test.e2e.env.runtime.run.RunEnvironment;
 import org.apache.shardingsphere.test.e2e.sql.framework.param.model.AssertionTestParameter;
 import org.apache.shardingsphere.test.e2e.sql.framework.param.model.E2ETestParameter;
 import org.apache.shardingsphere.test.e2e.sql.framework.type.SQLCommandType;
@@ -34,7 +35,7 @@ import java.util.LinkedList;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class E2ETestParameterFactory {
     
-    private static final E2ETestEnvironment ENV = E2ETestEnvironment.getInstance();
+    private static final RunEnvironment ENV = E2ETestEnvironment.getInstance().getRunEnvironment();
     
     /**
      * Get assertion test parameters.
@@ -44,7 +45,7 @@ public final class E2ETestParameterFactory {
      */
     public static Collection<AssertionTestParameter> getAssertionTestParameters(final SQLCommandType sqlCommandType) {
         Collection<AssertionTestParameter> result = new LinkedList<>();
-        for (AdapterMode each : ENV.getRunModes()) {
+        for (AdapterMode each : ENV.getModes()) {
             if (AdapterMode.STANDALONE == each) {
                 result.addAll(isDistSQLCommandType(sqlCommandType)
                         ? ProxyStandaloneTestParameterGenerator.getAssertionTestParameter(sqlCommandType)
@@ -64,7 +65,7 @@ public final class E2ETestParameterFactory {
      */
     public static Collection<E2ETestParameter> getCaseTestParameters(final SQLCommandType sqlCommandType) {
         Collection<E2ETestParameter> result = new LinkedList<>();
-        for (AdapterMode each : ENV.getRunModes()) {
+        for (AdapterMode each : ENV.getModes()) {
             if (AdapterMode.STANDALONE == each) {
                 result.addAll(isDistSQLCommandType(sqlCommandType)
                         ? ProxyStandaloneTestParameterGenerator.getCaseTestParameter(sqlCommandType)
@@ -86,6 +87,6 @@ public final class E2ETestParameterFactory {
      * @return contains or not
      */
     public static boolean containsTestParameter() {
-        return E2ETestEnvironment.getInstance().getRunModes().stream().anyMatch(each -> AdapterMode.STANDALONE == each || AdapterMode.CLUSTER == each);
+        return E2ETestEnvironment.getInstance().getRunEnvironment().getModes().stream().anyMatch(each -> AdapterMode.STANDALONE == each || AdapterMode.CLUSTER == each);
     }
 }

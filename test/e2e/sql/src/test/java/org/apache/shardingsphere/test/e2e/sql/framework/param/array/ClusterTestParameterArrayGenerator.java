@@ -43,7 +43,7 @@ public final class ClusterTestParameterArrayGenerator {
      */
     public static Collection<AssertionTestParameter> getAssertionTestParameter(final SQLCommandType sqlCommandType) {
         return new E2ETestParameterGenerator(ENV.getClusterEnvironment().getAdapters(), ENV.getScenarios(), AdapterMode.CLUSTER,
-                ENV.getClusterEnvironment().getDatabaseTypes(), ENV.isSmoke()).getAssertionTestParameter(sqlCommandType);
+                ENV.getClusterEnvironment().getDatabaseTypes(), ENV.getRunEnvironment().isRunSmokeCases()).getAssertionTestParameter(sqlCommandType);
     }
     
     /**
@@ -54,6 +54,6 @@ public final class ClusterTestParameterArrayGenerator {
      */
     public static Collection<E2ETestParameter> getCaseTestParameter(final SQLCommandType sqlCommandType) {
         return new E2ETestParameterGenerator(ENV.getClusterEnvironment().getAdapters(), ENV.getScenarios(), AdapterMode.CLUSTER,
-                ENV.getClusterEnvironment().getDatabaseTypes(), ENV.isSmoke()).getCaseTestParameter(sqlCommandType);
+                ENV.getClusterEnvironment().getDatabaseTypes(), ENV.getRunEnvironment().isRunSmokeCases()).getCaseTestParameter(sqlCommandType);
     }
 }
