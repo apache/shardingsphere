@@ -155,11 +155,13 @@ it.scenarios=db,tbl,dbtbl_with_replica_query,replica_query
 
 # 是否运行附加测试用例
 it.run.additional.cases=false
+
 # 是否运行冒烟测试
-it.run.smoke=false
+it.run.smoke.cases=false
 
 # 配置环境类型，只支持单值。可选值：DOCKER, NATIVE
 it.cluster.env.type=${it.env}
+
 # 待测试的接入端类型，多个值可用逗号分隔。可选值：jdbc, proxy, 默认值：jdbc
 it.cluster.adapters=jdbc
 
