@@ -30,6 +30,7 @@ import java.io.InputStream;
 import java.util.Collection;
 import java.util.Properties;
 import java.util.TimeZone;
+import java.util.stream.Collectors;
 
 /**
  * E2E test environment.
@@ -39,21 +40,21 @@ public final class E2ETestEnvironment {
     
     private static final E2ETestEnvironment INSTANCE = new E2ETestEnvironment();
     
+    private final Collection<String> scenarios;
+    
     private final RunEnvironment runEnvironment;
     
     private final ClusterEnvironment clusterEnvironment;
     
     private final NativeStorageEnvironment nativeStorageEnvironment;
     
-    private final Collection<String> scenarios;
-    
     private E2ETestEnvironment() {
         Properties props = loadProperties();
         TimeZone.setDefault(TimeZone.getTimeZone(props.getProperty("it.timezone", "UTC")));
+        scenarios = getScenarios(props);
         runEnvironment = new RunEnvironment(props);
         clusterEnvironment = new ClusterEnvironment(props);
         nativeStorageEnvironment = new NativeStorageEnvironment(props);
-        scenarios = getScenarios(props);
     }
     
     @SneakyThrows(IOException.class)
@@ -69,7 +70,7 @@ public final class E2ETestEnvironment {
     }
     
     private Collection<String> getScenarios(final Properties props) {
-        Collection<String> result = Splitter.on(",").trimResults().splitToList(props.getProperty("it.scenarios", ""));
+        Collection<String> result = Splitter.on(",").trimResults().splitToList(props.getProperty("it.scenarios", "")).stream().filter(each -> !each.isEmpty()).collect(Collectors.toList());
         for (String each : result) {
             new ScenarioCommonPath(each).checkFolderExist();
         }
