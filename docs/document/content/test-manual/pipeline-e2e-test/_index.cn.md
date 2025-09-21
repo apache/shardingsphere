@@ -26,7 +26,7 @@ weight = 4
 `${DOCKER-IMAGE}` 表示 docker 镜像名称，如 `mysql:5.7` 。 `${DATABASE-TYPE}` 表示数据库类型。
 
 目录：`src/test/resources/env/`
-- `it-env.properties`：环境配置文件。
+- `e2e-env.properties`：环境配置文件。
 - `${DATABASE-TYPE}/global.yaml`：ShardingSphere-Proxy 配置文件。
 - `${DATABASE-TYPE}/initdb.sql`：数据库初始化 SQL 文件。
 - `${DATABASE-TYPE}/*.cnf,*.conf`：数据库配置文件。
@@ -47,7 +47,7 @@ weight = 4
 
 ### 运行测试用例
 
-`it-env.properties` 所有属性都可以通过 Maven 命令行 `-D` 的方式传入，优先级高于配置文件。
+`e2e-env.properties` 所有属性都可以通过 Maven 命令行 `-D` 的方式传入，优先级高于配置文件。
 
 #### NATIVE 环境启动
 
@@ -60,7 +60,7 @@ Proxy 配置可以参考：
 
 2. 启动注册中心（如 ZooKeeper）和数据库。
 
-3. 以 MySQL 为例，`it-env.properties` 可以配置如下：
+3. 以 MySQL 为例，`e2e-env.properties` 可以配置如下：
 ```
 pipeline.it.env.type=NATIVE
 pipeline.it.native.database=mysql
@@ -87,7 +87,7 @@ pipeline.it.native.mysql.port=3306
 
 如果仅修改了测试代码，可以复用已有的测试镜像。
 
-2. 修改 `it-env.properties` 配置
+2. 修改 `e2e-env.properties` 配置
 
 ```
 pipeline.it.env.type=DOCKER

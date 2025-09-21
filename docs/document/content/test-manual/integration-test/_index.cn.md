@@ -104,7 +104,7 @@ SQL 用例在 `resources/cases/${SQL-TYPE}/e2e-${SQL-TYPE}-${cases-description}.
 
 #### Native 环境配置
 
-修改 `e2e-sql` 模块 `src/test/resources/env/it-env.properties` 文件中 `it.cluster.env.type` 为 `NATIVE` 模式，然后修改如下的属性为本地数据库地址和账号。 
+修改 `e2e-sql` 模块 `src/test/resources/env/e2e-env.properties` 文件中 `it.cluster.env.type` 为 `NATIVE` 模式，然后修改如下的属性为本地数据库地址和账号。 
 
 ```properties
 it.native.storage.host=127.0.0.1
@@ -113,11 +113,11 @@ it.native.storage.username=root
 it.native.storage.password=123456
 ```
 
-修改完成后，可以再调整 `it-env.properties` 中其他属性，测试 ShardingSphere 的 Proxy、JDBC 接入端，或者测试单机、集群模式。
+修改完成后，可以再调整 `e2e-env.properties` 中其他属性，测试 ShardingSphere 的 Proxy、JDBC 接入端，或者测试单机、集群模式。
 
 #### Docker 环境配置
 
-修改 `e2e-sql` 模块 `src/test/resources/env/it-env.properties` 文件中 `it.cluster.env.type` 为 `DOCKER` 模式，如果执行 Proxy 接入端测试，需要执行如下的命令打包 Proxy 镜像。
+修改 `e2e-sql` 模块 `src/test/resources/env/e2e-env.properties` 文件中 `it.cluster.env.type` 为 `DOCKER` 模式，如果执行 Proxy 接入端测试，需要执行如下的命令打包 Proxy 镜像。
 
 ```bash
 ./mvnw -B clean install -am -pl test/e2e/sql -Pit.env.docker -DskipTests -Dspotless.apply.skip=true -Drat.skip=true
@@ -134,7 +134,7 @@ socat TCP-LISTEN:2375,reuseaddr,fork UNIX-CLIENT:/var/run/docker.sock
 export DOCKER_HOST=tcp://127.0.0.1:2375
 ```
 
-修改完成后，可以再调整 `it-env.properties` 中其他属性，测试 ShardingSphere 的 Proxy、JDBC 接入端，或者测试单机、集群模式。
+修改完成后，可以再调整 `e2e-env.properties` 中其他属性，测试 ShardingSphere 的 Proxy、JDBC 接入端，或者测试单机、集群模式。
 
 **Docker 环境配置为 ShardingSphere-Proxy 提供了远程调试端口，可以在 `test/e2e/fixture/src/test/assembly/bin/start.sh` 文件的 `JAVA_OPTS` 中找到第 2 个暴露的端口用于远程调试。**
 
@@ -142,7 +142,7 @@ export DOCKER_HOST=tcp://127.0.0.1:2375
 
 #### 配置测试引擎运行环境
 
-通过配置 `src/test/resources/env/it-env.properties` 控制测试引擎。
+通过配置 `src/test/resources/env/e2e-env.properties` 控制测试引擎。
 
 所有的属性值都可以通过 Maven 命令行 `-D` 的方式动态注入。
 
@@ -204,7 +204,7 @@ it.native.storage.password=123456
 ```
 
 #### 远程 debug Docker 容器中的 Proxy 代码
-首先修改要测试模块的配置文件 it-env.properties，将 function.it.env.type 设置为 `docker`；设置对应的数据库镜像版本，例如 `transaction.it.docker.mysql.version=mysql:5.7`。
+首先修改要测试模块的配置文件 e2e-env.properties，将 function.it.env.type 设置为 `docker`；设置对应的数据库镜像版本，例如 `transaction.it.docker.mysql.version=mysql:5.7`。
 其次通过命令生成测试镜像，例如：
 
 ```bash
