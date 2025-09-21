@@ -41,6 +41,6 @@ public final class RunEnvironment {
         modes = Splitter.on(",").trimResults().splitToList(props.getProperty("it.run.modes", "")).stream()
                 .filter(each -> !each.isEmpty()).map(each -> AdapterMode.valueOf(each.toUpperCase())).collect(Collectors.toList());
         isRunAdditionalCases = Boolean.parseBoolean(props.getProperty("it.run.additional.cases", Boolean.FALSE.toString()));
-        isRunSmokeCases = Boolean.parseBoolean(props.getProperty("it.run.smoke", Boolean.FALSE.toString()));
+        isRunSmokeCases = Boolean.parseBoolean(props.getProperty("it.run.smoke.cases", Boolean.FALSE.toString()));
     }
 }

@@ -155,10 +155,11 @@ it.scenarios=db,tbl,dbtbl_with_replica_query,replica_query
 it.run.additional.cases=false
 
 # Whether to run smoke test
-it.run.smoke=false
+it.run.smoke.cases=false
 
 # Configure the environment type. Only one value is supported. Optional value: DOCKER, NATIVE
 it.cluster.env.type=${it.env}
+
 # Access port types to be tested. Multiple values can be separated by commas. Optional value: jdbc, proxy. The default value: jdbc
 it.cluster.adapters=jdbc
 
