@@ -41,22 +41,22 @@ public final class E2ETestEnvironment {
     
     private final RunEnvironment runEnvironment;
     
-    private final Collection<String> scenarios;
-    
-    private final String governanceCenter;
-    
     private final ClusterEnvironment clusterEnvironment;
     
     private final NativeStorageEnvironment nativeStorageEnvironment;
+    
+    private final Collection<String> scenarios;
+    
+    private final String governanceCenter;
     
     private E2ETestEnvironment() {
         Properties props = loadProperties();
         TimeZone.setDefault(TimeZone.getTimeZone(props.getProperty("it.timezone", "UTC")));
         runEnvironment = new RunEnvironment(props);
-        scenarios = getScenarios(props);
-        governanceCenter = props.getProperty("it.env.governance.center");
         clusterEnvironment = new ClusterEnvironment(props);
         nativeStorageEnvironment = new NativeStorageEnvironment(props);
+        scenarios = getScenarios(props);
+        governanceCenter = props.getProperty("it.env.governance.center");
     }
     
     @SneakyThrows(IOException.class)
