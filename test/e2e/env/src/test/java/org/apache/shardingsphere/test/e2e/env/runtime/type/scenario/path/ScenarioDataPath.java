@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.e2e.env.runtime.scenario.path;
+package org.apache.shardingsphere.test.e2e.env.runtime.type.scenario.path;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
@@ -69,21 +69,6 @@ public final class ScenarioDataPath {
         String path = String.join("/", getBasicPath(type), fileName);
         URL url = Thread.currentThread().getContextClassLoader().getResource(path);
         assertNotNull(url, String.format("File `%s` must exist.", path));
-        return url.getFile();
-    }
-    
-    /**
-     * Get init SQL file.
-     *
-     * @param type data type
-     * @param databaseType database type
-     * @return expected init SQL file
-     */
-    public String getInitSQLFile(final Type type, final DatabaseType databaseType) {
-        String initSQLFileName = String.join("-", Type.ACTUAL == type ? "50" : "60", type.name().toLowerCase(), BASIC_INIT_SQL_FILE);
-        String initSQLResourceFile = String.join("/", getInitSQLResourcePath(type, databaseType), initSQLFileName);
-        URL url = Thread.currentThread().getContextClassLoader().getResource(initSQLResourceFile);
-        assertNotNull(url, String.format("File `%s` must exist.", initSQLResourceFile));
         return url.getFile();
     }
     

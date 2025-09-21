@@ -34,7 +34,7 @@ import org.apache.shardingsphere.test.e2e.env.container.storage.option.StorageCo
 import org.apache.shardingsphere.test.e2e.env.container.storage.type.DockerStorageContainer;
 import org.apache.shardingsphere.test.e2e.env.container.storage.type.NativeStorageContainer;
 import org.apache.shardingsphere.test.e2e.env.runtime.E2ETestEnvironment;
-import org.apache.shardingsphere.test.e2e.env.runtime.cluster.ClusterEnvironment.Type;
+import org.apache.shardingsphere.test.e2e.env.runtime.type.ClusterEnvironment.Type;
 import org.apache.shardingsphere.test.e2e.sql.env.container.compose.ContainerComposer;
 import org.apache.shardingsphere.test.e2e.sql.env.container.config.SQLE2EProxyContainerConfigurationFactory;
 

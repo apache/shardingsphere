@@ -19,8 +19,8 @@ package org.apache.shardingsphere.test.e2e.env.container.storage.mount;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.test.e2e.env.container.storage.option.StorageContainerOption;
-import org.apache.shardingsphere.test.e2e.env.runtime.scenario.path.ScenarioDataPath;
-import org.apache.shardingsphere.test.e2e.env.runtime.scenario.path.ScenarioDataPath.Type;
+import org.apache.shardingsphere.test.e2e.env.runtime.type.scenario.path.ScenarioDataPath;
+import org.apache.shardingsphere.test.e2e.env.runtime.type.scenario.path.ScenarioDataPath.Type;
 
 import java.io.File;
 import java.util.Arrays;

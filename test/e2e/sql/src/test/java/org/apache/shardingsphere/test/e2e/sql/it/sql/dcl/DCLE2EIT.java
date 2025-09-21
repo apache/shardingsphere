@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.test.e2e.sql.it.sql.dcl;
 
 import lombok.Setter;
-import org.apache.shardingsphere.test.e2e.env.runtime.scenario.authority.AuthorityEnvironmentManager;
-import org.apache.shardingsphere.test.e2e.env.runtime.scenario.path.ScenarioCommonPath;
+import org.apache.shardingsphere.test.e2e.env.runtime.type.scenario.authority.AuthorityEnvironmentManager;
+import org.apache.shardingsphere.test.e2e.env.runtime.type.scenario.path.ScenarioCommonPath;
 import org.apache.shardingsphere.test.e2e.sql.env.SQLE2EEnvironmentEngine;
 import org.apache.shardingsphere.test.e2e.sql.framework.SQLE2EITArgumentsProvider;
 import org.apache.shardingsphere.test.e2e.sql.framework.SQLE2EITSettings;

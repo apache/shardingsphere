@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.e2e.env.runtime.scenario.authority;
+package org.apache.shardingsphere.test.e2e.env.runtime.type.scenario.authority;
 
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 
