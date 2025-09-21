@@ -20,7 +20,7 @@ mode:
   repository:
     type: ZooKeeper
     props:
-      namespace: it_empty_storage_units
+      namespace: e2e_empty_storage_units
       server-lists: zk.host:2181
 
 authority:

@@ -92,15 +92,15 @@ public final class PipelineContainerComposer implements AutoCloseable {
     
     public static final String SCHEMA_NAME = "test";
     
-    public static final String DS_0 = "pipeline_it_0";
+    public static final String DS_0 = "pipeline_e2e_0";
     
-    public static final String DS_1 = "pipeline_it_1";
+    public static final String DS_1 = "pipeline_e2e_1";
     
-    public static final String DS_2 = "pipeline_it_2";
+    public static final String DS_2 = "pipeline_e2e_2";
     
-    public static final String DS_3 = "pipeline_it_3";
+    public static final String DS_3 = "pipeline_e2e_3";
     
-    public static final String DS_4 = "pipeline_it_4";
+    public static final String DS_4 = "pipeline_e2e_4";
     
     public static final int TABLE_INIT_ROW_COUNT = 3000;
     
