@@ -34,6 +34,6 @@ public final class MySQLStorageContainerOption implements StorageContainerOption
     
     @Override
     public String getDatabaseType() {
-        return "MariaDB";
+        return "MySQL";
     }
 }
