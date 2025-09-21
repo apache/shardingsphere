@@ -25,7 +25,7 @@ Module path: `test/e2e/operation/pipeline`.
 `${DOCKER-IMAGE}` refers to the name of a docker mirror, such as `mysql:5.7`. `${DATABASE-TYPE}` refers to database types.
 
 Directory: `src/test/resources/env/`
-- `it-env.properties`: Environment setup configuration file.
+- `e2e-env.properties`: Environment setup configuration file.
 - `${DATABASE-TYPE}/global.yaml`: ShardingSphere-Proxy configuration fi;e.
 - `${DATABASE-TYPE}/initdb.sql`: Database initialization SQL file.
 - `${DATABASE-TYPE}/*.cnf,*.conf`: Database configuration files.
@@ -46,7 +46,7 @@ Functions included:
 
 ### Running the test case
 
-Any property of `it-env.properties` could be defined by Maven command line parameter `-D`, and its priority is higher than configuration file.
+Any property of `e2e-env.properties` could be defined by Maven command line parameter `-D`, and its priority is higher than configuration file.
 
 #### NATIVE environment setup
 
@@ -59,7 +59,7 @@ Refer to following files for proxy `global.yaml` configuration:
 
 2. Start registry center (e.g. ZooKeeper) and database.
 
-3. Take MySQL as an example, `it-env.properties` could be configured as follows: 
+3. Take MySQL as an example, `e2e-env.properties` could be configured as follows: 
 ```
 pipeline.it.env.type=NATIVE
 pipeline.it.native.database=mysql
@@ -86,7 +86,7 @@ The docker image has port `3308` for remote debugging.
 
 If only test code is modified, you could reuse existing docker image.
 
-2. Configure `it-env.properties`.
+2. Configure `e2e-env.properties`.
 
 ```
 pipeline.it.env.type=DOCKER

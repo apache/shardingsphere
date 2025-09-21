@@ -106,7 +106,7 @@ The assertion file format is as follows:
 
 #### Native environment configuration
 
-Modify `it.cluster.env.type` in `src/test/resources/env/it-env.properties` file of `e2e-sql` module to `NATIVE` mode, and then modify the following properties to the local database address and account.
+Modify `it.cluster.env.type` in `src/test/resources/env/e2e-env.properties` file of `e2e-sql` module to `NATIVE` mode, and then modify the following properties to the local database address and account.
 
 ```properties
 it.native.storage.host=127.0.0.1
@@ -115,11 +115,11 @@ it.native.storage.username=root
 it.native.storage.password=123456
 ```
 
-After the modification is completed, you can adjust other properties in `it-env.properties` to test ShardingSphere's Proxy, JDBC access terminal, or test the stand-alone and cluster modes.
+After the modification is completed, you can adjust other properties in `e2e-env.properties` to test ShardingSphere's Proxy, JDBC access terminal, or test the stand-alone and cluster modes.
 
 #### Docker environment configuration
 
-Modify `it.cluster.env.type` in the `src/test/resources/env/it-env.properties` file of the `e2e-sql` module to `DOCKER` mode. If you perform a Proxy access end test, you need to execute the following command to package the Proxy image.
+Modify `it.cluster.env.type` in the `src/test/resources/env/e2e-env.properties` file of the `e2e-sql` module to `DOCKER` mode. If you perform a Proxy access end test, you need to execute the following command to package the Proxy image.
 
 ```bash
 ./mvnw -B clean install -am -pl test/e2e/sql -Pit.env.docker -DskipTests -Dspotless.apply.skip=true -Drat.skip=true
@@ -136,13 +136,13 @@ socat TCP-LISTEN:2375,reuseaddr,fork UNIX-CLIENT:/var/run/docker.sock
 export DOCKER_HOST=tcp://127.0.0.1:2375
 ```
 
-After the modification is completed, you can adjust other properties in `it-env.properties` to test ShardingSphere's Proxy, JDBC access terminal, or test the stand-alone and cluster modes.
+After the modification is completed, you can adjust other properties in `e2e-env.properties` to test ShardingSphere's Proxy, JDBC access terminal, or test the stand-alone and cluster modes.
 
 ### Run the test engine
 
 #### Configure the running environment of the test engine
 
-Control the test engine by configuring `src/test/resources/env/it-env.properties`.
+Control the test engine by configuring `src/test/resources/env/e2e-env.properties`.
 
 All attribute values can be dynamically injected via Maven command line `-D`.
 
@@ -201,7 +201,7 @@ If you only modify the test code, you can reuse the existing test mirror without
 ```
 
 #### Remote debug Proxy code in Docker container
-First of all, you need to modify the configuration file it-env.properties, set function.it.env.type to `docker`, and then set the corresponding database image version like `transaction.it.docker.mysql.version=mysql:5.7`.
+First of all, you need to modify the configuration file e2e-env.properties, set function.it.env.type to `docker`, and then set the corresponding database image version like `transaction.it.docker.mysql.version=mysql:5.7`.
 Then generate the test image through the command, for example:
 
 ```bash
