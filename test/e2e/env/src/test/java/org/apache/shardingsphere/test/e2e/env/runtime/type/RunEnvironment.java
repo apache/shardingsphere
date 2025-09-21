@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.e2e.env.runtime.run;
+package org.apache.shardingsphere.test.e2e.env.runtime.type;
 
 import com.google.common.base.Splitter;
 import lombok.Getter;

@@ -15,22 +15,31 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.e2e.env.runtime.scenario.database;
+package org.apache.shardingsphere.test.e2e.env.runtime.type;
 
 import lombok.Getter;
+import org.apache.shardingsphere.test.e2e.env.container.constants.StorageContainerConstants;
 
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
-import java.util.Collection;
-import java.util.LinkedList;
+import java.util.Properties;
 
 /**
- * XML definition of database name environment.
+ * Native storage environment.
  */
-@XmlRootElement(name = "databases")
 @Getter
-public final class DatabaseNameEnvironment {
+public final class NativeStorageEnvironment {
     
-    @XmlElement(name = "database")
-    private final Collection<String> databases = new LinkedList<>();
+    private final String host;
+    
+    private final int port;
+    
+    private final String user;
+    
+    private final String password;
+    
+    public NativeStorageEnvironment(final Properties props) {
+        host = props.getProperty("it.native.storage.host", "127.0.0.1");
+        port = Integer.parseInt(props.getProperty("it.native.storage.port", "0"));
+        user = props.getProperty("it.native.storage.username", StorageContainerConstants.OPERATION_USER);
+        password = props.getProperty("it.native.storage.password", StorageContainerConstants.OPERATION_PASSWORD);
+    }
 }

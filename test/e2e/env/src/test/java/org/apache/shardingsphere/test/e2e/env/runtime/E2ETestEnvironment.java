@@ -20,10 +20,10 @@ package org.apache.shardingsphere.test.e2e.env.runtime;
 import com.google.common.base.Splitter;
 import lombok.Getter;
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.test.e2e.env.runtime.cluster.ClusterEnvironment;
-import org.apache.shardingsphere.test.e2e.env.runtime.natived.NativeStorageEnvironment;
-import org.apache.shardingsphere.test.e2e.env.runtime.run.RunEnvironment;
-import org.apache.shardingsphere.test.e2e.env.runtime.scenario.path.ScenarioCommonPath;
+import org.apache.shardingsphere.test.e2e.env.runtime.type.ClusterEnvironment;
+import org.apache.shardingsphere.test.e2e.env.runtime.type.NativeStorageEnvironment;
+import org.apache.shardingsphere.test.e2e.env.runtime.type.RunEnvironment;
+import org.apache.shardingsphere.test.e2e.env.runtime.type.scenario.path.ScenarioCommonPath;
 
 import java.io.IOException;
 import java.io.InputStream;
