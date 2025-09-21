@@ -48,8 +48,8 @@ public final class PipelineE2EEnvironment {
     
     private PipelineE2EEnvironment() {
         props = loadProperties();
-        itEnvType = PipelineEnvTypeEnum.valueOf(props.getProperty("pipeline.it.env.type", PipelineEnvTypeEnum.NONE.name()).toUpperCase());
-        itProxyType = PipelineProxyTypeEnum.valueOf(props.getProperty("pipeline.it.proxy.type", PipelineProxyTypeEnum.NONE.name()).toUpperCase());
+        itEnvType = PipelineEnvTypeEnum.valueOf(props.getProperty("pipeline.e2e.env.type", PipelineEnvTypeEnum.NONE.name()).toUpperCase());
+        itProxyType = PipelineProxyTypeEnum.valueOf(props.getProperty("pipeline.e2e.proxy.type", PipelineProxyTypeEnum.NONE.name()).toUpperCase());
     }
     
     @SneakyThrows(IOException.class)
@@ -72,7 +72,7 @@ public final class PipelineE2EEnvironment {
      */
     public int getActualDatabasePort(final DatabaseType databaseType) {
         int defaultPort = DatabaseTypedSPILoader.getService(StorageContainerOption.class, databaseType).getCreateOption().getPort();
-        return Integer.parseInt(props.getProperty(String.format("pipeline.it.native.%s.port", databaseType.getType().toLowerCase()), String.valueOf(defaultPort)));
+        return Integer.parseInt(props.getProperty(String.format("pipeline.e2e.native.%s.port", databaseType.getType().toLowerCase()), String.valueOf(defaultPort)));
     }
     
     /**
@@ -81,7 +81,7 @@ public final class PipelineE2EEnvironment {
      * @return native database type
      */
     public String getNativeDatabaseType() {
-        return String.valueOf(props.getProperty("pipeline.it.native.database"));
+        return String.valueOf(props.getProperty("pipeline.e2e.native.database"));
     }
     
     /**
@@ -91,7 +91,7 @@ public final class PipelineE2EEnvironment {
      * @return actual data source username
      */
     public String getActualDataSourceUsername(final DatabaseType databaseType) {
-        return String.valueOf(props.getProperty(String.format("pipeline.it.native.%s.username", databaseType.getType().toLowerCase()), StorageContainerConstants.OPERATION_USER));
+        return String.valueOf(props.getProperty(String.format("pipeline.e2e.native.%s.username", databaseType.getType().toLowerCase()), StorageContainerConstants.OPERATION_USER));
     }
     
     /**
@@ -101,7 +101,7 @@ public final class PipelineE2EEnvironment {
      * @return actual data source username
      */
     public String getActualDataSourcePassword(final DatabaseType databaseType) {
-        return String.valueOf(props.getProperty(String.format("pipeline.it.native.%s.password", databaseType.getType().toLowerCase()), StorageContainerConstants.OPERATION_PASSWORD));
+        return String.valueOf(props.getProperty(String.format("pipeline.e2e.native.%s.password", databaseType.getType().toLowerCase()), StorageContainerConstants.OPERATION_PASSWORD));
     }
     
     /**
@@ -124,7 +124,7 @@ public final class PipelineE2EEnvironment {
         if (PipelineEnvTypeEnum.NATIVE == itEnvType) {
             return databaseType.getType().equalsIgnoreCase(getNativeDatabaseType()) ? Collections.singletonList("") : Collections.emptyList();
         }
-        return Arrays.stream(props.getOrDefault(String.format("pipeline.it.docker.%s.version", databaseType.getType().toLowerCase()), "").toString()
+        return Arrays.stream(props.getOrDefault(String.format("pipeline.e2e.docker.%s.version", databaseType.getType().toLowerCase()), "").toString()
                 .split(",")).filter(each -> !Strings.isNullOrEmpty(each)).collect(Collectors.toList());
     }
 }

@@ -62,11 +62,11 @@ Proxy 配置可以参考：
 
 3. 以 MySQL 为例，`e2e-env.properties` 可以配置如下：
 ```
-pipeline.it.env.type=NATIVE
-pipeline.it.native.database=mysql
-pipeline.it.native.mysql.username=root
-pipeline.it.native.mysql.password=root
-pipeline.it.native.mysql.port=3306
+pipeline.e2e.env.type=NATIVE
+pipeline.e2e.native.database=mysql
+pipeline.e2e.native.mysql.username=root
+pipeline.e2e.native.mysql.password=root
+pipeline.e2e.native.mysql.port=3306
 ```
 
 4. 找到对应的测试类，在 IDE 启动运行。

@@ -37,9 +37,9 @@ public final class NativeStorageEnvironment {
     private final String password;
     
     public NativeStorageEnvironment(final Properties props) {
-        host = props.getProperty("it.native.storage.host", "127.0.0.1");
-        port = Integer.parseInt(props.getProperty("it.native.storage.port", "0"));
-        user = props.getProperty("it.native.storage.username", StorageContainerConstants.OPERATION_USER);
-        password = props.getProperty("it.native.storage.password", StorageContainerConstants.OPERATION_PASSWORD);
+        host = props.getProperty("e2e.native.storage.host", "127.0.0.1");
+        port = Integer.parseInt(props.getProperty("e2e.native.storage.port", "0"));
+        user = props.getProperty("e2e.native.storage.username", StorageContainerConstants.OPERATION_USER);
+        password = props.getProperty("e2e.native.storage.password", StorageContainerConstants.OPERATION_PASSWORD);
     }
 }

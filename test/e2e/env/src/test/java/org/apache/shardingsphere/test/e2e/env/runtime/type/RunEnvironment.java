@@ -38,9 +38,9 @@ public final class RunEnvironment {
     private final boolean isRunSmokeCases;
     
     public RunEnvironment(final Properties props) {
-        modes = Splitter.on(",").trimResults().splitToList(props.getProperty("it.run.modes", "")).stream()
+        modes = Splitter.on(",").trimResults().splitToList(props.getProperty("e2e.run.modes", "")).stream()
                 .filter(each -> !each.isEmpty()).map(each -> AdapterMode.valueOf(each.toUpperCase())).collect(Collectors.toList());
-        isRunAdditionalCases = Boolean.parseBoolean(props.getProperty("it.run.additional.cases", Boolean.FALSE.toString()));
-        isRunSmokeCases = Boolean.parseBoolean(props.getProperty("it.run.smoke.cases", Boolean.FALSE.toString()));
+        isRunAdditionalCases = Boolean.parseBoolean(props.getProperty("e2e.run.additional.cases", Boolean.FALSE.toString()));
+        isRunSmokeCases = Boolean.parseBoolean(props.getProperty("e2e.run.smoke.cases", Boolean.FALSE.toString()));
     }
 }

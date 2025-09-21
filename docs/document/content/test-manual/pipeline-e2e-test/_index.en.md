@@ -61,11 +61,11 @@ Refer to following files for proxy `global.yaml` configuration:
 
 3. Take MySQL as an example, `e2e-env.properties` could be configured as follows: 
 ```
-pipeline.it.env.type=NATIVE
-pipeline.it.native.database=mysql
-pipeline.it.native.mysql.username=root
-pipeline.it.native.mysql.password=root
-pipeline.it.native.mysql.port=3306
+pipeline.e2e.env.type=NATIVE
+pipeline.e2e.native.database=mysql
+pipeline.e2e.native.mysql.username=root
+pipeline.e2e.native.mysql.password=root
+pipeline.e2e.native.mysql.port=3306
 ```
 
 4. Find test class and start it on IDE.

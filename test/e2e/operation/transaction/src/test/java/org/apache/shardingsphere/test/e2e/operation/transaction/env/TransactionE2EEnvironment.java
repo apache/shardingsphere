@@ -66,14 +66,14 @@ public final class TransactionE2EEnvironment {
     
     private TransactionE2EEnvironment() {
         props = loadProperties();
-        itEnvType = TransactionE2EEnvTypeEnum.valueOf(props.getProperty("transaction.it.env.type", TransactionE2EEnvTypeEnum.NONE.name()).toUpperCase());
-        portBindings = splitProperty("transaction.it.proxy.port.bindings");
-        mysqlVersions = splitProperty("transaction.it.docker.mysql.version");
-        postgresqlVersions = splitProperty("transaction.it.docker.postgresql.version");
-        openGaussVersions = splitProperty("transaction.it.docker.opengauss.version");
-        needToRunTestCases = splitProperty("transaction.it.env.cases");
-        allowTransactionTypes = splitProperty("transaction.it.env.transtypes");
-        allowXAProviders = splitProperty("transaction.it.env.xa.providers");
+        itEnvType = TransactionE2EEnvTypeEnum.valueOf(props.getProperty("transaction.e2e.env.type", TransactionE2EEnvTypeEnum.NONE.name()).toUpperCase());
+        portBindings = splitProperty("transaction.e2e.proxy.port.bindings");
+        mysqlVersions = splitProperty("transaction.e2e.docker.mysql.version");
+        postgresqlVersions = splitProperty("transaction.e2e.docker.postgresql.version");
+        openGaussVersions = splitProperty("transaction.e2e.docker.opengauss.version");
+        needToRunTestCases = splitProperty("transaction.e2e.env.cases");
+        allowTransactionTypes = splitProperty("transaction.e2e.env.transtypes");
+        allowXAProviders = splitProperty("transaction.e2e.env.xa.providers");
         log.info("Loaded properties, allowTransactionTypes:{}, allowXAProviders:{}", allowTransactionTypes, allowXAProviders);
         transactionTestCaseRegistryMap = initTransactionTestCaseRegistryMap();
     }
@@ -113,11 +113,11 @@ public final class TransactionE2EEnvironment {
     public int getActualDataSourceDefaultPort(final DatabaseType databaseType) {
         switch (databaseType.getType()) {
             case "MySQL":
-                return Integer.parseInt(props.getOrDefault("transaction.it.native.mysql.port", new MySQLStorageContainerCreateOption().getPort()).toString());
+                return Integer.parseInt(props.getOrDefault("transaction.e2e.native.mysql.port", new MySQLStorageContainerCreateOption().getPort()).toString());
             case "PostgreSQL":
-                return Integer.parseInt(props.getOrDefault("transaction.it.native.postgresql.port", new PostgreSQLStorageContainerCreateOption().getPort()).toString());
+                return Integer.parseInt(props.getOrDefault("transaction.e2e.native.postgresql.port", new PostgreSQLStorageContainerCreateOption().getPort()).toString());
             case "openGauss":
-                return Integer.parseInt(props.getOrDefault("transaction.it.native.opengauss.port", new OpenGaussStorageContainerCreateOption().getPort()).toString());
+                return Integer.parseInt(props.getOrDefault("transaction.e2e.native.opengauss.port", new OpenGaussStorageContainerCreateOption().getPort()).toString());
             default:
                 throw new UnsupportedOperationException(String.format("Unsupported database type: `%s`", databaseType.getType()));
         }
@@ -131,7 +131,7 @@ public final class TransactionE2EEnvironment {
      */
     public String getActualDataSourceUsername(final DatabaseType databaseType) {
         return itEnvType == TransactionE2EEnvTypeEnum.NATIVE
-                ? String.valueOf(props.getOrDefault(String.format("transaction.it.native.%s.username", databaseType.getType().toLowerCase()), ProxyContainerConstants.USER))
+                ? String.valueOf(props.getOrDefault(String.format("transaction.e2e.native.%s.username", databaseType.getType().toLowerCase()), ProxyContainerConstants.USER))
                 : StorageContainerConstants.OPERATION_USER;
     }
     
@@ -143,7 +143,7 @@ public final class TransactionE2EEnvironment {
      */
     public String getActualDataSourcePassword(final DatabaseType databaseType) {
         return itEnvType == TransactionE2EEnvTypeEnum.NATIVE
-                ? props.getOrDefault(String.format("transaction.it.native.%s.password", databaseType.getType().toLowerCase()), ProxyContainerConstants.PASSWORD).toString()
+                ? props.getOrDefault(String.format("transaction.e2e.native.%s.password", databaseType.getType().toLowerCase()), ProxyContainerConstants.PASSWORD).toString()
                 : StorageContainerConstants.OPERATION_PASSWORD;
     }
     
