@@ -75,7 +75,7 @@ rules:
 
   shardingAlgorithms:
     it_standard_fixture:
-      type: IT.STANDARD.FIXTURE
+      type: E2E.STANDARD.FIXTURE
     t_product_hint_inline:
       type: HINT_INLINE
       props:
@@ -83,11 +83,11 @@ rules:
   
   keyGenerators:
     auto_increment:
-      type: IT.AUTO_INCREMENT.FIXTURE
+      type: E2E.AUTO_INCREMENT.FIXTURE
 
   auditors:
     auditor_constant:
-      type: IT.AUDITOR.FIXTURE
+      type: E2E.AUDITOR.FIXTURE
 
 - !BROADCAST
   tables:

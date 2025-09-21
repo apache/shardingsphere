@@ -59,6 +59,6 @@ public final class ITStandardShardingAlgorithmFixture implements StandardShardin
     
     @Override
     public String getType() {
-        return "IT.STANDARD.FIXTURE";
+        return "E2E.STANDARD.FIXTURE";
     }
 }

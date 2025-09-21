@@ -218,7 +218,7 @@ rules:
 
     shardingAlgorithms:
       it_standard_fixture:
-        type: IT.STANDARD.FIXTURE
+        type: E2E.STANDARD.FIXTURE
 
   - !SHADOW
     dataSources:

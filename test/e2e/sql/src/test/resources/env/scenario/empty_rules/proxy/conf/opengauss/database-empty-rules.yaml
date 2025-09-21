@@ -245,13 +245,13 @@ rules:
 
   keyGenerators:
     constant:
-      type: IT.FIXTURE
+      type: E2E.FIXTURE
       props:
         worker-id: 1
 
   auditors:
     auditor_constant:
-      type: IT.AUDITOR.FIXTURE
+      type: E2E.AUDITOR.FIXTURE
 
 - !READWRITE_SPLITTING
   dataSourceGroups:

@@ -32,6 +32,6 @@ public final class ITShardingAuditAlgorithmFixture implements ShardingAuditAlgor
     
     @Override
     public String getType() {
-        return "IT.AUDITOR.FIXTURE";
+        return "E2E.AUDITOR.FIXTURE";
     }
 }

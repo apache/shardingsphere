@@ -36,9 +36,6 @@ import java.sql.Connection;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-/**
- * Rollback migration E2E IT.
- */
 @PipelineE2ESettings(fetchSingle = true, database = @PipelineE2ESettings.PipelineE2EDatabaseSettings(type = "MySQL", scenarioFiles = "env/common/none.xml"))
 class RollbackMigrationE2EIT extends AbstractMigrationE2EIT {
     

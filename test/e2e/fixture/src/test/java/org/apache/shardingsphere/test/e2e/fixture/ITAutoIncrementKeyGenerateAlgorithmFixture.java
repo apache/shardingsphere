@@ -36,7 +36,7 @@ public final class ITAutoIncrementKeyGenerateAlgorithmFixture implements KeyGene
     
     @Override
     public String getType() {
-        return "IT.AUTO_INCREMENT.FIXTURE";
+        return "E2E.AUTO_INCREMENT.FIXTURE";
     }
     
     @Override

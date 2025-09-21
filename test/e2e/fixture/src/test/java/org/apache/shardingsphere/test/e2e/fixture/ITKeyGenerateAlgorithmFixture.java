@@ -43,7 +43,7 @@ public final class ITKeyGenerateAlgorithmFixture implements KeyGenerateAlgorithm
     
     @Override
     public String getType() {
-        return "IT.FIXTURE";
+        return "E2E.FIXTURE";
     }
     
     @Override

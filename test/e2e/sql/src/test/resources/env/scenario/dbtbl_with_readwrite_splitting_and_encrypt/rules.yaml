@@ -93,15 +93,15 @@ rules:
     - ref_1:t_order,t_order_item
   shardingAlgorithms:
     it_standard_fixture:
-      type: IT.STANDARD.FIXTURE
+      type: E2E.STANDARD.FIXTURE
 
   keyGenerators:
     constant:
-      type: IT.FIXTURE
+      type: E2E.FIXTURE
 
   auditors:
     auditor_constant:
-      type: IT.AUDITOR.FIXTURE
+      type: E2E.AUDITOR.FIXTURE
 
 - !READWRITE_SPLITTING
   dataSourceGroups:

@@ -169,6 +169,6 @@ public final class ITEncryptLikeAlgorithmFixture implements EncryptAlgorithm {
     
     @Override
     public String getType() {
-        return "IT.ENCRYPT.LIKE.FIXTURE";
+        return "E2E.ENCRYPT.LIKE.FIXTURE";
     }
 }
