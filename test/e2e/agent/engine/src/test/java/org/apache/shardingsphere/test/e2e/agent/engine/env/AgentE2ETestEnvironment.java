@@ -31,8 +31,8 @@ import org.apache.shardingsphere.test.e2e.agent.engine.container.plugin.AgentPlu
 import org.apache.shardingsphere.test.e2e.agent.engine.env.props.AgentE2ETestConfiguration;
 import org.apache.shardingsphere.test.e2e.agent.engine.env.props.AgentE2ETestImageConfiguration;
 import org.apache.shardingsphere.test.e2e.agent.fixture.proxy.ProxyRequestExecutor;
-import org.apache.shardingsphere.test.e2e.env.container.DockerITContainer;
-import org.apache.shardingsphere.test.e2e.env.container.ITContainers;
+import org.apache.shardingsphere.test.e2e.env.container.DockerE2EContainer;
+import org.apache.shardingsphere.test.e2e.env.container.E2EContainers;
 import org.apache.shardingsphere.test.e2e.env.container.adapter.config.AdaptorContainerConfiguration;
 import org.apache.shardingsphere.test.e2e.env.container.adapter.enums.AdapterType;
 import org.apache.shardingsphere.test.e2e.env.container.adapter.impl.ShardingSphereProxyDockerContainer;
@@ -73,7 +73,7 @@ public final class AgentE2ETestEnvironment {
     @Getter
     private final Collection<String> containerLogs = new LinkedList<>();
     
-    private ITContainers containers;
+    private E2EContainers containers;
     
     @Getter
     private String agentPluginURL;
@@ -99,7 +99,7 @@ public final class AgentE2ETestEnvironment {
             return;
         }
         StorageContainerOption storageContainerOption = DatabaseTypedSPILoader.getService(StorageContainerOption.class, databaseType);
-        Optional<DockerITContainer> agentPluginContainer = TypedSPILoader.findService(AgentPluginContainerFactory.class, testConfig.getPluginType()).map(AgentPluginContainerFactory::create);
+        Optional<DockerE2EContainer> agentPluginContainer = TypedSPILoader.findService(AgentPluginContainerFactory.class, testConfig.getPluginType()).map(AgentPluginContainerFactory::create);
         if (AdapterType.PROXY.getValue().equalsIgnoreCase(testConfig.getAdapter())) {
             createProxyEnvironment(storageContainerOption, agentPluginContainer.orElse(null));
         } else if (AdapterType.JDBC.getValue().equalsIgnoreCase(testConfig.getAdapter())) {
@@ -114,8 +114,8 @@ public final class AgentE2ETestEnvironment {
         initialized = true;
     }
     
-    private void createProxyEnvironment(final StorageContainerOption storageContainerOption, final DockerITContainer agentPluginContainer) {
-        containers = new ITContainers(null);
+    private void createProxyEnvironment(final StorageContainerOption storageContainerOption, final DockerE2EContainer agentPluginContainer) {
+        containers = new E2EContainers(null);
         ShardingSphereProxyDockerContainer proxyContainer = new ShardingSphereProxyDockerContainer(databaseType, getAdaptorContainerConfiguration());
         proxyContainer.withLogConsumer(testConfig.isLogEnabled() ? this::collectLogs : null);
         StorageContainer storageContainer = new DockerStorageContainer(imageConfig.getMysqlImage(), storageContainerOption, null);
@@ -147,8 +147,8 @@ public final class AgentE2ETestEnvironment {
         return new AdaptorContainerConfiguration("sharding_db", Collections.emptyList(), mountedResources, imageConfig.getProxyImage(), "");
     }
     
-    private void createJDBCEnvironment(final StorageContainerOption storageContainerOption, final DockerITContainer agentPluginContainer) {
-        containers = new ITContainers(null);
+    private void createJDBCEnvironment(final StorageContainerOption storageContainerOption, final DockerE2EContainer agentPluginContainer) {
+        containers = new E2EContainers(null);
         StorageContainer storageContainer = new DockerStorageContainer(imageConfig.getMysqlImage(), storageContainerOption, null);
         ShardingSphereJdbcAgentContainer jdbcAgentContainer = new ShardingSphereJdbcAgentContainer(
                 imageConfig.getJdbcProjectImage(), testConfig.getPluginType(), testConfig.isLogEnabled() ? this::collectLogs : null);

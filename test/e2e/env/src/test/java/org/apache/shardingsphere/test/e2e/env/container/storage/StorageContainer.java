@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.test.e2e.env.container.storage;
 
-import org.apache.shardingsphere.test.e2e.env.container.ITContainer;
+import org.apache.shardingsphere.test.e2e.env.container.E2EContainer;
 
 import javax.sql.DataSource;
 import java.util.Map;
@@ -25,7 +25,7 @@ import java.util.Map;
 /**
  * Storage container.
  */
-public interface StorageContainer extends ITContainer {
+public interface StorageContainer extends E2EContainer {
     
     /**
      * Get actual data source map.

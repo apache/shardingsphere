@@ -17,14 +17,14 @@
 
 package org.apache.shardingsphere.test.e2e.env.container.governance;
 
-import org.apache.shardingsphere.test.e2e.env.container.DockerITContainer;
+import org.apache.shardingsphere.test.e2e.env.container.DockerE2EContainer;
 import org.apache.shardingsphere.test.e2e.env.container.governance.option.GovernanceContainerOption;
 import org.testcontainers.containers.wait.strategy.LogMessageWaitStrategy;
 
 /**
  * Governance container.
  */
-public final class GovernanceContainer extends DockerITContainer {
+public final class GovernanceContainer extends DockerE2EContainer {
     
     private final GovernanceContainerOption option;
     

@@ -17,21 +17,17 @@
 
 package org.apache.shardingsphere.test.e2e.env.container;
 
-import org.testcontainers.lifecycle.Startable;
+import java.util.Collection;
 
 /**
- * IT container.
+ * Combo E2E container.
  */
-public interface ITContainer extends Startable {
-    
-    @Override
-    default void stop() {
-    }
+public interface ComboE2EContainer extends E2EContainer {
     
     /**
-     * Get abbreviation.
+     * Get containers.
      *
-     * @return abbreviation
+     * @return containers
      */
-    String getAbbreviation();
+    Collection<E2EContainer> getContainers();
 }

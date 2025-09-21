@@ -23,7 +23,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
-import org.apache.shardingsphere.test.e2e.env.container.DockerITContainer;
+import org.apache.shardingsphere.test.e2e.env.container.DockerE2EContainer;
 import org.apache.shardingsphere.test.e2e.env.container.adapter.AdapterContainer;
 import org.apache.shardingsphere.test.e2e.env.container.adapter.AdapterContainerFactory;
 import org.apache.shardingsphere.test.e2e.env.container.adapter.config.AdaptorContainerConfiguration;
@@ -72,8 +72,8 @@ public final class TransactionDockerContainerComposer extends TransactionBaseCon
             jdbcContainer = null;
             AdaptorContainerConfiguration containerConfig = TransactionProxyContainerConfigurationFactory.newInstance(testParam.getScenario(), databaseType, testParam.getPortBindings());
             proxyContainer = AdapterContainerFactory.newInstance(AdapterType.PROXY, databaseType, testParam.getScenario(), containerConfig, storageContainer, envType.name());
-            if (proxyContainer instanceof DockerITContainer) {
-                ((DockerITContainer) proxyContainer).dependsOn(governanceContainer, storageContainer);
+            if (proxyContainer instanceof DockerE2EContainer) {
+                ((DockerE2EContainer) proxyContainer).dependsOn(governanceContainer, storageContainer);
             }
             if (proxyContainer instanceof ShardingSphereProxyEmbeddedContainer) {
                 ((ShardingSphereProxyEmbeddedContainer) proxyContainer).dependsOn(governanceContainer, storageContainer);

@@ -38,20 +38,20 @@ import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 /**
- * IT containers.
+ * E2E containers.
  */
 @RequiredArgsConstructor
 @Slf4j
-public final class ITContainers implements Startable {
+public final class E2EContainers implements Startable {
     
     private final String scenario;
     
     @Getter
     private final Network network = Network.newNetwork();
     
-    private final Collection<EmbeddedITContainer> embeddedContainers = new LinkedList<>();
+    private final Collection<EmbeddedE2EContainer> embeddedContainers = new LinkedList<>();
     
-    private final Collection<DockerITContainer> dockerContainers = new LinkedList<>();
+    private final Collection<DockerE2EContainer> dockerContainers = new LinkedList<>();
     
     private volatile boolean started;
     
@@ -62,16 +62,16 @@ public final class ITContainers implements Startable {
      * @param <T> type of container
      * @return registered container
      */
-    public <T extends ITContainer> T registerContainer(final T container) {
-        if (container instanceof ComboITContainer) {
-            ((ComboITContainer) container).getContainers().forEach(this::registerContainer);
-        } else if (container instanceof EmbeddedITContainer) {
-            embeddedContainers.add((EmbeddedITContainer) container);
+    public <T extends E2EContainer> T registerContainer(final T container) {
+        if (container instanceof ComboE2EContainer) {
+            ((ComboE2EContainer) container).getContainers().forEach(this::registerContainer);
+        } else if (container instanceof EmbeddedE2EContainer) {
+            embeddedContainers.add((EmbeddedE2EContainer) container);
         } else if (container instanceof NativeStorageContainer) {
             String networkAlias = getNetworkAlias(container);
             ((NativeStorageContainer) container).setNetworkAliases(Collections.singletonList(networkAlias));
         } else {
-            DockerITContainer dockerContainer = (DockerITContainer) container;
+            DockerE2EContainer dockerContainer = (DockerE2EContainer) container;
             dockerContainer.setNetwork(network);
             String networkAlias = getNetworkAlias(container);
             dockerContainer.setNetworkAliases(Collections.singletonList(networkAlias));
@@ -82,7 +82,7 @@ public final class ITContainers implements Startable {
         return container;
     }
     
-    private <T extends ITContainer> String getNetworkAlias(final T container) {
+    private <T extends E2EContainer> String getNetworkAlias(final T container) {
         return container instanceof GovernanceContainer || Strings.isNullOrEmpty(scenario)
                 ? String.join(".", container.getAbbreviation(), "host")
                 : String.join(".", container.getAbbreviation(), scenario, "host");
@@ -93,7 +93,7 @@ public final class ITContainers implements Startable {
         if (!started) {
             synchronized (this) {
                 if (!started) {
-                    embeddedContainers.forEach(EmbeddedITContainer::start);
+                    embeddedContainers.forEach(EmbeddedE2EContainer::start);
                     dockerContainers.stream().filter(each -> !each.isCreated()).forEach(this::start);
                     waitUntilReady();
                     started = true;
@@ -102,7 +102,7 @@ public final class ITContainers implements Startable {
         }
     }
     
-    private void start(final DockerITContainer dockerITContainer) {
+    private void start(final DockerE2EContainer dockerITContainer) {
         log.info("Starting container {}...", dockerITContainer.getName());
         dockerITContainer.start();
     }

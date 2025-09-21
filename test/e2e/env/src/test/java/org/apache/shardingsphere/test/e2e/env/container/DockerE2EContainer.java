@@ -33,16 +33,16 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
- * Docker IT container.
+ * Docker E2E container.
  */
 @Getter
 @Setter
 @Slf4j
-public abstract class DockerITContainer extends GenericContainer<DockerITContainer> implements ITContainer {
+public abstract class DockerE2EContainer extends GenericContainer<DockerE2EContainer> implements E2EContainer {
     
     private String name;
     
-    protected DockerITContainer(final String name, final String containerImage) {
+    protected DockerE2EContainer(final String name, final String containerImage) {
         super(new RemoteDockerImage(DockerImageName.parse(containerImage)));
         this.name = name;
     }
@@ -59,7 +59,7 @@ public abstract class DockerITContainer extends GenericContainer<DockerITContain
     }
     
     private void startDependencies() {
-        Collection<DockerITContainer> dependencies = getDependencies().stream().filter(DockerITContainer.class::isInstance).map(DockerITContainer.class::cast).collect(Collectors.toList());
+        Collection<DockerE2EContainer> dependencies = getDependencies().stream().filter(DockerE2EContainer.class::isInstance).map(DockerE2EContainer.class::cast).collect(Collectors.toList());
         dependencies.stream().filter(each -> !each.isCreated()).forEach(GenericContainer::start);
         dependencies.stream()
                 .filter(each -> {

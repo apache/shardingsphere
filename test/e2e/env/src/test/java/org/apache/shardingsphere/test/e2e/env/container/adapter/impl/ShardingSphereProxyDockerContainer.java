@@ -20,7 +20,7 @@ package org.apache.shardingsphere.test.e2e.env.container.adapter.impl;
 import com.google.common.base.Strings;
 import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
-import org.apache.shardingsphere.test.e2e.env.container.DockerITContainer;
+import org.apache.shardingsphere.test.e2e.env.container.DockerE2EContainer;
 import org.apache.shardingsphere.test.e2e.env.container.adapter.AdapterContainer;
 import org.apache.shardingsphere.test.e2e.env.container.adapter.config.AdaptorContainerConfiguration;
 import org.apache.shardingsphere.test.e2e.env.container.constants.ProxyContainerConstants;
@@ -38,7 +38,7 @@ import java.util.concurrent.atomic.AtomicReference;
 /**
  * ShardingSphere proxy docker container.
  */
-public final class ShardingSphereProxyDockerContainer extends DockerITContainer implements AdapterContainer {
+public final class ShardingSphereProxyDockerContainer extends DockerE2EContainer implements AdapterContainer {
     
     private final AdaptorContainerConfiguration config;
     
