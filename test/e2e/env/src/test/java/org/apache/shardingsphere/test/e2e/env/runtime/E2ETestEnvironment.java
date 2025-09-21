@@ -40,21 +40,21 @@ public final class E2ETestEnvironment {
     
     private static final E2ETestEnvironment INSTANCE = new E2ETestEnvironment();
     
+    private final Collection<String> scenarios;
+    
     private final RunEnvironment runEnvironment;
     
     private final ClusterEnvironment clusterEnvironment;
     
     private final NativeStorageEnvironment nativeStorageEnvironment;
     
-    private final Collection<String> scenarios;
-    
     private E2ETestEnvironment() {
         Properties props = loadProperties();
         TimeZone.setDefault(TimeZone.getTimeZone(props.getProperty("it.timezone", "UTC")));
+        scenarios = getScenarios(props);
         runEnvironment = new RunEnvironment(props);
         clusterEnvironment = new ClusterEnvironment(props);
         nativeStorageEnvironment = new NativeStorageEnvironment(props);
-        scenarios = getScenarios(props);
     }
     
     @SneakyThrows(IOException.class)
