@@ -47,8 +47,6 @@ public final class E2ETestEnvironment {
     
     private final Collection<String> scenarios;
     
-    private final String governanceCenter;
-    
     private E2ETestEnvironment() {
         Properties props = loadProperties();
         TimeZone.setDefault(TimeZone.getTimeZone(props.getProperty("it.timezone", "UTC")));
@@ -56,7 +54,6 @@ public final class E2ETestEnvironment {
         clusterEnvironment = new ClusterEnvironment(props);
         nativeStorageEnvironment = new NativeStorageEnvironment(props);
         scenarios = getScenarios(props);
-        governanceCenter = props.getProperty("it.env.governance.center");
     }
     
     @SneakyThrows(IOException.class)

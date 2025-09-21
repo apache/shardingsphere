@@ -41,6 +41,8 @@ public final class ClusterEnvironment {
     
     private final Collection<String> adapters;
     
+    private final String regCenterType;
+    
     private final Collection<DatabaseType> databaseTypes;
     
     private final Map<DatabaseType, String> databaseImages;
@@ -48,6 +50,7 @@ public final class ClusterEnvironment {
     public ClusterEnvironment(final Properties props) {
         type = getType(props);
         adapters = getAdapters(props);
+        regCenterType = props.getProperty("it.cluster.regcenter");
         databaseTypes = getDatabaseTypes(props);
         databaseImages = getDatabaseImages(props);
     }

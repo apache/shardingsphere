@@ -58,22 +58,22 @@ public final class SQLE2EProxyContainerConfigurationFactory {
     }
     
     private static String getGlobalYamlPath(final String scenario, final String modeType, final DatabaseType databaseType) {
-        String governanceCenterType = getGovernanceCenterType(modeType);
-        if (isDialectScenarioGlobalYamlExists(scenario, modeType, governanceCenterType, databaseType)) {
-            return String.format("/env/scenario/%s/proxy/mode/%s/%s/%s/global.yaml", scenario, modeType, databaseType.getType().toLowerCase(), governanceCenterType);
+        String regCenterType = getRegistryCenterType(modeType);
+        if (isDialectScenarioGlobalYamlExists(scenario, modeType, regCenterType, databaseType)) {
+            return String.format("/env/scenario/%s/proxy/mode/%s/%s/%s/global.yaml", scenario, modeType, databaseType.getType().toLowerCase(), regCenterType);
         }
-        if (isGovernanceCenterGlobalYamlExists(scenario, modeType, governanceCenterType)) {
-            return String.format("/env/scenario/%s/proxy/mode/%s/%s/global.yaml", scenario, modeType, governanceCenterType);
+        if (isGovernanceCenterGlobalYamlExists(scenario, modeType, regCenterType)) {
+            return String.format("/env/scenario/%s/proxy/mode/%s/%s/global.yaml", scenario, modeType, regCenterType);
         }
-        return String.format("/env/common/%s/proxy/conf/%s/global.yaml", modeType, governanceCenterType);
+        return String.format("/env/common/%s/proxy/conf/%s/global.yaml", modeType, regCenterType);
     }
     
-    private static String getGovernanceCenterType(final String modeType) {
-        String governanceCenter = E2ETestEnvironment.getInstance().getGovernanceCenter();
-        if (Strings.isNullOrEmpty(governanceCenter)) {
+    private static String getRegistryCenterType(final String modeType) {
+        String regCenterType = E2ETestEnvironment.getInstance().getClusterEnvironment().getRegCenterType();
+        if (Strings.isNullOrEmpty(regCenterType)) {
             return "cluster".equals(modeType) ? "zookeeper" : "memory";
         }
-        return governanceCenter.toLowerCase();
+        return regCenterType.toLowerCase();
     }
     
     private static boolean isDialectScenarioGlobalYamlExists(final String scenario, final String modeType, final String governanceCenterType, final DatabaseType databaseType) {
