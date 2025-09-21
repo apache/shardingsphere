@@ -17,14 +17,14 @@
 
 package org.apache.shardingsphere.test.e2e.env.container.adapter;
 
-import org.apache.shardingsphere.test.e2e.env.container.ITContainer;
+import org.apache.shardingsphere.test.e2e.env.container.E2EContainer;
 
 import javax.sql.DataSource;
 
 /**
  * Adapter container.
  */
-public interface AdapterContainer extends ITContainer {
+public interface AdapterContainer extends E2EContainer {
     
     /**
      * Get target data source.

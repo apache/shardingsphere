@@ -17,17 +17,8 @@
 
 package org.apache.shardingsphere.test.e2e.env.container;
 
-import java.util.Collection;
-
 /**
- * Combo IT container.
+ * Embedded E2E container.
  */
-public interface ComboITContainer extends ITContainer {
-    
-    /**
-     * Get containers.
-     *
-     * @return containers
-     */
-    Collection<ITContainer> getContainers();
+public interface EmbeddedE2EContainer extends E2EContainer {
 }

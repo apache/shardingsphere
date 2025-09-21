@@ -32,7 +32,7 @@ import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.frontend.ShardingSphereProxy;
 import org.apache.shardingsphere.proxy.frontend.ssl.ProxySSLContext;
 import org.apache.shardingsphere.proxy.initializer.BootstrapInitializer;
-import org.apache.shardingsphere.test.e2e.env.container.EmbeddedITContainer;
+import org.apache.shardingsphere.test.e2e.env.container.EmbeddedE2EContainer;
 import org.apache.shardingsphere.test.e2e.env.container.adapter.AdapterContainer;
 import org.apache.shardingsphere.test.e2e.env.container.adapter.config.AdaptorContainerConfiguration;
 import org.apache.shardingsphere.test.e2e.env.container.constants.ProxyContainerConstants;
@@ -72,7 +72,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 @Slf4j
 // TODO Reset static properties when closing the class., like PipelineAPIFactory#GOVERNANCE_FACADE_MAP
-public final class ShardingSphereProxyEmbeddedContainer implements EmbeddedITContainer, AdapterContainer {
+public final class ShardingSphereProxyEmbeddedContainer implements EmbeddedE2EContainer, AdapterContainer {
     
     private static final String OS_MAC_TMP_DIR = "/tmp";
     

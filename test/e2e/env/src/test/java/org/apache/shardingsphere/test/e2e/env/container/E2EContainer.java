@@ -17,8 +17,21 @@
 
 package org.apache.shardingsphere.test.e2e.env.container;
 
+import org.testcontainers.lifecycle.Startable;
+
 /**
- * Embedded IT container.
+ * E2E container.
  */
-public interface EmbeddedITContainer extends ITContainer {
+public interface E2EContainer extends Startable {
+    
+    @Override
+    default void stop() {
+    }
+    
+    /**
+     * Get abbreviation.
+     *
+     * @return abbreviation
+     */
+    String getAbbreviation();
 }

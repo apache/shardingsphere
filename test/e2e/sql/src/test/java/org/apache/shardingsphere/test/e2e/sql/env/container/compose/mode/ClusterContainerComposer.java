@@ -20,8 +20,8 @@ package org.apache.shardingsphere.test.e2e.sql.env.container.compose.mode;
 import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
-import org.apache.shardingsphere.test.e2e.env.container.DockerITContainer;
-import org.apache.shardingsphere.test.e2e.env.container.ITContainers;
+import org.apache.shardingsphere.test.e2e.env.container.DockerE2EContainer;
+import org.apache.shardingsphere.test.e2e.env.container.E2EContainers;
 import org.apache.shardingsphere.test.e2e.env.container.adapter.AdapterContainer;
 import org.apache.shardingsphere.test.e2e.env.container.adapter.AdapterContainerFactory;
 import org.apache.shardingsphere.test.e2e.env.container.adapter.config.AdaptorContainerConfiguration;
@@ -46,7 +46,7 @@ import java.util.Map;
  */
 public final class ClusterContainerComposer implements ContainerComposer {
     
-    private final ITContainers containers;
+    private final E2EContainers containers;
     
     private final GovernanceContainer governanceContainer;
     
@@ -55,7 +55,7 @@ public final class ClusterContainerComposer implements ContainerComposer {
     private final AdapterContainer adapterContainer;
     
     public ClusterContainerComposer(final String scenario, final DatabaseType databaseType, final AdapterType adapterType) {
-        containers = new ITContainers(scenario);
+        containers = new E2EContainers(scenario);
         // TODO support other types of governance
         governanceContainer = containers.registerContainer(new GovernanceContainer(TypedSPILoader.getService(GovernanceContainerOption.class, "ZooKeeper")));
         Type envType = E2ETestEnvironment.getInstance().getClusterEnvironment().getType();
@@ -65,8 +65,8 @@ public final class ClusterContainerComposer implements ContainerComposer {
                 : new NativeStorageContainer(databaseType, scenario));
         AdaptorContainerConfiguration containerConfig = SQLE2EProxyContainerConfigurationFactory.newInstance(scenario, "cluster", databaseType);
         AdapterContainer adapterContainer = AdapterContainerFactory.newInstance(adapterType, databaseType, scenario, containerConfig, storageContainer, envType.name());
-        if (adapterContainer instanceof DockerITContainer) {
-            ((DockerITContainer) adapterContainer).dependsOn(governanceContainer, storageContainer);
+        if (adapterContainer instanceof DockerE2EContainer) {
+            ((DockerE2EContainer) adapterContainer).dependsOn(governanceContainer, storageContainer);
         }
         if (adapterContainer instanceof ShardingSphereProxyEmbeddedContainer) {
             ((ShardingSphereProxyEmbeddedContainer) adapterContainer).dependsOn(governanceContainer, storageContainer);

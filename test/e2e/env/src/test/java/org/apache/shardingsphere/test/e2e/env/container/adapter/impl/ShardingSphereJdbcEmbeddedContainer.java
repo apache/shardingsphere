@@ -20,7 +20,7 @@ package org.apache.shardingsphere.test.e2e.env.container.adapter.impl;
 import com.zaxxer.hikari.HikariDataSource;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.test.e2e.env.container.EmbeddedITContainer;
+import org.apache.shardingsphere.test.e2e.env.container.EmbeddedE2EContainer;
 import org.apache.shardingsphere.test.e2e.env.container.adapter.AdapterContainer;
 import org.apache.shardingsphere.test.e2e.env.container.storage.StorageContainer;
 
@@ -39,7 +39,7 @@ import java.util.concurrent.atomic.AtomicReference;
  * ShardingSphere JDBC embedded container.
  */
 @RequiredArgsConstructor
-public final class ShardingSphereJdbcEmbeddedContainer implements EmbeddedITContainer, AdapterContainer {
+public final class ShardingSphereJdbcEmbeddedContainer implements EmbeddedE2EContainer, AdapterContainer {
     
     private final StorageContainer storageContainer;
     

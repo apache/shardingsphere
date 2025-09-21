@@ -23,7 +23,7 @@ import com.google.common.base.Strings;
 import lombok.Getter;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
-import org.apache.shardingsphere.test.e2e.env.container.DockerITContainer;
+import org.apache.shardingsphere.test.e2e.env.container.DockerE2EContainer;
 import org.apache.shardingsphere.test.e2e.env.container.constants.StorageContainerConstants;
 import org.apache.shardingsphere.test.e2e.env.container.storage.StorageContainer;
 import org.apache.shardingsphere.test.e2e.env.container.storage.mount.MountConfigurationResourceGenerator;
@@ -53,7 +53,7 @@ import java.util.stream.Collectors;
 /**
  * Docker storage container.
  */
-public final class DockerStorageContainer extends DockerITContainer implements StorageContainer {
+public final class DockerStorageContainer extends DockerE2EContainer implements StorageContainer {
     
     private final StorageContainerOption option;
     

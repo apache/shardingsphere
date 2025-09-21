@@ -20,8 +20,8 @@ package org.apache.shardingsphere.test.e2e.operation.showprocesslist.container.c
 import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
-import org.apache.shardingsphere.test.e2e.env.container.DockerITContainer;
-import org.apache.shardingsphere.test.e2e.env.container.ITContainers;
+import org.apache.shardingsphere.test.e2e.env.container.DockerE2EContainer;
+import org.apache.shardingsphere.test.e2e.env.container.E2EContainers;
 import org.apache.shardingsphere.test.e2e.env.container.adapter.AdapterContainer;
 import org.apache.shardingsphere.test.e2e.env.container.adapter.AdapterContainerFactory;
 import org.apache.shardingsphere.test.e2e.env.container.adapter.config.AdaptorContainerConfiguration;
@@ -46,7 +46,7 @@ import java.util.Map;
  */
 public final class ClusterShowProcessListContainerComposer implements AutoCloseable {
     
-    private final ITContainers containers;
+    private final E2EContainers containers;
     
     private final GovernanceContainer governanceContainer;
     
@@ -55,7 +55,7 @@ public final class ClusterShowProcessListContainerComposer implements AutoClosea
     private final AdapterContainer proxyContainer;
     
     public ClusterShowProcessListContainerComposer(final ShowProcessListTestParameter testParam) {
-        containers = new ITContainers(testParam.getScenario());
+        containers = new E2EContainers(testParam.getScenario());
         governanceContainer = isClusterMode(testParam.getRunMode())
                 ? containers.registerContainer(new GovernanceContainer(TypedSPILoader.getService(GovernanceContainerOption.class, "ZooKeeper")))
                 : null;
@@ -67,11 +67,11 @@ public final class ClusterShowProcessListContainerComposer implements AutoClosea
         String envType = ShowProcessListEnvironment.getInstance().getItEnvType().name();
         jdbcContainer = AdapterContainerFactory.newInstance(AdapterType.JDBC, testParam.getDatabaseType(), testParam.getScenario(), containerConfig, storageContainer, envType);
         proxyContainer = AdapterContainerFactory.newInstance(AdapterType.PROXY, testParam.getDatabaseType(), testParam.getScenario(), containerConfig, storageContainer, envType);
-        if (proxyContainer instanceof DockerITContainer) {
+        if (proxyContainer instanceof DockerE2EContainer) {
             if (isClusterMode(testParam.getRunMode())) {
-                ((DockerITContainer) proxyContainer).dependsOn(governanceContainer);
+                ((DockerE2EContainer) proxyContainer).dependsOn(governanceContainer);
             }
-            ((DockerITContainer) proxyContainer).dependsOn(storageContainer);
+            ((DockerE2EContainer) proxyContainer).dependsOn(storageContainer);
         }
         containers.registerContainer(proxyContainer);
         containers.registerContainer(jdbcContainer);
