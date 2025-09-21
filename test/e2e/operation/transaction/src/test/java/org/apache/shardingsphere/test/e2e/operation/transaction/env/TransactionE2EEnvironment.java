@@ -23,9 +23,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.test.e2e.env.container.constants.ProxyContainerConstants;
 import org.apache.shardingsphere.test.e2e.env.container.constants.StorageContainerConstants;
-import org.apache.shardingsphere.test.e2e.env.container.storage.option.dialect.MySQLStorageContainerOption;
-import org.apache.shardingsphere.test.e2e.env.container.storage.option.dialect.OpenGaussStorageContainerOption;
-import org.apache.shardingsphere.test.e2e.env.container.storage.option.dialect.PostgreSQLStorageContainerOption;
+import org.apache.shardingsphere.test.e2e.env.container.storage.option.dialect.mysql.MySQLStorageContainerCreateOption;
+import org.apache.shardingsphere.test.e2e.env.container.storage.option.dialect.opengauss.OpenGaussStorageContainerCreateOption;
+import org.apache.shardingsphere.test.e2e.env.container.storage.option.dialect.postgresql.PostgreSQLStorageContainerCreateOption;
 import org.apache.shardingsphere.test.e2e.operation.transaction.env.enums.TransactionE2EEnvTypeEnum;
 import org.apache.shardingsphere.test.e2e.operation.transaction.env.enums.TransactionTestCaseRegistry;
 
@@ -113,11 +113,11 @@ public final class TransactionE2EEnvironment {
     public int getActualDataSourceDefaultPort(final DatabaseType databaseType) {
         switch (databaseType.getType()) {
             case "MySQL":
-                return Integer.parseInt(props.getOrDefault("transaction.it.native.mysql.port", new MySQLStorageContainerOption().getPort()).toString());
+                return Integer.parseInt(props.getOrDefault("transaction.it.native.mysql.port", new MySQLStorageContainerCreateOption().getPort()).toString());
             case "PostgreSQL":
-                return Integer.parseInt(props.getOrDefault("transaction.it.native.postgresql.port", new PostgreSQLStorageContainerOption().getPort()).toString());
+                return Integer.parseInt(props.getOrDefault("transaction.it.native.postgresql.port", new PostgreSQLStorageContainerCreateOption().getPort()).toString());
             case "openGauss":
-                return Integer.parseInt(props.getOrDefault("transaction.it.native.opengauss.port", new OpenGaussStorageContainerOption().getPort()).toString());
+                return Integer.parseInt(props.getOrDefault("transaction.it.native.opengauss.port", new OpenGaussStorageContainerCreateOption().getPort()).toString());
             default:
                 throw new UnsupportedOperationException(String.format("Unsupported database type: `%s`", databaseType.getType()));
         }

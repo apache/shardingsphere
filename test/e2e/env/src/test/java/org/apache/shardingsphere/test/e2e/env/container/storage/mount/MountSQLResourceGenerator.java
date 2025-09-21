@@ -18,7 +18,8 @@
 package org.apache.shardingsphere.test.e2e.env.container.storage.mount;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.test.e2e.env.container.storage.option.StorageContainerOption;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
+import org.apache.shardingsphere.test.e2e.env.container.storage.option.StorageContainerCreateOption;
 import org.apache.shardingsphere.test.e2e.env.runtime.type.scenario.path.ScenarioDataPath;
 import org.apache.shardingsphere.test.e2e.env.runtime.type.scenario.path.ScenarioDataPath.Type;
 
@@ -45,7 +46,9 @@ public final class MountSQLResourceGenerator {
     
     private static final String TO_BE_MOUNTED_EXPECTED_SCENARIO_SQL_FILE = "60-scenario-expected-init.sql";
     
-    private final StorageContainerOption option;
+    private final DatabaseType databaseType;
+    
+    private final StorageContainerCreateOption option;
     
     /**
      * Generate mount SQL resource map.
@@ -59,7 +62,7 @@ public final class MountSQLResourceGenerator {
         for (String each : TO_BE_MOUNTED_COMMON_SQL_FILES) {
             findToBeMountedCommonSQLFile(each).ifPresent(optional -> toBeMountedSQLFiles.add("/" + optional));
         }
-        String toBeMountedStandardEnvSQLFilePath = String.format("env/container/%s/init-sql/%s", option.getDatabaseType().toLowerCase(), TO_BE_MOUNTED_STANDARD_ENV_SQL_FILE);
+        String toBeMountedStandardEnvSQLFilePath = String.format("env/container/%s/init-sql/%s", databaseType.getType().toLowerCase(), TO_BE_MOUNTED_STANDARD_ENV_SQL_FILE);
         if (null != Thread.currentThread().getContextClassLoader().getResource(toBeMountedStandardEnvSQLFilePath)) {
             toBeMountedSQLFiles.add("/" + toBeMountedStandardEnvSQLFilePath);
         }
@@ -73,22 +76,22 @@ public final class MountSQLResourceGenerator {
     }
     
     private Optional<String> findToBeMountedCommonSQLFile(final String toBeMountedSQLFile) {
-        String toBeMountedFilePath = String.format("container/%s/init-sql/%s", option.getDatabaseType().toLowerCase(), toBeMountedSQLFile);
+        String toBeMountedFilePath = String.format("container/%s/init-sql/%s", databaseType.getType().toLowerCase(), toBeMountedSQLFile);
         return null == Thread.currentThread().getContextClassLoader().getResource(toBeMountedFilePath) ? Optional.empty() : Optional.of(toBeMountedFilePath);
     }
     
     private Optional<String> getToBeMountedAdditionalEnvSQLFile(final String sqlFile) {
-        String toBeMountedFilePath = String.format("env/container/%s/init-sql/%s", option.getDatabaseType().toLowerCase(), sqlFile);
+        String toBeMountedFilePath = String.format("env/container/%s/init-sql/%s", databaseType.getType().toLowerCase(), sqlFile);
         return null == Thread.currentThread().getContextClassLoader().getResource(toBeMountedFilePath) ? Optional.empty() : Optional.of(toBeMountedFilePath);
     }
     
     private Collection<String> getToBeMountedScenarioSQLFiles(final String scenario) {
         Collection<String> result = new LinkedList<>();
-        String actualScenarioFile = new ScenarioDataPath(scenario).getInitSQLResourcePath(Type.ACTUAL, option.getType()) + "/" + TO_BE_MOUNTED_ACTUAL_SCENARIO_SQL_FILE;
+        String actualScenarioFile = new ScenarioDataPath(scenario).getInitSQLResourcePath(Type.ACTUAL, databaseType) + "/" + TO_BE_MOUNTED_ACTUAL_SCENARIO_SQL_FILE;
         if (null != Thread.currentThread().getContextClassLoader().getResource(actualScenarioFile)) {
             result.add(actualScenarioFile);
         }
-        String expectedScenarioFile = new ScenarioDataPath(scenario).getInitSQLResourcePath(Type.EXPECTED, option.getType()) + "/" + TO_BE_MOUNTED_EXPECTED_SCENARIO_SQL_FILE;
+        String expectedScenarioFile = new ScenarioDataPath(scenario).getInitSQLResourcePath(Type.EXPECTED, databaseType) + "/" + TO_BE_MOUNTED_EXPECTED_SCENARIO_SQL_FILE;
         if (null != Thread.currentThread().getContextClassLoader().getResource(expectedScenarioFile)) {
             result.add(expectedScenarioFile);
         }

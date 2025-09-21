@@ -15,32 +15,31 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.e2e.env.runtime.datasource.dialect;
+package org.apache.shardingsphere.test.e2e.env.container.storage.option.dialect.mariadb;
 
-import org.apache.shardingsphere.test.e2e.env.runtime.datasource.DataSourceEnvironment;
+import org.apache.shardingsphere.test.e2e.env.container.storage.option.StorageContainerConnectOption;
 
 /**
- * Data source environment for Hive.
+ * Storage container connect option for MariaDB.
  */
-public final class HiveDataSourceEnvironment implements DataSourceEnvironment {
+public final class MariaDBStorageContainerConnectOption implements StorageContainerConnectOption {
     
     @Override
     public String getDriverClassName() {
-        return "org.apache.hive.jdbc.HiveDriver";
+        return "org.mariadb.jdbc.Driver";
     }
     
     @Override
     public String getURL(final String host, final int port) {
-        return String.format("jdbc:hive2://%s:%s/", host, port);
+        return String.format("jdbc:mysql://%s:%s?%s", host, port, getQueryProperties());
     }
     
     @Override
     public String getURL(final String host, final int port, final String dataSourceName) {
-        return String.format("jdbc:hive2://%s:%s/%s?ssl=false&useUnicode=true&characterEncoding=utf-8", host, port, dataSourceName);
+        return String.format("jdbc:mysql://%s:%s/%s?%s", host, port, dataSourceName, getQueryProperties());
     }
     
-    @Override
-    public String getDatabaseType() {
-        return "Hive";
+    private String getQueryProperties() {
+        return "useSSL=false&useServerPrepStmts=true&useLocalSessionState=true&characterEncoding=utf-8&allowMultiQueries=true&rewriteBatchedStatements=true";
     }
 }

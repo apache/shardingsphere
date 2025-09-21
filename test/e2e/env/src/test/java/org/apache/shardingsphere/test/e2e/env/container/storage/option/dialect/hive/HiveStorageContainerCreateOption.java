@@ -15,46 +15,49 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.e2e.env.container.storage.option.dialect;
+package org.apache.shardingsphere.test.e2e.env.container.storage.option.dialect.hive;
 
-import org.apache.shardingsphere.test.e2e.env.container.constants.StorageContainerConstants;
-import org.apache.shardingsphere.test.e2e.env.container.storage.option.StorageContainerOption;
+import org.apache.shardingsphere.test.e2e.env.container.storage.option.StorageContainerCreateOption;
 
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
 /**
- * Storage container option for openGauss.
+ * Storage container craete option for Hive.
  */
-public final class OpenGaussStorageContainerOption implements StorageContainerOption {
+public final class HiveStorageContainerCreateOption implements StorageContainerCreateOption {
     
     @Override
     public int getPort() {
-        return 5432;
+        return 10000;
     }
     
     @Override
     public String getDefaultImageName() {
-        return "opengauss/opengauss:3.1.0";
+        return "apache/hive:4.0.1";
     }
     
     @Override
     public String getCommand() {
-        return "";
+        return "bash -c 'start-hive.sh && tail -f /dev/null'";
     }
     
     @Override
     public Map<String, String> getEnvironments() {
-        return Collections.singletonMap("GS_PASSWORD", StorageContainerConstants.OPERATION_PASSWORD);
+        Map<String, String> result = new HashMap<>(3, 1F);
+        result.put("SERVICE_NAME", "hiveserver2");
+        result.put("SERVICE_OPTS", "-Dhive.support.concurrency=true -Dhive.exec.dynamic.partition.mode=nonstrict -Dhive.txn.manager=org.apache.hadoop.hive.ql.lockmgr.DbTxnManager");
+        result.put("LANG", "C.UTF-8");
+        return result;
     }
     
     @Override
     public Collection<String> getMountedConfigurationResources() {
-        return Arrays.asList("/usr/local/opengauss/share/postgresql/postgresql.conf.sample", "/usr/local/opengauss/share/postgresql/pg_hba.conf.sample");
+        return Collections.singleton("/opt/hive/conf/hive-site.xml");
     }
     
     @Override
@@ -69,21 +72,31 @@ public final class OpenGaussStorageContainerOption implements StorageContainerOp
     
     @Override
     public boolean withPrivilegedMode() {
-        return true;
+        return false;
     }
     
     @Override
     public Optional<String> getDefaultDatabaseName(final int majorVersion) {
-        return Optional.of(StorageContainerConstants.OPERATION_USER);
+        return Optional.of("default");
     }
     
     @Override
     public long getStartupTimeoutSeconds() {
-        return 120L;
+        return 180L;
     }
     
     @Override
-    public String getDatabaseType() {
-        return "openGauss";
+    public boolean isSupportDockerEntrypoint() {
+        return false;
+    }
+    
+    @Override
+    public Optional<String> getDefaultUserWhenUnsupportedDockerEntrypoint() {
+        return Optional.of("");
+    }
+    
+    @Override
+    public Optional<String> getDefaultPasswordWhenUnsupportedDockerEntrypoint() {
+        return Optional.of("");
     }
 }

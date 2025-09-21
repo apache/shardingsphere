@@ -15,32 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.e2e.env.runtime.datasource.dialect;
+package org.apache.shardingsphere.test.e2e.env.container.storage.option.dialect.hive;
 
-import org.apache.shardingsphere.test.e2e.env.runtime.datasource.DataSourceEnvironment;
+import lombok.Getter;
+import org.apache.shardingsphere.test.e2e.env.container.storage.option.StorageContainerConnectOption;
+import org.apache.shardingsphere.test.e2e.env.container.storage.option.StorageContainerCreateOption;
+import org.apache.shardingsphere.test.e2e.env.container.storage.option.StorageContainerOption;
 
 /**
- * Data source environment for openGauss.
+ * Storage container option for Hive.
  */
-public final class OpenGaussDataSourceEnvironment implements DataSourceEnvironment {
+@Getter
+public final class HiveStorageContainerOption implements StorageContainerOption {
     
-    @Override
-    public String getDriverClassName() {
-        return "org.opengauss.Driver";
-    }
+    private final StorageContainerCreateOption createOption = new HiveStorageContainerCreateOption();
     
-    @Override
-    public String getURL(final String host, final int port) {
-        return String.format("jdbc:opengauss://%s:%s/", host, port);
-    }
-    
-    @Override
-    public String getURL(final String host, final int port, final String dataSourceName) {
-        return String.format("jdbc:opengauss://%s:%s/%s?batchMode=OFF", host, port, dataSourceName);
-    }
+    private final StorageContainerConnectOption connectOption = new HiveStorageContainerConnectOption();
     
     @Override
     public String getDatabaseType() {
-        return "openGauss";
+        return "Hive";
     }
 }

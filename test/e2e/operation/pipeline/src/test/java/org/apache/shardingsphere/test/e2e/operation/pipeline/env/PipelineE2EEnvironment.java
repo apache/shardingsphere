@@ -71,7 +71,7 @@ public final class PipelineE2EEnvironment {
      * @return actual database port
      */
     public int getActualDatabasePort(final DatabaseType databaseType) {
-        int defaultPort = DatabaseTypedSPILoader.getService(StorageContainerOption.class, databaseType).getPort();
+        int defaultPort = DatabaseTypedSPILoader.getService(StorageContainerOption.class, databaseType).getCreateOption().getPort();
         return Integer.parseInt(props.getProperty(String.format("pipeline.it.native.%s.port", databaseType.getType().toLowerCase()), String.valueOf(defaultPort)));
     }
     

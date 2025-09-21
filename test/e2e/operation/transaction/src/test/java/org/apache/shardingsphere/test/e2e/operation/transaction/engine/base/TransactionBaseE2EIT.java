@@ -25,8 +25,9 @@ import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoa
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.test.e2e.env.container.adapter.enums.AdapterType;
+import org.apache.shardingsphere.test.e2e.env.container.storage.option.StorageContainerConnectOption;
+import org.apache.shardingsphere.test.e2e.env.container.storage.option.StorageContainerOption;
 import org.apache.shardingsphere.test.e2e.env.container.storage.type.DockerStorageContainer;
-import org.apache.shardingsphere.test.e2e.env.runtime.datasource.DataSourceEnvironment;
 import org.apache.shardingsphere.test.e2e.operation.transaction.cases.base.BaseTransactionTestCase;
 import org.apache.shardingsphere.test.e2e.operation.transaction.cases.base.BaseTransactionTestCase.TransactionTestCaseParameter;
 import org.apache.shardingsphere.test.e2e.operation.transaction.engine.command.CommonSQLCommand;
@@ -276,12 +277,12 @@ public abstract class TransactionBaseE2EIT {
     }
     
     private String getActualJdbcUrlTemplate(final String databaseName, final TransactionContainerComposer containerComposer) {
-        DataSourceEnvironment dataSourceEnvironment = DatabaseTypedSPILoader.getService(DataSourceEnvironment.class, containerComposer.getDatabaseType());
+        StorageContainerConnectOption option = DatabaseTypedSPILoader.getService(StorageContainerOption.class, containerComposer.getDatabaseType()).getConnectOption();
         if (ENV.getItEnvType() == TransactionE2EEnvTypeEnum.DOCKER) {
             DockerStorageContainer storageContainer = (DockerStorageContainer) ((TransactionDockerContainerComposer) containerComposer.getContainerComposer()).getStorageContainer();
-            return dataSourceEnvironment.getURL(containerComposer.getDatabaseType().getType().toLowerCase() + ".host", storageContainer.getExposedPort(), databaseName);
+            return option.getURL(containerComposer.getDatabaseType().getType().toLowerCase() + ".host", storageContainer.getExposedPort(), databaseName);
         }
-        return dataSourceEnvironment.getURL("127.0.0.1", ENV.getActualDataSourceDefaultPort(containerComposer.getDatabaseType()), databaseName);
+        return option.getURL("127.0.0.1", ENV.getActualDataSourceDefaultPort(containerComposer.getDatabaseType()), databaseName);
     }
     
     /**

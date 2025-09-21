@@ -15,32 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.e2e.env.runtime.datasource.dialect;
+package org.apache.shardingsphere.test.e2e.env.container.storage.option.dialect.mysql;
 
-import org.apache.shardingsphere.test.e2e.env.runtime.datasource.DataSourceEnvironment;
+import lombok.Getter;
+import org.apache.shardingsphere.test.e2e.env.container.storage.option.StorageContainerConnectOption;
+import org.apache.shardingsphere.test.e2e.env.container.storage.option.StorageContainerCreateOption;
+import org.apache.shardingsphere.test.e2e.env.container.storage.option.StorageContainerOption;
 
 /**
- * Data source environment for PostgreSQL.
+ * Storage container option for MySQL.
  */
-public final class PostgreSQLDataSourceEnvironment implements DataSourceEnvironment {
+@Getter
+public final class MySQLStorageContainerOption implements StorageContainerOption {
     
-    @Override
-    public String getDriverClassName() {
-        return "org.postgresql.Driver";
-    }
+    private final StorageContainerCreateOption createOption = new MySQLStorageContainerCreateOption();
     
-    @Override
-    public String getURL(final String host, final int port) {
-        return String.format("jdbc:postgresql://%s:%s/?ssl=on&sslmode=prefer", host, port);
-    }
-    
-    @Override
-    public String getURL(final String host, final int port, final String dataSourceName) {
-        return String.format("jdbc:postgresql://%s:%s/%s?ssl=on&sslmode=prefer", host, port, dataSourceName);
-    }
+    private final StorageContainerConnectOption connectOption = new MySQLStorageContainerConnectOption();
     
     @Override
     public String getDatabaseType() {
-        return "PostgreSQL";
+        return "MySQL";
     }
 }

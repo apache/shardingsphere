@@ -29,7 +29,6 @@ import org.apache.shardingsphere.test.e2e.env.container.governance.GovernanceCon
 import org.apache.shardingsphere.test.e2e.env.container.governance.option.GovernanceContainerOption;
 import org.apache.shardingsphere.test.e2e.env.container.storage.option.StorageContainerOption;
 import org.apache.shardingsphere.test.e2e.env.container.storage.type.DockerStorageContainer;
-import org.apache.shardingsphere.test.e2e.env.runtime.datasource.DataSourceEnvironment;
 import org.apache.shardingsphere.test.e2e.operation.pipeline.env.PipelineE2EEnvironment;
 import org.apache.shardingsphere.test.e2e.operation.pipeline.env.enums.PipelineProxyTypeEnum;
 import org.apache.shardingsphere.test.e2e.operation.pipeline.framework.container.compose.PipelineBaseContainerComposer;
@@ -91,7 +90,7 @@ public final class PipelineDockerContainerComposer extends PipelineBaseContainer
             host = proxyContainer.getHost();
             port = proxyContainer.getFirstMappedPort();
         }
-        return DatabaseTypedSPILoader.getService(DataSourceEnvironment.class, ProxyDatabaseTypeUtils.getProxyDatabaseType(databaseType)).getURL(host, port, databaseName);
+        return DatabaseTypedSPILoader.getService(StorageContainerOption.class, ProxyDatabaseTypeUtils.getProxyDatabaseType(databaseType)).getConnectOption().getURL(host, port, databaseName);
     }
     
     @Override

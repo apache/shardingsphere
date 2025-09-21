@@ -18,7 +18,8 @@
 package org.apache.shardingsphere.test.e2e.env.container.storage.mount;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.test.e2e.env.container.storage.option.StorageContainerOption;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
+import org.apache.shardingsphere.test.e2e.env.container.storage.option.StorageContainerCreateOption;
 
 import java.io.File;
 import java.util.Collection;
@@ -31,7 +32,9 @@ import java.util.Map;
 @RequiredArgsConstructor
 public final class MountConfigurationResourceGenerator {
     
-    private final StorageContainerOption option;
+    private final DatabaseType databaseType;
+    
+    private final StorageContainerCreateOption option;
     
     /**
      * Generate mount configuration resource map.
@@ -46,8 +49,8 @@ public final class MountConfigurationResourceGenerator {
         for (String each : mountedConfigResources) {
             String fileName = new File(each).getName();
             String configFile = option.getSupportedMajorVersions().isEmpty()
-                    ? String.format("container/%s/cnf/%s", option.getDatabaseType().toLowerCase(), fileName)
-                    : String.format("container/%s/cnf/%d/%s", option.getDatabaseType().toLowerCase(), majorVersion, fileName);
+                    ? String.format("container/%s/cnf/%s", databaseType.getType().toLowerCase(), fileName)
+                    : String.format("container/%s/cnf/%d/%s", databaseType.getType().toLowerCase(), majorVersion, fileName);
             result.put(getToBeMountedConfigurationFile(configFile, scenario), each);
         }
         return result;

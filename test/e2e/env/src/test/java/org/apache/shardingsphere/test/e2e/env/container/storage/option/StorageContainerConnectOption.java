@@ -15,16 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.e2e.env.runtime.datasource;
-
-import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPI;
-import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
+package org.apache.shardingsphere.test.e2e.env.container.storage.option;
 
 /**
- * Data source environment.
+ * Storage container connect option.
  */
-@SingletonSPI
-public interface DataSourceEnvironment extends DatabaseTypedSPI {
+public interface StorageContainerConnectOption {
     
     /**
      * Get driver class name.

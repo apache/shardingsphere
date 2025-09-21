@@ -20,7 +20,7 @@ package org.apache.shardingsphere.test.e2e.operation.pipeline.framework.containe
 import org.apache.shardingsphere.database.connector.core.jdbcurl.appender.JdbcUrlAppender;
 import org.apache.shardingsphere.infra.util.props.PropertiesBuilder;
 import org.apache.shardingsphere.infra.util.props.PropertiesBuilder.Property;
-import org.apache.shardingsphere.test.e2e.env.runtime.datasource.DataSourceEnvironment;
+import org.apache.shardingsphere.test.e2e.env.container.storage.option.StorageContainerConnectOption;
 import org.apache.shardingsphere.test.e2e.operation.pipeline.framework.container.compose.natived.DialectPipelineNativeContainerDropTableOption;
 
 import java.util.Optional;
@@ -31,8 +31,8 @@ import java.util.Optional;
 public final class MySQLPipelineNativeContainerDropTableOption implements DialectPipelineNativeContainerDropTableOption {
     
     @Override
-    public String getJdbcUrl(final DataSourceEnvironment dataSourceEnvironment, final int actualDatabasePort, final String databaseName) {
-        return new JdbcUrlAppender().appendQueryProperties(dataSourceEnvironment.getURL("localhost", actualDatabasePort, databaseName),
+    public String getJdbcUrl(final StorageContainerConnectOption storageContainerConnectOption, final int actualDatabasePort, final String databaseName) {
+        return new JdbcUrlAppender().appendQueryProperties(storageContainerConnectOption.getURL("localhost", actualDatabasePort, databaseName),
                 PropertiesBuilder.build(new Property("allowPublicKeyRetrieval", Boolean.TRUE.toString())));
     }
     

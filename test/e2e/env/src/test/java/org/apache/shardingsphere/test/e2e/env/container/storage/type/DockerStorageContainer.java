@@ -22,7 +22,6 @@ import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import lombok.Getter;
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.test.e2e.env.container.DockerITContainer;
 import org.apache.shardingsphere.test.e2e.env.container.constants.StorageContainerConstants;
@@ -34,7 +33,6 @@ import org.apache.shardingsphere.test.e2e.env.container.util.DockerImageVersion;
 import org.apache.shardingsphere.test.e2e.env.container.util.JdbcConnectCheckingWaitStrategy;
 import org.apache.shardingsphere.test.e2e.env.container.util.SQLScriptUtils;
 import org.apache.shardingsphere.test.e2e.env.container.util.StorageContainerUtils;
-import org.apache.shardingsphere.test.e2e.env.runtime.datasource.DataSourceEnvironment;
 import org.apache.shardingsphere.test.e2e.env.runtime.type.scenario.database.DatabaseEnvironmentManager;
 import org.apache.shardingsphere.test.e2e.env.runtime.type.scenario.path.ScenarioDataPath.Type;
 
@@ -63,8 +61,6 @@ public final class DockerStorageContainer extends DockerITContainer implements S
     
     private final int majorVersion;
     
-    private final DataSourceEnvironment dataSourceEnvironment;
-    
     @Getter
     private final Map<String, DataSource> actualDataSourceMap = new LinkedHashMap<>();
     
@@ -76,12 +72,11 @@ public final class DockerStorageContainer extends DockerITContainer implements S
         this.option = option;
         this.scenario = scenario;
         majorVersion = new DockerImageVersion(getContainerImage(containerImage, option)).getMajorVersion();
-        dataSourceEnvironment = DatabaseTypedSPILoader.getService(DataSourceEnvironment.class, option.getType());
     }
     
     private static String getContainerImage(final String containerImage, final StorageContainerOption option) {
         Preconditions.checkNotNull(option, "Can not support database type `%s`", option.getDatabaseType());
-        return Strings.isNullOrEmpty(containerImage) ? option.getDefaultImageName() : containerImage;
+        return Strings.isNullOrEmpty(containerImage) ? option.getCreateOption().getDefaultImageName() : containerImage;
     }
     
     @Override
@@ -96,56 +91,61 @@ public final class DockerStorageContainer extends DockerITContainer implements S
     }
     
     private void setCommands() {
-        String command = option.getCommand();
+        String command = option.getCreateOption().getCommand();
         if (!Strings.isNullOrEmpty(command)) {
             setCommand(command);
         }
     }
     
     private void addEnvironments() {
-        option.getEnvironments().forEach(this::addEnv);
+        option.getCreateOption().getEnvironments().forEach(this::addEnv);
     }
     
     private void mountConfigurations() {
-        mapResources(new MountConfigurationResourceGenerator(option).generate(majorVersion, scenario));
+        mapResources(new MountConfigurationResourceGenerator(option.getType(), option.getCreateOption()).generate(majorVersion, scenario));
     }
     
     private void mountSQLFiles() {
-        if (option.isSupportDockerEntrypoint()) {
-            mapResources(new MountSQLResourceGenerator(option).generate(majorVersion, scenario));
+        if (option.getCreateOption().isSupportDockerEntrypoint()) {
+            mapResources(new MountSQLResourceGenerator(option.getType(), option.getCreateOption()).generate(majorVersion, scenario));
         }
     }
     
     private void setPrivilegedMode() {
-        if (option.withPrivilegedMode()) {
+        if (option.getCreateOption().withPrivilegedMode()) {
             withPrivilegedMode(true);
         }
     }
     
     private void setWaitStrategy() {
-        String user = option.isSupportDockerEntrypoint() ? StorageContainerConstants.CHECK_READY_USER : option.getDefaultUserWhenUnsupportedDockerEntrypoint().orElse("");
-        String password = option.isSupportDockerEntrypoint() ? StorageContainerConstants.CHECK_READY_PASSWORD : option.getDefaultPasswordWhenUnsupportedDockerEntrypoint().orElse("");
+        String user = option.getCreateOption().isSupportDockerEntrypoint()
+                ? StorageContainerConstants.CHECK_READY_USER
+                : option.getCreateOption().getDefaultUserWhenUnsupportedDockerEntrypoint().orElse("");
+        String password = option.getCreateOption().isSupportDockerEntrypoint()
+                ? StorageContainerConstants.CHECK_READY_PASSWORD
+                : option.getCreateOption().getDefaultPasswordWhenUnsupportedDockerEntrypoint().orElse("");
         setWaitStrategy(new JdbcConnectCheckingWaitStrategy(() -> DriverManager.getConnection(getURL(), user, password)));
-        withStartupTimeout(Duration.ofSeconds(option.getStartupTimeoutSeconds()));
+        withStartupTimeout(Duration.ofSeconds(option.getCreateOption().getStartupTimeoutSeconds()));
     }
     
     private String getURL() {
-        return option.getDefaultDatabaseName(majorVersion)
-                .map(optional -> dataSourceEnvironment.getURL("localhost", getFirstMappedPort(), optional))
-                .orElseGet(() -> dataSourceEnvironment.getURL("localhost", getFirstMappedPort()));
+        return option.getCreateOption().getDefaultDatabaseName(majorVersion)
+                .map(optional -> option.getConnectOption().getURL("localhost", getFirstMappedPort(), optional))
+                .orElseGet(() -> option.getConnectOption().getURL("localhost", getFirstMappedPort()));
     }
     
     @SneakyThrows({SQLException.class, InterruptedException.class})
     @Override
     protected void containerIsStarted(final InspectContainerResponse containerInfo) {
-        if (option.isSupportDockerEntrypoint()) {
+        if (option.getCreateOption().isSupportDockerEntrypoint()) {
             return;
         }
         Thread.sleep(10000L);
         try (
-                Connection connection = DriverManager.getConnection(dataSourceEnvironment.getURL("localhost", getFirstMappedPort()),
-                        option.getDefaultUserWhenUnsupportedDockerEntrypoint().orElse(""), option.getDefaultPasswordWhenUnsupportedDockerEntrypoint().orElse(""))) {
-            for (String each : new MountSQLResourceGenerator(option).generate(majorVersion, scenario).keySet()) {
+                Connection connection = DriverManager.getConnection(option.getConnectOption().getURL("localhost", getFirstMappedPort()),
+                        option.getCreateOption().getDefaultUserWhenUnsupportedDockerEntrypoint().orElse(""),
+                        option.getCreateOption().getDefaultPasswordWhenUnsupportedDockerEntrypoint().orElse(""))) {
+            for (String each : new MountSQLResourceGenerator(option.getType(), option.getCreateOption()).generate(majorVersion, scenario).keySet()) {
                 SQLScriptUtils.execute(connection, each);
             }
         }
@@ -186,9 +186,8 @@ public final class DockerStorageContainer extends DockerITContainer implements S
      * @return JDBC URL
      */
     public String getJdbcUrl(final String dataSourceName) {
-        DataSourceEnvironment dataSourceEnvironment = DatabaseTypedSPILoader.getService(DataSourceEnvironment.class, option.getType());
-        String toBeConnectedDataSourceName = Strings.isNullOrEmpty(dataSourceName) ? option.getDefaultDatabaseName(majorVersion).orElse("") : dataSourceName;
-        return dataSourceEnvironment.getURL(getHost(), getMappedPort(), toBeConnectedDataSourceName);
+        String toBeConnectedDataSourceName = Strings.isNullOrEmpty(dataSourceName) ? option.getCreateOption().getDefaultDatabaseName(majorVersion).orElse("") : dataSourceName;
+        return option.getConnectOption().getURL(getHost(), getMappedPort(), toBeConnectedDataSourceName);
     }
     
     /**
@@ -197,7 +196,7 @@ public final class DockerStorageContainer extends DockerITContainer implements S
      * @return exposed database container port
      */
     public int getExposedPort() {
-        return option.getPort();
+        return option.getCreateOption().getPort();
     }
     
     /**

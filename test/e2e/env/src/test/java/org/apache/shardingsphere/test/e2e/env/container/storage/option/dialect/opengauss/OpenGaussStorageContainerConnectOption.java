@@ -15,36 +15,27 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.e2e.env.runtime.datasource.dialect;
+package org.apache.shardingsphere.test.e2e.env.container.storage.option.dialect.opengauss;
 
-import org.apache.shardingsphere.test.e2e.env.runtime.datasource.DataSourceEnvironment;
+import org.apache.shardingsphere.test.e2e.env.container.storage.option.StorageContainerConnectOption;
 
 /**
- * Data source environment for MariaDB.
+ * Storage container connect option for openGauss.
  */
-public final class MariaDBDataSourceEnvironment implements DataSourceEnvironment {
+public final class OpenGaussStorageContainerConnectOption implements StorageContainerConnectOption {
     
     @Override
     public String getDriverClassName() {
-        return "org.mariadb.jdbc.Driver";
+        return "org.opengauss.Driver";
     }
     
     @Override
     public String getURL(final String host, final int port) {
-        return String.format("jdbc:mysql://%s:%s?%s", host, port, getQueryProperties());
+        return String.format("jdbc:opengauss://%s:%s/", host, port);
     }
     
     @Override
     public String getURL(final String host, final int port, final String dataSourceName) {
-        return String.format("jdbc:mysql://%s:%s/%s?%s", host, port, dataSourceName, getQueryProperties());
-    }
-    
-    private String getQueryProperties() {
-        return "useSSL=false&useServerPrepStmts=true&useLocalSessionState=true&characterEncoding=utf-8&allowMultiQueries=true&rewriteBatchedStatements=true";
-    }
-    
-    @Override
-    public String getDatabaseType() {
-        return "MariaDB";
+        return String.format("jdbc:opengauss://%s:%s/%s?batchMode=OFF", host, port, dataSourceName);
     }
 }
