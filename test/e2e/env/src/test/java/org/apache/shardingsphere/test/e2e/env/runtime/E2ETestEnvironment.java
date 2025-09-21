@@ -30,6 +30,7 @@ import java.io.InputStream;
 import java.util.Collection;
 import java.util.Properties;
 import java.util.TimeZone;
+import java.util.stream.Collectors;
 
 /**
  * E2E test environment.
@@ -69,7 +70,7 @@ public final class E2ETestEnvironment {
     }
     
     private Collection<String> getScenarios(final Properties props) {
-        Collection<String> result = Splitter.on(",").trimResults().splitToList(props.getProperty("it.scenarios", ""));
+        Collection<String> result = Splitter.on(",").trimResults().splitToList(props.getProperty("it.scenarios", "")).stream().filter(each -> !each.isEmpty()).collect(Collectors.toList());
         for (String each : result) {
             new ScenarioCommonPath(each).checkFolderExist();
         }
