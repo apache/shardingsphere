@@ -43,9 +43,10 @@ import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRootConfiguration;
 import org.apache.shardingsphere.single.yaml.config.YamlSingleRuleConfiguration;
 import org.apache.shardingsphere.test.e2e.env.container.constants.ProxyContainerConstants;
 import org.apache.shardingsphere.test.e2e.env.container.constants.StorageContainerConstants;
+import org.apache.shardingsphere.test.e2e.env.container.storage.option.StorageContainerConnectOption;
+import org.apache.shardingsphere.test.e2e.env.container.storage.option.StorageContainerOption;
 import org.apache.shardingsphere.test.e2e.env.container.storage.type.DockerStorageContainer;
 import org.apache.shardingsphere.test.e2e.env.container.util.StorageContainerUtils;
-import org.apache.shardingsphere.test.e2e.env.runtime.datasource.DataSourceEnvironment;
 import org.apache.shardingsphere.test.e2e.operation.pipeline.command.ExtraSQLCommand;
 import org.apache.shardingsphere.test.e2e.operation.pipeline.env.PipelineE2EEnvironment;
 import org.apache.shardingsphere.test.e2e.operation.pipeline.env.enums.PipelineEnvTypeEnum;
@@ -279,14 +280,14 @@ public final class PipelineContainerComposer implements AutoCloseable {
      * @return actual JDBC URL template
      */
     public String getActualJdbcUrlTemplate(final String databaseName, final boolean isInContainer, final int storageContainerIndex) {
-        DataSourceEnvironment dataSourceEnvironment = DatabaseTypedSPILoader.getService(DataSourceEnvironment.class, databaseType);
+        StorageContainerConnectOption option = DatabaseTypedSPILoader.getService(StorageContainerOption.class, databaseType).getConnectOption();
         if (PipelineEnvTypeEnum.DOCKER == PipelineE2EEnvironment.getInstance().getItEnvType()) {
             DockerStorageContainer storageContainer = ((PipelineDockerContainerComposer) containerComposer).getStorageContainers().get(storageContainerIndex);
             return isInContainer
-                    ? dataSourceEnvironment.getURL(storageContainer.getNetworkAliases().get(0), storageContainer.getExposedPort(), databaseName)
+                    ? option.getURL(storageContainer.getNetworkAliases().get(0), storageContainer.getExposedPort(), databaseName)
                     : storageContainer.getJdbcUrl(databaseName);
         }
-        return dataSourceEnvironment.getURL("127.0.0.1", PipelineE2EEnvironment.getInstance().getActualDatabasePort(databaseType), databaseName);
+        return option.getURL("127.0.0.1", PipelineE2EEnvironment.getInstance().getActualDatabasePort(databaseType), databaseName);
     }
     
     /**

@@ -24,11 +24,11 @@ import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.test.e2e.env.container.constants.StorageContainerConstants;
 import org.apache.shardingsphere.test.e2e.env.container.storage.StorageContainer;
 import org.apache.shardingsphere.test.e2e.env.container.storage.mount.MountSQLResourceGenerator;
+import org.apache.shardingsphere.test.e2e.env.container.storage.option.StorageContainerConnectOption;
 import org.apache.shardingsphere.test.e2e.env.container.storage.option.StorageContainerOption;
 import org.apache.shardingsphere.test.e2e.env.container.util.SQLScriptUtils;
 import org.apache.shardingsphere.test.e2e.env.container.util.StorageContainerUtils;
 import org.apache.shardingsphere.test.e2e.env.runtime.E2ETestEnvironment;
-import org.apache.shardingsphere.test.e2e.env.runtime.datasource.DataSourceEnvironment;
 import org.apache.shardingsphere.test.e2e.env.runtime.type.NativeStorageEnvironment;
 import org.apache.shardingsphere.test.e2e.env.runtime.type.scenario.database.DatabaseEnvironmentManager;
 import org.apache.shardingsphere.test.e2e.env.runtime.type.scenario.path.ScenarioDataPath.Type;
@@ -77,9 +77,9 @@ public final class NativeStorageContainer implements StorageContainer {
     
     private void initDatabase() {
         if (null != option) {
-            DataSourceEnvironment dataSourceEnvironment = DatabaseTypedSPILoader.getService(DataSourceEnvironment.class, databaseType);
-            DataSource dataSource = StorageContainerUtils.generateDataSource(dataSourceEnvironment.getURL(env.getHost(), env.getPort()), env.getUser(), env.getPassword(), 2);
-            new MountSQLResourceGenerator(option).generate(0, scenario).keySet().forEach(each -> SQLScriptUtils.execute(dataSource, each));
+            StorageContainerConnectOption storageContainerConnectOption = DatabaseTypedSPILoader.getService(StorageContainerOption.class, databaseType).getConnectOption();
+            DataSource dataSource = StorageContainerUtils.generateDataSource(storageContainerConnectOption.getURL(env.getHost(), env.getPort()), env.getUser(), env.getPassword(), 2);
+            new MountSQLResourceGenerator(option.getType(), option.getCreateOption()).generate(0, scenario).keySet().forEach(each -> SQLScriptUtils.execute(dataSource, each));
         }
     }
     
@@ -91,10 +91,9 @@ public final class NativeStorageContainer implements StorageContainer {
     }
     
     private Map<String, DataSource> getDataSourceMap(final Collection<String> databaseNames) {
-        DataSourceEnvironment dataSourceEnvironment = DatabaseTypedSPILoader.getService(DataSourceEnvironment.class, databaseType);
         Map<String, DataSource> result = new HashMap<>(databaseNames.size(), 1F);
         for (String each : databaseNames) {
-            DataSource dataSource = StorageContainerUtils.generateDataSource(dataSourceEnvironment.getURL(env.getHost(), env.getPort(), each), env.getUser(), env.getPassword(), 2);
+            DataSource dataSource = StorageContainerUtils.generateDataSource(option.getConnectOption().getURL(env.getHost(), env.getPort(), each), env.getUser(), env.getPassword(), 2);
             result.put(each, dataSource);
         }
         return result;
@@ -106,7 +105,7 @@ public final class NativeStorageContainer implements StorageContainer {
      * @return exposed port
      */
     public int getExposedPort() {
-        return null == option ? 0 : option.getPort();
+        return null == option ? 0 : option.getCreateOption().getPort();
     }
     
     @Override

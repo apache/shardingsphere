@@ -20,7 +20,7 @@ package org.apache.shardingsphere.test.e2e.operation.pipeline.framework.containe
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
-import org.apache.shardingsphere.test.e2e.env.runtime.datasource.DataSourceEnvironment;
+import org.apache.shardingsphere.test.e2e.env.container.storage.option.StorageContainerOption;
 import org.apache.shardingsphere.test.e2e.operation.pipeline.env.PipelineE2EEnvironment;
 import org.apache.shardingsphere.test.e2e.operation.pipeline.framework.container.compose.PipelineBaseContainerComposer;
 import org.apache.shardingsphere.test.e2e.operation.pipeline.util.ProxyDatabaseTypeUtils;
@@ -57,7 +57,7 @@ public final class PipelineNativeContainerComposer extends PipelineBaseContainer
         int actualDatabasePort = ENV.getActualDatabasePort(databaseType);
         String username = ENV.getActualDataSourceUsername(databaseType);
         String password = ENV.getActualDataSourcePassword(databaseType);
-        String jdbcUrl = dropTableOption.getJdbcUrl(DatabaseTypedSPILoader.getService(DataSourceEnvironment.class, databaseType), actualDatabasePort, databaseName);
+        String jdbcUrl = dropTableOption.getJdbcUrl(DatabaseTypedSPILoader.getService(StorageContainerOption.class, databaseType).getConnectOption(), actualDatabasePort, databaseName);
         try (Connection connection = DriverManager.getConnection(jdbcUrl, username, password)) {
             dropTable(connection, databaseName);
         }
@@ -91,7 +91,7 @@ public final class PipelineNativeContainerComposer extends PipelineBaseContainer
     
     @Override
     public String getProxyJdbcUrl(final String databaseName) {
-        return DatabaseTypedSPILoader.getService(DataSourceEnvironment.class, ProxyDatabaseTypeUtils.getProxyDatabaseType(databaseType)).getURL("localhost", 3307, databaseName);
+        return DatabaseTypedSPILoader.getService(StorageContainerOption.class, ProxyDatabaseTypeUtils.getProxyDatabaseType(databaseType)).getConnectOption().getURL("localhost", 3307, databaseName);
     }
     
     @Override

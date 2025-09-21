@@ -37,11 +37,12 @@ import org.apache.shardingsphere.test.e2e.env.container.adapter.AdapterContainer
 import org.apache.shardingsphere.test.e2e.env.container.adapter.config.AdaptorContainerConfiguration;
 import org.apache.shardingsphere.test.e2e.env.container.constants.ProxyContainerConstants;
 import org.apache.shardingsphere.test.e2e.env.container.constants.StorageContainerConstants;
+import org.apache.shardingsphere.test.e2e.env.container.storage.option.StorageContainerConnectOption;
+import org.apache.shardingsphere.test.e2e.env.container.storage.option.StorageContainerOption;
 import org.apache.shardingsphere.test.e2e.env.container.storage.type.NativeStorageContainer;
 import org.apache.shardingsphere.test.e2e.env.container.util.JdbcConnectCheckingWaitStrategy;
 import org.apache.shardingsphere.test.e2e.env.container.util.StorageContainerUtils;
 import org.apache.shardingsphere.test.e2e.env.runtime.E2ETestEnvironment;
-import org.apache.shardingsphere.test.e2e.env.runtime.datasource.DataSourceEnvironment;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.lifecycle.Startable;
 import org.testcontainers.utility.Base58;
@@ -210,8 +211,8 @@ public final class ShardingSphereProxyEmbeddedContainer implements EmbeddedITCon
     public DataSource getTargetDataSource(final String serverLists) {
         DataSource dataSource = targetDataSourceProvider.get();
         if (null == dataSource) {
-            DataSourceEnvironment dataSourceEnvironment = DatabaseTypedSPILoader.getService(DataSourceEnvironment.class, databaseType);
-            targetDataSourceProvider.set(StorageContainerUtils.generateDataSource(dataSourceEnvironment.getURL(
+            StorageContainerConnectOption storageContainerConnectOption = DatabaseTypedSPILoader.getService(StorageContainerOption.class, databaseType).getConnectOption();
+            targetDataSourceProvider.set(StorageContainerUtils.generateDataSource(storageContainerConnectOption.getURL(
                     "127.0.0.1", 3307, config.getProxyDataSourceName()), ProxyContainerConstants.USER, ProxyContainerConstants.PASSWORD, 2));
         }
         return targetDataSourceProvider.get();

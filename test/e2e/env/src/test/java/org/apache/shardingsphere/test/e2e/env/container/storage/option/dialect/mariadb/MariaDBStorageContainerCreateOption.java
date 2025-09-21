@@ -15,9 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.e2e.env.container.storage.option.dialect;
+package org.apache.shardingsphere.test.e2e.env.container.storage.option.dialect.mariadb;
 
-import org.apache.shardingsphere.test.e2e.env.container.storage.option.StorageContainerOption;
+import org.apache.shardingsphere.test.e2e.env.container.storage.option.StorageContainerCreateOption;
+import org.apache.shardingsphere.test.e2e.env.container.util.ContainerUtils;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -27,37 +28,36 @@ import java.util.Map;
 import java.util.Optional;
 
 /**
- * Storage container option for Hive.
+ * Storage container craete option for MariaDB.
  */
-public final class HiveStorageContainerOption implements StorageContainerOption {
+public final class MariaDBStorageContainerCreateOption implements StorageContainerCreateOption {
     
     @Override
     public int getPort() {
-        return 10000;
+        return 3306;
     }
     
     @Override
     public String getDefaultImageName() {
-        return "apache/hive:4.0.1";
+        return "mariadb:11";
     }
     
     @Override
     public String getCommand() {
-        return "bash -c 'start-hive.sh && tail -f /dev/null'";
+        return "--server-id=" + ContainerUtils.generateMySQLServerId();
     }
     
     @Override
     public Map<String, String> getEnvironments() {
-        Map<String, String> result = new HashMap<>(3, 1F);
-        result.put("SERVICE_NAME", "hiveserver2");
-        result.put("SERVICE_OPTS", "-Dhive.support.concurrency=true -Dhive.exec.dynamic.partition.mode=nonstrict -Dhive.txn.manager=org.apache.hadoop.hive.ql.lockmgr.DbTxnManager");
+        Map<String, String> result = new HashMap<>(2, 1F);
         result.put("LANG", "C.UTF-8");
+        result.put("MYSQL_RANDOM_ROOT_PASSWORD", "yes");
         return result;
     }
     
     @Override
     public Collection<String> getMountedConfigurationResources() {
-        return Collections.singleton("/opt/hive/conf/hive-site.xml");
+        return Collections.singleton("/etc/mysql/mariadb.cnf");
     }
     
     @Override
@@ -77,31 +77,11 @@ public final class HiveStorageContainerOption implements StorageContainerOption 
     
     @Override
     public Optional<String> getDefaultDatabaseName(final int majorVersion) {
-        return Optional.of("default");
+        return Optional.empty();
     }
     
     @Override
     public long getStartupTimeoutSeconds() {
-        return 180L;
-    }
-    
-    @Override
-    public boolean isSupportDockerEntrypoint() {
-        return false;
-    }
-    
-    @Override
-    public Optional<String> getDefaultUserWhenUnsupportedDockerEntrypoint() {
-        return Optional.of("");
-    }
-    
-    @Override
-    public Optional<String> getDefaultPasswordWhenUnsupportedDockerEntrypoint() {
-        return Optional.of("");
-    }
-    
-    @Override
-    public String getDatabaseType() {
-        return "Hive";
+        return 120L;
     }
 }

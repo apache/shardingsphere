@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.test.e2e.operation.pipeline.framework.container.compose.natived.dialect;
 
-import org.apache.shardingsphere.test.e2e.env.runtime.datasource.DataSourceEnvironment;
+import org.apache.shardingsphere.test.e2e.env.container.storage.option.StorageContainerConnectOption;
 import org.apache.shardingsphere.test.e2e.operation.pipeline.framework.container.compose.natived.DialectPipelineNativeContainerDropTableOption;
 
 import java.util.Optional;
@@ -28,8 +28,8 @@ import java.util.Optional;
 public final class OraclePipelineNativeContainerDropTableOption implements DialectPipelineNativeContainerDropTableOption {
     
     @Override
-    public String getJdbcUrl(final DataSourceEnvironment dataSourceEnvironment, final int actualDatabasePort, final String databaseName) {
-        return dataSourceEnvironment.getURL("localhost", actualDatabasePort, "");
+    public String getJdbcUrl(final StorageContainerConnectOption storageContainerConnectOption, final int actualDatabasePort, final String databaseName) {
+        return storageContainerConnectOption.getURL("localhost", actualDatabasePort, "");
     }
     
     @Override

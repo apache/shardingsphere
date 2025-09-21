@@ -19,7 +19,7 @@ package org.apache.shardingsphere.test.e2e.operation.pipeline.framework.containe
 
 import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPI;
 import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
-import org.apache.shardingsphere.test.e2e.env.runtime.datasource.DataSourceEnvironment;
+import org.apache.shardingsphere.test.e2e.env.container.storage.option.StorageContainerConnectOption;
 
 import java.util.Optional;
 
@@ -32,12 +32,12 @@ public interface DialectPipelineNativeContainerDropTableOption extends DatabaseT
     /**
      * Get JDBC URL.
      *
-     * @param dataSourceEnvironment data source environment
+     * @param storageContainerConnectOption data source environment
      * @param actualDatabasePort actual database port
      * @param databaseName database name
      * @return JDBC URL
      */
-    String getJdbcUrl(DataSourceEnvironment dataSourceEnvironment, int actualDatabasePort, String databaseName);
+    String getJdbcUrl(StorageContainerConnectOption storageContainerConnectOption, int actualDatabasePort, String databaseName);
     
     /**
      * Get query all schema and table mapper SQL.

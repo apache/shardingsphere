@@ -15,32 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.e2e.env.runtime.datasource.dialect;
+package org.apache.shardingsphere.test.e2e.env.container.storage.option.dialect.mysql;
 
-import org.apache.shardingsphere.test.e2e.env.runtime.datasource.DataSourceEnvironment;
+import lombok.Getter;
+import org.apache.shardingsphere.test.e2e.env.container.storage.option.StorageContainerConnectOption;
+import org.apache.shardingsphere.test.e2e.env.container.storage.option.StorageContainerCreateOption;
+import org.apache.shardingsphere.test.e2e.env.container.storage.option.StorageContainerOption;
 
 /**
- * Data source environment for Hive.
+ * Storage container option for MySQL.
  */
-public final class HiveDataSourceEnvironment implements DataSourceEnvironment {
+@Getter
+public final class MySQLStorageContainerOption implements StorageContainerOption {
     
-    @Override
-    public String getDriverClassName() {
-        return "org.apache.hive.jdbc.HiveDriver";
-    }
+    private final StorageContainerCreateOption createOption = new MySQLStorageContainerCreateOption();
     
-    @Override
-    public String getURL(final String host, final int port) {
-        return String.format("jdbc:hive2://%s:%s/", host, port);
-    }
-    
-    @Override
-    public String getURL(final String host, final int port, final String dataSourceName) {
-        return String.format("jdbc:hive2://%s:%s/%s?ssl=false&useUnicode=true&characterEncoding=utf-8", host, port, dataSourceName);
-    }
+    private final StorageContainerConnectOption connectOption = new MySQLStorageContainerConnectOption();
     
     @Override
     public String getDatabaseType() {
-        return "Hive";
+        return "MariaDB";
     }
 }

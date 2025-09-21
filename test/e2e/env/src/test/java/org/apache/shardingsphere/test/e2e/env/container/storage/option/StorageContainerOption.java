@@ -20,113 +20,23 @@ package org.apache.shardingsphere.test.e2e.env.container.storage.option;
 import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPI;
 import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-
 /**
- * Storage container option.
+ * Storage container create option.
  */
 @SingletonSPI
 public interface StorageContainerOption extends DatabaseTypedSPI {
     
     /**
-     * Get container port.
+     * Get storage container create option.
      *
-     * @return container port
+     * @return storage container create option
      */
-    int getPort();
+    StorageContainerCreateOption getCreateOption();
     
     /**
-     * Get default container image name.
+     * Get storage container connect option.
      *
-     * @return default container image name
+     * @return storage container connect option
      */
-    String getDefaultImageName();
-    
-    /**
-     * Get container command.
-     *
-     * @return container command
-     */
-    String getCommand();
-    
-    /**
-     * Get container environments.
-     *
-     * @return container environments
-     */
-    Map<String, String> getEnvironments();
-    
-    /**
-     * Get mounted configuration resources.
-     *
-     * @return mounted configuration resources
-     */
-    Collection<String> getMountedConfigurationResources();
-    
-    /**
-     * Get additional env mounted SQL resources.
-     *
-     * @param majorVersion major version
-     * @return additional env mounted SQL resources
-     */
-    Collection<String> getAdditionalEnvMountedSQLResources(int majorVersion);
-    
-    /**
-     * Get supported major versions.
-     *
-     * @return supported major versions
-     */
-    List<Integer> getSupportedMajorVersions();
-    
-    /**
-     * Whether with privileged mode.
-     *
-     * @return is with privileged mode or not
-     */
-    boolean withPrivilegedMode();
-    
-    /**
-     * Get the default database name.
-     *
-     * @param majorVersion major version
-     * @return default database name
-     */
-    Optional<String> getDefaultDatabaseName(int majorVersion);
-    
-    /**
-     * Get container startup timeout seconds.
-     *
-     * @return container startup timeout seconds
-     */
-    long getStartupTimeoutSeconds();
-    
-    /**
-     * Whether support docker entrypoint.
-     *
-     * @return is support docker entrypoint or not
-     */
-    default boolean isSupportDockerEntrypoint() {
-        return true;
-    }
-    
-    /**
-     * Get default user when unsupported docker entrypoint.
-     *
-     * @return default user
-     */
-    default Optional<String> getDefaultUserWhenUnsupportedDockerEntrypoint() {
-        return Optional.empty();
-    }
-    
-    /**
-     * Get default password when unsupported docker entrypoint.
-     *
-     * @return default password
-     */
-    default Optional<String> getDefaultPasswordWhenUnsupportedDockerEntrypoint() {
-        return Optional.empty();
-    }
+    StorageContainerConnectOption getConnectOption();
 }

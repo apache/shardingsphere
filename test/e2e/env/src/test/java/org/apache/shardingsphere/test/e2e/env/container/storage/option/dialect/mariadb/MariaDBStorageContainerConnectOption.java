@@ -15,18 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.e2e.env.runtime.datasource.dialect;
+package org.apache.shardingsphere.test.e2e.env.container.storage.option.dialect.mariadb;
 
-import org.apache.shardingsphere.test.e2e.env.runtime.datasource.DataSourceEnvironment;
+import org.apache.shardingsphere.test.e2e.env.container.storage.option.StorageContainerConnectOption;
 
 /**
- * Data source environment for MySQL.
+ * Storage container connect option for MariaDB.
  */
-public final class MySQLDataSourceEnvironment implements DataSourceEnvironment {
+public final class MariaDBStorageContainerConnectOption implements StorageContainerConnectOption {
     
     @Override
     public String getDriverClassName() {
-        return "com.mysql.cj.jdbc.Driver";
+        return "org.mariadb.jdbc.Driver";
     }
     
     @Override
@@ -40,12 +40,6 @@ public final class MySQLDataSourceEnvironment implements DataSourceEnvironment {
     }
     
     private String getQueryProperties() {
-        return "useSSL=true&requireSSL=true&enabledTLSProtocols=TLSv1.2,TLSv1.3&verifyServerCertificate=false"
-                + "&useServerPrepStmts=true&useLocalSessionState=true&characterEncoding=utf-8&allowPublicKeyRetrieval=true&allowMultiQueries=true&rewriteBatchedStatements=true";
-    }
-    
-    @Override
-    public String getDatabaseType() {
-        return "MySQL";
+        return "useSSL=false&useServerPrepStmts=true&useLocalSessionState=true&characterEncoding=utf-8&allowMultiQueries=true&rewriteBatchedStatements=true";
     }
 }

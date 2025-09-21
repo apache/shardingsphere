@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.test.e2e.operation.pipeline.framework.container.compose.natived.dialect;
 
-import org.apache.shardingsphere.test.e2e.env.runtime.datasource.DataSourceEnvironment;
+import org.apache.shardingsphere.test.e2e.env.container.storage.option.StorageContainerConnectOption;
 import org.apache.shardingsphere.test.e2e.operation.pipeline.framework.container.compose.natived.DialectPipelineNativeContainerDropTableOption;
 
 import java.util.Optional;
@@ -30,8 +30,8 @@ public final class OpenGaussPipelineNativeContainerDropTableOption implements Di
     private final DialectPipelineNativeContainerDropTableOption delegated = new PostgreSQLPipelineNativeContainerDropTableOption();
     
     @Override
-    public String getJdbcUrl(final DataSourceEnvironment dataSourceEnvironment, final int actualDatabasePort, final String databaseName) {
-        return delegated.getJdbcUrl(dataSourceEnvironment, actualDatabasePort, databaseName);
+    public String getJdbcUrl(final StorageContainerConnectOption storageContainerConnectOption, final int actualDatabasePort, final String databaseName) {
+        return delegated.getJdbcUrl(storageContainerConnectOption, actualDatabasePort, databaseName);
     }
     
     @Override

@@ -117,7 +117,8 @@ public final class AgentE2ETestEnvironment {
         containers = new ITContainers(null);
         ShardingSphereProxyDockerContainer proxyContainer = new ShardingSphereProxyDockerContainer(databaseType, getAdaptorContainerConfiguration());
         proxyContainer.withLogConsumer(testConfig.isLogEnabled() ? this::collectLogs : null);
-        StorageContainer storageContainer = new DockerStorageContainer(imageConfig.getMysqlImage(), DatabaseTypedSPILoader.getService(StorageContainerOption.class, databaseType), null);
+        StorageContainer storageContainer = new DockerStorageContainer(
+                imageConfig.getMysqlImage(), DatabaseTypedSPILoader.getService(StorageContainerOption.class, databaseType), null);
         proxyContainer.dependsOn(storageContainer);
         containers.registerContainer(storageContainer);
         GovernanceContainer governanceContainer = new GovernanceContainer(TypedSPILoader.getService(GovernanceContainerOption.class, "ZooKeeper"));
@@ -148,7 +149,8 @@ public final class AgentE2ETestEnvironment {
     
     private void createJDBCEnvironment(final DockerITContainer agentPluginContainer) {
         containers = new ITContainers(null);
-        StorageContainer storageContainer = new DockerStorageContainer(imageConfig.getMysqlImage(), DatabaseTypedSPILoader.getService(StorageContainerOption.class, databaseType), null);
+        StorageContainer storageContainer = new DockerStorageContainer(
+                imageConfig.getMysqlImage(), DatabaseTypedSPILoader.getService(StorageContainerOption.class, databaseType), null);
         ShardingSphereJdbcAgentContainer jdbcAgentContainer = new ShardingSphereJdbcAgentContainer(
                 imageConfig.getJdbcProjectImage(), testConfig.getPluginType(), testConfig.isLogEnabled() ? this::collectLogs : null);
         jdbcAgentContainer.dependsOn(storageContainer);
