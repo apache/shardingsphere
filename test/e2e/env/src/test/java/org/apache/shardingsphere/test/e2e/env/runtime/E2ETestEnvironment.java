@@ -20,9 +20,9 @@ package org.apache.shardingsphere.test.e2e.env.runtime;
 import com.google.common.base.Splitter;
 import lombok.Getter;
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.test.e2e.env.container.adapter.enums.AdapterMode;
 import org.apache.shardingsphere.test.e2e.env.runtime.cluster.ClusterEnvironment;
 import org.apache.shardingsphere.test.e2e.env.runtime.natived.NativeStorageEnvironment;
+import org.apache.shardingsphere.test.e2e.env.runtime.run.RunEnvironment;
 import org.apache.shardingsphere.test.e2e.env.runtime.scenario.path.ScenarioCommonPath;
 
 import java.io.IOException;
@@ -30,7 +30,6 @@ import java.io.InputStream;
 import java.util.Collection;
 import java.util.Properties;
 import java.util.TimeZone;
-import java.util.stream.Collectors;
 
 /**
  * E2E test environment.
@@ -40,11 +39,7 @@ public final class E2ETestEnvironment {
     
     private static final E2ETestEnvironment INSTANCE = new E2ETestEnvironment();
     
-    private final Collection<AdapterMode> runModes;
-    
-    private final boolean runAdditionalTestCases;
-    
-    private final boolean smoke;
+    private final RunEnvironment runEnvironment;
     
     private final Collection<String> scenarios;
     
@@ -57,10 +52,7 @@ public final class E2ETestEnvironment {
     private E2ETestEnvironment() {
         Properties props = loadProperties();
         TimeZone.setDefault(TimeZone.getTimeZone(props.getProperty("it.timezone", "UTC")));
-        runModes = Splitter.on(",").trimResults().splitToList(props.getProperty("it.run.modes", "")).stream()
-                .filter(each -> !each.isEmpty()).map(each -> AdapterMode.valueOf(each.toUpperCase())).collect(Collectors.toList());
-        runAdditionalTestCases = Boolean.parseBoolean(props.getProperty("it.run.additional.cases"));
-        smoke = Boolean.parseBoolean(props.getProperty("it.run.smoke"));
+        runEnvironment = new RunEnvironment(props);
         scenarios = getScenarios(props);
         governanceCenter = props.getProperty("it.env.governance.center");
         clusterEnvironment = new ClusterEnvironment(props);
