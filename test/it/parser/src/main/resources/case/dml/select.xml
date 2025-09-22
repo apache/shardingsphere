@@ -11769,4 +11769,13 @@
             <simple-table name="Person" start-index="14" stop-index="19" />
         </from>
     </select>
+
+    <select sql-case-id="select_force_single_node_plan_hint">
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" />
+        </projections>
+        <from>
+            <simple-table name="Person" start-index="14" stop-index="19" />
+        </from>
+    </select>
 </sql-parser-test-cases>
