@@ -104,7 +104,7 @@ SQL 用例在 `resources/cases/${SQL-TYPE}/e2e-${SQL-TYPE}-${cases-description}.
 
 #### Native 环境配置
 
-修改 `e2e-sql` 模块 `src/test/resources/env/e2e-env.properties` 文件中 `e2e.cluster.env.type` 为 `NATIVE` 模式，然后修改如下的属性为本地数据库地址和账号。 
+修改 `e2e-sql` 模块 `src/test/resources/env/e2e-env.properties` 文件中 `e2e.artifact.env.type` 为 `NATIVE` 模式，然后修改如下的属性为本地数据库地址和账号。 
 
 ```properties
 e2e.native.storage.host=127.0.0.1
@@ -117,7 +117,7 @@ e2e.native.storage.password=123456
 
 #### Docker 环境配置
 
-修改 `e2e-sql` 模块 `src/test/resources/env/e2e-env.properties` 文件中 `e2e.cluster.env.type` 为 `DOCKER` 模式，如果执行 Proxy 接入端测试，需要执行如下的命令打包 Proxy 镜像。
+修改 `e2e-sql` 模块 `src/test/resources/env/e2e-env.properties` 文件中 `e2e.artifact.env.type` 为 `DOCKER` 模式，如果执行 Proxy 接入端测试，需要执行如下的命令打包 Proxy 镜像。
 
 ```bash
 ./mvnw -B clean install -am -pl test/e2e/sql -Pit.env.docker -DskipTests -Dspotless.apply.skip=true -Drat.skip=true
@@ -160,16 +160,16 @@ e2e.run.smoke.cases=false
 e2e.run.modes=Cluster
 
 # 配置环境类型，只支持单值。可选值：DOCKER, NATIVE
-e2e.cluster.env.type=${e2e.env}
+e2e.artifact.env.type=${e2e.env}
 
 # 待测试的接入端类型，多个值可用逗号分隔。可选值：jdbc, proxy, 默认值：jdbc
-e2e.cluster.adapters=jdbc
+e2e.artifact.adapters=jdbc
 
 # 场景类型，多个值可用逗号分隔。可选值：H2, MySQL, PostgreSQL，openGauss
-e2e.cluster.databases=H2,MySQL,PostgreSQL,openGauss
+e2e.artifact.databases=H2,MySQL,PostgreSQL,openGauss
 
 # 测试数据库的镜像版本
-e2e.cluster.database.mysql.image=mysql:8.2.0
+e2e.artifact.database.mysql.image=mysql:8.2.0
 
 # NATIVE 模式下数据库连接信息及账号
 e2e.native.storage.host=127.0.0.1
@@ -193,14 +193,14 @@ e2e.native.storage.password=123456
 #### 运行 Docker 模式
 
 ```bash
-./mvnw -B clean install -f test/e2e/pom.xml -Pit.env.docker -De2e.cluster.adapters=proxy,jdbc -De2e.scenarios=${scenario_name_1,scenario_name_2,scenario_name_n} -De2e.cluster.databases=MySQL
+./mvnw -B clean install -f test/e2e/pom.xml -Pit.env.docker -De2e.artifact.adapters=proxy,jdbc -De2e.scenarios=${scenario_name_1,scenario_name_2,scenario_name_n} -De2e.artifact.databases=MySQL
 ```
 
 运行以上命令会构建出一个用于集成测试的 Docker 镜像 `apache/shardingsphere-proxy-test:latest`。
 如果仅修改了测试代码，可以复用已有的测试镜像，无须重新构建。使用以下命令可以跳过镜像构建，直接运行集成测试：
 
 ```bash
-./mvnw -B clean install -f test/e2e/sql/pom.xml -Pit.env.docker -De2e.cluster.adapters=proxy,jdbc -De2e.scenarios=${scenario_name_1,scenario_name_2,scenario_name_n} -De2e.cluster.databases=MySQL
+./mvnw -B clean install -f test/e2e/sql/pom.xml -Pit.env.docker -De2e.artifact.adapters=proxy,jdbc -De2e.scenarios=${scenario_name_1,scenario_name_2,scenario_name_n} -De2e.artifact.databases=MySQL
 ```
 
 #### 远程 debug Docker 容器中的 Proxy 代码

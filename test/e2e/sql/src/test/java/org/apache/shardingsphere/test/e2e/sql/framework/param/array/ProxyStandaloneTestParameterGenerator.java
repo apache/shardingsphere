@@ -42,8 +42,8 @@ public final class ProxyStandaloneTestParameterGenerator {
      * @return assertion test parameters
      */
     public static Collection<AssertionTestParameter> getAssertionTestParameter(final SQLCommandType sqlCommandType) {
-        return new E2ETestParameterGenerator(ENV.getClusterEnvironment().getAdapters(),
-                ENV.getScenarios(), AdapterMode.STANDALONE, ENV.getClusterEnvironment().getDatabaseTypes(), ENV.getRunEnvironment().isRunSmokeCases()).getAssertionTestParameter(sqlCommandType);
+        return new E2ETestParameterGenerator(ENV.getArtifactEnvironment().getAdapters(),
+                ENV.getScenarios(), AdapterMode.STANDALONE, ENV.getArtifactEnvironment().getDatabaseTypes(), ENV.getRunEnvironment().isRunSmokeCases()).getAssertionTestParameter(sqlCommandType);
     }
     
     /**
@@ -53,7 +53,7 @@ public final class ProxyStandaloneTestParameterGenerator {
      * @return assertion test parameters
      */
     public static Collection<E2ETestParameter> getCaseTestParameter(final SQLCommandType sqlCommandType) {
-        return new E2ETestParameterGenerator(ENV.getClusterEnvironment().getAdapters(),
-                ENV.getScenarios(), AdapterMode.STANDALONE, ENV.getClusterEnvironment().getDatabaseTypes(), ENV.getRunEnvironment().isRunSmokeCases()).getCaseTestParameter(sqlCommandType);
+        return new E2ETestParameterGenerator(ENV.getArtifactEnvironment().getAdapters(),
+                ENV.getScenarios(), AdapterMode.STANDALONE, ENV.getArtifactEnvironment().getDatabaseTypes(), ENV.getRunEnvironment().isRunSmokeCases()).getCaseTestParameter(sqlCommandType);
     }
 }

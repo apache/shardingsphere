@@ -176,7 +176,7 @@
         <profile>
             <id>e2e.env.docker</id>
             <properties>
-                <e2e.cluster.env.type>DOCKER</e2e.cluster.env.type>
+                <e2e.artifact.env.type>DOCKER</e2e.artifact.env.type>
             </properties>
             <dependencies>
                 <dependency>
