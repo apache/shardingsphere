@@ -58,7 +58,7 @@ class CreateTableSQLGeneratorIT {
     
     private static final String DEFAULT_SCHEMA = "public";
     
-    private static final String DEFAULT_DATABASE = "pipeline_it_0";
+    private static final String DEFAULT_DATABASE = "pipeline_e2e_0";
     
     private static final Pattern REPLACE_LINE_SPACE = Pattern.compile("\\s*|\t|\r|\n");
     

@@ -20,7 +20,7 @@ mode:
   repository:
     type: ZooKeeper
     props:
-      namespace: it_db_mariadb
+      namespace: e2e_db_mariadb
       server-lists: zk.host:2181
 
 authority:

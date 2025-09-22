@@ -20,7 +20,7 @@ mode:
   repository:
     type: ZooKeeper
     props:
-      namespace: it_db_postgresql
+      namespace: e2e_db_postgresql
       server-lists: zk.host:2181
 
 authority:

@@ -102,9 +102,9 @@ public final class E2EContainers implements Startable {
         }
     }
     
-    private void start(final DockerE2EContainer dockerITContainer) {
-        log.info("Starting container {}...", dockerITContainer.getName());
-        dockerITContainer.start();
+    private void start(final DockerE2EContainer container) {
+        log.info("Starting container {}...", container.getName());
+        container.start();
     }
     
     private void waitUntilReady() {

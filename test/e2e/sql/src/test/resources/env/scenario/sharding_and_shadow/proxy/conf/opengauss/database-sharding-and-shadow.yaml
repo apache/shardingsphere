@@ -210,15 +210,15 @@ rules:
         databaseStrategy:
           standard:
             shardingColumn: order_id
-            shardingAlgorithmName: it_standard_fixture
+            shardingAlgorithmName: e2e_standard_fixture
         tableStrategy:
           standard:
             shardingColumn: order_id
-            shardingAlgorithmName: it_standard_fixture
+            shardingAlgorithmName: e2e_standard_fixture
 
     shardingAlgorithms:
-      it_standard_fixture:
-        type: IT.STANDARD.FIXTURE
+      e2e_standard_fixture:
+        type: E2E.STANDARD.FIXTURE
 
   - !SHADOW
     dataSources:

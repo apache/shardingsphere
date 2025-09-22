@@ -47,7 +47,7 @@
         <assertion expected-data-file="show_unused_sharding_algorithms.xml" />
     </test-case>
     
-    <test-case sql="SHOW SHARDING TABLE RULES USED ALGORITHM it_standard_fixture" scenario-types="db,tbl,readwrite_splitting,encrypt,dbtbl_with_readwrite_splitting,dbtbl_with_readwrite_splitting_and_encrypt,sharding_and_encrypt">
+    <test-case sql="SHOW SHARDING TABLE RULES USED ALGORITHM e2e_standard_fixture" scenario-types="db,tbl,readwrite_splitting,encrypt,dbtbl_with_readwrite_splitting,dbtbl_with_readwrite_splitting_and_encrypt,sharding_and_encrypt">
         <assertion expected-data-file="show_sharding_table_algorithms.xml" />
     </test-case>
     
