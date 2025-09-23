@@ -19,9 +19,9 @@ package org.apache.shardingsphere.test.e2e.sql.framework.param.array;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.test.e2e.env.container.adapter.enums.AdapterMode;
 import org.apache.shardingsphere.test.e2e.env.runtime.E2ETestEnvironment;
 import org.apache.shardingsphere.test.e2e.env.runtime.type.ArtifactEnvironment;
+import org.apache.shardingsphere.test.e2e.env.runtime.type.ArtifactEnvironment.Mode;
 import org.apache.shardingsphere.test.e2e.sql.framework.param.model.AssertionTestParameter;
 import org.apache.shardingsphere.test.e2e.sql.framework.param.model.E2ETestParameter;
 import org.apache.shardingsphere.test.e2e.sql.framework.type.SQLCommandType;
@@ -45,12 +45,12 @@ public final class E2ETestParameterFactory {
      */
     public static Collection<AssertionTestParameter> getAssertionTestParameters(final SQLCommandType sqlCommandType) {
         Collection<AssertionTestParameter> result = new LinkedList<>();
-        for (AdapterMode each : ENV.getModes()) {
-            if (AdapterMode.STANDALONE == each) {
+        for (Mode each : ENV.getModes()) {
+            if (Mode.STANDALONE == each) {
                 result.addAll(isDistSQLCommandType(sqlCommandType)
                         ? ProxyStandaloneTestParameterGenerator.getAssertionTestParameter(sqlCommandType)
                         : JdbcStandaloneTestParameterGenerator.getAssertionTestParameter(sqlCommandType));
-            } else if (AdapterMode.CLUSTER == each) {
+            } else if (Mode.CLUSTER == each) {
                 result.addAll(ClusterTestParameterArrayGenerator.getAssertionTestParameter(sqlCommandType));
             }
         }
@@ -65,12 +65,12 @@ public final class E2ETestParameterFactory {
      */
     public static Collection<E2ETestParameter> getCaseTestParameters(final SQLCommandType sqlCommandType) {
         Collection<E2ETestParameter> result = new LinkedList<>();
-        for (AdapterMode each : ENV.getModes()) {
-            if (AdapterMode.STANDALONE == each) {
+        for (Mode each : ENV.getModes()) {
+            if (Mode.STANDALONE == each) {
                 result.addAll(isDistSQLCommandType(sqlCommandType)
                         ? ProxyStandaloneTestParameterGenerator.getCaseTestParameter(sqlCommandType)
                         : JdbcStandaloneTestParameterGenerator.getCaseTestParameter(sqlCommandType));
-            } else if (AdapterMode.CLUSTER == each) {
+            } else if (Mode.CLUSTER == each) {
                 result.addAll(ClusterTestParameterArrayGenerator.getCaseTestParameter(sqlCommandType));
             }
         }
@@ -87,6 +87,6 @@ public final class E2ETestParameterFactory {
      * @return contains or not
      */
     public static boolean containsTestParameter() {
-        return ENV.getModes().stream().anyMatch(each -> AdapterMode.STANDALONE == each || AdapterMode.CLUSTER == each);
+        return ENV.getModes().stream().anyMatch(each -> Mode.STANDALONE == each || Mode.CLUSTER == each);
     }
 }

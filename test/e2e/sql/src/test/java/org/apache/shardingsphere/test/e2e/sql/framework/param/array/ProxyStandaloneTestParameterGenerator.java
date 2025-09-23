@@ -19,8 +19,8 @@ package org.apache.shardingsphere.test.e2e.sql.framework.param.array;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.test.e2e.env.container.adapter.enums.AdapterMode;
 import org.apache.shardingsphere.test.e2e.env.runtime.E2ETestEnvironment;
+import org.apache.shardingsphere.test.e2e.env.runtime.type.ArtifactEnvironment.Mode;
 import org.apache.shardingsphere.test.e2e.sql.framework.param.model.AssertionTestParameter;
 import org.apache.shardingsphere.test.e2e.sql.framework.param.model.E2ETestParameter;
 import org.apache.shardingsphere.test.e2e.sql.framework.type.SQLCommandType;
@@ -43,7 +43,7 @@ public final class ProxyStandaloneTestParameterGenerator {
      */
     public static Collection<AssertionTestParameter> getAssertionTestParameter(final SQLCommandType sqlCommandType) {
         return new E2ETestParameterGenerator(ENV.getArtifactEnvironment().getAdapters(),
-                ENV.getScenarios(), AdapterMode.STANDALONE, ENV.getArtifactEnvironment().getDatabaseTypes(), ENV.getRunEnvironment().isRunSmokeCases()).getAssertionTestParameter(sqlCommandType);
+                ENV.getScenarios(), Mode.STANDALONE, ENV.getArtifactEnvironment().getDatabaseTypes(), ENV.getRunEnvironment().isRunSmokeCases()).getAssertionTestParameter(sqlCommandType);
     }
     
     /**
@@ -54,6 +54,6 @@ public final class ProxyStandaloneTestParameterGenerator {
      */
     public static Collection<E2ETestParameter> getCaseTestParameter(final SQLCommandType sqlCommandType) {
         return new E2ETestParameterGenerator(ENV.getArtifactEnvironment().getAdapters(),
-                ENV.getScenarios(), AdapterMode.STANDALONE, ENV.getArtifactEnvironment().getDatabaseTypes(), ENV.getRunEnvironment().isRunSmokeCases()).getCaseTestParameter(sqlCommandType);
+                ENV.getScenarios(), Mode.STANDALONE, ENV.getArtifactEnvironment().getDatabaseTypes(), ENV.getRunEnvironment().isRunSmokeCases()).getCaseTestParameter(sqlCommandType);
     }
 }

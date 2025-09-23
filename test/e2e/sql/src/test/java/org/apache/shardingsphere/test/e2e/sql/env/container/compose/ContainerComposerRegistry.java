@@ -20,8 +20,8 @@ package org.apache.shardingsphere.test.e2e.sql.env.container.compose;
 import com.google.common.base.Preconditions;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
-import org.apache.shardingsphere.test.e2e.env.container.adapter.enums.AdapterMode;
 import org.apache.shardingsphere.test.e2e.env.container.adapter.enums.AdapterType;
+import org.apache.shardingsphere.test.e2e.env.runtime.type.ArtifactEnvironment.Mode;
 import org.apache.shardingsphere.test.e2e.sql.env.container.compose.mode.ClusterContainerComposer;
 import org.apache.shardingsphere.test.e2e.sql.env.container.compose.mode.StandaloneContainerComposer;
 
@@ -46,24 +46,24 @@ public final class ContainerComposerRegistry implements AutoCloseable {
      * @param key key
      * @param scenario scenario
      * @param databaseType databaseType
-     * @param adapterMode adapterMode
+     * @param mode adapterMode
      * @param adapterType adapterType
      * @return composed container
      */
-    public ContainerComposer getContainerComposer(final String key, final String scenario, final DatabaseType databaseType, final AdapterMode adapterMode, final AdapterType adapterType) {
+    public ContainerComposer getContainerComposer(final String key, final String scenario, final DatabaseType databaseType, final Mode mode, final AdapterType adapterType) {
         if (containerComposers.containsKey(key)) {
             return containerComposers.get(key);
         }
         synchronized (containerComposers) {
             if (!containerComposers.containsKey(key)) {
-                containerComposers.put(key, createContainerComposer(isClusterMode(adapterMode, adapterType), scenario, databaseType, adapterType));
+                containerComposers.put(key, createContainerComposer(isClusterMode(mode, adapterType), scenario, databaseType, adapterType));
             }
             return containerComposers.get(key);
         }
     }
     
-    private boolean isClusterMode(final AdapterMode adapterMode, final AdapterType adapterType) {
-        return AdapterMode.CLUSTER == adapterMode && AdapterType.PROXY == adapterType;
+    private boolean isClusterMode(final Mode mode, final AdapterType adapterType) {
+        return Mode.CLUSTER == mode && AdapterType.PROXY == adapterType;
     }
     
     private ContainerComposer createContainerComposer(final boolean clusterMode, final String scenario, final DatabaseType databaseType, final AdapterType adapterType) {
