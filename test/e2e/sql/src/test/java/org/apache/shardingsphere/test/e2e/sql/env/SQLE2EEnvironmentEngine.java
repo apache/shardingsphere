@@ -21,9 +21,9 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import org.apache.shardingsphere.database.connector.core.DefaultDatabase;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
-import org.apache.shardingsphere.test.e2e.env.container.adapter.enums.AdapterMode;
 import org.apache.shardingsphere.test.e2e.env.container.adapter.enums.AdapterType;
 import org.apache.shardingsphere.test.e2e.env.container.util.SQLScriptUtils;
+import org.apache.shardingsphere.test.e2e.env.runtime.type.ArtifactEnvironment.Mode;
 import org.apache.shardingsphere.test.e2e.env.runtime.type.scenario.path.ScenarioDataPath;
 import org.apache.shardingsphere.test.e2e.sql.env.container.compose.ContainerComposer;
 import org.apache.shardingsphere.test.e2e.sql.env.container.compose.ContainerComposerRegistry;
@@ -53,8 +53,8 @@ public final class SQLE2EEnvironmentEngine {
     
     private final Map<String, DataSource> expectedDataSourceMap;
     
-    public SQLE2EEnvironmentEngine(final String key, final String scenario, final DatabaseType databaseType, final AdapterMode adapterMode, final AdapterType adapterType) {
-        containerComposer = CONTAINER_COMPOSER_REGISTRY.getContainerComposer(key, scenario, databaseType, adapterMode, adapterType);
+    public SQLE2EEnvironmentEngine(final String key, final String scenario, final DatabaseType databaseType, final Mode mode, final AdapterType adapterType) {
+        containerComposer = CONTAINER_COMPOSER_REGISTRY.getContainerComposer(key, scenario, databaseType, mode, adapterType);
         containerComposer.start();
         actualDataSourceMap = containerComposer.getActualDataSourceMap();
         targetDataSource = containerComposer.getTargetDataSource();
