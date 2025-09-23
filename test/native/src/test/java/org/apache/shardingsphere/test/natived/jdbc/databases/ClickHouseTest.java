@@ -30,6 +30,8 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 import javax.sql.DataSource;
 import java.sql.SQLException;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+
 @EnabledInNativeImage
 @Testcontainers
 class ClickHouseTest {
@@ -43,12 +45,12 @@ class ClickHouseTest {
     }
     
     @Test
-    void assertShardingInLocalTransactions() throws SQLException {
+    void assertShardingInLocalTransactions() {
         HikariConfig config = new HikariConfig();
         config.setDriverClassName("org.apache.shardingsphere.driver.ShardingSphereDriver");
         config.setJdbcUrl("jdbc:shardingsphere:classpath:test-native/yaml/jdbc/databases/clickhouse.yaml");
         logicDataSource = new HikariDataSource(config);
         TestShardingService testShardingService = new TestShardingService(logicDataSource);
-        testShardingService.processSuccessInClickHouse();
+        assertDoesNotThrow(testShardingService::processSuccessInClickHouse);
     }
 }
