@@ -27,12 +27,35 @@ import java.util.Properties;
 @Getter
 public final class RunEnvironment {
     
+    private final Type type;
+    
     private final boolean isRunAdditionalCases;
     
     private final boolean isRunSmokeCases;
     
     public RunEnvironment(final Properties props) {
+        type = getType(props);
         isRunAdditionalCases = Boolean.parseBoolean(props.getProperty("e2e.run.additional.cases", Boolean.FALSE.toString()));
         isRunSmokeCases = Boolean.parseBoolean(props.getProperty("e2e.run.smoke.cases", Boolean.FALSE.toString()));
+    }
+    
+    private Type getType(final Properties props) {
+        String value = props.getProperty("e2e.run.type");
+        if (null == value) {
+            return Type.NATIVE;
+        }
+        try {
+            return Type.valueOf(value);
+        } catch (final IllegalArgumentException ignored) {
+            return Type.NATIVE;
+        }
+    }
+    
+    /**
+     * Cluster environment type.
+     */
+    public enum Type {
+        
+        DOCKER, NATIVE
     }
 }

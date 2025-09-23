@@ -104,7 +104,7 @@ SQL 用例在 `resources/cases/${SQL-TYPE}/e2e-${SQL-TYPE}-${cases-description}.
 
 #### Native 环境配置
 
-修改 `e2e-sql` 模块 `src/test/resources/env/e2e-env.properties` 文件中 `e2e.artifact.env.type` 为 `NATIVE` 模式，然后修改如下的属性为本地数据库地址和账号。 
+修改 `e2e-sql` 模块 `src/test/resources/env/e2e-env.properties` 文件中 `e2e.run.type` 为 `NATIVE` 模式，然后修改如下的属性为本地数据库地址和账号。 
 
 ```properties
 e2e.native.storage.host=127.0.0.1
@@ -117,7 +117,7 @@ e2e.native.storage.password=123456
 
 #### Docker 环境配置
 
-修改 `e2e-sql` 模块 `src/test/resources/env/e2e-env.properties` 文件中 `e2e.artifact.env.type` 为 `DOCKER` 模式，如果执行 Proxy 接入端测试，需要执行如下的命令打包 Proxy 镜像。
+修改 `e2e-sql` 模块 `src/test/resources/env/e2e-env.properties` 文件中 `e2e.run.type` 为 `DOCKER` 模式，如果执行 Proxy 接入端测试，需要执行如下的命令打包 Proxy 镜像。
 
 ```bash
 ./mvnw -B clean install -am -pl test/e2e/sql -Pit.env.docker -DskipTests -Dspotless.apply.skip=true -Drat.skip=true
@@ -157,7 +157,7 @@ e2e.run.additional.cases=false
 e2e.run.smoke.cases=false
 
 # 配置环境类型，只支持单值。可选值：DOCKER, NATIVE
-e2e.artifact.env.type=${e2e.env}
+e2e.run.type=DOCKER
 
 # 运行模式，多个值可用逗号分隔。可选值：Standalone, Cluster
 e2e.artifact.modes=Cluster

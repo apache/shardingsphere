@@ -37,8 +37,6 @@ import java.util.stream.Collectors;
 @Getter
 public final class ArtifactEnvironment {
     
-    private final Type type;
-    
     private final Collection<AdapterMode> modes;
     
     private final Collection<String> adapters;
@@ -50,7 +48,6 @@ public final class ArtifactEnvironment {
     private final Map<DatabaseType, String> databaseImages;
     
     public ArtifactEnvironment(final Properties props) {
-        type = getType(props);
         modes = Splitter.on(",").trimResults().splitToList(props.getProperty("e2e.artifact.modes", "")).stream()
                 .filter(each -> !each.isEmpty()).map(each -> AdapterMode.valueOf(each.toUpperCase())).collect(Collectors.toList());
         adapters = getAdapters(props);
@@ -67,18 +64,6 @@ public final class ArtifactEnvironment {
         return result;
     }
     
-    private Type getType(final Properties props) {
-        String value = props.getProperty("e2e.artifact.env.type");
-        if (null == value) {
-            return Type.NATIVE;
-        }
-        try {
-            return Type.valueOf(value);
-        } catch (final IllegalArgumentException ignored) {
-            return Type.NATIVE;
-        }
-    }
-    
     private Collection<String> getAdapters(final Properties props) {
         return Splitter.on(",").trimResults().splitToList(props.getProperty("e2e.artifact.adapters", "")).stream().filter(each -> !each.isEmpty()).collect(Collectors.toList());
     }
@@ -86,13 +71,5 @@ public final class ArtifactEnvironment {
     private Collection<DatabaseType> getDatabaseTypes(final Properties props) {
         return Splitter.on(",").trimResults().splitToList(props.getProperty("e2e.artifact.databases", "")).stream()
                 .filter(each -> !each.isEmpty()).map(each -> TypedSPILoader.getService(DatabaseType.class, each.trim())).collect(Collectors.toSet());
-    }
-    
-    /**
-     * Cluster environment type.
-     */
-    public enum Type {
-        
-        DOCKER, NATIVE
     }
 }
