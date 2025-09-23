@@ -31,7 +31,7 @@ public final class ShowProcessListTestParameter {
     
     private final String scenario;
     
-    private final String runMode;
+    private final String mode;
     
-    private final String governanceCenter;
+    private final String regCenterType;
 }
