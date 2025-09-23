@@ -25,7 +25,7 @@ import java.math.BigInteger;
 import java.util.Collection;
 import java.util.LinkedHashSet;
 
-public final class ITStandardShardingAlgorithmFixture implements StandardShardingAlgorithm<Integer> {
+public final class E2EStandardShardingAlgorithmFixture implements StandardShardingAlgorithm<Integer> {
     
     @Override
     public String doSharding(final Collection<String> availableTargetNames, final PreciseShardingValue<Integer> shardingValue) {
@@ -59,6 +59,6 @@ public final class ITStandardShardingAlgorithmFixture implements StandardShardin
     
     @Override
     public String getType() {
-        return "E2E.STANDARD.FIXTURE";
+        return "E2E.SHARDING.STANDARD.FIXTURE";
     }
 }

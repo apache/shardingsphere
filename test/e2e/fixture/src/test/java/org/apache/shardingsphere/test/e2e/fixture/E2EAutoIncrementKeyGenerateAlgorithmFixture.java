@@ -17,39 +17,31 @@
 
 package org.apache.shardingsphere.test.e2e.fixture;
 
-import org.apache.shardingsphere.infra.algorithm.core.context.AlgorithmSQLContext;
 import org.apache.shardingsphere.infra.algorithm.keygen.spi.KeyGenerateAlgorithm;
-import org.apache.shardingsphere.infra.instance.ComputeNodeInstanceContext;
-import org.apache.shardingsphere.infra.instance.ComputeNodeInstanceContextAware;
+import org.apache.shardingsphere.infra.algorithm.core.context.AlgorithmSQLContext;
 
 import java.util.Collection;
-import java.util.Properties;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-public final class ITKeyGenerateAlgorithmFixture implements KeyGenerateAlgorithm, ComputeNodeInstanceContextAware {
+public final class E2EAutoIncrementKeyGenerateAlgorithmFixture implements KeyGenerateAlgorithm {
     
-    private Properties props;
-    
-    @Override
-    public void init(final Properties props) {
-        this.props = props;
-    }
+    private final AtomicLong idGenerator = new AtomicLong(1L);
     
     @Override
     public Collection<Comparable<?>> generateKeys(final AlgorithmSQLContext context, final int keyGenerateCount) {
-        return IntStream.range(0, keyGenerateCount).mapToObj(each -> 1L).collect(Collectors.toList());
+        return IntStream.range(0, keyGenerateCount).mapToObj(each -> idGenerator.getAndIncrement()).collect(Collectors.toList());
+    }
+    
+    @Override
+    public boolean isSupportAutoIncrement() {
+        idGenerator.set(1L);
+        return true;
     }
     
     @Override
     public String getType() {
-        return "E2E.FIXTURE";
-    }
-    
-    @Override
-    public void setComputeNodeInstanceContext(final ComputeNodeInstanceContext computeNodeInstanceContext) {
-        if (null != computeNodeInstanceContext) {
-            computeNodeInstanceContext.generateWorkerId(props);
-        }
+        return "E2E.AUTO_INCREMENT.FIXTURE";
     }
 }
