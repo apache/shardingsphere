@@ -21,7 +21,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.test.e2e.env.container.adapter.enums.AdapterMode;
 import org.apache.shardingsphere.test.e2e.env.runtime.E2ETestEnvironment;
-import org.apache.shardingsphere.test.e2e.env.runtime.type.RunEnvironment;
+import org.apache.shardingsphere.test.e2e.env.runtime.type.ArtifactEnvironment;
 import org.apache.shardingsphere.test.e2e.sql.framework.param.model.AssertionTestParameter;
 import org.apache.shardingsphere.test.e2e.sql.framework.param.model.E2ETestParameter;
 import org.apache.shardingsphere.test.e2e.sql.framework.type.SQLCommandType;
@@ -35,7 +35,7 @@ import java.util.LinkedList;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class E2ETestParameterFactory {
     
-    private static final RunEnvironment ENV = E2ETestEnvironment.getInstance().getRunEnvironment();
+    private static final ArtifactEnvironment ENV = E2ETestEnvironment.getInstance().getArtifactEnvironment();
     
     /**
      * Get assertion test parameters.
@@ -87,6 +87,6 @@ public final class E2ETestParameterFactory {
      * @return contains or not
      */
     public static boolean containsTestParameter() {
-        return E2ETestEnvironment.getInstance().getRunEnvironment().getModes().stream().anyMatch(each -> AdapterMode.STANDALONE == each || AdapterMode.CLUSTER == each);
+        return ENV.getModes().stream().anyMatch(each -> AdapterMode.STANDALONE == each || AdapterMode.CLUSTER == each);
     }
 }

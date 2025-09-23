@@ -22,6 +22,7 @@ import lombok.Getter;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
+import org.apache.shardingsphere.test.e2e.env.container.adapter.enums.AdapterMode;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -39,6 +40,8 @@ public final class ArtifactEnvironment {
     
     private final Type type;
     
+    private final Collection<AdapterMode> modes;
+    
     private final Collection<String> adapters;
     
     private final String regCenterType;
@@ -49,6 +52,8 @@ public final class ArtifactEnvironment {
     
     public ArtifactEnvironment(final Properties props) {
         type = getType(props);
+        modes = Splitter.on(",").trimResults().splitToList(props.getProperty("e2e.artifact.modes", "")).stream()
+                .filter(each -> !each.isEmpty()).map(each -> AdapterMode.valueOf(each.toUpperCase())).collect(Collectors.toList());
         adapters = getAdapters(props);
         regCenterType = props.getProperty("e2e.artifact.regcenter");
         databaseTypes = getDatabaseTypes(props);

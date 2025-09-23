@@ -17,13 +17,9 @@
 
 package org.apache.shardingsphere.test.e2e.env.runtime.type;
 
-import com.google.common.base.Splitter;
 import lombok.Getter;
-import org.apache.shardingsphere.test.e2e.env.container.adapter.enums.AdapterMode;
 
-import java.util.Collection;
 import java.util.Properties;
-import java.util.stream.Collectors;
 
 /**
  * Run environment.
@@ -31,15 +27,11 @@ import java.util.stream.Collectors;
 @Getter
 public final class RunEnvironment {
     
-    private final Collection<AdapterMode> modes;
-    
     private final boolean isRunAdditionalCases;
     
     private final boolean isRunSmokeCases;
     
     public RunEnvironment(final Properties props) {
-        modes = Splitter.on(",").trimResults().splitToList(props.getProperty("e2e.run.modes", "")).stream()
-                .filter(each -> !each.isEmpty()).map(each -> AdapterMode.valueOf(each.toUpperCase())).collect(Collectors.toList());
         isRunAdditionalCases = Boolean.parseBoolean(props.getProperty("e2e.run.additional.cases", Boolean.FALSE.toString()));
         isRunSmokeCases = Boolean.parseBoolean(props.getProperty("e2e.run.smoke.cases", Boolean.FALSE.toString()));
     }

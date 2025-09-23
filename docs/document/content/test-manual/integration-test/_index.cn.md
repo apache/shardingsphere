@@ -156,11 +156,11 @@ e2e.run.additional.cases=false
 # 是否运行冒烟测试
 e2e.run.smoke.cases=false
 
-# 运行模式，多个值可用逗号分隔。可选值：Standalone, Cluster
-e2e.run.modes=Cluster
-
 # 配置环境类型，只支持单值。可选值：DOCKER, NATIVE
 e2e.artifact.env.type=${e2e.env}
+
+# 运行模式，多个值可用逗号分隔。可选值：Standalone, Cluster
+e2e.artifact.modes=Cluster
 
 # 待测试的接入端类型，多个值可用逗号分隔。可选值：jdbc, proxy, 默认值：jdbc
 e2e.artifact.adapters=jdbc

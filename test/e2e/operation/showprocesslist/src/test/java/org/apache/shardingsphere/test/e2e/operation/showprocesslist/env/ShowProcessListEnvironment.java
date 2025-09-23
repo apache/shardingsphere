@@ -33,11 +33,11 @@ public final class ShowProcessListEnvironment {
     
     private static final ShowProcessListEnvironment INSTANCE = new ShowProcessListEnvironment();
     
-    private final Collection<String> runModes;
-    
     private final Properties props;
     
     private final ShowProcessListEnvTypeEnum itEnvType;
+    
+    private final Collection<String> runModes;
     
     private final Collection<String> scenarios;
     
@@ -45,8 +45,8 @@ public final class ShowProcessListEnvironment {
     
     private ShowProcessListEnvironment() {
         props = loadProperties();
-        runModes = Splitter.on(",").trimResults().splitToList(props.getProperty("showprocesslist.e2e.run.modes", "Standalone,Cluster"));
         itEnvType = ShowProcessListEnvTypeEnum.valueOf(props.getProperty("showprocesslist.e2e.env.type", ShowProcessListEnvTypeEnum.NONE.name()).toUpperCase());
+        runModes = Splitter.on(",").trimResults().splitToList(props.getProperty("showprocesslist.e2e.artifact.modes", "Standalone,Cluster"));
         scenarios = getScenarios(props);
         governanceCenters = Splitter.on(",").trimResults().splitToList(props.getProperty("showprocesslist.e2e.governance.centers"));
     }
