@@ -31,6 +31,7 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.s
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.insert.ExpectedMultiTableInsertType;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.insert.ExpectedOnDuplicateKeyColumns;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.insert.ExpectedReturningClause;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.assignment.ExpectedValueReference;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.output.ExpectedOutputClause;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.set.ExpectedSetClause;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.table.ExpectedSimpleTable;
@@ -66,6 +67,9 @@ public final class InsertStatementTestCase extends SQLParserTestCase {
     
     @XmlElement(name = "on-duplicate-key-columns")
     private ExpectedOnDuplicateKeyColumns onDuplicateKeyColumns;
+    
+    @XmlElement(name = "value-reference")
+    private ExpectedValueReference valueReference;
     
     @XmlElement(name = "with")
     private ExpectedWithClause withClause;
