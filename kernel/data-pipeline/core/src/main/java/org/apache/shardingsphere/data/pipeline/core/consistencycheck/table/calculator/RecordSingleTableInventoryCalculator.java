@@ -63,8 +63,6 @@ public final class RecordSingleTableInventoryCalculator extends AbstractStreamin
     
     private final StreamingRangeType streamingRangeType;
     
-    private final EqualsBuilder equalsBuilder = new EqualsBuilder();
-    
     public RecordSingleTableInventoryCalculator(final int chunkSize, final StreamingRangeType streamingRangeType) {
         this(chunkSize, DEFAULT_STREAMING_CHUNK_COUNT, streamingRangeType);
     }
@@ -179,6 +177,7 @@ public final class RecordSingleTableInventoryCalculator extends AbstractStreamin
         if (null != previousRecord) {
             duplicateRecords.add(previousRecord);
         }
+        EqualsBuilder equalsBuilder = new EqualsBuilder();
         while (resultSet.next()) {
             ShardingSpherePreconditions.checkState(!isCanceling(), () -> new PipelineJobCancelingException("Calculate chunk canceled, qualified table: %s", param.getTable()));
             Map<String, Object> record = readRecord(columnValueReaderEngine, resultSet, resultSetMetaData);
