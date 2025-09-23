@@ -25,15 +25,17 @@ workflow:
 ######
 # Templates
 ######
-# We're using DooD instead of DinD here because of performance considerations,
-# since compilation requires a lot of resources (both RAM and CPU).
-# Mind the mountpoint for /var/run/docker.sock that should be configured in gitlab-runner's config.toml
-# in order for this to work.
 .build-proxy-native-template:
-  image: registry.red-soft.biz:5000/docker-images/3rdparty/docker:27.3.1
+  image: docker:20.10
+  services:
+    - name: docker:20.10-dind
+      entrypoint: [ "dockerd-entrypoint.sh" ]
+      command: [ "--insecure-registry", "registry.red-soft.biz:5000", "--registry-mirror", "http://registry-mirror.red-soft.biz:6000" ]
   parallel:
     matrix:
       - TYPE: [ "mostly", "dynamic"] # 'static' is currently not compiling
+  before_script:
+    - docker login -u "$CI_REGISTRY_USER" -p "$CI_BUILD_TOKEN" "$DOCKER_ENV_CI_REGISTRY"
   dependencies:
     - build_environment
   variables:
