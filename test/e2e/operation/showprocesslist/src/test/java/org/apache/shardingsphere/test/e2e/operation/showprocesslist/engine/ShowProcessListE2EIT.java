@@ -124,7 +124,7 @@ class ShowProcessListE2EIT {
             Collection<Arguments> result = new LinkedList<>();
             for (String each : ENV.getScenarios()) {
                 for (String mode : ENV.getModes()) {
-                    for (String governanceType : ENV.getGovernanceCenters()) {
+                    for (String governanceType : ENV.getRegCenterTypes()) {
                         result.add(Arguments.of(new ShowProcessListTestParameter(TypedSPILoader.getService(DatabaseType.class, "MySQL"), each, mode, governanceType)));
                     }
                 }
