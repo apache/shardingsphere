@@ -26,7 +26,7 @@ import org.apache.shardingsphere.test.e2e.env.container.adapter.impl.ShardingSph
 import org.apache.shardingsphere.test.e2e.env.container.adapter.impl.ShardingSphereProxyDockerContainer;
 import org.apache.shardingsphere.test.e2e.env.container.adapter.impl.ShardingSphereProxyEmbeddedContainer;
 import org.apache.shardingsphere.test.e2e.env.container.storage.StorageContainer;
-import org.apache.shardingsphere.test.e2e.env.runtime.type.ArtifactEnvironment;
+import org.apache.shardingsphere.test.e2e.env.runtime.type.RunEnvironment;
 import org.apache.shardingsphere.test.e2e.env.runtime.type.scenario.path.ScenarioCommonPath;
 
 /**
@@ -60,7 +60,7 @@ public final class AdapterContainerFactory {
     }
     
     private static AdapterContainer newProxyInstance(final DatabaseType databaseType, final AdaptorContainerConfiguration containerConfig, final String envType) {
-        return ArtifactEnvironment.Type.NATIVE.name().equalsIgnoreCase(envType)
+        return RunEnvironment.Type.NATIVE.name().equalsIgnoreCase(envType)
                 ? new ShardingSphereProxyEmbeddedContainer(databaseType, containerConfig)
                 : new ShardingSphereProxyDockerContainer(databaseType, containerConfig);
     }
