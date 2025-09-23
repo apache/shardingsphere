@@ -123,7 +123,7 @@ public final class BackendTransactionManager implements TransactionManager {
             if (TransactionType.LOCAL == TransactionUtils.getTransactionType(transactionContext) || null == distributedTransactionManager) {
                 localTransactionManager.commit();
             } else {
-                distributedTransactionManager.commit(getTransactionContext().isExceptionOccur());
+                distributedTransactionManager.commit(transactionContext.isExceptionOccur());
             }
         } finally {
             clear();
@@ -170,10 +170,6 @@ public final class BackendTransactionManager implements TransactionManager {
                 clear();
             }
         }
-    }
-    
-    private TransactionConnectionContext getTransactionContext() {
-        return connection.getConnectionSession().getConnectionContext().getTransactionContext();
     }
     
     @Override
