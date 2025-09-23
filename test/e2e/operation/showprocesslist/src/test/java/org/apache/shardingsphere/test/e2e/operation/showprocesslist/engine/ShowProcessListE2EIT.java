@@ -117,15 +117,15 @@ class ShowProcessListE2EIT {
         return ShowProcessListEnvTypeEnum.DOCKER == ENV.getItEnvType();
     }
     
-    private static class TestCaseArgumentsProvider implements ArgumentsProvider {
+    private static final class TestCaseArgumentsProvider implements ArgumentsProvider {
         
         @Override
         public Stream<? extends Arguments> provideArguments(final ParameterDeclarations parameters, final ExtensionContext context) {
             Collection<Arguments> result = new LinkedList<>();
             for (String each : ENV.getScenarios()) {
-                for (String runMode : ENV.getRunModes()) {
+                for (String mode : ENV.getModes()) {
                     for (String governanceType : ENV.getGovernanceCenters()) {
-                        result.add(Arguments.of(new ShowProcessListTestParameter(TypedSPILoader.getService(DatabaseType.class, "MySQL"), each, runMode, governanceType)));
+                        result.add(Arguments.of(new ShowProcessListTestParameter(TypedSPILoader.getService(DatabaseType.class, "MySQL"), each, mode, governanceType)));
                     }
                 }
             }

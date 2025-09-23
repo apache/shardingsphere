@@ -56,19 +56,19 @@ public final class ClusterShowProcessListContainerComposer implements AutoClosea
     
     public ClusterShowProcessListContainerComposer(final ShowProcessListTestParameter testParam) {
         containers = new E2EContainers(testParam.getScenario());
-        governanceContainer = isClusterMode(testParam.getRunMode())
+        governanceContainer = isClusterMode(testParam.getMode())
                 ? containers.registerContainer(new GovernanceContainer(TypedSPILoader.getService(GovernanceContainerOption.class, "ZooKeeper")))
                 : null;
         StorageContainer storageContainer = containers.registerContainer(
                 new DockerStorageContainer("", DatabaseTypedSPILoader.getService(StorageContainerOption.class, testParam.getDatabaseType()), testParam.getScenario()));
         AdaptorContainerConfiguration containerConfig = new AdaptorContainerConfiguration(testParam.getScenario(), new LinkedList<>(),
-                getMountedResources(testParam.getScenario(), testParam.getDatabaseType(), testParam.getRunMode(), testParam.getGovernanceCenter()), AdapterContainerUtils.getAdapterContainerImage(),
+                getMountedResources(testParam.getScenario(), testParam.getDatabaseType(), testParam.getMode(), testParam.getRegCenterType()), AdapterContainerUtils.getAdapterContainerImage(),
                 "");
         String envType = ShowProcessListEnvironment.getInstance().getItEnvType().name();
         jdbcContainer = AdapterContainerFactory.newInstance(AdapterType.JDBC, testParam.getDatabaseType(), testParam.getScenario(), containerConfig, storageContainer, envType);
         proxyContainer = AdapterContainerFactory.newInstance(AdapterType.PROXY, testParam.getDatabaseType(), testParam.getScenario(), containerConfig, storageContainer, envType);
         if (proxyContainer instanceof DockerE2EContainer) {
-            if (isClusterMode(testParam.getRunMode())) {
+            if (isClusterMode(testParam.getMode())) {
                 ((DockerE2EContainer) proxyContainer).dependsOn(governanceContainer);
             }
             ((DockerE2EContainer) proxyContainer).dependsOn(storageContainer);
@@ -77,16 +77,16 @@ public final class ClusterShowProcessListContainerComposer implements AutoClosea
         containers.registerContainer(jdbcContainer);
     }
     
-    private Map<String, String> getMountedResources(final String scenario, final DatabaseType databaseType, final String runMode, final String governanceCenter) {
+    private Map<String, String> getMountedResources(final String scenario, final DatabaseType databaseType, final String mode, final String refCenterType) {
         Map<String, String> result = new HashMap<>(2, 1F);
-        result.put(isClusterMode(runMode) ? String.format("/env/common/cluster/proxy/%s/conf/", governanceCenter.toLowerCase())
+        result.put(isClusterMode(mode) ? String.format("/env/common/cluster/proxy/%s/conf/", refCenterType.toLowerCase())
                 : "/env/common/standalone/proxy/conf/", ProxyContainerConstants.CONFIG_PATH_IN_CONTAINER);
         result.put("/env/scenario/" + scenario + "/proxy/conf/" + databaseType.getType().toLowerCase(), ProxyContainerConstants.CONFIG_PATH_IN_CONTAINER);
         return result;
     }
     
-    private boolean isClusterMode(final String runMode) {
-        return "Cluster".equals(runMode);
+    private boolean isClusterMode(final String mode) {
+        return "Cluster".equals(mode);
     }
     
     /**

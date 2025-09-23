@@ -46,7 +46,7 @@ public final class ContainerComposerRegistry implements AutoCloseable {
      * @param key key
      * @param scenario scenario
      * @param databaseType databaseType
-     * @param mode adapterMode
+     * @param mode mode
      * @param adapterType adapterType
      * @return composed container
      */
