@@ -24,7 +24,6 @@ import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.test.e2e.env.container.adapter.enums.AdapterMode;
 
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -81,11 +80,12 @@ public final class ArtifactEnvironment {
     }
     
     private Collection<String> getAdapters(final Properties props) {
-        return Splitter.on(",").trimResults().splitToList(props.getProperty("e2e.artifact.adapters"));
+        return Splitter.on(",").trimResults().splitToList(props.getProperty("e2e.artifact.adapters", "")).stream().filter(each -> !each.isEmpty()).collect(Collectors.toList());
     }
     
     private Collection<DatabaseType> getDatabaseTypes(final Properties props) {
-        return Arrays.stream(props.getProperty("e2e.artifact.databases").split(",")).map(each -> TypedSPILoader.getService(DatabaseType.class, each.trim())).collect(Collectors.toSet());
+        return Splitter.on(",").trimResults().splitToList(props.getProperty("e2e.artifact.databases", "")).stream()
+                .filter(each -> !each.isEmpty()).map(each -> TypedSPILoader.getService(DatabaseType.class, each.trim())).collect(Collectors.toSet());
     }
     
     /**
