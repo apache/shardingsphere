@@ -17,31 +17,21 @@
 
 package org.apache.shardingsphere.test.e2e.fixture;
 
-import org.apache.shardingsphere.infra.algorithm.keygen.spi.KeyGenerateAlgorithm;
-import org.apache.shardingsphere.infra.algorithm.core.context.AlgorithmSQLContext;
+import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
+import org.apache.shardingsphere.sharding.spi.ShardingAuditAlgorithm;
 
-import java.util.Collection;
-import java.util.concurrent.atomic.AtomicLong;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
+import java.util.List;
 
-public final class ITAutoIncrementKeyGenerateAlgorithmFixture implements KeyGenerateAlgorithm {
-    
-    private final AtomicLong idGenerator = new AtomicLong(1L);
+public final class E2EShardingAuditAlgorithmFixture implements ShardingAuditAlgorithm {
     
     @Override
-    public Collection<Comparable<?>> generateKeys(final AlgorithmSQLContext context, final int keyGenerateCount) {
-        return IntStream.range(0, keyGenerateCount).mapToObj(each -> idGenerator.getAndIncrement()).collect(Collectors.toList());
+    public void check(final SQLStatementContext sqlStatementContext, final List<Object> params, final RuleMetaData globalRuleMetaData, final ShardingSphereDatabase database) {
     }
     
     @Override
     public String getType() {
-        return "E2E.AUTO_INCREMENT.FIXTURE";
-    }
-    
-    @Override
-    public boolean isSupportAutoIncrement() {
-        idGenerator.set(1L);
-        return true;
+        return "E2E.AUDITOR.FIXTURE";
     }
 }

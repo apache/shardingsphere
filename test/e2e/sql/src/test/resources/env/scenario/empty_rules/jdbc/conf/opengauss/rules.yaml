@@ -266,7 +266,7 @@ rules:
 
     keyGenerators:
       constant:
-        type: E2E.FIXTURE
+        type: E2E.KEYGEN.FIXTURE
         props:
           worker-id: 1
 

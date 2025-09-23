@@ -76,7 +76,7 @@ rules:
 
     shardingAlgorithms:
       e2e_standard_fixture:
-        type: E2E.STANDARD.FIXTURE
+        type: E2E.SHARDING.STANDARD.FIXTURE
       t_product_hint_inline:
         type: HINT_INLINE
         props:

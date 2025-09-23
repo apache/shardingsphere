@@ -156,7 +156,7 @@ rules:
       - ref_0:t_order,t_order_item
     shardingAlgorithms:
       e2e_standard_fixture:
-        type: E2E.STANDARD.FIXTURE
+        type: E2E.SHARDING.STANDARD.FIXTURE
 
     keyGenerators:
       auto_increment:

@@ -35,7 +35,7 @@ import java.util.Scanner;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-public final class ITEncryptLikeAlgorithmFixture implements EncryptAlgorithm {
+public final class E2EEncryptLikeAlgorithmFixture implements EncryptAlgorithm {
     
     private static final String DELTA_KEY = "delta";
     
