@@ -41,7 +41,6 @@ import org.apache.shardingsphere.data.pipeline.core.ingest.record.DataRecord;
 import org.apache.shardingsphere.data.pipeline.core.ingest.record.FinishedRecord;
 import org.apache.shardingsphere.data.pipeline.core.ingest.record.NormalColumn;
 import org.apache.shardingsphere.data.pipeline.core.ingest.record.Record;
-import org.apache.shardingsphere.data.pipeline.core.metadata.loader.PipelineTableMetaDataLoader;
 import org.apache.shardingsphere.data.pipeline.core.metadata.model.PipelineColumnMetaData;
 import org.apache.shardingsphere.data.pipeline.core.query.JDBCStreamQueryBuilder;
 import org.apache.shardingsphere.data.pipeline.core.ratelimit.JobRateLimitAlgorithm;
@@ -81,8 +80,6 @@ public final class InventoryDumper extends AbstractPipelineLifecycleRunnable imp
     
     private final DataSource dataSource;
     
-    private final PipelineTableMetaDataLoader metaDataLoader;
-    
     private final InventoryDataRecordPositionCreator positionCreator;
     
     private final PipelineInventoryDumpSQLBuilder sqlBuilder;
@@ -91,12 +88,10 @@ public final class InventoryDumper extends AbstractPipelineLifecycleRunnable imp
     
     private final AtomicReference<Statement> runningStatement = new AtomicReference<>();
     
-    public InventoryDumper(final InventoryDumperContext dumperContext, final PipelineChannel channel, final DataSource dataSource,
-                           final PipelineTableMetaDataLoader metaDataLoader, final InventoryDataRecordPositionCreator positionCreator) {
+    public InventoryDumper(final InventoryDumperContext dumperContext, final PipelineChannel channel, final DataSource dataSource, final InventoryDataRecordPositionCreator positionCreator) {
         this.dumperContext = dumperContext;
         this.channel = channel;
         this.dataSource = dataSource;
-        this.metaDataLoader = metaDataLoader;
         this.positionCreator = positionCreator;
         DatabaseType databaseType = dumperContext.getCommonContext().getDataSourceConfig().getDatabaseType();
         sqlBuilder = new PipelineInventoryDumpSQLBuilder(databaseType);
