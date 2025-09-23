@@ -41,14 +41,14 @@ public final class ShowProcessListEnvironment {
     
     private final Collection<String> scenarios;
     
-    private final Collection<String> governanceCenters;
+    private final Collection<String> regCenterTypes;
     
     private ShowProcessListEnvironment() {
         props = loadProperties();
         itEnvType = ShowProcessListEnvTypeEnum.valueOf(props.getProperty("showprocesslist.e2e.env.type", ShowProcessListEnvTypeEnum.NONE.name()).toUpperCase());
         modes = Splitter.on(",").trimResults().splitToList(props.getProperty("showprocesslist.e2e.artifact.modes", "Standalone,Cluster"));
         scenarios = getScenarios(props);
-        governanceCenters = Splitter.on(",").trimResults().splitToList(props.getProperty("showprocesslist.e2e.governance.centers"));
+        regCenterTypes = Splitter.on(",").trimResults().splitToList(props.getProperty("showprocesslist.e2e.regcenter"));
     }
     
     /**

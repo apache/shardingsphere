@@ -41,49 +41,49 @@ public final class SQLE2EProxyContainerConfigurationFactory {
      * Create instance of adaptor container configuration.
      *
      * @param scenario scenario
-     * @param modeType modeType
+     * @param mode mode
      * @param databaseType database type
      * @return created instance
      */
-    public static AdaptorContainerConfiguration newInstance(final String scenario, final String modeType, final DatabaseType databaseType) {
-        return new AdaptorContainerConfiguration(scenario, new LinkedList<>(), getMountedResources(scenario, modeType, databaseType), AdapterContainerUtils.getAdapterContainerImage(), "");
+    public static AdaptorContainerConfiguration newInstance(final String scenario, final String mode, final DatabaseType databaseType) {
+        return new AdaptorContainerConfiguration(scenario, new LinkedList<>(), getMountedResources(scenario, mode, databaseType), AdapterContainerUtils.getAdapterContainerImage(), "");
     }
     
-    private static Map<String, String> getMountedResources(final String scenario, final String modeType, final DatabaseType databaseType) {
+    private static Map<String, String> getMountedResources(final String scenario, final String mode, final DatabaseType databaseType) {
         Map<String, String> result = new HashMap<>(3, 1F);
-        result.put(getGlobalYamlPath(scenario, modeType, databaseType), ProxyContainerConstants.CONFIG_PATH_IN_CONTAINER + "global.yaml");
+        result.put(getGlobalYamlPath(scenario, mode, databaseType), ProxyContainerConstants.CONFIG_PATH_IN_CONTAINER + "global.yaml");
         result.put(String.format("/env/scenario/%s/proxy/conf/%s", scenario, databaseType.getType().toLowerCase()), ProxyContainerConstants.CONFIG_PATH_IN_CONTAINER);
         result.put("/env/common/logback.xml", ProxyContainerConstants.CONFIG_PATH_IN_CONTAINER + "logback.xml");
         return result;
     }
     
-    private static String getGlobalYamlPath(final String scenario, final String modeType, final DatabaseType databaseType) {
-        String regCenterType = getRegistryCenterType(modeType);
-        if (isDialectScenarioGlobalYamlExists(scenario, modeType, regCenterType, databaseType)) {
-            return String.format("/env/scenario/%s/proxy/mode/%s/%s/%s/global.yaml", scenario, modeType, databaseType.getType().toLowerCase(), regCenterType);
+    private static String getGlobalYamlPath(final String scenario, final String mode, final DatabaseType databaseType) {
+        String regCenterType = getRegistryCenterType(mode);
+        if (isDialectScenarioGlobalYamlExists(scenario, mode, regCenterType, databaseType)) {
+            return String.format("/env/scenario/%s/proxy/mode/%s/%s/%s/global.yaml", scenario, mode, databaseType.getType().toLowerCase(), regCenterType);
         }
-        if (isGovernanceCenterGlobalYamlExists(scenario, modeType, regCenterType)) {
-            return String.format("/env/scenario/%s/proxy/mode/%s/%s/global.yaml", scenario, modeType, regCenterType);
+        if (isRegistryCenterGlobalYamlExists(scenario, mode, regCenterType)) {
+            return String.format("/env/scenario/%s/proxy/mode/%s/%s/global.yaml", scenario, mode, regCenterType);
         }
-        return String.format("/env/common/%s/proxy/conf/%s/global.yaml", modeType, regCenterType);
+        return String.format("/env/common/%s/proxy/conf/%s/global.yaml", mode, regCenterType);
     }
     
-    private static String getRegistryCenterType(final String modeType) {
+    private static String getRegistryCenterType(final String mode) {
         String regCenterType = E2ETestEnvironment.getInstance().getArtifactEnvironment().getRegCenterType();
         if (Strings.isNullOrEmpty(regCenterType)) {
-            return "cluster".equals(modeType) ? "zookeeper" : "memory";
+            return "cluster".equals(mode) ? "zookeeper" : "memory";
         }
         return regCenterType.toLowerCase();
     }
     
-    private static boolean isDialectScenarioGlobalYamlExists(final String scenario, final String modeType, final String governanceCenterType, final DatabaseType databaseType) {
+    private static boolean isDialectScenarioGlobalYamlExists(final String scenario, final String mode, final String regCenterType, final DatabaseType databaseType) {
         URL url = Thread.currentThread().getContextClassLoader().getResource(
-                String.format("env/scenario/%s/proxy/mode/%s/%s/%s/global.yaml", scenario, modeType, databaseType.getType().toLowerCase(), governanceCenterType));
+                String.format("env/scenario/%s/proxy/mode/%s/%s/%s/global.yaml", scenario, mode, databaseType.getType().toLowerCase(), regCenterType));
         return null != url;
     }
     
-    private static boolean isGovernanceCenterGlobalYamlExists(final String scenario, final String modeType, final String governanceCenterType) {
-        URL url = Thread.currentThread().getContextClassLoader().getResource(String.format("env/scenario/%s/proxy/mode/%s/%s/global.yaml", scenario, modeType, governanceCenterType));
+    private static boolean isRegistryCenterGlobalYamlExists(final String scenario, final String mode, final String regCenterType) {
+        URL url = Thread.currentThread().getContextClassLoader().getResource(String.format("env/scenario/%s/proxy/mode/%s/%s/global.yaml", scenario, mode, regCenterType));
         return null != url;
     }
 }
