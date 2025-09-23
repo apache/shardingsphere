@@ -106,7 +106,7 @@ The assertion file format is as follows:
 
 #### Native environment configuration
 
-Modify `e2e.cluster.env.type` in `src/test/resources/env/e2e-env.properties` file of `e2e-sql` module to `NATIVE` mode, and then modify the following properties to the local database address and account.
+Modify `e2e.artifact.env.type` in `src/test/resources/env/e2e-env.properties` file of `e2e-sql` module to `NATIVE` mode, and then modify the following properties to the local database address and account.
 
 ```properties
 e2e.native.storage.host=127.0.0.1
@@ -119,7 +119,8 @@ After the modification is completed, you can adjust other properties in `e2e-env
 
 #### Docker environment configuration
 
-Modify `e2e.cluster.env.type` in the `src/test/resources/env/e2e-env.properties` file of the `e2e-sql` module to `DOCKER` mode. If you perform a Proxy access end test, you need to execute the following command to package the Proxy image.
+Modify `e2e.artifact.env.type` in the `src/test/resources/env/e2e-env.properties` file of the `e2e-sql` module to `DOCKER` mode.
+If you perform a Proxy access end test, you need to execute the following command to package the Proxy image.
 
 ```bash
 ./mvnw -B clean install -am -pl test/e2e/sql -Pit.env.docker -DskipTests -Dspotless.apply.skip=true -Drat.skip=true
@@ -158,16 +159,16 @@ e2e.run.additional.cases=false
 e2e.run.smoke.cases=false
 
 # Configure the environment type. Only one value is supported. Optional value: DOCKER, NATIVE
-e2e.cluster.env.type=${e2e.env}
+e2e.artifact.env.type=${e2e.env}
 
 # Access port types to be tested. Multiple values can be separated by commas. Optional value: jdbc, proxy. The default value: jdbc
-e2e.cluster.adapters=jdbc
+e2e.artifact.adapters=jdbc
 
-# Scenario type. Multiple values can be separated by commas. Optional value: H2, MySQL, PostgreSQL, openGauss
-e2e.cluster.databases=H2,MySQL,PostgreSQL,openGauss
+# Database type. Multiple values can be separated by commas. Optional value: H2, MySQL, PostgreSQL, openGauss
+e2e.artifact.databases=H2,MySQL,PostgreSQL,openGauss
 
 # The mirror version of the database
-e2e.cluster.database.mysql.image=mysql:8.2.0
+e2e.artifact.database.mysql.image=mysql:8.2.0
 
 # Database connection information and account in NATIVE mode
 e2e.native.storage.host=127.0.0.1
@@ -191,13 +192,13 @@ e2e.native.storage.password=123456
 #### Run Docker mode
 
 ```bash
-./mvnw -B clean install -f test/e2e/pom.xml -Pit.env.docker -De2e.cluster.adapters=proxy,jdbc -De2e.scenarios=${scenario_name_1,scenario_name_2,scenario_name_n} -De2e.cluster.databases=MySQL
+./mvnw -B clean install -f test/e2e/pom.xml -Pit.env.docker -De2e.artifact.adapters=proxy,jdbc -De2e.scenarios=${scenario_name_1,scenario_name_2,scenario_name_n} -De2e.artifact.databases=MySQL
 ```
 Run the above command to build a Docker mirror `apache/shardingsphere-proxy-test:latest` used for integration testing.
 If you only modify the test code, you can reuse the existing test mirror without rebuilding it. Skip the mirror building and run the integration testing directly with the following command:
 
 ```bash
-./mvnw -B clean install -f test/e2e/sql/pom.xml -Pit.env.docker -De2e.cluster.adapters=proxy,jdbc -De2e.scenarios=${scenario_name_1,scenario_name_2,scenario_name_n} -De2e.cluster.databases=MySQL
+./mvnw -B clean install -f test/e2e/sql/pom.xml -Pit.env.docker -De2e.artifact.adapters=proxy,jdbc -De2e.scenarios=${scenario_name_1,scenario_name_2,scenario_name_n} -De2e.artifact.databases=MySQL
 ```
 
 #### Remote debug Proxy code in Docker container

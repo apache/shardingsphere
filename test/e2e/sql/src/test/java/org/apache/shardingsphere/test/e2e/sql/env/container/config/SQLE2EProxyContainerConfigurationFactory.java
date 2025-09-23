@@ -69,7 +69,7 @@ public final class SQLE2EProxyContainerConfigurationFactory {
     }
     
     private static String getRegistryCenterType(final String modeType) {
-        String regCenterType = E2ETestEnvironment.getInstance().getClusterEnvironment().getRegCenterType();
+        String regCenterType = E2ETestEnvironment.getInstance().getArtifactEnvironment().getRegCenterType();
         if (Strings.isNullOrEmpty(regCenterType)) {
             return "cluster".equals(modeType) ? "zookeeper" : "memory";
         }

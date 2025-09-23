@@ -32,10 +32,10 @@ import java.util.Properties;
 import java.util.stream.Collectors;
 
 /**
- * Cluster environment.
+ * Artifact environment.
  */
 @Getter
-public final class ClusterEnvironment {
+public final class ArtifactEnvironment {
     
     private final Type type;
     
@@ -47,10 +47,10 @@ public final class ClusterEnvironment {
     
     private final Map<DatabaseType, String> databaseImages;
     
-    public ClusterEnvironment(final Properties props) {
+    public ArtifactEnvironment(final Properties props) {
         type = getType(props);
         adapters = getAdapters(props);
-        regCenterType = props.getProperty("e2e.cluster.regcenter");
+        regCenterType = props.getProperty("e2e.artifact.regcenter");
         databaseTypes = getDatabaseTypes(props);
         databaseImages = getDatabaseImages(props);
     }
@@ -58,13 +58,13 @@ public final class ClusterEnvironment {
     private Map<DatabaseType, String> getDatabaseImages(final Properties props) {
         Map<DatabaseType, String> result = new HashMap<>();
         for (DatabaseType each : ShardingSphereServiceLoader.getServiceInstances(DatabaseType.class)) {
-            Optional.ofNullable(props.getProperty(String.format("e2e.cluster.database.%s.image", each.getType().toLowerCase()))).ifPresent(value -> result.put(each, value));
+            Optional.ofNullable(props.getProperty(String.format("e2e.artifact.database.%s.image", each.getType().toLowerCase()))).ifPresent(value -> result.put(each, value));
         }
         return result;
     }
     
     private Type getType(final Properties props) {
-        String value = props.getProperty("e2e.cluster.env.type");
+        String value = props.getProperty("e2e.artifact.env.type");
         if (null == value) {
             return Type.NATIVE;
         }
@@ -76,11 +76,11 @@ public final class ClusterEnvironment {
     }
     
     private Collection<String> getAdapters(final Properties props) {
-        return Splitter.on(",").trimResults().splitToList(props.getProperty("e2e.cluster.adapters"));
+        return Splitter.on(",").trimResults().splitToList(props.getProperty("e2e.artifact.adapters"));
     }
     
     private Collection<DatabaseType> getDatabaseTypes(final Properties props) {
-        return Arrays.stream(props.getProperty("e2e.cluster.databases").split(",")).map(each -> TypedSPILoader.getService(DatabaseType.class, each.trim())).collect(Collectors.toSet());
+        return Arrays.stream(props.getProperty("e2e.artifact.databases").split(",")).map(each -> TypedSPILoader.getService(DatabaseType.class, each.trim())).collect(Collectors.toSet());
     }
     
     /**

@@ -30,7 +30,7 @@ import org.apache.shardingsphere.test.e2e.env.container.storage.option.StorageCo
 import org.apache.shardingsphere.test.e2e.env.container.storage.type.DockerStorageContainer;
 import org.apache.shardingsphere.test.e2e.env.container.storage.type.NativeStorageContainer;
 import org.apache.shardingsphere.test.e2e.env.runtime.E2ETestEnvironment;
-import org.apache.shardingsphere.test.e2e.env.runtime.type.ClusterEnvironment.Type;
+import org.apache.shardingsphere.test.e2e.env.runtime.type.ArtifactEnvironment.Type;
 import org.apache.shardingsphere.test.e2e.sql.env.container.compose.ContainerComposer;
 import org.apache.shardingsphere.test.e2e.sql.env.container.config.SQLE2EProxyContainerConfigurationFactory;
 
@@ -50,9 +50,9 @@ public final class StandaloneContainerComposer implements ContainerComposer {
     
     public StandaloneContainerComposer(final String scenario, final DatabaseType databaseType, final AdapterType adapterType) {
         containers = new E2EContainers(scenario);
-        Type envType = E2ETestEnvironment.getInstance().getClusterEnvironment().getType();
+        Type envType = E2ETestEnvironment.getInstance().getArtifactEnvironment().getType();
         storageContainer = containers.registerContainer(Type.DOCKER == envType
-                ? new DockerStorageContainer(E2ETestEnvironment.getInstance().getClusterEnvironment().getDatabaseImages().get(databaseType),
+                ? new DockerStorageContainer(E2ETestEnvironment.getInstance().getArtifactEnvironment().getDatabaseImages().get(databaseType),
                         DatabaseTypedSPILoader.getService(StorageContainerOption.class, databaseType), scenario)
                 : new NativeStorageContainer(databaseType, scenario));
         AdaptorContainerConfiguration containerConfig = SQLE2EProxyContainerConfigurationFactory.newInstance(scenario, "standalone", databaseType);

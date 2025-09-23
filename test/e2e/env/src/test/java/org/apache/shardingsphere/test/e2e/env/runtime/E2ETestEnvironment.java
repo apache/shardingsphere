@@ -20,7 +20,7 @@ package org.apache.shardingsphere.test.e2e.env.runtime;
 import com.google.common.base.Splitter;
 import lombok.Getter;
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.test.e2e.env.runtime.type.ClusterEnvironment;
+import org.apache.shardingsphere.test.e2e.env.runtime.type.ArtifactEnvironment;
 import org.apache.shardingsphere.test.e2e.env.runtime.type.NativeStorageEnvironment;
 import org.apache.shardingsphere.test.e2e.env.runtime.type.RunEnvironment;
 import org.apache.shardingsphere.test.e2e.env.runtime.type.scenario.path.ScenarioCommonPath;
@@ -44,7 +44,7 @@ public final class E2ETestEnvironment {
     
     private final RunEnvironment runEnvironment;
     
-    private final ClusterEnvironment clusterEnvironment;
+    private final ArtifactEnvironment artifactEnvironment;
     
     private final NativeStorageEnvironment nativeStorageEnvironment;
     
@@ -53,7 +53,7 @@ public final class E2ETestEnvironment {
         TimeZone.setDefault(TimeZone.getTimeZone(props.getProperty("e2e.timezone", "UTC")));
         scenarios = getScenarios(props);
         runEnvironment = new RunEnvironment(props);
-        clusterEnvironment = new ClusterEnvironment(props);
+        artifactEnvironment = new ArtifactEnvironment(props);
         nativeStorageEnvironment = new NativeStorageEnvironment(props);
     }
     
