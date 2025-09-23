@@ -106,7 +106,7 @@ The assertion file format is as follows:
 
 #### Native environment configuration
 
-Modify `e2e.artifact.env.type` in `src/test/resources/env/e2e-env.properties` file of `e2e-sql` module to `NATIVE` mode, and then modify the following properties to the local database address and account.
+Modify `e2e.run.type` in `src/test/resources/env/e2e-env.properties` file of `e2e-sql` module to `NATIVE` mode, and then modify the following properties to the local database address and account.
 
 ```properties
 e2e.native.storage.host=127.0.0.1
@@ -119,7 +119,7 @@ After the modification is completed, you can adjust other properties in `e2e-env
 
 #### Docker environment configuration
 
-Modify `e2e.artifact.env.type` in the `src/test/resources/env/e2e-env.properties` file of the `e2e-sql` module to `DOCKER` mode.
+Modify `e2e.run.type` in the `src/test/resources/env/e2e-env.properties` file of the `e2e-sql` module to `DOCKER` mode.
 If you perform a Proxy access end test, you need to execute the following command to package the Proxy image.
 
 ```bash
@@ -159,7 +159,7 @@ e2e.run.additional.cases=false
 e2e.run.smoke.cases=false
 
 # Configure the environment type. Only one value is supported. Optional value: DOCKER, NATIVE
-e2e.artifact.env.type=${e2e.env}
+e2e.run.type=DOCKER
 
 # Access port types to be tested. Multiple values can be separated by commas. Optional value: jdbc, proxy. The default value: jdbc
 e2e.artifact.adapters=jdbc

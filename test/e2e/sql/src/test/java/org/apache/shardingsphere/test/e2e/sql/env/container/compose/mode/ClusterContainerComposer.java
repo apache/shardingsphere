@@ -34,7 +34,7 @@ import org.apache.shardingsphere.test.e2e.env.container.storage.option.StorageCo
 import org.apache.shardingsphere.test.e2e.env.container.storage.type.DockerStorageContainer;
 import org.apache.shardingsphere.test.e2e.env.container.storage.type.NativeStorageContainer;
 import org.apache.shardingsphere.test.e2e.env.runtime.E2ETestEnvironment;
-import org.apache.shardingsphere.test.e2e.env.runtime.type.ArtifactEnvironment.Type;
+import org.apache.shardingsphere.test.e2e.env.runtime.type.RunEnvironment.Type;
 import org.apache.shardingsphere.test.e2e.sql.env.container.compose.ContainerComposer;
 import org.apache.shardingsphere.test.e2e.sql.env.container.config.SQLE2EProxyContainerConfigurationFactory;
 
@@ -58,7 +58,7 @@ public final class ClusterContainerComposer implements ContainerComposer {
         containers = new E2EContainers(scenario);
         // TODO support other types of governance
         governanceContainer = containers.registerContainer(new GovernanceContainer(TypedSPILoader.getService(GovernanceContainerOption.class, "ZooKeeper")));
-        Type envType = E2ETestEnvironment.getInstance().getArtifactEnvironment().getType();
+        Type envType = E2ETestEnvironment.getInstance().getRunEnvironment().getType();
         storageContainer = containers.registerContainer(Type.DOCKER == envType
                 ? new DockerStorageContainer(E2ETestEnvironment.getInstance().getArtifactEnvironment().getDatabaseImages().get(databaseType),
                         DatabaseTypedSPILoader.getService(StorageContainerOption.class, databaseType), scenario)
