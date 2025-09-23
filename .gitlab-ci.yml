@@ -26,9 +26,9 @@ workflow:
 # Templates
 ######
 .build-proxy-native-template:
-  image: docker:20.10
+  image: docker
   services:
-    - name: docker:20.10-dind
+    - name: docker:dind
       entrypoint: [ "dockerd-entrypoint.sh" ]
       command: [ "--insecure-registry", "registry.red-soft.biz:5000", "--registry-mirror", "http://registry-mirror.red-soft.biz:6000" ]
   parallel:
