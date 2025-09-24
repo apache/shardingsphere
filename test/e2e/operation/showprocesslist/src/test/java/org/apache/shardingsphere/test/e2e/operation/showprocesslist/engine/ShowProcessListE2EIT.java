@@ -20,9 +20,10 @@ package org.apache.shardingsphere.test.e2e.operation.showprocesslist.engine;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.exception.external.sql.type.wrapper.SQLWrapperException;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
+import org.apache.shardingsphere.test.e2e.env.runtime.E2ETestEnvironment;
+import org.apache.shardingsphere.test.e2e.env.runtime.type.ArtifactEnvironment.Mode;
 import org.apache.shardingsphere.test.e2e.env.runtime.type.RunEnvironment;
 import org.apache.shardingsphere.test.e2e.operation.showprocesslist.container.composer.ClusterShowProcessListContainerComposer;
-import org.apache.shardingsphere.test.e2e.operation.showprocesslist.env.ShowProcessListEnvironment;
 import org.apache.shardingsphere.test.e2e.operation.showprocesslist.parameter.ShowProcessListTestParameter;
 import org.awaitility.Awaitility;
 import org.junit.jupiter.api.condition.EnabledIf;
@@ -50,7 +51,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 // TODO add jdbc
 class ShowProcessListE2EIT {
     
-    private static final ShowProcessListEnvironment ENV = ShowProcessListEnvironment.getInstance();
+    private static final E2ETestEnvironment ENV = E2ETestEnvironment.getInstance();
     
     private static final String SELECT_SLEEP = "select sleep(10)";
     
@@ -114,7 +115,7 @@ class ShowProcessListE2EIT {
     }
     
     private static boolean isEnabled() {
-        return RunEnvironment.Type.DOCKER == ENV.getType();
+        return RunEnvironment.Type.DOCKER == ENV.getRunEnvironment().getType();
     }
     
     private static final class TestCaseArgumentsProvider implements ArgumentsProvider {
@@ -123,10 +124,8 @@ class ShowProcessListE2EIT {
         public Stream<? extends Arguments> provideArguments(final ParameterDeclarations parameters, final ExtensionContext context) {
             Collection<Arguments> result = new LinkedList<>();
             for (String each : ENV.getScenarios()) {
-                for (String mode : ENV.getModes()) {
-                    for (String governanceType : ENV.getRegCenterTypes()) {
-                        result.add(Arguments.of(new ShowProcessListTestParameter(TypedSPILoader.getService(DatabaseType.class, "MySQL"), each, mode, governanceType)));
-                    }
+                for (Mode mode : ENV.getArtifactEnvironment().getModes()) {
+                    result.add(Arguments.of(new ShowProcessListTestParameter(TypedSPILoader.getService(DatabaseType.class, "MySQL"), each, mode, ENV.getArtifactEnvironment().getRegCenterType())));
                 }
             }
             return result.stream();
