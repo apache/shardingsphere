@@ -123,6 +123,7 @@ import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.SelectS
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.SelectWithIntoContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.SeparatorNameContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.SetAssignmentsClauseContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.SetRowAliasContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ShorthandRegularFunctionContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.SimpleExprContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.SingleTableClauseContext;
@@ -1491,24 +1492,9 @@ public abstract class MySQLStatementVisitor extends MySQLStatementBaseVisitor<AS
             result.setSetAssignment((SetAssignmentSegment) visit(ctx.setAssignmentsClause()));
             if (null != ctx.valueReference()) {
                 result.setValueReference((ValueReferenceSegment) visit(ctx.valueReference()));
-            } else {
-                if (null != ctx.setAssignmentsClause().setRowAlias()) {
-                    AliasSegment alias = (AliasSegment) visit(ctx.setAssignmentsClause().setRowAlias().alias());
-                    Collection<ColumnSegment> derivedColumns = null;
-                    if (null != ctx.setAssignmentsClause().setRowAlias().derivedColumns()) {
-                        derivedColumns = new LinkedList<>();
-                        for (AliasContext each : ctx.setAssignmentsClause().setRowAlias().derivedColumns().alias()) {
-                            AliasSegment aliasSegment = (AliasSegment) visit(each);
-                            ColumnSegment column = new ColumnSegment(each.getStart().getStartIndex(), each.getStop().getStopIndex(), aliasSegment.getIdentifier());
-                            derivedColumns.add(column);
-                        }
-                    }
-                    ValueReferenceSegment valueReference = new ValueReferenceSegment(
-                            ctx.setAssignmentsClause().setRowAlias().getStart().getStartIndex(),
-                            ctx.setAssignmentsClause().setRowAlias().getStop().getStopIndex(),
-                            alias, derivedColumns);
-                    result.setValueReference(valueReference);
-                }
+            }
+            if (null == ctx.valueReference() && null != ctx.setAssignmentsClause().setRowAlias()) {
+                result.setValueReference(createValueReferenceFromSetRowAlias(ctx.setAssignmentsClause().setRowAlias()));
             }
         }
         return result;
@@ -1528,6 +1514,20 @@ public abstract class MySQLStatementVisitor extends MySQLStatementBaseVisitor<AS
             result.setInsertColumns(new InsertColumnsSegment(ctx.start.getStartIndex() - 1, ctx.start.getStartIndex() - 1, Collections.emptyList()));
         }
         return result;
+    }
+    
+    private ValueReferenceSegment createValueReferenceFromSetRowAlias(final SetRowAliasContext ctx) {
+        AliasSegment alias = (AliasSegment) visit(ctx.alias());
+        Collection<ColumnSegment> derivedColumns = null;
+        if (null != ctx.derivedColumns()) {
+            derivedColumns = new LinkedList<>();
+            for (AliasContext each : ctx.derivedColumns().alias()) {
+                AliasSegment aliasSegment = (AliasSegment) visit(each);
+                ColumnSegment column = new ColumnSegment(each.getStart().getStartIndex(), each.getStop().getStopIndex(), aliasSegment.getIdentifier());
+                derivedColumns.add(column);
+            }
+        }
+        return new ValueReferenceSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), alias, derivedColumns);
     }
     
     private SubquerySegment createInsertSelectSegment(final InsertSelectClauseContext ctx) {
@@ -1689,7 +1689,6 @@ public abstract class MySQLStatementVisitor extends MySQLStatementBaseVisitor<AS
             assignments.add((ColumnAssignmentSegment) visit(each));
         }
         SetAssignmentSegment setAssignment = new SetAssignmentSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), assignments);
-        
         return setAssignment;
     }
     
