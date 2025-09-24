@@ -17,11 +17,11 @@
 
 package org.apache.shardingsphere.test.e2e.sql.it.sql.dml;
 
+import org.apache.shardingsphere.test.e2e.env.runtime.E2ETestEnvironment;
 import org.apache.shardingsphere.test.e2e.sql.cases.casse.assertion.SQLE2ETestCaseAssertion;
 import org.apache.shardingsphere.test.e2e.sql.cases.value.SQLValue;
 import org.apache.shardingsphere.test.e2e.sql.framework.SQLE2EITArgumentsProvider;
 import org.apache.shardingsphere.test.e2e.sql.framework.SQLE2EITSettings;
-import org.apache.shardingsphere.test.e2e.sql.framework.param.array.E2ETestParameterFactory;
 import org.apache.shardingsphere.test.e2e.sql.framework.param.model.CaseTestParameter;
 import org.apache.shardingsphere.test.e2e.sql.framework.type.SQLCommandType;
 import org.junit.jupiter.api.condition.EnabledIf;
@@ -121,6 +121,6 @@ class BatchDMLE2EIT extends BaseDMLE2EIT {
     }
     
     private static boolean isEnabled() {
-        return E2ETestParameterFactory.containsTestParameter();
+        return E2ETestEnvironment.getInstance().isValid();
     }
 }

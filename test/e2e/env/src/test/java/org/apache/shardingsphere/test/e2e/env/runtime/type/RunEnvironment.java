@@ -41,18 +41,11 @@ public final class RunEnvironment {
     
     private Type getType(final Properties props) {
         String value = props.getProperty("e2e.run.type");
-        if (null == value) {
-            return Type.NATIVE;
-        }
-        try {
-            return Type.valueOf(value);
-        } catch (final IllegalArgumentException ignored) {
-            return Type.NATIVE;
-        }
+        return null == value ? null : Type.valueOf(value);
     }
     
     /**
-     * Cluster environment type.
+     * Run type.
      */
     public enum Type {
         
