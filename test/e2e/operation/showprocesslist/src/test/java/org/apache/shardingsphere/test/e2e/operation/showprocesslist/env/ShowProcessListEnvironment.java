@@ -20,8 +20,8 @@ package org.apache.shardingsphere.test.e2e.operation.showprocesslist.env;
 import com.google.common.base.Splitter;
 import lombok.Getter;
 import lombok.SneakyThrows;
+import org.apache.shardingsphere.test.e2e.env.runtime.type.RunEnvironment.Type;
 import org.apache.shardingsphere.test.e2e.env.runtime.type.scenario.path.ScenarioCommonPath;
-import org.apache.shardingsphere.test.e2e.operation.showprocesslist.env.enums.ShowProcessListEnvTypeEnum;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -35,7 +35,7 @@ public final class ShowProcessListEnvironment {
     
     private final Properties props;
     
-    private final ShowProcessListEnvTypeEnum itEnvType;
+    private final Type type;
     
     private final Collection<String> modes;
     
@@ -45,19 +45,10 @@ public final class ShowProcessListEnvironment {
     
     private ShowProcessListEnvironment() {
         props = loadProperties();
-        itEnvType = ShowProcessListEnvTypeEnum.valueOf(props.getProperty("showprocesslist.e2e.env.type", ShowProcessListEnvTypeEnum.NONE.name()).toUpperCase());
+        type = Type.valueOf(props.getProperty("showprocesslist.e2e.env.type", Type.NATIVE.name()).toUpperCase());
         modes = Splitter.on(",").trimResults().splitToList(props.getProperty("showprocesslist.e2e.artifact.modes", "Standalone,Cluster"));
         scenarios = getScenarios(props);
         regCenterTypes = Splitter.on(",").trimResults().splitToList(props.getProperty("showprocesslist.e2e.regcenter"));
-    }
-    
-    /**
-     * Get instance.
-     *
-     * @return singleton instance
-     */
-    public static ShowProcessListEnvironment getInstance() {
-        return INSTANCE;
     }
     
     @SneakyThrows(IOException.class)
@@ -78,5 +69,14 @@ public final class ShowProcessListEnvironment {
             new ScenarioCommonPath(each).checkFolderExist();
         }
         return result;
+    }
+    
+    /**
+     * Get instance.
+     *
+     * @return singleton instance
+     */
+    public static ShowProcessListEnvironment getInstance() {
+        return INSTANCE;
     }
 }

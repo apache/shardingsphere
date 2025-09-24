@@ -64,7 +64,7 @@ public final class ClusterShowProcessListContainerComposer implements AutoClosea
         AdaptorContainerConfiguration containerConfig = new AdaptorContainerConfiguration(testParam.getScenario(), new LinkedList<>(),
                 getMountedResources(testParam.getScenario(), testParam.getDatabaseType(), testParam.getMode(), testParam.getRegCenterType()), AdapterContainerUtils.getAdapterContainerImage(),
                 "");
-        String envType = ShowProcessListEnvironment.getInstance().getItEnvType().name();
+        String envType = ShowProcessListEnvironment.getInstance().getType().name();
         jdbcContainer = AdapterContainerFactory.newInstance(Adapter.JDBC, testParam.getDatabaseType(), testParam.getScenario(), containerConfig, storageContainer, envType);
         proxyContainer = AdapterContainerFactory.newInstance(Adapter.PROXY, testParam.getDatabaseType(), testParam.getScenario(), containerConfig, storageContainer, envType);
         if (proxyContainer instanceof DockerE2EContainer) {
