@@ -1,0 +1,12 @@
+{
+    "image": "eclipse-temurin:11-jdk",
+    "customizations": {
+        "vscode": {
+            "extensions": [
+                "vscjava.vscode-java-pack",
+                "redhat.vscode-yaml"]
+        }
+    },
+    "runArgs": ["--net=host"],
+    "postCreateCommand": "apt update && DEBIAN_FRONTEND=noninteractive apt install git libxml2-utils -y --no-install-recommends"
+}

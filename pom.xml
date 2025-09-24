@@ -29,7 +29,18 @@
     <packaging>pom</packaging>
     <name>Apache ShardingSphere</name>
     <description>Build criterion and ecosystem above multi-model databases</description>
-    
+    <repositories>
+
+        <repository>
+            <id>nexus-red-soft-ru-jaybird</id>
+            <url>https://nexus.red-soft.ru/repository/jaybird</url>
+        </repository>
+        <repository>
+            <id>nexus-red-soft-ru-central</id>
+            <url>http://nexus.red-soft.biz/repository/central/</url>
+        </repository>
+
+    </repositories>
     <modules>
         <module>infra</module>
         <module>database</module>
