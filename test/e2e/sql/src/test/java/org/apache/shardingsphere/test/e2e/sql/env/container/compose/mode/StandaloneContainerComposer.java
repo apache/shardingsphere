@@ -24,12 +24,12 @@ import org.apache.shardingsphere.test.e2e.env.container.E2EContainers;
 import org.apache.shardingsphere.test.e2e.env.container.adapter.AdapterContainer;
 import org.apache.shardingsphere.test.e2e.env.container.adapter.AdapterContainerFactory;
 import org.apache.shardingsphere.test.e2e.env.container.adapter.config.AdaptorContainerConfiguration;
-import org.apache.shardingsphere.test.e2e.env.container.adapter.enums.AdapterType;
 import org.apache.shardingsphere.test.e2e.env.container.storage.StorageContainer;
 import org.apache.shardingsphere.test.e2e.env.container.storage.option.StorageContainerOption;
 import org.apache.shardingsphere.test.e2e.env.container.storage.type.DockerStorageContainer;
 import org.apache.shardingsphere.test.e2e.env.container.storage.type.NativeStorageContainer;
 import org.apache.shardingsphere.test.e2e.env.runtime.E2ETestEnvironment;
+import org.apache.shardingsphere.test.e2e.env.runtime.type.ArtifactEnvironment.Adapter;
 import org.apache.shardingsphere.test.e2e.env.runtime.type.RunEnvironment.Type;
 import org.apache.shardingsphere.test.e2e.sql.env.container.compose.ContainerComposer;
 import org.apache.shardingsphere.test.e2e.sql.env.container.config.SQLE2EProxyContainerConfigurationFactory;
@@ -48,7 +48,7 @@ public final class StandaloneContainerComposer implements ContainerComposer {
     
     private final AdapterContainer adapterContainer;
     
-    public StandaloneContainerComposer(final String scenario, final DatabaseType databaseType, final AdapterType adapterType) {
+    public StandaloneContainerComposer(final String scenario, final DatabaseType databaseType, final Adapter adapter) {
         containers = new E2EContainers(scenario);
         Type envType = E2ETestEnvironment.getInstance().getRunEnvironment().getType();
         storageContainer = containers.registerContainer(Type.DOCKER == envType
@@ -56,7 +56,7 @@ public final class StandaloneContainerComposer implements ContainerComposer {
                         DatabaseTypedSPILoader.getService(StorageContainerOption.class, databaseType), scenario)
                 : new NativeStorageContainer(databaseType, scenario));
         AdaptorContainerConfiguration containerConfig = SQLE2EProxyContainerConfigurationFactory.newInstance(scenario, "standalone", databaseType);
-        AdapterContainer adapterContainer = AdapterContainerFactory.newInstance(adapterType, databaseType, scenario, containerConfig, storageContainer, envType.name());
+        AdapterContainer adapterContainer = AdapterContainerFactory.newInstance(adapter, databaseType, scenario, containerConfig, storageContainer, envType.name());
         if (adapterContainer instanceof DockerE2EContainer) {
             ((DockerE2EContainer) adapterContainer).dependsOn(storageContainer);
         }

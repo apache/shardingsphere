@@ -24,10 +24,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
-import org.apache.shardingsphere.test.e2e.env.container.adapter.enums.AdapterType;
 import org.apache.shardingsphere.test.e2e.env.container.storage.option.StorageContainerConnectOption;
 import org.apache.shardingsphere.test.e2e.env.container.storage.option.StorageContainerOption;
 import org.apache.shardingsphere.test.e2e.env.container.storage.type.DockerStorageContainer;
+import org.apache.shardingsphere.test.e2e.env.runtime.type.ArtifactEnvironment.Adapter;
 import org.apache.shardingsphere.test.e2e.operation.transaction.cases.base.BaseTransactionTestCase;
 import org.apache.shardingsphere.test.e2e.operation.transaction.cases.base.BaseTransactionTestCase.TransactionTestCaseParameter;
 import org.apache.shardingsphere.test.e2e.operation.transaction.engine.command.CommonSQLCommand;
@@ -110,7 +110,7 @@ public abstract class TransactionBaseE2EIT {
     }
     
     private void callTestCases(final TransactionTestParameter testParam, final TransactionContainerComposer containerComposer) throws SQLException {
-        if (AdapterType.PROXY.getValue().equalsIgnoreCase(testParam.getAdapter())) {
+        if (Adapter.PROXY.getValue().equalsIgnoreCase(testParam.getAdapter())) {
             for (TransactionType each : testParam.getTransactionTypes()) {
                 if (TransactionType.LOCAL == each) {
                     log.info("Call transaction IT {}, alter transaction rule {}.", testParam, "");
@@ -402,7 +402,7 @@ public abstract class TransactionBaseE2EIT {
         
         private void setTestParameters(final Map<String, TransactionTestParameter> testParams, final TransactionTestCaseRegistry registry, final String databaseVersion,
                                        final TransactionTestCase transactionTestCase, final String scenario, final Class<? extends BaseTransactionTestCase> caseClass) {
-            if (AdapterType.PROXY.getValue().equals(registry.getRunningAdaptor())) {
+            if (Adapter.PROXY.getValue().equals(registry.getRunningAdaptor())) {
                 List<TransactionType> allowedTransactionTypes = ENV.getAllowTransactionTypes().isEmpty() ? Arrays.stream(TransactionType.values()).collect(Collectors.toList())
                         : ENV.getAllowTransactionTypes().stream().map(TransactionType::valueOf).collect(Collectors.toList());
                 List<String> allowedProviders = ENV.getAllowXAProviders().isEmpty() ? ALL_XA_PROVIDERS : ENV.getAllowXAProviders();

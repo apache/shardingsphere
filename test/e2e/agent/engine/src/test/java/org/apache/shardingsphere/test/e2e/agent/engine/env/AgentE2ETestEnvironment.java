@@ -34,7 +34,6 @@ import org.apache.shardingsphere.test.e2e.agent.fixture.proxy.ProxyRequestExecut
 import org.apache.shardingsphere.test.e2e.env.container.DockerE2EContainer;
 import org.apache.shardingsphere.test.e2e.env.container.E2EContainers;
 import org.apache.shardingsphere.test.e2e.env.container.adapter.config.AdaptorContainerConfiguration;
-import org.apache.shardingsphere.test.e2e.env.container.adapter.enums.AdapterType;
 import org.apache.shardingsphere.test.e2e.env.container.adapter.impl.ShardingSphereProxyDockerContainer;
 import org.apache.shardingsphere.test.e2e.env.container.constants.ProxyContainerConstants;
 import org.apache.shardingsphere.test.e2e.env.container.governance.GovernanceContainer;
@@ -42,6 +41,7 @@ import org.apache.shardingsphere.test.e2e.env.container.governance.option.Govern
 import org.apache.shardingsphere.test.e2e.env.container.storage.StorageContainer;
 import org.apache.shardingsphere.test.e2e.env.container.storage.option.StorageContainerOption;
 import org.apache.shardingsphere.test.e2e.env.container.storage.type.DockerStorageContainer;
+import org.apache.shardingsphere.test.e2e.env.runtime.type.ArtifactEnvironment.Adapter;
 import org.awaitility.Awaitility;
 import org.testcontainers.containers.output.OutputFrame;
 
@@ -100,9 +100,9 @@ public final class AgentE2ETestEnvironment {
         }
         StorageContainerOption storageContainerOption = DatabaseTypedSPILoader.getService(StorageContainerOption.class, databaseType);
         Optional<DockerE2EContainer> agentPluginContainer = TypedSPILoader.findService(AgentPluginContainerFactory.class, testConfig.getPluginType()).map(AgentPluginContainerFactory::create);
-        if (AdapterType.PROXY.getValue().equalsIgnoreCase(testConfig.getAdapter())) {
+        if (Adapter.PROXY.getValue().equalsIgnoreCase(testConfig.getAdapter())) {
             createProxyEnvironment(storageContainerOption, agentPluginContainer.orElse(null));
-        } else if (AdapterType.JDBC.getValue().equalsIgnoreCase(testConfig.getAdapter())) {
+        } else if (Adapter.JDBC.getValue().equalsIgnoreCase(testConfig.getAdapter())) {
             createJDBCEnvironment(storageContainerOption, agentPluginContainer.orElse(null));
         }
         log.info("Waiting to collect data ...");
