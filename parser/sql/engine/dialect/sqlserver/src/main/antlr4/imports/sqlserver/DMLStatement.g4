@@ -352,6 +352,7 @@ queryHint
     | USE PLAN NCHAR_TEXT
     | LABEL EQ_ stringLiterals
     | FOR TIMESTAMP AS OF stringLiterals
+    | FORCE SINGLE NODE PLAN
     ;
 
 optimizeForParameter

@@ -2186,3 +2186,11 @@ ONNX
 WINDOW
     : W I N D O W
     ;
+
+SINGLE
+    : S I N G L E
+    ;
+
+NODE
+    : N O D E
+    ;
