@@ -20,9 +20,9 @@ package org.apache.shardingsphere.test.e2e.operation.showprocesslist.engine;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.exception.external.sql.type.wrapper.SQLWrapperException;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
+import org.apache.shardingsphere.test.e2e.env.runtime.type.RunEnvironment;
 import org.apache.shardingsphere.test.e2e.operation.showprocesslist.container.composer.ClusterShowProcessListContainerComposer;
 import org.apache.shardingsphere.test.e2e.operation.showprocesslist.env.ShowProcessListEnvironment;
-import org.apache.shardingsphere.test.e2e.operation.showprocesslist.env.enums.ShowProcessListEnvTypeEnum;
 import org.apache.shardingsphere.test.e2e.operation.showprocesslist.parameter.ShowProcessListTestParameter;
 import org.awaitility.Awaitility;
 import org.junit.jupiter.api.condition.EnabledIf;
@@ -114,7 +114,7 @@ class ShowProcessListE2EIT {
     }
     
     private static boolean isEnabled() {
-        return ShowProcessListEnvTypeEnum.DOCKER == ENV.getItEnvType();
+        return RunEnvironment.Type.DOCKER == ENV.getType();
     }
     
     private static final class TestCaseArgumentsProvider implements ArgumentsProvider {
