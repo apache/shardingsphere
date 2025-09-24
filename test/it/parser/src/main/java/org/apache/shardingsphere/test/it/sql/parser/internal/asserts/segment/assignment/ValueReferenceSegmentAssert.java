@@ -43,7 +43,7 @@ public final class ValueReferenceSegmentAssert {
         assertThat(assertContext.getText("Value reference name assertion error: "), actual.getAlias().getIdentifier().getValue(), is(expected.getAlias()));
         SQLSegmentAssert.assertIs(assertContext, actual, expected);
         if (expected.getDerivedColumns().isPresent() && actual.getDerivedColumns().isPresent()) {
-            assertThat(assertContext.getText("Value reference derived columns size assertion error: "), 
+            assertThat(assertContext.getText("Value reference derived columns size assertion error: "),
                     actual.getDerivedColumns().get().size(), is(expected.getDerivedColumns().get().size()));
             int index = 0;
             for (ColumnSegment each : actual.getDerivedColumns().get()) {

@@ -1504,9 +1504,9 @@ public abstract class MySQLStatementVisitor extends MySQLStatementBaseVisitor<AS
                         }
                     }
                     ValueReferenceSegment valueReference = new ValueReferenceSegment(
-                        ctx.setAssignmentsClause().setRowAlias().getStart().getStartIndex(),
-                        ctx.setAssignmentsClause().setRowAlias().getStop().getStopIndex(),
-                        alias, derivedColumns);
+                            ctx.setAssignmentsClause().setRowAlias().getStart().getStartIndex(),
+                            ctx.setAssignmentsClause().setRowAlias().getStop().getStopIndex(),
+                            alias, derivedColumns);
                     result.setValueReference(valueReference);
                 }
             }
@@ -1689,7 +1689,6 @@ public abstract class MySQLStatementVisitor extends MySQLStatementBaseVisitor<AS
             assignments.add((ColumnAssignmentSegment) visit(each));
         }
         SetAssignmentSegment setAssignment = new SetAssignmentSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), assignments);
-        
         
         return setAssignment;
     }
