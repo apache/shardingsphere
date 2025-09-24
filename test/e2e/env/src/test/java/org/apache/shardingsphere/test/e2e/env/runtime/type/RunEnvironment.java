@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.test.e2e.env.runtime.type;
 
+import com.google.common.base.Strings;
 import lombok.Getter;
 
 import java.util.Properties;
@@ -41,7 +42,7 @@ public final class RunEnvironment {
     
     private Type getType(final Properties props) {
         String value = props.getProperty("e2e.run.type");
-        return null == value ? null : Type.valueOf(value);
+        return Strings.isNullOrEmpty(value) ? null : Type.valueOf(value);
     }
     
     /**
