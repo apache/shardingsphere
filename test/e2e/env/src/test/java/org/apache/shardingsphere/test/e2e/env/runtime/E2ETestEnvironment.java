@@ -78,6 +78,16 @@ public final class E2ETestEnvironment {
     }
     
     /**
+     * Judge whether valid E2E test environment.
+     *
+     * @return valid or invalid E2E test environment
+     */
+    public boolean isValid() {
+        return !scenarios.isEmpty() && null != runEnvironment.getType()
+                && !artifactEnvironment.getModes().isEmpty() && !artifactEnvironment.getAdapters().isEmpty() && !artifactEnvironment.getDatabaseTypes().isEmpty();
+    }
+    
+    /**
      * Get instance.
      *
      * @return singleton instance
