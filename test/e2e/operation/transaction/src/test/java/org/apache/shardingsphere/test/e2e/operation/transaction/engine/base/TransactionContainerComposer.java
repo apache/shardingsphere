@@ -19,7 +19,7 @@ package org.apache.shardingsphere.test.e2e.operation.transaction.engine.base;
 
 import lombok.Getter;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
-import org.apache.shardingsphere.test.e2e.env.container.adapter.enums.AdapterType;
+import org.apache.shardingsphere.test.e2e.env.runtime.type.ArtifactEnvironment.Adapter;
 import org.apache.shardingsphere.test.e2e.operation.transaction.env.TransactionE2EEnvironment;
 import org.apache.shardingsphere.test.e2e.operation.transaction.env.enums.TransactionE2EEnvTypeEnum;
 import org.apache.shardingsphere.test.e2e.operation.transaction.framework.container.compose.TransactionBaseContainerComposer;
@@ -56,7 +56,7 @@ public final class TransactionContainerComposer implements AutoCloseable {
     }
     
     private boolean isProxyAdapter(final TransactionTestParameter testParam) {
-        return AdapterType.PROXY.getValue().equalsIgnoreCase(testParam.getAdapter());
+        return Adapter.PROXY.getValue().equalsIgnoreCase(testParam.getAdapter());
     }
     
     private DataSource createProxyDataSource() {

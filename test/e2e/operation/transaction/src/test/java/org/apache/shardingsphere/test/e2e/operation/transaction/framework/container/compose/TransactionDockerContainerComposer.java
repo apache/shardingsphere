@@ -27,7 +27,6 @@ import org.apache.shardingsphere.test.e2e.env.container.DockerE2EContainer;
 import org.apache.shardingsphere.test.e2e.env.container.adapter.AdapterContainer;
 import org.apache.shardingsphere.test.e2e.env.container.adapter.AdapterContainerFactory;
 import org.apache.shardingsphere.test.e2e.env.container.adapter.config.AdaptorContainerConfiguration;
-import org.apache.shardingsphere.test.e2e.env.container.adapter.enums.AdapterType;
 import org.apache.shardingsphere.test.e2e.env.container.adapter.impl.ShardingSphereJdbcEmbeddedContainer;
 import org.apache.shardingsphere.test.e2e.env.container.adapter.impl.ShardingSphereProxyEmbeddedContainer;
 import org.apache.shardingsphere.test.e2e.env.container.governance.GovernanceContainer;
@@ -36,6 +35,7 @@ import org.apache.shardingsphere.test.e2e.env.container.storage.StorageContainer
 import org.apache.shardingsphere.test.e2e.env.container.storage.option.StorageContainerOption;
 import org.apache.shardingsphere.test.e2e.env.container.storage.type.DockerStorageContainer;
 import org.apache.shardingsphere.test.e2e.env.container.storage.type.NativeStorageContainer;
+import org.apache.shardingsphere.test.e2e.env.runtime.type.ArtifactEnvironment.Adapter;
 import org.apache.shardingsphere.test.e2e.operation.transaction.env.TransactionE2EEnvironment;
 import org.apache.shardingsphere.test.e2e.operation.transaction.env.enums.TransactionE2EEnvTypeEnum;
 import org.apache.shardingsphere.test.e2e.operation.transaction.framework.container.config.TransactionProxyContainerConfigurationFactory;
@@ -68,10 +68,10 @@ public final class TransactionDockerContainerComposer extends TransactionBaseCon
         } else {
             storageContainer = getContainers().registerContainer(new NativeStorageContainer(databaseType, testParam.getScenario()));
         }
-        if (AdapterType.PROXY.getValue().equalsIgnoreCase(testParam.getAdapter())) {
+        if (Adapter.PROXY.getValue().equalsIgnoreCase(testParam.getAdapter())) {
             jdbcContainer = null;
             AdaptorContainerConfiguration containerConfig = TransactionProxyContainerConfigurationFactory.newInstance(testParam.getScenario(), databaseType, testParam.getPortBindings());
-            proxyContainer = AdapterContainerFactory.newInstance(AdapterType.PROXY, databaseType, testParam.getScenario(), containerConfig, storageContainer, envType.name());
+            proxyContainer = AdapterContainerFactory.newInstance(Adapter.PROXY, databaseType, testParam.getScenario(), containerConfig, storageContainer, envType.name());
             if (proxyContainer instanceof DockerE2EContainer) {
                 ((DockerE2EContainer) proxyContainer).dependsOn(governanceContainer, storageContainer);
             }

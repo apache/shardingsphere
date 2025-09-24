@@ -21,11 +21,11 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.test.e2e.env.container.adapter.config.AdaptorContainerConfiguration;
-import org.apache.shardingsphere.test.e2e.env.container.adapter.enums.AdapterType;
 import org.apache.shardingsphere.test.e2e.env.container.adapter.impl.ShardingSphereJdbcEmbeddedContainer;
 import org.apache.shardingsphere.test.e2e.env.container.adapter.impl.ShardingSphereProxyDockerContainer;
 import org.apache.shardingsphere.test.e2e.env.container.adapter.impl.ShardingSphereProxyEmbeddedContainer;
 import org.apache.shardingsphere.test.e2e.env.container.storage.StorageContainer;
+import org.apache.shardingsphere.test.e2e.env.runtime.type.ArtifactEnvironment.Adapter;
 import org.apache.shardingsphere.test.e2e.env.runtime.type.RunEnvironment;
 import org.apache.shardingsphere.test.e2e.env.runtime.type.scenario.path.ScenarioCommonPath;
 
@@ -38,7 +38,7 @@ public final class AdapterContainerFactory {
     /**
      * Create new instance of adapter container.
      *
-     * @param adapter adapter type
+     * @param adapter adapter
      * @param databaseType database type
      * @param scenario scenario
      * @param containerConfig adaptor container configuration
@@ -47,7 +47,7 @@ public final class AdapterContainerFactory {
      * @return created instance
      * @throws RuntimeException runtime exception
      */
-    public static AdapterContainer newInstance(final AdapterType adapter, final DatabaseType databaseType, final String scenario,
+    public static AdapterContainer newInstance(final Adapter adapter, final DatabaseType databaseType, final String scenario,
                                                final AdaptorContainerConfiguration containerConfig, final StorageContainer storageContainer, final String envType) {
         switch (adapter) {
             case PROXY:

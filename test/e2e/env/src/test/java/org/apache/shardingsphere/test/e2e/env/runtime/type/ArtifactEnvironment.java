@@ -19,6 +19,7 @@ package org.apache.shardingsphere.test.e2e.env.runtime.type;
 
 import com.google.common.base.Splitter;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
@@ -56,8 +57,9 @@ public final class ArtifactEnvironment {
     }
     
     private Map<DatabaseType, String> getDatabaseImages(final Properties props) {
-        Map<DatabaseType, String> result = new HashMap<>();
-        for (DatabaseType each : ShardingSphereServiceLoader.getServiceInstances(DatabaseType.class)) {
+        Collection<DatabaseType> databaseTypes = ShardingSphereServiceLoader.getServiceInstances(DatabaseType.class);
+        Map<DatabaseType, String> result = new HashMap<>(databaseTypes.size(), 1F);
+        for (DatabaseType each : databaseTypes) {
             Optional.ofNullable(props.getProperty(String.format("e2e.artifact.database.%s.image", each.getType().toLowerCase()))).ifPresent(value -> result.put(each, value));
         }
         return result;
@@ -75,5 +77,16 @@ public final class ArtifactEnvironment {
     public enum Mode {
         
         STANDALONE, CLUSTER
+    }
+    
+    @RequiredArgsConstructor
+    @Getter
+    public enum Adapter {
+        
+        JDBC("jdbc"),
+        
+        PROXY("proxy");
+        
+        private final String value;
     }
 }
