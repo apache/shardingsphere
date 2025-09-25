@@ -83,4 +83,4 @@ jobs:
       - name: Build ${{ matrix.operation }} E2E Image
         run: ./mvnw -B clean install -am -pl test/e2e/operation/${{ matrix.operation }} -Pe2e.env.docker -DskipTests
       - name: Run ${{ matrix.operation }} on ${{ matrix.image.version }}
-        run: ./mvnw -nsu -B install -f test/e2e/operation/${{ matrix.operation }}/pom.xml -De2e.run.type=docker -D${{ matrix.operation }}.${{ matrix.image.type }}=${{ matrix.image.version }}
+        run: ./mvnw -nsu -B install -f test/e2e/operation/${{ matrix.operation }}/pom.xml -De2e.run.type=docker -D${{ matrix.image.type }}=${{ matrix.image.version }}
