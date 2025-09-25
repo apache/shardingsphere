@@ -361,7 +361,7 @@ public abstract class TransactionBaseE2EIT {
             }
             String databaseVersion = ENV.getArtifactEnvironment().getDatabaseImage(registry.getDatabaseType());
             for (Class<? extends BaseTransactionTestCase> each : TEST_CASES) {
-                if (!TRANSACTION_ENV.getCases().isEmpty() && !ENV.getScenarios().contains(each.getSimpleName())) {
+                if (!TRANSACTION_ENV.getCases().isEmpty() && !TRANSACTION_ENV.getCases().contains(each.getSimpleName())) {
                     log.info("Collect transaction test case, need to run cases don't contain this, skip: {}.", each.getName());
                     continue;
                 }
