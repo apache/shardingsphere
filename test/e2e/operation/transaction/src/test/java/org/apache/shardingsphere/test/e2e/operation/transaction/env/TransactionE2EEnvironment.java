@@ -66,10 +66,10 @@ public final class TransactionE2EEnvironment {
         props = loadProperties();
         scenarios = splitProperty("e2e.scenarios");
         type = props.containsKey("e2e.run.type") ? null : Type.valueOf(props.getProperty("e2e.run.type").toUpperCase());
-        portBindings = splitProperty("transaction.e2e.proxy.port.bindings");
-        mysqlVersions = splitProperty("transaction.e2e.docker.mysql.version");
-        postgresqlVersions = splitProperty("transaction.e2e.docker.postgresql.version");
-        openGaussVersions = splitProperty("transaction.e2e.docker.opengauss.version");
+        portBindings = splitProperty("e2e.proxy.port.bindings");
+        mysqlVersions = splitProperty("e2e.artifact.database.mysql.image");
+        postgresqlVersions = splitProperty("e2e.artifact.database.postgresql.image");
+        openGaussVersions = splitProperty("e2e.artifact.database.opengauss.image");
         allowTransactionTypes = splitProperty("transaction.e2e.env.transtypes");
         allowXAProviders = splitProperty("transaction.e2e.env.xa.providers");
         transactionTestCaseRegistryMap = initTransactionTestCaseRegistryMap();
