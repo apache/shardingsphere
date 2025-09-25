@@ -25,7 +25,6 @@ import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -49,7 +48,7 @@ public final class ArtifactEnvironment {
     
     private final Map<DatabaseType, String> databaseImages;
     
-    private final Map<String, String> proxyPortBindingMap;
+    private final List<String> proxyPortBindings;
     
     public ArtifactEnvironment(final Properties props) {
         modes = Splitter.on(",").trimResults().splitToList(props.getProperty("e2e.artifact.modes", "")).stream()
@@ -58,7 +57,7 @@ public final class ArtifactEnvironment {
         regCenterType = props.getProperty("e2e.artifact.regcenter");
         databaseTypes = getDatabaseTypes(props);
         databaseImages = getDatabaseImages(props);
-        proxyPortBindingMap = getProxyPortBindingMap(props);
+        proxyPortBindings = getProxyPortBindings(props);
     }
     
     private Collection<String> getAdapters(final Properties props) {
@@ -79,9 +78,9 @@ public final class ArtifactEnvironment {
         return result;
     }
     
-    private Map<String, String> getProxyPortBindingMap(final Properties props) {
-        List<String> portBindingPair = Splitter.on(":").trimResults().splitToList(props.getProperty("e2e.artifact.proxy.port.bindings", ""));
-        return 2 == portBindingPair.size() ? Collections.singletonMap(portBindingPair.get(0), portBindingPair.get(1)) : Collections.emptyMap();
+    private List<String> getProxyPortBindings(final Properties props) {
+        return Splitter.on(",").trimResults()
+                .splitToList(props.getProperty("e2e.artifact.proxy.port.bindings", "")).stream().filter(each -> !each.isEmpty()).collect(Collectors.toList());
     }
     
     public enum Mode {
