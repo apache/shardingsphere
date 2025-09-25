@@ -24,7 +24,8 @@ import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoa
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.test.e2e.env.container.constants.StorageContainerConstants;
 import org.apache.shardingsphere.test.e2e.env.container.storage.option.StorageContainerOption;
-import org.apache.shardingsphere.test.e2e.operation.pipeline.env.enums.PipelineEnvTypeEnum;
+import org.apache.shardingsphere.test.e2e.env.runtime.type.RunEnvironment;
+import org.apache.shardingsphere.test.e2e.env.runtime.type.RunEnvironment.Type;
 import org.apache.shardingsphere.test.e2e.operation.pipeline.env.enums.PipelineProxyTypeEnum;
 
 import java.io.IOException;
@@ -42,13 +43,13 @@ public final class PipelineE2EEnvironment {
     
     private final Properties props;
     
-    private final PipelineEnvTypeEnum itEnvType;
+    private final Type type;
     
     private final PipelineProxyTypeEnum itProxyType;
     
     private PipelineE2EEnvironment() {
         props = loadProperties();
-        itEnvType = PipelineEnvTypeEnum.valueOf(props.getProperty("pipeline.e2e.env.type", PipelineEnvTypeEnum.NONE.name()).toUpperCase());
+        type = getType(props);
         itProxyType = PipelineProxyTypeEnum.valueOf(props.getProperty("pipeline.e2e.proxy.type", PipelineProxyTypeEnum.NONE.name()).toUpperCase());
     }
     
@@ -62,6 +63,11 @@ public final class PipelineE2EEnvironment {
             result.setProperty(each, System.getProperty(each));
         }
         return result;
+    }
+    
+    private Type getType(final Properties props) {
+        String value = props.getProperty("e2e.run.type");
+        return Strings.isNullOrEmpty(value) ? null : Type.valueOf(value.toUpperCase());
     }
     
     /**
@@ -121,10 +127,10 @@ public final class PipelineE2EEnvironment {
      */
     public List<String> listStorageContainerImages(final DatabaseType databaseType) {
         // Native mode needn't use docker image, just return a list which contain one item
-        if (PipelineEnvTypeEnum.NATIVE == itEnvType) {
+        if (RunEnvironment.Type.NATIVE == type) {
             return databaseType.getType().equalsIgnoreCase(getNativeDatabaseType()) ? Collections.singletonList("") : Collections.emptyList();
         }
-        return Arrays.stream(props.getOrDefault(String.format("pipeline.e2e.docker.%s.version", databaseType.getType().toLowerCase()), "").toString()
+        return Arrays.stream(props.getOrDefault(String.format("e2e.artifact.database.%s.image", databaseType.getType().toLowerCase()), "").toString()
                 .split(",")).filter(each -> !Strings.isNullOrEmpty(each)).collect(Collectors.toList());
     }
 }

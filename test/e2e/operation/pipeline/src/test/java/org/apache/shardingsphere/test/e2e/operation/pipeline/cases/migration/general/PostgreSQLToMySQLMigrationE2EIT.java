@@ -25,10 +25,10 @@ import org.apache.shardingsphere.data.pipeline.core.job.JobStatus;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.MigrationJobType;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
+import org.apache.shardingsphere.test.e2e.env.runtime.type.RunEnvironment.Type;
 import org.apache.shardingsphere.test.e2e.operation.pipeline.cases.PipelineContainerComposer;
 import org.apache.shardingsphere.test.e2e.operation.pipeline.cases.migration.AbstractMigrationE2EIT;
 import org.apache.shardingsphere.test.e2e.operation.pipeline.env.PipelineE2EEnvironment;
-import org.apache.shardingsphere.test.e2e.operation.pipeline.env.enums.PipelineEnvTypeEnum;
 import org.apache.shardingsphere.test.e2e.operation.pipeline.framework.param.PipelineE2ECondition;
 import org.apache.shardingsphere.test.e2e.operation.pipeline.framework.param.PipelineE2ESettings;
 import org.apache.shardingsphere.test.e2e.operation.pipeline.framework.param.PipelineE2ESettings.PipelineE2EDatabaseSettings;
@@ -64,12 +64,12 @@ class PostgreSQLToMySQLMigrationE2EIT extends AbstractMigrationE2EIT {
     void assertMigrationSuccess(final PipelineTestParameter testParam) throws SQLException {
         PostgreSQLContainer<?> postgresqlContainer = null;
         try (PipelineContainerComposer containerComposer = new PipelineContainerComposer(testParam, new MigrationJobType())) {
-            if (PipelineEnvTypeEnum.DOCKER == PipelineE2EEnvironment.getInstance().getItEnvType()) {
+            if (Type.DOCKER == PipelineE2EEnvironment.getInstance().getType()) {
                 postgresqlContainer = new PostgreSQLContainer<>("postgres:13");
                 postgresqlContainer.withNetwork(containerComposer.getContainerComposer().getContainers().getNetwork()).withNetworkAliases("postgresql.host")
                         .withDatabaseName("postgres").withUsername("postgres").withPassword("postgres").withCommand("-c wal_level=logical").start();
             }
-            String jdbcUrl = PipelineE2EEnvironment.getInstance().getItEnvType() == PipelineEnvTypeEnum.DOCKER ? postgresqlContainer.getJdbcUrl() : "jdbc:postgresql://localhost:5432/postgres";
+            String jdbcUrl = Type.DOCKER == PipelineE2EEnvironment.getInstance().getType() ? postgresqlContainer.getJdbcUrl() : "jdbc:postgresql://localhost:5432/postgres";
             initSourceTable(jdbcUrl);
             registerMigrationSourceStorageUnit(containerComposer);
             containerComposer.registerStorageUnit(PipelineContainerComposer.DS_0);
@@ -97,9 +97,9 @@ class PostgreSQLToMySQLMigrationE2EIT extends AbstractMigrationE2EIT {
     }
     
     private void initSourceTable(final String jdbcUrl) throws SQLException {
-        PipelineEnvTypeEnum itEnvType = PipelineE2EEnvironment.getInstance().getItEnvType();
+        Type type = PipelineE2EEnvironment.getInstance().getType();
         try (Connection connection = DriverManager.getConnection(jdbcUrl, "postgres", "postgres")) {
-            if (PipelineEnvTypeEnum.NATIVE == itEnvType) {
+            if (Type.NATIVE == type) {
                 connection.createStatement().execute("DROP TABLE IF EXISTS t_order;");
             }
             String createTableSQL = "CREATE TABLE t_order (order_id BIGINT PRIMARY KEY,user_id INT,status VARCHAR(32), c_datetime TIMESTAMP,c_date DATE,c_time TIME,c_bytea BYTEA,"
@@ -124,15 +124,14 @@ class PostgreSQLToMySQLMigrationE2EIT extends AbstractMigrationE2EIT {
     }
     
     private void registerMigrationSourceStorageUnit(final PipelineContainerComposer containerComposer) throws SQLException {
-        if (PipelineEnvTypeEnum.NATIVE == PipelineE2EEnvironment.getInstance().getItEnvType()) {
+        if (Type.NATIVE == PipelineE2EEnvironment.getInstance().getType()) {
             try {
                 containerComposer.proxyExecuteWithLog("UNREGISTER MIGRATION SOURCE STORAGE UNIT source_ds", 2);
             } catch (final SQLException ex) {
                 log.warn("Unregister migration source storage unit `source_ds` failed, maybe it does not exist. Error msg: {}", ex.getMessage());
             }
         }
-        String jdbcUrl = String.format("jdbc:postgresql://%s:5432/postgres",
-                PipelineE2EEnvironment.getInstance().getItEnvType() == PipelineEnvTypeEnum.DOCKER ? "postgresql.host" : "localhost");
+        String jdbcUrl = String.format("jdbc:postgresql://%s:5432/postgres", Type.DOCKER == PipelineE2EEnvironment.getInstance().getType() ? "postgresql.host" : "localhost");
         String sql = String.format("REGISTER MIGRATION SOURCE STORAGE UNIT source_ds (URL='%s', USER='postgres', PASSWORD='postgres')", jdbcUrl);
         containerComposer.proxyExecuteWithLog(sql, 2);
     }

@@ -42,7 +42,7 @@ public final class RunEnvironment {
     
     private Type getType(final Properties props) {
         String value = props.getProperty("e2e.run.type");
-        return Strings.isNullOrEmpty(value) ? null : Type.valueOf(value);
+        return Strings.isNullOrEmpty(value) ? null : Type.valueOf(value.toUpperCase());
     }
     
     /**

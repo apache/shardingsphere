@@ -81,8 +81,8 @@ public final class TransactionDockerContainerComposer extends TransactionBaseCon
             getContainers().registerContainer(proxyContainer);
         } else {
             proxyContainer = null;
-            ShardingSphereJdbcEmbeddedContainer jdbcContainer = new ShardingSphereJdbcEmbeddedContainer(storageContainer,
-                    Objects.requireNonNull(getShardingSphereConfigResource(testParam)).getFile());
+            ShardingSphereJdbcEmbeddedContainer jdbcContainer = new ShardingSphereJdbcEmbeddedContainer(
+                    storageContainer, Objects.requireNonNull(getShardingSphereConfigResource(testParam)).getFile());
             this.jdbcContainer = getContainers().registerContainer(jdbcContainer);
         }
     }

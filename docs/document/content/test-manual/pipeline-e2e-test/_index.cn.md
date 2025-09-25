@@ -62,7 +62,7 @@ Proxy 配置可以参考：
 
 3. 以 MySQL 为例，`e2e-env.properties` 可以配置如下：
 ```
-pipeline.e2e.env.type=NATIVE
+e2e.run.type=NATIVE
 pipeline.e2e.native.database=mysql
 pipeline.e2e.native.mysql.username=root
 pipeline.e2e.native.mysql.password=root

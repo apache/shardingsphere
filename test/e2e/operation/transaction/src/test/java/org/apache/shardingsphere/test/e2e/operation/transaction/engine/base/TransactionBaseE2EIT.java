@@ -18,12 +18,12 @@
 package org.apache.shardingsphere.test.e2e.operation.transaction.engine.base;
 
 import com.google.common.base.Preconditions;
+import com.google.common.base.Strings;
 import lombok.Getter;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
-import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.test.e2e.env.container.storage.option.StorageContainerConnectOption;
 import org.apache.shardingsphere.test.e2e.env.container.storage.option.StorageContainerOption;
 import org.apache.shardingsphere.test.e2e.env.container.storage.type.DockerStorageContainer;
@@ -355,13 +355,16 @@ public abstract class TransactionBaseE2EIT {
         }
         
         private Collection<TransactionTestParameter> getTestParameters(final TransactionTestCaseRegistry registry) {
-            Map<String, TransactionTestParameter> result = new LinkedHashMap<>();
             if (TEST_CASES.isEmpty()) {
                 log.warn("Transaction test cases are empty.");
             }
             String databaseVersion = ENV.getArtifactEnvironment().getDatabaseImage(registry.getDatabaseType());
+            if (Strings.isNullOrEmpty(databaseVersion)) {
+                return new LinkedList<>();
+            }
+            Map<String, TransactionTestParameter> result = new LinkedHashMap<>();
             for (Class<? extends BaseTransactionTestCase> each : TEST_CASES) {
-                if (!TRANSACTION_ENV.getCases().isEmpty() && !ENV.getScenarios().contains(each.getSimpleName())) {
+                if (!TRANSACTION_ENV.getCases().isEmpty() && !TRANSACTION_ENV.getCases().contains(each.getSimpleName())) {
                     log.info("Collect transaction test case, need to run cases don't contain this, skip: {}.", each.getName());
                     continue;
                 }
@@ -419,7 +422,7 @@ public abstract class TransactionBaseE2EIT {
         private void setTestParameters(final Map<String, TransactionTestParameter> testParams, final TransactionTestCaseRegistry registry, final String databaseVersion,
                                        final List<TransactionType> transactionTypes, final List<String> providers, final String scenario, final Class<? extends BaseTransactionTestCase> caseClass) {
             String key = getUniqueKey(registry.getDatabaseType(), registry.getRunningAdaptor(), transactionTypes, providers, scenario);
-            testParams.putIfAbsent(key, new TransactionTestParameter(TypedSPILoader.getService(DatabaseType.class, registry.getDatabaseType()),
+            testParams.putIfAbsent(key, new TransactionTestParameter(registry.getDatabaseType(),
                     registry.getRunningAdaptor(), ENV.getArtifactEnvironment().getProxyPortBindings(), transactionTypes, providers,
                     getStorageContainerImageName(registry.getDatabaseType(), databaseVersion), scenario, new LinkedList<>()));
             testParams.get(key).getTransactionTestCaseClasses().add(caseClass);
