@@ -35,9 +35,9 @@ import org.apache.shardingsphere.test.e2e.env.container.storage.StorageContainer
 import org.apache.shardingsphere.test.e2e.env.container.storage.option.StorageContainerOption;
 import org.apache.shardingsphere.test.e2e.env.container.storage.type.DockerStorageContainer;
 import org.apache.shardingsphere.test.e2e.env.container.storage.type.NativeStorageContainer;
+import org.apache.shardingsphere.test.e2e.env.runtime.E2ETestEnvironment;
 import org.apache.shardingsphere.test.e2e.env.runtime.type.ArtifactEnvironment.Adapter;
 import org.apache.shardingsphere.test.e2e.env.runtime.type.RunEnvironment.Type;
-import org.apache.shardingsphere.test.e2e.operation.transaction.env.TransactionE2EEnvironment;
 import org.apache.shardingsphere.test.e2e.operation.transaction.framework.container.config.TransactionProxyContainerConfigurationFactory;
 import org.apache.shardingsphere.test.e2e.operation.transaction.framework.param.TransactionTestParameter;
 
@@ -61,7 +61,7 @@ public final class TransactionDockerContainerComposer extends TransactionBaseCon
         super(testParam.getScenario());
         DatabaseType databaseType = testParam.getDatabaseType();
         GovernanceContainer governanceContainer = getContainers().registerContainer(new GovernanceContainer(TypedSPILoader.getService(GovernanceContainerOption.class, "ZooKeeper")));
-        if (Type.DOCKER == TransactionE2EEnvironment.getInstance().getType()) {
+        if (Type.DOCKER == E2ETestEnvironment.getInstance().getRunEnvironment().getType()) {
             storageContainer = getContainers().registerContainer(new DockerStorageContainer(
                     testParam.getStorageContainerImage(), DatabaseTypedSPILoader.getService(StorageContainerOption.class, databaseType), testParam.getScenario()));
         } else {
@@ -71,7 +71,7 @@ public final class TransactionDockerContainerComposer extends TransactionBaseCon
             jdbcContainer = null;
             AdaptorContainerConfiguration containerConfig = TransactionProxyContainerConfigurationFactory.newInstance(testParam.getScenario(), databaseType, testParam.getPortBindings());
             proxyContainer = AdapterContainerFactory.newInstance(
-                    Adapter.PROXY, databaseType, testParam.getScenario(), containerConfig, storageContainer, TransactionE2EEnvironment.getInstance().getType().name());
+                    Adapter.PROXY, databaseType, testParam.getScenario(), containerConfig, storageContainer, E2ETestEnvironment.getInstance().getRunEnvironment().getType().name());
             if (proxyContainer instanceof DockerE2EContainer) {
                 ((DockerE2EContainer) proxyContainer).dependsOn(governanceContainer, storageContainer);
             }

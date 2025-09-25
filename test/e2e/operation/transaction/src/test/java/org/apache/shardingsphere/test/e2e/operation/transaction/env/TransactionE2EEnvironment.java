@@ -24,6 +24,7 @@ import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.test.e2e.env.container.constants.ProxyContainerConstants;
 import org.apache.shardingsphere.test.e2e.env.container.constants.StorageContainerConstants;
 import org.apache.shardingsphere.test.e2e.env.container.storage.option.StorageContainerOption;
+import org.apache.shardingsphere.test.e2e.env.runtime.E2ETestEnvironment;
 import org.apache.shardingsphere.test.e2e.env.runtime.type.RunEnvironment.Type;
 import org.apache.shardingsphere.test.e2e.operation.transaction.env.enums.TransactionTestCaseRegistry;
 
@@ -43,17 +44,7 @@ public final class TransactionE2EEnvironment {
     
     private final Properties props;
     
-    private final List<String> scenarios;
-    
-    private final Type type;
-    
     private final List<String> portBindings;
-    
-    private final List<String> mysqlVersions;
-    
-    private final List<String> postgresqlVersions;
-    
-    private final List<String> openGaussVersions;
     
     private final List<String> allowTransactionTypes;
     
@@ -63,19 +54,10 @@ public final class TransactionE2EEnvironment {
     
     private TransactionE2EEnvironment() {
         props = loadProperties();
-        scenarios = splitProperty("e2e.scenarios");
-        type = props.containsKey("e2e.run.type") ? null : Type.valueOf(props.getProperty("e2e.run.type").toUpperCase());
-        portBindings = splitProperty("e2e.proxy.port.bindings");
-        mysqlVersions = splitProperty("e2e.artifact.database.mysql.image");
-        postgresqlVersions = splitProperty("e2e.artifact.database.postgresql.image");
-        openGaussVersions = splitProperty("e2e.artifact.database.opengauss.image");
+        portBindings = splitProperty("e2e.artifact.proxy.port.bindings");
         allowTransactionTypes = splitProperty("transaction.e2e.env.transtypes");
         allowXAProviders = splitProperty("transaction.e2e.env.xa.providers");
         transactionTestCaseRegistryMap = initTransactionTestCaseRegistryMap();
-    }
-    
-    private List<String> splitProperty(final String key) {
-        return Arrays.stream(props.getOrDefault(key, "").toString().split(",")).filter(each -> !Strings.isNullOrEmpty(each)).map(String::trim).collect(Collectors.toList());
     }
     
     private Properties loadProperties() {
@@ -89,6 +71,10 @@ public final class TransactionE2EEnvironment {
             result.setProperty(each, System.getProperty(each));
         }
         return result;
+    }
+    
+    private List<String> splitProperty(final String key) {
+        return Arrays.stream(props.getOrDefault(key, "").toString().split(",")).filter(each -> !Strings.isNullOrEmpty(each)).map(String::trim).collect(Collectors.toList());
     }
     
     private Map<String, TransactionTestCaseRegistry> initTransactionTestCaseRegistryMap() {
@@ -116,7 +102,9 @@ public final class TransactionE2EEnvironment {
      * @return actual data source username
      */
     public String getActualDataSourceUsername() {
-        return type == Type.NATIVE ? String.valueOf(props.getOrDefault("e2e.native.storage.username", ProxyContainerConstants.USER)) : StorageContainerConstants.OPERATION_USER;
+        return E2ETestEnvironment.getInstance().getRunEnvironment().getType() == Type.NATIVE
+                ? String.valueOf(props.getOrDefault("e2e.native.storage.username", ProxyContainerConstants.USER))
+                : StorageContainerConstants.OPERATION_USER;
     }
     
     /**
@@ -125,7 +113,9 @@ public final class TransactionE2EEnvironment {
      * @return actual data source password
      */
     public String getActualDataSourcePassword() {
-        return type == Type.NATIVE ? props.getOrDefault("e2e.native.storage.password", ProxyContainerConstants.PASSWORD).toString() : StorageContainerConstants.OPERATION_PASSWORD;
+        return E2ETestEnvironment.getInstance().getRunEnvironment().getType() == Type.NATIVE
+                ? props.getOrDefault("e2e.native.storage.password", ProxyContainerConstants.PASSWORD).toString()
+                : StorageContainerConstants.OPERATION_PASSWORD;
     }
     
     /**

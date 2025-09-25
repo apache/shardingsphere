@@ -27,6 +27,7 @@ import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.test.e2e.env.container.storage.option.StorageContainerConnectOption;
 import org.apache.shardingsphere.test.e2e.env.container.storage.option.StorageContainerOption;
 import org.apache.shardingsphere.test.e2e.env.container.storage.type.DockerStorageContainer;
+import org.apache.shardingsphere.test.e2e.env.runtime.E2ETestEnvironment;
 import org.apache.shardingsphere.test.e2e.env.runtime.type.ArtifactEnvironment.Adapter;
 import org.apache.shardingsphere.test.e2e.env.runtime.type.RunEnvironment.Type;
 import org.apache.shardingsphere.test.e2e.operation.transaction.cases.base.BaseTransactionTestCase;
@@ -278,7 +279,7 @@ public abstract class TransactionBaseE2EIT {
     
     private String getActualJdbcUrlTemplate(final String databaseName, final TransactionContainerComposer containerComposer) {
         StorageContainerConnectOption option = DatabaseTypedSPILoader.getService(StorageContainerOption.class, containerComposer.getDatabaseType()).getConnectOption();
-        if (Type.DOCKER == ENV.getType()) {
+        if (Type.DOCKER == E2ETestEnvironment.getInstance().getRunEnvironment().getType()) {
             DockerStorageContainer storageContainer = (DockerStorageContainer) ((TransactionDockerContainerComposer) containerComposer.getContainerComposer()).getStorageContainer();
             return option.getURL(containerComposer.getDatabaseType().getType().toLowerCase() + ".host", storageContainer.getExposedPort(), databaseName);
         }
@@ -329,7 +330,7 @@ public abstract class TransactionBaseE2EIT {
     }
     
     private static boolean isEnabled() {
-        return !ENV.getScenarios().isEmpty() && null != ENV.getType();
+        return !E2ETestEnvironment.getInstance().getScenarios().isEmpty() && null != E2ETestEnvironment.getInstance().getRunEnvironment().getType();
     }
     
     private static final class TestCaseArgumentsProvider implements ArgumentsProvider {
@@ -352,19 +353,7 @@ public abstract class TransactionBaseE2EIT {
         }
         
         private Collection<TransactionTestParameter> getTestParameters(final TransactionTestCaseRegistry registry) {
-            Collection<TransactionTestParameter> result = new LinkedList<>();
-            if (TransactionTestConstants.MYSQL.equalsIgnoreCase(registry.getDbType())) {
-                result.addAll(getTestParameters(registry, ENV.getMysqlVersions()));
-            } else if (TransactionTestConstants.POSTGRESQL.equalsIgnoreCase(registry.getDbType())) {
-                result.addAll(getTestParameters(registry, ENV.getPostgresqlVersions()));
-            } else if (TransactionTestConstants.OPENGAUSS.equalsIgnoreCase(registry.getDbType())) {
-                result.addAll(getTestParameters(registry, ENV.getOpenGaussVersions()));
-            }
-            return result;
-        }
-        
-        private Collection<TransactionTestParameter> getTestParameters(final TransactionTestCaseRegistry registry, final List<String> databaseVersions) {
-            return databaseVersions.stream().flatMap(each -> getTestParameters(registry, each).stream()).collect(Collectors.toList());
+            return getTestParameters(registry, E2ETestEnvironment.getInstance().getArtifactEnvironment().getDatabaseImages().get(TypedSPILoader.getService(DatabaseType.class, registry.getDbType())));
         }
         
         private Collection<TransactionTestParameter> getTestParameters(final TransactionTestCaseRegistry registry, final String databaseVersion) {
@@ -373,7 +362,7 @@ public abstract class TransactionBaseE2EIT {
                 log.warn("Transaction test cases are empty.");
             }
             for (Class<? extends BaseTransactionTestCase> each : TEST_CASES) {
-                if (!ENV.getScenarios().isEmpty() && !ENV.getScenarios().contains(each.getSimpleName())) {
+                if (!E2ETestEnvironment.getInstance().getScenarios().isEmpty() && !E2ETestEnvironment.getInstance().getScenarios().contains(each.getSimpleName())) {
                     log.info("Collect transaction test case, need to run cases don't contain this, skip: {}.", each.getName());
                     continue;
                 }
