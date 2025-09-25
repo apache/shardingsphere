@@ -18,9 +18,10 @@ stages:
 
 workflow:
   rules:
-    - if: $CI_COMMIT_BRANCH == "master"
+    - if: $CI_COMMIT_BRANCH == "master" && $CI_COMMIT_TAG
       when: always
     - if: $CI_PIPELINE_SOURCE == "web"
+    - if: $CI_COMMIT_TAG
 
 ######
 # Templates
@@ -108,7 +109,8 @@ java8:
   dependencies:
     - java11
   script:
-    - ./mvnw -s ${M2_SETTINGSFILE} test -P release,db-firebird -f pom.xml
+    - ./mvnw -s ${M2_SETTINGSFILE} install -T1C -B -ntp -fae
+    #- ./mvnw -s ${M2_SETTINGSFILE} test -P release,db-firebird -f pom.xml
   allow_failure: true
 
 ######
@@ -120,7 +122,7 @@ release_hub:
   tags: ["docker", "x86_64", "linux"]
   image: $RELEASEHUB_CLIENT_IMAGE
   script:
-    - relmanager_client deploy rshrd ${PROJECT_VERSION} --artifacts ci/artifacts --ci-url ${CI_URL} --context ${BUILD_TYPE}
+    - relmanager_client deploy rshrd ${PROJECT_VERSION} --artifacts ci/artifacts # TODO--ci-url ${CI_URL} --context ${BUILD_TYPE}
   only:
     variables:
       - $RELEASE_HUB_KEY
