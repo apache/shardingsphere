@@ -24,7 +24,6 @@ import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
-import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.test.e2e.env.container.storage.option.StorageContainerConnectOption;
 import org.apache.shardingsphere.test.e2e.env.container.storage.option.StorageContainerOption;
 import org.apache.shardingsphere.test.e2e.env.container.storage.type.DockerStorageContainer;
@@ -423,7 +422,7 @@ public abstract class TransactionBaseE2EIT {
         private void setTestParameters(final Map<String, TransactionTestParameter> testParams, final TransactionTestCaseRegistry registry, final String databaseVersion,
                                        final List<TransactionType> transactionTypes, final List<String> providers, final String scenario, final Class<? extends BaseTransactionTestCase> caseClass) {
             String key = getUniqueKey(registry.getDatabaseType(), registry.getRunningAdaptor(), transactionTypes, providers, scenario);
-            testParams.putIfAbsent(key, new TransactionTestParameter(TypedSPILoader.getService(DatabaseType.class, registry.getDatabaseType()),
+            testParams.putIfAbsent(key, new TransactionTestParameter(registry.getDatabaseType(),
                     registry.getRunningAdaptor(), ENV.getArtifactEnvironment().getProxyPortBindings(), transactionTypes, providers,
                     getStorageContainerImageName(registry.getDatabaseType(), databaseVersion), scenario, new LinkedList<>()));
             testParams.get(key).getTransactionTestCaseClasses().add(caseClass);
