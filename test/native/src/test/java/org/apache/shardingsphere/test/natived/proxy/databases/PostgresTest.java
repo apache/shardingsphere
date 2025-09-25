@@ -19,6 +19,8 @@ package org.apache.shardingsphere.test.natived.proxy.databases;
 
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
+import org.apache.shardingsphere.infra.util.props.PropertiesBuilder;
+import org.apache.shardingsphere.infra.util.props.PropertiesBuilder.Property;
 import org.apache.shardingsphere.test.natived.commons.TestShardingService;
 import org.apache.shardingsphere.test.natived.commons.util.ProxyTestingServer;
 import org.awaitility.Awaitility;
@@ -38,7 +40,6 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.time.Duration;
 import java.util.Collections;
-import java.util.Properties;
 
 @SuppressWarnings("SqlNoDataSourceInspection")
 @EnabledInNativeImage
@@ -55,12 +56,12 @@ class PostgresTest {
     @BeforeEach
     void beforeEach() throws SQLException {
         Awaitility.await().atMost(Duration.ofSeconds(30L)).ignoreExceptions().until(() -> {
-            openConnection("test", "test", "jdbc:postgresql://127.0.0.1:" + postgresContainer.getMappedPort(5432) + "/")
+            getConnection("test", "test", "jdbc:postgresql://127.0.0.1:" + postgresContainer.getMappedPort(5432) + "/")
                     .close();
             return true;
         });
         try (
-                Connection connection = openConnection("test", "test", "jdbc:postgresql://127.0.0.1:" + postgresContainer.getMappedPort(5432) + "/");
+                Connection connection = getConnection("test", "test", "jdbc:postgresql://127.0.0.1:" + postgresContainer.getMappedPort(5432) + "/");
                 Statement statement = connection.createStatement()) {
             statement.executeUpdate("CREATE DATABASE demo_ds_0");
             statement.executeUpdate("CREATE DATABASE demo_ds_1");
@@ -69,7 +70,7 @@ class PostgresTest {
         String absolutePath = Paths.get("src/test/resources/test-native/yaml/proxy/databases/postgresql").toAbsolutePath().toString();
         proxyTestingServer = new ProxyTestingServer(absolutePath);
         Awaitility.await().atMost(Duration.ofSeconds(30L)).ignoreExceptions().until(() -> {
-            openConnection("root", "root", "jdbc:postgresql://127.0.0.1:" + proxyTestingServer.getProxyPort() + "/postgres").close();
+            getConnection("root", "root", "jdbc:postgresql://127.0.0.1:" + proxyTestingServer.getProxyPort() + "/postgres").close();
             return true;
         });
     }
@@ -89,12 +90,12 @@ class PostgresTest {
     @Test
     void assertShardingInLocalTransactions() throws SQLException {
         try (
-                Connection connection = openConnection("root", "root", "jdbc:postgresql://127.0.0.1:" + proxyTestingServer.getProxyPort() + "/postgres");
+                Connection connection = getConnection("root", "root", "jdbc:postgresql://127.0.0.1:" + proxyTestingServer.getProxyPort() + "/postgres");
                 Statement statement = connection.createStatement()) {
             statement.execute("CREATE DATABASE sharding_db");
         }
         try (
-                Connection connection = openConnection("root", "root", "jdbc:postgresql://127.0.0.1:" + proxyTestingServer.getProxyPort() + "/sharding_db");
+                Connection connection = getConnection("root", "root", "jdbc:postgresql://127.0.0.1:" + proxyTestingServer.getProxyPort() + "/sharding_db");
                 Statement statement = connection.createStatement()) {
             statement.execute("REGISTER STORAGE UNIT ds_0 (\n"
                     + "  URL='jdbc:postgresql://127.0.0.1:" + postgresContainer.getMappedPort(5432) + "/demo_ds_0',\n"
@@ -152,10 +153,7 @@ class PostgresTest {
         testShardingService.getAddressRepository().truncateTable();
     }
     
-    private static Connection openConnection(final String username, final String password, final String jdbcUrl) throws SQLException {
-        Properties props = new Properties();
-        props.setProperty("user", username);
-        props.setProperty("password", password);
-        return DriverManager.getConnection(jdbcUrl, props);
+    private Connection getConnection(final String username, final String password, final String jdbcUrl) throws SQLException {
+        return DriverManager.getConnection(jdbcUrl, PropertiesBuilder.build(new Property("user", username), new Property("password", password)));
     }
 }
