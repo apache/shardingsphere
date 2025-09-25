@@ -424,7 +424,7 @@ public abstract class TransactionBaseE2EIT {
             String key = getUniqueKey(registry.getDbType(), registry.getRunningAdaptor(), transactionTypes, providers, scenario);
             testParams.putIfAbsent(
                     key, new TransactionTestParameter(getDatabaseType(registry.getDbType()), registry.getRunningAdaptor(), TRANSACTION_ENV.getPortBindings(), transactionTypes, providers,
-                    getStorageContainerImageName(registry.getDbType(), databaseVersion), scenario, new LinkedList<>()));
+                            getStorageContainerImageName(registry.getDbType(), databaseVersion), scenario, new LinkedList<>()));
             testParams.get(key).getTransactionTestCaseClasses().add(caseClass);
         }
         
