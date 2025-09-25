@@ -19,7 +19,6 @@ package org.apache.shardingsphere.test.e2e.operation.transaction.env;
 
 import com.google.common.base.Strings;
 import lombok.Getter;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.test.e2e.env.container.constants.ProxyContainerConstants;
 import org.apache.shardingsphere.test.e2e.env.container.constants.StorageContainerConstants;
@@ -39,12 +38,13 @@ import java.util.Properties;
 import java.util.stream.Collectors;
 
 @Getter
-@Slf4j
 public final class TransactionE2EEnvironment {
     
     private static final TransactionE2EEnvironment INSTANCE = new TransactionE2EEnvironment();
     
     private final Properties props;
+    
+    private final List<String> scenarios;
     
     private final Type type;
     
@@ -56,8 +56,6 @@ public final class TransactionE2EEnvironment {
     
     private final List<String> openGaussVersions;
     
-    private final List<String> needToRunTestCases;
-    
     private final List<String> allowTransactionTypes;
     
     private final List<String> allowXAProviders;
@@ -66,15 +64,14 @@ public final class TransactionE2EEnvironment {
     
     private TransactionE2EEnvironment() {
         props = loadProperties();
-        type = props.containsKey("transaction.e2e.env.type") ? null : Type.valueOf(props.getProperty("transaction.e2e.env.type").toUpperCase());
+        scenarios = splitProperty("e2e.scenarios");
+        type = props.containsKey("e2e.run.type") ? null : Type.valueOf(props.getProperty("e2e.run.type").toUpperCase());
         portBindings = splitProperty("transaction.e2e.proxy.port.bindings");
         mysqlVersions = splitProperty("transaction.e2e.docker.mysql.version");
         postgresqlVersions = splitProperty("transaction.e2e.docker.postgresql.version");
         openGaussVersions = splitProperty("transaction.e2e.docker.opengauss.version");
-        needToRunTestCases = splitProperty("transaction.e2e.env.cases");
         allowTransactionTypes = splitProperty("transaction.e2e.env.transtypes");
         allowXAProviders = splitProperty("transaction.e2e.env.xa.providers");
-        log.info("Loaded properties, allowTransactionTypes:{}, allowXAProviders:{}", allowTransactionTypes, allowXAProviders);
         transactionTestCaseRegistryMap = initTransactionTestCaseRegistryMap();
     }
     
