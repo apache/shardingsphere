@@ -359,7 +359,7 @@ public abstract class TransactionBaseE2EIT {
             if (TEST_CASES.isEmpty()) {
                 log.warn("Transaction test cases are empty.");
             }
-            String databaseVersion = ENV.getArtifactEnvironment().getDatabaseImage(TypedSPILoader.getService(DatabaseType.class, registry.getDbType()));
+            String databaseVersion = ENV.getArtifactEnvironment().getDatabaseImage(registry.getDatabaseType());
             for (Class<? extends BaseTransactionTestCase> each : TEST_CASES) {
                 if (!TRANSACTION_ENV.getCases().isEmpty() && !ENV.getScenarios().contains(each.getSimpleName())) {
                     log.info("Collect transaction test case, need to run cases don't contain this, skip: {}.", each.getName());
@@ -370,7 +370,7 @@ public abstract class TransactionBaseE2EIT {
                     log.info("Collect transaction test case, annotation is null, skip: {}.", each.getName());
                     continue;
                 }
-                Optional<String> databaseType = Arrays.stream(transactionTestCase.dbTypes()).filter(registry.getDbType()::equalsIgnoreCase).findAny();
+                Optional<String> databaseType = Arrays.stream(transactionTestCase.dbTypes()).filter(dbTypes -> registry.getDatabaseType().getType().equalsIgnoreCase(dbTypes)).findAny();
                 if (!databaseType.isPresent()) {
                     log.info("Collect transaction test case, dbType is not matched, skip: {}.", each.getName());
                     continue;
@@ -418,19 +418,19 @@ public abstract class TransactionBaseE2EIT {
         
         private void setTestParameters(final Map<String, TransactionTestParameter> testParams, final TransactionTestCaseRegistry registry, final String databaseVersion,
                                        final List<TransactionType> transactionTypes, final List<String> providers, final String scenario, final Class<? extends BaseTransactionTestCase> caseClass) {
-            String key = getUniqueKey(registry.getDbType(), registry.getRunningAdaptor(), transactionTypes, providers, scenario);
-            testParams.putIfAbsent(key, new TransactionTestParameter(TypedSPILoader.getService(DatabaseType.class, registry.getDbType()),
+            String key = getUniqueKey(registry.getDatabaseType(), registry.getRunningAdaptor(), transactionTypes, providers, scenario);
+            testParams.putIfAbsent(key, new TransactionTestParameter(TypedSPILoader.getService(DatabaseType.class, registry.getDatabaseType()),
                     registry.getRunningAdaptor(), ENV.getArtifactEnvironment().getProxyPortBindings(), transactionTypes, providers,
-                    getStorageContainerImageName(registry.getDbType(), databaseVersion), scenario, new LinkedList<>()));
+                    getStorageContainerImageName(registry.getDatabaseType(), databaseVersion), scenario, new LinkedList<>()));
             testParams.get(key).getTransactionTestCaseClasses().add(caseClass);
         }
         
-        private String getUniqueKey(final String databaseType, final String runningAdapter, final List<TransactionType> transactionTypes, final List<String> providers, final String scenario) {
-            return String.join(File.separator, databaseType, runningAdapter, transactionTypes.toString(), providers.toString(), scenario);
+        private String getUniqueKey(final DatabaseType databaseType, final String runningAdapter, final List<TransactionType> transactionTypes, final List<String> providers, final String scenario) {
+            return String.join(File.separator, databaseType.getType(), runningAdapter, transactionTypes.toString(), providers.toString(), scenario);
         }
         
-        private String getStorageContainerImageName(final String databaseType, final String databaseVersion) {
-            switch (databaseType) {
+        private String getStorageContainerImageName(final DatabaseType databaseType, final String databaseVersion) {
+            switch (databaseType.getType()) {
                 case TransactionTestConstants.MYSQL:
                 case TransactionTestConstants.POSTGRESQL:
                 case TransactionTestConstants.OPENGAUSS:
