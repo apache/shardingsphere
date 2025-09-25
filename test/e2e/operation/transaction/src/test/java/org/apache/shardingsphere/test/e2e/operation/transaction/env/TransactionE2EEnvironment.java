@@ -24,6 +24,7 @@ import org.apache.shardingsphere.test.e2e.operation.transaction.env.enums.Transa
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -37,6 +38,8 @@ public final class TransactionE2EEnvironment {
     
     private final Properties props;
     
+    private final Collection<String> scenarios;
+    
     private final List<String> portBindings;
     
     private final List<String> allowTransactionTypes;
@@ -47,6 +50,7 @@ public final class TransactionE2EEnvironment {
     
     private TransactionE2EEnvironment() {
         props = loadProperties();
+        scenarios = splitProperty("e2e.scenarios");
         portBindings = splitProperty("e2e.artifact.proxy.port.bindings");
         allowTransactionTypes = splitProperty("transaction.e2e.env.transtypes");
         allowXAProviders = splitProperty("transaction.e2e.env.xa.providers");

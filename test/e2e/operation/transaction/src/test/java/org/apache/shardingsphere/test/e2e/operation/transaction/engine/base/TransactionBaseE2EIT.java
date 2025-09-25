@@ -332,7 +332,7 @@ public abstract class TransactionBaseE2EIT {
     }
     
     private static boolean isEnabled() {
-        return !ENV.getScenarios().isEmpty() && null != ENV.getRunEnvironment().getType();
+        return !TRANSACTION_ENV.getScenarios().isEmpty() && null != ENV.getRunEnvironment().getType();
     }
     
     private static final class TestCaseArgumentsProvider implements ArgumentsProvider {
@@ -364,7 +364,7 @@ public abstract class TransactionBaseE2EIT {
                 log.warn("Transaction test cases are empty.");
             }
             for (Class<? extends BaseTransactionTestCase> each : TEST_CASES) {
-                if (!ENV.getScenarios().isEmpty() && !ENV.getScenarios().contains(each.getSimpleName())) {
+                if (!TRANSACTION_ENV.getScenarios().isEmpty() && !ENV.getScenarios().contains(each.getSimpleName())) {
                     log.info("Collect transaction test case, need to run cases don't contain this, skip: {}.", each.getName());
                     continue;
                 }
