@@ -19,13 +19,6 @@ package org.apache.shardingsphere.test.e2e.operation.transaction.env;
 
 import com.google.common.base.Strings;
 import lombok.Getter;
-import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoader;
-import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
-import org.apache.shardingsphere.test.e2e.env.container.constants.ProxyContainerConstants;
-import org.apache.shardingsphere.test.e2e.env.container.constants.StorageContainerConstants;
-import org.apache.shardingsphere.test.e2e.env.container.storage.option.StorageContainerOption;
-import org.apache.shardingsphere.test.e2e.env.runtime.E2ETestEnvironment;
-import org.apache.shardingsphere.test.e2e.env.runtime.type.RunEnvironment.Type;
 import org.apache.shardingsphere.test.e2e.operation.transaction.env.enums.TransactionTestCaseRegistry;
 
 import java.io.IOException;
@@ -83,39 +76,6 @@ public final class TransactionE2EEnvironment {
             result.put(each.getTestCaseClass().getName(), each);
         }
         return result;
-    }
-    
-    /**
-     * Get actual data source default port.
-     *
-     * @param databaseType database type
-     * @return default port
-     */
-    public int getActualDataSourceDefaultPort(final DatabaseType databaseType) {
-        int defaultPort = DatabaseTypedSPILoader.getService(StorageContainerOption.class, databaseType).getCreateOption().getPort();
-        return Integer.parseInt(props.getOrDefault("e2e.native.storage.port", defaultPort).toString());
-    }
-    
-    /**
-     * Get actual data source username.
-     *
-     * @return actual data source username
-     */
-    public String getActualDataSourceUsername() {
-        return E2ETestEnvironment.getInstance().getRunEnvironment().getType() == Type.NATIVE
-                ? String.valueOf(props.getOrDefault("e2e.native.storage.username", ProxyContainerConstants.USER))
-                : StorageContainerConstants.OPERATION_USER;
-    }
-    
-    /**
-     * Get actual data source password.
-     *
-     * @return actual data source password
-     */
-    public String getActualDataSourcePassword() {
-        return E2ETestEnvironment.getInstance().getRunEnvironment().getType() == Type.NATIVE
-                ? props.getOrDefault("e2e.native.storage.password", ProxyContainerConstants.PASSWORD).toString()
-                : StorageContainerConstants.OPERATION_PASSWORD;
     }
     
     /**

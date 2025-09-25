@@ -268,8 +268,8 @@ public abstract class TransactionBaseE2EIT {
      */
     public void addResource(final Connection connection, final String databaseName, final TransactionContainerComposer containerComposer) throws SQLException {
         String addSourceResource = commonSQL.getSourceAddNewResourceTemplate()
-                .replace("${user}", ENV.getActualDataSourceUsername())
-                .replace("${password}", ENV.getActualDataSourcePassword())
+                .replace("${user}", E2ETestEnvironment.getInstance().getNativeStorageEnvironment().getUser())
+                .replace("${password}", E2ETestEnvironment.getInstance().getNativeStorageEnvironment().getPassword())
                 .replace("${ds2}", getActualJdbcUrlTemplate(databaseName, containerComposer));
         executeWithLog(connection, addSourceResource);
         int resourceCount = countWithLog("SHOW STORAGE UNITS FROM sharding_db", containerComposer);
@@ -283,7 +283,7 @@ public abstract class TransactionBaseE2EIT {
             DockerStorageContainer storageContainer = (DockerStorageContainer) ((TransactionDockerContainerComposer) containerComposer.getContainerComposer()).getStorageContainer();
             return option.getURL(containerComposer.getDatabaseType().getType().toLowerCase() + ".host", storageContainer.getExposedPort(), databaseName);
         }
-        return option.getURL("127.0.0.1", ENV.getActualDataSourceDefaultPort(containerComposer.getDatabaseType()), databaseName);
+        return option.getURL("127.0.0.1", E2ETestEnvironment.getInstance().getNativeStorageEnvironment().getPort(), databaseName);
     }
     
     /**
