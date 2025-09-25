@@ -26,7 +26,7 @@ import org.apache.shardingsphere.test.e2e.env.container.constants.StorageContain
 import org.apache.shardingsphere.test.e2e.env.container.storage.option.dialect.mysql.MySQLStorageContainerCreateOption;
 import org.apache.shardingsphere.test.e2e.env.container.storage.option.dialect.opengauss.OpenGaussStorageContainerCreateOption;
 import org.apache.shardingsphere.test.e2e.env.container.storage.option.dialect.postgresql.PostgreSQLStorageContainerCreateOption;
-import org.apache.shardingsphere.test.e2e.operation.transaction.env.enums.TransactionE2EEnvTypeEnum;
+import org.apache.shardingsphere.test.e2e.env.runtime.type.RunEnvironment.Type;
 import org.apache.shardingsphere.test.e2e.operation.transaction.env.enums.TransactionTestCaseRegistry;
 
 import java.io.IOException;
@@ -46,7 +46,7 @@ public final class TransactionE2EEnvironment {
     
     private final Properties props;
     
-    private final TransactionE2EEnvTypeEnum itEnvType;
+    private final Type type;
     
     private final List<String> portBindings;
     
@@ -66,7 +66,7 @@ public final class TransactionE2EEnvironment {
     
     private TransactionE2EEnvironment() {
         props = loadProperties();
-        itEnvType = TransactionE2EEnvTypeEnum.valueOf(props.getProperty("transaction.e2e.env.type", TransactionE2EEnvTypeEnum.NONE.name()).toUpperCase());
+        type = Type.valueOf(props.getProperty("transaction.e2e.env.type", Type.NATIVE.name()).toUpperCase());
         portBindings = splitProperty("transaction.e2e.proxy.port.bindings");
         mysqlVersions = splitProperty("transaction.e2e.docker.mysql.version");
         postgresqlVersions = splitProperty("transaction.e2e.docker.postgresql.version");
@@ -76,14 +76,6 @@ public final class TransactionE2EEnvironment {
         allowXAProviders = splitProperty("transaction.e2e.env.xa.providers");
         log.info("Loaded properties, allowTransactionTypes:{}, allowXAProviders:{}", allowTransactionTypes, allowXAProviders);
         transactionTestCaseRegistryMap = initTransactionTestCaseRegistryMap();
-    }
-    
-    private Map<String, TransactionTestCaseRegistry> initTransactionTestCaseRegistryMap() {
-        Map<String, TransactionTestCaseRegistry> result = new HashMap<>(TransactionTestCaseRegistry.values().length, 1F);
-        for (TransactionTestCaseRegistry each : TransactionTestCaseRegistry.values()) {
-            result.put(each.getTestCaseClass().getName(), each);
-        }
-        return result;
     }
     
     private List<String> splitProperty(final String key) {
@@ -99,6 +91,14 @@ public final class TransactionE2EEnvironment {
         }
         for (String each : System.getProperties().stringPropertyNames()) {
             result.setProperty(each, System.getProperty(each));
+        }
+        return result;
+    }
+    
+    private Map<String, TransactionTestCaseRegistry> initTransactionTestCaseRegistryMap() {
+        Map<String, TransactionTestCaseRegistry> result = new HashMap<>(TransactionTestCaseRegistry.values().length, 1F);
+        for (TransactionTestCaseRegistry each : TransactionTestCaseRegistry.values()) {
+            result.put(each.getTestCaseClass().getName(), each);
         }
         return result;
     }
@@ -130,7 +130,7 @@ public final class TransactionE2EEnvironment {
      * @return actual data source username
      */
     public String getActualDataSourceUsername(final DatabaseType databaseType) {
-        return itEnvType == TransactionE2EEnvTypeEnum.NATIVE
+        return type == Type.NATIVE
                 ? String.valueOf(props.getOrDefault(String.format("transaction.e2e.native.%s.username", databaseType.getType().toLowerCase()), ProxyContainerConstants.USER))
                 : StorageContainerConstants.OPERATION_USER;
     }
@@ -142,7 +142,7 @@ public final class TransactionE2EEnvironment {
      * @return actual data source username
      */
     public String getActualDataSourcePassword(final DatabaseType databaseType) {
-        return itEnvType == TransactionE2EEnvTypeEnum.NATIVE
+        return type == Type.NATIVE
                 ? props.getOrDefault(String.format("transaction.e2e.native.%s.password", databaseType.getType().toLowerCase()), ProxyContainerConstants.PASSWORD).toString()
                 : StorageContainerConstants.OPERATION_PASSWORD;
     }

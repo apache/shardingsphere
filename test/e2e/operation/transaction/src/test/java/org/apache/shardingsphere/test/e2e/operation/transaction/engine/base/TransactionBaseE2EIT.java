@@ -28,12 +28,12 @@ import org.apache.shardingsphere.test.e2e.env.container.storage.option.StorageCo
 import org.apache.shardingsphere.test.e2e.env.container.storage.option.StorageContainerOption;
 import org.apache.shardingsphere.test.e2e.env.container.storage.type.DockerStorageContainer;
 import org.apache.shardingsphere.test.e2e.env.runtime.type.ArtifactEnvironment.Adapter;
+import org.apache.shardingsphere.test.e2e.env.runtime.type.RunEnvironment.Type;
 import org.apache.shardingsphere.test.e2e.operation.transaction.cases.base.BaseTransactionTestCase;
 import org.apache.shardingsphere.test.e2e.operation.transaction.cases.base.BaseTransactionTestCase.TransactionTestCaseParameter;
 import org.apache.shardingsphere.test.e2e.operation.transaction.engine.command.CommonSQLCommand;
 import org.apache.shardingsphere.test.e2e.operation.transaction.engine.constants.TransactionTestConstants;
 import org.apache.shardingsphere.test.e2e.operation.transaction.env.TransactionE2EEnvironment;
-import org.apache.shardingsphere.test.e2e.operation.transaction.env.enums.TransactionE2EEnvTypeEnum;
 import org.apache.shardingsphere.test.e2e.operation.transaction.env.enums.TransactionTestCaseRegistry;
 import org.apache.shardingsphere.test.e2e.operation.transaction.framework.container.compose.TransactionDockerContainerComposer;
 import org.apache.shardingsphere.test.e2e.operation.transaction.framework.param.TransactionTestParameter;
@@ -278,7 +278,7 @@ public abstract class TransactionBaseE2EIT {
     
     private String getActualJdbcUrlTemplate(final String databaseName, final TransactionContainerComposer containerComposer) {
         StorageContainerConnectOption option = DatabaseTypedSPILoader.getService(StorageContainerOption.class, containerComposer.getDatabaseType()).getConnectOption();
-        if (ENV.getItEnvType() == TransactionE2EEnvTypeEnum.DOCKER) {
+        if (Type.DOCKER == ENV.getType()) {
             DockerStorageContainer storageContainer = (DockerStorageContainer) ((TransactionDockerContainerComposer) containerComposer.getContainerComposer()).getStorageContainer();
             return option.getURL(containerComposer.getDatabaseType().getType().toLowerCase() + ".host", storageContainer.getExposedPort(), databaseName);
         }
@@ -329,7 +329,7 @@ public abstract class TransactionBaseE2EIT {
     }
     
     private static boolean isEnabled() {
-        return ENV.getItEnvType() != TransactionE2EEnvTypeEnum.NONE;
+        return !ENV.getNeedToRunTestCases().isEmpty();
     }
     
     private static final class TestCaseArgumentsProvider implements ArgumentsProvider {
@@ -343,10 +343,7 @@ public abstract class TransactionBaseE2EIT {
         
         private Collection<TransactionTestParameter> getTransactionTestParameters(final Class<? extends TransactionBaseE2EIT> testCaseClass) {
             TransactionTestCaseRegistry currentTestCaseInfo = ENV.getTransactionTestCaseRegistryMap().get(testCaseClass.getName());
-            Collection<TransactionTestParameter> result = new LinkedList<>();
-            if (TransactionE2EEnvTypeEnum.NONE != ENV.getItEnvType()) {
-                result.addAll(getTestParameters(currentTestCaseInfo));
-            }
+            Collection<TransactionTestParameter> result = getTestParameters(currentTestCaseInfo);
             // TODO zhangcheng make sure the test cases should not empty
             if (result.isEmpty()) {
                 result.add(null);
