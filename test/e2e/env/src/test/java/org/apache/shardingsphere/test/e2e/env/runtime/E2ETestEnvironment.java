@@ -23,6 +23,7 @@ import lombok.SneakyThrows;
 import org.apache.shardingsphere.test.e2e.env.runtime.type.ArtifactEnvironment;
 import org.apache.shardingsphere.test.e2e.env.runtime.type.NativeStorageEnvironment;
 import org.apache.shardingsphere.test.e2e.env.runtime.type.RunEnvironment;
+import org.apache.shardingsphere.test.e2e.env.runtime.type.scenario.path.ScenarioCommonPath;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -70,9 +71,9 @@ public final class E2ETestEnvironment {
     
     private Collection<String> getScenarios(final Properties props) {
         Collection<String> result = Splitter.on(",").trimResults().splitToList(props.getProperty("e2e.scenarios", "")).stream().filter(each -> !each.isEmpty()).collect(Collectors.toList());
-//        for (String each : result) {
-//            new ScenarioCommonPath(each).checkFolderExist();
-//        }
+        for (String each : result) {
+            new ScenarioCommonPath(each).checkFolderExist();
+        }
         return result;
     }
     

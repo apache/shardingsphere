@@ -38,7 +38,7 @@ public final class TransactionE2EEnvironment {
     
     private final Properties props;
     
-    private final Collection<String> scenarios;
+    private final Collection<String> cases;
     
     private final List<String> portBindings;
     
@@ -50,7 +50,7 @@ public final class TransactionE2EEnvironment {
     
     private TransactionE2EEnvironment() {
         props = loadProperties();
-        scenarios = splitProperty("e2e.scenarios");
+        cases = splitProperty("e2e.cases");
         portBindings = splitProperty("e2e.artifact.proxy.port.bindings");
         allowTransactionTypes = splitProperty("transaction.e2e.env.transtypes");
         allowXAProviders = splitProperty("transaction.e2e.env.xa.providers");
