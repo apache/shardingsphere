@@ -36,11 +36,7 @@ public final class TransactionE2EEnvironment {
     
     private static final TransactionE2EEnvironment INSTANCE = new TransactionE2EEnvironment();
     
-    private final Properties props;
-    
     private final Collection<String> cases;
-    
-    private final List<String> portBindings;
     
     private final List<String> allowTransactionTypes;
     
@@ -49,11 +45,10 @@ public final class TransactionE2EEnvironment {
     private final Map<String, TransactionTestCaseRegistry> transactionTestCaseRegistryMap;
     
     private TransactionE2EEnvironment() {
-        props = loadProperties();
-        cases = splitProperty("e2e.cases");
-        portBindings = splitProperty("e2e.artifact.proxy.port.bindings");
-        allowTransactionTypes = splitProperty("transaction.e2e.env.transtypes");
-        allowXAProviders = splitProperty("transaction.e2e.env.xa.providers");
+        Properties props = loadProperties();
+        cases = splitProperty(props, "e2e.cases");
+        allowTransactionTypes = splitProperty(props, "transaction.e2e.env.transtypes");
+        allowXAProviders = splitProperty(props, "transaction.e2e.env.xa.providers");
         transactionTestCaseRegistryMap = initTransactionTestCaseRegistryMap();
     }
     
@@ -70,7 +65,7 @@ public final class TransactionE2EEnvironment {
         return result;
     }
     
-    private List<String> splitProperty(final String key) {
+    private List<String> splitProperty(final Properties props, final String key) {
         return Arrays.stream(props.getOrDefault(key, "").toString().split(",")).filter(each -> !Strings.isNullOrEmpty(each)).map(String::trim).collect(Collectors.toList());
     }
     

@@ -422,27 +422,14 @@ public abstract class TransactionBaseE2EIT {
         private void setTestParameters(final Map<String, TransactionTestParameter> testParams, final TransactionTestCaseRegistry registry, final String databaseVersion,
                                        final List<TransactionType> transactionTypes, final List<String> providers, final String scenario, final Class<? extends BaseTransactionTestCase> caseClass) {
             String key = getUniqueKey(registry.getDbType(), registry.getRunningAdaptor(), transactionTypes, providers, scenario);
-            testParams.putIfAbsent(
-                    key, new TransactionTestParameter(getDatabaseType(registry.getDbType()), registry.getRunningAdaptor(), TRANSACTION_ENV.getPortBindings(), transactionTypes, providers,
-                            getStorageContainerImageName(registry.getDbType(), databaseVersion), scenario, new LinkedList<>()));
+            testParams.putIfAbsent(key, new TransactionTestParameter(TypedSPILoader.getService(DatabaseType.class, registry.getDbType()),
+                    registry.getRunningAdaptor(), ENV.getArtifactEnvironment().getProxyPortBindings(), transactionTypes, providers,
+                    getStorageContainerImageName(registry.getDbType(), databaseVersion), scenario, new LinkedList<>()));
             testParams.get(key).getTransactionTestCaseClasses().add(caseClass);
         }
         
         private String getUniqueKey(final String databaseType, final String runningAdapter, final List<TransactionType> transactionTypes, final List<String> providers, final String scenario) {
             return String.join(File.separator, databaseType, runningAdapter, transactionTypes.toString(), providers.toString(), scenario);
-        }
-        
-        private DatabaseType getDatabaseType(final String databaseType) {
-            switch (databaseType) {
-                case TransactionTestConstants.MYSQL:
-                    return TypedSPILoader.getService(DatabaseType.class, "MySQL");
-                case TransactionTestConstants.POSTGRESQL:
-                    return TypedSPILoader.getService(DatabaseType.class, "PostgreSQL");
-                case TransactionTestConstants.OPENGAUSS:
-                    return TypedSPILoader.getService(DatabaseType.class, "openGauss");
-                default:
-                    throw new UnsupportedOperationException(String.format("Unsupported database type `%s`.", databaseType));
-            }
         }
         
         private String getStorageContainerImageName(final String databaseType, final String databaseVersion) {
