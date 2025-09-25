@@ -19,12 +19,11 @@ package org.apache.shardingsphere.test.e2e.operation.transaction.env;
 
 import com.google.common.base.Strings;
 import lombok.Getter;
+import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.test.e2e.env.container.constants.ProxyContainerConstants;
 import org.apache.shardingsphere.test.e2e.env.container.constants.StorageContainerConstants;
-import org.apache.shardingsphere.test.e2e.env.container.storage.option.dialect.mysql.MySQLStorageContainerCreateOption;
-import org.apache.shardingsphere.test.e2e.env.container.storage.option.dialect.opengauss.OpenGaussStorageContainerCreateOption;
-import org.apache.shardingsphere.test.e2e.env.container.storage.option.dialect.postgresql.PostgreSQLStorageContainerCreateOption;
+import org.apache.shardingsphere.test.e2e.env.container.storage.option.StorageContainerOption;
 import org.apache.shardingsphere.test.e2e.env.runtime.type.RunEnvironment.Type;
 import org.apache.shardingsphere.test.e2e.operation.transaction.env.enums.TransactionTestCaseRegistry;
 
@@ -105,43 +104,28 @@ public final class TransactionE2EEnvironment {
      *
      * @param databaseType database type
      * @return default port
-     * @throws UnsupportedOperationException unsupported operation exception
      */
     public int getActualDataSourceDefaultPort(final DatabaseType databaseType) {
-        switch (databaseType.getType()) {
-            case "MySQL":
-                return Integer.parseInt(props.getOrDefault("transaction.e2e.native.mysql.port", new MySQLStorageContainerCreateOption().getPort()).toString());
-            case "PostgreSQL":
-                return Integer.parseInt(props.getOrDefault("transaction.e2e.native.postgresql.port", new PostgreSQLStorageContainerCreateOption().getPort()).toString());
-            case "openGauss":
-                return Integer.parseInt(props.getOrDefault("transaction.e2e.native.opengauss.port", new OpenGaussStorageContainerCreateOption().getPort()).toString());
-            default:
-                throw new UnsupportedOperationException(String.format("Unsupported database type: `%s`", databaseType.getType()));
-        }
+        int defaultPort = DatabaseTypedSPILoader.getService(StorageContainerOption.class, databaseType).getCreateOption().getPort();
+        return Integer.parseInt(props.getOrDefault("e2e.native.storage.port", defaultPort).toString());
     }
     
     /**
      * Get actual data source username.
      *
-     * @param databaseType database type
      * @return actual data source username
      */
-    public String getActualDataSourceUsername(final DatabaseType databaseType) {
-        return type == Type.NATIVE
-                ? String.valueOf(props.getOrDefault(String.format("transaction.e2e.native.%s.username", databaseType.getType().toLowerCase()), ProxyContainerConstants.USER))
-                : StorageContainerConstants.OPERATION_USER;
+    public String getActualDataSourceUsername() {
+        return type == Type.NATIVE ? String.valueOf(props.getOrDefault("e2e.native.storage.username", ProxyContainerConstants.USER)) : StorageContainerConstants.OPERATION_USER;
     }
     
     /**
      * Get actual data source password.
      *
-     * @param databaseType database type
-     * @return actual data source username
+     * @return actual data source password
      */
-    public String getActualDataSourcePassword(final DatabaseType databaseType) {
-        return type == Type.NATIVE
-                ? props.getOrDefault(String.format("transaction.e2e.native.%s.password", databaseType.getType().toLowerCase()), ProxyContainerConstants.PASSWORD).toString()
-                : StorageContainerConstants.OPERATION_PASSWORD;
+    public String getActualDataSourcePassword() {
+        return type == Type.NATIVE ? props.getOrDefault("e2e.native.storage.password", ProxyContainerConstants.PASSWORD).toString() : StorageContainerConstants.OPERATION_PASSWORD;
     }
     
     /**

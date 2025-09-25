@@ -267,8 +267,8 @@ public abstract class TransactionBaseE2EIT {
      */
     public void addResource(final Connection connection, final String databaseName, final TransactionContainerComposer containerComposer) throws SQLException {
         String addSourceResource = commonSQL.getSourceAddNewResourceTemplate()
-                .replace("${user}", ENV.getActualDataSourceUsername(containerComposer.getDatabaseType()))
-                .replace("${password}", ENV.getActualDataSourcePassword(containerComposer.getDatabaseType()))
+                .replace("${user}", ENV.getActualDataSourceUsername())
+                .replace("${password}", ENV.getActualDataSourcePassword())
                 .replace("${ds2}", getActualJdbcUrlTemplate(databaseName, containerComposer));
         executeWithLog(connection, addSourceResource);
         int resourceCount = countWithLog("SHOW STORAGE UNITS FROM sharding_db", containerComposer);
