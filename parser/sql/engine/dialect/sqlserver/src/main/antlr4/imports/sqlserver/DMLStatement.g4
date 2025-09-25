@@ -345,7 +345,7 @@ queryHint
     | OPTIMIZE FOR LP_ optimizeForParameter (COMMA_ optimizeForParameter)* RP_
     | OPTIMIZE FOR UNKNOWN
     | PARAMETERIZATION (SIMPLE | FORCED)
-    | QUERYTRACEON INT_NUM_
+    | QUERYTRACEON NUMBER_ (COMMA_ QUERYTRACEON NUMBER_)*
     | RECOMPILE
     | ROBUST PLAN
     | USE HINT LP_ useHitName (COMMA_ useHitName)* RP_
