@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.test.e2e.env.runtime.type;
 
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
@@ -46,6 +47,7 @@ public final class ArtifactEnvironment {
     
     private final Collection<DatabaseType> databaseTypes;
     
+    @Getter(AccessLevel.NONE)
     private final Map<DatabaseType, String> databaseImages;
     
     private final List<String> proxyPortBindings;
@@ -67,6 +69,16 @@ public final class ArtifactEnvironment {
             Optional.ofNullable(props.getProperty(String.format("e2e.artifact.database.%s.image", each.getType().toLowerCase()))).ifPresent(value -> result.put(each, value));
         }
         return result;
+    }
+    
+    /**
+     * Get database image.
+     *
+     * @param databaseType database type
+     * @return database image
+     */
+    public String getDatabaseImage(final DatabaseType databaseType) {
+        return databaseImages.get(databaseType);
     }
     
     public enum Mode {
