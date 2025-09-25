@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.test.e2e.operation.transaction.engine.base;
 
 import com.google.common.base.Preconditions;
+import com.google.common.base.Strings;
 import lombok.Getter;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -355,11 +356,14 @@ public abstract class TransactionBaseE2EIT {
         }
         
         private Collection<TransactionTestParameter> getTestParameters(final TransactionTestCaseRegistry registry) {
-            Map<String, TransactionTestParameter> result = new LinkedHashMap<>();
             if (TEST_CASES.isEmpty()) {
                 log.warn("Transaction test cases are empty.");
             }
             String databaseVersion = ENV.getArtifactEnvironment().getDatabaseImage(registry.getDatabaseType());
+            if (Strings.isNullOrEmpty(databaseVersion)) {
+                return new LinkedList<>();
+            }
+            Map<String, TransactionTestParameter> result = new LinkedHashMap<>();
             for (Class<? extends BaseTransactionTestCase> each : TEST_CASES) {
                 if (!TRANSACTION_ENV.getCases().isEmpty() && !TRANSACTION_ENV.getCases().contains(each.getSimpleName())) {
                     log.info("Collect transaction test case, need to run cases don't contain this, skip: {}.", each.getName());
