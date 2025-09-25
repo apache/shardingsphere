@@ -393,8 +393,8 @@ public abstract class TransactionBaseE2EIT {
             if (Adapter.PROXY.getValue().equals(registry.getRunningAdaptor())) {
                 List<TransactionType> allowedTransactionTypes = TRANSACTION_ENV.getTransactionTypes().isEmpty() ? Arrays.stream(TransactionType.values()).collect(Collectors.toList())
                         : TRANSACTION_ENV.getTransactionTypes().stream().map(TransactionType::valueOf).collect(Collectors.toList());
-                List<String> allowedProviders = TRANSACTION_ENV.getXaProviders().isEmpty() ? ALL_XA_PROVIDERS : TRANSACTION_ENV.getXaProviders();
-                setTestParameters(testParams, registry, databaseVersion, allowedTransactionTypes, allowedProviders, scenario, caseClass);
+                List<String> xaProviders = TRANSACTION_ENV.getXaProviders().isEmpty() ? ALL_XA_PROVIDERS : TRANSACTION_ENV.getXaProviders();
+                setTestParameters(testParams, registry, databaseVersion, allowedTransactionTypes, xaProviders, scenario, caseClass);
                 return;
             }
             for (TransactionType each : transactionTestCase.transactionTypes()) {
