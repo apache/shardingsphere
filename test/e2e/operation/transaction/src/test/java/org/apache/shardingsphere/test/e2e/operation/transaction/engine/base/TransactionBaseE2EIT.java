@@ -355,14 +355,11 @@ public abstract class TransactionBaseE2EIT {
         }
         
         private Collection<TransactionTestParameter> getTestParameters(final TransactionTestCaseRegistry registry) {
-            return getTestParameters(registry, ENV.getArtifactEnvironment().getDatabaseImages().get(TypedSPILoader.getService(DatabaseType.class, registry.getDbType())));
-        }
-        
-        private Collection<TransactionTestParameter> getTestParameters(final TransactionTestCaseRegistry registry, final String databaseVersion) {
             Map<String, TransactionTestParameter> result = new LinkedHashMap<>();
             if (TEST_CASES.isEmpty()) {
                 log.warn("Transaction test cases are empty.");
             }
+            String databaseVersion = ENV.getArtifactEnvironment().getDatabaseImage(TypedSPILoader.getService(DatabaseType.class, registry.getDbType()));
             for (Class<? extends BaseTransactionTestCase> each : TEST_CASES) {
                 if (!TRANSACTION_ENV.getCases().isEmpty() && !ENV.getScenarios().contains(each.getSimpleName())) {
                     log.info("Collect transaction test case, need to run cases don't contain this, skip: {}.", each.getName());
