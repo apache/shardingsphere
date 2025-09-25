@@ -391,14 +391,14 @@ public abstract class TransactionBaseE2EIT {
         private void setTestParameters(final Map<String, TransactionTestParameter> testParams, final TransactionTestCaseRegistry registry, final String databaseVersion,
                                        final TransactionTestCase transactionTestCase, final String scenario, final Class<? extends BaseTransactionTestCase> caseClass) {
             if (Adapter.PROXY.getValue().equals(registry.getRunningAdaptor())) {
-                List<TransactionType> allowedTransactionTypes = TRANSACTION_ENV.getAllowTransactionTypes().isEmpty() ? Arrays.stream(TransactionType.values()).collect(Collectors.toList())
-                        : TRANSACTION_ENV.getAllowTransactionTypes().stream().map(TransactionType::valueOf).collect(Collectors.toList());
-                List<String> allowedProviders = TRANSACTION_ENV.getAllowXAProviders().isEmpty() ? ALL_XA_PROVIDERS : TRANSACTION_ENV.getAllowXAProviders();
-                setTestParameters(testParams, registry, databaseVersion, allowedTransactionTypes, allowedProviders, scenario, caseClass);
+                List<TransactionType> allowedTransactionTypes = TRANSACTION_ENV.getTransactionTypes().isEmpty() ? Arrays.stream(TransactionType.values()).collect(Collectors.toList())
+                        : TRANSACTION_ENV.getTransactionTypes().stream().map(TransactionType::valueOf).collect(Collectors.toList());
+                List<String> xaProviders = TRANSACTION_ENV.getXaProviders().isEmpty() ? ALL_XA_PROVIDERS : TRANSACTION_ENV.getXaProviders();
+                setTestParameters(testParams, registry, databaseVersion, allowedTransactionTypes, xaProviders, scenario, caseClass);
                 return;
             }
             for (TransactionType each : transactionTestCase.transactionTypes()) {
-                if (!TRANSACTION_ENV.getAllowTransactionTypes().isEmpty() && !TRANSACTION_ENV.getAllowTransactionTypes().contains(each.toString())) {
+                if (!TRANSACTION_ENV.getTransactionTypes().isEmpty() && !TRANSACTION_ENV.getTransactionTypes().contains(each.toString())) {
                     log.info("Collect transaction test case, need to run transaction types don't contain this, skip: {}-{}.", caseClass.getName(), each);
                     continue;
                 }
@@ -413,7 +413,7 @@ public abstract class TransactionBaseE2EIT {
                 return;
             }
             if (TransactionType.XA == transactionType) {
-                for (String each : TRANSACTION_ENV.getAllowXAProviders().isEmpty() ? ALL_XA_PROVIDERS : TRANSACTION_ENV.getAllowXAProviders()) {
+                for (String each : TRANSACTION_ENV.getXaProviders().isEmpty() ? ALL_XA_PROVIDERS : TRANSACTION_ENV.getXaProviders()) {
                     setTestParameters(testParams, registry, databaseVersion, Collections.singletonList(transactionType), Collections.singletonList(each), scenario, caseClass);
                 }
             }
