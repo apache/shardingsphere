@@ -267,8 +267,8 @@ public abstract class TransactionBaseE2EIT {
      */
     public void addResource(final Connection connection, final String databaseName, final TransactionContainerComposer containerComposer) throws SQLException {
         String addSourceResource = commonSQL.getSourceAddNewResourceTemplate()
-                .replace("${user}", ENV.getActualDataSourceUsername(containerComposer.getDatabaseType()))
-                .replace("${password}", ENV.getActualDataSourcePassword(containerComposer.getDatabaseType()))
+                .replace("${user}", ENV.getActualDataSourceUsername())
+                .replace("${password}", ENV.getActualDataSourcePassword())
                 .replace("${ds2}", getActualJdbcUrlTemplate(databaseName, containerComposer));
         executeWithLog(connection, addSourceResource);
         int resourceCount = countWithLog("SHOW STORAGE UNITS FROM sharding_db", containerComposer);
@@ -329,7 +329,7 @@ public abstract class TransactionBaseE2EIT {
     }
     
     private static boolean isEnabled() {
-        return !ENV.getNeedToRunTestCases().isEmpty() && null != ENV.getType();
+        return !ENV.getScenarios().isEmpty() && null != ENV.getType();
     }
     
     private static final class TestCaseArgumentsProvider implements ArgumentsProvider {
@@ -373,7 +373,7 @@ public abstract class TransactionBaseE2EIT {
                 log.warn("Transaction test cases are empty.");
             }
             for (Class<? extends BaseTransactionTestCase> each : TEST_CASES) {
-                if (!ENV.getNeedToRunTestCases().isEmpty() && !ENV.getNeedToRunTestCases().contains(each.getSimpleName())) {
+                if (!ENV.getScenarios().isEmpty() && !ENV.getScenarios().contains(each.getSimpleName())) {
                     log.info("Collect transaction test case, need to run cases don't contain this, skip: {}.", each.getName());
                     continue;
                 }
