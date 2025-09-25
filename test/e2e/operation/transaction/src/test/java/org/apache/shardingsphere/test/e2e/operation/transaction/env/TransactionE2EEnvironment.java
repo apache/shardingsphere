@@ -19,17 +19,12 @@ package org.apache.shardingsphere.test.e2e.operation.transaction.env;
 
 import com.google.common.base.Strings;
 import lombok.Getter;
-import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoader;
-import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
-import org.apache.shardingsphere.test.e2e.env.container.constants.ProxyContainerConstants;
-import org.apache.shardingsphere.test.e2e.env.container.constants.StorageContainerConstants;
-import org.apache.shardingsphere.test.e2e.env.container.storage.option.StorageContainerOption;
-import org.apache.shardingsphere.test.e2e.env.runtime.type.RunEnvironment.Type;
 import org.apache.shardingsphere.test.e2e.operation.transaction.env.enums.TransactionTestCaseRegistry;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -43,17 +38,9 @@ public final class TransactionE2EEnvironment {
     
     private final Properties props;
     
-    private final List<String> scenarios;
-    
-    private final Type type;
+    private final Collection<String> cases;
     
     private final List<String> portBindings;
-    
-    private final List<String> mysqlVersions;
-    
-    private final List<String> postgresqlVersions;
-    
-    private final List<String> openGaussVersions;
     
     private final List<String> allowTransactionTypes;
     
@@ -63,19 +50,11 @@ public final class TransactionE2EEnvironment {
     
     private TransactionE2EEnvironment() {
         props = loadProperties();
-        scenarios = splitProperty("e2e.scenarios");
-        type = props.containsKey("e2e.run.type") ? null : Type.valueOf(props.getProperty("e2e.run.type").toUpperCase());
-        portBindings = splitProperty("e2e.proxy.port.bindings");
-        mysqlVersions = splitProperty("e2e.artifact.database.mysql.image");
-        postgresqlVersions = splitProperty("e2e.artifact.database.postgresql.image");
-        openGaussVersions = splitProperty("e2e.artifact.database.opengauss.image");
+        cases = splitProperty("e2e.cases");
+        portBindings = splitProperty("e2e.artifact.proxy.port.bindings");
         allowTransactionTypes = splitProperty("transaction.e2e.env.transtypes");
         allowXAProviders = splitProperty("transaction.e2e.env.xa.providers");
         transactionTestCaseRegistryMap = initTransactionTestCaseRegistryMap();
-    }
-    
-    private List<String> splitProperty(final String key) {
-        return Arrays.stream(props.getOrDefault(key, "").toString().split(",")).filter(each -> !Strings.isNullOrEmpty(each)).map(String::trim).collect(Collectors.toList());
     }
     
     private Properties loadProperties() {
@@ -91,41 +70,16 @@ public final class TransactionE2EEnvironment {
         return result;
     }
     
+    private List<String> splitProperty(final String key) {
+        return Arrays.stream(props.getOrDefault(key, "").toString().split(",")).filter(each -> !Strings.isNullOrEmpty(each)).map(String::trim).collect(Collectors.toList());
+    }
+    
     private Map<String, TransactionTestCaseRegistry> initTransactionTestCaseRegistryMap() {
         Map<String, TransactionTestCaseRegistry> result = new HashMap<>(TransactionTestCaseRegistry.values().length, 1F);
         for (TransactionTestCaseRegistry each : TransactionTestCaseRegistry.values()) {
             result.put(each.getTestCaseClass().getName(), each);
         }
         return result;
-    }
-    
-    /**
-     * Get actual data source default port.
-     *
-     * @param databaseType database type
-     * @return default port
-     */
-    public int getActualDataSourceDefaultPort(final DatabaseType databaseType) {
-        int defaultPort = DatabaseTypedSPILoader.getService(StorageContainerOption.class, databaseType).getCreateOption().getPort();
-        return Integer.parseInt(props.getOrDefault("e2e.native.storage.port", defaultPort).toString());
-    }
-    
-    /**
-     * Get actual data source username.
-     *
-     * @return actual data source username
-     */
-    public String getActualDataSourceUsername() {
-        return type == Type.NATIVE ? String.valueOf(props.getOrDefault("e2e.native.storage.username", ProxyContainerConstants.USER)) : StorageContainerConstants.OPERATION_USER;
-    }
-    
-    /**
-     * Get actual data source password.
-     *
-     * @return actual data source password
-     */
-    public String getActualDataSourcePassword() {
-        return type == Type.NATIVE ? props.getOrDefault("e2e.native.storage.password", ProxyContainerConstants.PASSWORD).toString() : StorageContainerConstants.OPERATION_PASSWORD;
     }
     
     /**

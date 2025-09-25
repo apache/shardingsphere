@@ -25,7 +25,9 @@ import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Properties;
@@ -47,6 +49,8 @@ public final class ArtifactEnvironment {
     
     private final Map<DatabaseType, String> databaseImages;
     
+    private final Map<String, String> proxyPortBindingMap;
+    
     public ArtifactEnvironment(final Properties props) {
         modes = Splitter.on(",").trimResults().splitToList(props.getProperty("e2e.artifact.modes", "")).stream()
                 .filter(each -> !each.isEmpty()).map(each -> Mode.valueOf(each.toUpperCase())).collect(Collectors.toList());
@@ -54,6 +58,16 @@ public final class ArtifactEnvironment {
         regCenterType = props.getProperty("e2e.artifact.regcenter");
         databaseTypes = getDatabaseTypes(props);
         databaseImages = getDatabaseImages(props);
+        proxyPortBindingMap = getProxyPortBindingMap(props);
+    }
+    
+    private Collection<String> getAdapters(final Properties props) {
+        return Splitter.on(",").trimResults().splitToList(props.getProperty("e2e.artifact.adapters", "")).stream().filter(each -> !each.isEmpty()).collect(Collectors.toList());
+    }
+    
+    private Collection<DatabaseType> getDatabaseTypes(final Properties props) {
+        return Splitter.on(",").trimResults().splitToList(props.getProperty("e2e.artifact.databases", "")).stream()
+                .filter(each -> !each.isEmpty()).map(each -> TypedSPILoader.getService(DatabaseType.class, each.trim())).collect(Collectors.toSet());
     }
     
     private Map<DatabaseType, String> getDatabaseImages(final Properties props) {
@@ -65,13 +79,9 @@ public final class ArtifactEnvironment {
         return result;
     }
     
-    private Collection<String> getAdapters(final Properties props) {
-        return Splitter.on(",").trimResults().splitToList(props.getProperty("e2e.artifact.adapters", "")).stream().filter(each -> !each.isEmpty()).collect(Collectors.toList());
-    }
-    
-    private Collection<DatabaseType> getDatabaseTypes(final Properties props) {
-        return Splitter.on(",").trimResults().splitToList(props.getProperty("e2e.artifact.databases", "")).stream()
-                .filter(each -> !each.isEmpty()).map(each -> TypedSPILoader.getService(DatabaseType.class, each.trim())).collect(Collectors.toSet());
+    private Map<String, String> getProxyPortBindingMap(final Properties props) {
+        List<String> portBindingPair = Splitter.on(":").trimResults().splitToList(props.getProperty("e2e.artifact.proxy.port.bindings", ""));
+        return 2 == portBindingPair.size() ? Collections.singletonMap(portBindingPair.get(0), portBindingPair.get(1)) : Collections.emptyMap();
     }
     
     public enum Mode {
