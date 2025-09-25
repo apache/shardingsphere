@@ -17,15 +17,12 @@
 
 package org.apache.shardingsphere.test.e2e.operation.transaction.env;
 
-import com.google.common.base.Strings;
 import lombok.Getter;
+import org.apache.shardingsphere.test.e2e.env.runtime.EnvironmentPropertiesLoader;
 import org.apache.shardingsphere.test.e2e.operation.transaction.env.enums.TransactionTestCaseRegistry;
 
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -45,36 +42,11 @@ public final class TransactionE2EEnvironment {
     private final Map<String, TransactionTestCaseRegistry> transactionTestCaseRegistryMap;
     
     private TransactionE2EEnvironment() {
-        Properties props = loadProperties();
-        cases = splitProperty(props, "e2e.cases");
-        allowTransactionTypes = splitProperty(props, "transaction.e2e.env.transtypes");
-        allowXAProviders = splitProperty(props, "transaction.e2e.env.xa.providers");
-        transactionTestCaseRegistryMap = initTransactionTestCaseRegistryMap();
-    }
-    
-    private Properties loadProperties() {
-        Properties result = new Properties();
-        try (InputStream inputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream("env/e2e-env.properties")) {
-            result.load(inputStream);
-        } catch (final IOException ex) {
-            throw new RuntimeException(ex);
-        }
-        for (String each : System.getProperties().stringPropertyNames()) {
-            result.setProperty(each, System.getProperty(each));
-        }
-        return result;
-    }
-    
-    private List<String> splitProperty(final Properties props, final String key) {
-        return Arrays.stream(props.getOrDefault(key, "").toString().split(",")).filter(each -> !Strings.isNullOrEmpty(each)).map(String::trim).collect(Collectors.toList());
-    }
-    
-    private Map<String, TransactionTestCaseRegistry> initTransactionTestCaseRegistryMap() {
-        Map<String, TransactionTestCaseRegistry> result = new HashMap<>(TransactionTestCaseRegistry.values().length, 1F);
-        for (TransactionTestCaseRegistry each : TransactionTestCaseRegistry.values()) {
-            result.put(each.getTestCaseClass().getName(), each);
-        }
-        return result;
+        Properties props = EnvironmentPropertiesLoader.loadProperties();
+        cases = EnvironmentPropertiesLoader.getListValue(props, "e2e.cases");
+        allowTransactionTypes = EnvironmentPropertiesLoader.getListValue(props, "transaction.e2e.env.transtypes");
+        allowXAProviders = EnvironmentPropertiesLoader.getListValue(props, "transaction.e2e.env.xa.providers");
+        transactionTestCaseRegistryMap = Arrays.stream(TransactionTestCaseRegistry.values()).collect(Collectors.toMap(each -> each.getTestCaseClass().getName(), each -> each));
     }
     
     /**
