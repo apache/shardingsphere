@@ -17,20 +17,14 @@
 
 package org.apache.shardingsphere.test.e2e.env.runtime;
 
-import com.google.common.base.Splitter;
 import lombok.Getter;
-import lombok.SneakyThrows;
 import org.apache.shardingsphere.test.e2e.env.runtime.type.ArtifactEnvironment;
 import org.apache.shardingsphere.test.e2e.env.runtime.type.NativeStorageEnvironment;
 import org.apache.shardingsphere.test.e2e.env.runtime.type.RunEnvironment;
-import org.apache.shardingsphere.test.e2e.env.runtime.type.scenario.path.ScenarioCommonPath;
 
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.Collection;
 import java.util.Properties;
 import java.util.TimeZone;
-import java.util.stream.Collectors;
 
 /**
  * E2E test environment.
@@ -49,32 +43,12 @@ public final class E2ETestEnvironment {
     private final NativeStorageEnvironment nativeStorageEnvironment;
     
     private E2ETestEnvironment() {
-        Properties props = loadProperties();
+        Properties props = EnvironmentPropertiesLoader.loadProperties();
         TimeZone.setDefault(TimeZone.getTimeZone(props.getProperty("e2e.timezone", "UTC")));
-        scenarios = getScenarios(props);
+        scenarios = EnvironmentPropertiesLoader.getListValue(props, "e2e.scenarios");
         runEnvironment = new RunEnvironment(props);
         artifactEnvironment = new ArtifactEnvironment(props);
         nativeStorageEnvironment = new NativeStorageEnvironment(props);
-    }
-    
-    @SneakyThrows(IOException.class)
-    private Properties loadProperties() {
-        Properties result = new Properties();
-        try (InputStream inputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream("env/e2e-env.properties")) {
-            result.load(inputStream);
-        }
-        for (String each : System.getProperties().stringPropertyNames()) {
-            result.setProperty(each, System.getProperty(each));
-        }
-        return result;
-    }
-    
-    private Collection<String> getScenarios(final Properties props) {
-        Collection<String> result = Splitter.on(",").trimResults().splitToList(props.getProperty("e2e.scenarios", "")).stream().filter(each -> !each.isEmpty()).collect(Collectors.toList());
-        for (String each : result) {
-            new ScenarioCommonPath(each).checkFolderExist();
-        }
-        return result;
     }
     
     /**
