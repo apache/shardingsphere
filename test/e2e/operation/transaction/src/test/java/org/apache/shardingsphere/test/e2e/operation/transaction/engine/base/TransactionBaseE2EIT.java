@@ -82,7 +82,9 @@ public abstract class TransactionBaseE2EIT {
     
     private static final List<Class<? extends BaseTransactionTestCase>> TEST_CASES = TestCaseClassScanner.scan();
     
-    private static final TransactionE2EEnvironment ENV = TransactionE2EEnvironment.getInstance();
+    private static final E2ETestEnvironment ENV = E2ETestEnvironment.getInstance();
+    
+    private static final TransactionE2EEnvironment TRANSACTION_ENV = TransactionE2EEnvironment.getInstance();
     
     private final CommonSQLCommand commonSQL;
     
@@ -268,8 +270,8 @@ public abstract class TransactionBaseE2EIT {
      */
     public void addResource(final Connection connection, final String databaseName, final TransactionContainerComposer containerComposer) throws SQLException {
         String addSourceResource = commonSQL.getSourceAddNewResourceTemplate()
-                .replace("${user}", E2ETestEnvironment.getInstance().getNativeStorageEnvironment().getUser())
-                .replace("${password}", E2ETestEnvironment.getInstance().getNativeStorageEnvironment().getPassword())
+                .replace("${user}", ENV.getNativeStorageEnvironment().getUser())
+                .replace("${password}", ENV.getNativeStorageEnvironment().getPassword())
                 .replace("${ds2}", getActualJdbcUrlTemplate(databaseName, containerComposer));
         executeWithLog(connection, addSourceResource);
         int resourceCount = countWithLog("SHOW STORAGE UNITS FROM sharding_db", containerComposer);
@@ -279,11 +281,11 @@ public abstract class TransactionBaseE2EIT {
     
     private String getActualJdbcUrlTemplate(final String databaseName, final TransactionContainerComposer containerComposer) {
         StorageContainerConnectOption option = DatabaseTypedSPILoader.getService(StorageContainerOption.class, containerComposer.getDatabaseType()).getConnectOption();
-        if (Type.DOCKER == E2ETestEnvironment.getInstance().getRunEnvironment().getType()) {
+        if (Type.DOCKER == ENV.getRunEnvironment().getType()) {
             DockerStorageContainer storageContainer = (DockerStorageContainer) ((TransactionDockerContainerComposer) containerComposer.getContainerComposer()).getStorageContainer();
             return option.getURL(containerComposer.getDatabaseType().getType().toLowerCase() + ".host", storageContainer.getExposedPort(), databaseName);
         }
-        return option.getURL("127.0.0.1", E2ETestEnvironment.getInstance().getNativeStorageEnvironment().getPort(), databaseName);
+        return option.getURL("127.0.0.1", ENV.getNativeStorageEnvironment().getPort(), databaseName);
     }
     
     /**
@@ -330,7 +332,7 @@ public abstract class TransactionBaseE2EIT {
     }
     
     private static boolean isEnabled() {
-        return !E2ETestEnvironment.getInstance().getScenarios().isEmpty() && null != E2ETestEnvironment.getInstance().getRunEnvironment().getType();
+        return !ENV.getScenarios().isEmpty() && null != ENV.getRunEnvironment().getType();
     }
     
     private static final class TestCaseArgumentsProvider implements ArgumentsProvider {
@@ -343,7 +345,7 @@ public abstract class TransactionBaseE2EIT {
         }
         
         private Collection<TransactionTestParameter> getTransactionTestParameters(final Class<? extends TransactionBaseE2EIT> testCaseClass) {
-            TransactionTestCaseRegistry currentTestCaseInfo = ENV.getTransactionTestCaseRegistryMap().get(testCaseClass.getName());
+            TransactionTestCaseRegistry currentTestCaseInfo = TRANSACTION_ENV.getTransactionTestCaseRegistryMap().get(testCaseClass.getName());
             Collection<TransactionTestParameter> result = getTestParameters(currentTestCaseInfo);
             // TODO zhangcheng make sure the test cases should not empty
             if (result.isEmpty()) {
@@ -353,7 +355,7 @@ public abstract class TransactionBaseE2EIT {
         }
         
         private Collection<TransactionTestParameter> getTestParameters(final TransactionTestCaseRegistry registry) {
-            return getTestParameters(registry, E2ETestEnvironment.getInstance().getArtifactEnvironment().getDatabaseImages().get(TypedSPILoader.getService(DatabaseType.class, registry.getDbType())));
+            return getTestParameters(registry, ENV.getArtifactEnvironment().getDatabaseImages().get(TypedSPILoader.getService(DatabaseType.class, registry.getDbType())));
         }
         
         private Collection<TransactionTestParameter> getTestParameters(final TransactionTestCaseRegistry registry, final String databaseVersion) {
@@ -362,7 +364,7 @@ public abstract class TransactionBaseE2EIT {
                 log.warn("Transaction test cases are empty.");
             }
             for (Class<? extends BaseTransactionTestCase> each : TEST_CASES) {
-                if (!E2ETestEnvironment.getInstance().getScenarios().isEmpty() && !E2ETestEnvironment.getInstance().getScenarios().contains(each.getSimpleName())) {
+                if (!ENV.getScenarios().isEmpty() && !ENV.getScenarios().contains(each.getSimpleName())) {
                     log.info("Collect transaction test case, need to run cases don't contain this, skip: {}.", each.getName());
                     continue;
                 }
@@ -389,14 +391,14 @@ public abstract class TransactionBaseE2EIT {
         private void setTestParameters(final Map<String, TransactionTestParameter> testParams, final TransactionTestCaseRegistry registry, final String databaseVersion,
                                        final TransactionTestCase transactionTestCase, final String scenario, final Class<? extends BaseTransactionTestCase> caseClass) {
             if (Adapter.PROXY.getValue().equals(registry.getRunningAdaptor())) {
-                List<TransactionType> allowedTransactionTypes = ENV.getAllowTransactionTypes().isEmpty() ? Arrays.stream(TransactionType.values()).collect(Collectors.toList())
-                        : ENV.getAllowTransactionTypes().stream().map(TransactionType::valueOf).collect(Collectors.toList());
-                List<String> allowedProviders = ENV.getAllowXAProviders().isEmpty() ? ALL_XA_PROVIDERS : ENV.getAllowXAProviders();
+                List<TransactionType> allowedTransactionTypes = TRANSACTION_ENV.getAllowTransactionTypes().isEmpty() ? Arrays.stream(TransactionType.values()).collect(Collectors.toList())
+                        : TRANSACTION_ENV.getAllowTransactionTypes().stream().map(TransactionType::valueOf).collect(Collectors.toList());
+                List<String> allowedProviders = TRANSACTION_ENV.getAllowXAProviders().isEmpty() ? ALL_XA_PROVIDERS : TRANSACTION_ENV.getAllowXAProviders();
                 setTestParameters(testParams, registry, databaseVersion, allowedTransactionTypes, allowedProviders, scenario, caseClass);
                 return;
             }
             for (TransactionType each : transactionTestCase.transactionTypes()) {
-                if (!ENV.getAllowTransactionTypes().isEmpty() && !ENV.getAllowTransactionTypes().contains(each.toString())) {
+                if (!TRANSACTION_ENV.getAllowTransactionTypes().isEmpty() && !TRANSACTION_ENV.getAllowTransactionTypes().contains(each.toString())) {
                     log.info("Collect transaction test case, need to run transaction types don't contain this, skip: {}-{}.", caseClass.getName(), each);
                     continue;
                 }
@@ -411,7 +413,7 @@ public abstract class TransactionBaseE2EIT {
                 return;
             }
             if (TransactionType.XA == transactionType) {
-                for (String each : ENV.getAllowXAProviders().isEmpty() ? ALL_XA_PROVIDERS : ENV.getAllowXAProviders()) {
+                for (String each : TRANSACTION_ENV.getAllowXAProviders().isEmpty() ? ALL_XA_PROVIDERS : TRANSACTION_ENV.getAllowXAProviders()) {
                     setTestParameters(testParams, registry, databaseVersion, Collections.singletonList(transactionType), Collections.singletonList(each), scenario, caseClass);
                 }
             }
@@ -420,7 +422,8 @@ public abstract class TransactionBaseE2EIT {
         private void setTestParameters(final Map<String, TransactionTestParameter> testParams, final TransactionTestCaseRegistry registry, final String databaseVersion,
                                        final List<TransactionType> transactionTypes, final List<String> providers, final String scenario, final Class<? extends BaseTransactionTestCase> caseClass) {
             String key = getUniqueKey(registry.getDbType(), registry.getRunningAdaptor(), transactionTypes, providers, scenario);
-            testParams.putIfAbsent(key, new TransactionTestParameter(getDatabaseType(registry.getDbType()), registry.getRunningAdaptor(), ENV.getPortBindings(), transactionTypes, providers,
+            testParams.putIfAbsent(
+                    key, new TransactionTestParameter(getDatabaseType(registry.getDbType()), registry.getRunningAdaptor(), TRANSACTION_ENV.getPortBindings(), transactionTypes, providers,
                     getStorageContainerImageName(registry.getDbType(), databaseVersion), scenario, new LinkedList<>()));
             testParams.get(key).getTransactionTestCaseClasses().add(caseClass);
         }

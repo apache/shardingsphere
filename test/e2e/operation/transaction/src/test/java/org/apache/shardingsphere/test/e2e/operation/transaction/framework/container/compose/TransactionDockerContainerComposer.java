@@ -61,17 +61,17 @@ public final class TransactionDockerContainerComposer extends TransactionBaseCon
         super(testParam.getScenario());
         DatabaseType databaseType = testParam.getDatabaseType();
         GovernanceContainer governanceContainer = getContainers().registerContainer(new GovernanceContainer(TypedSPILoader.getService(GovernanceContainerOption.class, "ZooKeeper")));
-        if (Type.DOCKER == E2ETestEnvironment.getInstance().getRunEnvironment().getType()) {
-            storageContainer = getContainers().registerContainer(new DockerStorageContainer(
-                    testParam.getStorageContainerImage(), DatabaseTypedSPILoader.getService(StorageContainerOption.class, databaseType), testParam.getScenario()));
+        Type type = E2ETestEnvironment.getInstance().getRunEnvironment().getType();
+        if (Type.DOCKER == type) {
+            storageContainer = getContainers().registerContainer(
+                    new DockerStorageContainer(testParam.getStorageContainerImage(), DatabaseTypedSPILoader.getService(StorageContainerOption.class, databaseType), testParam.getScenario()));
         } else {
             storageContainer = getContainers().registerContainer(new NativeStorageContainer(databaseType, testParam.getScenario()));
         }
         if (Adapter.PROXY.getValue().equalsIgnoreCase(testParam.getAdapter())) {
             jdbcContainer = null;
             AdaptorContainerConfiguration containerConfig = TransactionProxyContainerConfigurationFactory.newInstance(testParam.getScenario(), databaseType, testParam.getPortBindings());
-            proxyContainer = AdapterContainerFactory.newInstance(
-                    Adapter.PROXY, databaseType, testParam.getScenario(), containerConfig, storageContainer, E2ETestEnvironment.getInstance().getRunEnvironment().getType().name());
+            proxyContainer = AdapterContainerFactory.newInstance(Adapter.PROXY, databaseType, testParam.getScenario(), containerConfig, storageContainer, type.name());
             if (proxyContainer instanceof DockerE2EContainer) {
                 ((DockerE2EContainer) proxyContainer).dependsOn(governanceContainer, storageContainer);
             }
