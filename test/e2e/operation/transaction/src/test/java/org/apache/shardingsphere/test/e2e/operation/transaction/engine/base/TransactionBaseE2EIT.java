@@ -329,7 +329,7 @@ public abstract class TransactionBaseE2EIT {
     }
     
     private static boolean isEnabled() {
-        return !ENV.getNeedToRunTestCases().isEmpty();
+        return !ENV.getNeedToRunTestCases().isEmpty() && null != ENV.getType();
     }
     
     private static final class TestCaseArgumentsProvider implements ArgumentsProvider {

@@ -66,7 +66,7 @@ public final class TransactionE2EEnvironment {
     
     private TransactionE2EEnvironment() {
         props = loadProperties();
-        type = Type.valueOf(props.getProperty("transaction.e2e.env.type", Type.NATIVE.name()).toUpperCase());
+        type = props.containsKey("transaction.e2e.env.type") ? null : Type.valueOf(props.getProperty("transaction.e2e.env.type").toUpperCase());
         portBindings = splitProperty("transaction.e2e.proxy.port.bindings");
         mysqlVersions = splitProperty("transaction.e2e.docker.mysql.version");
         postgresqlVersions = splitProperty("transaction.e2e.docker.postgresql.version");
