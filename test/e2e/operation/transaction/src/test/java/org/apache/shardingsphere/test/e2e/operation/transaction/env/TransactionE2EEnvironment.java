@@ -35,17 +35,17 @@ public final class TransactionE2EEnvironment {
     
     private final Collection<String> cases;
     
-    private final List<String> allowTransactionTypes;
+    private final List<String> transactionTypes;
     
-    private final List<String> allowXAProviders;
+    private final List<String> xaProviders;
     
     private final Map<String, TransactionTestCaseRegistry> transactionTestCaseRegistryMap;
     
     private TransactionE2EEnvironment() {
         Properties props = EnvironmentPropertiesLoader.loadProperties();
-        cases = EnvironmentPropertiesLoader.getListValue(props, "e2e.cases");
-        allowTransactionTypes = EnvironmentPropertiesLoader.getListValue(props, "transaction.e2e.env.transtypes");
-        allowXAProviders = EnvironmentPropertiesLoader.getListValue(props, "transaction.e2e.env.xa.providers");
+        cases = EnvironmentPropertiesLoader.getListValue(props, "e2e.transaction.cases");
+        transactionTypes = EnvironmentPropertiesLoader.getListValue(props, "e2e.transaction.types");
+        xaProviders = EnvironmentPropertiesLoader.getListValue(props, "e2e.transaction.xa.providers");
         transactionTestCaseRegistryMap = Arrays.stream(TransactionTestCaseRegistry.values()).collect(Collectors.toMap(each -> each.getTestCaseClass().getName(), each -> each));
     }
     
