@@ -19,9 +19,7 @@ package org.apache.shardingsphere.test.e2e.operation.pipeline.env;
 
 import com.google.common.base.Strings;
 import lombok.Getter;
-import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
-import org.apache.shardingsphere.test.e2e.env.container.storage.option.StorageContainerOption;
 import org.apache.shardingsphere.test.e2e.env.runtime.E2ETestEnvironment;
 import org.apache.shardingsphere.test.e2e.env.runtime.EnvironmentPropertiesLoader;
 import org.apache.shardingsphere.test.e2e.env.runtime.type.RunEnvironment;
@@ -48,26 +46,6 @@ public final class PipelineE2EEnvironment {
     }
     
     /**
-     * Get actual database port.
-     *
-     * @param databaseType database type
-     * @return actual database port
-     */
-    public int getActualDatabasePort(final DatabaseType databaseType) {
-        int defaultPort = DatabaseTypedSPILoader.getService(StorageContainerOption.class, databaseType).getCreateOption().getPort();
-        return Integer.parseInt(props.getProperty("e2e.native.storage.port", String.valueOf(defaultPort)));
-    }
-    
-    /**
-     * Get native database type.
-     *
-     * @return native database type
-     */
-    public String getNativeDatabaseType() {
-        return String.valueOf(props.getProperty("pipeline.e2e.native.database"));
-    }
-    
-    /**
      * Get instance.
      *
      * @return singleton instance
@@ -83,9 +61,8 @@ public final class PipelineE2EEnvironment {
      * @return database storage container images
      */
     public List<String> listStorageContainerImages(final DatabaseType databaseType) {
-        // Native mode needn't use docker image, just return a list which contain one item
         if (RunEnvironment.Type.NATIVE == E2ETestEnvironment.getInstance().getRunEnvironment().getType()) {
-            return databaseType.getType().equalsIgnoreCase(getNativeDatabaseType()) ? Collections.singletonList("") : Collections.emptyList();
+            return Collections.emptyList();
         }
         return Arrays.stream(props.getOrDefault(String.format("e2e.artifact.database.%s.image", databaseType.getType().toLowerCase()), "").toString()
                 .split(",")).filter(each -> !Strings.isNullOrEmpty(each)).collect(Collectors.toList());
