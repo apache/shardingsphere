@@ -21,6 +21,7 @@ import lombok.SneakyThrows;
 import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.test.e2e.env.container.storage.option.StorageContainerOption;
+import org.apache.shardingsphere.test.e2e.env.runtime.E2ETestEnvironment;
 import org.apache.shardingsphere.test.e2e.operation.pipeline.env.PipelineE2EEnvironment;
 import org.apache.shardingsphere.test.e2e.operation.pipeline.framework.container.compose.PipelineBaseContainerComposer;
 import org.apache.shardingsphere.test.e2e.operation.pipeline.util.ProxyDatabaseTypeUtils;
@@ -40,7 +41,9 @@ import java.util.Optional;
  */
 public final class PipelineNativeContainerComposer extends PipelineBaseContainerComposer {
     
-    private static final PipelineE2EEnvironment ENV = PipelineE2EEnvironment.getInstance();
+    private static final E2ETestEnvironment ENV = E2ETestEnvironment.getInstance();
+    
+    private static final PipelineE2EEnvironment PIPELINE_ENV = PipelineE2EEnvironment.getInstance();
     
     private final DatabaseType databaseType;
     
@@ -54,9 +57,9 @@ public final class PipelineNativeContainerComposer extends PipelineBaseContainer
     @SneakyThrows(SQLException.class)
     @Override
     public void cleanUpDatabase(final String databaseName) {
-        int actualDatabasePort = ENV.getActualDatabasePort(databaseType);
-        String username = ENV.getActualDataSourceUsername(databaseType);
-        String password = ENV.getActualDataSourcePassword(databaseType);
+        int actualDatabasePort = PIPELINE_ENV.getActualDatabasePort(databaseType);
+        String username = ENV.getNativeStorageEnvironment().getUser();
+        String password = ENV.getNativeStorageEnvironment().getPassword();
         String jdbcUrl = dropTableOption.getJdbcUrl(DatabaseTypedSPILoader.getService(StorageContainerOption.class, databaseType).getConnectOption(), actualDatabasePort, databaseName);
         try (Connection connection = DriverManager.getConnection(jdbcUrl, username, password)) {
             dropTable(connection, databaseName);

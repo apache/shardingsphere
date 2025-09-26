@@ -47,6 +47,7 @@ import org.apache.shardingsphere.test.e2e.env.container.storage.option.StorageCo
 import org.apache.shardingsphere.test.e2e.env.container.storage.option.StorageContainerOption;
 import org.apache.shardingsphere.test.e2e.env.container.storage.type.DockerStorageContainer;
 import org.apache.shardingsphere.test.e2e.env.container.util.StorageContainerUtils;
+import org.apache.shardingsphere.test.e2e.env.runtime.E2ETestEnvironment;
 import org.apache.shardingsphere.test.e2e.env.runtime.type.RunEnvironment.Type;
 import org.apache.shardingsphere.test.e2e.operation.pipeline.command.ExtraSQLCommand;
 import org.apache.shardingsphere.test.e2e.operation.pipeline.env.PipelineE2EEnvironment;
@@ -131,8 +132,8 @@ public final class PipelineContainerComposer implements AutoCloseable {
             username = StorageContainerConstants.OPERATION_USER;
             password = StorageContainerConstants.OPERATION_PASSWORD;
         } else {
-            username = PipelineE2EEnvironment.getInstance().getActualDataSourceUsername(databaseType);
-            password = PipelineE2EEnvironment.getInstance().getActualDataSourcePassword(databaseType);
+            username = E2ETestEnvironment.getInstance().getNativeStorageEnvironment().getUser();
+            password = E2ETestEnvironment.getInstance().getNativeStorageEnvironment().getPassword();
         }
         extraSQLCommand = JAXB.unmarshal(Objects.requireNonNull(Thread.currentThread().getContextClassLoader().getResource(testParam.getScenario())), ExtraSQLCommand.class);
         containerComposer.start();
