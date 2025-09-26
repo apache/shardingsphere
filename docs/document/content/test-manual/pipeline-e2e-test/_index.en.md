@@ -63,16 +63,16 @@ Refer to following files for proxy `global.yaml` configuration:
 ```
 e2e.run.type=NATIVE
 pipeline.e2e.native.database=mysql
-pipeline.e2e.native.mysql.username=root
-pipeline.e2e.native.mysql.password=root
-pipeline.e2e.native.mysql.port=3306
+e2e.native.storage.port=3306
+e2e.native.storage.username=root
+e2e.native.storage.password=root
 ```
 
 4. Find test class and start it on IDE.
 
 #### DOCKER environment setup
 
-Refer to `.github/workflows/e2e-pipeline.yml` for more details.
+Refer to `.github/workflows/e2e-operation.yml` for more details.
 
 1. Build docker image.
 
@@ -84,18 +84,18 @@ Running the above command will build a docker image `apache/shardingsphere-proxy
 
 The docker image has port `3308` for remote debugging.
 
-If only test code is modified, you could reuse existing docker image.
+If only test code is modified, you could reuse the existing docker image.
 
 2. Configure `e2e-env.properties`.
 
 ```
-pipeline.it.env.type=DOCKER
-pipeline.it.docker.mysql.version=mysql:5.7
+e2e.run.type=DOCKER
+e2e.artifact.database.mysql.image=mysql:5.7
 ```
 
 3. Run test cases.
 
 Take MySQL as an example:
 ```
-./mvnw -nsu -B install -f test/e2e/operation/pipeline/pom.xml -Dpipeline.it.env.type=docker -Dpipeline.it.docker.mysql.version=mysql:5.7
+./mvnw -nsu -B install -f test/e2e/operation/pipeline/pom.xml -De2e.run.type=docker -De2e.artifact.database.mysql.image=mysql:5.7
 ```

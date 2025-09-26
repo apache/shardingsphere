@@ -19,17 +19,14 @@ package org.apache.shardingsphere.test.e2e.operation.pipeline.env;
 
 import com.google.common.base.Strings;
 import lombok.Getter;
-import lombok.SneakyThrows;
 import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
-import org.apache.shardingsphere.test.e2e.env.container.constants.StorageContainerConstants;
 import org.apache.shardingsphere.test.e2e.env.container.storage.option.StorageContainerOption;
+import org.apache.shardingsphere.test.e2e.env.runtime.EnvironmentPropertiesLoader;
 import org.apache.shardingsphere.test.e2e.env.runtime.type.RunEnvironment;
 import org.apache.shardingsphere.test.e2e.env.runtime.type.RunEnvironment.Type;
 import org.apache.shardingsphere.test.e2e.operation.pipeline.env.enums.PipelineProxyTypeEnum;
 
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -48,21 +45,9 @@ public final class PipelineE2EEnvironment {
     private final PipelineProxyTypeEnum itProxyType;
     
     private PipelineE2EEnvironment() {
-        props = loadProperties();
+        props = EnvironmentPropertiesLoader.loadProperties();
         type = getType(props);
         itProxyType = PipelineProxyTypeEnum.valueOf(props.getProperty("pipeline.e2e.proxy.type", PipelineProxyTypeEnum.NONE.name()).toUpperCase());
-    }
-    
-    @SneakyThrows(IOException.class)
-    private Properties loadProperties() {
-        Properties result = new Properties();
-        try (InputStream inputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream("env/e2e-env.properties")) {
-            result.load(inputStream);
-        }
-        for (String each : System.getProperties().stringPropertyNames()) {
-            result.setProperty(each, System.getProperty(each));
-        }
-        return result;
     }
     
     private Type getType(final Properties props) {
@@ -78,7 +63,7 @@ public final class PipelineE2EEnvironment {
      */
     public int getActualDatabasePort(final DatabaseType databaseType) {
         int defaultPort = DatabaseTypedSPILoader.getService(StorageContainerOption.class, databaseType).getCreateOption().getPort();
-        return Integer.parseInt(props.getProperty(String.format("pipeline.e2e.native.%s.port", databaseType.getType().toLowerCase()), String.valueOf(defaultPort)));
+        return Integer.parseInt(props.getProperty("e2e.native.storage.port", String.valueOf(defaultPort)));
     }
     
     /**
@@ -88,26 +73,6 @@ public final class PipelineE2EEnvironment {
      */
     public String getNativeDatabaseType() {
         return String.valueOf(props.getProperty("pipeline.e2e.native.database"));
-    }
-    
-    /**
-     * Get actual data source username.
-     *
-     * @param databaseType database type
-     * @return actual data source username
-     */
-    public String getActualDataSourceUsername(final DatabaseType databaseType) {
-        return String.valueOf(props.getProperty(String.format("pipeline.e2e.native.%s.username", databaseType.getType().toLowerCase()), StorageContainerConstants.OPERATION_USER));
-    }
-    
-    /**
-     * Get actual data source password.
-     *
-     * @param databaseType database type
-     * @return actual data source username
-     */
-    public String getActualDataSourcePassword(final DatabaseType databaseType) {
-        return String.valueOf(props.getProperty(String.format("pipeline.e2e.native.%s.password", databaseType.getType().toLowerCase()), StorageContainerConstants.OPERATION_PASSWORD));
     }
     
     /**

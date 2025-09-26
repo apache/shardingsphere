@@ -61,19 +61,20 @@ Proxy 配置可以参考：
 2. 启动注册中心（如 ZooKeeper）和数据库。
 
 3. 以 MySQL 为例，`e2e-env.properties` 可以配置如下：
+4. 
 ```
 e2e.run.type=NATIVE
 pipeline.e2e.native.database=mysql
-pipeline.e2e.native.mysql.username=root
-pipeline.e2e.native.mysql.password=root
-pipeline.e2e.native.mysql.port=3306
+e2e.native.storage.port=3306
+e2e.native.storage.username=root
+e2e.native.storage.password=root
 ```
 
 4. 找到对应的测试类，在 IDE 启动运行。
 
 #### DOCKER 环境启动
 
-参考 `.github/workflows/e2e-pipeline.yml`。
+参考 `.github/workflows/e2e-operation.yml`。
 
 1. 打包镜像
 
@@ -90,12 +91,12 @@ pipeline.e2e.native.mysql.port=3306
 2. 修改 `e2e-env.properties` 配置
 
 ```
-pipeline.it.env.type=DOCKER
-pipeline.it.docker.mysql.version=mysql:5.7
+e2e.run.type=DOCKER
+e2e.artifact.database.mysql.image=mysql:5.7
 ```
 
 3. 通过 Maven 运行测试用例。以 MySQL 为例：
 
 ```
-./mvnw -nsu -B install -f test/e2e/operation/pipeline/pom.xml -Dpipeline.it.env.type=docker -Dpipeline.it.docker.mysql.version=mysql:5.7
+./mvnw -nsu -B install -f test/e2e/operation/pipeline/pom.xml -De2e.run.type=docker -De2e.artifact.database.mysql.image=mysql:5.7
 ```
