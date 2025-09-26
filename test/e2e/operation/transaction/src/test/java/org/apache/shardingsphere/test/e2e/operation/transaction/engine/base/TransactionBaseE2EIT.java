@@ -423,24 +423,12 @@ public abstract class TransactionBaseE2EIT {
                                        final List<TransactionType> transactionTypes, final List<String> providers, final String scenario, final Class<? extends BaseTransactionTestCase> caseClass) {
             String key = getUniqueKey(registry.getDatabaseType(), registry.getRunningAdaptor(), transactionTypes, providers, scenario);
             testParams.putIfAbsent(key, new TransactionTestParameter(registry.getDatabaseType(),
-                    registry.getRunningAdaptor(), ENV.getArtifactEnvironment().getProxyPortBindings(), transactionTypes, providers,
-                    getStorageContainerImageName(registry.getDatabaseType(), databaseVersion), scenario, new LinkedList<>()));
+                    registry.getRunningAdaptor(), ENV.getArtifactEnvironment().getProxyPortBindings(), transactionTypes, providers, databaseVersion, scenario, new LinkedList<>()));
             testParams.get(key).getTransactionTestCaseClasses().add(caseClass);
         }
         
         private String getUniqueKey(final DatabaseType databaseType, final String runningAdapter, final List<TransactionType> transactionTypes, final List<String> providers, final String scenario) {
             return String.join(File.separator, databaseType.getType(), runningAdapter, transactionTypes.toString(), providers.toString(), scenario);
-        }
-        
-        private String getStorageContainerImageName(final DatabaseType databaseType, final String databaseVersion) {
-            switch (databaseType.getType()) {
-                case TransactionTestConstants.MYSQL:
-                case TransactionTestConstants.POSTGRESQL:
-                case TransactionTestConstants.OPENGAUSS:
-                    return databaseVersion;
-                default:
-                    throw new UnsupportedOperationException(String.format("Unsupported database type `%s`.", databaseType));
-            }
         }
     }
 }
