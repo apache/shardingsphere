@@ -59,6 +59,7 @@ public final class DockerStorageContainer extends DockerE2EContainer implements 
     
     private final String scenario;
     
+    @Getter
     private final int majorVersion;
     
     @Getter

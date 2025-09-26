@@ -43,7 +43,6 @@ import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRootConfiguration;
 import org.apache.shardingsphere.single.yaml.config.YamlSingleRuleConfiguration;
 import org.apache.shardingsphere.test.e2e.env.container.constants.ProxyContainerConstants;
 import org.apache.shardingsphere.test.e2e.env.container.constants.StorageContainerConstants;
-import org.apache.shardingsphere.test.e2e.env.container.storage.option.StorageContainerConnectOption;
 import org.apache.shardingsphere.test.e2e.env.container.storage.option.StorageContainerOption;
 import org.apache.shardingsphere.test.e2e.env.container.storage.type.DockerStorageContainer;
 import org.apache.shardingsphere.test.e2e.env.container.util.StorageContainerUtils;
@@ -51,7 +50,7 @@ import org.apache.shardingsphere.test.e2e.env.runtime.E2ETestEnvironment;
 import org.apache.shardingsphere.test.e2e.env.runtime.type.RunEnvironment.Type;
 import org.apache.shardingsphere.test.e2e.operation.pipeline.command.ExtraSQLCommand;
 import org.apache.shardingsphere.test.e2e.operation.pipeline.env.PipelineE2EEnvironment;
-import org.apache.shardingsphere.test.e2e.operation.pipeline.env.enums.PipelineProxyTypeEnum;
+import org.apache.shardingsphere.test.e2e.operation.pipeline.env.PipelineProxyType;
 import org.apache.shardingsphere.test.e2e.operation.pipeline.framework.container.compose.PipelineBaseContainerComposer;
 import org.apache.shardingsphere.test.e2e.operation.pipeline.framework.container.compose.docker.PipelineDockerContainerComposer;
 import org.apache.shardingsphere.test.e2e.operation.pipeline.framework.container.compose.natived.PipelineNativeContainerComposer;
@@ -256,7 +255,7 @@ public final class PipelineContainerComposer implements AutoCloseable {
         String registerStorageUnitTemplate = "REGISTER STORAGE UNIT ${ds} ( URL='${url}', USER='${user}', PASSWORD='${password}')".replace("${ds}", storageUnitName)
                 .replace("${user}", username)
                 .replace("${password}", getPassword())
-                .replace("${url}", getActualJdbcUrlTemplate(storageUnitName, PipelineE2EEnvironment.getInstance().getItProxyType() == PipelineProxyTypeEnum.NONE));
+                .replace("${url}", getActualJdbcUrlTemplate(storageUnitName, PipelineE2EEnvironment.getInstance().getProxyType() == PipelineProxyType.NONE));
         proxyExecuteWithLog(registerStorageUnitTemplate, 0);
         int timeout = databaseType instanceof OpenGaussDatabaseType ? 60 : 10;
         Awaitility.await().ignoreExceptions().atMost(timeout, TimeUnit.SECONDS).pollInterval(3L, TimeUnit.SECONDS).until(() -> showStorageUnitsName().contains(storageUnitName));
@@ -282,14 +281,22 @@ public final class PipelineContainerComposer implements AutoCloseable {
      * @return actual JDBC URL template
      */
     public String getActualJdbcUrlTemplate(final String databaseName, final boolean isInContainer, final int storageContainerIndex) {
-        StorageContainerConnectOption option = DatabaseTypedSPILoader.getService(StorageContainerOption.class, databaseType).getConnectOption();
+        StorageContainerOption option = DatabaseTypedSPILoader.getService(StorageContainerOption.class, databaseType);
         if (Type.DOCKER == E2ETestEnvironment.getInstance().getRunEnvironment().getType()) {
             DockerStorageContainer storageContainer = ((PipelineDockerContainerComposer) containerComposer).getStorageContainers().get(storageContainerIndex);
-            return isInContainer
-                    ? option.getURL(storageContainer.getNetworkAliases().get(0), storageContainer.getExposedPort(), databaseName)
-                    : storageContainer.getJdbcUrl(databaseName);
+            String toBeConnectedDataSourceName = Strings.isNullOrEmpty(databaseName) ? option.getCreateOption().getDefaultDatabaseName(storageContainer.getMajorVersion()).orElse("") : databaseName;
+            String host;
+            int port;
+            if (isInContainer) {
+                host = storageContainer.getNetworkAliases().get(0);
+                port = storageContainer.getExposedPort();
+            } else {
+                host = storageContainer.getHost();
+                port = storageContainer.getMappedPort();
+            }
+            return option.getConnectOption().getURL(host, port, toBeConnectedDataSourceName);
         }
-        return option.getURL("127.0.0.1", E2ETestEnvironment.getInstance().getNativeStorageEnvironment().getPort(databaseType), databaseName);
+        return option.getConnectOption().getURL("127.0.0.1", E2ETestEnvironment.getInstance().getNativeStorageEnvironment().getPort(databaseType), databaseName);
     }
     
     /**
