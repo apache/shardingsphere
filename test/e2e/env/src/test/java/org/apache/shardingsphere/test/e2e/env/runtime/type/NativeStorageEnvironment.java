@@ -17,8 +17,12 @@
 
 package org.apache.shardingsphere.test.e2e.env.runtime.type;
 
+import lombok.AccessLevel;
 import lombok.Getter;
+import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoader;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.test.e2e.env.container.constants.StorageContainerConstants;
+import org.apache.shardingsphere.test.e2e.env.container.storage.option.StorageContainerOption;
 
 import java.util.Properties;
 
@@ -30,6 +34,7 @@ public final class NativeStorageEnvironment {
     
     private final String host;
     
+    @Getter(AccessLevel.NONE)
     private final int port;
     
     private final String user;
@@ -41,5 +46,15 @@ public final class NativeStorageEnvironment {
         port = Integer.parseInt(props.getProperty("e2e.native.storage.port", "0"));
         user = props.getProperty("e2e.native.storage.username", StorageContainerConstants.OPERATION_USER);
         password = props.getProperty("e2e.native.storage.password", StorageContainerConstants.OPERATION_PASSWORD);
+    }
+    
+    /**
+     * Get port.
+     *
+     * @param databaseType database type
+     * @return port
+     */
+    public int getPort(final DatabaseType databaseType) {
+        return 0 == port ? DatabaseTypedSPILoader.getService(StorageContainerOption.class, databaseType).getCreateOption().getPort() : port;
     }
 }

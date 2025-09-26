@@ -22,7 +22,6 @@ import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoa
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.test.e2e.env.container.storage.option.StorageContainerOption;
 import org.apache.shardingsphere.test.e2e.env.runtime.E2ETestEnvironment;
-import org.apache.shardingsphere.test.e2e.operation.pipeline.env.PipelineE2EEnvironment;
 import org.apache.shardingsphere.test.e2e.operation.pipeline.framework.container.compose.PipelineBaseContainerComposer;
 import org.apache.shardingsphere.test.e2e.operation.pipeline.util.ProxyDatabaseTypeUtils;
 
@@ -43,8 +42,6 @@ public final class PipelineNativeContainerComposer extends PipelineBaseContainer
     
     private static final E2ETestEnvironment ENV = E2ETestEnvironment.getInstance();
     
-    private static final PipelineE2EEnvironment PIPELINE_ENV = PipelineE2EEnvironment.getInstance();
-    
     private final DatabaseType databaseType;
     
     private final DialectPipelineNativeContainerDropTableOption dropTableOption;
@@ -57,10 +54,10 @@ public final class PipelineNativeContainerComposer extends PipelineBaseContainer
     @SneakyThrows(SQLException.class)
     @Override
     public void cleanUpDatabase(final String databaseName) {
-        int actualDatabasePort = PIPELINE_ENV.getActualDatabasePort(databaseType);
+        int port = ENV.getNativeStorageEnvironment().getPort(databaseType);
         String username = ENV.getNativeStorageEnvironment().getUser();
         String password = ENV.getNativeStorageEnvironment().getPassword();
-        String jdbcUrl = dropTableOption.getJdbcUrl(DatabaseTypedSPILoader.getService(StorageContainerOption.class, databaseType).getConnectOption(), actualDatabasePort, databaseName);
+        String jdbcUrl = dropTableOption.getJdbcUrl(DatabaseTypedSPILoader.getService(StorageContainerOption.class, databaseType).getConnectOption(), port, databaseName);
         try (Connection connection = DriverManager.getConnection(jdbcUrl, username, password)) {
             dropTable(connection, databaseName);
         }

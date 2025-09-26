@@ -19,9 +19,7 @@ package org.apache.shardingsphere.test.e2e.operation.pipeline.env;
 
 import com.google.common.base.Strings;
 import lombok.Getter;
-import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
-import org.apache.shardingsphere.test.e2e.env.container.storage.option.StorageContainerOption;
 import org.apache.shardingsphere.test.e2e.env.runtime.E2ETestEnvironment;
 import org.apache.shardingsphere.test.e2e.env.runtime.EnvironmentPropertiesLoader;
 import org.apache.shardingsphere.test.e2e.env.runtime.type.RunEnvironment;
@@ -45,17 +43,6 @@ public final class PipelineE2EEnvironment {
     private PipelineE2EEnvironment() {
         props = EnvironmentPropertiesLoader.loadProperties();
         itProxyType = PipelineProxyTypeEnum.valueOf(props.getProperty("pipeline.e2e.proxy.type", PipelineProxyTypeEnum.NONE.name()).toUpperCase());
-    }
-    
-    /**
-     * Get actual database port.
-     *
-     * @param databaseType database type
-     * @return actual database port
-     */
-    public int getActualDatabasePort(final DatabaseType databaseType) {
-        int defaultPort = DatabaseTypedSPILoader.getService(StorageContainerOption.class, databaseType).getCreateOption().getPort();
-        return Integer.parseInt(props.getProperty("e2e.native.storage.port", String.valueOf(defaultPort)));
     }
     
     /**
