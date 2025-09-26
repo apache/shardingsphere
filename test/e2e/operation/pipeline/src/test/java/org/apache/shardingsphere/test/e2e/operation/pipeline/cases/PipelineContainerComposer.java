@@ -125,10 +125,11 @@ public final class PipelineContainerComposer implements AutoCloseable {
     
     public PipelineContainerComposer(final PipelineTestParameter testParam, final PipelineJobType jobType) {
         databaseType = testParam.getDatabaseType();
-        containerComposer = Type.DOCKER == PipelineE2EEnvironment.getInstance().getType()
+        Type type = E2ETestEnvironment.getInstance().getRunEnvironment().getType();
+        containerComposer = Type.DOCKER == type
                 ? new PipelineDockerContainerComposer(testParam.getDatabaseType(), testParam.getStorageContainerImage(), testParam.getStorageContainerCount())
                 : new PipelineNativeContainerComposer(testParam.getDatabaseType());
-        if (Type.DOCKER == PipelineE2EEnvironment.getInstance().getType()) {
+        if (Type.DOCKER == type) {
             username = StorageContainerConstants.OPERATION_USER;
             password = StorageContainerConstants.OPERATION_PASSWORD;
         } else {
@@ -157,7 +158,7 @@ public final class PipelineContainerComposer implements AutoCloseable {
     }
     
     private void cleanUpPipelineJobs(final Connection connection, final PipelineJobType jobType) throws SQLException {
-        if (Type.NATIVE != PipelineE2EEnvironment.getInstance().getType()) {
+        if (Type.NATIVE != E2ETestEnvironment.getInstance().getRunEnvironment().getType()) {
             return;
         }
         String jobTypeName = jobType.getType();
@@ -197,7 +198,7 @@ public final class PipelineContainerComposer implements AutoCloseable {
     }
     
     private void cleanUpProxyDatabase(final Connection connection) {
-        if (Type.NATIVE != PipelineE2EEnvironment.getInstance().getType()) {
+        if (Type.NATIVE != E2ETestEnvironment.getInstance().getRunEnvironment().getType()) {
             return;
         }
         try (Statement statement = connection.createStatement()) {
@@ -218,7 +219,7 @@ public final class PipelineContainerComposer implements AutoCloseable {
     }
     
     private void cleanUpDataSource() {
-        if (Type.NATIVE != PipelineE2EEnvironment.getInstance().getType()) {
+        if (Type.NATIVE != E2ETestEnvironment.getInstance().getRunEnvironment().getType()) {
             return;
         }
         DatabaseTypeRegistry databaseTypeRegistry = new DatabaseTypeRegistry(databaseType);
@@ -282,7 +283,7 @@ public final class PipelineContainerComposer implements AutoCloseable {
      */
     public String getActualJdbcUrlTemplate(final String databaseName, final boolean isInContainer, final int storageContainerIndex) {
         StorageContainerConnectOption option = DatabaseTypedSPILoader.getService(StorageContainerOption.class, databaseType).getConnectOption();
-        if (Type.DOCKER == PipelineE2EEnvironment.getInstance().getType()) {
+        if (Type.DOCKER == E2ETestEnvironment.getInstance().getRunEnvironment().getType()) {
             DockerStorageContainer storageContainer = ((PipelineDockerContainerComposer) containerComposer).getStorageContainers().get(storageContainerIndex);
             return isInContainer
                     ? option.getURL(storageContainer.getNetworkAliases().get(0), storageContainer.getExposedPort(), databaseName)
@@ -618,7 +619,7 @@ public final class PipelineContainerComposer implements AutoCloseable {
         YamlRootConfiguration rootConfig = getYamlRootConfig();
         ShardingSpherePreconditions.checkNotNull(rootConfig.getDataSources(), () -> new IllegalStateException("dataSources is null"));
         ShardingSpherePreconditions.checkNotNull(rootConfig.getRules(), () -> new IllegalStateException("rules is null"));
-        if (Type.DOCKER == PipelineE2EEnvironment.getInstance().getType()) {
+        if (Type.DOCKER == E2ETestEnvironment.getInstance().getRunEnvironment().getType()) {
             DockerStorageContainer storageContainer = ((PipelineDockerContainerComposer) containerComposer).getStorageContainers().get(0);
             String sourceUrl = String.join(":", storageContainer.getNetworkAliases().get(0), Integer.toString(storageContainer.getExposedPort()));
             String targetUrl = String.join(":", storageContainer.getHost(), Integer.toString(storageContainer.getMappedPort()));
