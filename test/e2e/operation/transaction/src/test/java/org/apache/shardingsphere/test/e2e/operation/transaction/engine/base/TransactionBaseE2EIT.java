@@ -285,7 +285,7 @@ public abstract class TransactionBaseE2EIT {
             DockerStorageContainer storageContainer = (DockerStorageContainer) ((TransactionDockerContainerComposer) containerComposer.getContainerComposer()).getStorageContainer();
             return option.getURL(containerComposer.getDatabaseType().getType().toLowerCase() + ".host", storageContainer.getExposedPort(), databaseName);
         }
-        return option.getURL("127.0.0.1", ENV.getNativeStorageEnvironment().getPort(), databaseName);
+        return option.getURL("127.0.0.1", ENV.getNativeStorageEnvironment().getPort(containerComposer.getDatabaseType()), databaseName);
     }
     
     /**

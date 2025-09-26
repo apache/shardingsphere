@@ -21,6 +21,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.test.e2e.env.runtime.E2ETestEnvironment;
+import org.apache.shardingsphere.test.e2e.env.runtime.type.RunEnvironment.Type;
 import org.apache.shardingsphere.test.e2e.operation.pipeline.env.PipelineE2EEnvironment;
 
 import java.util.Arrays;
@@ -40,6 +41,9 @@ public final class PipelineE2ECondition {
     public static boolean isEnabled(final DatabaseType... databaseTypes) {
         if (null == E2ETestEnvironment.getInstance().getRunEnvironment().getType()) {
             return false;
+        }
+        if (0 != databaseTypes.length && Type.NATIVE == E2ETestEnvironment.getInstance().getRunEnvironment().getType()) {
+            return true;
         }
         return 0 == databaseTypes.length || Arrays.stream(databaseTypes).anyMatch(each -> !PipelineE2EEnvironment.getInstance().listStorageContainerImages(each).isEmpty());
     }

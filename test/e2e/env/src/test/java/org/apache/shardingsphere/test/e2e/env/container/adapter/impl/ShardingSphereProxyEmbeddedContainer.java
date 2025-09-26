@@ -167,7 +167,7 @@ public final class ShardingSphereProxyEmbeddedContainer implements EmbeddedE2ECo
     private Map<String, String> getStorageConnectionInfoMap(final NativeStorageContainer container) {
         return container.getNetworkAliases().stream().collect(Collectors.toMap(
                 each -> each + ":" + container.getExposedPort(),
-                each -> E2ETestEnvironment.getInstance().getNativeStorageEnvironment().getHost() + ":" + E2ETestEnvironment.getInstance().getNativeStorageEnvironment().getPort()));
+                each -> E2ETestEnvironment.getInstance().getNativeStorageEnvironment().getHost() + ":" + E2ETestEnvironment.getInstance().getNativeStorageEnvironment().getPort(databaseType)));
     }
     
     private File createTempDirectory() {

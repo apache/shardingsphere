@@ -76,7 +76,7 @@ public final class NativeStorageContainer implements StorageContainer {
     
     private void initDatabase() {
         if (null != option) {
-            DataSource dataSource = StorageContainerUtils.generateDataSource(option.getConnectOption().getURL(env.getHost(), env.getPort()), env.getUser(), env.getPassword(), 2);
+            DataSource dataSource = StorageContainerUtils.generateDataSource(option.getConnectOption().getURL(env.getHost(), env.getPort(databaseType)), env.getUser(), env.getPassword(), 2);
             new MountSQLResourceGenerator(option.getType(), option.getCreateOption()).generate(0, scenario).keySet().forEach(each -> SQLScriptUtils.execute(dataSource, each));
         }
     }
@@ -91,7 +91,7 @@ public final class NativeStorageContainer implements StorageContainer {
     private Map<String, DataSource> getDataSourceMap(final Collection<String> databaseNames) {
         Map<String, DataSource> result = new HashMap<>(databaseNames.size(), 1F);
         for (String each : databaseNames) {
-            DataSource dataSource = StorageContainerUtils.generateDataSource(option.getConnectOption().getURL(env.getHost(), env.getPort(), each), env.getUser(), env.getPassword(), 2);
+            DataSource dataSource = StorageContainerUtils.generateDataSource(option.getConnectOption().getURL(env.getHost(), env.getPort(databaseType), each), env.getUser(), env.getPassword(), 2);
             result.put(each, dataSource);
         }
         return result;
@@ -119,7 +119,7 @@ public final class NativeStorageContainer implements StorageContainer {
     public Map<String, String> getLinkReplacements() {
         Map<String, String> result = new HashMap<>(getNetworkAliases().size() + 2, 1F);
         for (String each : getNetworkAliases()) {
-            result.put(each + ":" + getExposedPort(), env.getHost() + ":" + env.getPort());
+            result.put(each + ":" + getExposedPort(), env.getHost() + ":" + env.getPort(databaseType));
         }
         result.put(StorageContainerConstants.OPERATION_USER, env.getUser());
         result.put(StorageContainerConstants.OPERATION_PASSWORD, env.getPassword());
