@@ -22,9 +22,9 @@ import lombok.Getter;
 import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.test.e2e.env.container.storage.option.StorageContainerOption;
+import org.apache.shardingsphere.test.e2e.env.runtime.E2ETestEnvironment;
 import org.apache.shardingsphere.test.e2e.env.runtime.EnvironmentPropertiesLoader;
 import org.apache.shardingsphere.test.e2e.env.runtime.type.RunEnvironment;
-import org.apache.shardingsphere.test.e2e.env.runtime.type.RunEnvironment.Type;
 import org.apache.shardingsphere.test.e2e.operation.pipeline.env.enums.PipelineProxyTypeEnum;
 
 import java.util.Arrays;
@@ -40,19 +40,11 @@ public final class PipelineE2EEnvironment {
     
     private final Properties props;
     
-    private final Type type;
-    
     private final PipelineProxyTypeEnum itProxyType;
     
     private PipelineE2EEnvironment() {
         props = EnvironmentPropertiesLoader.loadProperties();
-        type = getType(props);
         itProxyType = PipelineProxyTypeEnum.valueOf(props.getProperty("pipeline.e2e.proxy.type", PipelineProxyTypeEnum.NONE.name()).toUpperCase());
-    }
-    
-    private Type getType(final Properties props) {
-        String value = props.getProperty("e2e.run.type");
-        return Strings.isNullOrEmpty(value) ? null : Type.valueOf(value.toUpperCase());
     }
     
     /**
@@ -92,7 +84,7 @@ public final class PipelineE2EEnvironment {
      */
     public List<String> listStorageContainerImages(final DatabaseType databaseType) {
         // Native mode needn't use docker image, just return a list which contain one item
-        if (RunEnvironment.Type.NATIVE == type) {
+        if (RunEnvironment.Type.NATIVE == E2ETestEnvironment.getInstance().getRunEnvironment().getType()) {
             return databaseType.getType().equalsIgnoreCase(getNativeDatabaseType()) ? Collections.singletonList("") : Collections.emptyList();
         }
         return Arrays.stream(props.getOrDefault(String.format("e2e.artifact.database.%s.image", databaseType.getType().toLowerCase()), "").toString()
