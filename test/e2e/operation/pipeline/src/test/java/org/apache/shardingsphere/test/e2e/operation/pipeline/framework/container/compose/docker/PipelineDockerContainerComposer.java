@@ -30,7 +30,7 @@ import org.apache.shardingsphere.test.e2e.env.container.governance.option.Govern
 import org.apache.shardingsphere.test.e2e.env.container.storage.option.StorageContainerOption;
 import org.apache.shardingsphere.test.e2e.env.container.storage.type.DockerStorageContainer;
 import org.apache.shardingsphere.test.e2e.operation.pipeline.env.PipelineE2EEnvironment;
-import org.apache.shardingsphere.test.e2e.operation.pipeline.env.enums.PipelineProxyTypeEnum;
+import org.apache.shardingsphere.test.e2e.operation.pipeline.env.PipelineProxyType;
 import org.apache.shardingsphere.test.e2e.operation.pipeline.framework.container.compose.PipelineBaseContainerComposer;
 import org.apache.shardingsphere.test.e2e.operation.pipeline.framework.container.config.proxy.PipelineProxyContainerConfigurationFactory;
 import org.apache.shardingsphere.test.e2e.operation.pipeline.util.ProxyDatabaseTypeUtils;
@@ -64,7 +64,7 @@ public final class PipelineDockerContainerComposer extends PipelineBaseContainer
         }
         AdaptorContainerConfiguration containerConfig = PipelineProxyContainerConfigurationFactory.newInstance(databaseType);
         DatabaseType proxyDatabaseType = ProxyDatabaseTypeUtils.getProxyDatabaseType(databaseType);
-        if (PipelineProxyTypeEnum.INTERNAL == PipelineE2EEnvironment.getInstance().getItProxyType()) {
+        if (PipelineProxyType.INTERNAL == PipelineE2EEnvironment.getInstance().getProxyType()) {
             ShardingSphereProxyEmbeddedContainer proxyContainer = new ShardingSphereProxyEmbeddedContainer(proxyDatabaseType, containerConfig);
             for (DockerStorageContainer each : storageContainers) {
                 proxyContainer.dependsOn(governanceContainer, each);
@@ -83,7 +83,7 @@ public final class PipelineDockerContainerComposer extends PipelineBaseContainer
     public String getProxyJdbcUrl(final String databaseName) {
         String host;
         int port;
-        if (PipelineProxyTypeEnum.INTERNAL == PipelineE2EEnvironment.getInstance().getItProxyType()) {
+        if (PipelineProxyType.INTERNAL == PipelineE2EEnvironment.getInstance().getProxyType()) {
             host = "127.0.0.1";
             port = 3307;
         } else {

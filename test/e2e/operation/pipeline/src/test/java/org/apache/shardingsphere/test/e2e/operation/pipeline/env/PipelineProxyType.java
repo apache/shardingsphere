@@ -15,9 +15,9 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.e2e.operation.pipeline.env.enums;
+package org.apache.shardingsphere.test.e2e.operation.pipeline.env;
 
-public enum PipelineProxyTypeEnum {
+public enum PipelineProxyType {
     
     NONE, INTERNAL
 }

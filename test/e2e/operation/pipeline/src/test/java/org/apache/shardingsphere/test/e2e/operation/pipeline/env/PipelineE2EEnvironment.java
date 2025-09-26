@@ -23,7 +23,6 @@ import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.test.e2e.env.runtime.E2ETestEnvironment;
 import org.apache.shardingsphere.test.e2e.env.runtime.EnvironmentPropertiesLoader;
 import org.apache.shardingsphere.test.e2e.env.runtime.type.RunEnvironment;
-import org.apache.shardingsphere.test.e2e.operation.pipeline.env.enums.PipelineProxyTypeEnum;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -38,11 +37,11 @@ public final class PipelineE2EEnvironment {
     
     private final Properties props;
     
-    private final PipelineProxyTypeEnum itProxyType;
+    private final PipelineProxyType proxyType;
     
     private PipelineE2EEnvironment() {
         props = EnvironmentPropertiesLoader.loadProperties();
-        itProxyType = PipelineProxyTypeEnum.valueOf(props.getProperty("pipeline.e2e.proxy.type", PipelineProxyTypeEnum.NONE.name()).toUpperCase());
+        proxyType = PipelineProxyType.valueOf(props.getProperty("e2e.pipeline.proxy.type", PipelineProxyType.NONE.name()).toUpperCase());
     }
     
     /**
