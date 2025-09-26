@@ -60,9 +60,10 @@ Refer to following files for proxy `global.yaml` configuration:
 2. Start registry center (e.g. ZooKeeper) and database.
 
 3. Take MySQL as an example, `e2e-env.properties` could be configured as follows: 
+
 ```
 e2e.run.type=NATIVE
-pipeline.e2e.native.database=mysql
+
 e2e.native.storage.port=3306
 e2e.native.storage.username=root
 e2e.native.storage.password=root

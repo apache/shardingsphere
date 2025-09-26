@@ -46,15 +46,6 @@ public final class PipelineE2EEnvironment {
     }
     
     /**
-     * Get native database type.
-     *
-     * @return native database type
-     */
-    public String getNativeDatabaseType() {
-        return String.valueOf(props.getProperty("pipeline.e2e.native.database"));
-    }
-    
-    /**
      * Get instance.
      *
      * @return singleton instance
@@ -70,9 +61,8 @@ public final class PipelineE2EEnvironment {
      * @return database storage container images
      */
     public List<String> listStorageContainerImages(final DatabaseType databaseType) {
-        // Native mode needn't use docker image, just return a list which contain one item
         if (RunEnvironment.Type.NATIVE == E2ETestEnvironment.getInstance().getRunEnvironment().getType()) {
-            return databaseType.getType().equalsIgnoreCase(getNativeDatabaseType()) ? Collections.singletonList("") : Collections.emptyList();
+            return Collections.emptyList();
         }
         return Arrays.stream(props.getOrDefault(String.format("e2e.artifact.database.%s.image", databaseType.getType().toLowerCase()), "").toString()
                 .split(",")).filter(each -> !Strings.isNullOrEmpty(each)).collect(Collectors.toList());

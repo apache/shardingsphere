@@ -64,7 +64,7 @@ Proxy 配置可以参考：
 4. 
 ```
 e2e.run.type=NATIVE
-pipeline.e2e.native.database=mysql
+
 e2e.native.storage.port=3306
 e2e.native.storage.username=root
 e2e.native.storage.password=root
