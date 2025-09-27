@@ -17,27 +17,34 @@
 
 package org.apache.shardingsphere.test.e2e.env.runtime.type;
 
+import lombok.Getter;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
+import org.apache.shardingsphere.test.e2e.env.runtime.EnvironmentPropertiesLoader;
 
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Properties;
 
 /**
- * Docker database environment.
+ * Docker environment.
  */
-public final class DockerDatabaseEnvironment {
+public final class DockerEnvironment {
     
-    private final Map<DatabaseType, String> images;
+    private final Map<DatabaseType, String> databaseImages;
     
-    public DockerDatabaseEnvironment(final Properties props) {
-        images = getImages(props);
+    @Getter
+    private final List<String> proxyPortBindings;
+    
+    public DockerEnvironment(final Properties props) {
+        databaseImages = loadDatabaseImages(props);
+        proxyPortBindings = EnvironmentPropertiesLoader.getListValue(props, "e2e.docker.proxy.port.bindings");
     }
     
-    private Map<DatabaseType, String> getImages(final Properties props) {
+    private Map<DatabaseType, String> loadDatabaseImages(final Properties props) {
         Collection<DatabaseType> databaseTypes = ShardingSphereServiceLoader.getServiceInstances(DatabaseType.class);
         Map<DatabaseType, String> result = new HashMap<>(databaseTypes.size(), 1F);
         for (DatabaseType each : databaseTypes) {
@@ -47,12 +54,12 @@ public final class DockerDatabaseEnvironment {
     }
     
     /**
-     * Get image.
+     * Get database image.
      *
      * @param databaseType database type
      * @return database image
      */
-    public String getImage(final DatabaseType databaseType) {
-        return images.get(databaseType);
+    public String getDatabaseImage(final DatabaseType databaseType) {
+        return databaseImages.get(databaseType);
     }
 }
