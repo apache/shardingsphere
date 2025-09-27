@@ -23,7 +23,7 @@ ENV LOCAL_PATH=/opt/shardingsphere-proxy
 ADD target/${APP_NAME}.tar.gz /opt
 RUN mv /opt/${APP_NAME} ${LOCAL_PATH} && mkdir -p ${LOCAL_PATH}/ext-lib
 
-FROM eclipse-temurin:21-jdk
+FROM eclipse-temurin:25-jdk
 LABEL org.opencontainers.image.authors="ShardingSphere dev@shardingsphere.apache.org"
 
 ENV LOCAL_PATH=/opt/shardingsphere-proxy
