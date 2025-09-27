@@ -40,11 +40,11 @@ public final class DockerEnvironment {
     private final List<String> proxyPortBindings;
     
     public DockerEnvironment(final Properties props) {
-        databaseImages = getDatabaseImages(props);
+        databaseImages = loadDatabaseImages(props);
         proxyPortBindings = EnvironmentPropertiesLoader.getListValue(props, "e2e.docker.proxy.port.bindings");
     }
     
-    private Map<DatabaseType, String> getDatabaseImages(final Properties props) {
+    private Map<DatabaseType, String> loadDatabaseImages(final Properties props) {
         Collection<DatabaseType> databaseTypes = ShardingSphereServiceLoader.getServiceInstances(DatabaseType.class);
         Map<DatabaseType, String> result = new HashMap<>(databaseTypes.size(), 1F);
         for (DatabaseType each : databaseTypes) {
