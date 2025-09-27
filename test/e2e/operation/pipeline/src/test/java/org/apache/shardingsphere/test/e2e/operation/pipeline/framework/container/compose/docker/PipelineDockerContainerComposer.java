@@ -52,13 +52,13 @@ public final class PipelineDockerContainerComposer extends PipelineBaseContainer
     @Getter
     private final List<DockerStorageContainer> storageContainers = new LinkedList<>();
     
-    public PipelineDockerContainerComposer(final DatabaseType databaseType, final String storageContainerImage, final int storageContainerCount) {
+    public PipelineDockerContainerComposer(final DatabaseType databaseType, final String databaseContainerImage, final int storageContainerCount) {
         this.databaseType = databaseType;
         ShardingSpherePreconditions.checkState(storageContainerCount >= 1, () -> new InvalidParameterException("storageContainerCount must >= 1"));
         GovernanceContainer governanceContainer = getContainers().registerContainer(new GovernanceContainer(TypedSPILoader.getService(GovernanceContainerOption.class, "ZooKeeper")));
         for (int i = 0; i < storageContainerCount; i++) {
             DockerStorageContainer storageContainer = getContainers().registerContainer(
-                    new DockerStorageContainer(storageContainerImage, DatabaseTypedSPILoader.getService(StorageContainerOption.class, databaseType), null));
+                    new DockerStorageContainer(databaseContainerImage, DatabaseTypedSPILoader.getService(StorageContainerOption.class, databaseType), null));
             storageContainer.setNetworkAliases(Collections.singletonList(String.join(".", databaseType.getType().toLowerCase() + "_" + i, "host")));
             storageContainers.add(storageContainer);
         }
