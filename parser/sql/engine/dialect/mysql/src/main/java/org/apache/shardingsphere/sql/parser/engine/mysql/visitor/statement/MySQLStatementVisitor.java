@@ -173,6 +173,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.Returning
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.assignment.ColumnAssignmentSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.assignment.InsertValuesSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.assignment.SetAssignmentSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.assignment.RowAliasSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.assignment.ValueReferenceSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.InsertColumnsSegment;
@@ -1549,12 +1550,10 @@ public abstract class MySQLStatementVisitor extends MySQLStatementBaseVisitor<AS
             result.setInsertColumns(new InsertColumnsSegment(ctx.start.getStartIndex() - 1, ctx.start.getStartIndex() - 1, Collections.emptyList()));
         }
         result.getValues().addAll(createInsertValuesSegments(ctx.assignmentValues()));
-        
         if (null != ctx.valueReference()) {
             ValueReferenceSegment valueRef = (ValueReferenceSegment) visit(ctx.valueReference());
             result.setValueReference(valueRef);
         }
-        
         return result;
     }
     
@@ -1568,7 +1567,17 @@ public abstract class MySQLStatementVisitor extends MySQLStatementBaseVisitor<AS
     
     @Override
     public ASTNode visitRowAlias(final RowAliasContext ctx) {
-        return new CommonExpressionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.getText());
+        AliasSegment alias = (AliasSegment) visit(ctx.alias());
+        Collection<ColumnSegment> derivedColumns = null;
+        if (null != ctx.derivedColumns()) {
+            derivedColumns = new LinkedList<>();
+            for (AliasContext each : ctx.derivedColumns().alias()) {
+                AliasSegment aliasSegment = (AliasSegment) visit(each);
+                ColumnSegment column = new ColumnSegment(each.getStart().getStartIndex(), each.getStop().getStopIndex(), aliasSegment.getIdentifier());
+                derivedColumns.add(column);
+            }
+        }
+        return new RowAliasSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), alias, derivedColumns);
     }
     
     @Override
@@ -1688,8 +1697,7 @@ public abstract class MySQLStatementVisitor extends MySQLStatementBaseVisitor<AS
         for (AssignmentContext each : ctx.assignmentList().assignment()) {
             assignments.add((ColumnAssignmentSegment) visit(each));
         }
-        SetAssignmentSegment setAssignment = new SetAssignmentSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), assignments);
-        return setAssignment;
+        return new SetAssignmentSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), assignments);
     }
     
     @Override

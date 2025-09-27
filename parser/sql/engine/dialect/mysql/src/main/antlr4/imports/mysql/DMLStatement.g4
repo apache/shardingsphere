@@ -23,7 +23,11 @@ insert
     : INSERT insertSpecification INTO? tableName partitionNames? insertBody onDuplicateKeyClause? returningClause?
     ;
 
-insertBody : insertValuesClause | setAssignmentsClause valueReference? | insertSelectClause valueReference? ;
+insertBody
+    : insertValuesClause
+    | setAssignmentsClause valueReference?
+    | insertSelectClause valueReference?
+    ;
 
 insertSpecification
     : (LOW_PRIORITY | DELAYED | HIGH_PRIORITY)? IGNORE?
