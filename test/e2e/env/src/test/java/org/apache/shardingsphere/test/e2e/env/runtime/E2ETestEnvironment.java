@@ -19,7 +19,7 @@ package org.apache.shardingsphere.test.e2e.env.runtime;
 
 import lombok.Getter;
 import org.apache.shardingsphere.test.e2e.env.runtime.type.ArtifactEnvironment;
-import org.apache.shardingsphere.test.e2e.env.runtime.type.DockerDatabaseEnvironment;
+import org.apache.shardingsphere.test.e2e.env.runtime.type.DockerEnvironment;
 import org.apache.shardingsphere.test.e2e.env.runtime.type.NativeDatabaseEnvironment;
 import org.apache.shardingsphere.test.e2e.env.runtime.type.RunEnvironment;
 
@@ -41,7 +41,7 @@ public final class E2ETestEnvironment {
     
     private final ArtifactEnvironment artifactEnvironment;
     
-    private final DockerDatabaseEnvironment dockerDatabaseEnvironment;
+    private final DockerEnvironment dockerEnvironment;
     
     private final NativeDatabaseEnvironment nativeDatabaseEnvironment;
     
@@ -51,7 +51,7 @@ public final class E2ETestEnvironment {
         scenarios = EnvironmentPropertiesLoader.getListValue(props, "e2e.scenarios");
         runEnvironment = new RunEnvironment(props);
         artifactEnvironment = new ArtifactEnvironment(props);
-        dockerDatabaseEnvironment = new DockerDatabaseEnvironment(props);
+        dockerEnvironment = new DockerEnvironment(props);
         nativeDatabaseEnvironment = new NativeDatabaseEnvironment(props);
     }
     
