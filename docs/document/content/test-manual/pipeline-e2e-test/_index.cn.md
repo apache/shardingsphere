@@ -65,9 +65,9 @@ Proxy 配置可以参考：
 ```
 e2e.run.type=NATIVE
 
-e2e.native.storage.port=3306
-e2e.native.storage.username=root
-e2e.native.storage.password=root
+e2e.native.database.port=3306
+e2e.native.database.username=root
+e2e.native.database.password=root
 ```
 
 4. 找到对应的测试类，在 IDE 启动运行。

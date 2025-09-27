@@ -132,8 +132,8 @@ public final class PipelineContainerComposer implements AutoCloseable {
             username = StorageContainerConstants.OPERATION_USER;
             password = StorageContainerConstants.OPERATION_PASSWORD;
         } else {
-            username = E2ETestEnvironment.getInstance().getNativeStorageEnvironment().getUser();
-            password = E2ETestEnvironment.getInstance().getNativeStorageEnvironment().getPassword();
+            username = E2ETestEnvironment.getInstance().getNativeDatabaseEnvironment().getUser();
+            password = E2ETestEnvironment.getInstance().getNativeDatabaseEnvironment().getPassword();
         }
         extraSQLCommand = JAXB.unmarshal(Objects.requireNonNull(Thread.currentThread().getContextClassLoader().getResource(testParam.getScenario())), ExtraSQLCommand.class);
         containerComposer.start();
@@ -296,7 +296,7 @@ public final class PipelineContainerComposer implements AutoCloseable {
             }
             return option.getConnectOption().getURL(host, port, toBeConnectedDataSourceName);
         }
-        return option.getConnectOption().getURL("127.0.0.1", E2ETestEnvironment.getInstance().getNativeStorageEnvironment().getPort(databaseType), databaseName);
+        return option.getConnectOption().getURL("127.0.0.1", E2ETestEnvironment.getInstance().getNativeDatabaseEnvironment().getPort(databaseType), databaseName);
     }
     
     /**

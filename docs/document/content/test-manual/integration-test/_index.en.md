@@ -109,10 +109,10 @@ The assertion file format is as follows:
 Modify `e2e.run.type` in `src/test/resources/env/e2e-env.properties` file of `e2e-sql` module to `NATIVE` mode, and then modify the following properties to the local database address and account.
 
 ```properties
-e2e.native.storage.host=127.0.0.1
-e2e.native.storage.port=3306
-e2e.native.storage.username=root
-e2e.native.storage.password=123456
+e2e.native.database.host=127.0.0.1
+e2e.native.database.port=3306
+e2e.native.database.username=root
+e2e.native.database.password=123456
 ```
 
 After the modification is completed, you can adjust other properties in `e2e-env.properties` to test ShardingSphere's Proxy, JDBC access terminal, or test the stand-alone and cluster modes.
@@ -171,10 +171,10 @@ e2e.artifact.databases=H2,MySQL,PostgreSQL,openGauss
 e2e.artifact.database.mysql.image=mysql:8.2.0
 
 # Database connection information and account in NATIVE mode
-e2e.native.storage.host=127.0.0.1
-e2e.native.storage.port=3306
-e2e.native.storage.username=root
-e2e.native.storage.password=123456
+e2e.native.database.host=127.0.0.1
+e2e.native.database.port=3306
+e2e.native.database.username=root
+e2e.native.database.password=123456
 ```
 
 #### Run debugging mode
