@@ -52,13 +52,13 @@ public final class PipelineE2ETestCaseArgumentsProvider implements ArgumentsProv
     
     private Collection<Arguments> provideArguments(final PipelineE2ESettings settings, final PipelineE2EDatabaseSettings databaseSettings) {
         DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, databaseSettings.type());
-        List<String> storageContainerImages = PipelineE2EEnvironment.getInstance().listStorageContainerImages(databaseType);
-        return settings.fetchSingle() && !storageContainerImages.isEmpty()
-                ? provideArguments(databaseSettings.scenarioFiles(), databaseType, storageContainerImages.get(0))
-                : storageContainerImages.stream().flatMap(each -> provideArguments(databaseSettings.scenarioFiles(), databaseType, each).stream()).collect(Collectors.toList());
+        List<String> databaseContainerImages = PipelineE2EEnvironment.getInstance().listDatabaseContainerImages(databaseType);
+        return settings.fetchSingle() && !databaseContainerImages.isEmpty()
+                ? provideArguments(databaseSettings.scenarioFiles(), databaseType, databaseContainerImages.get(0))
+                : databaseContainerImages.stream().flatMap(each -> provideArguments(databaseSettings.scenarioFiles(), databaseType, each).stream()).collect(Collectors.toList());
     }
     
-    private Collection<Arguments> provideArguments(final String[] scenarioFiles, final DatabaseType databaseType, final String storageContainerImage) {
-        return Arrays.stream(scenarioFiles).map(each -> Arguments.of(new PipelineTestParameter(databaseType, storageContainerImage, each))).collect(Collectors.toList());
+    private Collection<Arguments> provideArguments(final String[] scenarioFiles, final DatabaseType databaseType, final String databaseContainerImage) {
+        return Arrays.stream(scenarioFiles).map(each -> Arguments.of(new PipelineTestParameter(databaseType, databaseContainerImage, each))).collect(Collectors.toList());
     }
 }
