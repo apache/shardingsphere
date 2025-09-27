@@ -65,9 +65,9 @@ Proxy 配置可以参考：
 ```
 e2e.run.type=NATIVE
 
-e2e.native.storage.port=3306
-e2e.native.storage.username=root
-e2e.native.storage.password=root
+e2e.native.database.port=3306
+e2e.native.database.username=root
+e2e.native.database.password=root
 ```
 
 4. 找到对应的测试类，在 IDE 启动运行。
@@ -92,11 +92,11 @@ e2e.native.storage.password=root
 
 ```
 e2e.run.type=DOCKER
-e2e.artifact.database.mysql.image=mysql:5.7
+e2e.docker.database.mysql.image=mysql:5.7
 ```
 
 3. 通过 Maven 运行测试用例。以 MySQL 为例：
 
 ```
-./mvnw -nsu -B install -f test/e2e/operation/pipeline/pom.xml -De2e.run.type=docker -De2e.artifact.database.mysql.image=mysql:5.7
+./mvnw -nsu -B install -f test/e2e/operation/pipeline/pom.xml -De2e.run.type=docker -De2e.docker.database.mysql.image=mysql:5.7
 ```

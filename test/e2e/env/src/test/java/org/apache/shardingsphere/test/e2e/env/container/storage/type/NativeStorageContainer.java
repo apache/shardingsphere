@@ -28,7 +28,7 @@ import org.apache.shardingsphere.test.e2e.env.container.storage.option.StorageCo
 import org.apache.shardingsphere.test.e2e.env.container.util.SQLScriptUtils;
 import org.apache.shardingsphere.test.e2e.env.container.util.StorageContainerUtils;
 import org.apache.shardingsphere.test.e2e.env.runtime.E2ETestEnvironment;
-import org.apache.shardingsphere.test.e2e.env.runtime.type.NativeStorageEnvironment;
+import org.apache.shardingsphere.test.e2e.env.runtime.type.NativeDatabaseEnvironment;
 import org.apache.shardingsphere.test.e2e.env.runtime.type.scenario.database.DatabaseEnvironmentManager;
 import org.apache.shardingsphere.test.e2e.env.runtime.type.scenario.path.ScenarioDataPath.Type;
 
@@ -46,7 +46,7 @@ import java.util.stream.Collectors;
  */
 public final class NativeStorageContainer implements StorageContainer {
     
-    private final NativeStorageEnvironment env;
+    private final NativeDatabaseEnvironment env;
     
     private final DatabaseType databaseType;
     
@@ -65,7 +65,7 @@ public final class NativeStorageContainer implements StorageContainer {
     private List<String> networkAliases;
     
     public NativeStorageContainer(final DatabaseType databaseType, final String scenario) {
-        env = E2ETestEnvironment.getInstance().getNativeStorageEnvironment();
+        env = E2ETestEnvironment.getInstance().getNativeDatabaseEnvironment();
         this.databaseType = databaseType;
         this.scenario = scenario;
         option = DatabaseTypedSPILoader.findService(StorageContainerOption.class, databaseType).orElse(null);

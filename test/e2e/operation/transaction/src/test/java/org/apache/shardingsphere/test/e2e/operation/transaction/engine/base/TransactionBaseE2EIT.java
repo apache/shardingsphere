@@ -270,8 +270,8 @@ public abstract class TransactionBaseE2EIT {
      */
     public void addResource(final Connection connection, final String databaseName, final TransactionContainerComposer containerComposer) throws SQLException {
         String addSourceResource = commonSQL.getSourceAddNewResourceTemplate()
-                .replace("${user}", ENV.getNativeStorageEnvironment().getUser())
-                .replace("${password}", ENV.getNativeStorageEnvironment().getPassword())
+                .replace("${user}", ENV.getNativeDatabaseEnvironment().getUser())
+                .replace("${password}", ENV.getNativeDatabaseEnvironment().getPassword())
                 .replace("${ds2}", getActualJdbcUrlTemplate(databaseName, containerComposer));
         executeWithLog(connection, addSourceResource);
         int resourceCount = countWithLog("SHOW STORAGE UNITS FROM sharding_db", containerComposer);
@@ -285,7 +285,7 @@ public abstract class TransactionBaseE2EIT {
             DockerStorageContainer storageContainer = (DockerStorageContainer) ((TransactionDockerContainerComposer) containerComposer.getContainerComposer()).getStorageContainer();
             return option.getURL(containerComposer.getDatabaseType().getType().toLowerCase() + ".host", storageContainer.getExposedPort(), databaseName);
         }
-        return option.getURL("127.0.0.1", ENV.getNativeStorageEnvironment().getPort(containerComposer.getDatabaseType()), databaseName);
+        return option.getURL("127.0.0.1", ENV.getNativeDatabaseEnvironment().getPort(containerComposer.getDatabaseType()), databaseName);
     }
     
     /**
@@ -358,7 +358,7 @@ public abstract class TransactionBaseE2EIT {
             if (TEST_CASES.isEmpty()) {
                 log.warn("Transaction test cases are empty.");
             }
-            String databaseVersion = ENV.getArtifactEnvironment().getDatabaseImage(registry.getDatabaseType());
+            String databaseVersion = ENV.getDockerDatabaseEnvironment().getImage(registry.getDatabaseType());
             if (Strings.isNullOrEmpty(databaseVersion)) {
                 return new LinkedList<>();
             }

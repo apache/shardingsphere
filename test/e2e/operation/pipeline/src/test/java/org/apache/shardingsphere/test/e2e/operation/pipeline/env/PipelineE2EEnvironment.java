@@ -63,7 +63,7 @@ public final class PipelineE2EEnvironment {
         if (RunEnvironment.Type.NATIVE == E2ETestEnvironment.getInstance().getRunEnvironment().getType()) {
             return Collections.emptyList();
         }
-        return Arrays.stream(props.getOrDefault(String.format("e2e.artifact.database.%s.image", databaseType.getType().toLowerCase()), "").toString()
+        return Arrays.stream(props.getOrDefault(String.format("e2e.docker.database.%s.image", databaseType.getType().toLowerCase()), "").toString()
                 .split(",")).filter(each -> !Strings.isNullOrEmpty(each)).collect(Collectors.toList());
     }
 }

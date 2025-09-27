@@ -54,9 +54,9 @@ public final class PipelineNativeContainerComposer extends PipelineBaseContainer
     @SneakyThrows(SQLException.class)
     @Override
     public void cleanUpDatabase(final String databaseName) {
-        int port = ENV.getNativeStorageEnvironment().getPort(databaseType);
-        String username = ENV.getNativeStorageEnvironment().getUser();
-        String password = ENV.getNativeStorageEnvironment().getPassword();
+        int port = ENV.getNativeDatabaseEnvironment().getPort(databaseType);
+        String username = ENV.getNativeDatabaseEnvironment().getUser();
+        String password = ENV.getNativeDatabaseEnvironment().getPassword();
         String jdbcUrl = dropTableOption.getJdbcUrl(DatabaseTypedSPILoader.getService(StorageContainerOption.class, databaseType).getConnectOption(), port, databaseName);
         try (Connection connection = DriverManager.getConnection(jdbcUrl, username, password)) {
             dropTable(connection, databaseName);

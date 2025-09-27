@@ -27,10 +27,10 @@ import org.apache.shardingsphere.test.e2e.env.container.storage.option.StorageCo
 import java.util.Properties;
 
 /**
- * Native storage environment.
+ * Native database environment.
  */
 @Getter
-public final class NativeStorageEnvironment {
+public final class NativeDatabaseEnvironment {
     
     private final String host;
     
@@ -41,11 +41,11 @@ public final class NativeStorageEnvironment {
     
     private final String password;
     
-    public NativeStorageEnvironment(final Properties props) {
-        host = props.getProperty("e2e.native.storage.host", "127.0.0.1");
-        port = Integer.parseInt(props.getProperty("e2e.native.storage.port", "0"));
-        user = props.getProperty("e2e.native.storage.username", StorageContainerConstants.OPERATION_USER);
-        password = props.getProperty("e2e.native.storage.password", StorageContainerConstants.OPERATION_PASSWORD);
+    public NativeDatabaseEnvironment(final Properties props) {
+        host = props.getProperty("e2e.native.database.host", "127.0.0.1");
+        port = Integer.parseInt(props.getProperty("e2e.native.database.port", "0"));
+        user = props.getProperty("e2e.native.database.username", StorageContainerConstants.OPERATION_USER);
+        password = props.getProperty("e2e.native.database.password", StorageContainerConstants.OPERATION_PASSWORD);
     }
     
     /**
