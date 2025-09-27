@@ -29,17 +29,14 @@ public final class PipelineTestParameter {
     
     private final DatabaseType databaseType;
     
-    private final String storageContainerImage;
+    private final String databaseContainerImage;
     
     // TODO It's not scenario. Remove it later
     private final String scenario;
     
     private final int storageContainerCount;
     
-    public PipelineTestParameter(final DatabaseType databaseType, final String storageContainerImage, final String scenario) {
-        this.databaseType = databaseType;
-        this.storageContainerImage = storageContainerImage;
-        this.scenario = scenario;
-        storageContainerCount = 1;
+    public PipelineTestParameter(final DatabaseType databaseType, final String databaseContainerImage, final String scenario) {
+        this(databaseType, databaseContainerImage, scenario, 1);
     }
 }

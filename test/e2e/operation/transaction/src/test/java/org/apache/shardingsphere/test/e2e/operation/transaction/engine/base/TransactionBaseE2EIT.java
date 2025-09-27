@@ -358,7 +358,7 @@ public abstract class TransactionBaseE2EIT {
             if (TEST_CASES.isEmpty()) {
                 log.warn("Transaction test cases are empty.");
             }
-            String databaseVersion = ENV.getDockerDatabaseEnvironment().getImage(registry.getDatabaseType());
+            String databaseVersion = ENV.getDockerEnvironment().getDatabaseImage(registry.getDatabaseType());
             if (Strings.isNullOrEmpty(databaseVersion)) {
                 return new LinkedList<>();
             }
@@ -423,7 +423,7 @@ public abstract class TransactionBaseE2EIT {
                                        final List<TransactionType> transactionTypes, final List<String> providers, final String scenario, final Class<? extends BaseTransactionTestCase> caseClass) {
             String key = getUniqueKey(registry.getDatabaseType(), registry.getRunningAdaptor(), transactionTypes, providers, scenario);
             testParams.putIfAbsent(key, new TransactionTestParameter(registry.getDatabaseType(),
-                    registry.getRunningAdaptor(), ENV.getArtifactEnvironment().getProxyPortBindings(), transactionTypes, providers, databaseVersion, scenario, new LinkedList<>()));
+                    registry.getRunningAdaptor(), ENV.getDockerEnvironment().getProxyPortBindings(), transactionTypes, providers, databaseVersion, scenario, new LinkedList<>()));
             testParams.get(key).getTransactionTestCaseClasses().add(caseClass);
         }
         

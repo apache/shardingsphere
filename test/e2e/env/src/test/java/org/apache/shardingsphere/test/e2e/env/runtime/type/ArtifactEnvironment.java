@@ -24,7 +24,6 @@ import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.test.e2e.env.runtime.EnvironmentPropertiesLoader;
 
 import java.util.Collection;
-import java.util.List;
 import java.util.Properties;
 import java.util.stream.Collectors;
 
@@ -42,15 +41,12 @@ public final class ArtifactEnvironment {
     
     private final Collection<DatabaseType> databaseTypes;
     
-    private final List<String> proxyPortBindings;
-    
     public ArtifactEnvironment(final Properties props) {
         modes = EnvironmentPropertiesLoader.getListValue(props, "e2e.artifact.modes").stream().map(each -> Mode.valueOf(each.toUpperCase())).collect(Collectors.toList());
         adapters = EnvironmentPropertiesLoader.getListValue(props, "e2e.artifact.adapters");
         regCenterType = props.getProperty("e2e.artifact.regcenter");
         databaseTypes = EnvironmentPropertiesLoader.getListValue(props, "e2e.artifact.databases").stream()
                 .map(each -> TypedSPILoader.getService(DatabaseType.class, each.trim())).collect(Collectors.toSet());
-        proxyPortBindings = EnvironmentPropertiesLoader.getListValue(props, "e2e.artifact.proxy.port.bindings");
     }
     
     public enum Mode {

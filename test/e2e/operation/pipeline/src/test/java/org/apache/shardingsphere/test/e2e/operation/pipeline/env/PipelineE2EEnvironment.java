@@ -54,12 +54,12 @@ public final class PipelineE2EEnvironment {
     }
     
     /**
-     * List storage container images.
+     * List database container images.
      *
      * @param databaseType database type
-     * @return database storage container images
+     * @return database container images
      */
-    public List<String> listStorageContainerImages(final DatabaseType databaseType) {
+    public List<String> listDatabaseContainerImages(final DatabaseType databaseType) {
         if (RunEnvironment.Type.NATIVE == E2ETestEnvironment.getInstance().getRunEnvironment().getType()) {
             return Collections.emptyList();
         }

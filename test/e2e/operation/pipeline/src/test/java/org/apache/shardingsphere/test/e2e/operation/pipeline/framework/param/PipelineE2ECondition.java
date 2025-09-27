@@ -45,6 +45,6 @@ public final class PipelineE2ECondition {
         if (0 != databaseTypes.length && Type.NATIVE == E2ETestEnvironment.getInstance().getRunEnvironment().getType()) {
             return true;
         }
-        return 0 == databaseTypes.length || Arrays.stream(databaseTypes).anyMatch(each -> !PipelineE2EEnvironment.getInstance().listStorageContainerImages(each).isEmpty());
+        return 0 == databaseTypes.length || Arrays.stream(databaseTypes).anyMatch(each -> !PipelineE2EEnvironment.getInstance().listDatabaseContainerImages(each).isEmpty());
     }
 }

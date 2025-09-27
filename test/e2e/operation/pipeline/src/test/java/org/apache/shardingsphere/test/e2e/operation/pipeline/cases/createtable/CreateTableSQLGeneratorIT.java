@@ -73,7 +73,7 @@ class CreateTableSQLGeneratorIT {
     @EnabledIf("isEnabled")
     @ArgumentsSource(PipelineE2ETestCaseArgumentsProvider.class)
     void assertGenerateCreateTableSQL(final PipelineTestParameter testParam) throws SQLException {
-        startStorageContainer(testParam.getDatabaseType(), testParam.getStorageContainerImage());
+        startStorageContainer(testParam.getDatabaseType(), testParam.getDatabaseContainerImage());
         CreateTableSQLGeneratorAssertionsRootEntity rootEntity = JAXB.unmarshal(
                 Objects.requireNonNull(Thread.currentThread().getContextClassLoader().getResource(testParam.getScenario())), CreateTableSQLGeneratorAssertionsRootEntity.class);
         DataSource dataSource = storageContainer.createAccessDataSource(DEFAULT_DATABASE);
@@ -90,8 +90,8 @@ class CreateTableSQLGeneratorIT {
         }
     }
     
-    private void startStorageContainer(final DatabaseType databaseType, final String storageContainerImage) {
-        storageContainer = new DockerStorageContainer(storageContainerImage, DatabaseTypedSPILoader.getService(StorageContainerOption.class, databaseType), null);
+    private void startStorageContainer(final DatabaseType databaseType, final String databaseContainerImage) {
+        storageContainer = new DockerStorageContainer(databaseContainerImage, DatabaseTypedSPILoader.getService(StorageContainerOption.class, databaseType), null);
         storageContainer.start();
     }
     

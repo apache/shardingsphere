@@ -64,7 +64,7 @@ public final class TransactionDockerContainerComposer extends TransactionBaseCon
         Type type = E2ETestEnvironment.getInstance().getRunEnvironment().getType();
         if (Type.DOCKER == type) {
             storageContainer = getContainers().registerContainer(
-                    new DockerStorageContainer(testParam.getStorageContainerImage(), DatabaseTypedSPILoader.getService(StorageContainerOption.class, databaseType), testParam.getScenario()));
+                    new DockerStorageContainer(testParam.getDatabaseContainerImage(), DatabaseTypedSPILoader.getService(StorageContainerOption.class, databaseType), testParam.getScenario()));
         } else {
             storageContainer = getContainers().registerContainer(new NativeStorageContainer(databaseType, testParam.getScenario()));
         }

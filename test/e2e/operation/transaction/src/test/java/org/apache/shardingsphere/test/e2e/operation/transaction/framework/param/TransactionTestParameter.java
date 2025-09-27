@@ -40,7 +40,7 @@ public final class TransactionTestParameter {
     
     private final List<String> providers;
     
-    private final String storageContainerImage;
+    private final String databaseContainerImage;
     
     private final String scenario;
     
@@ -48,6 +48,6 @@ public final class TransactionTestParameter {
     
     @Override
     public String toString() {
-        return String.format("%s -> %s -> %s -> %s -> %s -> %s", databaseType.getType(), adapter, transactionTypes, providers, storageContainerImage, scenario);
+        return String.format("%s -> %s -> %s -> %s -> %s -> %s", databaseType.getType(), adapter, transactionTypes, providers, databaseContainerImage, scenario);
     }
 }

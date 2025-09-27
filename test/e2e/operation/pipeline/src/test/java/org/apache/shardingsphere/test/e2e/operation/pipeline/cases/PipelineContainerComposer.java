@@ -126,7 +126,7 @@ public final class PipelineContainerComposer implements AutoCloseable {
         databaseType = testParam.getDatabaseType();
         Type type = E2ETestEnvironment.getInstance().getRunEnvironment().getType();
         containerComposer = Type.DOCKER == type
-                ? new PipelineDockerContainerComposer(testParam.getDatabaseType(), testParam.getStorageContainerImage(), testParam.getStorageContainerCount())
+                ? new PipelineDockerContainerComposer(testParam.getDatabaseType(), testParam.getDatabaseContainerImage(), testParam.getStorageContainerCount())
                 : new PipelineNativeContainerComposer(testParam.getDatabaseType());
         if (Type.DOCKER == type) {
             username = StorageContainerConstants.OPERATION_USER;
