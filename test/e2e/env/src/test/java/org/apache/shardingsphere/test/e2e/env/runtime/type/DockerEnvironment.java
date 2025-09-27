@@ -23,10 +23,10 @@ import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.test.e2e.env.runtime.EnvironmentPropertiesLoader;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Properties;
 
 /**
@@ -34,7 +34,7 @@ import java.util.Properties;
  */
 public final class DockerEnvironment {
     
-    private final Map<DatabaseType, String> databaseImages;
+    private final Map<DatabaseType, Collection<String>> databaseImages;
     
     @Getter
     private final List<String> proxyPortBindings;
@@ -44,13 +44,26 @@ public final class DockerEnvironment {
         proxyPortBindings = EnvironmentPropertiesLoader.getListValue(props, "e2e.docker.proxy.port.bindings");
     }
     
-    private Map<DatabaseType, String> loadDatabaseImages(final Properties props) {
+    private Map<DatabaseType, Collection<String>> loadDatabaseImages(final Properties props) {
         Collection<DatabaseType> databaseTypes = ShardingSphereServiceLoader.getServiceInstances(DatabaseType.class);
-        Map<DatabaseType, String> result = new HashMap<>(databaseTypes.size(), 1F);
+        Map<DatabaseType, Collection<String>> result = new HashMap<>(databaseTypes.size(), 1F);
         for (DatabaseType each : databaseTypes) {
-            Optional.ofNullable(props.getProperty(String.format("e2e.docker.database.%s.image", each.getType().toLowerCase()))).ifPresent(value -> result.put(each, value));
+            Collection<String> images = EnvironmentPropertiesLoader.getListValue(props, "e2e.docker.database.%s.image");
+            if (!images.isEmpty()) {
+                result.put(each, images);
+            }
         }
         return result;
+    }
+    
+    /**
+     * Get database images.
+     *
+     * @param databaseType database type
+     * @return database images
+     */
+    public Collection<String> getDatabaseImages(final DatabaseType databaseType) {
+        return databaseImages.getOrDefault(databaseType, Collections.emptyList());
     }
     
     /**
@@ -60,6 +73,7 @@ public final class DockerEnvironment {
      * @return database image
      */
     public String getDatabaseImage(final DatabaseType databaseType) {
-        return databaseImages.get(databaseType);
+        Collection<String> images = databaseImages.getOrDefault(databaseType, Collections.emptyList());
+        return images.isEmpty() ? null : images.iterator().next();
     }
 }

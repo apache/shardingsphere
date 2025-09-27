@@ -17,30 +17,20 @@
 
 package org.apache.shardingsphere.test.e2e.operation.pipeline.env;
 
-import com.google.common.base.Strings;
 import lombok.Getter;
-import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
-import org.apache.shardingsphere.test.e2e.env.runtime.E2ETestEnvironment;
 import org.apache.shardingsphere.test.e2e.env.runtime.EnvironmentPropertiesLoader;
-import org.apache.shardingsphere.test.e2e.env.runtime.type.RunEnvironment;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
 import java.util.Properties;
-import java.util.stream.Collectors;
 
 @Getter
 public final class PipelineE2EEnvironment {
     
     private static final PipelineE2EEnvironment INSTANCE = new PipelineE2EEnvironment();
     
-    private final Properties props;
-    
     private final PipelineProxyType proxyType;
     
     private PipelineE2EEnvironment() {
-        props = EnvironmentPropertiesLoader.loadProperties();
+        Properties props = EnvironmentPropertiesLoader.loadProperties();
         proxyType = PipelineProxyType.valueOf(props.getProperty("e2e.pipeline.proxy.type", PipelineProxyType.NONE.name()).toUpperCase());
     }
     
@@ -51,19 +41,5 @@ public final class PipelineE2EEnvironment {
      */
     public static PipelineE2EEnvironment getInstance() {
         return INSTANCE;
-    }
-    
-    /**
-     * List database container images.
-     *
-     * @param databaseType database type
-     * @return database container images
-     */
-    public List<String> listDatabaseContainerImages(final DatabaseType databaseType) {
-        if (RunEnvironment.Type.NATIVE == E2ETestEnvironment.getInstance().getRunEnvironment().getType()) {
-            return Collections.emptyList();
-        }
-        return Arrays.stream(props.getOrDefault(String.format("e2e.docker.database.%s.image", databaseType.getType().toLowerCase()), "").toString()
-                .split(",")).filter(each -> !Strings.isNullOrEmpty(each)).collect(Collectors.toList());
     }
 }

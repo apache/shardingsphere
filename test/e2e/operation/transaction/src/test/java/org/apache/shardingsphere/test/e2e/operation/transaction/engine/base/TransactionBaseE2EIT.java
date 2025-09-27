@@ -345,8 +345,8 @@ public abstract class TransactionBaseE2EIT {
         }
         
         private Collection<TransactionTestParameter> getTransactionTestParameters(final Class<? extends TransactionBaseE2EIT> testCaseClass) {
-            TransactionTestCaseRegistry currentTestCaseInfo = TRANSACTION_ENV.getTransactionTestCaseRegistryMap().get(testCaseClass.getName());
-            Collection<TransactionTestParameter> result = getTestParameters(currentTestCaseInfo);
+            TransactionTestCaseRegistry registry = TRANSACTION_ENV.getTransactionTestCaseRegistryMap().get(testCaseClass.getName());
+            Collection<TransactionTestParameter> result = getTestParameters(registry);
             // TODO zhangcheng make sure the test cases should not empty
             if (result.isEmpty()) {
                 result.add(null);
@@ -355,12 +355,15 @@ public abstract class TransactionBaseE2EIT {
         }
         
         private Collection<TransactionTestParameter> getTestParameters(final TransactionTestCaseRegistry registry) {
+            return ENV.getDockerEnvironment().getDatabaseImages(registry.getDatabaseType()).stream().flatMap(each -> getTestParameters(registry, each).stream()).collect(Collectors.toList());
+        }
+        
+        private Collection<TransactionTestParameter> getTestParameters(final TransactionTestCaseRegistry registry, final String databaseVersion) {
             if (TEST_CASES.isEmpty()) {
                 log.warn("Transaction test cases are empty.");
             }
-            String databaseVersion = ENV.getDockerEnvironment().getDatabaseImage(registry.getDatabaseType());
             if (Strings.isNullOrEmpty(databaseVersion)) {
-                return new LinkedList<>();
+                return Collections.emptyList();
             }
             Map<String, TransactionTestParameter> result = new LinkedHashMap<>();
             for (Class<? extends BaseTransactionTestCase> each : TEST_CASES) {
