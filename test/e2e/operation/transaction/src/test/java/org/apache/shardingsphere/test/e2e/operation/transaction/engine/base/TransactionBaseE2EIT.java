@@ -358,7 +358,7 @@ public abstract class TransactionBaseE2EIT {
             if (TEST_CASES.isEmpty()) {
                 log.warn("Transaction test cases are empty.");
             }
-            String databaseVersion = ENV.getArtifactEnvironment().getDatabaseImage(registry.getDatabaseType());
+            String databaseVersion = ENV.getDockerDatabaseEnvironment().getImage(registry.getDatabaseType());
             if (Strings.isNullOrEmpty(databaseVersion)) {
                 return new LinkedList<>();
             }
