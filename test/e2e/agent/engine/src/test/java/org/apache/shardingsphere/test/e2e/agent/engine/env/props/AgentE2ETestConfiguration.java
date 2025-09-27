@@ -19,6 +19,7 @@ package org.apache.shardingsphere.test.e2e.agent.engine.env.props;
 
 import com.google.common.base.Strings;
 import lombok.Getter;
+import org.apache.shardingsphere.test.e2e.env.runtime.EnvironmentPropertiesLoader;
 
 import java.util.Properties;
 
@@ -43,7 +44,7 @@ public final class AgentE2ETestConfiguration {
     private final long collectDataWaitSeconds;
     
     private AgentE2ETestConfiguration() {
-        Properties envProps = AgentE2EEnvironmentProperties.loadProperties("env/engine-env.properties");
+        Properties envProps = EnvironmentPropertiesLoader.loadProperties("env/engine-env.properties");
         adapter = envProps.getProperty("e2e.env.adapter");
         pluginType = envProps.getProperty("e2e.env.plugin.type");
         pluginImageName = envProps.getProperty("e2e.env.plugin.image");

@@ -39,10 +39,20 @@ public final class EnvironmentPropertiesLoader {
      *
      * @return loaded properties
      */
-    @SneakyThrows(IOException.class)
     public static Properties loadProperties() {
+        return loadProperties("env/e2e-env.properties");
+    }
+    
+    /**
+     * Load environment properties.
+     *
+     * @param fileName file name
+     * @return loaded properties
+     */
+    @SneakyThrows(IOException.class)
+    public static Properties loadProperties(final String fileName) {
         Properties result = new Properties();
-        try (InputStream inputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream("env/e2e-env.properties")) {
+        try (InputStream inputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream(fileName)) {
             result.load(inputStream);
         }
         for (String each : System.getProperties().stringPropertyNames()) {
