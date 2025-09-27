@@ -107,10 +107,10 @@ SQL 用例在 `resources/cases/${SQL-TYPE}/e2e-${SQL-TYPE}-${cases-description}.
 修改 `e2e-sql` 模块 `src/test/resources/env/e2e-env.properties` 文件中 `e2e.run.type` 为 `NATIVE` 模式，然后修改如下的属性为本地数据库地址和账号。 
 
 ```properties
-e2e.native.storage.host=127.0.0.1
-e2e.native.storage.port=3306
-e2e.native.storage.username=root
-e2e.native.storage.password=123456
+e2e.native.database.host=127.0.0.1
+e2e.native.database.port=3306
+e2e.native.database.username=root
+e2e.native.database.password=123456
 ```
 
 修改完成后，可以再调整 `e2e-env.properties` 中其他属性，测试 ShardingSphere 的 Proxy、JDBC 接入端，或者测试单机、集群模式。
@@ -172,10 +172,10 @@ e2e.artifact.databases=H2,MySQL,PostgreSQL,openGauss
 e2e.artifact.database.mysql.image=mysql:8.2.0
 
 # NATIVE 模式下数据库连接信息及账号
-e2e.native.storage.host=127.0.0.1
-e2e.native.storage.port=3306
-e2e.native.storage.username=root
-e2e.native.storage.password=123456
+e2e.native.database.host=127.0.0.1
+e2e.native.database.port=3306
+e2e.native.database.username=root
+e2e.native.database.password=123456
 ```
 
 #### 运行调试模式

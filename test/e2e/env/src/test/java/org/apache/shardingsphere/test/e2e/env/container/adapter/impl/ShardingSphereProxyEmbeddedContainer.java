@@ -159,15 +159,15 @@ public final class ShardingSphereProxyEmbeddedContainer implements EmbeddedE2ECo
                 result.putAll(getStorageConnectionInfoMap((NativeStorageContainer) each));
             }
         }
-        result.put("username: " + StorageContainerConstants.OPERATION_USER, "username: " + E2ETestEnvironment.getInstance().getNativeStorageEnvironment().getUser());
-        result.put("password: " + StorageContainerConstants.OPERATION_PASSWORD, "password: " + E2ETestEnvironment.getInstance().getNativeStorageEnvironment().getPassword());
+        result.put("username: " + StorageContainerConstants.OPERATION_USER, "username: " + E2ETestEnvironment.getInstance().getNativeDatabaseEnvironment().getUser());
+        result.put("password: " + StorageContainerConstants.OPERATION_PASSWORD, "password: " + E2ETestEnvironment.getInstance().getNativeDatabaseEnvironment().getPassword());
         return result;
     }
     
     private Map<String, String> getStorageConnectionInfoMap(final NativeStorageContainer container) {
         return container.getNetworkAliases().stream().collect(Collectors.toMap(
                 each -> each + ":" + container.getExposedPort(),
-                each -> E2ETestEnvironment.getInstance().getNativeStorageEnvironment().getHost() + ":" + E2ETestEnvironment.getInstance().getNativeStorageEnvironment().getPort(databaseType)));
+                each -> E2ETestEnvironment.getInstance().getNativeDatabaseEnvironment().getHost() + ":" + E2ETestEnvironment.getInstance().getNativeDatabaseEnvironment().getPort(databaseType)));
     }
     
     private File createTempDirectory() {

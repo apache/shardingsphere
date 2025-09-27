@@ -64,9 +64,9 @@ Refer to following files for proxy `global.yaml` configuration:
 ```
 e2e.run.type=NATIVE
 
-e2e.native.storage.port=3306
-e2e.native.storage.username=root
-e2e.native.storage.password=root
+e2e.native.database.port=3306
+e2e.native.database.username=root
+e2e.native.database.password=root
 ```
 
 4. Find test class and start it on IDE.
