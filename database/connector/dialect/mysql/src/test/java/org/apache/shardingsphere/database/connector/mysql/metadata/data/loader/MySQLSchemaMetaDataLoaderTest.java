@@ -66,8 +66,8 @@ class MySQLSchemaMetaDataLoaderTest {
     
     private ResultSet mockTableResultSet() throws SQLException {
         ResultSet result = mock(ResultSet.class);
-        when(result.next()).thenReturn(true, true, true, true, true, false);
-        when(result.getString("TABLE_NAME")).thenReturn("tbl", "$tbl", "/tbl", "##tbl", "partitioned_tbl");
+        when(result.next()).thenReturn(true, true, true, true, true, true, true, true, false);
+        when(result.getString("TABLE_NAME")).thenReturn("tbl", "$tbl", "/tbl", "##tbl", "partitioned_tbl", "host_summary", "accounts", "db_one");
         return result;
     }
     
@@ -80,7 +80,7 @@ class MySQLSchemaMetaDataLoaderTest {
     
     @Test
     void assertLoadSchemaTableNames() throws SQLException {
-        Map<String, Collection<String>> schemaTableNames = Collections.singletonMap("foo_db", new CaseInsensitiveSet<>(Arrays.asList("tbl", "partitioned_tbl")));
+        Map<String, Collection<String>> schemaTableNames = Collections.singletonMap("foo_db", new CaseInsensitiveSet<>(Arrays.asList("tbl", "$tbl", "/tbl", "##tbl", "partitioned_tbl", "db_one")));
         assertThat(new SchemaMetaDataLoader(databaseType).loadSchemaTableNames("foo_db", dataSource, Collections.emptyList()), is(schemaTableNames));
     }
     
