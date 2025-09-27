@@ -63,7 +63,7 @@ public final class DockerEnvironment {
      * @return database images
      */
     public Collection<String> getDatabaseImages(final DatabaseType databaseType) {
-        return databaseImages.get(databaseType);
+        return databaseImages.getOrDefault(databaseType, Collections.emptyList());
     }
     
     /**
