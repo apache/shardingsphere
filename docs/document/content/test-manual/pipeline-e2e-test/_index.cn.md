@@ -92,11 +92,11 @@ e2e.native.database.password=root
 
 ```
 e2e.run.type=DOCKER
-e2e.artifact.database.mysql.image=mysql:5.7
+e2e.docker.database.mysql.image=mysql:5.7
 ```
 
 3. 通过 Maven 运行测试用例。以 MySQL 为例：
 
 ```
-./mvnw -nsu -B install -f test/e2e/operation/pipeline/pom.xml -De2e.run.type=docker -De2e.artifact.database.mysql.image=mysql:5.7
+./mvnw -nsu -B install -f test/e2e/operation/pipeline/pom.xml -De2e.run.type=docker -De2e.docker.database.mysql.image=mysql:5.7
 ```

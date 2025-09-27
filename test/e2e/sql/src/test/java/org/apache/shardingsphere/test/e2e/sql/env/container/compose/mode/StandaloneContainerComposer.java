@@ -52,7 +52,7 @@ public final class StandaloneContainerComposer implements ContainerComposer {
         containers = new E2EContainers(scenario);
         Type envType = E2ETestEnvironment.getInstance().getRunEnvironment().getType();
         storageContainer = containers.registerContainer(Type.DOCKER == envType
-                ? new DockerStorageContainer(E2ETestEnvironment.getInstance().getArtifactEnvironment().getDatabaseImage(databaseType),
+                ? new DockerStorageContainer(E2ETestEnvironment.getInstance().getDockerDatabaseEnvironment().getImage(databaseType),
                         DatabaseTypedSPILoader.getService(StorageContainerOption.class, databaseType), scenario)
                 : new NativeStorageContainer(databaseType, scenario));
         AdaptorContainerConfiguration containerConfig = SQLE2EProxyContainerConfigurationFactory.newInstance(scenario, "standalone", databaseType);

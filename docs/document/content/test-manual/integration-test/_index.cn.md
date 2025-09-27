@@ -169,7 +169,7 @@ e2e.artifact.adapters=jdbc
 e2e.artifact.databases=H2,MySQL,PostgreSQL,openGauss
 
 # 测试数据库的镜像版本
-e2e.artifact.database.mysql.image=mysql:8.2.0
+e2e.docker.database.mysql.image=mysql:8.2.0
 
 # NATIVE 模式下数据库连接信息及账号
 e2e.native.database.host=127.0.0.1

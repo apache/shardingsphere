@@ -167,8 +167,8 @@ e2e.artifact.adapters=jdbc
 # Database type. Multiple values can be separated by commas. Optional value: H2, MySQL, PostgreSQL, openGauss
 e2e.artifact.databases=H2,MySQL,PostgreSQL,openGauss
 
-# The mirror version of the database
-e2e.artifact.database.mysql.image=mysql:8.2.0
+# The docker image version of the database
+e2e.docker.database.mysql.image=mysql:8.2.0
 
 # Database connection information and account in NATIVE mode
 e2e.native.database.host=127.0.0.1

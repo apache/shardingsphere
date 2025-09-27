@@ -17,19 +17,14 @@
 
 package org.apache.shardingsphere.test.e2e.env.runtime.type;
 
-import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
-import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.test.e2e.env.runtime.EnvironmentPropertiesLoader;
 
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.Optional;
 import java.util.Properties;
 import java.util.stream.Collectors;
 
@@ -47,9 +42,6 @@ public final class ArtifactEnvironment {
     
     private final Collection<DatabaseType> databaseTypes;
     
-    @Getter(AccessLevel.NONE)
-    private final Map<DatabaseType, String> databaseImages;
-    
     private final List<String> proxyPortBindings;
     
     public ArtifactEnvironment(final Properties props) {
@@ -58,27 +50,7 @@ public final class ArtifactEnvironment {
         regCenterType = props.getProperty("e2e.artifact.regcenter");
         databaseTypes = EnvironmentPropertiesLoader.getListValue(props, "e2e.artifact.databases").stream()
                 .map(each -> TypedSPILoader.getService(DatabaseType.class, each.trim())).collect(Collectors.toSet());
-        databaseImages = getDatabaseImages(props);
         proxyPortBindings = EnvironmentPropertiesLoader.getListValue(props, "e2e.artifact.proxy.port.bindings");
-    }
-    
-    private Map<DatabaseType, String> getDatabaseImages(final Properties props) {
-        Collection<DatabaseType> databaseTypes = ShardingSphereServiceLoader.getServiceInstances(DatabaseType.class);
-        Map<DatabaseType, String> result = new HashMap<>(databaseTypes.size(), 1F);
-        for (DatabaseType each : databaseTypes) {
-            Optional.ofNullable(props.getProperty(String.format("e2e.artifact.database.%s.image", each.getType().toLowerCase()))).ifPresent(value -> result.put(each, value));
-        }
-        return result;
-    }
-    
-    /**
-     * Get database image.
-     *
-     * @param databaseType database type
-     * @return database image
-     */
-    public String getDatabaseImage(final DatabaseType databaseType) {
-        return databaseImages.get(databaseType);
     }
     
     public enum Mode {
