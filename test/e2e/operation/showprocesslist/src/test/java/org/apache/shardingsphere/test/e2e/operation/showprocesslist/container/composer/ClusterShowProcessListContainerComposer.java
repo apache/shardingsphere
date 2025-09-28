@@ -31,7 +31,6 @@ import org.apache.shardingsphere.test.e2e.env.container.governance.option.Govern
 import org.apache.shardingsphere.test.e2e.env.container.storage.StorageContainer;
 import org.apache.shardingsphere.test.e2e.env.container.storage.option.StorageContainerOption;
 import org.apache.shardingsphere.test.e2e.env.container.storage.type.DockerStorageContainer;
-import org.apache.shardingsphere.test.e2e.env.container.util.AdapterContainerUtils;
 import org.apache.shardingsphere.test.e2e.env.runtime.E2ETestEnvironment;
 import org.apache.shardingsphere.test.e2e.env.runtime.type.ArtifactEnvironment.Adapter;
 import org.apache.shardingsphere.test.e2e.env.runtime.type.ArtifactEnvironment.Mode;
@@ -62,9 +61,9 @@ public final class ClusterShowProcessListContainerComposer implements AutoClosea
                 : null;
         StorageContainer storageContainer = containers.registerContainer(
                 new DockerStorageContainer("", DatabaseTypedSPILoader.getService(StorageContainerOption.class, testParam.getDatabaseType()), testParam.getScenario()));
+        String proxyImage = E2ETestEnvironment.getInstance().getDockerEnvironment().getProxyImage();
         AdaptorContainerConfiguration containerConfig = new AdaptorContainerConfiguration(testParam.getScenario(), new LinkedList<>(),
-                getMountedResources(testParam.getScenario(), testParam.getDatabaseType(), testParam.getMode(), testParam.getRegCenterType()), AdapterContainerUtils.getAdapterContainerImage(),
-                "");
+                getMountedResources(testParam.getScenario(), testParam.getDatabaseType(), testParam.getMode(), testParam.getRegCenterType()), proxyImage, "");
         String type = E2ETestEnvironment.getInstance().getRunEnvironment().getType().name();
         jdbcContainer = AdapterContainerFactory.newInstance(Adapter.JDBC, testParam.getDatabaseType(), testParam.getScenario(), containerConfig, storageContainer, type);
         proxyContainer = AdapterContainerFactory.newInstance(Adapter.PROXY, testParam.getDatabaseType(), testParam.getScenario(), containerConfig, storageContainer, type);
