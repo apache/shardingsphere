@@ -91,12 +91,12 @@ If only test code is modified, you could reuse the existing docker image.
 
 ```
 e2e.run.type=DOCKER
-e2e.docker.database.mysql.image=mysql:5.7
+e2e.docker.database.mysql.images=mysql:5.7
 ```
 
 3. Run test cases.
 
 Take MySQL as an example:
 ```
-./mvnw -nsu -B install -f test/e2e/operation/pipeline/pom.xml -De2e.run.type=docker -De2e.docker.database.mysql.image=mysql:5.7
+./mvnw -nsu -B install -f test/e2e/operation/pipeline/pom.xml -De2e.run.type=docker -De2e.docker.database.mysql.images=mysql:5.7
 ```
