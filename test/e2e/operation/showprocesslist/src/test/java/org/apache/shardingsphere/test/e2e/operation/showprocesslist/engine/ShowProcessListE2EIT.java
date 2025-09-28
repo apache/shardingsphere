@@ -22,7 +22,7 @@ import org.apache.shardingsphere.infra.exception.external.sql.type.wrapper.SQLWr
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.test.e2e.env.runtime.E2ETestEnvironment;
 import org.apache.shardingsphere.test.e2e.env.runtime.type.ArtifactEnvironment.Mode;
-import org.apache.shardingsphere.test.e2e.env.runtime.type.RunEnvironment;
+import org.apache.shardingsphere.test.e2e.env.runtime.type.RunEnvironment.Type;
 import org.apache.shardingsphere.test.e2e.operation.showprocesslist.container.composer.ClusterShowProcessListContainerComposer;
 import org.apache.shardingsphere.test.e2e.operation.showprocesslist.parameter.ShowProcessListTestParameter;
 import org.awaitility.Awaitility;
@@ -115,7 +115,7 @@ class ShowProcessListE2EIT {
     }
     
     private static boolean isEnabled() {
-        return RunEnvironment.Type.DOCKER == ENV.getRunEnvironment().getType();
+        return Type.DOCKER == ENV.getRunEnvironment().getType();
     }
     
     private static final class TestCaseArgumentsProvider implements ArgumentsProvider {
