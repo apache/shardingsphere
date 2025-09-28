@@ -282,7 +282,6 @@ public final class PipelineContainerComposer implements AutoCloseable {
         StorageContainerOption option = DatabaseTypedSPILoader.getService(StorageContainerOption.class, databaseType);
         if (Type.DOCKER == E2ETestEnvironment.getInstance().getRunEnvironment().getType()) {
             DockerStorageContainer storageContainer = ((PipelineDockerContainerComposer) containerComposer).getStorageContainers().get(storageContainerIndex);
-            String toBeConnectedDataSourceName = Strings.isNullOrEmpty(databaseName) ? option.getCreateOption().getDefaultDatabaseName(storageContainer.getMajorVersion()).orElse("") : databaseName;
             String host;
             int port;
             if (isInContainer) {
@@ -292,7 +291,7 @@ public final class PipelineContainerComposer implements AutoCloseable {
                 host = storageContainer.getHost();
                 port = storageContainer.getMappedPort();
             }
-            return option.getConnectOption().getURL(host, port, toBeConnectedDataSourceName);
+            return option.getConnectOption().getURL(host, port, storageContainer.getToBeConnectedDataSourceName(databaseName));
         }
         return option.getConnectOption().getURL("127.0.0.1", E2ETestEnvironment.getInstance().getNativeDatabaseEnvironment().getPort(databaseType), databaseName);
     }

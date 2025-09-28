@@ -23,7 +23,6 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.test.e2e.env.container.adapter.config.AdaptorContainerConfiguration;
 import org.apache.shardingsphere.test.e2e.env.container.constants.ProxyContainerConstants;
-import org.apache.shardingsphere.test.e2e.env.container.util.AdapterContainerUtils;
 import org.apache.shardingsphere.test.e2e.env.runtime.E2ETestEnvironment;
 
 import java.net.URL;
@@ -46,7 +45,8 @@ public final class SQLE2EProxyContainerConfigurationFactory {
      * @return created instance
      */
     public static AdaptorContainerConfiguration newInstance(final String scenario, final String mode, final DatabaseType databaseType) {
-        return new AdaptorContainerConfiguration(scenario, new LinkedList<>(), getMountedResources(scenario, mode, databaseType), AdapterContainerUtils.getAdapterContainerImage(), "");
+        return new AdaptorContainerConfiguration(
+                scenario, new LinkedList<>(), getMountedResources(scenario, mode, databaseType), E2ETestEnvironment.getInstance().getDockerEnvironment().getProxyImage(), "");
     }
     
     private static Map<String, String> getMountedResources(final String scenario, final String mode, final DatabaseType databaseType) {

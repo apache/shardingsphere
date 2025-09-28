@@ -187,8 +187,17 @@ public final class DockerStorageContainer extends DockerE2EContainer implements 
      * @return JDBC URL
      */
     public String getJdbcUrl(final String dataSourceName) {
-        String toBeConnectedDataSourceName = Strings.isNullOrEmpty(dataSourceName) ? option.getCreateOption().getDefaultDatabaseName(majorVersion).orElse("") : dataSourceName;
-        return option.getConnectOption().getURL(getHost(), getMappedPort(), toBeConnectedDataSourceName);
+        return option.getConnectOption().getURL(getHost(), getMappedPort(), getToBeConnectedDataSourceName(dataSourceName));
+    }
+    
+    /**
+     * Get to be connected data source name.
+     *
+     * @param dataSourceName datasource name
+     * @return to be connected data source name
+     */
+    public String getToBeConnectedDataSourceName(final String dataSourceName) {
+        return Strings.isNullOrEmpty(dataSourceName) ? option.getCreateOption().getDefaultDatabaseName(majorVersion).orElse("") : dataSourceName;
     }
     
     /**
