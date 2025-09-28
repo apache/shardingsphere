@@ -15,15 +15,17 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.core.consistencycheck.table.calculator;
+package org.apache.shardingsphere.data.pipeline.core.ingest.dumper.inventory.query.calculator;
 
 import org.apache.shardingsphere.data.pipeline.core.consistencycheck.PipelineCancellable;
-import org.apache.shardingsphere.data.pipeline.core.consistencycheck.result.SingleTableInventoryCalculatedResult;
+import org.apache.shardingsphere.data.pipeline.core.consistencycheck.table.calculator.SingleTableInventoryCalculateParameter;
 
 /**
  * Single table inventory calculator.
+ *
+ * @param <S> the type of result
  */
-public interface SingleTableInventoryCalculator extends PipelineCancellable {
+public interface SingleTableInventoryCalculator<S> extends PipelineCancellable {
     
     /**
      * Calculate for single table inventory data.
@@ -31,5 +33,5 @@ public interface SingleTableInventoryCalculator extends PipelineCancellable {
      * @param param calculate parameter
      * @return calculated result
      */
-    Iterable<SingleTableInventoryCalculatedResult> calculate(SingleTableInventoryCalculateParameter param);
+    Iterable<S> calculate(SingleTableInventoryCalculateParameter param);
 }

@@ -19,6 +19,7 @@ package org.apache.shardingsphere.data.pipeline.core.consistencycheck.table.calc
 
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.inventory.query.calculator.SingleTableInventoryCalculator;
 
 import java.sql.SQLException;
 import java.sql.SQLFeatureNotSupportedException;
@@ -28,9 +29,11 @@ import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * Abstract single table inventory calculator.
+ *
+ * @param <S> the type of result
  */
 @Slf4j
-public abstract class AbstractSingleTableInventoryCalculator implements SingleTableInventoryCalculator {
+public abstract class AbstractSingleTableInventoryCalculator<S> implements SingleTableInventoryCalculator<S> {
     
     private final AtomicBoolean canceling = new AtomicBoolean(false);
     

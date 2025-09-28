@@ -53,7 +53,7 @@ import java.util.Optional;
  */
 @HighFrequencyInvocation
 @RequiredArgsConstructor
-public final class RecordSingleTableInventoryCalculator extends AbstractStreamingSingleTableInventoryCalculator {
+public final class RecordSingleTableInventoryCalculator extends AbstractStreamingSingleTableInventoryCalculator<SingleTableInventoryCalculatedResult> {
     
     private static final int DEFAULT_STREAMING_CHUNK_COUNT = 100;
     
