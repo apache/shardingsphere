@@ -64,7 +64,7 @@ public final class PipelineDockerContainerComposer extends PipelineBaseContainer
         }
         AdaptorContainerConfiguration containerConfig = PipelineProxyContainerConfigurationFactory.newInstance(databaseType);
         DatabaseType proxyDatabaseType = ProxyDatabaseTypeUtils.getProxyDatabaseType(databaseType);
-        if (Type.DOCKER == E2ETestEnvironment.getInstance().getRunEnvironment().getType()) {
+        if (Type.NATIVE == E2ETestEnvironment.getInstance().getRunEnvironment().getType()) {
             ShardingSphereProxyEmbeddedContainer proxyContainer = new ShardingSphereProxyEmbeddedContainer(proxyDatabaseType, containerConfig);
             for (DockerStorageContainer each : storageContainers) {
                 proxyContainer.dependsOn(governanceContainer, each);
