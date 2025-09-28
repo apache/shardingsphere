@@ -27,7 +27,7 @@ import org.apache.shardingsphere.data.pipeline.core.consistencycheck.result.Tabl
 import org.apache.shardingsphere.data.pipeline.core.consistencycheck.result.yaml.YamlTableDataConsistencyCheckResult;
 import org.apache.shardingsphere.data.pipeline.core.consistencycheck.result.yaml.YamlTableDataConsistencyCheckResultSwapper;
 import org.apache.shardingsphere.data.pipeline.core.consistencycheck.table.calculator.SingleTableInventoryCalculateParameter;
-import org.apache.shardingsphere.data.pipeline.core.consistencycheck.table.calculator.SingleTableInventoryCalculator;
+import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.inventory.query.calculator.SingleTableInventoryCalculator;
 import org.apache.shardingsphere.data.pipeline.core.constant.PipelineSQLOperationType;
 import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.inventory.query.QueryType;
 import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.inventory.query.range.QueryRange;
@@ -57,9 +57,9 @@ public abstract class MatchingTableInventoryChecker implements TableInventoryChe
     
     private final AtomicBoolean canceling = new AtomicBoolean(false);
     
-    private volatile SingleTableInventoryCalculator sourceCalculator;
+    private volatile SingleTableInventoryCalculator<SingleTableInventoryCalculatedResult> sourceCalculator;
     
-    private volatile SingleTableInventoryCalculator targetCalculator;
+    private volatile SingleTableInventoryCalculator<SingleTableInventoryCalculatedResult> targetCalculator;
     
     @Override
     public TableDataConsistencyCheckResult checkSingleTableInventoryData() {
@@ -83,9 +83,9 @@ public abstract class MatchingTableInventoryChecker implements TableInventoryChe
                 param.getColumnNames(), param.getUniqueKeys(), QueryType.RANGE_QUERY, param.getQueryCondition());
         targetParam.setQueryRange(new QueryRange(null != checkRangePosition.getTargetPosition() ? checkRangePosition.getTargetPosition() : checkRangePosition.getTargetRange().getBeginValue(),
                 true, checkRangePosition.getTargetRange().getEndValue()));
-        SingleTableInventoryCalculator sourceCalculator = buildSingleTableInventoryCalculator();
+        SingleTableInventoryCalculator<SingleTableInventoryCalculatedResult> sourceCalculator = buildSingleTableInventoryCalculator();
         this.sourceCalculator = sourceCalculator;
-        SingleTableInventoryCalculator targetCalculator = buildSingleTableInventoryCalculator();
+        SingleTableInventoryCalculator<SingleTableInventoryCalculatedResult> targetCalculator = buildSingleTableInventoryCalculator();
         this.targetCalculator = targetCalculator;
         try {
             Iterator<SingleTableInventoryCalculatedResult> sourceCalculatedResults = PipelineTaskUtils.waitFuture(executor.submit(() -> sourceCalculator.calculate(sourceParam))).iterator();
@@ -132,7 +132,7 @@ public abstract class MatchingTableInventoryChecker implements TableInventoryChe
         return new YamlTableDataConsistencyCheckResultSwapper().swapToObject(checkResult);
     }
     
-    protected abstract SingleTableInventoryCalculator buildSingleTableInventoryCalculator();
+    protected abstract SingleTableInventoryCalculator<SingleTableInventoryCalculatedResult> buildSingleTableInventoryCalculator();
     
     @Override
     public void cancel() {

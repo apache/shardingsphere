@@ -52,7 +52,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-class CRC32SingleTableInventoryCalculatorTest {
+class CRC32SingleTableInventoryCheckCalculatorTest {
     
     private SingleTableInventoryCalculateParameter parameter;
     
@@ -78,7 +78,7 @@ class CRC32SingleTableInventoryCalculatorTest {
         when(connection.prepareStatement("SELECT CRC32(foo_col) FROM foo_tbl")).thenReturn(preparedStatement0);
         PreparedStatement preparedStatement1 = mockPreparedStatement(456L, 10);
         when(connection.prepareStatement("SELECT CRC32(bar_col) FROM foo_tbl")).thenReturn(preparedStatement1);
-        Iterator<SingleTableInventoryCalculatedResult> actual = new CRC32SingleTableInventoryCalculator().calculate(parameter).iterator();
+        Iterator<SingleTableInventoryCalculatedResult> actual = new CRC32SingleTableInventoryCheckCalculator().calculate(parameter).iterator();
         assertThat(actual.next().getRecordsCount(), is(10));
         assertFalse(actual.hasNext());
     }
@@ -95,6 +95,6 @@ class CRC32SingleTableInventoryCalculatorTest {
     @Test
     void assertCalculateFailed() throws SQLException {
         when(connection.prepareStatement(anyString())).thenThrow(new SQLException(""));
-        assertThrows(PipelineTableDataConsistencyCheckLoadingFailedException.class, () -> new CRC32SingleTableInventoryCalculator().calculate(parameter));
+        assertThrows(PipelineTableDataConsistencyCheckLoadingFailedException.class, () -> new CRC32SingleTableInventoryCheckCalculator().calculate(parameter));
     }
 }

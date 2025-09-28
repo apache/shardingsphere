@@ -19,7 +19,6 @@ package org.apache.shardingsphere.data.pipeline.core.consistencycheck.table.calc
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.data.pipeline.core.consistencycheck.result.SingleTableInventoryCalculatedResult;
 
 import java.util.Iterator;
 import java.util.NoSuchElementException;
@@ -29,12 +28,14 @@ import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * Abstract streaming single table inventory calculator.
+ *
+ * @param <S> the type of result
  */
 @Getter
-public abstract class AbstractStreamingSingleTableInventoryCalculator extends AbstractSingleTableInventoryCalculator {
+public abstract class AbstractStreamingSingleTableInventoryCalculator<S> extends AbstractSingleTableInventoryCalculator<S> {
     
     @Override
-    public final Iterable<SingleTableInventoryCalculatedResult> calculate(final SingleTableInventoryCalculateParameter param) {
+    public final Iterable<S> calculate(final SingleTableInventoryCalculateParameter param) {
         return new ResultIterable(param);
     }
     
@@ -44,28 +45,28 @@ public abstract class AbstractStreamingSingleTableInventoryCalculator extends Ab
      * @param param data consistency calculate parameter
      * @return optional calculated result, empty means there's no more result
      */
-    protected abstract Optional<SingleTableInventoryCalculatedResult> calculateChunk(SingleTableInventoryCalculateParameter param);
+    protected abstract Optional<S> calculateChunk(SingleTableInventoryCalculateParameter param);
     
     /**
      * It's not thread-safe, it should be executed in only one thread at the same time.
      */
     @RequiredArgsConstructor
-    private final class ResultIterable implements Iterable<SingleTableInventoryCalculatedResult> {
+    private final class ResultIterable implements Iterable<S> {
         
         private final SingleTableInventoryCalculateParameter param;
         
         @Override
-        public Iterator<SingleTableInventoryCalculatedResult> iterator() {
+        public Iterator<S> iterator() {
             return new ResultIterator(param);
         }
     }
     
     @RequiredArgsConstructor
-    private final class ResultIterator implements Iterator<SingleTableInventoryCalculatedResult> {
+    private final class ResultIterator implements Iterator<S> {
         
         private final AtomicBoolean currentChunkCalculated = new AtomicBoolean();
         
-        private final AtomicReference<Optional<SingleTableInventoryCalculatedResult>> nextResult = new AtomicReference<>();
+        private final AtomicReference<Optional<S>> nextResult = new AtomicReference<>();
         
         private final SingleTableInventoryCalculateParameter param;
         
@@ -76,9 +77,9 @@ public abstract class AbstractStreamingSingleTableInventoryCalculator extends Ab
         }
         
         @Override
-        public SingleTableInventoryCalculatedResult next() {
+        public S next() {
             calculateIfNecessary();
-            Optional<SingleTableInventoryCalculatedResult> result = nextResult.get();
+            Optional<S> result = nextResult.get();
             nextResult.set(null);
             currentChunkCalculated.set(false);
             return result.orElseThrow(NoSuchElementException::new);
