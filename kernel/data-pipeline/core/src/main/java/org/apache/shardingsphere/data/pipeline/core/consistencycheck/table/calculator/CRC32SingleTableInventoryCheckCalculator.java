@@ -36,10 +36,10 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
- * CRC32 single table inventory calculator.
+ * CRC32 single table inventory check calculator.
  */
 @Slf4j
-public final class CRC32SingleTableInventoryCalculator extends AbstractSingleTableInventoryCalculator {
+public final class CRC32SingleTableInventoryCheckCalculator extends AbstractSingleTableInventoryCalculator<SingleTableInventoryCalculatedResult> {
     
     @Override
     public Iterable<SingleTableInventoryCalculatedResult> calculate(final SingleTableInventoryCalculateParameter param) {
