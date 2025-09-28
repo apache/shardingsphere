@@ -92,7 +92,7 @@ e2e.native.database.password=root
 
 ```
 e2e.run.type=DOCKER
-e2e.docker.database.mysql.image=mysql:5.7
+e2e.docker.database.mysql.images=mysql:5.7
 ```
 
 3. 通过 Maven 运行测试用例。以 MySQL 为例：

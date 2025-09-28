@@ -48,7 +48,7 @@ public final class DockerEnvironment {
         Collection<DatabaseType> databaseTypes = ShardingSphereServiceLoader.getServiceInstances(DatabaseType.class);
         Map<DatabaseType, Collection<String>> result = new HashMap<>(databaseTypes.size(), 1F);
         for (DatabaseType each : databaseTypes) {
-            Collection<String> images = EnvironmentPropertiesLoader.getListValue(props, "e2e.docker.database.%s.image");
+            Collection<String> images = EnvironmentPropertiesLoader.getListValue(props, "e2e.docker.database.%s.images");
             if (!images.isEmpty()) {
                 result.put(each, images);
             }
