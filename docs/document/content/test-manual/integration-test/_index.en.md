@@ -168,7 +168,7 @@ e2e.artifact.adapters=jdbc
 e2e.artifact.databases=H2,MySQL,PostgreSQL,openGauss
 
 # The docker image version of the database
-e2e.docker.database.mysql.image=mysql:8.2.0
+e2e.docker.database.mysql.images=mysql:8.2.0
 
 # Database connection information and account in NATIVE mode
 e2e.native.database.host=127.0.0.1
