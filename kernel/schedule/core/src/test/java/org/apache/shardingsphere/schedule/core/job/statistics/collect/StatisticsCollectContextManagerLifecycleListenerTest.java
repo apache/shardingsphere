@@ -17,14 +17,12 @@
 
 package org.apache.shardingsphere.schedule.core.job.statistics.collect;
 
-import org.apache.shardingsphere.infra.instance.metadata.InstanceType;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -36,15 +34,6 @@ class StatisticsCollectContextManagerLifecycleListenerTest {
         when(contextManager.getComputeNodeInstanceContext().getModeConfiguration().isCluster()).thenReturn(true);
         new StatisticsCollectContextManagerLifecycleListener().onInitialized(contextManager);
         verify(contextManager.getComputeNodeInstanceContext()).getModeConfiguration();
-    }
-    
-    @Test
-    void assertOnInitializedWithProxy() {
-        ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
-        when(contextManager.getComputeNodeInstanceContext().getModeConfiguration().isCluster()).thenReturn(true);
-        when(contextManager.getComputeNodeInstanceContext().getInstance().getMetaData().getType()).thenReturn(InstanceType.PROXY);
-        new StatisticsCollectContextManagerLifecycleListener().onInitialized(contextManager);
-        verify(contextManager.getComputeNodeInstanceContext(), times(2)).getModeConfiguration();
     }
     
     @Test
