@@ -20,6 +20,7 @@ package org.apache.shardingsphere.test.e2e.env.runtime.type;
 import lombok.Getter;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
+import org.apache.shardingsphere.test.e2e.env.container.constants.ProxyContainerConstants;
 import org.apache.shardingsphere.test.e2e.env.runtime.EnvironmentPropertiesLoader;
 
 import java.util.Collection;
@@ -37,10 +38,14 @@ public final class DockerEnvironment {
     private final Map<DatabaseType, Collection<String>> databaseImages;
     
     @Getter
+    private final String proxyImage;
+    
+    @Getter
     private final List<String> proxyPortBindings;
     
     public DockerEnvironment(final Properties props) {
         databaseImages = loadDatabaseImages(props);
+        proxyImage = props.getProperty("e2e.docker.proxy.image", ProxyContainerConstants.PROXY_CONTAINER_IMAGE);
         proxyPortBindings = EnvironmentPropertiesLoader.getListValue(props, "e2e.docker.proxy.port.bindings");
     }
     

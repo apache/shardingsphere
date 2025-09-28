@@ -22,7 +22,7 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.test.e2e.env.container.adapter.config.AdaptorContainerConfiguration;
 import org.apache.shardingsphere.test.e2e.env.container.constants.ProxyContainerConstants;
-import org.apache.shardingsphere.test.e2e.env.container.util.AdapterContainerUtils;
+import org.apache.shardingsphere.test.e2e.env.runtime.E2ETestEnvironment;
 
 import java.util.HashMap;
 import java.util.List;
@@ -43,7 +43,8 @@ public final class TransactionProxyContainerConfigurationFactory {
      * @return created instance
      */
     public static AdaptorContainerConfiguration newInstance(final String scenario, final DatabaseType databaseType, final List<String> portBindings) {
-        return new AdaptorContainerConfiguration(getProxyDatasourceName(scenario), portBindings, getMountedResource(scenario, databaseType), AdapterContainerUtils.getAdapterContainerImage(), "");
+        return new AdaptorContainerConfiguration(
+                getProxyDatasourceName(scenario), portBindings, getMountedResource(scenario, databaseType), E2ETestEnvironment.getInstance().getDockerEnvironment().getProxyImage(), "");
     }
     
     private static String getProxyDatasourceName(final String scenario) {
