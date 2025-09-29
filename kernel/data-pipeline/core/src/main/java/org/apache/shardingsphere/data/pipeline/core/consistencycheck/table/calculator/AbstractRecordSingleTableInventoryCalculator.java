@@ -23,6 +23,7 @@ import org.apache.shardingsphere.data.pipeline.core.consistencycheck.DataConsist
 import org.apache.shardingsphere.data.pipeline.core.exception.PipelineJobCancelingException;
 import org.apache.shardingsphere.data.pipeline.core.exception.data.PipelineTableDataConsistencyCheckLoadingFailedException;
 import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.inventory.column.InventoryColumnValueReaderEngine;
+import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.inventory.query.PipelineDatabaseResources;
 import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.inventory.query.QueryType;
 import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.inventory.query.range.QueryRange;
 import org.apache.shardingsphere.data.pipeline.core.query.JDBCStreamQueryBuilder;
@@ -105,7 +106,7 @@ public abstract class AbstractRecordSingleTableInventoryCalculator<S, C> extends
         List<C> result = new LinkedList<>();
         CalculationContext<C> calculationContext = prepareCalculationContext(param);
         prepareDatabaseResources(calculationContext, param);
-        ResultSet resultSet = calculationContext.getResultSet();
+        ResultSet resultSet = calculationContext.getDatabaseResources().getResultSet();
         ResultSetMetaData resultSetMetaData = resultSet.getMetaData();
         while (resultSet.next()) {
             ShardingSpherePreconditions.checkState(!isCanceling(), () -> new PipelineJobCancelingException("Calculate chunk canceled, qualified table: %s", param.getTable()));
@@ -119,7 +120,7 @@ public abstract class AbstractRecordSingleTableInventoryCalculator<S, C> extends
         List<C> result = new LinkedList<>();
         CalculationContext<C> calculationContext = prepareCalculationContext(param);
         prepareDatabaseResources(calculationContext, param);
-        ResultSet resultSet = calculationContext.getResultSet();
+        ResultSet resultSet = calculationContext.getDatabaseResources().getResultSet();
         ResultSetMetaData resultSetMetaData = resultSet.getMetaData();
         while (resultSet.next()) {
             ShardingSpherePreconditions.checkState(!isCanceling(), () -> new PipelineJobCancelingException("Calculate chunk canceled, qualified table: %s", param.getTable()));
@@ -139,7 +140,7 @@ public abstract class AbstractRecordSingleTableInventoryCalculator<S, C> extends
         List<C> result = new LinkedList<>();
         CalculationContext<C> calculationContext = prepareCalculationContext(param);
         prepareDatabaseResources(calculationContext, param);
-        ResultSet resultSet = calculationContext.getResultSet();
+        ResultSet resultSet = calculationContext.getDatabaseResources().getResultSet();
         ResultSetMetaData resultSetMetaData = resultSet.getMetaData();
         while (resultSet.next()) {
             ShardingSpherePreconditions.checkState(!isCanceling(), () -> new PipelineJobCancelingException("Calculate chunk canceled, qualified table: %s", param.getTable()));
@@ -148,7 +149,7 @@ public abstract class AbstractRecordSingleTableInventoryCalculator<S, C> extends
                 return result;
             }
         }
-        calculationContext.resetDatabaseResources();
+        calculationContext.getDatabaseResources().reset();
         if (result.isEmpty() && 1 == round) {
             return rangeQueryWithSingleColumUniqueKey(param, columnValueReaderEngine, round + 1);
         }
@@ -168,7 +169,7 @@ public abstract class AbstractRecordSingleTableInventoryCalculator<S, C> extends
     private void doRangeQueryWithMultiColumUniqueKeys(final SingleTableInventoryCalculateParameter param, final CalculationContext<C> calculationContext,
                                                       final InventoryColumnValueReaderEngine columnValueReaderEngine) throws SQLException {
         prepareDatabaseResources(calculationContext, param);
-        ResultSet resultSet = calculationContext.getResultSet();
+        ResultSet resultSet = calculationContext.getDatabaseResources().getResultSet();
         ResultSetMetaData resultSetMetaData = resultSet.getMetaData();
         C previousRecord = calculationContext.getRecordDeque().pollLast();
         List<C> duplicateRecords = new LinkedList<>();
@@ -197,7 +198,7 @@ public abstract class AbstractRecordSingleTableInventoryCalculator<S, C> extends
             }
             duplicateRecords.add(record);
         }
-        calculationContext.resetDatabaseResources();
+        calculationContext.getDatabaseResources().reset();
         if (!duplicateRecords.isEmpty()) {
             calculationContext.getRecordDeque().addAll(pointRangeQuery(param, duplicateRecords.get(0), columnValueReaderEngine));
         }
@@ -241,19 +242,20 @@ public abstract class AbstractRecordSingleTableInventoryCalculator<S, C> extends
     }
     
     private void prepareDatabaseResources(final CalculationContext<C> calculationContext, final SingleTableInventoryCalculateParameter param) throws SQLException {
-        if (calculationContext.isDatabaseResourcesReady()) {
+        if (calculationContext.getDatabaseResources().isReady()) {
             return;
         }
+        PipelineDatabaseResources databaseResources = calculationContext.getDatabaseResources();
         Connection connection = param.getDataSource().getConnection();
-        calculationContext.setConnection(connection);
+        databaseResources.setConnection(connection);
         String sql = getQuerySQL(param);
         PreparedStatement preparedStatement = JDBCStreamQueryBuilder.build(param.getDatabaseType(), connection, sql, chunkSize);
         setCurrentStatement(preparedStatement);
-        calculationContext.setPreparedStatement(preparedStatement);
+        databaseResources.setPreparedStatement(preparedStatement);
         setParameters(preparedStatement, param);
         ResultSet resultSet = preparedStatement.executeQuery();
-        calculationContext.setResultSet(resultSet);
-        calculationContext.setDatabaseResourcesReady(true);
+        databaseResources.setResultSet(resultSet);
+        databaseResources.setReady(true);
     }
     
     private String getQuerySQL(final SingleTableInventoryCalculateParameter param) {
