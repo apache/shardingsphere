@@ -123,12 +123,8 @@ public final class InventoryDumper extends AbstractPipelineLifecycleRunnable imp
         return position instanceof PrimaryKeyIngestPosition && null == ((PrimaryKeyIngestPosition<?>) position).getBeginValue() && null == ((PrimaryKeyIngestPosition<?>) position).getEndValue();
     }
     
-    @SuppressWarnings("MagicConstant")
     private void dumpByPage(final Connection connection) throws SQLException {
         log.info("Start to dump inventory data by page, dataSource={}, actualTable={}", dumperContext.getCommonContext().getDataSourceName(), dumperContext.getActualTableName());
-        if (null != dumperContext.getTransactionIsolation()) {
-            connection.setTransactionIsolation(dumperContext.getTransactionIsolation());
-        }
         boolean firstQuery = true;
         AtomicLong rowCount = new AtomicLong();
         IngestPosition position = dumperContext.getCommonContext().getPosition();
@@ -250,13 +246,9 @@ public final class InventoryDumper extends AbstractPipelineLifecycleRunnable imp
         return ((DataRecord) dataRecords.get(index)).getUniqueKeyValue().iterator().next();
     }
     
-    @SuppressWarnings("MagicConstant")
     private void dumpWithStreamingQuery(final Connection connection) throws SQLException {
         int batchSize = dumperContext.getBatchSize();
         DatabaseType databaseType = dumperContext.getCommonContext().getDataSourceConfig().getDatabaseType();
-        if (null != dumperContext.getTransactionIsolation()) {
-            connection.setTransactionIsolation(dumperContext.getTransactionIsolation());
-        }
         if (null == dumperContext.getQuerySQL()) {
             fetchAllQuery(connection, databaseType, batchSize);
         } else {
