@@ -43,25 +43,19 @@ public final class AdapterContainerFactory {
      * @param scenario scenario
      * @param containerConfig adaptor container configuration
      * @param storageContainer storage container
-     * @param envType environment type
+     * @param type environment type
      * @return created instance
      * @throws RuntimeException runtime exception
      */
     public static AdapterContainer newInstance(final Adapter adapter, final DatabaseType databaseType, final String scenario,
-                                               final AdaptorContainerConfiguration containerConfig, final StorageContainer storageContainer, final String envType) {
+                                               final AdaptorContainerConfiguration containerConfig, final StorageContainer storageContainer, final Type type) {
         switch (adapter) {
             case PROXY:
-                return newProxyInstance(databaseType, containerConfig, envType);
+                return Type.NATIVE == type ? new ShardingSphereProxyEmbeddedContainer(databaseType, containerConfig) : new ShardingSphereProxyDockerContainer(databaseType, containerConfig);
             case JDBC:
                 return new ShardingSphereJdbcEmbeddedContainer(storageContainer, new ScenarioCommonPath(scenario).getRuleConfigurationFile(databaseType));
             default:
                 throw new RuntimeException(String.format("Unknown adapter `%s`.", adapter));
         }
-    }
-    
-    private static AdapterContainer newProxyInstance(final DatabaseType databaseType, final AdaptorContainerConfiguration containerConfig, final String envType) {
-        return Type.NATIVE.name().equalsIgnoreCase(envType)
-                ? new ShardingSphereProxyEmbeddedContainer(databaseType, containerConfig)
-                : new ShardingSphereProxyDockerContainer(databaseType, containerConfig);
     }
 }
