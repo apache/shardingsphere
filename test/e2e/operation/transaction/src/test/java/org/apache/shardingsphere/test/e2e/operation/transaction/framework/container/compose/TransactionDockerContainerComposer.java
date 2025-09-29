@@ -71,7 +71,7 @@ public final class TransactionDockerContainerComposer extends TransactionBaseCon
         if (Adapter.PROXY.getValue().equalsIgnoreCase(testParam.getAdapter())) {
             jdbcContainer = null;
             AdaptorContainerConfiguration containerConfig = TransactionProxyContainerConfigurationFactory.newInstance(testParam.getScenario(), databaseType, testParam.getPortBindings());
-            proxyContainer = AdapterContainerFactory.newInstance(Adapter.PROXY, databaseType, testParam.getScenario(), containerConfig, storageContainer, type.name());
+            proxyContainer = AdapterContainerFactory.newInstance(Adapter.PROXY, databaseType, testParam.getScenario(), containerConfig, storageContainer, type);
             if (proxyContainer instanceof DockerE2EContainer) {
                 ((DockerE2EContainer) proxyContainer).dependsOn(governanceContainer, storageContainer);
             }
