@@ -20,8 +20,6 @@ package org.apache.shardingsphere.data.pipeline.core.consistencycheck.table.calc
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.shardingsphere.data.pipeline.core.consistencycheck.DataConsistencyCheckUtils;
-import org.apache.shardingsphere.data.pipeline.core.consistencycheck.result.RecordSingleTableInventoryCalculatedResult;
-import org.apache.shardingsphere.data.pipeline.core.consistencycheck.result.SingleTableInventoryCalculatedResult;
 import org.apache.shardingsphere.data.pipeline.core.exception.PipelineJobCancelingException;
 import org.apache.shardingsphere.data.pipeline.core.exception.data.PipelineTableDataConsistencyCheckLoadingFailedException;
 import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.inventory.column.InventoryColumnValueReaderEngine;
@@ -42,18 +40,19 @@ import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Deque;
-import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 /**
- * Record single table inventory calculator.
+ * Abstract record single table inventory calculator.
+ *
+ * @param <S> the type of result
+ * @param <C> the type of record
  */
 @HighFrequencyInvocation
 @RequiredArgsConstructor
-public final class RecordSingleTableInventoryCalculator extends AbstractStreamingSingleTableInventoryCalculator<SingleTableInventoryCalculatedResult> {
+public abstract class AbstractRecordSingleTableInventoryCalculator<S, C> extends AbstractStreamingSingleTableInventoryCalculator<S> {
     
     private static final int DEFAULT_STREAMING_CHUNK_COUNT = 100;
     
@@ -63,24 +62,24 @@ public final class RecordSingleTableInventoryCalculator extends AbstractStreamin
     
     private final StreamingRangeType streamingRangeType;
     
-    public RecordSingleTableInventoryCalculator(final int chunkSize, final StreamingRangeType streamingRangeType) {
+    public AbstractRecordSingleTableInventoryCalculator(final int chunkSize, final StreamingRangeType streamingRangeType) {
         this(chunkSize, DEFAULT_STREAMING_CHUNK_COUNT, streamingRangeType);
     }
     
     @Override
-    public Optional<SingleTableInventoryCalculatedResult> calculateChunk(final SingleTableInventoryCalculateParameter param) {
-        List<Map<String, Object>> records = calculateChunk0(param);
+    public Optional<S> calculateChunk(final SingleTableInventoryCalculateParameter param) {
+        List<C> records = calculateChunk0(param);
         if (records.isEmpty()) {
             return Optional.empty();
         }
-        String firstUniqueKey = param.getFirstUniqueKey().getName();
+        Object maxUniqueKeyValue = getFirstUniqueKeyValue(records.get(records.size() - 1), param.getFirstUniqueKey().getName());
         if (QueryType.RANGE_QUERY == param.getQueryType()) {
-            updateQueryRangeLower(param, records, firstUniqueKey);
+            param.setQueryRange(new QueryRange(maxUniqueKeyValue, false, param.getQueryRange().getUpper()));
         }
-        return convertRecordsToResult(records, firstUniqueKey);
+        return Optional.of(convertRecordsToResult(records, maxUniqueKeyValue));
     }
     
-    private List<Map<String, Object>> calculateChunk0(final SingleTableInventoryCalculateParameter param) {
+    private List<C> calculateChunk0(final SingleTableInventoryCalculateParameter param) {
         InventoryColumnValueReaderEngine columnValueReaderEngine = new InventoryColumnValueReaderEngine(param.getDatabaseType());
         try {
             if (QueryType.POINT_QUERY == param.getQueryType()) {
@@ -102,30 +101,29 @@ public final class RecordSingleTableInventoryCalculator extends AbstractStreamin
         }
     }
     
-    private List<Map<String, Object>> pointQuery(final SingleTableInventoryCalculateParameter param, final InventoryColumnValueReaderEngine columnValueReaderEngine) throws SQLException {
-        List<Map<String, Object>> result = new LinkedList<>();
-        CalculationContext calculationContext = prepareCalculationContext(param);
+    private List<C> pointQuery(final SingleTableInventoryCalculateParameter param, final InventoryColumnValueReaderEngine columnValueReaderEngine) throws SQLException {
+        List<C> result = new LinkedList<>();
+        CalculationContext<C> calculationContext = prepareCalculationContext(param);
         prepareDatabaseResources(calculationContext, param);
         ResultSet resultSet = calculationContext.getResultSet();
         ResultSetMetaData resultSetMetaData = resultSet.getMetaData();
         while (resultSet.next()) {
             ShardingSpherePreconditions.checkState(!isCanceling(), () -> new PipelineJobCancelingException("Calculate chunk canceled, qualified table: %s", param.getTable()));
-            Map<String, Object> record = readRecord(columnValueReaderEngine, resultSet, resultSetMetaData);
+            C record = readRecord(resultSet, resultSetMetaData, columnValueReaderEngine);
             result.add(record);
         }
         return result;
     }
     
-    private List<Map<String, Object>> allQuery(final SingleTableInventoryCalculateParameter param,
-                                               final InventoryColumnValueReaderEngine columnValueReaderEngine) throws SQLException {
-        List<Map<String, Object>> result = new LinkedList<>();
-        CalculationContext calculationContext = prepareCalculationContext(param);
+    private List<C> allQuery(final SingleTableInventoryCalculateParameter param, final InventoryColumnValueReaderEngine columnValueReaderEngine) throws SQLException {
+        List<C> result = new LinkedList<>();
+        CalculationContext<C> calculationContext = prepareCalculationContext(param);
         prepareDatabaseResources(calculationContext, param);
         ResultSet resultSet = calculationContext.getResultSet();
         ResultSetMetaData resultSetMetaData = resultSet.getMetaData();
         while (resultSet.next()) {
             ShardingSpherePreconditions.checkState(!isCanceling(), () -> new PipelineJobCancelingException("Calculate chunk canceled, qualified table: %s", param.getTable()));
-            result.add(readRecord(columnValueReaderEngine, resultSet, resultSetMetaData));
+            result.add(readRecord(resultSet, resultSetMetaData, columnValueReaderEngine));
             if (result.size() == chunkSize) {
                 break;
             }
@@ -136,16 +134,16 @@ public final class RecordSingleTableInventoryCalculator extends AbstractStreamin
         return result;
     }
     
-    private List<Map<String, Object>> rangeQueryWithSingleColumUniqueKey(final SingleTableInventoryCalculateParameter param,
-                                                                         final InventoryColumnValueReaderEngine columnValueReaderEngine, final int round) throws SQLException {
-        List<Map<String, Object>> result = new LinkedList<>();
-        CalculationContext calculationContext = prepareCalculationContext(param);
+    private List<C> rangeQueryWithSingleColumUniqueKey(final SingleTableInventoryCalculateParameter param,
+                                                       final InventoryColumnValueReaderEngine columnValueReaderEngine, final int round) throws SQLException {
+        List<C> result = new LinkedList<>();
+        CalculationContext<C> calculationContext = prepareCalculationContext(param);
         prepareDatabaseResources(calculationContext, param);
         ResultSet resultSet = calculationContext.getResultSet();
         ResultSetMetaData resultSetMetaData = resultSet.getMetaData();
         while (resultSet.next()) {
             ShardingSpherePreconditions.checkState(!isCanceling(), () -> new PipelineJobCancelingException("Calculate chunk canceled, qualified table: %s", param.getTable()));
-            result.add(readRecord(columnValueReaderEngine, resultSet, resultSetMetaData));
+            result.add(readRecord(resultSet, resultSetMetaData, columnValueReaderEngine));
             if (result.size() == chunkSize) {
                 return result;
             }
@@ -157,9 +155,9 @@ public final class RecordSingleTableInventoryCalculator extends AbstractStreamin
         return result;
     }
     
-    private List<Map<String, Object>> rangeQueryWithMultiColumUniqueKeys(final SingleTableInventoryCalculateParameter param,
-                                                                         final InventoryColumnValueReaderEngine columnValueReaderEngine) throws SQLException {
-        CalculationContext calculationContext = prepareCalculationContext(param);
+    private List<C> rangeQueryWithMultiColumUniqueKeys(final SingleTableInventoryCalculateParameter param,
+                                                       final InventoryColumnValueReaderEngine columnValueReaderEngine) throws SQLException {
+        CalculationContext<C> calculationContext = prepareCalculationContext(param);
         if (calculationContext.getRecordDeque().size() > chunkSize) {
             return queryFromBuffer(calculationContext.getRecordDeque());
         }
@@ -167,21 +165,23 @@ public final class RecordSingleTableInventoryCalculator extends AbstractStreamin
         return queryFromBuffer(calculationContext.getRecordDeque());
     }
     
-    private void doRangeQueryWithMultiColumUniqueKeys(final SingleTableInventoryCalculateParameter param, final CalculationContext calculationContext,
+    private void doRangeQueryWithMultiColumUniqueKeys(final SingleTableInventoryCalculateParameter param, final CalculationContext<C> calculationContext,
                                                       final InventoryColumnValueReaderEngine columnValueReaderEngine) throws SQLException {
         prepareDatabaseResources(calculationContext, param);
         ResultSet resultSet = calculationContext.getResultSet();
         ResultSetMetaData resultSetMetaData = resultSet.getMetaData();
-        Map<String, Object> previousRecord = calculationContext.getRecordDeque().pollLast();
-        List<Map<String, Object>> duplicateRecords = new LinkedList<>();
+        C previousRecord = calculationContext.getRecordDeque().pollLast();
+        List<C> duplicateRecords = new LinkedList<>();
         if (null != previousRecord) {
             duplicateRecords.add(previousRecord);
         }
         EqualsBuilder equalsBuilder = new EqualsBuilder();
+        String firstUniqueKey = param.getFirstUniqueKey().getName();
         while (resultSet.next()) {
             ShardingSpherePreconditions.checkState(!isCanceling(), () -> new PipelineJobCancelingException("Calculate chunk canceled, qualified table: %s", param.getTable()));
-            Map<String, Object> record = readRecord(columnValueReaderEngine, resultSet, resultSetMetaData);
-            if (null == previousRecord || DataConsistencyCheckUtils.isFirstUniqueKeyValueMatched(previousRecord, record, param.getFirstUniqueKey().getName(), equalsBuilder)) {
+            C record = readRecord(resultSet, resultSetMetaData, columnValueReaderEngine);
+            if (null == previousRecord || DataConsistencyCheckUtils.isMatched(equalsBuilder,
+                    getFirstUniqueKeyValue(previousRecord, firstUniqueKey), getFirstUniqueKeyValue(record, firstUniqueKey))) {
                 duplicateRecords.add(record);
                 previousRecord = record;
                 continue;
@@ -203,9 +203,9 @@ public final class RecordSingleTableInventoryCalculator extends AbstractStreamin
         }
     }
     
-    private List<Map<String, Object>> pointRangeQuery(final SingleTableInventoryCalculateParameter param, final Map<String, Object> duplicateRecord,
-                                                      final InventoryColumnValueReaderEngine columnValueReaderEngine) throws SQLException {
-        Object duplicateUniqueKeyValue = DataConsistencyCheckUtils.getFirstUniqueKeyValue(duplicateRecord, param.getFirstUniqueKey().getName());
+    private List<C> pointRangeQuery(final SingleTableInventoryCalculateParameter param, final C duplicateRecord,
+                                    final InventoryColumnValueReaderEngine columnValueReaderEngine) throws SQLException {
+        Object duplicateUniqueKeyValue = getFirstUniqueKeyValue(duplicateRecord, param.getFirstUniqueKey().getName());
         SingleTableInventoryCalculateParameter newParam = buildPointRangeQueryCalculateParameter(param, duplicateUniqueKeyValue);
         try {
             return pointQuery(newParam, columnValueReaderEngine);
@@ -214,10 +214,10 @@ public final class RecordSingleTableInventoryCalculator extends AbstractStreamin
         }
     }
     
-    private List<Map<String, Object>> queryFromBuffer(final Deque<Map<String, Object>> recordDeque) {
-        List<Map<String, Object>> result = new LinkedList<>();
+    private List<C> queryFromBuffer(final Deque<C> recordDeque) {
+        List<C> result = new LinkedList<>();
         while (true) {
-            Map<String, Object> record = recordDeque.pollFirst();
+            C record = recordDeque.pollFirst();
             if (null == record) {
                 break;
             }
@@ -229,17 +229,18 @@ public final class RecordSingleTableInventoryCalculator extends AbstractStreamin
         return result;
     }
     
-    private CalculationContext prepareCalculationContext(final SingleTableInventoryCalculateParameter param) {
-        CalculationContext result = (CalculationContext) param.getCalculationContext();
+    @SuppressWarnings("unchecked")
+    private CalculationContext<C> prepareCalculationContext(final SingleTableInventoryCalculateParameter param) {
+        CalculationContext<C> result = (CalculationContext<C>) param.getCalculationContext();
         if (null != result) {
             return result;
         }
-        result = new CalculationContext();
+        result = new CalculationContext<>();
         param.setCalculationContext(result);
         return result;
     }
     
-    private void prepareDatabaseResources(final CalculationContext calculationContext, final SingleTableInventoryCalculateParameter param) throws SQLException {
+    private void prepareDatabaseResources(final CalculationContext<C> calculationContext, final SingleTableInventoryCalculateParameter param) throws SQLException {
         if (calculationContext.isDatabaseResourcesReady()) {
             return;
         }
@@ -317,21 +318,9 @@ public final class RecordSingleTableInventoryCalculator extends AbstractStreamin
         return result;
     }
     
-    private Map<String, Object> readRecord(final InventoryColumnValueReaderEngine columnValueReaderEngine, final ResultSet resultSet, final ResultSetMetaData resultSetMetaData) throws SQLException {
-        Map<String, Object> result = new LinkedHashMap<>();
-        for (int columnIndex = 1, columnCount = resultSetMetaData.getColumnCount(); columnIndex <= columnCount; columnIndex++) {
-            result.put(resultSetMetaData.getColumnLabel(columnIndex), columnValueReaderEngine.read(resultSet, resultSetMetaData, columnIndex));
-        }
-        return result;
-    }
+    protected abstract C readRecord(ResultSet resultSet, ResultSetMetaData resultSetMetaData, InventoryColumnValueReaderEngine columnValueReaderEngine) throws SQLException;
     
-    private void updateQueryRangeLower(final SingleTableInventoryCalculateParameter param, final List<Map<String, Object>> records, final String firstUniqueKey) {
-        Object maxUniqueKeyValue = DataConsistencyCheckUtils.getFirstUniqueKeyValue(records.get(records.size() - 1), firstUniqueKey);
-        param.setQueryRange(new QueryRange(maxUniqueKeyValue, false, param.getQueryRange().getUpper()));
-    }
+    protected abstract Object getFirstUniqueKeyValue(C record, String firstUniqueKey);
     
-    private Optional<SingleTableInventoryCalculatedResult> convertRecordsToResult(final List<Map<String, Object>> records, final String firstUniqueKey) {
-        Object maxUniqueKeyValue = DataConsistencyCheckUtils.getFirstUniqueKeyValue(records.get(records.size() - 1), firstUniqueKey);
-        return Optional.of(new RecordSingleTableInventoryCalculatedResult(maxUniqueKeyValue, records));
-    }
+    protected abstract S convertRecordsToResult(List<C> records, Object maxUniqueKeyValue);
 }
