@@ -31,6 +31,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
@@ -64,10 +66,12 @@ public final class PipelineNativeContainerComposer extends PipelineBaseContainer
     }
     
     private void dropTable(final Connection connection, final String databaseName) throws SQLException {
-        Map<String, String> schemaAndTableMapper = getSchemaAndTableMapper(connection, databaseName);
+        Map<String, List<String>> schemaAndTableMapper = getSchemaAndTableMapper(connection, databaseName);
         try (Statement statement = connection.createStatement()) {
-            for (Entry<String, String> entry : schemaAndTableMapper.entrySet()) {
-                statement.executeUpdate(String.format("DROP TABLE %s.%s", entry.getKey(), entry.getValue()));
+            for (Entry<String, List<String>> entry : schemaAndTableMapper.entrySet()) {
+                for (String each : entry.getValue()) {
+                    statement.executeUpdate(String.format("DROP TABLE %s.%s", entry.getKey(), each));
+                }
             }
             Optional<String> dropSchemaSQL = dropTableOption.getDropSchemaSQL();
             if (dropSchemaSQL.isPresent()) {
@@ -77,13 +81,13 @@ public final class PipelineNativeContainerComposer extends PipelineBaseContainer
     }
     
     @SuppressWarnings("CollectionWithoutInitialCapacity")
-    private Map<String, String> getSchemaAndTableMapper(final Connection connection, final String databaseName) throws SQLException {
-        Map<String, String> result = new HashMap<>();
+    private Map<String, List<String>> getSchemaAndTableMapper(final Connection connection, final String databaseName) throws SQLException {
+        Map<String, List<String>> result = new HashMap<>();
         try (
                 Statement statement = connection.createStatement();
                 ResultSet resultSet = statement.executeQuery(dropTableOption.getQueryAllSchemaAndTableMapperSQL(databaseName))) {
             while (resultSet.next()) {
-                result.put(resultSet.getString(1), resultSet.getString(2));
+                result.computeIfAbsent(resultSet.getString(1), key -> new LinkedList<>()).add(resultSet.getString(2));
             }
         }
         return result;
