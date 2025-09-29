@@ -25,14 +25,15 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.Deque;
 import java.util.LinkedList;
-import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * Calculation context.
+ *
+ * @param <C> the type of record
  */
-public final class CalculationContext implements AutoCloseable {
+public final class CalculationContext<C> implements AutoCloseable {
     
     private final AtomicReference<Connection> connection = new AtomicReference<>();
     
@@ -43,7 +44,7 @@ public final class CalculationContext implements AutoCloseable {
     private final AtomicBoolean databaseResourcesReady = new AtomicBoolean(false);
     
     @Getter
-    private final Deque<Map<String, Object>> recordDeque = new LinkedList<>();
+    private final Deque<C> recordDeque = new LinkedList<>();
     
     /**
      * Get connection.
