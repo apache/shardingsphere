@@ -58,13 +58,13 @@ public final class ClusterContainerComposer implements ContainerComposer {
         containers = new E2EContainers(scenario);
         // TODO support other types of governance
         governanceContainer = containers.registerContainer(new GovernanceContainer(TypedSPILoader.getService(GovernanceContainerOption.class, "ZooKeeper")));
-        Type envType = E2ETestEnvironment.getInstance().getRunEnvironment().getType();
-        storageContainer = containers.registerContainer(Type.DOCKER == envType
+        Type type = E2ETestEnvironment.getInstance().getRunEnvironment().getType();
+        storageContainer = containers.registerContainer(Type.DOCKER == type
                 ? new DockerStorageContainer(E2ETestEnvironment.getInstance().getDockerEnvironment().getDatabaseImage(databaseType),
                         DatabaseTypedSPILoader.getService(StorageContainerOption.class, databaseType), scenario)
                 : new NativeStorageContainer(databaseType, scenario));
         AdaptorContainerConfiguration containerConfig = SQLE2EProxyContainerConfigurationFactory.newInstance(scenario, "cluster", databaseType);
-        AdapterContainer adapterContainer = AdapterContainerFactory.newInstance(adapter, databaseType, scenario, containerConfig, storageContainer, envType.name());
+        AdapterContainer adapterContainer = AdapterContainerFactory.newInstance(adapter, databaseType, scenario, containerConfig, storageContainer, type);
         if (adapterContainer instanceof DockerE2EContainer) {
             ((DockerE2EContainer) adapterContainer).dependsOn(governanceContainer, storageContainer);
         }

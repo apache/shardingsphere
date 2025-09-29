@@ -50,13 +50,13 @@ public final class StandaloneContainerComposer implements ContainerComposer {
     
     public StandaloneContainerComposer(final String scenario, final DatabaseType databaseType, final Adapter adapter) {
         containers = new E2EContainers(scenario);
-        Type envType = E2ETestEnvironment.getInstance().getRunEnvironment().getType();
-        storageContainer = containers.registerContainer(Type.DOCKER == envType
+        Type type = E2ETestEnvironment.getInstance().getRunEnvironment().getType();
+        storageContainer = containers.registerContainer(Type.DOCKER == type
                 ? new DockerStorageContainer(E2ETestEnvironment.getInstance().getDockerEnvironment().getDatabaseImage(databaseType),
                         DatabaseTypedSPILoader.getService(StorageContainerOption.class, databaseType), scenario)
                 : new NativeStorageContainer(databaseType, scenario));
         AdaptorContainerConfiguration containerConfig = SQLE2EProxyContainerConfigurationFactory.newInstance(scenario, "standalone", databaseType);
-        AdapterContainer adapterContainer = AdapterContainerFactory.newInstance(adapter, databaseType, scenario, containerConfig, storageContainer, envType.name());
+        AdapterContainer adapterContainer = AdapterContainerFactory.newInstance(adapter, databaseType, scenario, containerConfig, storageContainer, type);
         if (adapterContainer instanceof DockerE2EContainer) {
             ((DockerE2EContainer) adapterContainer).dependsOn(storageContainer);
         }

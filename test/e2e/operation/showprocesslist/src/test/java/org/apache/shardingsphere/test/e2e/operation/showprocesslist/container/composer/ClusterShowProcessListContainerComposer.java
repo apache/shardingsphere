@@ -34,6 +34,7 @@ import org.apache.shardingsphere.test.e2e.env.container.storage.type.DockerStora
 import org.apache.shardingsphere.test.e2e.env.runtime.E2ETestEnvironment;
 import org.apache.shardingsphere.test.e2e.env.runtime.type.ArtifactEnvironment.Adapter;
 import org.apache.shardingsphere.test.e2e.env.runtime.type.ArtifactEnvironment.Mode;
+import org.apache.shardingsphere.test.e2e.env.runtime.type.RunEnvironment.Type;
 import org.apache.shardingsphere.test.e2e.operation.showprocesslist.parameter.ShowProcessListTestParameter;
 
 import javax.sql.DataSource;
@@ -64,7 +65,7 @@ public final class ClusterShowProcessListContainerComposer implements AutoClosea
         String proxyImage = E2ETestEnvironment.getInstance().getDockerEnvironment().getProxyImage();
         AdaptorContainerConfiguration containerConfig = new AdaptorContainerConfiguration(testParam.getScenario(), new LinkedList<>(),
                 getMountedResources(testParam.getScenario(), testParam.getDatabaseType(), testParam.getMode(), testParam.getRegCenterType()), proxyImage, "");
-        String type = E2ETestEnvironment.getInstance().getRunEnvironment().getType().name();
+        Type type = E2ETestEnvironment.getInstance().getRunEnvironment().getType();
         jdbcContainer = AdapterContainerFactory.newInstance(Adapter.JDBC, testParam.getDatabaseType(), testParam.getScenario(), containerConfig, storageContainer, type);
         proxyContainer = AdapterContainerFactory.newInstance(Adapter.PROXY, testParam.getDatabaseType(), testParam.getScenario(), containerConfig, storageContainer, type);
         if (proxyContainer instanceof DockerE2EContainer) {
