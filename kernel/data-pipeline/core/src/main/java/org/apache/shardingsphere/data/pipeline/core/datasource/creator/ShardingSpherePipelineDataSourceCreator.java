@@ -43,6 +43,7 @@ import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Properties;
 
 /**
@@ -65,9 +66,13 @@ public final class ShardingSpherePipelineDataSourceCreator implements PipelineDa
     }
     
     private void updateConfigurationProperties(final YamlRootConfiguration yamlRootConfig) {
-        Properties newProps = prepareProperties();
+        Optional<Properties> realtimeProps = getRealtimeProperties();
+        if (!realtimeProps.isPresent()) {
+            return;
+        }
+        Properties newProps = new Properties();
         for (String each : Arrays.asList(ConfigurationPropertyKey.KERNEL_EXECUTOR_SIZE.getKey(), ConfigurationPropertyKey.SQL_SHOW.getKey())) {
-            Object value = yamlRootConfig.getProps().get(each);
+            Object value = realtimeProps.get().get(each);
             if (null != value) {
                 newProps.put(each, value);
             }
@@ -78,12 +83,12 @@ public final class ShardingSpherePipelineDataSourceCreator implements PipelineDa
         yamlRootConfig.setProps(newProps);
     }
     
-    private Properties prepareProperties() {
+    private Optional<Properties> getRealtimeProperties() {
         ContextManager contextManager = PipelineContextManager.getProxyContext();
         if (null == contextManager) {
-            return new Properties();
+            return Optional.empty();
         }
-        return contextManager.getMetaDataContexts().getMetaData().getProps().getProps();
+        return Optional.of(contextManager.getMetaDataContexts().getMetaData().getProps().getProps());
     }
     
     @SuppressWarnings("unchecked")
