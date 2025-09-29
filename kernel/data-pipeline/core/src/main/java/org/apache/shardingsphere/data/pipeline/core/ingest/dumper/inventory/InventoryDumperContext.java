@@ -50,12 +50,6 @@ public final class InventoryDumperContext {
     
     private List<String> insertColumnNames;
     
-    private String querySQL;
-    
-    private List<Object> queryParams;
-    
-    private Integer transactionIsolation;
-    
     private int shardingItem;
     
     private int batchSize = 1000;
