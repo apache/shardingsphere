@@ -19,6 +19,7 @@ package org.apache.shardingsphere.data.pipeline.core.datasource.creator;
 
 import org.apache.shardingsphere.authority.yaml.config.YamlAuthorityRuleConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.type.ShardingSpherePipelineDataSourceConfiguration;
+import org.apache.shardingsphere.data.pipeline.core.context.PipelineContextManager;
 import org.apache.shardingsphere.data.pipeline.core.datasource.yaml.PipelineYamlRuleConfigurationReviser;
 import org.apache.shardingsphere.data.pipeline.spi.PipelineDataSourceCreator;
 import org.apache.shardingsphere.driver.api.ShardingSphereDataSourceFactory;
@@ -35,6 +36,7 @@ import org.apache.shardingsphere.infra.yaml.config.pojo.mode.YamlPersistReposito
 import org.apache.shardingsphere.infra.yaml.config.swapper.mode.YamlModeConfigurationSwapper;
 import org.apache.shardingsphere.infra.yaml.config.swapper.resource.YamlDataSourceConfigurationSwapper;
 import org.apache.shardingsphere.infra.yaml.config.swapper.rule.YamlRuleConfigurationSwapperEngine;
+import org.apache.shardingsphere.mode.manager.ContextManager;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
@@ -63,7 +65,7 @@ public final class ShardingSpherePipelineDataSourceCreator implements PipelineDa
     }
     
     private void updateConfigurationProperties(final YamlRootConfiguration yamlRootConfig) {
-        Properties newProps = new Properties();
+        Properties newProps = prepareProperties();
         for (String each : Arrays.asList(ConfigurationPropertyKey.KERNEL_EXECUTOR_SIZE.getKey(), ConfigurationPropertyKey.SQL_SHOW.getKey())) {
             Object value = yamlRootConfig.getProps().get(each);
             if (null != value) {
@@ -74,6 +76,14 @@ public final class ShardingSpherePipelineDataSourceCreator implements PipelineDa
         // Set a large enough value to enable ConnectionMode.MEMORY_STRICTLY, make sure streaming query work.
         newProps.put(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY.getKey(), 100000);
         yamlRootConfig.setProps(newProps);
+    }
+    
+    private Properties prepareProperties() {
+        ContextManager contextManager = PipelineContextManager.getProxyContext();
+        if (null == contextManager) {
+            return new Properties();
+        }
+        return contextManager.getMetaDataContexts().getMetaData().getProps().getProps();
     }
     
     @SuppressWarnings("unchecked")
