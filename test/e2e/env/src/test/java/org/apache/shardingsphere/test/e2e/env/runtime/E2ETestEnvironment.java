@@ -22,6 +22,7 @@ import org.apache.shardingsphere.test.e2e.env.runtime.type.ArtifactEnvironment;
 import org.apache.shardingsphere.test.e2e.env.runtime.type.DockerEnvironment;
 import org.apache.shardingsphere.test.e2e.env.runtime.type.NativeDatabaseEnvironment;
 import org.apache.shardingsphere.test.e2e.env.runtime.type.RunEnvironment;
+import org.apache.shardingsphere.test.e2e.env.runtime.type.scenario.path.ScenarioCommonPath;
 
 import java.util.Collection;
 import java.util.Properties;
@@ -49,6 +50,7 @@ public final class E2ETestEnvironment {
         Properties props = EnvironmentPropertiesLoader.loadProperties();
         TimeZone.setDefault(TimeZone.getTimeZone(props.getProperty("e2e.timezone", "UTC")));
         scenarios = EnvironmentPropertiesLoader.getListValue(props, "e2e.scenarios");
+        scenarios.forEach(each -> new ScenarioCommonPath(each).checkFolderExist());
         runEnvironment = new RunEnvironment(props);
         artifactEnvironment = new ArtifactEnvironment(props);
         dockerEnvironment = new DockerEnvironment(props);
