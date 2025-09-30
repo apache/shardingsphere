@@ -28,12 +28,12 @@ ShardingSphere 对 HiveServer2 JDBC Driver 的支持位于可选模块中。
     <dependency>
         <groupId>org.apache.hive</groupId>
         <artifactId>hive-jdbc</artifactId>
-        <version>4.0.1</version>
+        <version>4.1.0</version>
     </dependency>
     <dependency>
         <groupId>org.apache.hive</groupId>
         <artifactId>hive-service</artifactId>
-        <version>4.0.1</version>
+        <version>4.1.0</version>
     </dependency>
 </dependencies>
 ```

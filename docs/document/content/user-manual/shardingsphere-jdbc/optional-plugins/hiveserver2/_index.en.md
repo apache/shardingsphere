@@ -29,12 +29,12 @@ The possible Maven dependencies are as follows.
     <dependency>
         <groupId>org.apache.hive</groupId>
         <artifactId>hive-jdbc</artifactId>
-        <version>4.0.1</version>
+        <version>4.1.0</version>
     </dependency>
     <dependency>
         <groupId>org.apache.hive</groupId>
         <artifactId>hive-service</artifactId>
-        <version>4.0.1</version>
+        <version>4.1.0</version>
     </dependency>
 </dependencies>
 ```
