@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.test.e2e.env.runtime.type.scenario.path;
 
-import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 
 import java.net.URL;
@@ -27,7 +26,6 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 /**
  * Scenario common path.
  */
-@RequiredArgsConstructor
 public final class ScenarioCommonPath {
     
     private static final String ROOT_PATH = "env/scenario";
@@ -36,13 +34,16 @@ public final class ScenarioCommonPath {
     
     private static final String AUTHORITY_FILE = "authority.xml";
     
-    private final String scenario;
+    private final String scenarioDirectory;
+    
+    public ScenarioCommonPath(final String scenario) {
+        scenarioDirectory = String.join("/", ROOT_PATH, scenario);
+    }
     
     /**
      * Check folder existed.
      */
     public void checkFolderExisted() {
-        String scenarioDirectory = String.join("/", ROOT_PATH, scenario);
         assertNotNull(Thread.currentThread().getContextClassLoader().getResource(scenarioDirectory), String.format("Scenario folder `%s` must exist.", scenarioDirectory));
     }
     
@@ -53,12 +54,12 @@ public final class ScenarioCommonPath {
      * @return rule configuration file
      */
     public String getRuleConfigurationFile(final DatabaseType databaseType) {
-        String ruleConfigFileName = String.join("/", String.format("env/scenario/%s/jdbc/conf", scenario), databaseType.getType().toLowerCase(), RULE_CONFIG_FILE);
-        return isFileExisted(ruleConfigFileName) ? getFile(ruleConfigFileName) : getFile(String.join("/", ROOT_PATH, scenario, RULE_CONFIG_FILE));
+        String ruleConfigFileName = String.join("/", "jdbc", "conf", databaseType.getType().toLowerCase(), RULE_CONFIG_FILE);
+        return isFileExisted(ruleConfigFileName) ? getFile(ruleConfigFileName) : getFile(RULE_CONFIG_FILE);
     }
     
     private boolean isFileExisted(final String fileName) {
-        return null != Thread.currentThread().getContextClassLoader().getResource(fileName);
+        return null != Thread.currentThread().getContextClassLoader().getResource(String.join("/", scenarioDirectory, fileName));
     }
     
     /**
@@ -67,12 +68,13 @@ public final class ScenarioCommonPath {
      * @return authority file
      */
     public String getAuthorityFile() {
-        return getFile(String.join("/", "env/scenario", scenario, AUTHORITY_FILE));
+        return getFile(AUTHORITY_FILE);
     }
     
     private String getFile(final String fileName) {
-        URL url = Thread.currentThread().getContextClassLoader().getResource(fileName);
-        assertNotNull(url, String.format("File `%s` must exist.", fileName));
+        String scenarioFile = String.join("/", scenarioDirectory, fileName);
+        URL url = Thread.currentThread().getContextClassLoader().getResource(scenarioFile);
+        assertNotNull(url, String.format("File `%s` must exist.", scenarioFile));
         return url.getFile();
     }
 }
