@@ -2,6 +2,7 @@
 
 ### CVE
 
+1. Fix CVE-2025-55163, CVE-2025-58056, CVE-2025-58057 [#36758](https://github.com/apache/shardingsphere/pull/36758)
 1. Fix CVE-2025-48924 [#36085](https://github.com/apache/shardingsphere/pull/36085)
 1. Fix CVE-2024-7254 [#36153](https://github.com/apache/shardingsphere/pull/36153)
 
