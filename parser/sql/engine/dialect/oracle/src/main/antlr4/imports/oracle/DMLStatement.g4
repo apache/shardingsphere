@@ -517,7 +517,7 @@ modifyExternalTableProperties
 
 pivotClause
     : PIVOT XML?
-    LP_ aggregationFunction (AS? alias)? (COMMA_ aggregationFunction (AS? alias)?)* pivotForClause pivotInClause RP_
+    LP_ aggregationFunction (AS? alias)? (COMMA_ aggregationFunction (AS? alias)?)* pivotForClause pivotInClause RP_ alias?
     ;
 
 pivotForClause
@@ -535,7 +535,7 @@ pivotInClauseExpr
     ;
 
 unpivotClause
-    : UNPIVOT ((INCLUDE | EXCLUDE) NULLS)? LP_ columnNames pivotForClause unpivotInClause RP_
+    : UNPIVOT ((INCLUDE | EXCLUDE) NULLS)? LP_ (columnName | columnNames) pivotForClause unpivotInClause RP_ alias?
     ;
 
 unpivotInClause
