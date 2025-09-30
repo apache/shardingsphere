@@ -54,12 +54,12 @@ public final class ScenarioCommonPath {
      * @return rule configuration file
      */
     public String getRuleConfigurationFile(final DatabaseType databaseType) {
-        String ruleConfigFileName = String.join("/", scenarioDirectory, "jdbc", "conf", databaseType.getType().toLowerCase(), RULE_CONFIG_FILE);
-        return isFileExisted(ruleConfigFileName) ? getFile(ruleConfigFileName) : getFile(String.join("/", scenarioDirectory, RULE_CONFIG_FILE));
+        String ruleConfigFileName = String.join("/", "jdbc", "conf", databaseType.getType().toLowerCase(), RULE_CONFIG_FILE);
+        return isFileExisted(ruleConfigFileName) ? getFile(ruleConfigFileName) : getFile(RULE_CONFIG_FILE);
     }
     
     private boolean isFileExisted(final String fileName) {
-        return null != Thread.currentThread().getContextClassLoader().getResource(fileName);
+        return null != Thread.currentThread().getContextClassLoader().getResource(String.join("/", scenarioDirectory, fileName));
     }
     
     /**
@@ -68,12 +68,13 @@ public final class ScenarioCommonPath {
      * @return authority file
      */
     public String getAuthorityFile() {
-        return getFile(String.join("/", scenarioDirectory, AUTHORITY_FILE));
+        return getFile(AUTHORITY_FILE);
     }
     
     private String getFile(final String fileName) {
-        URL url = Thread.currentThread().getContextClassLoader().getResource(fileName);
-        assertNotNull(url, String.format("File `%s` must exist.", fileName));
+        String scenarioFile = String.join("/", scenarioDirectory, fileName);
+        URL url = Thread.currentThread().getContextClassLoader().getResource(scenarioFile);
+        assertNotNull(url, String.format("File `%s` must exist.", scenarioFile));
         return url.getFile();
     }
 }
