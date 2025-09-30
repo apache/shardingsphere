@@ -53,6 +53,8 @@
         <dependency>
             <groupId>org.apache.hive</groupId>
             <artifactId>hive-jdbc</artifactId>
+            <classifier>standalone</classifier>
+            <version>${hive-jdbc.version}</version>
         </dependency>
         
         <dependency>
