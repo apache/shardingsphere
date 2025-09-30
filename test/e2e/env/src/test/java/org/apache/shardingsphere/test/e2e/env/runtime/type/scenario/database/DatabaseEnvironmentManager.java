@@ -50,7 +50,7 @@ public final class DatabaseEnvironmentManager {
      * @return database types
      */
     public static Map<String, DatabaseType> getDatabaseTypes(final String scenario, final DatabaseType defaultDatabaseType, final Type type) {
-        return createDatabaseTypes(unmarshal(new ScenarioDataPath(scenario).getDatabasesFile(type)).getDatabases(), defaultDatabaseType);
+        return createDatabaseTypes(unmarshal(new ScenarioDataPath(scenario, type).getDatabasesFile()).getDatabases(), defaultDatabaseType);
     }
     
     private static Map<String, DatabaseType> createDatabaseTypes(final Collection<String> datasourceNames, final DatabaseType defaultDatabaseType) {

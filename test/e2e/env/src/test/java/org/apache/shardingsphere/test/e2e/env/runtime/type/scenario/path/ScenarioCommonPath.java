@@ -28,8 +28,6 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
  */
 public final class ScenarioCommonPath {
     
-    private static final String ROOT_PATH = "env/scenario";
-    
     private static final String RULE_CONFIG_FILE = "rules.yaml";
     
     private static final String AUTHORITY_FILE = "authority.xml";
@@ -37,7 +35,7 @@ public final class ScenarioCommonPath {
     private final String scenarioDirectory;
     
     public ScenarioCommonPath(final String scenario) {
-        scenarioDirectory = String.join("/", ROOT_PATH, scenario);
+        scenarioDirectory = String.join("/", "env", "scenario", scenario);
     }
     
     /**
