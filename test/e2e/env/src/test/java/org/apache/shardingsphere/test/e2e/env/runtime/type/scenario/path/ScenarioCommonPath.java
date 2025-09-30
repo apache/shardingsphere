@@ -67,7 +67,7 @@ public final class ScenarioCommonPath {
      * @return authority file
      */
     public String getAuthorityFile() {
-        return getFile(AUTHORITY_FILE);
+        return getFile(String.join("/", "env/scenario", scenario, AUTHORITY_FILE));
     }
     
     private String getFile(final String fileName) {
