@@ -50,7 +50,7 @@ public final class E2ETestEnvironment {
         Properties props = EnvironmentPropertiesLoader.loadProperties();
         TimeZone.setDefault(TimeZone.getTimeZone(props.getProperty("e2e.timezone", "UTC")));
         scenarios = EnvironmentPropertiesLoader.getListValue(props, "e2e.scenarios");
-        scenarios.forEach(each -> new ScenarioCommonPath(each).checkFolderExist());
+        scenarios.forEach(each -> new ScenarioCommonPath(each).checkFolderExisted());
         runEnvironment = new RunEnvironment(props);
         artifactEnvironment = new ArtifactEnvironment(props);
         dockerEnvironment = new DockerEnvironment(props);
