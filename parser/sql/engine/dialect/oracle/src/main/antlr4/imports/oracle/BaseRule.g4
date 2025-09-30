@@ -1144,14 +1144,6 @@ analyticViewName
     : (owner DOT_)? name
     ;
 
-samplePercent
-    : numberLiterals
-    ;
-
-seedValue
-    : numberLiterals
-    ;
-
 namespace
     : identifier
     ;

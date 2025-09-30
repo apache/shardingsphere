@@ -547,7 +547,15 @@ unpivotInClauseExpr
     ;
 
 sampleClause
-    : SAMPLE BLOCK? LP_ samplePercent RP_ (SEED LP_ seedValue RP_)?
+    : SAMPLE BLOCK? LP_ samplePercent RP_ seedValue?
+    ;
+
+samplePercent
+    : numberLiterals (COMMA_ numberLiterals)?
+    ;
+
+seedValue
+    : SEED LP_ numberLiterals RP_
     ;
 
 containersClause
