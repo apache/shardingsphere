@@ -25,6 +25,7 @@ import org.apache.shardingsphere.test.e2e.env.container.util.SQLScriptUtils;
 import org.apache.shardingsphere.test.e2e.env.runtime.type.ArtifactEnvironment.Adapter;
 import org.apache.shardingsphere.test.e2e.env.runtime.type.ArtifactEnvironment.Mode;
 import org.apache.shardingsphere.test.e2e.env.runtime.type.scenario.path.ScenarioDataPath;
+import org.apache.shardingsphere.test.e2e.env.runtime.type.scenario.path.ScenarioDataPath.Type;
 import org.apache.shardingsphere.test.e2e.sql.env.container.compose.ContainerComposer;
 import org.apache.shardingsphere.test.e2e.sql.env.container.compose.ContainerComposerRegistry;
 
@@ -63,7 +64,7 @@ public final class SQLE2EEnvironmentEngine {
     }
     
     private void executeLogicDatabaseInitSQLFileOnlyOnce(final String key, final String scenario, final DatabaseType databaseType) {
-        Optional<String> logicDatabaseInitSQLFile = new ScenarioDataPath(scenario).findActualDatabaseInitSQLFile(DefaultDatabase.LOGIC_NAME, databaseType);
+        Optional<String> logicDatabaseInitSQLFile = new ScenarioDataPath(scenario, Type.ACTUAL).findActualDatabaseInitSQLFile(DefaultDatabase.LOGIC_NAME, databaseType);
         if (!logicDatabaseInitSQLFile.isPresent()) {
             return;
         }

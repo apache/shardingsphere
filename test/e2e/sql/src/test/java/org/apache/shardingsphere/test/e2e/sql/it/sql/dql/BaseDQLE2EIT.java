@@ -87,9 +87,9 @@ public abstract class BaseDQLE2EIT implements SQLE2EIT {
             synchronized (FILLED_SUITES) {
                 if (!FILLED_SUITES.contains(cacheKey)) {
                     new DataSetEnvironmentManager(
-                            new ScenarioDataPath(testParam.getScenario()).getDataSetFile(Type.ACTUAL), getEnvironmentEngine().getActualDataSourceMap(), testParam.getDatabaseType()).fillData();
+                            new ScenarioDataPath(testParam.getScenario(), Type.ACTUAL).getDataSetFile(), getEnvironmentEngine().getActualDataSourceMap(), testParam.getDatabaseType()).fillData();
                     new DataSetEnvironmentManager(
-                            new ScenarioDataPath(testParam.getScenario()).getDataSetFile(Type.EXPECTED), getEnvironmentEngine().getExpectedDataSourceMap(), testParam.getDatabaseType()).fillData();
+                            new ScenarioDataPath(testParam.getScenario(), Type.EXPECTED).getDataSetFile(), getEnvironmentEngine().getExpectedDataSourceMap(), testParam.getDatabaseType()).fillData();
                     FILLED_SUITES.add(cacheKey);
                 }
             }
