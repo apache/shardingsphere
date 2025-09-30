@@ -64,7 +64,7 @@ public final class SQLE2EEnvironmentEngine {
     }
     
     private void executeLogicDatabaseInitSQLFileOnlyOnce(final String key, final String scenario, final DatabaseType databaseType) {
-        Optional<String> logicDatabaseInitSQLFile = new ScenarioDataPath(scenario, Type.ACTUAL).findActualDatabaseInitSQLFile(DefaultDatabase.LOGIC_NAME, databaseType);
+        Optional<String> logicDatabaseInitSQLFile = new ScenarioDataPath(scenario, Type.TARGETS).findTargetDatabaseInitSQLFile(DefaultDatabase.LOGIC_NAME, databaseType);
         if (!logicDatabaseInitSQLFile.isPresent()) {
             return;
         }
