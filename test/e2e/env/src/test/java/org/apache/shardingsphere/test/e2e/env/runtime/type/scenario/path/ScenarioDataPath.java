@@ -80,13 +80,7 @@ public final class ScenarioDataPath {
     }
     
     private boolean isTargetDatabaseInitSQLFileExisted(final String databaseName, final DatabaseType databaseType) {
-        String initSQLResourceFile = getTargetDatabaseInitSQLResourceFile(databaseName, databaseType);
-        return null != Thread.currentThread().getContextClassLoader().getResource(initSQLResourceFile);
-    }
-    
-    private String getTargetDatabaseInitSQLResourceFile(final String databaseName, final DatabaseType databaseType) {
-        String initSQLFileName = String.join("-", Type.TARGETS.name().toLowerCase(), databaseName, BASIC_INIT_SQL_FILE);
-        return String.join("/", getInitSQLResourcePath(databaseType), initSQLFileName);
+        return null != Thread.currentThread().getContextClassLoader().getResource(getTargetDatabaseInitSQLResourceFile(databaseName, databaseType));
     }
     
     private String getTargetDatabaseInitSQLFile(final String databaseName, final DatabaseType databaseType) {
@@ -94,6 +88,11 @@ public final class ScenarioDataPath {
         URL url = Thread.currentThread().getContextClassLoader().getResource(resourceFile);
         assertNotNull(url, String.format("File `%s` must exist.", resourceFile));
         return url.getFile();
+    }
+    
+    private String getTargetDatabaseInitSQLResourceFile(final String databaseName, final DatabaseType databaseType) {
+        String initSQLFileName = String.join("-", Type.TARGETS.name().toLowerCase(), databaseName, BASIC_INIT_SQL_FILE);
+        return String.join("/", getInitSQLResourcePath(databaseType), initSQLFileName);
     }
     
     /**
