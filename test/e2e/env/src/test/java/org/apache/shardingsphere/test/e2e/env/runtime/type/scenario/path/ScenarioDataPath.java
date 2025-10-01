@@ -69,28 +69,28 @@ public final class ScenarioDataPath {
     }
     
     /**
-     * Find actual init SQL file by database name.
+     * Find target init SQL file by database name.
      *
      * @param databaseName database name
      * @param databaseType database type
-     * @return actual init SQL file
+     * @return target init SQL file
      */
-    public Optional<String> findActualDatabaseInitSQLFile(final String databaseName, final DatabaseType databaseType) {
-        return isActualDatabaseInitSQLFileExisted(databaseName, databaseType) ? Optional.of(getActualDatabaseInitSQLFile(databaseName, databaseType)) : Optional.empty();
+    public Optional<String> findTargetDatabaseInitSQLFile(final String databaseName, final DatabaseType databaseType) {
+        return isTargetDatabaseInitSQLFileExisted(databaseName, databaseType) ? Optional.of(getTargetDatabaseInitSQLFile(databaseName, databaseType)) : Optional.empty();
     }
     
-    private boolean isActualDatabaseInitSQLFileExisted(final String databaseName, final DatabaseType databaseType) {
-        String initSQLResourceFile = getActualDatabaseInitSQLResourceFile(databaseName, databaseType);
+    private boolean isTargetDatabaseInitSQLFileExisted(final String databaseName, final DatabaseType databaseType) {
+        String initSQLResourceFile = getTargetDatabaseInitSQLResourceFile(databaseName, databaseType);
         return null != Thread.currentThread().getContextClassLoader().getResource(initSQLResourceFile);
     }
     
-    private String getActualDatabaseInitSQLResourceFile(final String databaseName, final DatabaseType databaseType) {
-        String initSQLFileName = String.join("-", Type.ACTUAL.name().toLowerCase(), databaseName, BASIC_INIT_SQL_FILE);
+    private String getTargetDatabaseInitSQLResourceFile(final String databaseName, final DatabaseType databaseType) {
+        String initSQLFileName = String.join("-", Type.TARGETS.name().toLowerCase(), databaseName, BASIC_INIT_SQL_FILE);
         return String.join("/", getInitSQLResourcePath(databaseType), initSQLFileName);
     }
     
-    private String getActualDatabaseInitSQLFile(final String databaseName, final DatabaseType databaseType) {
-        String resourceFile = getActualDatabaseInitSQLResourceFile(databaseName, databaseType);
+    private String getTargetDatabaseInitSQLFile(final String databaseName, final DatabaseType databaseType) {
+        String resourceFile = getTargetDatabaseInitSQLResourceFile(databaseName, databaseType);
         URL url = Thread.currentThread().getContextClassLoader().getResource(resourceFile);
         assertNotNull(url, String.format("File `%s` must exist.", resourceFile));
         return url.getFile();
@@ -110,6 +110,6 @@ public final class ScenarioDataPath {
      * Data type.
      */
     public enum Type {
-        ACTUAL, EXPECTED
+        ACTUAL, EXPECTED, TARGETS
     }
 }
