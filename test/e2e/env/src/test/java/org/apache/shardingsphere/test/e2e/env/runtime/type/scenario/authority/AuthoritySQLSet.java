@@ -49,7 +49,7 @@ public final class AuthoritySQLSet {
     
     @XmlElementWrapper(name = "clean")
     @XmlElement(name = "sql")
-    private List<String> cleanSQLs = new LinkedList<>();
+    private List<String> cleanSQLs = new LinkedList<>(); 
     
     /**
      * Get all init SQLs.
