@@ -34,7 +34,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
- * Authority SQL set xml entry.
+ * Authority SQL set XML entry.
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @Setter
