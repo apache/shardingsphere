@@ -18,8 +18,6 @@ stages:
 
 workflow:
   rules:
-    - if: $CI_COMMIT_BRANCH == "master" && $CI_COMMIT_TAG
-      when: always
     - if: $CI_PIPELINE_SOURCE == "web"
     - if: $CI_COMMIT_TAG
 
@@ -32,6 +30,8 @@ workflow:
     - name: docker:dind
       entrypoint: [ "dockerd-entrypoint.sh" ]
       command: [ "--insecure-registry", "registry.red-soft.biz:5000", "--registry-mirror", "http://registry-mirror.red-soft.biz:6000" ]
+  rules:
+    - if: $CI_COMMIT_TAG
   parallel:
     matrix:
       - TYPE: [ "mostly", "dynamic"] # 'static' is currently not compiling
@@ -75,10 +75,6 @@ proxy-native-docker:
     - docker build . -f ${DOCKERFILES}/Dockerfile-linux-${TYPE} --build-arg PROJECT_VERSION=${PROJECT_VERSION} -t ${OUT_IMAGE}
     - docker push ${OUT_IMAGE}
     - docker rmi ${OUT_IMAGE}
-    #- echo ${OUT_IMAGE} >> ci/docker-containers-${PROJECT_VERSION}.txt
-  #artifacts:
-  #  paths:
-  #    - ci/docker-containers-${PROJECT_VERSION}.txt
 
 java11:
   tags: ["docker", "linux", "x86_64"]
@@ -87,7 +83,7 @@ java11:
   variables:
     ARTIFACTS_DIR: ${CI_PROJECT_DIR}/${PROJECT_VERSION}
   script:
-    - ./mvnw -s ${M2_SETTINGSFILE} clean package -Prelease,db-firebird -T1C -DskipTests -Djacoco.skip=true -Dcheckstyle.skip=true -Drat.skip=true -Dmaven.javadoc.skip=true -B
+    - ./mvnw -s ${M2_SETTINGSFILE} clean p ackage -Prelease,db-firebird -T1C -DskipTests -Djacoco.skip=true -Dcheckstyle.skip=true -Drat.skip=true -Dmaven.javadoc.skip=true -B
     - mkdir -pv ${ARTIFACTS_DIR}
     - cp -v distribution/{jdbc,proxy,agent}/target/*.{tar.gz,tar.gz.sha512} ${ARTIFACTS_DIR}
     # Package command: .\mvnw.cmd clean package -P release,db-firebird -D skipTests -f pom.xml
@@ -122,7 +118,7 @@ release_hub:
   tags: ["docker", "x86_64", "linux"]
   image: $RELEASEHUB_CLIENT_IMAGE
   script:
-    - relmanager_client deploy rshrd ${PROJECT_VERSION} --artifacts ci/artifacts # TODO--ci-url ${CI_URL} --context ${BUILD_TYPE}
+    - relmanager_client deploy rshrd ${PROJECT_VERSION} --artifacts ci/artifacts --ci_url ${CI_URL} --context ${BUILD_TYPE}
   only:
     variables:
       - $RELEASE_HUB_KEY
