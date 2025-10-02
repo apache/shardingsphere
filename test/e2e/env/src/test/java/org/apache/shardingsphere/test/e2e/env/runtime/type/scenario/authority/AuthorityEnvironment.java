@@ -32,7 +32,7 @@ import java.util.stream.Collectors;
 public final class AuthorityEnvironment {
     
     @XmlElement(name = "sqlset")
-    private final Collection<AuthoritySQLSet> sqlSets = new LinkedList<>();
+    private final Collection<AuthorityEnvironmentSQLSet> sqlSets = new LinkedList<>();
     
     /**
      * Get init SQLs.
