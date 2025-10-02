@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.test.e2e.env.runtime.type.scenario.authority;
 
-import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 
 import javax.sql.DataSource;
@@ -29,59 +28,56 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Collection;
-import java.util.Map;
 
 /**
  * Authority environment manager.
  */
-@Slf4j
 public final class AuthorityEnvironmentManager implements AutoCloseable {
     
-    private final Map<String, DataSource> instanceDataSourceMap;
+    private final Collection<DataSource> dataSources;
     
     private final DatabaseType databaseType;
     
-    private final AuthorityEnvironment authorityEnvironment;
+    private final AuthorityEnvironment env;
     
-    public AuthorityEnvironmentManager(final String path, final Map<String, DataSource> instanceDataSourceMap, final DatabaseType databaseType) throws IOException, JAXBException, SQLException {
-        this.instanceDataSourceMap = instanceDataSourceMap;
+    public AuthorityEnvironmentManager(final String path, final Collection<DataSource> dataSources, final DatabaseType databaseType) throws IOException, JAXBException, SQLException {
+        this.dataSources = dataSources;
         this.databaseType = databaseType;
         try (FileReader reader = new FileReader(path)) {
-            authorityEnvironment = (AuthorityEnvironment) JAXBContext.newInstance(AuthorityEnvironment.class).createUnmarshaller().unmarshal(reader);
+            env = (AuthorityEnvironment) JAXBContext.newInstance(AuthorityEnvironment.class).createUnmarshaller().unmarshal(reader);
         }
         init();
     }
     
     private void init() throws SQLException {
-        Collection<String> initSQLs = authorityEnvironment.getInitSQLs(databaseType);
+        Collection<String> initSQLs = env.getInitSQLs(databaseType);
         if (initSQLs.isEmpty()) {
             return;
         }
-        for (DataSource each : instanceDataSourceMap.values()) {
-            executeOnInstanceDataSource(each, initSQLs);
+        for (DataSource each : dataSources) {
+            execute(each, initSQLs);
         }
     }
     
     @Override
     public void close() throws SQLException {
-        Collection<String> cleanSQLs = authorityEnvironment.getCleanSQLs(databaseType);
+        Collection<String> cleanSQLs = env.getCleanSQLs(databaseType);
         if (cleanSQLs.isEmpty()) {
             return;
         }
-        for (DataSource each : instanceDataSourceMap.values()) {
-            executeOnInstanceDataSource(each, cleanSQLs);
+        for (DataSource each : dataSources) {
+            execute(each, cleanSQLs);
         }
     }
     
-    private void executeOnInstanceDataSource(final DataSource dataSource, final Collection<String> sqls) throws SQLException {
-        try (Connection connection = dataSource.getConnection()) {
+    private void execute(final DataSource dataSource, final Collection<String> sqls) throws SQLException {
+        try (
+                Connection connection = dataSource.getConnection();
+                Statement statement = connection.createStatement()) {
             for (String each : sqls) {
-                try (Statement statement = connection.createStatement()) {
-                    statement.execute(each);
-                } catch (final SQLException ex) {
-                    log.error("execute '{}' failed.", each, ex);
-                }
+                statement.addBatch(each);
             }
+            statement.executeBatch();
         }
     }
 }
