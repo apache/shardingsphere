@@ -18,19 +18,20 @@
 package org.apache.shardingsphere.test.e2e.env.runtime.type.scenario.database;
 
 import lombok.Getter;
+import lombok.Setter;
 
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
-import java.util.Collection;
-import java.util.LinkedList;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
 
 /**
- * Database root XML entry.
+ * Database environment attribute XML entry.
  */
-@XmlRootElement(name = "databases")
+@XmlAccessorType(XmlAccessType.FIELD)
 @Getter
-public final class DatabaseEnvironment {
+@Setter
+public final class DatabaseEnvironmentAttribute {
     
-    @XmlElement(name = "database")
-    private final Collection<DatabaseEnvironmentAttribute> databases = new LinkedList<>();
+    @XmlAttribute(required = true)
+    private String name;
 }

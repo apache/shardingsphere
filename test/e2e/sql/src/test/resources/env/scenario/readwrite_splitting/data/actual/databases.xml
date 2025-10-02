@@ -17,7 +17,7 @@
   -->
 
 <databases>
-    <database>write_ds</database>
-    <database>read_0</database>
-    <database>read_1</database>
+    <database name="write_ds" />
+    <database name="read_0" />
+    <database name="read_1" />
 </databases>

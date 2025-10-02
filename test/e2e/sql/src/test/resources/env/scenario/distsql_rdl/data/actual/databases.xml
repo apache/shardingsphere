@@ -17,7 +17,7 @@
   -->
 
 <databases>
-    <database>rdl_ds_0</database>
-    <database>rdl_ds_1</database>
-    <database>rdl_ds_2</database>
+    <database name="rdl_ds_0" />
+    <database name="rdl_ds_1" />
+    <database name="rdl_ds_2" />
 </databases>

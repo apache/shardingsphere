@@ -17,24 +17,24 @@
   -->
 
 <databases>
-    <database>write_ds_0</database>
-    <database>write_ds_1</database>
-    <database>write_ds_2</database>
-    <database>write_ds_3</database>
-    <database>write_ds_4</database>
-    <database>write_ds_5</database>
-    <database>write_ds_6</database>
-    <database>write_ds_7</database>
-    <database>write_ds_8</database>
-    <database>write_ds_9</database>
-    <database>read_ds_0</database>
-    <database>read_ds_1</database>
-    <database>read_ds_2</database>
-    <database>read_ds_3</database>
-    <database>read_ds_4</database>
-    <database>read_ds_5</database>
-    <database>read_ds_6</database>
-    <database>read_ds_7</database>
-    <database>read_ds_8</database>
-    <database>read_ds_9</database>
+    <database name="write_ds_0" />
+    <database name="write_ds_1" />
+    <database name="write_ds_2" />
+    <database name="write_ds_3" />
+    <database name="write_ds_4" />
+    <database name="write_ds_5" />
+    <database name="write_ds_6" />
+    <database name="write_ds_7" />
+    <database name="write_ds_8" />
+    <database name="write_ds_9" />
+    <database name="read_ds_0" />
+    <database name="read_ds_1" />
+    <database name="read_ds_2" />
+    <database name="read_ds_3" />
+    <database name="read_ds_4" />
+    <database name="read_ds_5" />
+    <database name="read_ds_6" />
+    <database name="read_ds_7" />
+    <database name="read_ds_8" />
+    <database name="read_ds_9" />
 </databases>

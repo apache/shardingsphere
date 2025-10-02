@@ -17,14 +17,14 @@
   -->
 
 <databases>
-    <database>mask_ds_0</database>
-    <database>mask_ds_1</database>
-    <database>mask_ds_2</database>
-    <database>mask_ds_3</database>
-    <database>mask_ds_4</database>
-    <database>mask_ds_5</database>
-    <database>mask_ds_6</database>
-    <database>mask_ds_7</database>
-    <database>mask_ds_8</database>
-    <database>mask_ds_9</database>
+    <database name="mask_ds_0" />
+    <database name="mask_ds_1" />
+    <database name="mask_ds_2" />
+    <database name="mask_ds_3" />
+    <database name="mask_ds_4" />
+    <database name="mask_ds_5" />
+    <database name="mask_ds_6" />
+    <database name="mask_ds_7" />
+    <database name="mask_ds_8" />
+    <database name="mask_ds_9" />
 </databases>
