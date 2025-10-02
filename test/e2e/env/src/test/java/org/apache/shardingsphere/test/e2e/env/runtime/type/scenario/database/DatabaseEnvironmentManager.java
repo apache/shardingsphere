@@ -28,6 +28,7 @@ import javax.xml.bind.JAXBException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.stream.Collectors;
 
 /**
@@ -44,6 +45,9 @@ public final class DatabaseEnvironmentManager {
      * @return database types
      */
     public static Collection<String> getDatabaseNames(final String scenario, final Type type) {
+        if (null == scenario) {
+            return Collections.emptyList();
+        }
         return unmarshal(new ScenarioDataPath(scenario, type).getDatabasesFile()).getDatabases().stream().map(DatabaseEnvironmentAttribute::getName).collect(Collectors.toList());
     }
     
