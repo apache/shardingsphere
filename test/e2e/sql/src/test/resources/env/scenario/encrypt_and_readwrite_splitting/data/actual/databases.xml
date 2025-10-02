@@ -17,6 +17,6 @@
   -->
 
 <databases>
-    <database>encrypt_write_ds</database>
-    <database>encrypt_read_ds</database>
+    <database name="encrypt_write_ds" />
+    <database name="encrypt_read_ds" />
 </databases>

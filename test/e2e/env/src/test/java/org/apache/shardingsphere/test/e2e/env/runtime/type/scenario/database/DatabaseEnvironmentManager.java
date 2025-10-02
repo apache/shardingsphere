@@ -28,6 +28,7 @@ import javax.xml.bind.JAXBException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.Collection;
+import java.util.stream.Collectors;
 
 /**
  * Database environment manager.
@@ -43,7 +44,7 @@ public final class DatabaseEnvironmentManager {
      * @return database types
      */
     public static Collection<String> getDatabaseNames(final String scenario, final Type type) {
-        return unmarshal(new ScenarioDataPath(scenario, type).getDatabasesFile()).getDatabases();
+        return unmarshal(new ScenarioDataPath(scenario, type).getDatabasesFile()).getDatabases().stream().map(DatabaseEnvironmentAttribute::getName).collect(Collectors.toList());
     }
     
     @SneakyThrows({IOException.class, JAXBException.class})

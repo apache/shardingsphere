@@ -17,24 +17,24 @@
   -->
 
 <databases>
-    <database>encrypt_write_ds_0</database>
-    <database>encrypt_write_ds_1</database>
-    <database>encrypt_write_ds_2</database>
-    <database>encrypt_write_ds_3</database>
-    <database>encrypt_write_ds_4</database>
-    <database>encrypt_write_ds_5</database>
-    <database>encrypt_write_ds_6</database>
-    <database>encrypt_write_ds_7</database>
-    <database>encrypt_write_ds_8</database>
-    <database>encrypt_write_ds_9</database>
-    <database>encrypt_read_ds_0</database>
-    <database>encrypt_read_ds_1</database>
-    <database>encrypt_read_ds_2</database>
-    <database>encrypt_read_ds_3</database>
-    <database>encrypt_read_ds_4</database>
-    <database>encrypt_read_ds_5</database>
-    <database>encrypt_read_ds_6</database>
-    <database>encrypt_read_ds_7</database>
-    <database>encrypt_read_ds_8</database>
-    <database>encrypt_read_ds_9</database>
+    <database name="encrypt_write_ds_0" />
+    <database name="encrypt_write_ds_1" />
+    <database name="encrypt_write_ds_2" />
+    <database name="encrypt_write_ds_3" />
+    <database name="encrypt_write_ds_4" />
+    <database name="encrypt_write_ds_5" />
+    <database name="encrypt_write_ds_6" />
+    <database name="encrypt_write_ds_7" />
+    <database name="encrypt_write_ds_8" />
+    <database name="encrypt_write_ds_9" />
+    <database name="encrypt_read_ds_0" />
+    <database name="encrypt_read_ds_1" />
+    <database name="encrypt_read_ds_2" />
+    <database name="encrypt_read_ds_3" />
+    <database name="encrypt_read_ds_4" />
+    <database name="encrypt_read_ds_5" />
+    <database name="encrypt_read_ds_6" />
+    <database name="encrypt_read_ds_7" />
+    <database name="encrypt_read_ds_8" />
+    <database name="encrypt_read_ds_9" />
 </databases>
