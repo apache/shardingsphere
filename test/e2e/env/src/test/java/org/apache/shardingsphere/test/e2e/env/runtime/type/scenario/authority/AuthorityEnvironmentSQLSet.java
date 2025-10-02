@@ -34,11 +34,11 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
- * Authority SQL set XML entry.
+ * Authority environment SQL set XML entry.
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @Setter
-public final class AuthoritySQLSet {
+public final class AuthorityEnvironmentSQLSet {
     
     @XmlAttribute(name = "db-types", required = true)
     private String databaseTypes;

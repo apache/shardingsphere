@@ -25,11 +25,11 @@ import java.util.Collection;
 import java.util.LinkedList;
 
 /**
- * Database name root XML entry.
+ * Database root XML entry.
  */
 @XmlRootElement(name = "databases")
 @Getter
-public final class DatabaseNameEnvironment {
+public final class DatabaseEnvironment {
     
     @XmlElement(name = "database")
     private final Collection<String> databases = new LinkedList<>();
