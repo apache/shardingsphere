@@ -517,7 +517,7 @@ modifyExternalTableProperties
 
 pivotClause
     : PIVOT XML?
-    LP_ aggregationFunction (AS? alias)? (COMMA_ aggregationFunction (AS? alias)?)* pivotForClause pivotInClause RP_
+    LP_ aggregationFunction (AS? alias)? (COMMA_ aggregationFunction (AS? alias)?)* pivotForClause pivotInClause RP_ alias?
     ;
 
 pivotForClause
@@ -535,7 +535,7 @@ pivotInClauseExpr
     ;
 
 unpivotClause
-    : UNPIVOT ((INCLUDE | EXCLUDE) NULLS)? LP_ columnNames pivotForClause unpivotInClause RP_
+    : UNPIVOT ((INCLUDE | EXCLUDE) NULLS)? LP_ (columnName | columnNames) pivotForClause unpivotInClause RP_ alias?
     ;
 
 unpivotInClause
@@ -547,7 +547,15 @@ unpivotInClauseExpr
     ;
 
 sampleClause
-    : SAMPLE BLOCK? LP_ samplePercent RP_ (SEED LP_ seedValue RP_)?
+    : SAMPLE BLOCK? LP_ samplePercent RP_ seedValue?
+    ;
+
+samplePercent
+    : numberLiterals (COMMA_ numberLiterals)?
+    ;
+
+seedValue
+    : SEED LP_ numberLiterals RP_
     ;
 
 containersClause

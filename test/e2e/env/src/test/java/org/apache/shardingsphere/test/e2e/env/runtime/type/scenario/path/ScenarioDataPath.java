@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.test.e2e.env.runtime.type.scenario.path;
 
-import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 
 import java.net.URL;
@@ -28,12 +27,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 /**
  * Scenario data path.
  */
-@RequiredArgsConstructor
 public final class ScenarioDataPath {
-    
-    private static final String ROOT_PATH = "env/scenario";
-    
-    private static final String DATA_PATH = "data";
     
     private static final String DATABASES_FILE = "databases.xml";
     
@@ -43,82 +37,78 @@ public final class ScenarioDataPath {
     
     private static final String BASIC_INIT_SQL_FILE = "init.sql";
     
-    private final String scenario;
+    private final String scenarioDirectory;
+    
+    public ScenarioDataPath(final String scenario, final Type type) {
+        scenarioDirectory = String.join("/", "env", "scenario", scenario, "data", type.name().toLowerCase());
+    }
     
     /**
      * Get databases file.
      *
-     * @param type data type
      * @return databases file
      */
-    public String getDatabasesFile(final Type type) {
-        return getFile(type, DATABASES_FILE);
+    public String getDatabasesFile() {
+        return getFile(DATABASES_FILE);
     }
     
     /**
      * Get data set file.
      *
-     * @param type data type
      * @return data set file
      */
-    public String getDataSetFile(final Type type) {
-        return getFile(type, DATASET_FILE);
+    public String getDataSetFile() {
+        return getFile(DATASET_FILE);
     }
     
-    private String getFile(final Type type, final String fileName) {
-        String path = String.join("/", getBasicPath(type), fileName);
+    private String getFile(final String fileName) {
+        String path = String.join("/", scenarioDirectory, fileName);
         URL url = Thread.currentThread().getContextClassLoader().getResource(path);
         assertNotNull(url, String.format("File `%s` must exist.", path));
         return url.getFile();
     }
     
     /**
-     * Find actual init SQL file by database name.
+     * Find target init SQL file by database name.
      *
      * @param databaseName database name
      * @param databaseType database type
-     * @return actual init SQL file
+     * @return target init SQL file
      */
-    public Optional<String> findActualDatabaseInitSQLFile(final String databaseName, final DatabaseType databaseType) {
-        return isActualDatabaseInitSQLFileExisted(databaseName, databaseType) ? Optional.of(getActualDatabaseInitSQLFile(databaseName, databaseType)) : Optional.empty();
+    public Optional<String> findTargetDatabaseInitSQLFile(final String databaseName, final DatabaseType databaseType) {
+        return isTargetDatabaseInitSQLFileExisted(databaseName, databaseType) ? Optional.of(getTargetDatabaseInitSQLFile(databaseName, databaseType)) : Optional.empty();
     }
     
-    private boolean isActualDatabaseInitSQLFileExisted(final String databaseName, final DatabaseType databaseType) {
-        String initSQLResourceFile = getActualDatabaseInitSQLResourceFile(databaseName, databaseType);
-        return null != Thread.currentThread().getContextClassLoader().getResource(initSQLResourceFile);
+    private boolean isTargetDatabaseInitSQLFileExisted(final String databaseName, final DatabaseType databaseType) {
+        return null != Thread.currentThread().getContextClassLoader().getResource(getTargetDatabaseInitSQLResourceFile(databaseName, databaseType));
     }
     
-    private String getActualDatabaseInitSQLResourceFile(final String databaseName, final DatabaseType databaseType) {
-        String initSQLFileName = String.join("-", Type.ACTUAL.name().toLowerCase(), databaseName, BASIC_INIT_SQL_FILE);
-        return String.join("/", getInitSQLResourcePath(Type.ACTUAL, databaseType), initSQLFileName);
-    }
-    
-    private String getActualDatabaseInitSQLFile(final String databaseName, final DatabaseType databaseType) {
-        String resourceFile = getActualDatabaseInitSQLResourceFile(databaseName, databaseType);
+    private String getTargetDatabaseInitSQLFile(final String databaseName, final DatabaseType databaseType) {
+        String resourceFile = getTargetDatabaseInitSQLResourceFile(databaseName, databaseType);
         URL url = Thread.currentThread().getContextClassLoader().getResource(resourceFile);
         assertNotNull(url, String.format("File `%s` must exist.", resourceFile));
         return url.getFile();
     }
     
+    private String getTargetDatabaseInitSQLResourceFile(final String databaseName, final DatabaseType databaseType) {
+        String initSQLFileName = String.join("-", Type.TARGETS.name().toLowerCase(), databaseName, BASIC_INIT_SQL_FILE);
+        return String.join("/", getInitSQLResourcePath(databaseType), initSQLFileName);
+    }
+    
     /**
      * Get init SQL resource path.
      *
-     * @param type data type
      * @param databaseType database type
      * @return init SQL resource path
      */
-    public String getInitSQLResourcePath(final Type type, final DatabaseType databaseType) {
-        return String.join("/", getBasicPath(type), INIT_SQL_PATH, databaseType.getType().toLowerCase());
-    }
-    
-    private String getBasicPath(final Type type) {
-        return String.join("/", ROOT_PATH, scenario, DATA_PATH, type.name().toLowerCase());
+    public String getInitSQLResourcePath(final DatabaseType databaseType) {
+        return String.join("/", scenarioDirectory, INIT_SQL_PATH, databaseType.getType().toLowerCase());
     }
     
     /**
      * Data type.
      */
     public enum Type {
-        ACTUAL, EXPECTED
+        ACTUAL, EXPECTED, TARGETS
     }
 }

@@ -87,11 +87,11 @@ public final class MountSQLResourceGenerator {
     
     private Collection<String> getToBeMountedScenarioSQLFiles(final String scenario) {
         Collection<String> result = new LinkedList<>();
-        String actualScenarioFile = new ScenarioDataPath(scenario).getInitSQLResourcePath(Type.ACTUAL, databaseType) + "/" + TO_BE_MOUNTED_ACTUAL_SCENARIO_SQL_FILE;
+        String actualScenarioFile = new ScenarioDataPath(scenario, Type.ACTUAL).getInitSQLResourcePath(databaseType) + "/" + TO_BE_MOUNTED_ACTUAL_SCENARIO_SQL_FILE;
         if (null != Thread.currentThread().getContextClassLoader().getResource(actualScenarioFile)) {
             result.add(actualScenarioFile);
         }
-        String expectedScenarioFile = new ScenarioDataPath(scenario).getInitSQLResourcePath(Type.EXPECTED, databaseType) + "/" + TO_BE_MOUNTED_EXPECTED_SCENARIO_SQL_FILE;
+        String expectedScenarioFile = new ScenarioDataPath(scenario, Type.EXPECTED).getInitSQLResourcePath(databaseType) + "/" + TO_BE_MOUNTED_EXPECTED_SCENARIO_SQL_FILE;
         if (null != Thread.currentThread().getContextClassLoader().getResource(expectedScenarioFile)) {
             result.add(expectedScenarioFile);
         }
