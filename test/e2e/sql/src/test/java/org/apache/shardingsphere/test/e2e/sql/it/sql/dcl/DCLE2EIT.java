@@ -57,7 +57,7 @@ class DCLE2EIT implements SQLE2EIT {
         SQLE2EITContext context = new SQLE2EITContext(testParam);
         try (
                 AuthorityEnvironmentManager ignored = new AuthorityEnvironmentManager(
-                        new ScenarioCommonPath(testParam.getScenario()).getAuthorityFile(), environmentEngine.getActualDataSourceMap(), testParam.getDatabaseType())) {
+                        new ScenarioCommonPath(testParam.getScenario()).getAuthorityFile(), environmentEngine.getActualDataSourceMap().values(), testParam.getDatabaseType())) {
             assertExecuteUpdate(context);
         }
     }
@@ -88,7 +88,7 @@ class DCLE2EIT implements SQLE2EIT {
         SQLE2EITContext context = new SQLE2EITContext(testParam);
         try (
                 AuthorityEnvironmentManager ignored = new AuthorityEnvironmentManager(
-                        new ScenarioCommonPath(testParam.getScenario()).getAuthorityFile(), environmentEngine.getActualDataSourceMap(), testParam.getDatabaseType())) {
+                        new ScenarioCommonPath(testParam.getScenario()).getAuthorityFile(), environmentEngine.getActualDataSourceMap().values(), testParam.getDatabaseType())) {
             assertExecute(context);
         }
     }
