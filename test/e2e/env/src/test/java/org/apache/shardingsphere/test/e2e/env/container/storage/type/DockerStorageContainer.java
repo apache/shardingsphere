@@ -22,7 +22,6 @@ import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import lombok.Getter;
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.test.e2e.env.container.DockerE2EContainer;
 import org.apache.shardingsphere.test.e2e.env.container.constants.StorageContainerConstants;
 import org.apache.shardingsphere.test.e2e.env.container.storage.StorageContainer;
@@ -42,11 +41,9 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.time.Duration;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -154,20 +151,12 @@ public final class DockerStorageContainer extends DockerE2EContainer implements 
     
     @Override
     protected void postStart() {
-        actualDataSourceMap.putAll(createAccessDataSources(getDataSourceNames(getDataSourceNameAndTypeMap(Type.ACTUAL))));
-        expectedDataSourceMap.putAll(createAccessDataSources(getDataSourceNames(getDataSourceNameAndTypeMap(Type.EXPECTED))));
+        actualDataSourceMap.putAll(createAccessDataSources(DatabaseEnvironmentManager.getDatabaseNames(scenario, Type.ACTUAL)));
+        expectedDataSourceMap.putAll(createAccessDataSources(DatabaseEnvironmentManager.getDatabaseNames(scenario, Type.EXPECTED)));
     }
     
-    private Map<String, DatabaseType> getDataSourceNameAndTypeMap(final Type type) {
-        return null == scenario ? Collections.emptyMap() : DatabaseEnvironmentManager.getDatabaseTypes(scenario, option.getType(), type);
-    }
-    
-    private Collection<String> getDataSourceNames(final Map<String, DatabaseType> dataSourceNameAndTypeMap) {
-        return dataSourceNameAndTypeMap.entrySet().stream().filter(entry -> entry.getValue() == option.getType()).map(Entry::getKey).collect(Collectors.toList());
-    }
-    
-    private Map<String, DataSource> createAccessDataSources(final Collection<String> dataSourceNames) {
-        return dataSourceNames.stream().distinct().collect(Collectors.toMap(Function.identity(), this::createAccessDataSource));
+    private Map<String, DataSource> createAccessDataSources(final Collection<String> databaseNames) {
+        return databaseNames.stream().distinct().collect(Collectors.toMap(Function.identity(), this::createAccessDataSource));
     }
     
     /**

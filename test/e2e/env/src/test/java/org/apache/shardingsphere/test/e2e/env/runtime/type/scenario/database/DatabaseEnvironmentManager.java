@@ -45,17 +45,28 @@ public final class DatabaseEnvironmentManager {
      * Get database types.
      *
      * @param scenario scenario
-     * @param defaultDatabaseType default database type
      * @param type type
      * @return database types
      */
-    public static Map<String, DatabaseType> getDatabaseTypes(final String scenario, final DatabaseType defaultDatabaseType, final Type type) {
-        return createDatabaseTypes(unmarshal(new ScenarioDataPath(scenario, type).getDatabasesFile()).getDatabases(), defaultDatabaseType);
+    public static Collection<String> getDatabaseNames(final String scenario, final Type type) {
+        return unmarshal(new ScenarioDataPath(scenario, type).getDatabasesFile()).getDatabases();
     }
     
-    private static Map<String, DatabaseType> createDatabaseTypes(final Collection<String> datasourceNames, final DatabaseType defaultDatabaseType) {
-        Map<String, DatabaseType> result = new LinkedHashMap<>(datasourceNames.size(), 1F);
-        for (String each : datasourceNames) {
+    /**
+     * Get database name and type map.
+     *
+     * @param scenario scenario
+     * @param defaultDatabaseType default database type
+     * @param type type
+     * @return database name and type map
+     */
+    public static Map<String, DatabaseType> getDatabaseNameAndTypeMap(final String scenario, final DatabaseType defaultDatabaseType, final Type type) {
+        return getDatabaseNameAndTypeMap(unmarshal(new ScenarioDataPath(scenario, type).getDatabasesFile()).getDatabases(), defaultDatabaseType);
+    }
+    
+    private static Map<String, DatabaseType> getDatabaseNameAndTypeMap(final Collection<String> databaseNames, final DatabaseType defaultDatabaseType) {
+        Map<String, DatabaseType> result = new LinkedHashMap<>(databaseNames.size(), 1F);
+        for (String each : databaseNames) {
             List<String> items = Splitter.on(":").splitToList(each);
             DatabaseType databaseType = items.size() > 1 ? TypedSPILoader.getService(DatabaseType.class, items.get(1)) : defaultDatabaseType;
             result.put(items.get(0), databaseType);
