@@ -17,9 +17,9 @@
   -->
 
 <databases>
-    <database>write_ds</database>
-    <database>read_ds_0</database>
-    <database>read_ds_1</database>
-    <database>transaction_ds_0</database>
-    <database>transaction_ds_1</database>
+    <database name="write_ds" />
+    <database name="read_ds_0" />
+    <database name="read_ds_1" />
+    <database name="transaction_ds_0" />
+    <database name="transaction_ds_1" />
 </databases>
