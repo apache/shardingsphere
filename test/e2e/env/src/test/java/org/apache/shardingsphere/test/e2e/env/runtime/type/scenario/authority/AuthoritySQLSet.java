@@ -43,32 +43,32 @@ public final class AuthoritySQLSet {
     @XmlAttribute(name = "db-types", required = true)
     private String databaseTypes;
     
-    @XmlElementWrapper(name = "user-create")
+    @XmlElementWrapper(name = "init")
     @XmlElement(name = "sql")
-    private List<String> useCreateSQLs = new LinkedList<>();
+    private List<String> initSQLs = new LinkedList<>();
     
-    @XmlElementWrapper(name = "user-drop")
+    @XmlElementWrapper(name = "clean")
     @XmlElement(name = "sql")
-    private List<String> useDropSQLs = new LinkedList<>();
+    private List<String> cleanSQLs = new LinkedList<>();
     
     /**
-     * Get all create user SQLs.
+     * Get all init SQLs.
      *
      * @param databaseType database type
-     * @return create user SQLs
+     * @return init SQLs
      */
-    public Collection<String> getCreateUserSQLs(final DatabaseType databaseType) {
-        return getDatabaseTypes().contains(databaseType) ? useCreateSQLs : Collections.emptyList();
+    public Collection<String> getInitSQLs(final DatabaseType databaseType) {
+        return getDatabaseTypes().contains(databaseType) ? initSQLs : Collections.emptyList();
     }
     
     /**
-     * Get all drop user SQLs.
+     * Get all clean SQLs.
      *
      * @param databaseType database type
-     * @return create user SQLs
+     * @return clean SQLs
      */
-    public Collection<String> getDropUserSQLs(final DatabaseType databaseType) {
-        return getDatabaseTypes().contains(databaseType) ? useDropSQLs : Collections.emptyList();
+    public Collection<String> getCleanSQLs(final DatabaseType databaseType) {
+        return getDatabaseTypes().contains(databaseType) ? cleanSQLs : Collections.emptyList();
     }
     
     private Collection<DatabaseType> getDatabaseTypes() {

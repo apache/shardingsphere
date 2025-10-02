@@ -17,14 +17,14 @@
 
 <authority>
     <sqlset db-types="Oracle,SQLServer,PostgreSQL,openGauss">
-        <user-create>
+        <init>
             <sql>CREATE USER default_user</sql>
             <sql>CREATE ROLE default_role</sql>
             <sql>CREATE ROLE role2</sql>
             <sql>CREATE ROLE role3</sql>
             <sql>CREATE ROLE role4</sql>
-        </user-create>
-        <user-drop>
+        </init>
+        <clean>
             <sql>DROP ROLE IF EXISTS default_role</sql>
             <sql>DROP ROLE IF EXISTS role_dev</sql>
             <sql>DROP ROLE IF EXISTS role_dev_new</sql>
@@ -34,25 +34,25 @@
             <sql>DROP USER IF EXISTS user_dev</sql>
             <sql>DROP USER IF EXISTS user_dev_new</sql>
             <sql>DROP USER IF EXISTS default_user</sql>
-        </user-drop>
+        </clean>
     </sqlset>
     <sqlset db-types="SQLServer">
-        <user-create>
+        <init>
             <sql>CREATE LOGIN login_dev</sql>
             <sql>CREATE USER user_dev FOR LOGIN login_dev</sql>
-        </user-create>
-        <user-drop>
+        </init>
+        <clean>
             <sql>DROP LOGIN IF EXISTS login_dev</sql>
             <sql>DROP LOGIN IF EXISTS login_dev_new</sql>
-        </user-drop>
+        </clean>
     </sqlset>
     <sqlset db-types="MySQL">
-        <user-create>
+        <init>
             <sql>CREATE ROLE default_role</sql>
             <sql>CREATE USER user_dev@localhost</sql>
             <sql>GRANT select,update,insert,delete on encrypt.* to user_dev@localhost</sql>
-        </user-create>
-        <user-drop>
+        </init>
+        <clean>
             <sql>DROP USER IF EXISTS user_dev@localhost</sql>
             <sql>DROP USER IF EXISTS user_dev_new@localhost</sql>
             <sql>DROP USER IF EXISTS user_dev@127.0.0.1</sql>
@@ -60,11 +60,11 @@
             <sql>DROP ROLE IF EXISTS role_dev</sql>
             <sql>DROP ROLE IF EXISTS role_dev_new</sql>
             <sql>FLUSH PRIVILEGES</sql>
-        </user-drop>
+        </clean>
     </sqlset>
     <sqlset db-types="Oracle">
-        <user-create>
+        <init>
             <sql>CREATE USER user_dev identified by passwd_dev</sql>
-        </user-create>
+        </init>
     </sqlset>
 </authority>

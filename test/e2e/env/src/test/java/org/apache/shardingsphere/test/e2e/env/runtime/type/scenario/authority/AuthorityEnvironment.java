@@ -41,7 +41,7 @@ public final class AuthorityEnvironment {
      * @return init SQLs
      */
     public Collection<String> getInitSQLs(final DatabaseType databaseType) {
-        return sqlSets.stream().flatMap(each -> each.getCreateUserSQLs(databaseType).stream()).collect(Collectors.toList());
+        return sqlSets.stream().flatMap(each -> each.getInitSQLs(databaseType).stream()).collect(Collectors.toList());
     }
     
     /**
@@ -51,6 +51,6 @@ public final class AuthorityEnvironment {
      * @return clean SQLs
      */
     public Collection<String> getCleanSQLs(final DatabaseType databaseType) {
-        return sqlSets.stream().flatMap(each -> each.getDropUserSQLs(databaseType).stream()).collect(Collectors.toList());
+        return sqlSets.stream().flatMap(each -> each.getCleanSQLs(databaseType).stream()).collect(Collectors.toList());
     }
 }
