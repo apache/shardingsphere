@@ -47,9 +47,9 @@ public final class DatabaseEnvironmentManager {
     }
     
     @SneakyThrows({IOException.class, JAXBException.class})
-    private static DatabaseNameEnvironment unmarshal(final String databasesFile) {
+    private static DatabaseEnvironment unmarshal(final String databasesFile) {
         try (FileReader reader = new FileReader(databasesFile)) {
-            return (DatabaseNameEnvironment) JAXBContext.newInstance(DatabaseNameEnvironment.class).createUnmarshaller().unmarshal(reader);
+            return (DatabaseEnvironment) JAXBContext.newInstance(DatabaseEnvironment.class).createUnmarshaller().unmarshal(reader);
         }
     }
 }
