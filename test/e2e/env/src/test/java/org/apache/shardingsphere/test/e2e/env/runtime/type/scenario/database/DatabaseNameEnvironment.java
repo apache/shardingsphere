@@ -25,7 +25,7 @@ import java.util.Collection;
 import java.util.LinkedList;
 
 /**
- * XML definition of database name environment.
+ * Database name root XML entry.
  */
 @XmlRootElement(name = "databases")
 @Getter
