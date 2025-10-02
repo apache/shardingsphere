@@ -17,12 +17,9 @@
 
 package org.apache.shardingsphere.test.e2e.env.runtime.type.scenario.database;
 
-import com.google.common.base.Splitter;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
-import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.test.e2e.env.runtime.type.scenario.path.ScenarioDataPath;
 import org.apache.shardingsphere.test.e2e.env.runtime.type.scenario.path.ScenarioDataPath.Type;
 
@@ -31,9 +28,6 @@ import javax.xml.bind.JAXBException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.Collection;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
 
 /**
  * Database environment manager.
@@ -50,28 +44,6 @@ public final class DatabaseEnvironmentManager {
      */
     public static Collection<String> getDatabaseNames(final String scenario, final Type type) {
         return unmarshal(new ScenarioDataPath(scenario, type).getDatabasesFile()).getDatabases();
-    }
-    
-    /**
-     * Get database name and type map.
-     *
-     * @param scenario scenario
-     * @param defaultDatabaseType default database type
-     * @param type type
-     * @return database name and type map
-     */
-    public static Map<String, DatabaseType> getDatabaseNameAndTypeMap(final String scenario, final DatabaseType defaultDatabaseType, final Type type) {
-        return getDatabaseNameAndTypeMap(unmarshal(new ScenarioDataPath(scenario, type).getDatabasesFile()).getDatabases(), defaultDatabaseType);
-    }
-    
-    private static Map<String, DatabaseType> getDatabaseNameAndTypeMap(final Collection<String> databaseNames, final DatabaseType defaultDatabaseType) {
-        Map<String, DatabaseType> result = new LinkedHashMap<>(databaseNames.size(), 1F);
-        for (String each : databaseNames) {
-            List<String> items = Splitter.on(":").splitToList(each);
-            DatabaseType databaseType = items.size() > 1 ? TypedSPILoader.getService(DatabaseType.class, items.get(1)) : defaultDatabaseType;
-            result.put(items.get(0), databaseType);
-        }
-        return result;
     }
     
     @SneakyThrows({IOException.class, JAXBException.class})
