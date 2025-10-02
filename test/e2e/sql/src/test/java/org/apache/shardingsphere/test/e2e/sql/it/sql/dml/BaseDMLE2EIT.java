@@ -187,11 +187,12 @@ public abstract class BaseDMLE2EIT implements SQLE2EIT {
         for (String each : InlineExpressionParserFactory.newInstance(expectedDataSetMetaData.getDataNodes()).splitAndEvaluate()) {
             DataNode dataNode = new DataNode(each);
             DataSource dataSource = getEnvironmentEngine().getActualDataSourceMap().get(dataNode.getDataSourceName());
+            DatabaseType databaseType = testParam.getDatabaseType();
             try (
                     Connection connection = dataSource.getConnection();
                     PreparedStatement preparedStatement = connection.prepareStatement(
-                            generateFetchActualDataSQL(getEnvironmentEngine().getActualDataSourceMap(), dataNode, testParam.getDatabaseType()))) {
-                assertDataSet(preparedStatement, expectedDataSetMetaData, context.getDataSet().findRows(dataNode), testParam.getDatabaseType());
+                            generateFetchActualDataSQL(getEnvironmentEngine().getActualDataSourceMap(), dataNode, databaseType))) {
+                assertDataSet(preparedStatement, expectedDataSetMetaData, context.getDataSet().findRows(dataNode), databaseType);
             }
         }
     }
@@ -219,11 +220,12 @@ public abstract class BaseDMLE2EIT implements SQLE2EIT {
         for (String each : InlineExpressionParserFactory.newInstance(expectedDataSetMetaData.getDataNodes()).splitAndEvaluate()) {
             DataNode dataNode = new DataNode(each);
             DataSource dataSource = getEnvironmentEngine().getActualDataSourceMap().get(dataNode.getDataSourceName());
+            DatabaseType databaseType = testParam.getDatabaseType();
             try (
                     Connection connection = dataSource.getConnection();
                     PreparedStatement preparedStatement = connection.prepareStatement(
-                            generateFetchActualDataSQL(getEnvironmentEngine().getActualDataSourceMap(), dataNode, testParam.getDatabaseType()))) {
-                assertDataSet(preparedStatement, expectedDataSetMetaData, dataSet.findRows(dataNode), testParam.getDatabaseType());
+                            generateFetchActualDataSQL(getEnvironmentEngine().getActualDataSourceMap(), dataNode, databaseType))) {
+                assertDataSet(preparedStatement, expectedDataSetMetaData, dataSet.findRows(dataNode), databaseType);
             }
         }
     }
