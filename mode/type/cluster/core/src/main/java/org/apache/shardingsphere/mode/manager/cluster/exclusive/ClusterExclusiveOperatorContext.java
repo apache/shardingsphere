@@ -35,12 +35,13 @@ public final class ClusterExclusiveOperatorContext implements ExclusiveOperatorC
     
     @Override
     public boolean start(final ExclusiveOperation operation, final long timeoutMillis) {
-        return DistributedLockHolder.getDistributedLock(NodePathGenerator.toPath(new ExclusiveOperationNodePath(operation.getName())),
-                repository).tryLock(timeoutMillis);
+        String operationKey = NodePathGenerator.toPath(new ExclusiveOperationNodePath(operation.getName()));
+        return DistributedLockHolder.getDistributedLock(operationKey, repository).tryLock(timeoutMillis);
     }
     
     @Override
     public void stop(final ExclusiveOperation operation) {
-        DistributedLockHolder.getDistributedLock(NodePathGenerator.toPath(new ExclusiveOperationNodePath(operation.getName())), repository).unlock();
+        String operationKey = NodePathGenerator.toPath(new ExclusiveOperationNodePath(operation.getName()));
+        DistributedLockHolder.getDistributedLock(operationKey, repository).unlock();
     }
 }

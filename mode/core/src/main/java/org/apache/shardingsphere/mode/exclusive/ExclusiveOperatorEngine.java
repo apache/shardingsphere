@@ -27,7 +27,7 @@ import java.sql.SQLException;
 @RequiredArgsConstructor
 public final class ExclusiveOperatorEngine {
     
-    private final ExclusiveOperatorContext exclusiveOperatorContext;
+    private final ExclusiveOperatorContext context;
     
     /**
      * Operate with exclusive operation and void callback.
@@ -38,14 +38,10 @@ public final class ExclusiveOperatorEngine {
      * @throws SQLException SQL exception
      */
     public void operate(final ExclusiveOperation operation, final long timeoutMillis, final ExclusiveOperationVoidCallback voidCallback) throws SQLException {
-        operateWithResult(operation, timeoutMillis, asVoidCallback(voidCallback));
-    }
-    
-    private ExclusiveOperationCallback<Void> asVoidCallback(final ExclusiveOperationVoidCallback voidCallback) {
-        return () -> {
+        operateWithResult(operation, timeoutMillis, (ExclusiveOperationCallback<Void>) () -> {
             voidCallback.execute();
             return null;
-        };
+        });
     }
     
     /**
@@ -59,11 +55,11 @@ public final class ExclusiveOperatorEngine {
      * @throws SQLException SQL exception
      */
     public <T> T operateWithResult(final ExclusiveOperation operation, final long timeoutMillis, final ExclusiveOperationCallback<T> callback) throws SQLException {
-        if (exclusiveOperatorContext.start(operation, timeoutMillis)) {
+        if (context.start(operation, timeoutMillis)) {
             try {
                 return callback.execute();
             } finally {
-                exclusiveOperatorContext.stop(operation);
+                context.stop(operation);
             }
         }
         return null;
