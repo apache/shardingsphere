@@ -50,7 +50,7 @@ public final class StandaloneContextManagerBuilder implements ContextManagerBuil
                 StandalonePersistRepository.class, null == repositoryConfig ? null : repositoryConfig.getType(), null == repositoryConfig ? new Properties() : repositoryConfig.getProps());
         ExclusiveOperatorEngine exclusiveOperatorEngine = new ExclusiveOperatorEngine(new StandaloneExclusiveOperatorContext());
         MetaDataContexts metaDataContexts = new MetaDataContextsFactory(new MetaDataPersistFacade(repository), computeNodeInstanceContext).create(param);
-        return new ContextManager(metaDataContexts, computeNodeInstanceContext, repository, exclusiveOperatorEngine);
+        return new ContextManager(metaDataContexts, computeNodeInstanceContext, exclusiveOperatorEngine, repository);
     }
     
     @Override
