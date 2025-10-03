@@ -18,6 +18,10 @@
 package org.apache.shardingsphere.mode.exclusive;
 
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.mode.exclusive.callback.ExclusiveOperationCallback;
+import org.apache.shardingsphere.mode.exclusive.callback.ExclusiveOperationVoidCallback;
+import org.apache.shardingsphere.mode.node.path.engine.generator.NodePathGenerator;
+import org.apache.shardingsphere.mode.node.path.type.exclusive.ExclusiveOperationNodePath;
 
 import java.sql.SQLException;
 
@@ -27,7 +31,7 @@ import java.sql.SQLException;
 @RequiredArgsConstructor
 public final class ExclusiveOperatorEngine {
     
-    private final ExclusiveOperatorContext exclusiveOperatorContext;
+    private final ExclusiveOperatorContext context;
     
     /**
      * Operate with exclusive operation and void callback.
@@ -38,14 +42,10 @@ public final class ExclusiveOperatorEngine {
      * @throws SQLException SQL exception
      */
     public void operate(final ExclusiveOperation operation, final long timeoutMillis, final ExclusiveOperationVoidCallback voidCallback) throws SQLException {
-        operateWithResult(operation, timeoutMillis, asVoidCallback(voidCallback));
-    }
-    
-    private ExclusiveOperationCallback<Void> asVoidCallback(final ExclusiveOperationVoidCallback voidCallback) {
-        return () -> {
+        operateWithResult(operation, timeoutMillis, (ExclusiveOperationCallback<Void>) () -> {
             voidCallback.execute();
             return null;
-        };
+        });
     }
     
     /**
@@ -59,11 +59,12 @@ public final class ExclusiveOperatorEngine {
      * @throws SQLException SQL exception
      */
     public <T> T operateWithResult(final ExclusiveOperation operation, final long timeoutMillis, final ExclusiveOperationCallback<T> callback) throws SQLException {
-        if (exclusiveOperatorContext.start(operation, timeoutMillis)) {
+        String operationKey = NodePathGenerator.toPath(new ExclusiveOperationNodePath(operation.getName()));
+        if (context.start(operationKey, timeoutMillis)) {
             try {
                 return callback.execute();
             } finally {
-                exclusiveOperatorContext.stop(operation);
+                context.stop(operationKey);
             }
         }
         return null;
