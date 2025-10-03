@@ -18,6 +18,8 @@
 package org.apache.shardingsphere.mode.exclusive;
 
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.mode.exclusive.callback.ExclusiveOperationCallback;
+import org.apache.shardingsphere.mode.exclusive.callback.ExclusiveOperationVoidCallback;
 import org.apache.shardingsphere.mode.node.path.engine.generator.NodePathGenerator;
 import org.apache.shardingsphere.mode.node.path.type.exclusive.ExclusiveOperationNodePath;
 

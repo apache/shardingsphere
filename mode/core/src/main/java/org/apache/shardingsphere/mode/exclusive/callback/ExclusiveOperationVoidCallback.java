@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.exclusive;
+package org.apache.shardingsphere.mode.exclusive.callback;
 
 import java.sql.SQLException;
 
