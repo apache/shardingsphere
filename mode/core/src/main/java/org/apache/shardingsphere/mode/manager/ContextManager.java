@@ -65,18 +65,18 @@ public final class ContextManager implements AutoCloseable {
     
     private final ComputeNodeInstanceContext computeNodeInstanceContext;
     
-    private final StateContext stateContext;
+    private final ExclusiveOperatorEngine exclusiveOperatorEngine;
     
     private final ExecutorEngine executorEngine;
     
-    private final PersistServiceFacade persistServiceFacade;
-    
     private final MetaDataContextManager metaDataContextManager;
     
-    private final ExclusiveOperatorEngine exclusiveOperatorEngine;
+    private final PersistServiceFacade persistServiceFacade;
     
-    public ContextManager(final MetaDataContexts metaDataContexts, final ComputeNodeInstanceContext computeNodeInstanceContext,
-                          final PersistRepository repository, final ExclusiveOperatorEngine exclusiveOperatorEngine) {
+    private final StateContext stateContext;
+    
+    public ContextManager(final MetaDataContexts metaDataContexts, final ComputeNodeInstanceContext computeNodeInstanceContext, final ExclusiveOperatorEngine exclusiveOperatorEngine,
+                          final PersistRepository repository) {
         this.metaDataContexts = metaDataContexts;
         this.computeNodeInstanceContext = computeNodeInstanceContext;
         this.exclusiveOperatorEngine = exclusiveOperatorEngine;
