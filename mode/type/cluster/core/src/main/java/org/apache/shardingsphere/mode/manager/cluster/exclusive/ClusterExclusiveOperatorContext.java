@@ -18,10 +18,7 @@
 package org.apache.shardingsphere.mode.manager.cluster.exclusive;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.mode.exclusive.ExclusiveOperation;
 import org.apache.shardingsphere.mode.exclusive.ExclusiveOperatorContext;
-import org.apache.shardingsphere.mode.node.path.engine.generator.NodePathGenerator;
-import org.apache.shardingsphere.mode.node.path.type.exclusive.ExclusiveOperationNodePath;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 import org.apache.shardingsphere.mode.repository.cluster.core.lock.DistributedLockHolder;
 
@@ -34,13 +31,12 @@ public final class ClusterExclusiveOperatorContext implements ExclusiveOperatorC
     private final ClusterPersistRepository repository;
     
     @Override
-    public boolean start(final ExclusiveOperation operation, final long timeoutMillis) {
-        return DistributedLockHolder.getDistributedLock(NodePathGenerator.toPath(new ExclusiveOperationNodePath(operation.getName())),
-                repository).tryLock(timeoutMillis);
+    public boolean start(final String operationKey, final long timeoutMillis) {
+        return DistributedLockHolder.getDistributedLock(operationKey, repository).tryLock(timeoutMillis);
     }
     
     @Override
-    public void stop(final ExclusiveOperation operation) {
-        DistributedLockHolder.getDistributedLock(NodePathGenerator.toPath(new ExclusiveOperationNodePath(operation.getName())), repository).unlock();
+    public void stop(final String operationKey) {
+        DistributedLockHolder.getDistributedLock(operationKey, repository).unlock();
     }
 }

@@ -17,10 +17,7 @@
 
 package org.apache.shardingsphere.mode.manager.standalone.exclusive;
 
-import org.apache.shardingsphere.mode.exclusive.ExclusiveOperation;
 import org.apache.shardingsphere.mode.exclusive.ExclusiveOperatorContext;
-import org.apache.shardingsphere.mode.node.path.engine.generator.NodePathGenerator;
-import org.apache.shardingsphere.mode.node.path.type.exclusive.ExclusiveOperationNodePath;
 import org.apache.shardingsphere.mode.retry.RetryExecutor;
 
 import java.util.Collection;
@@ -34,14 +31,12 @@ public final class StandaloneExclusiveOperatorContext implements ExclusiveOperat
     private final Collection<String> exclusiveOperationKeys = new CopyOnWriteArraySet<>();
     
     @Override
-    public boolean start(final ExclusiveOperation operation, final long timeoutMillis) {
-        String operationKey = NodePathGenerator.toPath(new ExclusiveOperationNodePath(operation.getName()));
+    public boolean start(final String operationKey, final long timeoutMillis) {
         return new RetryExecutor(timeoutMillis, 50L).execute(arg -> exclusiveOperationKeys.add(operationKey), null);
     }
     
     @Override
-    public void stop(final ExclusiveOperation operation) {
-        String operationKey = NodePathGenerator.toPath(new ExclusiveOperationNodePath(operation.getName()));
+    public void stop(final String operationKey) {
         exclusiveOperationKeys.remove(operationKey);
     }
 }

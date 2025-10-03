@@ -25,16 +25,16 @@ public interface ExclusiveOperatorContext {
     /**
      * Start exclusive operation.
      *
-     * @param operation exclusive operation
+     * @param operationKey operation key
      * @param timeoutMillis timeout milliseconds
      * @return is started or not
      */
-    boolean start(ExclusiveOperation operation, long timeoutMillis);
+    boolean start(String operationKey, long timeoutMillis);
     
     /**
      * Stop exclusive operation.
      *
-     * @param operation exclusive operation
+     * @param operationKey operation key
      */
-    void stop(ExclusiveOperation operation);
+    void stop(String operationKey);
 }
