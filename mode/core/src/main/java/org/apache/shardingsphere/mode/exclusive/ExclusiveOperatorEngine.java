@@ -18,6 +18,8 @@
 package org.apache.shardingsphere.mode.exclusive;
 
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.mode.node.path.engine.generator.NodePathGenerator;
+import org.apache.shardingsphere.mode.node.path.type.exclusive.ExclusiveOperationNodePath;
 
 import java.sql.SQLException;
 
@@ -55,11 +57,12 @@ public final class ExclusiveOperatorEngine {
      * @throws SQLException SQL exception
      */
     public <T> T operateWithResult(final ExclusiveOperation operation, final long timeoutMillis, final ExclusiveOperationCallback<T> callback) throws SQLException {
-        if (context.start(operation, timeoutMillis)) {
+        String operationKey = NodePathGenerator.toPath(new ExclusiveOperationNodePath(operation.getName()));
+        if (context.start(operationKey, timeoutMillis)) {
             try {
                 return callback.execute();
             } finally {
-                context.stop(operation);
+                context.stop(operationKey);
             }
         }
         return null;
