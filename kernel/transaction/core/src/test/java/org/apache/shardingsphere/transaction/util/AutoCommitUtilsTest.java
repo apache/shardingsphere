@@ -18,9 +18,9 @@
 package org.apache.shardingsphere.transaction.util;
 
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
-import org.apache.shardingsphere.distsql.statement.type.rdl.resource.unit.type.RegisterStorageUnitStatement;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.EmptyStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.table.CreateTableStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.InsertStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.SelectStatement;
@@ -35,23 +35,30 @@ class AutoCommitUtilsTest {
     private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "FIXTURE");
     
     @Test
-    void assertNeedStartTransactionForSelectStatement() {
+    void assertNeedStartTransactionWithDDL() {
+        assertTrue(AutoCommitUtils.needStartTransaction(new CreateTableStatement(databaseType)));
+    }
+    
+    @Test
+    void assertNeedStartTransactionWithDML() {
+        assertTrue(AutoCommitUtils.needStartTransaction(new InsertStatement(databaseType)));
+    }
+    
+    @Test
+    void assertNeedStartTransactionWithSelectWithoutFromClause() {
         SelectStatement selectStatement = new SelectStatement(databaseType);
         assertFalse(AutoCommitUtils.needStartTransaction(selectStatement));
+    }
+    
+    @Test
+    void assertNeedStartTransactionWithSelectWithFromClause() {
+        SelectStatement selectStatement = new SelectStatement(databaseType);
         selectStatement.setFrom(mock(SimpleTableSegment.class));
         assertTrue(AutoCommitUtils.needStartTransaction(selectStatement));
     }
     
     @Test
-    void assertNeedStartTransactionForDDLOrDMLStatement() {
-        CreateTableStatement sqlStatement = new CreateTableStatement(databaseType);
-        sqlStatement.setIfNotExists(true);
-        assertTrue(AutoCommitUtils.needStartTransaction(sqlStatement));
-        assertTrue(AutoCommitUtils.needStartTransaction(new InsertStatement(databaseType)));
-    }
-    
-    @Test
-    void assertNeedStartTransactionForOtherStatement() {
-        assertFalse(AutoCommitUtils.needStartTransaction(mock(RegisterStorageUnitStatement.class)));
+    void assertNotNeedStartTransaction() {
+        assertFalse(AutoCommitUtils.needStartTransaction(new EmptyStatement(databaseType)));
     }
 }

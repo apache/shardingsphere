@@ -37,7 +37,7 @@ public final class AutoCommitUtils {
      * @return need to start or not
      */
     public static boolean needStartTransaction(final SQLStatement sqlStatement) {
-        return !isSelectWithoutFrom(sqlStatement) && (sqlStatement instanceof DDLStatement || sqlStatement instanceof DMLStatement);
+        return sqlStatement instanceof DDLStatement || sqlStatement instanceof DMLStatement && !isSelectWithoutFrom(sqlStatement);
     }
     
     private static boolean isSelectWithoutFrom(final SQLStatement sqlStatement) {
