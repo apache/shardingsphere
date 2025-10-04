@@ -77,7 +77,6 @@ public final class FirebirdExecuteStatementCommandExecutor implements QueryComma
         }
         QueryContext queryContext = new QueryContext(sqlStatementContext, preparedStatement.getSql(), params, preparedStatement.getHintValueContext(), connectionSession.getConnectionContext(),
                 ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData(), true);
-        connectionSession.setQueryContext(queryContext);
         proxyBackendHandler = ProxyBackendHandlerFactory.newInstance(TypedSPILoader.getService(DatabaseType.class, "Firebird"), queryContext, connectionSession, true);
         ResponseHeader responseHeader = proxyBackendHandler.execute();
         if (responseHeader instanceof QueryResponseHeader) {
