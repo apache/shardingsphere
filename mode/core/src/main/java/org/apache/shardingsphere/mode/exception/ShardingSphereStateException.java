@@ -19,6 +19,7 @@ package org.apache.shardingsphere.mode.exception;
 
 import org.apache.shardingsphere.infra.exception.external.sql.sqlstate.XOpenSQLState;
 import org.apache.shardingsphere.infra.exception.external.sql.type.kernel.category.ClusterSQLException;
+import org.apache.shardingsphere.mode.state.ShardingSphereState;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
 
 /**
@@ -28,7 +29,7 @@ public final class ShardingSphereStateException extends ClusterSQLException {
     
     private static final long serialVersionUID = 3834132923835083492L;
     
-    public ShardingSphereStateException(final String type, final SQLStatement sqlStatement) {
-        super(XOpenSQLState.GENERAL_ERROR, 20, "The cluster state is %s, can not support SQL statement '%s'.", type, sqlStatement.getClass().getSimpleName());
+    public ShardingSphereStateException(final ShardingSphereState state, final SQLStatement sqlStatement) {
+        super(XOpenSQLState.GENERAL_ERROR, 20, "The cluster state is %s, can not support SQL statement '%s'.", state, sqlStatement.getClass().getSimpleName());
     }
 }

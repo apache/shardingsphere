@@ -25,6 +25,7 @@ import org.apache.shardingsphere.distsql.statement.type.ral.updatable.UnlockClus
 import org.apache.shardingsphere.distsql.statement.type.rql.RQLStatement;
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.mode.exception.ShardingSphereStateException;
+import org.apache.shardingsphere.mode.state.ShardingSphereState;
 import org.apache.shardingsphere.proxy.backend.state.DialectProxyStateSupportedSQLProvider;
 import org.apache.shardingsphere.proxy.backend.state.ProxyClusterStateChecker;
 import org.apache.shardingsphere.proxy.backend.state.ProxySQLSupportedJudgeEngine;
@@ -55,7 +56,7 @@ public final class UnavailableProxyStateChecker implements ProxyClusterStateChec
     }
     
     @Override
-    public String getType() {
-        return "UNAVAILABLE";
+    public ShardingSphereState getType() {
+        return ShardingSphereState.UNAVAILABLE;
     }
 }
