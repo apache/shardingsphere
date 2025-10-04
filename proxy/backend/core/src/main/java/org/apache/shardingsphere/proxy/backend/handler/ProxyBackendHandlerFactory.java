@@ -90,12 +90,11 @@ public final class ProxyBackendHandlerFactory {
         if (sqlStatement instanceof EmptyStatement) {
             return new SkipBackendHandler(sqlStatement);
         }
+        ShardingSphereMetaData metaData = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData();
         SQLStatementContext sqlStatementContext = sqlStatement instanceof DistSQLStatement
                 ? new DistSQLStatementContext((DistSQLStatement) sqlStatement)
-                : new SQLBindEngine(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData(),
-                        connectionSession.getCurrentDatabaseName(), hintValueContext).bind(sqlStatement);
-        QueryContext queryContext = new QueryContext(sqlStatementContext, sql, Collections.emptyList(), hintValueContext, connectionSession.getConnectionContext(),
-                ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData());
+                : new SQLBindEngine(metaData, connectionSession.getCurrentDatabaseName(), hintValueContext).bind(sqlStatement);
+        QueryContext queryContext = new QueryContext(sqlStatementContext, sql, Collections.emptyList(), hintValueContext, connectionSession.getConnectionContext(), metaData);
         connectionSession.setQueryContext(queryContext);
         return newInstance(databaseType, queryContext, connectionSession, false);
     }
