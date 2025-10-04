@@ -35,23 +35,23 @@ class AutoCommitUtilsTest {
     private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "FIXTURE");
     
     @Test
-    void assertNeedOpenTransactionForSelectStatement() {
+    void assertNeedStartTransactionForSelectStatement() {
         SelectStatement selectStatement = new SelectStatement(databaseType);
-        assertFalse(AutoCommitUtils.needOpenTransaction(selectStatement));
+        assertFalse(AutoCommitUtils.needStartTransaction(selectStatement));
         selectStatement.setFrom(mock(SimpleTableSegment.class));
-        assertTrue(AutoCommitUtils.needOpenTransaction(selectStatement));
+        assertTrue(AutoCommitUtils.needStartTransaction(selectStatement));
     }
     
     @Test
-    void assertNeedOpenTransactionForDDLOrDMLStatement() {
+    void assertNeedStartTransactionForDDLOrDMLStatement() {
         CreateTableStatement sqlStatement = new CreateTableStatement(databaseType);
         sqlStatement.setIfNotExists(true);
-        assertTrue(AutoCommitUtils.needOpenTransaction(sqlStatement));
-        assertTrue(AutoCommitUtils.needOpenTransaction(new InsertStatement(databaseType)));
+        assertTrue(AutoCommitUtils.needStartTransaction(sqlStatement));
+        assertTrue(AutoCommitUtils.needStartTransaction(new InsertStatement(databaseType)));
     }
     
     @Test
-    void assertNeedOpenTransactionForOtherStatement() {
-        assertFalse(AutoCommitUtils.needOpenTransaction(mock(RegisterStorageUnitStatement.class)));
+    void assertNeedStartTransactionForOtherStatement() {
+        assertFalse(AutoCommitUtils.needStartTransaction(mock(RegisterStorageUnitStatement.class)));
     }
 }

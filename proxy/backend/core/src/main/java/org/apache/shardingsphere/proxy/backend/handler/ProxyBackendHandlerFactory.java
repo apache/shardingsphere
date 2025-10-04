@@ -192,7 +192,7 @@ public final class ProxyBackendHandlerFactory {
     }
     
     private static void handleAutoCommit(final SQLStatement sqlStatement, final ConnectionSession connectionSession) {
-        if (AutoCommitUtils.needOpenTransaction(sqlStatement)) {
+        if (AutoCommitUtils.needStartTransaction(sqlStatement)) {
             connectionSession.getDatabaseConnectionManager().handleAutoCommit();
         }
     }
