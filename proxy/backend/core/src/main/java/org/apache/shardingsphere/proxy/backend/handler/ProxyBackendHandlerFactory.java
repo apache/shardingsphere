@@ -19,6 +19,7 @@ package org.apache.shardingsphere.proxy.backend.handler;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.DialectDatabaseMetaData;
 import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.distsql.statement.DistSQLStatement;
@@ -34,6 +35,7 @@ import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
+import org.apache.shardingsphere.infra.session.connection.transaction.TransactionConnectionContext;
 import org.apache.shardingsphere.infra.session.query.QueryContext;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
@@ -46,7 +48,6 @@ import org.apache.shardingsphere.proxy.backend.handler.database.DatabaseOperateB
 import org.apache.shardingsphere.proxy.backend.handler.distsql.DistSQLBackendHandlerFactory;
 import org.apache.shardingsphere.proxy.backend.handler.skip.SkipBackendHandler;
 import org.apache.shardingsphere.proxy.backend.handler.tcl.TCLBackendHandlerFactory;
-import org.apache.shardingsphere.proxy.backend.handler.tcl.TransactionalErrorAllowedSQLStatementHandler;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.backend.state.DialectProxyStateSupportedSQLProvider;
 import org.apache.shardingsphere.proxy.backend.state.ProxyClusterStateChecker;
@@ -57,10 +58,13 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dcl.DC
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.database.CreateDatabaseStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.database.DropDatabaseStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.table.RenameTableStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.tcl.CommitStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.tcl.RollbackStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.tcl.TCLStatement;
 import org.apache.shardingsphere.transaction.util.AutoCommitUtils;
 
 import java.sql.SQLException;
+import java.sql.SQLFeatureNotSupportedException;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -113,7 +117,7 @@ public final class ProxyBackendHandlerFactory {
         connectionSession.setQueryContext(queryContext);
         SQLStatementContext sqlStatementContext = queryContext.getSqlStatementContext();
         SQLStatement sqlStatement = sqlStatementContext.getSqlStatement();
-        allowExecutingWhenTransactionalError(databaseType, connectionSession, sqlStatement);
+        checkAllowedSQLStatementWhenTransactionFailed(databaseType, connectionSession.getConnectionContext().getTransactionContext(), sqlStatement);
         checkSupportedSQLStatement(databaseType, sqlStatement);
         checkClusterState(sqlStatement, databaseType);
         if (sqlStatement instanceof EmptyStatement) {
@@ -152,13 +156,12 @@ public final class ProxyBackendHandlerFactory {
                 .orElseGet(() -> DatabaseBackendHandlerFactory.newInstance(queryContext, connectionSession, preferPreparedStatement));
     }
     
-    private static void allowExecutingWhenTransactionalError(final DatabaseType databaseType, final ConnectionSession connectionSession, final SQLStatement sqlStatement) throws SQLException {
-        if (!connectionSession.getConnectionContext().getTransactionContext().isExceptionOccur()) {
-            return;
-        }
-        Optional<TransactionalErrorAllowedSQLStatementHandler> allowedSQLStatementHandler = DatabaseTypedSPILoader.findService(TransactionalErrorAllowedSQLStatementHandler.class, databaseType);
-        if (allowedSQLStatementHandler.isPresent()) {
-            allowedSQLStatementHandler.get().judgeContinueToExecute(sqlStatement);
+    private static void checkAllowedSQLStatementWhenTransactionFailed(final DatabaseType databaseType,
+                                                                      final TransactionConnectionContext transactionContext, final SQLStatement sqlStatement) throws SQLException {
+        if (transactionContext.isExceptionOccur()
+                && DatabaseTypedSPILoader.getService(DialectDatabaseMetaData.class, databaseType).getTransactionOption().isAllowCommitAndRollbackOnlyWhenTransactionFailed()) {
+            ShardingSpherePreconditions.checkState(sqlStatement instanceof CommitStatement || sqlStatement instanceof RollbackStatement,
+                    () -> new SQLFeatureNotSupportedException("Current transaction is aborted, commands ignored until end of transaction block."));
         }
     }
     
