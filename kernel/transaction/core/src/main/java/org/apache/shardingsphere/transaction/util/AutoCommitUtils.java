@@ -36,7 +36,7 @@ public final class AutoCommitUtils {
      * @param sqlStatement SQL statement
      * @return need to start or not
      */
-    public static boolean needStartTransaction(final SQLStatement sqlStatement) {
+    public static boolean isNeedStartTransaction(final SQLStatement sqlStatement) {
         return sqlStatement instanceof DDLStatement || sqlStatement instanceof DMLStatement && !isSelectWithoutFrom(sqlStatement);
     }
     

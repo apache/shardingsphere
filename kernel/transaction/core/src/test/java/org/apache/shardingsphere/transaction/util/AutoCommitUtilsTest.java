@@ -35,30 +35,30 @@ class AutoCommitUtilsTest {
     private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "FIXTURE");
     
     @Test
-    void assertNeedStartTransactionWithDDL() {
-        assertTrue(AutoCommitUtils.needStartTransaction(new CreateTableStatement(databaseType)));
+    void assertIsNeedStartTransactionWithDDL() {
+        assertTrue(AutoCommitUtils.isNeedStartTransaction(new CreateTableStatement(databaseType)));
     }
     
     @Test
-    void assertNeedStartTransactionWithDML() {
-        assertTrue(AutoCommitUtils.needStartTransaction(new InsertStatement(databaseType)));
+    void assertIsNeedStartTransactionWithDML() {
+        assertTrue(AutoCommitUtils.isNeedStartTransaction(new InsertStatement(databaseType)));
     }
     
     @Test
-    void assertNeedStartTransactionWithSelectWithoutFromClause() {
+    void assertIsNeedStartTransactionWithSelectWithoutFromClause() {
         SelectStatement selectStatement = new SelectStatement(databaseType);
-        assertFalse(AutoCommitUtils.needStartTransaction(selectStatement));
+        assertFalse(AutoCommitUtils.isNeedStartTransaction(selectStatement));
     }
     
     @Test
-    void assertNeedStartTransactionWithSelectWithFromClause() {
+    void assertIsNeedStartTransactionWithSelectWithFromClause() {
         SelectStatement selectStatement = new SelectStatement(databaseType);
         selectStatement.setFrom(mock(SimpleTableSegment.class));
-        assertTrue(AutoCommitUtils.needStartTransaction(selectStatement));
+        assertTrue(AutoCommitUtils.isNeedStartTransaction(selectStatement));
     }
     
     @Test
-    void assertNotNeedStartTransaction() {
-        assertFalse(AutoCommitUtils.needStartTransaction(new EmptyStatement(databaseType)));
+    void assertIsNotNeedStartTransaction() {
+        assertFalse(AutoCommitUtils.isNeedStartTransaction(new EmptyStatement(databaseType)));
     }
 }
