@@ -179,9 +179,7 @@ public final class ProxyBackendHandlerFactory {
     
     private static void checkClusterState(final SQLStatement sqlStatement, final DatabaseType databaseType) {
         ShardingSphereState currentState = ProxyContext.getInstance().getContextManager().getStateContext().getState();
-        if (ShardingSphereState.OK != currentState) {
-            TypedSPILoader.getService(ProxyClusterStateChecker.class, currentState.name()).check(sqlStatement, databaseType);
-        }
+        TypedSPILoader.findService(ProxyClusterStateChecker.class, currentState).ifPresent(optional -> optional.check(sqlStatement, databaseType));
     }
     
     private static void checkSupportedDistSQLStatementInTransaction(final SQLStatement sqlStatement, final ConnectionSession connectionSession) {
