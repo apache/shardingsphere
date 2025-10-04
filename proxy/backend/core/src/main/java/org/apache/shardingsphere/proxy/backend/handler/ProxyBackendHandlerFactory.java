@@ -117,7 +117,7 @@ public final class ProxyBackendHandlerFactory {
         connectionSession.setQueryContext(queryContext);
         SQLStatementContext sqlStatementContext = queryContext.getSqlStatementContext();
         SQLStatement sqlStatement = sqlStatementContext.getSqlStatement();
-        checkAllowedSQLStatementWhenTransactionFailed(databaseType, connectionSession.getConnectionContext().getTransactionContext(), sqlStatement);
+        checkAllowedSQLStatementWhenTransactionFailed(databaseType, sqlStatement, connectionSession.getConnectionContext().getTransactionContext());
         checkSupportedSQLStatement(databaseType, sqlStatement);
         checkClusterState(databaseType, sqlStatement);
         if (sqlStatement instanceof EmptyStatement) {
@@ -156,8 +156,8 @@ public final class ProxyBackendHandlerFactory {
                 .orElseGet(() -> DatabaseBackendHandlerFactory.newInstance(queryContext, connectionSession, preferPreparedStatement));
     }
     
-    private static void checkAllowedSQLStatementWhenTransactionFailed(final DatabaseType databaseType,
-                                                                      final TransactionConnectionContext transactionContext, final SQLStatement sqlStatement) throws SQLException {
+    private static void checkAllowedSQLStatementWhenTransactionFailed(final DatabaseType databaseType, final SQLStatement sqlStatement,
+                                                                      final TransactionConnectionContext transactionContext) throws SQLException {
         if (transactionContext.isExceptionOccur()
                 && DatabaseTypedSPILoader.getService(DialectDatabaseMetaData.class, databaseType).getTransactionOption().isAllowCommitAndRollbackOnlyWhenTransactionFailed()) {
             ShardingSpherePreconditions.checkState(sqlStatement instanceof CommitStatement || sqlStatement instanceof RollbackStatement,
