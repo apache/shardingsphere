@@ -23,6 +23,7 @@ import org.apache.shardingsphere.distsql.statement.type.ral.updatable.UpdatableR
 import org.apache.shardingsphere.distsql.statement.type.rdl.RDLStatement;
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.mode.exception.ShardingSphereStateException;
+import org.apache.shardingsphere.mode.state.ShardingSphereState;
 import org.apache.shardingsphere.proxy.backend.state.ProxyClusterStateChecker;
 import org.apache.shardingsphere.proxy.backend.state.ProxySQLSupportedJudgeEngine;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
@@ -54,7 +55,7 @@ public final class ReadOnlyProxyStateChecker implements ProxyClusterStateChecker
     }
     
     @Override
-    public String getType() {
-        return "READ_ONLY";
+    public ShardingSphereState getType() {
+        return ShardingSphereState.READ_ONLY;
     }
 }
