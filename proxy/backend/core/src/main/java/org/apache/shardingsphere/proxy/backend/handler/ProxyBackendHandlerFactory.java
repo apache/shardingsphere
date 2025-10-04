@@ -158,10 +158,8 @@ public final class ProxyBackendHandlerFactory {
     
     private static void allowExecutingWhenTransactionalError(final DatabaseType databaseType,
                                                              final TransactionConnectionContext transactionContext, final SQLStatement sqlStatement) throws SQLException {
-        if (!transactionContext.isExceptionOccur()) {
-            return;
-        }
-        if (DatabaseTypedSPILoader.getService(DialectDatabaseMetaData.class, databaseType).getTransactionOption().isAllowCommitAndRollbackOnlyWhenTransactionFailed()) {
+        if (transactionContext.isExceptionOccur()
+                && DatabaseTypedSPILoader.getService(DialectDatabaseMetaData.class, databaseType).getTransactionOption().isAllowCommitAndRollbackOnlyWhenTransactionFailed()) {
             ShardingSpherePreconditions.checkState(sqlStatement instanceof CommitStatement || sqlStatement instanceof RollbackStatement,
                     () -> new SQLFeatureNotSupportedException("Current transaction is aborted, commands ignored until end of transaction block."));
         }
