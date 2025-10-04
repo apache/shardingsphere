@@ -95,7 +95,6 @@ public final class ProxyBackendHandlerFactory {
                 ? new DistSQLStatementContext((DistSQLStatement) sqlStatement)
                 : new SQLBindEngine(metaData, connectionSession.getCurrentDatabaseName(), hintValueContext).bind(sqlStatement);
         QueryContext queryContext = new QueryContext(sqlStatementContext, sql, Collections.emptyList(), hintValueContext, connectionSession.getConnectionContext(), metaData);
-        connectionSession.setQueryContext(queryContext);
         return newInstance(databaseType, queryContext, connectionSession, false);
     }
     
@@ -111,6 +110,7 @@ public final class ProxyBackendHandlerFactory {
      */
     public static ProxyBackendHandler newInstance(final DatabaseType databaseType, final QueryContext queryContext,
                                                   final ConnectionSession connectionSession, final boolean preferPreparedStatement) throws SQLException {
+        connectionSession.setQueryContext(queryContext);
         SQLStatementContext sqlStatementContext = queryContext.getSqlStatementContext();
         SQLStatement sqlStatement = sqlStatementContext.getSqlStatement();
         allowExecutingWhenTransactionalError(databaseType, connectionSession, sqlStatement);
