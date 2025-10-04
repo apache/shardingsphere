@@ -75,7 +75,7 @@ public final class OpenGaussDatabaseMetaData implements DialectDatabaseMetaData 
     
     @Override
     public DialectTransactionOption getTransactionOption() {
-        return new DialectTransactionOption(true, false, false, true, false, Connection.TRANSACTION_READ_COMMITTED, true);
+        return new DialectTransactionOption(true, false, false, true, false, Connection.TRANSACTION_READ_COMMITTED, true, true);
     }
     
     @Override
