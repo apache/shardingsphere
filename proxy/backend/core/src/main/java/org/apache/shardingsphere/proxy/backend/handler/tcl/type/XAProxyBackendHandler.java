@@ -46,14 +46,14 @@ import java.util.Collections;
 // TODO Currently XA transaction started with `XA START` doesn't support for database with multiple datasource, a flag should be added for this both in init progress and add datasource from DistSQL.
 public final class XAProxyBackendHandler implements ProxyBackendHandler {
     
-    private final XAStatement xaStatement;
+    private final XAStatement sqlStatement;
     
     private final ConnectionSession connectionSession;
     
     private final DatabaseConnector backendHandler;
     
     public XAProxyBackendHandler(final SQLStatementContext sqlStatementContext, final String sql, final ConnectionSession connectionSession) {
-        xaStatement = (XAStatement) sqlStatementContext.getSqlStatement();
+        sqlStatement = (XAStatement) sqlStatementContext.getSqlStatement();
         this.connectionSession = connectionSession;
         backendHandler = DatabaseConnectorFactory.getInstance().newInstance(new QueryContext(sqlStatementContext, sql, Collections.emptyList(), new HintValueContext(),
                 connectionSession.getConnectionContext(), ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData()), connectionSession.getDatabaseConnectionManager(), false);
@@ -61,20 +61,20 @@ public final class XAProxyBackendHandler implements ProxyBackendHandler {
     
     @Override
     public boolean next() throws SQLException {
-        return xaStatement instanceof XARecoveryStatement && backendHandler.next();
+        return sqlStatement instanceof XARecoveryStatement && backendHandler.next();
     }
     
     @Override
     public QueryResponseRow getRowData() throws SQLException {
-        return xaStatement instanceof XARecoveryStatement ? backendHandler.getRowData() : new QueryResponseRow(Collections.emptyList());
+        return sqlStatement instanceof XARecoveryStatement ? backendHandler.getRowData() : new QueryResponseRow(Collections.emptyList());
     }
     
     @Override
     public ResponseHeader execute() throws SQLException {
-        if (xaStatement instanceof XABeginStatement) {
+        if (sqlStatement instanceof XABeginStatement) {
             return begin();
         }
-        if (xaStatement instanceof XACommitStatement || xaStatement instanceof XARollbackStatement) {
+        if (sqlStatement instanceof XACommitStatement || sqlStatement instanceof XARollbackStatement) {
             return finish();
         }
         return backendHandler.execute();
