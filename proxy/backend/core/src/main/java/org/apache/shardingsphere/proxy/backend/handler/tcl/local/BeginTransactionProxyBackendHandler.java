@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.handler.tcl.type;
+package org.apache.shardingsphere.proxy.backend.handler.tcl.local;
 
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.DialectDatabaseMetaData;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeRegistry;

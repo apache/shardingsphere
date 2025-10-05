@@ -15,50 +15,58 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.handler.tcl.type;
+package org.apache.shardingsphere.proxy.backend.handler.tcl.local;
 
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.DialectDatabaseMetaData;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
-import org.apache.shardingsphere.proxy.backend.connector.jdbc.transaction.ProxyBackendTransactionManager;
 import org.apache.shardingsphere.proxy.backend.handler.ProxyBackendHandler;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.type.tcl.ReleaseSavepointStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.type.tcl.TCLStatement;
-
-import java.sql.SQLException;
-import java.sql.SQLFeatureNotSupportedException;
+import org.apache.shardingsphere.proxy.backend.util.TransactionUtils;
+import org.apache.shardingsphere.sql.parser.statement.core.enums.TransactionAccessType;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.tcl.SetTransactionStatement;
+import org.apache.shardingsphere.transaction.exception.SwitchTypeInTransactionException;
 
 /**
- * Release savepoint proxy backend handler.
+ * Set transaction proxy backend handler.
  */
-public final class ReleaseSavepointProxyBackendHandler implements ProxyBackendHandler {
+public final class SetTransactionProxyBackendHandler implements ProxyBackendHandler {
     
-    private final TCLStatement sqlStatement;
+    private final SetTransactionStatement sqlStatement;
     
     private final ConnectionSession connectionSession;
     
-    private final ProxyBackendTransactionManager transactionManager;
-    
     private final DialectDatabaseMetaData dialectDatabaseMetaData;
     
-    public ReleaseSavepointProxyBackendHandler(final TCLStatement sqlStatement, final ConnectionSession connectionSession) {
+    public SetTransactionProxyBackendHandler(final SetTransactionStatement sqlStatement, final ConnectionSession connectionSession) {
         this.sqlStatement = sqlStatement;
         this.connectionSession = connectionSession;
-        transactionManager = new ProxyBackendTransactionManager(connectionSession.getDatabaseConnectionManager());
         dialectDatabaseMetaData = new DatabaseTypeRegistry(connectionSession.getProtocolType()).getDialectDatabaseMetaData();
     }
     
     @Override
-    public ResponseHeader execute() throws SQLException {
-        ShardingSpherePreconditions.checkState(isValidSavepointStatus(), () -> new SQLFeatureNotSupportedException("RELEASE SAVEPOINT can only be used in transaction blocks"));
-        transactionManager.releaseSavepoint(((ReleaseSavepointStatement) sqlStatement).getSavepointName());
+    public ResponseHeader execute() {
+        ShardingSpherePreconditions.checkState(sqlStatement.containsScope() || !connectionSession.getTransactionStatus().isInTransaction(), SwitchTypeInTransactionException::new);
+        setReadOnly();
+        setTransactionIsolationLevel();
         return new UpdateResponseHeader(sqlStatement);
     }
     
-    private boolean isValidSavepointStatus() {
-        return connectionSession.getTransactionStatus().isInTransaction() || !dialectDatabaseMetaData.getSchemaOption().getDefaultSchema().isPresent();
+    private void setReadOnly() {
+        if (sqlStatement.isDesiredAccessMode(TransactionAccessType.READ_ONLY)) {
+            connectionSession.setReadOnly(true);
+        } else if (sqlStatement.isDesiredAccessMode(TransactionAccessType.READ_WRITE)) {
+            connectionSession.setReadOnly(false);
+        }
+    }
+    
+    private void setTransactionIsolationLevel() {
+        if (!sqlStatement.getIsolationLevel().isPresent()) {
+            return;
+        }
+        connectionSession.setDefaultIsolationLevel(TransactionUtils.getTransactionIsolationLevel(dialectDatabaseMetaData.getTransactionOption().getDefaultIsolationLevel()));
+        connectionSession.setIsolationLevel(sqlStatement.getIsolationLevel().get());
     }
 }

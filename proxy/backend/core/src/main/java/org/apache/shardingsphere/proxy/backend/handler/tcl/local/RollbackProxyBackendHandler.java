@@ -15,47 +15,34 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.handler.tcl.type;
+package org.apache.shardingsphere.proxy.backend.handler.tcl.local;
 
-import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.DialectDatabaseMetaData;
-import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.proxy.backend.connector.jdbc.transaction.ProxyBackendTransactionManager;
 import org.apache.shardingsphere.proxy.backend.handler.ProxyBackendHandler;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.type.tcl.SetAutoCommitStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.tcl.TCLStatement;
 
 import java.sql.SQLException;
 
 /**
- * Set auto commit proxy backend handler.
+ * Rollback proxy backend handler.
  */
-public final class SetAutoCommitProxyBackendHandler implements ProxyBackendHandler {
+public final class RollbackProxyBackendHandler implements ProxyBackendHandler {
     
     private final TCLStatement sqlStatement;
     
-    private final ConnectionSession connectionSession;
-    
     private final ProxyBackendTransactionManager transactionManager;
     
-    private final DialectDatabaseMetaData dialectDatabaseMetaData;
-    
-    public SetAutoCommitProxyBackendHandler(final TCLStatement sqlStatement, final ConnectionSession connectionSession) {
+    public RollbackProxyBackendHandler(final TCLStatement sqlStatement, final ConnectionSession connectionSession) {
         this.sqlStatement = sqlStatement;
-        this.connectionSession = connectionSession;
         transactionManager = new ProxyBackendTransactionManager(connectionSession.getDatabaseConnectionManager());
-        dialectDatabaseMetaData = new DatabaseTypeRegistry(connectionSession.getProtocolType()).getDialectDatabaseMetaData();
     }
     
     @Override
     public ResponseHeader execute() throws SQLException {
-        if (dialectDatabaseMetaData.getTransactionOption().isSupportAutoCommitInNestedTransaction() && connectionSession.getTransactionStatus().isInTransaction()
-                && ((SetAutoCommitStatement) sqlStatement).isAutoCommit()) {
-            transactionManager.commit();
-        }
-        connectionSession.setAutoCommit(((SetAutoCommitStatement) sqlStatement).isAutoCommit());
+        transactionManager.rollback();
         return new UpdateResponseHeader(sqlStatement);
     }
 }
