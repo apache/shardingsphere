@@ -22,7 +22,6 @@ import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.session.connection.transaction.TransactionConnectionContext;
 import org.apache.shardingsphere.infra.spi.type.ordered.OrderedSPILoader;
 import org.apache.shardingsphere.proxy.backend.connector.ProxyDatabaseConnectionManager;
-import org.apache.shardingsphere.proxy.backend.connector.TransactionManager;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.util.TransactionUtils;
 import org.apache.shardingsphere.transaction.ShardingSphereTransactionManagerEngine;
@@ -41,10 +40,10 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 /**
- * Backend transaction manager.
+ * Proxy backend transaction manager.
  */
 @SuppressWarnings({"rawtypes", "unchecked"})
-public final class BackendTransactionManager implements TransactionManager {
+public final class ProxyBackendTransactionManager {
     
     private final ProxyDatabaseConnectionManager connection;
     
@@ -58,7 +57,7 @@ public final class BackendTransactionManager implements TransactionManager {
     
     private final TransactionConnectionContext transactionContext;
     
-    public BackendTransactionManager(final ProxyDatabaseConnectionManager databaseConnectionManager) {
+    public ProxyBackendTransactionManager(final ProxyDatabaseConnectionManager databaseConnectionManager) {
         connection = databaseConnectionManager;
         localTransactionManager = new LocalTransactionManager(databaseConnectionManager);
         TransactionRule transactionRule = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getSingleRule(TransactionRule.class);
@@ -73,7 +72,9 @@ public final class BackendTransactionManager implements TransactionManager {
         transactionHooks = OrderedSPILoader.getServices(TransactionHook.class, ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getRules());
     }
     
-    @Override
+    /**
+     * Begin transaction.
+     */
     public void begin() {
         if (!connection.getConnectionSession().getTransactionStatus().isInTransaction()) {
             connection.getConnectionSession().getTransactionStatus().setInTransaction(true);
@@ -99,7 +100,11 @@ public final class BackendTransactionManager implements TransactionManager {
         }
     }
     
-    @Override
+    /**
+     * Commit transaction.
+     *
+     * @throws SQLException SQL exception
+     */
     public void commit() throws SQLException {
         if (!connection.getConnectionSession().getTransactionStatus().isInTransaction()) {
             return;
@@ -147,7 +152,11 @@ public final class BackendTransactionManager implements TransactionManager {
         connection.getConnectionSession().getConnectionContext().close();
     }
     
-    @Override
+    /**
+     * Rollback transaction.
+     *
+     * @throws SQLException SQL exception
+     */
     public void rollback() throws SQLException {
         if (!connection.getConnectionSession().getTransactionStatus().isInTransaction()) {
             return;
@@ -172,7 +181,12 @@ public final class BackendTransactionManager implements TransactionManager {
         }
     }
     
-    @Override
+    /**
+     * Set savepoint.
+     *
+     * @param savepointName savepoint name
+     * @throws SQLException SQL exception
+     */
     public void setSavepoint(final String savepointName) throws SQLException {
         for (Connection each : connection.getCachedConnections().values()) {
             ConnectionSavepointManager.getInstance().setSavepoint(each, savepointName);
@@ -180,7 +194,12 @@ public final class BackendTransactionManager implements TransactionManager {
         connection.getConnectionPostProcessors().add(target -> ConnectionSavepointManager.getInstance().setSavepoint(target, savepointName));
     }
     
-    @Override
+    /**
+     * Rollback to savepoint.
+     *
+     * @param savepointName savepoint name
+     * @throws SQLException SQL exception
+     */
     public void rollbackTo(final String savepointName) throws SQLException {
         Collection<SQLException> result = new LinkedList<>();
         for (Connection each : connection.getCachedConnections().values()) {
@@ -196,7 +215,12 @@ public final class BackendTransactionManager implements TransactionManager {
         throwSQLExceptionIfNecessary(result);
     }
     
-    @Override
+    /**
+     * Release savepoint.
+     *
+     * @param savepointName savepoint name
+     * @throws SQLException SQL exception
+     */
     public void releaseSavepoint(final String savepointName) throws SQLException {
         Collection<SQLException> result = new LinkedList<>();
         for (Connection each : connection.getCachedConnections().values()) {

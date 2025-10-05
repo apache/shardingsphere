@@ -21,7 +21,7 @@ import org.apache.shardingsphere.database.protocol.mysql.packet.generic.MySQLOKP
 import org.apache.shardingsphere.database.protocol.packet.DatabasePacket;
 import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.apache.shardingsphere.proxy.backend.connector.ProxyDatabaseConnectionManager;
-import org.apache.shardingsphere.proxy.backend.connector.jdbc.transaction.BackendTransactionManager;
+import org.apache.shardingsphere.proxy.backend.connector.jdbc.transaction.ProxyBackendTransactionManager;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.backend.session.ServerPreparedStatementRegistry;
 import org.apache.shardingsphere.proxy.backend.session.transaction.TransactionStatus;
@@ -44,7 +44,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(AutoMockExtension.class)
-@ConstructionMockSettings(BackendTransactionManager.class)
+@ConstructionMockSettings(ProxyBackendTransactionManager.class)
 class MySQLComResetConnectionExecutorTest {
     
     @Test

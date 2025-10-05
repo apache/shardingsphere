@@ -30,7 +30,7 @@ import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.spi.type.ordered.OrderedSPILoader;
 import org.apache.shardingsphere.proxy.backend.connector.jdbc.connection.ConnectionPostProcessor;
 import org.apache.shardingsphere.proxy.backend.connector.jdbc.connection.ConnectionResourceLock;
-import org.apache.shardingsphere.proxy.backend.connector.jdbc.transaction.BackendTransactionManager;
+import org.apache.shardingsphere.proxy.backend.connector.jdbc.transaction.ProxyBackendTransactionManager;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.exception.BackendConnectionException;
 import org.apache.shardingsphere.proxy.backend.handler.ProxyBackendHandler;
@@ -252,7 +252,7 @@ public final class ProxyDatabaseConnectionManager implements DatabaseConnectionM
      */
     public void handleAutoCommit() {
         if (!connectionSession.isAutoCommit() && !connectionSession.getTransactionStatus().isInTransaction()) {
-            BackendTransactionManager transactionManager = new BackendTransactionManager(this);
+            ProxyBackendTransactionManager transactionManager = new ProxyBackendTransactionManager(this);
             transactionManager.begin();
         }
     }

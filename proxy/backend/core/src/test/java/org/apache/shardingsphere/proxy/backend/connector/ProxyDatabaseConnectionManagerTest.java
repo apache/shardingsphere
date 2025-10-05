@@ -36,7 +36,7 @@ import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.proxy.backend.connector.jdbc.connection.ConnectionPostProcessor;
 import org.apache.shardingsphere.proxy.backend.connector.jdbc.datasource.JDBCBackendDataSource;
 import org.apache.shardingsphere.proxy.backend.connector.jdbc.statement.JDBCBackendStatement;
-import org.apache.shardingsphere.proxy.backend.connector.jdbc.transaction.BackendTransactionManager;
+import org.apache.shardingsphere.proxy.backend.connector.jdbc.transaction.ProxyBackendTransactionManager;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.exception.BackendConnectionException;
 import org.apache.shardingsphere.proxy.backend.handler.ProxyBackendHandler;
@@ -315,7 +315,7 @@ class ProxyDatabaseConnectionManagerTest {
     void assertHandleAutoCommit() {
         when(connectionSession.isAutoCommit()).thenReturn(false);
         connectionSession.getTransactionStatus().setInTransaction(false);
-        try (MockedConstruction<BackendTransactionManager> mockedConstruction = mockConstruction(BackendTransactionManager.class)) {
+        try (MockedConstruction<ProxyBackendTransactionManager> mockedConstruction = mockConstruction(ProxyBackendTransactionManager.class)) {
             databaseConnectionManager.handleAutoCommit();
             verify(mockedConstruction.constructed().get(0)).begin();
         }
