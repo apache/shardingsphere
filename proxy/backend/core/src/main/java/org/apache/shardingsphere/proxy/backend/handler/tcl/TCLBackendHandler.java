@@ -18,6 +18,8 @@
 package org.apache.shardingsphere.proxy.backend.handler.tcl;
 
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.DialectDatabaseMetaData;
+import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.schema.DialectSchemaOption;
+import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.transaction.DialectTransactionOption;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.database.exception.core.exception.transaction.InTransactionException;
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
@@ -48,16 +50,20 @@ public final class TCLBackendHandler implements ProxyBackendHandler {
     
     private final ConnectionSession connectionSession;
     
-    private final DialectDatabaseMetaData dialectDatabaseMetaData;
-    
     private final ProxyBackendTransactionManager transactionManager;
+    
+    private final DialectTransactionOption transactionOption;
+    
+    private final DialectSchemaOption schemaOption;
     
     public TCLBackendHandler(final TCLStatement tclStatement, final TransactionOperationType operationType, final ConnectionSession connectionSession) {
         this.tclStatement = tclStatement;
         this.operationType = operationType;
         this.connectionSession = connectionSession;
-        dialectDatabaseMetaData = new DatabaseTypeRegistry(connectionSession.getProtocolType()).getDialectDatabaseMetaData();
         transactionManager = new ProxyBackendTransactionManager(connectionSession.getDatabaseConnectionManager());
+        DialectDatabaseMetaData dialectDatabaseMetaData = new DatabaseTypeRegistry(connectionSession.getProtocolType()).getDialectDatabaseMetaData();
+        transactionOption = dialectDatabaseMetaData.getTransactionOption();
+        schemaOption = dialectDatabaseMetaData.getSchemaOption();
     }
     
     @Override
@@ -65,6 +71,14 @@ public final class TCLBackendHandler implements ProxyBackendHandler {
         switch (operationType) {
             case BEGIN:
                 handleBegin();
+                break;
+            case COMMIT:
+                return handleCommit();
+            case ROLLBACK:
+                handleRollback();
+                break;
+            case SET_AUTOCOMMIT:
+                handleSetAutoCommit();
                 break;
             case SAVEPOINT:
                 handleSavepoint();
@@ -75,16 +89,6 @@ public final class TCLBackendHandler implements ProxyBackendHandler {
             case RELEASE_SAVEPOINT:
                 handleReleaseSavepoint();
                 break;
-            case COMMIT:
-                SQLStatement sqlStatement = getSQLStatementByCommit();
-                transactionManager.commit();
-                return new UpdateResponseHeader(sqlStatement);
-            case ROLLBACK:
-                transactionManager.rollback();
-                break;
-            case SET_AUTOCOMMIT:
-                handleSetAutoCommit();
-                break;
             default:
                 throw new SQLFeatureNotSupportedException(operationType.name());
         }
@@ -93,44 +97,51 @@ public final class TCLBackendHandler implements ProxyBackendHandler {
     
     private void handleBegin() throws SQLException {
         if (connectionSession.getTransactionStatus().isInTransaction()) {
-            if (dialectDatabaseMetaData.getTransactionOption().isSupportAutoCommitInNestedTransaction()) {
+            if (transactionOption.isSupportAutoCommitInNestedTransaction()) {
                 transactionManager.commit();
-            } else if (dialectDatabaseMetaData.getSchemaOption().getDefaultSchema().isPresent()) {
+            } else if (schemaOption.getDefaultSchema().isPresent()) {
                 throw new InTransactionException();
             }
         }
         transactionManager.begin();
     }
     
-    private void handleSavepoint() throws SQLException {
-        ShardingSpherePreconditions.checkState(connectionSession.getTransactionStatus().isInTransaction() || !dialectDatabaseMetaData.getSchemaOption().getDefaultSchema().isPresent(),
-                () -> new SQLFeatureNotSupportedException("SAVEPOINT can only be used in transaction blocks"));
-        transactionManager.setSavepoint(((SavepointStatement) tclStatement).getSavepointName());
-    }
-    
-    private void handleRollbackToSavepoint() throws SQLException {
-        ShardingSpherePreconditions.checkState(connectionSession.getTransactionStatus().isInTransaction() || !dialectDatabaseMetaData.getSchemaOption().getDefaultSchema().isPresent(),
-                () -> new SQLFeatureNotSupportedException("ROLLBACK TO SAVEPOINT can only be used in transaction blocks"));
-        transactionManager.rollbackTo(((RollbackStatement) tclStatement).getSavepointName().get());
-    }
-    
-    private void handleReleaseSavepoint() throws SQLException {
-        ShardingSpherePreconditions.checkState(connectionSession.getTransactionStatus().isInTransaction() || !dialectDatabaseMetaData.getSchemaOption().getDefaultSchema().isPresent(),
-                () -> new SQLFeatureNotSupportedException("RELEASE SAVEPOINT can only be used in transaction blocks"));
-        transactionManager.releaseSavepoint(((ReleaseSavepointStatement) tclStatement).getSavepointName());
-    }
-    
-    private SQLStatement getSQLStatementByCommit() {
-        return connectionSession.getConnectionContext().getTransactionContext().isExceptionOccur() && dialectDatabaseMetaData.getTransactionOption().isReturnRollbackStatementWhenCommitFailed()
+    private UpdateResponseHeader handleCommit() throws SQLException {
+        transactionManager.commit();
+        SQLStatement sqlStatement = connectionSession.getConnectionContext().getTransactionContext().isExceptionOccur() && transactionOption.isReturnRollbackStatementWhenCommitFailed()
                 ? new RollbackStatement(connectionSession.getProtocolType())
                 : tclStatement;
+        return new UpdateResponseHeader(sqlStatement);
+    }
+    
+    private void handleRollback() throws SQLException {
+        transactionManager.rollback();
     }
     
     private void handleSetAutoCommit() throws SQLException {
-        if (dialectDatabaseMetaData.getTransactionOption().isSupportAutoCommitInNestedTransaction() && connectionSession.getTransactionStatus().isInTransaction()
+        if (transactionOption.isSupportAutoCommitInNestedTransaction() && connectionSession.getTransactionStatus().isInTransaction()
                 && ((SetAutoCommitStatement) tclStatement).isAutoCommit()) {
             transactionManager.commit();
         }
         connectionSession.setAutoCommit(((SetAutoCommitStatement) tclStatement).isAutoCommit());
+    }
+    
+    private void handleSavepoint() throws SQLException {
+        ShardingSpherePreconditions.checkState(isValidSavepointStatus(), () -> new SQLFeatureNotSupportedException("SAVEPOINT can only be used in transaction blocks"));
+        transactionManager.setSavepoint(((SavepointStatement) tclStatement).getSavepointName());
+    }
+    
+    private void handleRollbackToSavepoint() throws SQLException {
+        ShardingSpherePreconditions.checkState(isValidSavepointStatus(), () -> new SQLFeatureNotSupportedException("ROLLBACK TO SAVEPOINT can only be used in transaction blocks"));
+        transactionManager.rollbackTo(((RollbackStatement) tclStatement).getSavepointName().orElse(""));
+    }
+    
+    private void handleReleaseSavepoint() throws SQLException {
+        ShardingSpherePreconditions.checkState(isValidSavepointStatus(), () -> new SQLFeatureNotSupportedException("RELEASE SAVEPOINT can only be used in transaction blocks"));
+        transactionManager.releaseSavepoint(((ReleaseSavepointStatement) tclStatement).getSavepointName());
+    }
+    
+    private boolean isValidSavepointStatus() {
+        return connectionSession.getTransactionStatus().isInTransaction() || !schemaOption.getDefaultSchema().isPresent();
     }
 }
