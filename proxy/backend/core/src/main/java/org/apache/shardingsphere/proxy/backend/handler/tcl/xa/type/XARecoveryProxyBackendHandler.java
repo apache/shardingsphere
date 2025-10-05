@@ -15,33 +15,36 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.handler.tcl.xa;
+package org.apache.shardingsphere.proxy.backend.handler.tcl.xa.type;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.proxy.backend.connector.DatabaseConnector;
 import org.apache.shardingsphere.proxy.backend.handler.ProxyBackendHandler;
+import org.apache.shardingsphere.proxy.backend.response.data.QueryResponseRow;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
-import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 
 import java.sql.SQLException;
 
 /**
- * XA commit proxy backend handler.
+ * XA recovery proxy backend handler.
  */
 @RequiredArgsConstructor
-public final class XACommitProxyBackendHandler implements ProxyBackendHandler {
-    
-    private final ConnectionSession connectionSession;
+public final class XARecoveryProxyBackendHandler implements ProxyBackendHandler {
     
     private final DatabaseConnector databaseConnector;
     
     @Override
+    public boolean next() throws SQLException {
+        return databaseConnector.next();
+    }
+    
+    @Override
+    public QueryResponseRow getRowData() throws SQLException {
+        return databaseConnector.getRowData();
+    }
+    
+    @Override
     public ResponseHeader execute() throws SQLException {
-        try {
-            return databaseConnector.execute();
-        } finally {
-            connectionSession.getConnectionContext().clearTransactionContext();
-            connectionSession.getConnectionContext().clearCursorContext();
-        }
+        return databaseConnector.execute();
     }
 }

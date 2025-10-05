@@ -15,11 +15,8 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.handler.tcl.local;
+package org.apache.shardingsphere.proxy.backend.handler.tcl.local.type;
 
-import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.DialectDatabaseMetaData;
-import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeRegistry;
-import org.apache.shardingsphere.database.exception.core.exception.transaction.InTransactionException;
 import org.apache.shardingsphere.proxy.backend.connector.jdbc.transaction.ProxyBackendTransactionManager;
 import org.apache.shardingsphere.proxy.backend.handler.ProxyBackendHandler;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
@@ -30,35 +27,22 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.type.tcl.TC
 import java.sql.SQLException;
 
 /**
- * Begin transaction proxy backend handler.
+ * Rollback proxy backend handler.
  */
-public final class BeginTransactionProxyBackendHandler implements ProxyBackendHandler {
+public final class RollbackProxyBackendHandler implements ProxyBackendHandler {
     
     private final TCLStatement sqlStatement;
     
-    private final ConnectionSession connectionSession;
-    
     private final ProxyBackendTransactionManager transactionManager;
     
-    private final DialectDatabaseMetaData dialectDatabaseMetaData;
-    
-    public BeginTransactionProxyBackendHandler(final TCLStatement sqlStatement, final ConnectionSession connectionSession) {
+    public RollbackProxyBackendHandler(final TCLStatement sqlStatement, final ConnectionSession connectionSession) {
         this.sqlStatement = sqlStatement;
-        this.connectionSession = connectionSession;
         transactionManager = new ProxyBackendTransactionManager(connectionSession.getDatabaseConnectionManager());
-        dialectDatabaseMetaData = new DatabaseTypeRegistry(connectionSession.getProtocolType()).getDialectDatabaseMetaData();
     }
     
     @Override
     public ResponseHeader execute() throws SQLException {
-        if (connectionSession.getTransactionStatus().isInTransaction()) {
-            if (dialectDatabaseMetaData.getTransactionOption().isSupportAutoCommitInNestedTransaction()) {
-                transactionManager.commit();
-            } else if (dialectDatabaseMetaData.getSchemaOption().getDefaultSchema().isPresent()) {
-                throw new InTransactionException();
-            }
-        }
-        transactionManager.begin();
+        transactionManager.rollback();
         return new UpdateResponseHeader(sqlStatement);
     }
 }
