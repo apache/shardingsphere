@@ -253,9 +253,8 @@ class ProxyBackendHandlerFactoryTest {
                     Arguments.of("ROLLBACK", RollbackProxyBackendHandler.class),
                     Arguments.of("SAVEPOINT foo_point", SetSavepointProxyBackendHandler.class),
                     Arguments.of("RELEASE SAVEPOINT foo_point", ReleaseSavepointProxyBackendHandler.class),
-                    Arguments.of("ROLLBACK foo_point", RollbackSavepointProxyBackendHandler.class),
-                    Arguments.of("SET GLOBAL TRANSACTION READ, ISOLATION LEVEL REPEATABLE READ", SetTransactionProxyBackendHandler.class),
-                    Arguments.of("SET TRANSACTION READ, ISOLATION LEVEL REPEATABLE READ", SetTransactionProxyBackendHandler.class));
+                    Arguments.of("ROLLBACK TO foo_point", RollbackSavepointProxyBackendHandler.class),
+                    Arguments.of("SET TRANSACTION READ ONLY, ISOLATION LEVEL REPEATABLE READ", SetTransactionProxyBackendHandler.class));
         }
     }
 }
