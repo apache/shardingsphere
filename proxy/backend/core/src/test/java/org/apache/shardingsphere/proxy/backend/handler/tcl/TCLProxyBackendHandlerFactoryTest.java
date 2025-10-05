@@ -66,7 +66,7 @@ import static org.mockito.Mockito.when;
 @StaticMockSettings({ProxyContext.class, DatabaseConnectorFactory.class})
 class TCLProxyBackendHandlerFactoryTest {
     
-    private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "FIXTURE"); 
+    private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "FIXTURE");
     
     @Test
     void assertTCLBackendHandlerReturnedWhenTCLStatementInstanceOfCommitStatement() {
