@@ -50,24 +50,24 @@ public final class XAProxyBackendHandler implements ProxyBackendHandler {
     
     private final ConnectionSession connectionSession;
     
-    private final DatabaseConnector backendHandler;
+    private final DatabaseConnector databaseConnector;
     
     public XAProxyBackendHandler(final SQLStatementContext sqlStatementContext, final String sql, final ConnectionSession connectionSession) {
         sqlStatement = (XAStatement) sqlStatementContext.getSqlStatement();
         this.connectionSession = connectionSession;
-        backendHandler = DatabaseConnectorFactory.getInstance().newInstance(new QueryContext(sqlStatementContext, sql, Collections.emptyList(), new HintValueContext(), 
+        databaseConnector = DatabaseConnectorFactory.getInstance().newInstance(new QueryContext(sqlStatementContext, sql, Collections.emptyList(), new HintValueContext(), 
                 connectionSession.getConnectionContext(), ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData()), connectionSession.getDatabaseConnectionManager(), 
                 false);
     }
     
     @Override
     public boolean next() throws SQLException {
-        return sqlStatement instanceof XARecoveryStatement && backendHandler.next();
+        return sqlStatement instanceof XARecoveryStatement && databaseConnector.next();
     }
     
     @Override
     public QueryResponseRow getRowData() throws SQLException {
-        return sqlStatement instanceof XARecoveryStatement ? backendHandler.getRowData() : new QueryResponseRow(Collections.emptyList());
+        return sqlStatement instanceof XARecoveryStatement ? databaseConnector.getRowData() : new QueryResponseRow(Collections.emptyList());
     }
     
     @Override
@@ -78,7 +78,7 @@ public final class XAProxyBackendHandler implements ProxyBackendHandler {
         if (sqlStatement instanceof XACommitStatement || sqlStatement instanceof XARollbackStatement) {
             return finish();
         }
-        return backendHandler.execute();
+        return databaseConnector.execute();
     }
     
     /*
@@ -86,7 +86,7 @@ public final class XAProxyBackendHandler implements ProxyBackendHandler {
      */
     private ResponseHeader begin() throws SQLException {
         ShardingSpherePreconditions.checkState(!connectionSession.getTransactionStatus().isInTransaction(), XATransactionNestedBeginException::new);
-        ResponseHeader result = backendHandler.execute();
+        ResponseHeader result = databaseConnector.execute();
         TransactionRule transactionRule = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getSingleRule(TransactionRule.class);
         ShardingSphereTransactionManagerEngine engine = transactionRule.getResource();
         connectionSession.getConnectionContext().getTransactionContext().beginTransaction(transactionRule.getDefaultType().name(), engine.getTransactionManager(transactionRule.getDefaultType()));
@@ -95,7 +95,7 @@ public final class XAProxyBackendHandler implements ProxyBackendHandler {
     
     private ResponseHeader finish() throws SQLException {
         try {
-            return backendHandler.execute();
+            return databaseConnector.execute();
         } finally {
             connectionSession.getConnectionContext().clearTransactionContext();
             connectionSession.getConnectionContext().clearCursorContext();
