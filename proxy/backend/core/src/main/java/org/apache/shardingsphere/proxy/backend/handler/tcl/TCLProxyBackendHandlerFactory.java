@@ -79,7 +79,7 @@ public final class TCLProxyBackendHandlerFactory {
                     : new RollbackProxyBackendHandler(tclStatement, connectionSession);
         }
         if (tclStatement instanceof SetTransactionStatement && !((SetTransactionStatement) tclStatement).isDesiredScope(OperationScope.GLOBAL)) {
-            return new SetTransactionProxyBackendHandler((SetTransactionStatement) tclStatement, connectionSession, tclStatement.getDatabaseType());
+            return new SetTransactionProxyBackendHandler((SetTransactionStatement) tclStatement, connectionSession);
         }
         if (tclStatement instanceof SavepointStatement) {
             return new SetSavepointProxyBackendHandler(tclStatement, connectionSession);

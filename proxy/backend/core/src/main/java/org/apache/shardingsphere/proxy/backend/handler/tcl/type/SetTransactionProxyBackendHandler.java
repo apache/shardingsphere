@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.proxy.backend.handler.tcl.type;
 
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.DialectDatabaseMetaData;
-import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.proxy.backend.handler.ProxyBackendHandler;
@@ -41,7 +40,7 @@ public final class SetTransactionProxyBackendHandler implements ProxyBackendHand
     
     private final DialectDatabaseMetaData dialectDatabaseMetaData;
     
-    public SetTransactionProxyBackendHandler(final SetTransactionStatement sqlStatement, final ConnectionSession connectionSession, final DatabaseType databaseType) {
+    public SetTransactionProxyBackendHandler(final SetTransactionStatement sqlStatement, final ConnectionSession connectionSession) {
         this.sqlStatement = sqlStatement;
         this.connectionSession = connectionSession;
         dialectDatabaseMetaData = new DatabaseTypeRegistry(connectionSession.getProtocolType()).getDialectDatabaseMetaData();
