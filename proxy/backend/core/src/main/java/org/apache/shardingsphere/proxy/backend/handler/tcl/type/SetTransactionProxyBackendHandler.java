@@ -17,8 +17,7 @@
 
 package org.apache.shardingsphere.proxy.backend.handler.tcl.type;
 
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.transaction.DialectTransactionOption;
+import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.DialectDatabaseMetaData;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
@@ -34,14 +33,19 @@ import org.apache.shardingsphere.transaction.exception.SwitchTypeInTransactionEx
 /**
  * Set transaction proxy backend handler.
  */
-@RequiredArgsConstructor
 public final class SetTransactionProxyBackendHandler implements ProxyBackendHandler {
     
     private final SetTransactionStatement sqlStatement;
     
     private final ConnectionSession connectionSession;
     
-    private final DatabaseType databaseType;
+    private final DialectDatabaseMetaData dialectDatabaseMetaData;
+    
+    public SetTransactionProxyBackendHandler(final SetTransactionStatement sqlStatement, final ConnectionSession connectionSession, final DatabaseType databaseType) {
+        this.sqlStatement = sqlStatement;
+        this.connectionSession = connectionSession;
+        dialectDatabaseMetaData = new DatabaseTypeRegistry(connectionSession.getProtocolType()).getDialectDatabaseMetaData();
+    }
     
     @Override
     public ResponseHeader execute() {
@@ -63,8 +67,7 @@ public final class SetTransactionProxyBackendHandler implements ProxyBackendHand
         if (!sqlStatement.getIsolationLevel().isPresent()) {
             return;
         }
-        DialectTransactionOption transactionOption = new DatabaseTypeRegistry(databaseType).getDialectDatabaseMetaData().getTransactionOption();
-        connectionSession.setDefaultIsolationLevel(TransactionUtils.getTransactionIsolationLevel(transactionOption.getDefaultIsolationLevel()));
+        connectionSession.setDefaultIsolationLevel(TransactionUtils.getTransactionIsolationLevel(dialectDatabaseMetaData.getTransactionOption().getDefaultIsolationLevel()));
         connectionSession.setIsolationLevel(sqlStatement.getIsolationLevel().get());
     }
 }
