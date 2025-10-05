@@ -43,7 +43,14 @@ import org.apache.shardingsphere.proxy.backend.handler.data.impl.UnicastDatabase
 import org.apache.shardingsphere.proxy.backend.handler.distsql.DistSQLQueryBackendHandler;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.DistSQLUpdateBackendHandler;
 import org.apache.shardingsphere.proxy.backend.handler.skip.SkipBackendHandler;
-import org.apache.shardingsphere.proxy.backend.handler.tcl.TCLBackendHandler;
+import org.apache.shardingsphere.proxy.backend.handler.tcl.type.BeginTransactionProxyBackendHandler;
+import org.apache.shardingsphere.proxy.backend.handler.tcl.type.CommitProxyBackendHandler;
+import org.apache.shardingsphere.proxy.backend.handler.tcl.type.ReleaseSavepointProxyBackendHandler;
+import org.apache.shardingsphere.proxy.backend.handler.tcl.type.RollbackProxyBackendHandler;
+import org.apache.shardingsphere.proxy.backend.handler.tcl.type.RollbackSavepointProxyBackendHandler;
+import org.apache.shardingsphere.proxy.backend.handler.tcl.type.SetAutoCommitProxyBackendHandler;
+import org.apache.shardingsphere.proxy.backend.handler.tcl.type.SetSavepointProxyBackendHandler;
+import org.apache.shardingsphere.proxy.backend.handler.tcl.type.SetTransactionProxyBackendHandler;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.EmptyStatement;
@@ -146,10 +153,10 @@ class ProxyBackendHandlerFactoryTest {
     
     @ParameterizedTest(name = "{0}")
     @ArgumentsSource(TCLTestCaseArgumentsProvider.class)
-    void assertNewInstanceWithTCL(final String sql) throws SQLException {
+    void assertNewInstanceWithTCL(final String sql, final Class<? extends ProxyBackendHandler> proxyBackendHandlerClass) throws SQLException {
         SQLStatement sqlStatement = ProxySQLComQueryParser.parse(sql, databaseType, connectionSession);
         ProxyBackendHandler actual = ProxyBackendHandlerFactory.newInstance(databaseType, sql, sqlStatement, connectionSession, new HintValueContext());
-        assertThat(actual, isA(TCLBackendHandler.class));
+        assertThat(actual, isA(proxyBackendHandlerClass));
     }
     
     @Test
@@ -231,17 +238,23 @@ class ProxyBackendHandlerFactoryTest {
         assertThat(actual, isA(DistSQLQueryBackendHandler.class));
     }
     
-    private static class TCLTestCaseArgumentsProvider implements ArgumentsProvider {
+    private static final class TCLTestCaseArgumentsProvider implements ArgumentsProvider {
         
         @Override
         public Stream<? extends Arguments> provideArguments(final ParameterDeclarations parameters, final ExtensionContext context) {
             return Stream.of(
-                    Arguments.of("BEGIN"),
-                    Arguments.of("START TRANSACTION"),
-                    Arguments.of("SET AUTOCOMMIT=0"),
-                    Arguments.of("SET @@SESSION.AUTOCOMMIT = OFF"),
-                    Arguments.of("SET AUTOCOMMIT=1"),
-                    Arguments.of("SET @@SESSION.AUTOCOMMIT = ON"));
+                    Arguments.of("BEGIN", BeginTransactionProxyBackendHandler.class),
+                    Arguments.of("START TRANSACTION", BeginTransactionProxyBackendHandler.class),
+                    Arguments.of("SET AUTOCOMMIT=0", SetAutoCommitProxyBackendHandler.class),
+                    Arguments.of("SET @@SESSION.AUTOCOMMIT = OFF", SetAutoCommitProxyBackendHandler.class),
+                    Arguments.of("SET AUTOCOMMIT=1", SetAutoCommitProxyBackendHandler.class),
+                    Arguments.of("SET @@SESSION.AUTOCOMMIT = ON", SetAutoCommitProxyBackendHandler.class),
+                    Arguments.of("COMMIT", CommitProxyBackendHandler.class),
+                    Arguments.of("ROLLBACK", RollbackProxyBackendHandler.class),
+                    Arguments.of("SAVEPOINT foo_point", SetSavepointProxyBackendHandler.class),
+                    Arguments.of("RELEASE SAVEPOINT foo_point", ReleaseSavepointProxyBackendHandler.class),
+                    Arguments.of("ROLLBACK TO foo_point", RollbackSavepointProxyBackendHandler.class),
+                    Arguments.of("SET TRANSACTION READ ONLY, ISOLATION LEVEL REPEATABLE READ", SetTransactionProxyBackendHandler.class));
         }
     }
 }

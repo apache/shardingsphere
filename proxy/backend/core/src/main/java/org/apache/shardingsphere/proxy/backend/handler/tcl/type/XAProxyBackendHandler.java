@@ -15,9 +15,8 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.handler.tcl;
+package org.apache.shardingsphere.proxy.backend.handler.tcl.type;
 
-import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.hint.HintValueContext;
@@ -42,44 +41,44 @@ import java.sql.SQLException;
 import java.util.Collections;
 
 /**
- * XA TCL handler.
+ * XA proxy backend handler.
  */
 // TODO Currently XA transaction started with `XA START` doesn't support for database with multiple datasource, a flag should be added for this both in init progress and add datasource from DistSQL.
-@RequiredArgsConstructor
-public final class XATCLHandler implements ProxyBackendHandler {
+public final class XAProxyBackendHandler implements ProxyBackendHandler {
     
-    private final XAStatement xaStatement;
+    private final XAStatement sqlStatement;
     
     private final ConnectionSession connectionSession;
     
-    private final DatabaseConnector backendHandler;
+    private final DatabaseConnector databaseConnector;
     
-    public XATCLHandler(final SQLStatementContext sqlStatementContext, final String sql, final ConnectionSession connectionSession) {
-        xaStatement = (XAStatement) sqlStatementContext.getSqlStatement();
+    public XAProxyBackendHandler(final SQLStatementContext sqlStatementContext, final String sql, final ConnectionSession connectionSession) {
+        sqlStatement = (XAStatement) sqlStatementContext.getSqlStatement();
         this.connectionSession = connectionSession;
-        backendHandler = DatabaseConnectorFactory.getInstance().newInstance(new QueryContext(sqlStatementContext, sql, Collections.emptyList(), new HintValueContext(),
-                connectionSession.getConnectionContext(), ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData()), connectionSession.getDatabaseConnectionManager(), false);
+        QueryContext queryContext = new QueryContext(sqlStatementContext, sql,
+                Collections.emptyList(), new HintValueContext(), connectionSession.getConnectionContext(), ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData());
+        databaseConnector = DatabaseConnectorFactory.getInstance().newInstance(queryContext, connectionSession.getDatabaseConnectionManager(), false);
     }
     
     @Override
     public boolean next() throws SQLException {
-        return xaStatement instanceof XARecoveryStatement && backendHandler.next();
+        return sqlStatement instanceof XARecoveryStatement && databaseConnector.next();
     }
     
     @Override
     public QueryResponseRow getRowData() throws SQLException {
-        return xaStatement instanceof XARecoveryStatement ? backendHandler.getRowData() : new QueryResponseRow(Collections.emptyList());
+        return sqlStatement instanceof XARecoveryStatement ? databaseConnector.getRowData() : new QueryResponseRow(Collections.emptyList());
     }
     
     @Override
     public ResponseHeader execute() throws SQLException {
-        if (xaStatement instanceof XABeginStatement) {
+        if (sqlStatement instanceof XABeginStatement) {
             return begin();
         }
-        if (xaStatement instanceof XACommitStatement || xaStatement instanceof XARollbackStatement) {
+        if (sqlStatement instanceof XACommitStatement || sqlStatement instanceof XARollbackStatement) {
             return finish();
         }
-        return backendHandler.execute();
+        return databaseConnector.execute();
     }
     
     /*
@@ -87,7 +86,7 @@ public final class XATCLHandler implements ProxyBackendHandler {
      */
     private ResponseHeader begin() throws SQLException {
         ShardingSpherePreconditions.checkState(!connectionSession.getTransactionStatus().isInTransaction(), XATransactionNestedBeginException::new);
-        ResponseHeader result = backendHandler.execute();
+        ResponseHeader result = databaseConnector.execute();
         TransactionRule transactionRule = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getSingleRule(TransactionRule.class);
         ShardingSphereTransactionManagerEngine engine = transactionRule.getResource();
         connectionSession.getConnectionContext().getTransactionContext().beginTransaction(transactionRule.getDefaultType().name(), engine.getTransactionManager(transactionRule.getDefaultType()));
@@ -96,7 +95,7 @@ public final class XATCLHandler implements ProxyBackendHandler {
     
     private ResponseHeader finish() throws SQLException {
         try {
-            return backendHandler.execute();
+            return databaseConnector.execute();
         } finally {
             connectionSession.getConnectionContext().clearTransactionContext();
             connectionSession.getConnectionContext().clearCursorContext();

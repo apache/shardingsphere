@@ -25,6 +25,15 @@ import org.apache.shardingsphere.infra.session.query.QueryContext;
 import org.apache.shardingsphere.proxy.backend.connector.DatabaseConnectorFactory;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.handler.ProxyBackendHandler;
+import org.apache.shardingsphere.proxy.backend.handler.tcl.type.BeginTransactionProxyBackendHandler;
+import org.apache.shardingsphere.proxy.backend.handler.tcl.type.CommitProxyBackendHandler;
+import org.apache.shardingsphere.proxy.backend.handler.tcl.type.ReleaseSavepointProxyBackendHandler;
+import org.apache.shardingsphere.proxy.backend.handler.tcl.type.RollbackProxyBackendHandler;
+import org.apache.shardingsphere.proxy.backend.handler.tcl.type.RollbackSavepointProxyBackendHandler;
+import org.apache.shardingsphere.proxy.backend.handler.tcl.type.SetAutoCommitProxyBackendHandler;
+import org.apache.shardingsphere.proxy.backend.handler.tcl.type.SetSavepointProxyBackendHandler;
+import org.apache.shardingsphere.proxy.backend.handler.tcl.type.SetTransactionProxyBackendHandler;
+import org.apache.shardingsphere.proxy.backend.handler.tcl.type.XAProxyBackendHandler;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.OperationScope;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.tcl.BeginTransactionStatement;
@@ -36,51 +45,50 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.type.tcl.Se
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.tcl.SetTransactionStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.tcl.TCLStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.tcl.xa.XAStatement;
-import org.apache.shardingsphere.transaction.core.TransactionOperationType;
 
 import java.util.Collections;
 
 /**
- * TCL backend handler factory.
+ * TCL proxy backend handler factory.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class TCLBackendHandlerFactory {
+public final class TCLProxyBackendHandlerFactory {
     
     /**
-     * New instance of backend handler.
+     * New instance of TCL proxy backend handler.
      *
      * @param sqlStatementContext SQL statement context
      * @param sql SQL
      * @param connectionSession connection session
-     * @return backend handler
+     * @return created instance
      */
     public static ProxyBackendHandler newInstance(final SQLStatementContext sqlStatementContext, final String sql, final ConnectionSession connectionSession) {
-        TCLStatement tclStatement = (TCLStatement) sqlStatementContext.getSqlStatement();
-        if (tclStatement instanceof BeginTransactionStatement) {
-            return new TCLBackendHandler(tclStatement, TransactionOperationType.BEGIN, connectionSession);
+        TCLStatement sqlStatement = (TCLStatement) sqlStatementContext.getSqlStatement();
+        if (sqlStatement instanceof BeginTransactionStatement) {
+            return new BeginTransactionProxyBackendHandler(sqlStatement, connectionSession);
         }
-        if (tclStatement instanceof SetAutoCommitStatement) {
-            return new TCLBackendHandler(tclStatement, TransactionOperationType.SET_AUTOCOMMIT, connectionSession);
+        if (sqlStatement instanceof SetAutoCommitStatement) {
+            return new SetAutoCommitProxyBackendHandler(sqlStatement, connectionSession);
         }
-        if (tclStatement instanceof SavepointStatement) {
-            return new TCLBackendHandler(tclStatement, TransactionOperationType.SAVEPOINT, connectionSession);
+        if (sqlStatement instanceof CommitStatement) {
+            return new CommitProxyBackendHandler(sqlStatement, connectionSession);
         }
-        if (tclStatement instanceof ReleaseSavepointStatement) {
-            return new TCLBackendHandler(tclStatement, TransactionOperationType.RELEASE_SAVEPOINT, connectionSession);
+        if (sqlStatement instanceof RollbackStatement) {
+            return ((RollbackStatement) sqlStatement).getSavepointName().isPresent()
+                    ? new RollbackSavepointProxyBackendHandler(sqlStatement, connectionSession)
+                    : new RollbackProxyBackendHandler(sqlStatement, connectionSession);
         }
-        if (tclStatement instanceof CommitStatement) {
-            return new TCLBackendHandler(tclStatement, TransactionOperationType.COMMIT, connectionSession);
+        if (sqlStatement instanceof SavepointStatement) {
+            return new SetSavepointProxyBackendHandler(sqlStatement, connectionSession);
         }
-        if (tclStatement instanceof RollbackStatement) {
-            return ((RollbackStatement) tclStatement).getSavepointName().isPresent()
-                    ? new TCLBackendHandler(tclStatement, TransactionOperationType.ROLLBACK_TO_SAVEPOINT, connectionSession)
-                    : new TCLBackendHandler(tclStatement, TransactionOperationType.ROLLBACK, connectionSession);
+        if (sqlStatement instanceof ReleaseSavepointStatement) {
+            return new ReleaseSavepointProxyBackendHandler(sqlStatement, connectionSession);
         }
-        if (tclStatement instanceof SetTransactionStatement && !((SetTransactionStatement) tclStatement).isDesiredScope(OperationScope.GLOBAL)) {
-            return new SetTransactionHandler((SetTransactionStatement) tclStatement, connectionSession, tclStatement.getDatabaseType());
+        if (sqlStatement instanceof SetTransactionStatement && !((SetTransactionStatement) sqlStatement).isDesiredScope(OperationScope.GLOBAL)) {
+            return new SetTransactionProxyBackendHandler((SetTransactionStatement) sqlStatement, connectionSession);
         }
-        if (tclStatement instanceof XAStatement) {
-            return new XATCLHandler(sqlStatementContext, sql, connectionSession);
+        if (sqlStatement instanceof XAStatement) {
+            return new XAProxyBackendHandler(sqlStatementContext, sql, connectionSession);
         }
         QueryContext queryContext = new QueryContext(sqlStatementContext, sql, Collections.emptyList(), new HintValueContext(), connectionSession.getConnectionContext(),
                 ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData());
