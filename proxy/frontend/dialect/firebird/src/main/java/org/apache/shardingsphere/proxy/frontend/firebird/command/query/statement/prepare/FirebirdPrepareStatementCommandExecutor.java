@@ -79,7 +79,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.Up
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.tcl.BeginTransactionStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.tcl.CommitStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.tcl.RollbackStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.type.tcl.SetSavepointStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.tcl.SavepointStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 
 import java.sql.SQLException;
@@ -184,7 +184,7 @@ public final class FirebirdPrepareStatementCommandExecutor implements CommandExe
         if (statement instanceof RollbackStatement) {
             return FirebirdSQLInfoReturnValue.ROLLBACK;
         }
-        if (statement instanceof SetSavepointStatement) {
+        if (statement instanceof SavepointStatement) {
             return FirebirdSQLInfoReturnValue.SAVEPOINT;
         }
         return null;

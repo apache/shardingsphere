@@ -30,7 +30,7 @@ import org.apache.shardingsphere.sql.parser.engine.oracle.visitor.statement.Orac
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.lcl.LockStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.tcl.CommitStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.tcl.RollbackStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.type.tcl.SetSavepointStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.tcl.SavepointStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.tcl.SetConstraintsStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.tcl.SetTransactionStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
@@ -64,7 +64,7 @@ public final class OracleTCLStatementVisitor extends OracleStatementVisitor impl
     
     @Override
     public ASTNode visitSavepoint(final SavepointContext ctx) {
-        return new SetSavepointStatement(getDatabaseType(), ((IdentifierValue) visit(ctx.savepointName())).getValue());
+        return new SavepointStatement(getDatabaseType(), ((IdentifierValue) visit(ctx.savepointName())).getValue());
     }
     
     @Override

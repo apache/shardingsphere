@@ -35,7 +35,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.enums.TransactionIsol
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.tcl.BeginTransactionStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.tcl.CommitStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.tcl.RollbackStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.type.tcl.SetSavepointStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.tcl.SavepointStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.tcl.SetAutoCommitStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.tcl.SetTransactionStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.tcl.xa.XABeginStatement;
@@ -102,7 +102,7 @@ public final class SQLServerTCLStatementVisitor extends SQLServerStatementVisito
     
     @Override
     public ASTNode visitSavepoint(final SavepointContext ctx) {
-        return new SetSavepointStatement(getDatabaseType(), null);
+        return new SavepointStatement(getDatabaseType(), null);
     }
     
     @Override

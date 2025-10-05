@@ -27,7 +27,7 @@ import org.apache.shardingsphere.sql.parser.autogen.FirebirdStatementParser.SetT
 import org.apache.shardingsphere.sql.parser.engine.firebird.visitor.statement.FirebirdStatementVisitor;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.tcl.CommitStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.tcl.RollbackStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.type.tcl.SetSavepointStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.tcl.SavepointStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.tcl.SetTransactionStatement;
 
 /**
@@ -56,6 +56,6 @@ public final class FirebirdTCLStatementVisitor extends FirebirdStatementVisitor 
     
     @Override
     public ASTNode visitSavepoint(final SavepointContext ctx) {
-        return new SetSavepointStatement(getDatabaseType(), null);
+        return new SavepointStatement(getDatabaseType(), null);
     }
 }

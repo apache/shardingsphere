@@ -44,7 +44,13 @@ import org.apache.shardingsphere.proxy.backend.handler.distsql.DistSQLQueryBacke
 import org.apache.shardingsphere.proxy.backend.handler.distsql.DistSQLUpdateBackendHandler;
 import org.apache.shardingsphere.proxy.backend.handler.skip.SkipBackendHandler;
 import org.apache.shardingsphere.proxy.backend.handler.tcl.type.BeginTransactionProxyBackendHandler;
+import org.apache.shardingsphere.proxy.backend.handler.tcl.type.CommitProxyBackendHandler;
+import org.apache.shardingsphere.proxy.backend.handler.tcl.type.ReleaseSavepointProxyBackendHandler;
+import org.apache.shardingsphere.proxy.backend.handler.tcl.type.RollbackProxyBackendHandler;
+import org.apache.shardingsphere.proxy.backend.handler.tcl.type.RollbackSavepointProxyBackendHandler;
 import org.apache.shardingsphere.proxy.backend.handler.tcl.type.SetAutoCommitProxyBackendHandler;
+import org.apache.shardingsphere.proxy.backend.handler.tcl.type.SetSavepointProxyBackendHandler;
+import org.apache.shardingsphere.proxy.backend.handler.tcl.type.SetTransactionProxyBackendHandler;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.EmptyStatement;
@@ -242,7 +248,14 @@ class ProxyBackendHandlerFactoryTest {
                     Arguments.of("SET AUTOCOMMIT=0", SetAutoCommitProxyBackendHandler.class),
                     Arguments.of("SET @@SESSION.AUTOCOMMIT = OFF", SetAutoCommitProxyBackendHandler.class),
                     Arguments.of("SET AUTOCOMMIT=1", SetAutoCommitProxyBackendHandler.class),
-                    Arguments.of("SET @@SESSION.AUTOCOMMIT = ON", SetAutoCommitProxyBackendHandler.class));
+                    Arguments.of("SET @@SESSION.AUTOCOMMIT = ON", SetAutoCommitProxyBackendHandler.class),
+                    Arguments.of("COMMIT", CommitProxyBackendHandler.class),
+                    Arguments.of("ROLLBACK", RollbackProxyBackendHandler.class),
+                    Arguments.of("SAVEPOINT foo_point", SetSavepointProxyBackendHandler.class),
+                    Arguments.of("RELEASE SAVEPOINT foo_point", ReleaseSavepointProxyBackendHandler.class),
+                    Arguments.of("ROLLBACK foo_point", RollbackSavepointProxyBackendHandler.class),
+                    Arguments.of("SET GLOBAL TRANSACTION READ, ISOLATION LEVEL REPEATABLE READ", SetTransactionProxyBackendHandler.class),
+                    Arguments.of("SET TRANSACTION READ, ISOLATION LEVEL REPEATABLE READ", SetTransactionProxyBackendHandler.class));
         }
     }
 }
