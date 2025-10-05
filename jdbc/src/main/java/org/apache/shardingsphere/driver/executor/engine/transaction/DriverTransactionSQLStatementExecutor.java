@@ -21,7 +21,7 @@ import org.apache.shardingsphere.driver.jdbc.core.connection.ShardingSphereConne
 import org.apache.shardingsphere.driver.jdbc.core.savepoint.ShardingSphereSavepoint;
 import org.apache.shardingsphere.infra.session.query.QueryContext;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.tcl.ReleaseSavepointStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.type.tcl.SavepointStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.tcl.SetSavepointStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.tcl.TCLStatement;
 import org.apache.shardingsphere.transaction.core.TransactionOperationType;
 
@@ -51,7 +51,7 @@ public final class DriverTransactionSQLStatementExecutor {
             return false;
         }
         TCLStatement tclStatement = (TCLStatement) queryContext.getSqlStatementContext().getSqlStatement();
-        if (tclStatement instanceof SavepointStatement) {
+        if (tclStatement instanceof SetSavepointStatement) {
             operationType = TransactionOperationType.SAVEPOINT;
             return true;
         }
@@ -72,7 +72,7 @@ public final class DriverTransactionSQLStatementExecutor {
      */
     public boolean execute(final TCLStatement tclStatement) throws SQLException {
         if (TransactionOperationType.SAVEPOINT == operationType) {
-            connection.setSavepoint(((SavepointStatement) tclStatement).getSavepointName());
+            connection.setSavepoint(((SetSavepointStatement) tclStatement).getSavepointName());
             return true;
         }
         if (TransactionOperationType.RELEASE_SAVEPOINT == operationType) {

@@ -22,7 +22,7 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.tcl.BeginTransactionStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.tcl.CommitStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.tcl.RollbackStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.type.tcl.SavepointStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.tcl.SetSavepointStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.tcl.SetAutoCommitStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.tcl.SetConstraintsStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.tcl.SetTransactionStatement;
@@ -68,8 +68,8 @@ public final class TCLStatementAssert {
             CommitStatementAssert.assertIs(assertContext, (CommitStatement) actual, (CommitStatementTestCase) expected);
         } else if (actual instanceof RollbackStatement) {
             RollbackStatementAssert.assertIs(assertContext, (RollbackStatement) actual, (RollbackStatementTestCase) expected);
-        } else if (actual instanceof SavepointStatement) {
-            SavepointStatementAssert.assertIs(assertContext, (SavepointStatement) actual, (SavepointStatementTestCase) expected);
+        } else if (actual instanceof SetSavepointStatement) {
+            SavepointStatementAssert.assertIs(assertContext, (SetSavepointStatement) actual, (SavepointStatementTestCase) expected);
         } else if (actual instanceof SetConstraintsStatement) {
             SetConstraintsStatementAssert.assertIs(assertContext, (SetConstraintsStatement) actual, (SetConstraintsStatementTestCase) expected);
         }

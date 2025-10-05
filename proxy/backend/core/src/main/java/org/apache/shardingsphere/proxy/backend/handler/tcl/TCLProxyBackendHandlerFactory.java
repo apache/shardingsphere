@@ -40,7 +40,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.type.tcl.Be
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.tcl.CommitStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.tcl.ReleaseSavepointStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.tcl.RollbackStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.type.tcl.SavepointStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.tcl.SetSavepointStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.tcl.SetAutoCommitStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.tcl.SetTransactionStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.tcl.TCLStatement;
@@ -78,7 +78,7 @@ public final class TCLProxyBackendHandlerFactory {
                     ? new RollbackSavepointProxyBackendHandler(sqlStatement, connectionSession)
                     : new RollbackProxyBackendHandler(sqlStatement, connectionSession);
         }
-        if (sqlStatement instanceof SavepointStatement) {
+        if (sqlStatement instanceof SetSavepointStatement) {
             return new SetSavepointProxyBackendHandler(sqlStatement, connectionSession);
         }
         if (sqlStatement instanceof ReleaseSavepointStatement) {

@@ -21,14 +21,14 @@ import lombok.Getter;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 
 /**
- * Savepoint statement.
+ * Set savepoint statement.
  */
 @Getter
-public final class SavepointStatement extends TCLStatement {
+public final class SetSavepointStatement extends TCLStatement {
     
     private final String savepointName;
     
-    public SavepointStatement(final DatabaseType databaseType, final String savepointName) {
+    public SetSavepointStatement(final DatabaseType databaseType, final String savepointName) {
         super(databaseType);
         this.savepointName = savepointName;
     }

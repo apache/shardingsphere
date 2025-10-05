@@ -25,7 +25,7 @@ import org.apache.shardingsphere.proxy.backend.handler.ProxyBackendHandler;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.type.tcl.SavepointStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.tcl.SetSavepointStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.tcl.TCLStatement;
 
 import java.sql.SQLException;
@@ -54,7 +54,7 @@ public final class SetSavepointProxyBackendHandler implements ProxyBackendHandle
     @Override
     public ResponseHeader execute() throws SQLException {
         ShardingSpherePreconditions.checkState(isValidSavepointStatus(), () -> new SQLFeatureNotSupportedException("SAVEPOINT can only be used in transaction blocks"));
-        transactionManager.setSavepoint(((SavepointStatement) sqlStatement).getSavepointName());
+        transactionManager.setSavepoint(((SetSavepointStatement) sqlStatement).getSavepointName());
         return new UpdateResponseHeader(sqlStatement);
     }
     

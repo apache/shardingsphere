@@ -19,7 +19,7 @@ package org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.type.tcl.SavepointStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.tcl.SetSavepointStatement;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.tcl.SavepointStatementTestCase;
 
@@ -39,7 +39,7 @@ public final class SavepointStatementAssert {
      * @param actual actual savepoint statement
      * @param expected expected savepoint statement test case
      */
-    public static void assertIs(final SQLCaseAssertContext assertContext, final SavepointStatement actual, final SavepointStatementTestCase expected) {
+    public static void assertIs(final SQLCaseAssertContext assertContext, final SetSavepointStatement actual, final SavepointStatementTestCase expected) {
         assertThat(assertContext.getText("Savepoint name assertion error."), actual.getSavepointName(), is(expected.getSavepointName()));
     }
 }

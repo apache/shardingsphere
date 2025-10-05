@@ -59,7 +59,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.type.tcl.Be
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.tcl.CommitStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.tcl.ReleaseSavepointStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.tcl.RollbackStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.type.tcl.SavepointStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.tcl.SetSavepointStatement;
 import org.apache.shardingsphere.sql.parser.statement.postgresql.dal.PostgreSQLResetParameterStatement;
 import org.apache.shardingsphere.sql.parser.statement.postgresql.dal.PostgreSQLVacuumStatement;
 import org.apache.shardingsphere.sql.parser.statement.postgresql.ddl.PostgreSQLDeclareStatement;
@@ -289,7 +289,7 @@ class PostgreSQLCommandTest {
     
     @Test
     void assertValueOfSavepointStatement() {
-        assertThat(PostgreSQLCommand.valueOf(SavepointStatement.class).orElse(null), is(PostgreSQLCommand.SAVEPOINT));
+        assertThat(PostgreSQLCommand.valueOf(SetSavepointStatement.class).orElse(null), is(PostgreSQLCommand.SAVEPOINT));
         assertThat(PostgreSQLCommand.SAVEPOINT.getTag(), is("SAVEPOINT"));
     }
     
