@@ -77,7 +77,7 @@ public final class TCLBackendHandlerFactory {
                     : new TCLBackendHandler(tclStatement, TransactionOperationType.ROLLBACK, connectionSession);
         }
         if (tclStatement instanceof SetTransactionStatement && !((SetTransactionStatement) tclStatement).isDesiredScope(OperationScope.GLOBAL)) {
-            return new SetTransactionHandler((SetTransactionStatement) tclStatement, connectionSession, sqlStatementContext.getSqlStatement().getDatabaseType());
+            return new SetTransactionHandler((SetTransactionStatement) tclStatement, connectionSession, tclStatement.getDatabaseType());
         }
         if (tclStatement instanceof XAStatement) {
             return new XATCLHandler(sqlStatementContext, sql, connectionSession);
