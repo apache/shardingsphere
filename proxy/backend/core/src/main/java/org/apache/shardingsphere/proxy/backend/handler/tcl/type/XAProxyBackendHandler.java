@@ -55,8 +55,9 @@ public final class XAProxyBackendHandler implements ProxyBackendHandler {
     public XAProxyBackendHandler(final SQLStatementContext sqlStatementContext, final String sql, final ConnectionSession connectionSession) {
         sqlStatement = (XAStatement) sqlStatementContext.getSqlStatement();
         this.connectionSession = connectionSession;
-        backendHandler = DatabaseConnectorFactory.getInstance().newInstance(new QueryContext(sqlStatementContext, sql, Collections.emptyList(), new HintValueContext(),
-                connectionSession.getConnectionContext(), ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData()), connectionSession.getDatabaseConnectionManager(), false);
+        backendHandler = DatabaseConnectorFactory.getInstance().newInstance(new QueryContext(sqlStatementContext, sql, Collections.emptyList(), new HintValueContext(), 
+                connectionSession.getConnectionContext(), ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData()), connectionSession.getDatabaseConnectionManager(), 
+                false);
     }
     
     @Override
