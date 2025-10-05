@@ -15,26 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.handler.tcl.local;
+package org.apache.shardingsphere.proxy.backend.handler.tcl.local.type;
 
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.DialectDatabaseMetaData;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeRegistry;
-import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
+import org.apache.shardingsphere.database.exception.core.exception.transaction.InTransactionException;
 import org.apache.shardingsphere.proxy.backend.connector.jdbc.transaction.ProxyBackendTransactionManager;
 import org.apache.shardingsphere.proxy.backend.handler.ProxyBackendHandler;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.type.tcl.SavepointStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.tcl.TCLStatement;
 
 import java.sql.SQLException;
-import java.sql.SQLFeatureNotSupportedException;
 
 /**
- * Set savepoint proxy backend handler.
+ * Begin transaction proxy backend handler.
  */
-public final class SetSavepointProxyBackendHandler implements ProxyBackendHandler {
+public final class BeginTransactionProxyBackendHandler implements ProxyBackendHandler {
     
     private final TCLStatement sqlStatement;
     
@@ -44,7 +42,7 @@ public final class SetSavepointProxyBackendHandler implements ProxyBackendHandle
     
     private final DialectDatabaseMetaData dialectDatabaseMetaData;
     
-    public SetSavepointProxyBackendHandler(final TCLStatement sqlStatement, final ConnectionSession connectionSession) {
+    public BeginTransactionProxyBackendHandler(final TCLStatement sqlStatement, final ConnectionSession connectionSession) {
         this.sqlStatement = sqlStatement;
         this.connectionSession = connectionSession;
         transactionManager = new ProxyBackendTransactionManager(connectionSession.getDatabaseConnectionManager());
@@ -53,12 +51,14 @@ public final class SetSavepointProxyBackendHandler implements ProxyBackendHandle
     
     @Override
     public ResponseHeader execute() throws SQLException {
-        ShardingSpherePreconditions.checkState(isValidSavepointStatus(), () -> new SQLFeatureNotSupportedException("SAVEPOINT can only be used in transaction blocks"));
-        transactionManager.setSavepoint(((SavepointStatement) sqlStatement).getSavepointName());
+        if (connectionSession.getTransactionStatus().isInTransaction()) {
+            if (dialectDatabaseMetaData.getTransactionOption().isSupportAutoCommitInNestedTransaction()) {
+                transactionManager.commit();
+            } else if (dialectDatabaseMetaData.getSchemaOption().getDefaultSchema().isPresent()) {
+                throw new InTransactionException();
+            }
+        }
+        transactionManager.begin();
         return new UpdateResponseHeader(sqlStatement);
-    }
-    
-    private boolean isValidSavepointStatus() {
-        return connectionSession.getTransactionStatus().isInTransaction() || !dialectDatabaseMetaData.getSchemaOption().getDefaultSchema().isPresent();
     }
 }

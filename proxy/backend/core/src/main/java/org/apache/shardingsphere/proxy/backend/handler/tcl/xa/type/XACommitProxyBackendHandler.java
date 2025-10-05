@@ -15,34 +15,33 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.handler.tcl.local;
+package org.apache.shardingsphere.proxy.backend.handler.tcl.xa.type;
 
-import org.apache.shardingsphere.proxy.backend.connector.jdbc.transaction.ProxyBackendTransactionManager;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.proxy.backend.connector.DatabaseConnector;
 import org.apache.shardingsphere.proxy.backend.handler.ProxyBackendHandler;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
-import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.type.tcl.TCLStatement;
 
 import java.sql.SQLException;
 
 /**
- * Rollback proxy backend handler.
+ * XA commit proxy backend handler.
  */
-public final class RollbackProxyBackendHandler implements ProxyBackendHandler {
+@RequiredArgsConstructor
+public final class XACommitProxyBackendHandler implements ProxyBackendHandler {
     
-    private final TCLStatement sqlStatement;
+    private final ConnectionSession connectionSession;
     
-    private final ProxyBackendTransactionManager transactionManager;
-    
-    public RollbackProxyBackendHandler(final TCLStatement sqlStatement, final ConnectionSession connectionSession) {
-        this.sqlStatement = sqlStatement;
-        transactionManager = new ProxyBackendTransactionManager(connectionSession.getDatabaseConnectionManager());
-    }
+    private final DatabaseConnector databaseConnector;
     
     @Override
     public ResponseHeader execute() throws SQLException {
-        transactionManager.rollback();
-        return new UpdateResponseHeader(sqlStatement);
+        try {
+            return databaseConnector.execute();
+        } finally {
+            connectionSession.getConnectionContext().clearTransactionContext();
+            connectionSession.getConnectionContext().clearCursorContext();
+        }
     }
 }
