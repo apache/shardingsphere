@@ -57,7 +57,7 @@ public abstract class AbstractStatementAdapter extends WrapperAdapter implements
     private boolean closed;
     
     protected final void handleAutoCommitBeforeExecution(final SQLStatement sqlStatement, final ShardingSphereConnection connection) throws SQLException {
-        if (AutoCommitUtils.needOpenTransaction(sqlStatement)) {
+        if (AutoCommitUtils.isNeedStartTransaction(sqlStatement)) {
             connection.beginTransactionIfNeededWhenAutoCommitFalse();
         }
     }

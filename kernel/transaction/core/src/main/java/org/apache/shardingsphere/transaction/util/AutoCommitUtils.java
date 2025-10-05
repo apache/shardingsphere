@@ -33,13 +33,14 @@ public final class AutoCommitUtils {
     /**
      * Judge whether to start a new transaction.
      *
-     * @param sqlStatement sqlStatement.
-     * @return need to open a new transaction.
+     * @param sqlStatement SQL statement
+     * @return need to start or not
      */
-    public static boolean needOpenTransaction(final SQLStatement sqlStatement) {
-        if (sqlStatement instanceof SelectStatement && !((SelectStatement) sqlStatement).getFrom().isPresent()) {
-            return false;
-        }
-        return sqlStatement instanceof DDLStatement || sqlStatement instanceof DMLStatement;
+    public static boolean isNeedStartTransaction(final SQLStatement sqlStatement) {
+        return sqlStatement instanceof DDLStatement || sqlStatement instanceof DMLStatement && !isSelectWithoutFrom(sqlStatement);
+    }
+    
+    private static boolean isSelectWithoutFrom(final SQLStatement sqlStatement) {
+        return sqlStatement instanceof SelectStatement && !((SelectStatement) sqlStatement).getFrom().isPresent();
     }
 }
