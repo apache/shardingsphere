@@ -60,7 +60,7 @@ public final class TCLProxyBackendHandlerFactory {
      * @param sqlStatementContext SQL statement context
      * @param sql SQL
      * @param connectionSession connection session
-     * @return created instancd
+     * @return created instance
      */
     public static ProxyBackendHandler newInstance(final SQLStatementContext sqlStatementContext, final String sql, final ConnectionSession connectionSession) {
         TCLStatement sqlStatement = (TCLStatement) sqlStatementContext.getSqlStatement();
