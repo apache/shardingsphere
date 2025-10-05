@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.handler.tcl;
+package org.apache.shardingsphere.proxy.backend.handler.tcl.type;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.transaction.DialectTransactionOption;
@@ -32,10 +32,10 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.type.tcl.Se
 import org.apache.shardingsphere.transaction.exception.SwitchTypeInTransactionException;
 
 /**
- * Transaction set handler.
+ * Set transaction proxy backend handler.
  */
 @RequiredArgsConstructor
-public final class SetTransactionHandler implements ProxyBackendHandler {
+public final class SetTransactionProxyBackendHandler implements ProxyBackendHandler {
     
     private final SetTransactionStatement sqlStatement;
     

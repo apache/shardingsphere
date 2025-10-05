@@ -34,13 +34,14 @@ import org.apache.shardingsphere.proxy.backend.connector.ProxyDatabaseConnection
 import org.apache.shardingsphere.proxy.backend.connector.jdbc.transaction.ProxyBackendTransactionManager;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.handler.ProxyBackendHandler;
+import org.apache.shardingsphere.proxy.backend.handler.tcl.type.CommitProxyBackendHandler;
+import org.apache.shardingsphere.proxy.backend.handler.tcl.type.RollbackProxyBackendHandler;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.tcl.CommitStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.tcl.RollbackStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.tcl.TCLStatement;
 import org.apache.shardingsphere.test.infra.framework.mock.AutoMockExtension;
 import org.apache.shardingsphere.test.infra.framework.mock.StaticMockSettings;
-import org.apache.shardingsphere.transaction.core.TransactionOperationType;
 import org.apache.shardingsphere.transaction.rule.TransactionRule;
 import org.hamcrest.Matcher;
 import org.junit.jupiter.api.Test;
@@ -63,7 +64,7 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(AutoMockExtension.class)
 @StaticMockSettings({ProxyContext.class, DatabaseConnectorFactory.class})
-class TCLBackendHandlerFactoryTest {
+class TCLProxyBackendHandlerFactoryTest {
     
     private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "FIXTURE");
     
@@ -77,10 +78,9 @@ class TCLBackendHandlerFactoryTest {
         when(databaseConnectionManager.getConnectionSession().getConnectionContext().getTransactionContext()).thenReturn(new TransactionConnectionContext());
         ContextManager contextManager = mockContextManager();
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
-        ProxyBackendHandler proxyBackendHandler = TCLBackendHandlerFactory.newInstance(new CommonSQLStatementContext(new CommitStatement(databaseType)), null, connectionSession);
-        assertThat(proxyBackendHandler, isA(TCLBackendHandler.class));
-        TCLBackendHandler backendHandler = (TCLBackendHandler) proxyBackendHandler;
-        assertFieldOfInstance(backendHandler, "operationType", is(TransactionOperationType.COMMIT));
+        ProxyBackendHandler proxyBackendHandler = TCLProxyBackendHandlerFactory.newInstance(new CommonSQLStatementContext(new CommitStatement(databaseType)), null, connectionSession);
+        assertThat(proxyBackendHandler, isA(CommitProxyBackendHandler.class));
+        CommitProxyBackendHandler backendHandler = (CommitProxyBackendHandler) proxyBackendHandler;
         assertFieldOfInstance(getTransactionManager(backendHandler), "connection", is(databaseConnectionManager));
     }
     
@@ -95,10 +95,9 @@ class TCLBackendHandlerFactoryTest {
         when(connectionSession.getDatabaseConnectionManager().getConnectionSession().getConnectionContext().getTransactionContext()).thenReturn(new TransactionConnectionContext());
         ContextManager contextManager = mockContextManager();
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
-        ProxyBackendHandler proxyBackendHandler = TCLBackendHandlerFactory.newInstance(new CommonSQLStatementContext(new RollbackStatement(databaseType)), null, connectionSession);
-        assertThat(proxyBackendHandler, isA(TCLBackendHandler.class));
-        TCLBackendHandler backendHandler = (TCLBackendHandler) proxyBackendHandler;
-        assertFieldOfInstance(backendHandler, "operationType", is(TransactionOperationType.ROLLBACK));
+        ProxyBackendHandler proxyBackendHandler = TCLProxyBackendHandlerFactory.newInstance(new CommonSQLStatementContext(new RollbackStatement(databaseType)), null, connectionSession);
+        assertThat(proxyBackendHandler, isA(RollbackProxyBackendHandler.class));
+        RollbackProxyBackendHandler backendHandler = (RollbackProxyBackendHandler) proxyBackendHandler;
         assertFieldOfInstance(getTransactionManager(backendHandler), "connection", is(databaseConnectionManager));
     }
     
@@ -121,7 +120,7 @@ class TCLBackendHandlerFactoryTest {
         ConnectionSession connectionSession = mock(ConnectionSession.class);
         ConnectionContext connectionContext = mockConnectionContext();
         when(connectionSession.getConnectionContext()).thenReturn(connectionContext);
-        assertThat(TCLBackendHandlerFactory.newInstance(sqlStatementContext, null, connectionSession), isA(DatabaseConnector.class));
+        assertThat(TCLProxyBackendHandlerFactory.newInstance(sqlStatementContext, null, connectionSession), isA(DatabaseConnector.class));
     }
     
     private ConnectionContext mockConnectionContext() {
@@ -138,7 +137,7 @@ class TCLBackendHandlerFactoryTest {
     }
     
     @SneakyThrows(ReflectiveOperationException.class)
-    private ProxyBackendTransactionManager getTransactionManager(final TCLBackendHandler backendHandler) {
-        return (ProxyBackendTransactionManager) Plugins.getMemberAccessor().get(TCLBackendHandler.class.getDeclaredField("transactionManager"), backendHandler);
+    private ProxyBackendTransactionManager getTransactionManager(final ProxyBackendHandler backendHandler) {
+        return (ProxyBackendTransactionManager) Plugins.getMemberAccessor().get(backendHandler.getClass().getDeclaredField("transactionManager"), backendHandler);
     }
 }

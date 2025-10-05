@@ -47,7 +47,7 @@ import org.apache.shardingsphere.proxy.backend.handler.data.DatabaseBackendHandl
 import org.apache.shardingsphere.proxy.backend.handler.database.DatabaseOperateBackendHandlerFactory;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.DistSQLBackendHandlerFactory;
 import org.apache.shardingsphere.proxy.backend.handler.skip.SkipBackendHandler;
-import org.apache.shardingsphere.proxy.backend.handler.tcl.TCLBackendHandlerFactory;
+import org.apache.shardingsphere.proxy.backend.handler.tcl.TCLProxyBackendHandlerFactory;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.backend.state.DialectProxyStateSupportedSQLProvider;
 import org.apache.shardingsphere.proxy.backend.state.ProxyClusterStateChecker;
@@ -130,7 +130,7 @@ public final class ProxyBackendHandlerFactory {
         String sql = queryContext.getSql();
         handleAutoCommit(sqlStatement, connectionSession);
         if (sqlStatement instanceof TCLStatement) {
-            return TCLBackendHandlerFactory.newInstance(sqlStatementContext, sql, connectionSession);
+            return TCLProxyBackendHandlerFactory.newInstance(sqlStatementContext, sql, connectionSession);
         }
         Optional<ProxyBackendHandler> backendHandler = DatabaseAdminBackendHandlerFactory.newInstance(databaseType, sqlStatementContext, connectionSession, sql, queryContext.getParameters());
         if (backendHandler.isPresent()) {

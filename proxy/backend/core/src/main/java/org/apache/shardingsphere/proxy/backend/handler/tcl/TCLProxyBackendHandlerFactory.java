@@ -25,6 +25,15 @@ import org.apache.shardingsphere.infra.session.query.QueryContext;
 import org.apache.shardingsphere.proxy.backend.connector.DatabaseConnectorFactory;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.handler.ProxyBackendHandler;
+import org.apache.shardingsphere.proxy.backend.handler.tcl.type.BeginTransactionProxyBackendHandler;
+import org.apache.shardingsphere.proxy.backend.handler.tcl.type.CommitProxyBackendHandler;
+import org.apache.shardingsphere.proxy.backend.handler.tcl.type.ReleaseSavepointProxyBackendHandler;
+import org.apache.shardingsphere.proxy.backend.handler.tcl.type.RollbackProxyBackendHandler;
+import org.apache.shardingsphere.proxy.backend.handler.tcl.type.RollbackSavepointProxyBackendHandler;
+import org.apache.shardingsphere.proxy.backend.handler.tcl.type.SetAutoCommitProxyBackendHandler;
+import org.apache.shardingsphere.proxy.backend.handler.tcl.type.SetSavepointProxyBackendHandler;
+import org.apache.shardingsphere.proxy.backend.handler.tcl.type.SetTransactionProxyBackendHandler;
+import org.apache.shardingsphere.proxy.backend.handler.tcl.type.XATCLProxyBackendHandler;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.OperationScope;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.tcl.BeginTransactionStatement;
@@ -36,51 +45,50 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.type.tcl.Se
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.tcl.SetTransactionStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.tcl.TCLStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.tcl.xa.XAStatement;
-import org.apache.shardingsphere.transaction.core.TransactionOperationType;
 
 import java.util.Collections;
 
 /**
- * TCL backend handler factory.
+ * TCL proxy backend handler factory.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class TCLBackendHandlerFactory {
+public final class TCLProxyBackendHandlerFactory {
     
     /**
-     * New instance of backend handler.
+     * New instance of TCL proxy backend handler.
      *
      * @param sqlStatementContext SQL statement context
      * @param sql SQL
      * @param connectionSession connection session
-     * @return backend handler
+     * @return created instancd
      */
     public static ProxyBackendHandler newInstance(final SQLStatementContext sqlStatementContext, final String sql, final ConnectionSession connectionSession) {
         TCLStatement tclStatement = (TCLStatement) sqlStatementContext.getSqlStatement();
         if (tclStatement instanceof BeginTransactionStatement) {
-            return new TCLBackendHandler(tclStatement, TransactionOperationType.BEGIN, connectionSession);
+            return new BeginTransactionProxyBackendHandler(tclStatement, connectionSession);
         }
         if (tclStatement instanceof SetAutoCommitStatement) {
-            return new TCLBackendHandler(tclStatement, TransactionOperationType.SET_AUTOCOMMIT, connectionSession);
-        }
-        if (tclStatement instanceof SavepointStatement) {
-            return new TCLBackendHandler(tclStatement, TransactionOperationType.SAVEPOINT, connectionSession);
-        }
-        if (tclStatement instanceof ReleaseSavepointStatement) {
-            return new TCLBackendHandler(tclStatement, TransactionOperationType.RELEASE_SAVEPOINT, connectionSession);
+            return new SetAutoCommitProxyBackendHandler(tclStatement, connectionSession);
         }
         if (tclStatement instanceof CommitStatement) {
-            return new TCLBackendHandler(tclStatement, TransactionOperationType.COMMIT, connectionSession);
+            return new CommitProxyBackendHandler(tclStatement, connectionSession);
         }
         if (tclStatement instanceof RollbackStatement) {
             return ((RollbackStatement) tclStatement).getSavepointName().isPresent()
-                    ? new TCLBackendHandler(tclStatement, TransactionOperationType.ROLLBACK_TO_SAVEPOINT, connectionSession)
-                    : new TCLBackendHandler(tclStatement, TransactionOperationType.ROLLBACK, connectionSession);
+                    ? new RollbackSavepointProxyBackendHandler(tclStatement, connectionSession)
+                    : new RollbackProxyBackendHandler(tclStatement, connectionSession);
         }
         if (tclStatement instanceof SetTransactionStatement && !((SetTransactionStatement) tclStatement).isDesiredScope(OperationScope.GLOBAL)) {
-            return new SetTransactionHandler((SetTransactionStatement) tclStatement, connectionSession, tclStatement.getDatabaseType());
+            return new SetTransactionProxyBackendHandler((SetTransactionStatement) tclStatement, connectionSession, tclStatement.getDatabaseType());
+        }
+        if (tclStatement instanceof SavepointStatement) {
+            return new SetSavepointProxyBackendHandler(tclStatement, connectionSession);
+        }
+        if (tclStatement instanceof ReleaseSavepointStatement) {
+            return new ReleaseSavepointProxyBackendHandler(tclStatement, connectionSession);
         }
         if (tclStatement instanceof XAStatement) {
-            return new XATCLHandler(sqlStatementContext, sql, connectionSession);
+            return new XATCLProxyBackendHandler(sqlStatementContext, sql, connectionSession);
         }
         QueryContext queryContext = new QueryContext(sqlStatementContext, sql, Collections.emptyList(), new HintValueContext(), connectionSession.getConnectionContext(),
                 ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData());

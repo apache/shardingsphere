@@ -15,9 +15,8 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.handler.tcl;
+package org.apache.shardingsphere.proxy.backend.handler.tcl.type;
 
-import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.hint.HintValueContext;
@@ -42,11 +41,10 @@ import java.sql.SQLException;
 import java.util.Collections;
 
 /**
- * XA TCL handler.
+ * XA TCL proxy backend handler.
  */
 // TODO Currently XA transaction started with `XA START` doesn't support for database with multiple datasource, a flag should be added for this both in init progress and add datasource from DistSQL.
-@RequiredArgsConstructor
-public final class XATCLHandler implements ProxyBackendHandler {
+public final class XATCLProxyBackendHandler implements ProxyBackendHandler {
     
     private final XAStatement xaStatement;
     
@@ -54,7 +52,7 @@ public final class XATCLHandler implements ProxyBackendHandler {
     
     private final DatabaseConnector backendHandler;
     
-    public XATCLHandler(final SQLStatementContext sqlStatementContext, final String sql, final ConnectionSession connectionSession) {
+    public XATCLProxyBackendHandler(final SQLStatementContext sqlStatementContext, final String sql, final ConnectionSession connectionSession) {
         xaStatement = (XAStatement) sqlStatementContext.getSqlStatement();
         this.connectionSession = connectionSession;
         backendHandler = DatabaseConnectorFactory.getInstance().newInstance(new QueryContext(sqlStatementContext, sql, Collections.emptyList(), new HintValueContext(),
