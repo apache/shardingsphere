@@ -63,31 +63,31 @@ public final class TCLProxyBackendHandlerFactory {
      * @return created instancd
      */
     public static ProxyBackendHandler newInstance(final SQLStatementContext sqlStatementContext, final String sql, final ConnectionSession connectionSession) {
-        TCLStatement tclStatement = (TCLStatement) sqlStatementContext.getSqlStatement();
-        if (tclStatement instanceof BeginTransactionStatement) {
-            return new BeginTransactionProxyBackendHandler(tclStatement, connectionSession);
+        TCLStatement sqlStatement = (TCLStatement) sqlStatementContext.getSqlStatement();
+        if (sqlStatement instanceof BeginTransactionStatement) {
+            return new BeginTransactionProxyBackendHandler(sqlStatement, connectionSession);
         }
-        if (tclStatement instanceof SetAutoCommitStatement) {
-            return new SetAutoCommitProxyBackendHandler(tclStatement, connectionSession);
+        if (sqlStatement instanceof SetAutoCommitStatement) {
+            return new SetAutoCommitProxyBackendHandler(sqlStatement, connectionSession);
         }
-        if (tclStatement instanceof CommitStatement) {
-            return new CommitProxyBackendHandler(tclStatement, connectionSession);
+        if (sqlStatement instanceof CommitStatement) {
+            return new CommitProxyBackendHandler(sqlStatement, connectionSession);
         }
-        if (tclStatement instanceof RollbackStatement) {
-            return ((RollbackStatement) tclStatement).getSavepointName().isPresent()
-                    ? new RollbackSavepointProxyBackendHandler(tclStatement, connectionSession)
-                    : new RollbackProxyBackendHandler(tclStatement, connectionSession);
+        if (sqlStatement instanceof RollbackStatement) {
+            return ((RollbackStatement) sqlStatement).getSavepointName().isPresent()
+                    ? new RollbackSavepointProxyBackendHandler(sqlStatement, connectionSession)
+                    : new RollbackProxyBackendHandler(sqlStatement, connectionSession);
         }
-        if (tclStatement instanceof SetTransactionStatement && !((SetTransactionStatement) tclStatement).isDesiredScope(OperationScope.GLOBAL)) {
-            return new SetTransactionProxyBackendHandler((SetTransactionStatement) tclStatement, connectionSession);
+        if (sqlStatement instanceof SavepointStatement) {
+            return new SetSavepointProxyBackendHandler(sqlStatement, connectionSession);
         }
-        if (tclStatement instanceof SavepointStatement) {
-            return new SetSavepointProxyBackendHandler(tclStatement, connectionSession);
+        if (sqlStatement instanceof ReleaseSavepointStatement) {
+            return new ReleaseSavepointProxyBackendHandler(sqlStatement, connectionSession);
         }
-        if (tclStatement instanceof ReleaseSavepointStatement) {
-            return new ReleaseSavepointProxyBackendHandler(tclStatement, connectionSession);
+        if (sqlStatement instanceof SetTransactionStatement && !((SetTransactionStatement) sqlStatement).isDesiredScope(OperationScope.GLOBAL)) {
+            return new SetTransactionProxyBackendHandler((SetTransactionStatement) sqlStatement, connectionSession);
         }
-        if (tclStatement instanceof XAStatement) {
+        if (sqlStatement instanceof XAStatement) {
             return new XATCLProxyBackendHandler(sqlStatementContext, sql, connectionSession);
         }
         QueryContext queryContext = new QueryContext(sqlStatementContext, sql, Collections.emptyList(), new HintValueContext(), connectionSession.getConnectionContext(),
