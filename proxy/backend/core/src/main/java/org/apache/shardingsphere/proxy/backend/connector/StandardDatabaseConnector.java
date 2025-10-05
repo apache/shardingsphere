@@ -60,7 +60,7 @@ import org.apache.shardingsphere.mode.metadata.refresher.pushdown.PushDownMetaDa
 import org.apache.shardingsphere.proxy.backend.connector.jdbc.executor.callback.ProxyJDBCExecutorCallback;
 import org.apache.shardingsphere.proxy.backend.connector.jdbc.executor.callback.ProxyJDBCExecutorCallbackFactory;
 import org.apache.shardingsphere.proxy.backend.connector.jdbc.statement.JDBCBackendStatement;
-import org.apache.shardingsphere.proxy.backend.connector.jdbc.transaction.BackendTransactionManager;
+import org.apache.shardingsphere.proxy.backend.connector.jdbc.transaction.ProxyBackendTransactionManager;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.response.data.QueryResponseCell;
 import org.apache.shardingsphere.proxy.backend.response.data.QueryResponseRow;
@@ -219,7 +219,7 @@ public final class StandardDatabaseConnector implements DatabaseConnector {
     
     private <T> T doExecuteWithImplicitCommitTransaction(final ImplicitTransactionCallback<T> callback) throws SQLException {
         T result;
-        BackendTransactionManager transactionManager = new BackendTransactionManager(databaseConnectionManager);
+        ProxyBackendTransactionManager transactionManager = new ProxyBackendTransactionManager(databaseConnectionManager);
         try {
             transactionManager.begin();
             result = callback.execute();
@@ -243,7 +243,7 @@ public final class StandardDatabaseConnector implements DatabaseConnector {
                 ? proxySQLExecutor.execute(executionContext)
                 : advancedExecutors.iterator().next().execute(executionContext, contextManager, database, this);
         if (isNeedImplicitCommit(queryContext.getSqlStatementContext().getSqlStatement())) {
-            BackendTransactionManager transactionManager = new BackendTransactionManager(databaseConnectionManager);
+            ProxyBackendTransactionManager transactionManager = new ProxyBackendTransactionManager(databaseConnectionManager);
             transactionManager.commit();
         }
         pushDownMetaDataRefreshEngine.refresh(queryContext.getSqlStatementContext(), executionContext.getRouteContext().getRouteUnits());

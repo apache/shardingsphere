@@ -31,7 +31,7 @@ import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.proxy.backend.connector.DatabaseConnector;
 import org.apache.shardingsphere.proxy.backend.connector.DatabaseConnectorFactory;
 import org.apache.shardingsphere.proxy.backend.connector.ProxyDatabaseConnectionManager;
-import org.apache.shardingsphere.proxy.backend.connector.jdbc.transaction.BackendTransactionManager;
+import org.apache.shardingsphere.proxy.backend.connector.jdbc.transaction.ProxyBackendTransactionManager;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.handler.ProxyBackendHandler;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
@@ -81,7 +81,7 @@ class TCLBackendHandlerFactoryTest {
         assertThat(proxyBackendHandler, isA(TCLBackendHandler.class));
         TCLBackendHandler backendHandler = (TCLBackendHandler) proxyBackendHandler;
         assertFieldOfInstance(backendHandler, "operationType", is(TransactionOperationType.COMMIT));
-        assertFieldOfInstance(getBackendTransactionManager(backendHandler), "connection", is(databaseConnectionManager));
+        assertFieldOfInstance(getTransactionManager(backendHandler), "connection", is(databaseConnectionManager));
     }
     
     @Test
@@ -99,7 +99,7 @@ class TCLBackendHandlerFactoryTest {
         assertThat(proxyBackendHandler, isA(TCLBackendHandler.class));
         TCLBackendHandler backendHandler = (TCLBackendHandler) proxyBackendHandler;
         assertFieldOfInstance(backendHandler, "operationType", is(TransactionOperationType.ROLLBACK));
-        assertFieldOfInstance(getBackendTransactionManager(backendHandler), "connection", is(databaseConnectionManager));
+        assertFieldOfInstance(getTransactionManager(backendHandler), "connection", is(databaseConnectionManager));
     }
     
     private ContextManager mockContextManager() {
@@ -138,7 +138,7 @@ class TCLBackendHandlerFactoryTest {
     }
     
     @SneakyThrows(ReflectiveOperationException.class)
-    private BackendTransactionManager getBackendTransactionManager(final TCLBackendHandler backendHandler) {
-        return (BackendTransactionManager) Plugins.getMemberAccessor().get(TCLBackendHandler.class.getDeclaredField("backendTransactionManager"), backendHandler);
+    private ProxyBackendTransactionManager getTransactionManager(final TCLBackendHandler backendHandler) {
+        return (ProxyBackendTransactionManager) Plugins.getMemberAccessor().get(TCLBackendHandler.class.getDeclaredField("transactionManager"), backendHandler);
     }
 }
