@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.handler.tcl.type;
+package org.apache.shardingsphere.proxy.backend.handler.tcl.xa;
 
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
