@@ -33,7 +33,7 @@ import org.apache.shardingsphere.proxy.backend.handler.tcl.type.RollbackSavepoin
 import org.apache.shardingsphere.proxy.backend.handler.tcl.type.SetAutoCommitProxyBackendHandler;
 import org.apache.shardingsphere.proxy.backend.handler.tcl.type.SetSavepointProxyBackendHandler;
 import org.apache.shardingsphere.proxy.backend.handler.tcl.type.SetTransactionProxyBackendHandler;
-import org.apache.shardingsphere.proxy.backend.handler.tcl.type.XATCLProxyBackendHandler;
+import org.apache.shardingsphere.proxy.backend.handler.tcl.type.XAProxyBackendHandler;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.OperationScope;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.tcl.BeginTransactionStatement;
@@ -88,7 +88,7 @@ public final class TCLProxyBackendHandlerFactory {
             return new SetTransactionProxyBackendHandler((SetTransactionStatement) sqlStatement, connectionSession);
         }
         if (sqlStatement instanceof XAStatement) {
-            return new XATCLProxyBackendHandler(sqlStatementContext, sql, connectionSession);
+            return new XAProxyBackendHandler(sqlStatementContext, sql, connectionSession);
         }
         QueryContext queryContext = new QueryContext(sqlStatementContext, sql, Collections.emptyList(), new HintValueContext(), connectionSession.getConnectionContext(),
                 ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData());

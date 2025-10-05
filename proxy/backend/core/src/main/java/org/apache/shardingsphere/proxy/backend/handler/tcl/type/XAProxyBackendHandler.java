@@ -41,10 +41,10 @@ import java.sql.SQLException;
 import java.util.Collections;
 
 /**
- * XA TCL proxy backend handler.
+ * XA proxy backend handler.
  */
 // TODO Currently XA transaction started with `XA START` doesn't support for database with multiple datasource, a flag should be added for this both in init progress and add datasource from DistSQL.
-public final class XATCLProxyBackendHandler implements ProxyBackendHandler {
+public final class XAProxyBackendHandler implements ProxyBackendHandler {
     
     private final XAStatement xaStatement;
     
@@ -52,7 +52,7 @@ public final class XATCLProxyBackendHandler implements ProxyBackendHandler {
     
     private final DatabaseConnector backendHandler;
     
-    public XATCLProxyBackendHandler(final SQLStatementContext sqlStatementContext, final String sql, final ConnectionSession connectionSession) {
+    public XAProxyBackendHandler(final SQLStatementContext sqlStatementContext, final String sql, final ConnectionSession connectionSession) {
         xaStatement = (XAStatement) sqlStatementContext.getSqlStatement();
         this.connectionSession = connectionSession;
         backendHandler = DatabaseConnectorFactory.getInstance().newInstance(new QueryContext(sqlStatementContext, sql, Collections.emptyList(), new HintValueContext(),
