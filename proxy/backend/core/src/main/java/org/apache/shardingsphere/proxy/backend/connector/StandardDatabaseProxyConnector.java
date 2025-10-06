@@ -97,9 +97,9 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 /**
- * Standard database connector.
+ * Standard database proxy connector.
  */
-public final class StandardDatabaseConnector implements DatabaseConnector {
+public final class StandardDatabaseProxyConnector implements DatabaseProxyConnector {
     
     private final String driverType;
     
@@ -127,7 +127,7 @@ public final class StandardDatabaseConnector implements DatabaseConnector {
     
     private MergedResult mergedResult;
     
-    public StandardDatabaseConnector(final String driverType, final QueryContext queryContext, final ProxyDatabaseConnectionManager databaseConnectionManager) {
+    public StandardDatabaseProxyConnector(final String driverType, final QueryContext queryContext, final ProxyDatabaseConnectionManager databaseConnectionManager) {
         this.driverType = driverType;
         this.queryContext = queryContext;
         this.databaseConnectionManager = databaseConnectionManager;

@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.proxy.backend.handler.tcl.xa.type;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.proxy.backend.connector.DatabaseConnector;
+import org.apache.shardingsphere.proxy.backend.connector.DatabaseProxyConnector;
 import org.apache.shardingsphere.proxy.backend.handler.ProxyBackendHandler;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
@@ -33,7 +33,7 @@ public final class XARollbackProxyBackendHandler implements ProxyBackendHandler 
     
     private final ConnectionSession connectionSession;
     
-    private final DatabaseConnector databaseConnector;
+    private final DatabaseProxyConnector databaseConnector;
     
     @Override
     public ResponseHeader execute() throws SQLException {

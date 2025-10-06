@@ -23,7 +23,7 @@ import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.exception.generic.UnsupportedSQLOperationException;
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.JDBCDriverType;
 import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
-import org.apache.shardingsphere.proxy.backend.connector.DatabaseConnector;
+import org.apache.shardingsphere.proxy.backend.connector.DatabaseProxyConnector;
 import org.apache.shardingsphere.proxy.backend.connector.jdbc.executor.callback.impl.ProxyPreparedStatementExecutorCallback;
 import org.apache.shardingsphere.proxy.backend.connector.jdbc.executor.callback.impl.ProxyStatementExecutorCallback;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
@@ -49,7 +49,7 @@ public final class ProxyJDBCExecutorCallbackFactory {
      * @throws UnsupportedSQLOperationException unsupported SQL operation exception
      */
     public static ProxyJDBCExecutorCallback newInstance(final String type, final DatabaseType protocolType, final ResourceMetaData resourceMetaData, final SQLStatement sqlStatement,
-                                                        final DatabaseConnector databaseConnector, final boolean isReturnGeneratedKeys, final boolean isExceptionThrown,
+                                                        final DatabaseProxyConnector databaseConnector, final boolean isReturnGeneratedKeys, final boolean isExceptionThrown,
                                                         final boolean isFetchMetaData) {
         if (JDBCDriverType.STATEMENT.equals(type)) {
             return new ProxyStatementExecutorCallback(protocolType, resourceMetaData, sqlStatement, databaseConnector, isReturnGeneratedKeys, isExceptionThrown, isFetchMetaData);

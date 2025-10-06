@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.proxy.backend.handler.tcl.xa.type;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.proxy.backend.connector.DatabaseConnector;
+import org.apache.shardingsphere.proxy.backend.connector.DatabaseProxyConnector;
 import org.apache.shardingsphere.proxy.backend.handler.ProxyBackendHandler;
 import org.apache.shardingsphere.proxy.backend.response.data.QueryResponseRow;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
@@ -31,7 +31,7 @@ import java.sql.SQLException;
 @RequiredArgsConstructor
 public final class XARecoveryProxyBackendHandler implements ProxyBackendHandler {
     
-    private final DatabaseConnector databaseConnector;
+    private final DatabaseProxyConnector databaseConnector;
     
     @Override
     public boolean next() throws SQLException {
