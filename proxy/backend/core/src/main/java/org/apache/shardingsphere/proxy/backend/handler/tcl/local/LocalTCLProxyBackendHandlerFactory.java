@@ -19,11 +19,8 @@ package org.apache.shardingsphere.proxy.backend.handler.tcl.local;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.apache.shardingsphere.infra.session.query.QueryContext;
 import org.apache.shardingsphere.proxy.backend.connector.DatabaseConnectorFactory;
-import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.handler.ProxyBackendHandler;
 import org.apache.shardingsphere.proxy.backend.handler.tcl.local.type.BeginTransactionProxyBackendHandler;
 import org.apache.shardingsphere.proxy.backend.handler.tcl.local.type.CommitProxyBackendHandler;
@@ -44,8 +41,6 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.type.tcl.Se
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.tcl.SetTransactionStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.tcl.TCLStatement;
 
-import java.util.Collections;
-
 /**
  * Local TCL proxy backend handler factory.
  */
@@ -55,13 +50,12 @@ public final class LocalTCLProxyBackendHandlerFactory {
     /**
      * New instance of local TCL proxy backend handler.
      *
-     * @param sqlStatementContext SQL statement context
-     * @param sql SQL
+     * @param queryContext query context
      * @param connectionSession connection session
      * @return created instance
      */
-    public static ProxyBackendHandler newInstance(final SQLStatementContext sqlStatementContext, final String sql, final ConnectionSession connectionSession) {
-        TCLStatement sqlStatement = (TCLStatement) sqlStatementContext.getSqlStatement();
+    public static ProxyBackendHandler newInstance(final QueryContext queryContext, final ConnectionSession connectionSession) {
+        TCLStatement sqlStatement = (TCLStatement) queryContext.getSqlStatementContext().getSqlStatement();
         if (sqlStatement instanceof BeginTransactionStatement) {
             return new BeginTransactionProxyBackendHandler(sqlStatement, connectionSession);
         }
@@ -85,8 +79,6 @@ public final class LocalTCLProxyBackendHandlerFactory {
         if (sqlStatement instanceof SetTransactionStatement && !((SetTransactionStatement) sqlStatement).isDesiredScope(OperationScope.GLOBAL)) {
             return new SetTransactionProxyBackendHandler((SetTransactionStatement) sqlStatement, connectionSession);
         }
-        QueryContext queryContext = new QueryContext(sqlStatementContext, sql,
-                Collections.emptyList(), new HintValueContext(), connectionSession.getConnectionContext(), ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData());
         return DatabaseConnectorFactory.getInstance().newInstance(queryContext, connectionSession.getDatabaseConnectionManager(), false);
     }
 }

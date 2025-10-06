@@ -20,10 +20,8 @@ package org.apache.shardingsphere.proxy.backend.handler.tcl;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.binder.context.statement.type.CommonSQLStatementContext;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
-import org.apache.shardingsphere.infra.session.connection.ConnectionContext;
 import org.apache.shardingsphere.infra.session.connection.transaction.TransactionConnectionContext;
 import org.apache.shardingsphere.infra.session.query.QueryContext;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
@@ -50,7 +48,6 @@ import org.mockito.Answers;
 import org.mockito.internal.configuration.plugins.Plugins;
 
 import java.util.Collections;
-import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -78,7 +75,9 @@ class TCLProxyBackendHandlerFactoryTest {
         when(databaseConnectionManager.getConnectionSession().getConnectionContext().getTransactionContext()).thenReturn(new TransactionConnectionContext());
         ContextManager contextManager = mockContextManager();
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
-        ProxyBackendHandler proxyBackendHandler = TCLProxyBackendHandlerFactory.newInstance(new CommonSQLStatementContext(new CommitStatement(databaseType)), null, connectionSession);
+        QueryContext queryContext = mock(QueryContext.class, RETURNS_DEEP_STUBS);
+        when(queryContext.getSqlStatementContext().getSqlStatement()).thenReturn(new CommitStatement(databaseType));
+        ProxyBackendHandler proxyBackendHandler = TCLProxyBackendHandlerFactory.newInstance(queryContext, connectionSession);
         assertThat(proxyBackendHandler, isA(CommitProxyBackendHandler.class));
         CommitProxyBackendHandler backendHandler = (CommitProxyBackendHandler) proxyBackendHandler;
         assertFieldOfInstance(getTransactionManager(backendHandler), "connection", is(databaseConnectionManager));
@@ -95,7 +94,9 @@ class TCLProxyBackendHandlerFactoryTest {
         when(connectionSession.getDatabaseConnectionManager().getConnectionSession().getConnectionContext().getTransactionContext()).thenReturn(new TransactionConnectionContext());
         ContextManager contextManager = mockContextManager();
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
-        ProxyBackendHandler proxyBackendHandler = TCLProxyBackendHandlerFactory.newInstance(new CommonSQLStatementContext(new RollbackStatement(databaseType)), null, connectionSession);
+        QueryContext queryContext = mock(QueryContext.class, RETURNS_DEEP_STUBS);
+        when(queryContext.getSqlStatementContext().getSqlStatement()).thenReturn(new RollbackStatement(databaseType));
+        ProxyBackendHandler proxyBackendHandler = TCLProxyBackendHandlerFactory.newInstance(queryContext, connectionSession);
         assertThat(proxyBackendHandler, isA(RollbackProxyBackendHandler.class));
         RollbackProxyBackendHandler backendHandler = (RollbackProxyBackendHandler) proxyBackendHandler;
         assertFieldOfInstance(getTransactionManager(backendHandler), "connection", is(databaseConnectionManager));
@@ -117,16 +118,9 @@ class TCLProxyBackendHandlerFactoryTest {
         when(mockFactory.newInstance(any(QueryContext.class), nullable(ProxyDatabaseConnectionManager.class), anyBoolean())).thenReturn(mock(DatabaseConnector.class));
         ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class);
         when(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData()).thenReturn(metaData);
-        ConnectionSession connectionSession = mock(ConnectionSession.class);
-        ConnectionContext connectionContext = mockConnectionContext();
-        when(connectionSession.getConnectionContext()).thenReturn(connectionContext);
-        assertThat(TCLProxyBackendHandlerFactory.newInstance(sqlStatementContext, null, connectionSession), isA(DatabaseConnector.class));
-    }
-    
-    private ConnectionContext mockConnectionContext() {
-        ConnectionContext result = mock(ConnectionContext.class);
-        when(result.getCurrentDatabaseName()).thenReturn(Optional.of("foo_db"));
-        return result;
+        QueryContext queryContext = mock(QueryContext.class);
+        when(queryContext.getSqlStatementContext()).thenReturn(sqlStatementContext);
+        assertThat(TCLProxyBackendHandlerFactory.newInstance(queryContext, mock(ConnectionSession.class)), isA(DatabaseConnector.class));
     }
     
     @SuppressWarnings("unchecked")

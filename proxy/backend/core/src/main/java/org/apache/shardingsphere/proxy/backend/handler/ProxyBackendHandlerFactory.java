@@ -127,12 +127,12 @@ public final class ProxyBackendHandlerFactory {
             checkSupportedDistSQLStatementInTransaction(sqlStatement, connectionSession);
             return DistSQLBackendHandlerFactory.newInstance((DistSQLStatement) sqlStatement, connectionSession);
         }
-        String sql = queryContext.getSql();
         handleAutoCommit(sqlStatement, connectionSession);
         if (sqlStatement instanceof TCLStatement) {
-            return TCLProxyBackendHandlerFactory.newInstance(sqlStatementContext, sql, connectionSession);
+            return TCLProxyBackendHandlerFactory.newInstance(queryContext, connectionSession);
         }
-        Optional<ProxyBackendHandler> databaseAdminHandler = DatabaseAdminBackendHandlerFactory.newInstance(databaseType, sqlStatementContext, connectionSession, sql, queryContext.getParameters());
+        Optional<ProxyBackendHandler> databaseAdminHandler = DatabaseAdminBackendHandlerFactory.newInstance(
+                databaseType, sqlStatementContext, connectionSession, queryContext.getSql(), queryContext.getParameters());
         if (databaseAdminHandler.isPresent()) {
             return databaseAdminHandler.get();
         }
