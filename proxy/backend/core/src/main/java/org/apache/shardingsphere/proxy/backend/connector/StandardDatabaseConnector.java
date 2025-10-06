@@ -139,7 +139,7 @@ public final class StandardDatabaseConnector implements DatabaseConnector {
         if (sqlStatementContext.getSqlStatement().getAttributes().findAttribute(CursorSQLStatementAttribute.class).isPresent()) {
             prepareCursorStatementContext(sqlStatementContext);
         }
-        proxySQLExecutor = new ProxySQLExecutor(driverType, databaseConnectionManager, this, queryContext);
+        proxySQLExecutor = new ProxySQLExecutor(driverType, databaseConnectionManager, this, sqlStatementContext);
         pushDownMetaDataRefreshEngine = new PushDownMetaDataRefreshEngine(
                 contextManager.getPersistServiceFacade().getModeFacade().getMetaDataManagerService(), database, contextManager.getMetaDataContexts().getMetaData().getProps());
         federationMetaDataRefreshEngine = new FederationMetaDataRefreshEngine(contextManager.getPersistServiceFacade().getModeFacade().getMetaDataManagerService(), database);
