@@ -132,9 +132,9 @@ public final class ProxyBackendHandlerFactory {
         if (sqlStatement instanceof TCLStatement) {
             return TCLProxyBackendHandlerFactory.newInstance(sqlStatementContext, sql, connectionSession);
         }
-        Optional<ProxyBackendHandler> backendHandler = DatabaseAdminBackendHandlerFactory.newInstance(databaseType, sqlStatementContext, connectionSession, sql, queryContext.getParameters());
-        if (backendHandler.isPresent()) {
-            return backendHandler.get();
+        Optional<ProxyBackendHandler> databaseAdminHandler = DatabaseAdminBackendHandlerFactory.newInstance(databaseType, sqlStatementContext, connectionSession, sql, queryContext.getParameters());
+        if (databaseAdminHandler.isPresent()) {
+            return databaseAdminHandler.get();
         }
         Optional<ProxyBackendHandler> databaseOperateHandler = findDatabaseOperateBackendHandler(sqlStatement, connectionSession);
         if (databaseOperateHandler.isPresent()) {
@@ -146,12 +146,7 @@ public final class ProxyBackendHandlerFactory {
         if (null == databaseName) {
             return DatabaseBackendHandlerFactory.newInstance(queryContext, connectionSession, preferPreparedStatement);
         }
-        Grantee grantee = connectionSession.getConnectionContext().getGrantee();
-        ShardingSphereMetaData metaData = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData();
-        ShardingSphereDatabase database = metaData.getDatabase(databaseName);
-        for (SQLExecutionChecker each : ShardingSphereServiceLoader.getServiceInstances(SQLExecutionChecker.class)) {
-            each.check(metaData, grantee, queryContext, database);
-        }
+        checkSQLExecution(queryContext, connectionSession, databaseName);
         return DatabaseAdminBackendHandlerFactory.newInstance(databaseType, sqlStatementContext, connectionSession)
                 .orElseGet(() -> DatabaseBackendHandlerFactory.newInstance(queryContext, connectionSession, preferPreparedStatement));
     }
@@ -201,5 +196,14 @@ public final class ProxyBackendHandlerFactory {
         return sqlStatement instanceof CreateDatabaseStatement || sqlStatement instanceof DropDatabaseStatement
                 ? Optional.of(DatabaseOperateBackendHandlerFactory.newInstance(sqlStatement, connectionSession))
                 : Optional.empty();
+    }
+    
+    private static void checkSQLExecution(final QueryContext queryContext, final ConnectionSession connectionSession, final String databaseName) {
+        Grantee grantee = connectionSession.getConnectionContext().getGrantee();
+        ShardingSphereMetaData metaData = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData();
+        ShardingSphereDatabase database = metaData.getDatabase(databaseName);
+        for (SQLExecutionChecker each : ShardingSphereServiceLoader.getServiceInstances(SQLExecutionChecker.class)) {
+            each.check(metaData, grantee, queryContext, database);
+        }
     }
 }
