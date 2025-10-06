@@ -19,7 +19,7 @@ package org.apache.shardingsphere.proxy.backend.handler.tcl;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
+import org.apache.shardingsphere.infra.session.query.QueryContext;
 import org.apache.shardingsphere.proxy.backend.handler.ProxyBackendHandler;
 import org.apache.shardingsphere.proxy.backend.handler.tcl.local.LocalTCLProxyBackendHandlerFactory;
 import org.apache.shardingsphere.proxy.backend.handler.tcl.xa.XATCLProxyBackendHandlerFactory;
@@ -35,14 +35,13 @@ public final class TCLProxyBackendHandlerFactory {
     /**
      * New instance of TCL proxy backend handler.
      *
-     * @param sqlStatementContext SQL statement context
-     * @param sql SQL
+     * @param queryContext query context
      * @param connectionSession connection session
      * @return created instance
      */
-    public static ProxyBackendHandler newInstance(final SQLStatementContext sqlStatementContext, final String sql, final ConnectionSession connectionSession) {
-        return sqlStatementContext.getSqlStatement() instanceof XAStatement
-                ? XATCLProxyBackendHandlerFactory.newInstance(sqlStatementContext, sql, connectionSession)
-                : LocalTCLProxyBackendHandlerFactory.newInstance(sqlStatementContext, sql, connectionSession);
+    public static ProxyBackendHandler newInstance(final QueryContext queryContext, final ConnectionSession connectionSession) {
+        return queryContext.getSqlStatementContext().getSqlStatement() instanceof XAStatement
+                ? XATCLProxyBackendHandlerFactory.newInstance(queryContext, connectionSession)
+                : LocalTCLProxyBackendHandlerFactory.newInstance(queryContext, connectionSession);
     }
 }
