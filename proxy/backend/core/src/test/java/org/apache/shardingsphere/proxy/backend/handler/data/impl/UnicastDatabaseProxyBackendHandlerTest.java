@@ -108,8 +108,8 @@ class UnicastDatabaseProxyBackendHandlerTest {
     }
     
     @SneakyThrows(ReflectiveOperationException.class)
-    private void setBackendHandlerFactory(final DatabaseProxyBackendHandler schemaDatabaseProxyBackendHandler) {
-        Plugins.getMemberAccessor().set(schemaDatabaseProxyBackendHandler.getClass().getDeclaredField("databaseConnectorFactory"), schemaDatabaseProxyBackendHandler, databaseProxyConnectorFactory);
+    private void setBackendHandlerFactory(final DatabaseProxyBackendHandler databaseProxyBackendHandler) {
+        Plugins.getMemberAccessor().set(databaseProxyBackendHandler.getClass().getDeclaredField("databaseProxyConnectorFactory"), databaseProxyBackendHandler, databaseProxyConnectorFactory);
     }
     
     @Test
