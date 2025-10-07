@@ -29,13 +29,13 @@ import org.apache.shardingsphere.database.protocol.firebird.payload.FirebirdPack
  */
 @Getter
 public final class FirebirdCreateBlobCommandPacket extends FirebirdCommandPacket {
-
+    
     private final byte[] blobParameterBuffer;
-
+    
     private final int transactionId;
-
+    
     private final long requestedBlobId;
-
+    
     public FirebirdCreateBlobCommandPacket(final FirebirdCommandPacketType commandType, final FirebirdPacketPayload payload) {
         Preconditions.checkArgument(FirebirdCommandPacketType.CREATE_BLOB == commandType
                 || FirebirdCommandPacketType.CREATE_BLOB2 == commandType, "Unsupported blob command type: %s", commandType);
@@ -50,11 +50,11 @@ public final class FirebirdCreateBlobCommandPacket extends FirebirdCommandPacket
         transactionId = payload.readInt4();
         requestedBlobId = payload.readInt8();
     }
-
+    
     @Override
     protected void write(final FirebirdPacketPayload payload) {
     }
-
+    
     /**
      * Get length of packet.
      *
@@ -66,14 +66,18 @@ public final class FirebirdCreateBlobCommandPacket extends FirebirdCommandPacket
         Preconditions.checkArgument(
                 FirebirdCommandPacketType.CREATE_BLOB == commandType
                         || FirebirdCommandPacketType.CREATE_BLOB2 == commandType,
-                "Unsupported blob command type: %s", commandType
-        );
-        int length = 4; // reserved (4)
+                "Unsupported blob command type: %s", commandType);
+        // reserved (4)
+        int length = 4;
         if (FirebirdCommandPacketType.CREATE_BLOB2 == commandType) {
-            length += payload.getBufferLength(length); // + blob parameter buffer
+            // + blob parameter buffer
+            length += payload.getBufferLength(length);
         }
-        length += 4; // transactionId (4)
-        length += 8; // requestedBlobId (8)
+        // transactionId (4)
+        length += 4;
+        // requestedBlobId (8)
+        length += 8;
         return length;
     }
+    
 }

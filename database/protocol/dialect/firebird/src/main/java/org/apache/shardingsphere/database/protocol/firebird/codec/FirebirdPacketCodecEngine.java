@@ -89,7 +89,7 @@ public final class FirebirdPacketCodecEngine implements DatabasePacketCodecEngin
             }
         }
     }
-
+    
     private ByteBuf mergePendingMessages(final ChannelHandlerContext context, final ByteBuf in) {
         if (pendingMessages.isEmpty()) {
             return in;
@@ -100,7 +100,7 @@ public final class FirebirdPacketCodecEngine implements DatabasePacketCodecEngin
         result.addComponent(true, in.readRetainedSlice(in.readableBytes()));
         return result;
     }
-
+    
     private void processPackets(final ChannelHandlerContext context, final ByteBuf buffer, final List<Object> out) {
         Charset charset = context.channel().attr(CommonConstants.CHARSET_ATTRIBUTE_KEY).get();
         while (buffer.isReadable()) {
@@ -124,7 +124,7 @@ public final class FirebirdPacketCodecEngine implements DatabasePacketCodecEngin
             out.add(buffer.readRetainedSlice(packetLength));
         }
     }
-
+    
     private int findPacketLength(final ChannelHandlerContext context, final ByteBuf buffer, final FirebirdCommandPacketType commandType, final Charset charset) {
         int readerIndex = buffer.readerIndex();
         int readableBytes = buffer.readableBytes();

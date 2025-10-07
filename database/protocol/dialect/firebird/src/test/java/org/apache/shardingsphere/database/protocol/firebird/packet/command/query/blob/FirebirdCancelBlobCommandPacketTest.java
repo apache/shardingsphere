@@ -30,10 +30,10 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class FirebirdCancelBlobCommandPacketTest {
-
+    
     @Mock
     private FirebirdPacketPayload payload;
-
+    
     @Test
     void assertCancelBlobPacket() {
         when(payload.readInt4()).thenReturn(42);
@@ -42,7 +42,7 @@ class FirebirdCancelBlobCommandPacketTest {
         verify(payload).readInt4();
         assertThat(packet.getBlobHandle(), is(42));
     }
-
+    
     @Test
     void assertGetLength() {
         assertThat(FirebirdCancelBlobCommandPacket.getLength(), is(8));

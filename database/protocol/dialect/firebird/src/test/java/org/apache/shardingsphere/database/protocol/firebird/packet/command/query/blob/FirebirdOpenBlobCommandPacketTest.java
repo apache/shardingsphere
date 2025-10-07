@@ -33,10 +33,10 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class FirebirdOpenBlobCommandPacketTest {
-
+    
     @Mock
     private FirebirdPacketPayload payload;
-
+    
     @Test
     void assertOpenBlobPacketWithoutBpb() {
         when(payload.readInt4()).thenReturn(5);
@@ -48,7 +48,7 @@ class FirebirdOpenBlobCommandPacketTest {
         assertThat(packet.getTransactionId(), is(5));
         assertThat(packet.getBlobId(), is(7L));
     }
-
+    
     @Test
     void assertOpenBlobPacketWithBpb() {
         when(payload.readBuffer()).thenReturn(Unpooled.wrappedBuffer(new byte[]{4, 5, 6}));
@@ -61,7 +61,7 @@ class FirebirdOpenBlobCommandPacketTest {
         assertThat(packet.getTransactionId(), is(9));
         assertThat(packet.getBlobId(), is(12L));
     }
-
+    
     @Test
     void assertGetLengthWithoutBpb() {
         assertThat(FirebirdOpenBlobCommandPacket.getLength(FirebirdCommandPacketType.OPEN_BLOB, payload), is(16));

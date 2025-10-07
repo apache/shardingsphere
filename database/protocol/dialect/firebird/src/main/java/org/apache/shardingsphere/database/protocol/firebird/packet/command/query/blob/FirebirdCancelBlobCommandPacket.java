@@ -26,24 +26,25 @@ import org.apache.shardingsphere.database.protocol.firebird.payload.FirebirdPack
  */
 @Getter
 public final class FirebirdCancelBlobCommandPacket extends FirebirdCommandPacket {
-
+    
     private final int blobHandle;
-
+    
     public FirebirdCancelBlobCommandPacket(final FirebirdPacketPayload payload) {
         payload.skipReserved(4);
         blobHandle = payload.readInt4();
     }
-
+    
     @Override
     protected void write(final FirebirdPacketPayload payload) {
     }
-
+    
     /**
      * Get length of packet.
      *
      * @return length of packet
      */
     public static int getLength() {
-        return 8; // 4 reserved + blobHandle(4)
+        // 4 reserved + blobHandle(4)
+        return 8;
     }
 }

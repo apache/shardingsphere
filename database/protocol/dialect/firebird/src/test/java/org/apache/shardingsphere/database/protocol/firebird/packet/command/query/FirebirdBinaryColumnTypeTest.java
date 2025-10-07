@@ -98,9 +98,9 @@ class FirebirdBinaryColumnTypeTest {
     void assertValueOfWithIllegalArgument() {
         assertThrows(IllegalArgumentException.class, () -> FirebirdBinaryColumnType.valueOf(-1));
     }
-
+    
     @Test
-    void assertValueOfJDBCType(){
+    void assertValueOfJDBCType() {
         assertThat(FirebirdBinaryColumnType.valueOfJDBCType(Types.BLOB), is(FirebirdBinaryColumnType.BLOB));
     }
 }

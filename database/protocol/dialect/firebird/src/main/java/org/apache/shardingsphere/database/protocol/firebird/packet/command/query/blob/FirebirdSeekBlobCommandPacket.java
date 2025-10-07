@@ -26,30 +26,31 @@ import org.apache.shardingsphere.database.protocol.firebird.payload.FirebirdPack
  */
 @Getter
 public final class FirebirdSeekBlobCommandPacket extends FirebirdCommandPacket {
-
+    
     private final int blobHandle;
-
+    
     private final int seekMode;
-
+    
     private final int offset;
-
+    
     public FirebirdSeekBlobCommandPacket(final FirebirdPacketPayload payload) {
         payload.skipReserved(4);
         blobHandle = payload.readInt4();
         seekMode = payload.readInt4();
         offset = payload.readInt4();
     }
-
+    
     @Override
     protected void write(final FirebirdPacketPayload payload) {
     }
-
+    
     /**
      * Get length of packet.
      *
      * @return length of packet
      */
     public static int getLength() {
-        return 16; // reserved (4) + blob handle (4) + seek mode (4) + offset (4)
+        // reserved (4) + blob handle (4) + seek mode (4) + offset (4)
+        return 16;
     }
 }

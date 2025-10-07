@@ -32,23 +32,26 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class FirebirdPutBlobSegmentCommandPacketTest {
-
+    
     @Mock
     private FirebirdPacketPayload payload;
-
+    
     @Test
     void assertPutBlobSegmentPacket() {
         when(payload.readInt4()).thenReturn(15, 3);
-        when(payload.readBuffer()).thenReturn(Unpooled.wrappedBuffer(new byte[] {5, 6, 7}));
-        FirebirdPutBlobSegmentCommandPacket packet = new FirebirdPutBlobSegmentCommandPacket(payload);
+        when(payload.readBuffer()).thenReturn(Unpooled.wrappedBuffer(new byte[]{5, 6, 7}));
+        
         verify(payload).skipReserved(4);
         verify(payload, times(2)).readInt4();
         verify(payload).readBuffer();
+        
+        final FirebirdPutBlobSegmentCommandPacket packet = new FirebirdPutBlobSegmentCommandPacket(payload);
         assertThat(packet.getBlobHandle(), is(15));
         assertThat(packet.getSegmentLength(), is(3));
-        assertThat(packet.getSegment(), is(new byte[] {5, 6, 7}));
+        assertThat(packet.getSegment(), is(new byte[]{5, 6, 7}));
+        
     }
-
+    
     @Test
     void assertGetLength() {
         when(payload.getBufferLength(12)).thenReturn(20);

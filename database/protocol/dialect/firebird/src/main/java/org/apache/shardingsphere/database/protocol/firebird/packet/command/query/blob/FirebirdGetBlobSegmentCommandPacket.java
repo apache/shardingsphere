@@ -27,13 +27,13 @@ import org.apache.shardingsphere.database.protocol.firebird.payload.FirebirdPack
  */
 @Getter
 public final class FirebirdGetBlobSegmentCommandPacket extends FirebirdCommandPacket {
-
+    
     private final int blobHandle;
-
+    
     private final int segmentLength;
-
+    
     private final byte[] segment;
-
+    
     public FirebirdGetBlobSegmentCommandPacket(final FirebirdPacketPayload payload) {
         payload.skipReserved(4);
         blobHandle = payload.readInt4();
@@ -42,11 +42,11 @@ public final class FirebirdGetBlobSegmentCommandPacket extends FirebirdCommandPa
         segment = new byte[buffer.readableBytes()];
         buffer.readBytes(segment);
     }
-
+    
     @Override
     protected void write(final FirebirdPacketPayload payload) {
     }
-
+    
     /**
      * Get length of packet.
      *
@@ -54,8 +54,10 @@ public final class FirebirdGetBlobSegmentCommandPacket extends FirebirdCommandPa
      * @return length of packet
      */
     public static int getLength(final FirebirdPacketPayload payload) {
-        int length = 12; // reserved (4) + blob handle (4) + segment length (4)
-        length += payload.getBufferLength(length); // + segment buffer
+        // reserved (4) + blob handle (4) + segment length (4)
+        int length = 12;
+        // + segment buffer
+        length += payload.getBufferLength(length);
         return length;
     }
 }

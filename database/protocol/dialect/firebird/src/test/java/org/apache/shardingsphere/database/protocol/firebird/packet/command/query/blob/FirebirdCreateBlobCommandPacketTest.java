@@ -33,10 +33,10 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class FirebirdCreateBlobCommandPacketTest {
-
+    
     @Mock
     private FirebirdPacketPayload payload;
-
+    
     @Test
     void assertCreateBlobPacketWithoutBpb() {
         when(payload.readInt4()).thenReturn(42);
@@ -48,10 +48,10 @@ class FirebirdCreateBlobCommandPacketTest {
         assertThat(packet.getRequestedBlobId(), is(0x0102030405060708L));
         assertThat(packet.getBlobParameterBuffer().length, is(0));
     }
-
+    
     @Test
     void assertCreateBlobPacketWithBpb() {
-        when(payload.readBuffer()).thenReturn(Unpooled.wrappedBuffer(new byte[] {1, 2, 3, 4}));
+        when(payload.readBuffer()).thenReturn(Unpooled.wrappedBuffer(new byte[]{1, 2, 3, 4}));
         when(payload.readInt4()).thenReturn(7);
         when(payload.readInt8()).thenReturn(11L);
         FirebirdCreateBlobCommandPacket packet = new FirebirdCreateBlobCommandPacket(FirebirdCommandPacketType.CREATE_BLOB2, payload);
@@ -59,14 +59,14 @@ class FirebirdCreateBlobCommandPacketTest {
         verify(payload).readBuffer();
         assertThat(packet.getTransactionId(), is(7));
         assertThat(packet.getRequestedBlobId(), is(11L));
-        assertThat(packet.getBlobParameterBuffer(), is(new byte[] {1, 2, 3, 4}));
+        assertThat(packet.getBlobParameterBuffer(), is(new byte[]{1, 2, 3, 4}));
     }
-
+    
     @Test
     void assertGetLengthWithoutBpb() {
         assertThat(FirebirdCreateBlobCommandPacket.getLength(FirebirdCommandPacketType.CREATE_BLOB, payload), is(16));
     }
-
+    
     @Test
     void assertGetLengthWithBpb() {
         when(payload.getBufferLength(4)).thenReturn(12);

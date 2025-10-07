@@ -34,11 +34,11 @@ import java.util.Collections;
  */
 @RequiredArgsConstructor
 public final class FirebirdCloseBlobCommandExecutor implements CommandExecutor {
-
+    
     private final FirebirdCloseBlobCommandPacket packet;
-
+    
     private final ConnectionSession connectionSession;
-
+    
     @Override
     public Collection<DatabasePacket> execute() throws SQLException {
         int statementId = FirebirdStatementIdGenerator.getInstance().nextStatementId(connectionSession.getConnectionId());

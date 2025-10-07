@@ -595,7 +595,7 @@ public abstract class FirebirdStatementVisitor extends FirebirdStatementBaseVisi
             }
         }
     }
-
+    
     @Override
     public final ASTNode visitDataType(final DataTypeContext ctx) {
         if (null != ctx.blobDataType()) {
@@ -611,7 +611,7 @@ public abstract class FirebirdStatementVisitor extends FirebirdStatementBaseVisi
         }
         return result;
     }
-
+    
     @Override
     public final ASTNode visitBlobDataType(final BlobDataTypeContext ctx) {
         DataTypeSegment result = new DataTypeSegment();
@@ -620,7 +620,7 @@ public abstract class FirebirdStatementVisitor extends FirebirdStatementBaseVisi
         result.setDataTypeName(buildBlobDataTypeName(ctx));
         return result;
     }
-
+    
     private String buildBlobDataTypeName(final BlobDataTypeContext ctx) {
         StringBuilder result = new StringBuilder(ctx.BLOB().getText());
         appendClause(result, ctx.blobSubTypeDefinition());
@@ -633,7 +633,7 @@ public abstract class FirebirdStatementVisitor extends FirebirdStatementBaseVisi
         }
         return result.toString();
     }
-
+    
     private void appendClause(final StringBuilder builder, final ParserRuleContext ctx) {
         if (null != ctx) {
             builder.append(' ').append(getOriginalText(ctx).trim());
