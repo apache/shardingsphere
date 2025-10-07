@@ -152,7 +152,7 @@ class FirebirdPacketCodecEngineTest {
         List<Object> out = new LinkedList<>();
         FirebirdPacketCodecEngine codecEngine = new FirebirdPacketCodecEngine();
         try (MockedStatic<FirebirdCommandPacketFactory> mocked = mockStatic(FirebirdCommandPacketFactory.class)) {
-            mocked.when(() -> FirebirdCommandPacketFactory.isValidLength(any(), any(), anyInt(), any())).thenReturn(false, true);
+            mocked.when(() -> FirebirdCommandPacketFactory.getExpectedLength(any(), any(), any())).thenReturn(12, 12);
             codecEngine.decode(context, firstPart, out);
             assertTrue(out.isEmpty());
             codecEngine.decode(context, secondPart, out);
@@ -177,7 +177,7 @@ class FirebirdPacketCodecEngineTest {
         when(slice.readableBytes()).thenReturn(8);
         List<Object> out = new LinkedList<>();
         try (MockedStatic<FirebirdCommandPacketFactory> mocked = mockStatic(FirebirdCommandPacketFactory.class)) {
-            mocked.when(() -> FirebirdCommandPacketFactory.isValidLength(any(), any(), anyInt(), any())).thenReturn(true);
+            mocked.when(() -> FirebirdCommandPacketFactory.getExpectedLength(any(), any(), any())).thenReturn(8);
             new FirebirdPacketCodecEngine().decode(context, in, out);
             assertThat(out.size(), is(1));
             assertThat(((ByteBuf) out.get(0)).readableBytes(), is(8));
