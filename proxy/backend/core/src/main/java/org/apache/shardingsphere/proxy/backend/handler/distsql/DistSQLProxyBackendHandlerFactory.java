@@ -30,13 +30,13 @@ import org.apache.shardingsphere.proxy.backend.handler.ProxyBackendHandler;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 
 /**
- * DistSQL backend handler factory.
+ * DistSQL proxy backend handler factory.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class DistSQLBackendHandlerFactory {
+public final class DistSQLProxyBackendHandlerFactory {
     
     /**
-     * Create new instance of DistSQL backend handler.
+     * Create new instance of DistSQL proxy backend handler.
      *
      * @param sqlStatement DistSQL statement
      * @param connectionSession connection session
@@ -45,13 +45,15 @@ public final class DistSQLBackendHandlerFactory {
      */
     public static ProxyBackendHandler newInstance(final DistSQLStatement sqlStatement, final ConnectionSession connectionSession) {
         if (sqlStatement instanceof RQLStatement || sqlStatement instanceof RULStatement) {
-            return new DistSQLQueryBackendHandler(sqlStatement, connectionSession);
+            return new DistSQLQueryProxyBackendHandler(sqlStatement, connectionSession);
         }
         if (sqlStatement instanceof RDLStatement) {
-            return new DistSQLUpdateBackendHandler(sqlStatement, connectionSession);
+            return new DistSQLUpdateProxyBackendHandler(sqlStatement, connectionSession);
         }
         if (sqlStatement instanceof RALStatement) {
-            return sqlStatement instanceof QueryableRALStatement ? new DistSQLQueryBackendHandler(sqlStatement, connectionSession) : new DistSQLUpdateBackendHandler(sqlStatement, connectionSession);
+            return sqlStatement instanceof QueryableRALStatement
+                    ? new DistSQLQueryProxyBackendHandler(sqlStatement, connectionSession)
+                    : new DistSQLUpdateProxyBackendHandler(sqlStatement, connectionSession);
         }
         throw new UnsupportedSQLOperationException(sqlStatement.getClass().getName());
     }

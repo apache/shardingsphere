@@ -27,10 +27,10 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.da
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.database.DropDatabaseStatement;
 
 /**
- * Database operate backend handler factory.
+ * Database operate proxy backend handler factory.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class DatabaseOperateBackendHandlerFactory {
+public final class DatabaseOperateProxyBackendHandlerFactory {
     
     /**
      * Create new instance of database operate backend handler.
@@ -40,10 +40,10 @@ public final class DatabaseOperateBackendHandlerFactory {
      * @return created instance
      */
     public static ProxyBackendHandler newInstance(final SQLStatement sqlStatement, final ConnectionSession connectionSession) {
-        return createBackendHandler(sqlStatement, connectionSession);
+        return createProxyBackendHandler(sqlStatement, connectionSession);
     }
     
-    private static ProxyBackendHandler createBackendHandler(final SQLStatement sqlStatement, final ConnectionSession connectionSession) {
+    private static ProxyBackendHandler createProxyBackendHandler(final SQLStatement sqlStatement, final ConnectionSession connectionSession) {
         if (sqlStatement instanceof CreateDatabaseStatement) {
             return new CreateDatabaseProxyBackendHandler((CreateDatabaseStatement) sqlStatement);
         }

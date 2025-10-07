@@ -53,7 +53,7 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(AutoMockExtension.class)
 @StaticMockSettings(ProxyContext.class)
-class DistSQLUpdateBackendHandlerTest {
+class DistSQLUpdateProxyBackendHandlerTest {
     
     private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "FIXTURE");
     
@@ -68,7 +68,7 @@ class DistSQLUpdateBackendHandlerTest {
     @Test
     void assertEmptyStorageUnit() {
         when(contextManager.getDatabase("foo_db")).thenReturn(new ShardingSphereDatabase("foo_db", databaseType, mock(), mock(), Collections.emptyList()));
-        DistSQLUpdateBackendHandler backendHandler = new DistSQLUpdateBackendHandler(new RefreshTableMetaDataStatement(), mockConnectionSession("foo_db"));
+        DistSQLUpdateProxyBackendHandler backendHandler = new DistSQLUpdateProxyBackendHandler(new RefreshTableMetaDataStatement(), mockConnectionSession("foo_db"));
         assertThrows(EmptyStorageUnitException.class, backendHandler::execute);
     }
     
@@ -77,7 +77,7 @@ class DistSQLUpdateBackendHandlerTest {
         ResourceMetaData resourceMetaData = mock(ResourceMetaData.class);
         when(resourceMetaData.getStorageUnits()).thenReturn(Collections.singletonMap("ds_0", mock(StorageUnit.class)));
         when(contextManager.getDatabase("foo_db")).thenReturn(new ShardingSphereDatabase("foo_db", databaseType, resourceMetaData, mock(), Collections.emptyList()));
-        DistSQLUpdateBackendHandler backendHandler = new DistSQLUpdateBackendHandler(new RefreshTableMetaDataStatement("t_order", "ds_1", null), mockConnectionSession("foo_db"));
+        DistSQLUpdateProxyBackendHandler backendHandler = new DistSQLUpdateProxyBackendHandler(new RefreshTableMetaDataStatement("t_order", "ds_1", null), mockConnectionSession("foo_db"));
         assertThrows(MissingRequiredStorageUnitsException.class, backendHandler::execute);
     }
     
@@ -86,7 +86,7 @@ class DistSQLUpdateBackendHandlerTest {
         ResourceMetaData resourceMetaData = mock(ResourceMetaData.class);
         when(resourceMetaData.getStorageUnits()).thenReturn(Collections.singletonMap("ds_0", mock(StorageUnit.class)));
         when(contextManager.getDatabase("foo_db")).thenReturn(new ShardingSphereDatabase("foo_db", databaseType, resourceMetaData, mock(), Collections.emptyList()));
-        DistSQLUpdateBackendHandler backendHandler = new DistSQLUpdateBackendHandler(new RefreshTableMetaDataStatement("t_order", "ds_0", "bar_db"), mockConnectionSession("foo_db"));
+        DistSQLUpdateProxyBackendHandler backendHandler = new DistSQLUpdateProxyBackendHandler(new RefreshTableMetaDataStatement("t_order", "ds_0", "bar_db"), mockConnectionSession("foo_db"));
         assertThrows(SchemaNotFoundException.class, backendHandler::execute);
     }
     
@@ -100,7 +100,7 @@ class DistSQLUpdateBackendHandlerTest {
         when(database.getSchema("foo_db")).thenReturn(schema);
         when(database.getResourceMetaData()).thenReturn(resourceMetaData);
         when(contextManager.getDatabase("foo_db")).thenReturn(database);
-        DistSQLUpdateBackendHandler backendHandler = new DistSQLUpdateBackendHandler(new RefreshTableMetaDataStatement("t_order", "ds_0", "foo_db"), mockConnectionSession("foo_db"));
+        DistSQLUpdateProxyBackendHandler backendHandler = new DistSQLUpdateProxyBackendHandler(new RefreshTableMetaDataStatement("t_order", "ds_0", "foo_db"), mockConnectionSession("foo_db"));
         assertThrows(TableNotFoundException.class, backendHandler::execute);
     }
     
@@ -113,7 +113,7 @@ class DistSQLUpdateBackendHandlerTest {
         when(database.getProtocolType()).thenReturn(databaseType);
         when(database.getResourceMetaData()).thenReturn(resourceMetaData);
         when(contextManager.getDatabase("foo_db")).thenReturn(database);
-        ResponseHeader actual = new DistSQLUpdateBackendHandler(new RefreshTableMetaDataStatement(), mockConnectionSession("foo_db")).execute();
+        ResponseHeader actual = new DistSQLUpdateProxyBackendHandler(new RefreshTableMetaDataStatement(), mockConnectionSession("foo_db")).execute();
         assertThat(actual, isA(UpdateResponseHeader.class));
     }
     

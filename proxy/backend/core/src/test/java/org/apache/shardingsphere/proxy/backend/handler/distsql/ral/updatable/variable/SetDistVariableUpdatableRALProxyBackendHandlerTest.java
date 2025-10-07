@@ -21,7 +21,7 @@ import io.netty.util.DefaultAttributeMap;
 import org.apache.shardingsphere.distsql.statement.type.ral.updatable.SetDistVariableStatement;
 import org.apache.shardingsphere.infra.exception.kernel.syntax.UnsupportedVariableException;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
-import org.apache.shardingsphere.proxy.backend.handler.distsql.DistSQLUpdateBackendHandler;
+import org.apache.shardingsphere.proxy.backend.handler.distsql.DistSQLUpdateProxyBackendHandler;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.test.infra.framework.mock.AutoMockExtension;
 import org.apache.shardingsphere.test.infra.framework.mock.StaticMockSettings;
@@ -36,7 +36,7 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(AutoMockExtension.class)
 @StaticMockSettings(ProxyContext.class)
-class SetDistVariableUpdatableRALBackendHandlerTest {
+class SetDistVariableUpdatableRALProxyBackendHandlerTest {
     
     private ConnectionSession connectionSession;
     
@@ -48,7 +48,7 @@ class SetDistVariableUpdatableRALBackendHandlerTest {
     
     @Test
     void assertNotSupportedVariable() {
-        DistSQLUpdateBackendHandler handler = new DistSQLUpdateBackendHandler(new SetDistVariableStatement("unsupported", "XXX"), connectionSession);
+        DistSQLUpdateProxyBackendHandler handler = new DistSQLUpdateProxyBackendHandler(new SetDistVariableStatement("unsupported", "XXX"), connectionSession);
         assertThrows(UnsupportedVariableException.class, handler::execute);
     }
 }

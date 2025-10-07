@@ -66,7 +66,7 @@ class TCLProxyBackendHandlerFactoryTest {
     private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "FIXTURE");
     
     @Test
-    void assertTCLBackendHandlerReturnedWhenTCLStatementInstanceOfCommitStatement() {
+    void assertTCLProxyBackendHandlerReturnedWhenTCLStatementInstanceOfCommitStatement() {
         ConnectionSession connectionSession = mock(ConnectionSession.class, Answers.RETURNS_DEEP_STUBS);
         ProxyDatabaseConnectionManager databaseConnectionManager = mock(ProxyDatabaseConnectionManager.class);
         when(connectionSession.getDatabaseConnectionManager()).thenReturn(databaseConnectionManager);
@@ -84,7 +84,7 @@ class TCLProxyBackendHandlerFactoryTest {
     }
     
     @Test
-    void assertTCLBackendHandlerReturnedWhenTCLStatementInstanceOfRollbackStatement() {
+    void assertTCLProxyBackendHandlerReturnedWhenTCLStatementInstanceOfRollbackStatement() {
         ConnectionSession connectionSession = mock(ConnectionSession.class, Answers.RETURNS_DEEP_STUBS);
         ProxyDatabaseConnectionManager databaseConnectionManager = mock(ProxyDatabaseConnectionManager.class);
         when(connectionSession.getDatabaseConnectionManager()).thenReturn(databaseConnectionManager);
@@ -109,7 +109,7 @@ class TCLProxyBackendHandlerFactoryTest {
     }
     
     @Test
-    void assertBroadcastBackendHandlerReturnedWhenTCLStatementNotHit() {
+    void assertBroadcastProxyBackendHandlerReturnedWhenTCLStatementNotHit() {
         SQLStatementContext sqlStatementContext = mock(SQLStatementContext.class, RETURNS_DEEP_STUBS);
         when(sqlStatementContext.getTablesContext().getDatabaseNames()).thenReturn(Collections.emptyList());
         when(sqlStatementContext.getSqlStatement()).thenReturn(mock(TCLStatement.class));
