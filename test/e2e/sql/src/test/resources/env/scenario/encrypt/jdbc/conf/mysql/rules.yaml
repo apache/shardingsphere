@@ -22,7 +22,7 @@ dataSources:
     url: jdbc:mysql://mysql.encrypt.host:3306/encrypt?useSSL=true&requireSSL=true&enabledTLSProtocols=TLSv1.2,TLSv1.3&verifyServerCertificate=false&useServerPrepStmts=true&useLocalSessionState=true&characterEncoding=utf-8&allowPublicKeyRetrieval=true&allowMultiQueries=true&rewriteBatchedStatements=true
     dataSourceClassName: com.zaxxer.hikari.HikariDataSource
     username: test_user
-    password: Test@123
+    password: Test@9876
     connectionTimeoutMilliseconds: 30000
     idleTimeoutMilliseconds: 60000
     maxLifetimeMilliseconds: 1800000
@@ -41,7 +41,7 @@ rules:
           aes-key-value: 123456abc
           digest-algorithm-name: SHA-1
       like_encryptor:
-        type: IT.ENCRYPT.LIKE.FIXTURE
+        type: E2E.ENCRYPT.LIKE.FIXTURE
         props:
           mask: 4093
     tables:

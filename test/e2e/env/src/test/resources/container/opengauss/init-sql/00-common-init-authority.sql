@@ -15,7 +15,7 @@
 -- limitations under the License.
 --
 
-CREATE USER test_user WITH ENCRYPTED PASSWORD 'Test@123';
+CREATE USER test_user WITH ENCRYPTED PASSWORD 'Test@9876';
 ALTER ROLE test_user SYSADMIN;
 CREATE DATABASE test_user;
 ALTER USER test_user set session_timeout = 0;

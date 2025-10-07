@@ -21,11 +21,12 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
-import org.apache.shardingsphere.data.pipeline.core.job.JobStatus;
 import org.apache.shardingsphere.data.pipeline.core.consistencycheck.ConsistencyCheckJobItemProgressContext;
+import org.apache.shardingsphere.data.pipeline.core.consistencycheck.position.TableCheckRangePosition;
+import org.apache.shardingsphere.data.pipeline.core.job.JobStatus;
 
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Data consistency check job item progress.
@@ -48,9 +49,7 @@ public final class ConsistencyCheckJobItemProgress implements PipelineJobItemPro
     
     private final Long checkEndTimeMillis;
     
-    private final Map<String, Object> sourceTableCheckPositions = new LinkedHashMap<>();
-    
-    private final Map<String, Object> targetTableCheckPositions = new LinkedHashMap<>();
+    private final List<TableCheckRangePosition> tableCheckRangePositions = new ArrayList<>();
     
     private final String sourceDatabaseType;
     
@@ -64,8 +63,7 @@ public final class ConsistencyCheckJobItemProgress implements PipelineJobItemPro
         recordsCount = context.getRecordsCount();
         checkBeginTimeMillis = context.getCheckBeginTimeMillis();
         checkEndTimeMillis = context.getCheckEndTimeMillis();
-        sourceTableCheckPositions.putAll(context.getSourceTableCheckPositions());
-        targetTableCheckPositions.putAll(context.getTargetTableCheckPositions());
+        tableCheckRangePositions.addAll(context.getTableCheckRangePositions());
         sourceDatabaseType = context.getSourceDatabaseType();
     }
 }

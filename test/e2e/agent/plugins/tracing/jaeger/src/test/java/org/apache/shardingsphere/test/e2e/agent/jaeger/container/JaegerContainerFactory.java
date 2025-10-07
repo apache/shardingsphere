@@ -19,7 +19,7 @@ package org.apache.shardingsphere.test.e2e.agent.jaeger.container;
 
 import org.apache.shardingsphere.test.e2e.agent.engine.container.plugin.AgentPluginContainerFactory;
 import org.apache.shardingsphere.test.e2e.agent.engine.env.props.AgentE2ETestConfiguration;
-import org.apache.shardingsphere.test.e2e.env.container.atomic.DockerITContainer;
+import org.apache.shardingsphere.test.e2e.env.container.DockerE2EContainer;
 
 /**
  * Jaeger container factory.
@@ -27,7 +27,7 @@ import org.apache.shardingsphere.test.e2e.env.container.atomic.DockerITContainer
 public final class JaegerContainerFactory implements AgentPluginContainerFactory {
     
     @Override
-    public DockerITContainer create() {
+    public DockerE2EContainer create() {
         return new JaegerContainer(AgentE2ETestConfiguration.getInstance().getPluginImageName());
     }
     

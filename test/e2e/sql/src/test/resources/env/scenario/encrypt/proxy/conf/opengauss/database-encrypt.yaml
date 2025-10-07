@@ -21,7 +21,7 @@ dataSources:
   encrypt:
     url: jdbc:opengauss://opengauss.encrypt.host:5432/encrypt
     username: test_user
-    password: Test@123
+    password: Test@9876
     connectionTimeoutMilliseconds: 30000
     idleTimeoutMilliseconds: 60000
     maxLifetimeMilliseconds: 1800000
@@ -40,7 +40,7 @@ rules:
         aes-key-value: 123456abc
         digest-algorithm-name: SHA-1
     like_encryptor:
-      type: IT.ENCRYPT.LIKE.FIXTURE
+      type: E2E.ENCRYPT.LIKE.FIXTURE
       props:
         mask: 4093
   tables:

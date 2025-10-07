@@ -21,7 +21,7 @@ dataSources:
   write_ds_0:
     url: jdbc:opengauss://opengauss.dbtbl_with_readwrite_splitting.host:5432/write_ds_0
     username: test_user
-    password: Test@123
+    password: Test@9876
     connectionTimeoutMilliseconds: 30000
     idleTimeoutMilliseconds: 60000
     maxLifetimeMilliseconds: 1800000
@@ -30,7 +30,7 @@ dataSources:
   write_ds_1:
     url: jdbc:opengauss://opengauss.dbtbl_with_readwrite_splitting.host:5432/write_ds_1
     username: test_user
-    password: Test@123
+    password: Test@9876
     connectionTimeoutMilliseconds: 30000
     idleTimeoutMilliseconds: 60000
     maxLifetimeMilliseconds: 1800000
@@ -39,7 +39,7 @@ dataSources:
   write_ds_2:
     url: jdbc:opengauss://opengauss.dbtbl_with_readwrite_splitting.host:5432/write_ds_2
     username: test_user
-    password: Test@123
+    password: Test@9876
     connectionTimeoutMilliseconds: 30000
     idleTimeoutMilliseconds: 60000
     maxLifetimeMilliseconds: 1800000
@@ -48,7 +48,7 @@ dataSources:
   write_ds_3:
     url: jdbc:opengauss://opengauss.dbtbl_with_readwrite_splitting.host:5432/write_ds_3
     username: test_user
-    password: Test@123
+    password: Test@9876
     connectionTimeoutMilliseconds: 30000
     idleTimeoutMilliseconds: 60000
     maxLifetimeMilliseconds: 1800000
@@ -57,7 +57,7 @@ dataSources:
   write_ds_4:
     url: jdbc:opengauss://opengauss.dbtbl_with_readwrite_splitting.host:5432/write_ds_4
     username: test_user
-    password: Test@123
+    password: Test@9876
     connectionTimeoutMilliseconds: 30000
     idleTimeoutMilliseconds: 60000
     maxLifetimeMilliseconds: 1800000
@@ -66,7 +66,7 @@ dataSources:
   write_ds_5:
     url: jdbc:opengauss://opengauss.dbtbl_with_readwrite_splitting.host:5432/write_ds_5
     username: test_user
-    password: Test@123
+    password: Test@9876
     connectionTimeoutMilliseconds: 30000
     idleTimeoutMilliseconds: 60000
     maxLifetimeMilliseconds: 1800000
@@ -75,7 +75,7 @@ dataSources:
   write_ds_6:
     url: jdbc:opengauss://opengauss.dbtbl_with_readwrite_splitting.host:5432/write_ds_6
     username: test_user
-    password: Test@123
+    password: Test@9876
     connectionTimeoutMilliseconds: 30000
     idleTimeoutMilliseconds: 60000
     maxLifetimeMilliseconds: 1800000
@@ -84,7 +84,7 @@ dataSources:
   write_ds_7:
     url: jdbc:opengauss://opengauss.dbtbl_with_readwrite_splitting.host:5432/write_ds_7
     username: test_user
-    password: Test@123
+    password: Test@9876
     connectionTimeoutMilliseconds: 30000
     idleTimeoutMilliseconds: 60000
     maxLifetimeMilliseconds: 1800000
@@ -93,7 +93,7 @@ dataSources:
   write_ds_8:
     url: jdbc:opengauss://opengauss.dbtbl_with_readwrite_splitting.host:5432/write_ds_8
     username: test_user
-    password: Test@123
+    password: Test@9876
     connectionTimeoutMilliseconds: 30000
     idleTimeoutMilliseconds: 60000
     maxLifetimeMilliseconds: 1800000
@@ -102,7 +102,7 @@ dataSources:
   write_ds_9:
     url: jdbc:opengauss://opengauss.dbtbl_with_readwrite_splitting.host:5432/write_ds_9
     username: test_user
-    password: Test@123
+    password: Test@9876
     connectionTimeoutMilliseconds: 30000
     idleTimeoutMilliseconds: 60000
     maxLifetimeMilliseconds: 1800000
@@ -111,7 +111,7 @@ dataSources:
   read_ds_0:
     url: jdbc:opengauss://opengauss.dbtbl_with_readwrite_splitting.host:5432/read_ds_0
     username: test_user
-    password: Test@123
+    password: Test@9876
     connectionTimeoutMilliseconds: 30000
     idleTimeoutMilliseconds: 60000
     maxLifetimeMilliseconds: 1800000
@@ -120,7 +120,7 @@ dataSources:
   read_ds_1:
     url: jdbc:opengauss://opengauss.dbtbl_with_readwrite_splitting.host:5432/read_ds_1
     username: test_user
-    password: Test@123
+    password: Test@9876
     connectionTimeoutMilliseconds: 30000
     idleTimeoutMilliseconds: 60000
     maxLifetimeMilliseconds: 1800000
@@ -129,7 +129,7 @@ dataSources:
   read_ds_2:
     url: jdbc:opengauss://opengauss.dbtbl_with_readwrite_splitting.host:5432/read_ds_2
     username: test_user
-    password: Test@123
+    password: Test@9876
     connectionTimeoutMilliseconds: 30000
     idleTimeoutMilliseconds: 60000
     maxLifetimeMilliseconds: 1800000
@@ -138,7 +138,7 @@ dataSources:
   read_ds_3:
     url: jdbc:opengauss://opengauss.dbtbl_with_readwrite_splitting.host:5432/read_ds_3
     username: test_user
-    password: Test@123
+    password: Test@9876
     connectionTimeoutMilliseconds: 30000
     idleTimeoutMilliseconds: 60000
     maxLifetimeMilliseconds: 1800000
@@ -147,7 +147,7 @@ dataSources:
   read_ds_4:
     url: jdbc:opengauss://opengauss.dbtbl_with_readwrite_splitting.host:5432/read_ds_4
     username: test_user
-    password: Test@123
+    password: Test@9876
     connectionTimeoutMilliseconds: 30000
     idleTimeoutMilliseconds: 60000
     maxLifetimeMilliseconds: 1800000
@@ -156,7 +156,7 @@ dataSources:
   read_ds_5:
     url: jdbc:opengauss://opengauss.dbtbl_with_readwrite_splitting.host:5432/read_ds_5
     username: test_user
-    password: Test@123
+    password: Test@9876
     connectionTimeoutMilliseconds: 30000
     idleTimeoutMilliseconds: 60000
     maxLifetimeMilliseconds: 1800000
@@ -165,7 +165,7 @@ dataSources:
   read_ds_6:
     url: jdbc:opengauss://opengauss.dbtbl_with_readwrite_splitting.host:5432/read_ds_6
     username: test_user
-    password: Test@123
+    password: Test@9876
     connectionTimeoutMilliseconds: 30000
     idleTimeoutMilliseconds: 60000
     maxLifetimeMilliseconds: 1800000
@@ -174,7 +174,7 @@ dataSources:
   read_ds_7:
     url: jdbc:opengauss://opengauss.dbtbl_with_readwrite_splitting.host:5432/read_ds_7
     username: test_user
-    password: Test@123
+    password: Test@9876
     connectionTimeoutMilliseconds: 30000
     idleTimeoutMilliseconds: 60000
     maxLifetimeMilliseconds: 1800000
@@ -183,7 +183,7 @@ dataSources:
   read_ds_8:
     url: jdbc:opengauss://opengauss.dbtbl_with_readwrite_splitting.host:5432/read_ds_8
     username: test_user
-    password: Test@123
+    password: Test@9876
     connectionTimeoutMilliseconds: 30000
     idleTimeoutMilliseconds: 60000
     maxLifetimeMilliseconds: 1800000
@@ -192,7 +192,7 @@ dataSources:
   read_ds_9:
     url: jdbc:opengauss://opengauss.dbtbl_with_readwrite_splitting.host:5432/read_ds_9
     username: test_user
-    password: Test@123
+    password: Test@9876
     connectionTimeoutMilliseconds: 30000
     idleTimeoutMilliseconds: 60000
     maxLifetimeMilliseconds: 1800000
@@ -210,21 +210,21 @@ rules:
       databaseStrategy:
         standard:
           shardingColumn: user_id
-          shardingAlgorithmName: it_standard_fixture
+          shardingAlgorithmName: e2e_standard_fixture
       tableStrategy:
         standard:
           shardingColumn: order_id
-          shardingAlgorithmName: it_standard_fixture
+          shardingAlgorithmName: e2e_standard_fixture
     t_order_item:
       actualDataNodes: readwrite_ds_${0..9}.t_order_item_${0..9}
       databaseStrategy:
         standard:
           shardingColumn: user_id
-          shardingAlgorithmName: it_standard_fixture
+          shardingAlgorithmName: e2e_standard_fixture
       tableStrategy:
         standard:
           shardingColumn: order_id
-          shardingAlgorithmName: it_standard_fixture
+          shardingAlgorithmName: e2e_standard_fixture
       keyGenerateStrategy:
         column: item_id
         keyGeneratorName: auto_increment
@@ -237,24 +237,24 @@ rules:
       databaseStrategy:
         standard:
           shardingColumn: user_id
-          shardingAlgorithmName: it_standard_fixture
+          shardingAlgorithmName: e2e_standard_fixture
       tableStrategy:
         standard:
           shardingColumn: order_id
-          shardingAlgorithmName: it_standard_fixture
+          shardingAlgorithmName: e2e_standard_fixture
   bindingTables:
     - ref_0:t_order,t_order_item,t_order_details
   shardingAlgorithms:
-    it_standard_fixture:
-      type: IT.STANDARD.FIXTURE
+    e2e_standard_fixture:
+      type: E2E.SHARDING.STANDARD.FIXTURE
 
   keyGenerators:
     auto_increment:
-      type: IT.AUTO_INCREMENT.FIXTURE
+      type: E2E.AUTO_INCREMENT.FIXTURE
 
   auditors:
     auditor_constant:
-      type: IT.AUDITOR.FIXTURE
+      type: E2E.AUDITOR.FIXTURE
 
 - !BROADCAST
   tables:

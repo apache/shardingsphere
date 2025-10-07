@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.test.e2e.operation.transaction.framework.container.compose;
 
 import lombok.Getter;
-import org.apache.shardingsphere.test.e2e.env.container.atomic.ITContainers;
+import org.apache.shardingsphere.test.e2e.env.container.E2EContainers;
 import org.testcontainers.lifecycle.Startable;
 
 /**
@@ -27,10 +27,10 @@ import org.testcontainers.lifecycle.Startable;
 @Getter
 public abstract class TransactionBaseContainerComposer implements Startable {
     
-    private final ITContainers containers;
+    private final E2EContainers containers;
     
     protected TransactionBaseContainerComposer(final String scenario) {
-        containers = new ITContainers(scenario);
+        containers = new E2EContainers(scenario);
     }
     
     @Override

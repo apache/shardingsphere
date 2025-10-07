@@ -36,6 +36,8 @@ public final class TableInventoryCheckParameter {
     
     private final String jobId;
     
+    private final int splittingItem;
+    
     private final PipelineDataSource sourceDataSource;
     
     private final PipelineDataSource targetDataSource;
@@ -51,4 +53,14 @@ public final class TableInventoryCheckParameter {
     private final JobRateLimitAlgorithm readRateLimitAlgorithm;
     
     private final ConsistencyCheckJobItemProgressContext progressContext;
+    
+    private final String queryCondition;
+    
+    public TableInventoryCheckParameter(final String jobId, final PipelineDataSource sourceDataSource, final PipelineDataSource targetDataSource,
+                                        final QualifiedTable sourceTable, final QualifiedTable targetTable,
+                                        final List<String> columnNames, final List<PipelineColumnMetaData> uniqueKeys,
+                                        final JobRateLimitAlgorithm readRateLimitAlgorithm, final ConsistencyCheckJobItemProgressContext progressContext) {
+        this(jobId, 0, sourceDataSource, targetDataSource, sourceTable, targetTable, columnNames, uniqueKeys, readRateLimitAlgorithm, progressContext,
+                null);
+    }
 }

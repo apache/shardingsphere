@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.test.e2e.sql.framework.param.model;
 
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
+import org.apache.shardingsphere.test.e2e.env.runtime.type.ArtifactEnvironment.Mode;
 import org.apache.shardingsphere.test.e2e.sql.cases.casse.SQLE2ETestCaseContext;
 import org.apache.shardingsphere.test.e2e.sql.framework.type.SQLCommandType;
 
@@ -59,7 +60,7 @@ public interface E2ETestParameter {
      *
      * @return mode
      */
-    String getMode();
+    Mode getMode();
     
     /**
      * Get sql command type.

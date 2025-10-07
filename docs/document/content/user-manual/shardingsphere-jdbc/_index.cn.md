@@ -19,3 +19,6 @@ ShardingSphere-JDBC 提供了 2 种配置方式，用于不同的使用场景。
 同理，如果前一个规则是面向表聚合的，下一个规则在配置表时，则需要使用前一个规则配置的聚合后的逻辑表名称。
 
 更多使用细节请参见[使用示例](https://github.com/apache/shardingsphere/tree/master/examples/shardingsphere-jdbc-example-generator)。
+
+> **注意**：使用 ShardingSphere-JDBC 接入端时，需特别关注应用的内存配置。由于 Antlr 在 SQL 解析过程中，会使用内部缓存来提升性能，如果应用的 SQL 模板数量过多，则会导致缓存不断增长，占用大量堆内存。
+根据 ANTLR 官方 [issue#4232](https://github.com/antlr/antlr4/issues/4232) 的反馈，目前该问题尚未得到优化，应用接入 ShardingSphere-JDBC 时，建议通过 `-Xmx` 参数设置合理的堆内存大小，避免因内存不足导致的 OOM。

@@ -20,7 +20,7 @@ mode:
   repository:
     type: ZooKeeper
     props:
-      namespace: it_logging
+      namespace: e2e_logging
       server-lists: zk.host:2181
 
 authority:

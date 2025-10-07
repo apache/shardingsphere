@@ -19,9 +19,9 @@ package org.apache.shardingsphere.test.e2e.operation.transaction.engine.base;
 
 import lombok.Getter;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
-import org.apache.shardingsphere.test.e2e.env.container.atomic.enums.AdapterType;
-import org.apache.shardingsphere.test.e2e.operation.transaction.env.TransactionE2EEnvironment;
-import org.apache.shardingsphere.test.e2e.operation.transaction.env.enums.TransactionE2EEnvTypeEnum;
+import org.apache.shardingsphere.test.e2e.env.runtime.E2ETestEnvironment;
+import org.apache.shardingsphere.test.e2e.env.runtime.type.ArtifactEnvironment.Adapter;
+import org.apache.shardingsphere.test.e2e.env.runtime.type.RunEnvironment.Type;
 import org.apache.shardingsphere.test.e2e.operation.transaction.framework.container.compose.TransactionBaseContainerComposer;
 import org.apache.shardingsphere.test.e2e.operation.transaction.framework.container.compose.TransactionDockerContainerComposer;
 import org.apache.shardingsphere.test.e2e.operation.transaction.framework.container.compose.TransactionNativeContainerComposer;
@@ -34,8 +34,6 @@ import javax.sql.DataSource;
  */
 @Getter
 public final class TransactionContainerComposer implements AutoCloseable {
-    
-    private static final TransactionE2EEnvironment ENV = TransactionE2EEnvironment.getInstance();
     
     private final DatabaseType databaseType;
     
@@ -50,13 +48,15 @@ public final class TransactionContainerComposer implements AutoCloseable {
     }
     
     private TransactionBaseContainerComposer initContainerComposer(final TransactionTestParameter testParam) {
-        TransactionBaseContainerComposer result = TransactionE2EEnvTypeEnum.NONE == ENV.getItEnvType() ? new TransactionNativeContainerComposer() : new TransactionDockerContainerComposer(testParam);
+        TransactionBaseContainerComposer result = Type.NATIVE == E2ETestEnvironment.getInstance().getRunEnvironment().getType()
+                ? new TransactionNativeContainerComposer()
+                : new TransactionDockerContainerComposer(testParam);
         result.start();
         return result;
     }
     
     private boolean isProxyAdapter(final TransactionTestParameter testParam) {
-        return AdapterType.PROXY.getValue().equalsIgnoreCase(testParam.getAdapter());
+        return Adapter.PROXY.getValue().equalsIgnoreCase(testParam.getAdapter());
     }
     
     private DataSource createProxyDataSource() {

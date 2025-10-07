@@ -18,10 +18,11 @@
 package org.apache.shardingsphere.data.pipeline.core.consistencycheck.table;
 
 import com.google.common.base.Strings;
+import org.apache.shardingsphere.data.pipeline.core.consistencycheck.result.SingleTableInventoryCalculatedResult;
 import org.apache.shardingsphere.data.pipeline.core.consistencycheck.result.TableDataConsistencyCheckIgnoredType;
 import org.apache.shardingsphere.data.pipeline.core.consistencycheck.result.TableDataConsistencyCheckResult;
-import org.apache.shardingsphere.data.pipeline.core.consistencycheck.table.calculator.RecordSingleTableInventoryCalculator;
-import org.apache.shardingsphere.data.pipeline.core.consistencycheck.table.calculator.SingleTableInventoryCalculator;
+import org.apache.shardingsphere.data.pipeline.core.consistencycheck.table.calculator.RecordSingleTableInventoryCheckCalculator;
+import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.inventory.query.calculator.SingleTableInventoryCalculator;
 import org.apache.shardingsphere.data.pipeline.core.consistencycheck.table.calculator.StreamingRangeType;
 import org.apache.shardingsphere.data.pipeline.core.exception.param.PipelineInvalidParameterException;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
@@ -127,8 +128,8 @@ public final class DataMatchTableDataConsistencyChecker implements TableDataCons
         }
         
         @Override
-        protected SingleTableInventoryCalculator buildSingleTableInventoryCalculator() {
-            return new RecordSingleTableInventoryCalculator(chunkSize, streamingRangeType);
+        protected SingleTableInventoryCalculator<SingleTableInventoryCalculatedResult> buildSingleTableInventoryCalculator() {
+            return new RecordSingleTableInventoryCheckCalculator(chunkSize, streamingRangeType);
         }
     }
 }

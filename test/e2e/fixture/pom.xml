@@ -174,9 +174,9 @@
     
     <profiles>
         <profile>
-            <id>it.env.docker</id>
+            <id>e2e.env.docker</id>
             <properties>
-                <it.cluster.env.type>DOCKER</it.cluster.env.type>
+                <e2e.run.type>DOCKER</e2e.run.type>
             </properties>
             <dependencies>
                 <dependency>

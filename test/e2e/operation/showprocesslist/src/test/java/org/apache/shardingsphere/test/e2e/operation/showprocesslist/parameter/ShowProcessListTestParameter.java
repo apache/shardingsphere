@@ -21,6 +21,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
+import org.apache.shardingsphere.test.e2e.env.runtime.type.ArtifactEnvironment.Mode;
 
 @RequiredArgsConstructor
 @Getter
@@ -31,7 +32,7 @@ public final class ShowProcessListTestParameter {
     
     private final String scenario;
     
-    private final String runMode;
+    private final Mode mode;
     
-    private final String governanceCenter;
+    private final String regCenterType;
 }

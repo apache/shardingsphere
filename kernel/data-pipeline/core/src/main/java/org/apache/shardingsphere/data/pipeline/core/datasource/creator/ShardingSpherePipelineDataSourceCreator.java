@@ -19,6 +19,7 @@ package org.apache.shardingsphere.data.pipeline.core.datasource.creator;
 
 import org.apache.shardingsphere.authority.yaml.config.YamlAuthorityRuleConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.type.ShardingSpherePipelineDataSourceConfiguration;
+import org.apache.shardingsphere.data.pipeline.core.context.PipelineContextManager;
 import org.apache.shardingsphere.data.pipeline.core.datasource.yaml.PipelineYamlRuleConfigurationReviser;
 import org.apache.shardingsphere.data.pipeline.spi.PipelineDataSourceCreator;
 import org.apache.shardingsphere.driver.api.ShardingSphereDataSourceFactory;
@@ -35,11 +36,13 @@ import org.apache.shardingsphere.infra.yaml.config.pojo.mode.YamlPersistReposito
 import org.apache.shardingsphere.infra.yaml.config.swapper.mode.YamlModeConfigurationSwapper;
 import org.apache.shardingsphere.infra.yaml.config.swapper.resource.YamlDataSourceConfigurationSwapper;
 import org.apache.shardingsphere.infra.yaml.config.swapper.rule.YamlRuleConfigurationSwapperEngine;
+import org.apache.shardingsphere.mode.manager.ContextManager;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
-import java.util.Arrays;
 import java.util.Collection;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
@@ -52,7 +55,7 @@ public final class ShardingSpherePipelineDataSourceCreator implements PipelineDa
     public DataSource create(final Object dataSourceConfig) throws SQLException {
         YamlRootConfiguration yamlRootConfig = YamlEngine.unmarshal(YamlEngine.marshal(dataSourceConfig), YamlRootConfiguration.class);
         removeAuthorityRuleConfiguration(yamlRootConfig);
-        updateConfigurationProperties(yamlRootConfig);
+        yamlRootConfig.setProps(createConfigurationProperties());
         reviseYamlRuleConfiguration(yamlRootConfig);
         yamlRootConfig.setMode(createStandaloneModeConfiguration());
         return createShardingSphereDataSource(yamlRootConfig);
@@ -62,18 +65,34 @@ public final class ShardingSpherePipelineDataSourceCreator implements PipelineDa
         yamlRootConfig.getRules().removeIf(YamlAuthorityRuleConfiguration.class::isInstance);
     }
     
-    private void updateConfigurationProperties(final YamlRootConfiguration yamlRootConfig) {
-        Properties newProps = new Properties();
-        for (String each : Arrays.asList(ConfigurationPropertyKey.KERNEL_EXECUTOR_SIZE.getKey(), ConfigurationPropertyKey.SQL_SHOW.getKey())) {
-            Object value = yamlRootConfig.getProps().get(each);
+    private Properties createConfigurationProperties() {
+        Properties realtimeProps = getRealtimeProperties();
+        Properties result = new Properties();
+        for (String each : getConfigurationPropertyKeys()) {
+            Object value = realtimeProps.get(each);
             if (null != value) {
-                newProps.put(each, value);
+                result.put(each, value);
             }
         }
-        newProps.put(TemporaryConfigurationPropertyKey.SYSTEM_SCHEMA_METADATA_ASSEMBLY_ENABLED.getKey(), String.valueOf(Boolean.FALSE));
+        result.put(TemporaryConfigurationPropertyKey.SYSTEM_SCHEMA_METADATA_ASSEMBLY_ENABLED.getKey(), String.valueOf(Boolean.FALSE));
         // Set a large enough value to enable ConnectionMode.MEMORY_STRICTLY, make sure streaming query work.
-        newProps.put(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY.getKey(), 100000);
-        yamlRootConfig.setProps(newProps);
+        result.put(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY.getKey(), 100000);
+        return result;
+    }
+    
+    private Properties getRealtimeProperties() {
+        ContextManager contextManager = PipelineContextManager.getProxyContext();
+        if (null == contextManager) {
+            return new Properties();
+        }
+        return contextManager.getMetaDataContexts().getMetaData().getProps().getProps();
+    }
+    
+    private List<String> getConfigurationPropertyKeys() {
+        List<String> result = new LinkedList<>();
+        result.add(ConfigurationPropertyKey.KERNEL_EXECUTOR_SIZE.getKey());
+        result.add(ConfigurationPropertyKey.SQL_SHOW.getKey());
+        return result;
     }
     
     @SuppressWarnings("unchecked")

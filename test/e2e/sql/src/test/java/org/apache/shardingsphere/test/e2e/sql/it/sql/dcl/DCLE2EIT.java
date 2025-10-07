@@ -18,12 +18,12 @@
 package org.apache.shardingsphere.test.e2e.sql.it.sql.dcl;
 
 import lombok.Setter;
-import org.apache.shardingsphere.test.e2e.env.runtime.scenario.authority.AuthorityEnvironmentManager;
-import org.apache.shardingsphere.test.e2e.env.runtime.scenario.path.ScenarioCommonPath;
+import org.apache.shardingsphere.test.e2e.env.runtime.E2ETestEnvironment;
+import org.apache.shardingsphere.test.e2e.env.runtime.type.scenario.authority.AuthorityEnvironmentManager;
+import org.apache.shardingsphere.test.e2e.env.runtime.type.scenario.path.ScenarioCommonPath;
 import org.apache.shardingsphere.test.e2e.sql.env.SQLE2EEnvironmentEngine;
 import org.apache.shardingsphere.test.e2e.sql.framework.SQLE2EITArgumentsProvider;
 import org.apache.shardingsphere.test.e2e.sql.framework.SQLE2EITSettings;
-import org.apache.shardingsphere.test.e2e.sql.framework.param.array.E2ETestParameterFactory;
 import org.apache.shardingsphere.test.e2e.sql.framework.param.model.AssertionTestParameter;
 import org.apache.shardingsphere.test.e2e.sql.framework.type.SQLCommandType;
 import org.apache.shardingsphere.test.e2e.sql.framework.type.SQLExecuteType;
@@ -57,7 +57,7 @@ class DCLE2EIT implements SQLE2EIT {
         SQLE2EITContext context = new SQLE2EITContext(testParam);
         try (
                 AuthorityEnvironmentManager ignored = new AuthorityEnvironmentManager(
-                        new ScenarioCommonPath(testParam.getScenario()).getAuthorityFile(), environmentEngine.getActualDataSourceMap(), testParam.getDatabaseType())) {
+                        new ScenarioCommonPath(testParam.getScenario()).getAuthorityFile(), environmentEngine.getActualDataSourceMap().values(), testParam.getDatabaseType())) {
             assertExecuteUpdate(context);
         }
     }
@@ -88,7 +88,7 @@ class DCLE2EIT implements SQLE2EIT {
         SQLE2EITContext context = new SQLE2EITContext(testParam);
         try (
                 AuthorityEnvironmentManager ignored = new AuthorityEnvironmentManager(
-                        new ScenarioCommonPath(testParam.getScenario()).getAuthorityFile(), environmentEngine.getActualDataSourceMap(), testParam.getDatabaseType())) {
+                        new ScenarioCommonPath(testParam.getScenario()).getAuthorityFile(), environmentEngine.getActualDataSourceMap().values(), testParam.getDatabaseType())) {
             assertExecute(context);
         }
     }
@@ -109,6 +109,6 @@ class DCLE2EIT implements SQLE2EIT {
     }
     
     private static boolean isEnabled() {
-        return E2ETestParameterFactory.containsTestParameter();
+        return E2ETestEnvironment.getInstance().isValid();
     }
 }

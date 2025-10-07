@@ -21,8 +21,9 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.infra.util.datetime.DateTimeFormatterFactory;
-import org.apache.shardingsphere.test.e2e.env.runtime.scenario.path.ScenarioDataPath;
-import org.apache.shardingsphere.test.e2e.env.runtime.scenario.path.ScenarioDataPath.Type;
+import org.apache.shardingsphere.test.e2e.env.runtime.type.ArtifactEnvironment.Mode;
+import org.apache.shardingsphere.test.e2e.env.runtime.type.scenario.path.ScenarioDataPath;
+import org.apache.shardingsphere.test.e2e.env.runtime.type.scenario.path.ScenarioDataPath.Type;
 import org.apache.shardingsphere.test.e2e.sql.cases.dataset.metadata.DataSetColumn;
 import org.apache.shardingsphere.test.e2e.sql.cases.dataset.metadata.DataSetMetaData;
 import org.apache.shardingsphere.test.e2e.sql.cases.dataset.row.DataSetRow;
@@ -86,9 +87,9 @@ public abstract class BaseDQLE2EIT implements SQLE2EIT {
             synchronized (FILLED_SUITES) {
                 if (!FILLED_SUITES.contains(cacheKey)) {
                     new DataSetEnvironmentManager(
-                            new ScenarioDataPath(testParam.getScenario()).getDataSetFile(Type.ACTUAL), getEnvironmentEngine().getActualDataSourceMap(), testParam.getDatabaseType()).fillData();
+                            new ScenarioDataPath(testParam.getScenario(), Type.ACTUAL).getDataSetFile(), getEnvironmentEngine().getActualDataSourceMap(), testParam.getDatabaseType()).fillData();
                     new DataSetEnvironmentManager(
-                            new ScenarioDataPath(testParam.getScenario()).getDataSetFile(Type.EXPECTED), getEnvironmentEngine().getExpectedDataSourceMap(), testParam.getDatabaseType()).fillData();
+                            new ScenarioDataPath(testParam.getScenario(), Type.EXPECTED).getDataSetFile(), getEnvironmentEngine().getExpectedDataSourceMap(), testParam.getDatabaseType()).fillData();
                     FILLED_SUITES.add(cacheKey);
                 }
             }
@@ -133,7 +134,7 @@ public abstract class BaseDQLE2EIT implements SQLE2EIT {
             if ("db_tbl_sql_federation".equals(testParam.getScenario())) {
                 continue;
             }
-            if ("jdbc".equals(testParam.getAdapter()) && "Cluster".equals(testParam.getMode()) && "encrypt".equals(testParam.getScenario())
+            if ("jdbc".equals(testParam.getAdapter()) && Mode.CLUSTER == testParam.getMode() && "encrypt".equals(testParam.getScenario())
                     || "MySQL".equals(testParam.getDatabaseType().getType()) && "passthrough".equals(testParam.getScenario())) {
                 // FIXME correct columnType with proxy adapter and other jdbc scenario
                 assertThat(actualResultSetMetaData.getColumnType(i + 1), is(expectedResultSetMetaData.getColumnType(i + 1)));

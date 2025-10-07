@@ -29,12 +29,12 @@
         <column name="like_query_type" />
         <column name="like_query_props" />
     </metadata>
-    <row values="t_user| user_name| user_name_cipher| | user_name_like| AES| {&quot;aes-key-value&quot;:&quot;123456abc&quot;,&quot;digest-algorithm-name&quot;:&quot;SHA-1&quot;}| | | IT.ENCRYPT.LIKE.FIXTURE| {&quot;mask&quot;:4093}"/>
+    <row values="t_user| user_name| user_name_cipher| | user_name_like| AES| {&quot;aes-key-value&quot;:&quot;123456abc&quot;,&quot;digest-algorithm-name&quot;:&quot;SHA-1&quot;}| | | E2E.ENCRYPT.LIKE.FIXTURE| {&quot;mask&quot;:4093}"/>
     <row values="t_user| password| password_cipher| | | AES| {&quot;aes-key-value&quot;:&quot;123456abc&quot;,&quot;digest-algorithm-name&quot;:&quot;SHA-1&quot;}| | | | "/>
     <row values="t_user| email| email_cipher| | | AES| {&quot;aes-key-value&quot;:&quot;123456abc&quot;,&quot;digest-algorithm-name&quot;:&quot;SHA-1&quot;}| | | | "/>
-    <row values="t_user| telephone| user_telephone_cipher| | user_telephone_like| AES| {&quot;aes-key-value&quot;:&quot;123456abc&quot;,&quot;digest-algorithm-name&quot;:&quot;SHA-1&quot;}| | | IT.ENCRYPT.LIKE.FIXTURE| {&quot;mask&quot;:4093}"/>
+    <row values="t_user| telephone| user_telephone_cipher| | user_telephone_like| AES| {&quot;aes-key-value&quot;:&quot;123456abc&quot;,&quot;digest-algorithm-name&quot;:&quot;SHA-1&quot;}| | | E2E.ENCRYPT.LIKE.FIXTURE| {&quot;mask&quot;:4093}"/>
     <row values="t_user_details| number| number_cipher| | | AES| {&quot;aes-key-value&quot;:&quot;123456abc&quot;,&quot;digest-algorithm-name&quot;:&quot;SHA-1&quot;}| | | | "/>
     <row values="t_user_details| number_new| number_new_cipher| | | AES| {&quot;aes-key-value&quot;:&quot;123456abc&quot;,&quot;digest-algorithm-name&quot;:&quot;SHA-1&quot;}| | | | "/>
-    <row values="t_merchant| business_code| business_code_cipher| | business_code_like| AES| {&quot;aes-key-value&quot;:&quot;123456abc&quot;,&quot;digest-algorithm-name&quot;:&quot;SHA-1&quot;}| | | IT.ENCRYPT.LIKE.FIXTURE | {&quot;mask&quot;:4093} "/>
-    <row values="t_merchant| telephone| merchant_telephone_cipher| | merchant_telephone_like| AES| {&quot;aes-key-value&quot;:&quot;123456abc&quot;,&quot;digest-algorithm-name&quot;:&quot;SHA-1&quot;}| | | IT.ENCRYPT.LIKE.FIXTURE | {&quot;mask&quot;:4093} "/>
+    <row values="t_merchant| business_code| business_code_cipher| | business_code_like| AES| {&quot;aes-key-value&quot;:&quot;123456abc&quot;,&quot;digest-algorithm-name&quot;:&quot;SHA-1&quot;}| | | E2E.ENCRYPT.LIKE.FIXTURE | {&quot;mask&quot;:4093} "/>
+    <row values="t_merchant| telephone| merchant_telephone_cipher| | merchant_telephone_like| AES| {&quot;aes-key-value&quot;:&quot;123456abc&quot;,&quot;digest-algorithm-name&quot;:&quot;SHA-1&quot;}| | | E2E.ENCRYPT.LIKE.FIXTURE | {&quot;mask&quot;:4093} "/>
 </dataset>

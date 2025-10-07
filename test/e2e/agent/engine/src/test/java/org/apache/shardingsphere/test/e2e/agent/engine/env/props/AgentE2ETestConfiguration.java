@@ -19,6 +19,7 @@ package org.apache.shardingsphere.test.e2e.agent.engine.env.props;
 
 import com.google.common.base.Strings;
 import lombok.Getter;
+import org.apache.shardingsphere.test.e2e.env.runtime.EnvironmentPropertiesLoader;
 
 import java.util.Properties;
 
@@ -43,13 +44,13 @@ public final class AgentE2ETestConfiguration {
     private final long collectDataWaitSeconds;
     
     private AgentE2ETestConfiguration() {
-        Properties envProps = AgentE2EEnvironmentProperties.loadProperties("env/engine-env.properties");
-        adapter = envProps.getProperty("it.env.adapter");
-        pluginType = envProps.getProperty("it.env.plugin.type");
-        pluginImageName = envProps.getProperty("it.env.plugin.image");
-        logEnabled = Boolean.parseBoolean(envProps.getProperty("it.env.log.enabled", Boolean.FALSE.toString()));
-        defaultExposePort = Integer.parseInt(envProps.getProperty("it.env.plugin.default.expose.port", "0"));
-        collectDataWaitSeconds = Long.parseLong(envProps.getProperty("it.env.collect.data.wait.seconds", "0"));
+        Properties envProps = EnvironmentPropertiesLoader.loadProperties("env/engine-env.properties");
+        adapter = envProps.getProperty("e2e.env.adapter");
+        pluginType = envProps.getProperty("e2e.env.plugin.type");
+        pluginImageName = envProps.getProperty("e2e.env.plugin.image");
+        logEnabled = Boolean.parseBoolean(envProps.getProperty("e2e.env.log.enabled", Boolean.FALSE.toString()));
+        defaultExposePort = Integer.parseInt(envProps.getProperty("e2e.env.plugin.default.expose.port", "0"));
+        collectDataWaitSeconds = Long.parseLong(envProps.getProperty("e2e.env.collect.data.wait.seconds", "0"));
     }
     
     /**

@@ -28,7 +28,7 @@ public final class TransactionTestConstants {
     
     public static final String MYSQL = "MySQL";
     
-    public static final String OPENGAUSS = "OpenGauss";
+    public static final String OPENGAUSS = "openGauss";
     
     public static final String POSTGRESQL = "PostgreSQL";
     

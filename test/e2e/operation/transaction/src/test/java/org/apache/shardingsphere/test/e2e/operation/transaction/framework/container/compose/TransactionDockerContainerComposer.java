@@ -22,23 +22,22 @@ import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
-import org.apache.shardingsphere.test.e2e.env.container.atomic.DockerITContainer;
-import org.apache.shardingsphere.test.e2e.env.container.atomic.adapter.AdapterContainer;
-import org.apache.shardingsphere.test.e2e.env.container.atomic.adapter.AdapterContainerFactory;
-import org.apache.shardingsphere.test.e2e.env.container.atomic.adapter.config.AdaptorContainerConfiguration;
-import org.apache.shardingsphere.test.e2e.env.container.atomic.adapter.impl.ShardingSphereJdbcEmbeddedContainer;
-import org.apache.shardingsphere.test.e2e.env.container.atomic.adapter.impl.ShardingSphereProxyEmbeddedContainer;
-import org.apache.shardingsphere.test.e2e.env.container.atomic.enums.AdapterMode;
-import org.apache.shardingsphere.test.e2e.env.container.atomic.enums.AdapterType;
-import org.apache.shardingsphere.test.e2e.env.container.atomic.governance.GovernanceContainer;
-import org.apache.shardingsphere.test.e2e.env.container.atomic.governance.impl.ZookeeperContainer;
-import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.StorageContainer;
-import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.StorageContainerFactory;
-import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.option.StorageContainerConfigurationOption;
-import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.type.docker.DockerStorageContainer;
-import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.type.natived.NativeStorageContainer;
-import org.apache.shardingsphere.test.e2e.operation.transaction.env.TransactionE2EEnvironment;
-import org.apache.shardingsphere.test.e2e.operation.transaction.env.enums.TransactionE2EEnvTypeEnum;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
+import org.apache.shardingsphere.test.e2e.env.container.DockerE2EContainer;
+import org.apache.shardingsphere.test.e2e.env.container.adapter.AdapterContainer;
+import org.apache.shardingsphere.test.e2e.env.container.adapter.AdapterContainerFactory;
+import org.apache.shardingsphere.test.e2e.env.container.adapter.config.AdaptorContainerConfiguration;
+import org.apache.shardingsphere.test.e2e.env.container.adapter.impl.ShardingSphereJdbcEmbeddedContainer;
+import org.apache.shardingsphere.test.e2e.env.container.adapter.impl.ShardingSphereProxyEmbeddedContainer;
+import org.apache.shardingsphere.test.e2e.env.container.governance.GovernanceContainer;
+import org.apache.shardingsphere.test.e2e.env.container.governance.option.GovernanceContainerOption;
+import org.apache.shardingsphere.test.e2e.env.container.storage.StorageContainer;
+import org.apache.shardingsphere.test.e2e.env.container.storage.option.StorageContainerOption;
+import org.apache.shardingsphere.test.e2e.env.container.storage.type.DockerStorageContainer;
+import org.apache.shardingsphere.test.e2e.env.container.storage.type.NativeStorageContainer;
+import org.apache.shardingsphere.test.e2e.env.runtime.E2ETestEnvironment;
+import org.apache.shardingsphere.test.e2e.env.runtime.type.ArtifactEnvironment.Adapter;
+import org.apache.shardingsphere.test.e2e.env.runtime.type.RunEnvironment.Type;
 import org.apache.shardingsphere.test.e2e.operation.transaction.framework.container.config.TransactionProxyContainerConfigurationFactory;
 import org.apache.shardingsphere.test.e2e.operation.transaction.framework.param.TransactionTestParameter;
 
@@ -61,21 +60,20 @@ public final class TransactionDockerContainerComposer extends TransactionBaseCon
     public TransactionDockerContainerComposer(final TransactionTestParameter testParam) {
         super(testParam.getScenario());
         DatabaseType databaseType = testParam.getDatabaseType();
-        GovernanceContainer governanceContainer = getContainers().registerContainer(new ZookeeperContainer());
-        TransactionE2EEnvTypeEnum envType = TransactionE2EEnvironment.getInstance().getItEnvType();
-        if (TransactionE2EEnvTypeEnum.DOCKER == envType) {
-            storageContainer = getContainers().registerContainer((DockerStorageContainer) StorageContainerFactory.newInstance(databaseType,
-                    testParam.getStorageContainerImage(), DatabaseTypedSPILoader.findService(StorageContainerConfigurationOption.class, databaseType).orElse(null), testParam.getScenario()));
+        GovernanceContainer governanceContainer = getContainers().registerContainer(new GovernanceContainer(TypedSPILoader.getService(GovernanceContainerOption.class, "ZooKeeper")));
+        Type type = E2ETestEnvironment.getInstance().getRunEnvironment().getType();
+        if (Type.DOCKER == type) {
+            storageContainer = getContainers().registerContainer(
+                    new DockerStorageContainer(testParam.getDatabaseContainerImage(), DatabaseTypedSPILoader.getService(StorageContainerOption.class, databaseType), testParam.getScenario()));
         } else {
             storageContainer = getContainers().registerContainer(new NativeStorageContainer(databaseType, testParam.getScenario()));
         }
-        if (AdapterType.PROXY.getValue().equalsIgnoreCase(testParam.getAdapter())) {
+        if (Adapter.PROXY.getValue().equalsIgnoreCase(testParam.getAdapter())) {
             jdbcContainer = null;
             AdaptorContainerConfiguration containerConfig = TransactionProxyContainerConfigurationFactory.newInstance(testParam.getScenario(), databaseType, testParam.getPortBindings());
-            proxyContainer =
-                    AdapterContainerFactory.newInstance(AdapterMode.CLUSTER, AdapterType.PROXY, databaseType, testParam.getScenario(), containerConfig, storageContainer, envType.name());
-            if (proxyContainer instanceof DockerITContainer) {
-                ((DockerITContainer) proxyContainer).dependsOn(governanceContainer, storageContainer);
+            proxyContainer = AdapterContainerFactory.newInstance(Adapter.PROXY, databaseType, testParam.getScenario(), containerConfig, storageContainer, type);
+            if (proxyContainer instanceof DockerE2EContainer) {
+                ((DockerE2EContainer) proxyContainer).dependsOn(governanceContainer, storageContainer);
             }
             if (proxyContainer instanceof ShardingSphereProxyEmbeddedContainer) {
                 ((ShardingSphereProxyEmbeddedContainer) proxyContainer).dependsOn(governanceContainer, storageContainer);
@@ -83,8 +81,8 @@ public final class TransactionDockerContainerComposer extends TransactionBaseCon
             getContainers().registerContainer(proxyContainer);
         } else {
             proxyContainer = null;
-            ShardingSphereJdbcEmbeddedContainer jdbcContainer = new ShardingSphereJdbcEmbeddedContainer(storageContainer,
-                    Objects.requireNonNull(getShardingSphereConfigResource(testParam)).getFile());
+            ShardingSphereJdbcEmbeddedContainer jdbcContainer = new ShardingSphereJdbcEmbeddedContainer(
+                    storageContainer, Objects.requireNonNull(getShardingSphereConfigResource(testParam)).getFile());
             this.jdbcContainer = getContainers().registerContainer(jdbcContainer);
         }
     }

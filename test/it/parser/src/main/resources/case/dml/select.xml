@@ -11769,4 +11769,35 @@
             <simple-table name="Person" start-index="14" stop-index="19" />
         </from>
     </select>
+
+    <select sql-case-id="select_force_single_node_plan_hint">
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" />
+        </projections>
+        <from>
+            <simple-table name="Person" start-index="14" stop-index="19" />
+        </from>
+    </select>
+
+    <select sql-case-id="select_querytraceon_hint">
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" />
+        </projections>
+        <from>
+            <simple-table name="Person" start-index="14" stop-index="19" />
+        </from>
+    </select>
+    
+    <select sql-case-id="select_with_sample_clause">
+        <projections start-index="7" stop-index="13">
+            <expression-projection text="1" alias="C1" start-index="7" stop-index="13">
+                <expr start-index="7" stop-index="7">
+                    <literal-expression value="1" start-index="7" stop-index="7"/>
+                </expr>
+            </expression-projection>
+        </projections>
+        <from start-index="20" stop-index="68">
+            <simple-table alias="T_ORDER" name="T_ORDER" start-index="20" stop-index="68"/>
+        </from>
+    </select>
 </sql-parser-test-cases>

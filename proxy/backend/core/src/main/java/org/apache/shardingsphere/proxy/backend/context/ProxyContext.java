@@ -24,12 +24,10 @@ import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.DatabaseTypeEngine;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnit;
-import org.apache.shardingsphere.infra.state.instance.InstanceStateContext;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.proxy.backend.connector.jdbc.datasource.JDBCBackendDataSource;
 
 import java.util.Collection;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -80,15 +78,6 @@ public final class ProxyContext {
      */
     public Collection<String> getAllDatabaseNames() {
         return contextManager.getMetaDataContexts().getMetaData().getAllDatabases().stream().map(ShardingSphereDatabase::getName).collect(Collectors.toList());
-    }
-    
-    /**
-     * Get instance state context.
-     *
-     * @return instance state context
-     */
-    public Optional<InstanceStateContext> getInstanceStateContext() {
-        return null == contextManager.getComputeNodeInstanceContext() ? Optional.empty() : Optional.ofNullable(contextManager.getComputeNodeInstanceContext().getInstance().getState());
     }
     
     /**

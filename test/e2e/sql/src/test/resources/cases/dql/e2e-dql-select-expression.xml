@@ -30,11 +30,11 @@
     </test-case>
     
     <test-case sql="select t.*,o.item_id as item_id,(case when t.status = 'init' then '已启用' when t.status = 'failed' then '已停用' end) as stateName
-    from t_order t left join t_order_item as o on o.order_id =t.order_id where t.order_id=1000 limit 1" db-types="MySQL,H2" scenario-types="tbl,readwrite_splitting">
+    from t_order t left join t_order_item as o on o.order_id =t.order_id where t.order_id=1000 limit 1" db-types="MySQL" scenario-types="tbl,readwrite_splitting">
         <assertion expected-data-source-name="read_dataset" />
     </test-case>
     
-    <test-case sql="select case when (select 1 from t_order t where exists (select 1 from t_order t where t.user_id = i.item_id)) = '1' then '已启用' else '已停用' end as status from t_order_item i" db-types="MySQL,H2" scenario-types="encrypt">
+    <test-case sql="select case when (select 1 from t_order t where exists (select 1 from t_order t where t.user_id = i.item_id)) = '1' then '已启用' else '已停用' end as status from t_order_item i" db-types="MySQL" scenario-types="encrypt">
         <assertion expected-data-source-name="read_dataset" />
     </test-case>
     

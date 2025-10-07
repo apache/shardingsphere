@@ -20,8 +20,8 @@ package org.apache.shardingsphere.test.e2e.operation.pipeline.framework.param;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
-import org.apache.shardingsphere.test.e2e.operation.pipeline.env.PipelineE2EEnvironment;
-import org.apache.shardingsphere.test.e2e.operation.pipeline.env.enums.PipelineEnvTypeEnum;
+import org.apache.shardingsphere.test.e2e.env.runtime.E2ETestEnvironment;
+import org.apache.shardingsphere.test.e2e.env.runtime.type.RunEnvironment.Type;
 
 import java.util.Arrays;
 
@@ -38,9 +38,12 @@ public final class PipelineE2ECondition {
      * @return enabled or not
      */
     public static boolean isEnabled(final DatabaseType... databaseTypes) {
-        if (PipelineEnvTypeEnum.NONE == PipelineE2EEnvironment.getInstance().getItEnvType()) {
+        if (null == E2ETestEnvironment.getInstance().getRunEnvironment().getType()) {
             return false;
         }
-        return 0 == databaseTypes.length || Arrays.stream(databaseTypes).anyMatch(each -> !PipelineE2EEnvironment.getInstance().listStorageContainerImages(each).isEmpty());
+        if (0 != databaseTypes.length && Type.NATIVE == E2ETestEnvironment.getInstance().getRunEnvironment().getType()) {
+            return true;
+        }
+        return 0 == databaseTypes.length || Arrays.stream(databaseTypes).anyMatch(each -> !E2ETestEnvironment.getInstance().getDockerEnvironment().getDatabaseImages(each).isEmpty());
     }
 }

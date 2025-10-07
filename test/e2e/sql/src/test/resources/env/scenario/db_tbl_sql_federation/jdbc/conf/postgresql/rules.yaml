@@ -22,7 +22,7 @@ dataSources:
     url: jdbc:postgresql://postgresql.db_tbl_sql_federation.host:5432/sql_federation_ds_0?ssl=on&sslmode=prefer
     dataSourceClassName: com.zaxxer.hikari.HikariDataSource
     username: test_user
-    password: Test@123
+    password: Test@9876
     connectionTimeoutMilliseconds: 30000
     idleTimeoutMilliseconds: 60000
     maxLifetimeMilliseconds: 1800000
@@ -32,7 +32,7 @@ dataSources:
     url: jdbc:postgresql://postgresql.db_tbl_sql_federation.host:5432/sql_federation_ds_1?ssl=on&sslmode=prefer
     dataSourceClassName: com.zaxxer.hikari.HikariDataSource
     username: test_user
-    password: Test@123
+    password: Test@9876
     connectionTimeoutMilliseconds: 30000
     idleTimeoutMilliseconds: 60000
     maxLifetimeMilliseconds: 1800000
@@ -42,7 +42,7 @@ dataSources:
     url: jdbc:postgresql://postgresql.db_tbl_sql_federation.host:5432/sql_federation_ds_2?ssl=on&sslmode=prefer
     dataSourceClassName: com.zaxxer.hikari.HikariDataSource
     username: test_user
-    password: Test@123
+    password: Test@9876
     connectionTimeoutMilliseconds: 30000
     idleTimeoutMilliseconds: 60000
     maxLifetimeMilliseconds: 1800000
@@ -52,7 +52,7 @@ dataSources:
     url: jdbc:postgresql://postgresql.db_tbl_sql_federation.host:5432/sql_federation_ds_3?ssl=on&sslmode=prefer
     dataSourceClassName: com.zaxxer.hikari.HikariDataSource
     username: test_user
-    password: Test@123
+    password: Test@9876
     connectionTimeoutMilliseconds: 30000
     idleTimeoutMilliseconds: 60000
     maxLifetimeMilliseconds: 1800000
@@ -62,7 +62,7 @@ dataSources:
     url: jdbc:postgresql://postgresql.db_tbl_sql_federation.host:5432/sql_federation_ds_4?ssl=on&sslmode=prefer
     dataSourceClassName: com.zaxxer.hikari.HikariDataSource
     username: test_user
-    password: Test@123
+    password: Test@9876
     connectionTimeoutMilliseconds: 30000
     idleTimeoutMilliseconds: 60000
     maxLifetimeMilliseconds: 1800000
@@ -72,7 +72,7 @@ dataSources:
     url: jdbc:postgresql://postgresql.db_tbl_sql_federation.host:5432/sql_federation_ds_5?ssl=on&sslmode=prefer
     dataSourceClassName: com.zaxxer.hikari.HikariDataSource
     username: test_user
-    password: Test@123
+    password: Test@9876
     connectionTimeoutMilliseconds: 30000
     idleTimeoutMilliseconds: 60000
     maxLifetimeMilliseconds: 1800000
@@ -82,7 +82,7 @@ dataSources:
     url: jdbc:postgresql://postgresql.db_tbl_sql_federation.host:5432/sql_federation_ds_6?ssl=on&sslmode=prefer
     dataSourceClassName: com.zaxxer.hikari.HikariDataSource
     username: test_user
-    password: Test@123
+    password: Test@9876
     connectionTimeoutMilliseconds: 30000
     idleTimeoutMilliseconds: 60000
     maxLifetimeMilliseconds: 1800000
@@ -92,7 +92,7 @@ dataSources:
     url: jdbc:postgresql://postgresql.db_tbl_sql_federation.host:5432/sql_federation_ds_7?ssl=on&sslmode=prefer
     dataSourceClassName: com.zaxxer.hikari.HikariDataSource
     username: test_user
-    password: Test@123
+    password: Test@9876
     connectionTimeoutMilliseconds: 30000
     idleTimeoutMilliseconds: 60000
     maxLifetimeMilliseconds: 1800000
@@ -102,7 +102,7 @@ dataSources:
     url: jdbc:postgresql://postgresql.db_tbl_sql_federation.host:5432/sql_federation_ds_8?ssl=on&sslmode=prefer
     dataSourceClassName: com.zaxxer.hikari.HikariDataSource
     username: test_user
-    password: Test@123
+    password: Test@9876
     connectionTimeoutMilliseconds: 30000
     idleTimeoutMilliseconds: 60000
     maxLifetimeMilliseconds: 1800000
@@ -112,7 +112,7 @@ dataSources:
     url: jdbc:postgresql://postgresql.db_tbl_sql_federation.host:5432/sql_federation_ds_9?ssl=on&sslmode=prefer
     dataSourceClassName: com.zaxxer.hikari.HikariDataSource
     username: test_user
-    password: Test@123
+    password: Test@9876
     connectionTimeoutMilliseconds: 30000
     idleTimeoutMilliseconds: 60000
     maxLifetimeMilliseconds: 1800000
@@ -130,21 +130,21 @@ rules:
         databaseStrategy:
           standard:
             shardingColumn: user_id
-            shardingAlgorithmName: it_standard_fixture
+            shardingAlgorithmName: e2e_standard_fixture
         tableStrategy:
           standard:
             shardingColumn: order_id
-            shardingAlgorithmName: it_standard_fixture
+            shardingAlgorithmName: e2e_standard_fixture
       t_order_item:
         actualDataNodes: sql_federation_ds_${0..9}.t_order_item_${0..9}
         databaseStrategy:
           standard:
             shardingColumn: user_id
-            shardingAlgorithmName: it_standard_fixture
+            shardingAlgorithmName: e2e_standard_fixture
         tableStrategy:
           standard:
             shardingColumn: order_id
-            shardingAlgorithmName: it_standard_fixture
+            shardingAlgorithmName: e2e_standard_fixture
         keyGenerateStrategy:
           column: item_id
           keyGeneratorName: auto_increment
@@ -155,16 +155,16 @@ rules:
     bindingTables:
       - ref_0:t_order,t_order_item
     shardingAlgorithms:
-      it_standard_fixture:
-        type: IT.STANDARD.FIXTURE
+      e2e_standard_fixture:
+        type: E2E.SHARDING.STANDARD.FIXTURE
 
     keyGenerators:
       auto_increment:
-        type: IT.AUTO_INCREMENT.FIXTURE
+        type: E2E.AUTO_INCREMENT.FIXTURE
 
     auditors:
       auditor_constant:
-        type: IT.AUDITOR.FIXTURE
+        type: E2E.AUDITOR.FIXTURE
   - !BROADCAST
     tables:
       - t_country

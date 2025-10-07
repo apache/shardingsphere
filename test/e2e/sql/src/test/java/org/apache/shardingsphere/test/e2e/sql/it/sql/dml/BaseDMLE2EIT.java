@@ -26,9 +26,8 @@ import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.expr.entry.InlineExpressionParserFactory;
 import org.apache.shardingsphere.infra.util.datetime.DateTimeFormatterFactory;
-import org.apache.shardingsphere.test.e2e.env.runtime.scenario.database.DatabaseEnvironmentManager;
-import org.apache.shardingsphere.test.e2e.env.runtime.scenario.path.ScenarioDataPath;
-import org.apache.shardingsphere.test.e2e.env.runtime.scenario.path.ScenarioDataPath.Type;
+import org.apache.shardingsphere.test.e2e.env.runtime.type.scenario.path.ScenarioDataPath;
+import org.apache.shardingsphere.test.e2e.env.runtime.type.scenario.path.ScenarioDataPath.Type;
 import org.apache.shardingsphere.test.e2e.sql.cases.casse.assertion.SQLE2ETestCaseAssertion;
 import org.apache.shardingsphere.test.e2e.sql.cases.dataset.DataSet;
 import org.apache.shardingsphere.test.e2e.sql.cases.dataset.DataSetLoader;
@@ -93,8 +92,8 @@ public abstract class BaseDMLE2EIT implements SQLE2EIT {
      * @throws JAXBException JAXB exception
      */
     protected void init(final E2ETestParameter testParam) throws SQLException, IOException, JAXBException {
-        dataSetEnvironmentManager =
-                new DataSetEnvironmentManager(new ScenarioDataPath(testParam.getScenario()).getDataSetFile(Type.ACTUAL), getEnvironmentEngine().getActualDataSourceMap(), testParam.getDatabaseType());
+        dataSetEnvironmentManager = new DataSetEnvironmentManager(
+                new ScenarioDataPath(testParam.getScenario(), Type.ACTUAL).getDataSetFile(), getEnvironmentEngine().getActualDataSourceMap(), testParam.getDatabaseType());
         dataSetEnvironmentManager.fillData();
     }
     
@@ -185,14 +184,14 @@ public abstract class BaseDMLE2EIT implements SQLE2EIT {
     }
     
     private void assertDataSet(final SQLE2EITContext context, final DataSetMetaData expectedDataSetMetaData, final AssertionTestParameter testParam) throws SQLException {
-        Map<String, DatabaseType> databaseTypes = DatabaseEnvironmentManager.getDatabaseTypes(testParam.getScenario(), testParam.getDatabaseType(), Type.ACTUAL);
         for (String each : InlineExpressionParserFactory.newInstance(expectedDataSetMetaData.getDataNodes()).splitAndEvaluate()) {
             DataNode dataNode = new DataNode(each);
             DataSource dataSource = getEnvironmentEngine().getActualDataSourceMap().get(dataNode.getDataSourceName());
-            DatabaseType databaseType = databaseTypes.get(dataNode.getDataSourceName());
+            DatabaseType databaseType = testParam.getDatabaseType();
             try (
                     Connection connection = dataSource.getConnection();
-                    PreparedStatement preparedStatement = connection.prepareStatement(generateFetchActualDataSQL(getEnvironmentEngine().getActualDataSourceMap(), dataNode, databaseType))) {
+                    PreparedStatement preparedStatement = connection.prepareStatement(
+                            generateFetchActualDataSQL(getEnvironmentEngine().getActualDataSourceMap(), dataNode, databaseType))) {
                 assertDataSet(preparedStatement, expectedDataSetMetaData, context.getDataSet().findRows(dataNode), databaseType);
             }
         }
@@ -218,14 +217,14 @@ public abstract class BaseDMLE2EIT implements SQLE2EIT {
     }
     
     private void assertDataSet(final DataSetMetaData expectedDataSetMetaData, final CaseTestParameter testParam, final DataSet dataSet) throws SQLException {
-        Map<String, DatabaseType> databaseTypes = DatabaseEnvironmentManager.getDatabaseTypes(testParam.getScenario(), testParam.getDatabaseType(), Type.ACTUAL);
         for (String each : InlineExpressionParserFactory.newInstance(expectedDataSetMetaData.getDataNodes()).splitAndEvaluate()) {
             DataNode dataNode = new DataNode(each);
-            DatabaseType databaseType = databaseTypes.get(dataNode.getDataSourceName());
             DataSource dataSource = getEnvironmentEngine().getActualDataSourceMap().get(dataNode.getDataSourceName());
+            DatabaseType databaseType = testParam.getDatabaseType();
             try (
                     Connection connection = dataSource.getConnection();
-                    PreparedStatement preparedStatement = connection.prepareStatement(generateFetchActualDataSQL(getEnvironmentEngine().getActualDataSourceMap(), dataNode, databaseType))) {
+                    PreparedStatement preparedStatement = connection.prepareStatement(
+                            generateFetchActualDataSQL(getEnvironmentEngine().getActualDataSourceMap(), dataNode, databaseType))) {
                 assertDataSet(preparedStatement, expectedDataSetMetaData, dataSet.findRows(dataNode), databaseType);
             }
         }

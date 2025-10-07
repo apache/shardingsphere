@@ -19,21 +19,22 @@ package org.apache.shardingsphere.test.e2e.operation.showprocesslist.container.c
 
 import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
-import org.apache.shardingsphere.test.e2e.env.container.atomic.DockerITContainer;
-import org.apache.shardingsphere.test.e2e.env.container.atomic.ITContainers;
-import org.apache.shardingsphere.test.e2e.env.container.atomic.adapter.AdapterContainer;
-import org.apache.shardingsphere.test.e2e.env.container.atomic.adapter.AdapterContainerFactory;
-import org.apache.shardingsphere.test.e2e.env.container.atomic.adapter.config.AdaptorContainerConfiguration;
-import org.apache.shardingsphere.test.e2e.env.container.atomic.constants.ProxyContainerConstants;
-import org.apache.shardingsphere.test.e2e.env.container.atomic.enums.AdapterMode;
-import org.apache.shardingsphere.test.e2e.env.container.atomic.enums.AdapterType;
-import org.apache.shardingsphere.test.e2e.env.container.atomic.governance.GovernanceContainer;
-import org.apache.shardingsphere.test.e2e.env.container.atomic.governance.GovernanceContainerFactory;
-import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.StorageContainer;
-import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.StorageContainerFactory;
-import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.option.StorageContainerConfigurationOption;
-import org.apache.shardingsphere.test.e2e.env.container.atomic.util.AdapterContainerUtils;
-import org.apache.shardingsphere.test.e2e.operation.showprocesslist.env.ShowProcessListEnvironment;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
+import org.apache.shardingsphere.test.e2e.env.container.DockerE2EContainer;
+import org.apache.shardingsphere.test.e2e.env.container.E2EContainers;
+import org.apache.shardingsphere.test.e2e.env.container.adapter.AdapterContainer;
+import org.apache.shardingsphere.test.e2e.env.container.adapter.AdapterContainerFactory;
+import org.apache.shardingsphere.test.e2e.env.container.adapter.config.AdaptorContainerConfiguration;
+import org.apache.shardingsphere.test.e2e.env.container.constants.ProxyContainerConstants;
+import org.apache.shardingsphere.test.e2e.env.container.governance.GovernanceContainer;
+import org.apache.shardingsphere.test.e2e.env.container.governance.option.GovernanceContainerOption;
+import org.apache.shardingsphere.test.e2e.env.container.storage.StorageContainer;
+import org.apache.shardingsphere.test.e2e.env.container.storage.option.StorageContainerOption;
+import org.apache.shardingsphere.test.e2e.env.container.storage.type.DockerStorageContainer;
+import org.apache.shardingsphere.test.e2e.env.runtime.E2ETestEnvironment;
+import org.apache.shardingsphere.test.e2e.env.runtime.type.ArtifactEnvironment.Adapter;
+import org.apache.shardingsphere.test.e2e.env.runtime.type.ArtifactEnvironment.Mode;
+import org.apache.shardingsphere.test.e2e.env.runtime.type.RunEnvironment.Type;
 import org.apache.shardingsphere.test.e2e.operation.showprocesslist.parameter.ShowProcessListTestParameter;
 
 import javax.sql.DataSource;
@@ -46,7 +47,7 @@ import java.util.Map;
  */
 public final class ClusterShowProcessListContainerComposer implements AutoCloseable {
     
-    private final ITContainers containers;
+    private final E2EContainers containers;
     
     private final GovernanceContainer governanceContainer;
     
@@ -55,38 +56,38 @@ public final class ClusterShowProcessListContainerComposer implements AutoClosea
     private final AdapterContainer proxyContainer;
     
     public ClusterShowProcessListContainerComposer(final ShowProcessListTestParameter testParam) {
-        containers = new ITContainers(testParam.getScenario());
-        governanceContainer = isClusterMode(testParam.getRunMode()) ? containers.registerContainer(GovernanceContainerFactory.newInstance("ZooKeeper")) : null;
-        StorageContainerConfigurationOption option = DatabaseTypedSPILoader.findService(StorageContainerConfigurationOption.class, testParam.getDatabaseType()).orElse(null);
-        StorageContainer storageContainer = containers.registerContainer(StorageContainerFactory.newInstance(testParam.getDatabaseType(), "", option, testParam.getScenario()));
+        containers = new E2EContainers(testParam.getScenario());
+        governanceContainer = isClusterMode(testParam.getMode())
+                ? containers.registerContainer(new GovernanceContainer(TypedSPILoader.getService(GovernanceContainerOption.class, "ZooKeeper")))
+                : null;
+        StorageContainer storageContainer = containers.registerContainer(
+                new DockerStorageContainer("", DatabaseTypedSPILoader.getService(StorageContainerOption.class, testParam.getDatabaseType()), testParam.getScenario()));
+        String proxyImage = E2ETestEnvironment.getInstance().getDockerEnvironment().getProxyImage();
         AdaptorContainerConfiguration containerConfig = new AdaptorContainerConfiguration(testParam.getScenario(), new LinkedList<>(),
-                getMountedResources(testParam.getScenario(), testParam.getDatabaseType(), testParam.getRunMode(), testParam.getGovernanceCenter()), AdapterContainerUtils.getAdapterContainerImage(),
-                "");
-        String envType = ShowProcessListEnvironment.getInstance().getItEnvType().name();
-        jdbcContainer = AdapterContainerFactory.newInstance(AdapterMode.valueOf(testParam.getRunMode().toUpperCase()), AdapterType.JDBC, testParam.getDatabaseType(), testParam.getScenario(),
-                containerConfig, storageContainer, envType);
-        proxyContainer = AdapterContainerFactory.newInstance(AdapterMode.valueOf(testParam.getRunMode().toUpperCase()), AdapterType.PROXY, testParam.getDatabaseType(), testParam.getScenario(),
-                containerConfig, storageContainer, envType);
-        if (proxyContainer instanceof DockerITContainer) {
-            if (isClusterMode(testParam.getRunMode())) {
-                ((DockerITContainer) proxyContainer).dependsOn(governanceContainer);
+                getMountedResources(testParam.getScenario(), testParam.getDatabaseType(), testParam.getMode(), testParam.getRegCenterType()), proxyImage, "");
+        Type type = E2ETestEnvironment.getInstance().getRunEnvironment().getType();
+        jdbcContainer = AdapterContainerFactory.newInstance(Adapter.JDBC, testParam.getDatabaseType(), testParam.getScenario(), containerConfig, storageContainer, type);
+        proxyContainer = AdapterContainerFactory.newInstance(Adapter.PROXY, testParam.getDatabaseType(), testParam.getScenario(), containerConfig, storageContainer, type);
+        if (proxyContainer instanceof DockerE2EContainer) {
+            if (isClusterMode(testParam.getMode())) {
+                ((DockerE2EContainer) proxyContainer).dependsOn(governanceContainer);
             }
-            ((DockerITContainer) proxyContainer).dependsOn(storageContainer);
+            ((DockerE2EContainer) proxyContainer).dependsOn(storageContainer);
         }
         containers.registerContainer(proxyContainer);
         containers.registerContainer(jdbcContainer);
     }
     
-    private Map<String, String> getMountedResources(final String scenario, final DatabaseType databaseType, final String runMode, final String governanceCenter) {
+    private Map<String, String> getMountedResources(final String scenario, final DatabaseType databaseType, final Mode mode, final String refCenterType) {
         Map<String, String> result = new HashMap<>(2, 1F);
-        result.put(isClusterMode(runMode) ? String.format("/env/common/cluster/proxy/%s/conf/", governanceCenter.toLowerCase())
+        result.put(isClusterMode(mode) ? String.format("/env/common/cluster/proxy/%s/conf/", refCenterType.toLowerCase())
                 : "/env/common/standalone/proxy/conf/", ProxyContainerConstants.CONFIG_PATH_IN_CONTAINER);
         result.put("/env/scenario/" + scenario + "/proxy/conf/" + databaseType.getType().toLowerCase(), ProxyContainerConstants.CONFIG_PATH_IN_CONTAINER);
         return result;
     }
     
-    private boolean isClusterMode(final String runMode) {
-        return "Cluster".equals(runMode);
+    private boolean isClusterMode(final Mode mode) {
+        return Mode.CLUSTER == mode;
     }
     
     /**

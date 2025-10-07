@@ -15,6 +15,6 @@
 -- limitations under the License.
 --
 
-CREATE USER IF NOT EXISTS 'test_user'@'%' IDENTIFIED BY 'Test@123';
+CREATE USER IF NOT EXISTS 'test_user'@'%' IDENTIFIED BY 'Test@9876';
 GRANT ALL ON *.* TO 'test_user'@'%';
 

@@ -21,7 +21,7 @@ dataSources:
   db:
     url: jdbc:mysql://mysql.encrypt_shadow.host:3306/db?useSSL=false&characterEncoding=utf-8&tinyInt1isBit=true
     username: test_user
-    password: Test@123
+    password: Test@9876
     connectionTimeoutMilliseconds: 30000
     idleTimeoutMilliseconds: 60000
     maxLifetimeMilliseconds: 1800000
@@ -30,7 +30,7 @@ dataSources:
   encrypt_shadow_db:
     url: jdbc:mysql://mysql.encrypt_shadow.host:3306/encrypt_shadow_db?useSSL=false&characterEncoding=utf-8&tinyInt1isBit=true
     username: test_user
-    password: Test@123
+    password: Test@9876
     connectionTimeoutMilliseconds: 30000
     idleTimeoutMilliseconds: 60000
     maxLifetimeMilliseconds: 1800000

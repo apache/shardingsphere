@@ -141,6 +141,9 @@ Apache ShardingSphere 由 JDBC、Proxy 这 2 款既能够独立部署，又支�
 
 :link: 更多信息请参考[官方网站](https://shardingsphere.apache.org/document/current/cn/overview/#shardingsphere-jdbc)。
 
+> **注意**：使用 ShardingSphere-JDBC 接入端时，需特别关注应用的内存配置。由于 Antlr 在 SQL 解析过程中，会使用内部缓存来提升性能，如果应用的 SQL 模板数量过多，则会导致缓存不断增长，占用大量堆内存。
+根据 ANTLR 官方 [issue#4232](https://github.com/antlr/antlr4/issues/4232) 的反馈，目前该问题尚未得到优化，应用接入 ShardingSphere-JDBC 时，建议通过 `-Xmx` 参数设置合理的堆内存大小，避免因内存不足导致的 OOM。
+
 ### ShardingSphere-Proxy
 
 <hr>

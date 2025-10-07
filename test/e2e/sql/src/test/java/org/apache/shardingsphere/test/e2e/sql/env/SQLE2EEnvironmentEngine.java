@@ -21,10 +21,11 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import org.apache.shardingsphere.database.connector.core.DefaultDatabase;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
-import org.apache.shardingsphere.test.e2e.env.container.atomic.enums.AdapterMode;
-import org.apache.shardingsphere.test.e2e.env.container.atomic.enums.AdapterType;
-import org.apache.shardingsphere.test.e2e.env.container.atomic.util.SQLScriptUtils;
-import org.apache.shardingsphere.test.e2e.env.runtime.scenario.path.ScenarioDataPath;
+import org.apache.shardingsphere.test.e2e.env.container.util.SQLScriptUtils;
+import org.apache.shardingsphere.test.e2e.env.runtime.type.ArtifactEnvironment.Adapter;
+import org.apache.shardingsphere.test.e2e.env.runtime.type.ArtifactEnvironment.Mode;
+import org.apache.shardingsphere.test.e2e.env.runtime.type.scenario.path.ScenarioDataPath;
+import org.apache.shardingsphere.test.e2e.env.runtime.type.scenario.path.ScenarioDataPath.Type;
 import org.apache.shardingsphere.test.e2e.sql.env.container.compose.ContainerComposer;
 import org.apache.shardingsphere.test.e2e.sql.env.container.compose.ContainerComposerRegistry;
 
@@ -53,8 +54,8 @@ public final class SQLE2EEnvironmentEngine {
     
     private final Map<String, DataSource> expectedDataSourceMap;
     
-    public SQLE2EEnvironmentEngine(final String key, final String scenario, final DatabaseType databaseType, final AdapterMode adapterMode, final AdapterType adapterType) {
-        containerComposer = CONTAINER_COMPOSER_REGISTRY.getContainerComposer(key, scenario, databaseType, adapterMode, adapterType);
+    public SQLE2EEnvironmentEngine(final String key, final String scenario, final DatabaseType databaseType, final Mode mode, final Adapter adapter) {
+        containerComposer = CONTAINER_COMPOSER_REGISTRY.getContainerComposer(key, scenario, databaseType, mode, adapter);
         containerComposer.start();
         actualDataSourceMap = containerComposer.getActualDataSourceMap();
         targetDataSource = containerComposer.getTargetDataSource();
@@ -63,7 +64,7 @@ public final class SQLE2EEnvironmentEngine {
     }
     
     private void executeLogicDatabaseInitSQLFileOnlyOnce(final String key, final String scenario, final DatabaseType databaseType) {
-        Optional<String> logicDatabaseInitSQLFile = new ScenarioDataPath(scenario).findActualDatabaseInitSQLFile(DefaultDatabase.LOGIC_NAME, databaseType);
+        Optional<String> logicDatabaseInitSQLFile = new ScenarioDataPath(scenario, Type.TARGETS).findTargetDatabaseInitSQLFile(DefaultDatabase.LOGIC_NAME, databaseType);
         if (!logicDatabaseInitSQLFile.isPresent()) {
             return;
         }

@@ -50,7 +50,7 @@ class DorisFETest {
     
     @SuppressWarnings("resource")
     @Container
-    private final GenericContainer<?> container = new GenericContainer<>("dyrnq/doris:3.0.5")
+    private final GenericContainer<?> container = new GenericContainer<>("dyrnq/doris:3.1.0")
             .withEnv("RUN_MODE", "standalone")
             .withEnv("SKIP_CHECK_ULIMIT", "true")
             .withExposedPorts(9030)
@@ -120,7 +120,7 @@ class DorisFETest {
     }
     
     /**
-     * TODO `shardingsphere-parser-sql-engine-doris` module does not support `create table` statements yet.
+     * TODO `shardingsphere-parser-sql-engine-doris` module still has SQL syntax that is not fully parsed.
      * Doris FE does not support the use of `PRIMARY KEY`.
      *
      * @param databaseName database name

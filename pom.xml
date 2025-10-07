@@ -92,11 +92,11 @@
         <asm.version>9.3</asm.version>
         <groovy.version>4.0.22</groovy.version>
         <freemarker.version>2.3.31</freemarker.version>
-        <bytebuddy.version>1.15.4</bytebuddy.version>
+        <bytebuddy.version>1.17.7</bytebuddy.version>
         
         <jakarta.jakartaee-bom.version>8.0.0</jakarta.jakartaee-bom.version>
         
-        <netty.version>4.1.121.Final</netty.version>
+        <netty.version>4.1.126.Final</netty.version>
         <bouncycastle.version>1.78.1</bouncycastle.version>
         
         <curator.version>5.7.0</curator.version>
@@ -105,7 +105,7 @@
         <jetcd.version>0.7.7</jetcd.version>
         <vertx.version>4.5.1</vertx.version>
         
-        <grpc.version>1.65.1</grpc.version>
+        <grpc.version>1.75.0</grpc.version>
         <protobuf.version>3.25.8</protobuf.version>
         
         <elasticjob.version>3.0.4</elasticjob.version>
@@ -167,7 +167,7 @@
         <maven-release-plugin.version>3.0.0</maven-release-plugin.version>
         <maven-assembly-plugin.version>3.5.0</maven-assembly-plugin.version>
         
-        <maven-shade-plugin.version>3.5.1</maven-shade-plugin.version>
+        <maven-shade-plugin.version>3.6.1</maven-shade-plugin.version>
         <checksum-maven-plugin.version>1.10</checksum-maven-plugin.version>
         
         <!-- Check plugin versions -->
@@ -188,7 +188,7 @@
         <jdepend-maven-plugin.version>2.0</jdepend-maven-plugin.version>
         <taglist-maven-plugin.version>2.4</taglist-maven-plugin.version>
         <jacoco-maven-plugin.version>0.8.8</jacoco-maven-plugin.version>
-        <dependency-check-maven.version>10.0.3</dependency-check-maven.version>
+        <dependency-check-maven.version>12.1.6</dependency-check-maven.version>
     </properties>
     
     <dependencyManagement>

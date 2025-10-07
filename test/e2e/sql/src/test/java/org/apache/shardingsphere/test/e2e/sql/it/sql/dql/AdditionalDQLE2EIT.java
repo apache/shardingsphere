@@ -21,7 +21,6 @@ import org.apache.shardingsphere.test.e2e.env.runtime.E2ETestEnvironment;
 import org.apache.shardingsphere.test.e2e.sql.cases.value.SQLValue;
 import org.apache.shardingsphere.test.e2e.sql.framework.SQLE2EITArgumentsProvider;
 import org.apache.shardingsphere.test.e2e.sql.framework.SQLE2EITSettings;
-import org.apache.shardingsphere.test.e2e.sql.framework.param.array.E2ETestParameterFactory;
 import org.apache.shardingsphere.test.e2e.sql.framework.param.model.AssertionTestParameter;
 import org.apache.shardingsphere.test.e2e.sql.framework.type.SQLCommandType;
 import org.apache.shardingsphere.test.e2e.sql.framework.type.SQLExecuteType;
@@ -256,6 +255,6 @@ class AdditionalDQLE2EIT extends BaseDQLE2EIT {
     }
     
     private static boolean isEnabled() {
-        return E2ETestParameterFactory.containsTestParameter() && E2ETestEnvironment.getInstance().isRunAdditionalTestCases();
+        return E2ETestEnvironment.getInstance().isValid() && E2ETestEnvironment.getInstance().getRunEnvironment().isRunAdditionalCases();
     }
 }

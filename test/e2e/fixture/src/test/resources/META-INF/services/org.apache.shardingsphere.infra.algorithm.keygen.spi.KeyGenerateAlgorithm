@@ -15,5 +15,5 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.test.e2e.fixture.ITKeyGenerateAlgorithmFixture
-org.apache.shardingsphere.test.e2e.fixture.ITAutoIncrementKeyGenerateAlgorithmFixture
+org.apache.shardingsphere.test.e2e.fixture.E2EKeyGenerateAlgorithmFixture
+org.apache.shardingsphere.test.e2e.fixture.E2EAutoIncrementKeyGenerateAlgorithmFixture

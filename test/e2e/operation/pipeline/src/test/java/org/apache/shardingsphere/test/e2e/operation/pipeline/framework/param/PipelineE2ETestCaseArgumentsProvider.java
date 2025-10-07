@@ -20,7 +20,7 @@ package org.apache.shardingsphere.test.e2e.operation.pipeline.framework.param;
 import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
-import org.apache.shardingsphere.test.e2e.operation.pipeline.env.PipelineE2EEnvironment;
+import org.apache.shardingsphere.test.e2e.env.runtime.E2ETestEnvironment;
 import org.apache.shardingsphere.test.e2e.operation.pipeline.framework.param.PipelineE2ESettings.PipelineE2EDatabaseSettings;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.params.provider.Arguments;
@@ -30,7 +30,6 @@ import org.junit.jupiter.params.support.ParameterDeclarations;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -52,13 +51,13 @@ public final class PipelineE2ETestCaseArgumentsProvider implements ArgumentsProv
     
     private Collection<Arguments> provideArguments(final PipelineE2ESettings settings, final PipelineE2EDatabaseSettings databaseSettings) {
         DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, databaseSettings.type());
-        List<String> storageContainerImages = PipelineE2EEnvironment.getInstance().listStorageContainerImages(databaseType);
-        return settings.fetchSingle() && !storageContainerImages.isEmpty()
-                ? provideArguments(databaseSettings.scenarioFiles(), databaseType, storageContainerImages.get(0))
-                : storageContainerImages.stream().flatMap(each -> provideArguments(databaseSettings.scenarioFiles(), databaseType, each).stream()).collect(Collectors.toList());
+        Collection<String> databaseImages = E2ETestEnvironment.getInstance().getDockerEnvironment().getDatabaseImages(databaseType);
+        return settings.fetchSingle() && !databaseImages.isEmpty()
+                ? provideArguments(databaseSettings.scenarioFiles(), databaseType, databaseImages.iterator().next())
+                : databaseImages.stream().flatMap(each -> provideArguments(databaseSettings.scenarioFiles(), databaseType, each).stream()).collect(Collectors.toList());
     }
     
-    private Collection<Arguments> provideArguments(final String[] scenarioFiles, final DatabaseType databaseType, final String storageContainerImage) {
-        return Arrays.stream(scenarioFiles).map(each -> Arguments.of(new PipelineTestParameter(databaseType, storageContainerImage, each))).collect(Collectors.toList());
+    private Collection<Arguments> provideArguments(final String[] scenarioFiles, final DatabaseType databaseType, final String databaseContainerImage) {
+        return Arrays.stream(scenarioFiles).map(each -> Arguments.of(new PipelineTestParameter(databaseType, databaseContainerImage, each))).collect(Collectors.toList());
     }
 }

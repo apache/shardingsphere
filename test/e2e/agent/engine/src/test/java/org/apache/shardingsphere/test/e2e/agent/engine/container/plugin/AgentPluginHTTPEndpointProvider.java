@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.test.e2e.agent.engine.container.plugin;
 
-import org.apache.shardingsphere.test.e2e.env.container.atomic.DockerITContainer;
+import org.apache.shardingsphere.test.e2e.env.container.DockerE2EContainer;
 
 /**
  * Agent plugin HTTP endpoint provider.
@@ -31,7 +31,7 @@ public final class AgentPluginHTTPEndpointProvider {
      * @param defaultExposePort default expose port
      * @return HTTP URL
      */
-    public String getHURL(final DockerITContainer container, final int defaultExposePort) {
+    public String getHURL(final DockerE2EContainer container, final int defaultExposePort) {
         return String.format("http://%s:%s", container.getHost(), container.getMappedPort(defaultExposePort));
     }
 }

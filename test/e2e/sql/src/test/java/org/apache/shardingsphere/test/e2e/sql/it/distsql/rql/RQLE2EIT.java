@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.test.e2e.sql.it.distsql.rql;
 
 import lombok.Setter;
+import org.apache.shardingsphere.test.e2e.env.runtime.E2ETestEnvironment;
 import org.apache.shardingsphere.test.e2e.sql.cases.dataset.metadata.DataSetColumn;
 import org.apache.shardingsphere.test.e2e.sql.cases.dataset.metadata.DataSetMetaData;
 import org.apache.shardingsphere.test.e2e.sql.cases.dataset.row.DataSetRow;
@@ -122,6 +123,6 @@ class RQLE2EIT implements SQLE2EIT {
     }
     
     private static boolean isEnabled() {
-        return E2ETestParameterFactory.containsTestParameter() && !E2ETestParameterFactory.getAssertionTestParameters(SQLCommandType.RQL).isEmpty();
+        return E2ETestEnvironment.getInstance().isValid() && !E2ETestParameterFactory.getAssertionTestParameters(SQLCommandType.RQL).isEmpty();
     }
 }
