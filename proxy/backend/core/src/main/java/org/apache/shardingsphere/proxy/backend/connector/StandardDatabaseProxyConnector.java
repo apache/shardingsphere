@@ -42,6 +42,7 @@ import org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.dr
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.driver.jdbc.type.stream.JDBCStreamQueryResult;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.update.UpdateResult;
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.DriverExecutionPrepareEngine;
+import org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.JDBCDriverType;
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.StatementOption;
 import org.apache.shardingsphere.infra.merge.MergeEngine;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
@@ -101,7 +102,7 @@ import java.util.stream.Collectors;
  */
 public final class StandardDatabaseProxyConnector implements DatabaseProxyConnector {
     
-    private final String driverType;
+    private final JDBCDriverType driverType;
     
     private final QueryContext queryContext;
     
@@ -127,7 +128,7 @@ public final class StandardDatabaseProxyConnector implements DatabaseProxyConnec
     
     private MergedResult mergedResult;
     
-    public StandardDatabaseProxyConnector(final String driverType, final QueryContext queryContext, final ProxyDatabaseConnectionManager databaseConnectionManager) {
+    public StandardDatabaseProxyConnector(final JDBCDriverType driverType, final QueryContext queryContext, final ProxyDatabaseConnectionManager databaseConnectionManager) {
         this.driverType = driverType;
         this.queryContext = queryContext;
         this.databaseConnectionManager = databaseConnectionManager;

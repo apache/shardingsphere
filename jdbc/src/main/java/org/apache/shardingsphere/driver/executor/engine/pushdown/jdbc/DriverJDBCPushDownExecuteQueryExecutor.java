@@ -107,7 +107,7 @@ public final class DriverJDBCPushDownExecuteQueryExecutor {
         for (ExecutionGroup<JDBCExecutionUnit> each : executionGroupContext.getInputGroups()) {
             Collection<Statement> statements = getStatements(each);
             this.statements.addAll(statements);
-            addCallback.add(statements, JDBCDriverType.PREPARED_STATEMENT.equals(prepareEngine.getType()) ? getParameterSets(each) : Collections.emptyList());
+            addCallback.add(statements, JDBCDriverType.PREPARED_STATEMENT == prepareEngine.getType() ? getParameterSets(each) : Collections.emptyList());
         }
         replayCallback.replay();
         ProcessEngine processEngine = new ProcessEngine();

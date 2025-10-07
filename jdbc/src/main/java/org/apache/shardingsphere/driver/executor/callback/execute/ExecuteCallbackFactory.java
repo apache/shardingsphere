@@ -37,7 +37,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public final class ExecuteCallbackFactory {
     
-    private final String jdbcDriverType;
+    private final JDBCDriverType type;
     
     /**
      * Create new instance of execute callback.
@@ -52,7 +52,7 @@ public final class ExecuteCallbackFactory {
             
             @Override
             protected Boolean executeSQL(final String sql, final Statement statement, final ConnectionMode connectionMode, final DatabaseType storageType) throws SQLException {
-                return JDBCDriverType.STATEMENT.equals(jdbcDriverType) ? executeCallback.execute(sql, statement) : ((PreparedStatement) statement).execute();
+                return JDBCDriverType.STATEMENT == type ? executeCallback.execute(sql, statement) : ((PreparedStatement) statement).execute();
             }
             
             @Override

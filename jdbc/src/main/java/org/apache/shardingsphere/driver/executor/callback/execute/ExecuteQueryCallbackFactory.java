@@ -31,7 +31,7 @@ import org.apache.shardingsphere.infra.session.query.QueryContext;
 @RequiredArgsConstructor
 public final class ExecuteQueryCallbackFactory {
     
-    private final String jdbcDriverType;
+    private final JDBCDriverType type;
     
     /**
      * Create new instance of execute query callback.
@@ -40,7 +40,7 @@ public final class ExecuteQueryCallbackFactory {
      * @return created instance
      */
     public ExecuteQueryCallback newInstance(final ShardingSphereDatabase database, final QueryContext queryContext) {
-        return JDBCDriverType.STATEMENT.equals(jdbcDriverType)
+        return JDBCDriverType.STATEMENT == type
                 ? new StatementExecuteQueryCallback(database.getProtocolType(), database.getResourceMetaData(),
                         queryContext.getSqlStatementContext().getSqlStatement(), SQLExecutorExceptionHandler.isExceptionThrown())
                 : new PreparedStatementExecuteQueryCallback(database.getProtocolType(), database.getResourceMetaData(),
