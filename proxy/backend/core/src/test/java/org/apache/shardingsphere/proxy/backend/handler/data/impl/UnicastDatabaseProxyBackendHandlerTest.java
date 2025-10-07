@@ -74,7 +74,7 @@ class UnicastDatabaseProxyBackendHandlerTest {
     
     private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "FIXTURE");
     
-    private UnicastDatabaseProxyBackendHandler unicastDatabaseBackendHandler;
+    private UnicastDatabaseProxyBackendHandler unicastDatabaseProxyBackendHandler;
     
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private ConnectionSession connectionSession;
@@ -91,9 +91,9 @@ class UnicastDatabaseProxyBackendHandlerTest {
         mockDatabaseProxyConnector(new UpdateResponseHeader(mock()));
         SQLStatementContext sqlStatementContext = mock(SQLStatementContext.class, RETURNS_DEEP_STUBS);
         when(sqlStatementContext.getTablesContext().getDatabaseNames()).thenReturn(Collections.emptyList());
-        unicastDatabaseBackendHandler = new UnicastDatabaseProxyBackendHandler(
+        unicastDatabaseProxyBackendHandler = new UnicastDatabaseProxyBackendHandler(
                 new QueryContext(sqlStatementContext, EXECUTE_SQL, Collections.emptyList(), new HintValueContext(), mockConnectionContext(), mock()), connectionSession);
-        setBackendHandlerFactory(unicastDatabaseBackendHandler);
+        setBackendHandlerFactory(unicastDatabaseProxyBackendHandler);
     }
     
     private ConnectionContext mockConnectionContext() {
@@ -113,12 +113,12 @@ class UnicastDatabaseProxyBackendHandlerTest {
     }
     
     @Test
-    void assertExecuteDatabaseBackendHandler() throws SQLException {
+    void assertExecuteDatabaseProxyBackendHandler() throws SQLException {
         ContextManager contextManager = mockContextManager();
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
         ShardingSphereDatabase database = createDatabases().iterator().next();
         when(contextManager.getDatabase("db_0")).thenReturn(database);
-        ResponseHeader actual = unicastDatabaseBackendHandler.execute();
+        ResponseHeader actual = unicastDatabaseProxyBackendHandler.execute();
         assertThat(actual, isA(UpdateResponseHeader.class));
     }
     
@@ -128,9 +128,9 @@ class UnicastDatabaseProxyBackendHandlerTest {
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
         ShardingSphereDatabase database = createDatabases().iterator().next();
         when(contextManager.getDatabase("db_0")).thenReturn(database);
-        unicastDatabaseBackendHandler.execute();
-        while (unicastDatabaseBackendHandler.next()) {
-            assertThat(unicastDatabaseBackendHandler.getRowData().getData().size(), is(1));
+        unicastDatabaseProxyBackendHandler.execute();
+        while (unicastDatabaseProxyBackendHandler.next()) {
+            assertThat(unicastDatabaseProxyBackendHandler.getRowData().getData().size(), is(1));
         }
     }
     

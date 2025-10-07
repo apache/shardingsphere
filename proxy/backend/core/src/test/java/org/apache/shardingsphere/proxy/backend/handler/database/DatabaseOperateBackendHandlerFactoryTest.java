@@ -138,13 +138,13 @@ class DatabaseOperateBackendHandlerFactoryTest {
     }
     
     @Test
-    void assertDatabaseOperateBackendHandlerFactoryReturnCreateDatabaseBackendHandler() {
-        assertThat(DatabaseOperateBackendHandlerFactory.newInstance(mock(CreateDatabaseStatement.class), mock(ConnectionSession.class)), isA(CreateDatabaseBackendHandler.class));
+    void assertDatabaseOperateBackendHandlerFactoryReturnCreateDatabaseProxyBackendHandler() {
+        assertThat(DatabaseOperateBackendHandlerFactory.newInstance(mock(CreateDatabaseStatement.class), mock(ConnectionSession.class)), isA(CreateDatabaseProxyBackendHandler.class));
     }
     
     @Test
-    void assertDatabaseOperateBackendHandlerFactoryReturnDropDatabaseBackendHandler() {
-        assertThat(DatabaseOperateBackendHandlerFactory.newInstance(mock(DropDatabaseStatement.class), mock(ConnectionSession.class)), isA(DropDatabaseBackendHandler.class));
+    void assertDatabaseOperateBackendHandlerFactoryReturnDropDatabaseProxyBackendHandler() {
+        assertThat(DatabaseOperateBackendHandlerFactory.newInstance(mock(DropDatabaseStatement.class), mock(ConnectionSession.class)), isA(DropDatabaseProxyBackendHandler.class));
     }
     
     @Test
