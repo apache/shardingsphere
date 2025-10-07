@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.handler.database;
+package org.apache.shardingsphere.proxy.backend.handler.database.type;
 
 import com.google.common.base.Strings;
 import lombok.RequiredArgsConstructor;
@@ -64,8 +64,7 @@ public final class DropDatabaseProxyBackendHandler implements ProxyBackendHandle
     private void check(final DropDatabaseStatement sqlStatement, final Grantee grantee) {
         String databaseName = sqlStatement.getDatabaseName().toLowerCase();
         AuthorityRule authorityRule = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getSingleRule(AuthorityRule.class);
-        AuthorityChecker authorityChecker = new AuthorityChecker(authorityRule, grantee);
-        ShardingSpherePreconditions.checkState(authorityChecker.isAuthorized(databaseName), () -> new UnknownDatabaseException(databaseName));
+        ShardingSpherePreconditions.checkState(new AuthorityChecker(authorityRule, grantee).isAuthorized(databaseName), () -> new UnknownDatabaseException(databaseName));
         ShardingSpherePreconditions.checkState(sqlStatement.isIfExists() || ProxyContext.getInstance().databaseExists(databaseName), () -> new DatabaseDropNotExistsException(databaseName));
     }
     
