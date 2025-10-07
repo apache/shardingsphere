@@ -68,13 +68,11 @@ public final class UnicastDatabaseProxyBackendHandler implements DatabaseProxyBa
     
     private String getFirstDatabaseName() {
         Collection<String> databaseNames = ProxyContext.getInstance().getAllDatabaseNames();
-        if (databaseNames.isEmpty()) {
-            throw new NoDatabaseSelectedException();
-        }
+        ShardingSpherePreconditions.checkNotEmpty(databaseNames, NoDatabaseSelectedException::new);
         AuthorityRule authorityRule = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getSingleRule(AuthorityRule.class);
         Optional<ShardingSpherePrivileges> privileges = authorityRule.findPrivileges(connectionSession.getConnectionContext().getGrantee());
-        Stream<String> databaseStream = databaseNames.stream().filter(each -> ProxyContext.getInstance().getContextManager().getDatabase(each).containsDataSource());
-        Optional<String> result = privileges.map(optional -> databaseStream.filter(optional::hasPrivileges).findFirst()).orElseGet(databaseStream::findFirst);
+        Stream<String> storageUnitContainedDatabaseNames = databaseNames.stream().filter(each -> ProxyContext.getInstance().getContextManager().getDatabase(each).containsDataSource());
+        Optional<String> result = privileges.map(optional -> storageUnitContainedDatabaseNames.filter(optional::hasPrivileges).findFirst()).orElseGet(storageUnitContainedDatabaseNames::findFirst);
         ShardingSpherePreconditions.checkState(result.isPresent(), EmptyStorageUnitException::new);
         return result.get();
     }
