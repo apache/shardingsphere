@@ -38,9 +38,9 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
- * DistSQL query backend handler.
+ * DistSQL query proxy backend handler.
  */
-public final class DistSQLQueryBackendHandler implements DistSQLBackendHandler {
+public final class DistSQLQueryProxyBackendHandler implements DistSQLProxyBackendHandler {
     
     private final DistSQLQueryExecuteEngine engine;
     
@@ -48,7 +48,7 @@ public final class DistSQLQueryBackendHandler implements DistSQLBackendHandler {
     
     private MergedResult mergedResult;
     
-    public DistSQLQueryBackendHandler(final DistSQLStatement sqlStatement, final ConnectionSession connectionSession) {
+    public DistSQLQueryProxyBackendHandler(final DistSQLStatement sqlStatement, final ConnectionSession connectionSession) {
         DistSQLConnectionContext distsqlConnectionContext = new DistSQLConnectionContext(connectionSession.getQueryContext(),
                 connectionSession.getDatabaseConnectionManager().getConnectionSize(), connectionSession.getProtocolType(),
                 connectionSession.getDatabaseConnectionManager(), connectionSession.getStatementManager());

@@ -15,24 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.handler.skip;
+package org.apache.shardingsphere.proxy.backend.handler.distsql;
 
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
-import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
 import org.apache.shardingsphere.proxy.backend.handler.ProxyBackendHandler;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
 
 /**
- * Skip backend handler.
+ * DistSQL proxy backend handler.
  */
-@RequiredArgsConstructor
-public final class SkipBackendHandler implements ProxyBackendHandler {
-    
-    private final SQLStatement sqlStatement;
-    
-    @Override
-    public ResponseHeader execute() {
-        return new UpdateResponseHeader(sqlStatement);
-    }
+public interface DistSQLProxyBackendHandler extends ProxyBackendHandler {
 }
