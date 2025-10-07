@@ -61,8 +61,6 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public final class UnicastResourceShowExecutor implements DatabaseAdminQueryExecutor {
     
-    private final DatabaseProxyConnectorFactory databaseProxyConnectorFactory = DatabaseProxyConnectorFactory.getInstance();
-    
     private final SelectStatement sqlStatement;
     
     private final String sql;
@@ -84,7 +82,7 @@ public final class UnicastResourceShowExecutor implements DatabaseAdminQueryExec
             connectionSession.setCurrentDatabaseName(databaseName);
             ShardingSphereMetaData metaData = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData();
             SQLStatementContext sqlStatementContext = new SQLBindEngine(metaData, connectionSession.getCurrentDatabaseName(), hintValueContext).bind(sqlStatement);
-            databaseProxyConnector = databaseProxyConnectorFactory.newInstance(new QueryContext(
+            databaseProxyConnector = DatabaseProxyConnectorFactory.newInstance(new QueryContext(
                     sqlStatementContext, sql, Collections.emptyList(), hintValueContext, connectionSession.getConnectionContext(), metaData), connectionSession.getDatabaseConnectionManager(), false);
             responseHeader = databaseProxyConnector.execute();
             mergedResult = new TransparentMergedResult(createQueryResult());

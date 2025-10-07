@@ -113,9 +113,7 @@ class TCLProxyBackendHandlerFactoryTest {
         SQLStatementContext sqlStatementContext = mock(SQLStatementContext.class, RETURNS_DEEP_STUBS);
         when(sqlStatementContext.getTablesContext().getDatabaseNames()).thenReturn(Collections.emptyList());
         when(sqlStatementContext.getSqlStatement()).thenReturn(mock(TCLStatement.class));
-        DatabaseProxyConnectorFactory mockFactory = mock(DatabaseProxyConnectorFactory.class);
-        when(DatabaseProxyConnectorFactory.getInstance()).thenReturn(mockFactory);
-        when(mockFactory.newInstance(any(QueryContext.class), nullable(ProxyDatabaseConnectionManager.class), anyBoolean())).thenReturn(mock(DatabaseProxyConnector.class));
+        when(DatabaseProxyConnectorFactory.newInstance(any(QueryContext.class), nullable(ProxyDatabaseConnectionManager.class), anyBoolean())).thenReturn(mock(DatabaseProxyConnector.class));
         ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class);
         when(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData()).thenReturn(metaData);
         QueryContext queryContext = mock(QueryContext.class);

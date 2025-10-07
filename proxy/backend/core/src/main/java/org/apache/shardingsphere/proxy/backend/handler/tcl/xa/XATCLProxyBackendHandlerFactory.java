@@ -50,7 +50,7 @@ public final class XATCLProxyBackendHandlerFactory {
      */
     public static ProxyBackendHandler newInstance(final QueryContext queryContext, final ConnectionSession connectionSession) {
         XAStatement sqlStatement = (XAStatement) queryContext.getSqlStatementContext().getSqlStatement();
-        DatabaseProxyConnector databaseProxyConnector = DatabaseProxyConnectorFactory.getInstance().newInstance(queryContext, connectionSession.getDatabaseConnectionManager(), false);
+        DatabaseProxyConnector databaseProxyConnector = DatabaseProxyConnectorFactory.newInstance(queryContext, connectionSession.getDatabaseConnectionManager(), false);
         if (sqlStatement instanceof XARecoveryStatement) {
             return new XARecoveryProxyBackendHandler(databaseProxyConnector);
         }

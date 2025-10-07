@@ -53,7 +53,7 @@ public final class DatabaseProxyBackendHandlerFactory {
         if (sqlStatement instanceof DoStatement || isNotDatabaseSelectRequiredDALStatement(sqlStatement) || isNotContainFromSelectStatement(sqlStatement)) {
             return new UnicastDatabaseProxyBackendHandler(queryContext, connectionSession);
         }
-        return DatabaseProxyConnectorFactory.getInstance().newInstance(queryContext, connectionSession.getDatabaseConnectionManager(), preferPreparedStatement);
+        return DatabaseProxyConnectorFactory.newInstance(queryContext, connectionSession.getDatabaseConnectionManager(), preferPreparedStatement);
     }
     
     private static boolean isNotDatabaseSelectRequiredDALStatement(final SQLStatement sqlStatement) {

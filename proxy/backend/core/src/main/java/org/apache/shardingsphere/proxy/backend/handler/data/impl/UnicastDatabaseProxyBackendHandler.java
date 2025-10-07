@@ -43,8 +43,6 @@ import java.util.stream.Stream;
 @RequiredArgsConstructor
 public final class UnicastDatabaseProxyBackendHandler implements DatabaseProxyBackendHandler {
     
-    private final DatabaseProxyConnectorFactory databaseProxyConnectorFactory = DatabaseProxyConnectorFactory.getInstance();
-    
     private final QueryContext queryContext;
     
     private final ConnectionSession connectionSession;
@@ -59,7 +57,7 @@ public final class UnicastDatabaseProxyBackendHandler implements DatabaseProxyBa
                 () -> new EmptyStorageUnitException(unicastDatabaseName));
         try {
             connectionSession.setCurrentDatabaseName(unicastDatabaseName);
-            databaseProxyConnector = databaseProxyConnectorFactory.newInstance(queryContext, connectionSession.getDatabaseConnectionManager(), false);
+            databaseProxyConnector = DatabaseProxyConnectorFactory.newInstance(queryContext, connectionSession.getDatabaseConnectionManager(), false);
             return databaseProxyConnector.execute();
         } finally {
             connectionSession.setCurrentDatabaseName(originalDatabaseName);
@@ -68,13 +66,11 @@ public final class UnicastDatabaseProxyBackendHandler implements DatabaseProxyBa
     
     private String getFirstDatabaseName() {
         Collection<String> databaseNames = ProxyContext.getInstance().getAllDatabaseNames();
-        if (databaseNames.isEmpty()) {
-            throw new NoDatabaseSelectedException();
-        }
+        ShardingSpherePreconditions.checkNotEmpty(databaseNames, NoDatabaseSelectedException::new);
         AuthorityRule authorityRule = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getSingleRule(AuthorityRule.class);
         Optional<ShardingSpherePrivileges> privileges = authorityRule.findPrivileges(connectionSession.getConnectionContext().getGrantee());
-        Stream<String> databaseStream = databaseNames.stream().filter(each -> ProxyContext.getInstance().getContextManager().getDatabase(each).containsDataSource());
-        Optional<String> result = privileges.map(optional -> databaseStream.filter(optional::hasPrivileges).findFirst()).orElseGet(databaseStream::findFirst);
+        Stream<String> storageUnitContainedDatabaseNames = databaseNames.stream().filter(each -> ProxyContext.getInstance().getContextManager().getDatabase(each).containsDataSource());
+        Optional<String> result = privileges.map(optional -> storageUnitContainedDatabaseNames.filter(optional::hasPrivileges).findFirst()).orElseGet(storageUnitContainedDatabaseNames::findFirst);
         ShardingSpherePreconditions.checkState(result.isPresent(), EmptyStorageUnitException::new);
         return result.get();
     }

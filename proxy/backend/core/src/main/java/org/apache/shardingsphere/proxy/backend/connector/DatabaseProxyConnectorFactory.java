@@ -28,17 +28,6 @@ import org.apache.shardingsphere.infra.session.query.QueryContext;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class DatabaseProxyConnectorFactory {
     
-    private static final DatabaseProxyConnectorFactory INSTANCE = new DatabaseProxyConnectorFactory();
-    
-    /**
-     * Get backend handler factory instance.
-     *
-     * @return backend handler factory
-     */
-    public static DatabaseProxyConnectorFactory getInstance() {
-        return INSTANCE;
-    }
-    
     /**
      * Create new instance of {@link DatabaseProxyConnector}.
      *
@@ -47,7 +36,7 @@ public final class DatabaseProxyConnectorFactory {
      * @param preferPreparedStatement use prepared statement as possible
      * @return created instance
      */
-    public DatabaseProxyConnector newInstance(final QueryContext queryContext, final ProxyDatabaseConnectionManager databaseConnectionManager, final boolean preferPreparedStatement) {
+    public static DatabaseProxyConnector newInstance(final QueryContext queryContext, final ProxyDatabaseConnectionManager databaseConnectionManager, final boolean preferPreparedStatement) {
         String driverType = preferPreparedStatement || !queryContext.getParameters().isEmpty() ? JDBCDriverType.PREPARED_STATEMENT : JDBCDriverType.STATEMENT;
         DatabaseProxyConnector result = new StandardDatabaseProxyConnector(driverType, queryContext, databaseConnectionManager);
         databaseConnectionManager.add(result);
