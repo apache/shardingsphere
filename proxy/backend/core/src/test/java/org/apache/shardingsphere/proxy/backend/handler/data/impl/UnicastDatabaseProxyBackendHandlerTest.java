@@ -31,11 +31,11 @@ import org.apache.shardingsphere.infra.session.query.QueryContext;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
-import org.apache.shardingsphere.proxy.backend.connector.DatabaseConnector;
-import org.apache.shardingsphere.proxy.backend.connector.DatabaseConnectorFactory;
+import org.apache.shardingsphere.proxy.backend.connector.DatabaseProxyConnector;
+import org.apache.shardingsphere.proxy.backend.connector.DatabaseProxyConnectorFactory;
 import org.apache.shardingsphere.proxy.backend.connector.ProxyDatabaseConnectionManager;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
-import org.apache.shardingsphere.proxy.backend.handler.data.DatabaseBackendHandler;
+import org.apache.shardingsphere.proxy.backend.handler.data.DatabaseProxyBackendHandler;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
@@ -66,7 +66,7 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(AutoMockExtension.class)
 @StaticMockSettings(ProxyContext.class)
-class UnicastDatabaseBackendHandlerTest {
+class UnicastDatabaseProxyBackendHandlerTest {
     
     private static final String EXECUTE_SQL = "SELECT 1 FROM user WHERE id = 1";
     
@@ -74,16 +74,16 @@ class UnicastDatabaseBackendHandlerTest {
     
     private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "FIXTURE");
     
-    private UnicastDatabaseBackendHandler unicastDatabaseBackendHandler;
+    private UnicastDatabaseProxyBackendHandler unicastDatabaseBackendHandler;
     
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private ConnectionSession connectionSession;
     
     @Mock
-    private DatabaseConnectorFactory databaseConnectorFactory;
+    private DatabaseProxyConnectorFactory databaseProxyConnectorFactory;
     
     @Mock
-    private DatabaseConnector databaseConnector;
+    private DatabaseProxyConnector databaseConnector;
     
     @BeforeEach
     void setUp() throws SQLException {
@@ -91,7 +91,7 @@ class UnicastDatabaseBackendHandlerTest {
         mockDatabaseConnector(new UpdateResponseHeader(mock()));
         SQLStatementContext sqlStatementContext = mock(SQLStatementContext.class, RETURNS_DEEP_STUBS);
         when(sqlStatementContext.getTablesContext().getDatabaseNames()).thenReturn(Collections.emptyList());
-        unicastDatabaseBackendHandler = new UnicastDatabaseBackendHandler(
+        unicastDatabaseBackendHandler = new UnicastDatabaseProxyBackendHandler(
                 new QueryContext(sqlStatementContext, EXECUTE_SQL, Collections.emptyList(), new HintValueContext(), mockConnectionContext(), mock()), connectionSession);
         setBackendHandlerFactory(unicastDatabaseBackendHandler);
     }
@@ -104,12 +104,12 @@ class UnicastDatabaseBackendHandlerTest {
     
     private void mockDatabaseConnector(final ResponseHeader responseHeader) throws SQLException {
         when(databaseConnector.execute()).thenReturn(responseHeader);
-        when(databaseConnectorFactory.newInstance(any(QueryContext.class), any(ProxyDatabaseConnectionManager.class), eq(false))).thenReturn(databaseConnector);
+        when(databaseProxyConnectorFactory.newInstance(any(QueryContext.class), any(ProxyDatabaseConnectionManager.class), eq(false))).thenReturn(databaseConnector);
     }
     
     @SneakyThrows(ReflectiveOperationException.class)
-    private void setBackendHandlerFactory(final DatabaseBackendHandler schemaDatabaseBackendHandler) {
-        Plugins.getMemberAccessor().set(schemaDatabaseBackendHandler.getClass().getDeclaredField("databaseConnectorFactory"), schemaDatabaseBackendHandler, databaseConnectorFactory);
+    private void setBackendHandlerFactory(final DatabaseProxyBackendHandler databaseProxyBackendHandler) {
+        Plugins.getMemberAccessor().set(databaseProxyBackendHandler.getClass().getDeclaredField("databaseProxyConnectorFactory"), databaseProxyBackendHandler, databaseProxyConnectorFactory);
     }
     
     @Test

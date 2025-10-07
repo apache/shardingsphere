@@ -42,7 +42,7 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(AutoMockExtension.class)
 @StaticMockSettings(ProxyContext.class)
-class CreateDatabaseBackendHandlerTest {
+class CreateDatabaseProxyBackendHandlerTest {
     
     @Mock
     private CreateDatabaseStatement statement;

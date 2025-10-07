@@ -23,33 +23,33 @@ import org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.JDBCDriv
 import org.apache.shardingsphere.infra.session.query.QueryContext;
 
 /**
- * Database connector factory.
+ * Database proxy connector factory.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class DatabaseConnectorFactory {
+public final class DatabaseProxyConnectorFactory {
     
-    private static final DatabaseConnectorFactory INSTANCE = new DatabaseConnectorFactory();
+    private static final DatabaseProxyConnectorFactory INSTANCE = new DatabaseProxyConnectorFactory();
     
     /**
      * Get backend handler factory instance.
      *
      * @return backend handler factory
      */
-    public static DatabaseConnectorFactory getInstance() {
+    public static DatabaseProxyConnectorFactory getInstance() {
         return INSTANCE;
     }
     
     /**
-     * Create new instance of {@link DatabaseConnector}.
+     * Create new instance of {@link DatabaseProxyConnector}.
      *
      * @param queryContext query context
      * @param databaseConnectionManager database connection manager
      * @param preferPreparedStatement use prepared statement as possible
      * @return created instance
      */
-    public DatabaseConnector newInstance(final QueryContext queryContext, final ProxyDatabaseConnectionManager databaseConnectionManager, final boolean preferPreparedStatement) {
+    public DatabaseProxyConnector newInstance(final QueryContext queryContext, final ProxyDatabaseConnectionManager databaseConnectionManager, final boolean preferPreparedStatement) {
         String driverType = preferPreparedStatement || !queryContext.getParameters().isEmpty() ? JDBCDriverType.PREPARED_STATEMENT : JDBCDriverType.STATEMENT;
-        DatabaseConnector result = new StandardDatabaseConnector(driverType, queryContext, databaseConnectionManager);
+        DatabaseProxyConnector result = new StandardDatabaseProxyConnector(driverType, queryContext, databaseConnectionManager);
         databaseConnectionManager.add(result);
         return result;
     }
