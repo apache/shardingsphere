@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.handler.database;
+package org.apache.shardingsphere.proxy.backend.handler.database.type;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.database.exception.core.exception.syntax.database.DatabaseCreateExistsException;

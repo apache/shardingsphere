@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.handler.database;
+package org.apache.shardingsphere.proxy.backend.handler.database.type;
 
 import com.google.common.base.Strings;
 import lombok.RequiredArgsConstructor;
