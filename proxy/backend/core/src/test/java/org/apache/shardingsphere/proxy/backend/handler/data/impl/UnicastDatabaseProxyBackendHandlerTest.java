@@ -93,7 +93,7 @@ class UnicastDatabaseProxyBackendHandlerTest {
         when(sqlStatementContext.getTablesContext().getDatabaseNames()).thenReturn(Collections.emptyList());
         unicastDatabaseProxyBackendHandler = new UnicastDatabaseProxyBackendHandler(
                 new QueryContext(sqlStatementContext, EXECUTE_SQL, Collections.emptyList(), new HintValueContext(), mockConnectionContext(), mock()), connectionSession);
-        setBackendHandlerFactory(unicastDatabaseProxyBackendHandler);
+        setProxyBackendHandlerFactory(unicastDatabaseProxyBackendHandler);
     }
     
     private ConnectionContext mockConnectionContext() {
@@ -108,7 +108,7 @@ class UnicastDatabaseProxyBackendHandlerTest {
     }
     
     @SneakyThrows(ReflectiveOperationException.class)
-    private void setBackendHandlerFactory(final DatabaseProxyBackendHandler databaseProxyBackendHandler) {
+    private void setProxyBackendHandlerFactory(final DatabaseProxyBackendHandler databaseProxyBackendHandler) {
         Plugins.getMemberAccessor().set(databaseProxyBackendHandler.getClass().getDeclaredField("databaseProxyConnectorFactory"), databaseProxyBackendHandler, databaseProxyConnectorFactory);
     }
     

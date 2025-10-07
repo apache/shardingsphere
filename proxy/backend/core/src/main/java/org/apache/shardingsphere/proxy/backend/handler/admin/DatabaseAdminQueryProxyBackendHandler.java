@@ -38,10 +38,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Database admin query backend handler.
+ * Database admin query proxy backend handler.
  */
 @RequiredArgsConstructor
-public final class DatabaseAdminQueryBackendHandler implements ProxyBackendHandler {
+public final class DatabaseAdminQueryProxyBackendHandler implements ProxyBackendHandler {
     
     private final ConnectionSession connectionSession;
     

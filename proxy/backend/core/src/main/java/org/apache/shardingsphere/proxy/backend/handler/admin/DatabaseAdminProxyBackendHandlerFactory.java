@@ -32,10 +32,10 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- * Database admin backend handler factory.
+ * Database admin proxy backend handler factory.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class DatabaseAdminBackendHandlerFactory {
+public final class DatabaseAdminProxyBackendHandlerFactory {
     
     /**
      * Create new instance of database admin backend handler, and this handler requires a connection containing a schema to be used.
@@ -76,7 +76,7 @@ public final class DatabaseAdminBackendHandlerFactory {
     
     private static ProxyBackendHandler createProxyBackendHandler(final SQLStatementContext sqlStatementContext, final ConnectionSession connectionSession, final DatabaseAdminExecutor executor) {
         return executor instanceof DatabaseAdminQueryExecutor
-                ? new DatabaseAdminQueryBackendHandler(connectionSession, (DatabaseAdminQueryExecutor) executor)
-                : new DatabaseAdminUpdateBackendHandler(connectionSession, sqlStatementContext.getSqlStatement(), executor);
+                ? new DatabaseAdminQueryProxyBackendHandler(connectionSession, (DatabaseAdminQueryExecutor) executor)
+                : new DatabaseAdminUpdateProxyBackendHandler(connectionSession, sqlStatementContext.getSqlStatement(), executor);
     }
 }

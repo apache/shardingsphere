@@ -69,9 +69,9 @@ import java.util.List;
 import java.util.regex.Pattern;
 
 /**
- * Handler for MySQL multi statements.
+ * MySQL multi-statements proxy backend handler.
  */
-public final class MySQLMultiStatementsHandler implements ProxyBackendHandler {
+public final class MySQLMultiStatementsProxyBackendHandler implements ProxyBackendHandler {
     
     private static final Pattern MULTI_INSERT_STATEMENTS = Pattern.compile(";(?=\\s*insert)", Pattern.CASE_INSENSITIVE);
     
@@ -91,7 +91,7 @@ public final class MySQLMultiStatementsHandler implements ProxyBackendHandler {
     
     private final BatchPreparedStatementExecutor batchExecutor;
     
-    public MySQLMultiStatementsHandler(final ConnectionSession connectionSession, final SQLStatement sqlStatementSample, final String sql) {
+    public MySQLMultiStatementsProxyBackendHandler(final ConnectionSession connectionSession, final SQLStatement sqlStatementSample, final String sql) {
         connectionSession.getDatabaseConnectionManager().handleAutoCommit();
         this.connectionSession = connectionSession;
         this.sqlStatementSample = sqlStatementSample;

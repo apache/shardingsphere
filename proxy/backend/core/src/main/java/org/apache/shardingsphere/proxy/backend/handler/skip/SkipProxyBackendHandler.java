@@ -15,34 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.handler.distsql;
+package org.apache.shardingsphere.proxy.backend.handler.skip;
 
-import org.apache.shardingsphere.distsql.handler.engine.update.DistSQLUpdateExecuteEngine;
-import org.apache.shardingsphere.distsql.statement.DistSQLStatement;
-import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
-import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
-
-import java.sql.SQLException;
+import org.apache.shardingsphere.proxy.backend.handler.ProxyBackendHandler;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
 
 /**
- * DistSQL update backend handler.
+ * Skip proxy backend handler.
  */
-public final class DistSQLUpdateBackendHandler implements DistSQLBackendHandler {
+@RequiredArgsConstructor
+public final class SkipProxyBackendHandler implements ProxyBackendHandler {
     
-    private final DistSQLStatement sqlStatement;
-    
-    private final DistSQLUpdateExecuteEngine engine;
-    
-    public DistSQLUpdateBackendHandler(final DistSQLStatement sqlStatement, final ConnectionSession connectionSession) {
-        this.sqlStatement = sqlStatement;
-        engine = new DistSQLUpdateExecuteEngine(sqlStatement, connectionSession.getUsedDatabaseName(), ProxyContext.getInstance().getContextManager());
-    }
+    private final SQLStatement sqlStatement;
     
     @Override
-    public ResponseHeader execute() throws SQLException {
-        engine.executeUpdate();
+    public ResponseHeader execute() {
         return new UpdateResponseHeader(sqlStatement);
     }
 }

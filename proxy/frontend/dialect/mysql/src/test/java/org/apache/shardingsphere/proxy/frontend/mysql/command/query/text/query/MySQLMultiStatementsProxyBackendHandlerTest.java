@@ -69,7 +69,7 @@ import static org.mockito.Mockito.when;
 @ExtendWith(AutoMockExtension.class)
 @StaticMockSettings(ProxyContext.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
-class MySQLMultiStatementsHandlerTest {
+class MySQLMultiStatementsProxyBackendHandlerTest {
     
     @Test
     void assertExecute() throws SQLException {
@@ -78,7 +78,7 @@ class MySQLMultiStatementsHandlerTest {
         UpdateStatement expectedStatement = mock(UpdateStatement.class);
         ContextManager contextManager = mockContextManager();
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
-        ResponseHeader actual = new MySQLMultiStatementsHandler(connectionSession, expectedStatement, sql).execute();
+        ResponseHeader actual = new MySQLMultiStatementsProxyBackendHandler(connectionSession, expectedStatement, sql).execute();
         assertThat(actual, isA(MultiStatementsUpdateResponseHeader.class));
         MultiStatementsUpdateResponseHeader actualHeader = (MultiStatementsUpdateResponseHeader) actual;
         assertThat(actualHeader.getUpdateResponseHeaders().size(), is(3));
@@ -104,7 +104,7 @@ class MySQLMultiStatementsHandlerTest {
         UpdateStatement expectedStatement = mock(UpdateStatement.class);
         ContextManager contextManager = mockContextManager();
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
-        ResponseHeader actual = new MySQLMultiStatementsHandler(connectionSession, expectedStatement, sql).execute();
+        ResponseHeader actual = new MySQLMultiStatementsProxyBackendHandler(connectionSession, expectedStatement, sql).execute();
         assertThat(actual, isA(MultiStatementsUpdateResponseHeader.class));
         MultiStatementsUpdateResponseHeader actualHeader = (MultiStatementsUpdateResponseHeader) actual;
         assertThat(actualHeader.getUpdateResponseHeaders().size(), is(3));
@@ -132,7 +132,7 @@ class MySQLMultiStatementsHandlerTest {
         UpdateStatement expectedStatement = mock(UpdateStatement.class);
         ContextManager contextManager = mockContextManager();
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
-        ResponseHeader actual = new MySQLMultiStatementsHandler(connectionSession, expectedStatement, sql).execute();
+        ResponseHeader actual = new MySQLMultiStatementsProxyBackendHandler(connectionSession, expectedStatement, sql).execute();
         assertThat(actual, isA(MultiStatementsUpdateResponseHeader.class));
         MultiStatementsUpdateResponseHeader actualHeader = (MultiStatementsUpdateResponseHeader) actual;
         assertThat(actualHeader.getUpdateResponseHeaders().size(), is(3));

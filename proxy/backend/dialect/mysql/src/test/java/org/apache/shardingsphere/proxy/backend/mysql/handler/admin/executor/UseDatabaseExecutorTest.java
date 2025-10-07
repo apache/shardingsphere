@@ -60,7 +60,7 @@ class UseDatabaseExecutorTest {
     private ConnectionSession connectionSession;
     
     @Test
-    void assertExecuteUseStatementBackendHandler() {
+    void assertExecuteUseStatementProxyBackendHandler() {
         MySQLUseStatement useStatement = mock(MySQLUseStatement.class);
         when(useStatement.getDatabase()).thenReturn(String.format(DATABASE_PATTERN, 0));
         ContextManager contextManager = mockContextManager();
@@ -73,7 +73,7 @@ class UseDatabaseExecutorTest {
     }
     
     @Test
-    void assertExecuteUseStatementBackendHandlerWhenSchemaNotExist() {
+    void assertExecuteUseStatementProxyBackendHandlerWhenSchemaNotExist() {
         MySQLUseStatement useStatement = mock(MySQLUseStatement.class);
         when(useStatement.getDatabase()).thenReturn(String.format(DATABASE_PATTERN, 10));
         UseDatabaseExecutor executor = new UseDatabaseExecutor(useStatement);

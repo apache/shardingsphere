@@ -63,9 +63,9 @@ public final class ProxyDatabaseConnectionManager implements DatabaseConnectionM
     
     private final Multimap<String, Connection> cachedConnections = LinkedHashMultimap.create();
     
-    private final Collection<ProxyBackendHandler> backendHandlers = Collections.newSetFromMap(new ConcurrentHashMap<>(64));
+    private final Collection<ProxyBackendHandler> proxyBackendHandlers = Collections.newSetFromMap(new ConcurrentHashMap<>(64));
     
-    private final Collection<ProxyBackendHandler> inUseBackendHandlers = Collections.newSetFromMap(new ConcurrentHashMap<>(64));
+    private final Collection<ProxyBackendHandler> inUseProxyBackendHandlers = Collections.newSetFromMap(new ConcurrentHashMap<>(64));
     
     private final Collection<ConnectionPostProcessor> connectionPostProcessors = new LinkedList<>();
     
@@ -226,7 +226,7 @@ public final class ProxyDatabaseConnectionManager implements DatabaseConnectionM
      * @param handler handler to be added
      */
     public void add(final ProxyBackendHandler handler) {
-        backendHandlers.add(handler);
+        proxyBackendHandlers.add(handler);
     }
     
     /**
@@ -235,7 +235,7 @@ public final class ProxyDatabaseConnectionManager implements DatabaseConnectionM
      * @param handler handler to be marked
      */
     public void markResourceInUse(final ProxyBackendHandler handler) {
-        inUseBackendHandlers.add(handler);
+        inUseProxyBackendHandlers.add(handler);
     }
     
     /**
@@ -244,7 +244,7 @@ public final class ProxyDatabaseConnectionManager implements DatabaseConnectionM
      * @param handler proxy backend handler to be added
      */
     public void unmarkResourceInUse(final ProxyBackendHandler handler) {
-        inUseBackendHandlers.remove(handler);
+        inUseProxyBackendHandlers.remove(handler);
     }
     
     /**
@@ -302,8 +302,8 @@ public final class ProxyDatabaseConnectionManager implements DatabaseConnectionM
      */
     public Collection<SQLException> closeHandlers(final boolean includeInUse) {
         Collection<SQLException> result = new LinkedList<>();
-        for (ProxyBackendHandler each : backendHandlers) {
-            if (!includeInUse && inUseBackendHandlers.contains(each)) {
+        for (ProxyBackendHandler each : proxyBackendHandlers) {
+            if (!includeInUse && inUseProxyBackendHandlers.contains(each)) {
                 continue;
             }
             try {
@@ -313,9 +313,9 @@ public final class ProxyDatabaseConnectionManager implements DatabaseConnectionM
             }
         }
         if (includeInUse) {
-            inUseBackendHandlers.clear();
+            inUseProxyBackendHandlers.clear();
         }
-        backendHandlers.retainAll(inUseBackendHandlers);
+        proxyBackendHandlers.retainAll(inUseProxyBackendHandlers);
         return result;
     }
     

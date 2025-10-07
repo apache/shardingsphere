@@ -57,11 +57,11 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(AutoMockExtension.class)
 @StaticMockSettings(ProxyContext.class)
-class DatabaseAdminQueryBackendHandlerTest {
+class DatabaseAdminQueryProxyBackendHandlerTest {
     
     private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "FIXTURE");
     
-    private DatabaseAdminQueryBackendHandler handler;
+    private DatabaseAdminQueryProxyBackendHandler handler;
     
     @BeforeEach
     void before() throws SQLException {
@@ -70,7 +70,7 @@ class DatabaseAdminQueryBackendHandlerTest {
         DatabaseAdminQueryExecutor executor = mock(DatabaseAdminQueryExecutor.class, RETURNS_DEEP_STUBS);
         when(executor.getMergedResult()).thenReturn(new LocalDataMergedResult(Collections.singleton(new LocalDataQueryResultRow("ds_0", "ds_1"))));
         when(executor.getQueryResultMetaData().getColumnCount()).thenReturn(1);
-        handler = new DatabaseAdminQueryBackendHandler(connectionSession, executor);
+        handler = new DatabaseAdminQueryProxyBackendHandler(connectionSession, executor);
     }
     
     @Test

@@ -325,7 +325,7 @@ class ProxyDatabaseConnectionManagerTest {
     void assertAddDatabaseProxyConnector() {
         ProxyBackendHandler expectedEngine = mock(DatabaseProxyConnector.class);
         databaseConnectionManager.add(expectedEngine);
-        Collection<ProxyBackendHandler> actual = getBackendHandlers();
+        Collection<ProxyBackendHandler> actual = getProxyBackendHandlers();
         assertThat(actual.size(), is(1));
         assertThat(actual.iterator().next(), is(expectedEngine));
     }
@@ -335,7 +335,7 @@ class ProxyDatabaseConnectionManagerTest {
         ProxyBackendHandler expectedEngine = mock(DatabaseProxyConnector.class);
         databaseConnectionManager.add(expectedEngine);
         databaseConnectionManager.markResourceInUse(expectedEngine);
-        Collection<ProxyBackendHandler> actual = getInUseBackendHandlers();
+        Collection<ProxyBackendHandler> actual = getInUseProxyBackendHandlers();
         assertThat(actual.size(), is(1));
         assertThat(actual.iterator().next(), is(expectedEngine));
     }
@@ -343,7 +343,7 @@ class ProxyDatabaseConnectionManagerTest {
     @Test
     void assertUnmarkInUseDatabaseProxyConnector() {
         ProxyBackendHandler engine = mock(DatabaseProxyConnector.class);
-        Collection<ProxyBackendHandler> actual = getInUseBackendHandlers();
+        Collection<ProxyBackendHandler> actual = getInUseProxyBackendHandlers();
         actual.add(engine);
         databaseConnectionManager.unmarkResourceInUse(engine);
         assertTrue(actual.isEmpty());
@@ -355,34 +355,34 @@ class ProxyDatabaseConnectionManagerTest {
         ProxyBackendHandler inUseEngine = mock(DatabaseProxyConnector.class);
         SQLException expectedException = mock(SQLException.class);
         doThrow(expectedException).when(engine).close();
-        Collection<ProxyBackendHandler> backendHandlers = getBackendHandlers();
-        Collection<ProxyBackendHandler> inUseBackendHandlers = getInUseBackendHandlers();
+        Collection<ProxyBackendHandler> backendHandlers = getProxyBackendHandlers();
+        Collection<ProxyBackendHandler> inUseProxyBackendHandlers = getInUseProxyBackendHandlers();
         backendHandlers.add(engine);
         backendHandlers.add(inUseEngine);
-        inUseBackendHandlers.add(inUseEngine);
+        inUseProxyBackendHandlers.add(inUseEngine);
         Collection<SQLException> actual = databaseConnectionManager.closeHandlers(false);
         assertThat(actual.size(), is(1));
         assertThat(actual.iterator().next(), is(expectedException));
-        assertThat(inUseBackendHandlers.size(), is(1));
+        assertThat(inUseProxyBackendHandlers.size(), is(1));
         assertThat(backendHandlers.size(), is(1));
         verify(engine).close();
         databaseConnectionManager.closeHandlers(true);
         verify(inUseEngine).close();
         assertTrue(backendHandlers.isEmpty());
-        assertTrue(inUseBackendHandlers.isEmpty());
+        assertTrue(inUseProxyBackendHandlers.isEmpty());
     }
     
     @Test
     void assertCloseExecutionResourcesNotInTransaction() throws BackendConnectionException, SQLException {
         ProxyBackendHandler notInUseHandler = mock(ProxyBackendHandler.class);
         ProxyBackendHandler inUseHandler = mock(ProxyBackendHandler.class);
-        getBackendHandlers().addAll(Arrays.asList(notInUseHandler, inUseHandler));
-        getInUseBackendHandlers().add(inUseHandler);
+        getProxyBackendHandlers().addAll(Arrays.asList(notInUseHandler, inUseHandler));
+        getInUseProxyBackendHandlers().add(inUseHandler);
         Connection cachedConnection = prepareCachedConnections();
         databaseConnectionManager.closeExecutionResources();
         verify(cachedConnection).close();
-        assertTrue(getBackendHandlers().isEmpty());
-        assertTrue(getInUseBackendHandlers().isEmpty());
+        assertTrue(getProxyBackendHandlers().isEmpty());
+        assertTrue(getInUseProxyBackendHandlers().isEmpty());
         verify(notInUseHandler).close();
         verify(inUseHandler).close();
     }
@@ -392,25 +392,25 @@ class ProxyDatabaseConnectionManagerTest {
         connectionSession.getTransactionStatus().setInTransaction(true);
         ProxyBackendHandler notInUseHandler = mock(ProxyBackendHandler.class);
         ProxyBackendHandler inUseHandler = mock(ProxyBackendHandler.class);
-        getBackendHandlers().addAll(Arrays.asList(notInUseHandler, inUseHandler));
-        getInUseBackendHandlers().add(inUseHandler);
+        getProxyBackendHandlers().addAll(Arrays.asList(notInUseHandler, inUseHandler));
+        getInUseProxyBackendHandlers().add(inUseHandler);
         Connection cachedConnection = prepareCachedConnections();
         databaseConnectionManager.closeExecutionResources();
         verifyNoInteractions(inUseHandler, cachedConnection);
-        assertThat(getBackendHandlers(), is(Collections.singleton(inUseHandler)));
-        assertThat(getInUseBackendHandlers(), is(Collections.singleton(inUseHandler)));
+        assertThat(getProxyBackendHandlers(), is(Collections.singleton(inUseHandler)));
+        assertThat(getInUseProxyBackendHandlers(), is(Collections.singleton(inUseHandler)));
     }
     
     @SuppressWarnings("unchecked")
     @SneakyThrows(ReflectiveOperationException.class)
-    private Collection<ProxyBackendHandler> getBackendHandlers() {
-        return (Collection<ProxyBackendHandler>) Plugins.getMemberAccessor().get(ProxyDatabaseConnectionManager.class.getDeclaredField("backendHandlers"), databaseConnectionManager);
+    private Collection<ProxyBackendHandler> getProxyBackendHandlers() {
+        return (Collection<ProxyBackendHandler>) Plugins.getMemberAccessor().get(ProxyDatabaseConnectionManager.class.getDeclaredField("proxyBackendHandlers"), databaseConnectionManager);
     }
     
     @SuppressWarnings("unchecked")
     @SneakyThrows(ReflectiveOperationException.class)
-    private Collection<ProxyBackendHandler> getInUseBackendHandlers() {
-        return (Collection<ProxyBackendHandler>) Plugins.getMemberAccessor().get(ProxyDatabaseConnectionManager.class.getDeclaredField("inUseBackendHandlers"), databaseConnectionManager);
+    private Collection<ProxyBackendHandler> getInUseProxyBackendHandlers() {
+        return (Collection<ProxyBackendHandler>) Plugins.getMemberAccessor().get(ProxyDatabaseConnectionManager.class.getDeclaredField("inUseProxyBackendHandlers"), databaseConnectionManager);
     }
     
     @Test

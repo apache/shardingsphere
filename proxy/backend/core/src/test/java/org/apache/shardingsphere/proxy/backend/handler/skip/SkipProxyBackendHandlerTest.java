@@ -15,33 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.handler.admin;
+package org.apache.shardingsphere.proxy.backend.handler.skip;
 
-import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
-import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
-import org.apache.shardingsphere.proxy.backend.handler.ProxyBackendHandler;
-import org.apache.shardingsphere.proxy.backend.handler.admin.executor.DatabaseAdminExecutor;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
+import org.junit.jupiter.api.Test;
 
-import java.sql.SQLException;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.isA;
 
-/**
- * Database admin update backend handler.
- */
-@RequiredArgsConstructor
-public final class DatabaseAdminUpdateBackendHandler implements ProxyBackendHandler {
+class SkipProxyBackendHandlerTest {
     
-    private final ConnectionSession connectionSession;
-    
-    private final SQLStatement sqlStatement;
-    
-    private final DatabaseAdminExecutor executor;
-    
-    @Override
-    public ResponseHeader execute() throws SQLException {
-        executor.execute(connectionSession);
-        return new UpdateResponseHeader(sqlStatement);
+    @Test
+    void assertExecuteSkipProxyBackendHandler() {
+        SkipProxyBackendHandler skipProxyBackendHandler = new SkipProxyBackendHandler(null);
+        ResponseHeader actual = skipProxyBackendHandler.execute();
+        assertThat(actual, isA(UpdateResponseHeader.class));
     }
 }
