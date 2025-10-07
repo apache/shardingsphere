@@ -322,7 +322,7 @@ class ProxyDatabaseConnectionManagerTest {
     }
     
     @Test
-    void assertAddDatabaseConnector() {
+    void assertAddDatabaseProxyConnector() {
         ProxyBackendHandler expectedEngine = mock(DatabaseProxyConnector.class);
         databaseConnectionManager.add(expectedEngine);
         Collection<ProxyBackendHandler> actual = getBackendHandlers();
@@ -331,7 +331,7 @@ class ProxyDatabaseConnectionManagerTest {
     }
     
     @Test
-    void assertMarkDatabaseConnectorInUse() {
+    void assertMarkDatabaseProxyConnectorInUse() {
         ProxyBackendHandler expectedEngine = mock(DatabaseProxyConnector.class);
         databaseConnectionManager.add(expectedEngine);
         databaseConnectionManager.markResourceInUse(expectedEngine);
@@ -341,7 +341,7 @@ class ProxyDatabaseConnectionManagerTest {
     }
     
     @Test
-    void assertUnmarkInUseDatabaseConnector() {
+    void assertUnmarkInUseDatabaseProxyConnector() {
         ProxyBackendHandler engine = mock(DatabaseProxyConnector.class);
         Collection<ProxyBackendHandler> actual = getInUseBackendHandlers();
         actual.add(engine);
@@ -355,21 +355,21 @@ class ProxyDatabaseConnectionManagerTest {
         ProxyBackendHandler inUseEngine = mock(DatabaseProxyConnector.class);
         SQLException expectedException = mock(SQLException.class);
         doThrow(expectedException).when(engine).close();
-        Collection<ProxyBackendHandler> databaseConnectors = getBackendHandlers();
-        Collection<ProxyBackendHandler> inUseDatabaseConnectors = getInUseBackendHandlers();
-        databaseConnectors.add(engine);
-        databaseConnectors.add(inUseEngine);
-        inUseDatabaseConnectors.add(inUseEngine);
+        Collection<ProxyBackendHandler> backendHandlers = getBackendHandlers();
+        Collection<ProxyBackendHandler> inUseBackendHandlers = getInUseBackendHandlers();
+        backendHandlers.add(engine);
+        backendHandlers.add(inUseEngine);
+        inUseBackendHandlers.add(inUseEngine);
         Collection<SQLException> actual = databaseConnectionManager.closeHandlers(false);
         assertThat(actual.size(), is(1));
         assertThat(actual.iterator().next(), is(expectedException));
-        assertThat(inUseDatabaseConnectors.size(), is(1));
-        assertThat(databaseConnectors.size(), is(1));
+        assertThat(inUseBackendHandlers.size(), is(1));
+        assertThat(backendHandlers.size(), is(1));
         verify(engine).close();
         databaseConnectionManager.closeHandlers(true);
         verify(inUseEngine).close();
-        assertTrue(databaseConnectors.isEmpty());
-        assertTrue(inUseDatabaseConnectors.isEmpty());
+        assertTrue(backendHandlers.isEmpty());
+        assertTrue(inUseBackendHandlers.isEmpty());
     }
     
     @Test

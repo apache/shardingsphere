@@ -83,12 +83,12 @@ class UnicastDatabaseProxyBackendHandlerTest {
     private DatabaseProxyConnectorFactory databaseProxyConnectorFactory;
     
     @Mock
-    private DatabaseProxyConnector databaseConnector;
+    private DatabaseProxyConnector databaseProxyConnector;
     
     @BeforeEach
     void setUp() throws SQLException {
         when(connectionSession.getCurrentDatabaseName()).thenReturn(String.format(DATABASE_PATTERN, 0));
-        mockDatabaseConnector(new UpdateResponseHeader(mock()));
+        mockDatabaseProxyConnector(new UpdateResponseHeader(mock()));
         SQLStatementContext sqlStatementContext = mock(SQLStatementContext.class, RETURNS_DEEP_STUBS);
         when(sqlStatementContext.getTablesContext().getDatabaseNames()).thenReturn(Collections.emptyList());
         unicastDatabaseBackendHandler = new UnicastDatabaseProxyBackendHandler(
@@ -102,9 +102,9 @@ class UnicastDatabaseProxyBackendHandlerTest {
         return result;
     }
     
-    private void mockDatabaseConnector(final ResponseHeader responseHeader) throws SQLException {
-        when(databaseConnector.execute()).thenReturn(responseHeader);
-        when(databaseProxyConnectorFactory.newInstance(any(QueryContext.class), any(ProxyDatabaseConnectionManager.class), eq(false))).thenReturn(databaseConnector);
+    private void mockDatabaseProxyConnector(final ResponseHeader responseHeader) throws SQLException {
+        when(databaseProxyConnector.execute()).thenReturn(responseHeader);
+        when(databaseProxyConnectorFactory.newInstance(any(QueryContext.class), any(ProxyDatabaseConnectionManager.class), eq(false))).thenReturn(databaseProxyConnector);
     }
     
     @SneakyThrows(ReflectiveOperationException.class)

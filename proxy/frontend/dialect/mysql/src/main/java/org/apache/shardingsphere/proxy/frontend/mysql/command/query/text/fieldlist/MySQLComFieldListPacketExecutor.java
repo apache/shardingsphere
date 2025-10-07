@@ -61,7 +61,7 @@ public final class MySQLComFieldListPacketExecutor implements CommandExecutor {
     
     private final ConnectionSession connectionSession;
     
-    private DatabaseProxyConnector databaseConnector;
+    private DatabaseProxyConnector databaseProxyConnector;
     
     @Override
     public Collection<DatabasePacket> execute() throws SQLException {
@@ -74,16 +74,16 @@ public final class MySQLComFieldListPacketExecutor implements CommandExecutor {
         SQLStatementContext sqlStatementContext = new SQLBindEngine(metaDataContexts.getMetaData(), currentDatabaseName, hintValueContext).bind(sqlStatement);
         ProxyDatabaseConnectionManager databaseConnectionManager = connectionSession.getDatabaseConnectionManager();
         QueryContext queryContext = new QueryContext(sqlStatementContext, sql, Collections.emptyList(), hintValueContext, connectionSession.getConnectionContext(), metaDataContexts.getMetaData());
-        databaseConnector = DatabaseProxyConnectorFactory.getInstance().newInstance(queryContext, databaseConnectionManager, false);
-        databaseConnector.execute();
+        databaseProxyConnector = DatabaseProxyConnectorFactory.getInstance().newInstance(queryContext, databaseConnectionManager, false);
+        databaseProxyConnector.execute();
         return createColumnDefinition41Packets(currentDatabaseName);
     }
     
     private Collection<DatabasePacket> createColumnDefinition41Packets(final String databaseName) throws SQLException {
         Collection<DatabasePacket> result = new LinkedList<>();
         int characterSet = connectionSession.getAttributeMap().attr(MySQLConstants.CHARACTER_SET_ATTRIBUTE_KEY).get().getId();
-        while (databaseConnector.next()) {
-            String columnName = databaseConnector.getRowData().getCells().iterator().next().getData().toString();
+        while (databaseProxyConnector.next()) {
+            String columnName = databaseProxyConnector.getRowData().getCells().iterator().next().getData().toString();
             result.add(new MySQLColumnDefinition41Packet(
                     characterSet, databaseName, packet.getTable(), packet.getTable(), columnName, columnName, 100, MySQLBinaryColumnType.VARCHAR, 0, true));
         }
@@ -93,8 +93,8 @@ public final class MySQLComFieldListPacketExecutor implements CommandExecutor {
     
     @Override
     public void close() throws SQLException {
-        if (null != databaseConnector) {
-            databaseConnector.close();
+        if (null != databaseProxyConnector) {
+            databaseProxyConnector.close();
         }
     }
 }

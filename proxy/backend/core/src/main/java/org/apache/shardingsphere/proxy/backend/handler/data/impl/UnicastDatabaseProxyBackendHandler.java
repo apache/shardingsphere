@@ -49,7 +49,7 @@ public final class UnicastDatabaseProxyBackendHandler implements DatabaseProxyBa
     
     private final ConnectionSession connectionSession;
     
-    private DatabaseProxyConnector databaseConnector;
+    private DatabaseProxyConnector databaseProxyConnector;
     
     @Override
     public ResponseHeader execute() throws SQLException {
@@ -59,8 +59,8 @@ public final class UnicastDatabaseProxyBackendHandler implements DatabaseProxyBa
                 () -> new EmptyStorageUnitException(unicastDatabaseName));
         try {
             connectionSession.setCurrentDatabaseName(unicastDatabaseName);
-            databaseConnector = databaseProxyConnectorFactory.newInstance(queryContext, connectionSession.getDatabaseConnectionManager(), false);
-            return databaseConnector.execute();
+            databaseProxyConnector = databaseProxyConnectorFactory.newInstance(queryContext, connectionSession.getDatabaseConnectionManager(), false);
+            return databaseProxyConnector.execute();
         } finally {
             connectionSession.setCurrentDatabaseName(originalDatabaseName);
         }
@@ -81,18 +81,18 @@ public final class UnicastDatabaseProxyBackendHandler implements DatabaseProxyBa
     
     @Override
     public boolean next() throws SQLException {
-        return databaseConnector.next();
+        return databaseProxyConnector.next();
     }
     
     @Override
     public QueryResponseRow getRowData() throws SQLException {
-        return databaseConnector.getRowData();
+        return databaseProxyConnector.getRowData();
     }
     
     @Override
     public void close() throws SQLException {
-        if (null != databaseConnector) {
-            databaseConnector.close();
+        if (null != databaseProxyConnector) {
+            databaseProxyConnector.close();
         }
     }
 }
