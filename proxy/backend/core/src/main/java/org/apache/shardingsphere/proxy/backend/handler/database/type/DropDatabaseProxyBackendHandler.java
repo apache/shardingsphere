@@ -64,7 +64,8 @@ public final class DropDatabaseProxyBackendHandler implements ProxyBackendHandle
     private void check(final DropDatabaseStatement sqlStatement, final Grantee grantee) {
         String databaseName = sqlStatement.getDatabaseName().toLowerCase();
         AuthorityRule authorityRule = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getSingleRule(AuthorityRule.class);
-        ShardingSpherePreconditions.checkState(new AuthorityChecker(authorityRule, grantee).isAuthorized(databaseName), () -> new UnknownDatabaseException(databaseName));
+        AuthorityChecker authorityChecker = new AuthorityChecker(authorityRule, grantee);
+        ShardingSpherePreconditions.checkState(authorityChecker.isAuthorized(databaseName), () -> new UnknownDatabaseException(databaseName));
         ShardingSpherePreconditions.checkState(sqlStatement.isIfExists() || ProxyContext.getInstance().databaseExists(databaseName), () -> new DatabaseDropNotExistsException(databaseName));
     }
     
