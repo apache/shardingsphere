@@ -15,42 +15,36 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.database.protocol.firebird.packet.command.query.statement.execute.protocol;
+package org.apache.shardingsphere.database.protocol.firebird.packet.command.query.blob;
 
-import io.netty.buffer.Unpooled;
 import org.apache.shardingsphere.database.protocol.firebird.payload.FirebirdPacketPayload;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-class FirebirdByteBinaryProtocolValueTest {
-    
+class FirebirdCloseBlobCommandPacketTest {
+
     @Mock
     private FirebirdPacketPayload payload;
-    
+
     @Test
-    void assertRead() {
-        byte[] expected = {1, 2};
-        when(payload.readBuffer()).thenReturn(Unpooled.wrappedBuffer(expected));
-        assertArrayEquals(expected, (byte[]) new FirebirdByteBinaryProtocolValue().read(payload));
+    void assertCloseBlobPacket() {
+        when(payload.readInt4()).thenReturn(99);
+        FirebirdCloseBlobCommandPacket packet = new FirebirdCloseBlobCommandPacket(payload);
+        verify(payload).skipReserved(4);
+        verify(payload).readInt4();
+        assertThat(packet.getBlobHandle(), is(99));
     }
-    
+
     @Test
-    void assertWriteWithString() {
-        new FirebirdByteBinaryProtocolValue().write(payload, "foo");
-        verify(payload).writeString("foo");
-    }
-    
-    @Test
-    void assertWriteWithBytes() {
-        byte[] bytes = {1, 2};
-        new FirebirdByteBinaryProtocolValue().write(payload, bytes);
-        verify(payload).writeBuffer(bytes);
+    void assertGetLength() {
+        assertThat(FirebirdCloseBlobCommandPacket.getLength(), is(8));
     }
 }

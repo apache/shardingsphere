@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.database.protocol.firebird.packet.command.query.statement.execute.protocol;
+package org.apache.shardingsphere.database.protocol.firebird.packet.command.query.blob;
 
 import io.netty.buffer.Unpooled;
 import org.apache.shardingsphere.database.protocol.firebird.payload.FirebirdPacketPayload;
@@ -24,33 +24,35 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-class FirebirdByteBinaryProtocolValueTest {
-    
+class FirebirdPutBlobSegmentCommandPacketTest {
+
     @Mock
     private FirebirdPacketPayload payload;
-    
+
     @Test
-    void assertRead() {
-        byte[] expected = {1, 2};
-        when(payload.readBuffer()).thenReturn(Unpooled.wrappedBuffer(expected));
-        assertArrayEquals(expected, (byte[]) new FirebirdByteBinaryProtocolValue().read(payload));
+    void assertPutBlobSegmentPacket() {
+        when(payload.readInt4()).thenReturn(15, 3);
+        when(payload.readBuffer()).thenReturn(Unpooled.wrappedBuffer(new byte[] {5, 6, 7}));
+        FirebirdPutBlobSegmentCommandPacket packet = new FirebirdPutBlobSegmentCommandPacket(payload);
+        verify(payload).skipReserved(4);
+        verify(payload, times(2)).readInt4();
+        verify(payload).readBuffer();
+        assertThat(packet.getBlobHandle(), is(15));
+        assertThat(packet.getSegmentLength(), is(3));
+        assertThat(packet.getSegment(), is(new byte[] {5, 6, 7}));
     }
-    
+
     @Test
-    void assertWriteWithString() {
-        new FirebirdByteBinaryProtocolValue().write(payload, "foo");
-        verify(payload).writeString("foo");
-    }
-    
-    @Test
-    void assertWriteWithBytes() {
-        byte[] bytes = {1, 2};
-        new FirebirdByteBinaryProtocolValue().write(payload, bytes);
-        verify(payload).writeBuffer(bytes);
+    void assertGetLength() {
+        when(payload.getBufferLength(12)).thenReturn(20);
+        assertThat(FirebirdPutBlobSegmentCommandPacket.getLength(payload), is(32));
+        verify(payload).getBufferLength(12);
     }
 }
