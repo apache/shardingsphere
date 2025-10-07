@@ -17,17 +17,10 @@
 
 package org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-
 /**
  * JDBC driver type.
  */
-@RequiredArgsConstructor
-@Getter
 public enum JDBCDriverType {
     
-    STATEMENT("JDBC.STATEMENT"), PREPARED_STATEMENT("JDBC.PREPARED_STATEMENT");
-    
-    private final String value;
+    STATEMENT, PREPARED_STATEMENT
 }
