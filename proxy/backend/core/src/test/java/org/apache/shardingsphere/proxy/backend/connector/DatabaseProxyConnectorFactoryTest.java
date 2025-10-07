@@ -68,7 +68,7 @@ class DatabaseProxyConnectorFactoryTest {
         QueryContext queryContext = new QueryContext(sqlStatementContext, "schemaName", Collections.emptyList(), new HintValueContext(), mockConnectionContext(), metaData);
         ContextManager contextManager = mockContextManager(database);
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
-        DatabaseProxyConnector engine = DatabaseProxyConnectorFactory.getInstance().newInstance(queryContext, databaseConnectionManager, false);
+        DatabaseProxyConnector engine = DatabaseProxyConnectorFactory.newInstance(queryContext, databaseConnectionManager, false);
         assertThat(engine, isA(DatabaseProxyConnector.class));
     }
     
@@ -91,7 +91,7 @@ class DatabaseProxyConnectorFactoryTest {
         when(metaData.getDatabase("foo_db")).thenReturn(database);
         ContextManager contextManager = mockContextManager(database);
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
-        assertThat(DatabaseProxyConnectorFactory.getInstance().newInstance(
+        assertThat(DatabaseProxyConnectorFactory.newInstance(
                 new QueryContext(sqlStatementContext, "schemaName", Collections.emptyList(), new HintValueContext(), mockConnectionContext(), metaData), databaseConnectionManager, false),
                 isA(DatabaseProxyConnector.class));
     }

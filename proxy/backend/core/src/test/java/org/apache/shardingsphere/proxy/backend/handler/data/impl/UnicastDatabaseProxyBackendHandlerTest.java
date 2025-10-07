@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.proxy.backend.handler.data.impl;
 
-import lombok.SneakyThrows;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.hint.HintValueContext;
@@ -35,7 +34,6 @@ import org.apache.shardingsphere.proxy.backend.connector.DatabaseProxyConnector;
 import org.apache.shardingsphere.proxy.backend.connector.DatabaseProxyConnectorFactory;
 import org.apache.shardingsphere.proxy.backend.connector.ProxyDatabaseConnectionManager;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
-import org.apache.shardingsphere.proxy.backend.handler.data.DatabaseProxyBackendHandler;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
@@ -46,7 +44,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Answers;
 import org.mockito.Mock;
-import org.mockito.internal.configuration.plugins.Plugins;
 
 import java.sql.SQLException;
 import java.util.Collection;
@@ -65,7 +62,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(AutoMockExtension.class)
-@StaticMockSettings(ProxyContext.class)
+@StaticMockSettings({ProxyContext.class, DatabaseProxyConnectorFactory.class})
 class UnicastDatabaseProxyBackendHandlerTest {
     
     private static final String EXECUTE_SQL = "SELECT 1 FROM user WHERE id = 1";
@@ -80,9 +77,6 @@ class UnicastDatabaseProxyBackendHandlerTest {
     private ConnectionSession connectionSession;
     
     @Mock
-    private DatabaseProxyConnectorFactory databaseProxyConnectorFactory;
-    
-    @Mock
     private DatabaseProxyConnector databaseProxyConnector;
     
     @BeforeEach
@@ -93,7 +87,6 @@ class UnicastDatabaseProxyBackendHandlerTest {
         when(sqlStatementContext.getTablesContext().getDatabaseNames()).thenReturn(Collections.emptyList());
         unicastDatabaseProxyBackendHandler = new UnicastDatabaseProxyBackendHandler(
                 new QueryContext(sqlStatementContext, EXECUTE_SQL, Collections.emptyList(), new HintValueContext(), mockConnectionContext(), mock()), connectionSession);
-        setProxyBackendHandlerFactory(unicastDatabaseProxyBackendHandler);
     }
     
     private ConnectionContext mockConnectionContext() {
@@ -104,12 +97,7 @@ class UnicastDatabaseProxyBackendHandlerTest {
     
     private void mockDatabaseProxyConnector(final ResponseHeader responseHeader) throws SQLException {
         when(databaseProxyConnector.execute()).thenReturn(responseHeader);
-        when(databaseProxyConnectorFactory.newInstance(any(QueryContext.class), any(ProxyDatabaseConnectionManager.class), eq(false))).thenReturn(databaseProxyConnector);
-    }
-    
-    @SneakyThrows(ReflectiveOperationException.class)
-    private void setProxyBackendHandlerFactory(final DatabaseProxyBackendHandler databaseProxyBackendHandler) {
-        Plugins.getMemberAccessor().set(databaseProxyBackendHandler.getClass().getDeclaredField("databaseProxyConnectorFactory"), databaseProxyBackendHandler, databaseProxyConnectorFactory);
+        when(DatabaseProxyConnectorFactory.newInstance(any(QueryContext.class), any(ProxyDatabaseConnectionManager.class), eq(false))).thenReturn(databaseProxyConnector);
     }
     
     @Test

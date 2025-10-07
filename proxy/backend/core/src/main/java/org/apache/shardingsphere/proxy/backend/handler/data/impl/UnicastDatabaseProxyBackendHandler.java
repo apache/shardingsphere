@@ -43,8 +43,6 @@ import java.util.stream.Stream;
 @RequiredArgsConstructor
 public final class UnicastDatabaseProxyBackendHandler implements DatabaseProxyBackendHandler {
     
-    private final DatabaseProxyConnectorFactory databaseProxyConnectorFactory = DatabaseProxyConnectorFactory.getInstance();
-    
     private final QueryContext queryContext;
     
     private final ConnectionSession connectionSession;
@@ -59,7 +57,7 @@ public final class UnicastDatabaseProxyBackendHandler implements DatabaseProxyBa
                 () -> new EmptyStorageUnitException(unicastDatabaseName));
         try {
             connectionSession.setCurrentDatabaseName(unicastDatabaseName);
-            databaseProxyConnector = databaseProxyConnectorFactory.newInstance(queryContext, connectionSession.getDatabaseConnectionManager(), false);
+            databaseProxyConnector = DatabaseProxyConnectorFactory.newInstance(queryContext, connectionSession.getDatabaseConnectionManager(), false);
             return databaseProxyConnector.execute();
         } finally {
             connectionSession.setCurrentDatabaseName(originalDatabaseName);

@@ -74,7 +74,7 @@ public final class MySQLComFieldListPacketExecutor implements CommandExecutor {
         SQLStatementContext sqlStatementContext = new SQLBindEngine(metaDataContexts.getMetaData(), currentDatabaseName, hintValueContext).bind(sqlStatement);
         ProxyDatabaseConnectionManager databaseConnectionManager = connectionSession.getDatabaseConnectionManager();
         QueryContext queryContext = new QueryContext(sqlStatementContext, sql, Collections.emptyList(), hintValueContext, connectionSession.getConnectionContext(), metaDataContexts.getMetaData());
-        databaseProxyConnector = DatabaseProxyConnectorFactory.getInstance().newInstance(queryContext, databaseConnectionManager, false);
+        databaseProxyConnector = DatabaseProxyConnectorFactory.newInstance(queryContext, databaseConnectionManager, false);
         databaseProxyConnector.execute();
         return createColumnDefinition41Packets(currentDatabaseName);
     }
