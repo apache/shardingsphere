@@ -67,7 +67,7 @@ public final class UnicastResourceShowExecutor implements DatabaseAdminQueryExec
     
     private final String sql;
     
-    private DatabaseProxyConnector databaseConnector;
+    private DatabaseProxyConnector databaseProxyConnector;
     
     private ResponseHeader responseHeader;
     
@@ -84,13 +84,13 @@ public final class UnicastResourceShowExecutor implements DatabaseAdminQueryExec
             connectionSession.setCurrentDatabaseName(databaseName);
             ShardingSphereMetaData metaData = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData();
             SQLStatementContext sqlStatementContext = new SQLBindEngine(metaData, connectionSession.getCurrentDatabaseName(), hintValueContext).bind(sqlStatement);
-            databaseConnector = databaseProxyConnectorFactory.newInstance(new QueryContext(
+            databaseProxyConnector = databaseProxyConnectorFactory.newInstance(new QueryContext(
                     sqlStatementContext, sql, Collections.emptyList(), hintValueContext, connectionSession.getConnectionContext(), metaData), connectionSession.getDatabaseConnectionManager(), false);
-            responseHeader = databaseConnector.execute();
+            responseHeader = databaseProxyConnector.execute();
             mergedResult = new TransparentMergedResult(createQueryResult());
         } finally {
             connectionSession.setCurrentDatabaseName(originDatabase);
-            databaseConnector.close();
+            databaseProxyConnector.close();
         }
     }
     
@@ -114,8 +114,8 @@ public final class UnicastResourceShowExecutor implements DatabaseAdminQueryExec
     
     private QueryResult createQueryResult() throws SQLException {
         List<MemoryQueryResultDataRow> rows = new LinkedList<>();
-        while (databaseConnector.next()) {
-            List<Object> data = databaseConnector.getRowData().getData();
+        while (databaseProxyConnector.next()) {
+            List<Object> data = databaseProxyConnector.getRowData().getData();
             rows.add(new MemoryQueryResultDataRow(data));
         }
         return new RawMemoryQueryResult(getQueryResultMetaData(), rows);

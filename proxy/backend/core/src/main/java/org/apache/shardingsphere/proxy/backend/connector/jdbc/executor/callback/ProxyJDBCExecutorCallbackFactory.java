@@ -41,7 +41,7 @@ public final class ProxyJDBCExecutorCallbackFactory {
      * @param protocolType protocol type
      * @param resourceMetaData resource meta data
      * @param sqlStatement SQL statement
-     * @param databaseConnector database connector
+     * @param databaseProxyConnector database proxy connector
      * @param isReturnGeneratedKeys is return generated keys or not
      * @param isExceptionThrown is exception thrown or not
      * @param isFetchMetaData is fetch meta data or not
@@ -49,13 +49,13 @@ public final class ProxyJDBCExecutorCallbackFactory {
      * @throws UnsupportedSQLOperationException unsupported SQL operation exception
      */
     public static ProxyJDBCExecutorCallback newInstance(final String type, final DatabaseType protocolType, final ResourceMetaData resourceMetaData, final SQLStatement sqlStatement,
-                                                        final DatabaseProxyConnector databaseConnector, final boolean isReturnGeneratedKeys, final boolean isExceptionThrown,
+                                                        final DatabaseProxyConnector databaseProxyConnector, final boolean isReturnGeneratedKeys, final boolean isExceptionThrown,
                                                         final boolean isFetchMetaData) {
         if (JDBCDriverType.STATEMENT.equals(type)) {
-            return new ProxyStatementExecutorCallback(protocolType, resourceMetaData, sqlStatement, databaseConnector, isReturnGeneratedKeys, isExceptionThrown, isFetchMetaData);
+            return new ProxyStatementExecutorCallback(protocolType, resourceMetaData, sqlStatement, databaseProxyConnector, isReturnGeneratedKeys, isExceptionThrown, isFetchMetaData);
         }
         if (JDBCDriverType.PREPARED_STATEMENT.equals(type)) {
-            return new ProxyPreparedStatementExecutorCallback(protocolType, resourceMetaData, sqlStatement, databaseConnector, isReturnGeneratedKeys, isExceptionThrown, isFetchMetaData);
+            return new ProxyPreparedStatementExecutorCallback(protocolType, resourceMetaData, sqlStatement, databaseProxyConnector, isReturnGeneratedKeys, isExceptionThrown, isFetchMetaData);
         }
         throw new UnsupportedSQLOperationException(String.format("Unsupported driver type: `%s`", type));
     }
