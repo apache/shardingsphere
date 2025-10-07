@@ -33,8 +33,8 @@ import org.apache.shardingsphere.infra.session.query.QueryContext;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.parser.rule.SQLParserRule;
-import org.apache.shardingsphere.proxy.backend.connector.DatabaseConnector;
-import org.apache.shardingsphere.proxy.backend.connector.DatabaseConnectorFactory;
+import org.apache.shardingsphere.proxy.backend.connector.DatabaseProxyConnector;
+import org.apache.shardingsphere.proxy.backend.connector.DatabaseProxyConnectorFactory;
 import org.apache.shardingsphere.proxy.backend.connector.ProxyDatabaseConnectionManager;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
@@ -61,7 +61,7 @@ public final class MySQLComFieldListPacketExecutor implements CommandExecutor {
     
     private final ConnectionSession connectionSession;
     
-    private DatabaseConnector databaseConnector;
+    private DatabaseProxyConnector databaseConnector;
     
     @Override
     public Collection<DatabasePacket> execute() throws SQLException {
@@ -74,7 +74,7 @@ public final class MySQLComFieldListPacketExecutor implements CommandExecutor {
         SQLStatementContext sqlStatementContext = new SQLBindEngine(metaDataContexts.getMetaData(), currentDatabaseName, hintValueContext).bind(sqlStatement);
         ProxyDatabaseConnectionManager databaseConnectionManager = connectionSession.getDatabaseConnectionManager();
         QueryContext queryContext = new QueryContext(sqlStatementContext, sql, Collections.emptyList(), hintValueContext, connectionSession.getConnectionContext(), metaDataContexts.getMetaData());
-        databaseConnector = DatabaseConnectorFactory.getInstance().newInstance(queryContext, databaseConnectionManager, false);
+        databaseConnector = DatabaseProxyConnectorFactory.getInstance().newInstance(queryContext, databaseConnectionManager, false);
         databaseConnector.execute();
         return createColumnDefinition41Packets(currentDatabaseName);
     }

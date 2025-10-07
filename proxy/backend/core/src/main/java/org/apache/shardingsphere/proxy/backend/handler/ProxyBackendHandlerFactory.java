@@ -43,7 +43,7 @@ import org.apache.shardingsphere.mode.state.ShardingSphereState;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.distsql.DistSQLStatementContext;
 import org.apache.shardingsphere.proxy.backend.handler.admin.DatabaseAdminBackendHandlerFactory;
-import org.apache.shardingsphere.proxy.backend.handler.data.DatabaseBackendHandlerFactory;
+import org.apache.shardingsphere.proxy.backend.handler.data.DatabaseProxyBackendHandlerFactory;
 import org.apache.shardingsphere.proxy.backend.handler.database.DatabaseOperateBackendHandlerFactory;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.DistSQLBackendHandlerFactory;
 import org.apache.shardingsphere.proxy.backend.handler.skip.SkipBackendHandler;
@@ -144,11 +144,11 @@ public final class ProxyBackendHandlerFactory {
                 ? sqlStatementContext.getTablesContext().getDatabaseName().get()
                 : connectionSession.getUsedDatabaseName();
         if (null == databaseName) {
-            return DatabaseBackendHandlerFactory.newInstance(queryContext, connectionSession, preferPreparedStatement);
+            return DatabaseProxyBackendHandlerFactory.newInstance(queryContext, connectionSession, preferPreparedStatement);
         }
         checkSQLExecution(queryContext, connectionSession, databaseName);
         return DatabaseAdminBackendHandlerFactory.newInstance(databaseType, sqlStatementContext, connectionSession)
-                .orElseGet(() -> DatabaseBackendHandlerFactory.newInstance(queryContext, connectionSession, preferPreparedStatement));
+                .orElseGet(() -> DatabaseProxyBackendHandlerFactory.newInstance(queryContext, connectionSession, preferPreparedStatement));
     }
     
     private static void checkAllowedSQLStatementWhenTransactionFailed(final DatabaseType databaseType, final SQLStatement sqlStatement,

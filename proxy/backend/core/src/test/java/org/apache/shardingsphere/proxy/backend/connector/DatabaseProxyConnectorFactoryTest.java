@@ -50,7 +50,7 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(AutoMockExtension.class)
 @StaticMockSettings(ProxyContext.class)
-class DatabaseConnectorFactoryTest {
+class DatabaseProxyConnectorFactoryTest {
     
     private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "FIXTURE");
     
@@ -68,8 +68,8 @@ class DatabaseConnectorFactoryTest {
         QueryContext queryContext = new QueryContext(sqlStatementContext, "schemaName", Collections.emptyList(), new HintValueContext(), mockConnectionContext(), metaData);
         ContextManager contextManager = mockContextManager(database);
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
-        DatabaseConnector engine = DatabaseConnectorFactory.getInstance().newInstance(queryContext, databaseConnectionManager, false);
-        assertThat(engine, isA(DatabaseConnector.class));
+        DatabaseProxyConnector engine = DatabaseProxyConnectorFactory.getInstance().newInstance(queryContext, databaseConnectionManager, false);
+        assertThat(engine, isA(DatabaseProxyConnector.class));
     }
     
     private ConnectionContext mockConnectionContext() {
@@ -91,9 +91,9 @@ class DatabaseConnectorFactoryTest {
         when(metaData.getDatabase("foo_db")).thenReturn(database);
         ContextManager contextManager = mockContextManager(database);
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
-        assertThat(DatabaseConnectorFactory.getInstance().newInstance(
+        assertThat(DatabaseProxyConnectorFactory.getInstance().newInstance(
                 new QueryContext(sqlStatementContext, "schemaName", Collections.emptyList(), new HintValueContext(), mockConnectionContext(), metaData), databaseConnectionManager, false),
-                isA(DatabaseConnector.class));
+                isA(DatabaseProxyConnector.class));
     }
     
     private ContextManager mockContextManager(final ShardingSphereDatabase database) {

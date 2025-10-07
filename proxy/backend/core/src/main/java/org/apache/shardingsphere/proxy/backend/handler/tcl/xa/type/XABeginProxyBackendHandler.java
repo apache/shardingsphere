@@ -19,7 +19,7 @@ package org.apache.shardingsphere.proxy.backend.handler.tcl.xa.type;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
-import org.apache.shardingsphere.proxy.backend.connector.DatabaseConnector;
+import org.apache.shardingsphere.proxy.backend.connector.DatabaseProxyConnector;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.handler.ProxyBackendHandler;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
@@ -39,7 +39,7 @@ public final class XABeginProxyBackendHandler implements ProxyBackendHandler {
     
     private final ConnectionSession connectionSession;
     
-    private final DatabaseConnector databaseConnector;
+    private final DatabaseProxyConnector databaseConnector;
     
     /*
      * We have to let session occupy the thread when doing xa transaction. According to https://dev.mysql.com/doc/refman/5.7/en/xa-states.html XA and local transactions are mutually exclusive.

@@ -20,8 +20,8 @@ package org.apache.shardingsphere.proxy.backend.handler.data;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.session.query.QueryContext;
-import org.apache.shardingsphere.proxy.backend.connector.DatabaseConnectorFactory;
-import org.apache.shardingsphere.proxy.backend.handler.data.impl.UnicastDatabaseBackendHandler;
+import org.apache.shardingsphere.proxy.backend.connector.DatabaseProxyConnectorFactory;
+import org.apache.shardingsphere.proxy.backend.handler.data.impl.UnicastDatabaseProxyBackendHandler;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
@@ -32,31 +32,28 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.Do
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.SelectStatement;
 
 /**
- * Database backend handler factory.
+ * Database proxy backend handler factory.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class DatabaseBackendHandlerFactory {
+public final class DatabaseProxyBackendHandlerFactory {
     
     /**
-     * New instance of database backend handler.
+     * New instance of database proxy backend handler.
      *
      * @param queryContext query context
      * @param connectionSession connection session
      * @param preferPreparedStatement use prepared statement as possible
      * @return created instance
      */
-    public static DatabaseBackendHandler newInstance(final QueryContext queryContext, final ConnectionSession connectionSession, final boolean preferPreparedStatement) {
+    public static DatabaseProxyBackendHandler newInstance(final QueryContext queryContext, final ConnectionSession connectionSession, final boolean preferPreparedStatement) {
         SQLStatement sqlStatement = queryContext.getSqlStatementContext().getSqlStatement();
-        if (sqlStatement instanceof DoStatement) {
-            return new UnicastDatabaseBackendHandler(queryContext, connectionSession);
-        }
         if (sqlStatement instanceof SetStatement && null == connectionSession.getUsedDatabaseName()) {
             return () -> new UpdateResponseHeader(sqlStatement);
         }
-        if (isNotDatabaseSelectRequiredDALStatement(sqlStatement) || isNotContainFromSelectStatement(sqlStatement)) {
-            return new UnicastDatabaseBackendHandler(queryContext, connectionSession);
+        if (sqlStatement instanceof DoStatement || isNotDatabaseSelectRequiredDALStatement(sqlStatement) || isNotContainFromSelectStatement(sqlStatement)) {
+            return new UnicastDatabaseProxyBackendHandler(queryContext, connectionSession);
         }
-        return DatabaseConnectorFactory.getInstance().newInstance(queryContext, connectionSession.getDatabaseConnectionManager(), preferPreparedStatement);
+        return DatabaseProxyConnectorFactory.getInstance().newInstance(queryContext, connectionSession.getDatabaseConnectionManager(), preferPreparedStatement);
     }
     
     private static boolean isNotDatabaseSelectRequiredDALStatement(final SQLStatement sqlStatement) {

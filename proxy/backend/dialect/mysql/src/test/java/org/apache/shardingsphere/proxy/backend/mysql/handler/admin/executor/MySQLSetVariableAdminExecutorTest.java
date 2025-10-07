@@ -30,7 +30,7 @@ import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.parser.config.SQLParserRuleConfiguration;
 import org.apache.shardingsphere.parser.rule.SQLParserRule;
 import org.apache.shardingsphere.proxy.backend.connector.ProxyDatabaseConnectionManager;
-import org.apache.shardingsphere.proxy.backend.connector.StandardDatabaseConnector;
+import org.apache.shardingsphere.proxy.backend.connector.StandardDatabaseProxyConnector;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.sql.parser.engine.api.CacheOption;
@@ -77,7 +77,7 @@ class MySQLSetVariableAdminExecutorTest {
         when(connectionSession.getDatabaseConnectionManager()).thenReturn(databaseConnectionManager);
         ContextManager contextManager = mockContextManager();
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
-        try (MockedConstruction<StandardDatabaseConnector> mockConstruction = mockConstruction(StandardDatabaseConnector.class)) {
+        try (MockedConstruction<StandardDatabaseProxyConnector> mockConstruction = mockConstruction(StandardDatabaseProxyConnector.class)) {
             executor.execute(connectionSession);
             verify(mockConstruction.constructed().get(0)).execute();
         }

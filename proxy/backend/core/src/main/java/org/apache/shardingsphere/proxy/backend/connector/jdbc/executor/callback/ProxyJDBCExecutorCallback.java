@@ -29,7 +29,7 @@ import org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.dr
 import org.apache.shardingsphere.infra.executor.sql.execute.result.update.UpdateResult;
 import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
-import org.apache.shardingsphere.proxy.backend.connector.DatabaseConnector;
+import org.apache.shardingsphere.proxy.backend.connector.DatabaseProxyConnector;
 import org.apache.shardingsphere.proxy.backend.connector.sane.DialectSaneQueryResultEngine;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
@@ -46,7 +46,7 @@ import java.util.Optional;
  */
 public abstract class ProxyJDBCExecutorCallback extends JDBCExecutorCallback<ExecuteResult> {
     
-    private final DatabaseConnector databaseConnector;
+    private final DatabaseProxyConnector databaseConnector;
     
     private final boolean isReturnGeneratedKeys;
     
@@ -55,7 +55,7 @@ public abstract class ProxyJDBCExecutorCallback extends JDBCExecutorCallback<Exe
     private boolean hasMetaData;
     
     protected ProxyJDBCExecutorCallback(final DatabaseType protocolType, final ResourceMetaData resourceMetaData, final SQLStatement sqlStatement,
-                                        final DatabaseConnector databaseConnector,
+                                        final DatabaseProxyConnector databaseConnector,
                                         final boolean isReturnGeneratedKeys, final boolean isExceptionThrown, final boolean fetchMetaData) {
         super(protocolType, resourceMetaData, sqlStatement, isExceptionThrown);
         this.databaseConnector = databaseConnector;

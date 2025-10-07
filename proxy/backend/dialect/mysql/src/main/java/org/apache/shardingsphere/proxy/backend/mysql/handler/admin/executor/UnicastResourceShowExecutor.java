@@ -36,8 +36,8 @@ import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.apache.shardingsphere.infra.merge.result.impl.transparent.TransparentMergedResult;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.session.query.QueryContext;
-import org.apache.shardingsphere.proxy.backend.connector.DatabaseConnector;
-import org.apache.shardingsphere.proxy.backend.connector.DatabaseConnectorFactory;
+import org.apache.shardingsphere.proxy.backend.connector.DatabaseProxyConnector;
+import org.apache.shardingsphere.proxy.backend.connector.DatabaseProxyConnectorFactory;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.handler.admin.executor.DatabaseAdminQueryExecutor;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
@@ -61,13 +61,13 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public final class UnicastResourceShowExecutor implements DatabaseAdminQueryExecutor {
     
-    private final DatabaseConnectorFactory databaseConnectorFactory = DatabaseConnectorFactory.getInstance();
+    private final DatabaseProxyConnectorFactory databaseProxyConnectorFactory = DatabaseProxyConnectorFactory.getInstance();
     
     private final SelectStatement sqlStatement;
     
     private final String sql;
     
-    private DatabaseConnector databaseConnector;
+    private DatabaseProxyConnector databaseConnector;
     
     private ResponseHeader responseHeader;
     
@@ -84,7 +84,7 @@ public final class UnicastResourceShowExecutor implements DatabaseAdminQueryExec
             connectionSession.setCurrentDatabaseName(databaseName);
             ShardingSphereMetaData metaData = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData();
             SQLStatementContext sqlStatementContext = new SQLBindEngine(metaData, connectionSession.getCurrentDatabaseName(), hintValueContext).bind(sqlStatement);
-            databaseConnector = databaseConnectorFactory.newInstance(new QueryContext(
+            databaseConnector = databaseProxyConnectorFactory.newInstance(new QueryContext(
                     sqlStatementContext, sql, Collections.emptyList(), hintValueContext, connectionSession.getConnectionContext(), metaData), connectionSession.getDatabaseConnectionManager(), false);
             responseHeader = databaseConnector.execute();
             mergedResult = new TransparentMergedResult(createQueryResult());

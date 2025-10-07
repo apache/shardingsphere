@@ -101,7 +101,7 @@ public final class ProxySQLExecutor {
             TransactionHook.class, ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getRules());
     
     public ProxySQLExecutor(final String type,
-                            final ProxyDatabaseConnectionManager databaseConnectionManager, final DatabaseConnector databaseConnector, final SQLStatementContext sqlStatementContext) {
+                            final ProxyDatabaseConnectionManager databaseConnectionManager, final DatabaseProxyConnector databaseConnector, final SQLStatementContext sqlStatementContext) {
         this.type = type;
         this.databaseConnectionManager = databaseConnectionManager;
         ExecutorEngine executorEngine = BackendExecutorContext.getInstance().getExecutorEngine();

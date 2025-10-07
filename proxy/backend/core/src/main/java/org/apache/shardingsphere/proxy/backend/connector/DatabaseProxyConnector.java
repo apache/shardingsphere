@@ -17,18 +17,15 @@
 
 package org.apache.shardingsphere.proxy.backend.connector;
 
-import org.apache.shardingsphere.proxy.backend.handler.data.DatabaseBackendHandler;
-import org.apache.shardingsphere.proxy.backend.response.data.QueryResponseRow;
-import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
+import org.apache.shardingsphere.proxy.backend.handler.data.DatabaseProxyBackendHandler;
 
 import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.sql.Statement;
 
 /**
- * Database connector.
+ * Database proxy connector.
  */
-public interface DatabaseConnector extends DatabaseBackendHandler {
+public interface DatabaseProxyConnector extends DatabaseProxyBackendHandler {
     
     /**
      * Add statement.
@@ -43,16 +40,4 @@ public interface DatabaseConnector extends DatabaseBackendHandler {
      * @param resultSet result set to be added
      */
     void add(ResultSet resultSet);
-    
-    @Override
-    ResponseHeader execute() throws SQLException;
-    
-    @Override
-    boolean next() throws SQLException;
-    
-    @Override
-    QueryResponseRow getRowData() throws SQLException;
-    
-    @Override
-    void close() throws SQLException;
 }

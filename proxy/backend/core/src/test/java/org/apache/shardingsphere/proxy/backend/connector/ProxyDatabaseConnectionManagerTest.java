@@ -323,7 +323,7 @@ class ProxyDatabaseConnectionManagerTest {
     
     @Test
     void assertAddDatabaseConnector() {
-        ProxyBackendHandler expectedEngine = mock(DatabaseConnector.class);
+        ProxyBackendHandler expectedEngine = mock(DatabaseProxyConnector.class);
         databaseConnectionManager.add(expectedEngine);
         Collection<ProxyBackendHandler> actual = getBackendHandlers();
         assertThat(actual.size(), is(1));
@@ -332,7 +332,7 @@ class ProxyDatabaseConnectionManagerTest {
     
     @Test
     void assertMarkDatabaseConnectorInUse() {
-        ProxyBackendHandler expectedEngine = mock(DatabaseConnector.class);
+        ProxyBackendHandler expectedEngine = mock(DatabaseProxyConnector.class);
         databaseConnectionManager.add(expectedEngine);
         databaseConnectionManager.markResourceInUse(expectedEngine);
         Collection<ProxyBackendHandler> actual = getInUseBackendHandlers();
@@ -342,7 +342,7 @@ class ProxyDatabaseConnectionManagerTest {
     
     @Test
     void assertUnmarkInUseDatabaseConnector() {
-        ProxyBackendHandler engine = mock(DatabaseConnector.class);
+        ProxyBackendHandler engine = mock(DatabaseProxyConnector.class);
         Collection<ProxyBackendHandler> actual = getInUseBackendHandlers();
         actual.add(engine);
         databaseConnectionManager.unmarkResourceInUse(engine);
@@ -351,8 +351,8 @@ class ProxyDatabaseConnectionManagerTest {
     
     @Test
     void assertCloseHandlers() throws SQLException {
-        ProxyBackendHandler engine = mock(DatabaseConnector.class);
-        ProxyBackendHandler inUseEngine = mock(DatabaseConnector.class);
+        ProxyBackendHandler engine = mock(DatabaseProxyConnector.class);
+        ProxyBackendHandler inUseEngine = mock(DatabaseProxyConnector.class);
         SQLException expectedException = mock(SQLException.class);
         doThrow(expectedException).when(engine).close();
         Collection<ProxyBackendHandler> databaseConnectors = getBackendHandlers();

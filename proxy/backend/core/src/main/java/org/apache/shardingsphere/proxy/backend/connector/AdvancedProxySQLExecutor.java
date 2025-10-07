@@ -43,5 +43,5 @@ public interface AdvancedProxySQLExecutor extends ShardingSphereSPI {
      * @return execute result
      * @throws SQLException SQL exception
      */
-    List<ExecuteResult> execute(ExecutionContext executionContext, ContextManager contextManager, ShardingSphereDatabase database, DatabaseConnector databaseConnector) throws SQLException;
+    List<ExecuteResult> execute(ExecutionContext executionContext, ContextManager contextManager, ShardingSphereDatabase database, DatabaseProxyConnector databaseConnector) throws SQLException;
 }

@@ -20,7 +20,7 @@ package org.apache.shardingsphere.proxy.backend.handler.data;
 import org.apache.shardingsphere.proxy.backend.handler.ProxyBackendHandler;
 
 /**
- * Database backend handler.
+ * Database proxy backend handler.
  */
-public interface DatabaseBackendHandler extends ProxyBackendHandler {
+public interface DatabaseProxyBackendHandler extends ProxyBackendHandler {
 }

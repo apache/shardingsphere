@@ -24,10 +24,10 @@ import org.apache.shardingsphere.database.exception.core.exception.syntax.databa
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.exception.kernel.metadata.resource.storageunit.EmptyStorageUnitException;
 import org.apache.shardingsphere.infra.session.query.QueryContext;
-import org.apache.shardingsphere.proxy.backend.connector.DatabaseConnector;
-import org.apache.shardingsphere.proxy.backend.connector.DatabaseConnectorFactory;
+import org.apache.shardingsphere.proxy.backend.connector.DatabaseProxyConnector;
+import org.apache.shardingsphere.proxy.backend.connector.DatabaseProxyConnectorFactory;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
-import org.apache.shardingsphere.proxy.backend.handler.data.DatabaseBackendHandler;
+import org.apache.shardingsphere.proxy.backend.handler.data.DatabaseProxyBackendHandler;
 import org.apache.shardingsphere.proxy.backend.response.data.QueryResponseRow;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
@@ -38,18 +38,18 @@ import java.util.Optional;
 import java.util.stream.Stream;
 
 /**
- * Database backend handler with unicast schema.
+ * Unicast database proxy backend handler.
  */
 @RequiredArgsConstructor
-public final class UnicastDatabaseBackendHandler implements DatabaseBackendHandler {
+public final class UnicastDatabaseProxyBackendHandler implements DatabaseProxyBackendHandler {
     
-    private final DatabaseConnectorFactory databaseConnectorFactory = DatabaseConnectorFactory.getInstance();
+    private final DatabaseProxyConnectorFactory databaseProxyConnectorFactory = DatabaseProxyConnectorFactory.getInstance();
     
     private final QueryContext queryContext;
     
     private final ConnectionSession connectionSession;
     
-    private DatabaseConnector databaseConnector;
+    private DatabaseProxyConnector databaseConnector;
     
     @Override
     public ResponseHeader execute() throws SQLException {
@@ -59,7 +59,7 @@ public final class UnicastDatabaseBackendHandler implements DatabaseBackendHandl
                 () -> new EmptyStorageUnitException(unicastDatabaseName));
         try {
             connectionSession.setCurrentDatabaseName(unicastDatabaseName);
-            databaseConnector = databaseConnectorFactory.newInstance(queryContext, connectionSession.getDatabaseConnectionManager(), false);
+            databaseConnector = databaseProxyConnectorFactory.newInstance(queryContext, connectionSession.getDatabaseConnectionManager(), false);
             return databaseConnector.execute();
         } finally {
             connectionSession.setCurrentDatabaseName(originalDatabaseName);

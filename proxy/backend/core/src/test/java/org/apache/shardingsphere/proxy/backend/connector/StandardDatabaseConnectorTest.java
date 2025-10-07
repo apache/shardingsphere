@@ -140,14 +140,14 @@ class StandardDatabaseConnectorTest {
         SQLStatementContext sqlStatementContext = mock(SQLStatementContext.class, RETURNS_DEEP_STUBS);
         when(sqlStatementContext.getTablesContext().getDatabaseNames()).thenReturn(Collections.emptyList());
         when(sqlStatementContext.getSqlStatement().getDatabaseType()).thenReturn(TypedSPILoader.getService(DatabaseType.class, "FIXTURE"));
-        DatabaseConnector engine = createDatabaseConnector(JDBCDriverType.PREPARED_STATEMENT, createQueryContext(sqlStatementContext));
-        Field queryHeadersField = StandardDatabaseConnector.class.getDeclaredField("queryHeaders");
+        DatabaseProxyConnector engine = createDatabaseConnector(JDBCDriverType.PREPARED_STATEMENT, createQueryContext(sqlStatementContext));
+        Field queryHeadersField = StandardDatabaseProxyConnector.class.getDeclaredField("queryHeaders");
         ShardingSphereDatabase database = createDatabaseMetaData();
         try (MockedStatic<DatabaseTypedSPILoader> spiLoader = mockStatic(DatabaseTypedSPILoader.class)) {
             spiLoader.when(() -> DatabaseTypedSPILoader.getService(QueryHeaderBuilder.class, TypedSPILoader.getService(DatabaseType.class, "MySQL"))).thenReturn(new QueryHeaderBuilderFixture());
             Plugins.getMemberAccessor().set(queryHeadersField, engine,
                     Collections.singletonList(new QueryHeaderBuilderEngine(TypedSPILoader.getService(DatabaseType.class, "MySQL")).build(createQueryResultMetaData(), database, 1)));
-            Field mergedResultField = StandardDatabaseConnector.class.getDeclaredField("mergedResult");
+            Field mergedResultField = StandardDatabaseProxyConnector.class.getDeclaredField("mergedResult");
             Plugins.getMemberAccessor().set(mergedResultField, engine, new MemoryMergedResult<ShardingSphereRule>(null, null, null, Collections.emptyList()) {
                 
                 @Override
@@ -167,8 +167,8 @@ class StandardDatabaseConnectorTest {
         }
     }
     
-    private DatabaseConnector createDatabaseConnector(final String driverType, final QueryContext queryContext) {
-        DatabaseConnector result = new StandardDatabaseConnector(driverType, queryContext, databaseConnectionManager);
+    private DatabaseProxyConnector createDatabaseConnector(final String driverType, final QueryContext queryContext) {
+        DatabaseProxyConnector result = new StandardDatabaseProxyConnector(driverType, queryContext, databaseConnectionManager);
         databaseConnectionManager.add(result);
         return result;
     }
@@ -204,7 +204,7 @@ class StandardDatabaseConnectorTest {
         SQLStatementContext sqlStatementContext = mock(SQLStatementContext.class, RETURNS_DEEP_STUBS);
         when(sqlStatementContext.getTablesContext().getDatabaseNames()).thenReturn(Collections.emptyList());
         when(sqlStatementContext.getSqlStatement().getDatabaseType()).thenReturn(TypedSPILoader.getService(DatabaseType.class, "FIXTURE"));
-        DatabaseConnector engine = createDatabaseConnector(JDBCDriverType.STATEMENT, createQueryContext(sqlStatementContext));
+        DatabaseProxyConnector engine = createDatabaseConnector(JDBCDriverType.STATEMENT, createQueryContext(sqlStatementContext));
         engine.add(statement);
         Collection<?> actual = getField(engine, "cachedStatements");
         assertThat(actual.size(), is(1));
@@ -216,7 +216,7 @@ class StandardDatabaseConnectorTest {
         SQLStatementContext sqlStatementContext = mock(SQLStatementContext.class, RETURNS_DEEP_STUBS);
         when(sqlStatementContext.getTablesContext().getDatabaseNames()).thenReturn(Collections.emptyList());
         when(sqlStatementContext.getSqlStatement().getDatabaseType()).thenReturn(TypedSPILoader.getService(DatabaseType.class, "FIXTURE"));
-        DatabaseConnector engine = createDatabaseConnector(JDBCDriverType.STATEMENT, createQueryContext(sqlStatementContext));
+        DatabaseProxyConnector engine = createDatabaseConnector(JDBCDriverType.STATEMENT, createQueryContext(sqlStatementContext));
         engine.add(resultSet);
         Collection<?> actual = getField(engine, "cachedResultSets");
         assertThat(actual.size(), is(1));
@@ -228,7 +228,7 @@ class StandardDatabaseConnectorTest {
         SQLStatementContext sqlStatementContext = mock(SQLStatementContext.class, RETURNS_DEEP_STUBS);
         when(sqlStatementContext.getTablesContext().getDatabaseNames()).thenReturn(Collections.emptyList());
         when(sqlStatementContext.getSqlStatement().getDatabaseType()).thenReturn(TypedSPILoader.getService(DatabaseType.class, "FIXTURE"));
-        DatabaseConnector engine = createDatabaseConnector(JDBCDriverType.STATEMENT, createQueryContext(sqlStatementContext));
+        DatabaseProxyConnector engine = createDatabaseConnector(JDBCDriverType.STATEMENT, createQueryContext(sqlStatementContext));
         Collection<ResultSet> cachedResultSets = getField(engine, "cachedResultSets");
         cachedResultSets.add(resultSet);
         Collection<Statement> cachedStatements = getField(engine, "cachedStatements");
@@ -246,7 +246,7 @@ class StandardDatabaseConnectorTest {
         SQLStatementContext sqlStatementContext = mock(SQLStatementContext.class, RETURNS_DEEP_STUBS);
         when(sqlStatementContext.getTablesContext().getDatabaseNames()).thenReturn(Collections.emptyList());
         when(sqlStatementContext.getSqlStatement().getDatabaseType()).thenReturn(TypedSPILoader.getService(DatabaseType.class, "FIXTURE"));
-        DatabaseConnector engine = createDatabaseConnector(JDBCDriverType.STATEMENT, createQueryContext(sqlStatementContext));
+        DatabaseProxyConnector engine = createDatabaseConnector(JDBCDriverType.STATEMENT, createQueryContext(sqlStatementContext));
         Collection<ResultSet> cachedResultSets = getField(engine, "cachedResultSets");
         SQLException sqlExceptionByResultSet = new SQLException("ResultSet");
         doThrow(sqlExceptionByResultSet).when(resultSet).close();
@@ -272,7 +272,7 @@ class StandardDatabaseConnectorTest {
     
     @SuppressWarnings("unchecked")
     @SneakyThrows(ReflectiveOperationException.class)
-    private <T> T getField(final DatabaseConnector target, final String fieldName) {
-        return (T) Plugins.getMemberAccessor().get(StandardDatabaseConnector.class.getDeclaredField(fieldName), target);
+    private <T> T getField(final DatabaseProxyConnector target, final String fieldName) {
+        return (T) Plugins.getMemberAccessor().get(StandardDatabaseProxyConnector.class.getDeclaredField(fieldName), target);
     }
 }
