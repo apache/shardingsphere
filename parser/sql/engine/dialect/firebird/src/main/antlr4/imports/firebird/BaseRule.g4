@@ -431,7 +431,8 @@ optimizeClause
     ;
 
 dataType
-    : dataTypeName dataTypeLength? characterSet? collateClause?
+    : blobDataType
+    | dataTypeName dataTypeLength? characterSet? collateClause?
     | dataTypeName LP_ STRING_ (COMMA_ STRING_)* RP_ characterSet? collateClause?
     | dataTypeName LBT_ (NUMBER_? COLON_ NUMBER | NUMBER_ (COMMA_ NUMBER_)*) RBT_
     ;
@@ -439,8 +440,40 @@ dataType
 dataTypeName
     : CHARACTER | CHARACTER VARYING | CHAR VARYING | NATIONAL CHARACTER | NATIONAL CHARACTER VARYING | CHAR | VARCHAR | NCHAR
     | NATIONAL CHAR | NATIONAL CHAR VARYING | BIT | BIT VARYING | NUMERIC | DECIMAL | DEC | INTEGER | SMALLINT | BOOLEAN
-    | FLOAT | REAL | DOUBLE PRECISION | DATE | TIME | TIMESTAMP | INTERVAL | TIME WITH TIME ZONE | TIMESTAMP WITH TIME ZONE
+    | FLOAT | REAL | DOUBLE PRECISION | DATE | TIME | TIMESTAMP | INTERVAL | TIME WITH TIME ZONE | TIMESTAMP WITH TIME ZONE | BLOB
     | identifier
+    ;
+
+blobDataType
+    : BLOB blobSubTypeDefinition? blobSegmentSizeClause? characterSet?
+    | BLOB (LP_ blobAbbreviatedAttributes RP_)?
+    ;
+
+blobSubTypeDefinition
+    : SUB_TYPE blobSubType
+    ;
+
+blobSegmentSizeClause
+    : SEGMENT SIZE NUMBER_
+    ;
+
+blobAbbreviatedAttributes
+    : NUMBER_
+    | NUMBER_ COMMA_ blobSubType
+    | COMMA_ blobSubType
+    ;
+
+blobSubType
+    : blobSubTypeName
+    | blobSubTypeNumber
+    ;
+
+blobSubTypeName
+    : BINARY | TEXT | BLR | ACL | RANGES | SUMMARY | FORMAT | TRANSACTION_DESCRIPTION | EXTERNAL_FILE_DESCRIPTION
+    ;
+
+blobSubTypeNumber
+    : NUMBER_
     ;
 
 dataTypeLength
