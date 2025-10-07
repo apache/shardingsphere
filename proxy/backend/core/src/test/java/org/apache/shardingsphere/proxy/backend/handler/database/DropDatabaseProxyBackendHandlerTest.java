@@ -65,7 +65,7 @@ class DropDatabaseProxyBackendHandlerTest {
     @Mock
     private DropDatabaseStatement sqlStatement;
     
-    private DropDatabaseBackendHandler handler;
+    private DropDatabaseProxyBackendHandler handler;
     
     @BeforeEach
     void setUp() {
@@ -74,7 +74,7 @@ class DropDatabaseProxyBackendHandlerTest {
         when(ProxyContext.getInstance().databaseExists("foo_db")).thenReturn(true);
         when(ProxyContext.getInstance().databaseExists("bar_db")).thenReturn(true);
         when(connectionSession.getConnectionContext().getGrantee()).thenReturn(null);
-        handler = new DropDatabaseBackendHandler(sqlStatement, connectionSession);
+        handler = new DropDatabaseProxyBackendHandler(sqlStatement, connectionSession);
     }
     
     private ContextManager mockContextManager() {

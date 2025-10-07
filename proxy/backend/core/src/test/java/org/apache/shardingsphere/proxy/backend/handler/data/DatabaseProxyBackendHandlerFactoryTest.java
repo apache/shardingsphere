@@ -61,7 +61,7 @@ class DatabaseProxyBackendHandlerFactoryTest {
     private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "FIXTURE");
     
     @Test
-    void assertNewInstanceReturnedUnicastDatabaseBackendHandlerWithDAL() {
+    void assertNewInstanceReturnedUnicastDatabaseProxyBackendHandlerWithDAL() {
         String sql = "DESC tbl";
         SQLStatementContext sqlStatementContext = mock(SQLStatementContext.class, RETURNS_DEEP_STUBS);
         when(sqlStatementContext.getSqlStatement()).thenReturn(mock(DALStatement.class, RETURNS_DEEP_STUBS));
@@ -78,7 +78,7 @@ class DatabaseProxyBackendHandlerFactoryTest {
     }
     
     @Test
-    void assertNewInstanceReturnedUnicastDatabaseBackendHandlerWithQueryWithoutFrom() {
+    void assertNewInstanceReturnedUnicastDatabaseProxyBackendHandlerWithQueryWithoutFrom() {
         String sql = "SELECT 1";
         SQLStatementContext sqlStatementContext = new CommonSQLStatementContext(new SelectStatement(databaseType));
         DatabaseProxyBackendHandler actual = DatabaseProxyBackendHandlerFactory.newInstance(
@@ -87,7 +87,7 @@ class DatabaseProxyBackendHandlerFactoryTest {
     }
     
     @Test
-    void assertNewInstanceReturnedSchemaAssignedDatabaseBackendHandler() {
+    void assertNewInstanceReturnedSchemaAssignedDatabaseProxyBackendHandler() {
         String sql = "SELECT 1 FROM user WHERE id = 1";
         SQLStatementContext sqlStatementContext = mockSQLStatementContext();
         ConnectionSession connectionSession = mockConnectionSession();

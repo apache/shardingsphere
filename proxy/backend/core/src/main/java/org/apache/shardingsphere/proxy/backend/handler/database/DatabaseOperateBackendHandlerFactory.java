@@ -45,10 +45,10 @@ public final class DatabaseOperateBackendHandlerFactory {
     
     private static ProxyBackendHandler createBackendHandler(final SQLStatement sqlStatement, final ConnectionSession connectionSession) {
         if (sqlStatement instanceof CreateDatabaseStatement) {
-            return new CreateDatabaseBackendHandler((CreateDatabaseStatement) sqlStatement);
+            return new CreateDatabaseProxyBackendHandler((CreateDatabaseStatement) sqlStatement);
         }
         if (sqlStatement instanceof DropDatabaseStatement) {
-            return new DropDatabaseBackendHandler((DropDatabaseStatement) sqlStatement, connectionSession);
+            return new DropDatabaseProxyBackendHandler((DropDatabaseStatement) sqlStatement, connectionSession);
         }
         throw new UnsupportedSQLOperationException(sqlStatement.getClass().getName());
     }
