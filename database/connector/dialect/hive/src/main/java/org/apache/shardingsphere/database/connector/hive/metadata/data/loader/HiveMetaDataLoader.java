@@ -29,6 +29,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.sql.Types;
 import java.util.Collection;
 import java.util.Collections;
@@ -45,15 +46,10 @@ import java.util.stream.Collectors;
  */
 public final class HiveMetaDataLoader implements DialectMetaDataLoader {
     
-    @SuppressWarnings("SqlNoDataSourceInspection")
     @Override
     public Collection<SchemaMetaData> load(final MetaDataLoaderMaterial material) throws SQLException {
-        boolean informationSchemaFlag;
-        try (Connection connection = material.getDataSource().getConnection()) {
-            informationSchemaFlag = connection.createStatement().executeQuery("SHOW DATABASES LIKE 'INFORMATION_SCHEMA'").next();
-        }
         Collection<TableMetaData> tableMetaData = new LinkedList<>();
-        if (informationSchemaFlag) {
+        if (loadInformationSchemaFlag(material)) {
             try (Connection connection = material.getDataSource().getConnection()) {
                 Map<String, Collection<ColumnMetaData>> columnMetaDataMap = loadColumnMetaDataMap(connection, material.getActualTableNames());
                 for (Map.Entry<String, Collection<ColumnMetaData>> entry : columnMetaDataMap.entrySet()) {
@@ -65,18 +61,20 @@ public final class HiveMetaDataLoader implements DialectMetaDataLoader {
         for (String each : material.getActualTableNames()) {
             TableMetaDataLoader.load(material.getDataSource(), each, material.getStorageType()).ifPresent(tableMetaData::add);
         }
-        return Collections.singletonList(new SchemaMetaData(material.getDefaultSchemaName(), tableMetaData));
+        return Collections.singleton(new SchemaMetaData(material.getDefaultSchemaName(), tableMetaData));
     }
     
-    /**
-     * For apache/hive 4.0.1, `org.apache.hive.jdbc.HiveConnection` does not implement {@link java.sql.Connection#getCatalog}.
-     *
-     * @param connection connection
-     * @param tables     tables
-     * @return a map of table name to its column metadata
-     * @throws SQLException SQL exception
-     */
-    @SuppressWarnings("SqlSourceToSinkFlow")
+    private boolean loadInformationSchemaFlag(final MetaDataLoaderMaterial material) throws SQLException {
+        String sql = "SHOW DATABASES LIKE 'INFORMATION_SCHEMA'";
+        try (
+                Connection connection = material.getDataSource().getConnection();
+                Statement statement = connection.createStatement();
+                ResultSet resultSet = statement.executeQuery(sql)) {
+            return resultSet.next();
+        }
+    }
+    
+    @SuppressWarnings("CollectionWithoutInitialCapacity")
     private Map<String, Collection<ColumnMetaData>> loadColumnMetaDataMap(final Connection connection, final Collection<String> tables) throws SQLException {
         Map<String, Collection<ColumnMetaData>> result = new HashMap<>();
         try (PreparedStatement preparedStatement = connection.prepareStatement(getTableMetaDataSQL(tables))) {
@@ -97,27 +95,11 @@ public final class HiveMetaDataLoader implements DialectMetaDataLoader {
     
     private String getTableMetaDataSQL(final Collection<String> tables) {
         if (tables.isEmpty()) {
-            return "SELECT TABLE_CATALOG,\n"
-                    + "       TABLE_NAME,\n"
-                    + "       COLUMN_NAME,\n"
-                    + "       DATA_TYPE,\n"
-                    + "       ORDINAL_POSITION,\n"
-                    + "       IS_NULLABLE\n"
-                    + "FROM INFORMATION_SCHEMA.COLUMNS\n"
-                    + "WHERE TABLE_CATALOG = ?\n"
-                    + "ORDER BY ORDINAL_POSITION";
+            return "SELECT TABLE_CATALOG,TABLE_NAME,COLUMN_NAME,DATA_TYPE,ORDINAL_POSITION,IS_NULLABLE FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_CATALOG=? ORDER BY ORDINAL_POSITION";
         }
         String tableNames = tables.stream().map(each -> String.format("'%s'", each).toUpperCase()).collect(Collectors.joining(","));
-        return String.format("SELECT TABLE_CATALOG,\n"
-                + "       TABLE_NAME,\n"
-                + "       COLUMN_NAME,\n"
-                + "       DATA_TYPE,\n"
-                + "       ORDINAL_POSITION,\n"
-                + "       IS_NULLABLE\n"
-                + "FROM INFORMATION_SCHEMA.COLUMNS\n"
-                + "WHERE TABLE_CATALOG = ?\n"
-                + "  AND UPPER(TABLE_NAME) IN (%s)\n"
-                + "ORDER BY ORDINAL_POSITION", tableNames);
+        return String.format("SELECT TABLE_CATALOG,TABLE_NAME,COLUMN_NAME,DATA_TYPE,ORDINAL_POSITION,IS_NULLABLE FROM INFORMATION_SCHEMA.COLUMNS"
+                + " WHERE TABLE_CATALOG=? AND UPPER(TABLE_NAME) IN (%s) ORDER BY ORDINAL_POSITION", tableNames);
     }
     
     private ColumnMetaData loadColumnMetaData(final ResultSet resultSet) throws SQLException {
