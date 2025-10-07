@@ -54,9 +54,9 @@ import java.util.concurrent.atomic.AtomicBoolean;
 /**
  * Database connection manager of ShardingSphere-Proxy.
  */
-@Slf4j
 @RequiredArgsConstructor
 @Getter
+@Slf4j
 public final class ProxyDatabaseConnectionManager implements DatabaseConnectionManager<Connection> {
     
     private final ConnectionSession connectionSession;
@@ -180,6 +180,7 @@ public final class ProxyDatabaseConnectionManager implements DatabaseConnectionM
         }
     }
     
+    @SuppressWarnings("MagicConstant")
     private void replayTransactionOption(final Connection connection) throws SQLException {
         if (null == connection) {
             return;
