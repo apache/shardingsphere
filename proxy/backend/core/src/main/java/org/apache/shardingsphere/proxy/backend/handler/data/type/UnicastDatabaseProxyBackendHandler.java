@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.handler.data.impl;
+package org.apache.shardingsphere.proxy.backend.handler.data.type;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.authority.model.ShardingSpherePrivileges;
