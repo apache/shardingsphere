@@ -46,7 +46,7 @@ import java.util.Optional;
  */
 public abstract class ProxyJDBCExecutorCallback extends JDBCExecutorCallback<ExecuteResult> {
     
-    private final DatabaseProxyConnector databaseConnector;
+    private final DatabaseProxyConnector databaseProxyConnector;
     
     private final boolean isReturnGeneratedKeys;
     
@@ -55,10 +55,10 @@ public abstract class ProxyJDBCExecutorCallback extends JDBCExecutorCallback<Exe
     private boolean hasMetaData;
     
     protected ProxyJDBCExecutorCallback(final DatabaseType protocolType, final ResourceMetaData resourceMetaData, final SQLStatement sqlStatement,
-                                        final DatabaseProxyConnector databaseConnector,
+                                        final DatabaseProxyConnector databaseProxyConnector,
                                         final boolean isReturnGeneratedKeys, final boolean isExceptionThrown, final boolean fetchMetaData) {
         super(protocolType, resourceMetaData, sqlStatement, isExceptionThrown);
-        this.databaseConnector = databaseConnector;
+        this.databaseProxyConnector = databaseProxyConnector;
         this.isReturnGeneratedKeys = isReturnGeneratedKeys;
         this.fetchMetaData = fetchMetaData;
     }
@@ -66,10 +66,10 @@ public abstract class ProxyJDBCExecutorCallback extends JDBCExecutorCallback<Exe
     @Override
     public ExecuteResult executeSQL(final String sql, final Statement statement, final ConnectionMode connectionMode, final DatabaseType storageType) throws SQLException {
         hasMetaData = fetchMetaData && !hasMetaData;
-        databaseConnector.add(statement);
+        databaseProxyConnector.add(statement);
         if (execute(sql, statement, isReturnGeneratedKeys)) {
             ResultSet resultSet = statement.getResultSet();
-            databaseConnector.add(resultSet);
+            databaseProxyConnector.add(resultSet);
             return createQueryResult(resultSet, connectionMode, storageType);
         }
         return new UpdateResult(Math.max(statement.getUpdateCount(), 0), isReturnGeneratedKeys ? getGeneratedKey(statement) : 0L);

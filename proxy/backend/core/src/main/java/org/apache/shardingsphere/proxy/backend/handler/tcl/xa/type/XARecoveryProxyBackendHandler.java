@@ -31,20 +31,20 @@ import java.sql.SQLException;
 @RequiredArgsConstructor
 public final class XARecoveryProxyBackendHandler implements ProxyBackendHandler {
     
-    private final DatabaseProxyConnector databaseConnector;
+    private final DatabaseProxyConnector databaseProxyConnector;
     
     @Override
     public boolean next() throws SQLException {
-        return databaseConnector.next();
+        return databaseProxyConnector.next();
     }
     
     @Override
     public QueryResponseRow getRowData() throws SQLException {
-        return databaseConnector.getRowData();
+        return databaseProxyConnector.getRowData();
     }
     
     @Override
     public ResponseHeader execute() throws SQLException {
-        return databaseConnector.execute();
+        return databaseProxyConnector.execute();
     }
 }

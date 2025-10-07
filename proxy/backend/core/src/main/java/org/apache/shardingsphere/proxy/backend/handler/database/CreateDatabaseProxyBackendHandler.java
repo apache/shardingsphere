@@ -28,10 +28,10 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.da
 import java.sql.SQLException;
 
 /**
- * Create database backend handler.
+ * Create database proxy backend handler.
  */
 @RequiredArgsConstructor
-public final class CreateDatabaseBackendHandler implements ProxyBackendHandler {
+public final class CreateDatabaseProxyBackendHandler implements ProxyBackendHandler {
     
     private final CreateDatabaseStatement sqlStatement;
     

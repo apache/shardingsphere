@@ -33,12 +33,12 @@ public final class XACommitProxyBackendHandler implements ProxyBackendHandler {
     
     private final ConnectionSession connectionSession;
     
-    private final DatabaseProxyConnector databaseConnector;
+    private final DatabaseProxyConnector databaseProxyConnector;
     
     @Override
     public ResponseHeader execute() throws SQLException {
         try {
-            return databaseConnector.execute();
+            return databaseProxyConnector.execute();
         } finally {
             connectionSession.getConnectionContext().clearTransactionContext();
             connectionSession.getConnectionContext().clearCursorContext();

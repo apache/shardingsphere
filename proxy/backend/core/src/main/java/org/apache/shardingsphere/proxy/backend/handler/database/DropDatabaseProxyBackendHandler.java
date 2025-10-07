@@ -38,10 +38,10 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.da
 import java.sql.SQLException;
 
 /**
- * Drop database backend handler.
+ * Drop database proxy backend handler.
  */
 @RequiredArgsConstructor
-public final class DropDatabaseBackendHandler implements ProxyBackendHandler {
+public final class DropDatabaseProxyBackendHandler implements ProxyBackendHandler {
     
     private final DropDatabaseStatement sqlStatement;
     

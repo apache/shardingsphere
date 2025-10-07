@@ -101,13 +101,13 @@ public final class ProxySQLExecutor {
             TransactionHook.class, ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getRules());
     
     public ProxySQLExecutor(final String type,
-                            final ProxyDatabaseConnectionManager databaseConnectionManager, final DatabaseProxyConnector databaseConnector, final SQLStatementContext sqlStatementContext) {
+                            final ProxyDatabaseConnectionManager databaseConnectionManager, final DatabaseProxyConnector databaseProxyConnector, final SQLStatementContext sqlStatementContext) {
         this.type = type;
         this.databaseConnectionManager = databaseConnectionManager;
         ExecutorEngine executorEngine = BackendExecutorContext.getInstance().getExecutorEngine();
         ConnectionContext connectionContext = databaseConnectionManager.getConnectionSession().getConnectionContext();
         JDBCExecutor jdbcExecutor = new JDBCExecutor(executorEngine, connectionContext);
-        regularExecutor = new ProxyJDBCExecutor(type, databaseConnectionManager.getConnectionSession(), databaseConnector, jdbcExecutor);
+        regularExecutor = new ProxyJDBCExecutor(type, databaseConnectionManager.getConnectionSession(), databaseProxyConnector, jdbcExecutor);
         rawExecutor = new RawExecutor(executorEngine, connectionContext);
         MetaDataContexts metaDataContexts = ProxyContext.getInstance().getContextManager().getMetaDataContexts();
         String currentDatabaseName = Strings.isNullOrEmpty(databaseConnectionManager.getConnectionSession().getCurrentDatabaseName())

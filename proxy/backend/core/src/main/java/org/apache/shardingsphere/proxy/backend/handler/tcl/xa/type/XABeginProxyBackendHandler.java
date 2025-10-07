@@ -39,7 +39,7 @@ public final class XABeginProxyBackendHandler implements ProxyBackendHandler {
     
     private final ConnectionSession connectionSession;
     
-    private final DatabaseProxyConnector databaseConnector;
+    private final DatabaseProxyConnector databaseProxyConnector;
     
     /*
      * We have to let session occupy the thread when doing xa transaction. According to https://dev.mysql.com/doc/refman/5.7/en/xa-states.html XA and local transactions are mutually exclusive.
@@ -47,7 +47,7 @@ public final class XABeginProxyBackendHandler implements ProxyBackendHandler {
     @Override
     public ResponseHeader execute() throws SQLException {
         ShardingSpherePreconditions.checkState(!connectionSession.getTransactionStatus().isInTransaction(), XATransactionNestedBeginException::new);
-        ResponseHeader result = databaseConnector.execute();
+        ResponseHeader result = databaseProxyConnector.execute();
         TransactionRule transactionRule = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getSingleRule(TransactionRule.class);
         ShardingSphereTransactionManagerEngine engine = transactionRule.getResource();
         connectionSession.getConnectionContext().getTransactionContext().beginTransaction(transactionRule.getDefaultType().name(), engine.getTransactionManager(transactionRule.getDefaultType()));

@@ -46,7 +46,7 @@ public final class ProxyJDBCExecutor {
     
     private final ConnectionSession connectionSession;
     
-    private final DatabaseProxyConnector databaseConnector;
+    private final DatabaseProxyConnector databaseProxyConnector;
     
     private final JDBCExecutor jdbcExecutor;
     
@@ -71,10 +71,10 @@ public final class ProxyJDBCExecutor {
             processEngine.executeSQL(executionGroupContext, queryContext);
             SQLStatementContext context = queryContext.getSqlStatementContext();
             return jdbcExecutor.execute(executionGroupContext,
-                    ProxyJDBCExecutorCallbackFactory.newInstance(type, protocolType, database.getResourceMetaData(), context.getSqlStatement(), databaseConnector, isReturnGeneratedKeys,
+                    ProxyJDBCExecutorCallbackFactory.newInstance(type, protocolType, database.getResourceMetaData(), context.getSqlStatement(), databaseProxyConnector, isReturnGeneratedKeys,
                             isExceptionThrown,
                             true),
-                    ProxyJDBCExecutorCallbackFactory.newInstance(type, protocolType, database.getResourceMetaData(), context.getSqlStatement(), databaseConnector, isReturnGeneratedKeys,
+                    ProxyJDBCExecutorCallbackFactory.newInstance(type, protocolType, database.getResourceMetaData(), context.getSqlStatement(), databaseProxyConnector, isReturnGeneratedKeys,
                             isExceptionThrown,
                             false));
         } finally {

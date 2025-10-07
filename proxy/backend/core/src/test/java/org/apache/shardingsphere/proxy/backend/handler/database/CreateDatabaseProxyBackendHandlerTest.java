@@ -47,11 +47,11 @@ class CreateDatabaseProxyBackendHandlerTest {
     @Mock
     private CreateDatabaseStatement statement;
     
-    private CreateDatabaseBackendHandler handler;
+    private CreateDatabaseProxyBackendHandler handler;
     
     @BeforeEach
     void setUp() {
-        handler = new CreateDatabaseBackendHandler(statement);
+        handler = new CreateDatabaseProxyBackendHandler(statement);
     }
     
     @Test

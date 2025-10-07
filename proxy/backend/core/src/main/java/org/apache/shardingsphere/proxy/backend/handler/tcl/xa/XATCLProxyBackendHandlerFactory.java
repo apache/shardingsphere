@@ -50,19 +50,19 @@ public final class XATCLProxyBackendHandlerFactory {
      */
     public static ProxyBackendHandler newInstance(final QueryContext queryContext, final ConnectionSession connectionSession) {
         XAStatement sqlStatement = (XAStatement) queryContext.getSqlStatementContext().getSqlStatement();
-        DatabaseProxyConnector databaseConnector = DatabaseProxyConnectorFactory.getInstance().newInstance(queryContext, connectionSession.getDatabaseConnectionManager(), false);
+        DatabaseProxyConnector databaseProxyConnector = DatabaseProxyConnectorFactory.getInstance().newInstance(queryContext, connectionSession.getDatabaseConnectionManager(), false);
         if (sqlStatement instanceof XARecoveryStatement) {
-            return new XARecoveryProxyBackendHandler(databaseConnector);
+            return new XARecoveryProxyBackendHandler(databaseProxyConnector);
         }
         if (sqlStatement instanceof XABeginStatement) {
-            return new XABeginProxyBackendHandler(connectionSession, databaseConnector);
+            return new XABeginProxyBackendHandler(connectionSession, databaseProxyConnector);
         }
         if (sqlStatement instanceof XACommitStatement) {
-            return new XACommitProxyBackendHandler(connectionSession, databaseConnector);
+            return new XACommitProxyBackendHandler(connectionSession, databaseProxyConnector);
         }
         if (sqlStatement instanceof XARollbackStatement) {
-            return new XARollbackProxyBackendHandler(connectionSession, databaseConnector);
+            return new XARollbackProxyBackendHandler(connectionSession, databaseProxyConnector);
         }
-        return new XAOtherOperationProxyBackendHandler(databaseConnector);
+        return new XAOtherOperationProxyBackendHandler(databaseProxyConnector);
     }
 }

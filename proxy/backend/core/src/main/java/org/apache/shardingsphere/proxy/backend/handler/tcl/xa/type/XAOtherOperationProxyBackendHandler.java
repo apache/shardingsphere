@@ -30,10 +30,10 @@ import java.sql.SQLException;
 @RequiredArgsConstructor
 public final class XAOtherOperationProxyBackendHandler implements ProxyBackendHandler {
     
-    private final DatabaseProxyConnector databaseConnector;
+    private final DatabaseProxyConnector databaseProxyConnector;
     
     @Override
     public ResponseHeader execute() throws SQLException {
-        return databaseConnector.execute();
+        return databaseProxyConnector.execute();
     }
 }

@@ -554,13 +554,13 @@
     },
     {
       "condition": {
-        "typeReached": "org.apache.shardingsphere.proxy.backend.connector.StandardDatabaseConnector"
+        "typeReached": "org.apache.shardingsphere.proxy.backend.connector.StandardDatabaseProxyConnector"
       },
       "type": "java.lang.Object"
     },
     {
       "condition": {
-        "typeReached": "org.apache.shardingsphere.proxy.backend.handler.database.CreateDatabaseBackendHandler"
+        "typeReached": "org.apache.shardingsphere.proxy.backend.handler.database.CreateDatabaseProxyBackendHandler"
       },
       "type": "java.lang.Object"
     },
@@ -4421,7 +4421,7 @@
     },
     {
       "condition": {
-        "typeReached": "org.apache.shardingsphere.proxy.backend.handler.database.CreateDatabaseBackendHandler"
+        "typeReached": "org.apache.shardingsphere.proxy.backend.handler.database.CreateDatabaseProxyBackendHandler"
       },
       "type": "org.apache.shardingsphere.infra.yaml.data.pojo.YamlRowStatistics"
     },
@@ -4910,7 +4910,7 @@
     },
     {
       "condition": {
-        "typeReached": "org.apache.shardingsphere.proxy.backend.connector.StandardDatabaseConnector"
+        "typeReached": "org.apache.shardingsphere.proxy.backend.connector.StandardDatabaseProxyConnector"
       },
       "type": "org.apache.shardingsphere.infra.yaml.schema.pojo.YamlShardingSphereTable"
     },
@@ -5732,13 +5732,13 @@
     },
     {
       "condition": {
-        "typeReached": "org.apache.shardingsphere.proxy.backend.connector.StandardDatabaseConnector"
+        "typeReached": "org.apache.shardingsphere.proxy.backend.connector.StandardDatabaseProxyConnector"
       },
       "type": "org.apache.shardingsphere.mode.node.path.type.database.metadata.DatabaseMetaDataNodePath"
     },
     {
       "condition": {
-        "typeReached": "org.apache.shardingsphere.proxy.backend.handler.database.CreateDatabaseBackendHandler"
+        "typeReached": "org.apache.shardingsphere.proxy.backend.handler.database.CreateDatabaseProxyBackendHandler"
       },
       "type": "org.apache.shardingsphere.mode.node.path.type.database.metadata.DatabaseMetaDataNodePath"
     },
@@ -6151,7 +6151,7 @@
     },
     {
       "condition": {
-        "typeReached": "org.apache.shardingsphere.proxy.backend.connector.StandardDatabaseConnector"
+        "typeReached": "org.apache.shardingsphere.proxy.backend.connector.StandardDatabaseProxyConnector"
       },
       "type": "org.apache.shardingsphere.mode.node.path.type.database.metadata.schema.SchemaMetaDataNodePath"
     },
@@ -6267,7 +6267,7 @@
     },
     {
       "condition": {
-        "typeReached": "org.apache.shardingsphere.proxy.backend.connector.StandardDatabaseConnector"
+        "typeReached": "org.apache.shardingsphere.proxy.backend.connector.StandardDatabaseProxyConnector"
       },
       "type": "org.apache.shardingsphere.mode.node.path.type.database.metadata.schema.TableMetaDataNodePath"
     },
@@ -6417,7 +6417,7 @@
     },
     {
       "condition": {
-        "typeReached": "org.apache.shardingsphere.proxy.backend.handler.database.CreateDatabaseBackendHandler"
+        "typeReached": "org.apache.shardingsphere.proxy.backend.handler.database.CreateDatabaseProxyBackendHandler"
       },
       "type": "org.apache.shardingsphere.mode.node.path.type.database.statistics.StatisticsDataNodePath"
     },
@@ -6570,7 +6570,7 @@
     },
     {
       "condition": {
-        "typeReached": "org.apache.shardingsphere.proxy.backend.handler.database.CreateDatabaseBackendHandler"
+        "typeReached": "org.apache.shardingsphere.proxy.backend.handler.database.CreateDatabaseProxyBackendHandler"
       },
       "type": "org.apache.shardingsphere.mode.node.path.type.database.statistics.StatisticsDatabaseNodePath"
     },
@@ -6688,7 +6688,7 @@
     },
     {
       "condition": {
-        "typeReached": "org.apache.shardingsphere.proxy.backend.handler.database.CreateDatabaseBackendHandler"
+        "typeReached": "org.apache.shardingsphere.proxy.backend.handler.database.CreateDatabaseProxyBackendHandler"
       },
       "type": "org.apache.shardingsphere.mode.node.path.type.database.statistics.StatisticsSchemaNodePath"
     },
@@ -6800,7 +6800,7 @@
     },
     {
       "condition": {
-        "typeReached": "org.apache.shardingsphere.proxy.backend.handler.database.CreateDatabaseBackendHandler"
+        "typeReached": "org.apache.shardingsphere.proxy.backend.handler.database.CreateDatabaseProxyBackendHandler"
       },
       "type": "org.apache.shardingsphere.mode.node.path.type.database.statistics.StatisticsTableNodePath"
     },
@@ -11044,7 +11044,7 @@
     },
     {
       "condition": {
-        "typeReached": "org.apache.shardingsphere.proxy.backend.connector.StandardDatabaseConnector"
+        "typeReached": "org.apache.shardingsphere.proxy.backend.connector.StandardDatabaseProxyConnector"
       },
       "type": "org.apache.shardingsphere.transaction.base.seata.at.SeataTransactionalSQLExecutionHook"
     },
