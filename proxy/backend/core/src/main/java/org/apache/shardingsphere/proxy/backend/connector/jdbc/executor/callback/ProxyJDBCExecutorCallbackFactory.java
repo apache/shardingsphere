@@ -48,13 +48,13 @@ public final class ProxyJDBCExecutorCallbackFactory {
      * @return created instance
      * @throws UnsupportedSQLOperationException unsupported SQL operation exception
      */
-    public static ProxyJDBCExecutorCallback newInstance(final String type, final DatabaseType protocolType, final ResourceMetaData resourceMetaData, final SQLStatement sqlStatement,
+    public static ProxyJDBCExecutorCallback newInstance(final JDBCDriverType type, final DatabaseType protocolType, final ResourceMetaData resourceMetaData, final SQLStatement sqlStatement,
                                                         final DatabaseProxyConnector databaseProxyConnector, final boolean isReturnGeneratedKeys, final boolean isExceptionThrown,
                                                         final boolean isFetchMetaData) {
-        if (JDBCDriverType.STATEMENT.equals(type)) {
+        if (JDBCDriverType.STATEMENT == type) {
             return new ProxyStatementExecutorCallback(protocolType, resourceMetaData, sqlStatement, databaseProxyConnector, isReturnGeneratedKeys, isExceptionThrown, isFetchMetaData);
         }
-        if (JDBCDriverType.PREPARED_STATEMENT.equals(type)) {
+        if (JDBCDriverType.PREPARED_STATEMENT == type) {
             return new ProxyPreparedStatementExecutorCallback(protocolType, resourceMetaData, sqlStatement, databaseProxyConnector, isReturnGeneratedKeys, isExceptionThrown, isFetchMetaData);
         }
         throw new UnsupportedSQLOperationException(String.format("Unsupported driver type: `%s`", type));

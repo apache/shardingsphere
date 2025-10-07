@@ -37,7 +37,7 @@ public final class DatabaseProxyConnectorFactory {
      * @return created instance
      */
     public static DatabaseProxyConnector newInstance(final QueryContext queryContext, final ProxyDatabaseConnectionManager databaseConnectionManager, final boolean preferPreparedStatement) {
-        String driverType = preferPreparedStatement || !queryContext.getParameters().isEmpty() ? JDBCDriverType.PREPARED_STATEMENT : JDBCDriverType.STATEMENT;
+        JDBCDriverType driverType = preferPreparedStatement || !queryContext.getParameters().isEmpty() ? JDBCDriverType.PREPARED_STATEMENT : JDBCDriverType.STATEMENT;
         DatabaseProxyConnector result = new StandardDatabaseProxyConnector(driverType, queryContext, databaseConnectionManager);
         databaseConnectionManager.add(result);
         return result;

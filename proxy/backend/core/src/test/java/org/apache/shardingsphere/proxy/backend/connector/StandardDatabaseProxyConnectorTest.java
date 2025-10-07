@@ -167,7 +167,7 @@ class StandardDatabaseProxyConnectorTest {
         }
     }
     
-    private DatabaseProxyConnector createDatabaseProxyConnector(final String driverType, final QueryContext queryContext) {
+    private DatabaseProxyConnector createDatabaseProxyConnector(final JDBCDriverType driverType, final QueryContext queryContext) {
         DatabaseProxyConnector result = new StandardDatabaseProxyConnector(driverType, queryContext, databaseConnectionManager);
         databaseConnectionManager.add(result);
         return result;
