@@ -60,7 +60,7 @@ class ZookeeperServiceDiscoveryTest {
     
     @Container
     @AutoClose
-    private final GenericContainer<?> zookeeperContainer = new GenericContainer<>("zookeeper:3.9.3-jre-17")
+    private final GenericContainer<?> zookeeperContainer = new GenericContainer<>("zookeeper:3.9.4-jre-17")
             .withNetwork(network)
             .withNetworkAliases("foo")
             .withExposedPorts(2181);
