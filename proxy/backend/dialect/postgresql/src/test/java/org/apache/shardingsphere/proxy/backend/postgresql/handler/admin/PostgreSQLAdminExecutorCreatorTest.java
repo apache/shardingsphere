@@ -52,36 +52,19 @@ import static org.mockito.Mockito.when;
 
 class PostgreSQLAdminExecutorCreatorTest {
     
-    private static final String PSQL_SELECT_DATABASES = "SELECT d.datname as \"Name\",\n"
-            + "       pg_catalog.pg_get_userbyid(d.datdba) as \"Owner\",\n"
-            + "       pg_catalog.pg_encoding_to_char(d.encoding) as \"Encoding\",\n"
-            + "       d.datcollate as \"Collate\",\n"
-            + "       d.datctype as \"Ctype\",\n"
-            + "       pg_catalog.array_to_string(d.datacl, E'\\n') AS \"Access privileges\"\n"
-            + "FROM pg_catalog.pg_database d\n"
-            + "ORDER BY 1";
+    private static final String PSQL_SELECT_DATABASES = "SELECT d.datname as \"Name\",pg_catalog.pg_get_userbyid(d.datdba) as \"Owner\",pg_catalog.pg_encoding_to_char(d.encoding) as \"Encoding\","
+            + "d.datcollate as \"Collate\",d.datctype as \"Ctype\",pg_catalog.array_to_string(d.datacl, E'\\n') AS \"Access privileges\" FROM pg_catalog.pg_database d ORDER BY 1";
     
-    private static final String PSQL_SELECT_TABLESPACES = "SELECT spcname AS \"Name\",\n"
-            + "  pg_catalog.pg_get_userbyid(spcowner) AS \"Owner\",\n"
-            + "  pg_catalog.pg_tablespace_location(oid) AS \"Location\"\n"
-            + "FROM pg_catalog.pg_tablespace\n"
-            + "ORDER BY 1";
+    private static final String PSQL_SELECT_TABLESPACES = "SELECT spcname AS \"Name\",pg_catalog.pg_get_userbyid(spcowner) AS \"Owner\",pg_catalog.pg_tablespace_location(oid) AS \"Location\""
+            + " FROM pg_catalog.pg_tablespace ORDER BY 1";
     
     private static final String SELECT_PG_CATALOG_WITH_SUBQUERY = "select * from (select * from pg_catalog.pg_namespace) t;";
     
-    private static final String SELECT_PG_CLASS_AND_PG_NAMESPACE = "SELECT n.nspname as \"Schema\",\n"
-            + "       c.relname as \"Name\",\n"
+    private static final String SELECT_PG_CLASS_AND_PG_NAMESPACE = "SELECT n.nspname as \"Schema\",c.relname as \"Name\","
             + "CASE c.relkind WHEN 'r' THEN 'table' WHEN 'v' THEN 'view' WHEN 'm' THEN 'materialized view' WHEN 'i' THEN 'index' WHEN 'S' THEN 'sequence' WHEN 's' THEN 'special' "
-            + "WHEN 'f' THEN 'foreign table' WHEN 'p' THEN 'partitioned table' WHEN 'I' THEN 'partitioned index' END as \"Type\",\n"
-            + "pg_catalog.pg_get_userbyid(c.relowner) as \"Owner\"\n"
-            + "FROM pg_catalog.pg_class c\n"
-            + "       LEFT JOIN pg_catalog.pg_namespace n ON n.oid = c.relnamespace\n"
-            + "WHERE c.relkind IN ('r','p','v','m','S','f','')\n"
-            + "       AND n.nspname <> 'pg_catalog'\n"
-            + "       AND n.nspname <> 'information_schema'\n"
-            + "       AND n.nspname !~ '^pg_toast'\n"
-            + "       AND pg_catalog.pg_table_is_visible(c.oid)\n"
-            + "ORDER BY 1,2;";
+            + "WHEN 'f' THEN 'foreign table' WHEN 'p' THEN 'partitioned table' WHEN 'I' THEN 'partitioned index' END as \"Type\",pg_catalog.pg_get_userbyid(c.relowner) as \"Owner\" "
+            + "FROM pg_catalog.pg_class c LEFT JOIN pg_catalog.pg_namespace n ON n.oid = c.relnamespace WHERE c.relkind IN ('r','p','v','m','S','f','') "
+            + "AND n.nspname <> 'pg_catalog' AND n.nspname <> 'information_schema' AND n.nspname !~ '^pg_toast' AND pg_catalog.pg_table_is_visible(c.oid) ORDER BY 1,2;";
     
     private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "PostgreSQL");
     
