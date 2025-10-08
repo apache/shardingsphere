@@ -219,7 +219,7 @@ class PortalTest {
         when(insertStatementContext.getTablesContext().getDatabaseName()).thenReturn(Optional.empty());
         PostgreSQLServerPreparedStatement preparedStatement = new PostgreSQLServerPreparedStatement("", insertStatementContext, new HintValueContext(), Collections.emptyList(),
                 Collections.emptyList());
-        Portal portal = new Portal("insert into t values (1)", preparedStatement, Collections.emptyList(), Collections.emptyList(), databaseConnectionManager);
+        Portal portal = new Portal("INSERT INTO t VALUES (1)", preparedStatement, Collections.emptyList(), Collections.emptyList(), databaseConnectionManager);
         portal.bind();
         assertThat(portal.describe(), is(PostgreSQLNoDataPacket.getInstance()));
         List<DatabasePacket> actualPackets = portal.execute(0);

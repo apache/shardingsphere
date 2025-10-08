@@ -133,8 +133,8 @@ class PostgreSQLComParseExecutorTest {
     
     @Test
     void assertExecuteWithNonOrderedParameterizedSQL() throws ReflectiveOperationException {
-        final String rawSQL = "update t_test set name=$2 where id=$1";
-        final String expectedSQL = "update t_test set name=? where id=?";
+        final String rawSQL = "UPDATE t_test SET name=$2 WHERE id=$1";
+        final String expectedSQL = "UPDATE t_test SET name=? WHERE id=?";
         final String statementId = "S_2";
         when(parsePacket.getSQL()).thenReturn(rawSQL);
         when(parsePacket.getHintValueContext()).thenReturn(new HintValueContext());
@@ -152,8 +152,8 @@ class PostgreSQLComParseExecutorTest {
     
     @Test
     void assertExecuteWithQuestionOperator() throws ReflectiveOperationException {
-        final String rawSQL = "update t_test set enabled = $1 where name ?& $2";
-        final String expectedSQL = "update t_test set enabled = ? where name ??& ?";
+        final String rawSQL = "UPDATE t_test SET enabled = $1 WHERE name ?& $2";
+        final String expectedSQL = "UPDATE t_test SET enabled = ? WHERE name ??& ?";
         final String statementId = "S_2";
         when(parsePacket.getSQL()).thenReturn(rawSQL);
         when(parsePacket.getStatementId()).thenReturn(statementId);

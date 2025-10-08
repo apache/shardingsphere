@@ -39,8 +39,8 @@ public abstract class SetReadOnlyTestCase extends BaseTransactionTestCase {
     void assertNotSetReadOnly() throws SQLException {
         try (Connection connection = getDataSource().getConnection()) {
             assertQueryBalance(connection);
-            executeUpdateWithLog(connection, "update account set balance = 101 where id = 2;");
-            ResultSet resultSet = executeQueryWithLog(connection, "select * from account where id = 2");
+            executeUpdateWithLog(connection, "UPDATE account SET balance = 101 WHERE id = 2;");
+            ResultSet resultSet = executeQueryWithLog(connection, "SELECT * FROM account WHERE id = 2");
             assertTrue(resultSet.next());
             int balanceResult = resultSet.getInt("balance");
             assertThat(String.format("Balance is %s, should be 101.", balanceResult), balanceResult, is(101));
@@ -48,7 +48,7 @@ public abstract class SetReadOnlyTestCase extends BaseTransactionTestCase {
     }
     
     void assertQueryBalance(final Connection connection) throws SQLException {
-        ResultSet resultSet = executeQueryWithLog(connection, "select * from account;");
+        ResultSet resultSet = executeQueryWithLog(connection, "SELECT * FROM account;");
         while (resultSet.next()) {
             int id = resultSet.getInt("id");
             int balance = resultSet.getInt("balance");

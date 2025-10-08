@@ -31,7 +31,7 @@ import static org.mockito.Mockito.mock;
 
 class ParseTreeCacheLoaderTest {
     
-    private static final String SQL = "select * from user where id=1";
+    private static final String SQL = "SELECT * FROM user WHERE id=1";
     
     @Test
     void assertParseTreeCacheLoader() throws ReflectiveOperationException {

@@ -158,11 +158,11 @@ class DatabaseMetaDataManagerTest {
         ShardingSphereSchema toBeAlteredSchema = createToBeAlteredSchema();
         when(metaDataContexts.getMetaData().getDatabase("foo_db").getAllSchemas()).thenReturn(Collections.singleton(toBeAlteredSchema));
         when(metaDataContexts.getMetaData().getDatabase("foo_db").getSchema("foo_schema")).thenReturn(toBeAlteredSchema);
-        ShardingSphereView toBeChangedView = new ShardingSphereView("foo_view", "select `foo_view`.`foo_view`.`id` AS `id` from `foo_view`.`foo_view`");
+        ShardingSphereView toBeChangedView = new ShardingSphereView("foo_view", "SELECT `foo_view`.`foo_view`.`id` AS `id` FROM `foo_view`.`foo_view`");
         databaseMetaDataManager.alterView("foo_db", "foo_schema", toBeChangedView);
         ShardingSphereView view = metaDataContexts.getMetaData().getDatabase("foo_db").getSchema("foo_schema").getView("foo_view");
         assertThat(view.getName(), is("foo_view"));
-        assertThat(view.getViewDefinition(), is("select `foo_view`.`foo_view`.`id` AS `id` from `foo_view`.`foo_view`"));
+        assertThat(view.getViewDefinition(), is("SELECT `foo_view`.`foo_view`.`id` AS `id` FROM `foo_view`.`foo_view`"));
     }
     
     @Test

@@ -52,16 +52,16 @@ public final class PostgreSQLAutoCommitTestCase extends AutoCommitTestCase {
     
     private void assertAutoCommit() throws SQLException {
         try (Connection connection1 = getDataSource().getConnection(); Connection connection2 = getDataSource().getConnection()) {
-            executeWithLog(connection1, "set transaction isolation level read committed;");
-            executeWithLog(connection2, "set transaction isolation level read committed;");
+            executeWithLog(connection1, "SET transaction isolation level read committed;");
+            executeWithLog(connection2, "SET transaction isolation level read committed;");
             connection1.setAutoCommit(false);
             connection2.setAutoCommit(false);
-            executeWithLog(connection1, "insert into account(id, balance, transaction_id) values(1, 100, 1);");
-            assertFalse(executeQueryWithLog(connection2, "select * from account;").next());
+            executeWithLog(connection1, "INSERT INTO account(id, balance, transaction_id) VALUES(1, 100, 1);");
+            assertFalse(executeQueryWithLog(connection2, "SELECT * FROM account;").next());
             connection1.commit();
             Awaitility.await().atMost(1L, TimeUnit.SECONDS).pollDelay(200L, TimeUnit.MILLISECONDS).until(
-                    () -> executeQueryWithLog(connection2, "select * from account;").next());
-            assertTrue(executeQueryWithLog(connection2, "select * from account;").next());
+                    () -> executeQueryWithLog(connection2, "SELECT * FROM account;").next());
+            assertTrue(executeQueryWithLog(connection2, "SELECT * FROM account;").next());
         }
     }
 }

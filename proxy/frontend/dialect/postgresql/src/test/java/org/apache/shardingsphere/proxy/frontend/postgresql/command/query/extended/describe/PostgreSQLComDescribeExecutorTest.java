@@ -138,7 +138,7 @@ class PostgreSQLComDescribeExecutorTest {
         when(packet.getType()).thenReturn('S');
         final String statementId = "S_1";
         when(packet.getName()).thenReturn(statementId);
-        String sql = "insert into t_order values (?, 0, 'char', ?), (2, ?, ?, '')";
+        String sql = "INSERT INTO t_order VALUES (?, 0, 'char', ?), (2, ?, ?, '')";
         SQLStatement sqlStatement = SQL_PARSER_ENGINE.parse(sql, false);
         List<PostgreSQLColumnType> parameterTypes = new ArrayList<>(sqlStatement.getParameterCount());
         for (int i = 0; i < sqlStatement.getParameterCount(); i++) {
@@ -168,7 +168,7 @@ class PostgreSQLComDescribeExecutorTest {
         when(packet.getType()).thenReturn('S');
         final String statementId = "S_2";
         when(packet.getName()).thenReturn(statementId);
-        String sql = "insert into t_order (id, k, c, pad) values (1, ?, ?, ?), (?, 2, ?, '')";
+        String sql = "INSERT INTO t_order (id, k, c, pad) VALUES (1, ?, ?, ?), (?, 2, ?, '')";
         SQLStatement sqlStatement = SQL_PARSER_ENGINE.parse(sql, false);
         List<PostgreSQLColumnType> parameterTypes = new ArrayList<>(sqlStatement.getParameterCount());
         for (int i = 0; i < sqlStatement.getParameterCount(); i++) {
@@ -198,7 +198,7 @@ class PostgreSQLComDescribeExecutorTest {
         when(packet.getType()).thenReturn('S');
         final String statementId = "S_2";
         when(packet.getName()).thenReturn(statementId);
-        String sql = "insert into t_order (iD, k, c, PaD) values (1, ?, ?, ?), (?, 2, ?, '')";
+        String sql = "INSERT INTO t_order (iD, k, c, PaD) VALUES (1, ?, ?, ?), (?, 2, ?, '')";
         SQLStatement sqlStatement = SQL_PARSER_ENGINE.parse(sql, false);
         List<PostgreSQLColumnType> parameterTypes = new ArrayList<>(sqlStatement.getParameterCount());
         for (int i = 0; i < sqlStatement.getParameterCount(); i++) {
@@ -228,7 +228,7 @@ class PostgreSQLComDescribeExecutorTest {
         when(packet.getType()).thenReturn('S');
         final String statementId = "S_2";
         when(packet.getName()).thenReturn(statementId);
-        String sql = "insert into t_order (undefined_column, k, c, pad) values (1, ?, ?, ?), (?, 2, ?, '')";
+        String sql = "INSERT INTO t_order (undefined_column, k, c, pad) VALUES (1, ?, ?, ?), (?, 2, ?, '')";
         SQLStatement sqlStatement = SQL_PARSER_ENGINE.parse(sql, false);
         List<PostgreSQLColumnType> parameterTypes = new ArrayList<>(sqlStatement.getParameterCount());
         for (int i = 0; i < sqlStatement.getParameterCount(); i++) {
@@ -249,8 +249,8 @@ class PostgreSQLComDescribeExecutorTest {
         when(packet.getType()).thenReturn('S');
         final String statementId = "S_2";
         when(packet.getName()).thenReturn(statementId);
-        String sql = "insert into t_order (k, c, pad) values (?, ?, ?) "
-                + "returning id, id alias_id, 'anonymous', 'OK' literal_string, 1 literal_int, 4294967296 literal_bigint, 1.1 literal_numeric, t_order.*, t_order, t_order alias_t_order";
+        String sql = "INSERT INTO t_order (k, c, pad) VALUES (?, ?, ?) "
+                + "RETURNING id, id alias_id, 'anonymous', 'OK' literal_string, 1 literal_int, 4294967296 literal_bigint, 1.1 literal_numeric, t_order.*, t_order, t_order alias_t_order";
         SQLStatement sqlStatement = SQL_PARSER_ENGINE.parse(sql, false);
         List<PostgreSQLColumnType> parameterTypes = new ArrayList<>(sqlStatement.getParameterCount());
         for (int i = 0; i < sqlStatement.getParameterCount(); i++) {
@@ -332,7 +332,7 @@ class PostgreSQLComDescribeExecutorTest {
         when(packet.getType()).thenReturn('S');
         String statementId = "S_3";
         when(packet.getName()).thenReturn(statementId);
-        String sql = "select id, k, c, pad from t_order where id = ?";
+        String sql = "SELECT id, k, c, pad FROM t_order WHERE id = ?";
         SQLStatement sqlStatement = SQL_PARSER_ENGINE.parse(sql, false);
         SQLStatementContext sqlStatementContext = mock(SelectStatementContext.class);
         when(sqlStatementContext.getSqlStatement()).thenReturn(sqlStatement);

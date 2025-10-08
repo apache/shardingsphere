@@ -83,7 +83,7 @@ class OpenGaussComBatchBindExecutorTest {
     @Test
     void assertExecute() throws SQLException {
         String statement = "S_1";
-        String sql = "insert into bmsql (id) values (?)";
+        String sql = "INSERT INTO bmsql (id) VALUES (?)";
         SQLStatement sqlStatement = parserEngine.parse(sql, false);
         SQLStatementContext sqlStatementContext = mock(InsertStatementContext.class);
         when(sqlStatementContext.getSqlStatement()).thenReturn(sqlStatement);

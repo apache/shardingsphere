@@ -62,9 +62,9 @@ public abstract class BaseTransactionTestCase {
     protected void beforeTest() throws SQLException {
         try (Connection connection = getDataSource().getConnection()) {
             connection.setAutoCommit(false);
-            executeWithLog(connection, "delete from account;");
-            executeWithLog(connection, "delete from t_order;");
-            executeWithLog(connection, "delete from t_order_item;");
+            executeWithLog(connection, "DELETE FROM account;");
+            executeWithLog(connection, "DELETE FROM t_order;");
+            executeWithLog(connection, "DELETE FROM t_order_item;");
             connection.commit();
         }
     }

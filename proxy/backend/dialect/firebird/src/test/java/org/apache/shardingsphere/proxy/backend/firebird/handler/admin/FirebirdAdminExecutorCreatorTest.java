@@ -64,7 +64,7 @@ class FirebirdAdminExecutorCreatorTest {
     void assertCreateWithSelectNonSystem() {
         SelectStatementContext selectStatementContext = mock(SelectStatementContext.class);
         when(selectStatementContext.getSqlStatement()).thenReturn(new SelectStatement(databaseType));
-        assertThat(new FirebirdAdminExecutorCreator().create(selectStatementContext, "select 1", "", Collections.emptyList()), is(Optional.empty()));
+        assertThat(new FirebirdAdminExecutorCreator().create(selectStatementContext, "SELECT 1", "", Collections.emptyList()), is(Optional.empty()));
     }
     
     @Test
@@ -78,6 +78,6 @@ class FirebirdAdminExecutorCreatorTest {
     @Test
     void assertCreateWithDMLStatement() {
         DeleteStatementContext sqlStatementContext = new DeleteStatementContext(new DeleteStatement(databaseType));
-        assertThat(new FirebirdAdminExecutorCreator().create(sqlStatementContext, "delete from t where id = 1", "", Collections.emptyList()), is(Optional.empty()));
+        assertThat(new FirebirdAdminExecutorCreator().create(sqlStatementContext, "DELETE FROM t WHERE id = 1", "", Collections.emptyList()), is(Optional.empty()));
     }
 }

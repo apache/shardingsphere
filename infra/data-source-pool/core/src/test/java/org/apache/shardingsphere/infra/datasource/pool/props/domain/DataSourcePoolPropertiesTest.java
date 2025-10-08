@@ -47,7 +47,7 @@ class DataSourcePoolPropertiesTest {
         actualDataSource.setUrl("jdbc:mock://127.0.0.1/foo_ds");
         actualDataSource.setUsername("root");
         actualDataSource.setPassword("root");
-        actualDataSource.setConnectionInitSqls(Arrays.asList("set names utf8mb4;", "set names utf8;"));
+        actualDataSource.setConnectionInitSqls(Arrays.asList("SET names utf8mb4;", "SET names utf8;"));
         DataSourcePoolProperties actual = DataSourcePoolPropertiesCreator.create(actualDataSource);
         assertThat(actual.getPoolClassName(), is(MockedDataSource.class.getName()));
         assertThat(actual.getAllLocalProperties().get("driverClassName").toString(), is(MockedDataSource.class.getName()));
@@ -57,8 +57,8 @@ class DataSourcePoolPropertiesTest {
         assertNull(actual.getAllLocalProperties().get("loginTimeout"));
         assertThat(actual.getAllLocalProperties().get("connectionInitSqls"), isA(List.class));
         List<String> actualConnectionInitSql = (List<String>) actual.getAllLocalProperties().get("connectionInitSqls");
-        assertThat(actualConnectionInitSql, hasItem("set names utf8mb4;"));
-        assertThat(actualConnectionInitSql, hasItem("set names utf8;"));
+        assertThat(actualConnectionInitSql, hasItem("SET names utf8mb4;"));
+        assertThat(actualConnectionInitSql, hasItem("SET names utf8;"));
     }
     
     @Test

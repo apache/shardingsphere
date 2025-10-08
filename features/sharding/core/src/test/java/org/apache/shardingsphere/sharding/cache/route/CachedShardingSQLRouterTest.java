@@ -74,7 +74,7 @@ class CachedShardingSQLRouterTest {
         when(shardingCache.getConfiguration()).thenReturn(new ShardingCacheConfiguration(1, null));
         when(sqlStatementContext.getTablesContext().getDatabaseNames()).thenReturn(Collections.emptyList());
         QueryContext queryContext =
-                new QueryContext(sqlStatementContext, "select 1", Collections.emptyList(), new HintValueContext(), mockConnectionContext(), mock(ShardingSphereMetaData.class));
+                new QueryContext(sqlStatementContext, "SELECT 1", Collections.emptyList(), new HintValueContext(), mockConnectionContext(), mock(ShardingSphereMetaData.class));
         Optional<RouteContext> actual = new CachedShardingSQLRouter().loadRouteContext(null, queryContext, mock(RuleMetaData.class), null, shardingCache, Collections.emptyList(), null);
         assertFalse(actual.isPresent());
     }
@@ -88,7 +88,7 @@ class CachedShardingSQLRouterTest {
     @Test
     void assertCreateRouteContextWithNotCacheableQuery() {
         QueryContext queryContext =
-                new QueryContext(sqlStatementContext, "insert into t values (?), (?)", Collections.emptyList(), new HintValueContext(), mockConnectionContext(), mock(ShardingSphereMetaData.class));
+                new QueryContext(sqlStatementContext, "INSERT INTO t VALUES (?), (?)", Collections.emptyList(), new HintValueContext(), mockConnectionContext(), mock(ShardingSphereMetaData.class));
         when(shardingCache.getConfiguration()).thenReturn(new ShardingCacheConfiguration(100, null));
         when(shardingCache.getRouteCacheableChecker()).thenReturn(mock(ShardingRouteCacheableChecker.class));
         when(shardingCache.getRouteCacheableChecker().check(null, queryContext)).thenReturn(new ShardingRouteCacheableCheckResult(false, Collections.emptyList()));
@@ -99,7 +99,7 @@ class CachedShardingSQLRouterTest {
     @Test
     void assertCreateRouteContextWithUnmatchedActualParameterSize() {
         QueryContext queryContext =
-                new QueryContext(sqlStatementContext, "insert into t values (?, ?)", Collections.singletonList(0), new HintValueContext(), mockConnectionContext(), mock(ShardingSphereMetaData.class));
+                new QueryContext(sqlStatementContext, "INSERT INTO t VALUES (?, ?)", Collections.singletonList(0), new HintValueContext(), mockConnectionContext(), mock(ShardingSphereMetaData.class));
         when(shardingCache.getConfiguration()).thenReturn(new ShardingCacheConfiguration(100, null));
         when(shardingCache.getRouteCacheableChecker()).thenReturn(mock(ShardingRouteCacheableChecker.class));
         when(shardingCache.getRouteCacheableChecker().check(null, queryContext)).thenReturn(new ShardingRouteCacheableCheckResult(true, Collections.singletonList(1)));
@@ -110,7 +110,7 @@ class CachedShardingSQLRouterTest {
     @Test
     void assertCreateRouteContextWithCacheableQueryButCacheMissed() {
         QueryContext queryContext =
-                new QueryContext(sqlStatementContext, "insert into t values (?, ?)", Arrays.asList(0, 1), new HintValueContext(), mockConnectionContext(), mock(ShardingSphereMetaData.class));
+                new QueryContext(sqlStatementContext, "INSERT INTO t VALUES (?, ?)", Arrays.asList(0, 1), new HintValueContext(), mockConnectionContext(), mock(ShardingSphereMetaData.class));
         when(shardingCache.getConfiguration()).thenReturn(new ShardingCacheConfiguration(100, null));
         when(shardingCache.getRouteCacheableChecker()).thenReturn(mock(ShardingRouteCacheableChecker.class));
         when(shardingCache.getRouteCacheableChecker().check(null, queryContext)).thenReturn(new ShardingRouteCacheableCheckResult(true, Collections.singletonList(1)));
@@ -130,7 +130,7 @@ class CachedShardingSQLRouterTest {
     @Test
     void assertCreateRouteContextWithCacheHit() {
         QueryContext queryContext =
-                new QueryContext(sqlStatementContext, "insert into t values (?, ?)", Arrays.asList(0, 1), new HintValueContext(), mockConnectionContext(), mock(ShardingSphereMetaData.class));
+                new QueryContext(sqlStatementContext, "INSERT INTO t VALUES (?, ?)", Arrays.asList(0, 1), new HintValueContext(), mockConnectionContext(), mock(ShardingSphereMetaData.class));
         when(shardingCache.getConfiguration()).thenReturn(new ShardingCacheConfiguration(100, null));
         when(shardingCache.getRouteCacheableChecker()).thenReturn(mock(ShardingRouteCacheableChecker.class));
         when(shardingCache.getRouteCacheableChecker().check(null, queryContext)).thenReturn(new ShardingRouteCacheableCheckResult(true, Collections.singletonList(1)));
@@ -150,7 +150,7 @@ class CachedShardingSQLRouterTest {
     @Test
     void assertCreateRouteContextWithQueryRoutedToMultiDataNodes() {
         QueryContext queryContext =
-                new QueryContext(sqlStatementContext, "select * from t", Collections.emptyList(), new HintValueContext(), mockConnectionContext(), mock(ShardingSphereMetaData.class));
+                new QueryContext(sqlStatementContext, "SELECT * FROM t", Collections.emptyList(), new HintValueContext(), mockConnectionContext(), mock(ShardingSphereMetaData.class));
         when(shardingCache.getConfiguration()).thenReturn(new ShardingCacheConfiguration(100, null));
         when(shardingCache.getRouteCacheableChecker()).thenReturn(mock(ShardingRouteCacheableChecker.class));
         when(shardingCache.getRouteCacheableChecker().check(null, queryContext)).thenReturn(new ShardingRouteCacheableCheckResult(true, Collections.emptyList()));
