@@ -55,7 +55,7 @@ public final class XATCLProxyBackendHandlerFactory {
             return new XARecoveryProxyBackendHandler(databaseProxyConnector);
         }
         if (sqlStatement instanceof XABeginStatement) {
-            return new XABeginProxyBackendHandler(connectionSession, databaseProxyConnector);
+            return new XABeginProxyBackendHandler(connectionSession, databaseProxyConnector, queryContext.getMetaData());
         }
         if (sqlStatement instanceof XACommitStatement) {
             return new XACommitProxyBackendHandler(connectionSession, databaseProxyConnector);
