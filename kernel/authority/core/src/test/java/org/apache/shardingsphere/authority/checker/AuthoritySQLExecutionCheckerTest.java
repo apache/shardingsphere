@@ -37,6 +37,8 @@ class AuthoritySQLExecutionCheckerTest {
     void assertCheck() {
         ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class, RETURNS_DEEP_STUBS);
         when(metaData.getGlobalRuleMetaData()).thenReturn(new RuleMetaData(Collections.singleton(mock(AuthorityRule.class))));
-        assertDoesNotThrow(() -> new AuthoritySQLExecutionChecker().check(metaData, null, mock(QueryContext.class), mock(ShardingSphereDatabase.class)));
+        QueryContext queryContext = mock(QueryContext.class);
+        when(queryContext.getMetaData()).thenReturn(metaData);
+        assertDoesNotThrow(() -> new AuthoritySQLExecutionChecker().check(null, queryContext, mock(ShardingSphereDatabase.class)));
     }
 }
