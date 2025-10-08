@@ -45,7 +45,7 @@ class OpenGaussSystemTableQueryExecutorCreatorTest {
     
     @Test
     void assertSelectDatCompatibilityFromPgDatabase() {
-        String sql = "select datcompatibility from pg_database where datname='sharding_db'";
+        String sql = "SELECT datcompatibility FROM pg_database WHERE datname='sharding_db'";
         SQLStatementContext sqlStatementContext = mockSelectStatementContext("pg_catalog", "pg_database", "datcompatibility");
         OpenGaussSystemTableQueryExecutorCreator creator = new OpenGaussSystemTableQueryExecutorCreator(sqlStatementContext, sql, Collections.emptyList());
         assertTrue(creator.accept());
@@ -56,7 +56,7 @@ class OpenGaussSystemTableQueryExecutorCreatorTest {
     
     @Test
     void assertSelectFromNotCollectedTable() {
-        String sql = "select name from pg_type'";
+        String sql = "SELECT name FROM pg_type'";
         SQLStatementContext sqlStatementContext = mockSelectStatementContext("pg_catalog", "pg_type", "name");
         OpenGaussSystemTableQueryExecutorCreator creator = new OpenGaussSystemTableQueryExecutorCreator(sqlStatementContext, sql, Collections.emptyList());
         assertTrue(creator.accept());
