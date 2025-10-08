@@ -35,14 +35,14 @@ import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.mode.state.ShardingSphereState;
 import org.apache.shardingsphere.parser.rule.SQLParserRule;
 import org.apache.shardingsphere.parser.rule.builder.DefaultSQLParserRuleConfigurationBuilder;
-import org.apache.shardingsphere.proxy.backend.connector.DatabaseConnector;
+import org.apache.shardingsphere.proxy.backend.connector.DatabaseProxyConnector;
 import org.apache.shardingsphere.proxy.backend.connector.ProxyDatabaseConnectionManager;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
-import org.apache.shardingsphere.proxy.backend.handler.admin.DatabaseAdminQueryBackendHandler;
-import org.apache.shardingsphere.proxy.backend.handler.data.impl.UnicastDatabaseBackendHandler;
-import org.apache.shardingsphere.proxy.backend.handler.distsql.DistSQLQueryBackendHandler;
-import org.apache.shardingsphere.proxy.backend.handler.distsql.DistSQLUpdateBackendHandler;
-import org.apache.shardingsphere.proxy.backend.handler.skip.SkipBackendHandler;
+import org.apache.shardingsphere.proxy.backend.handler.admin.DatabaseAdminQueryProxyBackendHandler;
+import org.apache.shardingsphere.proxy.backend.handler.data.type.UnicastDatabaseProxyBackendHandler;
+import org.apache.shardingsphere.proxy.backend.handler.distsql.DistSQLQueryProxyBackendHandler;
+import org.apache.shardingsphere.proxy.backend.handler.distsql.DistSQLUpdateProxyBackendHandler;
+import org.apache.shardingsphere.proxy.backend.handler.skip.SkipProxyBackendHandler;
 import org.apache.shardingsphere.proxy.backend.handler.tcl.local.type.BeginTransactionProxyBackendHandler;
 import org.apache.shardingsphere.proxy.backend.handler.tcl.local.type.CommitProxyBackendHandler;
 import org.apache.shardingsphere.proxy.backend.handler.tcl.local.type.ReleaseSavepointProxyBackendHandler;
@@ -140,15 +140,15 @@ class ProxyBackendHandlerFactoryTest {
         String sql = "set dist variable sql_show='true'";
         SQLStatement sqlStatement = ProxySQLComQueryParser.parse(sql, databaseType, connectionSession);
         ProxyBackendHandler actual = ProxyBackendHandlerFactory.newInstance(databaseType, sql, sqlStatement, connectionSession, new HintValueContext());
-        assertThat(actual, isA(DistSQLUpdateBackendHandler.class));
+        assertThat(actual, isA(DistSQLUpdateProxyBackendHandler.class));
         sql = "show dist variable where name = sql_show";
         sqlStatement = ProxySQLComQueryParser.parse(sql, databaseType, connectionSession);
         actual = ProxyBackendHandlerFactory.newInstance(databaseType, sql, sqlStatement, connectionSession, new HintValueContext());
-        assertThat(actual, isA(DistSQLQueryBackendHandler.class));
+        assertThat(actual, isA(DistSQLQueryProxyBackendHandler.class));
         sql = "show dist variables";
         sqlStatement = ProxySQLComQueryParser.parse(sql, databaseType, connectionSession);
         actual = ProxyBackendHandlerFactory.newInstance(databaseType, sql, sqlStatement, connectionSession, new HintValueContext());
-        assertThat(actual, isA(DistSQLQueryBackendHandler.class));
+        assertThat(actual, isA(DistSQLQueryProxyBackendHandler.class));
     }
     
     @ParameterizedTest(name = "{0}")
@@ -164,19 +164,19 @@ class ProxyBackendHandlerFactoryTest {
         String sql = "SHOW VARIABLES LIKE '%x%'";
         SQLStatement sqlStatement = ProxySQLComQueryParser.parse(sql, databaseType, connectionSession);
         ProxyBackendHandler actual = ProxyBackendHandlerFactory.newInstance(databaseType, sql, sqlStatement, connectionSession, new HintValueContext());
-        assertThat(actual, isA(UnicastDatabaseBackendHandler.class));
+        assertThat(actual, isA(UnicastDatabaseProxyBackendHandler.class));
         sql = "SHOW VARIABLES WHERE Variable_name ='language'";
         sqlStatement = ProxySQLComQueryParser.parse(sql, databaseType, connectionSession);
         actual = ProxyBackendHandlerFactory.newInstance(databaseType, sql, sqlStatement, connectionSession, new HintValueContext());
-        assertThat(actual, isA(UnicastDatabaseBackendHandler.class));
+        assertThat(actual, isA(UnicastDatabaseProxyBackendHandler.class));
         sql = "SHOW CHARACTER SET";
         sqlStatement = ProxySQLComQueryParser.parse(sql, databaseType, connectionSession);
         actual = ProxyBackendHandlerFactory.newInstance(databaseType, sql, sqlStatement, connectionSession, new HintValueContext());
-        assertThat(actual, isA(UnicastDatabaseBackendHandler.class));
+        assertThat(actual, isA(UnicastDatabaseProxyBackendHandler.class));
         sql = "SHOW COLLATION";
         sqlStatement = ProxySQLComQueryParser.parse(sql, databaseType, connectionSession);
         actual = ProxyBackendHandlerFactory.newInstance(databaseType, sql, sqlStatement, connectionSession, new HintValueContext());
-        assertThat(actual, isA(UnicastDatabaseBackendHandler.class));
+        assertThat(actual, isA(UnicastDatabaseProxyBackendHandler.class));
     }
     
     // TODO
@@ -189,18 +189,18 @@ class ProxyBackendHandlerFactoryTest {
         when(proxyContext.getContextManager().getDatabase("db").containsDataSource()).thenReturn(true);
         SQLStatement sqlStatement = ProxySQLComQueryParser.parse(sql, databaseType, connectionSession);
         ProxyBackendHandler actual = ProxyBackendHandlerFactory.newInstance(databaseType, sql, sqlStatement, connectionSession, new HintValueContext());
-        assertThat(actual, isA(DatabaseConnector.class));
+        assertThat(actual, isA(DatabaseProxyConnector.class));
         sql = "SELECT * FROM information_schema.schemata LIMIT 1";
         sqlStatement = ProxySQLComQueryParser.parse(sql, databaseType, connectionSession);
         actual = ProxyBackendHandlerFactory.newInstance(databaseType, sql, sqlStatement, connectionSession, new HintValueContext());
-        assertThat(actual, isA(DatabaseAdminQueryBackendHandler.class));
+        assertThat(actual, isA(DatabaseAdminQueryProxyBackendHandler.class));
     }
     
     @Test
     void assertNewInstanceWithEmptyString() throws SQLException {
         String sql = "";
         ProxyBackendHandler actual = ProxyBackendHandlerFactory.newInstance(databaseType, sql, new EmptyStatement(databaseType), connectionSession, new HintValueContext());
-        assertThat(actual, isA(SkipBackendHandler.class));
+        assertThat(actual, isA(SkipProxyBackendHandler.class));
     }
     
     @Test
@@ -217,7 +217,7 @@ class ProxyBackendHandlerFactoryTest {
         String sql = "SHOW TRANSACTION RULE;";
         SQLStatement sqlStatement = ProxySQLComQueryParser.parse(sql, databaseType, connectionSession);
         ProxyBackendHandler actual = ProxyBackendHandlerFactory.newInstance(databaseType, sql, sqlStatement, connectionSession, new HintValueContext());
-        assertThat(actual, isA(DistSQLQueryBackendHandler.class));
+        assertThat(actual, isA(DistSQLQueryProxyBackendHandler.class));
     }
     
     @Test
@@ -226,7 +226,7 @@ class ProxyBackendHandlerFactoryTest {
         String sql = "SHOW DEFAULT SINGLE TABLE STORAGE UNIT";
         SQLStatement sqlStatement = ProxySQLComQueryParser.parse(sql, databaseType, connectionSession);
         ProxyBackendHandler actual = ProxyBackendHandlerFactory.newInstance(databaseType, sql, sqlStatement, connectionSession, new HintValueContext());
-        assertThat(actual, isA(DistSQLQueryBackendHandler.class));
+        assertThat(actual, isA(DistSQLQueryProxyBackendHandler.class));
     }
     
     @Test
@@ -235,7 +235,7 @@ class ProxyBackendHandlerFactoryTest {
         String sql = "PREVIEW INSERT INTO account VALUES(1, 1, 1)";
         SQLStatement sqlStatement = ProxySQLComQueryParser.parse(sql, databaseType, connectionSession);
         ProxyBackendHandler actual = ProxyBackendHandlerFactory.newInstance(databaseType, sql, sqlStatement, connectionSession, new HintValueContext());
-        assertThat(actual, isA(DistSQLQueryBackendHandler.class));
+        assertThat(actual, isA(DistSQLQueryProxyBackendHandler.class));
     }
     
     private static final class TCLTestCaseArgumentsProvider implements ArgumentsProvider {

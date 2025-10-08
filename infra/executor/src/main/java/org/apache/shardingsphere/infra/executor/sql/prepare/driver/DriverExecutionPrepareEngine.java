@@ -27,6 +27,7 @@ import org.apache.shardingsphere.infra.executor.sql.context.ExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.ConnectionMode;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.DriverExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.prepare.AbstractExecutionPrepareEngine;
+import org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.JDBCDriverType;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnit;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
@@ -49,10 +50,10 @@ import java.util.concurrent.ConcurrentHashMap;
 public final class DriverExecutionPrepareEngine<T extends DriverExecutionUnit<?>, C> extends AbstractExecutionPrepareEngine<T> {
     
     @SuppressWarnings("rawtypes")
-    private static final Map<String, SQLExecutionUnitBuilder> TYPE_TO_BUILDER_MAP = new ConcurrentHashMap<>(8, 1F);
+    private static final Map<JDBCDriverType, SQLExecutionUnitBuilder> TYPE_TO_BUILDER_MAP = new ConcurrentHashMap<>(8, 1F);
     
     @Getter
-    private final String type;
+    private final JDBCDriverType type;
     
     private final DatabaseConnectionManager<C> databaseConnectionManager;
     
@@ -65,7 +66,7 @@ public final class DriverExecutionPrepareEngine<T extends DriverExecutionUnit<?>
     
     private final ShardingSphereMetaData metaData;
     
-    public DriverExecutionPrepareEngine(final String type, final int maxConnectionsSizePerQuery, final DatabaseConnectionManager<C> databaseConnectionManager,
+    public DriverExecutionPrepareEngine(final JDBCDriverType type, final int maxConnectionsSizePerQuery, final DatabaseConnectionManager<C> databaseConnectionManager,
                                         final ExecutorStatementManager<C, ?, ?> statementManager, final StorageResourceOption option, final Collection<ShardingSphereRule> rules,
                                         final ShardingSphereMetaData metaData) {
         super(maxConnectionsSizePerQuery, rules);
@@ -77,14 +78,11 @@ public final class DriverExecutionPrepareEngine<T extends DriverExecutionUnit<?>
         this.metaData = metaData;
     }
     
-    /**
+    /*
      * Refer to <a href="https://bugs.openjdk.java.net/browse/JDK-8161372">JDK-8161372</a>.
-     *
-     * @param type type
-     * @return sql execution unit builder
      */
     @SuppressWarnings("rawtypes")
-    private SQLExecutionUnitBuilder getCachedSQLExecutionUnitBuilder(final String type) {
+    private SQLExecutionUnitBuilder getCachedSQLExecutionUnitBuilder(final JDBCDriverType type) {
         SQLExecutionUnitBuilder result;
         if (null == (result = TYPE_TO_BUILDER_MAP.get(type))) {
             result = TYPE_TO_BUILDER_MAP.computeIfAbsent(type, key -> TypedSPILoader.getService(SQLExecutionUnitBuilder.class, key));

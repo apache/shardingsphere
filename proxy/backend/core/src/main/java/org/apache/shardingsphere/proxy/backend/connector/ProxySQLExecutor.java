@@ -41,6 +41,7 @@ import org.apache.shardingsphere.infra.executor.sql.execute.engine.raw.RawSQLExe
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.raw.callback.RawSQLExecutorCallback;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.ExecuteResult;
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.DriverExecutionPrepareEngine;
+import org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.JDBCDriverType;
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.StatementOption;
 import org.apache.shardingsphere.infra.executor.sql.prepare.raw.RawExecutionPrepareEngine;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
@@ -85,7 +86,7 @@ import java.util.Optional;
  */
 public final class ProxySQLExecutor {
     
-    private final String type;
+    private final JDBCDriverType type;
     
     private final ProxyDatabaseConnectionManager databaseConnectionManager;
     
@@ -100,14 +101,14 @@ public final class ProxySQLExecutor {
     private final Map<ShardingSphereRule, TransactionHook> transactionHooks = OrderedSPILoader.getServices(
             TransactionHook.class, ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getRules());
     
-    public ProxySQLExecutor(final String type,
-                            final ProxyDatabaseConnectionManager databaseConnectionManager, final DatabaseConnector databaseConnector, final SQLStatementContext sqlStatementContext) {
+    public ProxySQLExecutor(final JDBCDriverType type,
+                            final ProxyDatabaseConnectionManager databaseConnectionManager, final DatabaseProxyConnector databaseProxyConnector, final SQLStatementContext sqlStatementContext) {
         this.type = type;
         this.databaseConnectionManager = databaseConnectionManager;
         ExecutorEngine executorEngine = BackendExecutorContext.getInstance().getExecutorEngine();
         ConnectionContext connectionContext = databaseConnectionManager.getConnectionSession().getConnectionContext();
         JDBCExecutor jdbcExecutor = new JDBCExecutor(executorEngine, connectionContext);
-        regularExecutor = new ProxyJDBCExecutor(type, databaseConnectionManager.getConnectionSession(), databaseConnector, jdbcExecutor);
+        regularExecutor = new ProxyJDBCExecutor(type, databaseConnectionManager.getConnectionSession(), databaseProxyConnector, jdbcExecutor);
         rawExecutor = new RawExecutor(executorEngine, connectionContext);
         MetaDataContexts metaDataContexts = ProxyContext.getInstance().getContextManager().getMetaDataContexts();
         String currentDatabaseName = Strings.isNullOrEmpty(databaseConnectionManager.getConnectionSession().getCurrentDatabaseName())

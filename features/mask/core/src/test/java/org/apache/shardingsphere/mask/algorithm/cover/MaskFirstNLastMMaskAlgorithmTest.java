@@ -51,7 +51,7 @@ class MaskFirstNLastMMaskAlgorithmTest {
         MaskAlgorithmAssertions.assertMask(type, props, plainValue, maskedValue);
     }
     
-    private static class AlgorithmInitArgumentsProvider extends MaskAlgorithmInitArgumentsProvider {
+    private static final class AlgorithmInitArgumentsProvider extends MaskAlgorithmInitArgumentsProvider {
         
         AlgorithmInitArgumentsProvider() {
             super("MASK_FIRST_N_LAST_M");
@@ -66,7 +66,7 @@ class MaskFirstNLastMMaskAlgorithmTest {
         }
     }
     
-    private static class AlgorithmMaskExecuteArgumentsProvider extends MaskAlgorithmExecuteArgumentsProvider {
+    private static final class AlgorithmMaskExecuteArgumentsProvider extends MaskAlgorithmExecuteArgumentsProvider {
         
         AlgorithmMaskExecuteArgumentsProvider() {
             super("MASK_FIRST_N_LAST_M", PropertiesBuilder.build(new Property("first-n", "3"), new Property("last-m", "5"), new Property("replace-char", "*")));
@@ -87,7 +87,7 @@ class MaskFirstNLastMMaskAlgorithmTest {
         }
     }
     
-    private static class AlgorithmMaskExecuteWithSameNMArgumentsProvider extends MaskAlgorithmExecuteArgumentsProvider {
+    private static final class AlgorithmMaskExecuteWithSameNMArgumentsProvider extends MaskAlgorithmExecuteArgumentsProvider {
         
         AlgorithmMaskExecuteWithSameNMArgumentsProvider() {
             super("MASK_FIRST_N_LAST_M", PropertiesBuilder.build(new Property("first-n", "5"), new Property("last-m", "5"), new Property("replace-char", "*")));

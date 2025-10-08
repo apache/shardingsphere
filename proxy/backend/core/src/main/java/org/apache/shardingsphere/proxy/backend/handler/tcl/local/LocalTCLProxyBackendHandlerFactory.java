@@ -20,7 +20,7 @@ package org.apache.shardingsphere.proxy.backend.handler.tcl.local;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.session.query.QueryContext;
-import org.apache.shardingsphere.proxy.backend.connector.DatabaseConnectorFactory;
+import org.apache.shardingsphere.proxy.backend.connector.DatabaseProxyConnectorFactory;
 import org.apache.shardingsphere.proxy.backend.handler.ProxyBackendHandler;
 import org.apache.shardingsphere.proxy.backend.handler.tcl.local.type.BeginTransactionProxyBackendHandler;
 import org.apache.shardingsphere.proxy.backend.handler.tcl.local.type.CommitProxyBackendHandler;
@@ -79,6 +79,6 @@ public final class LocalTCLProxyBackendHandlerFactory {
         if (sqlStatement instanceof SetTransactionStatement && !((SetTransactionStatement) sqlStatement).isDesiredScope(OperationScope.GLOBAL)) {
             return new SetTransactionProxyBackendHandler((SetTransactionStatement) sqlStatement, connectionSession);
         }
-        return DatabaseConnectorFactory.getInstance().newInstance(queryContext, connectionSession.getDatabaseConnectionManager(), false);
+        return DatabaseProxyConnectorFactory.newInstance(queryContext, connectionSession.getDatabaseConnectionManager(), false);
     }
 }

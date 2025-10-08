@@ -42,11 +42,11 @@ import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.mode.state.ShardingSphereState;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.distsql.DistSQLStatementContext;
-import org.apache.shardingsphere.proxy.backend.handler.admin.DatabaseAdminBackendHandlerFactory;
-import org.apache.shardingsphere.proxy.backend.handler.data.DatabaseBackendHandlerFactory;
-import org.apache.shardingsphere.proxy.backend.handler.database.DatabaseOperateBackendHandlerFactory;
-import org.apache.shardingsphere.proxy.backend.handler.distsql.DistSQLBackendHandlerFactory;
-import org.apache.shardingsphere.proxy.backend.handler.skip.SkipBackendHandler;
+import org.apache.shardingsphere.proxy.backend.handler.admin.DatabaseAdminProxyBackendHandlerFactory;
+import org.apache.shardingsphere.proxy.backend.handler.data.DatabaseProxyBackendHandlerFactory;
+import org.apache.shardingsphere.proxy.backend.handler.database.DatabaseOperateProxyBackendHandlerFactory;
+import org.apache.shardingsphere.proxy.backend.handler.distsql.DistSQLProxyBackendHandlerFactory;
+import org.apache.shardingsphere.proxy.backend.handler.skip.SkipProxyBackendHandler;
 import org.apache.shardingsphere.proxy.backend.handler.tcl.TCLProxyBackendHandlerFactory;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.backend.state.DialectProxyStateSupportedSQLProvider;
@@ -92,7 +92,7 @@ public final class ProxyBackendHandlerFactory {
     public static ProxyBackendHandler newInstance(final DatabaseType databaseType, final String sql, final SQLStatement sqlStatement,
                                                   final ConnectionSession connectionSession, final HintValueContext hintValueContext) throws SQLException {
         if (sqlStatement instanceof EmptyStatement) {
-            return new SkipBackendHandler(sqlStatement);
+            return new SkipProxyBackendHandler(sqlStatement);
         }
         ShardingSphereMetaData metaData = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData();
         SQLStatementContext sqlStatementContext = sqlStatement instanceof DistSQLStatement
@@ -121,22 +121,22 @@ public final class ProxyBackendHandlerFactory {
         checkSupportedSQLStatement(databaseType, sqlStatement);
         checkClusterState(databaseType, sqlStatement);
         if (sqlStatement instanceof EmptyStatement) {
-            return new SkipBackendHandler(sqlStatement);
+            return new SkipProxyBackendHandler(sqlStatement);
         }
         if (sqlStatement instanceof DistSQLStatement) {
             checkSupportedDistSQLStatementInTransaction(sqlStatement, connectionSession);
-            return DistSQLBackendHandlerFactory.newInstance((DistSQLStatement) sqlStatement, connectionSession);
+            return DistSQLProxyBackendHandlerFactory.newInstance((DistSQLStatement) sqlStatement, connectionSession);
         }
         handleAutoCommit(sqlStatement, connectionSession);
         if (sqlStatement instanceof TCLStatement) {
             return TCLProxyBackendHandlerFactory.newInstance(queryContext, connectionSession);
         }
-        Optional<ProxyBackendHandler> databaseAdminHandler = DatabaseAdminBackendHandlerFactory.newInstance(
+        Optional<ProxyBackendHandler> databaseAdminHandler = DatabaseAdminProxyBackendHandlerFactory.newInstance(
                 databaseType, sqlStatementContext, connectionSession, queryContext.getSql(), queryContext.getParameters());
         if (databaseAdminHandler.isPresent()) {
             return databaseAdminHandler.get();
         }
-        Optional<ProxyBackendHandler> databaseOperateHandler = findDatabaseOperateBackendHandler(sqlStatement, connectionSession);
+        Optional<ProxyBackendHandler> databaseOperateHandler = findDatabaseOperateProxyBackendHandler(sqlStatement, connectionSession);
         if (databaseOperateHandler.isPresent()) {
             return databaseOperateHandler.get();
         }
@@ -144,11 +144,11 @@ public final class ProxyBackendHandlerFactory {
                 ? sqlStatementContext.getTablesContext().getDatabaseName().get()
                 : connectionSession.getUsedDatabaseName();
         if (null == databaseName) {
-            return DatabaseBackendHandlerFactory.newInstance(queryContext, connectionSession, preferPreparedStatement);
+            return DatabaseProxyBackendHandlerFactory.newInstance(queryContext, connectionSession, preferPreparedStatement);
         }
         checkSQLExecution(queryContext, connectionSession, databaseName);
-        return DatabaseAdminBackendHandlerFactory.newInstance(databaseType, sqlStatementContext, connectionSession)
-                .orElseGet(() -> DatabaseBackendHandlerFactory.newInstance(queryContext, connectionSession, preferPreparedStatement));
+        return DatabaseAdminProxyBackendHandlerFactory.newInstance(databaseType, sqlStatementContext, connectionSession)
+                .orElseGet(() -> DatabaseProxyBackendHandlerFactory.newInstance(queryContext, connectionSession, preferPreparedStatement));
     }
     
     private static void checkAllowedSQLStatementWhenTransactionFailed(final DatabaseType databaseType, final SQLStatement sqlStatement,
@@ -192,9 +192,9 @@ public final class ProxyBackendHandlerFactory {
         }
     }
     
-    private static Optional<ProxyBackendHandler> findDatabaseOperateBackendHandler(final SQLStatement sqlStatement, final ConnectionSession connectionSession) {
+    private static Optional<ProxyBackendHandler> findDatabaseOperateProxyBackendHandler(final SQLStatement sqlStatement, final ConnectionSession connectionSession) {
         return sqlStatement instanceof CreateDatabaseStatement || sqlStatement instanceof DropDatabaseStatement
-                ? Optional.of(DatabaseOperateBackendHandlerFactory.newInstance(sqlStatement, connectionSession))
+                ? Optional.of(DatabaseOperateProxyBackendHandlerFactory.newInstance(sqlStatement, connectionSession))
                 : Optional.empty();
     }
     

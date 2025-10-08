@@ -20,8 +20,8 @@ package org.apache.shardingsphere.proxy.backend.handler.tcl.xa;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.session.query.QueryContext;
-import org.apache.shardingsphere.proxy.backend.connector.DatabaseConnector;
-import org.apache.shardingsphere.proxy.backend.connector.DatabaseConnectorFactory;
+import org.apache.shardingsphere.proxy.backend.connector.DatabaseProxyConnector;
+import org.apache.shardingsphere.proxy.backend.connector.DatabaseProxyConnectorFactory;
 import org.apache.shardingsphere.proxy.backend.handler.ProxyBackendHandler;
 import org.apache.shardingsphere.proxy.backend.handler.tcl.xa.type.XABeginProxyBackendHandler;
 import org.apache.shardingsphere.proxy.backend.handler.tcl.xa.type.XACommitProxyBackendHandler;
@@ -50,19 +50,19 @@ public final class XATCLProxyBackendHandlerFactory {
      */
     public static ProxyBackendHandler newInstance(final QueryContext queryContext, final ConnectionSession connectionSession) {
         XAStatement sqlStatement = (XAStatement) queryContext.getSqlStatementContext().getSqlStatement();
-        DatabaseConnector databaseConnector = DatabaseConnectorFactory.getInstance().newInstance(queryContext, connectionSession.getDatabaseConnectionManager(), false);
+        DatabaseProxyConnector databaseProxyConnector = DatabaseProxyConnectorFactory.newInstance(queryContext, connectionSession.getDatabaseConnectionManager(), false);
         if (sqlStatement instanceof XARecoveryStatement) {
-            return new XARecoveryProxyBackendHandler(databaseConnector);
+            return new XARecoveryProxyBackendHandler(databaseProxyConnector);
         }
         if (sqlStatement instanceof XABeginStatement) {
-            return new XABeginProxyBackendHandler(connectionSession, databaseConnector);
+            return new XABeginProxyBackendHandler(connectionSession, databaseProxyConnector, queryContext.getMetaData());
         }
         if (sqlStatement instanceof XACommitStatement) {
-            return new XACommitProxyBackendHandler(connectionSession, databaseConnector);
+            return new XACommitProxyBackendHandler(connectionSession, databaseProxyConnector);
         }
         if (sqlStatement instanceof XARollbackStatement) {
-            return new XARollbackProxyBackendHandler(connectionSession, databaseConnector);
+            return new XARollbackProxyBackendHandler(connectionSession, databaseProxyConnector);
         }
-        return new XAOtherOperationProxyBackendHandler(databaseConnector);
+        return new XAOtherOperationProxyBackendHandler(databaseProxyConnector);
     }
 }
