@@ -73,7 +73,7 @@ class MySQLMultiStatementsProxyBackendHandlerTest {
     
     @Test
     void assertExecute() throws SQLException {
-        String sql = "update t set v=v+1 where id=1;update t set v=v+1 where id=2;update t set v=v+1 where id=3";
+        String sql = "UPDATE t SET v=v+1 WHERE id=1;UPDATE t SET v=v+1 WHERE id=2;UPDATE t SET v=v+1 WHERE id=3";
         ConnectionSession connectionSession = mockConnectionSession();
         UpdateStatement expectedStatement = mock(UpdateStatement.class);
         ContextManager contextManager = mockContextManager();
@@ -99,7 +99,7 @@ class MySQLMultiStatementsProxyBackendHandlerTest {
     
     @Test
     void assertExecuteWithSpecifiedDatabaseName() throws SQLException {
-        String sql = "update foo_db.t set v=v+1 where id=1;update foo_db.t set v=v+1 where id=2;update foo_db.t set v=v+1 where id=3";
+        String sql = "UPDATE foo_db.t SET v=v+1 WHERE id=1;UPDATE foo_db.t SET v=v+1 WHERE id=2;UPDATE foo_db.t SET v=v+1 WHERE id=3";
         ConnectionSession connectionSession = mockConnectionSession();
         UpdateStatement expectedStatement = mock(UpdateStatement.class);
         ContextManager contextManager = mockContextManager();
@@ -125,9 +125,8 @@ class MySQLMultiStatementsProxyBackendHandlerTest {
     
     @Test
     void assertExecuteWithMultiInsertOnDuplicateKey() throws SQLException {
-        String sql =
-                "insert into t (id, v) values(1,1) on duplicate key update v=2;insert into t (id, v) values(2,1) "
-                        + "on duplicate key update v=3;insert into t (id, v) values(2,1) on duplicate key update v=3";
+        String sql = "INSERT INTO t (id, v) VALUES(1,1) ON DUPLICATE KEY UPDATE v=2;"
+                + "INSERT INTO t (id, v) VALUES(2,1) ON DUPLICATE KEY UPDATE v=3;INSERT INTO t (id, v) VALUES(2,1) ON DUPLICATE KEY UPDATE v=3";
         ConnectionSession connectionSession = mockConnectionSession();
         UpdateStatement expectedStatement = mock(UpdateStatement.class);
         ContextManager contextManager = mockContextManager();

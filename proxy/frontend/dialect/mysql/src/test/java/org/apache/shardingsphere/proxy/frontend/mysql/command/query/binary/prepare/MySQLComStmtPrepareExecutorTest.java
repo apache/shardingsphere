@@ -100,7 +100,7 @@ class MySQLComStmtPrepareExecutorTest {
     
     @Test
     void assertPrepareMultiStatements() {
-        when(packet.getSQL()).thenReturn("update t set v=v+1 where id=1;update t set v=v+1 where id=2;update t set v=v+1 where id=3");
+        when(packet.getSQL()).thenReturn("UPDATE t SET v=v+1 WHERE id=1;UPDATE t SET v=v+1 WHERE id=2;UPDATE t SET v=v+1 WHERE id=3");
         when(connectionSession.getAttributeMap().hasAttr(MySQLConstants.OPTION_MULTI_STATEMENTS_ATTRIBUTE_KEY)).thenReturn(true);
         when(connectionSession.getAttributeMap().attr(MySQLConstants.OPTION_MULTI_STATEMENTS_ATTRIBUTE_KEY).get()).thenReturn(0);
         assertThrows(UnsupportedPreparedStatementException.class, () -> new MySQLComStmtPrepareExecutor(packet, connectionSession).execute());
@@ -108,7 +108,7 @@ class MySQLComStmtPrepareExecutorTest {
     
     @Test
     void assertPrepareSelectStatement() {
-        String sql = "select name from foo_db.user where id = ?";
+        String sql = "SELECT name FROM foo_db.user WHERE id = ?";
         when(packet.getSQL()).thenReturn(sql);
         when(packet.getHintValueContext()).thenReturn(new HintValueContext());
         when(connectionSession.getConnectionId()).thenReturn(1);
@@ -132,7 +132,7 @@ class MySQLComStmtPrepareExecutorTest {
     
     @Test
     void assertPrepareInsertStatement() {
-        String sql = "insert into user (id, name, age) values (1, ?, ?), (?, 'bar', ?)";
+        String sql = "INSERT INTO user (id, name, age) VALUES (1, ?, ?), (?, 'bar', ?)";
         when(packet.getSQL()).thenReturn(sql);
         when(packet.getHintValueContext()).thenReturn(new HintValueContext());
         int connectionId = 2;
@@ -193,7 +193,7 @@ class MySQLComStmtPrepareExecutorTest {
     
     @Test
     void assertPrepareUpdateStatement() {
-        String sql = "update user set name = ?, age = ? where id = ?";
+        String sql = "UPDATE user SET name = ?, age = ? WHERE id = ?";
         when(packet.getSQL()).thenReturn(sql);
         when(packet.getHintValueContext()).thenReturn(new HintValueContext());
         when(connectionSession.getConnectionId()).thenReturn(1);
