@@ -68,8 +68,6 @@ class DropDatabaseProxyBackendHandlerTest {
     
     @BeforeEach
     void setUp() {
-        when(ProxyContext.getInstance().databaseExists("foo_db")).thenReturn(true);
-        when(ProxyContext.getInstance().databaseExists("bar_db")).thenReturn(true);
         when(connectionSession.getConnectionContext().getGrantee()).thenReturn(null);
         handler = new DropDatabaseProxyBackendHandler(sqlStatement, mockMetaData(), connectionSession);
     }
@@ -81,6 +79,8 @@ class DropDatabaseProxyBackendHandlerTest {
         when(database2.getName()).thenReturn("bar_db");
         ShardingSphereMetaData result = mock(ShardingSphereMetaData.class, RETURNS_DEEP_STUBS);
         when(result.getAllDatabases()).thenReturn(Arrays.asList(database1, database2));
+        when(result.containsDatabase("foo_db")).thenReturn(true);
+        when(result.containsDatabase("bar_db")).thenReturn(true);
         when(result.getDatabase("foo_db")).thenReturn(database1);
         when(result.getDatabase("bar_db")).thenReturn(database2);
         when(result.getDatabase("test_not_exist_db")).thenReturn(mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS));
