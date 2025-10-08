@@ -94,7 +94,7 @@ public final class SwitchingTransactionRuleTestCase extends BaseTransactionTestC
     
     @RequiredArgsConstructor
     @Getter
-    private static class AlterTransactionRuleTask implements Runnable {
+    private static final class AlterTransactionRuleTask implements Runnable {
         
         private final TransactionContainerComposer containerComposer;
         
@@ -181,7 +181,7 @@ public final class SwitchingTransactionRuleTestCase extends BaseTransactionTestC
     
     @RequiredArgsConstructor
     @Getter
-    private static class TransactionOperationsTask implements Runnable {
+    private static final class TransactionOperationsTask implements Runnable {
         
         private static final AtomicInteger ID_COUNTER = new AtomicInteger();
         

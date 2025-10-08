@@ -29,7 +29,7 @@ class ShardingSphereSQLExceptionTest {
         assertNotNull(new MalformedFormatMessageSQLException().getMessage());
     }
     
-    private static class MalformedFormatMessageSQLException extends ShardingSphereSQLException {
+    private static final class MalformedFormatMessageSQLException extends ShardingSphereSQLException {
         
         private static final long serialVersionUID = 139616805450096292L;
         
