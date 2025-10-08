@@ -40,18 +40,18 @@ public final class SQLAuditEngine {
      * Audit SQL.
      *
      * @param queryContext query context
-     * @param globalRuleMetaData global rule meta data
      * @param database database
      */
     @HighFrequencyInvocation
     @SuppressWarnings({"rawtypes", "unchecked"})
-    public static void audit(final QueryContext queryContext, final RuleMetaData globalRuleMetaData, final ShardingSphereDatabase database) {
+    public static void audit(final QueryContext queryContext, final ShardingSphereDatabase database) {
+        RuleMetaData globalRuleMetaData = queryContext.getMetaData().getGlobalRuleMetaData();
         Collection<ShardingSphereRule> rules = new LinkedList<>(globalRuleMetaData.getRules());
         if (null != database) {
             rules.addAll(database.getRuleMetaData().getRules());
         }
         for (Entry<ShardingSphereRule, SQLAuditor> entry : OrderedSPILoader.getServices(SQLAuditor.class, rules).entrySet()) {
-            entry.getValue().audit(queryContext, globalRuleMetaData, database, entry.getKey());
+            entry.getValue().audit(queryContext, database, entry.getKey());
         }
     }
 }

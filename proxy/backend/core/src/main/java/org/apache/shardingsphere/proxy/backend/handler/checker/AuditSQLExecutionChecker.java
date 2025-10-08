@@ -30,6 +30,6 @@ public final class AuditSQLExecutionChecker implements SQLExecutionChecker {
     
     @Override
     public void check(final Grantee grantee, final QueryContext queryContext, final ShardingSphereDatabase database) {
-        SQLAuditEngine.audit(queryContext, queryContext.getMetaData().getGlobalRuleMetaData(), database);
+        SQLAuditEngine.audit(queryContext, database);
     }
 }
