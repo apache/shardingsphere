@@ -19,8 +19,8 @@ package org.apache.shardingsphere.proxy.backend.handler.tcl.xa.type;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.proxy.backend.connector.DatabaseProxyConnector;
-import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.handler.ProxyBackendHandler;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
@@ -41,14 +41,16 @@ public final class XABeginProxyBackendHandler implements ProxyBackendHandler {
     
     private final DatabaseProxyConnector databaseProxyConnector;
     
+    private final ShardingSphereMetaData metaData;
+    
     /*
-     * We have to let session occupy the thread when doing xa transaction. According to https://dev.mysql.com/doc/refman/5.7/en/xa-states.html XA and local transactions are mutually exclusive.
+     * We have to let session occupy the thread when doing XA transaction. According to https://dev.mysql.com/doc/refman/5.7/en/xa-states.html XA and local transactions are mutually exclusive.
      */
     @Override
     public ResponseHeader execute() throws SQLException {
         ShardingSpherePreconditions.checkState(!connectionSession.getTransactionStatus().isInTransaction(), XATransactionNestedBeginException::new);
         ResponseHeader result = databaseProxyConnector.execute();
-        TransactionRule transactionRule = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getSingleRule(TransactionRule.class);
+        TransactionRule transactionRule = metaData.getGlobalRuleMetaData().getSingleRule(TransactionRule.class);
         ShardingSphereTransactionManagerEngine engine = transactionRule.getResource();
         connectionSession.getConnectionContext().getTransactionContext().beginTransaction(transactionRule.getDefaultType().name(), engine.getTransactionManager(transactionRule.getDefaultType()));
         return result;
