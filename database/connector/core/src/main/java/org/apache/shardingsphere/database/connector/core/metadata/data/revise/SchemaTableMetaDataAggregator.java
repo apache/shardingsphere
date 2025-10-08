@@ -33,11 +33,11 @@ import java.util.stream.Collectors;
 public final class SchemaTableMetaDataAggregator {
     
     /**
-     * Aggregate table metadata.
+     * Aggregate table meta data.
      *
-     * @param checkTableMetaDataEnabled check table metadata enabled
-     * @param tableMetaDataMap table metadata map
-     * @return table metadata
+     * @param checkTableMetaDataEnabled check table meta data enabled
+     * @param tableMetaDataMap table meta data map
+     * @return table meta data
      */
     public Collection<TableMetaData> aggregate(final boolean checkTableMetaDataEnabled, final Map<String, Collection<TableMetaData>> tableMetaDataMap) {
         Collection<TableMetaData> result = new LinkedList<>();
