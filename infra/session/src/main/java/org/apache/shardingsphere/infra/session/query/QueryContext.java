@@ -85,7 +85,8 @@ public final class QueryContext {
     public ShardingSphereDatabase getUsedDatabase() {
         ShardingSpherePreconditions.checkState(usedDatabaseNames.size() <= 1,
                 () -> new UnsupportedSQLOperationException(String.format("Can not support multiple logic databases [%s]", Joiner.on(", ").join(usedDatabaseNames))));
-        String databaseName = usedDatabaseNames.isEmpty() ? connectionContext.getCurrentDatabaseName().orElseThrow(NoDatabaseSelectedException::new) : usedDatabaseNames.iterator().next();
+        ShardingSpherePreconditions.checkState(usedDatabaseNames.size() == 1, NoDatabaseSelectedException::new);
+        String databaseName = usedDatabaseNames.iterator().next();
         ShardingSpherePreconditions.checkState(metaData.containsDatabase(databaseName), () -> new UnknownDatabaseException(databaseName));
         return metaData.getDatabase(databaseName);
     }
