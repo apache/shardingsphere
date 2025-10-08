@@ -90,7 +90,7 @@ public final class ClassicTransferTestCase extends BaseTransactionTestCase {
     
     @RequiredArgsConstructor
     @Getter
-    private static class UpdateAccountTask implements Runnable {
+    private static final class UpdateAccountTask implements Runnable {
         
         private final DataSource dataSource;
         

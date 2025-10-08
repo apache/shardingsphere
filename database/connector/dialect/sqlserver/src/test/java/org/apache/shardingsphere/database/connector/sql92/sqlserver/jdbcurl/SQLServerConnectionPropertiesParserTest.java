@@ -58,7 +58,7 @@ class SQLServerConnectionPropertiesParserTest {
         assertThrows(UnrecognizedDatabaseURLException.class, () -> parser.parse("jdbc:sqlserver:xxxxxxxx", null, null));
     }
     
-    private static class NewConstructorTestCaseArgumentsProvider implements ArgumentsProvider {
+    private static final class NewConstructorTestCaseArgumentsProvider implements ArgumentsProvider {
         
         @Override
         public Stream<? extends Arguments> provideArguments(final ParameterDeclarations parameters, final ExtensionContext context) {

@@ -49,7 +49,7 @@ class NodePathSegmentTest {
     @NodePathEntity("/foo/${fooVariable}")
     @RequiredArgsConstructor
     @Getter
-    private static class NodePathFixture implements NodePath {
+    private static final class NodePathFixture implements NodePath {
         
         private final String fooVariable;
     }

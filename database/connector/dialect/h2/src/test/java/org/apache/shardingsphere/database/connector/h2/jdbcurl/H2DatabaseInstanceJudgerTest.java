@@ -49,7 +49,7 @@ class H2DatabaseInstanceJudgerTest {
         assertThat(judger.isInSameDatabaseInstance(actual1, actual2), is(isSame));
     }
     
-    private static class IsInSameDatabaseInstanceTestCaseArgumentsProvider implements ArgumentsProvider {
+    private static final class IsInSameDatabaseInstanceTestCaseArgumentsProvider implements ArgumentsProvider {
         
         @Override
         public Stream<? extends Arguments> provideArguments(final ParameterDeclarations parameters, final ExtensionContext context) {

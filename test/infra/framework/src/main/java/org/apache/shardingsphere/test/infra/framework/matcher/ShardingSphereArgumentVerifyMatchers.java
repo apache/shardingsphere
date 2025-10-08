@@ -47,7 +47,7 @@ public final class ShardingSphereArgumentVerifyMatchers {
     }
     
     @RequiredArgsConstructor
-    private static class DeepEqualsMatcher implements ArgumentMatcher<Object> {
+    private static final class DeepEqualsMatcher implements ArgumentMatcher<Object> {
         
         private final Object wanted;
         

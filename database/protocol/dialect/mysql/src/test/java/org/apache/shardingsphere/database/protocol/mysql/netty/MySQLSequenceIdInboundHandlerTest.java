@@ -50,7 +50,7 @@ class MySQLSequenceIdInboundHandlerTest {
         assertThat(channel.<ByteBuf>readOutbound().readUnsignedByte(), is((short) 1));
     }
     
-    private static class FixtureOutboundHandler extends ChannelOutboundHandlerAdapter {
+    private static final class FixtureOutboundHandler extends ChannelOutboundHandlerAdapter {
         
         @Override
         public void write(final ChannelHandlerContext context, final Object msg, final ChannelPromise promise) {
@@ -59,7 +59,7 @@ class MySQLSequenceIdInboundHandlerTest {
         }
     }
     
-    private static class FixtureInboundHandler extends ChannelInboundHandlerAdapter {
+    private static final class FixtureInboundHandler extends ChannelInboundHandlerAdapter {
         
         @Override
         public void channelRead(final ChannelHandlerContext context, final Object msg) {

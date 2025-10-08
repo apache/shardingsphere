@@ -151,7 +151,7 @@ public final class PipelineDistributedBarrier {
     
     @RequiredArgsConstructor
     @Getter
-    private static class InnerCountDownLatchHolder {
+    private static final class InnerCountDownLatchHolder {
         
         private final int totalCount;
         

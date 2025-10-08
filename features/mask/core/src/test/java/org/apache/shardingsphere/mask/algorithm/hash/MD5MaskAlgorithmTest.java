@@ -44,7 +44,7 @@ class MD5MaskAlgorithmTest {
         MaskAlgorithmAssertions.assertMask(type, props, plainValue, maskedValue);
     }
     
-    private static class AlgorithmMaskExecuteArgumentsProvider extends MaskAlgorithmExecuteArgumentsProvider {
+    private static final class AlgorithmMaskExecuteArgumentsProvider extends MaskAlgorithmExecuteArgumentsProvider {
         
         AlgorithmMaskExecuteArgumentsProvider() {
             super("MD5", new Properties());
@@ -58,7 +58,7 @@ class MD5MaskAlgorithmTest {
         }
     }
     
-    private static class AlgorithmMaskExecuteWithSaltArgumentsProvider extends MaskAlgorithmExecuteArgumentsProvider {
+    private static final class AlgorithmMaskExecuteWithSaltArgumentsProvider extends MaskAlgorithmExecuteArgumentsProvider {
         
         AlgorithmMaskExecuteWithSaltArgumentsProvider() {
             super("MD5", PropertiesBuilder.build(new Property("salt", "202cb962ac5907")));

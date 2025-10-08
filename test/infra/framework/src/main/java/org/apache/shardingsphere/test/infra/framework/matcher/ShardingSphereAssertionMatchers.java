@@ -43,7 +43,7 @@ public final class ShardingSphereAssertionMatchers {
     }
     
     @RequiredArgsConstructor
-    private static class DeepEqualMatcher<T> extends BaseMatcher<T> {
+    private static final class DeepEqualMatcher<T> extends BaseMatcher<T> {
         
         private final T expectedValue;
         

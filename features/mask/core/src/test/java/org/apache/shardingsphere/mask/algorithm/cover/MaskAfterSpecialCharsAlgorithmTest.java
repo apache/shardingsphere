@@ -45,7 +45,7 @@ class MaskAfterSpecialCharsAlgorithmTest {
         MaskAlgorithmAssertions.assertMask(type, props, plainValue, maskedValue);
     }
     
-    private static class AlgorithmInitArgumentsProvider extends MaskAlgorithmInitArgumentsProvider {
+    private static final class AlgorithmInitArgumentsProvider extends MaskAlgorithmInitArgumentsProvider {
         
         AlgorithmInitArgumentsProvider() {
             super("MASK_AFTER_SPECIAL_CHARS");
@@ -61,7 +61,7 @@ class MaskAfterSpecialCharsAlgorithmTest {
         }
     }
     
-    private static class AlgorithmMaskExecuteArgumentsProvider extends MaskAlgorithmExecuteArgumentsProvider {
+    private static final class AlgorithmMaskExecuteArgumentsProvider extends MaskAlgorithmExecuteArgumentsProvider {
         
         AlgorithmMaskExecuteArgumentsProvider() {
             super("MASK_AFTER_SPECIAL_CHARS", PropertiesBuilder.build(new Property("special-chars", "d1"), new Property("replace-char", "*")));

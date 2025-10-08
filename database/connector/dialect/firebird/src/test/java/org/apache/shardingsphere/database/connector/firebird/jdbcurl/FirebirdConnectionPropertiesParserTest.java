@@ -62,7 +62,7 @@ class FirebirdConnectionPropertiesParserTest {
         assertThrows(SQLNonTransientConnectionException.class, () -> parser.parse("jdbc:firebirdsql://localhost:c:/data/db/test.fdb", null, null));
     }
     
-    private static class NewConstructorTestCaseArgumentsProvider implements ArgumentsProvider {
+    private static final class NewConstructorTestCaseArgumentsProvider implements ArgumentsProvider {
         
         @Override
         public Stream<? extends Arguments> provideArguments(final ParameterDeclarations parameters, final ExtensionContext context) {

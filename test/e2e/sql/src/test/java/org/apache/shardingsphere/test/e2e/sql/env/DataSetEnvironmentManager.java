@@ -184,7 +184,7 @@ public final class DataSetEnvironmentManager {
     }
     
     @RequiredArgsConstructor
-    private static class InsertTask implements Callable<Void> {
+    private static final class InsertTask implements Callable<Void> {
         
         private final DataSource dataSource;
         
@@ -214,7 +214,7 @@ public final class DataSetEnvironmentManager {
     }
     
     @RequiredArgsConstructor
-    private static class DeleteTask implements Callable<Void> {
+    private static final class DeleteTask implements Callable<Void> {
         
         private final DataSource dataSource;
         

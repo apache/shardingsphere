@@ -51,7 +51,7 @@ public abstract class InternalUnsupportedSQLParserIT {
         assertThrows(SQLParsingException.class, () -> new SQLParserEngine("H2".equals(databaseType) ? "MySQL" : databaseType, cacheOption).parse(sql, false));
     }
     
-    private static class TestCaseArgumentsProvider implements ArgumentsProvider {
+    private static final class TestCaseArgumentsProvider implements ArgumentsProvider {
         
         @Override
         public Stream<? extends Arguments> provideArguments(final ParameterDeclarations parameters, final ExtensionContext context) {
