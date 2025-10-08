@@ -45,7 +45,7 @@ class ServerPreparedStatementRegistryTest {
         assertNull(registry.getPreparedStatement(1));
     }
     
-    private static class DummyServerPreparedStatement implements ServerPreparedStatement {
+    private static final class DummyServerPreparedStatement implements ServerPreparedStatement {
         
         @Override
         public String getSql() {

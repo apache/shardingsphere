@@ -63,7 +63,7 @@ class HiveConnectionPropertiesParserTest {
         assertThrows(RuntimeException.class, () -> parser.parse("jdbc:hive2://", null, null));
     }
     
-    private static class NewConstructorTestCaseArgumentsProvider implements ArgumentsProvider {
+    private static final class NewConstructorTestCaseArgumentsProvider implements ArgumentsProvider {
         
         @Override
         public Stream<? extends Arguments> provideArguments(final ParameterDeclarations parameters, final ExtensionContext context) {
