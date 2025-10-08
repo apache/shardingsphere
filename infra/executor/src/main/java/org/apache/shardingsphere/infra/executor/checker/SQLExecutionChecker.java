@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.infra.executor.checker;
 
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.apache.shardingsphere.infra.session.query.QueryContext;
@@ -33,10 +32,9 @@ public interface SQLExecutionChecker extends ShardingSphereSPI {
     /**
      * Check before SQL execute.
      *
-     * @param metaData ShardingSphere meta data
      * @param grantee grantee
      * @param queryContext query context
      * @param database database
      */
-    void check(ShardingSphereMetaData metaData, Grantee grantee, QueryContext queryContext, ShardingSphereDatabase database);
+    void check(Grantee grantee, QueryContext queryContext, ShardingSphereDatabase database);
 }

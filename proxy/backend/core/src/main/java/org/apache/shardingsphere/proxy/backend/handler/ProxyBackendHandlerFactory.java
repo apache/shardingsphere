@@ -125,7 +125,7 @@ public final class ProxyBackendHandlerFactory {
         }
         if (sqlStatement instanceof DistSQLStatement) {
             checkSupportedDistSQLStatementInTransaction(sqlStatement, connectionSession);
-            return DistSQLProxyBackendHandlerFactory.newInstance((DistSQLStatement) sqlStatement, connectionSession);
+            return DistSQLProxyBackendHandlerFactory.newInstance((DistSQLStatement) sqlStatement, queryContext, connectionSession);
         }
         handleAutoCommit(sqlStatement, connectionSession);
         if (sqlStatement instanceof TCLStatement) {
@@ -136,7 +136,7 @@ public final class ProxyBackendHandlerFactory {
         if (databaseAdminHandler.isPresent()) {
             return databaseAdminHandler.get();
         }
-        Optional<ProxyBackendHandler> databaseOperateHandler = findDatabaseOperateProxyBackendHandler(sqlStatement, connectionSession);
+        Optional<ProxyBackendHandler> databaseOperateHandler = findDatabaseOperateProxyBackendHandler(sqlStatement, queryContext, connectionSession);
         if (databaseOperateHandler.isPresent()) {
             return databaseOperateHandler.get();
         }
@@ -192,18 +192,17 @@ public final class ProxyBackendHandlerFactory {
         }
     }
     
-    private static Optional<ProxyBackendHandler> findDatabaseOperateProxyBackendHandler(final SQLStatement sqlStatement, final ConnectionSession connectionSession) {
+    private static Optional<ProxyBackendHandler> findDatabaseOperateProxyBackendHandler(final SQLStatement sqlStatement, final QueryContext queryContext, final ConnectionSession connectionSession) {
         return sqlStatement instanceof CreateDatabaseStatement || sqlStatement instanceof DropDatabaseStatement
-                ? Optional.of(DatabaseOperateProxyBackendHandlerFactory.newInstance(sqlStatement, connectionSession))
+                ? Optional.of(DatabaseOperateProxyBackendHandlerFactory.newInstance(sqlStatement, queryContext.getMetaData(), connectionSession))
                 : Optional.empty();
     }
     
     private static void checkSQLExecution(final QueryContext queryContext, final ConnectionSession connectionSession, final String databaseName) {
         Grantee grantee = connectionSession.getConnectionContext().getGrantee();
-        ShardingSphereMetaData metaData = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData();
-        ShardingSphereDatabase database = metaData.getDatabase(databaseName);
+        ShardingSphereDatabase database = queryContext.getMetaData().getDatabase(databaseName);
         for (SQLExecutionChecker each : ShardingSphereServiceLoader.getServiceInstances(SQLExecutionChecker.class)) {
-            each.check(metaData, grantee, queryContext, database);
+            each.check(grantee, queryContext, database);
         }
     }
 }

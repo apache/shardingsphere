@@ -26,6 +26,7 @@ import org.apache.shardingsphere.distsql.statement.type.rdl.RDLStatement;
 import org.apache.shardingsphere.distsql.statement.type.rql.RQLStatement;
 import org.apache.shardingsphere.distsql.statement.type.rul.RULStatement;
 import org.apache.shardingsphere.infra.exception.generic.UnsupportedSQLOperationException;
+import org.apache.shardingsphere.infra.session.query.QueryContext;
 import org.apache.shardingsphere.proxy.backend.handler.ProxyBackendHandler;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 
@@ -39,20 +40,21 @@ public final class DistSQLProxyBackendHandlerFactory {
      * Create new instance of DistSQL proxy backend handler.
      *
      * @param sqlStatement DistSQL statement
+     * @param queryContext query context
      * @param connectionSession connection session
      * @return proxy backend handler
      * @throws UnsupportedSQLOperationException unsupported SQL operation exception
      */
-    public static ProxyBackendHandler newInstance(final DistSQLStatement sqlStatement, final ConnectionSession connectionSession) {
+    public static ProxyBackendHandler newInstance(final DistSQLStatement sqlStatement, final QueryContext queryContext, final ConnectionSession connectionSession) {
         if (sqlStatement instanceof RQLStatement || sqlStatement instanceof RULStatement) {
-            return new DistSQLQueryProxyBackendHandler(sqlStatement, connectionSession);
+            return new DistSQLQueryProxyBackendHandler(sqlStatement, queryContext, connectionSession);
         }
         if (sqlStatement instanceof RDLStatement) {
             return new DistSQLUpdateProxyBackendHandler(sqlStatement, connectionSession);
         }
         if (sqlStatement instanceof RALStatement) {
             return sqlStatement instanceof QueryableRALStatement
-                    ? new DistSQLQueryProxyBackendHandler(sqlStatement, connectionSession)
+                    ? new DistSQLQueryProxyBackendHandler(sqlStatement, queryContext, connectionSession)
                     : new DistSQLUpdateProxyBackendHandler(sqlStatement, connectionSession);
         }
         throw new UnsupportedSQLOperationException(sqlStatement.getClass().getName());

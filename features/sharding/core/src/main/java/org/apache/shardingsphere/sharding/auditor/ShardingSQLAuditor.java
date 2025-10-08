@@ -21,7 +21,6 @@ import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.executor.audit.SQLAuditor;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.session.query.QueryContext;
 import org.apache.shardingsphere.sharding.api.config.strategy.audit.ShardingAuditStrategyConfiguration;
 import org.apache.shardingsphere.sharding.constant.ShardingOrder;
@@ -37,22 +36,22 @@ public final class ShardingSQLAuditor implements SQLAuditor<ShardingRule> {
     
     @HighFrequencyInvocation
     @Override
-    public void audit(final QueryContext queryContext, final RuleMetaData globalRuleMetaData, final ShardingSphereDatabase database, final ShardingRule rule) {
+    public void audit(final QueryContext queryContext, final ShardingSphereDatabase database, final ShardingRule rule) {
         Collection<ShardingAuditStrategyConfiguration> auditStrategies = getShardingAuditStrategies(queryContext.getSqlStatementContext(), rule);
         if (auditStrategies.isEmpty()) {
             return;
         }
         Collection<String> disableAuditNames = queryContext.getHintValueContext().getDisableAuditNames();
         for (ShardingAuditStrategyConfiguration each : auditStrategies) {
-            audit(queryContext, globalRuleMetaData, database, rule, each, disableAuditNames);
+            audit(queryContext, database, rule, each, disableAuditNames);
         }
     }
     
-    private void audit(final QueryContext queryContext, final RuleMetaData globalRuleMetaData, final ShardingSphereDatabase database, final ShardingRule rule,
+    private void audit(final QueryContext queryContext, final ShardingSphereDatabase database, final ShardingRule rule,
                        final ShardingAuditStrategyConfiguration auditStrategy, final Collection<String> disableAuditNames) {
         for (String each : auditStrategy.getAuditorNames()) {
             if (!auditStrategy.isAllowHintDisable() || !disableAuditNames.contains(each.toLowerCase())) {
-                rule.getAuditors().get(each).check(queryContext.getSqlStatementContext(), queryContext.getParameters(), globalRuleMetaData, database);
+                rule.getAuditors().get(each).check(queryContext.getSqlStatementContext(), queryContext.getParameters(), queryContext.getMetaData().getGlobalRuleMetaData(), database);
             }
         }
     }

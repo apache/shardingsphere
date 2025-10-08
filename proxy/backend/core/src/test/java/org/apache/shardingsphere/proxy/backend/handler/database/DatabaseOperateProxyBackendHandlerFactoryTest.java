@@ -62,15 +62,15 @@ import static org.mockito.Mockito.when;
 @MockitoSettings(strictness = Strictness.LENIENT)
 class DatabaseOperateProxyBackendHandlerFactoryTest {
     
+    private final ShardingSphereMetaData metaData = new ShardingSphereMetaData(
+            Collections.singleton(mockDatabase()), mock(ResourceMetaData.class), mock(RuleMetaData.class), new ConfigurationProperties(new Properties()));
+    
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private ConnectionSession connectionSession;
     
     @BeforeEach
     void setUp() {
         when(connectionSession.getConnectionContext().getGrantee()).thenReturn(null);
-        ShardingSphereMetaData metaData = new ShardingSphereMetaData(
-                Collections.singleton(mockDatabase()), mock(ResourceMetaData.class), mock(RuleMetaData.class), new ConfigurationProperties(new Properties()));
-        when(connectionSession.getQueryContext().getMetaData()).thenReturn(metaData);
         when(ProxyContext.getInstance().databaseExists("foo_db")).thenReturn(true);
     }
     
@@ -78,7 +78,7 @@ class DatabaseOperateProxyBackendHandlerFactoryTest {
     void assertExecuteCreateDatabaseContext() throws SQLException {
         CreateDatabaseStatement sqlStatement = mock(CreateDatabaseStatement.class);
         when(sqlStatement.getDatabaseName()).thenReturn("new_db");
-        ResponseHeader response = DatabaseOperateProxyBackendHandlerFactory.newInstance(sqlStatement, connectionSession).execute();
+        ResponseHeader response = DatabaseOperateProxyBackendHandlerFactory.newInstance(sqlStatement, metaData, connectionSession).execute();
         assertThat(response, isA(UpdateResponseHeader.class));
     }
     
@@ -86,7 +86,7 @@ class DatabaseOperateProxyBackendHandlerFactoryTest {
     void assertExecuteDropDatabaseContext() throws SQLException {
         DropDatabaseStatement sqlStatement = mock(DropDatabaseStatement.class);
         when(sqlStatement.getDatabaseName()).thenReturn("foo_db");
-        ResponseHeader response = DatabaseOperateProxyBackendHandlerFactory.newInstance(sqlStatement, connectionSession).execute();
+        ResponseHeader response = DatabaseOperateProxyBackendHandlerFactory.newInstance(sqlStatement, metaData, connectionSession).execute();
         assertThat(response, isA(UpdateResponseHeader.class));
     }
     
@@ -95,7 +95,7 @@ class DatabaseOperateProxyBackendHandlerFactoryTest {
         CreateDatabaseStatement sqlStatement = mock(CreateDatabaseStatement.class);
         when(sqlStatement.getDatabaseName()).thenReturn("foo_db");
         try {
-            DatabaseOperateProxyBackendHandlerFactory.newInstance(sqlStatement, connectionSession);
+            DatabaseOperateProxyBackendHandlerFactory.newInstance(sqlStatement, metaData, connectionSession);
         } catch (final DatabaseCreateExistsException ex) {
             assertNull(ex.getMessage());
         }
@@ -110,16 +110,16 @@ class DatabaseOperateProxyBackendHandlerFactoryTest {
     
     @Test
     void assertDatabaseOperateProxyBackendHandlerFactoryReturnCreateDatabaseProxyBackendHandler() {
-        assertThat(DatabaseOperateProxyBackendHandlerFactory.newInstance(mock(CreateDatabaseStatement.class), mock(ConnectionSession.class)), isA(CreateDatabaseProxyBackendHandler.class));
+        assertThat(DatabaseOperateProxyBackendHandlerFactory.newInstance(mock(CreateDatabaseStatement.class), metaData, mock(ConnectionSession.class)), isA(CreateDatabaseProxyBackendHandler.class));
     }
     
     @Test
     void assertDatabaseOperateProxyBackendHandlerFactoryReturnDropDatabaseProxyBackendHandler() {
-        assertThat(DatabaseOperateProxyBackendHandlerFactory.newInstance(mock(DropDatabaseStatement.class), mock(ConnectionSession.class)), isA(DropDatabaseProxyBackendHandler.class));
+        assertThat(DatabaseOperateProxyBackendHandlerFactory.newInstance(mock(DropDatabaseStatement.class), metaData, mock(ConnectionSession.class)), isA(DropDatabaseProxyBackendHandler.class));
     }
     
     @Test
     void assertDatabaseOperateProxyBackendHandlerFactoryThrowUnsupportedOperationException() {
-        assertThrows(UnsupportedSQLOperationException.class, () -> DatabaseOperateProxyBackendHandlerFactory.newInstance(mock(AlterDatabaseStatement.class), mock(ConnectionSession.class)));
+        assertThrows(UnsupportedSQLOperationException.class, () -> DatabaseOperateProxyBackendHandlerFactory.newInstance(mock(AlterDatabaseStatement.class), metaData, mock(ConnectionSession.class)));
     }
 }

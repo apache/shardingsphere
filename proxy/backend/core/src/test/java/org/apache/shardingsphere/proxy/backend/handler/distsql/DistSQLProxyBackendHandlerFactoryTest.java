@@ -177,7 +177,7 @@ class DistSQLProxyBackendHandlerFactoryTest {
     @Test
     void assertExecuteShowShadowRulesContext() throws SQLException {
         mockRuleMetaData();
-        assertThat(new DistSQLQueryProxyBackendHandler(mock(ShowShadowRulesStatement.class, RETURNS_DEEP_STUBS), connectionSession).execute(), isA(QueryResponseHeader.class));
+        assertThat(new DistSQLQueryProxyBackendHandler(mock(ShowShadowRulesStatement.class, RETURNS_DEEP_STUBS), mock(), connectionSession).execute(), isA(QueryResponseHeader.class));
     }
     
     @Test
@@ -185,7 +185,7 @@ class DistSQLProxyBackendHandlerFactoryTest {
         mockRuleMetaData();
         ShowShadowTableRulesStatement sqlStatement = mock(ShowShadowTableRulesStatement.class);
         when(sqlStatement.getAttributes()).thenReturn(new SQLStatementAttributes());
-        assertThat(new DistSQLQueryProxyBackendHandler(sqlStatement, connectionSession).execute(), isA(QueryResponseHeader.class));
+        assertThat(new DistSQLQueryProxyBackendHandler(sqlStatement, mock(), connectionSession).execute(), isA(QueryResponseHeader.class));
     }
     
     @Test
@@ -193,7 +193,7 @@ class DistSQLProxyBackendHandlerFactoryTest {
         mockRuleMetaData();
         ShowShadowAlgorithmsStatement sqlStatement = mock(ShowShadowAlgorithmsStatement.class);
         when(sqlStatement.getAttributes()).thenReturn(new SQLStatementAttributes());
-        assertThat(new DistSQLQueryProxyBackendHandler(sqlStatement, connectionSession).execute(), isA(QueryResponseHeader.class));
+        assertThat(new DistSQLQueryProxyBackendHandler(sqlStatement, mock(), connectionSession).execute(), isA(QueryResponseHeader.class));
     }
     
     @Test

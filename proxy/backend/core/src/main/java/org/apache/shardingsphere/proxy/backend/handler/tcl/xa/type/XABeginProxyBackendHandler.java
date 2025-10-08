@@ -37,11 +37,11 @@ import java.sql.SQLException;
 @RequiredArgsConstructor
 public final class XABeginProxyBackendHandler implements ProxyBackendHandler {
     
+    private final ShardingSphereMetaData metaData;
+    
     private final ConnectionSession connectionSession;
     
     private final DatabaseProxyConnector databaseProxyConnector;
-    
-    private final ShardingSphereMetaData metaData;
     
     /*
      * We have to let session occupy the thread when doing XA transaction. According to https://dev.mysql.com/doc/refman/5.7/en/xa-states.html XA and local transactions are mutually exclusive.

@@ -211,7 +211,7 @@ For discussion, assume that there is the following Docker Compose file to start 
 name: test-1
 services:
   zookeeper:
-    image: zookeeper:3.9.3-jre-17
+    image: zookeeper:3.9.4-jre-17
     ports:
       - "2181:2181"
   apache-hive-1:

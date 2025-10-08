@@ -26,6 +26,7 @@ import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeRegist
 import org.apache.shardingsphere.database.exception.core.exception.syntax.database.DatabaseDropNotExistsException;
 import org.apache.shardingsphere.database.exception.core.exception.syntax.database.UnknownDatabaseException;
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
@@ -45,28 +46,30 @@ public final class DropDatabaseProxyBackendHandler implements ProxyBackendHandle
     
     private final DropDatabaseStatement sqlStatement;
     
+    private final ShardingSphereMetaData metaData;
+    
     private final ConnectionSession connectionSession;
     
     @Override
     public ResponseHeader execute() throws SQLException {
-        check(sqlStatement, connectionSession.getConnectionContext().getGrantee());
+        check(sqlStatement, metaData, connectionSession.getConnectionContext().getGrantee());
         if (isDropCurrentDatabase(sqlStatement.getDatabaseName())) {
             checkSupportedDropCurrentDatabase(connectionSession);
             connectionSession.setCurrentDatabaseName(null);
         }
-        if (ProxyContext.getInstance().databaseExists(sqlStatement.getDatabaseName())) {
-            ShardingSphereDatabase database = connectionSession.getQueryContext().getMetaData().getDatabase(sqlStatement.getDatabaseName());
+        if (metaData.containsDatabase(sqlStatement.getDatabaseName())) {
+            ShardingSphereDatabase database = metaData.getDatabase(sqlStatement.getDatabaseName());
             ProxyContext.getInstance().getContextManager().getPersistServiceFacade().getModeFacade().getMetaDataManagerService().dropDatabase(database);
         }
         return new UpdateResponseHeader(sqlStatement);
     }
     
-    private void check(final DropDatabaseStatement sqlStatement, final Grantee grantee) {
+    private void check(final DropDatabaseStatement sqlStatement, final ShardingSphereMetaData metaData, final Grantee grantee) {
         String databaseName = sqlStatement.getDatabaseName().toLowerCase();
-        AuthorityRule authorityRule = connectionSession.getQueryContext().getMetaData().getGlobalRuleMetaData().getSingleRule(AuthorityRule.class);
+        AuthorityRule authorityRule = metaData.getGlobalRuleMetaData().getSingleRule(AuthorityRule.class);
         AuthorityChecker authorityChecker = new AuthorityChecker(authorityRule, grantee);
         ShardingSpherePreconditions.checkState(authorityChecker.isAuthorized(databaseName), () -> new UnknownDatabaseException(databaseName));
-        ShardingSpherePreconditions.checkState(sqlStatement.isIfExists() || ProxyContext.getInstance().databaseExists(databaseName), () -> new DatabaseDropNotExistsException(databaseName));
+        ShardingSpherePreconditions.checkState(sqlStatement.isIfExists() || metaData.containsDatabase(databaseName), () -> new DatabaseDropNotExistsException(databaseName));
     }
     
     private boolean isDropCurrentDatabase(final String databaseName) {

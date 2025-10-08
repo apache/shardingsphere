@@ -45,6 +45,7 @@ import java.util.LinkedList;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(AutoMockExtension.class)
@@ -69,7 +70,7 @@ class ParseDistSQLExecutorTest {
     void assertGetRowDataForMySQL() throws SQLException {
         String sql = "SELECT * FROM t_order";
         when(connectionSession.getProtocolType()).thenReturn(TypedSPILoader.getService(DatabaseType.class, "MySQL"));
-        DistSQLQueryProxyBackendHandler handler = new DistSQLQueryProxyBackendHandler(new ParseStatement(sql), connectionSession);
+        DistSQLQueryProxyBackendHandler handler = new DistSQLQueryProxyBackendHandler(new ParseStatement(sql), mock(), connectionSession);
         handler.execute();
         handler.next();
         SQLStatement sqlStatement = sqlParserRule.getSQLParserEngine(TypedSPILoader.getService(DatabaseType.class, "MySQL")).parse(sql, false);
@@ -81,7 +82,7 @@ class ParseDistSQLExecutorTest {
     void assertGetRowDataForPostgreSQL() throws SQLException {
         String sql = "SELECT * FROM t_order";
         when(connectionSession.getProtocolType()).thenReturn(TypedSPILoader.getService(DatabaseType.class, "PostgreSQL"));
-        DistSQLQueryProxyBackendHandler handler = new DistSQLQueryProxyBackendHandler(new ParseStatement(sql), connectionSession);
+        DistSQLQueryProxyBackendHandler handler = new DistSQLQueryProxyBackendHandler(new ParseStatement(sql), mock(), connectionSession);
         handler.execute();
         handler.next();
         SQLStatement sqlStatement = sqlParserRule.getSQLParserEngine(TypedSPILoader.getService(DatabaseType.class, "PostgreSQL")).parse(sql, false);
@@ -92,7 +93,7 @@ class ParseDistSQLExecutorTest {
     void assertExecute() {
         String sql = "wrong sql";
         when(connectionSession.getProtocolType()).thenReturn(TypedSPILoader.getService(DatabaseType.class, "MySQL"));
-        DistSQLQueryProxyBackendHandler handler = new DistSQLQueryProxyBackendHandler(new ParseStatement(sql), connectionSession);
+        DistSQLQueryProxyBackendHandler handler = new DistSQLQueryProxyBackendHandler(new ParseStatement(sql), mock(), connectionSession);
         assertThrows(DialectSQLParsingException.class, handler::execute);
     }
 }
