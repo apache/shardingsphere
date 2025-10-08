@@ -22,12 +22,12 @@ CREATE DATABASE IF NOT EXISTS expected_dataset;
 USE expected_dataset;
 
 CREATE TABLE IF NOT EXISTS t_user (
-                                      user_id INT,
-                                      user_name STRING,
-                                      password STRING,
-                                      email STRING,
-                                      telephone STRING,
-                                      creation_date DATE
+    user_id INT,
+    user_name STRING,
+    password STRING,
+    email STRING,
+    telephone STRING,
+    creation_date DATE
 )
-    STORED AS ORC
-    TBLPROPERTIES ('transactional'='true');
+STORED AS ORC
+TBLPROPERTIES ('transactional'='true');
