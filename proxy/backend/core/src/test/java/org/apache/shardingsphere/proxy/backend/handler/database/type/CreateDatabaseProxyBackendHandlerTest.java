@@ -23,7 +23,6 @@ import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResp
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.database.CreateDatabaseStatement;
 import org.apache.shardingsphere.test.infra.framework.mock.AutoMockExtension;
 import org.apache.shardingsphere.test.infra.framework.mock.StaticMockSettings;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
@@ -42,30 +41,23 @@ class CreateDatabaseProxyBackendHandlerTest {
     @Mock
     private CreateDatabaseStatement statement;
     
-    private CreateDatabaseProxyBackendHandler handler;
-    
-    @BeforeEach
-    void setUp() {
-        handler = new CreateDatabaseProxyBackendHandler(statement);
-    }
-    
     @Test
     void assertExecuteCreateNewDatabase() throws SQLException {
         when(statement.getDatabaseName()).thenReturn("bar_db");
-        assertThat(handler.execute(), isA(UpdateResponseHeader.class));
+        assertThat(new CreateDatabaseProxyBackendHandler(statement).execute(), isA(UpdateResponseHeader.class));
     }
     
     @Test
     void assertExecuteCreateExistDatabase() {
         when(statement.getDatabaseName()).thenReturn("foo_db");
         when(ProxyContext.getInstance().databaseExists("foo_db")).thenReturn(true);
-        assertThrows(DatabaseCreateExistsException.class, () -> handler.execute());
+        assertThrows(DatabaseCreateExistsException.class, () -> new CreateDatabaseProxyBackendHandler(statement).execute());
     }
     
     @Test
     void assertExecuteCreateExistDatabaseWithIfNotExists() throws SQLException {
         when(statement.getDatabaseName()).thenReturn("foo_db");
         when(statement.isIfNotExists()).thenReturn(true);
-        assertThat(handler.execute(), isA(UpdateResponseHeader.class));
+        assertThat(new CreateDatabaseProxyBackendHandler(statement).execute(), isA(UpdateResponseHeader.class));
     }
 }
