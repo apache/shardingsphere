@@ -73,12 +73,8 @@ public final class QueryContext {
     }
     
     private Collection<String> getUsedDatabaseNames(final SQLStatementContext sqlStatementContext, final ConnectionContext connectionContext) {
-        Collection<String> result = sqlStatementContext.getTablesContext().getDatabaseNames();
-        return result.isEmpty() ? getCurrentDatabaseNames(connectionContext) : result;
-    }
-    
-    private Collection<String> getCurrentDatabaseNames(final ConnectionContext connectionContext) {
-        return connectionContext.getCurrentDatabaseName().isPresent() ? Collections.singleton(connectionContext.getCurrentDatabaseName().get()) : Collections.emptyList();
+        Collection<String> databaseNamesFromSQL = sqlStatementContext.getTablesContext().getDatabaseNames();
+        return databaseNamesFromSQL.isEmpty() ? connectionContext.getCurrentDatabaseName().map(Collections::singletonList).orElse(Collections.emptyList()) : databaseNamesFromSQL;
     }
     
     /**
