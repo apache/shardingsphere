@@ -19,6 +19,7 @@ package org.apache.shardingsphere.proxy.backend.handler.tcl.local;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.infra.session.query.QueryContext;
 import org.apache.shardingsphere.proxy.backend.connector.DatabaseProxyConnectorFactory;
 import org.apache.shardingsphere.proxy.backend.handler.ProxyBackendHandler;
 import org.apache.shardingsphere.proxy.backend.handler.tcl.local.type.BeginTransactionProxyBackendHandler;
@@ -49,11 +50,12 @@ public final class LocalTCLProxyBackendHandlerFactory {
     /**
      * New instance of local TCL proxy backend handler.
      *
+     * @param queryContext query context
      * @param connectionSession connection session
      * @return created instance
      */
-    public static ProxyBackendHandler newInstance(final ConnectionSession connectionSession) {
-        TCLStatement sqlStatement = (TCLStatement) connectionSession.getQueryContext().getSqlStatementContext().getSqlStatement();
+    public static ProxyBackendHandler newInstance(final QueryContext queryContext, final ConnectionSession connectionSession) {
+        TCLStatement sqlStatement = (TCLStatement) queryContext.getSqlStatementContext().getSqlStatement();
         if (sqlStatement instanceof BeginTransactionStatement) {
             return new BeginTransactionProxyBackendHandler(sqlStatement, connectionSession);
         }
@@ -77,6 +79,6 @@ public final class LocalTCLProxyBackendHandlerFactory {
         if (sqlStatement instanceof SetTransactionStatement && !((SetTransactionStatement) sqlStatement).isDesiredScope(OperationScope.GLOBAL)) {
             return new SetTransactionProxyBackendHandler((SetTransactionStatement) sqlStatement, connectionSession);
         }
-        return DatabaseProxyConnectorFactory.newInstance(connectionSession.getQueryContext(), connectionSession.getDatabaseConnectionManager(), false);
+        return DatabaseProxyConnectorFactory.newInstance(queryContext, connectionSession.getDatabaseConnectionManager(), false);
     }
 }

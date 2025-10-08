@@ -19,6 +19,7 @@ package org.apache.shardingsphere.proxy.backend.handler.tcl.xa.type;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.proxy.backend.connector.DatabaseProxyConnector;
 import org.apache.shardingsphere.proxy.backend.handler.ProxyBackendHandler;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
@@ -36,6 +37,8 @@ import java.sql.SQLException;
 @RequiredArgsConstructor
 public final class XABeginProxyBackendHandler implements ProxyBackendHandler {
     
+    private final ShardingSphereMetaData metaData;
+    
     private final ConnectionSession connectionSession;
     
     private final DatabaseProxyConnector databaseProxyConnector;
@@ -47,7 +50,7 @@ public final class XABeginProxyBackendHandler implements ProxyBackendHandler {
     public ResponseHeader execute() throws SQLException {
         ShardingSpherePreconditions.checkState(!connectionSession.getTransactionStatus().isInTransaction(), XATransactionNestedBeginException::new);
         ResponseHeader result = databaseProxyConnector.execute();
-        TransactionRule transactionRule = connectionSession.getQueryContext().getMetaData().getGlobalRuleMetaData().getSingleRule(TransactionRule.class);
+        TransactionRule transactionRule = metaData.getGlobalRuleMetaData().getSingleRule(TransactionRule.class);
         ShardingSphereTransactionManagerEngine engine = transactionRule.getResource();
         connectionSession.getConnectionContext().getTransactionContext().beginTransaction(transactionRule.getDefaultType().name(), engine.getTransactionManager(transactionRule.getDefaultType()));
         return result;

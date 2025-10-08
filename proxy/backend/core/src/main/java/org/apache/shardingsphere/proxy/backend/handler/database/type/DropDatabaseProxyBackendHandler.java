@@ -46,11 +46,12 @@ public final class DropDatabaseProxyBackendHandler implements ProxyBackendHandle
     
     private final DropDatabaseStatement sqlStatement;
     
+    private final ShardingSphereMetaData metaData;
+    
     private final ConnectionSession connectionSession;
     
     @Override
     public ResponseHeader execute() throws SQLException {
-        ShardingSphereMetaData metaData = connectionSession.getQueryContext().getMetaData();
         check(sqlStatement, metaData, connectionSession.getConnectionContext().getGrantee());
         if (isDropCurrentDatabase(sqlStatement.getDatabaseName())) {
             checkSupportedDropCurrentDatabase(connectionSession);
