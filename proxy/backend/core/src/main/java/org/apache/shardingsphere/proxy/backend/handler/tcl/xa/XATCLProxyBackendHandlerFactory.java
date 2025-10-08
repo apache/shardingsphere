@@ -19,7 +19,6 @@ package org.apache.shardingsphere.proxy.backend.handler.tcl.xa;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.infra.session.query.QueryContext;
 import org.apache.shardingsphere.proxy.backend.connector.DatabaseProxyConnector;
 import org.apache.shardingsphere.proxy.backend.connector.DatabaseProxyConnectorFactory;
 import org.apache.shardingsphere.proxy.backend.handler.ProxyBackendHandler;
@@ -45,17 +44,16 @@ public final class XATCLProxyBackendHandlerFactory {
      * New instance of XA TCL proxy backend handler.
      *
      * @param connectionSession connection session
-     * @param queryContext query context
      * @return created instance
      */
-    public static ProxyBackendHandler newInstance(final QueryContext queryContext, final ConnectionSession connectionSession) {
-        XAStatement sqlStatement = (XAStatement) queryContext.getSqlStatementContext().getSqlStatement();
-        DatabaseProxyConnector databaseProxyConnector = DatabaseProxyConnectorFactory.newInstance(queryContext, connectionSession.getDatabaseConnectionManager(), false);
+    public static ProxyBackendHandler newInstance(final ConnectionSession connectionSession) {
+        XAStatement sqlStatement = (XAStatement) connectionSession.getQueryContext().getSqlStatementContext().getSqlStatement();
+        DatabaseProxyConnector databaseProxyConnector = DatabaseProxyConnectorFactory.newInstance(connectionSession.getQueryContext(), connectionSession.getDatabaseConnectionManager(), false);
         if (sqlStatement instanceof XARecoveryStatement) {
             return new XARecoveryProxyBackendHandler(databaseProxyConnector);
         }
         if (sqlStatement instanceof XABeginStatement) {
-            return new XABeginProxyBackendHandler(connectionSession, databaseProxyConnector, queryContext.getMetaData());
+            return new XABeginProxyBackendHandler(connectionSession, databaseProxyConnector);
         }
         if (sqlStatement instanceof XACommitStatement) {
             return new XACommitProxyBackendHandler(connectionSession, databaseProxyConnector);

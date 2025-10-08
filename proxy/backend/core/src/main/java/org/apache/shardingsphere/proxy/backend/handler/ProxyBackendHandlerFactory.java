@@ -129,7 +129,7 @@ public final class ProxyBackendHandlerFactory {
         }
         handleAutoCommit(sqlStatement, connectionSession);
         if (sqlStatement instanceof TCLStatement) {
-            return TCLProxyBackendHandlerFactory.newInstance(queryContext, connectionSession);
+            return TCLProxyBackendHandlerFactory.newInstance(connectionSession);
         }
         Optional<ProxyBackendHandler> databaseAdminHandler = DatabaseAdminProxyBackendHandlerFactory.newInstance(
                 databaseType, sqlStatementContext, connectionSession, queryContext.getSql(), queryContext.getParameters());
