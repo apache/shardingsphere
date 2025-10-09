@@ -61,7 +61,7 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
         computeNodeInstanceContext.init(new ClusterWorkerIdGenerator(repository, param.getInstanceMetaData().getId()));
         ExclusiveOperatorEngine exclusiveOperatorEngine = new ExclusiveOperatorEngine(new ClusterExclusiveOperatorContext(repository));
         MetaDataContexts metaDataContexts = new MetaDataContextsFactory(new MetaDataPersistFacade(repository), computeNodeInstanceContext).create(param);
-        ContextManager result = new ContextManager(metaDataContexts, computeNodeInstanceContext, repository, exclusiveOperatorEngine);
+        ContextManager result = new ContextManager(metaDataContexts, computeNodeInstanceContext, exclusiveOperatorEngine, repository);
         registerOnline(computeNodeInstanceContext, param, result);
         new DeliverEventSubscriberRegistry(result.getComputeNodeInstanceContext().getEventBusContext()).register(createDeliverEventSubscribers(repository));
         return result;

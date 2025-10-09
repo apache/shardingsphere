@@ -43,7 +43,7 @@ class SQLTranslatorRuleTest {
     
     @Test
     void assertTranslateWhenProtocolSameAsStorage() {
-        String expected = "select 1";
+        String expected = "SELECT 1";
         DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "PostgreSQL");
         QueryContext queryContext = mock(QueryContext.class, RETURNS_DEEP_STUBS);
         when(queryContext.getSqlStatementContext().getSqlStatement().getDatabaseType()).thenReturn(databaseType);
@@ -53,7 +53,7 @@ class SQLTranslatorRuleTest {
     
     @Test
     void assertTranslateWhenNoStorage() {
-        String expected = "select 1";
+        String expected = "SELECT 1";
         DatabaseType sqlParserType = TypedSPILoader.getService(DatabaseType.class, "PostgreSQL");
         QueryContext queryContext = mock(QueryContext.class, RETURNS_DEEP_STUBS);
         when(queryContext.getSqlStatementContext().getSqlStatement().getDatabaseType()).thenReturn(sqlParserType);
@@ -63,7 +63,7 @@ class SQLTranslatorRuleTest {
     
     @Test
     void assertTranslateWithProtocolDifferentWithStorage() {
-        String input = "select 1";
+        String input = "SELECT 1";
         DatabaseType sqlParserType = TypedSPILoader.getService(DatabaseType.class, "MySQL");
         QueryContext queryContext = mock(QueryContext.class, RETURNS_DEEP_STUBS);
         when(queryContext.getSqlStatementContext().getSqlStatement().getDatabaseType()).thenReturn(sqlParserType);
@@ -75,7 +75,7 @@ class SQLTranslatorRuleTest {
     
     @Test
     void assertUseOriginalSQLWhenTranslatingFailed() {
-        String expected = "ERROR: select 1";
+        String expected = "ERROR: SELECT 1";
         DatabaseType sqlParserType = TypedSPILoader.getService(DatabaseType.class, "PostgreSQL");
         QueryContext queryContext = mock(QueryContext.class, RETURNS_DEEP_STUBS);
         when(queryContext.getSqlStatementContext().getSqlStatement().getDatabaseType()).thenReturn(sqlParserType);
@@ -91,7 +91,7 @@ class SQLTranslatorRuleTest {
         when(queryContext.getSqlStatementContext().getSqlStatement().getDatabaseType()).thenReturn(sqlParserType);
         DatabaseType storageType = TypedSPILoader.getService(DatabaseType.class, "MySQL");
         assertThrows(UnsupportedTranslatedDatabaseException.class,
-                () -> createSQLTranslatorRule(false).translate("ERROR: select 1", Collections.emptyList(), queryContext, storageType, mock(), mock()));
+                () -> createSQLTranslatorRule(false).translate("ERROR: SELECT 1", Collections.emptyList(), queryContext, storageType, mock(), mock()));
     }
     
     @Test

@@ -17,5 +17,5 @@
   -->
 
 <databases>
-    <database>mask</database>
+    <database name="mask" />
 </databases>

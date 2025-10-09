@@ -74,6 +74,6 @@ class PrometheusPluginLifecycleServiceTest {
         ComputeNodeInstanceContext computeNodeInstanceContext = new ComputeNodeInstanceContext(
                 new ComputeNodeInstance(mock(InstanceMetaData.class)), new ModeConfiguration("Standalone", null), new EventBusContext());
         computeNodeInstanceContext.init(new StandaloneWorkerIdGenerator());
-        return new ContextManager(metaDataContexts, computeNodeInstanceContext, mock(PersistRepository.class), mock(ExclusiveOperatorEngine.class));
+        return new ContextManager(metaDataContexts, computeNodeInstanceContext, mock(ExclusiveOperatorEngine.class), mock(PersistRepository.class));
     }
 }

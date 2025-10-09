@@ -23,41 +23,34 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.util.Collection;
 import java.util.LinkedList;
+import java.util.stream.Collectors;
 
 /**
- * Authority root xml entry.
+ * Authority root XML entry.
  */
 @XmlRootElement(name = "authority")
 public final class AuthorityEnvironment {
     
     @XmlElement(name = "sqlset")
-    private final Collection<AuthoritySQLSet> sqlSets = new LinkedList<>();
+    private final Collection<AuthorityEnvironmentSQLSet> sqlSets = new LinkedList<>();
     
     /**
-     * Get init SQLs of this database type.
+     * Get init SQLs.
      *
      * @param databaseType database type
-     * @return init SQLs of this database type
+     * @return init SQLs
      */
     public Collection<String> getInitSQLs(final DatabaseType databaseType) {
-        Collection<String> result = new LinkedList<>();
-        for (AuthoritySQLSet each : sqlSets) {
-            result.addAll(each.getCreateUserSQLs(databaseType));
-        }
-        return result;
+        return sqlSets.stream().flatMap(each -> each.getInitSQLs(databaseType).stream()).collect(Collectors.toList());
     }
     
     /**
-     * Get clean SQLs of this database type.
+     * Get clean SQLs.
      *
      * @param databaseType database type
-     * @return clean SQLs of this database type
+     * @return clean SQLs
      */
     public Collection<String> getCleanSQLs(final DatabaseType databaseType) {
-        Collection<String> result = new LinkedList<>();
-        for (AuthoritySQLSet each : sqlSets) {
-            result.addAll(each.getDropUserSQLs(databaseType));
-        }
-        return result;
+        return sqlSets.stream().flatMap(each -> each.getCleanSQLs(databaseType).stream()).collect(Collectors.toList());
     }
 }

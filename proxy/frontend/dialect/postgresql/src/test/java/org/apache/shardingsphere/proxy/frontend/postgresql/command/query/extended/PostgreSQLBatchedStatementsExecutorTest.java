@@ -99,7 +99,7 @@ class PostgreSQLBatchedStatementsExecutorTest {
                 .thenReturn(preparedStatement);
         ContextManager contextManager = mockContextManager();
         ConnectionSession connectionSession = mockConnectionSession();
-        PostgreSQLServerPreparedStatement postgresqlPreparedStatement = new PostgreSQLServerPreparedStatement("insert into t (id, col) values (?, ?)", mockInsertStatementContext(),
+        PostgreSQLServerPreparedStatement postgresqlPreparedStatement = new PostgreSQLServerPreparedStatement("INSERT INTO t (id, col) VALUES (?, ?)", mockInsertStatementContext(),
                 new HintValueContext(), Arrays.asList(PostgreSQLColumnType.INT4, PostgreSQLColumnType.VARCHAR), Arrays.asList(0, 1));
         List<List<Object>> parameterSets = Arrays.asList(Arrays.asList(1, new PostgreSQLTypeUnspecifiedSQLParameter("foo")),
                 Arrays.asList(2, new PostgreSQLTypeUnspecifiedSQLParameter("bar")), Arrays.asList(3, new PostgreSQLTypeUnspecifiedSQLParameter("baz")));

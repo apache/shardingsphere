@@ -17,8 +17,8 @@
   -->
 
 <databases>
-    <database>write_db</database>
-    <database>write_db_shadow</database>
-    <database>read_0</database>
-    <database>read_1</database>
+    <database name="write_db" />
+    <database name="write_db_shadow" />
+    <database name="read_0" />
+    <database name="read_1" />
 </databases>

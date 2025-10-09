@@ -38,8 +38,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
-import java.util.stream.Collectors;
 
 /**
  * Native storage container.
@@ -82,10 +80,7 @@ public final class NativeStorageContainer implements StorageContainer {
     }
     
     private Map<String, DataSource> createDataSourceMap(final Type type) {
-        return null == scenario
-                ? Collections.emptyMap()
-                : getDataSourceMap(DatabaseEnvironmentManager.getDatabaseTypes(scenario, databaseType, type).entrySet().stream()
-                        .filter(entry -> entry.getValue() == databaseType).map(Entry::getKey).collect(Collectors.toList()));
+        return null == scenario ? Collections.emptyMap() : getDataSourceMap(DatabaseEnvironmentManager.getDatabaseNames(scenario, type));
     }
     
     private Map<String, DataSource> getDataSourceMap(final Collection<String> databaseNames) {

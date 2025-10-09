@@ -41,4 +41,6 @@ public final class DialectTransactionOption {
     private final int defaultIsolationLevel;
     
     private final boolean isReturnRollbackStatementWhenCommitFailed;
+    
+    private final boolean isAllowCommitAndRollbackOnlyWhenTransactionFailed;
 }

@@ -53,7 +53,7 @@ class ShowProcessListE2EIT {
     
     private static final E2ETestEnvironment ENV = E2ETestEnvironment.getInstance();
     
-    private static final String SELECT_SLEEP = "select sleep(10)";
+    private static final String SELECT_SLEEP = "SELECT sleep(10)";
     
     @ParameterizedTest(name = "{0}")
     @EnabledIf("isEnabled")

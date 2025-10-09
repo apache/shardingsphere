@@ -554,19 +554,19 @@
     },
     {
       "condition": {
-        "typeReached": "org.apache.shardingsphere.proxy.backend.connector.StandardDatabaseConnector"
+        "typeReached": "org.apache.shardingsphere.proxy.backend.connector.StandardDatabaseProxyConnector"
       },
       "type": "java.lang.Object"
     },
     {
       "condition": {
-        "typeReached": "org.apache.shardingsphere.proxy.backend.handler.database.CreateDatabaseBackendHandler"
+        "typeReached": "org.apache.shardingsphere.proxy.backend.handler.database.CreateDatabaseProxyBackendHandler"
       },
       "type": "java.lang.Object"
     },
     {
       "condition": {
-        "typeReached": "org.apache.shardingsphere.proxy.backend.handler.distsql.DistSQLUpdateBackendHandler"
+        "typeReached": "org.apache.shardingsphere.proxy.backend.handler.distsql.DistSQLUpdateProxyBackendHandler"
       },
       "type": "java.lang.Object"
     },
@@ -1107,7 +1107,7 @@
     },
     {
       "condition": {
-        "typeReached": "org.apache.shardingsphere.proxy.backend.handler.distsql.DistSQLUpdateBackendHandler"
+        "typeReached": "org.apache.shardingsphere.proxy.backend.handler.distsql.DistSQLUpdateProxyBackendHandler"
       },
       "type": "java.util.LinkedHashSet"
     },
@@ -1251,7 +1251,7 @@
     },
     {
       "condition": {
-        "typeReached": "org.apache.shardingsphere.proxy.backend.handler.distsql.DistSQLUpdateBackendHandler"
+        "typeReached": "org.apache.shardingsphere.proxy.backend.handler.distsql.DistSQLUpdateProxyBackendHandler"
       },
       "type": "java.util.Properties"
     },
@@ -1981,7 +1981,7 @@
     },
     {
       "condition": {
-        "typeReached": "org.apache.shardingsphere.proxy.backend.handler.distsql.DistSQLUpdateBackendHandler"
+        "typeReached": "org.apache.shardingsphere.proxy.backend.handler.distsql.DistSQLUpdateProxyBackendHandler"
       },
       "type": "org.apache.shardingsphere.broadcast.yaml.config.YamlBroadcastRuleConfiguration"
     },
@@ -2691,7 +2691,7 @@
     },
     {
       "condition": {
-        "typeReached": "org.apache.shardingsphere.proxy.backend.handler.distsql.DistSQLUpdateBackendHandler"
+        "typeReached": "org.apache.shardingsphere.proxy.backend.handler.distsql.DistSQLUpdateProxyBackendHandler"
       },
       "type": "org.apache.shardingsphere.driver.ShardingSphereDriver"
     },
@@ -3388,7 +3388,7 @@
     },
     {
       "condition": {
-        "typeReached": "org.apache.shardingsphere.proxy.backend.handler.distsql.DistSQLUpdateBackendHandler"
+        "typeReached": "org.apache.shardingsphere.proxy.backend.handler.distsql.DistSQLUpdateProxyBackendHandler"
       },
       "type": "org.apache.shardingsphere.infra.algorithm.core.yaml.YamlAlgorithmConfiguration"
     },
@@ -3528,7 +3528,7 @@
     },
     {
       "condition": {
-        "typeReached": "org.apache.shardingsphere.proxy.backend.handler.distsql.DistSQLUpdateBackendHandler"
+        "typeReached": "org.apache.shardingsphere.proxy.backend.handler.distsql.DistSQLUpdateProxyBackendHandler"
       },
       "type": "org.apache.shardingsphere.infra.algorithm.keygen.snowflake.SnowflakeKeyGenerateAlgorithm"
     },
@@ -3630,7 +3630,7 @@
     },
     {
       "condition": {
-        "typeReached": "org.apache.shardingsphere.proxy.backend.handler.distsql.DistSQLUpdateBackendHandler"
+        "typeReached": "org.apache.shardingsphere.proxy.backend.handler.distsql.DistSQLUpdateProxyBackendHandler"
       },
       "type": "org.apache.shardingsphere.infra.algorithm.keygen.uuid.UUIDKeyGenerateAlgorithm"
     },
@@ -3822,7 +3822,7 @@
     },
     {
       "condition": {
-        "typeReached": "org.apache.shardingsphere.proxy.backend.handler.distsql.DistSQLUpdateBackendHandler"
+        "typeReached": "org.apache.shardingsphere.proxy.backend.handler.distsql.DistSQLUpdateProxyBackendHandler"
       },
       "type": "org.apache.shardingsphere.infra.expr.groovy.GroovyInlineExpressionParser"
     },
@@ -3918,7 +3918,7 @@
     },
     {
       "condition": {
-        "typeReached": "org.apache.shardingsphere.proxy.backend.handler.distsql.DistSQLUpdateBackendHandler"
+        "typeReached": "org.apache.shardingsphere.proxy.backend.handler.distsql.DistSQLUpdateProxyBackendHandler"
       },
       "type": "org.apache.shardingsphere.infra.expr.interval.IntervalInlineExpressionParser"
     },
@@ -4014,7 +4014,7 @@
     },
     {
       "condition": {
-        "typeReached": "org.apache.shardingsphere.proxy.backend.handler.distsql.DistSQLUpdateBackendHandler"
+        "typeReached": "org.apache.shardingsphere.proxy.backend.handler.distsql.DistSQLUpdateProxyBackendHandler"
       },
       "type": "org.apache.shardingsphere.infra.expr.literal.LiteralInlineExpressionParser"
     },
@@ -4421,13 +4421,13 @@
     },
     {
       "condition": {
-        "typeReached": "org.apache.shardingsphere.proxy.backend.handler.database.CreateDatabaseBackendHandler"
+        "typeReached": "org.apache.shardingsphere.proxy.backend.handler.database.CreateDatabaseProxyBackendHandler"
       },
       "type": "org.apache.shardingsphere.infra.yaml.data.pojo.YamlRowStatistics"
     },
     {
       "condition": {
-        "typeReached": "org.apache.shardingsphere.proxy.backend.handler.distsql.DistSQLUpdateBackendHandler"
+        "typeReached": "org.apache.shardingsphere.proxy.backend.handler.distsql.DistSQLUpdateProxyBackendHandler"
       },
       "type": "org.apache.shardingsphere.infra.yaml.data.pojo.YamlRowStatistics"
     },
@@ -4910,7 +4910,7 @@
     },
     {
       "condition": {
-        "typeReached": "org.apache.shardingsphere.proxy.backend.connector.StandardDatabaseConnector"
+        "typeReached": "org.apache.shardingsphere.proxy.backend.connector.StandardDatabaseProxyConnector"
       },
       "type": "org.apache.shardingsphere.infra.yaml.schema.pojo.YamlShardingSphereTable"
     },
@@ -5732,19 +5732,19 @@
     },
     {
       "condition": {
-        "typeReached": "org.apache.shardingsphere.proxy.backend.connector.StandardDatabaseConnector"
+        "typeReached": "org.apache.shardingsphere.proxy.backend.connector.StandardDatabaseProxyConnector"
       },
       "type": "org.apache.shardingsphere.mode.node.path.type.database.metadata.DatabaseMetaDataNodePath"
     },
     {
       "condition": {
-        "typeReached": "org.apache.shardingsphere.proxy.backend.handler.database.CreateDatabaseBackendHandler"
+        "typeReached": "org.apache.shardingsphere.proxy.backend.handler.database.CreateDatabaseProxyBackendHandler"
       },
       "type": "org.apache.shardingsphere.mode.node.path.type.database.metadata.DatabaseMetaDataNodePath"
     },
     {
       "condition": {
-        "typeReached": "org.apache.shardingsphere.proxy.backend.handler.distsql.DistSQLUpdateBackendHandler"
+        "typeReached": "org.apache.shardingsphere.proxy.backend.handler.distsql.DistSQLUpdateProxyBackendHandler"
       },
       "type": "org.apache.shardingsphere.mode.node.path.type.database.metadata.DatabaseMetaDataNodePath"
     },
@@ -5870,7 +5870,7 @@
     },
     {
       "condition": {
-        "typeReached": "org.apache.shardingsphere.proxy.backend.handler.distsql.DistSQLUpdateBackendHandler"
+        "typeReached": "org.apache.shardingsphere.proxy.backend.handler.distsql.DistSQLUpdateProxyBackendHandler"
       },
       "type": "org.apache.shardingsphere.mode.node.path.type.database.metadata.datasource.StorageUnitNodePath"
     },
@@ -6003,7 +6003,7 @@
     },
     {
       "condition": {
-        "typeReached": "org.apache.shardingsphere.proxy.backend.handler.distsql.DistSQLUpdateBackendHandler"
+        "typeReached": "org.apache.shardingsphere.proxy.backend.handler.distsql.DistSQLUpdateProxyBackendHandler"
       },
       "type": "org.apache.shardingsphere.mode.node.path.type.database.metadata.rule.DatabaseRuleNodePath"
     },
@@ -6151,13 +6151,13 @@
     },
     {
       "condition": {
-        "typeReached": "org.apache.shardingsphere.proxy.backend.connector.StandardDatabaseConnector"
+        "typeReached": "org.apache.shardingsphere.proxy.backend.connector.StandardDatabaseProxyConnector"
       },
       "type": "org.apache.shardingsphere.mode.node.path.type.database.metadata.schema.SchemaMetaDataNodePath"
     },
     {
       "condition": {
-        "typeReached": "org.apache.shardingsphere.proxy.backend.handler.distsql.DistSQLUpdateBackendHandler"
+        "typeReached": "org.apache.shardingsphere.proxy.backend.handler.distsql.DistSQLUpdateProxyBackendHandler"
       },
       "type": "org.apache.shardingsphere.mode.node.path.type.database.metadata.schema.SchemaMetaDataNodePath"
     },
@@ -6267,7 +6267,7 @@
     },
     {
       "condition": {
-        "typeReached": "org.apache.shardingsphere.proxy.backend.connector.StandardDatabaseConnector"
+        "typeReached": "org.apache.shardingsphere.proxy.backend.connector.StandardDatabaseProxyConnector"
       },
       "type": "org.apache.shardingsphere.mode.node.path.type.database.metadata.schema.TableMetaDataNodePath"
     },
@@ -6417,13 +6417,13 @@
     },
     {
       "condition": {
-        "typeReached": "org.apache.shardingsphere.proxy.backend.handler.database.CreateDatabaseBackendHandler"
+        "typeReached": "org.apache.shardingsphere.proxy.backend.handler.database.CreateDatabaseProxyBackendHandler"
       },
       "type": "org.apache.shardingsphere.mode.node.path.type.database.statistics.StatisticsDataNodePath"
     },
     {
       "condition": {
-        "typeReached": "org.apache.shardingsphere.proxy.backend.handler.distsql.DistSQLUpdateBackendHandler"
+        "typeReached": "org.apache.shardingsphere.proxy.backend.handler.distsql.DistSQLUpdateProxyBackendHandler"
       },
       "type": "org.apache.shardingsphere.mode.node.path.type.database.statistics.StatisticsDataNodePath"
     },
@@ -6570,13 +6570,13 @@
     },
     {
       "condition": {
-        "typeReached": "org.apache.shardingsphere.proxy.backend.handler.database.CreateDatabaseBackendHandler"
+        "typeReached": "org.apache.shardingsphere.proxy.backend.handler.database.CreateDatabaseProxyBackendHandler"
       },
       "type": "org.apache.shardingsphere.mode.node.path.type.database.statistics.StatisticsDatabaseNodePath"
     },
     {
       "condition": {
-        "typeReached": "org.apache.shardingsphere.proxy.backend.handler.distsql.DistSQLUpdateBackendHandler"
+        "typeReached": "org.apache.shardingsphere.proxy.backend.handler.distsql.DistSQLUpdateProxyBackendHandler"
       },
       "type": "org.apache.shardingsphere.mode.node.path.type.database.statistics.StatisticsDatabaseNodePath"
     },
@@ -6688,13 +6688,13 @@
     },
     {
       "condition": {
-        "typeReached": "org.apache.shardingsphere.proxy.backend.handler.database.CreateDatabaseBackendHandler"
+        "typeReached": "org.apache.shardingsphere.proxy.backend.handler.database.CreateDatabaseProxyBackendHandler"
       },
       "type": "org.apache.shardingsphere.mode.node.path.type.database.statistics.StatisticsSchemaNodePath"
     },
     {
       "condition": {
-        "typeReached": "org.apache.shardingsphere.proxy.backend.handler.distsql.DistSQLUpdateBackendHandler"
+        "typeReached": "org.apache.shardingsphere.proxy.backend.handler.distsql.DistSQLUpdateProxyBackendHandler"
       },
       "type": "org.apache.shardingsphere.mode.node.path.type.database.statistics.StatisticsSchemaNodePath"
     },
@@ -6800,13 +6800,13 @@
     },
     {
       "condition": {
-        "typeReached": "org.apache.shardingsphere.proxy.backend.handler.database.CreateDatabaseBackendHandler"
+        "typeReached": "org.apache.shardingsphere.proxy.backend.handler.database.CreateDatabaseProxyBackendHandler"
       },
       "type": "org.apache.shardingsphere.mode.node.path.type.database.statistics.StatisticsTableNodePath"
     },
     {
       "condition": {
-        "typeReached": "org.apache.shardingsphere.proxy.backend.handler.distsql.DistSQLUpdateBackendHandler"
+        "typeReached": "org.apache.shardingsphere.proxy.backend.handler.distsql.DistSQLUpdateProxyBackendHandler"
       },
       "type": "org.apache.shardingsphere.mode.node.path.type.database.statistics.StatisticsTableNodePath"
     },
@@ -8886,7 +8886,7 @@
     },
     {
       "condition": {
-        "typeReached": "org.apache.shardingsphere.proxy.backend.handler.distsql.DistSQLUpdateBackendHandler"
+        "typeReached": "org.apache.shardingsphere.proxy.backend.handler.distsql.DistSQLUpdateProxyBackendHandler"
       },
       "type": "org.apache.shardingsphere.sharding.yaml.config.YamlShardingRuleConfiguration"
     },
@@ -9025,7 +9025,7 @@
     },
     {
       "condition": {
-        "typeReached": "org.apache.shardingsphere.proxy.backend.handler.distsql.DistSQLUpdateBackendHandler"
+        "typeReached": "org.apache.shardingsphere.proxy.backend.handler.distsql.DistSQLUpdateProxyBackendHandler"
       },
       "type": "org.apache.shardingsphere.sharding.yaml.config.rule.YamlTableRuleConfiguration"
     },
@@ -9154,7 +9154,7 @@
     },
     {
       "condition": {
-        "typeReached": "org.apache.shardingsphere.proxy.backend.handler.distsql.DistSQLUpdateBackendHandler"
+        "typeReached": "org.apache.shardingsphere.proxy.backend.handler.distsql.DistSQLUpdateProxyBackendHandler"
       },
       "type": "org.apache.shardingsphere.sharding.yaml.config.strategy.keygen.YamlKeyGenerateStrategyConfiguration"
     },
@@ -9308,7 +9308,7 @@
     },
     {
       "condition": {
-        "typeReached": "org.apache.shardingsphere.proxy.backend.handler.distsql.DistSQLUpdateBackendHandler"
+        "typeReached": "org.apache.shardingsphere.proxy.backend.handler.distsql.DistSQLUpdateProxyBackendHandler"
       },
       "type": "org.apache.shardingsphere.sharding.yaml.config.strategy.sharding.YamlShardingStrategyConfiguration"
     },
@@ -9425,7 +9425,7 @@
     },
     {
       "condition": {
-        "typeReached": "org.apache.shardingsphere.proxy.backend.handler.distsql.DistSQLUpdateBackendHandler"
+        "typeReached": "org.apache.shardingsphere.proxy.backend.handler.distsql.DistSQLUpdateProxyBackendHandler"
       },
       "type": "org.apache.shardingsphere.sharding.yaml.config.strategy.sharding.YamlStandardShardingStrategyConfiguration"
     },
@@ -10327,7 +10327,7 @@
     },
     {
       "condition": {
-        "typeReached": "org.apache.shardingsphere.proxy.backend.handler.distsql.DistSQLUpdateBackendHandler"
+        "typeReached": "org.apache.shardingsphere.proxy.backend.handler.distsql.DistSQLUpdateProxyBackendHandler"
       },
       "type": "org.apache.shardingsphere.sqlfederation.compiler.sql.function.mysql.MySQLOperatorTable"
     },
@@ -10912,7 +10912,7 @@
     },
     {
       "condition": {
-        "typeReached": "org.apache.shardingsphere.proxy.backend.handler.distsql.DistSQLUpdateBackendHandler"
+        "typeReached": "org.apache.shardingsphere.proxy.backend.handler.distsql.DistSQLUpdateProxyBackendHandler"
       },
       "type": "org.apache.shardingsphere.timeservice.type.system.SystemTimestampService"
     },
@@ -11044,7 +11044,7 @@
     },
     {
       "condition": {
-        "typeReached": "org.apache.shardingsphere.proxy.backend.connector.StandardDatabaseConnector"
+        "typeReached": "org.apache.shardingsphere.proxy.backend.connector.StandardDatabaseProxyConnector"
       },
       "type": "org.apache.shardingsphere.transaction.base.seata.at.SeataTransactionalSQLExecutionHook"
     },
