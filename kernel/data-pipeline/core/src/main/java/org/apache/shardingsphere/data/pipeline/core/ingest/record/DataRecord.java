@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.data.pipeline.core.ingest.record;
 
+import com.cedarsoftware.util.CaseInsensitiveMap;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -29,6 +30,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Data record.
@@ -46,6 +48,8 @@ public final class DataRecord extends Record {
     private final String tableName;
     
     private final List<Column> columns;
+    
+    private final Map<String, Column> columnMap;
     
     private final Collection<Object> uniqueKeyValue = new LinkedList<>();
     
@@ -65,6 +69,7 @@ public final class DataRecord extends Record {
         this.schemaName = schemaName;
         this.tableName = tableName;
         columns = new ArrayList<>(columnCount);
+        columnMap = new CaseInsensitiveMap<>(columnCount, 1F);
     }
     
     /**
@@ -74,6 +79,7 @@ public final class DataRecord extends Record {
      */
     public void addColumn(final Column data) {
         columns.add(data);
+        columnMap.put(data.getName(), data);
         if (data.isUniqueKey()) {
             uniqueKeyValue.add(data.getValue());
             oldUniqueKeyValues.add(data.getOldValue());
@@ -97,6 +103,16 @@ public final class DataRecord extends Record {
      */
     public Column getColumn(final int index) {
         return columns.get(index);
+    }
+    
+    /**
+     * Get column by name.
+     *
+     * @param name column name
+     * @return column
+     */
+    public Column getColumn(final String name) {
+        return columnMap.get(name);
     }
     
     /**

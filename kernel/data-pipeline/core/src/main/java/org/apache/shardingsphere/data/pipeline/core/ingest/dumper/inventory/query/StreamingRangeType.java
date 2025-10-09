@@ -18,16 +18,9 @@
 package org.apache.shardingsphere.data.pipeline.core.ingest.dumper.inventory.query;
 
 /**
- * Inventory query parameter.
- * 
- * @param <T> type of parameter value
+ * Streaming range type.
  */
-public interface InventoryQueryParameter<T> {
+public enum StreamingRangeType {
     
-    /**
-     * Get parameter value.
-     *
-     * @return parameter value
-     */
-    T getValue();
+    SMALL, LARGE
 }

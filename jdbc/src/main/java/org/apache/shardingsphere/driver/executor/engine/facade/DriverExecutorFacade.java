@@ -104,9 +104,9 @@ public final class DriverExecutorFacade implements AutoCloseable {
     public ResultSet executeQuery(final ShardingSphereDatabase database, final ShardingSphereMetaData metaData, final QueryContext queryContext, final Statement statement,
                                   final Map<String, Integer> columnLabelAndIndexMap,
                                   final StatementAddCallback addCallback, final StatementReplayCallback replayCallback) throws SQLException {
-        SQLAuditEngine.audit(queryContext, connection.getContextManager().getMetaDataContexts().getMetaData().getGlobalRuleMetaData(), database);
-        return queryExecutor.executeQuery(database, queryContext, createDriverExecutionPrepareEngine(database, metaData, jdbcDriverType), statement, columnLabelAndIndexMap, addCallback,
-                replayCallback);
+        SQLAuditEngine.audit(queryContext, database);
+        return queryExecutor.executeQuery(
+                database, queryContext, createDriverExecutionPrepareEngine(database, metaData, jdbcDriverType), statement, columnLabelAndIndexMap, addCallback, replayCallback);
     }
     
     /**
@@ -124,7 +124,7 @@ public final class DriverExecutorFacade implements AutoCloseable {
     @SuppressWarnings("rawtypes")
     public int executeUpdate(final ShardingSphereDatabase database, final ShardingSphereMetaData metaData, final QueryContext queryContext,
                              final StatementExecuteUpdateCallback executeUpdateCallback, final StatementAddCallback addCallback, final StatementReplayCallback replayCallback) throws SQLException {
-        SQLAuditEngine.audit(queryContext, connection.getContextManager().getMetaDataContexts().getMetaData().getGlobalRuleMetaData(), database);
+        SQLAuditEngine.audit(queryContext, database);
         return updateExecutor.executeUpdate(database, queryContext, createDriverExecutionPrepareEngine(database, metaData, jdbcDriverType), executeUpdateCallback, addCallback, replayCallback);
     }
     
@@ -143,7 +143,7 @@ public final class DriverExecutorFacade implements AutoCloseable {
     @SuppressWarnings("rawtypes")
     public boolean execute(final ShardingSphereDatabase database, final ShardingSphereMetaData metaData, final QueryContext queryContext,
                            final StatementExecuteCallback executeCallback, final StatementAddCallback addCallback, final StatementReplayCallback replayCallback) throws SQLException {
-        SQLAuditEngine.audit(queryContext, connection.getContextManager().getMetaDataContexts().getMetaData().getGlobalRuleMetaData(), database);
+        SQLAuditEngine.audit(queryContext, database);
         return executeExecutor.execute(database, queryContext, createDriverExecutionPrepareEngine(database, metaData, jdbcDriverType), executeCallback, addCallback, replayCallback);
     }
     

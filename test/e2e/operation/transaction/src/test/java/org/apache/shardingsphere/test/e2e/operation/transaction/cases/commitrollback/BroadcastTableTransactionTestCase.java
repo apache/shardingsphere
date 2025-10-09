@@ -58,7 +58,7 @@ public final class BroadcastTableTransactionTestCase extends BaseTransactionTest
     
     private void init() throws SQLException {
         try (Connection connection = getDataSource().getConnection()) {
-            executeWithLog(connection, "delete from t_address;");
+            executeWithLog(connection, "DELETE FROM t_address;");
             assertTableRowCount(connection, T_ADDRESS, 0);
         }
     }
@@ -66,7 +66,7 @@ public final class BroadcastTableTransactionTestCase extends BaseTransactionTest
     private void commit() throws SQLException {
         try (Connection connection = getDataSource().getConnection()) {
             connection.setAutoCommit(false);
-            executeWithLog(connection, "delete from t_address;");
+            executeWithLog(connection, "DELETE FROM t_address;");
             assertTableRowCount(connection, T_ADDRESS, 0);
             executeWithLog(connection, "INSERT INTO t_address (id, code, address) VALUES (1, '1', 'nanjing');");
             assertTableRowCount(connection, T_ADDRESS, 1);
@@ -77,7 +77,7 @@ public final class BroadcastTableTransactionTestCase extends BaseTransactionTest
     private void rollback() throws SQLException {
         try (Connection connection = getDataSource().getConnection()) {
             connection.setAutoCommit(false);
-            executeWithLog(connection, "delete from t_address;");
+            executeWithLog(connection, "DELETE FROM t_address;");
             assertTableRowCount(connection, T_ADDRESS, 0);
             executeWithLog(connection, "INSERT INTO t_address (id, code, address) VALUES (1, '1', 'nanjing');");
             assertTableRowCount(connection, T_ADDRESS, 1);

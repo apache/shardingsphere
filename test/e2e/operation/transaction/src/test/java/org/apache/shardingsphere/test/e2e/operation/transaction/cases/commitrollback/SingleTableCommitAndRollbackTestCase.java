@@ -46,7 +46,7 @@ public final class SingleTableCommitAndRollbackTestCase extends BaseTransactionT
             connection.setAutoCommit(false);
             assertAccountRowCount(connection, 0);
             Statement statement = connection.createStatement();
-            statement.execute("insert into account(id, balance, transaction_id) values(1, 1, 1);");
+            statement.execute("INSERT INTO account(id, balance, transaction_id) VALUES(1, 1, 1);");
             assertAccountRowCount(connection, 1);
             connection.rollback();
             assertAccountRowCount(connection, 0);
@@ -58,7 +58,7 @@ public final class SingleTableCommitAndRollbackTestCase extends BaseTransactionT
             connection.setAutoCommit(false);
             assertAccountRowCount(connection, 0);
             Statement statement = connection.createStatement();
-            statement.execute("insert into account(id, balance, transaction_id) values(1, 1, 1);");
+            statement.execute("INSERT INTO account(id, balance, transaction_id) VALUES(1, 1, 1);");
             assertAccountRowCount(connection, 1);
             connection.commit();
             assertAccountRowCount(connection, 1);

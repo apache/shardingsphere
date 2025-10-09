@@ -39,7 +39,6 @@ import org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.Statemen
 import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.apache.shardingsphere.infra.hint.SQLHintUtils;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.parser.SQLParserEngine;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.session.query.QueryContext;
@@ -170,10 +169,9 @@ public final class MySQLMultiStatementsProxyBackendHandler implements ProxyBacke
     }
     
     private ExecutionContext createExecutionContext(final QueryContext queryContext) {
-        RuleMetaData globalRuleMetaData = metaDataContexts.getMetaData().getGlobalRuleMetaData();
         ShardingSphereDatabase currentDatabase = metaDataContexts.getMetaData().getDatabase(connectionSession.getCurrentDatabaseName());
-        SQLAuditEngine.audit(queryContext, globalRuleMetaData, currentDatabase);
-        return new KernelProcessor().generateExecutionContext(queryContext, globalRuleMetaData, metaDataContexts.getMetaData().getProps());
+        SQLAuditEngine.audit(queryContext, currentDatabase);
+        return new KernelProcessor().generateExecutionContext(queryContext, metaDataContexts.getMetaData().getGlobalRuleMetaData(), metaDataContexts.getMetaData().getProps());
     }
     
     private void executeAddBatch(final ExecutionGroupContext<JDBCExecutionUnit> executionGroupContext) throws SQLException {

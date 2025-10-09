@@ -88,7 +88,7 @@ public final class AddressRepository {
      * @throws SQLException SQL exception
      */
     public void createAcidTableInHiveServer2() throws SQLException {
-        String sql = "create table IF NOT EXISTS t_address (address_id BIGINT NOT NULL,address_name VARCHAR(100) NOT NULL,"
+        String sql = "CREATE TABLE IF NOT EXISTS t_address (address_id BIGINT NOT NULL,address_name VARCHAR(100) NOT NULL,"
                 + "PRIMARY KEY (address_id) disable novalidate) CLUSTERED BY (address_id) INTO 2 BUCKETS STORED AS ORC TBLPROPERTIES ('transactional' = 'true')";
         try (
                 Connection connection = dataSource.getConnection();
@@ -183,7 +183,7 @@ public final class AddressRepository {
      * @throws SQLException SQL exception
      */
     public void deleteInClickHouse(final Long id) throws SQLException {
-        String sql = "alter table t_address delete where address_id=?";
+        String sql = "ALTER TABLE t_address delete WHERE address_id=?";
         try (
                 Connection connection = dataSource.getConnection();
                 PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
