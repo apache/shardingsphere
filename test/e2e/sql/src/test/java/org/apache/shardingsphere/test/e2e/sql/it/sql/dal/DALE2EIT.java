@@ -70,6 +70,11 @@ class DALE2EIT implements SQLE2EIT {
         try (Connection connection = environmentEngine.getTargetDataSource().getConnection()) {
             try (Statement statement = connection.createStatement()) {
                 statement.execute(context.getSQL());
+                try {
+                    Thread.sleep(1000L);
+                } catch (final InterruptedException ignore) {
+                    Thread.currentThread().interrupt();
+                }
                 assertExecuteResult(context, statement);
             }
         }
