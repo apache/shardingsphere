@@ -19,9 +19,6 @@ package org.apache.shardingsphere.data.pipeline.core.ingest.dumper.inventory;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.core.channel.PipelineChannel;
-import org.apache.shardingsphere.data.pipeline.core.consistencycheck.table.calculator.AbstractRecordSingleTableInventoryCalculator;
-import org.apache.shardingsphere.data.pipeline.core.consistencycheck.table.calculator.SingleTableInventoryCalculateParameter;
-import org.apache.shardingsphere.data.pipeline.core.consistencycheck.table.calculator.StreamingRangeType;
 import org.apache.shardingsphere.data.pipeline.core.constant.PipelineSQLOperationType;
 import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSource;
 import org.apache.shardingsphere.data.pipeline.core.exception.IngestException;
@@ -30,8 +27,11 @@ import org.apache.shardingsphere.data.pipeline.core.execute.AbstractPipelineLife
 import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.Dumper;
 import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.inventory.column.InventoryColumnValueReaderEngine;
 import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.inventory.position.InventoryDataRecordPositionCreator;
+import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.inventory.query.QueryRange;
 import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.inventory.query.QueryType;
-import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.inventory.query.range.QueryRange;
+import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.inventory.query.StreamingRangeType;
+import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.inventory.query.calculator.AbstractRecordSingleTableInventoryCalculator;
+import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.inventory.query.calculator.SingleTableInventoryCalculateParameter;
 import org.apache.shardingsphere.data.pipeline.core.ingest.position.IngestPosition;
 import org.apache.shardingsphere.data.pipeline.core.ingest.position.type.finished.IngestFinishedPosition;
 import org.apache.shardingsphere.data.pipeline.core.ingest.position.type.pk.PrimaryKeyIngestPosition;
@@ -117,13 +117,13 @@ public final class InventoryDumper extends AbstractPipelineLifecycleRunnable imp
     }
     
     private void dumpByCalculator() throws SQLException {
-        log.info("Dump by calculator start, dataSource={}, actualTable={}", dumperContext.getCommonContext().getDataSourceName(), dumperContext.getActualTableName());
         String schemaName = dumperContext.getCommonContext().getTableAndSchemaNameMapper().getSchemaName(dumperContext.getLogicTableName());
         QualifiedTable table = new QualifiedTable(schemaName, dumperContext.getActualTableName());
+        IngestPosition initialPosition = dumperContext.getCommonContext().getPosition();
+        log.info("Dump by calculator start, dataSource={}, table={}, initialPosition={}", dumperContext.getCommonContext().getDataSourceName(), table, initialPosition);
         List<String> columnNames = dumperContext.getQueryColumnNames();
         SingleTableInventoryCalculateParameter calculateParam = new SingleTableInventoryCalculateParameter(dataSource, table,
                 columnNames, dumperContext.getUniqueKeyColumns(), QueryType.RANGE_QUERY, null);
-        IngestPosition initialPosition = dumperContext.getCommonContext().getPosition();
         QueryRange queryRange = new QueryRange(((PrimaryKeyIngestPosition<?>) initialPosition).getBeginValue(), dumperContext.isFirstDump(),
                 ((PrimaryKeyIngestPosition<?>) initialPosition).getEndValue());
         calculateParam.setQueryRange(queryRange);
@@ -143,7 +143,7 @@ public final class InventoryDumper extends AbstractPipelineLifecycleRunnable imp
         IngestPosition position = new IngestFinishedPosition();
         channel.push(Collections.singletonList(new FinishedRecord(position)));
         dumperContext.getCommonContext().setPosition(position);
-        log.info("Dump by calculator done, rowCount={}, dataSource={}, actualTable={}", rowCount, dumperContext.getCommonContext().getDataSourceName(), dumperContext.getActualTableName());
+        log.info("Dump by calculator done, rowCount={}, dataSource={}, table={}, initialPosition={}", rowCount, dumperContext.getCommonContext().getDataSourceName(), table, initialPosition);
     }
     
     private void dumpWithStreamingQuery() throws SQLException {
