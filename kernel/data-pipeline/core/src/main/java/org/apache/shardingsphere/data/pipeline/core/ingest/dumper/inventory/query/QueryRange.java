@@ -15,29 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.core.consistencycheck.table.calculator;
+package org.apache.shardingsphere.data.pipeline.core.ingest.dumper.inventory.query;
 
 import lombok.Getter;
-import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.inventory.query.PipelineDatabaseResources;
-
-import java.util.Deque;
-import java.util.LinkedList;
+import lombok.RequiredArgsConstructor;
 
 /**
- * Calculation context.
- *
- * @param <C> the type of record
+ * Query range.
  */
+@RequiredArgsConstructor
 @Getter
-public final class CalculationContext<C> implements AutoCloseable {
+public final class QueryRange {
     
-    private final PipelineDatabaseResources databaseResources = new PipelineDatabaseResources();
+    private final Object lower;
     
-    private final Deque<C> recordDeque = new LinkedList<>();
+    private final boolean lowerInclusive;
     
-    @Override
-    public void close() {
-        databaseResources.close();
-        recordDeque.clear();
-    }
+    private final Object upper;
 }

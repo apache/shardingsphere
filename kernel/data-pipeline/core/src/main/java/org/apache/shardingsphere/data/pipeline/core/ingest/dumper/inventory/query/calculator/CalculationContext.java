@@ -15,21 +15,29 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.core.ingest.dumper.inventory.query.range;
+package org.apache.shardingsphere.data.pipeline.core.ingest.dumper.inventory.query.calculator;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.inventory.query.PipelineDatabaseResources;
+
+import java.util.Deque;
+import java.util.LinkedList;
 
 /**
- * Query range.
+ * Calculation context.
+ *
+ * @param <C> the type of record
  */
-@RequiredArgsConstructor
 @Getter
-public final class QueryRange {
+public final class CalculationContext<C> implements AutoCloseable {
     
-    private final Object lower;
+    private final PipelineDatabaseResources databaseResources = new PipelineDatabaseResources();
     
-    private final boolean lowerInclusive;
+    private final Deque<C> recordDeque = new LinkedList<>();
     
-    private final Object upper;
+    @Override
+    public void close() {
+        databaseResources.close();
+        recordDeque.clear();
+    }
 }
