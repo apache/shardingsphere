@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.data.pipeline.core.ingest.dumper.inventory.query.calculator;
 
 import org.apache.shardingsphere.data.pipeline.core.consistencycheck.PipelineCancellable;
-import org.apache.shardingsphere.data.pipeline.core.consistencycheck.table.calculator.SingleTableInventoryCalculateParameter;
 
 /**
  * Single table inventory calculator.
