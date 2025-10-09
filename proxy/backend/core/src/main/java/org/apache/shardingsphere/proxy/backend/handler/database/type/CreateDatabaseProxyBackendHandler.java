@@ -37,7 +37,7 @@ public final class CreateDatabaseProxyBackendHandler implements ProxyBackendHand
     
     private final CreateDatabaseStatement sqlStatement;
     
-    private final ShardingSphereMetaData metaData;
+    private final ShardingSphereMetaData metaData; 
     
     private final MetaDataManagerPersistService metaDataManagerPersistService;
     
