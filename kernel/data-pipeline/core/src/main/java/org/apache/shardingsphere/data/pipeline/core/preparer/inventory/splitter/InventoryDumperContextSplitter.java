@@ -71,10 +71,10 @@ public final class InventoryDumperContextSplitter {
     
     private Collection<InventoryDumperContext> splitByTable() {
         return dumperContext.getCommonContext().getTableNameMapper().getTableNameMap().entrySet()
-                .stream().map(entry -> createTableSpLitDumperContext(entry.getKey(), entry.getValue())).collect(Collectors.toList());
+                .stream().map(entry -> createTableSplitDumperContext(entry.getKey(), entry.getValue())).collect(Collectors.toList());
     }
     
-    private InventoryDumperContext createTableSpLitDumperContext(final ShardingSphereIdentifier actualTableName, final ShardingSphereIdentifier logicTableName) {
+    private InventoryDumperContext createTableSplitDumperContext(final ShardingSphereIdentifier actualTableName, final ShardingSphereIdentifier logicTableName) {
         InventoryDumperContext result = new InventoryDumperContext(dumperContext.getCommonContext());
         result.setActualTableName(actualTableName.toString());
         result.setLogicTableName(logicTableName.toString());
