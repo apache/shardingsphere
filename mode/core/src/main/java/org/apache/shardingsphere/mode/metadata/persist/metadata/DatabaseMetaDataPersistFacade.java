@@ -26,7 +26,6 @@ import org.apache.shardingsphere.infra.metadata.database.schema.builder.GenericS
 import org.apache.shardingsphere.infra.metadata.database.schema.manager.GenericSchemaManager;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
-import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereView;
 import org.apache.shardingsphere.mode.exception.LoadTableMetaDataFailedException;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.mode.metadata.persist.metadata.service.DatabaseMetaDataPersistService;
@@ -95,25 +94,6 @@ public final class DatabaseMetaDataPersistFacade {
         Collection<ShardingSphereSchema> toBeAlteredSchemasWithTablesAdded = GenericSchemaManager.getToBeAlteredSchemasWithTablesAdded(reloadDatabase, currentDatabase);
         toBeAlteredSchemasWithTablesAdded.forEach(each -> schema.alterByRuleDropped(databaseName, each));
         toBeAlteredSchemasWithTablesDropped.forEach(each -> table.drop(databaseName, each.getName(), each.getAllTables()));
-    }
-    
-    /**
-     * Persist schema.
-     *
-     * @param database database
-     * @param schemaName schema name
-     * @param alteredTables altered tables
-     * @param alteredViews altered views
-     * @param droppedTables dropped tables
-     * @param droppedViews dropped views
-     */
-    public void alterSchema(final ShardingSphereDatabase database, final String schemaName,
-                            final Collection<ShardingSphereTable> alteredTables, final Collection<ShardingSphereView> alteredViews,
-                            final Collection<String> droppedTables, final Collection<String> droppedViews) {
-        table.persist(database.getName(), schemaName, alteredTables);
-        view.persist(database.getName(), schemaName, alteredViews);
-        droppedTables.forEach(each -> table.drop(database.getName(), schemaName, each));
-        droppedViews.forEach(each -> view.drop(database.getName(), schemaName, each));
     }
     
     /**
