@@ -23,6 +23,7 @@ import org.apache.shardingsphere.database.connector.core.metadata.data.loader.Me
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.DialectDatabaseMetaData;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.schema.DialectSchemaOption;
 import org.apache.shardingsphere.database.connector.core.metadata.database.system.SystemDatabase;
+import org.apache.shardingsphere.database.connector.core.metadata.detector.SystemTableEngine;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeRegistry;
 
@@ -115,15 +116,11 @@ public final class SchemaMetaDataLoader {
         try (ResultSet resultSet = connection.getMetaData().getTables(connection.getCatalog(), schemaName, null, tableTypes)) {
             while (resultSet.next()) {
                 String table = resultSet.getString(TABLE_NAME);
-                if (!isSystemTable(table) && !excludedTables.contains(table)) {
+                if (!SystemTableEngine.isSystemTable(databaseType, table) && !excludedTables.contains(table)) {
                     result.add(table);
                 }
             }
         }
         return result;
-    }
-    
-    private boolean isSystemTable(final String table) {
-        return table.contains("$") || table.contains("/") || table.contains("##");
     }
 }
