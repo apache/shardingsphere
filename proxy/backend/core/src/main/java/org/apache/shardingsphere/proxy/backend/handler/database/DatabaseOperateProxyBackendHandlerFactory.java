@@ -21,6 +21,8 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.exception.generic.UnsupportedSQLOperationException;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.mode.persist.service.MetaDataManagerPersistService;
+import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.handler.ProxyBackendHandler;
 import org.apache.shardingsphere.proxy.backend.handler.database.type.CreateDatabaseProxyBackendHandler;
 import org.apache.shardingsphere.proxy.backend.handler.database.type.DropDatabaseProxyBackendHandler;
@@ -48,11 +50,12 @@ public final class DatabaseOperateProxyBackendHandlerFactory {
     }
     
     private static ProxyBackendHandler createProxyBackendHandler(final SQLStatement sqlStatement, final ShardingSphereMetaData metaData, final ConnectionSession connectionSession) {
+        MetaDataManagerPersistService metaDataManagerPersistService = ProxyContext.getInstance().getContextManager().getPersistServiceFacade().getModeFacade().getMetaDataManagerService();
         if (sqlStatement instanceof CreateDatabaseStatement) {
-            return new CreateDatabaseProxyBackendHandler((CreateDatabaseStatement) sqlStatement, metaData);
+            return new CreateDatabaseProxyBackendHandler((CreateDatabaseStatement) sqlStatement, metaData, metaDataManagerPersistService);
         }
         if (sqlStatement instanceof DropDatabaseStatement) {
-            return new DropDatabaseProxyBackendHandler((DropDatabaseStatement) sqlStatement, metaData, connectionSession);
+            return new DropDatabaseProxyBackendHandler((DropDatabaseStatement) sqlStatement, metaData, metaDataManagerPersistService, connectionSession);
         }
         throw new UnsupportedSQLOperationException(sqlStatement.getClass().getName());
     }
