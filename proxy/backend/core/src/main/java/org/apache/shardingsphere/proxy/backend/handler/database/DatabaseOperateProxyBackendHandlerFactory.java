@@ -49,7 +49,7 @@ public final class DatabaseOperateProxyBackendHandlerFactory {
     
     private static ProxyBackendHandler createProxyBackendHandler(final SQLStatement sqlStatement, final ShardingSphereMetaData metaData, final ConnectionSession connectionSession) {
         if (sqlStatement instanceof CreateDatabaseStatement) {
-            return new CreateDatabaseProxyBackendHandler((CreateDatabaseStatement) sqlStatement);
+            return new CreateDatabaseProxyBackendHandler((CreateDatabaseStatement) sqlStatement, metaData);
         }
         if (sqlStatement instanceof DropDatabaseStatement) {
             return new DropDatabaseProxyBackendHandler((DropDatabaseStatement) sqlStatement, metaData, connectionSession);

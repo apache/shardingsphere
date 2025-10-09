@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.proxy.backend.handler.database.type;
 
 import org.apache.shardingsphere.database.exception.core.exception.syntax.database.DatabaseCreateExistsException;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.database.CreateDatabaseStatement;
@@ -32,6 +33,7 @@ import java.sql.SQLException;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.isA;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(AutoMockExtension.class)
@@ -44,20 +46,21 @@ class CreateDatabaseProxyBackendHandlerTest {
     @Test
     void assertExecuteCreateNewDatabase() throws SQLException {
         when(statement.getDatabaseName()).thenReturn("bar_db");
-        assertThat(new CreateDatabaseProxyBackendHandler(statement).execute(), isA(UpdateResponseHeader.class));
+        assertThat(new CreateDatabaseProxyBackendHandler(statement, mock()).execute(), isA(UpdateResponseHeader.class));
     }
     
     @Test
     void assertExecuteCreateExistDatabase() {
         when(statement.getDatabaseName()).thenReturn("foo_db");
-        when(ProxyContext.getInstance().databaseExists("foo_db")).thenReturn(true);
-        assertThrows(DatabaseCreateExistsException.class, () -> new CreateDatabaseProxyBackendHandler(statement).execute());
+        ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class);
+        when(metaData.containsDatabase("foo_db")).thenReturn(true);
+        assertThrows(DatabaseCreateExistsException.class, () -> new CreateDatabaseProxyBackendHandler(statement, metaData).execute());
     }
     
     @Test
     void assertExecuteCreateExistDatabaseWithIfNotExists() throws SQLException {
         when(statement.getDatabaseName()).thenReturn("foo_db");
         when(statement.isIfNotExists()).thenReturn(true);
-        assertThat(new CreateDatabaseProxyBackendHandler(statement).execute(), isA(UpdateResponseHeader.class));
+        assertThat(new CreateDatabaseProxyBackendHandler(statement, mock()).execute(), isA(UpdateResponseHeader.class));
     }
 }
