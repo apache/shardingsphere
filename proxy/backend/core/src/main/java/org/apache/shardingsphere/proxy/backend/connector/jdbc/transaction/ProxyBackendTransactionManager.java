@@ -86,7 +86,7 @@ public final class ProxyBackendTransactionManager {
     private void doBegin() {
         connection.closeHandlers(true);
         connection.closeConnections(false);
-        DatabaseType databaseType = ProxyContext.getInstance().getDatabaseType();
+        DatabaseType databaseType = ProxyContext.getInstance().getContextManager().getDatabaseType();
         for (Entry<ShardingSphereRule, TransactionHook> entry : transactionHooks.entrySet()) {
             entry.getValue().beforeBegin(entry.getKey(), databaseType, transactionContext);
         }
@@ -109,7 +109,7 @@ public final class ProxyBackendTransactionManager {
         if (!connection.getConnectionSession().getTransactionStatus().isInTransaction()) {
             return;
         }
-        DatabaseType databaseType = ProxyContext.getInstance().getDatabaseType();
+        DatabaseType databaseType = ProxyContext.getInstance().getContextManager().getDatabaseType();
         boolean isNeedLock = isNeedLockWhenCommit();
         if (isNeedLock) {
             // FIXME if timeout when lock required, TSO not assigned, but commit will continue, solution is use redis lock in impl to instead of reg center's lock. #35041
@@ -161,7 +161,7 @@ public final class ProxyBackendTransactionManager {
         if (!connection.getConnectionSession().getTransactionStatus().isInTransaction()) {
             return;
         }
-        DatabaseType databaseType = ProxyContext.getInstance().getDatabaseType();
+        DatabaseType databaseType = ProxyContext.getInstance().getContextManager().getDatabaseType();
         for (Entry<ShardingSphereRule, TransactionHook> entry : transactionHooks.entrySet()) {
             entry.getValue().beforeRollback(entry.getKey(), databaseType, connection.getCachedConnections().values(), transactionContext);
         }

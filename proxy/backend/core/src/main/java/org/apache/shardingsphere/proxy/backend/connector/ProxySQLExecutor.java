@@ -241,7 +241,7 @@ public final class ProxySQLExecutor {
             return;
         }
         for (Entry<ShardingSphereRule, TransactionHook> entry : transactionHooks.entrySet()) {
-            entry.getValue().beforeExecuteSQL(entry.getKey(), ProxyContext.getInstance().getDatabaseType(),
+            entry.getValue().beforeExecuteSQL(entry.getKey(), ProxyContext.getInstance().getContextManager().getDatabaseType(),
                     connectionSession.getDatabaseConnectionManager().getCachedConnections().values(), getTransactionContext(connectionSession),
                     connectionSession.getIsolationLevel().orElse(TransactionIsolationLevel.READ_COMMITTED));
         }
