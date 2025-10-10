@@ -136,7 +136,7 @@ public final class ProxyBackendHandlerFactory {
         if (databaseAdminHandler.isPresent()) {
             return databaseAdminHandler.get();
         }
-        Optional<ProxyBackendHandler> databaseOperateHandler = findDatabaseOperateProxyBackendHandler(sqlStatement, queryContext, connectionSession);
+        Optional<ProxyBackendHandler> databaseOperateHandler = findDatabaseOperateProxyBackendHandler(sqlStatement, connectionSession);
         if (databaseOperateHandler.isPresent()) {
             return databaseOperateHandler.get();
         }
@@ -192,9 +192,9 @@ public final class ProxyBackendHandlerFactory {
         }
     }
     
-    private static Optional<ProxyBackendHandler> findDatabaseOperateProxyBackendHandler(final SQLStatement sqlStatement, final QueryContext queryContext, final ConnectionSession connectionSession) {
+    private static Optional<ProxyBackendHandler> findDatabaseOperateProxyBackendHandler(final SQLStatement sqlStatement, final ConnectionSession connectionSession) {
         return sqlStatement instanceof CreateDatabaseStatement || sqlStatement instanceof DropDatabaseStatement
-                ? Optional.of(DatabaseOperateProxyBackendHandlerFactory.newInstance(sqlStatement, queryContext.getMetaData(), connectionSession))
+                ? Optional.of(DatabaseOperateProxyBackendHandlerFactory.newInstance(sqlStatement, connectionSession))
                 : Optional.empty();
     }
     
