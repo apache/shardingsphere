@@ -23,7 +23,7 @@ import org.apache.shardingsphere.distsql.statement.DistSQLStatement;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataMergedResult;
 import org.apache.shardingsphere.infra.session.query.QueryContext;
-import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
+import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.proxy.backend.response.data.QueryResponseCell;
 import org.apache.shardingsphere.proxy.backend.response.data.QueryResponseRow;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
@@ -49,11 +49,11 @@ public final class DistSQLQueryProxyBackendHandler implements DistSQLProxyBacken
     
     private MergedResult mergedResult;
     
-    public DistSQLQueryProxyBackendHandler(final DistSQLStatement sqlStatement, final QueryContext queryContext, final ConnectionSession connectionSession) {
+    public DistSQLQueryProxyBackendHandler(final DistSQLStatement sqlStatement, final QueryContext queryContext, final ConnectionSession connectionSession, final ContextManager contextManager) {
         DistSQLConnectionContext distsqlConnectionContext = new DistSQLConnectionContext(queryContext,
                 connectionSession.getDatabaseConnectionManager().getConnectionSize(), connectionSession.getProtocolType(),
                 connectionSession.getDatabaseConnectionManager(), connectionSession.getStatementManager());
-        engine = new DistSQLQueryExecuteEngine(sqlStatement, connectionSession.getUsedDatabaseName(), ProxyContext.getInstance().getContextManager(), distsqlConnectionContext);
+        engine = new DistSQLQueryExecuteEngine(sqlStatement, connectionSession.getUsedDatabaseName(), contextManager, distsqlConnectionContext);
     }
     
     @Override

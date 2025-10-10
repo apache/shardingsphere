@@ -19,7 +19,7 @@ package org.apache.shardingsphere.proxy.backend.handler.distsql;
 
 import org.apache.shardingsphere.distsql.handler.engine.update.DistSQLUpdateExecuteEngine;
 import org.apache.shardingsphere.distsql.statement.DistSQLStatement;
-import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
+import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
@@ -35,9 +35,9 @@ public final class DistSQLUpdateProxyBackendHandler implements DistSQLProxyBacke
     
     private final DistSQLUpdateExecuteEngine engine;
     
-    public DistSQLUpdateProxyBackendHandler(final DistSQLStatement sqlStatement, final ConnectionSession connectionSession) {
+    public DistSQLUpdateProxyBackendHandler(final DistSQLStatement sqlStatement, final ConnectionSession connectionSession, final ContextManager contextManager) {
         this.sqlStatement = sqlStatement;
-        engine = new DistSQLUpdateExecuteEngine(sqlStatement, connectionSession.getUsedDatabaseName(), ProxyContext.getInstance().getContextManager());
+        engine = new DistSQLUpdateExecuteEngine(sqlStatement, connectionSession.getUsedDatabaseName(), contextManager);
     }
     
     @Override
