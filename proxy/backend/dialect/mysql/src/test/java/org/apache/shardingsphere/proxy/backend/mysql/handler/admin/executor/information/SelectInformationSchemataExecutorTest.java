@@ -100,7 +100,6 @@ class SelectInformationSchemataExecutorTest {
     void assertExecuteWithUnauthorizedDatabase() throws SQLException {
         ContextManager contextManager = mockContextManager(createDatabase("no_auth_db"));
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
-        when(ProxyContext.getInstance().getAllDatabaseNames()).thenReturn(Collections.singleton("no_auth_db"));
         SelectInformationSchemataExecutor executor = new SelectInformationSchemataExecutor(statement, sql, Collections.emptyList());
         executor.execute(connectionSession);
         assertThat(executor.getQueryResultMetaData().getColumnCount(), is(0));
@@ -120,7 +119,6 @@ class SelectInformationSchemataExecutorTest {
             ShardingSphereDatabase database = createDatabase(expectedResultSetMap);
             ContextManager contextManager = mockContextManager(database);
             when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
-            when(ProxyContext.getInstance().getAllDatabaseNames()).thenReturn(Collections.singleton("auth_db"));
             SelectInformationSchemataExecutor executor = new SelectInformationSchemataExecutor(statement, sql, Collections.emptyList());
             executor.execute(connectionSession);
             assertThat(executor.getQueryResultMetaData().getColumnCount(), is(2));
@@ -136,7 +134,6 @@ class SelectInformationSchemataExecutorTest {
     void assertExecuteWithAuthorizedDatabaseAndEmptyResource() throws SQLException {
         ContextManager contextManager = mockContextManager(createDatabase("auth_db"));
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
-        when(ProxyContext.getInstance().getAllDatabaseNames()).thenReturn(Collections.singleton("auth_db"));
         SelectInformationSchemataExecutor executor = new SelectInformationSchemataExecutor(statement, sql, Collections.emptyList());
         executor.execute(connectionSession);
         assertThat(executor.getQueryResultMetaData().getColumnCount(), is(2));
@@ -150,7 +147,6 @@ class SelectInformationSchemataExecutorTest {
     void assertExecuteWithoutDatabase() throws SQLException {
         ContextManager contextManager = mockContextManager();
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
-        when(ProxyContext.getInstance().getAllDatabaseNames()).thenReturn(Collections.emptyList());
         SelectInformationSchemataExecutor executor = new SelectInformationSchemataExecutor(statement, sql, Collections.emptyList());
         executor.execute(connectionSession);
         assertThat(executor.getQueryResultMetaData().getColumnCount(), is(0));
@@ -168,6 +164,7 @@ class SelectInformationSchemataExecutorTest {
         for (ShardingSphereDatabase each : databases) {
             when(result.getDatabase(each.getName())).thenReturn(each);
         }
+        when(result.getAllDatabaseNames()).thenReturn(Arrays.stream(databases).map(ShardingSphereDatabase::getName).collect(Collectors.toList()));
         return result;
     }
     

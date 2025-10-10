@@ -172,7 +172,7 @@ public final class MySQLAdminExecutorCreator implements DatabaseAdminExecutorCre
     }
     
     private boolean hasNoResource() {
-        Collection<String> databaseNames = ProxyContext.getInstance().getAllDatabaseNames();
+        Collection<String> databaseNames = ProxyContext.getInstance().getContextManager().getAllDatabaseNames();
         if (databaseNames.isEmpty()) {
             return true;
         }

@@ -28,7 +28,6 @@ import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.proxy.backend.connector.jdbc.datasource.JDBCBackendDataSource;
 
 import java.util.Collection;
-import java.util.stream.Collectors;
 
 /**
  * Proxy context.
@@ -59,25 +58,6 @@ public final class ProxyContext {
      */
     public static ProxyContext getInstance() {
         return INSTANCE;
-    }
-    
-    /**
-     * Check database exists.
-     *
-     * @param name database name
-     * @return database exists or not
-     */
-    public boolean databaseExists(final String name) {
-        return contextManager.getMetaDataContexts().getMetaData().containsDatabase(name);
-    }
-    
-    /**
-     * Get all database names.
-     *
-     * @return all database names
-     */
-    public Collection<String> getAllDatabaseNames() {
-        return contextManager.getMetaDataContexts().getMetaData().getAllDatabases().stream().map(ShardingSphereDatabase::getName).collect(Collectors.toList());
     }
     
     /**

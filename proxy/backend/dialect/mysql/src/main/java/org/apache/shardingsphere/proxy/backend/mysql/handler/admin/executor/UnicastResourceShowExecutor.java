@@ -93,7 +93,7 @@ public final class UnicastResourceShowExecutor implements DatabaseAdminQueryExec
     }
     
     private String getFirstDatabaseName() {
-        Collection<String> databaseNames = ProxyContext.getInstance().getAllDatabaseNames();
+        Collection<String> databaseNames = ProxyContext.getInstance().getContextManager().getAllDatabaseNames();
         if (databaseNames.isEmpty()) {
             throw new NoDatabaseSelectedException();
         }

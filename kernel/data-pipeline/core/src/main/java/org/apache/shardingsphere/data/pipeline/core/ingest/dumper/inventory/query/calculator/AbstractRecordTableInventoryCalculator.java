@@ -28,7 +28,7 @@ import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.inventory.quer
 import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.inventory.query.QueryType;
 import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.inventory.query.StreamingRangeType;
 import org.apache.shardingsphere.data.pipeline.core.query.JDBCStreamQueryBuilder;
-import org.apache.shardingsphere.data.pipeline.core.sqlbuilder.sql.PipelineDataConsistencyCalculateSQLBuilder;
+import org.apache.shardingsphere.data.pipeline.core.sqlbuilder.sql.PipelineInventoryCalculateSQLBuilder;
 import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.exception.external.sql.type.kernel.category.PipelineSQLException;
@@ -262,7 +262,7 @@ public abstract class AbstractRecordTableInventoryCalculator<S, C> extends Abstr
     private String getQuerySQL(final TableInventoryCalculateParameter param) {
         ShardingSpherePreconditions.checkState(null != param.getUniqueKeys() && !param.getUniqueKeys().isEmpty() && null != param.getFirstUniqueKey(),
                 () -> new UnsupportedOperationException("Record inventory calculator does not support table without unique key and primary key now."));
-        PipelineDataConsistencyCalculateSQLBuilder pipelineSQLBuilder = new PipelineDataConsistencyCalculateSQLBuilder(param.getDatabaseType());
+        PipelineInventoryCalculateSQLBuilder pipelineSQLBuilder = new PipelineInventoryCalculateSQLBuilder(param.getDatabaseType());
         Collection<String> columnNames = param.getColumnNames().isEmpty() ? Collections.singleton("*") : param.getColumnNames();
         switch (param.getQueryType()) {
             case RANGE_QUERY:

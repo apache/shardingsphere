@@ -59,7 +59,6 @@ class ShowCreateDatabaseExecutorTest {
         ShowCreateDatabaseExecutor executor = new ShowCreateDatabaseExecutor(statement);
         ContextManager contextManager = mockContextManager();
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
-        when(ProxyContext.getInstance().databaseExists("db_0")).thenReturn(true);
         executor.execute(mock(ConnectionSession.class));
         assertThat(executor.getQueryResultMetaData().getColumnCount(), is(2));
         int count = 0;

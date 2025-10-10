@@ -71,7 +71,7 @@ class DatabaseOperateProxyBackendHandlerFactoryTest {
     @BeforeEach
     void setUp() {
         when(connectionSession.getConnectionContext().getGrantee()).thenReturn(null);
-        when(ProxyContext.getInstance().databaseExists("foo_db")).thenReturn(true);
+        when(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().containsDatabase("foo_db")).thenReturn(true);
         when(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData()).thenReturn(metaData);
     }
     

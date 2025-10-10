@@ -58,7 +58,7 @@ public final class ShowDatabasesExecutor implements DatabaseAdminQueryExecutor {
     private Collection<LocalDataQueryResultRow> getDatabaseNames(final ConnectionSession connectionSession) {
         AuthorityRule authorityRule = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getSingleRule(AuthorityRule.class);
         AuthorityChecker authorityChecker = new AuthorityChecker(authorityRule, connectionSession.getConnectionContext().getGrantee());
-        return ProxyContext.getInstance().getAllDatabaseNames().stream().sorted()
+        return ProxyContext.getInstance().getContextManager().getAllDatabaseNames().stream().sorted()
                 .filter(each -> checkLikePattern(each) && authorityChecker.isAuthorized(each)).map(LocalDataQueryResultRow::new).collect(Collectors.toList());
     }
     

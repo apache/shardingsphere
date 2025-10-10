@@ -155,7 +155,7 @@ class DefaultDatabaseMetaDataExecutorTest {
         MetaDataContexts metaDataContexts = new MetaDataContexts(metaData, ShardingSphereStatisticsFactory.create(metaData, new ShardingSphereStatistics()));
         when(result.getMetaDataContexts()).thenReturn(metaDataContexts);
         when(result.getDatabase("auth_db")).thenReturn(database);
-        when(ProxyContext.getInstance().getAllDatabaseNames()).thenReturn(Collections.singleton("auth_db"));
+        when(result.getAllDatabaseNames()).thenReturn(Collections.singleton("auth_db"));
         return result;
     }
 }

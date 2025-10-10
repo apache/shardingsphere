@@ -71,7 +71,6 @@ class ShowDatabasesExecutorTest {
     void assertExecute() throws SQLException {
         ContextManager contextManager = mockContextManager();
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
-        when(ProxyContext.getInstance().getAllDatabaseNames()).thenReturn(IntStream.range(0, 10).mapToObj(each -> String.format("database_%s", each)).collect(Collectors.toList()));
         ShowDatabasesExecutor executor = new ShowDatabasesExecutor(new MySQLShowDatabasesStatement(databaseType, null));
         executor.execute(mockConnectionSession());
         QueryResultMetaData queryResultMetaData = executor.getQueryResultMetaData();
@@ -90,7 +89,6 @@ class ShowDatabasesExecutorTest {
         MySQLShowDatabasesStatement showDatabasesStatement = new MySQLShowDatabasesStatement(databaseType, showFilterSegment);
         ContextManager contextManager = mockContextManager();
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
-        when(ProxyContext.getInstance().getAllDatabaseNames()).thenReturn(IntStream.range(0, 10).mapToObj(each -> String.format("database_%s", each)).collect(Collectors.toList()));
         ShowDatabasesExecutor executor = new ShowDatabasesExecutor(showDatabasesStatement);
         executor.execute(mockConnectionSession());
         assertThat(getActual(executor), is(getExpected()));
@@ -122,7 +120,6 @@ class ShowDatabasesExecutorTest {
         MySQLShowDatabasesStatement showDatabasesStatement = new MySQLShowDatabasesStatement(databaseType, showFilterSegment);
         ContextManager contextManager = mockContextManager();
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
-        when(ProxyContext.getInstance().getAllDatabaseNames()).thenReturn(IntStream.range(0, 10).mapToObj(each -> String.format("database_%s", each)).collect(Collectors.toList()));
         ShowDatabasesExecutor executor = new ShowDatabasesExecutor(showDatabasesStatement);
         executor.execute(mockConnectionSession());
         assertThat(executor.getQueryResultMetaData().getColumnCount(), is(1));
@@ -142,7 +139,6 @@ class ShowDatabasesExecutorTest {
         MySQLShowDatabasesStatement showDatabasesStatement = new MySQLShowDatabasesStatement(databaseType, showFilterSegment);
         ContextManager contextManager = mockContextManager();
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
-        when(ProxyContext.getInstance().getAllDatabaseNames()).thenReturn(IntStream.range(0, 10).mapToObj(each -> String.format("database_%s", each)).collect(Collectors.toList()));
         ShowDatabasesExecutor executor = new ShowDatabasesExecutor(showDatabasesStatement);
         executor.execute(mockConnectionSession());
         assertThat(executor.getQueryResultMetaData().getColumnCount(), is(1));
@@ -162,7 +158,6 @@ class ShowDatabasesExecutorTest {
         MySQLShowDatabasesStatement showDatabasesStatement = new MySQLShowDatabasesStatement(databaseType, showFilterSegment);
         ContextManager contextManager = mockContextManager();
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
-        when(ProxyContext.getInstance().getAllDatabaseNames()).thenReturn(IntStream.range(0, 10).mapToObj(each -> String.format("database_%s", each)).collect(Collectors.toList()));
         ShowDatabasesExecutor executor = new ShowDatabasesExecutor(showDatabasesStatement);
         executor.execute(mockConnectionSession());
         assertThat(executor.getQueryResultMetaData().getColumnCount(), is(1));
@@ -180,6 +175,7 @@ class ShowDatabasesExecutorTest {
         ShardingSphereMetaData metaData = new ShardingSphereMetaData(createDatabases(), mock(), globalRuleMetaData, mock());
         MetaDataContexts metaDataContexts = new MetaDataContexts(metaData, ShardingSphereStatisticsFactory.create(metaData, new ShardingSphereStatistics()));
         when(result.getMetaDataContexts()).thenReturn(metaDataContexts);
+        when(result.getAllDatabaseNames()).thenReturn(IntStream.range(0, 10).mapToObj(each -> String.format("database_%s", each)).collect(Collectors.toList()));
         return result;
     }
     

@@ -93,7 +93,6 @@ class ExportStorageNodesExecutorTest {
     void assertExecuteWithWrongDatabaseName() {
         ContextManager contextManager = mockEmptyContextManager();
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
-        when(ProxyContext.getInstance().getAllDatabaseNames()).thenReturn(Collections.singleton("empty_metadata"));
         ExportStorageNodesStatement sqlStatement = new ExportStorageNodesStatement("foo", null);
         assertThrows(IllegalArgumentException.class, () -> new ExportStorageNodesExecutor().getRows(sqlStatement, contextManager));
     }
@@ -102,7 +101,6 @@ class ExportStorageNodesExecutorTest {
     void assertExecuteWithEmptyMetaData() {
         ContextManager contextManager = mockEmptyContextManager();
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
-        when(ProxyContext.getInstance().getAllDatabaseNames()).thenReturn(Collections.singleton("empty_metadata"));
         ExportStorageNodesStatement sqlStatement = new ExportStorageNodesStatement(null, null);
         Collection<LocalDataQueryResultRow> actual = new ExportStorageNodesExecutor().getRows(sqlStatement, contextManager);
         assertThat(actual.size(), is(1));
@@ -116,6 +114,7 @@ class ExportStorageNodesExecutorTest {
                 Collections.emptyList(), new ResourceMetaData(Collections.emptyMap()), new RuleMetaData(Collections.emptyList()), new ConfigurationProperties(new Properties()));
         MetaDataContexts metaDataContexts = new MetaDataContexts(metaData, new ShardingSphereStatistics());
         when(result.getMetaDataContexts()).thenReturn(metaDataContexts);
+        when(result.getAllDatabaseNames()).thenReturn(Collections.singleton("empty_metadata"));
         return result;
     }
     

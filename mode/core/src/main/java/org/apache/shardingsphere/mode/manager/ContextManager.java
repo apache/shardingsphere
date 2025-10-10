@@ -53,6 +53,7 @@ import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * Context manager.
@@ -85,6 +86,15 @@ public final class ContextManager implements AutoCloseable {
         persistServiceFacade = new PersistServiceFacade(repository, computeNodeInstanceContext.getModeConfiguration(), metaDataContextManager);
         stateContext = new StateContext(persistServiceFacade.getStateService().load());
         ContextManagerLifecycleListenerFactory.getListeners(this).forEach(each -> each.onInitialized(this));
+    }
+    
+    /**
+     * Get all database names.
+     *
+     * @return all database names
+     */
+    public Collection<String> getAllDatabaseNames() {
+        return metaDataContexts.getMetaData().getAllDatabases().stream().map(ShardingSphereDatabase::getName).collect(Collectors.toList());
     }
     
     /**

@@ -116,6 +116,11 @@ class ContextManagerTest {
     }
     
     @Test
+    void assertGetAllDatabaseNames() {
+        assertThat(contextManager.getAllDatabaseNames(), is(Collections.singletonList("foo_db")));
+    }
+    
+    @Test
     void assertGetDatabase() {
         assertNotNull(contextManager.getDatabase("foo_db"));
     }

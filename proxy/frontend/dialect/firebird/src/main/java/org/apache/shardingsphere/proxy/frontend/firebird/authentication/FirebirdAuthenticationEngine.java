@@ -100,7 +100,9 @@ public final class FirebirdAuthenticationEngine implements AuthenticationEngine 
     }
     
     private void login(final String databaseName, final String username, final FirebirdAttachPacket attachPacket, final AuthorityRule rule) {
-        ShardingSpherePreconditions.checkState(Strings.isNullOrEmpty(databaseName) || ProxyContext.getInstance().databaseExists(databaseName), () -> new UnknownDatabaseException(databaseName));
+        ShardingSpherePreconditions.checkState(
+                Strings.isNullOrEmpty(databaseName) || ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().containsDatabase(databaseName),
+                () -> new UnknownDatabaseException(databaseName));
         Grantee grantee = new Grantee(username, "");
         Optional<ShardingSphereUser> user = rule.findUser(grantee);
         user.ifPresent(shardingSphereUser -> new AuthenticatorFactory<>(FirebirdAuthenticatorType.class, rule)

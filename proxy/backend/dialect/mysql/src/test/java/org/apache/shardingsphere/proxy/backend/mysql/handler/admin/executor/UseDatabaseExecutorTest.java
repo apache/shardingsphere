@@ -65,7 +65,6 @@ class UseDatabaseExecutorTest {
         when(useStatement.getDatabase()).thenReturn(String.format(DATABASE_PATTERN, 0));
         ContextManager contextManager = mockContextManager();
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
-        when(ProxyContext.getInstance().databaseExists("db_0")).thenReturn(true);
         UseDatabaseExecutor executor = new UseDatabaseExecutor(useStatement);
         when(connectionSession.getConnectionContext().getGrantee()).thenReturn(null);
         executor.execute(connectionSession);
