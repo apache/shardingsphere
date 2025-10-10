@@ -79,30 +79,6 @@ public final class SchemaMetaDataPersistService {
     }
     
     /**
-     * Alter schema by rule altered.
-     *
-     * @param databaseName database name
-     * @param schema to be altered schema
-     */
-    public void alterByRuleAltered(final String databaseName, final ShardingSphereSchema schema) {
-        String schemaName = schema.getName().toLowerCase();
-        if (schema.isEmpty()) {
-            add(databaseName, schemaName);
-        }
-        tableMetaDataPersistService.persist(databaseName, schemaName, schema.getAllTables());
-    }
-    
-    /**
-     * Alter schema by rule dropped.
-     *
-     * @param databaseName database name
-     * @param schema to be altered schema
-     */
-    public void alterByRuleDropped(final String databaseName, final ShardingSphereSchema schema) {
-        tableMetaDataPersistService.persist(databaseName, schema.getName(), schema.getAllTables());
-    }
-    
-    /**
      * Load schemas.
      *
      * @param databaseName database name

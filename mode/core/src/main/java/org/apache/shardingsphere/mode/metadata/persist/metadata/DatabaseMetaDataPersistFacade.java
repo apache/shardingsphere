@@ -69,31 +69,17 @@ public final class DatabaseMetaDataPersistFacade {
     }
     
     /**
-     * Persist reload meta data by alter.
+     * Persist reload meta data.
      *
      * @param databaseName database name
      * @param reloadDatabase reload database
      * @param currentDatabase current database
      */
-    public void persistReloadDatabaseByAlter(final String databaseName, final ShardingSphereDatabase reloadDatabase, final ShardingSphereDatabase currentDatabase) {
+    public void persistReloadDatabase(final String databaseName, final ShardingSphereDatabase reloadDatabase, final ShardingSphereDatabase currentDatabase) {
         Collection<ShardingSphereSchema> toBeAlteredSchemasWithTablesDropped = GenericSchemaManager.getToBeAlteredSchemasWithTablesDropped(reloadDatabase, currentDatabase);
         Collection<ShardingSphereSchema> toBeAlteredSchemasWithTablesAdded = GenericSchemaManager.getToBeAlteredSchemasWithTablesAdded(reloadDatabase, currentDatabase);
-        toBeAlteredSchemasWithTablesAdded.forEach(each -> schema.alterByRuleAltered(databaseName, each));
-        toBeAlteredSchemasWithTablesDropped.forEach(each -> table.drop(databaseName, each.getName(), each.getAllTables()));
-    }
-    
-    /**
-     * Persist reload meta data by drop.
-     *
-     * @param databaseName database name
-     * @param reloadDatabase reload database
-     * @param currentDatabase current database
-     */
-    public void persistReloadDatabaseByDrop(final String databaseName, final ShardingSphereDatabase reloadDatabase, final ShardingSphereDatabase currentDatabase) {
-        Collection<ShardingSphereSchema> toBeAlteredSchemasWithTablesDropped = GenericSchemaManager.getToBeAlteredSchemasWithTablesDropped(reloadDatabase, currentDatabase);
-        Collection<ShardingSphereSchema> toBeAlteredSchemasWithTablesAdded = GenericSchemaManager.getToBeAlteredSchemasWithTablesAdded(reloadDatabase, currentDatabase);
-        toBeAlteredSchemasWithTablesAdded.forEach(each -> schema.alterByRuleDropped(databaseName, each));
-        toBeAlteredSchemasWithTablesDropped.forEach(each -> table.drop(databaseName, each.getName(), each.getAllTables()));
+        toBeAlteredSchemasWithTablesAdded.forEach(each -> table.persist(databaseName, each.getName().toLowerCase(), each.getAllTables()));
+        toBeAlteredSchemasWithTablesDropped.forEach(each -> table.drop(databaseName, each.getName().toLowerCase(), each.getAllTables()));
     }
     
     /**
