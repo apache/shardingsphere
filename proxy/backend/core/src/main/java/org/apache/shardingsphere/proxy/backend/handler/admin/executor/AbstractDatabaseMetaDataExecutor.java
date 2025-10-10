@@ -34,7 +34,6 @@ import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaDa
 import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnit;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.apache.shardingsphere.mode.manager.ContextManager;
-import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 
 import java.sql.Connection;
@@ -57,6 +56,7 @@ import java.util.stream.Collectors;
 /**
  * The abstract class of database meta data, used to define the template.
  */
+@RequiredArgsConstructor
 @Getter
 public abstract class AbstractDatabaseMetaDataExecutor implements DatabaseAdminQueryExecutor {
     
@@ -64,7 +64,7 @@ public abstract class AbstractDatabaseMetaDataExecutor implements DatabaseAdminQ
     
     private MergedResult mergedResult;
     
-    private final ContextManager contextManager = ProxyContext.getInstance().getContextManager();
+    private final ContextManager contextManager;
     
     private final List<Map<String, Object>> rows = new LinkedList<>();
     
@@ -130,12 +130,17 @@ public abstract class AbstractDatabaseMetaDataExecutor implements DatabaseAdminQ
     /**
      * Default database meta data executor, execute sql directly in the database to obtain the result source data.
      */
-    @RequiredArgsConstructor
     public static class DefaultDatabaseMetaDataExecutor extends AbstractDatabaseMetaDataExecutor {
         
         private final String sql;
         
         private final List<Object> parameters;
+        
+        public DefaultDatabaseMetaDataExecutor(final ContextManager contextManager, final String sql, final List<Object> parameters) {
+            super(contextManager);
+            this.sql = sql;
+            this.parameters = parameters;
+        }
         
         @Override
         protected Collection<String> getDatabaseNames(final ConnectionSession connectionSession) {

@@ -69,7 +69,7 @@ public final class SelectInformationSchemataExecutor extends DefaultDatabaseMeta
     private boolean queryDatabase;
     
     public SelectInformationSchemataExecutor(final SelectStatement sqlStatement, final String sql, final List<Object> parameters) {
-        super(sql, parameters);
+        super(ProxyContext.getInstance().getContextManager(), sql, parameters);
         this.sqlStatement = sqlStatement;
     }
     
