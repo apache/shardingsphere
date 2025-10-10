@@ -24,6 +24,7 @@ import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
+import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
@@ -66,7 +67,10 @@ class DropDatabaseProxyBackendHandlerTest {
     @BeforeEach
     void setUp() {
         when(connectionSession.getConnectionContext().getGrantee()).thenReturn(null);
-        handler = new DropDatabaseProxyBackendHandler(sqlStatement, mockMetaData(), mock(), connectionSession);
+        ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
+        ShardingSphereMetaData metaData = mockMetaData();
+        when(contextManager.getMetaDataContexts().getMetaData()).thenReturn(metaData);
+        handler = new DropDatabaseProxyBackendHandler(sqlStatement, contextManager, connectionSession);
     }
     
     private ShardingSphereMetaData mockMetaData() {
