@@ -65,7 +65,7 @@ public final class UnicastDatabaseProxyBackendHandler implements DatabaseProxyBa
     }
     
     private String getFirstDatabaseName() {
-        Collection<String> databaseNames = ProxyContext.getInstance().getAllDatabaseNames();
+        Collection<String> databaseNames = ProxyContext.getInstance().getContextManager().getAllDatabaseNames();
         ShardingSpherePreconditions.checkNotEmpty(databaseNames, NoDatabaseSelectedException::new);
         AuthorityRule authorityRule = queryContext.getMetaData().getGlobalRuleMetaData().getSingleRule(AuthorityRule.class);
         Optional<ShardingSpherePrivileges> privileges = authorityRule.findPrivileges(connectionSession.getConnectionContext().getGrantee());
