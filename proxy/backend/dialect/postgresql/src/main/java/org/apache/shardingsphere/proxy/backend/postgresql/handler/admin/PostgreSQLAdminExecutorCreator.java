@@ -25,6 +25,7 @@ import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementCont
 import org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager;
 import org.apache.shardingsphere.infra.metadata.statistics.collector.DialectDatabaseStatisticsCollector;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
+import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.handler.admin.executor.AbstractDatabaseMetaDataExecutor.DefaultDatabaseMetaDataExecutor;
 import org.apache.shardingsphere.proxy.backend.handler.admin.executor.DatabaseAdminExecutor;
 import org.apache.shardingsphere.proxy.backend.handler.admin.executor.DatabaseAdminExecutorCreator;
@@ -79,7 +80,7 @@ public final class PostgreSQLAdminExecutorCreator implements DatabaseAdminExecut
                 return Optional.empty();
             }
             if (isSelectSystemTable(selectedSchemaTables)) {
-                return Optional.of(new DefaultDatabaseMetaDataExecutor(sql, parameters));
+                return Optional.of(new DefaultDatabaseMetaDataExecutor(ProxyContext.getInstance().getContextManager(), sql, parameters));
             }
         }
         if (sqlStatement instanceof SetStatement) {

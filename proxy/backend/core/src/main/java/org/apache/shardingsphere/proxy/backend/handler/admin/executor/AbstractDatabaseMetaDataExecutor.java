@@ -33,7 +33,7 @@ import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
 import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnit;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
-import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
+import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 
 import java.sql.Connection;
@@ -56,12 +56,15 @@ import java.util.stream.Collectors;
 /**
  * The abstract class of database meta data, used to define the template.
  */
+@RequiredArgsConstructor
 @Getter
 public abstract class AbstractDatabaseMetaDataExecutor implements DatabaseAdminQueryExecutor {
     
     private QueryResultMetaData queryResultMetaData;
     
     private MergedResult mergedResult;
+    
+    private final ContextManager contextManager;
     
     private final List<Map<String, Object>> rows = new LinkedList<>();
     
@@ -124,39 +127,41 @@ public abstract class AbstractDatabaseMetaDataExecutor implements DatabaseAdminQ
         return new RawQueryResultMetaData(columns);
     }
     
-    protected static Boolean hasDataSource(final String databaseName) {
-        return ProxyContext.getInstance().getContextManager().getDatabase(databaseName).containsDataSource();
-    }
-    
-    protected static boolean isAuthorized(final String databaseName, final Grantee grantee) {
-        AuthorityRule authorityRule = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getSingleRule(AuthorityRule.class);
-        return new AuthorityChecker(authorityRule, grantee).isAuthorized(databaseName);
-    }
-    
     /**
      * Default database meta data executor, execute sql directly in the database to obtain the result source data.
      */
-    @RequiredArgsConstructor
     public static class DefaultDatabaseMetaDataExecutor extends AbstractDatabaseMetaDataExecutor {
         
         private final String sql;
         
         private final List<Object> parameters;
         
+        public DefaultDatabaseMetaDataExecutor(final ContextManager contextManager, final String sql, final List<Object> parameters) {
+            super(contextManager);
+            this.sql = sql;
+            this.parameters = parameters;
+        }
+        
         @Override
         protected Collection<String> getDatabaseNames(final ConnectionSession connectionSession) {
-            ShardingSphereDatabase database = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getDatabase(connectionSession.getCurrentDatabaseName());
-            if (null != database && isAuthorized(database.getName(), connectionSession.getConnectionContext().getGrantee()) && hasDataSource(database.getName())) {
+            ShardingSphereDatabase database = getContextManager().getMetaDataContexts().getMetaData().getDatabase(connectionSession.getCurrentDatabaseName());
+            if (null != database && isAuthorized(database.getName(), connectionSession.getConnectionContext().getGrantee())
+                    && getContextManager().getDatabase(database.getName()).containsDataSource()) {
                 return Collections.singleton(database.getName());
             }
-            Collection<String> databaseNames = ProxyContext.getInstance().getContextManager().getAllDatabaseNames().stream()
-                    .filter(each -> isAuthorized(each, connectionSession.getConnectionContext().getGrantee())).filter(AbstractDatabaseMetaDataExecutor::hasDataSource).collect(Collectors.toList());
+            Collection<String> databaseNames = getContextManager().getAllDatabaseNames().stream()
+                    .filter(each -> isAuthorized(each, connectionSession.getConnectionContext().getGrantee()))
+                    .filter(each -> getContextManager().getDatabase(each).containsDataSource()).collect(Collectors.toList());
             return databaseNames.isEmpty() ? Collections.emptyList() : Collections.singletonList(databaseNames.iterator().next());
+        }
+        
+        private boolean isAuthorized(final String databaseName, final Grantee grantee) {
+            return new AuthorityChecker(getContextManager().getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getSingleRule(AuthorityRule.class), grantee).isAuthorized(databaseName);
         }
         
         @Override
         protected void processMetaData(final String databaseName, final Consumer<ResultSet> callback) throws SQLException {
-            ResourceMetaData resourceMetaData = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getDatabase(databaseName).getResourceMetaData();
+            ResourceMetaData resourceMetaData = getContextManager().getMetaDataContexts().getMetaData().getDatabase(databaseName).getResourceMetaData();
             Optional<StorageUnit> storageUnit = resourceMetaData.getStorageUnits().values().stream().findFirst();
             if (!storageUnit.isPresent()) {
                 return;

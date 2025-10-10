@@ -22,7 +22,7 @@ import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResultMetaData;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
+import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.proxy.backend.handler.ProxyBackendHandler;
 import org.apache.shardingsphere.proxy.backend.handler.admin.executor.DatabaseAdminQueryExecutor;
 import org.apache.shardingsphere.proxy.backend.response.data.QueryResponseCell;
@@ -43,6 +43,8 @@ import java.util.List;
 @RequiredArgsConstructor
 public final class DatabaseAdminQueryProxyBackendHandler implements ProxyBackendHandler {
     
+    private final ContextManager contextManager;
+    
     private final ConnectionSession connectionSession;
     
     private final DatabaseAdminQueryExecutor executor;
@@ -61,7 +63,7 @@ public final class DatabaseAdminQueryProxyBackendHandler implements ProxyBackend
     
     private List<QueryHeader> createResponseHeader() throws SQLException {
         List<QueryHeader> result = new ArrayList<>(queryResultMetaData.getColumnCount());
-        ShardingSphereDatabase database = null == connectionSession.getUsedDatabaseName() ? null : ProxyContext.getInstance().getContextManager().getDatabase(connectionSession.getUsedDatabaseName());
+        ShardingSphereDatabase database = null == connectionSession.getUsedDatabaseName() ? null : contextManager.getDatabase(connectionSession.getUsedDatabaseName());
         DatabaseType databaseType = null == database ? connectionSession.getProtocolType() : database.getProtocolType();
         QueryHeaderBuilderEngine queryHeaderBuilderEngine = new QueryHeaderBuilderEngine(databaseType);
         for (int columnIndex = 1; columnIndex <= queryResultMetaData.getColumnCount(); columnIndex++) {
