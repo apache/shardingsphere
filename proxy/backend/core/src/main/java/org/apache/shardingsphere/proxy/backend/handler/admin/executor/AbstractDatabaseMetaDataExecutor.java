@@ -146,11 +146,11 @@ public abstract class AbstractDatabaseMetaDataExecutor implements DatabaseAdminQ
         @Override
         protected Collection<String> getDatabaseNames(final ConnectionSession connectionSession) {
             ShardingSphereDatabase database = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getDatabase(connectionSession.getCurrentDatabaseName());
-            if (null != database && isAuthorized(database.getName(), connectionSession.getConnectionContext().getGrantee()) && AbstractDatabaseMetaDataExecutor.hasDataSource(database.getName())) {
+            if (null != database && isAuthorized(database.getName(), connectionSession.getConnectionContext().getGrantee()) && hasDataSource(database.getName())) {
                 return Collections.singleton(database.getName());
             }
-            Collection<String> databaseNames = ProxyContext.getInstance().getAllDatabaseNames().stream().filter(each -> isAuthorized(each, connectionSession.getConnectionContext().getGrantee()))
-                    .filter(AbstractDatabaseMetaDataExecutor::hasDataSource).collect(Collectors.toList());
+            Collection<String> databaseNames = ProxyContext.getInstance().getContextManager().getAllDatabaseNames().stream()
+                    .filter(each -> isAuthorized(each, connectionSession.getConnectionContext().getGrantee())).filter(AbstractDatabaseMetaDataExecutor::hasDataSource).collect(Collectors.toList());
             return databaseNames.isEmpty() ? Collections.emptyList() : Collections.singletonList(databaseNames.iterator().next());
         }
         
