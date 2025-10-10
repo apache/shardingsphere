@@ -97,8 +97,15 @@ public final class SQLScriptUtils {
     }
     
     private static void executeBatch(final Connection connection, final Collection<String> sqls) throws SQLException {
-        int count = 0;
         try (Statement statement = connection.createStatement()) {
+            String driverName = connection.getMetaData().getDriverName();
+            if (null != driverName && driverName.toLowerCase().contains("hive")) {
+                for (String each : sqls) {
+                    statement.execute(each);
+                }
+                return;
+            }
+            int count = 0;
             for (String each : sqls) {
                 statement.addBatch(each);
                 count++;

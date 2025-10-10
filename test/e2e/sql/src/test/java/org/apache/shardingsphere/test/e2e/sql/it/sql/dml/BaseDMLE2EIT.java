@@ -22,6 +22,7 @@ import com.google.common.collect.Sets;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.SneakyThrows;
+import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.expr.entry.InlineExpressionParserFactory;
@@ -34,6 +35,7 @@ import org.apache.shardingsphere.test.e2e.sql.cases.dataset.DataSetLoader;
 import org.apache.shardingsphere.test.e2e.sql.cases.dataset.metadata.DataSetColumn;
 import org.apache.shardingsphere.test.e2e.sql.cases.dataset.metadata.DataSetMetaData;
 import org.apache.shardingsphere.test.e2e.sql.cases.dataset.row.DataSetRow;
+import org.apache.shardingsphere.test.e2e.sql.framework.metadata.DialectQueryBehaviorProvider;
 import org.apache.shardingsphere.test.e2e.sql.env.DataSetEnvironmentManager;
 import org.apache.shardingsphere.test.e2e.sql.env.SQLE2EEnvironmentEngine;
 import org.apache.shardingsphere.test.e2e.sql.framework.metadata.DialectDatabaseAssertionMetaDataFactory;
@@ -236,8 +238,12 @@ public abstract class BaseDMLE2EIT implements SQLE2EIT {
         if (primaryKeyColumnName.isPresent()) {
             return String.format("SELECT * FROM %s ORDER BY %s ASC", tableName, primaryKeyColumnName.get());
         }
-        if ("Hive".equalsIgnoreCase(databaseType.getType())) {
-            return String.format("SELECT * FROM %s ORDER BY 1 ASC", tableName);
+        Optional<DialectQueryBehaviorProvider> behaviorProvider = DatabaseTypedSPILoader.findService(DialectQueryBehaviorProvider.class, databaseType);
+        if (behaviorProvider.isPresent()) {
+            Optional<String> fallbackOrderBy = behaviorProvider.get().getFallbackOrderByWhenNoPrimaryKey();
+            if (fallbackOrderBy.isPresent()) {
+                return String.format("SELECT * FROM %s ORDER BY %s", tableName, fallbackOrderBy.get());
+            }
         }
         return String.format("SELECT * FROM %s", tableName);
     }
