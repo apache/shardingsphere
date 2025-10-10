@@ -21,6 +21,7 @@ import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.filter.Filter;
 import ch.qos.logback.core.spi.FilterReply;
 import com.google.common.base.Strings;
+import org.apache.shardingsphere.test.e2e.env.container.constants.ProxyContainerConstants;
 
 import java.util.Arrays;
 import java.util.LinkedHashMap;
@@ -55,7 +56,7 @@ public final class PipelineLoggerFilter extends Filter<ILoggingEvent> {
         if (IGNORED_LOGGER_NAMES.contains(event.getLoggerName())) {
             return FilterReply.DENY;
         }
-        if (":Pipeline-Proxy".equals(event.getLoggerName())) {
+        if ((":" + ProxyContainerConstants.PROXY_CONTAINER_NAME_PREFIX).equals(event.getLoggerName())) {
             for (Object each : event.getArgumentArray()) {
                 String arg = each.toString();
                 if (Strings.isNullOrEmpty(arg)) {
