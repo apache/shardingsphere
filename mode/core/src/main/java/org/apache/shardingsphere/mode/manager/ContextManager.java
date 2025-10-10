@@ -19,11 +19,13 @@ package org.apache.shardingsphere.mode.manager;
 
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.database.exception.core.exception.syntax.database.NoDatabaseSelectedException;
 import org.apache.shardingsphere.database.exception.core.exception.syntax.database.UnknownDatabaseException;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
+import org.apache.shardingsphere.infra.database.DatabaseTypeEngine;
 import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePoolProperties;
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.executor.kernel.ExecutorEngine;
@@ -86,6 +88,17 @@ public final class ContextManager implements AutoCloseable {
         persistServiceFacade = new PersistServiceFacade(repository, computeNodeInstanceContext.getModeConfiguration(), metaDataContextManager);
         stateContext = new StateContext(persistServiceFacade.getStateService().load());
         ContextManagerLifecycleListenerFactory.getListeners(this).forEach(each -> each.onInitialized(this));
+    }
+    
+    /**
+     * Get database type.
+     *
+     * @return database type
+     */
+    public DatabaseType getDatabaseType() {
+        Collection<ShardingSphereDatabase> databases = metaDataContexts.getMetaData().getAllDatabases();
+        return databases.stream().flatMap(each -> each.getResourceMetaData().getStorageUnits().values().stream()).findFirst().map(StorageUnit::getStorageType)
+                .orElseGet(DatabaseTypeEngine::getDefaultStorageType);
     }
     
     /**
