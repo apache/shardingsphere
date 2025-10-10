@@ -133,7 +133,9 @@ public final class OpenGaussAuthenticationEngine implements AuthenticationEngine
     private void login(final AuthorityRule rule, final String digest) {
         String username = currentAuthResult.getUsername();
         String databaseName = currentAuthResult.getDatabase();
-        ShardingSpherePreconditions.checkState(Strings.isNullOrEmpty(databaseName) || ProxyContext.getInstance().databaseExists(databaseName), () -> new UnknownDatabaseException(databaseName));
+        ShardingSpherePreconditions.checkState(
+                Strings.isNullOrEmpty(databaseName) || ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().containsDatabase(databaseName),
+                () -> new UnknownDatabaseException(databaseName));
         Grantee grantee = new Grantee(username);
         ShardingSphereUser user = rule.findUser(grantee).orElseThrow(() -> new UnknownUsernameException(username));
         Authenticator authenticator = new AuthenticatorFactory<>(OpenGaussAuthenticatorType.class, rule).newInstance(user);

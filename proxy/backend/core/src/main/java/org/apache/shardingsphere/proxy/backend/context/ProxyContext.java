@@ -61,16 +61,6 @@ public final class ProxyContext {
     }
     
     /**
-     * Check database exists.
-     *
-     * @param name database name
-     * @return database exists or not
-     */
-    public boolean databaseExists(final String name) {
-        return contextManager.getMetaDataContexts().getMetaData().containsDatabase(name);
-    }
-    
-    /**
      * Get database type.
      *
      * @return database type
