@@ -23,18 +23,36 @@ import ch.qos.logback.core.spi.FilterReply;
 import com.google.common.base.Strings;
 
 import java.util.Arrays;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 public final class PipelineLoggerFilter extends Filter<ILoggingEvent> {
     
-    private static final List<String> IGNORE_LOGGER_NAMES = Arrays.asList(":mysql", ":zookeeper", ":postgresql", ":opengauss");
+    private static final List<String> IGNORED_LOGGER_NAMES = getIgnoredLoggerNames();
     
-    private static final String[] IGNORE_ATOMIKOS_ARGS = new String[]{"- tips & advice", "- working demos", "- access to the full documentation",
-            "- special exclusive bonus offers not available to others"};
+    private static final Map<String, String[]> IGNORED_PROXY_LOG_ARGS = getIgnoredProxyLogArgs();
+    
+    private static List<String> getIgnoredLoggerNames() {
+        List<String> result = new LinkedList<>();
+        result.add(":zookeeper");
+        result.add(":mysql");
+        result.add(":postgresql");
+        result.add(":opengauss");
+        return result;
+    }
+    
+    private static Map<String, String[]> getIgnoredProxyLogArgs() {
+        Map<String, String[]> result = new LinkedHashMap<>();
+        result.put("atomikos", new String[]{"- tips & advice", "- working demos", "- access to the full documentation", "- special exclusive bonus offers not available to others"});
+        return result;
+    }
     
     @Override
     public FilterReply decide(final ILoggingEvent event) {
-        if (IGNORE_LOGGER_NAMES.contains(event.getLoggerName())) {
+        if (IGNORED_LOGGER_NAMES.contains(event.getLoggerName())) {
             return FilterReply.DENY;
         }
         if (":Pipeline-Proxy".equals(event.getLoggerName())) {
@@ -43,8 +61,10 @@ public final class PipelineLoggerFilter extends Filter<ILoggingEvent> {
                 if (Strings.isNullOrEmpty(arg)) {
                     continue;
                 }
-                if ("atomikos".equalsIgnoreCase(arg) || Arrays.stream(IGNORE_ATOMIKOS_ARGS).anyMatch(arg::contains)) {
-                    return FilterReply.DENY;
+                for (Entry<String, String[]> entry : IGNORED_PROXY_LOG_ARGS.entrySet()) {
+                    if (entry.getKey().equalsIgnoreCase(arg) || Arrays.stream(entry.getValue()).anyMatch(arg::contains)) {
+                        return FilterReply.DENY;
+                    }
                 }
             }
         }
