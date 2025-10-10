@@ -17,10 +17,12 @@
 
 package org.apache.shardingsphere.proxy.backend.mysql.handler.admin.executor.information;
 
+import org.apache.shardingsphere.authority.checker.AuthorityChecker;
+import org.apache.shardingsphere.authority.rule.AuthorityRule;
 import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
 import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnit;
+import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
-import org.apache.shardingsphere.proxy.backend.handler.admin.executor.AbstractDatabaseMetaDataExecutor;
 import org.apache.shardingsphere.proxy.backend.handler.admin.executor.AbstractDatabaseMetaDataExecutor.DefaultDatabaseMetaDataExecutor;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ColumnProjectionSegment;
@@ -87,10 +89,12 @@ public final class SelectInformationSchemataExecutor extends DefaultDatabaseMeta
     
     @Override
     protected Collection<String> getDatabaseNames(final ConnectionSession connectionSession) {
-        Collection<String> databaseNames = ProxyContext.getInstance().getContextManager().getAllDatabaseNames().stream()
-                .filter(each -> isAuthorized(each, connectionSession.getConnectionContext().getGrantee())).collect(Collectors.toList());
-        SCHEMA_WITHOUT_DATA_SOURCE.addAll(databaseNames.stream().filter(each -> !hasDataSource(each)).collect(Collectors.toSet()));
-        Collection<String> result = databaseNames.stream().filter(AbstractDatabaseMetaDataExecutor::hasDataSource).collect(Collectors.toList());
+        ContextManager contextManager = ProxyContext.getInstance().getContextManager();
+        AuthorityChecker authorityChecker = new AuthorityChecker(
+                contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getSingleRule(AuthorityRule.class), connectionSession.getConnectionContext().getGrantee());
+        Collection<String> databaseNames = contextManager.getAllDatabaseNames().stream().filter(authorityChecker::isAuthorized).collect(Collectors.toList());
+        SCHEMA_WITHOUT_DATA_SOURCE.addAll(databaseNames.stream().filter(each -> !contextManager.getDatabase(each).containsDataSource()).collect(Collectors.toSet()));
+        Collection<String> result = databaseNames.stream().filter(each -> contextManager.getDatabase(each).containsDataSource()).collect(Collectors.toList());
         if (!SCHEMA_WITHOUT_DATA_SOURCE.isEmpty()) {
             fillSchemasWithoutDataSource();
         }
