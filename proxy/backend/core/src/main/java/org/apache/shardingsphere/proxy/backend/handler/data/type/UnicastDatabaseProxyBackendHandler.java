@@ -24,9 +24,9 @@ import org.apache.shardingsphere.database.exception.core.exception.syntax.databa
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.exception.kernel.metadata.resource.storageunit.EmptyStorageUnitException;
 import org.apache.shardingsphere.infra.session.query.QueryContext;
+import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.proxy.backend.connector.DatabaseProxyConnector;
 import org.apache.shardingsphere.proxy.backend.connector.DatabaseProxyConnectorFactory;
-import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.handler.data.DatabaseProxyBackendHandler;
 import org.apache.shardingsphere.proxy.backend.response.data.QueryResponseRow;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
@@ -45,6 +45,8 @@ public final class UnicastDatabaseProxyBackendHandler implements DatabaseProxyBa
     
     private final QueryContext queryContext;
     
+    private final ContextManager contextManager;
+    
     private final ConnectionSession connectionSession;
     
     private DatabaseProxyConnector databaseProxyConnector;
@@ -53,8 +55,7 @@ public final class UnicastDatabaseProxyBackendHandler implements DatabaseProxyBa
     public ResponseHeader execute() throws SQLException {
         String originalDatabaseName = connectionSession.getCurrentDatabaseName();
         String unicastDatabaseName = null == originalDatabaseName ? getFirstDatabaseName() : originalDatabaseName;
-        ShardingSpherePreconditions.checkState(ProxyContext.getInstance().getContextManager().getDatabase(unicastDatabaseName).containsDataSource(),
-                () -> new EmptyStorageUnitException(unicastDatabaseName));
+        ShardingSpherePreconditions.checkState(contextManager.getDatabase(unicastDatabaseName).containsDataSource(), () -> new EmptyStorageUnitException(unicastDatabaseName));
         try {
             connectionSession.setCurrentDatabaseName(unicastDatabaseName);
             databaseProxyConnector = DatabaseProxyConnectorFactory.newInstance(queryContext, connectionSession.getDatabaseConnectionManager(), false);
@@ -65,11 +66,11 @@ public final class UnicastDatabaseProxyBackendHandler implements DatabaseProxyBa
     }
     
     private String getFirstDatabaseName() {
-        Collection<String> databaseNames = ProxyContext.getInstance().getAllDatabaseNames();
+        Collection<String> databaseNames = contextManager.getAllDatabaseNames();
         ShardingSpherePreconditions.checkNotEmpty(databaseNames, NoDatabaseSelectedException::new);
         AuthorityRule authorityRule = queryContext.getMetaData().getGlobalRuleMetaData().getSingleRule(AuthorityRule.class);
         Optional<ShardingSpherePrivileges> privileges = authorityRule.findPrivileges(connectionSession.getConnectionContext().getGrantee());
-        Stream<String> storageUnitContainedDatabaseNames = databaseNames.stream().filter(each -> ProxyContext.getInstance().getContextManager().getDatabase(each).containsDataSource());
+        Stream<String> storageUnitContainedDatabaseNames = databaseNames.stream().filter(each -> contextManager.getDatabase(each).containsDataSource());
         Optional<String> result = privileges.map(optional -> storageUnitContainedDatabaseNames.filter(optional::hasPrivileges).findFirst()).orElseGet(storageUnitContainedDatabaseNames::findFirst);
         ShardingSpherePreconditions.checkState(result.isPresent(), EmptyStorageUnitException::new);
         return result.get();

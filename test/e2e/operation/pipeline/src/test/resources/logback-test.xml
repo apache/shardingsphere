@@ -18,6 +18,7 @@
 
 <configuration>
     <appender name="console" class="ch.qos.logback.core.ConsoleAppender">
+        <filter class="org.apache.shardingsphere.test.e2e.operation.pipeline.logger.PipelineLoggerFilter" />
         <encoder>
             <pattern>[%-5level] %d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %logger{36} - %msg%n</pattern>
         </encoder>

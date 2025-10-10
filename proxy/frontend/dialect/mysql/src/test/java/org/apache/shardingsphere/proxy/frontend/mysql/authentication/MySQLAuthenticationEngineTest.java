@@ -197,7 +197,6 @@ class MySQLAuthenticationEngineTest {
         ChannelHandlerContext context = mockChannelHandlerContext();
         ContextManager contextManager = mockContextManager(rule);
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
-        when(ProxyContext.getInstance().databaseExists("foo_db")).thenReturn(true);
         try (MockedConstruction<MySQLErrPacket> ignored = mockConstruction(MySQLErrPacket.class, (mock, mockContext) -> assertAuthenticationErrorPacket(mockContext.arguments()))) {
             assertThrows(AccessDeniedException.class, () -> authenticationEngine.authenticate(context, getPayload("root", "foo_db", authResponse)));
         }
@@ -214,7 +213,6 @@ class MySQLAuthenticationEngineTest {
         ChannelHandlerContext context = mockChannelHandlerContext();
         ContextManager contextManager = mockContextManager(rule);
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
-        when(ProxyContext.getInstance().databaseExists("foo_db")).thenReturn(true);
         try (
                 MockedConstruction<AuthenticatorFactory> mockedAuthenticatorFactory = mockConstruction(AuthenticatorFactory.class,
                         (mock, mockContext) -> when(mock.newInstance(user)).thenReturn(mock(Authenticator.class)));
@@ -238,7 +236,6 @@ class MySQLAuthenticationEngineTest {
         ChannelHandlerContext context = mockChannelHandlerContext();
         ContextManager contextManager = mockContextManager(rule);
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
-        when(ProxyContext.getInstance().databaseExists("foo_db")).thenReturn(true);
         try (MockedConstruction<MySQLErrPacket> ignored = mockConstruction(MySQLErrPacket.class, (mock, mockContext) -> assertDatabaseAccessDeniedErrorPacket(mockContext.arguments()))) {
             assertThrows(DatabaseAccessDeniedException.class, () -> authenticationEngine.authenticate(context, getPayload("root", "foo_db", authResponse)));
         }

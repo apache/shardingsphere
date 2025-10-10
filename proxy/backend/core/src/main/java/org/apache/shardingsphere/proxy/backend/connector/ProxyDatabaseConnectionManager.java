@@ -119,7 +119,7 @@ public final class ProxyDatabaseConnectionManager implements DatabaseConnectionM
     @SuppressWarnings({"unchecked", "rawtypes"})
     private void executeTransactionHooksAfterCreateConnections(final List<Connection> connections) throws SQLException {
         if (connectionSession.getTransactionStatus().isInTransaction()) {
-            DatabaseType databaseType = ProxyContext.getInstance().getDatabaseType();
+            DatabaseType databaseType = ProxyContext.getInstance().getContextManager().getDatabaseType();
             for (Entry<ShardingSphereRule, TransactionHook> entry : transactionHooks.entrySet()) {
                 entry.getValue().afterCreateConnections(entry.getKey(), databaseType, connections, connectionSession.getConnectionContext().getTransactionContext());
             }

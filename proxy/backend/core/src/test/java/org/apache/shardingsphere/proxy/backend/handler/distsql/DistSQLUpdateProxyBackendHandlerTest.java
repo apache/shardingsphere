@@ -29,17 +29,14 @@ import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUn
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.mode.manager.ContextManager;
-import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
-import org.apache.shardingsphere.test.infra.framework.mock.AutoMockExtension;
-import org.apache.shardingsphere.test.infra.framework.mock.StaticMockSettings;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Answers;
 import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.sql.SQLException;
 import java.util.Collections;
@@ -51,8 +48,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-@ExtendWith(AutoMockExtension.class)
-@StaticMockSettings(ProxyContext.class)
+@ExtendWith(MockitoExtension.class)
 class DistSQLUpdateProxyBackendHandlerTest {
     
     private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "FIXTURE");
@@ -60,15 +56,10 @@ class DistSQLUpdateProxyBackendHandlerTest {
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private ContextManager contextManager;
     
-    @BeforeEach
-    void setUp() {
-        when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
-    }
-    
     @Test
     void assertEmptyStorageUnit() {
         when(contextManager.getDatabase("foo_db")).thenReturn(new ShardingSphereDatabase("foo_db", databaseType, mock(), mock(), Collections.emptyList()));
-        DistSQLUpdateProxyBackendHandler backendHandler = new DistSQLUpdateProxyBackendHandler(new RefreshTableMetaDataStatement(), mockConnectionSession("foo_db"));
+        DistSQLUpdateProxyBackendHandler backendHandler = new DistSQLUpdateProxyBackendHandler(new RefreshTableMetaDataStatement(), mockConnectionSession("foo_db"), contextManager);
         assertThrows(EmptyStorageUnitException.class, backendHandler::execute);
     }
     
@@ -77,7 +68,8 @@ class DistSQLUpdateProxyBackendHandlerTest {
         ResourceMetaData resourceMetaData = mock(ResourceMetaData.class);
         when(resourceMetaData.getStorageUnits()).thenReturn(Collections.singletonMap("ds_0", mock(StorageUnit.class)));
         when(contextManager.getDatabase("foo_db")).thenReturn(new ShardingSphereDatabase("foo_db", databaseType, resourceMetaData, mock(), Collections.emptyList()));
-        DistSQLUpdateProxyBackendHandler backendHandler = new DistSQLUpdateProxyBackendHandler(new RefreshTableMetaDataStatement("t_order", "ds_1", null), mockConnectionSession("foo_db"));
+        DistSQLUpdateProxyBackendHandler backendHandler = new DistSQLUpdateProxyBackendHandler(
+                new RefreshTableMetaDataStatement("t_order", "ds_1", null), mockConnectionSession("foo_db"), contextManager);
         assertThrows(MissingRequiredStorageUnitsException.class, backendHandler::execute);
     }
     
@@ -86,7 +78,8 @@ class DistSQLUpdateProxyBackendHandlerTest {
         ResourceMetaData resourceMetaData = mock(ResourceMetaData.class);
         when(resourceMetaData.getStorageUnits()).thenReturn(Collections.singletonMap("ds_0", mock(StorageUnit.class)));
         when(contextManager.getDatabase("foo_db")).thenReturn(new ShardingSphereDatabase("foo_db", databaseType, resourceMetaData, mock(), Collections.emptyList()));
-        DistSQLUpdateProxyBackendHandler backendHandler = new DistSQLUpdateProxyBackendHandler(new RefreshTableMetaDataStatement("t_order", "ds_0", "bar_db"), mockConnectionSession("foo_db"));
+        DistSQLUpdateProxyBackendHandler backendHandler = new DistSQLUpdateProxyBackendHandler(
+                new RefreshTableMetaDataStatement("t_order", "ds_0", "bar_db"), mockConnectionSession("foo_db"), contextManager);
         assertThrows(SchemaNotFoundException.class, backendHandler::execute);
     }
     
@@ -100,7 +93,8 @@ class DistSQLUpdateProxyBackendHandlerTest {
         when(database.getSchema("foo_db")).thenReturn(schema);
         when(database.getResourceMetaData()).thenReturn(resourceMetaData);
         when(contextManager.getDatabase("foo_db")).thenReturn(database);
-        DistSQLUpdateProxyBackendHandler backendHandler = new DistSQLUpdateProxyBackendHandler(new RefreshTableMetaDataStatement("t_order", "ds_0", "foo_db"), mockConnectionSession("foo_db"));
+        DistSQLUpdateProxyBackendHandler backendHandler = new DistSQLUpdateProxyBackendHandler(
+                new RefreshTableMetaDataStatement("t_order", "ds_0", "foo_db"), mockConnectionSession("foo_db"), contextManager);
         assertThrows(TableNotFoundException.class, backendHandler::execute);
     }
     
@@ -113,7 +107,7 @@ class DistSQLUpdateProxyBackendHandlerTest {
         when(database.getProtocolType()).thenReturn(databaseType);
         when(database.getResourceMetaData()).thenReturn(resourceMetaData);
         when(contextManager.getDatabase("foo_db")).thenReturn(database);
-        ResponseHeader actual = new DistSQLUpdateProxyBackendHandler(new RefreshTableMetaDataStatement(), mockConnectionSession("foo_db")).execute();
+        ResponseHeader actual = new DistSQLUpdateProxyBackendHandler(new RefreshTableMetaDataStatement(), mockConnectionSession("foo_db"), contextManager).execute();
         assertThat(actual, isA(UpdateResponseHeader.class));
     }
     

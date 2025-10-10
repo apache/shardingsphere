@@ -31,43 +31,43 @@ import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 
-class RecordSingleTableInventoryCalculatedResultTest {
+class RecordTableInventoryCheckCalculatedResultTest {
     
     @Test
     void assertNotEqualsWithNull() {
-        assertFalse(new RecordSingleTableInventoryCalculatedResult(0, Collections.emptyList()).equals(null));
+        assertFalse(new RecordTableInventoryCheckCalculatedResult(0, Collections.emptyList()).equals(null));
     }
     
     @Test
     void assertEqualsWithSameObject() {
-        RecordSingleTableInventoryCalculatedResult calculatedResult = new RecordSingleTableInventoryCalculatedResult(0, Collections.emptyList());
+        RecordTableInventoryCheckCalculatedResult calculatedResult = new RecordTableInventoryCheckCalculatedResult(0, Collections.emptyList());
         assertThat(calculatedResult, is(calculatedResult));
     }
     
     @Test
     void assertNotEqualsWithDifferentClassType() {
-        RecordSingleTableInventoryCalculatedResult actual = new RecordSingleTableInventoryCalculatedResult(0, Collections.emptyList());
+        RecordTableInventoryCheckCalculatedResult actual = new RecordTableInventoryCheckCalculatedResult(0, Collections.emptyList());
         Object expected = new Object();
         assertThat(actual, not(expected));
     }
     
     @Test
     void assertEqualsWithEmptyRecords() {
-        RecordSingleTableInventoryCalculatedResult actual = new RecordSingleTableInventoryCalculatedResult(0, Collections.emptyList());
-        RecordSingleTableInventoryCalculatedResult expected = new RecordSingleTableInventoryCalculatedResult(0, Collections.emptyList());
+        RecordTableInventoryCheckCalculatedResult actual = new RecordTableInventoryCheckCalculatedResult(0, Collections.emptyList());
+        RecordTableInventoryCheckCalculatedResult expected = new RecordTableInventoryCheckCalculatedResult(0, Collections.emptyList());
         assertThat(actual, is(expected));
     }
     
     @Test
     void assertEqualsWithFullTypeRecords() {
-        RecordSingleTableInventoryCalculatedResult actual = new RecordSingleTableInventoryCalculatedResult(1000, Arrays.asList(buildFixedFullTypeRecord(), buildFixedFullTypeRecord()));
-        RecordSingleTableInventoryCalculatedResult expected = new RecordSingleTableInventoryCalculatedResult(1000, Arrays.asList(buildFixedFullTypeRecord(), buildFixedFullTypeRecord()));
+        RecordTableInventoryCheckCalculatedResult actual = new RecordTableInventoryCheckCalculatedResult(1000, Arrays.asList(buildFixedFullTypeRecord(), buildFixedFullTypeRecord()));
+        RecordTableInventoryCheckCalculatedResult expected = new RecordTableInventoryCheckCalculatedResult(1000, Arrays.asList(buildFixedFullTypeRecord(), buildFixedFullTypeRecord()));
         assertThat(actual, is(expected));
     }
     
     @Test
     void assertFullTypeRecordsEqualsWithDifferentDecimalScale() {
-        RecordSingleTableInventoryCalculatedResult expected = new RecordSingleTableInventoryCalculatedResult(1000, Collections.singletonList(buildFixedFullTypeRecord()));
+        RecordTableInventoryCheckCalculatedResult expected = new RecordTableInventoryCheckCalculatedResult(1000, Collections.singletonList(buildFixedFullTypeRecord()));
         Map<String, Object> recordMap = buildFixedFullTypeRecord();
         recordMap.forEach((key, value) -> {
             if (value instanceof BigDecimal) {
@@ -75,28 +75,28 @@ class RecordSingleTableInventoryCalculatedResultTest {
                 recordMap.put(key, decimal.setScale(decimal.scale() + 1, RoundingMode.CEILING));
             }
         });
-        RecordSingleTableInventoryCalculatedResult actual = new RecordSingleTableInventoryCalculatedResult(1000, Collections.singletonList(recordMap));
+        RecordTableInventoryCheckCalculatedResult actual = new RecordTableInventoryCheckCalculatedResult(1000, Collections.singletonList(recordMap));
         assertThat(actual, is(expected));
     }
     
     @Test
     void assertNotEqualsWithDifferentRecordsCount() {
-        assertThat(new RecordSingleTableInventoryCalculatedResult(1000, Collections.singletonList(buildFixedFullTypeRecord())),
-                not(new RecordSingleTableInventoryCalculatedResult(1000, Collections.emptyList())));
+        assertThat(new RecordTableInventoryCheckCalculatedResult(1000, Collections.singletonList(buildFixedFullTypeRecord())),
+                not(new RecordTableInventoryCheckCalculatedResult(1000, Collections.emptyList())));
     }
     
     @Test
     void assertNotEqualsWithDifferentMaxUniqueKeyValue() {
-        assertThat(new RecordSingleTableInventoryCalculatedResult(1000, Collections.singletonList(buildFixedFullTypeRecord())),
-                not(new RecordSingleTableInventoryCalculatedResult(1001, Collections.singletonList(buildFixedFullTypeRecord()))));
+        assertThat(new RecordTableInventoryCheckCalculatedResult(1000, Collections.singletonList(buildFixedFullTypeRecord())),
+                not(new RecordTableInventoryCheckCalculatedResult(1001, Collections.singletonList(buildFixedFullTypeRecord()))));
     }
     
     @Test
     void assertNotEqualsWithDifferentRandomColumnValue() {
         Map<String, Object> record = buildFixedFullTypeRecord();
-        RecordSingleTableInventoryCalculatedResult result1 = new RecordSingleTableInventoryCalculatedResult(1000, Collections.singletonList(record));
+        RecordTableInventoryCheckCalculatedResult result1 = new RecordTableInventoryCheckCalculatedResult(1000, Collections.singletonList(record));
         record.forEach((key, value) -> {
-            RecordSingleTableInventoryCalculatedResult result2 = new RecordSingleTableInventoryCalculatedResult(1000,
+            RecordTableInventoryCheckCalculatedResult result2 = new RecordTableInventoryCheckCalculatedResult(1000,
                     Collections.singletonList(modifyColumnValueRandomly(buildFixedFullTypeRecord(), key)));
             assertThat(result1, not(result2));
         });
@@ -112,7 +112,7 @@ class RecordSingleTableInventoryCalculatedResultTest {
     
     @Test
     void assertHashcode() {
-        assertThat(new RecordSingleTableInventoryCalculatedResult(1000, Collections.emptyList()).hashCode(),
-                is(new RecordSingleTableInventoryCalculatedResult(1000, Collections.emptyList()).hashCode()));
+        assertThat(new RecordTableInventoryCheckCalculatedResult(1000, Collections.emptyList()).hashCode(),
+                is(new RecordTableInventoryCheckCalculatedResult(1000, Collections.emptyList()).hashCode()));
     }
 }

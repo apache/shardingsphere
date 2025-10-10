@@ -71,14 +71,15 @@ class DatabaseOperateProxyBackendHandlerFactoryTest {
     @BeforeEach
     void setUp() {
         when(connectionSession.getConnectionContext().getGrantee()).thenReturn(null);
-        when(ProxyContext.getInstance().databaseExists("foo_db")).thenReturn(true);
+        when(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().containsDatabase("foo_db")).thenReturn(true);
+        when(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData()).thenReturn(metaData);
     }
     
     @Test
     void assertExecuteCreateDatabaseContext() throws SQLException {
         CreateDatabaseStatement sqlStatement = mock(CreateDatabaseStatement.class);
         when(sqlStatement.getDatabaseName()).thenReturn("new_db");
-        ResponseHeader response = DatabaseOperateProxyBackendHandlerFactory.newInstance(sqlStatement, metaData, connectionSession).execute();
+        ResponseHeader response = DatabaseOperateProxyBackendHandlerFactory.newInstance(sqlStatement, connectionSession).execute();
         assertThat(response, isA(UpdateResponseHeader.class));
     }
     
@@ -86,7 +87,7 @@ class DatabaseOperateProxyBackendHandlerFactoryTest {
     void assertExecuteDropDatabaseContext() throws SQLException {
         DropDatabaseStatement sqlStatement = mock(DropDatabaseStatement.class);
         when(sqlStatement.getDatabaseName()).thenReturn("foo_db");
-        ResponseHeader response = DatabaseOperateProxyBackendHandlerFactory.newInstance(sqlStatement, metaData, connectionSession).execute();
+        ResponseHeader response = DatabaseOperateProxyBackendHandlerFactory.newInstance(sqlStatement, connectionSession).execute();
         assertThat(response, isA(UpdateResponseHeader.class));
     }
     
@@ -95,7 +96,7 @@ class DatabaseOperateProxyBackendHandlerFactoryTest {
         CreateDatabaseStatement sqlStatement = mock(CreateDatabaseStatement.class);
         when(sqlStatement.getDatabaseName()).thenReturn("foo_db");
         try {
-            DatabaseOperateProxyBackendHandlerFactory.newInstance(sqlStatement, metaData, connectionSession);
+            DatabaseOperateProxyBackendHandlerFactory.newInstance(sqlStatement, connectionSession);
         } catch (final DatabaseCreateExistsException ex) {
             assertNull(ex.getMessage());
         }
@@ -110,16 +111,16 @@ class DatabaseOperateProxyBackendHandlerFactoryTest {
     
     @Test
     void assertDatabaseOperateProxyBackendHandlerFactoryReturnCreateDatabaseProxyBackendHandler() {
-        assertThat(DatabaseOperateProxyBackendHandlerFactory.newInstance(mock(CreateDatabaseStatement.class), metaData, mock(ConnectionSession.class)), isA(CreateDatabaseProxyBackendHandler.class));
+        assertThat(DatabaseOperateProxyBackendHandlerFactory.newInstance(mock(CreateDatabaseStatement.class), mock(ConnectionSession.class)), isA(CreateDatabaseProxyBackendHandler.class));
     }
     
     @Test
     void assertDatabaseOperateProxyBackendHandlerFactoryReturnDropDatabaseProxyBackendHandler() {
-        assertThat(DatabaseOperateProxyBackendHandlerFactory.newInstance(mock(DropDatabaseStatement.class), metaData, mock(ConnectionSession.class)), isA(DropDatabaseProxyBackendHandler.class));
+        assertThat(DatabaseOperateProxyBackendHandlerFactory.newInstance(mock(DropDatabaseStatement.class), mock(ConnectionSession.class)), isA(DropDatabaseProxyBackendHandler.class));
     }
     
     @Test
     void assertDatabaseOperateProxyBackendHandlerFactoryThrowUnsupportedOperationException() {
-        assertThrows(UnsupportedSQLOperationException.class, () -> DatabaseOperateProxyBackendHandlerFactory.newInstance(mock(AlterDatabaseStatement.class), metaData, mock(ConnectionSession.class)));
+        assertThrows(UnsupportedSQLOperationException.class, () -> DatabaseOperateProxyBackendHandlerFactory.newInstance(mock(AlterDatabaseStatement.class), mock(ConnectionSession.class)));
     }
 }

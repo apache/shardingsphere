@@ -20,9 +20,9 @@ package org.apache.shardingsphere.data.pipeline.core.consistencycheck.result;
 import java.util.Optional;
 
 /**
- * Single table inventory calculated result.
+ * Table inventory check calculated result.
  */
-public interface SingleTableInventoryCalculatedResult {
+public interface TableInventoryCheckCalculatedResult {
     
     /**
      * Get max unique key value.

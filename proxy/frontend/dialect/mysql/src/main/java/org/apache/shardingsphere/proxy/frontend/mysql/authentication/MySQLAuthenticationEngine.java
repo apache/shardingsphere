@@ -123,7 +123,7 @@ public final class MySQLAuthenticationEngine implements AuthenticationEngine {
         setMultiStatementsOption(context, handshakeResponsePacket);
         setCharacterSet(context, handshakeResponsePacket);
         String database = handshakeResponsePacket.getDatabase();
-        if (!Strings.isNullOrEmpty(database) && !ProxyContext.getInstance().databaseExists(database)) {
+        if (!Strings.isNullOrEmpty(database) && !ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().containsDatabase(database)) {
             throw new UnknownDatabaseException(database);
         }
         String username = handshakeResponsePacket.getUsername();

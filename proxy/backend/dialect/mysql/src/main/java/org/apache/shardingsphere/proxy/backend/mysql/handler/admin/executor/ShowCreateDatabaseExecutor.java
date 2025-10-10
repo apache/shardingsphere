@@ -20,6 +20,7 @@ package org.apache.shardingsphere.proxy.backend.mysql.handler.admin.executor;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.database.exception.core.exception.syntax.database.UnknownDatabaseException;
+import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResultMetaData;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.raw.metadata.RawQueryResultColumnMetaData;
@@ -35,7 +36,7 @@ import org.apache.shardingsphere.sql.parser.statement.mysql.dal.show.database.My
 
 import java.sql.Types;
 import java.util.Arrays;
-import java.util.LinkedList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -64,11 +65,9 @@ public final class ShowCreateDatabaseExecutor implements DatabaseAdminQueryExecu
     }
     
     private QueryResult getQueryResult(final String databaseName) {
-        if (!ProxyContext.getInstance().databaseExists(databaseName)) {
-            throw new UnknownDatabaseException(databaseName);
-        }
-        List<MemoryQueryResultDataRow> rows = new LinkedList<>();
-        rows.add(new MemoryQueryResultDataRow(Arrays.asList(databaseName, String.format(CREATE_DATABASE_PATTERN, databaseName))));
+        ShardingSpherePreconditions.checkState(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().containsDatabase(databaseName),
+                () -> new UnknownDatabaseException(databaseName));
+        List<MemoryQueryResultDataRow> rows = Collections.singletonList(new MemoryQueryResultDataRow(Arrays.asList(databaseName, String.format(CREATE_DATABASE_PATTERN, databaseName))));
         return new RawMemoryQueryResult(queryResultMetaData, rows);
     }
     

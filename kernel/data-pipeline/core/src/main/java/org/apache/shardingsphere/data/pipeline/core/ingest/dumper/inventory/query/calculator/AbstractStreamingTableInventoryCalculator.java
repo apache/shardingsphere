@@ -27,15 +27,15 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
 /**
- * Abstract streaming single table inventory calculator.
+ * Abstract streaming table inventory calculator.
  *
  * @param <S> the type of result
  */
 @Getter
-public abstract class AbstractStreamingSingleTableInventoryCalculator<S> extends AbstractSingleTableInventoryCalculator<S> {
+public abstract class AbstractStreamingTableInventoryCalculator<S> extends AbstractTableInventoryCalculator<S> {
     
     @Override
-    public final Iterable<S> calculate(final SingleTableInventoryCalculateParameter param) {
+    public final Iterable<S> calculate(final TableInventoryCalculateParameter param) {
         return new ResultIterable(param);
     }
     
@@ -45,7 +45,7 @@ public abstract class AbstractStreamingSingleTableInventoryCalculator<S> extends
      * @param param data consistency calculate parameter
      * @return optional calculated result, empty means there's no more result
      */
-    protected abstract Optional<S> calculateChunk(SingleTableInventoryCalculateParameter param);
+    protected abstract Optional<S> calculateChunk(TableInventoryCalculateParameter param);
     
     /**
      * It's not thread-safe, it should be executed in only one thread at the same time.
@@ -53,7 +53,7 @@ public abstract class AbstractStreamingSingleTableInventoryCalculator<S> extends
     @RequiredArgsConstructor
     private final class ResultIterable implements Iterable<S> {
         
-        private final SingleTableInventoryCalculateParameter param;
+        private final TableInventoryCalculateParameter param;
         
         @Override
         public Iterator<S> iterator() {
@@ -68,7 +68,7 @@ public abstract class AbstractStreamingSingleTableInventoryCalculator<S> extends
         
         private final AtomicReference<Optional<S>> nextResult = new AtomicReference<>();
         
-        private final SingleTableInventoryCalculateParameter param;
+        private final TableInventoryCalculateParameter param;
         
         @Override
         public boolean hasNext() {

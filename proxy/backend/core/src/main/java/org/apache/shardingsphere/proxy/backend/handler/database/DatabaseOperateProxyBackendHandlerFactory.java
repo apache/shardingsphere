@@ -20,7 +20,8 @@ package org.apache.shardingsphere.proxy.backend.handler.database;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.exception.generic.UnsupportedSQLOperationException;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.mode.manager.ContextManager;
+import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.handler.ProxyBackendHandler;
 import org.apache.shardingsphere.proxy.backend.handler.database.type.CreateDatabaseProxyBackendHandler;
 import org.apache.shardingsphere.proxy.backend.handler.database.type.DropDatabaseProxyBackendHandler;
@@ -39,20 +40,20 @@ public final class DatabaseOperateProxyBackendHandlerFactory {
      * Create new instance of database operate backend handler.
      *
      * @param sqlStatement SQL statement
-     * @param metaData meta data
      * @param connectionSession connection session
      * @return created instance
      */
-    public static ProxyBackendHandler newInstance(final SQLStatement sqlStatement, final ShardingSphereMetaData metaData, final ConnectionSession connectionSession) {
-        return createProxyBackendHandler(sqlStatement, metaData, connectionSession);
+    public static ProxyBackendHandler newInstance(final SQLStatement sqlStatement, final ConnectionSession connectionSession) {
+        return createProxyBackendHandler(sqlStatement, connectionSession);
     }
     
-    private static ProxyBackendHandler createProxyBackendHandler(final SQLStatement sqlStatement, final ShardingSphereMetaData metaData, final ConnectionSession connectionSession) {
+    private static ProxyBackendHandler createProxyBackendHandler(final SQLStatement sqlStatement, final ConnectionSession connectionSession) {
+        ContextManager contextManager = ProxyContext.getInstance().getContextManager();
         if (sqlStatement instanceof CreateDatabaseStatement) {
-            return new CreateDatabaseProxyBackendHandler((CreateDatabaseStatement) sqlStatement, metaData);
+            return new CreateDatabaseProxyBackendHandler((CreateDatabaseStatement) sqlStatement, contextManager);
         }
         if (sqlStatement instanceof DropDatabaseStatement) {
-            return new DropDatabaseProxyBackendHandler((DropDatabaseStatement) sqlStatement, metaData, connectionSession);
+            return new DropDatabaseProxyBackendHandler((DropDatabaseStatement) sqlStatement, contextManager, connectionSession);
         }
         throw new UnsupportedSQLOperationException(sqlStatement.getClass().getName());
     }

@@ -24,18 +24,17 @@ import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
-import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
+import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.database.DropDatabaseStatement;
-import org.apache.shardingsphere.test.infra.framework.mock.AutoMockExtension;
-import org.apache.shardingsphere.test.infra.framework.mock.StaticMockSettings;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Answers;
 import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 
@@ -53,8 +52,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-@ExtendWith(AutoMockExtension.class)
-@StaticMockSettings(ProxyContext.class)
+@ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
 class DropDatabaseProxyBackendHandlerTest {
     
@@ -69,7 +67,10 @@ class DropDatabaseProxyBackendHandlerTest {
     @BeforeEach
     void setUp() {
         when(connectionSession.getConnectionContext().getGrantee()).thenReturn(null);
-        handler = new DropDatabaseProxyBackendHandler(sqlStatement, mockMetaData(), connectionSession);
+        ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
+        ShardingSphereMetaData metaData = mockMetaData();
+        when(contextManager.getMetaDataContexts().getMetaData()).thenReturn(metaData);
+        handler = new DropDatabaseProxyBackendHandler(sqlStatement, contextManager, connectionSession);
     }
     
     private ShardingSphereMetaData mockMetaData() {
