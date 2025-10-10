@@ -32,7 +32,6 @@ import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
-import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.handler.admin.executor.AbstractDatabaseMetaDataExecutor.DefaultDatabaseMetaDataExecutor;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.test.infra.fixture.jdbc.MockedDataSource;
@@ -63,7 +62,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(AutoMockExtension.class)
-@StaticMockSettings({ProxyContext.class, SystemSchemaUtils.class})
+@StaticMockSettings(SystemSchemaUtils.class)
 class DefaultDatabaseMetaDataExecutorTest {
     
     private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "FIXTURE");
@@ -85,9 +84,7 @@ class DefaultDatabaseMetaDataExecutorTest {
         expectedResultSetMap.put("DEFAULT_CHARACTER_SET_NAME", "utf8mb4");
         String sql = "SELECT SCHEMA_NAME AS sn, DEFAULT_CHARACTER_SET_NAME FROM information_schema.SCHEMATA";
         ShardingSphereDatabase database = createDatabase(expectedResultSetMap);
-        ContextManager contextManager = mockContextManager(database);
-        when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
-        DefaultDatabaseMetaDataExecutor executor = new DefaultDatabaseMetaDataExecutor(sql, Collections.emptyList());
+        DefaultDatabaseMetaDataExecutor executor = new DefaultDatabaseMetaDataExecutor(mockContextManager(database), sql, Collections.emptyList());
         executor.execute(connectionSession);
         assertThat(executor.getRows().get(0).get("sn"), is("foo_ds"));
         assertThat(executor.getRows().get(0).get("DEFAULT_CHARACTER_SET_NAME"), is("utf8mb4"));
@@ -97,9 +94,7 @@ class DefaultDatabaseMetaDataExecutorTest {
     void assertExecuteWithDefaultValue() throws SQLException {
         String sql = "SELECT COUNT(*) AS support_ndb FROM information_schema.ENGINES WHERE Engine = 'ndbcluster'";
         ShardingSphereDatabase database = createDatabase(Collections.singletonMap("support_ndb", "0"));
-        ContextManager contextManager = mockContextManager(database);
-        when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
-        DefaultDatabaseMetaDataExecutor executor = new DefaultDatabaseMetaDataExecutor(sql, Collections.emptyList());
+        DefaultDatabaseMetaDataExecutor executor = new DefaultDatabaseMetaDataExecutor(mockContextManager(database), sql, Collections.emptyList());
         executor.execute(connectionSession);
         assertThat(executor.getQueryResultMetaData().getColumnCount(), is(1));
         while (executor.getMergedResult().next()) {
@@ -111,9 +106,7 @@ class DefaultDatabaseMetaDataExecutorTest {
     void assertExecuteWithPreparedStatement() throws SQLException {
         String sql = "SELECT COUNT(*) AS support_ndb FROM information_schema.ENGINES WHERE Engine = ?";
         ShardingSphereDatabase database = createDatabase(Collections.singletonMap("support_ndb", "0"));
-        ContextManager contextManager = mockContextManager(database);
-        when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
-        DefaultDatabaseMetaDataExecutor executor = new DefaultDatabaseMetaDataExecutor(sql, Collections.singletonList("ndbcluster"));
+        DefaultDatabaseMetaDataExecutor executor = new DefaultDatabaseMetaDataExecutor(mockContextManager(database), sql, Collections.singletonList("ndbcluster"));
         executor.execute(connectionSession);
         assertThat(executor.getQueryResultMetaData().getColumnCount(), is(1));
         while (executor.getMergedResult().next()) {
