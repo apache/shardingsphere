@@ -20,11 +20,11 @@ package org.apache.shardingsphere.data.pipeline.core.ingest.dumper.inventory.que
 import org.apache.shardingsphere.data.pipeline.core.consistencycheck.PipelineCancellable;
 
 /**
- * Single table inventory calculator.
+ * Table inventory calculator.
  *
  * @param <S> the type of result
  */
-public interface SingleTableInventoryCalculator<S> extends PipelineCancellable {
+public interface TableInventoryCalculator<S> extends PipelineCancellable {
     
     /**
      * Calculate for single table inventory data.
@@ -32,5 +32,5 @@ public interface SingleTableInventoryCalculator<S> extends PipelineCancellable {
      * @param param calculate parameter
      * @return calculated result
      */
-    Iterable<S> calculate(SingleTableInventoryCalculateParameter param);
+    Iterable<S> calculate(TableInventoryCalculateParameter param);
 }

@@ -18,13 +18,13 @@
 package org.apache.shardingsphere.data.pipeline.core.consistencycheck.table;
 
 import com.google.common.base.Strings;
-import org.apache.shardingsphere.data.pipeline.core.consistencycheck.result.SingleTableInventoryCalculatedResult;
 import org.apache.shardingsphere.data.pipeline.core.consistencycheck.result.TableDataConsistencyCheckIgnoredType;
 import org.apache.shardingsphere.data.pipeline.core.consistencycheck.result.TableDataConsistencyCheckResult;
-import org.apache.shardingsphere.data.pipeline.core.consistencycheck.table.calculator.RecordSingleTableInventoryCheckCalculator;
+import org.apache.shardingsphere.data.pipeline.core.consistencycheck.result.TableInventoryCheckCalculatedResult;
+import org.apache.shardingsphere.data.pipeline.core.consistencycheck.table.calculator.RecordTableInventoryCheckCalculator;
 import org.apache.shardingsphere.data.pipeline.core.exception.param.PipelineInvalidParameterException;
 import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.inventory.query.StreamingRangeType;
-import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.inventory.query.calculator.SingleTableInventoryCalculator;
+import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.inventory.query.calculator.TableInventoryCalculator;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.spi.annotation.SPIDescription;
@@ -128,8 +128,8 @@ public final class DataMatchTableDataConsistencyChecker implements TableDataCons
         }
         
         @Override
-        protected SingleTableInventoryCalculator<SingleTableInventoryCalculatedResult> buildSingleTableInventoryCalculator() {
-            return new RecordSingleTableInventoryCheckCalculator(chunkSize, streamingRangeType);
+        protected TableInventoryCalculator<TableInventoryCheckCalculatedResult> buildSingleTableInventoryCalculator() {
+            return new RecordTableInventoryCheckCalculator(chunkSize, streamingRangeType);
         }
     }
 }

@@ -29,11 +29,11 @@ import java.util.Map;
 import java.util.Optional;
 
 /**
- * Record single table inventory calculated result.
+ * Record table inventory calculated result.
  */
 @Getter
 @Slf4j
-public final class RecordSingleTableInventoryCalculatedResult implements SingleTableInventoryCalculatedResult {
+public final class RecordTableInventoryCheckCalculatedResult implements TableInventoryCheckCalculatedResult {
     
     private final Object maxUniqueKeyValue;
     
@@ -41,7 +41,7 @@ public final class RecordSingleTableInventoryCalculatedResult implements SingleT
     
     private final List<Map<String, Object>> records;
     
-    public RecordSingleTableInventoryCalculatedResult(final Object maxUniqueKeyValue, final List<Map<String, Object>> records) {
+    public RecordTableInventoryCheckCalculatedResult(final Object maxUniqueKeyValue, final List<Map<String, Object>> records) {
         this.maxUniqueKeyValue = maxUniqueKeyValue;
         recordsCount = records.size();
         this.records = records;
@@ -60,11 +60,11 @@ public final class RecordSingleTableInventoryCalculatedResult implements SingleT
         if (this == o) {
             return true;
         }
-        if (!(o instanceof RecordSingleTableInventoryCalculatedResult)) {
+        if (!(o instanceof RecordTableInventoryCheckCalculatedResult)) {
             log.warn("RecordSingleTableInventoryCalculatedResult type not match, o.className={}.", o.getClass().getName());
             return false;
         }
-        final RecordSingleTableInventoryCalculatedResult that = (RecordSingleTableInventoryCalculatedResult) o;
+        final RecordTableInventoryCheckCalculatedResult that = (RecordTableInventoryCheckCalculatedResult) o;
         EqualsBuilder equalsBuilder = new EqualsBuilder();
         if (recordsCount != that.recordsCount || !DataConsistencyCheckUtils.isMatched(equalsBuilder, maxUniqueKeyValue, that.maxUniqueKeyValue)) {
             log.warn("Record count or max unique key value not match, recordCount1={}, recordCount2={}, maxUniqueKeyValue1={}, maxUniqueKeyValue2={}, value1.class={}, value2.class={}.",

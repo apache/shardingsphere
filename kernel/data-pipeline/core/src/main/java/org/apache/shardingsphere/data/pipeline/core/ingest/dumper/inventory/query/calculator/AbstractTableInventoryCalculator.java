@@ -27,12 +27,12 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
 /**
- * Abstract single table inventory calculator.
+ * Abstract table inventory calculator.
  *
  * @param <S> the type of result
  */
 @Slf4j
-public abstract class AbstractSingleTableInventoryCalculator<S> implements SingleTableInventoryCalculator<S> {
+public abstract class AbstractTableInventoryCalculator<S> implements TableInventoryCalculator<S> {
     
     private final AtomicBoolean canceling = new AtomicBoolean(false);
     
