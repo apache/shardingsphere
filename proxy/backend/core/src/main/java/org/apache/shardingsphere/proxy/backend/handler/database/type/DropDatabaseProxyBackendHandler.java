@@ -29,7 +29,7 @@ import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
-import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
+import org.apache.shardingsphere.mode.persist.service.MetaDataManagerPersistService;
 import org.apache.shardingsphere.proxy.backend.handler.ProxyBackendHandler;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
@@ -48,6 +48,8 @@ public final class DropDatabaseProxyBackendHandler implements ProxyBackendHandle
     
     private final ShardingSphereMetaData metaData;
     
+    private final MetaDataManagerPersistService metaDataManagerPersistService;
+    
     private final ConnectionSession connectionSession;
     
     @Override
@@ -59,7 +61,7 @@ public final class DropDatabaseProxyBackendHandler implements ProxyBackendHandle
         }
         if (metaData.containsDatabase(sqlStatement.getDatabaseName())) {
             ShardingSphereDatabase database = metaData.getDatabase(sqlStatement.getDatabaseName());
-            ProxyContext.getInstance().getContextManager().getPersistServiceFacade().getModeFacade().getMetaDataManagerService().dropDatabase(database);
+            metaDataManagerPersistService.dropDatabase(database);
         }
         return new UpdateResponseHeader(sqlStatement);
     }
