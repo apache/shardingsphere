@@ -29,7 +29,7 @@ import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
-import org.apache.shardingsphere.mode.persist.service.MetaDataManagerPersistService;
+import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.proxy.backend.handler.ProxyBackendHandler;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
@@ -46,14 +46,13 @@ public final class DropDatabaseProxyBackendHandler implements ProxyBackendHandle
     
     private final DropDatabaseStatement sqlStatement;
     
-    private final ShardingSphereMetaData metaData;
-    
-    private final MetaDataManagerPersistService metaDataManagerPersistService;
+    private final ContextManager contextManager;
     
     private final ConnectionSession connectionSession;
     
     @Override
     public ResponseHeader execute() throws SQLException {
+        ShardingSphereMetaData metaData = contextManager.getMetaDataContexts().getMetaData();
         check(sqlStatement, metaData, connectionSession.getConnectionContext().getGrantee());
         if (isDropCurrentDatabase(sqlStatement.getDatabaseName())) {
             checkSupportedDropCurrentDatabase(connectionSession);
@@ -61,7 +60,7 @@ public final class DropDatabaseProxyBackendHandler implements ProxyBackendHandle
         }
         if (metaData.containsDatabase(sqlStatement.getDatabaseName())) {
             ShardingSphereDatabase database = metaData.getDatabase(sqlStatement.getDatabaseName());
-            metaDataManagerPersistService.dropDatabase(database);
+            contextManager.getPersistServiceFacade().getModeFacade().getMetaDataManagerService().dropDatabase(database);
         }
         return new UpdateResponseHeader(sqlStatement);
     }

@@ -20,8 +20,7 @@ package org.apache.shardingsphere.proxy.backend.handler.database.type;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.database.exception.core.exception.syntax.database.DatabaseCreateExistsException;
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
-import org.apache.shardingsphere.mode.persist.service.MetaDataManagerPersistService;
+import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.proxy.backend.handler.ProxyBackendHandler;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
@@ -37,15 +36,13 @@ public final class CreateDatabaseProxyBackendHandler implements ProxyBackendHand
     
     private final CreateDatabaseStatement sqlStatement;
     
-    private final ShardingSphereMetaData metaData;
-    
-    private final MetaDataManagerPersistService metaDataManagerPersistService;
+    private final ContextManager contextManager;
     
     @Override
     public ResponseHeader execute() throws SQLException {
-        ShardingSpherePreconditions.checkState(sqlStatement.isIfNotExists() || !metaData.containsDatabase(sqlStatement.getDatabaseName()),
+        ShardingSpherePreconditions.checkState(sqlStatement.isIfNotExists() || !contextManager.getMetaDataContexts().getMetaData().containsDatabase(sqlStatement.getDatabaseName()),
                 () -> new DatabaseCreateExistsException(sqlStatement.getDatabaseName()));
-        metaDataManagerPersistService.createDatabase(sqlStatement.getDatabaseName());
+        contextManager.getPersistServiceFacade().getModeFacade().getMetaDataManagerService().createDatabase(sqlStatement.getDatabaseName());
         return new UpdateResponseHeader(sqlStatement);
     }
 }
