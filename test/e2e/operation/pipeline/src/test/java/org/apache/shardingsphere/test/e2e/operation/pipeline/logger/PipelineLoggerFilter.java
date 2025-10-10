@@ -24,20 +24,20 @@ import com.google.common.base.Strings;
 import org.apache.shardingsphere.test.e2e.env.container.constants.ProxyContainerConstants;
 
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 
 public final class PipelineLoggerFilter extends Filter<ILoggingEvent> {
     
-    private static final List<String> IGNORED_LOGGER_NAMES = getIgnoredLoggerNames();
+    private static final Set<String> IGNORED_LOGGER_NAMES = getIgnoredLoggerNames();
     
     private static final Map<String, String[]> IGNORED_PROXY_LOG_ARGS = getIgnoredProxyLogArgs();
     
-    private static List<String> getIgnoredLoggerNames() {
-        List<String> result = new LinkedList<>();
+    private static Set<String> getIgnoredLoggerNames() {
+        Set<String> result = new HashSet<>();
         result.add(":zookeeper");
         result.add(":mysql");
         result.add(":postgresql");
