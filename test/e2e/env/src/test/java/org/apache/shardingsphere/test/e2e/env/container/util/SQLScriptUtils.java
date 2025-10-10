@@ -22,6 +22,7 @@ import lombok.NoArgsConstructor;
 import lombok.SneakyThrows;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Strings;
+import org.apache.shardingsphere.test.e2e.env.container.util.spi.SQLBatchExecutionStrategy;
 import org.h2.util.ScriptReader;
 
 import javax.sql.DataSource;
@@ -38,6 +39,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Collection;
 import java.util.LinkedList;
+import java.util.ServiceLoader;
 
 /**
  * SQL script utility class.
@@ -97,15 +99,16 @@ public final class SQLScriptUtils {
     }
     
     private static void executeBatch(final Connection connection, final Collection<String> sqls) throws SQLException {
+        int count = 0;
         try (Statement statement = connection.createStatement()) {
             String driverName = connection.getMetaData().getDriverName();
-            if (null != driverName && driverName.toLowerCase().contains("hive")) {
-                for (String each : sqls) {
-                    statement.execute(each);
+            ServiceLoader<SQLBatchExecutionStrategy> loader = ServiceLoader.load(SQLBatchExecutionStrategy.class);
+            for (SQLBatchExecutionStrategy strategy : loader) {
+                if (strategy.supports(driverName)) {
+                    strategy.execute(connection, statement, sqls);
+                    return;
                 }
-                return;
             }
-            int count = 0;
             for (String each : sqls) {
                 statement.addBatch(each);
                 count++;
