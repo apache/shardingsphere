@@ -47,14 +47,14 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- * Abstract record single table inventory calculator.
+ * Abstract record table inventory calculator.
  *
  * @param <S> the type of result
  * @param <C> the type of record
  */
 @HighFrequencyInvocation
 @RequiredArgsConstructor
-public abstract class AbstractRecordSingleTableInventoryCalculator<S, C> extends AbstractStreamingSingleTableInventoryCalculator<S> {
+public abstract class AbstractRecordTableInventoryCalculator<S, C> extends AbstractStreamingTableInventoryCalculator<S> {
     
     private static final int DEFAULT_STREAMING_CHUNK_COUNT = 100;
     
@@ -64,12 +64,12 @@ public abstract class AbstractRecordSingleTableInventoryCalculator<S, C> extends
     
     private final StreamingRangeType streamingRangeType;
     
-    public AbstractRecordSingleTableInventoryCalculator(final int chunkSize, final StreamingRangeType streamingRangeType) {
+    public AbstractRecordTableInventoryCalculator(final int chunkSize, final StreamingRangeType streamingRangeType) {
         this(chunkSize, DEFAULT_STREAMING_CHUNK_COUNT, streamingRangeType);
     }
     
     @Override
-    public Optional<S> calculateChunk(final SingleTableInventoryCalculateParameter param) {
+    public Optional<S> calculateChunk(final TableInventoryCalculateParameter param) {
         List<C> records = calculateChunk0(param);
         if (records.isEmpty()) {
             return Optional.empty();
@@ -81,7 +81,7 @@ public abstract class AbstractRecordSingleTableInventoryCalculator<S, C> extends
         return Optional.of(convertRecordsToResult(records, maxUniqueKeyValue));
     }
     
-    private List<C> calculateChunk0(final SingleTableInventoryCalculateParameter param) {
+    private List<C> calculateChunk0(final TableInventoryCalculateParameter param) {
         InventoryColumnValueReaderEngine columnValueReaderEngine = new InventoryColumnValueReaderEngine(param.getDatabaseType());
         try {
             if (QueryType.POINT_QUERY == param.getQueryType()) {
@@ -103,7 +103,7 @@ public abstract class AbstractRecordSingleTableInventoryCalculator<S, C> extends
         }
     }
     
-    private List<C> pointQuery(final SingleTableInventoryCalculateParameter param, final InventoryColumnValueReaderEngine columnValueReaderEngine) throws SQLException {
+    private List<C> pointQuery(final TableInventoryCalculateParameter param, final InventoryColumnValueReaderEngine columnValueReaderEngine) throws SQLException {
         List<C> result = new LinkedList<>();
         CalculationContext<C> calculationContext = prepareCalculationContext(param);
         prepareDatabaseResources(calculationContext, param);
@@ -117,7 +117,7 @@ public abstract class AbstractRecordSingleTableInventoryCalculator<S, C> extends
         return result;
     }
     
-    private List<C> allQuery(final SingleTableInventoryCalculateParameter param, final InventoryColumnValueReaderEngine columnValueReaderEngine) throws SQLException {
+    private List<C> allQuery(final TableInventoryCalculateParameter param, final InventoryColumnValueReaderEngine columnValueReaderEngine) throws SQLException {
         List<C> result = new LinkedList<>();
         CalculationContext<C> calculationContext = prepareCalculationContext(param);
         prepareDatabaseResources(calculationContext, param);
@@ -136,7 +136,7 @@ public abstract class AbstractRecordSingleTableInventoryCalculator<S, C> extends
         return result;
     }
     
-    private List<C> rangeQueryWithSingleColumUniqueKey(final SingleTableInventoryCalculateParameter param,
+    private List<C> rangeQueryWithSingleColumUniqueKey(final TableInventoryCalculateParameter param,
                                                        final InventoryColumnValueReaderEngine columnValueReaderEngine, final int round) throws SQLException {
         List<C> result = new LinkedList<>();
         CalculationContext<C> calculationContext = prepareCalculationContext(param);
@@ -157,7 +157,7 @@ public abstract class AbstractRecordSingleTableInventoryCalculator<S, C> extends
         return result;
     }
     
-    private List<C> rangeQueryWithMultiColumUniqueKeys(final SingleTableInventoryCalculateParameter param,
+    private List<C> rangeQueryWithMultiColumUniqueKeys(final TableInventoryCalculateParameter param,
                                                        final InventoryColumnValueReaderEngine columnValueReaderEngine) throws SQLException {
         CalculationContext<C> calculationContext = prepareCalculationContext(param);
         if (calculationContext.getRecordDeque().size() > chunkSize) {
@@ -167,7 +167,7 @@ public abstract class AbstractRecordSingleTableInventoryCalculator<S, C> extends
         return queryFromBuffer(calculationContext.getRecordDeque());
     }
     
-    private void doRangeQueryWithMultiColumUniqueKeys(final SingleTableInventoryCalculateParameter param, final CalculationContext<C> calculationContext,
+    private void doRangeQueryWithMultiColumUniqueKeys(final TableInventoryCalculateParameter param, final CalculationContext<C> calculationContext,
                                                       final InventoryColumnValueReaderEngine columnValueReaderEngine) throws SQLException {
         prepareDatabaseResources(calculationContext, param);
         ResultSet resultSet = calculationContext.getDatabaseResources().getResultSet();
@@ -205,10 +205,10 @@ public abstract class AbstractRecordSingleTableInventoryCalculator<S, C> extends
         }
     }
     
-    private List<C> pointRangeQuery(final SingleTableInventoryCalculateParameter param, final C duplicateRecord,
+    private List<C> pointRangeQuery(final TableInventoryCalculateParameter param, final C duplicateRecord,
                                     final InventoryColumnValueReaderEngine columnValueReaderEngine) throws SQLException {
         Object duplicateUniqueKeyValue = getFirstUniqueKeyValue(duplicateRecord, param.getFirstUniqueKey().getName());
-        SingleTableInventoryCalculateParameter newParam = buildPointRangeQueryCalculateParameter(param, duplicateUniqueKeyValue);
+        TableInventoryCalculateParameter newParam = buildPointRangeQueryCalculateParameter(param, duplicateUniqueKeyValue);
         try {
             return pointQuery(newParam, columnValueReaderEngine);
         } finally {
@@ -232,7 +232,7 @@ public abstract class AbstractRecordSingleTableInventoryCalculator<S, C> extends
     }
     
     @SuppressWarnings("unchecked")
-    private CalculationContext<C> prepareCalculationContext(final SingleTableInventoryCalculateParameter param) {
+    private CalculationContext<C> prepareCalculationContext(final TableInventoryCalculateParameter param) {
         CalculationContext<C> result = (CalculationContext<C>) param.getCalculationContext();
         if (null != result) {
             return result;
@@ -242,7 +242,7 @@ public abstract class AbstractRecordSingleTableInventoryCalculator<S, C> extends
         return result;
     }
     
-    private void prepareDatabaseResources(final CalculationContext<C> calculationContext, final SingleTableInventoryCalculateParameter param) throws SQLException {
+    private void prepareDatabaseResources(final CalculationContext<C> calculationContext, final TableInventoryCalculateParameter param) throws SQLException {
         if (calculationContext.getDatabaseResources().isReady()) {
             return;
         }
@@ -259,7 +259,7 @@ public abstract class AbstractRecordSingleTableInventoryCalculator<S, C> extends
         databaseResources.setReady(true);
     }
     
-    private String getQuerySQL(final SingleTableInventoryCalculateParameter param) {
+    private String getQuerySQL(final TableInventoryCalculateParameter param) {
         ShardingSpherePreconditions.checkState(null != param.getUniqueKeys() && !param.getUniqueKeys().isEmpty() && null != param.getFirstUniqueKey(),
                 () -> new UnsupportedOperationException("Record inventory calculator does not support table without unique key and primary key now."));
         PipelineDataConsistencyCalculateSQLBuilder pipelineSQLBuilder = new PipelineDataConsistencyCalculateSQLBuilder(param.getDatabaseType());
@@ -275,7 +275,7 @@ public abstract class AbstractRecordSingleTableInventoryCalculator<S, C> extends
         }
     }
     
-    private void setParameters(final PreparedStatement preparedStatement, final SingleTableInventoryCalculateParameter param) throws SQLException {
+    private void setParameters(final PreparedStatement preparedStatement, final TableInventoryCalculateParameter param) throws SQLException {
         QueryType queryType = param.getQueryType();
         if (queryType == QueryType.RANGE_QUERY) {
             QueryRange queryRange = param.getQueryRange();
@@ -312,8 +312,8 @@ public abstract class AbstractRecordSingleTableInventoryCalculator<S, C> extends
         }
     }
     
-    private SingleTableInventoryCalculateParameter buildPointRangeQueryCalculateParameter(final SingleTableInventoryCalculateParameter param, final Object uniqueKeyValue) {
-        SingleTableInventoryCalculateParameter result = new SingleTableInventoryCalculateParameter(param.getDataSource(), param.getTable(), param.getColumnNames(),
+    private TableInventoryCalculateParameter buildPointRangeQueryCalculateParameter(final TableInventoryCalculateParameter param, final Object uniqueKeyValue) {
+        TableInventoryCalculateParameter result = new TableInventoryCalculateParameter(param.getDataSource(), param.getTable(), param.getColumnNames(),
                 Collections.singletonList(param.getFirstUniqueKey()), QueryType.POINT_QUERY, param.getQueryCondition());
         result.setUniqueKeysValues(Collections.singletonList(uniqueKeyValue));
         result.setShardingColumnsNames(param.getShardingColumnsNames());

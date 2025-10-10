@@ -18,11 +18,11 @@
 package org.apache.shardingsphere.data.pipeline.core.consistencycheck.table.calculator;
 
 import org.apache.shardingsphere.data.pipeline.core.consistencycheck.DataConsistencyCheckUtils;
-import org.apache.shardingsphere.data.pipeline.core.consistencycheck.result.RecordSingleTableInventoryCalculatedResult;
-import org.apache.shardingsphere.data.pipeline.core.consistencycheck.result.SingleTableInventoryCalculatedResult;
+import org.apache.shardingsphere.data.pipeline.core.consistencycheck.result.RecordTableInventoryCheckCalculatedResult;
+import org.apache.shardingsphere.data.pipeline.core.consistencycheck.result.TableInventoryCheckCalculatedResult;
 import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.inventory.column.InventoryColumnValueReaderEngine;
 import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.inventory.query.StreamingRangeType;
-import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.inventory.query.calculator.AbstractRecordSingleTableInventoryCalculator;
+import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.inventory.query.calculator.AbstractRecordTableInventoryCalculator;
 
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
@@ -32,15 +32,15 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Record single table inventory check calculator.
+ * Record table inventory check calculator.
  */
-public final class RecordSingleTableInventoryCheckCalculator extends AbstractRecordSingleTableInventoryCalculator<SingleTableInventoryCalculatedResult, Map<String, Object>> {
+public final class RecordTableInventoryCheckCalculator extends AbstractRecordTableInventoryCalculator<TableInventoryCheckCalculatedResult, Map<String, Object>> {
     
-    public RecordSingleTableInventoryCheckCalculator(final int chunkSize, final int streamingChunkCount, final StreamingRangeType streamingRangeType) {
+    public RecordTableInventoryCheckCalculator(final int chunkSize, final int streamingChunkCount, final StreamingRangeType streamingRangeType) {
         super(chunkSize, streamingChunkCount, streamingRangeType);
     }
     
-    public RecordSingleTableInventoryCheckCalculator(final int chunkSize, final StreamingRangeType streamingRangeType) {
+    public RecordTableInventoryCheckCalculator(final int chunkSize, final StreamingRangeType streamingRangeType) {
         super(chunkSize, streamingRangeType);
     }
     
@@ -59,7 +59,7 @@ public final class RecordSingleTableInventoryCheckCalculator extends AbstractRec
     }
     
     @Override
-    protected SingleTableInventoryCalculatedResult convertRecordsToResult(final List<Map<String, Object>> records, final Object maxUniqueKeyValue) {
-        return new RecordSingleTableInventoryCalculatedResult(maxUniqueKeyValue, records);
+    protected TableInventoryCheckCalculatedResult convertRecordsToResult(final List<Map<String, Object>> records, final Object maxUniqueKeyValue) {
+        return new RecordTableInventoryCheckCalculatedResult(maxUniqueKeyValue, records);
     }
 }

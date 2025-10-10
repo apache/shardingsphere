@@ -65,13 +65,12 @@ class DatabaseMetaDataPersistFacadeTest {
     }
     
     @Test
-    void assertPersistReloadDatabaseByAlter() {
+    void assertPersistReloadDatabase() {
         ShardingSphereSchema toBeDeletedSchema = new ShardingSphereSchema("to_be_deleted");
         ShardingSphereSchema toBeAddedSchema = new ShardingSphereSchema("to_be_added");
         when(GenericSchemaManager.getToBeAlteredSchemasWithTablesDropped(any(), any())).thenReturn(Collections.singleton(toBeDeletedSchema));
         when(GenericSchemaManager.getToBeAlteredSchemasWithTablesAdded(any(), any())).thenReturn(Collections.singleton(toBeAddedSchema));
-        databaseMetaDataFacade.persistReloadDatabaseByAlter("foo_db", mock(ShardingSphereDatabase.class), mock(ShardingSphereDatabase.class));
-        verify(schemaMetaDataService).alterByRuleAltered("foo_db", toBeAddedSchema);
+        databaseMetaDataFacade.persistReloadDatabase("foo_db", mock(ShardingSphereDatabase.class), mock(ShardingSphereDatabase.class));
         verify(tableMetaDataService).drop(eq("foo_db"), eq("to_be_deleted"), anyCollection());
     }
     
@@ -81,8 +80,7 @@ class DatabaseMetaDataPersistFacadeTest {
         ShardingSphereSchema toBeAlterSchema = new ShardingSphereSchema("to_be_altered");
         when(GenericSchemaManager.getToBeAlteredSchemasWithTablesDropped(any(), any())).thenReturn(Collections.singleton(toBeDeletedSchema));
         when(GenericSchemaManager.getToBeAlteredSchemasWithTablesAdded(any(), any())).thenReturn(Collections.singleton(toBeAlterSchema));
-        databaseMetaDataFacade.persistReloadDatabaseByDrop("foo_db", mock(ShardingSphereDatabase.class), mock(ShardingSphereDatabase.class));
-        verify(schemaMetaDataService).alterByRuleDropped("foo_db", toBeAlterSchema);
+        databaseMetaDataFacade.persistReloadDatabase("foo_db", mock(ShardingSphereDatabase.class), mock(ShardingSphereDatabase.class));
         verify(tableMetaDataService).drop(eq("foo_db"), eq("to_be_deleted"), anyCollection());
     }
 }

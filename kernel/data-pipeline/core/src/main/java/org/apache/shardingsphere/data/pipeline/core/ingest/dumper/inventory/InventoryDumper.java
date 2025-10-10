@@ -30,8 +30,8 @@ import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.inventory.posi
 import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.inventory.query.QueryRange;
 import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.inventory.query.QueryType;
 import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.inventory.query.StreamingRangeType;
-import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.inventory.query.calculator.AbstractRecordSingleTableInventoryCalculator;
-import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.inventory.query.calculator.SingleTableInventoryCalculateParameter;
+import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.inventory.query.calculator.AbstractRecordTableInventoryCalculator;
+import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.inventory.query.calculator.TableInventoryCalculateParameter;
 import org.apache.shardingsphere.data.pipeline.core.ingest.position.IngestPosition;
 import org.apache.shardingsphere.data.pipeline.core.ingest.position.type.finished.IngestFinishedPosition;
 import org.apache.shardingsphere.data.pipeline.core.ingest.position.type.pk.PrimaryKeyIngestPosition;
@@ -122,12 +122,12 @@ public final class InventoryDumper extends AbstractPipelineLifecycleRunnable imp
         IngestPosition initialPosition = dumperContext.getCommonContext().getPosition();
         log.info("Dump by calculator start, dataSource={}, table={}, initialPosition={}", dumperContext.getCommonContext().getDataSourceName(), table, initialPosition);
         List<String> columnNames = dumperContext.getQueryColumnNames();
-        SingleTableInventoryCalculateParameter calculateParam = new SingleTableInventoryCalculateParameter(dataSource, table,
+        TableInventoryCalculateParameter calculateParam = new TableInventoryCalculateParameter(dataSource, table,
                 columnNames, dumperContext.getUniqueKeyColumns(), QueryType.RANGE_QUERY, null);
         QueryRange queryRange = new QueryRange(((PrimaryKeyIngestPosition<?>) initialPosition).getBeginValue(), dumperContext.isFirstDump(),
                 ((PrimaryKeyIngestPosition<?>) initialPosition).getEndValue());
         calculateParam.setQueryRange(queryRange);
-        RecordSingleTableInventoryDumpCalculator dumpCalculator = new RecordSingleTableInventoryDumpCalculator(dumperContext.getBatchSize(), StreamingRangeType.SMALL);
+        RecordTableInventoryDumpCalculator dumpCalculator = new RecordTableInventoryDumpCalculator(dumperContext.getBatchSize(), StreamingRangeType.SMALL);
         long rowCount = 0L;
         try {
             String firstUniqueKey = calculateParam.getFirstUniqueKey().getName();
@@ -223,9 +223,9 @@ public final class InventoryDumper extends AbstractPipelineLifecycleRunnable imp
         Optional.ofNullable(runningStatement.get()).ifPresent(PipelineJdbcUtils::cancelStatement);
     }
     
-    private class RecordSingleTableInventoryDumpCalculator extends AbstractRecordSingleTableInventoryCalculator<List<DataRecord>, DataRecord> {
+    private class RecordTableInventoryDumpCalculator extends AbstractRecordTableInventoryCalculator<List<DataRecord>, DataRecord> {
         
-        RecordSingleTableInventoryDumpCalculator(final int chunkSize, final StreamingRangeType streamingRangeType) {
+        RecordTableInventoryDumpCalculator(final int chunkSize, final StreamingRangeType streamingRangeType) {
             super(chunkSize, streamingRangeType);
         }
         

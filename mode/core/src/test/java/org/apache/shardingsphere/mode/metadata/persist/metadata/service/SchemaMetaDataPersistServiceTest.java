@@ -32,8 +32,6 @@ import java.util.Collections;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.mockito.ArgumentMatchers.anyCollection;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -108,36 +106,5 @@ class SchemaMetaDataPersistServiceTest {
         assertThat(actual.size(), is(1));
         assertThat(actual.iterator().next().getTable("foo_tbl"), is(table));
         assertThat(actual.iterator().next().getView("foo_view"), is(view));
-    }
-    
-    @Test
-    void assertAlterSchemaByAlterConfigurationByRefresh() {
-        persistService.alterByRuleAltered("foo_db", new ShardingSphereSchema("foo_schema"));
-        verify(repository).persist("/metadata/foo_db/schemas/foo_schema/tables", "");
-        verify(tableMetaDataPersistService).persist(eq("foo_db"), eq("foo_schema"), anyCollection());
-    }
-    
-    @Test
-    void assertAlterSchemaByAlterConfigurationWithNotEmptyTablesByRefresh() {
-        ShardingSphereTable table = mock(ShardingSphereTable.class);
-        when(table.getName()).thenReturn("foo_tbl");
-        persistService.alterByRuleAltered("foo_db", new ShardingSphereSchema("foo_schema", Collections.singletonList(table), Collections.emptyList()));
-        verify(repository, times(0)).persist("/metadata/foo_db/schemas/foo_schema/tables", "");
-        verify(tableMetaDataPersistService).persist(eq("foo_db"), eq("foo_schema"), anyCollection());
-    }
-    
-    @Test
-    void assertAlterSchemaByAlterConfigurationWithNotEmptyViewsByRefresh() {
-        ShardingSphereView view = mock(ShardingSphereView.class);
-        when(view.getName()).thenReturn("foo_view");
-        persistService.alterByRuleAltered("foo_db", new ShardingSphereSchema("foo_schema", Collections.emptyList(), Collections.singleton(view)));
-        verify(repository, times(0)).persist("/metadata/foo_db/schemas/foo_schema/tables", "");
-        verify(tableMetaDataPersistService).persist(eq("foo_db"), eq("foo_schema"), anyCollection());
-    }
-    
-    @Test
-    void assertAlterByRefreshByDropConfiguration() {
-        persistService.alterByRuleDropped("foo_db", new ShardingSphereSchema("foo_schema"));
-        verify(tableMetaDataPersistService).persist(eq("foo_db"), eq("foo_schema"), anyCollection());
     }
 }

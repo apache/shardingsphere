@@ -34,11 +34,11 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
 /**
- * Single table inventory calculate parameter.
+ * Table inventory calculate parameter.
  */
 @RequiredArgsConstructor
 @Getter
-public final class SingleTableInventoryCalculateParameter {
+public final class TableInventoryCalculateParameter {
     
     /**
      * Data source of source side or target side.
