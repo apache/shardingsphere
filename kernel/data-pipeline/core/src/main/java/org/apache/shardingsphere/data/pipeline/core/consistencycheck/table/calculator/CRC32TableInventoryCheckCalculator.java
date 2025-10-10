@@ -20,10 +20,10 @@ package org.apache.shardingsphere.data.pipeline.core.consistencycheck.table.calc
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.data.pipeline.core.consistencycheck.result.SingleTableInventoryCalculatedResult;
+import org.apache.shardingsphere.data.pipeline.core.consistencycheck.result.TableInventoryCheckCalculatedResult;
 import org.apache.shardingsphere.data.pipeline.core.exception.data.PipelineTableDataConsistencyCheckLoadingFailedException;
-import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.inventory.query.calculator.AbstractSingleTableInventoryCalculator;
-import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.inventory.query.calculator.SingleTableInventoryCalculateParameter;
+import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.inventory.query.calculator.AbstractTableInventoryCalculator;
+import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.inventory.query.calculator.TableInventoryCalculateParameter;
 import org.apache.shardingsphere.data.pipeline.core.sqlbuilder.sql.PipelineDataConsistencyCalculateSQLBuilder;
 import org.apache.shardingsphere.infra.algorithm.core.exception.UnsupportedAlgorithmOnDatabaseTypeException;
 
@@ -38,19 +38,19 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
- * CRC32 single table inventory check calculator.
+ * CRC32 table inventory check calculator.
  */
 @Slf4j
-public final class CRC32SingleTableInventoryCheckCalculator extends AbstractSingleTableInventoryCalculator<SingleTableInventoryCalculatedResult> {
+public final class CRC32TableInventoryCheckCalculator extends AbstractTableInventoryCalculator<TableInventoryCheckCalculatedResult> {
     
     @Override
-    public Iterable<SingleTableInventoryCalculatedResult> calculate(final SingleTableInventoryCalculateParameter param) {
+    public Iterable<TableInventoryCheckCalculatedResult> calculate(final TableInventoryCalculateParameter param) {
         PipelineDataConsistencyCalculateSQLBuilder pipelineSQLBuilder = new PipelineDataConsistencyCalculateSQLBuilder(param.getDatabaseType());
         List<CalculatedItem> calculatedItems = param.getColumnNames().stream().map(each -> calculateCRC32(pipelineSQLBuilder, param, each)).collect(Collectors.toList());
         return Collections.singletonList(new CalculatedResult(calculatedItems.get(0).getRecordsCount(), calculatedItems.stream().map(CalculatedItem::getCrc32).collect(Collectors.toList())));
     }
     
-    private CalculatedItem calculateCRC32(final PipelineDataConsistencyCalculateSQLBuilder pipelineSQLBuilder, final SingleTableInventoryCalculateParameter param, final String columnName) {
+    private CalculatedItem calculateCRC32(final PipelineDataConsistencyCalculateSQLBuilder pipelineSQLBuilder, final TableInventoryCalculateParameter param, final String columnName) {
         String sql = pipelineSQLBuilder.buildCRC32SQL(param.getTable(), columnName)
                 .orElseThrow(() -> new UnsupportedAlgorithmOnDatabaseTypeException("DataConsistencyCalculate", "CRC32", param.getDatabaseType()));
         try (
@@ -79,7 +79,7 @@ public final class CRC32SingleTableInventoryCheckCalculator extends AbstractSing
     
     @RequiredArgsConstructor
     @Getter
-    private static final class CalculatedResult implements SingleTableInventoryCalculatedResult {
+    private static final class CalculatedResult implements TableInventoryCheckCalculatedResult {
         
         private final int recordsCount;
         

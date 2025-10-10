@@ -17,11 +17,11 @@
 
 package org.apache.shardingsphere.data.pipeline.core.consistencycheck.table.calculator;
 
-import org.apache.shardingsphere.data.pipeline.core.consistencycheck.result.SingleTableInventoryCalculatedResult;
+import org.apache.shardingsphere.data.pipeline.core.consistencycheck.result.TableInventoryCheckCalculatedResult;
 import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSource;
 import org.apache.shardingsphere.data.pipeline.core.exception.data.PipelineTableDataConsistencyCheckLoadingFailedException;
 import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.inventory.query.QueryType;
-import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.inventory.query.calculator.SingleTableInventoryCalculateParameter;
+import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.inventory.query.calculator.TableInventoryCalculateParameter;
 import org.apache.shardingsphere.data.pipeline.core.metadata.model.PipelineColumnMetaData;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.database.schema.QualifiedTable;
@@ -53,9 +53,9 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-class CRC32SingleTableInventoryCheckCalculatorTest {
+class CRC32TableInventoryCheckCalculatorTest {
     
-    private SingleTableInventoryCalculateParameter parameter;
+    private TableInventoryCalculateParameter parameter;
     
     @Mock
     private PipelineDataSource pipelineDataSource;
@@ -67,7 +67,7 @@ class CRC32SingleTableInventoryCheckCalculatorTest {
     void setUp() throws SQLException {
         DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "FIXTURE");
         List<PipelineColumnMetaData> uniqueKeys = Collections.singletonList(new PipelineColumnMetaData(1, "id", Types.INTEGER, "integer", false, true, true));
-        parameter = new SingleTableInventoryCalculateParameter(pipelineDataSource, new QualifiedTable(null, "foo_tbl"),
+        parameter = new TableInventoryCalculateParameter(pipelineDataSource, new QualifiedTable(null, "foo_tbl"),
                 Arrays.asList("foo_col", "bar_col"), uniqueKeys, QueryType.RANGE_QUERY, null);
         when(pipelineDataSource.getDatabaseType()).thenReturn(databaseType);
         when(pipelineDataSource.getConnection()).thenReturn(connection);
@@ -79,7 +79,7 @@ class CRC32SingleTableInventoryCheckCalculatorTest {
         when(connection.prepareStatement("SELECT CRC32(foo_col) FROM foo_tbl")).thenReturn(preparedStatement0);
         PreparedStatement preparedStatement1 = mockPreparedStatement(456L, 10);
         when(connection.prepareStatement("SELECT CRC32(bar_col) FROM foo_tbl")).thenReturn(preparedStatement1);
-        Iterator<SingleTableInventoryCalculatedResult> actual = new CRC32SingleTableInventoryCheckCalculator().calculate(parameter).iterator();
+        Iterator<TableInventoryCheckCalculatedResult> actual = new CRC32TableInventoryCheckCalculator().calculate(parameter).iterator();
         assertThat(actual.next().getRecordsCount(), is(10));
         assertFalse(actual.hasNext());
     }
@@ -96,6 +96,6 @@ class CRC32SingleTableInventoryCheckCalculatorTest {
     @Test
     void assertCalculateFailed() throws SQLException {
         when(connection.prepareStatement(anyString())).thenThrow(new SQLException(""));
-        assertThrows(PipelineTableDataConsistencyCheckLoadingFailedException.class, () -> new CRC32SingleTableInventoryCheckCalculator().calculate(parameter));
+        assertThrows(PipelineTableDataConsistencyCheckLoadingFailedException.class, () -> new CRC32TableInventoryCheckCalculator().calculate(parameter));
     }
 }
