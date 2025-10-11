@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.mysql.handler.admin;
+package org.apache.shardingsphere.proxy.backend.mysql.handler.admin.factory;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
