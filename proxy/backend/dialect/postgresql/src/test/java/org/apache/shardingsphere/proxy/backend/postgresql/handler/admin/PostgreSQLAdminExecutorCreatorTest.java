@@ -34,7 +34,6 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatemen
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.SetStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.ShowStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.DeleteStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.InsertStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.statement.postgresql.dal.PostgreSQLResetParameterStatement;
 import org.junit.jupiter.api.Test;
@@ -67,18 +66,6 @@ class PostgreSQLAdminExecutorCreatorTest {
             + "AND n.nspname <> 'pg_catalog' AND n.nspname <> 'information_schema' AND n.nspname !~ '^pg_toast' AND pg_catalog.pg_table_is_visible(c.oid) ORDER BY 1,2;";
     
     private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "PostgreSQL");
-    
-    @Test
-    void assertCreateWithOtherSQLStatementContextOnly() {
-        assertThat(new PostgreSQLAdminExecutorCreator().create(new CommonSQLStatementContext(new InsertStatement(databaseType))), is(Optional.empty()));
-    }
-    
-    @Test
-    void assertCreateWithShowSQLStatement() {
-        Optional<DatabaseAdminExecutor> actual = new PostgreSQLAdminExecutorCreator().create(new CommonSQLStatementContext(new ShowStatement(databaseType, "client_encoding")));
-        assertTrue(actual.isPresent());
-        assertThat(actual.get(), isA(PostgreSQLShowVariableExecutor.class));
-    }
     
     @Test
     void assertCreateWithSelectDatabase() {
@@ -143,6 +130,14 @@ class PostgreSQLAdminExecutorCreatorTest {
                 .create(new CommonSQLStatementContext(new PostgreSQLResetParameterStatement(databaseType, "client_encoding")), "RESET client_encoding", "", Collections.emptyList());
         assertTrue(actual.isPresent());
         assertThat(actual.get(), isA(PostgreSQLResetVariableAdminExecutor.class));
+    }
+    
+    @Test
+    void assertCreateWithShowSQLStatement() {
+        Optional<DatabaseAdminExecutor> actual = new PostgreSQLAdminExecutorCreator().create(
+                new CommonSQLStatementContext(new ShowStatement(databaseType, "client_encoding")), "SHOW client_encoding", "", Collections.emptyList());
+        assertTrue(actual.isPresent());
+        assertThat(actual.get(), isA(PostgreSQLShowVariableExecutor.class));
     }
     
     @Test

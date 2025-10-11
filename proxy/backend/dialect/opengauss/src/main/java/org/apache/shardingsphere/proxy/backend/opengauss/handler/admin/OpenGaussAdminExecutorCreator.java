@@ -22,7 +22,6 @@ import org.apache.shardingsphere.proxy.backend.handler.admin.executor.DatabaseAd
 import org.apache.shardingsphere.proxy.backend.handler.admin.executor.DatabaseAdminExecutorCreator;
 import org.apache.shardingsphere.proxy.backend.opengauss.handler.admin.executor.OpenGaussShowVariableExecutor;
 import org.apache.shardingsphere.proxy.backend.postgresql.handler.admin.PostgreSQLAdminExecutorCreator;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.ShowStatement;
 
 import java.util.List;
@@ -36,12 +35,6 @@ public final class OpenGaussAdminExecutorCreator implements DatabaseAdminExecuto
     private final PostgreSQLAdminExecutorCreator delegate = new PostgreSQLAdminExecutorCreator();
     
     @Override
-    public Optional<DatabaseAdminExecutor> create(final SQLStatementContext sqlStatementContext) {
-        SQLStatement sqlStatement = sqlStatementContext.getSqlStatement();
-        return sqlStatement instanceof ShowStatement ? Optional.of(new OpenGaussShowVariableExecutor((ShowStatement) sqlStatement)) : Optional.empty();
-    }
-    
-    @Override
     public Optional<DatabaseAdminExecutor> create(final SQLStatementContext sqlStatementContext, final String sql, final String databaseName, final List<Object> parameters) {
         OpenGaussSystemTableQueryExecutorCreator systemTableQueryExecutorCreator = new OpenGaussSystemTableQueryExecutorCreator(sqlStatementContext, sql, parameters);
         if (systemTableQueryExecutorCreator.accept()) {
@@ -50,6 +43,9 @@ public final class OpenGaussAdminExecutorCreator implements DatabaseAdminExecuto
         OpenGaussSystemFunctionQueryExecutorCreator functionQueryExecutorCreator = new OpenGaussSystemFunctionQueryExecutorCreator(sqlStatementContext);
         if (functionQueryExecutorCreator.accept()) {
             return functionQueryExecutorCreator.create();
+        }
+        if (sqlStatementContext.getSqlStatement() instanceof ShowStatement) {
+            return Optional.of(new OpenGaussShowVariableExecutor((ShowStatement) sqlStatementContext.getSqlStatement()));
         }
         return delegate.create(sqlStatementContext, sql, databaseName, parameters);
     }
