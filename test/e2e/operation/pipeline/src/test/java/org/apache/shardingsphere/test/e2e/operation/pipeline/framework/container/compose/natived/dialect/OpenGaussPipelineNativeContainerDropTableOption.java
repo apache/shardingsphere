@@ -27,21 +27,21 @@ import java.util.Optional;
  */
 public final class OpenGaussPipelineNativeContainerDropTableOption implements DialectPipelineNativeContainerDropTableOption {
     
-    private final DialectPipelineNativeContainerDropTableOption delegated = new PostgreSQLPipelineNativeContainerDropTableOption();
+    private final DialectPipelineNativeContainerDropTableOption delegate = new PostgreSQLPipelineNativeContainerDropTableOption();
     
     @Override
     public String getJdbcUrl(final StorageContainerConnectOption storageContainerConnectOption, final int actualDatabasePort, final String databaseName) {
-        return delegated.getJdbcUrl(storageContainerConnectOption, actualDatabasePort, databaseName);
+        return delegate.getJdbcUrl(storageContainerConnectOption, actualDatabasePort, databaseName);
     }
     
     @Override
     public String getQueryAllSchemaAndTableMapperSQL(final String databaseName) {
-        return delegated.getQueryAllSchemaAndTableMapperSQL(databaseName);
+        return delegate.getQueryAllSchemaAndTableMapperSQL(databaseName);
     }
     
     @Override
     public Optional<String> getDropSchemaSQL() {
-        return delegated.getDropSchemaSQL();
+        return delegate.getDropSchemaSQL();
     }
     
     @Override

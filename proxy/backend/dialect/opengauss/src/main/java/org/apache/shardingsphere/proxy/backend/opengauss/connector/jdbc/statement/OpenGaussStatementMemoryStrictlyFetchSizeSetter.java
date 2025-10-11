@@ -28,11 +28,11 @@ import java.sql.Statement;
  */
 public final class OpenGaussStatementMemoryStrictlyFetchSizeSetter implements StatementMemoryStrictlyFetchSizeSetter {
     
-    private final PostgreSQLStatementMemoryStrictlyFetchSizeSetter delegated = new PostgreSQLStatementMemoryStrictlyFetchSizeSetter();
+    private final PostgreSQLStatementMemoryStrictlyFetchSizeSetter delegate = new PostgreSQLStatementMemoryStrictlyFetchSizeSetter();
     
     @Override
     public void setFetchSize(final Statement statement) throws SQLException {
-        delegated.setFetchSize(statement);
+        delegate.setFetchSize(statement);
     }
     
     @Override
