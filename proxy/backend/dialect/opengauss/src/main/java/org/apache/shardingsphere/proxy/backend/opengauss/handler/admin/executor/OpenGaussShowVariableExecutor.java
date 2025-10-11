@@ -50,7 +50,7 @@ public final class OpenGaussShowVariableExecutor implements DatabaseAdminQueryEx
     
     private final ShowStatement showStatement;
     
-    private final PostgreSQLShowVariableExecutor delegated;
+    private final PostgreSQLShowVariableExecutor delegate;
     
     @Getter
     private QueryResultMetaData queryResultMetaData;
@@ -60,7 +60,7 @@ public final class OpenGaussShowVariableExecutor implements DatabaseAdminQueryEx
     
     public OpenGaussShowVariableExecutor(final ShowStatement showStatement) {
         this.showStatement = showStatement;
-        delegated = new PostgreSQLShowVariableExecutor(showStatement);
+        delegate = new PostgreSQLShowVariableExecutor(showStatement);
     }
     
     @Override
@@ -76,9 +76,9 @@ public final class OpenGaussShowVariableExecutor implements DatabaseAdminQueryEx
     }
     
     private void delegated(final ConnectionSession connectionSession) {
-        delegated.execute(connectionSession);
-        queryResultMetaData = delegated.getQueryResultMetaData();
-        mergedResult = delegated.getMergedResult();
+        delegate.execute(connectionSession);
+        queryResultMetaData = delegate.getQueryResultMetaData();
+        mergedResult = delegate.getMergedResult();
     }
     
     private interface VariableRowDataGenerator {

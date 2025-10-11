@@ -60,7 +60,7 @@ class OpenGaussAdminExecutorFactoryTest {
     @BeforeEach
     void setup() throws ReflectiveOperationException {
         openGaussAdminExecutorFactory = new OpenGaussAdminExecutorCreator();
-        Plugins.getMemberAccessor().set(OpenGaussAdminExecutorCreator.class.getDeclaredField("delegated"), openGaussAdminExecutorFactory, postgresqlAdminExecutorFactory);
+        Plugins.getMemberAccessor().set(OpenGaussAdminExecutorCreator.class.getDeclaredField("delegate"), openGaussAdminExecutorFactory, postgresqlAdminExecutorFactory);
     }
     
     @Test

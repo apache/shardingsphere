@@ -33,7 +33,7 @@ import java.util.Optional;
  */
 public final class OpenGaussAdminExecutorCreator implements DatabaseAdminExecutorCreator {
     
-    private final PostgreSQLAdminExecutorCreator delegated = new PostgreSQLAdminExecutorCreator();
+    private final PostgreSQLAdminExecutorCreator delegate = new PostgreSQLAdminExecutorCreator();
     
     @Override
     public Optional<DatabaseAdminExecutor> create(final SQLStatementContext sqlStatementContext) {
@@ -51,7 +51,7 @@ public final class OpenGaussAdminExecutorCreator implements DatabaseAdminExecuto
         if (functionQueryExecutorCreator.accept()) {
             return functionQueryExecutorCreator.create();
         }
-        return delegated.create(sqlStatementContext, sql, databaseName, parameters);
+        return delegate.create(sqlStatementContext, sql, databaseName, parameters);
     }
     
     @Override

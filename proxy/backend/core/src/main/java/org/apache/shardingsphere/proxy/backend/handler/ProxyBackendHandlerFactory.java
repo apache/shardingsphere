@@ -146,7 +146,7 @@ public final class ProxyBackendHandlerFactory {
         if (null == databaseName) {
             return DatabaseProxyBackendHandlerFactory.newInstance(queryContext, connectionSession, preferPreparedStatement);
         }
-        checkSQLExecution(queryContext, connectionSession, databaseName);
+        checkSQLExecution(queryContext, connectionSession.getConnectionContext().getGrantee(), databaseName);
         return DatabaseAdminProxyBackendHandlerFactory.newInstance(databaseType, sqlStatementContext, connectionSession)
                 .orElseGet(() -> DatabaseProxyBackendHandlerFactory.newInstance(queryContext, connectionSession, preferPreparedStatement));
     }
@@ -198,8 +198,7 @@ public final class ProxyBackendHandlerFactory {
                 : Optional.empty();
     }
     
-    private static void checkSQLExecution(final QueryContext queryContext, final ConnectionSession connectionSession, final String databaseName) {
-        Grantee grantee = connectionSession.getConnectionContext().getGrantee();
+    private static void checkSQLExecution(final QueryContext queryContext, final Grantee grantee, final String databaseName) {
         ShardingSphereDatabase database = queryContext.getMetaData().getDatabase(databaseName);
         for (SQLExecutionChecker each : ShardingSphereServiceLoader.getServiceInstances(SQLExecutionChecker.class)) {
             each.check(grantee, queryContext, database);

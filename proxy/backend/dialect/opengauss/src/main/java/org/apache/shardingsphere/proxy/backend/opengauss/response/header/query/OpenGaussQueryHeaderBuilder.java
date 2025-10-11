@@ -30,12 +30,12 @@ import java.sql.SQLException;
  */
 public final class OpenGaussQueryHeaderBuilder implements QueryHeaderBuilder {
     
-    private final PostgreSQLQueryHeaderBuilder delegated = new PostgreSQLQueryHeaderBuilder();
+    private final PostgreSQLQueryHeaderBuilder delegate = new PostgreSQLQueryHeaderBuilder();
     
     @Override
     public QueryHeader build(final QueryResultMetaData queryResultMetaData,
                              final ShardingSphereDatabase database, final String columnName, final String columnLabel, final int columnIndex) throws SQLException {
-        return delegated.build(queryResultMetaData, database, columnName, columnLabel, columnIndex);
+        return delegate.build(queryResultMetaData, database, columnName, columnLabel, columnIndex);
     }
     
     @Override
