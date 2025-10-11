@@ -118,12 +118,6 @@ class MySQLAdminExecutorCreatorTest {
     }
     
     @Test
-    void assertCreateWithOtherSQLStatementContext() {
-        SQLStatementContext sqlStatementContext = mock(SQLStatementContext.class);
-        assertThat(new MySQLAdminExecutorCreator().create(sqlStatementContext), is(Optional.empty()));
-    }
-    
-    @Test
     void assertCreateWithUse() {
         SQLStatementContext sqlStatementContext = new CommonSQLStatementContext(new MySQLUseStatement(databaseType, null));
         Optional<DatabaseAdminExecutor> actual = new MySQLAdminExecutorCreator().create(sqlStatementContext, "use db", "", Collections.emptyList());

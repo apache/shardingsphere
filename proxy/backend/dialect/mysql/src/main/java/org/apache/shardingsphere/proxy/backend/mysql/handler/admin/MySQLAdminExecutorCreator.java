@@ -71,11 +71,6 @@ public final class MySQLAdminExecutorCreator implements DatabaseAdminExecutorCre
     private static final String SYS_SCHEMA = "sys";
     
     @Override
-    public Optional<DatabaseAdminExecutor> create(final SQLStatementContext sqlStatementContext) {
-        return Optional.empty();
-    }
-    
-    @Override
     public Optional<DatabaseAdminExecutor> create(final SQLStatementContext sqlStatementContext, final String sql, final String databaseName, final List<Object> parameters) {
         if (sqlStatementContext instanceof SelectStatementContext) {
             return createExecutorForSelectStatement((SelectStatementContext) sqlStatementContext, sql, databaseName, parameters);

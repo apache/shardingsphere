@@ -36,15 +36,6 @@ import java.util.Optional;
 public final class FirebirdAdminExecutorCreator implements DatabaseAdminExecutorCreator {
     
     @Override
-    public Optional<DatabaseAdminExecutor> create(final SQLStatementContext sqlStatementContext) {
-        SQLStatement sqlStatement = sqlStatementContext.getSqlStatement();
-        if (sqlStatement instanceof ShowStatement) {
-            return Optional.of(new FirebirdShowVariableExecutor((ShowStatement) sqlStatement));
-        }
-        return Optional.empty();
-    }
-    
-    @Override
     public Optional<DatabaseAdminExecutor> create(final SQLStatementContext sqlStatementContext, final String sql, final String databaseName, final List<Object> parameters) {
         SQLStatement sqlStatement = sqlStatementContext.getSqlStatement();
         // TODO add support for Firebird system tables
@@ -53,6 +44,9 @@ public final class FirebirdAdminExecutorCreator implements DatabaseAdminExecutor
         }
         if (sqlStatement instanceof SetStatement) {
             return Optional.of(new FirebirdSetVariableAdminExecutor((SetStatement) sqlStatement));
+        }
+        if (sqlStatement instanceof ShowStatement) {
+            return Optional.of(new FirebirdShowVariableExecutor((ShowStatement) sqlStatement));
         }
         return Optional.empty();
     }

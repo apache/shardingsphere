@@ -63,15 +63,6 @@ public final class PostgreSQLAdminExecutorCreator implements DatabaseAdminExecut
     }
     
     @Override
-    public Optional<DatabaseAdminExecutor> create(final SQLStatementContext sqlStatementContext) {
-        SQLStatement sqlStatement = sqlStatementContext.getSqlStatement();
-        if (sqlStatement instanceof ShowStatement) {
-            return Optional.of(new PostgreSQLShowVariableExecutor((ShowStatement) sqlStatement));
-        }
-        return Optional.empty();
-    }
-    
-    @Override
     public Optional<DatabaseAdminExecutor> create(final SQLStatementContext sqlStatementContext, final String sql, final String databaseName, final List<Object> parameters) {
         SQLStatement sqlStatement = sqlStatementContext.getSqlStatement();
         if (sqlStatement instanceof SelectStatement) {
@@ -88,6 +79,9 @@ public final class PostgreSQLAdminExecutorCreator implements DatabaseAdminExecut
         }
         if (sqlStatement instanceof PostgreSQLResetParameterStatement) {
             return Optional.of(new PostgreSQLResetVariableAdminExecutor((PostgreSQLResetParameterStatement) sqlStatement));
+        }
+        if (sqlStatement instanceof ShowStatement) {
+            return Optional.of(new PostgreSQLShowVariableExecutor((ShowStatement) sqlStatement));
         }
         return Optional.empty();
     }

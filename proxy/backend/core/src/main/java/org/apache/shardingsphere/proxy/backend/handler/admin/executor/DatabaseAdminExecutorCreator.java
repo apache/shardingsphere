@@ -31,14 +31,6 @@ import java.util.Optional;
 public interface DatabaseAdminExecutorCreator extends DatabaseTypedSPI {
     
     /**
-     * Create database admin executor, and this executor requires a connection containing a schema to be used.
-     *
-     * @param sqlStatementContext SQL statement context
-     * @return created instance
-     */
-    Optional<DatabaseAdminExecutor> create(SQLStatementContext sqlStatementContext);
-    
-    /**
      * Create database admin executor.
      *
      * @param sqlStatementContext SQL statement context

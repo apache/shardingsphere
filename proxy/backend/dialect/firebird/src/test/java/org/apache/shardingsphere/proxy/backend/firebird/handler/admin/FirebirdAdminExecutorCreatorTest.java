@@ -29,7 +29,6 @@ import org.apache.shardingsphere.proxy.backend.handler.admin.executor.DatabaseAd
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.SetStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.ShowStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.DeleteStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.InsertStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.SelectStatement;
 import org.junit.jupiter.api.Test;
 
@@ -48,19 +47,6 @@ class FirebirdAdminExecutorCreatorTest {
     private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "Firebird");
     
     @Test
-    void assertCreateWithOtherSQLStatementContextOnly() {
-        assertThat(new FirebirdAdminExecutorCreator().create(new CommonSQLStatementContext(new InsertStatement(databaseType))), is(Optional.empty()));
-    }
-    
-    @Test
-    void assertCreateWithShowSQLStatement() {
-        Optional<DatabaseAdminExecutor> actual = new FirebirdAdminExecutorCreator().create(
-                new CommonSQLStatementContext(new ShowStatement(databaseType, "server_version")));
-        assertTrue(actual.isPresent());
-        assertThat(actual.get(), isA(FirebirdShowVariableExecutor.class));
-    }
-    
-    @Test
     void assertCreateWithSelectNonSystem() {
         SelectStatementContext selectStatementContext = mock(SelectStatementContext.class);
         when(selectStatementContext.getSqlStatement()).thenReturn(new SelectStatement(databaseType));
@@ -73,6 +59,14 @@ class FirebirdAdminExecutorCreatorTest {
         Optional<DatabaseAdminExecutor> actual = new FirebirdAdminExecutorCreator().create(sqlStatementContext, "SET NAMES utf8", "", Collections.emptyList());
         assertTrue(actual.isPresent());
         assertThat(actual.get(), isA(FirebirdSetVariableAdminExecutor.class));
+    }
+    
+    @Test
+    void assertCreateWithShowSQLStatement() {
+        Optional<DatabaseAdminExecutor> actual = new FirebirdAdminExecutorCreator().create(
+                new CommonSQLStatementContext(new ShowStatement(databaseType, "server_version")), "SHOW server_version", "", Collections.emptyList());
+        assertTrue(actual.isPresent());
+        assertThat(actual.get(), isA(FirebirdShowVariableExecutor.class));
     }
     
     @Test

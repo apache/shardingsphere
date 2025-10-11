@@ -147,8 +147,7 @@ public final class ProxyBackendHandlerFactory {
             return DatabaseProxyBackendHandlerFactory.newInstance(queryContext, connectionSession, preferPreparedStatement);
         }
         checkSQLExecution(queryContext, connectionSession.getConnectionContext().getGrantee(), databaseName);
-        return DatabaseAdminProxyBackendHandlerFactory.newInstance(databaseType, sqlStatementContext, connectionSession)
-                .orElseGet(() -> DatabaseProxyBackendHandlerFactory.newInstance(queryContext, connectionSession, preferPreparedStatement));
+        return DatabaseProxyBackendHandlerFactory.newInstance(queryContext, connectionSession, preferPreparedStatement);
     }
     
     private static void checkAllowedSQLStatementWhenTransactionFailed(final DatabaseType databaseType, final SQLStatement sqlStatement,

@@ -39,23 +39,6 @@ import java.util.Optional;
 public final class DatabaseAdminProxyBackendHandlerFactory {
     
     /**
-     * Create new instance of database admin backend handler, and this handler requires a connection containing a schema to be used.
-     *
-     * @param databaseType database type
-     * @param sqlStatementContext SQL statement context
-     * @param connectionSession connection session
-     * @return created instance
-     */
-    public static Optional<ProxyBackendHandler> newInstance(final DatabaseType databaseType, final SQLStatementContext sqlStatementContext, final ConnectionSession connectionSession) {
-        Optional<DatabaseAdminExecutorCreator> executorCreator = DatabaseTypedSPILoader.findService(DatabaseAdminExecutorCreator.class, databaseType);
-        if (!executorCreator.isPresent()) {
-            return Optional.empty();
-        }
-        Optional<DatabaseAdminExecutor> executor = executorCreator.get().create(sqlStatementContext);
-        return executor.map(optional -> createProxyBackendHandler(sqlStatementContext, connectionSession, optional));
-    }
-    
-    /**
      * Create new instance of database admin backend handler.
      *
      * @param databaseType database type
