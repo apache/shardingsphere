@@ -1,22 +1,28 @@
-#
-# Licensed to the Apache Software Foundation (ASF) under one or more
-# contributor license agreements.  See the NOTICE file distributed with
-# this work for additional information regarding copyright ownership.
-# The ASF licenses this file to You under the Apache License, Version 2.0
-# (the "License"); you may not use this file except in compliance with
-# the License.  You may obtain a copy of the License at
-#
-#     http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
-#
+# Use Eclipse Temurin JDK as the base image
 FROM eclipse-temurin:23-jdk
+
+# Metadata
 LABEL org.opencontainers.image.authors="ShardingSphere dev@shardingsphere.apache.org"
+
+# Define build arguments
 ARG DIRECTORY_NAME
 ARG JAR_NAME
-ADD target/${DIRECTORY_NAME} /usr
-RUN mv /usr/agent/${JAR_NAME} /usr/agent/shardingsphere-agent.jar
+
+# Set working directory
+WORKDIR /usr/agent
+
+# Copy ShardingSphere Agent files
+ADD target/${DIRECTORY_NAME} /usr/agent/
+
+# Rename and ensure the agent JAR is properly placed
+RUN if [ -f "/usr/agent/${JAR_NAME}" ]; then \
+        mv /usr/agent/${JAR_NAME} /usr/agent/shardingsphere-agent.jar; \
+    else \
+        echo "Error: ShardingSphere Agent JAR not found!"; exit 1; \
+    fi
+
+# Environment variable for Java Agent
+ENV JAVA_TOOL_OPTIONS="-javaagent:/usr/agent/shardingsphere-agent.jar"
+
+# Default command for running applications with the agent
+CMD ["java", "-jar", "app.jar"]
