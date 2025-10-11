@@ -32,13 +32,13 @@ import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 /**
- * Character set of MySQL.
+ * Character sets of MySQL.
  *
  * @see <a href="https://dev.mysql.com/doc/dev/mysql-server/latest/page_protocol_basic_character_set.html">Character Set</a>
  * @see <a href="https://dev.mysql.com/doc/refman/8.0/en/charset-charsets.html">Character Set</a>
  */
 @Getter
-public enum MySQLCharacterSet {
+public enum MySQLCharacterSets {
     
     BIG5_CHINESE_CI(1, () -> Charset.forName("big5")),
     LATIN2_CZECH_CS(2, () -> Charset.forName("latin2")),
@@ -313,13 +313,13 @@ public enum MySQLCharacterSet {
     UTF8MB4_ZH_0900_AS_CS(308, () -> StandardCharsets.UTF_8),
     UTF8MB4_0900_BIN(309, () -> StandardCharsets.UTF_8);
     
-    private static final Map<Integer, MySQLCharacterSet> CHARACTER_SET_MAP = Collections.unmodifiableMap(Arrays.stream(values()).collect(Collectors.toMap(each -> each.id, Function.identity())));
+    private static final Map<Integer, MySQLCharacterSets> CHARACTER_SET_MAP = Collections.unmodifiableMap(Arrays.stream(values()).collect(Collectors.toMap(each -> each.id, Function.identity())));
     
     private final int id;
     
     private final Charset charset;
     
-    MySQLCharacterSet(final int id, final Supplier<Charset> charsetSupplier) {
+    MySQLCharacterSets(final int id, final Supplier<Charset> charsetSupplier) {
         this.id = id;
         Charset result = null;
         try {
@@ -335,8 +335,8 @@ public enum MySQLCharacterSet {
      * @param id id
      * @return MySQL character set
      */
-    public static MySQLCharacterSet findById(final int id) {
-        MySQLCharacterSet result = CHARACTER_SET_MAP.get(id);
+    public static MySQLCharacterSets findById(final int id) {
+        MySQLCharacterSets result = CHARACTER_SET_MAP.get(id);
         ShardingSpherePreconditions.checkNotNull(result, () -> new UnknownCollationException(id));
         ShardingSpherePreconditions.checkNotNull(result.getCharset(), () -> new UnknownCollationException(id));
         return result;

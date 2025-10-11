@@ -22,7 +22,7 @@ import io.netty.buffer.Unpooled;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.database.exception.mysql.exception.TooManyPlaceholdersException;
 import org.apache.shardingsphere.database.exception.mysql.exception.UnsupportedPreparedStatementException;
-import org.apache.shardingsphere.database.protocol.mysql.constant.MySQLCharacterSet;
+import org.apache.shardingsphere.database.protocol.mysql.constant.MySQLCharacterSets;
 import org.apache.shardingsphere.database.protocol.mysql.constant.MySQLConstants;
 import org.apache.shardingsphere.database.protocol.mysql.packet.command.query.MySQLColumnDefinition41Packet;
 import org.apache.shardingsphere.database.protocol.mysql.packet.command.query.MySQLColumnDefinitionFlag;
@@ -95,7 +95,7 @@ class MySQLComStmtPrepareExecutorTest {
     @BeforeEach
     void setup() {
         when(connectionSession.getServerPreparedStatementRegistry()).thenReturn(new ServerPreparedStatementRegistry());
-        when(connectionSession.getAttributeMap().attr(MySQLConstants.CHARACTER_SET_ATTRIBUTE_KEY).get()).thenReturn(MySQLCharacterSet.UTF8MB4_UNICODE_CI);
+        when(connectionSession.getAttributeMap().attr(MySQLConstants.CHARACTER_SET_ATTRIBUTE_KEY).get()).thenReturn(MySQLCharacterSets.UTF8MB4_UNICODE_CI);
     }
     
     @Test

@@ -31,7 +31,7 @@ public final class MySQLConstants {
     
     public static final AttributeKey<AtomicInteger> SEQUENCE_ID_ATTRIBUTE_KEY = AttributeKey.valueOf("MYSQL_SEQUENCE_ID");
     
-    public static final AttributeKey<MySQLCharacterSet> CHARACTER_SET_ATTRIBUTE_KEY = AttributeKey.valueOf(MySQLCharacterSet.class.getName());
+    public static final AttributeKey<MySQLCharacterSets> CHARACTER_SET_ATTRIBUTE_KEY = AttributeKey.valueOf(MySQLCharacterSets.class.getName());
     
     public static final AttributeKey<Integer> OPTION_MULTI_STATEMENTS_ATTRIBUTE_KEY = AttributeKey.valueOf("MYSQL_OPTION_MULTI_STATEMENTS");
     
@@ -40,5 +40,5 @@ public final class MySQLConstants {
      */
     public static final int PROTOCOL_VERSION = 0x0A;
     
-    public static final MySQLCharacterSet DEFAULT_CHARSET = MySQLCharacterSet.UTF8MB4_GENERAL_CI;
+    public static final MySQLCharacterSets DEFAULT_CHARSET = MySQLCharacterSets.UTF8MB4_GENERAL_CI;
 }

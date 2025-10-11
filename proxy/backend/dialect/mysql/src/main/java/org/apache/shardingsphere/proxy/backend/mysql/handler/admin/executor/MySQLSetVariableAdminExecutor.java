@@ -61,7 +61,8 @@ public final class MySQLSetVariableAdminExecutor implements DatabaseAdminExecuto
     public void execute(final ConnectionSession connectionSession) throws SQLException {
         Map<String, String> sessionVariables = extractSessionVariables();
         validateSessionVariables(sessionVariables.keySet());
-        new CharsetSetExecutor(databaseType, connectionSession).set(sessionVariables);
+        CharsetSetExecutor charsetSetExecutor = new CharsetSetExecutor(databaseType, connectionSession);
+        sessionVariables.forEach(charsetSetExecutor::set);
         new SessionVariableRecordExecutor(databaseType, connectionSession).recordVariable(sessionVariables);
         executeSetGlobalVariablesIfPresent(connectionSession);
     }

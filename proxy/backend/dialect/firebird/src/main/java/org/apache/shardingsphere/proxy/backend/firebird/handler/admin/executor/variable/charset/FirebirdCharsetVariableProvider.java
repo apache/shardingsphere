@@ -21,6 +21,8 @@ import org.apache.shardingsphere.database.exception.core.exception.data.InvalidP
 import org.apache.shardingsphere.proxy.backend.handler.admin.executor.variable.charset.CharsetVariableProvider;
 
 import java.nio.charset.Charset;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Locale;
 
 /**
@@ -29,18 +31,17 @@ import java.util.Locale;
 public final class FirebirdCharsetVariableProvider implements CharsetVariableProvider {
     
     @Override
-    public boolean isCharsetVariable(final String variableName) {
-        return "names".equalsIgnoreCase(variableName);
+    public Collection<String> getCharsetVariables() {
+        return Collections.singleton("names");
     }
     
     @Override
     public Charset parseCharset(final String variableValue) {
-        String formattedValue = variableValue.trim();
+        String formattedValue = variableValue.trim().toLowerCase(Locale.ROOT);
         try {
-            String result = formattedValue.toLowerCase(Locale.ROOT);
-            return "default".equals(result) ? Charset.defaultCharset() : FirebirdCharacterSets.findCharacterSet(result);
+            return "default".equals(formattedValue) ? Charset.defaultCharset() : FirebirdCharacterSets.findCharacterSet(formattedValue);
         } catch (final IllegalArgumentException ignored) {
-            throw new InvalidParameterValueException("names", formattedValue.toLowerCase(Locale.ROOT));
+            throw new InvalidParameterValueException("names", formattedValue);
         }
     }
     
