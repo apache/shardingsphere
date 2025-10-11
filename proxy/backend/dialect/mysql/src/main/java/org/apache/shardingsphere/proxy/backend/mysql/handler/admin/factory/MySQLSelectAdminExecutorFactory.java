@@ -42,7 +42,7 @@ public final class MySQLSelectAdminExecutorFactory {
     
     /**
      * New instance of select admin executor for MySQL.
-     * 
+     *
      * @param selectStatementContext select statement context
      * @param sql SQL
      * @param databaseName database name

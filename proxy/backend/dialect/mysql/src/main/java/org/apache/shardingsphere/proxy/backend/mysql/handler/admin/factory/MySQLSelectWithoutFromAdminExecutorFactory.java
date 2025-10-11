@@ -46,7 +46,7 @@ public final class MySQLSelectWithoutFromAdminExecutorFactory {
     
     /**
      * New instance of select without from admin executor factory for MySQL.
-     * 
+     *
      * @param selectStatementContext select statement context
      * @param sql SQL
      * @param databaseName database name
