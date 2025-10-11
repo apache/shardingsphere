@@ -26,6 +26,7 @@ import org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.ra
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataMergedResult;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.proxy.backend.handler.admin.executor.DatabaseAdminQueryExecutor;
 import org.apache.shardingsphere.proxy.backend.postgresql.handler.admin.executor.PostgreSQLShowVariableExecutor;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
@@ -64,19 +65,19 @@ public final class OpenGaussShowVariableExecutor implements DatabaseAdminQueryEx
     }
     
     @Override
-    public void execute(final ConnectionSession connectionSession) {
+    public void execute(final ConnectionSession connectionSession, final ShardingSphereMetaData metaData) {
         String name = showStatement.getName().toLowerCase(Locale.ROOT);
         if (VARIABLE_ROW_DATA_GENERATORS.containsKey(name)) {
             queryResultMetaData = new RawQueryResultMetaData(Collections.singletonList(new RawQueryResultColumnMetaData("", "", name, Types.VARCHAR, "VARCHAR", -1, 0)));
             OpenGaussShowVariableExecutor.VariableRowDataGenerator variableRowDataGenerator = VARIABLE_ROW_DATA_GENERATORS.getOrDefault(name, unused -> new String[]{"", "", ""});
             mergedResult = new LocalDataMergedResult(Collections.singletonList(new LocalDataQueryResultRow(variableRowDataGenerator.getVariable(connectionSession)[1])));
         } else {
-            delegated(connectionSession);
+            delegated(connectionSession, metaData);
         }
     }
     
-    private void delegated(final ConnectionSession connectionSession) {
-        delegate.execute(connectionSession);
+    private void delegated(final ConnectionSession connectionSession, final ShardingSphereMetaData metaData) {
+        delegate.execute(connectionSession, metaData);
         queryResultMetaData = delegate.getQueryResultMetaData();
         mergedResult = delegate.getMergedResult();
     }

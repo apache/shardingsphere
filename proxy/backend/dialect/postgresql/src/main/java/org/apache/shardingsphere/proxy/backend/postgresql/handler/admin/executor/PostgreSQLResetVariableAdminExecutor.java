@@ -19,6 +19,7 @@ package org.apache.shardingsphere.proxy.backend.postgresql.handler.admin.executo
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.proxy.backend.handler.admin.executor.DatabaseAdminExecutor;
 import org.apache.shardingsphere.proxy.backend.handler.admin.executor.variable.charset.CharsetSetExecutor;
@@ -39,7 +40,7 @@ public final class PostgreSQLResetVariableAdminExecutor implements DatabaseAdmin
     private final PostgreSQLResetParameterStatement resetParameterStatement;
     
     @Override
-    public void execute(final ConnectionSession connectionSession) {
+    public void execute(final ConnectionSession connectionSession, final ShardingSphereMetaData metaData) {
         String variableName = resetParameterStatement.getConfigurationParameter();
         new CharsetSetExecutor(databaseType, connectionSession).set(variableName, DEFAULT);
         new SessionVariableRecordExecutor(databaseType, connectionSession).recordVariable(variableName, DEFAULT);

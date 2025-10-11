@@ -22,7 +22,7 @@ import org.apache.shardingsphere.authority.checker.AuthorityChecker;
 import org.apache.shardingsphere.authority.rule.AuthorityRule;
 import org.apache.shardingsphere.database.exception.core.exception.syntax.database.UnknownDatabaseException;
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
-import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.proxy.backend.handler.admin.executor.DatabaseAdminExecutor;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.sql.parser.statement.core.util.SQLUtils;
@@ -34,16 +34,14 @@ import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLUseStatemen
 @RequiredArgsConstructor
 public final class UseDatabaseExecutor implements DatabaseAdminExecutor {
     
-    private final MySQLUseStatement useStatement;
+    private final MySQLUseStatement sqlStatement;
     
     @Override
-    public void execute(final ConnectionSession connectionSession) {
-        String databaseName = SQLUtils.getExactlyValue(useStatement.getDatabase());
-        AuthorityRule authorityRule = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getSingleRule(AuthorityRule.class);
+    public void execute(final ConnectionSession connectionSession, final ShardingSphereMetaData metaData) {
+        String databaseName = SQLUtils.getExactlyValue(sqlStatement.getDatabase());
+        AuthorityRule authorityRule = metaData.getGlobalRuleMetaData().getSingleRule(AuthorityRule.class);
         AuthorityChecker authorityChecker = new AuthorityChecker(authorityRule, connectionSession.getConnectionContext().getGrantee());
-        ShardingSpherePreconditions.checkState(
-                ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().containsDatabase(databaseName) && authorityChecker.isAuthorized(databaseName),
-                () -> new UnknownDatabaseException(databaseName));
+        ShardingSpherePreconditions.checkState(metaData.containsDatabase(databaseName) && authorityChecker.isAuthorized(databaseName), () -> new UnknownDatabaseException(databaseName));
         connectionSession.setCurrentDatabaseName(databaseName);
     }
 }

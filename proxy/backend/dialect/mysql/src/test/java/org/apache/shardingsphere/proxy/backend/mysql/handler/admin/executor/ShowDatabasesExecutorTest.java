@@ -24,21 +24,15 @@ import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryRe
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
-import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereStatistics;
-import org.apache.shardingsphere.infra.metadata.statistics.builder.ShardingSphereStatisticsFactory;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
-import org.apache.shardingsphere.mode.manager.ContextManager;
-import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
-import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.ShowFilterSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.ShowLikeSegment;
 import org.apache.shardingsphere.sql.parser.statement.mysql.dal.show.database.MySQLShowDatabasesStatement;
-import org.apache.shardingsphere.test.infra.framework.mock.AutoMockExtension;
-import org.apache.shardingsphere.test.infra.framework.mock.StaticMockSettings;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 
@@ -58,8 +52,7 @@ import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-@ExtendWith(AutoMockExtension.class)
-@StaticMockSettings(ProxyContext.class)
+@ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
 class ShowDatabasesExecutorTest {
     
@@ -69,10 +62,8 @@ class ShowDatabasesExecutorTest {
     
     @Test
     void assertExecute() throws SQLException {
-        ContextManager contextManager = mockContextManager();
-        when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
         ShowDatabasesExecutor executor = new ShowDatabasesExecutor(new MySQLShowDatabasesStatement(databaseType, null));
-        executor.execute(mockConnectionSession());
+        executor.execute(mockConnectionSession(), mockMetaData());
         QueryResultMetaData queryResultMetaData = executor.getQueryResultMetaData();
         assertThat(queryResultMetaData.getColumnCount(), is(1));
         assertThat(queryResultMetaData.getTableName(1), is("SCHEMATA"));
@@ -87,10 +78,8 @@ class ShowDatabasesExecutorTest {
         ShowLikeSegment showLikeSegment = new ShowLikeSegment(0, 0, "database%");
         showFilterSegment.setLike(showLikeSegment);
         MySQLShowDatabasesStatement showDatabasesStatement = new MySQLShowDatabasesStatement(databaseType, showFilterSegment);
-        ContextManager contextManager = mockContextManager();
-        when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
         ShowDatabasesExecutor executor = new ShowDatabasesExecutor(showDatabasesStatement);
-        executor.execute(mockConnectionSession());
+        executor.execute(mockConnectionSession(), mockMetaData());
         assertThat(getActual(executor), is(getExpected()));
     }
     
@@ -118,10 +107,8 @@ class ShowDatabasesExecutorTest {
         ShowLikeSegment showLikeSegment = new ShowLikeSegment(0, 0, "%_1");
         showFilterSegment.setLike(showLikeSegment);
         MySQLShowDatabasesStatement showDatabasesStatement = new MySQLShowDatabasesStatement(databaseType, showFilterSegment);
-        ContextManager contextManager = mockContextManager();
-        when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
         ShowDatabasesExecutor executor = new ShowDatabasesExecutor(showDatabasesStatement);
-        executor.execute(mockConnectionSession());
+        executor.execute(mockConnectionSession(), mockMetaData());
         assertThat(executor.getQueryResultMetaData().getColumnCount(), is(1));
         int count = 0;
         while (executor.getMergedResult().next()) {
@@ -137,10 +124,8 @@ class ShowDatabasesExecutorTest {
         ShowLikeSegment showLikeSegment = new ShowLikeSegment(0, 0, "database_9");
         showFilterSegment.setLike(showLikeSegment);
         MySQLShowDatabasesStatement showDatabasesStatement = new MySQLShowDatabasesStatement(databaseType, showFilterSegment);
-        ContextManager contextManager = mockContextManager();
-        when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
         ShowDatabasesExecutor executor = new ShowDatabasesExecutor(showDatabasesStatement);
-        executor.execute(mockConnectionSession());
+        executor.execute(mockConnectionSession(), mockMetaData());
         assertThat(executor.getQueryResultMetaData().getColumnCount(), is(1));
         int count = 0;
         while (executor.getMergedResult().next()) {
@@ -156,10 +141,8 @@ class ShowDatabasesExecutorTest {
         ShowLikeSegment showLikeSegment = new ShowLikeSegment(0, 0, "not_exist_database");
         showFilterSegment.setLike(showLikeSegment);
         MySQLShowDatabasesStatement showDatabasesStatement = new MySQLShowDatabasesStatement(databaseType, showFilterSegment);
-        ContextManager contextManager = mockContextManager();
-        when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
         ShowDatabasesExecutor executor = new ShowDatabasesExecutor(showDatabasesStatement);
-        executor.execute(mockConnectionSession());
+        executor.execute(mockConnectionSession(), mockMetaData());
         assertThat(executor.getQueryResultMetaData().getColumnCount(), is(1));
         int count = 0;
         while (executor.getMergedResult().next()) {
@@ -169,14 +152,9 @@ class ShowDatabasesExecutorTest {
         assertThat(count, is(0));
     }
     
-    private ContextManager mockContextManager() {
-        ContextManager result = mock(ContextManager.class, RETURNS_DEEP_STUBS);
+    private ShardingSphereMetaData mockMetaData() {
         RuleMetaData globalRuleMetaData = new RuleMetaData(Collections.singleton(mockAuthorityRule()));
-        ShardingSphereMetaData metaData = new ShardingSphereMetaData(createDatabases(), mock(), globalRuleMetaData, mock());
-        MetaDataContexts metaDataContexts = new MetaDataContexts(metaData, ShardingSphereStatisticsFactory.create(metaData, new ShardingSphereStatistics()));
-        when(result.getMetaDataContexts()).thenReturn(metaDataContexts);
-        when(result.getAllDatabaseNames()).thenReturn(IntStream.range(0, 10).mapToObj(each -> String.format("database_%s", each)).collect(Collectors.toList()));
-        return result;
+        return new ShardingSphereMetaData(createDatabases(), mock(), globalRuleMetaData, mock());
     }
     
     private AuthorityRule mockAuthorityRule() {
