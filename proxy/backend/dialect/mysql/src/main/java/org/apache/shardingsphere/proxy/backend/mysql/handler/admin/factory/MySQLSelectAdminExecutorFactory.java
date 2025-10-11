@@ -22,6 +22,11 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.binder.context.statement.type.dml.SelectStatementContext;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.handler.admin.executor.DatabaseAdminExecutor;
+import org.apache.shardingsphere.proxy.backend.mysql.handler.admin.factory.schema.MySQLInformationSchemaExecutorFactory;
+import org.apache.shardingsphere.proxy.backend.mysql.handler.admin.factory.schema.MySQLMySQLSchemaExecutorFactory;
+import org.apache.shardingsphere.proxy.backend.mysql.handler.admin.factory.schema.MySQLPerformanceSchemaExecutorFactory;
+import org.apache.shardingsphere.proxy.backend.mysql.handler.admin.factory.schema.MySQLSysSchemaExecutorFactory;
+import org.apache.shardingsphere.proxy.backend.mysql.handler.admin.factory.withoutfrom.MySQLSelectWithoutFromAdminExecutorFactory;
 
 import java.util.List;
 import java.util.Optional;
