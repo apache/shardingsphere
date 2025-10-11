@@ -25,6 +25,7 @@ import org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.ra
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataMergedResult;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.proxy.backend.handler.admin.executor.DatabaseAdminQueryExecutor;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 
@@ -43,7 +44,7 @@ public final class OpenGaussSelectVersionExecutor implements DatabaseAdminQueryE
     private MergedResult mergedResult;
     
     @Override
-    public void execute(final ConnectionSession connectionSession) {
+    public void execute(final ConnectionSession connectionSession, final ShardingSphereMetaData metaData) {
         String version = "ShardingSphere-Proxy " + ShardingSphereVersion.VERSION + ("-" + ShardingSphereVersion.BUILD_GIT_COMMIT_ID_ABBREV) + (ShardingSphereVersion.BUILD_GIT_DIRTY ? "-dirty" : "");
         mergedResult = new LocalDataMergedResult(Collections.singleton(new LocalDataQueryResultRow(version)));
     }

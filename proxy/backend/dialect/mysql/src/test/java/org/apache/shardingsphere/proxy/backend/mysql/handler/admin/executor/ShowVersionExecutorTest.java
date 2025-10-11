@@ -59,7 +59,7 @@ class ShowVersionExecutorTest {
         SelectStatement selectStatement = mock(SelectStatement.class);
         when(selectStatement.getProjections()).thenReturn(createProjectionsSegmentWithoutAlias());
         ShowVersionExecutor executor = new ShowVersionExecutor(selectStatement);
-        executor.execute(mockConnectionSession());
+        executor.execute(mockConnectionSession(), mock());
         assertQueryResult(executor, ShowVersionExecutor.FUNCTION_NAME);
     }
     
@@ -81,7 +81,7 @@ class ShowVersionExecutorTest {
         SelectStatement selectStatement = mock(SelectStatement.class);
         when(selectStatement.getProjections()).thenReturn(createProjectionsSegmentWithAlias());
         ShowVersionExecutor executor = new ShowVersionExecutor(selectStatement);
-        executor.execute(mockConnectionSession());
+        executor.execute(mockConnectionSession(), mock());
         assertQueryResult(executor, "foo_alias");
     }
     

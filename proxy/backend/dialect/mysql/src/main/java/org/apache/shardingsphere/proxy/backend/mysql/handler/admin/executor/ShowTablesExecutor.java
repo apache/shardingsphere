@@ -21,6 +21,8 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.database.connector.core.metadata.database.system.SystemDatabase;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
+import org.apache.shardingsphere.database.exception.core.exception.syntax.database.UnknownDatabaseException;
+import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResultMetaData;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.raw.metadata.RawQueryResultColumnMetaData;
@@ -29,9 +31,10 @@ import org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.ra
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.type.memory.row.MemoryQueryResultDataRow;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.apache.shardingsphere.infra.merge.result.impl.transparent.TransparentMergedResult;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
 import org.apache.shardingsphere.infra.util.regex.RegexUtils;
-import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.handler.admin.executor.DatabaseAdminQueryExecutor;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.sql.parser.statement.mysql.dal.show.table.MySQLShowTablesStatement;
@@ -64,10 +67,10 @@ public final class ShowTablesExecutor implements DatabaseAdminQueryExecutor {
     private MergedResult mergedResult;
     
     @Override
-    public void execute(final ConnectionSession connectionSession) {
+    public void execute(final ConnectionSession connectionSession, final ShardingSphereMetaData metaData) {
         String databaseName = sqlStatement.getFromDatabase().map(schema -> schema.getDatabase().getIdentifier().getValue()).orElseGet(connectionSession::getUsedDatabaseName);
         queryResultMetaData = createQueryResultMetaData(databaseName);
-        mergedResult = new TransparentMergedResult(getQueryResult(databaseName));
+        mergedResult = new TransparentMergedResult(getQueryResult(databaseName, metaData));
     }
     
     private QueryResultMetaData createQueryResultMetaData(final String databaseName) {
@@ -80,12 +83,13 @@ public final class ShowTablesExecutor implements DatabaseAdminQueryExecutor {
         return new RawQueryResultMetaData(columnNames);
     }
     
-    private QueryResult getQueryResult(final String databaseName) {
+    private QueryResult getQueryResult(final String databaseName, final ShardingSphereMetaData metaData) {
         SystemDatabase systemDatabase = new SystemDatabase(databaseType);
-        if (!systemDatabase.getSystemSchemas().contains(databaseName) && !ProxyContext.getInstance().getContextManager().getDatabase(databaseName).isComplete()) {
-            return new RawMemoryQueryResult(queryResultMetaData, Collections.emptyList());
-        }
-        List<MemoryQueryResultDataRow> rows = getTables(databaseName).stream().map(this::getRow).collect(Collectors.toList());
+        ShardingSpherePreconditions.checkState(metaData.containsDatabase(databaseName), () -> new UnknownDatabaseException(databaseName));
+        ShardingSphereDatabase database = metaData.getDatabase(databaseName);
+        List<MemoryQueryResultDataRow> rows = systemDatabase.getSystemSchemas().contains(databaseName) || database.isComplete()
+                ? getTables(database).stream().map(this::getRow).collect(Collectors.toList())
+                : Collections.emptyList();
         return new RawMemoryQueryResult(queryResultMetaData, rows);
     }
     
@@ -95,11 +99,11 @@ public final class ShowTablesExecutor implements DatabaseAdminQueryExecutor {
                 : new MemoryQueryResultDataRow(Collections.singletonList(table.getName()));
     }
     
-    private Collection<ShardingSphereTable> getTables(final String databaseName) {
-        if (null == ProxyContext.getInstance().getContextManager().getDatabase(databaseName).getSchema(databaseName)) {
+    private Collection<ShardingSphereTable> getTables(final ShardingSphereDatabase database) {
+        if (null == database.getSchema(database.getName())) {
             return Collections.emptyList();
         }
-        Collection<ShardingSphereTable> tables = ProxyContext.getInstance().getContextManager().getDatabase(databaseName).getSchema(databaseName).getAllTables();
+        Collection<ShardingSphereTable> tables = database.getSchema(database.getName()).getAllTables();
         Collection<ShardingSphereTable> filteredTables = filterByLike(tables);
         return filteredTables.stream().sorted(Comparator.comparing(ShardingSphereTable::getName)).collect(Collectors.toList());
     }

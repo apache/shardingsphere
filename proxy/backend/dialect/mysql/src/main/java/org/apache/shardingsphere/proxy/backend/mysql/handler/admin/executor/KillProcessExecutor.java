@@ -20,6 +20,7 @@ package org.apache.shardingsphere.proxy.backend.mysql.handler.admin.executor;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.exception.generic.UnsupportedSQLOperationException;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.handler.admin.executor.DatabaseAdminExecutor;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
@@ -37,13 +38,8 @@ public final class KillProcessExecutor implements DatabaseAdminExecutor {
     
     private final MySQLKillStatement killStatement;
     
-    /**
-     * Execute.
-     *
-     * @param connectionSession connection session
-     */
     @Override
-    public void execute(final ConnectionSession connectionSession) throws SQLException {
+    public void execute(final ConnectionSession connectionSession, final ShardingSphereMetaData metaData) throws SQLException {
         ShardingSpherePreconditions.checkState(QUERY_SCOPE.equalsIgnoreCase(killStatement.getScope()),
                 () -> new UnsupportedSQLOperationException("Only `KILL QUERY <processId>` SQL syntax is supported"));
         String processId = killStatement.getProcessId();

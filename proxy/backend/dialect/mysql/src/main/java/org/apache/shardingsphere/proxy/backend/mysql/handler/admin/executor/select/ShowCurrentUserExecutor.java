@@ -25,9 +25,9 @@ import org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.ra
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataMergedResult;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
-import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.handler.admin.executor.DatabaseAdminQueryExecutor;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 
@@ -48,8 +48,8 @@ public final class ShowCurrentUserExecutor implements DatabaseAdminQueryExecutor
     private MergedResult mergedResult;
     
     @Override
-    public void execute(final ConnectionSession connectionSession) {
-        AuthorityRule authorityRule = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getSingleRule(AuthorityRule.class);
+    public void execute(final ConnectionSession connectionSession, final ShardingSphereMetaData metaData) {
+        AuthorityRule authorityRule = metaData.getGlobalRuleMetaData().getSingleRule(AuthorityRule.class);
         Optional<Grantee> grantee = authorityRule.findUser(connectionSession.getConnectionContext().getGrantee()).map(ShardingSphereUser::getGrantee);
         mergedResult = new LocalDataMergedResult(Collections.singleton(new LocalDataQueryResultRow(grantee.map(Grantee::toString).orElse(""))));
     }

@@ -23,12 +23,11 @@ import org.apache.shardingsphere.database.exception.mysql.exception.UnknownSyste
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.engine.SQLBindEngine;
 import org.apache.shardingsphere.infra.hint.HintValueContext;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.session.query.QueryContext;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
-import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.parser.rule.SQLParserRule;
 import org.apache.shardingsphere.proxy.backend.connector.DatabaseProxyConnectorFactory;
-import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.handler.admin.executor.DatabaseAdminExecutor;
 import org.apache.shardingsphere.proxy.backend.handler.admin.executor.variable.charset.CharsetSetExecutor;
 import org.apache.shardingsphere.proxy.backend.handler.admin.executor.variable.session.SessionVariableRecordExecutor;
@@ -58,13 +57,13 @@ public final class MySQLSetVariableAdminExecutor implements DatabaseAdminExecuto
     private final SetStatement setStatement;
     
     @Override
-    public void execute(final ConnectionSession connectionSession) throws SQLException {
+    public void execute(final ConnectionSession connectionSession, final ShardingSphereMetaData metaData) throws SQLException {
         Map<String, String> sessionVariables = extractSessionVariables();
         validateSessionVariables(sessionVariables.keySet());
         CharsetSetExecutor charsetSetExecutor = new CharsetSetExecutor(databaseType, connectionSession);
         sessionVariables.forEach(charsetSetExecutor::set);
         new SessionVariableRecordExecutor(databaseType, connectionSession).recordVariable(sessionVariables);
-        executeSetGlobalVariablesIfPresent(connectionSession);
+        executeSetGlobalVariablesIfPresent(connectionSession, metaData);
     }
     
     private Map<String, String> extractSessionVariables() {
@@ -79,7 +78,7 @@ public final class MySQLSetVariableAdminExecutor implements DatabaseAdminExecuto
         }
     }
     
-    private void executeSetGlobalVariablesIfPresent(final ConnectionSession connectionSession) throws SQLException {
+    private void executeSetGlobalVariablesIfPresent(final ConnectionSession connectionSession, final ShardingSphereMetaData metaData) throws SQLException {
         if (null == connectionSession.getUsedDatabaseName()) {
             return;
         }
@@ -89,13 +88,12 @@ public final class MySQLSetVariableAdminExecutor implements DatabaseAdminExecuto
             return;
         }
         String sql = "SET " + concatenatedGlobalVariables;
-        MetaDataContexts metaDataContexts = ProxyContext.getInstance().getContextManager().getMetaDataContexts();
-        SQLParserRule sqlParserRule = metaDataContexts.getMetaData().getGlobalRuleMetaData().getSingleRule(SQLParserRule.class);
+        SQLParserRule sqlParserRule = metaData.getGlobalRuleMetaData().getSingleRule(SQLParserRule.class);
         SQLStatement sqlStatement = sqlParserRule.getSQLParserEngine(databaseType).parse(sql, false);
-        SQLStatementContext sqlStatementContext = new SQLBindEngine(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData(),
+        SQLStatementContext sqlStatementContext = new SQLBindEngine(metaData,
                 connectionSession.getCurrentDatabaseName(), new HintValueContext()).bind(sqlStatement);
         DatabaseProxyBackendHandler databaseProxyBackendHandler = DatabaseProxyConnectorFactory.newInstance(
-                new QueryContext(sqlStatementContext, sql, Collections.emptyList(), new HintValueContext(), connectionSession.getConnectionContext(), metaDataContexts.getMetaData()),
+                new QueryContext(sqlStatementContext, sql, Collections.emptyList(), new HintValueContext(), connectionSession.getConnectionContext(), metaData),
                 connectionSession.getDatabaseConnectionManager(), false);
         try {
             databaseProxyBackendHandler.execute();

@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.proxy.backend.handler.admin;
 
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
@@ -33,6 +34,8 @@ import java.sql.SQLException;
 @RequiredArgsConstructor
 public final class DatabaseAdminUpdateProxyBackendHandler implements ProxyBackendHandler {
     
+    private final ContextManager contextManager;
+    
     private final ConnectionSession connectionSession;
     
     private final SQLStatement sqlStatement;
@@ -41,7 +44,7 @@ public final class DatabaseAdminUpdateProxyBackendHandler implements ProxyBacken
     
     @Override
     public ResponseHeader execute() throws SQLException {
-        executor.execute(connectionSession);
+        executor.execute(connectionSession, contextManager.getMetaDataContexts().getMetaData());
         return new UpdateResponseHeader(sqlStatement);
     }
 }
