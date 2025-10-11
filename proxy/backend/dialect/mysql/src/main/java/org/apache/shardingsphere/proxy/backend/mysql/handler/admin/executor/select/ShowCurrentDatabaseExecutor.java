@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.mysql.handler.admin.executor;
+package org.apache.shardingsphere.proxy.backend.mysql.handler.admin.executor.select;
 
 import lombok.Getter;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResultMetaData;

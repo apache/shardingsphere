@@ -15,34 +15,35 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.mysql.handler.admin.executor;
+package org.apache.shardingsphere.proxy.backend.mysql.handler.admin.executor.select;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
+import org.apache.shardingsphere.database.protocol.constant.DatabaseProtocolServerInfo;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResultMetaData;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.raw.metadata.RawQueryResultColumnMetaData;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.raw.metadata.RawQueryResultMetaData;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataMergedResult;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.proxy.backend.handler.admin.executor.DatabaseAdminQueryExecutor;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ExpressionProjectionSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.SelectStatement;
 
 import java.sql.Types;
-import java.util.Collection;
 import java.util.Collections;
 
 /**
- * Show connection id executor.
+ * Show version executor.
  */
 @RequiredArgsConstructor
 @Getter
-public final class ShowConnectionIdExecutor implements DatabaseAdminQueryExecutor {
+public final class ShowVersionExecutor implements DatabaseAdminQueryExecutor {
     
-    public static final String FUNCTION_NAME = "connection_id()";
+    public static final String FUNCTION_NAME = "version()";
     
     private final SelectStatement sqlStatement;
     
@@ -50,7 +51,8 @@ public final class ShowConnectionIdExecutor implements DatabaseAdminQueryExecuto
     
     @Override
     public void execute(final ConnectionSession connectionSession) {
-        mergedResult = new LocalDataMergedResult(Collections.singleton(new LocalDataQueryResultRow(connectionSession.getConnectionId())));
+        mergedResult = new LocalDataMergedResult(Collections.singleton(new LocalDataQueryResultRow(
+                DatabaseProtocolServerInfo.getProtocolVersion(connectionSession.getUsedDatabaseName(), TypedSPILoader.getService(DatabaseType.class, "MySQL")))));
     }
     
     @Override
@@ -59,12 +61,7 @@ public final class ShowConnectionIdExecutor implements DatabaseAdminQueryExecuto
     }
     
     private String getLabel() {
-        Collection<ProjectionSegment> projections = sqlStatement.getProjections().getProjections();
-        for (ProjectionSegment each : projections) {
-            if (each instanceof ExpressionProjectionSegment) {
-                return ((ExpressionProjectionSegment) each).getAliasName().orElse(FUNCTION_NAME);
-            }
-        }
-        return FUNCTION_NAME;
+        return sqlStatement.getProjections().getProjections().stream()
+                .filter(ExpressionProjectionSegment.class::isInstance).findFirst().map(each -> ((ExpressionProjectionSegment) each).getAliasName().orElse(FUNCTION_NAME)).orElse(FUNCTION_NAME);
     }
 }
