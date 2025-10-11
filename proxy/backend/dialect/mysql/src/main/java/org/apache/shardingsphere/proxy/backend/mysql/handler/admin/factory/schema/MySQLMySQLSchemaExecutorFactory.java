@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.mysql.handler.admin.factory;
+package org.apache.shardingsphere.proxy.backend.mysql.handler.admin.factory.schema;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -31,10 +31,10 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- * Construct the sys schema executor's factory.
+ * Construct the mysql schema executor's factory.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class MySQLSysSchemaExecutorFactory {
+public final class MySQLMySQLSchemaExecutorFactory {
     
     /**
      * Create executor.
@@ -50,7 +50,7 @@ public final class MySQLSysSchemaExecutorFactory {
             return Optional.empty();
         }
         String tableName = ((SimpleTableSegment) sqlStatement.getFrom().get()).getTableName().getIdentifier().getValue();
-        if (SystemSchemaManager.isSystemTable("mysql", "sys", tableName)) {
+        if (SystemSchemaManager.isSystemTable("mysql", "mysql", tableName)) {
             return Optional.of(new DefaultDatabaseMetaDataExecutor(ProxyContext.getInstance().getContextManager(), sql, parameters));
         }
         return Optional.empty();
