@@ -15,47 +15,56 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.mysql.handler.admin.executor;
+package org.apache.shardingsphere.proxy.backend.mysql.handler.admin.executor.select;
 
 import lombok.Getter;
-import org.apache.shardingsphere.authority.rule.AuthorityRule;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResultMetaData;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.raw.metadata.RawQueryResultColumnMetaData;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.raw.metadata.RawQueryResultMetaData;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataMergedResult;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
-import org.apache.shardingsphere.infra.metadata.user.Grantee;
-import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
-import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.handler.admin.executor.DatabaseAdminQueryExecutor;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ExpressionProjectionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ProjectionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.SelectStatement;
 
 import java.sql.Types;
+import java.util.Collection;
 import java.util.Collections;
-import java.util.Optional;
 
 /**
- * Show current user executor.
+ * Show connection id executor.
  */
+@RequiredArgsConstructor
 @Getter
-public final class ShowCurrentUserExecutor implements DatabaseAdminQueryExecutor {
+public final class ShowConnectionIdExecutor implements DatabaseAdminQueryExecutor {
     
-    public static final String FUNCTION_NAME = "current_user()";
+    public static final String FUNCTION_NAME = "connection_id()";
     
-    public static final String FUNCTION_NAME_ALIAS = "current_user";
+    private final SelectStatement sqlStatement;
     
     private MergedResult mergedResult;
     
     @Override
     public void execute(final ConnectionSession connectionSession) {
-        AuthorityRule authorityRule = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getSingleRule(AuthorityRule.class);
-        Optional<Grantee> grantee = authorityRule.findUser(connectionSession.getConnectionContext().getGrantee()).map(ShardingSphereUser::getGrantee);
-        mergedResult = new LocalDataMergedResult(Collections.singleton(new LocalDataQueryResultRow(grantee.map(Grantee::toString).orElse(""))));
+        mergedResult = new LocalDataMergedResult(Collections.singleton(new LocalDataQueryResultRow(connectionSession.getConnectionId())));
     }
     
     @Override
     public QueryResultMetaData getQueryResultMetaData() {
-        return new RawQueryResultMetaData(Collections.singletonList(new RawQueryResultColumnMetaData("", FUNCTION_NAME, FUNCTION_NAME, Types.VARCHAR, "VARCHAR", 100, 0)));
+        return new RawQueryResultMetaData(Collections.singletonList(new RawQueryResultColumnMetaData("", FUNCTION_NAME, getLabel(), Types.VARCHAR, "VARCHAR", 100, 0)));
+    }
+    
+    private String getLabel() {
+        Collection<ProjectionSegment> projections = sqlStatement.getProjections().getProjections();
+        for (ProjectionSegment each : projections) {
+            if (each instanceof ExpressionProjectionSegment) {
+                return ((ExpressionProjectionSegment) each).getAliasName().orElse(FUNCTION_NAME);
+            }
+        }
+        return FUNCTION_NAME;
     }
 }

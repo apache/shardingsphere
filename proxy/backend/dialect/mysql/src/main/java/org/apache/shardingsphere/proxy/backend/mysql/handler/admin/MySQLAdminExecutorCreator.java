@@ -74,14 +74,14 @@ public final class MySQLAdminExecutorCreator implements DatabaseAdminExecutorCre
         if (sqlStatement instanceof MySQLShowProcedureStatusStatement) {
             return Optional.of(new ShowProcedureStatusExecutor((MySQLShowProcedureStatusStatement) sqlStatement));
         }
-        if (sqlStatement instanceof SetStatement) {
-            return Optional.of(new MySQLSetVariableAdminExecutor((SetStatement) sqlStatement));
-        }
         if (sqlStatement instanceof MySQLShowProcessListStatement) {
             return Optional.of(new ShowProcessListExecutor(((MySQLShowProcessListStatement) sqlStatement).isFull()));
         }
         if (sqlStatement instanceof MySQLKillStatement) {
             return Optional.of(new KillProcessExecutor((MySQLKillStatement) sqlStatement));
+        }
+        if (sqlStatement instanceof SetStatement) {
+            return Optional.of(new MySQLSetVariableAdminExecutor((SetStatement) sqlStatement));
         }
         return Optional.empty();
     }
