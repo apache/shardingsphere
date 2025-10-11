@@ -25,9 +25,9 @@ import java.nio.charset.StandardCharsets;
 import java.util.Locale;
 
 /**
- * Set charset executor of PostgreSQL.
+ * Charset variable provider of PostgreSQL.
  */
-public final class PostgreSQLSetCharsetExecutor implements CharsetVariableProvider {
+public final class PostgreSQLCharsetVariableProvider implements CharsetVariableProvider {
     
     @Override
     public boolean isCharsetVariable(final String variableName) {

@@ -24,9 +24,9 @@ import java.nio.charset.Charset;
 import java.util.Locale;
 
 /**
- * Set charset executor of Firebird.
+ * Charset variable provider of Firebird.
  */
-public final class FirebirdSetCharsetExecutor implements CharsetVariableProvider {
+public final class FirebirdCharsetVariableProvider implements CharsetVariableProvider {
     
     @Override
     public boolean isCharsetVariable(final String variableName) {
@@ -35,17 +35,13 @@ public final class FirebirdSetCharsetExecutor implements CharsetVariableProvider
     
     @Override
     public Charset parseCharset(final String variableValue) {
-        String formattedValue = formatValue(variableValue);
+        String formattedValue = variableValue.trim();
         try {
             String result = formattedValue.toLowerCase(Locale.ROOT);
             return "default".equals(result) ? Charset.defaultCharset() : FirebirdCharacterSets.findCharacterSet(result);
         } catch (final IllegalArgumentException ignored) {
             throw new InvalidParameterValueException("names", formattedValue.toLowerCase(Locale.ROOT));
         }
-    }
-    
-    private String formatValue(final String variableValue) {
-        return variableValue.trim();
     }
     
     @Override

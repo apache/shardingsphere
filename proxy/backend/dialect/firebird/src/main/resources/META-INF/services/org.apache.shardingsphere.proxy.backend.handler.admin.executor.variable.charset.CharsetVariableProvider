@@ -15,4 +15,4 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.proxy.backend.firebird.handler.admin.executor.variable.charset.FirebirdSetCharsetExecutor
+org.apache.shardingsphere.proxy.backend.firebird.handler.admin.executor.variable.charset.FirebirdCharsetVariableProvider

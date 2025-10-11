@@ -27,9 +27,9 @@ import java.nio.charset.StandardCharsets;
 import java.util.Locale;
 
 /**
- * Set charset executor of MySQL.
+ * Charset variable provider of MySQL.
  */
-public final class MySQLSetCharsetExecutor implements CharsetVariableProvider {
+public final class MySQLCharsetVariableProvider implements CharsetVariableProvider {
     
     @Override
     public boolean isCharsetVariable(final String variableName) {
