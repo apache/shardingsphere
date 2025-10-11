@@ -24,6 +24,8 @@ import org.apache.shardingsphere.proxy.backend.handler.admin.executor.variable.c
 
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.Locale;
 
 /**
@@ -32,8 +34,8 @@ import java.util.Locale;
 public final class MySQLCharsetVariableProvider implements CharsetVariableProvider {
     
     @Override
-    public boolean isCharsetVariable(final String variableName) {
-        return "charset".equalsIgnoreCase(variableName) || "character_set_client".equalsIgnoreCase(variableName);
+    public Collection<String> getCharsetVariables() {
+        return Arrays.asList("charset", "character_set_client");
     }
     
     @Override

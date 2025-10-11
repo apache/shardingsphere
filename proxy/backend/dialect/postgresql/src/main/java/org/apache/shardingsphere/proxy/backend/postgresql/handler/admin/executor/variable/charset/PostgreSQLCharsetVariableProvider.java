@@ -21,7 +21,8 @@ import org.apache.shardingsphere.database.exception.core.exception.data.InvalidP
 import org.apache.shardingsphere.proxy.backend.handler.admin.executor.variable.charset.CharsetVariableProvider;
 
 import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Locale;
 
 /**
@@ -30,23 +31,18 @@ import java.util.Locale;
 public final class PostgreSQLCharsetVariableProvider implements CharsetVariableProvider {
     
     @Override
-    public boolean isCharsetVariable(final String variableName) {
-        return "client_encoding".equalsIgnoreCase(variableName);
+    public Collection<String> getCharsetVariables() {
+        return Collections.singleton("client_encoding");
     }
     
     @Override
     public Charset parseCharset(final String variableValue) {
-        String formattedValue = formatValue(variableValue);
+        String formattedValue = variableValue.trim().toLowerCase(Locale.ROOT);
         try {
-            String result = formattedValue.toLowerCase(Locale.ROOT);
-            return "default".equals(result) ? StandardCharsets.UTF_8 : PostgreSQLCharacterSets.findCharacterSet(result);
+            return "default".equals(formattedValue) ? Charset.defaultCharset() : PostgreSQLCharacterSets.findCharacterSet(formattedValue);
         } catch (final IllegalArgumentException ignored) {
-            throw new InvalidParameterValueException("client_encoding", formattedValue.toLowerCase(Locale.ROOT));
+            throw new InvalidParameterValueException("client_encoding", formattedValue);
         }
-    }
-    
-    private String formatValue(final String variableValue) {
-        return variableValue.trim();
     }
     
     @Override

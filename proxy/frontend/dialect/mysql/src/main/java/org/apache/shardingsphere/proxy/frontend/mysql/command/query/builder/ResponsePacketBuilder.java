@@ -20,7 +20,7 @@ package org.apache.shardingsphere.proxy.frontend.mysql.command.query.builder;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.database.protocol.mysql.constant.MySQLBinaryColumnType;
-import org.apache.shardingsphere.database.protocol.mysql.constant.MySQLCharacterSet;
+import org.apache.shardingsphere.database.protocol.mysql.constant.MySQLCharacterSets;
 import org.apache.shardingsphere.database.protocol.mysql.packet.command.query.MySQLColumnDefinition41Packet;
 import org.apache.shardingsphere.database.protocol.mysql.packet.command.query.MySQLColumnDefinitionFlag;
 import org.apache.shardingsphere.database.protocol.mysql.packet.command.query.MySQLFieldCountPacket;
@@ -64,7 +64,7 @@ public final class ResponsePacketBuilder {
         List<QueryHeader> queryHeaders = queryResponseHeader.getQueryHeaders();
         result.add(new MySQLFieldCountPacket(queryHeaders.size()));
         for (QueryHeader each : queryHeaders) {
-            int characterSet = BINARY_TYPES.contains(each.getColumnType()) ? MySQLCharacterSet.BINARY.getId() : sessionCharacterSet;
+            int characterSet = BINARY_TYPES.contains(each.getColumnType()) ? MySQLCharacterSets.BINARY.getId() : sessionCharacterSet;
             result.add(new MySQLColumnDefinition41Packet(characterSet, getColumnDefinitionFlag(each), each.getSchema(), each.getTable(), each.getTable(),
                     each.getColumnLabel(), each.getColumnName(), each.getColumnLength(), MySQLBinaryColumnType.valueOfJDBCType(each.getColumnType()), each.getDecimals(), false));
         }
