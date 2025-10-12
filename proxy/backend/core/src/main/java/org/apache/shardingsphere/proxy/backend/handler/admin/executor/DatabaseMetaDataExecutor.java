@@ -34,7 +34,6 @@ import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
 import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnit;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
-import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 
 import java.sql.Connection;
@@ -55,17 +54,19 @@ import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 /**
- * The abstract class of database meta data, used to define the template.
+ * Database meta data executor.
  */
 @RequiredArgsConstructor
 @Getter
-public abstract class AbstractDatabaseMetaDataExecutor implements DatabaseAdminQueryExecutor {
+public class DatabaseMetaDataExecutor implements DatabaseAdminQueryExecutor {
     
     private QueryResultMetaData queryResultMetaData;
     
     private MergedResult mergedResult;
     
-    private final ContextManager contextManager;
+    private final String sql;
+    
+    private final List<Object> parameters;
     
     private final List<Map<String, Object>> rows = new LinkedList<>();
     
@@ -73,45 +74,77 @@ public abstract class AbstractDatabaseMetaDataExecutor implements DatabaseAdminQ
     
     @Override
     public final void execute(final ConnectionSession connectionSession, final ShardingSphereMetaData metaData) throws SQLException {
-        Collection<String> databaseNames = getDatabaseNames(connectionSession);
-        for (String databaseName : databaseNames) {
-            processMetaData(databaseName, resultSet -> handleResultSet(databaseName, resultSet));
+        Collection<ShardingSphereDatabase> databases = getDatabases(connectionSession, metaData);
+        for (ShardingSphereDatabase each : databases) {
+            processMetaData(each, resultSet -> handleResultSet(each, resultSet));
         }
         postProcess();
         queryResultMetaData = createQueryResultMetaData();
         mergedResult = createMergedResult();
     }
     
+    protected Collection<ShardingSphereDatabase> getDatabases(final ConnectionSession connectionSession, final ShardingSphereMetaData metaData) {
+        String databaseName = connectionSession.getCurrentDatabaseName();
+        ShardingSphereDatabase database = metaData.getDatabase(databaseName);
+        if (null != database && isAuthorized(database.getName(), metaData, connectionSession.getConnectionContext().getGrantee()) && database.containsDataSource()) {
+            return Collections.singleton(database);
+        }
+        Collection<ShardingSphereDatabase> databases = metaData.getAllDatabases().stream()
+                .filter(each -> isAuthorized(each.getName(), metaData, connectionSession.getConnectionContext().getGrantee()))
+                .filter(ShardingSphereDatabase::containsDataSource).collect(Collectors.toList());
+        return databases.isEmpty() ? Collections.emptyList() : Collections.singleton(databases.iterator().next());
+    }
+    
+    private boolean isAuthorized(final String databaseName, final ShardingSphereMetaData metaData, final Grantee grantee) {
+        return new AuthorityChecker(metaData.getGlobalRuleMetaData().getSingleRule(AuthorityRule.class), grantee).isAuthorized(databaseName);
+    }
+    
     @SneakyThrows(SQLException.class)
-    private void handleResultSet(final String databaseName, final ResultSet resultSet) {
-        ResultSetMetaData metaData = resultSet.getMetaData();
+    private void handleResultSet(final ShardingSphereDatabase database, final ResultSet resultSet) {
+        ResultSetMetaData resultSetMetaData = resultSet.getMetaData();
         while (resultSet.next()) {
-            int columnCount = metaData.getColumnCount();
+            int columnCount = resultSetMetaData.getColumnCount();
             Map<String, Object> rowMap = new LinkedHashMap<>(columnCount, 1F);
             Map<String, String> aliasMap = new LinkedHashMap<>(columnCount, 1F);
             for (int i = 1; i < columnCount + 1; i++) {
-                aliasMap.put(metaData.getColumnName(i), metaData.getColumnLabel(i));
-                rowMap.put(metaData.getColumnLabel(i), resultSet.getString(i));
+                aliasMap.put(resultSetMetaData.getColumnName(i), resultSetMetaData.getColumnLabel(i));
+                rowMap.put(resultSetMetaData.getColumnLabel(i), resultSet.getString(i));
             }
-            preProcess(databaseName, rowMap, aliasMap);
+            preProcess(database, rowMap, aliasMap);
             if (!rowMap.isEmpty()) {
                 rows.add(rowMap);
             }
         }
         if (rows.isEmpty()) {
-            for (int i = 1; i < metaData.getColumnCount() + 1; i++) {
-                labels.add(metaData.getColumnLabel(i));
+            for (int i = 1; i < resultSetMetaData.getColumnCount() + 1; i++) {
+                labels.add(resultSetMetaData.getColumnLabel(i));
             }
         }
     }
     
-    protected abstract Collection<String> getDatabaseNames(ConnectionSession connectionSession);
+    protected void preProcess(final ShardingSphereDatabase database, final Map<String, Object> rows, final Map<String, String> alias) throws SQLException {
+    }
     
-    protected abstract void preProcess(String databaseName, Map<String, Object> rows, Map<String, String> alias) throws SQLException;
+    protected void postProcess() {
+    }
     
-    protected abstract void postProcess();
-    
-    protected abstract void processMetaData(String databaseName, Consumer<ResultSet> callback) throws SQLException;
+    protected void processMetaData(final ShardingSphereDatabase database, final Consumer<ResultSet> callback) throws SQLException {
+        ResourceMetaData resourceMetaData = database.getResourceMetaData();
+        Optional<StorageUnit> storageUnit = resourceMetaData.getStorageUnits().values().stream().findFirst();
+        if (!storageUnit.isPresent()) {
+            return;
+        }
+        try (
+                Connection connection = storageUnit.get().getDataSource().getConnection();
+                PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+            for (int i = 0; i < parameters.size(); i++) {
+                preparedStatement.setObject(i + 1, parameters.get(i));
+            }
+            try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                callback.accept(resultSet);
+            }
+        }
+    }
     
     private MergedResult createMergedResult() {
         List<MemoryQueryResultDataRow> resultDataRows = rows.stream().map(each -> new MemoryQueryResultDataRow(new LinkedList<>(each.values()))).collect(Collectors.toList());
@@ -126,65 +159,5 @@ public abstract class AbstractDatabaseMetaDataExecutor implements DatabaseAdminQ
         List<RawQueryResultColumnMetaData> columns = rows.stream().flatMap(each -> each.keySet().stream()).collect(Collectors.toCollection(LinkedHashSet::new))
                 .stream().map(each -> new RawQueryResultColumnMetaData("", each, each, Types.VARCHAR, "VARCHAR", 20, 0)).collect(Collectors.toList());
         return new RawQueryResultMetaData(columns);
-    }
-    
-    /**
-     * Default database meta data executor, execute sql directly in the database to obtain the result source data.
-     */
-    public static class DefaultDatabaseMetaDataExecutor extends AbstractDatabaseMetaDataExecutor {
-        
-        private final String sql;
-        
-        private final List<Object> parameters;
-        
-        public DefaultDatabaseMetaDataExecutor(final ContextManager contextManager, final String sql, final List<Object> parameters) {
-            super(contextManager);
-            this.sql = sql;
-            this.parameters = parameters;
-        }
-        
-        @Override
-        protected Collection<String> getDatabaseNames(final ConnectionSession connectionSession) {
-            ShardingSphereDatabase database = getContextManager().getMetaDataContexts().getMetaData().getDatabase(connectionSession.getCurrentDatabaseName());
-            if (null != database && isAuthorized(database.getName(), connectionSession.getConnectionContext().getGrantee())
-                    && getContextManager().getDatabase(database.getName()).containsDataSource()) {
-                return Collections.singleton(database.getName());
-            }
-            Collection<String> databaseNames = getContextManager().getAllDatabaseNames().stream()
-                    .filter(each -> isAuthorized(each, connectionSession.getConnectionContext().getGrantee()))
-                    .filter(each -> getContextManager().getDatabase(each).containsDataSource()).collect(Collectors.toList());
-            return databaseNames.isEmpty() ? Collections.emptyList() : Collections.singletonList(databaseNames.iterator().next());
-        }
-        
-        private boolean isAuthorized(final String databaseName, final Grantee grantee) {
-            return new AuthorityChecker(getContextManager().getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getSingleRule(AuthorityRule.class), grantee).isAuthorized(databaseName);
-        }
-        
-        @Override
-        protected void processMetaData(final String databaseName, final Consumer<ResultSet> callback) throws SQLException {
-            ResourceMetaData resourceMetaData = getContextManager().getMetaDataContexts().getMetaData().getDatabase(databaseName).getResourceMetaData();
-            Optional<StorageUnit> storageUnit = resourceMetaData.getStorageUnits().values().stream().findFirst();
-            if (!storageUnit.isPresent()) {
-                return;
-            }
-            try (
-                    Connection connection = storageUnit.get().getDataSource().getConnection();
-                    PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
-                for (int i = 0; i < parameters.size(); i++) {
-                    preparedStatement.setObject(i + 1, parameters.get(i));
-                }
-                try (ResultSet resultSet = preparedStatement.executeQuery()) {
-                    callback.accept(resultSet);
-                }
-            }
-        }
-        
-        @Override
-        protected void preProcess(final String databaseName, final Map<String, Object> rows, final Map<String, String> alias) throws SQLException {
-        }
-        
-        @Override
-        protected void postProcess() {
-        }
     }
 }
