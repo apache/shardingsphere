@@ -47,7 +47,7 @@ import java.util.stream.Collectors;
 @Getter
 public final class MySQLShowDatabasesExecutor implements DatabaseAdminQueryExecutor {
     
-    private final MySQLShowDatabasesStatement showDatabasesStatement;
+    private final MySQLShowDatabasesStatement sqlStatement;
     
     private MergedResult mergedResult;
     
@@ -64,8 +64,8 @@ public final class MySQLShowDatabasesExecutor implements DatabaseAdminQueryExecu
     }
     
     private boolean checkLikePattern(final String databaseName) {
-        if (showDatabasesStatement.getFilter().isPresent()) {
-            Optional<String> pattern = showDatabasesStatement.getFilter().get().getLike().map(optional -> RegexUtils.convertLikePatternToRegex(optional.getPattern()));
+        if (sqlStatement.getFilter().isPresent()) {
+            Optional<String> pattern = sqlStatement.getFilter().get().getLike().map(optional -> RegexUtils.convertLikePatternToRegex(optional.getPattern()));
             return !pattern.isPresent() || databaseName.matches(pattern.get());
         }
         return true;

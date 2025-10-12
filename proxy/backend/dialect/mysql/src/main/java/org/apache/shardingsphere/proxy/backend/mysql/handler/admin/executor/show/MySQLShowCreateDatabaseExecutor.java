@@ -46,13 +46,7 @@ import java.util.List;
 @Getter
 public final class MySQLShowCreateDatabaseExecutor implements DatabaseAdminQueryExecutor {
     
-    private static final String CREATE_DATABASE_PATTERN = "CREATE DATABASE `%s`;";
-    
-    private static final String DATABASE = "Database";
-    
-    private static final String CREATE_DATABASE = "CREATE DATABASE ";
-    
-    private final MySQLShowCreateDatabaseStatement showCreateDatabaseStatement;
+    private final MySQLShowCreateDatabaseStatement sqlStatement;
     
     private QueryResultMetaData queryResultMetaData;
     
@@ -61,19 +55,19 @@ public final class MySQLShowCreateDatabaseExecutor implements DatabaseAdminQuery
     @Override
     public void execute(final ConnectionSession connectionSession, final ShardingSphereMetaData metaData) {
         queryResultMetaData = createQueryResultMetaData();
-        mergedResult = new TransparentMergedResult(getQueryResult(showCreateDatabaseStatement.getDatabaseName(), metaData));
-    }
-    
-    private QueryResult getQueryResult(final String databaseName, final ShardingSphereMetaData metaData) {
-        ShardingSpherePreconditions.checkState(metaData.containsDatabase(databaseName),
-                () -> new UnknownDatabaseException(databaseName));
-        List<MemoryQueryResultDataRow> rows = Collections.singletonList(new MemoryQueryResultDataRow(Arrays.asList(databaseName, String.format(CREATE_DATABASE_PATTERN, databaseName))));
-        return new RawMemoryQueryResult(queryResultMetaData, rows);
+        mergedResult = new TransparentMergedResult(getQueryResult(sqlStatement.getDatabaseName(), metaData));
     }
     
     private QueryResultMetaData createQueryResultMetaData() {
-        List<RawQueryResultColumnMetaData> columnMetaData = Arrays.asList(new RawQueryResultColumnMetaData("", DATABASE, DATABASE, Types.VARCHAR, "VARCHAR", 255, 0),
-                new RawQueryResultColumnMetaData("", CREATE_DATABASE, CREATE_DATABASE, Types.VARCHAR, "VARCHAR", 255, 0));
+        List<RawQueryResultColumnMetaData> columnMetaData = Arrays.asList(
+                new RawQueryResultColumnMetaData("", "Database", "Database", Types.VARCHAR, "VARCHAR", 255, 0),
+                new RawQueryResultColumnMetaData("", "Create Database", "Create Database", Types.VARCHAR, "VARCHAR", 255, 0));
         return new RawQueryResultMetaData(columnMetaData);
+    }
+    
+    private QueryResult getQueryResult(final String databaseName, final ShardingSphereMetaData metaData) {
+        ShardingSpherePreconditions.checkState(metaData.containsDatabase(databaseName), () -> new UnknownDatabaseException(databaseName));
+        List<MemoryQueryResultDataRow> rows = Collections.singletonList(new MemoryQueryResultDataRow(Arrays.asList(databaseName, String.format("CREATE DATABASE `%s`;", databaseName))));
+        return new RawMemoryQueryResult(queryResultMetaData, rows);
     }
 }
