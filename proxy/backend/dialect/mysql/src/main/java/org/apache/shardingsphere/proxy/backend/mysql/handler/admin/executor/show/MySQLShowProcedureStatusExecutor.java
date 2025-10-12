@@ -43,7 +43,7 @@ import java.util.List;
 @Getter
 public final class MySQLShowProcedureStatusExecutor implements DatabaseAdminQueryExecutor {
     
-    private final MySQLShowProcedureStatusStatement showProcedureStatusStatement;
+    private final MySQLShowProcedureStatusStatement sqlStatement;
     
     private QueryResultMetaData queryResultMetaData;
     
