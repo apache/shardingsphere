@@ -22,6 +22,7 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
+import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.handler.ProxyBackendHandler;
 import org.apache.shardingsphere.proxy.backend.handler.admin.executor.DatabaseAdminExecutor;
@@ -59,8 +60,9 @@ public final class DatabaseAdminProxyBackendHandlerFactory {
     }
     
     private static ProxyBackendHandler createProxyBackendHandler(final SQLStatementContext sqlStatementContext, final ConnectionSession connectionSession, final DatabaseAdminExecutor executor) {
+        ContextManager contextManager = ProxyContext.getInstance().getContextManager();
         return executor instanceof DatabaseAdminQueryExecutor
-                ? new DatabaseAdminQueryProxyBackendHandler(ProxyContext.getInstance().getContextManager(), connectionSession, (DatabaseAdminQueryExecutor) executor)
-                : new DatabaseAdminUpdateProxyBackendHandler(connectionSession, sqlStatementContext.getSqlStatement(), executor);
+                ? new DatabaseAdminQueryProxyBackendHandler(contextManager, connectionSession, (DatabaseAdminQueryExecutor) executor)
+                : new DatabaseAdminUpdateProxyBackendHandler(contextManager, connectionSession, sqlStatementContext.getSqlStatement(), executor);
     }
 }

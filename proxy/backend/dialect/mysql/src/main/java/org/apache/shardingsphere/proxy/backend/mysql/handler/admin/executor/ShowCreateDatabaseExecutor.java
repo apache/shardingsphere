@@ -29,7 +29,7 @@ import org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.ra
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.type.memory.row.MemoryQueryResultDataRow;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.apache.shardingsphere.infra.merge.result.impl.transparent.TransparentMergedResult;
-import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.proxy.backend.handler.admin.executor.DatabaseAdminQueryExecutor;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.sql.parser.statement.mysql.dal.show.database.MySQLShowCreateDatabaseStatement;
@@ -59,13 +59,13 @@ public final class ShowCreateDatabaseExecutor implements DatabaseAdminQueryExecu
     private MergedResult mergedResult;
     
     @Override
-    public void execute(final ConnectionSession connectionSession) {
+    public void execute(final ConnectionSession connectionSession, final ShardingSphereMetaData metaData) {
         queryResultMetaData = createQueryResultMetaData();
-        mergedResult = new TransparentMergedResult(getQueryResult(showCreateDatabaseStatement.getDatabaseName()));
+        mergedResult = new TransparentMergedResult(getQueryResult(showCreateDatabaseStatement.getDatabaseName(), metaData));
     }
     
-    private QueryResult getQueryResult(final String databaseName) {
-        ShardingSpherePreconditions.checkState(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().containsDatabase(databaseName),
+    private QueryResult getQueryResult(final String databaseName, final ShardingSphereMetaData metaData) {
+        ShardingSpherePreconditions.checkState(metaData.containsDatabase(databaseName),
                 () -> new UnknownDatabaseException(databaseName));
         List<MemoryQueryResultDataRow> rows = Collections.singletonList(new MemoryQueryResultDataRow(Arrays.asList(databaseName, String.format(CREATE_DATABASE_PATTERN, databaseName))));
         return new RawMemoryQueryResult(queryResultMetaData, rows);

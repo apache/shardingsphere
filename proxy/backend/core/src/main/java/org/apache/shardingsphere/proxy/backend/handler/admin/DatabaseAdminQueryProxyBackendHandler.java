@@ -55,7 +55,7 @@ public final class DatabaseAdminQueryProxyBackendHandler implements ProxyBackend
     
     @Override
     public ResponseHeader execute() throws SQLException {
-        executor.execute(connectionSession);
+        executor.execute(connectionSession, contextManager.getMetaDataContexts().getMetaData());
         queryResultMetaData = executor.getQueryResultMetaData();
         mergedResult = executor.getMergedResult();
         return new QueryResponseHeader(createResponseHeader());

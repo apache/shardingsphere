@@ -27,8 +27,9 @@ import org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.ra
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataMergedResult;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.util.regex.RegexUtils;
-import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.handler.admin.executor.DatabaseAdminQueryExecutor;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.sql.parser.statement.mysql.dal.show.database.MySQLShowDatabasesStatement;
@@ -51,14 +52,14 @@ public final class ShowDatabasesExecutor implements DatabaseAdminQueryExecutor {
     private MergedResult mergedResult;
     
     @Override
-    public void execute(final ConnectionSession connectionSession) {
-        mergedResult = new LocalDataMergedResult(getDatabaseNames(connectionSession));
+    public void execute(final ConnectionSession connectionSession, final ShardingSphereMetaData metaData) {
+        mergedResult = new LocalDataMergedResult(getDatabaseNames(connectionSession, metaData));
     }
     
-    private Collection<LocalDataQueryResultRow> getDatabaseNames(final ConnectionSession connectionSession) {
-        AuthorityRule authorityRule = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getSingleRule(AuthorityRule.class);
+    private Collection<LocalDataQueryResultRow> getDatabaseNames(final ConnectionSession connectionSession, final ShardingSphereMetaData metaData) {
+        AuthorityRule authorityRule = metaData.getGlobalRuleMetaData().getSingleRule(AuthorityRule.class);
         AuthorityChecker authorityChecker = new AuthorityChecker(authorityRule, connectionSession.getConnectionContext().getGrantee());
-        return ProxyContext.getInstance().getContextManager().getAllDatabaseNames().stream().sorted()
+        return metaData.getAllDatabases().stream().map(ShardingSphereDatabase::getName).sorted()
                 .filter(each -> checkLikePattern(each) && authorityChecker.isAuthorized(each)).map(LocalDataQueryResultRow::new).collect(Collectors.toList());
     }
     

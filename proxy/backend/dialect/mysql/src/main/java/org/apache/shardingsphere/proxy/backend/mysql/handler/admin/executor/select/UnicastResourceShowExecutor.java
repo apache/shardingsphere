@@ -20,6 +20,7 @@ package org.apache.shardingsphere.proxy.backend.mysql.handler.admin.executor.sel
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.database.exception.core.exception.syntax.database.NoDatabaseSelectedException;
+import org.apache.shardingsphere.database.exception.core.exception.syntax.database.UnknownDatabaseException;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.engine.SQLBindEngine;
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
@@ -35,10 +36,10 @@ import org.apache.shardingsphere.infra.hint.SQLHintUtils;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.apache.shardingsphere.infra.merge.result.impl.transparent.TransparentMergedResult;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.session.query.QueryContext;
 import org.apache.shardingsphere.proxy.backend.connector.DatabaseProxyConnector;
 import org.apache.shardingsphere.proxy.backend.connector.DatabaseProxyConnectorFactory;
-import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.handler.admin.executor.DatabaseAdminQueryExecutor;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.query.QueryHeader;
@@ -73,14 +74,14 @@ public final class UnicastResourceShowExecutor implements DatabaseAdminQueryExec
     private MergedResult mergedResult;
     
     @Override
-    public void execute(final ConnectionSession connectionSession) throws SQLException {
+    public void execute(final ConnectionSession connectionSession, final ShardingSphereMetaData metaData) throws SQLException {
         String originDatabase = connectionSession.getUsedDatabaseName();
-        String databaseName = null == originDatabase ? getFirstDatabaseName() : originDatabase;
-        ShardingSpherePreconditions.checkState(ProxyContext.getInstance().getContextManager().getDatabase(databaseName).containsDataSource(), () -> new EmptyStorageUnitException(databaseName));
+        String databaseName = null == originDatabase ? getFirstDatabaseName(metaData) : originDatabase;
+        ShardingSpherePreconditions.checkState(metaData.containsDatabase(databaseName), () -> new UnknownDatabaseException(databaseName));
+        ShardingSpherePreconditions.checkState(metaData.getDatabase(databaseName).containsDataSource(), () -> new EmptyStorageUnitException(databaseName));
         HintValueContext hintValueContext = SQLHintUtils.extractHint(sql);
         try {
             connectionSession.setCurrentDatabaseName(databaseName);
-            ShardingSphereMetaData metaData = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData();
             SQLStatementContext sqlStatementContext = new SQLBindEngine(metaData, connectionSession.getCurrentDatabaseName(), hintValueContext).bind(sqlStatement);
             databaseProxyConnector = DatabaseProxyConnectorFactory.newInstance(new QueryContext(
                     sqlStatementContext, sql, Collections.emptyList(), hintValueContext, connectionSession.getConnectionContext(), metaData), connectionSession.getDatabaseConnectionManager(), false);
@@ -92,14 +93,14 @@ public final class UnicastResourceShowExecutor implements DatabaseAdminQueryExec
         }
     }
     
-    private String getFirstDatabaseName() {
-        Collection<String> databaseNames = ProxyContext.getInstance().getContextManager().getAllDatabaseNames();
-        if (databaseNames.isEmpty()) {
+    private String getFirstDatabaseName(final ShardingSphereMetaData metaData) {
+        Collection<ShardingSphereDatabase> databases = metaData.getAllDatabases();
+        if (databases.isEmpty()) {
             throw new NoDatabaseSelectedException();
         }
-        Optional<String> result = databaseNames.stream().filter(each -> ProxyContext.getInstance().getContextManager().getDatabase(each).containsDataSource()).findFirst();
+        Optional<ShardingSphereDatabase> result = databases.stream().filter(ShardingSphereDatabase::containsDataSource).findFirst();
         ShardingSpherePreconditions.checkState(result.isPresent(), EmptyStorageUnitException::new);
-        return result.get();
+        return result.get().getName();
     }
     
     @Override

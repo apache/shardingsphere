@@ -28,6 +28,7 @@ import org.apache.shardingsphere.infra.executor.sql.execute.result.query.type.me
 import org.apache.shardingsphere.infra.executor.sql.process.Process;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.apache.shardingsphere.infra.merge.result.impl.transparent.TransparentMergedResult;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.handler.admin.executor.DatabaseAdminQueryExecutor;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
@@ -55,7 +56,7 @@ public final class ShowProcessListExecutor implements DatabaseAdminQueryExecutor
     private MergedResult mergedResult;
     
     @Override
-    public void execute(final ConnectionSession connectionSession) {
+    public void execute(final ConnectionSession connectionSession, final ShardingSphereMetaData metaData) {
         queryResultMetaData = createQueryResultMetaData();
         mergedResult = new TransparentMergedResult(getQueryResult());
     }
