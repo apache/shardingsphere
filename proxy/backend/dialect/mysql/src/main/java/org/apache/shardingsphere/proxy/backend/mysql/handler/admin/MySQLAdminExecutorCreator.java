@@ -21,14 +21,14 @@ import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementCont
 import org.apache.shardingsphere.infra.binder.context.statement.type.dml.SelectStatementContext;
 import org.apache.shardingsphere.proxy.backend.handler.admin.executor.DatabaseAdminExecutor;
 import org.apache.shardingsphere.proxy.backend.handler.admin.executor.DatabaseAdminExecutorCreator;
-import org.apache.shardingsphere.proxy.backend.mysql.handler.admin.executor.KillProcessExecutor;
+import org.apache.shardingsphere.proxy.backend.mysql.handler.admin.executor.MySQLKillProcessExecutor;
 import org.apache.shardingsphere.proxy.backend.mysql.handler.admin.executor.MySQLSetVariableAdminExecutor;
-import org.apache.shardingsphere.proxy.backend.mysql.handler.admin.executor.ShowCreateDatabaseExecutor;
-import org.apache.shardingsphere.proxy.backend.mysql.handler.admin.executor.ShowDatabasesExecutor;
-import org.apache.shardingsphere.proxy.backend.mysql.handler.admin.executor.ShowFunctionStatusExecutor;
-import org.apache.shardingsphere.proxy.backend.mysql.handler.admin.executor.ShowProcedureStatusExecutor;
-import org.apache.shardingsphere.proxy.backend.mysql.handler.admin.executor.ShowProcessListExecutor;
-import org.apache.shardingsphere.proxy.backend.mysql.handler.admin.executor.ShowTablesExecutor;
+import org.apache.shardingsphere.proxy.backend.mysql.handler.admin.executor.show.MySQLShowCreateDatabaseExecutor;
+import org.apache.shardingsphere.proxy.backend.mysql.handler.admin.executor.show.MySQLShowDatabasesExecutor;
+import org.apache.shardingsphere.proxy.backend.mysql.handler.admin.executor.show.MySQLShowFunctionStatusExecutor;
+import org.apache.shardingsphere.proxy.backend.mysql.handler.admin.executor.show.MySQLShowProcedureStatusExecutor;
+import org.apache.shardingsphere.proxy.backend.mysql.handler.admin.executor.show.MySQLShowProcessListExecutor;
+import org.apache.shardingsphere.proxy.backend.mysql.handler.admin.executor.show.MySQLShowTablesExecutor;
 import org.apache.shardingsphere.proxy.backend.mysql.handler.admin.executor.MySQLUseDatabaseExecutor;
 import org.apache.shardingsphere.proxy.backend.mysql.handler.admin.factory.MySQLSelectAdminExecutorFactory;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
@@ -60,25 +60,25 @@ public final class MySQLAdminExecutorCreator implements DatabaseAdminExecutorCre
             return Optional.of(new MySQLUseDatabaseExecutor((MySQLUseStatement) sqlStatement));
         }
         if (sqlStatement instanceof MySQLShowDatabasesStatement) {
-            return Optional.of(new ShowDatabasesExecutor((MySQLShowDatabasesStatement) sqlStatement));
+            return Optional.of(new MySQLShowDatabasesExecutor((MySQLShowDatabasesStatement) sqlStatement));
         }
         if (sqlStatement instanceof MySQLShowTablesStatement) {
-            return Optional.of(new ShowTablesExecutor((MySQLShowTablesStatement) sqlStatement, sqlStatementContext.getSqlStatement().getDatabaseType()));
+            return Optional.of(new MySQLShowTablesExecutor((MySQLShowTablesStatement) sqlStatement, sqlStatementContext.getSqlStatement().getDatabaseType()));
         }
         if (sqlStatement instanceof MySQLShowCreateDatabaseStatement) {
-            return Optional.of(new ShowCreateDatabaseExecutor((MySQLShowCreateDatabaseStatement) sqlStatement));
+            return Optional.of(new MySQLShowCreateDatabaseExecutor((MySQLShowCreateDatabaseStatement) sqlStatement));
         }
         if (sqlStatement instanceof MySQLShowFunctionStatusStatement) {
-            return Optional.of(new ShowFunctionStatusExecutor((MySQLShowFunctionStatusStatement) sqlStatement));
+            return Optional.of(new MySQLShowFunctionStatusExecutor((MySQLShowFunctionStatusStatement) sqlStatement));
         }
         if (sqlStatement instanceof MySQLShowProcedureStatusStatement) {
-            return Optional.of(new ShowProcedureStatusExecutor((MySQLShowProcedureStatusStatement) sqlStatement));
+            return Optional.of(new MySQLShowProcedureStatusExecutor((MySQLShowProcedureStatusStatement) sqlStatement));
         }
         if (sqlStatement instanceof MySQLShowProcessListStatement) {
-            return Optional.of(new ShowProcessListExecutor(((MySQLShowProcessListStatement) sqlStatement).isFull()));
+            return Optional.of(new MySQLShowProcessListExecutor(((MySQLShowProcessListStatement) sqlStatement).isFull()));
         }
         if (sqlStatement instanceof MySQLKillStatement) {
-            return Optional.of(new KillProcessExecutor((MySQLKillStatement) sqlStatement));
+            return Optional.of(new MySQLKillProcessExecutor((MySQLKillStatement) sqlStatement));
         }
         if (sqlStatement instanceof SetStatement) {
             return Optional.of(new MySQLSetVariableAdminExecutor((SetStatement) sqlStatement));

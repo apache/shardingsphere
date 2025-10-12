@@ -15,14 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.mysql.handler.admin.executor;
+package org.apache.shardingsphere.proxy.backend.mysql.handler.admin.executor.show;
 
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
-import org.apache.shardingsphere.sql.parser.statement.mysql.dal.show.function.MySQLShowFunctionStatusStatement;
+import org.apache.shardingsphere.sql.parser.statement.mysql.dal.show.procedure.MySQLShowProcedureStatusStatement;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -38,7 +38,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.mock;
 
 @ExtendWith(MockitoExtension.class)
-class ShowFunctionStatusExecutorTest {
+class MySQLShowProcedureStatusExecutorTest {
     
     private static final String DATABASE_PATTERN = "db_%s";
     
@@ -46,7 +46,7 @@ class ShowFunctionStatusExecutorTest {
     
     @Test
     void assertExecute() throws SQLException {
-        ShowFunctionStatusExecutor executor = new ShowFunctionStatusExecutor(new MySQLShowFunctionStatusStatement(databaseType, null));
+        MySQLShowProcedureStatusExecutor executor = new MySQLShowProcedureStatusExecutor(new MySQLShowProcedureStatusStatement(databaseType, null));
         executor.execute(mock(ConnectionSession.class), new ShardingSphereMetaData(createDatabases(), mock(), mock(), mock()));
         assertThat(executor.getQueryResultMetaData().getColumnCount(), is(11));
     }

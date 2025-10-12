@@ -15,14 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.mysql.handler.admin.executor;
+package org.apache.shardingsphere.proxy.backend.mysql.handler.admin.executor.show;
 
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
-import org.apache.shardingsphere.sql.parser.statement.mysql.dal.show.procedure.MySQLShowProcedureStatusStatement;
+import org.apache.shardingsphere.sql.parser.statement.mysql.dal.show.database.MySQLShowCreateDatabaseStatement;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -38,7 +38,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.mock;
 
 @ExtendWith(MockitoExtension.class)
-class ShowProcedureStatusExecutorTest {
+class MySQLShowCreateDatabaseExecutorTest {
     
     private static final String DATABASE_PATTERN = "db_%s";
     
@@ -46,9 +46,15 @@ class ShowProcedureStatusExecutorTest {
     
     @Test
     void assertExecute() throws SQLException {
-        ShowProcedureStatusExecutor executor = new ShowProcedureStatusExecutor(new MySQLShowProcedureStatusStatement(databaseType, null));
+        MySQLShowCreateDatabaseStatement statement = new MySQLShowCreateDatabaseStatement(databaseType, "db_0");
+        MySQLShowCreateDatabaseExecutor executor = new MySQLShowCreateDatabaseExecutor(statement);
         executor.execute(mock(ConnectionSession.class), new ShardingSphereMetaData(createDatabases(), mock(), mock(), mock()));
-        assertThat(executor.getQueryResultMetaData().getColumnCount(), is(11));
+        assertThat(executor.getQueryResultMetaData().getColumnCount(), is(2));
+        int count = 0;
+        while (executor.getMergedResult().next()) {
+            assertThat(executor.getMergedResult().getValue(1, Object.class), is(String.format(DATABASE_PATTERN, count)));
+            count++;
+        }
     }
     
     private Collection<ShardingSphereDatabase> createDatabases() {

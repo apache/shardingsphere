@@ -29,10 +29,10 @@ import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLKillStateme
 import java.sql.SQLException;
 
 /**
- * Kill process executor.
+ * Kill process executor for MySQL.
  */
 @RequiredArgsConstructor
-public final class KillProcessExecutor implements DatabaseAdminExecutor {
+public final class MySQLKillProcessExecutor implements DatabaseAdminExecutor {
     
     private static final String QUERY_SCOPE = "QUERY";
     

@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.mysql.handler.admin.executor;
+package org.apache.shardingsphere.proxy.backend.mysql.handler.admin.executor.show;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -41,11 +41,11 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
- * Show databases executor.
+ * Show databases executor for MySQL.
  */
 @RequiredArgsConstructor
 @Getter
-public final class ShowDatabasesExecutor implements DatabaseAdminQueryExecutor {
+public final class MySQLShowDatabasesExecutor implements DatabaseAdminQueryExecutor {
     
     private final MySQLShowDatabasesStatement showDatabasesStatement;
     
