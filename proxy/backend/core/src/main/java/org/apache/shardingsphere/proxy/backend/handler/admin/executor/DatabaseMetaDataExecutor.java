@@ -22,8 +22,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.authority.checker.AuthorityChecker;
 import org.apache.shardingsphere.authority.rule.AuthorityRule;
-import org.apache.shardingsphere.database.exception.core.exception.syntax.database.UnknownDatabaseException;
-import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResultMetaData;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.raw.metadata.RawQueryResultColumnMetaData;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.raw.metadata.RawQueryResultMetaData;
@@ -87,7 +85,6 @@ public class DatabaseMetaDataExecutor implements DatabaseAdminQueryExecutor {
     
     protected Collection<ShardingSphereDatabase> getDatabases(final ConnectionSession connectionSession, final ShardingSphereMetaData metaData) {
         String databaseName = connectionSession.getCurrentDatabaseName();
-        ShardingSpherePreconditions.checkState(metaData.containsDatabase(databaseName), () -> new UnknownDatabaseException(databaseName));
         ShardingSphereDatabase database = metaData.getDatabase(databaseName);
         if (null != database && isAuthorized(database.getName(), metaData, connectionSession.getConnectionContext().getGrantee()) && database.containsDataSource()) {
             return Collections.singleton(database);
