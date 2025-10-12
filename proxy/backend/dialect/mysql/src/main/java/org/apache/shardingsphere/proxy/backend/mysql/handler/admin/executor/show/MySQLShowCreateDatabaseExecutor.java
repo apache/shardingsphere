@@ -19,6 +19,8 @@ package org.apache.shardingsphere.proxy.backend.mysql.handler.admin.executor.sho
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.authority.checker.AuthorityChecker;
+import org.apache.shardingsphere.authority.rule.AuthorityRule;
 import org.apache.shardingsphere.database.exception.core.exception.syntax.database.UnknownDatabaseException;
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
@@ -55,7 +57,7 @@ public final class MySQLShowCreateDatabaseExecutor implements DatabaseAdminQuery
     @Override
     public void execute(final ConnectionSession connectionSession, final ShardingSphereMetaData metaData) {
         queryResultMetaData = createQueryResultMetaData();
-        mergedResult = new TransparentMergedResult(getQueryResult(sqlStatement.getDatabaseName(), metaData));
+        mergedResult = new TransparentMergedResult(getQueryResult(connectionSession, sqlStatement.getDatabaseName(), metaData));
     }
     
     private QueryResultMetaData createQueryResultMetaData() {
@@ -65,8 +67,11 @@ public final class MySQLShowCreateDatabaseExecutor implements DatabaseAdminQuery
         return new RawQueryResultMetaData(columnMetaData);
     }
     
-    private QueryResult getQueryResult(final String databaseName, final ShardingSphereMetaData metaData) {
+    private QueryResult getQueryResult(final ConnectionSession connectionSession, final String databaseName, final ShardingSphereMetaData metaData) {
         ShardingSpherePreconditions.checkState(metaData.containsDatabase(databaseName), () -> new UnknownDatabaseException(databaseName));
+        AuthorityRule authorityRule = metaData.getGlobalRuleMetaData().getSingleRule(AuthorityRule.class);
+        AuthorityChecker authorityChecker = new AuthorityChecker(authorityRule, connectionSession.getConnectionContext().getGrantee());
+        ShardingSpherePreconditions.checkState(authorityChecker.isAuthorized(databaseName), () -> new UnknownDatabaseException(databaseName));
         List<MemoryQueryResultDataRow> rows = Collections.singletonList(new MemoryQueryResultDataRow(Arrays.asList(databaseName, String.format("CREATE DATABASE `%s`;", databaseName))));
         return new RawMemoryQueryResult(queryResultMetaData, rows);
     }
