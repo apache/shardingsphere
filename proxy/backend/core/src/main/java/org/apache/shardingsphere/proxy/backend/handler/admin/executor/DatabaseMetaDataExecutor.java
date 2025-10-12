@@ -19,7 +19,6 @@ package org.apache.shardingsphere.proxy.backend.handler.admin.executor;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.SneakyThrows;
 import org.apache.shardingsphere.authority.checker.AuthorityChecker;
 import org.apache.shardingsphere.authority.rule.AuthorityRule;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResultMetaData;
@@ -49,7 +48,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 /**
@@ -75,7 +73,7 @@ public class DatabaseMetaDataExecutor implements DatabaseAdminQueryExecutor {
     public final void execute(final ConnectionSession connectionSession, final ShardingSphereMetaData metaData) throws SQLException {
         Collection<ShardingSphereDatabase> databases = getDatabases(connectionSession, metaData);
         for (ShardingSphereDatabase each : databases) {
-            processMetaData(each, resultSet -> handleResultSet(each, resultSet));
+            loadMetaData(each);
         }
         postProcess();
         queryResultMetaData = createQueryResultMetaData();
@@ -94,7 +92,7 @@ public class DatabaseMetaDataExecutor implements DatabaseAdminQueryExecutor {
         return databases.isEmpty() ? Collections.emptyList() : Collections.singleton(databases.iterator().next());
     }
     
-    private void processMetaData(final ShardingSphereDatabase database, final Consumer<ResultSet> callback) throws SQLException {
+    private void loadMetaData(final ShardingSphereDatabase database) throws SQLException {
         ResourceMetaData resourceMetaData = database.getResourceMetaData();
         Optional<StorageUnit> storageUnit = resourceMetaData.getStorageUnits().values().stream().findFirst();
         if (!storageUnit.isPresent()) {
@@ -107,13 +105,12 @@ public class DatabaseMetaDataExecutor implements DatabaseAdminQueryExecutor {
                 preparedStatement.setObject(i + 1, parameters.get(i));
             }
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
-                callback.accept(resultSet);
+                handleResultSet(database, resultSet);
             }
         }
     }
     
-    @SneakyThrows(SQLException.class)
-    private void handleResultSet(final ShardingSphereDatabase database, final ResultSet resultSet) {
+    private void handleResultSet(final ShardingSphereDatabase database, final ResultSet resultSet) throws SQLException {
         ResultSetMetaData resultSetMetaData = resultSet.getMetaData();
         while (resultSet.next()) {
             int columnCount = resultSetMetaData.getColumnCount();
@@ -141,11 +138,6 @@ public class DatabaseMetaDataExecutor implements DatabaseAdminQueryExecutor {
     protected void postProcess() {
     }
     
-    private MergedResult createMergedResult() {
-        List<MemoryQueryResultDataRow> resultDataRows = rows.stream().map(each -> new MemoryQueryResultDataRow(new LinkedList<>(each.values()))).collect(Collectors.toList());
-        return new TransparentMergedResult(new RawMemoryQueryResult(queryResultMetaData, resultDataRows));
-    }
-    
     private RawQueryResultMetaData createQueryResultMetaData() {
         if (rows.isEmpty() && !labels.isEmpty()) {
             List<RawQueryResultColumnMetaData> columns = labels.stream().map(each -> new RawQueryResultColumnMetaData("", each, each, Types.VARCHAR, "VARCHAR", 20, 0)).collect(Collectors.toList());
@@ -154,5 +146,10 @@ public class DatabaseMetaDataExecutor implements DatabaseAdminQueryExecutor {
         List<RawQueryResultColumnMetaData> columns = rows.stream().flatMap(each -> each.keySet().stream()).collect(Collectors.toCollection(LinkedHashSet::new))
                 .stream().map(each -> new RawQueryResultColumnMetaData("", each, each, Types.VARCHAR, "VARCHAR", 20, 0)).collect(Collectors.toList());
         return new RawQueryResultMetaData(columns);
+    }
+    
+    private MergedResult createMergedResult() {
+        List<MemoryQueryResultDataRow> resultDataRows = rows.stream().map(each -> new MemoryQueryResultDataRow(new LinkedList<>(each.values()))).collect(Collectors.toList());
+        return new TransparentMergedResult(new RawMemoryQueryResult(queryResultMetaData, resultDataRows));
     }
 }
