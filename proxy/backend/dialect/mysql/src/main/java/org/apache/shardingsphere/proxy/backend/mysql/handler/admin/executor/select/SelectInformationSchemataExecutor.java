@@ -74,20 +74,6 @@ public final class SelectInformationSchemataExecutor extends DatabaseMetaDataExe
     }
     
     @Override
-    protected void postProcess() {
-        removeDuplicatedRow();
-    }
-    
-    private void removeDuplicatedRow() {
-        if (queryDatabase) {
-            Collection<Map<String, Object>> reservedRow = getRows().stream()
-                    .collect(Collectors.groupingBy(each -> Optional.ofNullable(each.get(schemaNameAlias)), Collectors.toCollection(LinkedList::new)))
-                    .values().stream().map(LinkedList::getFirst).collect(Collectors.toList());
-            reservedRow.forEach(each -> getRows().removeIf(row -> !getRows().contains(each)));
-        }
-    }
-    
-    @Override
     protected Collection<ShardingSphereDatabase> getDatabases(final ConnectionSession connectionSession, final ShardingSphereMetaData metaData) {
         AuthorityChecker authorityChecker = new AuthorityChecker(metaData.getGlobalRuleMetaData().getSingleRule(AuthorityRule.class), connectionSession.getConnectionContext().getGrantee());
         Collection<ShardingSphereDatabase> databases = metaData.getAllDatabases().stream().filter(each -> authorityChecker.isAuthorized(each.getName())).collect(Collectors.toList());
@@ -160,6 +146,20 @@ public final class SelectInformationSchemataExecutor extends DatabaseMetaDataExe
         }
         try (Connection connection = storageUnit.get().getDataSource().getConnection()) {
             return Collections.singleton(connection.getCatalog());
+        }
+    }
+    
+    @Override
+    protected void postProcess() {
+        removeDuplicatedRow();
+    }
+    
+    private void removeDuplicatedRow() {
+        if (queryDatabase) {
+            Collection<Map<String, Object>> reservedRow = getRows().stream()
+                    .collect(Collectors.groupingBy(each -> Optional.ofNullable(each.get(schemaNameAlias)), Collectors.toCollection(LinkedList::new)))
+                    .values().stream().map(LinkedList::getFirst).collect(Collectors.toList());
+            reservedRow.forEach(each -> getRows().removeIf(row -> !getRows().contains(each)));
         }
     }
 }
