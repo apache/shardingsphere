@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.mysql.handler.admin.executor;
+package org.apache.shardingsphere.proxy.backend.mysql.handler.admin.executor.show;
 
 import org.apache.shardingsphere.authority.model.ShardingSpherePrivileges;
 import org.apache.shardingsphere.authority.rule.AuthorityRule;
@@ -54,7 +54,7 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
-class ShowDatabasesExecutorTest {
+class MySQLShowDatabasesExecutorTest {
     
     private static final String DATABASE_PATTERN = "database_%s";
     
@@ -62,7 +62,7 @@ class ShowDatabasesExecutorTest {
     
     @Test
     void assertExecute() throws SQLException {
-        ShowDatabasesExecutor executor = new ShowDatabasesExecutor(new MySQLShowDatabasesStatement(databaseType, null));
+        MySQLShowDatabasesExecutor executor = new MySQLShowDatabasesExecutor(new MySQLShowDatabasesStatement(databaseType, null));
         executor.execute(mockConnectionSession(), mockMetaData());
         QueryResultMetaData queryResultMetaData = executor.getQueryResultMetaData();
         assertThat(queryResultMetaData.getColumnCount(), is(1));
@@ -78,12 +78,12 @@ class ShowDatabasesExecutorTest {
         ShowLikeSegment showLikeSegment = new ShowLikeSegment(0, 0, "database%");
         showFilterSegment.setLike(showLikeSegment);
         MySQLShowDatabasesStatement showDatabasesStatement = new MySQLShowDatabasesStatement(databaseType, showFilterSegment);
-        ShowDatabasesExecutor executor = new ShowDatabasesExecutor(showDatabasesStatement);
+        MySQLShowDatabasesExecutor executor = new MySQLShowDatabasesExecutor(showDatabasesStatement);
         executor.execute(mockConnectionSession(), mockMetaData());
         assertThat(getActual(executor), is(getExpected()));
     }
     
-    private Collection<String> getActual(final ShowDatabasesExecutor executor) throws SQLException {
+    private Collection<String> getActual(final MySQLShowDatabasesExecutor executor) throws SQLException {
         Map<String, String> result = new ConcurrentHashMap<>(10, 1F);
         while (executor.getMergedResult().next()) {
             String value = executor.getMergedResult().getValue(1, Object.class).toString();
@@ -107,7 +107,7 @@ class ShowDatabasesExecutorTest {
         ShowLikeSegment showLikeSegment = new ShowLikeSegment(0, 0, "%_1");
         showFilterSegment.setLike(showLikeSegment);
         MySQLShowDatabasesStatement showDatabasesStatement = new MySQLShowDatabasesStatement(databaseType, showFilterSegment);
-        ShowDatabasesExecutor executor = new ShowDatabasesExecutor(showDatabasesStatement);
+        MySQLShowDatabasesExecutor executor = new MySQLShowDatabasesExecutor(showDatabasesStatement);
         executor.execute(mockConnectionSession(), mockMetaData());
         assertThat(executor.getQueryResultMetaData().getColumnCount(), is(1));
         int count = 0;
@@ -124,7 +124,7 @@ class ShowDatabasesExecutorTest {
         ShowLikeSegment showLikeSegment = new ShowLikeSegment(0, 0, "database_9");
         showFilterSegment.setLike(showLikeSegment);
         MySQLShowDatabasesStatement showDatabasesStatement = new MySQLShowDatabasesStatement(databaseType, showFilterSegment);
-        ShowDatabasesExecutor executor = new ShowDatabasesExecutor(showDatabasesStatement);
+        MySQLShowDatabasesExecutor executor = new MySQLShowDatabasesExecutor(showDatabasesStatement);
         executor.execute(mockConnectionSession(), mockMetaData());
         assertThat(executor.getQueryResultMetaData().getColumnCount(), is(1));
         int count = 0;
@@ -141,7 +141,7 @@ class ShowDatabasesExecutorTest {
         ShowLikeSegment showLikeSegment = new ShowLikeSegment(0, 0, "not_exist_database");
         showFilterSegment.setLike(showLikeSegment);
         MySQLShowDatabasesStatement showDatabasesStatement = new MySQLShowDatabasesStatement(databaseType, showFilterSegment);
-        ShowDatabasesExecutor executor = new ShowDatabasesExecutor(showDatabasesStatement);
+        MySQLShowDatabasesExecutor executor = new MySQLShowDatabasesExecutor(showDatabasesStatement);
         executor.execute(mockConnectionSession(), mockMetaData());
         assertThat(executor.getQueryResultMetaData().getColumnCount(), is(1));
         int count = 0;

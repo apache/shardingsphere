@@ -36,12 +36,12 @@ import org.apache.shardingsphere.proxy.backend.handler.admin.executor.DatabaseMe
 import org.apache.shardingsphere.proxy.backend.handler.admin.executor.DatabaseAdminExecutor;
 import org.apache.shardingsphere.proxy.backend.mysql.handler.admin.executor.MySQLSetVariableAdminExecutor;
 import org.apache.shardingsphere.proxy.backend.mysql.handler.admin.executor.MySQLSystemVariableQueryExecutor;
-import org.apache.shardingsphere.proxy.backend.mysql.handler.admin.executor.ShowCreateDatabaseExecutor;
-import org.apache.shardingsphere.proxy.backend.mysql.handler.admin.executor.ShowDatabasesExecutor;
-import org.apache.shardingsphere.proxy.backend.mysql.handler.admin.executor.ShowFunctionStatusExecutor;
-import org.apache.shardingsphere.proxy.backend.mysql.handler.admin.executor.ShowProcedureStatusExecutor;
-import org.apache.shardingsphere.proxy.backend.mysql.handler.admin.executor.ShowProcessListExecutor;
-import org.apache.shardingsphere.proxy.backend.mysql.handler.admin.executor.ShowTablesExecutor;
+import org.apache.shardingsphere.proxy.backend.mysql.handler.admin.executor.show.MySQLShowCreateDatabaseExecutor;
+import org.apache.shardingsphere.proxy.backend.mysql.handler.admin.executor.show.MySQLShowDatabasesExecutor;
+import org.apache.shardingsphere.proxy.backend.mysql.handler.admin.executor.show.MySQLShowFunctionStatusExecutor;
+import org.apache.shardingsphere.proxy.backend.mysql.handler.admin.executor.show.MySQLShowProcedureStatusExecutor;
+import org.apache.shardingsphere.proxy.backend.mysql.handler.admin.executor.show.MySQLShowProcessListExecutor;
+import org.apache.shardingsphere.proxy.backend.mysql.handler.admin.executor.show.MySQLShowTablesExecutor;
 import org.apache.shardingsphere.proxy.backend.mysql.handler.admin.executor.MySQLUseDatabaseExecutor;
 import org.apache.shardingsphere.proxy.backend.mysql.handler.admin.executor.select.NoResourceShowExecutor;
 import org.apache.shardingsphere.proxy.backend.mysql.handler.admin.executor.select.SelectInformationSchemataExecutor;
@@ -98,7 +98,7 @@ class MySQLAdminExecutorCreatorTest {
         SQLStatementContext sqlStatementContext = new CommonSQLStatementContext(new MySQLShowFunctionStatusStatement(databaseType, null));
         Optional<DatabaseAdminExecutor> actual = new MySQLAdminExecutorCreator().create(sqlStatementContext, "", "", Collections.emptyList());
         assertTrue(actual.isPresent());
-        assertThat(actual.get(), isA(ShowFunctionStatusExecutor.class));
+        assertThat(actual.get(), isA(MySQLShowFunctionStatusExecutor.class));
     }
     
     @Test
@@ -106,7 +106,7 @@ class MySQLAdminExecutorCreatorTest {
         SQLStatementContext sqlStatementContext = new CommonSQLStatementContext(new MySQLShowProcedureStatusStatement(databaseType, null));
         Optional<DatabaseAdminExecutor> actual = new MySQLAdminExecutorCreator().create(sqlStatementContext, "", "", Collections.emptyList());
         assertTrue(actual.isPresent());
-        assertThat(actual.get(), isA(ShowProcedureStatusExecutor.class));
+        assertThat(actual.get(), isA(MySQLShowProcedureStatusExecutor.class));
     }
     
     @Test
@@ -114,7 +114,7 @@ class MySQLAdminExecutorCreatorTest {
         SQLStatementContext sqlStatementContext = new CommonSQLStatementContext(new MySQLShowTablesStatement(databaseType, null, null, false));
         Optional<DatabaseAdminExecutor> actual = new MySQLAdminExecutorCreator().create(sqlStatementContext, "", "", Collections.emptyList());
         assertTrue(actual.isPresent());
-        assertThat(actual.get(), isA(ShowTablesExecutor.class));
+        assertThat(actual.get(), isA(MySQLShowTablesExecutor.class));
     }
     
     @Test
@@ -130,7 +130,7 @@ class MySQLAdminExecutorCreatorTest {
         SQLStatementContext sqlStatementContext = new CommonSQLStatementContext(new MySQLShowDatabasesStatement(databaseType, null));
         Optional<DatabaseAdminExecutor> actual = new MySQLAdminExecutorCreator().create(sqlStatementContext, "", "", Collections.emptyList());
         assertTrue(actual.isPresent());
-        assertThat(actual.get(), isA(ShowDatabasesExecutor.class));
+        assertThat(actual.get(), isA(MySQLShowDatabasesExecutor.class));
     }
     
     @Test
@@ -138,7 +138,7 @@ class MySQLAdminExecutorCreatorTest {
         SQLStatementContext sqlStatementContext = new CommonSQLStatementContext(new MySQLShowProcessListStatement(databaseType, false));
         Optional<DatabaseAdminExecutor> actual = new MySQLAdminExecutorCreator().create(sqlStatementContext, "", "", Collections.emptyList());
         assertTrue(actual.isPresent());
-        assertThat(actual.get(), isA(ShowProcessListExecutor.class));
+        assertThat(actual.get(), isA(MySQLShowProcessListExecutor.class));
     }
     
     @Test
@@ -146,7 +146,7 @@ class MySQLAdminExecutorCreatorTest {
         SQLStatementContext sqlStatementContext = new CommonSQLStatementContext(new MySQLShowCreateDatabaseStatement(databaseType, null));
         Optional<DatabaseAdminExecutor> actual = new MySQLAdminExecutorCreator().create(sqlStatementContext, "", "", Collections.emptyList());
         assertTrue(actual.isPresent());
-        assertThat(actual.get(), isA(ShowCreateDatabaseExecutor.class));
+        assertThat(actual.get(), isA(MySQLShowCreateDatabaseExecutor.class));
     }
     
     @Test

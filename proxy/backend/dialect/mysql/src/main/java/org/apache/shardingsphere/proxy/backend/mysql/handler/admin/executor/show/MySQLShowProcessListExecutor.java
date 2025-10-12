@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.mysql.handler.admin.executor;
+package org.apache.shardingsphere.proxy.backend.mysql.handler.admin.executor.show;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -42,10 +42,10 @@ import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 /**
- * Show process list executor.
+ * Show process list executor for MySQL.
  */
 @RequiredArgsConstructor
-public final class ShowProcessListExecutor implements DatabaseAdminQueryExecutor {
+public final class MySQLShowProcessListExecutor implements DatabaseAdminQueryExecutor {
     
     private final boolean showFullProcesslist;
     

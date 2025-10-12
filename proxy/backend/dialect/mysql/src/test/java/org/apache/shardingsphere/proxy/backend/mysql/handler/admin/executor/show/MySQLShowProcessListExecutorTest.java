@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.mysql.handler.admin.executor;
+package org.apache.shardingsphere.proxy.backend.mysql.handler.admin.executor.show;
 
 import io.netty.util.DefaultAttributeMap;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
@@ -44,7 +44,7 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(AutoMockExtension.class)
 @StaticMockSettings(ProxyContext.class)
-class ShowProcessListExecutorTest {
+class MySQLShowProcessListExecutorTest {
     
     private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "MySQL");
     
@@ -53,7 +53,7 @@ class ShowProcessListExecutorTest {
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
         when(contextManager.getPersistServiceFacade().getModeFacade().getProcessService().getProcessList()).thenReturn(mockProcessList());
-        ShowProcessListExecutor showProcessListExecutor = new ShowProcessListExecutor(false);
+        MySQLShowProcessListExecutor showProcessListExecutor = new MySQLShowProcessListExecutor(false);
         showProcessListExecutor.execute(new ConnectionSession(databaseType, new DefaultAttributeMap()), mock());
         assertThat(showProcessListExecutor.getQueryResultMetaData().getColumnCount(), is(8));
         MergedResult mergedResult = showProcessListExecutor.getMergedResult();
