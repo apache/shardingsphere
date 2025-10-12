@@ -33,7 +33,6 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.Se
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
@@ -128,24 +127,24 @@ public final class SelectInformationSchemataExecutor extends DatabaseMetaDataExe
     
     @Override
     protected void preProcess(final ShardingSphereDatabase database, final Map<String, Object> rows, final Map<String, String> alias) throws SQLException {
-        Collection<String> catalogs = getCatalogs(database.getResourceMetaData());
+        Optional<String> catalog = findCatalog(database.getResourceMetaData());
         schemaNameAlias = alias.getOrDefault(SCHEMA_NAME, alias.getOrDefault(schemaNameAlias, schemaNameAlias));
         String rowValue = rows.getOrDefault(schemaNameAlias, "").toString();
         queryDatabase = !rowValue.isEmpty();
-        if (catalogs.contains(rowValue)) {
+        if (catalog.isPresent() && rowValue.equals(catalog.get())) {
             rows.replace(schemaNameAlias, database.getName());
         } else {
             rows.clear();
         }
     }
     
-    private Collection<String> getCatalogs(final ResourceMetaData resourceMetaData) throws SQLException {
+    private Optional<String> findCatalog(final ResourceMetaData resourceMetaData) throws SQLException {
         Optional<StorageUnit> storageUnit = resourceMetaData.getStorageUnits().values().stream().findFirst();
         if (!storageUnit.isPresent()) {
-            return Collections.emptySet();
+            return Optional.empty();
         }
         try (Connection connection = storageUnit.get().getDataSource().getConnection()) {
-            return Collections.singleton(connection.getCatalog());
+            return Optional.of(connection.getCatalog());
         }
     }
     
