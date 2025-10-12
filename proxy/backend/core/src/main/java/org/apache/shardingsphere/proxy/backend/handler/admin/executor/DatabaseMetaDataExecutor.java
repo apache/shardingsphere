@@ -33,7 +33,6 @@ import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
 import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnit;
-import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 
 import java.sql.Connection;
@@ -84,19 +83,33 @@ public class DatabaseMetaDataExecutor implements DatabaseAdminQueryExecutor {
     }
     
     protected Collection<ShardingSphereDatabase> getDatabases(final ConnectionSession connectionSession, final ShardingSphereMetaData metaData) {
+        AuthorityChecker authorityChecker = new AuthorityChecker(metaData.getGlobalRuleMetaData().getSingleRule(AuthorityRule.class), connectionSession.getConnectionContext().getGrantee());
         String databaseName = connectionSession.getCurrentDatabaseName();
         ShardingSphereDatabase database = metaData.getDatabase(databaseName);
-        if (null != database && isAuthorized(database.getName(), metaData, connectionSession.getConnectionContext().getGrantee()) && database.containsDataSource()) {
+        if (null != database && authorityChecker.isAuthorized(database.getName()) && database.containsDataSource()) {
             return Collections.singleton(database);
         }
         Collection<ShardingSphereDatabase> databases = metaData.getAllDatabases().stream()
-                .filter(each -> isAuthorized(each.getName(), metaData, connectionSession.getConnectionContext().getGrantee()))
-                .filter(ShardingSphereDatabase::containsDataSource).collect(Collectors.toList());
+                .filter(each -> authorityChecker.isAuthorized(each.getName())).filter(ShardingSphereDatabase::containsDataSource).collect(Collectors.toList());
         return databases.isEmpty() ? Collections.emptyList() : Collections.singleton(databases.iterator().next());
     }
     
-    private boolean isAuthorized(final String databaseName, final ShardingSphereMetaData metaData, final Grantee grantee) {
-        return new AuthorityChecker(metaData.getGlobalRuleMetaData().getSingleRule(AuthorityRule.class), grantee).isAuthorized(databaseName);
+    private void processMetaData(final ShardingSphereDatabase database, final Consumer<ResultSet> callback) throws SQLException {
+        ResourceMetaData resourceMetaData = database.getResourceMetaData();
+        Optional<StorageUnit> storageUnit = resourceMetaData.getStorageUnits().values().stream().findFirst();
+        if (!storageUnit.isPresent()) {
+            return;
+        }
+        try (
+                Connection connection = storageUnit.get().getDataSource().getConnection();
+                PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+            for (int i = 0; i < parameters.size(); i++) {
+                preparedStatement.setObject(i + 1, parameters.get(i));
+            }
+            try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                callback.accept(resultSet);
+            }
+        }
     }
     
     @SneakyThrows(SQLException.class)
@@ -126,24 +139,6 @@ public class DatabaseMetaDataExecutor implements DatabaseAdminQueryExecutor {
     }
     
     protected void postProcess() {
-    }
-    
-    protected void processMetaData(final ShardingSphereDatabase database, final Consumer<ResultSet> callback) throws SQLException {
-        ResourceMetaData resourceMetaData = database.getResourceMetaData();
-        Optional<StorageUnit> storageUnit = resourceMetaData.getStorageUnits().values().stream().findFirst();
-        if (!storageUnit.isPresent()) {
-            return;
-        }
-        try (
-                Connection connection = storageUnit.get().getDataSource().getConnection();
-                PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
-            for (int i = 0; i < parameters.size(); i++) {
-                preparedStatement.setObject(i + 1, parameters.get(i));
-            }
-            try (ResultSet resultSet = preparedStatement.executeQuery()) {
-                callback.accept(resultSet);
-            }
-        }
     }
     
     private MergedResult createMergedResult() {

@@ -60,7 +60,7 @@ public final class SelectInformationSchemataExecutor extends DatabaseMetaDataExe
     
     public static final String DEFAULT_ENCRYPTION = "DEFAULT_ENCRYPTION";
     
-    private static final Collection<String> SCHEMA_WITHOUT_DATA_SOURCE = new LinkedHashSet<>();
+    private static final Collection<String> EMPTY_DATABASES = new LinkedHashSet<>();
     
     private final SelectStatement sqlStatement;
     
@@ -77,51 +77,51 @@ public final class SelectInformationSchemataExecutor extends DatabaseMetaDataExe
     protected Collection<ShardingSphereDatabase> getDatabases(final ConnectionSession connectionSession, final ShardingSphereMetaData metaData) {
         AuthorityChecker authorityChecker = new AuthorityChecker(metaData.getGlobalRuleMetaData().getSingleRule(AuthorityRule.class), connectionSession.getConnectionContext().getGrantee());
         Collection<ShardingSphereDatabase> databases = metaData.getAllDatabases().stream().filter(each -> authorityChecker.isAuthorized(each.getName())).collect(Collectors.toList());
-        SCHEMA_WITHOUT_DATA_SOURCE.addAll(databases.stream().filter(each -> !each.containsDataSource()).map(ShardingSphereDatabase::getName).collect(Collectors.toSet()));
+        EMPTY_DATABASES.addAll(databases.stream().filter(each -> !each.containsDataSource()).map(ShardingSphereDatabase::getName).collect(Collectors.toSet()));
         Collection<ShardingSphereDatabase> result = databases.stream().filter(ShardingSphereDatabase::containsDataSource).collect(Collectors.toList());
-        if (!SCHEMA_WITHOUT_DATA_SOURCE.isEmpty()) {
-            fillSchemasWithoutDataSource();
+        if (!EMPTY_DATABASES.isEmpty()) {
+            fillDatabasesWithoutDataSource(getDefaultRowData());
         }
         return result;
     }
     
-    private void fillSchemasWithoutDataSource() {
-        if (SCHEMA_WITHOUT_DATA_SOURCE.isEmpty()) {
-            return;
-        }
-        Map<String, String> defaultRowData = getTheDefaultRowData();
-        SCHEMA_WITHOUT_DATA_SOURCE.forEach(each -> {
+    private void fillDatabasesWithoutDataSource(final Map<String, String> defaultRowData) {
+        for (String each : EMPTY_DATABASES) {
             Map<String, Object> row = new LinkedHashMap<>(defaultRowData);
             row.replace(schemaNameAlias, each);
             getRows().add(row);
-        });
-        SCHEMA_WITHOUT_DATA_SOURCE.clear();
-    }
-    
-    private Map<String, String> getTheDefaultRowData() {
-        Collection<ProjectionSegment> projections = sqlStatement.getProjections().getProjections();
-        if (projections.stream().anyMatch(ShorthandProjectionSegment.class::isInstance)) {
-            return Stream.of(CATALOG_NAME, SCHEMA_NAME, DEFAULT_CHARACTER_SET_NAME, DEFAULT_COLLATION_NAME, SQL_PATH, DEFAULT_ENCRYPTION)
-                    .collect(Collectors.toMap(each -> each, each -> "", (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
         }
-        return getDefaultRowsFromProjections(projections);
+        EMPTY_DATABASES.clear();
     }
     
-    private Map<String, String> getDefaultRowsFromProjections(final Collection<ProjectionSegment> projections) {
+    private Map<String, String> getDefaultRowData() {
+        Collection<ProjectionSegment> projections = sqlStatement.getProjections().getProjections();
+        return projections.stream().anyMatch(ShorthandProjectionSegment.class::isInstance)
+                ? getDefaultRowsFromShorthandProjection()
+                : getDefaultRowsFromColumnProjections(filterColumnProjections(projections));
+    }
+    
+    private Map<String, String> getDefaultRowsFromShorthandProjection() {
+        return Stream.of(CATALOG_NAME, SCHEMA_NAME, DEFAULT_CHARACTER_SET_NAME, DEFAULT_COLLATION_NAME, SQL_PATH, DEFAULT_ENCRYPTION)
+                .collect(Collectors.toMap(each -> each, each -> "", (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
+    }
+    
+    private List<ColumnProjectionSegment> filterColumnProjections(final Collection<ProjectionSegment> projections) {
+        return projections.stream().filter(each -> each.getClass().isAssignableFrom(ColumnProjectionSegment.class)).map(each -> (ColumnProjectionSegment) each).collect(Collectors.toList());
+    }
+    
+    private Map<String, String> getDefaultRowsFromColumnProjections(final Collection<ColumnProjectionSegment> projections) {
         Map<String, String> result = new LinkedHashMap<>(projections.size(), 1F);
-        for (ProjectionSegment each : projections) {
-            if (!each.getClass().isAssignableFrom(ColumnProjectionSegment.class)) {
-                continue;
-            }
-            if (((ColumnProjectionSegment) each).getAlias().isPresent()) {
-                String alias = ((ColumnProjectionSegment) each).getAlias().get().getValue();
-                if (((ColumnProjectionSegment) each).getColumn().getIdentifier().getValue().equalsIgnoreCase(SCHEMA_NAME)) {
+        for (ColumnProjectionSegment each : projections) {
+            if (each.getAlias().isPresent()) {
+                String alias = each.getAlias().get().getValue();
+                if (each.getColumn().getIdentifier().getValue().equalsIgnoreCase(SCHEMA_NAME)) {
                     schemaNameAlias = alias;
                 }
                 result.put(alias, "");
                 continue;
             }
-            result.put(((ColumnProjectionSegment) each).getColumn().getIdentifier().getValue().toUpperCase(), "");
+            result.put(each.getColumn().getIdentifier().getValue().toUpperCase(), "");
         }
         return result;
     }
