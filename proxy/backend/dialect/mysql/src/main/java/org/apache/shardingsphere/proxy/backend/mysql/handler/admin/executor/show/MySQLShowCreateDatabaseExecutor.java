@@ -15,35 +15,44 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.mysql.handler.admin.executor;
+package org.apache.shardingsphere.proxy.backend.mysql.handler.admin.executor.show;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.database.exception.core.exception.syntax.database.UnknownDatabaseException;
+import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResultMetaData;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.raw.metadata.RawQueryResultColumnMetaData;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.raw.metadata.RawQueryResultMetaData;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.raw.type.RawMemoryQueryResult;
+import org.apache.shardingsphere.infra.executor.sql.execute.result.query.type.memory.row.MemoryQueryResultDataRow;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.apache.shardingsphere.infra.merge.result.impl.transparent.TransparentMergedResult;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.proxy.backend.handler.admin.executor.DatabaseAdminQueryExecutor;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
-import org.apache.shardingsphere.sql.parser.statement.mysql.dal.show.procedure.MySQLShowProcedureStatusStatement;
+import org.apache.shardingsphere.sql.parser.statement.mysql.dal.show.database.MySQLShowCreateDatabaseStatement;
 
 import java.sql.Types;
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
 /**
- * Show procedure status executor.
+ * Show create database executor for MySQL.
  */
 @RequiredArgsConstructor
 @Getter
-public final class ShowProcedureStatusExecutor implements DatabaseAdminQueryExecutor {
+public final class MySQLShowCreateDatabaseExecutor implements DatabaseAdminQueryExecutor {
     
-    private final MySQLShowProcedureStatusStatement showProcedureStatusStatement;
+    private static final String CREATE_DATABASE_PATTERN = "CREATE DATABASE `%s`;";
+    
+    private static final String DATABASE = "Database";
+    
+    private static final String CREATE_DATABASE = "CREATE DATABASE ";
+    
+    private final MySQLShowCreateDatabaseStatement showCreateDatabaseStatement;
     
     private QueryResultMetaData queryResultMetaData;
     
@@ -52,26 +61,19 @@ public final class ShowProcedureStatusExecutor implements DatabaseAdminQueryExec
     @Override
     public void execute(final ConnectionSession connectionSession, final ShardingSphereMetaData metaData) {
         queryResultMetaData = createQueryResultMetaData();
-        mergedResult = new TransparentMergedResult(getQueryResult());
+        mergedResult = new TransparentMergedResult(getQueryResult(showCreateDatabaseStatement.getDatabaseName(), metaData));
     }
     
-    private QueryResult getQueryResult() {
-        return new RawMemoryQueryResult(queryResultMetaData, Collections.emptyList());
+    private QueryResult getQueryResult(final String databaseName, final ShardingSphereMetaData metaData) {
+        ShardingSpherePreconditions.checkState(metaData.containsDatabase(databaseName),
+                () -> new UnknownDatabaseException(databaseName));
+        List<MemoryQueryResultDataRow> rows = Collections.singletonList(new MemoryQueryResultDataRow(Arrays.asList(databaseName, String.format(CREATE_DATABASE_PATTERN, databaseName))));
+        return new RawMemoryQueryResult(queryResultMetaData, rows);
     }
     
     private QueryResultMetaData createQueryResultMetaData() {
-        List<RawQueryResultColumnMetaData> columns = new ArrayList<>(11);
-        columns.add(new RawQueryResultColumnMetaData("", "Db", "Db", Types.VARCHAR, "VARCHAR", 255, 0));
-        columns.add(new RawQueryResultColumnMetaData("", "Name", "Name", Types.VARCHAR, "VARCHAR", 255, 0));
-        columns.add(new RawQueryResultColumnMetaData("", "Type", "Type", Types.VARCHAR, "VARCHAR", 64, 0));
-        columns.add(new RawQueryResultColumnMetaData("", "Definer", "Definer", Types.VARCHAR, "VARCHAR", 64, 0));
-        columns.add(new RawQueryResultColumnMetaData("", "Modified", "Modified", Types.VARCHAR, "VARCHAR", 64, 0));
-        columns.add(new RawQueryResultColumnMetaData("", "Created", "Created", Types.VARCHAR, "VARCHAR", 64, 0));
-        columns.add(new RawQueryResultColumnMetaData("", "Security_type", "Security_type", Types.VARCHAR, "VARCHAR", 64, 0));
-        columns.add(new RawQueryResultColumnMetaData("", "Comment", "Comment", Types.VARCHAR, "VARCHAR", 120, 0));
-        columns.add(new RawQueryResultColumnMetaData("", "character_set_client", "character_set_client", Types.VARCHAR, "VARCHAR", 20, 0));
-        columns.add(new RawQueryResultColumnMetaData("", "collation_connection", "collation_connection", Types.VARCHAR, "VARCHAR", 20, 0));
-        columns.add(new RawQueryResultColumnMetaData("", "Database_Collation", "Database_Collation", Types.VARCHAR, "VARCHAR", 20, 0));
-        return new RawQueryResultMetaData(columns);
+        List<RawQueryResultColumnMetaData> columnMetaData = Arrays.asList(new RawQueryResultColumnMetaData("", DATABASE, DATABASE, Types.VARCHAR, "VARCHAR", 255, 0),
+                new RawQueryResultColumnMetaData("", CREATE_DATABASE, CREATE_DATABASE, Types.VARCHAR, "VARCHAR", 255, 0));
+        return new RawQueryResultMetaData(columnMetaData);
     }
 }

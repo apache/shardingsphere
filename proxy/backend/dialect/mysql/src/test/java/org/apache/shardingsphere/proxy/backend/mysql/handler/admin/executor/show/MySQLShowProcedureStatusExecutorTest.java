@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.mysql.handler.admin.executor;
+package org.apache.shardingsphere.proxy.backend.mysql.handler.admin.executor.show;
 
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
@@ -38,7 +38,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.mock;
 
 @ExtendWith(MockitoExtension.class)
-class ShowProcedureStatusExecutorTest {
+class MySQLShowProcedureStatusExecutorTest {
     
     private static final String DATABASE_PATTERN = "db_%s";
     
@@ -46,7 +46,7 @@ class ShowProcedureStatusExecutorTest {
     
     @Test
     void assertExecute() throws SQLException {
-        ShowProcedureStatusExecutor executor = new ShowProcedureStatusExecutor(new MySQLShowProcedureStatusStatement(databaseType, null));
+        MySQLShowProcedureStatusExecutor executor = new MySQLShowProcedureStatusExecutor(new MySQLShowProcedureStatusStatement(databaseType, null));
         executor.execute(mock(ConnectionSession.class), new ShardingSphereMetaData(createDatabases(), mock(), mock(), mock()));
         assertThat(executor.getQueryResultMetaData().getColumnCount(), is(11));
     }

@@ -15,58 +15,40 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.mysql.handler.admin.executor;
+package org.apache.shardingsphere.proxy.backend.mysql.handler.admin.executor.show;
 
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
-import org.apache.shardingsphere.database.exception.core.exception.syntax.database.UnknownDatabaseException;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
-import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLUseStatement;
+import org.apache.shardingsphere.sql.parser.statement.mysql.dal.show.function.MySQLShowFunctionStatusStatement;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Answers;
-import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.anyString;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-class UseDatabaseExecutorTest {
+class MySQLShowFunctionStatusExecutorTest {
     
     private static final String DATABASE_PATTERN = "db_%s";
     
     private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "MySQL");
     
-    @Mock(answer = Answers.RETURNS_DEEP_STUBS)
-    private ConnectionSession connectionSession;
-    
     @Test
-    void assertExecuteUseStatementProxyBackendHandler() {
-        MySQLUseStatement useStatement = mock(MySQLUseStatement.class);
-        when(useStatement.getDatabase()).thenReturn(String.format(DATABASE_PATTERN, 0));
-        UseDatabaseExecutor executor = new UseDatabaseExecutor(useStatement);
-        when(connectionSession.getConnectionContext().getGrantee()).thenReturn(null);
-        executor.execute(connectionSession, new ShardingSphereMetaData(createDatabases(), mock(), mock(), mock()));
-        verify(connectionSession).setCurrentDatabaseName(anyString());
-    }
-    
-    @Test
-    void assertExecuteUseStatementProxyBackendHandlerWhenSchemaNotExist() {
-        MySQLUseStatement useStatement = mock(MySQLUseStatement.class);
-        when(useStatement.getDatabase()).thenReturn(String.format(DATABASE_PATTERN, 10));
-        UseDatabaseExecutor executor = new UseDatabaseExecutor(useStatement);
-        assertThrows(UnknownDatabaseException.class, () -> executor.execute(connectionSession, new ShardingSphereMetaData(createDatabases(), mock(), mock(), mock())));
+    void assertExecute() throws SQLException {
+        MySQLShowFunctionStatusExecutor executor = new MySQLShowFunctionStatusExecutor(new MySQLShowFunctionStatusStatement(databaseType, null));
+        executor.execute(mock(ConnectionSession.class), new ShardingSphereMetaData(createDatabases(), mock(), mock(), mock()));
+        assertThat(executor.getQueryResultMetaData().getColumnCount(), is(11));
     }
     
     private Collection<ShardingSphereDatabase> createDatabases() {

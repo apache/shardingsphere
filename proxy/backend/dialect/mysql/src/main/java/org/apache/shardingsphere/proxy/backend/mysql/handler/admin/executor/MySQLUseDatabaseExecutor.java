@@ -29,10 +29,10 @@ import org.apache.shardingsphere.sql.parser.statement.core.util.SQLUtils;
 import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLUseStatement;
 
 /**
- * Use database executor.
+ * Use database executor for MySQL.
  */
 @RequiredArgsConstructor
-public final class UseDatabaseExecutor implements DatabaseAdminExecutor {
+public final class MySQLUseDatabaseExecutor implements DatabaseAdminExecutor {
     
     private final MySQLUseStatement sqlStatement;
     
