@@ -28,12 +28,7 @@ import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaDa
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
-import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereStatistics;
-import org.apache.shardingsphere.infra.metadata.statistics.builder.ShardingSphereStatisticsFactory;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
-import org.apache.shardingsphere.mode.manager.ContextManager;
-import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
-import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.FromDatabaseSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.ShowFilterSegment;
@@ -41,10 +36,9 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.ShowLikeS
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.DatabaseSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 import org.apache.shardingsphere.sql.parser.statement.mysql.dal.show.table.MySQLShowTablesStatement;
-import org.apache.shardingsphere.test.infra.framework.mock.AutoMockExtension;
-import org.apache.shardingsphere.test.infra.framework.mock.StaticMockSettings;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 
@@ -63,8 +57,7 @@ import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-@ExtendWith(AutoMockExtension.class)
-@StaticMockSettings(ProxyContext.class)
+@ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
 class ShowTablesExecutorTest {
     
@@ -75,10 +68,7 @@ class ShowTablesExecutorTest {
     @Test
     void assertShowTablesExecutorWithoutFilter() throws SQLException {
         ShowTablesExecutor executor = new ShowTablesExecutor(new MySQLShowTablesStatement(databaseType, null, null, false), databaseType);
-        Collection<ShardingSphereDatabase> databases = mockDatabases();
-        ContextManager contextManager = mockContextManager(databases);
-        when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
-        executor.execute(mockConnectionSession());
+        executor.execute(mockConnectionSession(), mockMetaData(mockDatabases()));
         assertThat(executor.getQueryResultMetaData().getColumnCount(), is(1));
         executor.getMergedResult().next();
         assertThat(executor.getMergedResult().getValue(1, Object.class), is("T_TEST"));
@@ -96,10 +86,7 @@ class ShowTablesExecutorTest {
         MySQLShowTablesStatement showTablesStatement = mock(MySQLShowTablesStatement.class);
         when(showTablesStatement.isContainsFull()).thenReturn(true);
         ShowTablesExecutor executor = new ShowTablesExecutor(showTablesStatement, databaseType);
-        Collection<ShardingSphereDatabase> databases = mockDatabases();
-        ContextManager contextManager = mockContextManager(databases);
-        when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
-        executor.execute(mockConnectionSession());
+        executor.execute(mockConnectionSession(), mockMetaData(mockDatabases()));
         assertThat(executor.getQueryResultMetaData().getColumnCount(), is(2));
     }
     
@@ -109,10 +96,7 @@ class ShowTablesExecutorTest {
         when(showFilterSegment.getLike()).thenReturn(Optional.of(new ShowLikeSegment(0, 10, "t_account%")));
         MySQLShowTablesStatement showTablesStatement = new MySQLShowTablesStatement(databaseType, null, showFilterSegment, false);
         ShowTablesExecutor executor = new ShowTablesExecutor(showTablesStatement, databaseType);
-        Collection<ShardingSphereDatabase> databases = mockDatabases();
-        ContextManager contextManager = mockContextManager(databases);
-        when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
-        executor.execute(mockConnectionSession());
+        executor.execute(mockConnectionSession(), mockMetaData(mockDatabases()));
         assertThat(executor.getQueryResultMetaData().getColumnCount(), is(1));
         executor.getMergedResult().next();
         assertThat(executor.getMergedResult().getValue(1, Object.class), is("t_account"));
@@ -129,10 +113,7 @@ class ShowTablesExecutorTest {
         when(showFilterSegment.getLike()).thenReturn(Optional.of(new ShowLikeSegment(0, 10, "t_account")));
         MySQLShowTablesStatement showTablesStatement = new MySQLShowTablesStatement(databaseType, null, showFilterSegment, false);
         ShowTablesExecutor executor = new ShowTablesExecutor(showTablesStatement, databaseType);
-        Collection<ShardingSphereDatabase> databases = mockDatabases();
-        ContextManager contextManager = mockContextManager(databases);
-        when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
-        executor.execute(mockConnectionSession());
+        executor.execute(mockConnectionSession(), mockMetaData(mockDatabases()));
         assertThat(executor.getQueryResultMetaData().getColumnCount(), is(1));
         executor.getMergedResult().next();
         assertThat(executor.getMergedResult().getValue(1, Object.class), is("t_account"));
@@ -145,10 +126,7 @@ class ShowTablesExecutorTest {
         when(showFilterSegment.getLike()).thenReturn(Optional.of(new ShowLikeSegment(0, 10, "T_TEST")));
         MySQLShowTablesStatement showTablesStatement = new MySQLShowTablesStatement(databaseType, null, showFilterSegment, false);
         ShowTablesExecutor executor = new ShowTablesExecutor(showTablesStatement, databaseType);
-        Collection<ShardingSphereDatabase> databases = mockDatabases();
-        ContextManager contextManager = mockContextManager(databases);
-        when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
-        executor.execute(mockConnectionSession());
+        executor.execute(mockConnectionSession(), mockMetaData(mockDatabases()));
         assertThat(executor.getQueryResultMetaData().getColumnCount(), is(1));
         executor.getMergedResult().next();
         assertThat(executor.getMergedResult().getValue(1, Object.class), is("T_TEST"));
@@ -161,10 +139,7 @@ class ShowTablesExecutorTest {
         when(showFilterSegment.getLike()).thenReturn(Optional.of(new ShowLikeSegment(0, 10, "t_test")));
         MySQLShowTablesStatement showTablesStatement = new MySQLShowTablesStatement(databaseType, null, showFilterSegment, false);
         ShowTablesExecutor executor = new ShowTablesExecutor(showTablesStatement, databaseType);
-        Collection<ShardingSphereDatabase> databases = mockDatabases();
-        ContextManager contextManager = mockContextManager(databases);
-        when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
-        executor.execute(mockConnectionSession());
+        executor.execute(mockConnectionSession(), mockMetaData(mockDatabases()));
         assertThat(executor.getQueryResultMetaData().getColumnCount(), is(1));
         executor.getMergedResult().next();
         assertThat(executor.getMergedResult().getValue(1, Object.class), is("T_TEST"));
@@ -176,9 +151,7 @@ class ShowTablesExecutorTest {
         MySQLShowTablesStatement showTablesStatement = new MySQLShowTablesStatement(
                 databaseType, new FromDatabaseSegment(0, new DatabaseSegment(0, 0, new IdentifierValue("uncompleted"))), null, false);
         ShowTablesExecutor executor = new ShowTablesExecutor(showTablesStatement, databaseType);
-        ContextManager contextManager = mockContextManager(mockDatabases());
-        when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
-        executor.execute(mockConnectionSession());
+        executor.execute(mockConnectionSession(), mockMetaData(mockDatabases()));
         QueryResultMetaData actualMetaData = executor.getQueryResultMetaData();
         assertThat(actualMetaData.getColumnCount(), is(1));
         assertThat(actualMetaData.getColumnName(1), is("Tables_in_uncompleted"));
@@ -186,14 +159,8 @@ class ShowTablesExecutorTest {
         assertFalse(actualResult.next());
     }
     
-    private ContextManager mockContextManager(final Collection<ShardingSphereDatabase> databases) {
-        ShardingSphereMetaData metaData = new ShardingSphereMetaData(
-                databases, mock(ResourceMetaData.class), new RuleMetaData(Collections.singleton(mock(AuthorityRule.class))), new ConfigurationProperties(new Properties()));
-        MetaDataContexts metaDataContexts = new MetaDataContexts(metaData, ShardingSphereStatisticsFactory.create(metaData, new ShardingSphereStatistics()));
-        ContextManager result = mock(ContextManager.class, RETURNS_DEEP_STUBS);
-        when(result.getMetaDataContexts()).thenReturn(metaDataContexts);
-        when(result.getDatabase("db_0")).thenReturn(databases.iterator().next());
-        return result;
+    private static ShardingSphereMetaData mockMetaData(final Collection<ShardingSphereDatabase> databases) {
+        return new ShardingSphereMetaData(databases, mock(ResourceMetaData.class), new RuleMetaData(Collections.singleton(mock(AuthorityRule.class))), new ConfigurationProperties(new Properties()));
     }
     
     private Collection<ShardingSphereDatabase> mockDatabases() {

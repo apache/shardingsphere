@@ -102,7 +102,7 @@ class SelectInformationSchemataExecutorTest {
         ContextManager contextManager = mockContextManager(createDatabase("no_auth_db"));
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
         SelectInformationSchemataExecutor executor = new SelectInformationSchemataExecutor(statement, sql, Collections.emptyList());
-        executor.execute(connectionSession);
+        executor.execute(connectionSession, contextManager.getMetaDataContexts().getMetaData());
         assertThat(executor.getQueryResultMetaData().getColumnCount(), is(0));
         assertFalse(executor.getMergedResult().next());
     }
@@ -121,7 +121,7 @@ class SelectInformationSchemataExecutorTest {
             ContextManager contextManager = mockContextManager(database);
             when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
             SelectInformationSchemataExecutor executor = new SelectInformationSchemataExecutor(statement, sql, Collections.emptyList());
-            executor.execute(connectionSession);
+            executor.execute(connectionSession, contextManager.getMetaDataContexts().getMetaData());
             assertThat(executor.getQueryResultMetaData().getColumnCount(), is(2));
             assertTrue(executor.getMergedResult().next());
             assertThat(executor.getMergedResult().getValue(1, String.class), is("auth_db"));
@@ -136,7 +136,7 @@ class SelectInformationSchemataExecutorTest {
         ContextManager contextManager = mockContextManager(createDatabase("auth_db"));
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
         SelectInformationSchemataExecutor executor = new SelectInformationSchemataExecutor(statement, sql, Collections.emptyList());
-        executor.execute(connectionSession);
+        executor.execute(connectionSession, contextManager.getMetaDataContexts().getMetaData());
         assertThat(executor.getQueryResultMetaData().getColumnCount(), is(2));
         assertTrue(executor.getMergedResult().next());
         assertThat(executor.getMergedResult().getValue(1, String.class), is("auth_db"));
@@ -149,7 +149,7 @@ class SelectInformationSchemataExecutorTest {
         ContextManager contextManager = mockContextManager();
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
         SelectInformationSchemataExecutor executor = new SelectInformationSchemataExecutor(statement, sql, Collections.emptyList());
-        executor.execute(connectionSession);
+        executor.execute(connectionSession, contextManager.getMetaDataContexts().getMetaData());
         assertThat(executor.getQueryResultMetaData().getColumnCount(), is(0));
     }
     

@@ -26,6 +26,7 @@ import org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.ra
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataMergedResult;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.proxy.backend.handler.admin.executor.DatabaseAdminExecutor;
 import org.apache.shardingsphere.proxy.backend.handler.admin.executor.DatabaseAdminQueryExecutor;
 import org.apache.shardingsphere.proxy.backend.mysql.handler.admin.executor.sysvar.MySQLSystemVariable;
@@ -60,8 +61,8 @@ public final class MySQLSystemVariableQueryExecutor implements DatabaseAdminQuer
     private MergedResult mergedResult;
     
     @Override
-    public void execute(final ConnectionSession connectionSession) {
-        List<RawQueryResultColumnMetaData> metaData = new ArrayList<>(projections.size());
+    public void execute(final ConnectionSession connectionSession, final ShardingSphereMetaData metaData) {
+        List<RawQueryResultColumnMetaData> columnMetaData = new ArrayList<>(projections.size());
         List<Object> columnsOfRow = new ArrayList<>(projections.size());
         for (int i = 0; i < projections.size(); i++) {
             ExpressionProjectionSegment projection = projections.get(i);
@@ -69,9 +70,9 @@ public final class MySQLSystemVariableQueryExecutor implements DatabaseAdminQuer
             Scope scope = variableSegment.getScope().map(Scope::getScope).orElse(Scope.DEFAULT);
             columnsOfRow.add(variables.get(i).getValue(scope, connectionSession));
             String name = projection.getAliasName().orElseGet(() -> "@@" + variableSegment.getScope().map(s -> s + ".").orElse("") + variableSegment.getVariable());
-            metaData.add(new RawQueryResultColumnMetaData("", name, name, Types.VARCHAR, "VARCHAR", 1024, 0));
+            columnMetaData.add(new RawQueryResultColumnMetaData("", name, name, Types.VARCHAR, "VARCHAR", 1024, 0));
         }
-        queryResultMetaData = new RawQueryResultMetaData(metaData);
+        queryResultMetaData = new RawQueryResultMetaData(columnMetaData);
         mergedResult = new LocalDataMergedResult(Collections.singleton(new LocalDataQueryResultRow(columnsOfRow.toArray())));
     }
     

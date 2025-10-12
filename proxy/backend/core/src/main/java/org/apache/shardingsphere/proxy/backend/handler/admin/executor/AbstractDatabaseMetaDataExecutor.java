@@ -29,6 +29,7 @@ import org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.ra
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.type.memory.row.MemoryQueryResultDataRow;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.apache.shardingsphere.infra.merge.result.impl.transparent.TransparentMergedResult;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
 import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnit;
@@ -71,7 +72,7 @@ public abstract class AbstractDatabaseMetaDataExecutor implements DatabaseAdminQ
     private final Collection<String> labels = new LinkedList<>();
     
     @Override
-    public final void execute(final ConnectionSession connectionSession) throws SQLException {
+    public final void execute(final ConnectionSession connectionSession, final ShardingSphereMetaData metaData) throws SQLException {
         Collection<String> databaseNames = getDatabaseNames(connectionSession);
         for (String databaseName : databaseNames) {
             processMetaData(databaseName, resultSet -> handleResultSet(databaseName, resultSet));

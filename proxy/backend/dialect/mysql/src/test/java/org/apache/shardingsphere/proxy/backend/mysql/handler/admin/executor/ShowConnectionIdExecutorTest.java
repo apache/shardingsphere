@@ -42,7 +42,7 @@ class ShowConnectionIdExecutorTest {
     @Test
     void assertExecute() throws SQLException {
         ShowConnectionIdExecutor executor = new ShowConnectionIdExecutor(mockSelectStatement());
-        executor.execute(mockConnectionSession());
+        executor.execute(mockConnectionSession(), mock());
         QueryResultMetaData metaData = executor.getQueryResultMetaData();
         assertThat(metaData.getColumnCount(), is(1));
         assertThat(metaData.getColumnName(1), is(ShowConnectionIdExecutor.FUNCTION_NAME));
@@ -55,7 +55,7 @@ class ShowConnectionIdExecutorTest {
     @Test
     void assertExecuteWithAlias() throws SQLException {
         ShowConnectionIdExecutor executor = new ShowConnectionIdExecutor(mockSelectStatementWithAlias());
-        executor.execute(mockConnectionSession());
+        executor.execute(mockConnectionSession(), mock());
         QueryResultMetaData metaData = executor.getQueryResultMetaData();
         assertThat(metaData.getColumnCount(), is(1));
         assertThat(metaData.getColumnName(1), is(ShowConnectionIdExecutor.FUNCTION_NAME));

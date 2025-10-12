@@ -19,7 +19,6 @@ package org.apache.shardingsphere.proxy.backend.opengauss.handler.admin.executor
 
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResultMetaData;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
-import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.junit.jupiter.api.Test;
 
 import java.sql.SQLException;
@@ -40,9 +39,8 @@ class OpenGaussSelectPasswordNotifyTimeExecutorTest {
     
     @Test
     void assertExecute() throws SQLException {
-        ConnectionSession connectionSession = mock(ConnectionSession.class);
         OpenGaussSelectPasswordNotifyTimeExecutor executor = new OpenGaussSelectPasswordNotifyTimeExecutor();
-        executor.execute(connectionSession);
+        executor.execute(mock(), mock());
         QueryResultMetaData actualMetaData = executor.getQueryResultMetaData();
         assertThat(actualMetaData.getColumnCount(), is(1));
         assertThat(actualMetaData.getColumnLabel(1), is("gs_password_notifytime"));

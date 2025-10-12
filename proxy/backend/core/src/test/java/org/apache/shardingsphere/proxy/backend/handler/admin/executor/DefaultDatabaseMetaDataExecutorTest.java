@@ -85,7 +85,7 @@ class DefaultDatabaseMetaDataExecutorTest {
         String sql = "SELECT SCHEMA_NAME AS sn, DEFAULT_CHARACTER_SET_NAME FROM information_schema.SCHEMATA";
         ShardingSphereDatabase database = createDatabase(expectedResultSetMap);
         DefaultDatabaseMetaDataExecutor executor = new DefaultDatabaseMetaDataExecutor(mockContextManager(database), sql, Collections.emptyList());
-        executor.execute(connectionSession);
+        executor.execute(connectionSession, mock());
         assertThat(executor.getRows().get(0).get("sn"), is("foo_ds"));
         assertThat(executor.getRows().get(0).get("DEFAULT_CHARACTER_SET_NAME"), is("utf8mb4"));
     }
@@ -95,7 +95,7 @@ class DefaultDatabaseMetaDataExecutorTest {
         String sql = "SELECT COUNT(*) AS support_ndb FROM information_schema.ENGINES WHERE Engine = 'ndbcluster'";
         ShardingSphereDatabase database = createDatabase(Collections.singletonMap("support_ndb", "0"));
         DefaultDatabaseMetaDataExecutor executor = new DefaultDatabaseMetaDataExecutor(mockContextManager(database), sql, Collections.emptyList());
-        executor.execute(connectionSession);
+        executor.execute(connectionSession, mock());
         assertThat(executor.getQueryResultMetaData().getColumnCount(), is(1));
         while (executor.getMergedResult().next()) {
             assertThat(executor.getMergedResult().getValue(1, String.class), is("0"));
@@ -107,7 +107,7 @@ class DefaultDatabaseMetaDataExecutorTest {
         String sql = "SELECT COUNT(*) AS support_ndb FROM information_schema.ENGINES WHERE Engine = ?";
         ShardingSphereDatabase database = createDatabase(Collections.singletonMap("support_ndb", "0"));
         DefaultDatabaseMetaDataExecutor executor = new DefaultDatabaseMetaDataExecutor(mockContextManager(database), sql, Collections.singletonList("ndbcluster"));
-        executor.execute(connectionSession);
+        executor.execute(connectionSession, mock());
         assertThat(executor.getQueryResultMetaData().getColumnCount(), is(1));
         while (executor.getMergedResult().next()) {
             assertThat(executor.getMergedResult().getValue(1, String.class), is("0"));

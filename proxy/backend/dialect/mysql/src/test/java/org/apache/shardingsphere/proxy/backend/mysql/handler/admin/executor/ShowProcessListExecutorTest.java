@@ -54,7 +54,7 @@ class ShowProcessListExecutorTest {
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
         when(contextManager.getPersistServiceFacade().getModeFacade().getProcessService().getProcessList()).thenReturn(mockProcessList());
         ShowProcessListExecutor showProcessListExecutor = new ShowProcessListExecutor(false);
-        showProcessListExecutor.execute(new ConnectionSession(databaseType, new DefaultAttributeMap()));
+        showProcessListExecutor.execute(new ConnectionSession(databaseType, new DefaultAttributeMap()), mock());
         assertThat(showProcessListExecutor.getQueryResultMetaData().getColumnCount(), is(8));
         MergedResult mergedResult = showProcessListExecutor.getMergedResult();
         while (mergedResult.next()) {

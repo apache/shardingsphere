@@ -67,7 +67,7 @@ class UseDatabaseExecutorTest {
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
         UseDatabaseExecutor executor = new UseDatabaseExecutor(useStatement);
         when(connectionSession.getConnectionContext().getGrantee()).thenReturn(null);
-        executor.execute(connectionSession);
+        executor.execute(connectionSession, new ShardingSphereMetaData(createDatabases(), mock(), mock(), mock()));
         verify(connectionSession).setCurrentDatabaseName(anyString());
     }
     
@@ -78,7 +78,7 @@ class UseDatabaseExecutorTest {
         UseDatabaseExecutor executor = new UseDatabaseExecutor(useStatement);
         ContextManager contextManager = mockContextManager();
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
-        assertThrows(UnknownDatabaseException.class, () -> executor.execute(connectionSession));
+        assertThrows(UnknownDatabaseException.class, () -> executor.execute(connectionSession, new ShardingSphereMetaData(createDatabases(), mock(), mock(), mock())));
     }
     
     private ContextManager mockContextManager() {
