@@ -20,7 +20,6 @@ package org.apache.shardingsphere.proxy.backend.mysql.handler.admin.executor.sho
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.database.connector.core.metadata.database.system.SystemDatabase;
-import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.database.exception.core.exception.syntax.database.UnknownDatabaseException;
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
@@ -40,11 +39,11 @@ import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.sql.parser.statement.mysql.dal.show.table.MySQLShowTablesStatement;
 
 import java.sql.Types;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 import java.util.regex.Pattern;
@@ -57,8 +56,6 @@ import java.util.stream.Collectors;
 public final class MySQLShowTablesExecutor implements DatabaseAdminQueryExecutor {
     
     private final MySQLShowTablesStatement sqlStatement;
-    
-    private final DatabaseType databaseType;
     
     @Getter
     private QueryResultMetaData queryResultMetaData;
@@ -74,7 +71,7 @@ public final class MySQLShowTablesExecutor implements DatabaseAdminQueryExecutor
     }
     
     private QueryResultMetaData createQueryResultMetaData(final String databaseName) {
-        List<RawQueryResultColumnMetaData> columnNames = new LinkedList<>();
+        List<RawQueryResultColumnMetaData> columnNames = new ArrayList<>(2);
         String tableColumnName = String.format("Tables_in_%s", databaseName);
         columnNames.add(new RawQueryResultColumnMetaData("", tableColumnName, tableColumnName, Types.VARCHAR, "VARCHAR", 255, 0));
         if (sqlStatement.isContainsFull()) {
@@ -84,19 +81,13 @@ public final class MySQLShowTablesExecutor implements DatabaseAdminQueryExecutor
     }
     
     private QueryResult getQueryResult(final String databaseName, final ShardingSphereMetaData metaData) {
-        SystemDatabase systemDatabase = new SystemDatabase(databaseType);
+        SystemDatabase systemDatabase = new SystemDatabase(sqlStatement.getDatabaseType());
         ShardingSpherePreconditions.checkState(metaData.containsDatabase(databaseName), () -> new UnknownDatabaseException(databaseName));
         ShardingSphereDatabase database = metaData.getDatabase(databaseName);
         List<MemoryQueryResultDataRow> rows = systemDatabase.getSystemSchemas().contains(databaseName) || database.isComplete()
                 ? getTables(database).stream().map(this::getRow).collect(Collectors.toList())
                 : Collections.emptyList();
         return new RawMemoryQueryResult(queryResultMetaData, rows);
-    }
-    
-    private MemoryQueryResultDataRow getRow(final ShardingSphereTable table) {
-        return sqlStatement.isContainsFull()
-                ? new MemoryQueryResultDataRow(Arrays.asList(table.getName(), table.getType()))
-                : new MemoryQueryResultDataRow(Collections.singletonList(table.getName()));
     }
     
     private Collection<ShardingSphereTable> getTables(final ShardingSphereDatabase database) {
@@ -119,5 +110,11 @@ public final class MySQLShowTablesExecutor implements DatabaseAdminQueryExecutor
         }
         Optional<String> regex = sqlStatement.getFilter().get().getLike().map(optional -> RegexUtils.convertLikePatternToRegex(optional.getPattern()));
         return regex.map(optional -> Pattern.compile(optional, Pattern.CASE_INSENSITIVE));
+    }
+    
+    private MemoryQueryResultDataRow getRow(final ShardingSphereTable table) {
+        return sqlStatement.isContainsFull()
+                ? new MemoryQueryResultDataRow(Arrays.asList(table.getName(), table.getType()))
+                : new MemoryQueryResultDataRow(Collections.singletonList(table.getName()));
     }
 }

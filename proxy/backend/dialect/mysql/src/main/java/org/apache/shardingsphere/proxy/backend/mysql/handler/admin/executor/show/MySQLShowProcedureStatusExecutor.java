@@ -55,10 +55,6 @@ public final class MySQLShowProcedureStatusExecutor implements DatabaseAdminQuer
         mergedResult = new TransparentMergedResult(getQueryResult());
     }
     
-    private QueryResult getQueryResult() {
-        return new RawMemoryQueryResult(queryResultMetaData, Collections.emptyList());
-    }
-    
     private QueryResultMetaData createQueryResultMetaData() {
         List<RawQueryResultColumnMetaData> columns = new ArrayList<>(11);
         columns.add(new RawQueryResultColumnMetaData("", "Db", "Db", Types.VARCHAR, "VARCHAR", 255, 0));
@@ -73,5 +69,9 @@ public final class MySQLShowProcedureStatusExecutor implements DatabaseAdminQuer
         columns.add(new RawQueryResultColumnMetaData("", "collation_connection", "collation_connection", Types.VARCHAR, "VARCHAR", 20, 0));
         columns.add(new RawQueryResultColumnMetaData("", "Database_Collation", "Database_Collation", Types.VARCHAR, "VARCHAR", 20, 0));
         return new RawQueryResultMetaData(columns);
+    }
+    
+    private QueryResult getQueryResult() {
+        return new RawMemoryQueryResult(queryResultMetaData, Collections.emptyList());
     }
 }
