@@ -24,7 +24,7 @@ import org.apache.shardingsphere.infra.binder.context.segment.table.TablesContex
 import org.apache.shardingsphere.infra.binder.context.statement.type.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.metadata.statistics.collector.DialectDatabaseStatisticsCollector;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
-import org.apache.shardingsphere.proxy.backend.handler.admin.executor.AbstractDatabaseMetaDataExecutor.DefaultDatabaseMetaDataExecutor;
+import org.apache.shardingsphere.proxy.backend.handler.admin.executor.DatabaseMetaDataExecutor;
 import org.apache.shardingsphere.proxy.backend.handler.admin.executor.DatabaseAdminExecutor;
 import org.apache.shardingsphere.proxy.backend.opengauss.handler.admin.executor.OpenGaussSelectDatCompatibilityExecutor;
 import org.apache.shardingsphere.proxy.backend.opengauss.handler.admin.executor.OpenGaussSelectPasswordDeadlineExecutor;
@@ -85,7 +85,7 @@ class OpenGaussAdminExecutorCreatorTest {
         SelectStatementContext selectStatementContext = mockSelectStatementContext("pg_catalog", "pg_type", null);
         Optional<DatabaseAdminExecutor> actual = new OpenGaussAdminExecutorCreator().create(selectStatementContext, sql, "postgres", Collections.emptyList());
         assertTrue(actual.isPresent());
-        assertThat(actual.get(), isA(DefaultDatabaseMetaDataExecutor.class));
+        assertThat(actual.get(), isA(DatabaseMetaDataExecutor.class));
     }
     
     @Test

@@ -21,7 +21,7 @@ import org.apache.shardingsphere.infra.binder.context.segment.select.projection.
 import org.apache.shardingsphere.infra.binder.context.segment.table.TablesContext;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.dml.SelectStatementContext;
-import org.apache.shardingsphere.proxy.backend.handler.admin.executor.AbstractDatabaseMetaDataExecutor.DefaultDatabaseMetaDataExecutor;
+import org.apache.shardingsphere.proxy.backend.handler.admin.executor.DatabaseMetaDataExecutor;
 import org.apache.shardingsphere.proxy.backend.handler.admin.executor.DatabaseAdminExecutor;
 import org.apache.shardingsphere.proxy.backend.opengauss.handler.admin.executor.OpenGaussSelectDatCompatibilityExecutor;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.bound.ColumnSegmentBoundInfo;
@@ -62,7 +62,7 @@ class OpenGaussSystemTableQueryExecutorCreatorTest {
         assertTrue(creator.accept());
         Optional<DatabaseAdminExecutor> actual = creator.create();
         assertTrue(actual.isPresent());
-        assertThat(actual.get(), isA(DefaultDatabaseMetaDataExecutor.class));
+        assertThat(actual.get(), isA(DatabaseMetaDataExecutor.class));
     }
     
     private SQLStatementContext mockSelectStatementContext(final String schemaName, final String tableName, final String columnName) {

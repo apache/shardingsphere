@@ -19,11 +19,11 @@ package org.apache.shardingsphere.proxy.backend.mysql.handler.admin.executor.sel
 
 import org.apache.shardingsphere.authority.checker.AuthorityChecker;
 import org.apache.shardingsphere.authority.rule.AuthorityRule;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
 import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnit;
-import org.apache.shardingsphere.mode.manager.ContextManager;
-import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
-import org.apache.shardingsphere.proxy.backend.handler.admin.executor.AbstractDatabaseMetaDataExecutor.DefaultDatabaseMetaDataExecutor;
+import org.apache.shardingsphere.proxy.backend.handler.admin.executor.DatabaseMetaDataExecutor;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ColumnProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ProjectionSegment;
@@ -44,9 +44,9 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
- * Schemata query executor, used to query the schemata table.
+ * Select information schemata executor.
  */
-public final class SelectInformationSchemataExecutor extends DefaultDatabaseMetaDataExecutor {
+public final class SelectInformationSchemataExecutor extends DatabaseMetaDataExecutor {
     
     public static final String SCHEMA_NAME = "SCHEMA_NAME";
     
@@ -69,7 +69,7 @@ public final class SelectInformationSchemataExecutor extends DefaultDatabaseMeta
     private boolean queryDatabase;
     
     public SelectInformationSchemataExecutor(final SelectStatement sqlStatement, final String sql, final List<Object> parameters) {
-        super(ProxyContext.getInstance().getContextManager(), sql, parameters);
+        super(sql, parameters);
         this.sqlStatement = sqlStatement;
     }
     
@@ -88,13 +88,11 @@ public final class SelectInformationSchemataExecutor extends DefaultDatabaseMeta
     }
     
     @Override
-    protected Collection<String> getDatabaseNames(final ConnectionSession connectionSession) {
-        ContextManager contextManager = ProxyContext.getInstance().getContextManager();
-        AuthorityChecker authorityChecker = new AuthorityChecker(
-                contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getSingleRule(AuthorityRule.class), connectionSession.getConnectionContext().getGrantee());
-        Collection<String> databaseNames = contextManager.getAllDatabaseNames().stream().filter(authorityChecker::isAuthorized).collect(Collectors.toList());
-        SCHEMA_WITHOUT_DATA_SOURCE.addAll(databaseNames.stream().filter(each -> !contextManager.getDatabase(each).containsDataSource()).collect(Collectors.toSet()));
-        Collection<String> result = databaseNames.stream().filter(each -> contextManager.getDatabase(each).containsDataSource()).collect(Collectors.toList());
+    protected Collection<ShardingSphereDatabase> getDatabases(final ConnectionSession connectionSession, final ShardingSphereMetaData metaData) {
+        AuthorityChecker authorityChecker = new AuthorityChecker(metaData.getGlobalRuleMetaData().getSingleRule(AuthorityRule.class), connectionSession.getConnectionContext().getGrantee());
+        Collection<ShardingSphereDatabase> databases = metaData.getAllDatabases().stream().filter(each -> authorityChecker.isAuthorized(each.getName())).collect(Collectors.toList());
+        SCHEMA_WITHOUT_DATA_SOURCE.addAll(databases.stream().filter(each -> !each.containsDataSource()).map(ShardingSphereDatabase::getName).collect(Collectors.toSet()));
+        Collection<ShardingSphereDatabase> result = databases.stream().filter(ShardingSphereDatabase::containsDataSource).collect(Collectors.toList());
         if (!SCHEMA_WITHOUT_DATA_SOURCE.isEmpty()) {
             fillSchemasWithoutDataSource();
         }
@@ -143,14 +141,13 @@ public final class SelectInformationSchemataExecutor extends DefaultDatabaseMeta
     }
     
     @Override
-    protected void preProcess(final String databaseName, final Map<String, Object> rows, final Map<String, String> alias) throws SQLException {
-        ResourceMetaData resourceMetaData = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getDatabase(databaseName).getResourceMetaData();
-        Collection<String> catalogs = getCatalogs(resourceMetaData);
+    protected void preProcess(final ShardingSphereDatabase database, final Map<String, Object> rows, final Map<String, String> alias) throws SQLException {
+        Collection<String> catalogs = getCatalogs(database.getResourceMetaData());
         schemaNameAlias = alias.getOrDefault(SCHEMA_NAME, alias.getOrDefault(schemaNameAlias, schemaNameAlias));
         String rowValue = rows.getOrDefault(schemaNameAlias, "").toString();
         queryDatabase = !rowValue.isEmpty();
         if (catalogs.contains(rowValue)) {
-            rows.replace(schemaNameAlias, databaseName);
+            rows.replace(schemaNameAlias, database.getName());
         } else {
             rows.clear();
         }
