@@ -63,7 +63,7 @@ public final class MySQLAdminExecutorCreator implements DatabaseAdminExecutorCre
             return Optional.of(new MySQLShowDatabasesExecutor((MySQLShowDatabasesStatement) sqlStatement));
         }
         if (sqlStatement instanceof MySQLShowTablesStatement) {
-            return Optional.of(new MySQLShowTablesExecutor((MySQLShowTablesStatement) sqlStatement, sqlStatementContext.getSqlStatement().getDatabaseType()));
+            return Optional.of(new MySQLShowTablesExecutor((MySQLShowTablesStatement) sqlStatement));
         }
         if (sqlStatement instanceof MySQLShowCreateDatabaseStatement) {
             return Optional.of(new MySQLShowCreateDatabaseExecutor((MySQLShowCreateDatabaseStatement) sqlStatement));
