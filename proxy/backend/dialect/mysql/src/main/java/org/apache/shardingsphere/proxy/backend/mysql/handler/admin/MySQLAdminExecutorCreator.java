@@ -29,7 +29,7 @@ import org.apache.shardingsphere.proxy.backend.mysql.handler.admin.executor.Show
 import org.apache.shardingsphere.proxy.backend.mysql.handler.admin.executor.ShowProcedureStatusExecutor;
 import org.apache.shardingsphere.proxy.backend.mysql.handler.admin.executor.ShowProcessListExecutor;
 import org.apache.shardingsphere.proxy.backend.mysql.handler.admin.executor.ShowTablesExecutor;
-import org.apache.shardingsphere.proxy.backend.mysql.handler.admin.executor.UseDatabaseExecutor;
+import org.apache.shardingsphere.proxy.backend.mysql.handler.admin.executor.MySQLUseDatabaseExecutor;
 import org.apache.shardingsphere.proxy.backend.mysql.handler.admin.factory.MySQLSelectAdminExecutorFactory;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.SetStatement;
@@ -57,7 +57,7 @@ public final class MySQLAdminExecutorCreator implements DatabaseAdminExecutorCre
         }
         SQLStatement sqlStatement = sqlStatementContext.getSqlStatement();
         if (sqlStatement instanceof MySQLUseStatement) {
-            return Optional.of(new UseDatabaseExecutor((MySQLUseStatement) sqlStatement));
+            return Optional.of(new MySQLUseDatabaseExecutor((MySQLUseStatement) sqlStatement));
         }
         if (sqlStatement instanceof MySQLShowDatabasesStatement) {
             return Optional.of(new ShowDatabasesExecutor((MySQLShowDatabasesStatement) sqlStatement));
