@@ -17,10 +17,12 @@
 
 package org.apache.shardingsphere.proxy.backend.mysql.handler.admin.executor;
 
+import org.apache.shardingsphere.authority.rule.AuthorityRule;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.database.exception.core.exception.syntax.database.UnknownDatabaseException;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLUseStatement;
@@ -30,21 +32,15 @@ import org.mockito.Answers;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.util.Collection;
 import java.util.Collections;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-class UseDatabaseExecutorTest {
-    
-    private static final String DATABASE_PATTERN = "db_%s";
+class MySQLUseDatabaseExecutorTest {
     
     private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "MySQL");
     
@@ -52,25 +48,34 @@ class UseDatabaseExecutorTest {
     private ConnectionSession connectionSession;
     
     @Test
-    void assertExecuteUseStatementProxyBackendHandler() {
-        MySQLUseStatement useStatement = mock(MySQLUseStatement.class);
-        when(useStatement.getDatabase()).thenReturn(String.format(DATABASE_PATTERN, 0));
-        UseDatabaseExecutor executor = new UseDatabaseExecutor(useStatement);
+    void assertExecuteExistedDatabase() {
+        MySQLUseStatement sqlStatement = mock(MySQLUseStatement.class);
+        when(sqlStatement.getDatabase()).thenReturn("foo_db");
         when(connectionSession.getConnectionContext().getGrantee()).thenReturn(null);
-        executor.execute(connectionSession, new ShardingSphereMetaData(createDatabases(), mock(), mock(), mock()));
-        verify(connectionSession).setCurrentDatabaseName(anyString());
+        MySQLUseDatabaseExecutor executor = new MySQLUseDatabaseExecutor(sqlStatement);
+        executor.execute(connectionSession, mockMetaData());
+        verify(connectionSession).setCurrentDatabaseName("foo_db");
     }
     
     @Test
-    void assertExecuteUseStatementProxyBackendHandlerWhenSchemaNotExist() {
-        MySQLUseStatement useStatement = mock(MySQLUseStatement.class);
-        when(useStatement.getDatabase()).thenReturn(String.format(DATABASE_PATTERN, 10));
-        UseDatabaseExecutor executor = new UseDatabaseExecutor(useStatement);
-        assertThrows(UnknownDatabaseException.class, () -> executor.execute(connectionSession, new ShardingSphereMetaData(createDatabases(), mock(), mock(), mock())));
+    void assertExecuteNotExistedDatabase() {
+        MySQLUseStatement sqlStatement = mock(MySQLUseStatement.class);
+        when(sqlStatement.getDatabase()).thenReturn("bar_db");
+        MySQLUseDatabaseExecutor executor = new MySQLUseDatabaseExecutor(sqlStatement);
+        assertThrows(UnknownDatabaseException.class, () -> executor.execute(connectionSession, mockMetaData()));
     }
     
-    private Collection<ShardingSphereDatabase> createDatabases() {
-        return IntStream.range(0, 10)
-                .mapToObj(each -> new ShardingSphereDatabase(String.format(DATABASE_PATTERN, each), databaseType, mock(), mock(), Collections.emptyList())).collect(Collectors.toList());
+    @Test
+    void assertExecuteUnauthorizedDatabase() {
+        MySQLUseStatement sqlStatement = mock(MySQLUseStatement.class);
+        when(sqlStatement.getDatabase()).thenReturn("foo_db");
+        MySQLUseDatabaseExecutor executor = new MySQLUseDatabaseExecutor(sqlStatement);
+        assertThrows(UnknownDatabaseException.class, () -> executor.execute(connectionSession, mockMetaData()));
+    }
+    
+    private ShardingSphereMetaData mockMetaData() {
+        AuthorityRule rule = mock(AuthorityRule.class);
+        return new ShardingSphereMetaData(
+                Collections.singleton(new ShardingSphereDatabase("foo_db", databaseType, mock(), mock(), Collections.emptyList())), mock(), new RuleMetaData(Collections.singleton(rule)), mock());
     }
 }
