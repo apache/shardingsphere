@@ -75,7 +75,7 @@ public final class MySQLAdminExecutorCreator implements DatabaseAdminExecutorCre
             return Optional.of(new MySQLShowProcedureStatusExecutor((MySQLShowProcedureStatusStatement) sqlStatement));
         }
         if (sqlStatement instanceof MySQLShowProcessListStatement) {
-            return Optional.of(new MySQLShowProcessListExecutor(((MySQLShowProcessListStatement) sqlStatement).isFull()));
+            return Optional.of(new MySQLShowProcessListExecutor((MySQLShowProcessListStatement) sqlStatement));
         }
         if (sqlStatement instanceof MySQLKillStatement) {
             return Optional.of(new MySQLKillProcessExecutor((MySQLKillStatement) sqlStatement));
