@@ -46,7 +46,7 @@ class IncrementalTaskTest {
     
     @BeforeAll
     static void beforeClass() {
-        PipelineContextUtils.initPipelineContextManager(IncrementalTaskTest.class.getSimpleName());
+        PipelineContextUtils.initPipelineContextManager();
     }
     
     @BeforeEach

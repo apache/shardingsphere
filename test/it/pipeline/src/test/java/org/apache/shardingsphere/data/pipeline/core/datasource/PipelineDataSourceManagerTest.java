@@ -41,7 +41,7 @@ class PipelineDataSourceManagerTest {
     
     @BeforeAll
     static void beforeClass() {
-        PipelineContextUtils.initPipelineContextManager(PipelineDataSourceManagerTest.class.getSimpleName());
+        PipelineContextUtils.initPipelineContextManager();
     }
     
     @BeforeEach
