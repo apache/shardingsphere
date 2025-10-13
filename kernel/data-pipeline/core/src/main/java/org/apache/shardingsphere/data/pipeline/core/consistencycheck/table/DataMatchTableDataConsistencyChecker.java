@@ -70,7 +70,7 @@ public final class DataMatchTableDataConsistencyChecker implements TableDataCons
             throw new PipelineInvalidParameterException("'chunk-size' is not a valid number: `" + chunkSizeText + "`");
         }
         if (result <= 0) {
-            throw new PipelineInvalidParameterException("Invalid 'chunk-size': " + result);
+            throw new PipelineInvalidParameterException("Invalid 'chunk-size' value: `" + result + "`, it should be a positive integer.");
         }
         return result;
     }
@@ -83,7 +83,7 @@ public final class DataMatchTableDataConsistencyChecker implements TableDataCons
         try {
             return StreamingRangeType.valueOf(streamingRangeTypeText.toUpperCase());
         } catch (final IllegalArgumentException ex) {
-            throw new PipelineInvalidParameterException("'streaming-range-type' is not a valid value: `" + streamingRangeTypeText
+            throw new PipelineInvalidParameterException("Invalid 'streaming-range-type' value: `" + streamingRangeTypeText
                     + "`, expected values are " + Arrays.toString(StreamingRangeType.values()));
         }
     }
