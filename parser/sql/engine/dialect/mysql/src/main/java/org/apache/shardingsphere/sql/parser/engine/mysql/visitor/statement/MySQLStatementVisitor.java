@@ -129,6 +129,7 @@ import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.StringL
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.String_Context;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.SubqueryContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.SubstringFunctionContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.SubstringParamContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.SystemVariableContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.TableAliasRefListContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.TableFactorContext;
@@ -1175,8 +1176,13 @@ public abstract class MySQLStatementVisitor extends MySQLStatementBaseVisitor<AS
     public final ASTNode visitSubstringFunction(final SubstringFunctionContext ctx) {
         FunctionSegment result = new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), getFunctionName(ctx), getOriginalText(ctx));
         result.getParameters().add((ExpressionSegment) visit(ctx.expr()));
-        for (TerminalNode each : ctx.NUMBER_()) {
-            result.getParameters().add(new LiteralExpressionSegment(each.getSymbol().getStartIndex(), each.getSymbol().getStopIndex(), new NumberLiteralValue(each.getText()).getValue()));
+        for (SubstringParamContext each : ctx.substringParam()) {
+            if (null != each.numberLiterals()) {
+                result.getParameters()
+                        .add(new LiteralExpressionSegment(each.numberLiterals().start.getStartIndex(), each.numberLiterals().stop.getStopIndex(), new NumberLiteralValue(each.getText()).getValue()));
+            } else if (null != each.expr()) {
+                result.getParameters().add((ExpressionSegment) visit(each.expr()));
+            }
         }
         return result;
     }
