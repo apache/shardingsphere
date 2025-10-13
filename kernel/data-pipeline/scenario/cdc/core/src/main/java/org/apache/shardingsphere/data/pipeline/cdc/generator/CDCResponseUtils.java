@@ -69,7 +69,7 @@ public final class CDCResponseUtils {
             case RESPONSE_NOT_SET:
                 break;
             default:
-                throw new PipelineInvalidParameterException(responseCase.name());
+                throw new PipelineInvalidParameterException("Unknown response case: `" + responseCase.name() + "`.");
         }
         return result.build();
     }
