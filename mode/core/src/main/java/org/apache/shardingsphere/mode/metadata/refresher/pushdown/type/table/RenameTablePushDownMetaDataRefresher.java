@@ -28,7 +28,9 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.ta
 
 import java.sql.SQLException;
 import java.util.Collection;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
+import java.util.Map;
 
 /**
  * Rename table push down meta data refresher.
@@ -39,16 +41,18 @@ public final class RenameTablePushDownMetaDataRefresher implements PushDownMetaD
     public void refresh(final MetaDataManagerPersistService metaDataManagerPersistService, final ShardingSphereDatabase database, final String logicDataSourceName,
                         final String schemaName, final DatabaseType databaseType, final RenameTableStatement sqlStatement, final ConfigurationProperties props) throws SQLException {
         Collection<ShardingSphereTable> alteredTables = new LinkedList<>();
-        Collection<String> droppedTables = new LinkedList<>();
+        Map<String, String> renameTableMap = new LinkedHashMap<>();
         for (RenameTableDefinitionSegment each : sqlStatement.getRenameTables()) {
-            String toBeRenamedTableName = each.getTable().getTableName().getIdentifier().getValue();
-            ShardingSphereTable toBeRenamedTable = database.getSchema(schemaName).getTable(toBeRenamedTableName);
-            alteredTables.add(new ShardingSphereTable(
-                    each.getRenameTable().getTableName().getIdentifier().getValue(), toBeRenamedTable.getAllColumns(), toBeRenamedTable.getAllIndexes(), toBeRenamedTable.getAllConstraints()));
-            droppedTables.add(toBeRenamedTableName);
+            String oldTableName = each.getTable().getTableName().getIdentifier().getValue();
+            String newTableName = each.getRenameTable().getTableName().getIdentifier().getValue();
+            ShardingSphereTable toBeRenamedTable = database.getSchema(schemaName).getTable(oldTableName);
+            alteredTables.add(new ShardingSphereTable(newTableName, toBeRenamedTable.getAllColumns(), toBeRenamedTable.getAllIndexes(), toBeRenamedTable.getAllConstraints()));
+            renameTableMap.put(oldTableName, newTableName);
         }
+        // Add new tables to metadata first
         metaDataManagerPersistService.alterTables(database, schemaName, alteredTables);
-        metaDataManagerPersistService.dropTables(database, schemaName, droppedTables);
+        // Then drop old tables and update single table rules
+        metaDataManagerPersistService.renameTables(database, schemaName, renameTableMap);
     }
     
     @Override

@@ -48,16 +48,18 @@ public final class AlterTablePushDownMetaDataRefresher implements PushDownMetaDa
                         final String schemaName, final DatabaseType databaseType, final AlterTableStatement sqlStatement, final ConfigurationProperties props) throws SQLException {
         String tableName = TableRefreshUtils.getTableName(sqlStatement.getTable().getTableName().getIdentifier(), databaseType);
         Collection<ShardingSphereTable> alteredTables = new LinkedList<>();
-        Collection<String> droppedTables = new LinkedList<>();
         if (sqlStatement.getRenameTable().isPresent()) {
             String renameTable = sqlStatement.getRenameTable().get().getTableName().getIdentifier().getValue();
             alteredTables.add(getTable(database, logicDataSourceName, schemaName, renameTable, props));
-            droppedTables.add(tableName);
+            // Add new table to metadata first
+            metaDataManagerPersistService.alterTables(database, schemaName, alteredTables);
+            // Then drop old table and update single table rules
+            Map<String, String> renameTableMap = Collections.singletonMap(tableName, renameTable);
+            metaDataManagerPersistService.renameTables(database, schemaName, renameTableMap);
         } else {
             alteredTables.add(getTable(database, logicDataSourceName, schemaName, tableName, props));
+            metaDataManagerPersistService.alterTables(database, schemaName, alteredTables);
         }
-        metaDataManagerPersistService.alterTables(database, schemaName, alteredTables);
-        metaDataManagerPersistService.dropTables(database, schemaName, droppedTables);
     }
     
     private ShardingSphereTable getTable(final ShardingSphereDatabase database, final String logicDataSourceName, final String schemaName,

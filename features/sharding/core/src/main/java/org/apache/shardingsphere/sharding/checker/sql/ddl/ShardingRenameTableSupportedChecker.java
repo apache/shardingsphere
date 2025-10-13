@@ -25,12 +25,7 @@ import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSp
 import org.apache.shardingsphere.sharding.exception.syntax.UnsupportedShardingOperationException;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.table.RenameTableDefinitionSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.table.RenameTableStatement;
-
-import java.util.Collection;
-import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * Rename table supported checker for sharding.
@@ -44,11 +39,15 @@ public final class ShardingRenameTableSupportedChecker implements SupportedSQLCh
     
     @Override
     public void check(final ShardingRule rule, final ShardingSphereDatabase database, final ShardingSphereSchema currentSchema, final SQLStatementContext sqlStatementContext) {
-        Collection<String> tableNames = sqlStatementContext.getTablesContext().getSimpleTables().stream()
-                .map(each -> each.getTableName().getIdentifier().getValue()).collect(Collectors.toList());
-        List<SimpleTableSegment> renameTables = ((RenameTableStatement) sqlStatementContext.getSqlStatement())
-                .getRenameTables().stream().map(RenameTableDefinitionSegment::getRenameTable).collect(Collectors.toList());
-        ShardingSpherePreconditions.checkState(renameTables.isEmpty() || !rule.containsShardingTable(tableNames),
-                () -> new UnsupportedShardingOperationException("RENAME TABLE", renameTables.get(0).getTableName().getIdentifier().getValue()));
+        RenameTableStatement sqlStatement = (RenameTableStatement) sqlStatementContext.getSqlStatement();
+        for (RenameTableDefinitionSegment each : sqlStatement.getRenameTables()) {
+            String newTableName = each.getRenameTable().getTableName().getIdentifier().getValue();
+            // Validate new table name does not conflict with existing sharding tables
+            ShardingSpherePreconditions.checkState(!rule.isShardingTable(newTableName),
+                    () -> new UnsupportedShardingOperationException("RENAME TABLE", newTableName));
+            // Validate new table name does not exist in current schema
+            ShardingSpherePreconditions.checkState(!currentSchema.containsTable(newTableName),
+                    () -> new UnsupportedShardingOperationException("RENAME TABLE", newTableName));
+        }
     }
 }
