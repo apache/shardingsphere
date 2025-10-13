@@ -23,14 +23,12 @@ import org.apache.shardingsphere.authority.checker.AuthorityChecker;
 import org.apache.shardingsphere.authority.rule.AuthorityRule;
 import org.apache.shardingsphere.database.exception.core.exception.syntax.database.UnknownDatabaseException;
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
-import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResultMetaData;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.raw.metadata.RawQueryResultColumnMetaData;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.raw.metadata.RawQueryResultMetaData;
-import org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.raw.type.RawMemoryQueryResult;
-import org.apache.shardingsphere.infra.executor.sql.execute.result.query.type.memory.row.MemoryQueryResultDataRow;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
-import org.apache.shardingsphere.infra.merge.result.impl.transparent.TransparentMergedResult;
+import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataMergedResult;
+import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.proxy.backend.handler.admin.executor.DatabaseAdminQueryExecutor;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
@@ -38,6 +36,7 @@ import org.apache.shardingsphere.sql.parser.statement.mysql.dal.show.database.My
 
 import java.sql.Types;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
@@ -50,29 +49,26 @@ public final class MySQLShowCreateDatabaseExecutor implements DatabaseAdminQuery
     
     private final MySQLShowCreateDatabaseStatement sqlStatement;
     
-    private QueryResultMetaData queryResultMetaData;
-    
     private MergedResult mergedResult;
     
     @Override
     public void execute(final ConnectionSession connectionSession, final ShardingSphereMetaData metaData) {
-        queryResultMetaData = createQueryResultMetaData();
-        mergedResult = new TransparentMergedResult(getQueryResult(connectionSession, sqlStatement.getDatabaseName(), metaData));
+        mergedResult = new LocalDataMergedResult(getQueryResultRows(connectionSession, sqlStatement.getDatabaseName(), metaData));
     }
     
-    private QueryResultMetaData createQueryResultMetaData() {
-        List<RawQueryResultColumnMetaData> columnMetaData = Arrays.asList(
-                new RawQueryResultColumnMetaData("", "Database", "Database", Types.VARCHAR, "VARCHAR", 255, 0),
-                new RawQueryResultColumnMetaData("", "Create Database", "Create Database", Types.VARCHAR, "VARCHAR", 255, 0));
-        return new RawQueryResultMetaData(columnMetaData);
-    }
-    
-    private QueryResult getQueryResult(final ConnectionSession connectionSession, final String databaseName, final ShardingSphereMetaData metaData) {
+    private Collection<LocalDataQueryResultRow> getQueryResultRows(final ConnectionSession connectionSession, final String databaseName, final ShardingSphereMetaData metaData) {
         ShardingSpherePreconditions.checkState(metaData.containsDatabase(databaseName), () -> new UnknownDatabaseException(databaseName));
         AuthorityRule authorityRule = metaData.getGlobalRuleMetaData().getSingleRule(AuthorityRule.class);
         AuthorityChecker authorityChecker = new AuthorityChecker(authorityRule, connectionSession.getConnectionContext().getGrantee());
         ShardingSpherePreconditions.checkState(authorityChecker.isAuthorized(databaseName), () -> new UnknownDatabaseException(databaseName));
-        List<MemoryQueryResultDataRow> rows = Collections.singletonList(new MemoryQueryResultDataRow(Arrays.asList(databaseName, String.format("CREATE DATABASE `%s`;", databaseName))));
-        return new RawMemoryQueryResult(queryResultMetaData, rows);
+        return Collections.singleton(new LocalDataQueryResultRow(databaseName, String.format("CREATE DATABASE `%s`;", databaseName)));
+    }
+    
+    @Override
+    public QueryResultMetaData getQueryResultMetaData() {
+        List<RawQueryResultColumnMetaData> columnMetaData = Arrays.asList(
+                new RawQueryResultColumnMetaData("", "Database", "Database", Types.VARCHAR, "VARCHAR", 255, 0),
+                new RawQueryResultColumnMetaData("", "Create Database", "Create Database", Types.VARCHAR, "VARCHAR", 255, 0));
+        return new RawQueryResultMetaData(columnMetaData);
     }
 }

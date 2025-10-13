@@ -60,6 +60,7 @@ class MySQLShowCreateDatabaseExecutorTest {
         assertThat(executor.getQueryResultMetaData().getColumnCount(), is(2));
         assertTrue(executor.getMergedResult().next());
         assertThat(executor.getMergedResult().getValue(1, Object.class), is("foo_db"));
+        assertThat(executor.getMergedResult().getValue(2, Object.class), is("CREATE DATABASE `foo_db`;"));
         assertFalse(executor.getMergedResult().next());
     }
     
