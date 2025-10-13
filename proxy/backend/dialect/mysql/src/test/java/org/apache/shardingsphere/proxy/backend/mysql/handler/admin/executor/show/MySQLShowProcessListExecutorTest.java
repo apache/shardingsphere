@@ -25,6 +25,7 @@ import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
+import org.apache.shardingsphere.sql.parser.statement.mysql.dal.show.process.MySQLShowProcessListStatement;
 import org.apache.shardingsphere.test.infra.framework.mock.AutoMockExtension;
 import org.apache.shardingsphere.test.infra.framework.mock.StaticMockSettings;
 import org.junit.jupiter.api.Test;
@@ -53,7 +54,7 @@ class MySQLShowProcessListExecutorTest {
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
         when(contextManager.getPersistServiceFacade().getModeFacade().getProcessService().getProcessList()).thenReturn(mockProcessList());
-        MySQLShowProcessListExecutor showProcessListExecutor = new MySQLShowProcessListExecutor(false);
+        MySQLShowProcessListExecutor showProcessListExecutor = new MySQLShowProcessListExecutor(new MySQLShowProcessListStatement(databaseType, false));
         showProcessListExecutor.execute(new ConnectionSession(databaseType, new DefaultAttributeMap()), mock());
         assertThat(showProcessListExecutor.getQueryResultMetaData().getColumnCount(), is(8));
         MergedResult mergedResult = showProcessListExecutor.getMergedResult();
