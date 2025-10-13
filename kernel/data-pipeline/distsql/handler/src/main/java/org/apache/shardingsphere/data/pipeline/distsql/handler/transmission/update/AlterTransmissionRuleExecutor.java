@@ -17,7 +17,9 @@
 
 package org.apache.shardingsphere.data.pipeline.distsql.handler.transmission.update;
 
+import org.apache.shardingsphere.data.pipeline.core.channel.PipelineChannelCreator;
 import org.apache.shardingsphere.data.pipeline.core.context.PipelineContextKey;
+import org.apache.shardingsphere.data.pipeline.core.exception.param.PipelineInvalidParameterException;
 import org.apache.shardingsphere.data.pipeline.core.job.progress.config.PipelineProcessConfiguration;
 import org.apache.shardingsphere.data.pipeline.core.job.progress.config.PipelineReadConfiguration;
 import org.apache.shardingsphere.data.pipeline.core.job.progress.config.PipelineWriteConfiguration;
@@ -42,8 +44,13 @@ public final class AlterTransmissionRuleExecutor implements DistSQLUpdateExecuto
     
     @Override
     public void executeUpdate(final AlterTransmissionRuleStatement sqlStatement, final ContextManager contextManager) {
+        PipelineProcessConfiguration processConfig = convertToProcessConfiguration(sqlStatement.getProcessConfigSegment());
+        AlgorithmConfiguration streamChannel = processConfig.getStreamChannel();
+        if (null != streamChannel && !TypedSPILoader.findService(PipelineChannelCreator.class, streamChannel.getType()).isPresent()) {
+            throw new PipelineInvalidParameterException("Unknown stream channel type `" + streamChannel.getType() + "`.");
+        }
         String jobType = TypedSPILoader.getService(PipelineJobType.class, sqlStatement.getJobTypeName()).getType();
-        processConfigPersistService.persist(new PipelineContextKey(InstanceType.PROXY), jobType, convertToProcessConfiguration(sqlStatement.getProcessConfigSegment()));
+        processConfigPersistService.persist(new PipelineContextKey(InstanceType.PROXY), jobType, processConfig);
     }
     
     private PipelineProcessConfiguration convertToProcessConfiguration(final TransmissionRuleSegment segment) {
