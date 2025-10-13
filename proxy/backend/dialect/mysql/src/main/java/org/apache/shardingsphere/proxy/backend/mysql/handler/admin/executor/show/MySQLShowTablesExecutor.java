@@ -65,7 +65,7 @@ public final class MySQLShowTablesExecutor implements DatabaseAdminQueryExecutor
     
     @Override
     public void execute(final ConnectionSession connectionSession, final ShardingSphereMetaData metaData) {
-        String databaseName = sqlStatement.getFromDatabase().map(schema -> schema.getDatabase().getIdentifier().getValue()).orElseGet(connectionSession::getUsedDatabaseName);
+        String databaseName = sqlStatement.getFromDatabase().map(optional -> optional.getDatabase().getIdentifier().getValue()).orElseGet(connectionSession::getUsedDatabaseName);
         queryResultMetaData = createQueryResultMetaData(databaseName);
         mergedResult = new TransparentMergedResult(getQueryResult(databaseName, metaData));
     }

@@ -18,14 +18,12 @@
 package org.apache.shardingsphere.proxy.backend.mysql.handler.admin.executor;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.database.exception.mysql.exception.UnknownSystemVariableException;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.engine.SQLBindEngine;
 import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.session.query.QueryContext;
-import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.parser.rule.SQLParserRule;
 import org.apache.shardingsphere.proxy.backend.connector.DatabaseProxyConnectorFactory;
 import org.apache.shardingsphere.proxy.backend.handler.admin.executor.DatabaseAdminExecutor;
@@ -52,17 +50,15 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public final class MySQLSetVariableAdminExecutor implements DatabaseAdminExecutor {
     
-    private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "MySQL");
-    
     private final SetStatement setStatement;
     
     @Override
     public void execute(final ConnectionSession connectionSession, final ShardingSphereMetaData metaData) throws SQLException {
         Map<String, String> sessionVariables = extractSessionVariables();
         validateSessionVariables(sessionVariables.keySet());
-        CharsetSetExecutor charsetSetExecutor = new CharsetSetExecutor(databaseType, connectionSession);
+        CharsetSetExecutor charsetSetExecutor = new CharsetSetExecutor(setStatement.getDatabaseType(), connectionSession);
         sessionVariables.forEach(charsetSetExecutor::set);
-        new SessionVariableRecordExecutor(databaseType, connectionSession).recordVariable(sessionVariables);
+        new SessionVariableRecordExecutor(setStatement.getDatabaseType(), connectionSession).recordVariable(sessionVariables);
         executeSetGlobalVariablesIfPresent(connectionSession, metaData);
     }
     
@@ -89,7 +85,7 @@ public final class MySQLSetVariableAdminExecutor implements DatabaseAdminExecuto
         }
         String sql = "SET " + concatenatedGlobalVariables;
         SQLParserRule sqlParserRule = metaData.getGlobalRuleMetaData().getSingleRule(SQLParserRule.class);
-        SQLStatement sqlStatement = sqlParserRule.getSQLParserEngine(databaseType).parse(sql, false);
+        SQLStatement sqlStatement = sqlParserRule.getSQLParserEngine(setStatement.getDatabaseType()).parse(sql, false);
         SQLStatementContext sqlStatementContext = new SQLBindEngine(metaData,
                 connectionSession.getCurrentDatabaseName(), new HintValueContext()).bind(sqlStatement);
         DatabaseProxyBackendHandler databaseProxyBackendHandler = DatabaseProxyConnectorFactory.newInstance(

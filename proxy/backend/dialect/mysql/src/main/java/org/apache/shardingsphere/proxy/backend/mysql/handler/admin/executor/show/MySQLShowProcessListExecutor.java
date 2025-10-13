@@ -32,6 +32,7 @@ import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.handler.admin.executor.DatabaseAdminQueryExecutor;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
+import org.apache.shardingsphere.sql.parser.statement.mysql.dal.show.process.MySQLShowProcessListStatement;
 
 import java.sql.Types;
 import java.util.ArrayList;
@@ -47,7 +48,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public final class MySQLShowProcessListExecutor implements DatabaseAdminQueryExecutor {
     
-    private final boolean showFullProcesslist;
+    private final MySQLShowProcessListStatement sqlStatement;
     
     @Getter
     private QueryResultMetaData queryResultMetaData;
@@ -59,6 +60,19 @@ public final class MySQLShowProcessListExecutor implements DatabaseAdminQueryExe
     public void execute(final ConnectionSession connectionSession, final ShardingSphereMetaData metaData) {
         queryResultMetaData = createQueryResultMetaData();
         mergedResult = new TransparentMergedResult(getQueryResult());
+    }
+    
+    private QueryResultMetaData createQueryResultMetaData() {
+        List<RawQueryResultColumnMetaData> columns = new ArrayList<>(8);
+        columns.add(new RawQueryResultColumnMetaData("", "Id", "Id", Types.VARCHAR, "VARCHAR", 20, 0));
+        columns.add(new RawQueryResultColumnMetaData("", "User", "User", Types.VARCHAR, "VARCHAR", 20, 0));
+        columns.add(new RawQueryResultColumnMetaData("", "Host", "Host", Types.VARCHAR, "VARCHAR", 64, 0));
+        columns.add(new RawQueryResultColumnMetaData("", "db", "db", Types.VARCHAR, "VARCHAR", 64, 0));
+        columns.add(new RawQueryResultColumnMetaData("", "Command", "Command", Types.VARCHAR, "VARCHAR", 64, 0));
+        columns.add(new RawQueryResultColumnMetaData("", "Time", "Time", Types.VARCHAR, "VARCHAR", 10, 0));
+        columns.add(new RawQueryResultColumnMetaData("", "State", "State", Types.VARCHAR, "VARCHAR", 64, 0));
+        columns.add(new RawQueryResultColumnMetaData("", "Info", "Info", Types.VARCHAR, "VARCHAR", 120, 0));
+        return new RawQueryResultMetaData(columns);
     }
     
     private QueryResult getQueryResult() {
@@ -87,23 +101,10 @@ public final class MySQLShowProcessListExecutor implements DatabaseAdminQueryExe
             rowValues.add(statePrefix + processDoneCount + "/" + process.getTotalUnitCount().get());
             sql = process.getSql();
         }
-        if (null != sql && sql.length() > 100 && !showFullProcesslist) {
+        if (null != sql && sql.length() > 100 && !sqlStatement.isFull()) {
             sql = sql.substring(0, 100);
         }
         rowValues.add(null != sql ? sql : "");
         return new MemoryQueryResultDataRow(rowValues);
-    }
-    
-    private QueryResultMetaData createQueryResultMetaData() {
-        List<RawQueryResultColumnMetaData> columns = new ArrayList<>(8);
-        columns.add(new RawQueryResultColumnMetaData("", "Id", "Id", Types.VARCHAR, "VARCHAR", 20, 0));
-        columns.add(new RawQueryResultColumnMetaData("", "User", "User", Types.VARCHAR, "VARCHAR", 20, 0));
-        columns.add(new RawQueryResultColumnMetaData("", "Host", "Host", Types.VARCHAR, "VARCHAR", 64, 0));
-        columns.add(new RawQueryResultColumnMetaData("", "db", "db", Types.VARCHAR, "VARCHAR", 64, 0));
-        columns.add(new RawQueryResultColumnMetaData("", "Command", "Command", Types.VARCHAR, "VARCHAR", 64, 0));
-        columns.add(new RawQueryResultColumnMetaData("", "Time", "Time", Types.VARCHAR, "VARCHAR", 10, 0));
-        columns.add(new RawQueryResultColumnMetaData("", "State", "State", Types.VARCHAR, "VARCHAR", 64, 0));
-        columns.add(new RawQueryResultColumnMetaData("", "Info", "Info", Types.VARCHAR, "VARCHAR", 120, 0));
-        return new RawQueryResultMetaData(columns);
     }
 }
