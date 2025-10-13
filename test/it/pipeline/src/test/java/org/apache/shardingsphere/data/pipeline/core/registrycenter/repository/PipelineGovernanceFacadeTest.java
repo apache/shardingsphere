@@ -67,12 +67,10 @@ class PipelineGovernanceFacadeTest {
     
     private static final CountDownLatch COUNT_DOWN_LATCH = new CountDownLatch(1);
     
-    private static final String TEST_DATABASE_NAME = PipelineGovernanceFacadeTest.class.getSimpleName();
-    
     @BeforeAll
     static void beforeClass() {
-        PipelineContextUtils.initPipelineContextManager(TEST_DATABASE_NAME);
-        governanceFacade = PipelineAPIFactory.getPipelineGovernanceFacade(PipelineContextUtils.getContextKey(TEST_DATABASE_NAME));
+        PipelineContextUtils.initPipelineContextManager();
+        governanceFacade = PipelineAPIFactory.getPipelineGovernanceFacade(PipelineContextUtils.getContextKey());
         watch();
     }
     
@@ -190,7 +188,7 @@ class PipelineGovernanceFacadeTest {
     }
     
     private ClusterPersistRepository getClusterPersistRepository() {
-        return (ClusterPersistRepository) PipelineContextManager.getContext(PipelineContextUtils.getContextKey(TEST_DATABASE_NAME)).getPersistServiceFacade().getRepository();
+        return (ClusterPersistRepository) PipelineContextManager.getContext(PipelineContextUtils.getContextKey()).getPersistServiceFacade().getRepository();
     }
     
     private MigrationJobItemContext mockJobItemContext() {
