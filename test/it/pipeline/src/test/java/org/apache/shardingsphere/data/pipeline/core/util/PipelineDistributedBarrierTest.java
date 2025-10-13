@@ -35,17 +35,15 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class PipelineDistributedBarrierTest {
     
-    private static final String TEST_DATABASE_NAME = PipelineDistributedBarrierTest.class.getSimpleName();
-    
     @BeforeAll
     static void setUp() {
-        PipelineContextUtils.initPipelineContextManager(TEST_DATABASE_NAME);
+        PipelineContextUtils.initPipelineContextManager();
     }
     
     @Test
     void assertRegisterAndRemove() throws ReflectiveOperationException {
         String jobId = JobConfigurationBuilder.createYamlMigrationJobConfiguration().getJobId();
-        PipelineContextKey contextKey = PipelineContextUtils.getContextKey(TEST_DATABASE_NAME);
+        PipelineContextKey contextKey = PipelineContextUtils.getContextKey();
         PipelineContextManager.getContext(contextKey).getPersistServiceFacade().getRepository().persist(PipelineMetaDataNode.getJobRootPath(jobId), "");
         PipelineDistributedBarrier instance = PipelineDistributedBarrier.getInstance(contextKey);
         String parentPath = "/barrier";
@@ -60,7 +58,7 @@ class PipelineDistributedBarrierTest {
     @Test
     void assertAwait() {
         String jobId = JobConfigurationBuilder.createYamlMigrationJobConfiguration().getJobId();
-        PipelineContextKey contextKey = PipelineContextUtils.getContextKey(TEST_DATABASE_NAME);
+        PipelineContextKey contextKey = PipelineContextUtils.getContextKey();
         PipelineContextManager.getContext(contextKey).getPersistServiceFacade().getRepository().persist(PipelineMetaDataNode.getJobRootPath(jobId), "");
         PipelineDistributedBarrier instance = PipelineDistributedBarrier.getInstance(contextKey);
         String barrierEnablePath = PipelineMetaDataNode.getJobBarrierEnablePath(jobId);

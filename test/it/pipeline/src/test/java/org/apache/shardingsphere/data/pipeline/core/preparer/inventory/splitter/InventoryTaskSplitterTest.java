@@ -59,7 +59,7 @@ class InventoryTaskSplitterTest {
     
     @BeforeAll
     static void beforeClass() {
-        PipelineContextUtils.initPipelineContextManager(InventoryTaskSplitterTest.class.getSimpleName());
+        PipelineContextUtils.initPipelineContextManager();
     }
     
     @BeforeEach

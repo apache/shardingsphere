@@ -92,16 +92,16 @@ import static org.mockito.Mockito.mock;
  */
 public final class PipelineContextUtils {
     
+    private static final PipelineContextKey CONTEXT_KEY = new PipelineContextKey(InstanceType.PROXY);
+    
     private static final PipelineExecuteEngine EXECUTE_ENGINE = PipelineExecuteEngine.newCachedThreadInstance(PipelineContextUtils.class.getSimpleName());
     
     /**
      * Init pipeline context manager.
-     *
-     * @param databaseName database name
      */
-    public static void initPipelineContextManager(final String databaseName) {
+    public static void initPipelineContextManager() {
         EmbedTestingServer.start();
-        PipelineContextKey contextKey = getContextKey(databaseName);
+        PipelineContextKey contextKey = getContextKey();
         if (null != PipelineContextManager.getContext(contextKey)) {
             return;
         }
@@ -171,11 +171,10 @@ public final class PipelineContextUtils {
     /**
      * Get context key.
      *
-     * @param databaseName database name
      * @return context key
      */
-    public static PipelineContextKey getContextKey(final String databaseName) {
-        return new PipelineContextKey(databaseName, InstanceType.PROXY);
+    public static PipelineContextKey getContextKey() {
+        return CONTEXT_KEY;
     }
     
     /**
