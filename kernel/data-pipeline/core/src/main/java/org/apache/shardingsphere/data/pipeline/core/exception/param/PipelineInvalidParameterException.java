@@ -28,6 +28,6 @@ public final class PipelineInvalidParameterException extends PipelineSQLExceptio
     private static final long serialVersionUID = -2162309404414015630L;
     
     public PipelineInvalidParameterException(final String message) {
-        super(XOpenSQLState.INVALID_PARAMETER_VALUE, 0, String.format("There is invalid parameter value '%s'.", message));
+        super(XOpenSQLState.INVALID_PARAMETER_VALUE, 0, String.format("There is invalid parameter value. %s", message));
     }
 }
