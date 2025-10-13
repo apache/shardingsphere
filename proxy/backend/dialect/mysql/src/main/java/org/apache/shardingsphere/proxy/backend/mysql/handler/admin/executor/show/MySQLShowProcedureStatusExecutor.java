@@ -19,13 +19,11 @@ package org.apache.shardingsphere.proxy.backend.mysql.handler.admin.executor.sho
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResultMetaData;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.raw.metadata.RawQueryResultColumnMetaData;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.raw.metadata.RawQueryResultMetaData;
-import org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.raw.type.RawMemoryQueryResult;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
-import org.apache.shardingsphere.infra.merge.result.impl.transparent.TransparentMergedResult;
+import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataMergedResult;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.proxy.backend.handler.admin.executor.DatabaseAdminQueryExecutor;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
@@ -45,17 +43,15 @@ public final class MySQLShowProcedureStatusExecutor implements DatabaseAdminQuer
     
     private final MySQLShowProcedureStatusStatement sqlStatement;
     
-    private QueryResultMetaData queryResultMetaData;
-    
     private MergedResult mergedResult;
     
     @Override
     public void execute(final ConnectionSession connectionSession, final ShardingSphereMetaData metaData) {
-        queryResultMetaData = createQueryResultMetaData();
-        mergedResult = new TransparentMergedResult(getQueryResult());
+        mergedResult = new LocalDataMergedResult(Collections.emptyList());
     }
     
-    private QueryResultMetaData createQueryResultMetaData() {
+    @Override
+    public QueryResultMetaData getQueryResultMetaData() {
         List<RawQueryResultColumnMetaData> columns = new ArrayList<>(11);
         columns.add(new RawQueryResultColumnMetaData("", "Db", "Db", Types.VARCHAR, "VARCHAR", 255, 0));
         columns.add(new RawQueryResultColumnMetaData("", "Name", "Name", Types.VARCHAR, "VARCHAR", 255, 0));
@@ -69,9 +65,5 @@ public final class MySQLShowProcedureStatusExecutor implements DatabaseAdminQuer
         columns.add(new RawQueryResultColumnMetaData("", "collation_connection", "collation_connection", Types.VARCHAR, "VARCHAR", 20, 0));
         columns.add(new RawQueryResultColumnMetaData("", "Database_Collation", "Database_Collation", Types.VARCHAR, "VARCHAR", 20, 0));
         return new RawQueryResultMetaData(columns);
-    }
-    
-    private QueryResult getQueryResult() {
-        return new RawMemoryQueryResult(queryResultMetaData, Collections.emptyList());
     }
 }
