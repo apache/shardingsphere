@@ -50,9 +50,11 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class MigrationDataConsistencyCheckerTest {
     
+    private static final String TEST_DATABASE_NAME = MigrationDataConsistencyCheckerTest.class.getSimpleName();
+    
     @BeforeAll
     static void beforeClass() {
-        PipelineContextUtils.initPipelineContextManager();
+        PipelineContextUtils.initPipelineContextManager(TEST_DATABASE_NAME);
     }
     
     @Test
@@ -79,7 +81,7 @@ class MigrationDataConsistencyCheckerTest {
         jobConfigurationPOJO.setJobParameter(YamlEngine.marshal(new YamlMigrationJobConfigurationSwapper().swapToYamlConfiguration(jobConfig)));
         jobConfigurationPOJO.setJobName(jobConfig.getJobId());
         jobConfigurationPOJO.setShardingTotalCount(1);
-        PipelineGovernanceFacade governanceFacade = PipelineAPIFactory.getPipelineGovernanceFacade(PipelineContextUtils.getContextKey());
+        PipelineGovernanceFacade governanceFacade = PipelineAPIFactory.getPipelineGovernanceFacade(PipelineContextUtils.getContextKey(TEST_DATABASE_NAME));
         getClusterPersistRepository().persist(String.format("/pipeline/jobs/%s/config", jobConfig.getJobId()), YamlEngine.marshal(jobConfigurationPOJO));
         governanceFacade.getJobItemFacade().getProcess().persist(jobConfig.getJobId(), 0, "");
         return new MigrationDataConsistencyChecker(jobConfig, new TransmissionProcessContext(jobConfig.getJobId(), null),
@@ -87,7 +89,7 @@ class MigrationDataConsistencyCheckerTest {
     }
     
     private ClusterPersistRepository getClusterPersistRepository() {
-        return (ClusterPersistRepository) PipelineContextManager.getContext(PipelineContextUtils.getContextKey()).getPersistServiceFacade().getRepository();
+        return (ClusterPersistRepository) PipelineContextManager.getContext(PipelineContextUtils.getContextKey(TEST_DATABASE_NAME)).getPersistServiceFacade().getRepository();
     }
     
     private ConsistencyCheckJobItemProgressContext createConsistencyCheckJobItemProgressContext(final String jobId) {

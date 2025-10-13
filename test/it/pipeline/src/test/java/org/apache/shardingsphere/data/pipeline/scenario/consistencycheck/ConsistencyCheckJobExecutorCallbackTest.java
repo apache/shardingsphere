@@ -48,9 +48,11 @@ import static org.hamcrest.Matchers.is;
 
 class ConsistencyCheckJobExecutorCallbackTest {
     
+    private static final String TEST_DATABASE_NAME = ConsistencyCheckJobExecutorCallbackTest.class.getSimpleName();
+    
     @BeforeAll
     static void beforeClass() {
-        PipelineContextUtils.initPipelineContextManager();
+        PipelineContextUtils.initPipelineContextManager(TEST_DATABASE_NAME);
     }
     
     @Test
@@ -58,7 +60,7 @@ class ConsistencyCheckJobExecutorCallbackTest {
         ConsistencyCheckJobId pipelineJobId = new ConsistencyCheckJobId(new PipelineContextKey(InstanceType.PROXY), JobConfigurationBuilder.createYamlMigrationJobConfiguration().getJobId());
         String checkJobId = PipelineJobIdUtils.marshal(pipelineJobId);
         List<YamlTableCheckRangePosition> expectedYamlTableCheckRangePositions = Collections.singletonList(createYamlTableCheckRangePosition());
-        PipelineAPIFactory.getPipelineGovernanceFacade(PipelineContextUtils.getContextKey()).getJobItemFacade().getProcess().persist(checkJobId, 0,
+        PipelineAPIFactory.getPipelineGovernanceFacade(PipelineContextUtils.getContextKey(TEST_DATABASE_NAME)).getJobItemFacade().getProcess().persist(checkJobId, 0,
                 YamlEngine.marshal(createYamlConsistencyCheckJobItemProgress(expectedYamlTableCheckRangePositions)));
         ConsistencyCheckJobExecutorCallback callback = new ConsistencyCheckJobExecutorCallback();
         ConsistencyCheckJobConfiguration jobConfig = new YamlConsistencyCheckJobConfigurationSwapper().swapToObject(createYamlConsistencyCheckJobConfiguration(checkJobId));

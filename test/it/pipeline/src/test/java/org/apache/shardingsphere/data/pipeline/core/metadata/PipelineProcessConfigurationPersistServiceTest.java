@@ -33,9 +33,11 @@ import static org.hamcrest.MatcherAssert.assertThat;
 
 class PipelineProcessConfigurationPersistServiceTest {
     
+    private static final String TEST_DATABASE_NAME = PipelineProcessConfigurationPersistServiceTest.class.getSimpleName();
+    
     @BeforeAll
     static void beforeClass() {
-        PipelineContextUtils.initPipelineContextManager();
+        PipelineContextUtils.initPipelineContextManager(TEST_DATABASE_NAME);
     }
     
     @Test
@@ -52,8 +54,9 @@ class PipelineProcessConfigurationPersistServiceTest {
         String expectedYamlText = YamlEngine.marshal(yamlProcessConfig);
         PipelineProcessConfiguration processConfig = new YamlPipelineProcessConfigurationSwapper().swapToObject(yamlProcessConfig);
         PipelineProcessConfigurationPersistService persistService = new PipelineProcessConfigurationPersistService();
-        persistService.persist(PipelineContextUtils.getContextKey(), "MIGRATION", processConfig);
-        String actualYamlText = YamlEngine.marshal(new YamlPipelineProcessConfigurationSwapper().swapToYamlConfiguration(persistService.load(PipelineContextUtils.getContextKey(), "MIGRATION")));
+        persistService.persist(PipelineContextUtils.getContextKey(TEST_DATABASE_NAME), "MIGRATION", processConfig);
+        String actualYamlText = YamlEngine.marshal(new YamlPipelineProcessConfigurationSwapper()
+                .swapToYamlConfiguration(persistService.load(PipelineContextUtils.getContextKey(TEST_DATABASE_NAME), "MIGRATION")));
         assertThat(actualYamlText, is(expectedYamlText));
     }
 }

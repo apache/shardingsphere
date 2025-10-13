@@ -56,7 +56,7 @@ class InventoryTaskTest {
     
     @BeforeAll
     static void beforeClass() {
-        PipelineContextUtils.initPipelineContextManager();
+        PipelineContextUtils.initPipelineContextManager(InventoryTaskTest.class.getSimpleName());
     }
     
     @AfterAll

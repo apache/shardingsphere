@@ -55,6 +55,8 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 
 class ConsistencyCheckJobAPITest {
     
+    private static final String TEST_DATABASE_NAME = ConsistencyCheckJobAPITest.class.getSimpleName();
+    
     private final ConsistencyCheckJobType jobType = new ConsistencyCheckJobType();
     
     private final ConsistencyCheckJobAPI jobAPI = new ConsistencyCheckJobAPI(jobType);
@@ -65,7 +67,7 @@ class ConsistencyCheckJobAPITest {
     
     @BeforeAll
     static void beforeClass() {
-        PipelineContextUtils.initPipelineContextManager();
+        PipelineContextUtils.initPipelineContextManager(TEST_DATABASE_NAME);
     }
     
     @Test
@@ -81,7 +83,7 @@ class ConsistencyCheckJobAPITest {
         assertNull(checkJobConfig.getAlgorithmTypeName());
         int sequence = ConsistencyCheckJobId.parseSequence(expectCheckJobId);
         assertThat(sequence, is(expectedSequence));
-        PipelineGovernanceFacade governanceFacade = PipelineAPIFactory.getPipelineGovernanceFacade(PipelineContextUtils.getContextKey());
+        PipelineGovernanceFacade governanceFacade = PipelineAPIFactory.getPipelineGovernanceFacade(PipelineContextUtils.getContextKey(TEST_DATABASE_NAME));
         Collection<String> actualCheckJobIds = governanceFacade.getJobFacade().getCheck().listCheckJobIds(parentJobId);
         assertThat(actualCheckJobIds.size(), is(1));
         assertThat(actualCheckJobIds.iterator().next(), is(expectCheckJobId));
@@ -93,7 +95,7 @@ class ConsistencyCheckJobAPITest {
     void assertDropByParentJobId() {
         MigrationJobConfiguration parentJobConfig = jobConfigSwapper.swapToObject(JobConfigurationBuilder.createYamlMigrationJobConfiguration());
         String parentJobId = parentJobConfig.getJobId();
-        PipelineGovernanceFacade governanceFacade = PipelineAPIFactory.getPipelineGovernanceFacade(PipelineContextUtils.getContextKey());
+        PipelineGovernanceFacade governanceFacade = PipelineAPIFactory.getPipelineGovernanceFacade(PipelineContextUtils.getContextKey(TEST_DATABASE_NAME));
         int expectedSequence = 1;
         for (int i = 0; i < 3; i++) {
             String checkJobId = jobAPI.start(new CreateConsistencyCheckJobParameter(parentJobId, null, null,
@@ -235,7 +237,7 @@ class ConsistencyCheckJobAPITest {
     
     private void persistCheckJobResult(final String parentJobId, final String checkJobId) {
         Map<String, TableDataConsistencyCheckResult> dataConsistencyCheckResult = Collections.singletonMap("t_order", new TableDataConsistencyCheckResult(true));
-        PipelineGovernanceFacade governanceFacade = PipelineAPIFactory.getPipelineGovernanceFacade(PipelineContextUtils.getContextKey());
+        PipelineGovernanceFacade governanceFacade = PipelineAPIFactory.getPipelineGovernanceFacade(PipelineContextUtils.getContextKey(TEST_DATABASE_NAME));
         governanceFacade.getJobFacade().getCheck().persistCheckJobResult(parentJobId, checkJobId, dataConsistencyCheckResult);
     }
     
