@@ -82,4 +82,8 @@
                scenario-comments="Test MAX DISTINCT returns NULL when no data matches">
         <assertion expected-data-source-name="read_dataset" />
     </test-case>
+
+    <test-case sql="SELECT user_id, COUNT(*) AS user_count FROM t_user GROUP BY user_id ORDER BY user_id" db-types="Hive" scenario-types="mask">
+        <assertion expected-data-source-name="expected_dataset" />
+    </test-case>
 </e2e-test-cases>
