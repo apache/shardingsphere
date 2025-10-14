@@ -50,20 +50,20 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public final class MySQLSetVariableAdminExecutor implements DatabaseAdminExecutor {
     
-    private final SetStatement setStatement;
+    private final SetStatement sqlStatement;
     
     @Override
     public void execute(final ConnectionSession connectionSession, final ShardingSphereMetaData metaData) throws SQLException {
         Map<String, String> sessionVariables = extractSessionVariables();
         validateSessionVariables(sessionVariables.keySet());
-        CharsetSetExecutor charsetSetExecutor = new CharsetSetExecutor(setStatement.getDatabaseType(), connectionSession);
+        CharsetSetExecutor charsetSetExecutor = new CharsetSetExecutor(sqlStatement.getDatabaseType(), connectionSession);
         sessionVariables.forEach(charsetSetExecutor::set);
-        new SessionVariableRecordExecutor(setStatement.getDatabaseType(), connectionSession).recordVariable(sessionVariables);
+        new SessionVariableRecordExecutor(sqlStatement.getDatabaseType(), connectionSession).recordVariable(sessionVariables);
         executeSetGlobalVariablesIfPresent(connectionSession, metaData);
     }
     
     private Map<String, String> extractSessionVariables() {
-        return setStatement.getVariableAssigns().stream().filter(each -> !"global".equalsIgnoreCase(each.getVariable().getScope().orElse("")))
+        return sqlStatement.getVariableAssigns().stream().filter(each -> !"global".equalsIgnoreCase(each.getVariable().getScope().orElse("")))
                 .collect(Collectors.toMap(each -> each.getVariable().getVariable(), VariableAssignSegment::getAssignValue));
     }
     
@@ -85,7 +85,7 @@ public final class MySQLSetVariableAdminExecutor implements DatabaseAdminExecuto
         }
         String sql = "SET " + concatenatedGlobalVariables;
         SQLParserRule sqlParserRule = metaData.getGlobalRuleMetaData().getSingleRule(SQLParserRule.class);
-        SQLStatement sqlStatement = sqlParserRule.getSQLParserEngine(setStatement.getDatabaseType()).parse(sql, false);
+        SQLStatement sqlStatement = sqlParserRule.getSQLParserEngine(this.sqlStatement.getDatabaseType()).parse(sql, false);
         SQLStatementContext sqlStatementContext = new SQLBindEngine(metaData,
                 connectionSession.getCurrentDatabaseName(), new HintValueContext()).bind(sqlStatement);
         DatabaseProxyBackendHandler databaseProxyBackendHandler = DatabaseProxyConnectorFactory.newInstance(
@@ -99,7 +99,7 @@ public final class MySQLSetVariableAdminExecutor implements DatabaseAdminExecuto
     }
     
     private Map<String, String> extractGlobalVariables() {
-        return setStatement.getVariableAssigns().stream().filter(each -> "global".equalsIgnoreCase(each.getVariable().getScope().orElse("")))
+        return sqlStatement.getVariableAssigns().stream().filter(each -> "global".equalsIgnoreCase(each.getVariable().getScope().orElse("")))
                 .collect(Collectors.toMap(each -> each.getVariable().getVariable(), VariableAssignSegment::getAssignValue, (oldValue, newValue) -> newValue, LinkedHashMap::new));
     }
 }
