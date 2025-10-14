@@ -16,7 +16,8 @@ variables:
   # Override this variable with 'fetch' or 'rebase' in jobs if needed.
   GIT_STRATEGY: none
 stages:
-  - prepare
+  - prepare_env
+  - prepare_src
   - build
   - test
   - deploy
@@ -43,7 +44,7 @@ stages:
   before_script:
     - docker login -u "$CI_REGISTRY_USER" -p "$CI_BUILD_TOKEN" "$DOCKER_ENV_CI_REGISTRY"
   dependencies:
-    - build_environment
+    - prepare_environment
   variables:
     DOCKERFILES: "distribution/proxy-native"
     OUT_IMAGE: registry.red-soft.biz:5000/red-sharding/proxy-native:${VERSION}-${TYPE}
@@ -53,14 +54,14 @@ stages:
 ######
 # Preparation
 ######
-build_environment:
+prepare_environment:
   variables:
     GIT_STRATEGY: fetch
   tags:
     - docker
     - builder
     - x86_64
-  stage: prepare
+  stage: prepare_env
   image: registry.red-soft.biz:5000/utils/red-release-manager/client:master
   script:
     - mkdir .ci
@@ -101,10 +102,10 @@ build_environment:
     reports:
       dotenv: vars.env
 
-sources:
+apply_version:
   variables:
     GIT_STRATEGY: fetch
-  stage: prepare
+  stage: prepare_src
   tags:
     - docker
     - builder
@@ -115,8 +116,6 @@ sources:
     - hash=$(git stash create)
     - "[ \"$hash\" = \"\" ] && hash=HEAD"
     - git archive --format=tar $hash | gzip > rshrd-${VERSION}-src.tar.gz
-  dependencies:
-    - build_environment
   artifacts:
     paths:
       - rshrd-${VERSION}-src.tar.gz
@@ -135,8 +134,8 @@ proxy-native-docker:
     - docker push ${OUT_IMAGE}
     - docker rmi ${OUT_IMAGE}
   dependencies:
-    - sources
-    - build_environment
+    - apply_version
+    - prepare_environment
 
 java11:
   tags: ["docker", "linux", "x86_64"]
@@ -154,8 +153,8 @@ java11:
     paths:
       - ${ARTIFACTS_DIR}/*.{tar.gz,tar.gz.sha512}
   dependencies:
-    - build_environment
-    - sources
+    - prepare_environment
+    - apply_version
 
 ######
 # Testing
@@ -167,8 +166,8 @@ java8:
     #- if: $CI_COMMIT_BRANCH == "master"
   image: $JDK_TEST_IMAGE
   dependencies:
-    - sources
-    - build_environment
+    - apply_version
+    - prepare_environment
   before_script:
     - tar -xvf rshrd-${VERSION}-src.tar.gz -C .
   script:
