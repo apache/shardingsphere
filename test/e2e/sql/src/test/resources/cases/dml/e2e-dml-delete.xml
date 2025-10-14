@@ -71,6 +71,6 @@
     </test-case>
 
     <test-case sql="DELETE FROM t_user WHERE user_id = ?" db-types="Hive" scenario-types="encrypt" skip-batch="true">
-        <assertion parameters="10:int" expected-data-file="delete_user_table.xml" />
+        <assertion parameters="10:int" expected-data-file="delete_user_table_for_hive.xml" />
     </test-case>
 </e2e-test-cases>

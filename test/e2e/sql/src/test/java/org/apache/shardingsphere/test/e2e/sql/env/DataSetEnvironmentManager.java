@@ -19,12 +19,12 @@ package org.apache.shardingsphere.test.e2e.sql.env;
 
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
+import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.sqlbatch.DialectSQLBatchOption;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeFactory;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.database.connector.opengauss.type.OpenGaussDatabaseType;
 import org.apache.shardingsphere.database.connector.postgresql.type.PostgreSQLDatabaseType;
-import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.executor.kernel.ExecutorEngine;
 import org.apache.shardingsphere.infra.executor.kernel.thread.ExecutorServiceManager;
@@ -45,7 +45,6 @@ import java.sql.Connection;
 import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.sql.SQLFeatureNotSupportedException;
 import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
@@ -96,9 +95,10 @@ public final class DataSetEnvironmentManager {
                 sqlValueGroups.add(new SQLValueGroup(dataSetMetaData, row.splitValues(DATA_COLUMN_DELIMITER)));
             }
             String insertSQL;
+            DatabaseType databaseType;
             try (Connection connection = dataSourceMap.get(dataNode.getDataSourceName()).getConnection()) {
-                String insertTableName = dataNode.getTableName();
-                insertSQL = generateInsertSQL(insertTableName, dataSetMetaData.getColumns(), databaseType);
+                databaseType = DatabaseTypeFactory.get(connection.getMetaData());
+                insertSQL = generateInsertSQL(dataNode.getTableName(), dataSetMetaData.getColumns(), databaseType);
             }
             fillDataTasks.add(new InsertTask(dataSourceMap.get(dataNode.getDataSourceName()), insertSQL, sqlValueGroups, databaseType));
         }
@@ -202,40 +202,37 @@ public final class DataSetEnvironmentManager {
             try (
                     Connection connection = dataSource.getConnection();
                     PreparedStatement preparedStatement = connection.prepareStatement(insertSQL)) {
-                boolean supportsBatchUpdates;
-                try {
-                    supportsBatchUpdates = connection.getMetaData().supportsBatchUpdates();
-                } catch (final SQLFeatureNotSupportedException ignored) {
-                    supportsBatchUpdates = false;
-                }
-                if (supportsBatchUpdates) {
-                    for (SQLValueGroup each : sqlValueGroups) {
-                        setParameters(preparedStatement, each);
-                        preparedStatement.addBatch();
-                    }
-                    preparedStatement.executeBatch();
+                DialectSQLBatchOption sqlBatchOption = new DatabaseTypeRegistry(databaseType).getDialectDatabaseMetaData().getSQLBatchOption();
+                if (sqlBatchOption.isSupportSQLBatch()) {
+                    executeBatch(preparedStatement);
                 } else {
-                    for (SQLValueGroup each : sqlValueGroups) {
-                        setParameters(preparedStatement, each);
-                        preparedStatement.executeUpdate();
-                    }
+                    executeUpdate(preparedStatement);
                 }
             }
             return null;
         }
         
+        private void executeBatch(final PreparedStatement preparedStatement) throws SQLException {
+            for (SQLValueGroup each : sqlValueGroups) {
+                setParameters(preparedStatement, each);
+                preparedStatement.addBatch();
+            }
+            preparedStatement.executeBatch();
+        }
+        
+        private void executeUpdate(final PreparedStatement preparedStatement) throws SQLException {
+            for (SQLValueGroup each : sqlValueGroups) {
+                setParameters(preparedStatement, each);
+                preparedStatement.executeUpdate();
+            }
+        }
+        
         private void setParameters(final PreparedStatement preparedStatement, final SQLValueGroup sqlValueGroup) throws SQLException {
             for (SQLValue each : sqlValueGroup.getValues()) {
-                Object value = each.getValue();
-                int index = each.getIndex();
-                if ("Hive".equalsIgnoreCase(databaseType.getType())) {
-                    if (value instanceof Date) {
-                        preparedStatement.setDate(index, (java.sql.Date) value);
-                    } else {
-                        preparedStatement.setObject(index, value);
-                    }
+                if ("Hive".equalsIgnoreCase(databaseType.getType()) && each.getValue() instanceof Date) {
+                    preparedStatement.setDate(each.getIndex(), (java.sql.Date) each.getValue());
                 } else {
-                    preparedStatement.setObject(index, value);
+                    preparedStatement.setObject(each.getIndex(), each.getValue());
                 }
             }
         }
@@ -251,7 +248,7 @@ public final class DataSetEnvironmentManager {
         @Override
         public Void call() throws SQLException {
             try (Connection connection = dataSource.getConnection()) {
-                DatabaseType databaseType = getDatabaseType(connection);
+                DatabaseType databaseType = DatabaseTypeFactory.get(connection.getMetaData());
                 for (String each : tableNames) {
                     String quotedTableName = getQuotedTableName(each, databaseType);
                     try (PreparedStatement preparedStatement = connection.prepareStatement(String.format("TRUNCATE TABLE %s", quotedTableName))) {
@@ -260,19 +257,6 @@ public final class DataSetEnvironmentManager {
                 }
             }
             return null;
-        }
-        
-        private DatabaseType getDatabaseType(final Connection connection) throws SQLException {
-            try {
-                String url = connection.getMetaData().getURL();
-                return DatabaseTypeFactory.get(url);
-            } catch (final SQLFeatureNotSupportedException ex) {
-                String driverName = connection.getMetaData().getDriverName();
-                if (null != driverName && driverName.toLowerCase().contains("hive")) {
-                    return TypedSPILoader.getService(DatabaseType.class, "Hive");
-                }
-                throw ex;
-            }
         }
         
         private String getQuotedTableName(final String tableName, final DatabaseType databaseType) {
