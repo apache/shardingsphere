@@ -22,7 +22,10 @@ import lombok.NoArgsConstructor;
 import lombok.SneakyThrows;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Strings;
-import org.apache.shardingsphere.test.e2e.env.container.util.spi.SQLBatchExecutionStrategy;
+import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.sqlbatch.DialectSQLBatchOption;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeFactory;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeRegistry;
 import org.h2.util.ScriptReader;
 
 import javax.sql.DataSource;
@@ -39,7 +42,6 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Collection;
 import java.util.LinkedList;
-import java.util.ServiceLoader;
 
 /**
  * SQL script utility class.
@@ -59,7 +61,7 @@ public final class SQLScriptUtils {
     public static void execute(final DataSource dataSource, final String scriptFilePath) {
         Collection<String> sqls = readSQLs(scriptFilePath);
         try (Connection connection = dataSource.getConnection()) {
-            executeBatch(connection, sqls);
+            execute(connection, sqls);
         }
     }
     
@@ -71,7 +73,21 @@ public final class SQLScriptUtils {
      */
     @SneakyThrows({SQLException.class, IOException.class})
     public static void execute(final Connection connection, final String scriptFilePath) {
-        executeBatch(connection, readSQLs(scriptFilePath));
+        execute(connection, readSQLs(scriptFilePath));
+    }
+    
+    private static void execute(final Connection connection, final Collection<String> sqls) throws SQLException {
+        DatabaseType databaseType = DatabaseTypeFactory.get(connection.getMetaData());
+        DialectSQLBatchOption sqlBatchOption = new DatabaseTypeRegistry(databaseType).getDialectDatabaseMetaData().getSQLBatchOption();
+        if (sqlBatchOption.isSupportSQLBatch()) {
+            executeBatch(connection, sqls);
+            return;
+        }
+        for (String each : sqls) {
+            try (Statement statement = connection.createStatement()) {
+                statement.execute(each);
+            }
+        }
     }
     
     private static Collection<String> readSQLs(final String scriptFilePath) throws IOException {
@@ -101,14 +117,6 @@ public final class SQLScriptUtils {
     private static void executeBatch(final Connection connection, final Collection<String> sqls) throws SQLException {
         int count = 0;
         try (Statement statement = connection.createStatement()) {
-            String driverName = connection.getMetaData().getDriverName();
-            ServiceLoader<SQLBatchExecutionStrategy> loader = ServiceLoader.load(SQLBatchExecutionStrategy.class);
-            for (SQLBatchExecutionStrategy strategy : loader) {
-                if (strategy.supports(driverName)) {
-                    strategy.execute(connection, statement, sqls);
-                    return;
-                }
-            }
             for (String each : sqls) {
                 statement.addBatch(each);
                 count++;

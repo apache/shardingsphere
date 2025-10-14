@@ -15,24 +15,17 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.e2e.sql.framework.metadata.dialect;
+package org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.sqlbatch;
 
-import org.apache.shardingsphere.test.e2e.sql.framework.metadata.DialectQueryBehaviorProvider;
-
-import java.util.Optional;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 /**
- * Hive dialect query behavior provider.
+ * Dialect sql batch option.
  */
-public final class HiveDialectQueryBehaviorProvider implements DialectQueryBehaviorProvider {
+@RequiredArgsConstructor
+@Getter
+public final class DialectSQLBatchOption {
     
-    @Override
-    public Optional<String> getFallbackOrderByWhenNoPrimaryKey() {
-        return Optional.of("1 ASC");
-    }
-    
-    @Override
-    public String getDatabaseType() {
-        return "Hive";
-    }
+    private final boolean supportSQLBatch;
 }
