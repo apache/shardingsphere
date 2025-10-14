@@ -14,25 +14,20 @@
 -- See the License for the specific language governing permissions and
 -- limitations under the License.
 --
+
 SET hive.exec.dynamic.partition=true;
 SET hive.exec.dynamic.partition.mode=nonstrict;
 
-DROP DATABASE IF EXISTS expected_dataset;
 CREATE DATABASE IF NOT EXISTS expected_dataset;
 USE expected_dataset;
 
-CREATE TABLE expected_dataset.t_order (order_id INT, user_id INT, status STRING, merchant_id INT, remark STRING, creation_date DATE)
-    STORED AS ORC
-TBLPROPERTIES ('transactional'='true');
-
-CREATE TABLE expected_dataset.t_order_item (item_id INT, order_id INT, user_id INT, product_id INT, quantity INT, creation_date DATE)
-    STORED AS ORC
-TBLPROPERTIES ('transactional'='true');
-
-CREATE TABLE expected_dataset.t_user (user_id INT, user_name STRING, password STRING, email STRING, telephone STRING, creation_date DATE)
-    STORED AS ORC
-TBLPROPERTIES ('transactional'='true');
-
-CREATE TABLE expected_dataset.t_merchant (merchant_id INT, country_id SMALLINT, merchant_name STRING, business_code STRING, telephone STRING, creation_date DATE)
-    STORED AS ORC
+CREATE TABLE IF NOT EXISTS t_user (
+    user_id INT,
+    user_name STRING,
+    password STRING,
+    email STRING,
+    telephone STRING,
+    creation_date DATE
+)
+STORED AS ORC
 TBLPROPERTIES ('transactional'='true');
