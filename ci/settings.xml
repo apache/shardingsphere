@@ -37,7 +37,7 @@
                     <snapshots><enabled>true</enabled></snapshots>
                 </repository>
                 <repository>
-                    <id>jaybird</id>
+                    <id>jaybird-snapshot</id>
                     <url>http://nexus.red-soft.biz/repository/jaybird-snapshots/</url>
                     <releases><enabled>true</enabled></releases>
                     <snapshots><enabled>true</enabled></snapshots>
