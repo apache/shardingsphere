@@ -178,7 +178,7 @@ public final class E2ETestParameterGenerator {
     
     private Collection<E2ETestParameter> getCaseTestParameter(final SQLE2ETestCaseContext testCaseContext, final DatabaseType databaseType, final SQLCommandType sqlCommandType) {
         Collection<E2ETestParameter> result = new LinkedList<>();
-        if (testCaseContext.getTestCase().isSkipBatch() && "Hive".equalsIgnoreCase(databaseType.getType())) {
+        if (testCaseContext.getTestCase().isSkipBatch()) {
             return Collections.emptyList();
         }
         for (String each : envAdapters) {

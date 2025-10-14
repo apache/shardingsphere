@@ -111,6 +111,6 @@
     </test-case>
 
     <test-case sql="UPDATE t_user SET password = ? WHERE user_id = ?" db-types="Hive" scenario-types="encrypt" skip-batch="true">
-        <assertion parameters="222222:String, 11:int" expected-data-file="update_user_table_hive.xml" />
+        <assertion parameters="222222:String, 11:int" expected-data-file="update_user_table_for_hive.xml" />
     </test-case>
 </e2e-test-cases>
