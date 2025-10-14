@@ -124,8 +124,7 @@ public final class InventoryDumper extends AbstractPipelineLifecycleRunnable imp
         List<String> columnNames = dumperContext.getQueryColumnNames();
         TableInventoryCalculateParameter calculateParam = new TableInventoryCalculateParameter(dataSource, table,
                 columnNames, dumperContext.getUniqueKeyColumns(), QueryType.RANGE_QUERY, null);
-        QueryRange queryRange = new QueryRange(((PrimaryKeyIngestPosition<?>) initialPosition).getBeginValue(), dumperContext.isFirstDump(),
-                ((PrimaryKeyIngestPosition<?>) initialPosition).getEndValue());
+        QueryRange queryRange = new QueryRange(((PrimaryKeyIngestPosition<?>) initialPosition).getBeginValue(), true, ((PrimaryKeyIngestPosition<?>) initialPosition).getEndValue());
         calculateParam.setQueryRange(queryRange);
         RecordTableInventoryDumpCalculator dumpCalculator = new RecordTableInventoryDumpCalculator(dumperContext.getBatchSize(), StreamingRangeType.SMALL);
         long rowCount = 0L;
