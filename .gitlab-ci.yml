@@ -104,7 +104,7 @@ build_environment:
 sources:
   variables:
     GIT_STRATEGY: fetch
-  stage: prepare_sources
+  stage: prepare
   tags:
     - docker
     - builder
@@ -115,6 +115,8 @@ sources:
     - hash=$(git stash create)
     - "[ \"$hash\" = \"\" ] && hash=HEAD"
     - git archive --format=tar $hash | gzip > rshrd-${VERSION}-src.tar.gz
+  dependencies:
+    - build_environment
   artifacts:
     paths:
       - rshrd-${VERSION}-src.tar.gz
