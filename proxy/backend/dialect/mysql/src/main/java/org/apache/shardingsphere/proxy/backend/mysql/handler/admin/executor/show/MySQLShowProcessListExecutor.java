@@ -19,15 +19,13 @@ package org.apache.shardingsphere.proxy.backend.mysql.handler.admin.executor.sho
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResultMetaData;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.raw.metadata.RawQueryResultColumnMetaData;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.raw.metadata.RawQueryResultMetaData;
-import org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.raw.type.RawMemoryQueryResult;
-import org.apache.shardingsphere.infra.executor.sql.execute.result.query.type.memory.row.MemoryQueryResultDataRow;
 import org.apache.shardingsphere.infra.executor.sql.process.Process;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
-import org.apache.shardingsphere.infra.merge.result.impl.transparent.TransparentMergedResult;
+import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataMergedResult;
+import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.handler.admin.executor.DatabaseAdminQueryExecutor;
@@ -37,7 +35,6 @@ import org.apache.shardingsphere.sql.parser.statement.mysql.dal.show.process.MyS
 import java.sql.Types;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
@@ -51,40 +48,15 @@ public final class MySQLShowProcessListExecutor implements DatabaseAdminQueryExe
     private final MySQLShowProcessListStatement sqlStatement;
     
     @Getter
-    private QueryResultMetaData queryResultMetaData;
-    
-    @Getter
     private MergedResult mergedResult;
     
     @Override
     public void execute(final ConnectionSession connectionSession, final ShardingSphereMetaData metaData) {
-        queryResultMetaData = createQueryResultMetaData();
-        mergedResult = new TransparentMergedResult(getQueryResult());
-    }
-    
-    private QueryResultMetaData createQueryResultMetaData() {
-        List<RawQueryResultColumnMetaData> columns = new ArrayList<>(8);
-        columns.add(new RawQueryResultColumnMetaData("", "Id", "Id", Types.VARCHAR, "VARCHAR", 20, 0));
-        columns.add(new RawQueryResultColumnMetaData("", "User", "User", Types.VARCHAR, "VARCHAR", 20, 0));
-        columns.add(new RawQueryResultColumnMetaData("", "Host", "Host", Types.VARCHAR, "VARCHAR", 64, 0));
-        columns.add(new RawQueryResultColumnMetaData("", "db", "db", Types.VARCHAR, "VARCHAR", 64, 0));
-        columns.add(new RawQueryResultColumnMetaData("", "Command", "Command", Types.VARCHAR, "VARCHAR", 64, 0));
-        columns.add(new RawQueryResultColumnMetaData("", "Time", "Time", Types.VARCHAR, "VARCHAR", 10, 0));
-        columns.add(new RawQueryResultColumnMetaData("", "State", "State", Types.VARCHAR, "VARCHAR", 64, 0));
-        columns.add(new RawQueryResultColumnMetaData("", "Info", "Info", Types.VARCHAR, "VARCHAR", 120, 0));
-        return new RawQueryResultMetaData(columns);
-    }
-    
-    private QueryResult getQueryResult() {
         Collection<Process> processes = ProxyContext.getInstance().getContextManager().getPersistServiceFacade().getModeFacade().getProcessService().getProcessList();
-        if (processes.isEmpty()) {
-            return new RawMemoryQueryResult(queryResultMetaData, Collections.emptyList());
-        }
-        List<MemoryQueryResultDataRow> rows = processes.stream().map(this::getMemoryQueryResultDataRow).collect(Collectors.toList());
-        return new RawMemoryQueryResult(queryResultMetaData, rows);
+        mergedResult = new LocalDataMergedResult(processes.stream().map(this::getQueryResultRow).collect(Collectors.toList()));
     }
     
-    private MemoryQueryResultDataRow getMemoryQueryResultDataRow(final Process process) {
+    private LocalDataQueryResultRow getQueryResultRow(final Process process) {
         List<Object> rowValues = new ArrayList<>(8);
         rowValues.add(process.getId());
         rowValues.add(process.getUsername());
@@ -105,6 +77,20 @@ public final class MySQLShowProcessListExecutor implements DatabaseAdminQueryExe
             sql = sql.substring(0, 100);
         }
         rowValues.add(null != sql ? sql : "");
-        return new MemoryQueryResultDataRow(rowValues);
+        return new LocalDataQueryResultRow(rowValues.toArray());
+    }
+    
+    @Override
+    public QueryResultMetaData getQueryResultMetaData() {
+        List<RawQueryResultColumnMetaData> columns = new ArrayList<>(8);
+        columns.add(new RawQueryResultColumnMetaData("", "Id", "Id", Types.VARCHAR, "VARCHAR", 20, 0));
+        columns.add(new RawQueryResultColumnMetaData("", "User", "User", Types.VARCHAR, "VARCHAR", 20, 0));
+        columns.add(new RawQueryResultColumnMetaData("", "Host", "Host", Types.VARCHAR, "VARCHAR", 64, 0));
+        columns.add(new RawQueryResultColumnMetaData("", "db", "db", Types.VARCHAR, "VARCHAR", 64, 0));
+        columns.add(new RawQueryResultColumnMetaData("", "Command", "Command", Types.VARCHAR, "VARCHAR", 64, 0));
+        columns.add(new RawQueryResultColumnMetaData("", "Time", "Time", Types.VARCHAR, "VARCHAR", 10, 0));
+        columns.add(new RawQueryResultColumnMetaData("", "State", "State", Types.VARCHAR, "VARCHAR", 64, 0));
+        columns.add(new RawQueryResultColumnMetaData("", "Info", "Info", Types.VARCHAR, "VARCHAR", 120, 0));
+        return new RawQueryResultMetaData(columns);
     }
 }

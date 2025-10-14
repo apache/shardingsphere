@@ -22,14 +22,12 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.database.connector.core.metadata.database.system.SystemDatabase;
 import org.apache.shardingsphere.database.exception.core.exception.syntax.database.UnknownDatabaseException;
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
-import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResultMetaData;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.raw.metadata.RawQueryResultColumnMetaData;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.raw.metadata.RawQueryResultMetaData;
-import org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.raw.type.RawMemoryQueryResult;
-import org.apache.shardingsphere.infra.executor.sql.execute.result.query.type.memory.row.MemoryQueryResultDataRow;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
-import org.apache.shardingsphere.infra.merge.result.impl.transparent.TransparentMergedResult;
+import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataMergedResult;
+import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
@@ -40,7 +38,6 @@ import org.apache.shardingsphere.sql.parser.statement.mysql.dal.show.table.MySQL
 
 import java.sql.Types;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
@@ -67,7 +64,7 @@ public final class MySQLShowTablesExecutor implements DatabaseAdminQueryExecutor
     public void execute(final ConnectionSession connectionSession, final ShardingSphereMetaData metaData) {
         String databaseName = sqlStatement.getFromDatabase().map(optional -> optional.getDatabase().getIdentifier().getValue()).orElseGet(connectionSession::getUsedDatabaseName);
         queryResultMetaData = createQueryResultMetaData(databaseName);
-        mergedResult = new TransparentMergedResult(getQueryResult(databaseName, metaData));
+        mergedResult = new LocalDataMergedResult(getQueryResultRows(databaseName, metaData));
     }
     
     private QueryResultMetaData createQueryResultMetaData(final String databaseName) {
@@ -80,14 +77,13 @@ public final class MySQLShowTablesExecutor implements DatabaseAdminQueryExecutor
         return new RawQueryResultMetaData(columnNames);
     }
     
-    private QueryResult getQueryResult(final String databaseName, final ShardingSphereMetaData metaData) {
+    private Collection<LocalDataQueryResultRow> getQueryResultRows(final String databaseName, final ShardingSphereMetaData metaData) {
         SystemDatabase systemDatabase = new SystemDatabase(sqlStatement.getDatabaseType());
         ShardingSpherePreconditions.checkState(metaData.containsDatabase(databaseName), () -> new UnknownDatabaseException(databaseName));
         ShardingSphereDatabase database = metaData.getDatabase(databaseName);
-        List<MemoryQueryResultDataRow> rows = systemDatabase.getSystemSchemas().contains(databaseName) || database.isComplete()
-                ? getTables(database).stream().map(this::getRow).collect(Collectors.toList())
+        return systemDatabase.getSystemSchemas().contains(databaseName) || database.isComplete()
+                ? getTables(database).stream().map(this::getQueryResultRow).collect(Collectors.toList())
                 : Collections.emptyList();
-        return new RawMemoryQueryResult(queryResultMetaData, rows);
     }
     
     private Collection<ShardingSphereTable> getTables(final ShardingSphereDatabase database) {
@@ -112,9 +108,7 @@ public final class MySQLShowTablesExecutor implements DatabaseAdminQueryExecutor
         return regex.map(optional -> Pattern.compile(optional, Pattern.CASE_INSENSITIVE));
     }
     
-    private MemoryQueryResultDataRow getRow(final ShardingSphereTable table) {
-        return sqlStatement.isContainsFull()
-                ? new MemoryQueryResultDataRow(Arrays.asList(table.getName(), table.getType()))
-                : new MemoryQueryResultDataRow(Collections.singletonList(table.getName()));
+    private LocalDataQueryResultRow getQueryResultRow(final ShardingSphereTable table) {
+        return sqlStatement.isContainsFull() ? new LocalDataQueryResultRow(table.getName(), table.getType()) : new LocalDataQueryResultRow(table.getName());
     }
 }
