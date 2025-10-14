@@ -17,26 +17,22 @@
 
 package org.apache.shardingsphere.proxy.backend.mysql.handler.admin.executor.sysvar;
 
+import java.util.Arrays;
+
 /**
- * Scope of MySQL system variable.
+ * System variable scope for MySQL.
  */
-public enum Scope {
+public enum MySQLSystemVariableScope {
     
     SESSION, GLOBAL, DEFAULT;
     
     /**
-     * Get scope.
+     * Get scope from text.
      *
-     * @param scope scope
+     * @param value scope text
      * @return scope
      */
-    public static Scope getScope(final String scope) {
-        if (SESSION.name().equalsIgnoreCase(scope)) {
-            return SESSION;
-        }
-        if (GLOBAL.name().equalsIgnoreCase(scope)) {
-            return GLOBAL;
-        }
-        return DEFAULT;
+    public static MySQLSystemVariableScope valueFrom(final String value) {
+        return Arrays.stream(values()).filter(each -> each.name().equalsIgnoreCase(value)).findFirst().orElse(DEFAULT);
     }
 }
