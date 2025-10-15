@@ -36,6 +36,7 @@ public final class FirebirdPutBlobSegmentCommandPacket extends FirebirdCommandPa
     private final int segmentLength;
     
     public FirebirdPutBlobSegmentCommandPacket(final FirebirdPacketPayload payload) {
+        FirebirdBlobRegistry.clearSegment();
         payload.skipReserved(4);
         blobHandle = payload.readInt4();
         segmentLength = payload.readInt4();
@@ -44,6 +45,7 @@ public final class FirebirdPutBlobSegmentCommandPacket extends FirebirdCommandPa
         buffer.readBytes(segment);
         Preconditions.checkArgument(segmentLength == segment.length,
                 "Segment length mismatch, expected: %s, actual: %s", segmentLength, segment.length);
+        FirebirdBlobRegistry.setSegment(segment);
     }
     
     @Override
