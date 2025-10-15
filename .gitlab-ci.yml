@@ -147,7 +147,9 @@ proxy-native-docker:
 java11:
   rules:
     - if: ${CI_PIPELINE_SOURCE} == "schedule"
+      when: always
     - if: ${CI_COMMIT_TAG}
+      when: always
   tags: ["docker", "linux", "x86_64"]
   stage: build
   image: $JDK_BUILD_IMAGE
