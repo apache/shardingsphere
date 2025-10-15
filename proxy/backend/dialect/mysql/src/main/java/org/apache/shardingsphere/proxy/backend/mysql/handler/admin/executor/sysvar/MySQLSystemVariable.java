@@ -1129,7 +1129,7 @@ public enum MySQLSystemVariable {
     
     /**
      * Validate scope of set operation.
-     * 
+     *
      * @param scope set scope
      */
     public void validateSetTargetScope(final MySQLSystemVariableScope scope) {
