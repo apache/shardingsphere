@@ -157,7 +157,7 @@ public final class DriverExecutorFacade implements AutoCloseable {
      * Get result set.
      *
      * @param database database
-     * @param queryContext SQL statement context
+     * @param queryContext query context
      * @param statement statement
      * @param statements statements
      * @return result set
