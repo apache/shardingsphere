@@ -123,7 +123,7 @@ public final class EnumerableScanImplementor implements ScanImplementor {
                 List<QueryResult> queryResults =
                         executorContext.getJdbcExecutor().execute(executionGroupContext, executorContext.getCallback()).stream().map(QueryResult.class::cast).collect(Collectors.toList());
                 MergeEngine mergeEngine = new MergeEngine(queryContext.getMetaData(), database, queryContext.getMetaData().getProps(), queryContext.getConnectionContext());
-                MergedResult mergedResult = mergeEngine.merge(queryResults, queryContext.getSqlStatementContext());
+                MergedResult mergedResult = mergeEngine.merge(queryResults, queryContext);
                 Collection<Statement> statements = getStatements(executionGroupContext.getInputGroups());
                 return new JDBCDataRowEnumerator(mergedResult, queryResults.get(0).getMetaData(), statements);
             }

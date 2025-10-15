@@ -82,7 +82,7 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
     
     private String usedDatabaseName;
     
-    private SQLStatementContext sqlStatementContext;
+    private QueryContext queryContext;
     
     private boolean returnGeneratedKeys;
     
@@ -263,9 +263,9 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
     
     private void prepareExecute(final QueryContext queryContext) throws SQLException {
         handleAutoCommitBeforeExecution(queryContext.getSqlStatementContext().getSqlStatement(), connection);
-        sqlStatementContext = queryContext.getSqlStatementContext();
-        ShardingSpherePreconditions.checkNotNull(sqlStatementContext, () -> new IllegalStateException("Statement context can not be null"));
-        usedDatabaseName = sqlStatementContext.getTablesContext().getDatabaseName().orElse(connection.getCurrentDatabaseName());
+        this.queryContext = queryContext;
+        ShardingSpherePreconditions.checkNotNull(this.queryContext, () -> new IllegalStateException("Query context can not be null"));
+        usedDatabaseName = queryContext.getSqlStatementContext().getTablesContext().getDatabaseName().orElse(connection.getCurrentDatabaseName());
         connection.getDatabaseConnectionManager().getConnectionContext().setCurrentDatabaseName(connection.getCurrentDatabaseName());
         clearStatements();
     }
@@ -303,7 +303,7 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
         if (null != currentResultSet) {
             return currentResultSet;
         }
-        driverExecutorFacade.getResultSet(metaData.getDatabase(usedDatabaseName), sqlStatementContext, this, statements).ifPresent(optional -> currentResultSet = optional);
+        driverExecutorFacade.getResultSet(metaData.getDatabase(usedDatabaseName), queryContext, this, statements).ifPresent(optional -> currentResultSet = optional);
         return currentResultSet;
     }
     
@@ -327,7 +327,7 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
     @Override
     public boolean isAccumulate() {
         for (DataNodeRuleAttribute each : metaData.getDatabase(usedDatabaseName).getRuleMetaData().getAttributes(DataNodeRuleAttribute.class)) {
-            if (each.isNeedAccumulate(sqlStatementContext.getTablesContext().getTableNames())) {
+            if (each.isNeedAccumulate(queryContext.getSqlStatementContext().getTablesContext().getTableNames())) {
                 return true;
             }
         }
@@ -357,6 +357,7 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
     }
     
     private Optional<GeneratedKeyContext> findGeneratedKey() {
+        SQLStatementContext sqlStatementContext = queryContext.getSqlStatementContext();
         return sqlStatementContext instanceof InsertStatementContext ? ((InsertStatementContext) sqlStatementContext).getGeneratedKeyContext() : Optional.empty();
     }
     
