@@ -33,14 +33,21 @@
 #      maxRetries: 3
 #      operationTimeoutMilliseconds: 500
 #
-#authority:
-#  users:
-#    - user: root@%
-#      password: root
-#    - user: sharding
-#      password: sharding
-#  privilege:
-#    type: ALL_PERMITTED
+mode:
+  type: Standalone
+  repository:
+    type: JDBC
+    props:
+      provider: MYSQL
+      jdbcUrl: "jdbc:mysql://localhost:3306/proxy_database?useSSL=false&characterEncoding=utf8"  # 元数据库地址
+      username: root
+      password: 183297
+authority:
+  users:
+    - user: root@%
+      password: root
+  privilege:
+    type: ALL_PERMITTED
 #
 #transaction:
 #  defaultType: XA
@@ -69,22 +76,22 @@
 #    initialCapacity: 2000
 #    maximumSize: 65535
 #
-#props:
-#  system-log-level: INFO
-#  max-connections-size-per-query: 1
-#  kernel-executor-size: 16  # Infinite by default.
-#  proxy-frontend-flush-threshold: 128  # The default value is 128.
-#  # sql-show is the same as props in logger ShardingSphere-SQL, and its priority is lower than logging rule
-#  sql-show: false
-#  check-table-metadata-enabled: false
-#    # Proxy backend query fetch size. A larger value may increase the memory usage of ShardingSphere Proxy.
-#    # The default value is -1, which means set the minimum value for different JDBC drivers.
-#  proxy-backend-query-fetch-size: -1
-#  proxy-frontend-executor-size: 0 # Proxy frontend executor size. The default value is 0, which means let Netty decide.
-#  proxy-frontend-max-connections: 0 # Less than or equal to 0 means no limitation.
-#  proxy-default-port: 3307 # Proxy default port.
-#  proxy-netty-backlog: 1024 # Proxy netty backlog.
-#  cdc-server-port: 33071 # CDC server port
-#  proxy-frontend-ssl-enabled: false
-#  proxy-frontend-ssl-cipher: ''
-#  proxy-frontend-ssl-version: TLSv1.2,TLSv1.3
+props:
+  system-log-level: INFO
+  max-connections-size-per-query: 1
+  kernel-executor-size: 16  # Infinite by default.
+  proxy-frontend-flush-threshold: 128  # The default value is 128.
+  # sql-show is the same as props in logger ShardingSphere-SQL, and its priority is lower than logging rule
+  sql-show: false
+  check-table-metadata-enabled: false
+    # Proxy backend query fetch size. A larger value may increase the memory usage of ShardingSphere Proxy.
+    # The default value is -1, which means set the minimum value for different JDBC drivers.
+  proxy-backend-query-fetch-size: -1
+  proxy-frontend-executor-size: 0 # Proxy frontend executor size. The default value is 0, which means let Netty decide.
+  proxy-frontend-max-connections: 0 # Less than or equal to 0 means no limitation.
+  proxy-default-port: 3307 # Proxy default port.
+  proxy-netty-backlog: 1024 # Proxy netty backlog.
+  cdc-server-port: 33071 # CDC server port
+  proxy-frontend-ssl-enabled: false
+  proxy-frontend-ssl-cipher: ''
+  proxy-frontend-ssl-version: TLSv1.2,TLSv1.3
