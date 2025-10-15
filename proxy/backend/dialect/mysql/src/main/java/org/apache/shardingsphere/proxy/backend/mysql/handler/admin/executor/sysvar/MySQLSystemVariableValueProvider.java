@@ -35,7 +35,7 @@ public interface MySQLSystemVariableValueProvider {
      * @param variable variable
      * @return value of variable
      */
-    default String get(final Scope scope, final ConnectionSession connectionSession, final MySQLSystemVariable variable) {
+    default String get(final MySQLSystemVariableScope scope, final ConnectionSession connectionSession, final MySQLSystemVariable variable) {
         return variable.getDefaultValue();
     }
 }
