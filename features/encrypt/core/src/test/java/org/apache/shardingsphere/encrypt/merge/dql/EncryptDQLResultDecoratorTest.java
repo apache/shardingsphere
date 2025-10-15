@@ -40,7 +40,7 @@ class EncryptDQLResultDecoratorTest {
         when(mergedResult.next()).thenReturn(true);
         EncryptDQLResultDecorator decorator =
                 new EncryptDQLResultDecorator(mock(ShardingSphereDatabase.class), mock(ShardingSphereMetaData.class), mock(SelectStatementContext.class, RETURNS_DEEP_STUBS));
-        MergedResult actual = decorator.decorate(mergedResult, mock(SQLStatementContext.class), mock(EncryptRule.class));
+        MergedResult actual = decorator.decorate(mergedResult, mock(SQLStatementContext.class), queryContext.getParameters(), mock(EncryptRule.class));
         assertTrue(actual.next());
     }
 }

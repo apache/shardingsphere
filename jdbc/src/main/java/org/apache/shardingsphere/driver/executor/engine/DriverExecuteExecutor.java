@@ -26,7 +26,6 @@ import org.apache.shardingsphere.driver.executor.engine.pushdown.jdbc.DriverJDBC
 import org.apache.shardingsphere.driver.executor.engine.pushdown.raw.DriverRawPushDownExecuteExecutor;
 import org.apache.shardingsphere.driver.executor.engine.transaction.DriverTransactionSQLStatementExecutor;
 import org.apache.shardingsphere.driver.jdbc.core.connection.ShardingSphereConnection;
-import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.connection.kernel.KernelProcessor;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionContext;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutionUnit;
@@ -39,8 +38,8 @@ import org.apache.shardingsphere.infra.rule.attribute.raw.RawExecutionRuleAttrib
 import org.apache.shardingsphere.infra.session.query.QueryContext;
 import org.apache.shardingsphere.mode.metadata.refresher.federation.FederationMetaDataRefreshEngine;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.tcl.TCLStatement;
-import org.apache.shardingsphere.sqlfederation.engine.SQLFederationEngine;
 import org.apache.shardingsphere.sqlfederation.context.SQLFederationContext;
+import org.apache.shardingsphere.sqlfederation.engine.SQLFederationEngine;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -129,13 +128,13 @@ public final class DriverExecuteExecutor {
      * Get result set.
      *
      * @param database database
-     * @param sqlStatementContext SQL statement context
+     * @param queryContext query context
      * @param statement statement
      * @param statements statements
      * @return result set
      * @throws SQLException SQL exception
      */
-    public Optional<ResultSet> getResultSet(final ShardingSphereDatabase database, final SQLStatementContext sqlStatementContext,
+    public Optional<ResultSet> getResultSet(final ShardingSphereDatabase database, final QueryContext queryContext,
                                             final Statement statement, final List<? extends Statement> statements) throws SQLException {
         if (null == executeType) {
             return Optional.empty();
@@ -144,7 +143,7 @@ public final class DriverExecuteExecutor {
             case FEDERATION:
                 return Optional.of(sqlFederationEngine.getResultSet());
             case JDBC_PUSH_DOWN:
-                return jdbcPushDownExecutor.getResultSet(database, sqlStatementContext, statement, statements);
+                return jdbcPushDownExecutor.getResultSet(database, queryContext, statement, statements);
             default:
                 return Optional.empty();
         }
