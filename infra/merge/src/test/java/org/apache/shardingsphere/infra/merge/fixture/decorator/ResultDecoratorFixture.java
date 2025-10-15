@@ -26,6 +26,7 @@ import org.apache.shardingsphere.infra.merge.result.impl.transparent.Transparent
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.List;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -33,7 +34,7 @@ import static org.mockito.Mockito.when;
 public final class ResultDecoratorFixture implements ResultDecorator<DecoratorRuleFixture> {
     
     @Override
-    public MergedResult decorate(final MergedResult mergedResult, final SQLStatementContext sqlStatementContext, final DecoratorRuleFixture rule) throws SQLException {
+    public MergedResult decorate(final MergedResult mergedResult, final SQLStatementContext sqlStatementContext, final List<Object> parameters, final DecoratorRuleFixture rule) throws SQLException {
         ResultSet resultSet = mock(ResultSet.class);
         when(resultSet.getString(1)).thenReturn("decorated_merged_value");
         return new TransparentMergedResult(new JDBCStreamQueryResult(resultSet));

@@ -44,6 +44,7 @@ import org.apache.shardingsphere.infra.merge.MergeEngine;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.session.query.QueryContext;
 import org.apache.shardingsphere.mode.metadata.refresher.pushdown.PushDownMetaDataRefreshEngine;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.DALStatement;
@@ -141,14 +142,15 @@ public final class DriverJDBCPushDownExecuteExecutor {
      * Get result set.
      *
      * @param database database
-     * @param sqlStatementContext SQL statement context
+     * @param queryContext query context
      * @param statement statement
      * @param statements statements
      * @return result set
      * @throws SQLException SQL exception
      */
-    public Optional<ResultSet> getResultSet(final ShardingSphereDatabase database, final SQLStatementContext sqlStatementContext,
+    public Optional<ResultSet> getResultSet(final ShardingSphereDatabase database, final QueryContext queryContext,
                                             final Statement statement, final List<? extends Statement> statements) throws SQLException {
+        SQLStatementContext sqlStatementContext = queryContext.getSqlStatementContext();
         if (sqlStatementContext instanceof SelectStatementContext || sqlStatementContext.getSqlStatement() instanceof DALStatement) {
             List<ResultSet> resultSets = getResultSets(statements);
             if (resultSets.isEmpty()) {
@@ -156,7 +158,7 @@ public final class DriverJDBCPushDownExecuteExecutor {
             }
             List<QueryResult> queryResults = getQueryResults(resultSets);
             MergedResult mergedResult = new MergeEngine(metaData, database, metaData.getProps(), connection.getDatabaseConnectionManager().getConnectionContext())
-                    .merge(queryResults, sqlStatementContext);
+                    .merge(queryResults, queryContext);
             return Optional.of(new ShardingSphereResultSet(resultSets, mergedResult, statement, sqlStatementContext));
         }
         return Optional.empty();

@@ -29,6 +29,8 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatemen
 import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.type.ColumnInResultSetSQLStatementAttribute;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.type.TableInResultSetSQLStatementAttribute;
 
+import java.util.List;
+
 /**
  * DAL result decorator for encrypt.
  */
@@ -38,7 +40,7 @@ public final class EncryptDALResultDecorator implements ResultDecorator<EncryptR
     private final RuleMetaData globalRuleMetaData;
     
     @Override
-    public MergedResult decorate(final MergedResult mergedResult, final SQLStatementContext sqlStatementContext, final EncryptRule rule) {
+    public MergedResult decorate(final MergedResult mergedResult, final SQLStatementContext sqlStatementContext, final List<Object> parameters, final EncryptRule rule) {
         SQLStatement sqlStatement = sqlStatementContext.getSqlStatement();
         if (sqlStatement.getAttributes().findAttribute(ColumnInResultSetSQLStatementAttribute.class).isPresent()) {
             return new EncryptShowColumnsMergedResult(mergedResult, sqlStatementContext, rule);

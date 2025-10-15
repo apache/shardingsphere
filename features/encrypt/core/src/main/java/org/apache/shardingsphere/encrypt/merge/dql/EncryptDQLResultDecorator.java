@@ -26,6 +26,8 @@ import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 
+import java.util.List;
+
 /**
  * DQL result decorator for encrypt.
  */
@@ -39,7 +41,7 @@ public final class EncryptDQLResultDecorator implements ResultDecorator<EncryptR
     private final SelectStatementContext selectStatementContext;
     
     @Override
-    public MergedResult decorate(final MergedResult mergedResult, final SQLStatementContext sqlStatementContext, final EncryptRule rule) {
+    public MergedResult decorate(final MergedResult mergedResult, final SQLStatementContext sqlStatementContext, final List<Object> parameters, final EncryptRule rule) {
         return new EncryptMergedResult(database, metaData, selectStatementContext, mergedResult);
     }
 }

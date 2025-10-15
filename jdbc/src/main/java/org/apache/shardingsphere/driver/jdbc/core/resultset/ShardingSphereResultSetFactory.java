@@ -66,7 +66,7 @@ public final class ShardingSphereResultSetFactory {
     public ResultSet newInstance(final ShardingSphereDatabase database, final QueryContext queryContext, final List<QueryResult> queryResults,
                                  final Statement statement, final Map<String, Integer> columnLabelAndIndexMap) throws SQLException {
         List<ResultSet> resultSets = getResultSets(queryResults);
-        MergedResult mergedResult = new MergeEngine(metaData, database, props, connectionContext).merge(queryResults, queryContext.getSqlStatementContext());
+        MergedResult mergedResult = new MergeEngine(metaData, database, props, connectionContext).merge(queryResults, queryContext);
         return new ShardingSphereResultSet(resultSets, mergedResult, statement, queryContext.getSqlStatementContext(),
                 null == columnLabelAndIndexMap
                         ? ShardingSphereResultSetUtils.createColumnLabelAndIndexMap(queryContext.getSqlStatementContext(), resultSets.get(0).getMetaData())
