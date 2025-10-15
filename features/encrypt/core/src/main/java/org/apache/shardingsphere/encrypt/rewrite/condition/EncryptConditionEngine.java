@@ -153,23 +153,27 @@ public final class EncryptConditionEngine {
     }
     
     private Optional<EncryptCondition> createCompareEncryptCondition(final String tableName, final BinaryOperationExpression expression) {
-        if (isLeftRightAllNotColumnSegment(expression) || isLeftRightContainsSubquerySegment(expression)) {
+        if (isLeftRightContainsSubquerySegment(expression)) {
             return Optional.empty();
         }
-        ColumnSegment columnSegment = expression.getLeft() instanceof ColumnSegment ? (ColumnSegment) expression.getLeft() : (ColumnSegment) expression.getRight();
-        ExpressionSegment compareValueSegment = expression.getLeft() instanceof ColumnSegment ? expression.getRight() : expression.getLeft();
+        Optional<ColumnSegment> columnSegment = Optional.ofNullable(isCompareValueSegment(expression.getLeft()) ? expression.getRight() : expression.getLeft()).filter(ColumnSegment.class::isInstance)
+                .map(ColumnSegment.class::cast);
+        if (!columnSegment.isPresent()) {
+            return Optional.empty();
+        }
+        ExpressionSegment compareValueSegment = isCompareValueSegment(expression.getLeft()) ? expression.getLeft() : expression.getRight();
         if (compareValueSegment instanceof SimpleExpressionSegment) {
-            return Optional.of(createEncryptBinaryOperationCondition(tableName, expression, columnSegment, compareValueSegment));
+            return Optional.of(createEncryptBinaryOperationCondition(tableName, expression, columnSegment.get(), compareValueSegment));
         }
         if (compareValueSegment instanceof ListExpression) {
             // TODO check this logic when items contain multiple values @duanzhengqiang
-            return Optional.of(createEncryptBinaryOperationCondition(tableName, expression, columnSegment, ((ListExpression) compareValueSegment).getItems().get(0)));
+            return Optional.of(createEncryptBinaryOperationCondition(tableName, expression, columnSegment.get(), ((ListExpression) compareValueSegment).getItems().get(0)));
         }
         return Optional.empty();
     }
     
-    private boolean isLeftRightAllNotColumnSegment(final BinaryOperationExpression expression) {
-        return !(expression.getLeft() instanceof ColumnSegment) && !(expression.getRight() instanceof ColumnSegment);
+    private boolean isCompareValueSegment(final ExpressionSegment expressionSegment) {
+        return expressionSegment instanceof SimpleExpressionSegment || expressionSegment instanceof ListExpression;
     }
     
     private boolean isLeftRightContainsSubquerySegment(final BinaryOperationExpression expression) {

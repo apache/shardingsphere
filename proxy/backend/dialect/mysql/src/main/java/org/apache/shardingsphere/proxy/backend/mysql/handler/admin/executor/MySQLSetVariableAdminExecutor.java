@@ -31,7 +31,7 @@ import org.apache.shardingsphere.proxy.backend.handler.admin.executor.variable.c
 import org.apache.shardingsphere.proxy.backend.handler.admin.executor.variable.session.SessionVariableRecordExecutor;
 import org.apache.shardingsphere.proxy.backend.handler.data.DatabaseProxyBackendHandler;
 import org.apache.shardingsphere.proxy.backend.mysql.handler.admin.executor.sysvar.MySQLSystemVariable;
-import org.apache.shardingsphere.proxy.backend.mysql.handler.admin.executor.sysvar.Scope;
+import org.apache.shardingsphere.proxy.backend.mysql.handler.admin.executor.sysvar.MySQLSystemVariableScope;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.VariableAssignSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
@@ -70,7 +70,7 @@ public final class MySQLSetVariableAdminExecutor implements DatabaseAdminExecuto
     private void validateSessionVariables(final Collection<String> sessionVariables) {
         for (String each : sessionVariables) {
             MySQLSystemVariable systemVariable = MySQLSystemVariable.findSystemVariable(each).orElseThrow(() -> new UnknownSystemVariableException(each));
-            systemVariable.validateSetTargetScope(Scope.SESSION);
+            systemVariable.validateSetTargetScope(MySQLSystemVariableScope.SESSION);
         }
     }
     

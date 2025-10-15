@@ -26,6 +26,8 @@ import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.mask.rule.MaskRule;
 
+import java.util.List;
+
 /**
  * DQL result decorator for mask.
  */
@@ -39,7 +41,7 @@ public final class MaskDQLResultDecorator implements ResultDecorator<MaskRule> {
     private final SelectStatementContext selectStatementContext;
     
     @Override
-    public MergedResult decorate(final MergedResult mergedResult, final SQLStatementContext sqlStatementContext, final MaskRule rule) {
+    public MergedResult decorate(final MergedResult mergedResult, final SQLStatementContext sqlStatementContext, final List<Object> parameters, final MaskRule rule) {
         return new MaskMergedResult(database, metaData, selectStatementContext, mergedResult);
     }
 }

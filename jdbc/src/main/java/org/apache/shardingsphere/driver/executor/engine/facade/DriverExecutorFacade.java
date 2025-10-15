@@ -28,7 +28,6 @@ import org.apache.shardingsphere.driver.executor.engine.DriverExecuteUpdateExecu
 import org.apache.shardingsphere.driver.executor.engine.transaction.DriverTransactionSQLStatementExecutor;
 import org.apache.shardingsphere.driver.jdbc.core.connection.ShardingSphereConnection;
 import org.apache.shardingsphere.driver.jdbc.core.statement.StatementManager;
-import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.executor.audit.SQLAuditEngine;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutionUnit;
@@ -158,15 +157,15 @@ public final class DriverExecutorFacade implements AutoCloseable {
      * Get result set.
      *
      * @param database database
-     * @param sqlStatementContext SQL statement context
+     * @param queryContext query context
      * @param statement statement
      * @param statements statements
      * @return result set
      * @throws SQLException SQL exception
      */
     public Optional<ResultSet> getResultSet(final ShardingSphereDatabase database,
-                                            final SQLStatementContext sqlStatementContext, final Statement statement, final List<? extends Statement> statements) throws SQLException {
-        return executeExecutor.getResultSet(database, sqlStatementContext, statement, statements);
+                                            final QueryContext queryContext, final Statement statement, final List<? extends Statement> statements) throws SQLException {
+        return executeExecutor.getResultSet(database, queryContext, statement, statements);
     }
     
     @Override
