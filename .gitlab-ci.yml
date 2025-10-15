@@ -68,8 +68,8 @@ prepare_environment:
     - apk --update add sed
     - |
       VERSION_IN_POM=$(mvn -q -Dexec.executable="echo" -Dexec.args='${project.version}' --non-recursive org.codehaus.mojo:exec-maven-plugin:1.3.1:exec)
+      VERSION=$(echo ${CI_COMMIT_TAG}|sed 's/v//')
       if [ "${CI_COMMIT_TAG}" ]; then
-        VERSION=$(echo ${CI_COMMIT_TAG}|sed 's/v//')
         SUFFIX=$(echo $VERSION|awk -F- '{print $2}')
         if [ "$VERSION" != "$VERSION_IN_POM" ]; then
           echo Project versions in pom.xml $VERSION_IN_POM and tag $VERSION do not match!
@@ -82,6 +82,13 @@ prepare_environment:
         fi
         BRANCH=${TAG_BRANCH}
         CONTEXT=tag
+      elif [[ "${CI_PIPELINE_SOURCE}" == "schedule" ]]
+        DATE_TAG=$(date +"%y%m%d")
+        BUILDNO=$(relmanager_client genbuildno ${RELEASE_HUB_PROJECT} ${VERSION}-NIGTHLY)
+        VERSION=${VERSION}_NIGHTLY_${DATE_TAG}_${BUILDNO}
+        BRANCH=${CI_COMMIT_REF_NAME}
+        CONTEXT=schedule
+        STAGE=nightly
       else
         VERSION=$(date +"%Y.%m")
         BUILDNO=$(relmanager_client genbuildno ${RELEASE_HUB_PROJECT} ${VERSION}-SNAPSHOT)
@@ -138,6 +145,9 @@ proxy-native-docker:
     - prepare_environment
 
 java11:
+  rules:
+    - if: ${CI_PIPELINE_SOURCE} == "schedule"
+    - if: ${CI_COMMIT_TAG}
   tags: ["docker", "linux", "x86_64"]
   stage: build
   image: $JDK_BUILD_IMAGE
@@ -146,7 +156,7 @@ java11:
   before_script:
     - tar -xvf rshrd-${VERSION}-src.tar.gz -C .
   script:
-    - ./mvnw -s ${M2_SETTINGSFILE} clean package -Prelease,db-firebird -T2C -DskipTests -Djacoco.skip=true -Dcheckstyle.skip=true -Drat.skip=true -Dmaven.javadoc.skip=true -B
+    - ./mvnw -s ${M2_SETTINGSFILE} clean package -Prelease,db-firebird -T1C -DskipTests -Djacoco.skip=true -Dcheckstyle.skip=true -Drat.skip=true -Dmaven.javadoc.skip=true -B
     - mkdir -pv ${ARTIFACTS_DIR}
     - cp -v distribution/{jdbc,proxy,agent}/target/*.{tar.gz,tar.gz.sha512} ${ARTIFACTS_DIR}
   artifacts:
@@ -171,7 +181,7 @@ java8:
   before_script:
     - tar -xvf rshrd-${VERSION}-src.tar.gz -C .
   script:
-    - ./mvnw -s ${M2_SETTINGSFILE} install -T2C -B -ntp -fae
+    - ./mvnw -s ${M2_SETTINGSFILE} install -T1C -B -ntp -fae
   allow_failure: true
 
 
