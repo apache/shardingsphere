@@ -21,13 +21,13 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 /**
- * MySQL system variable flag.
+ * System variable flag for MySQL.
  *
  * @see <a href="https://github.com/mysql/mysql-server/blob/mysql-8.0.32/sql/set_var.h#L125-L151">sql/set_var.h</a>
  */
 @SuppressWarnings("unused")
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class Flag {
+public final class MySQLSystemVariableFlag {
     
     public static final int GLOBAL = 0x0001;
     

@@ -30,7 +30,7 @@ import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.proxy.backend.handler.admin.executor.DatabaseAdminExecutor;
 import org.apache.shardingsphere.proxy.backend.handler.admin.executor.DatabaseAdminQueryExecutor;
 import org.apache.shardingsphere.proxy.backend.mysql.handler.admin.executor.sysvar.MySQLSystemVariable;
-import org.apache.shardingsphere.proxy.backend.mysql.handler.admin.executor.sysvar.Scope;
+import org.apache.shardingsphere.proxy.backend.mysql.handler.admin.executor.sysvar.MySQLSystemVariableScope;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.VariableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ExpressionProjectionSegment;
@@ -67,7 +67,7 @@ public final class MySQLSystemVariableQueryExecutor implements DatabaseAdminQuer
         for (int i = 0; i < projections.size(); i++) {
             ExpressionProjectionSegment projection = projections.get(i);
             VariableSegment variableSegment = (VariableSegment) projection.getExpr();
-            Scope scope = variableSegment.getScope().map(Scope::getScope).orElse(Scope.DEFAULT);
+            MySQLSystemVariableScope scope = variableSegment.getScope().map(MySQLSystemVariableScope::valueFrom).orElse(MySQLSystemVariableScope.DEFAULT);
             columnsOfRow.add(variables.get(i).getValue(scope, connectionSession));
             String name = projection.getAliasName().orElseGet(() -> "@@" + variableSegment.getScope().map(s -> s + ".").orElse("") + variableSegment.getVariable());
             columnMetaData.add(new RawQueryResultColumnMetaData("", name, name, Types.VARCHAR, "VARCHAR", 1024, 0));
