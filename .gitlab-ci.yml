@@ -88,7 +88,7 @@ prepare_environment:
         VERSION=${VERSION}_NIGHTLY_${DATE_TAG}_${BUILDNO}
         BRANCH=${CI_COMMIT_REF_NAME}
         CONTEXT=schedule
-        STAGE=nightly
+        STAGE=snapshot
       else
         VERSION=$(date +"%Y.%m")
         BUILDNO=$(relmanager_client genbuildno ${RELEASE_HUB_PROJECT} ${VERSION}-SNAPSHOT)
