@@ -68,7 +68,6 @@ prepare_environment:
     - apk --update add sed
     - |
       VERSION_IN_POM=$(mvn -q -Dexec.executable="echo" -Dexec.args='${project.version}' --non-recursive org.codehaus.mojo:exec-maven-plugin:1.3.1:exec)
-      VERSION=$(echo ${CI_COMMIT_TAG}|sed 's/v//')
       if [ "${CI_COMMIT_TAG}" ]; then
         SUFFIX=$(echo $VERSION|awk -F- '{print $2}')
         if [ "$VERSION" != "$VERSION_IN_POM" ]; then
@@ -85,6 +84,7 @@ prepare_environment:
       elif [[ "${CI_PIPELINE_SOURCE}" == "schedule" ]]; then
         DATE_TAG=$(date +"%y%m%d")
         BUILDNO=$(relmanager_client genbuildno ${RELEASE_HUB_PROJECT} ${VERSION}-NIGTHLY)
+        VERSION=$(echo ${CI_COMMIT_TAG}|sed 's/v//')
         VERSION=${VERSION}_NIGHTLY_${DATE_TAG}_${BUILDNO}
         BRANCH=${CI_COMMIT_REF_NAME}
         CONTEXT=schedule
