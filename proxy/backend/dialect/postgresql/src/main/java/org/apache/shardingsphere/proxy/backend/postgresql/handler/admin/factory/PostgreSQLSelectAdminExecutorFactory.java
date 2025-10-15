@@ -59,7 +59,7 @@ public final class PostgreSQLSelectAdminExecutorFactory {
     
     /**
      * Create new instance of database admin executor.
-     * 
+     *
      * @param sqlStatement select statement
      * @param sql SQL
      * @param parameters SQL parameters
