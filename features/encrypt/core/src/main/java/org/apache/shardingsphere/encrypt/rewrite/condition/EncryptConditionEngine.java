@@ -40,6 +40,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.subq
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.predicate.WhereSegment;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -107,7 +108,7 @@ public final class EncryptConditionEngine {
             String tableName = each.getColumnBoundInfo().getOriginalTable().getValue();
             Optional<EncryptTable> encryptTable = rule.findEncryptTable(tableName);
             if (encryptTable.isPresent() && encryptTable.get().isEncryptColumn(each.getColumnBoundInfo().getOriginalColumn().getValue())) {
-                createEncryptCondition(expression, tableName).ifPresent(encryptConditions::add);
+                encryptConditions.addAll(createEncryptCondition(expression, tableName));
             }
         }
     }
@@ -130,7 +131,7 @@ public final class EncryptConditionEngine {
         return "NULL".equalsIgnoreCase(literals) || "NOT NULL".equalsIgnoreCase(literals);
     }
     
-    private Optional<EncryptCondition> createEncryptCondition(final ExpressionSegment expression, final String tableName) {
+    private Collection<EncryptCondition> createEncryptCondition(final ExpressionSegment expression, final String tableName) {
         if (expression instanceof BinaryOperationExpression) {
             return createBinaryEncryptCondition((BinaryOperationExpression) expression, tableName);
         }
@@ -140,36 +141,36 @@ public final class EncryptConditionEngine {
         if (expression instanceof BetweenExpression) {
             throw new UnsupportedEncryptSQLException("BETWEEN...AND...");
         }
-        return Optional.empty();
+        return Collections.emptyList();
     }
     
-    private Optional<EncryptCondition> createBinaryEncryptCondition(final BinaryOperationExpression expression, final String tableName) {
+    private Collection<EncryptCondition> createBinaryEncryptCondition(final BinaryOperationExpression expression, final String tableName) {
         String operator = expression.getOperator();
         if (LOGICAL_OPERATORS.contains(operator)) {
-            return Optional.empty();
+            return Collections.emptyList();
         }
         ShardingSpherePreconditions.checkContains(SUPPORTED_COMPARE_OPERATORS, operator, () -> new UnsupportedEncryptSQLException(operator));
         return createCompareEncryptCondition(tableName, expression);
     }
     
-    private Optional<EncryptCondition> createCompareEncryptCondition(final String tableName, final BinaryOperationExpression expression) {
+    private Collection<EncryptCondition> createCompareEncryptCondition(final String tableName, final BinaryOperationExpression expression) {
         if (isLeftRightContainsSubquerySegment(expression)) {
-            return Optional.empty();
+            return Collections.emptyList();
         }
         Optional<ColumnSegment> columnSegment = Optional.ofNullable(isCompareValueSegment(expression.getLeft()) ? expression.getRight() : expression.getLeft()).filter(ColumnSegment.class::isInstance)
                 .map(ColumnSegment.class::cast);
         if (!columnSegment.isPresent()) {
-            return Optional.empty();
+            return Collections.emptyList();
         }
         ExpressionSegment compareValueSegment = isCompareValueSegment(expression.getLeft()) ? expression.getLeft() : expression.getRight();
         if (compareValueSegment instanceof SimpleExpressionSegment) {
-            return Optional.of(createEncryptBinaryOperationCondition(tableName, expression, columnSegment.get(), compareValueSegment));
+            return Collections.singleton(createEncryptBinaryOperationCondition(tableName, expression, columnSegment.get(), compareValueSegment));
         }
         if (compareValueSegment instanceof ListExpression) {
             // TODO check this logic when items contain multiple values @duanzhengqiang
-            return Optional.of(createEncryptBinaryOperationCondition(tableName, expression, columnSegment.get(), ((ListExpression) compareValueSegment).getItems().get(0)));
+            return Collections.singleton(createEncryptBinaryOperationCondition(tableName, expression, columnSegment.get(), ((ListExpression) compareValueSegment).getItems().get(0)));
         }
-        return Optional.empty();
+        return Collections.emptyList();
     }
     
     private boolean isCompareValueSegment(final ExpressionSegment expressionSegment) {
@@ -185,9 +186,9 @@ public final class EncryptConditionEngine {
         return new EncryptBinaryCondition(columnSegment, tableName, expression.getOperator(), compareValueSegment.getStartIndex(), compareValueSegment.getStopIndex(), compareValueSegment);
     }
     
-    private static Optional<EncryptCondition> createInEncryptCondition(final String tableName, final InExpression inExpression, final ExpressionSegment inRightValue) {
+    private static Collection<EncryptCondition> createInEncryptCondition(final String tableName, final InExpression inExpression, final ExpressionSegment inRightValue) {
         if (!(inExpression.getLeft() instanceof ColumnSegment)) {
-            return Optional.empty();
+            return Collections.emptyList();
         }
         List<ExpressionSegment> expressionSegments = new LinkedList<>();
         for (ExpressionSegment each : inExpression.getExpressionList()) {
@@ -196,9 +197,9 @@ public final class EncryptConditionEngine {
             }
         }
         if (expressionSegments.isEmpty()) {
-            return Optional.empty();
+            return Collections.emptyList();
         }
         ColumnSegment columnSegment = (ColumnSegment) inExpression.getLeft();
-        return Optional.of(new EncryptInCondition(columnSegment, tableName, inRightValue.getStartIndex(), inRightValue.getStopIndex(), expressionSegments));
+        return Collections.singleton(new EncryptInCondition(columnSegment, tableName, inRightValue.getStartIndex(), inRightValue.getStopIndex(), expressionSegments));
     }
 }
