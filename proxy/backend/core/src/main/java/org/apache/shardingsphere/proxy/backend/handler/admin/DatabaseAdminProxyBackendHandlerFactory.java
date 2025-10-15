@@ -22,6 +22,8 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
+import org.apache.shardingsphere.mode.manager.ContextManager;
+import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.handler.ProxyBackendHandler;
 import org.apache.shardingsphere.proxy.backend.handler.admin.executor.DatabaseAdminExecutor;
 import org.apache.shardingsphere.proxy.backend.handler.admin.executor.DatabaseAdminExecutorCreator;
@@ -38,23 +40,6 @@ import java.util.Optional;
 public final class DatabaseAdminProxyBackendHandlerFactory {
     
     /**
-     * Create new instance of database admin backend handler, and this handler requires a connection containing a schema to be used.
-     *
-     * @param databaseType database type
-     * @param sqlStatementContext SQL statement context
-     * @param connectionSession connection session
-     * @return created instance
-     */
-    public static Optional<ProxyBackendHandler> newInstance(final DatabaseType databaseType, final SQLStatementContext sqlStatementContext, final ConnectionSession connectionSession) {
-        Optional<DatabaseAdminExecutorCreator> executorCreator = DatabaseTypedSPILoader.findService(DatabaseAdminExecutorCreator.class, databaseType);
-        if (!executorCreator.isPresent()) {
-            return Optional.empty();
-        }
-        Optional<DatabaseAdminExecutor> executor = executorCreator.get().create(sqlStatementContext);
-        return executor.map(optional -> createProxyBackendHandler(sqlStatementContext, connectionSession, optional));
-    }
-    
-    /**
      * Create new instance of database admin backend handler.
      *
      * @param databaseType database type
@@ -64,8 +49,8 @@ public final class DatabaseAdminProxyBackendHandlerFactory {
      * @param parameters parameters
      * @return created instance
      */
-    public static Optional<ProxyBackendHandler> newInstance(final DatabaseType databaseType, final SQLStatementContext sqlStatementContext,
-                                                            final ConnectionSession connectionSession, final String sql, final List<Object> parameters) {
+    public static Optional<ProxyBackendHandler> newInstance(final DatabaseType databaseType, final SQLStatementContext sqlStatementContext, final ConnectionSession connectionSession,
+                                                            final String sql, final List<Object> parameters) {
         Optional<DatabaseAdminExecutorCreator> executorCreator = DatabaseTypedSPILoader.findService(DatabaseAdminExecutorCreator.class, databaseType);
         if (!executorCreator.isPresent()) {
             return Optional.empty();
@@ -75,8 +60,9 @@ public final class DatabaseAdminProxyBackendHandlerFactory {
     }
     
     private static ProxyBackendHandler createProxyBackendHandler(final SQLStatementContext sqlStatementContext, final ConnectionSession connectionSession, final DatabaseAdminExecutor executor) {
+        ContextManager contextManager = ProxyContext.getInstance().getContextManager();
         return executor instanceof DatabaseAdminQueryExecutor
-                ? new DatabaseAdminQueryProxyBackendHandler(connectionSession, (DatabaseAdminQueryExecutor) executor)
-                : new DatabaseAdminUpdateProxyBackendHandler(connectionSession, sqlStatementContext.getSqlStatement(), executor);
+                ? new DatabaseAdminQueryProxyBackendHandler(contextManager, connectionSession, (DatabaseAdminQueryExecutor) executor)
+                : new DatabaseAdminUpdateProxyBackendHandler(contextManager, connectionSession, sqlStatementContext.getSqlStatement(), executor);
     }
 }

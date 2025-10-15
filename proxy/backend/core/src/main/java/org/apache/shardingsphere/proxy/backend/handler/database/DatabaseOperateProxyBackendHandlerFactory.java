@@ -20,7 +20,11 @@ package org.apache.shardingsphere.proxy.backend.handler.database;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.exception.generic.UnsupportedSQLOperationException;
+import org.apache.shardingsphere.mode.manager.ContextManager;
+import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.handler.ProxyBackendHandler;
+import org.apache.shardingsphere.proxy.backend.handler.database.type.CreateDatabaseProxyBackendHandler;
+import org.apache.shardingsphere.proxy.backend.handler.database.type.DropDatabaseProxyBackendHandler;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.database.CreateDatabaseStatement;
@@ -44,11 +48,12 @@ public final class DatabaseOperateProxyBackendHandlerFactory {
     }
     
     private static ProxyBackendHandler createProxyBackendHandler(final SQLStatement sqlStatement, final ConnectionSession connectionSession) {
+        ContextManager contextManager = ProxyContext.getInstance().getContextManager();
         if (sqlStatement instanceof CreateDatabaseStatement) {
-            return new CreateDatabaseProxyBackendHandler((CreateDatabaseStatement) sqlStatement);
+            return new CreateDatabaseProxyBackendHandler((CreateDatabaseStatement) sqlStatement, contextManager);
         }
         if (sqlStatement instanceof DropDatabaseStatement) {
-            return new DropDatabaseProxyBackendHandler((DropDatabaseStatement) sqlStatement, connectionSession);
+            return new DropDatabaseProxyBackendHandler((DropDatabaseStatement) sqlStatement, contextManager, connectionSession);
         }
         throw new UnsupportedSQLOperationException(sqlStatement.getClass().getName());
     }

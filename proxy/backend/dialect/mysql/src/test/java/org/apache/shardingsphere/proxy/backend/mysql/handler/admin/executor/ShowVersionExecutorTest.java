@@ -21,6 +21,7 @@ import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.database.protocol.constant.DatabaseProtocolServerInfo;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResultMetaData;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
+import org.apache.shardingsphere.proxy.backend.mysql.handler.admin.executor.select.ShowVersionExecutor;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ExpressionProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ProjectionsSegment;
@@ -58,7 +59,7 @@ class ShowVersionExecutorTest {
         SelectStatement selectStatement = mock(SelectStatement.class);
         when(selectStatement.getProjections()).thenReturn(createProjectionsSegmentWithoutAlias());
         ShowVersionExecutor executor = new ShowVersionExecutor(selectStatement);
-        executor.execute(mockConnectionSession());
+        executor.execute(mockConnectionSession(), mock());
         assertQueryResult(executor, ShowVersionExecutor.FUNCTION_NAME);
     }
     
@@ -80,7 +81,7 @@ class ShowVersionExecutorTest {
         SelectStatement selectStatement = mock(SelectStatement.class);
         when(selectStatement.getProjections()).thenReturn(createProjectionsSegmentWithAlias());
         ShowVersionExecutor executor = new ShowVersionExecutor(selectStatement);
-        executor.execute(mockConnectionSession());
+        executor.execute(mockConnectionSession(), mock());
         assertQueryResult(executor, "foo_alias");
     }
     

@@ -37,15 +37,13 @@ import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.mode.spi.repository.PersistRepository;
-import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.FromDatabaseSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.DatabaseSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
-import org.apache.shardingsphere.test.infra.framework.mock.AutoMockExtension;
-import org.apache.shardingsphere.test.infra.framework.mock.StaticMockSettings;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -56,16 +54,15 @@ import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-@ExtendWith(AutoMockExtension.class)
-@StaticMockSettings(ProxyContext.class)
+@ExtendWith(MockitoExtension.class)
 class DistSQLQueryProxyBackendHandlerTest {
     
     private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "FIXTURE");
     
     @Test
     void assertExecuteWithNoDatabase() {
-        assertThrows(NoDatabaseSelectedException.class,
-                () -> new DistSQLQueryProxyBackendHandler(mock(ExportDatabaseConfigurationStatement.class, RETURNS_DEEP_STUBS), mock(ConnectionSession.class, RETURNS_DEEP_STUBS)).execute());
+        assertThrows(NoDatabaseSelectedException.class, () -> new DistSQLQueryProxyBackendHandler(
+                mock(ExportDatabaseConfigurationStatement.class, RETURNS_DEEP_STUBS), mock(), mock(ConnectionSession.class, RETURNS_DEEP_STUBS), mock()).execute());
     }
     
     @Test
@@ -77,22 +74,23 @@ class DistSQLQueryProxyBackendHandlerTest {
         ComputeNodeInstanceContext computeNodeInstanceContext = mock(ComputeNodeInstanceContext.class);
         when(computeNodeInstanceContext.getModeConfiguration()).thenReturn(mock(ModeConfiguration.class));
         ContextManager contextManager = new ContextManager(metaDataContexts, computeNodeInstanceContext, mock(), mock(PersistRepository.class));
-        when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
-        assertThrows(UnknownDatabaseException.class, () -> new DistSQLQueryProxyBackendHandler(mock(ExportDatabaseConfigurationStatement.class, RETURNS_DEEP_STUBS), connectionSession).execute());
+        assertThrows(UnknownDatabaseException.class,
+                () -> new DistSQLQueryProxyBackendHandler(mock(ExportDatabaseConfigurationStatement.class, RETURNS_DEEP_STUBS), mock(), connectionSession, contextManager).execute());
     }
     
     @Test
     void assertExecuteWithAbstractStatement() {
         assertThrows(ServiceProviderNotFoundException.class,
-                () -> new DistSQLQueryProxyBackendHandler(mock(QueryableRALStatement.class, RETURNS_DEEP_STUBS), mock(ConnectionSession.class, RETURNS_DEEP_STUBS)).execute());
+                () -> new DistSQLQueryProxyBackendHandler(mock(QueryableRALStatement.class, RETURNS_DEEP_STUBS), mock(), mock(ConnectionSession.class, RETURNS_DEEP_STUBS), mock()).execute());
     }
     
     @Test
     void assertExecute() {
         ShardingSphereDatabase database = new ShardingSphereDatabase(
                 "foo_db", databaseType, mock(), mock(), Collections.singleton(new ShardingSphereSchema("foo_db", createTables(), Collections.emptyList())));
-        when(ProxyContext.getInstance().getContextManager().getDatabase("foo_db")).thenReturn(database);
-        assertDoesNotThrow(() -> new DistSQLQueryProxyBackendHandler(createSqlStatement(), mock(ConnectionSession.class, RETURNS_DEEP_STUBS)).execute());
+        ContextManager contextManager = mock(ContextManager.class);
+        when(contextManager.getDatabase("foo_db")).thenReturn(database);
+        assertDoesNotThrow(() -> new DistSQLQueryProxyBackendHandler(createSqlStatement(), mock(), mock(ConnectionSession.class, RETURNS_DEEP_STUBS), contextManager).execute());
     }
     
     private Collection<ShardingSphereTable> createTables() {

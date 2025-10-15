@@ -1,0 +1,60 @@
+#
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements.  See the NOTICE file distributed with
+# this work for additional information regarding copyright ownership.
+# The ASF licenses this file to You under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with
+# the License.  You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+databaseName: mask
+
+dataSources:
+  mask:
+    url: jdbc:hive2://hive.mask.host:10000/mask?ssl=false&useUnicode=true&characterEncoding=utf-8&hive.exec.dynamic.partition=true&hive.exec.dynamic.partition.mode=nonstrict
+    dataSourceClassName: com.zaxxer.hikari.HikariDataSource
+    connectionTimeoutMilliseconds: 30000
+    idleTimeoutMilliseconds: 60000
+    maxLifetimeMilliseconds: 1800000
+    maxPoolSize: 2
+    minPoolSize: 2
+
+rules:
+  - !SINGLE
+    tables:
+      - "*.*"
+  - !MASK
+    maskAlgorithms:
+      md5_mask:
+        type: MD5
+      mask_before_special_chars_mask:
+        type: MASK_BEFORE_SPECIAL_CHARS
+        props:
+          special-chars: '@'
+          replace-char: '*'
+      keep_first_n_last_m_mask:
+        type: KEEP_FIRST_N_LAST_M
+        props:
+          first-n: 3
+          last-m: 4
+          replace-char: '*'
+    tables:
+      t_user:
+        columns:
+          password:
+            maskAlgorithm: md5_mask
+          email:
+            maskAlgorithm: mask_before_special_chars_mask
+          telephone:
+            maskAlgorithm: keep_first_n_last_m_mask
+
+props:
+  sql-show: true

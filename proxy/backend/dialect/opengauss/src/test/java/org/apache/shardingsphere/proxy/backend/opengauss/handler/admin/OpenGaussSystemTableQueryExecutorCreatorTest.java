@@ -21,7 +21,7 @@ import org.apache.shardingsphere.infra.binder.context.segment.select.projection.
 import org.apache.shardingsphere.infra.binder.context.segment.table.TablesContext;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.dml.SelectStatementContext;
-import org.apache.shardingsphere.proxy.backend.handler.admin.executor.AbstractDatabaseMetaDataExecutor.DefaultDatabaseMetaDataExecutor;
+import org.apache.shardingsphere.proxy.backend.handler.admin.executor.DatabaseMetaDataExecutor;
 import org.apache.shardingsphere.proxy.backend.handler.admin.executor.DatabaseAdminExecutor;
 import org.apache.shardingsphere.proxy.backend.opengauss.handler.admin.executor.OpenGaussSelectDatCompatibilityExecutor;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.bound.ColumnSegmentBoundInfo;
@@ -45,7 +45,7 @@ class OpenGaussSystemTableQueryExecutorCreatorTest {
     
     @Test
     void assertSelectDatCompatibilityFromPgDatabase() {
-        String sql = "select datcompatibility from pg_database where datname='sharding_db'";
+        String sql = "SELECT datcompatibility FROM pg_database WHERE datname='sharding_db'";
         SQLStatementContext sqlStatementContext = mockSelectStatementContext("pg_catalog", "pg_database", "datcompatibility");
         OpenGaussSystemTableQueryExecutorCreator creator = new OpenGaussSystemTableQueryExecutorCreator(sqlStatementContext, sql, Collections.emptyList());
         assertTrue(creator.accept());
@@ -56,13 +56,13 @@ class OpenGaussSystemTableQueryExecutorCreatorTest {
     
     @Test
     void assertSelectFromNotCollectedTable() {
-        String sql = "select name from pg_type'";
+        String sql = "SELECT name FROM pg_type'";
         SQLStatementContext sqlStatementContext = mockSelectStatementContext("pg_catalog", "pg_type", "name");
         OpenGaussSystemTableQueryExecutorCreator creator = new OpenGaussSystemTableQueryExecutorCreator(sqlStatementContext, sql, Collections.emptyList());
         assertTrue(creator.accept());
         Optional<DatabaseAdminExecutor> actual = creator.create();
         assertTrue(actual.isPresent());
-        assertThat(actual.get(), isA(DefaultDatabaseMetaDataExecutor.class));
+        assertThat(actual.get(), isA(DatabaseMetaDataExecutor.class));
     }
     
     private SQLStatementContext mockSelectStatementContext(final String schemaName, final String tableName, final String columnName) {

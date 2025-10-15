@@ -131,24 +131,11 @@ class DorisFETest {
         try (
                 Connection con = DriverManager.getConnection(jdbcUrlPrefix + databaseName, "root", null);
                 Statement stmt = con.createStatement()) {
-            stmt.execute("CREATE TABLE IF NOT EXISTS t_order (\n"
-                    + "    order_id BIGINT NOT NULL AUTO_INCREMENT,\n"
-                    + "    order_type INT(11),\n"
-                    + "    user_id INT NOT NULL,\n"
-                    + "    address_id BIGINT NOT NULL,\n"
-                    + "    status VARCHAR(50)\n"
-                    + ")\n"
+            stmt.execute("CREATE TABLE IF NOT EXISTS t_order (order_id BIGINT NOT NULL AUTO_INCREMENT,order_type INT(11),user_id INT NOT NULL,address_id BIGINT NOT NULL,status VARCHAR(50))"
                     + "UNIQUE KEY (order_id) DISTRIBUTED BY HASH(order_id) PROPERTIES ('replication_num' = '1')");
-            stmt.execute("CREATE TABLE IF NOT EXISTS t_order_item \n"
-                    + "(order_item_id BIGINT NOT NULL AUTO_INCREMENT,\n"
-                    + "order_id BIGINT NOT NULL,\n"
-                    + "user_id INT NOT NULL,\n"
-                    + "phone VARCHAR(50),\n"
-                    + "status VARCHAR(50))\n"
+            stmt.execute("CREATE TABLE IF NOT EXISTS t_order_item (order_item_id BIGINT NOT NULL AUTO_INCREMENT,order_id BIGINT NOT NULL,user_id INT NOT NULL,phone VARCHAR(50),status VARCHAR(50))"
                     + "UNIQUE KEY (order_item_id) DISTRIBUTED BY HASH(order_item_id) PROPERTIES ('replication_num' = '1')");
-            stmt.execute("CREATE TABLE IF NOT EXISTS t_address ("
-                    + "address_id BIGINT NOT NULL,\n"
-                    + "address_name VARCHAR(100) NOT NULL)\n"
+            stmt.execute("CREATE TABLE IF NOT EXISTS t_address (address_id BIGINT NOT NULL,address_name VARCHAR(100) NOT NULL)"
                     + "UNIQUE KEY (address_id) DISTRIBUTED BY HASH(address_id) PROPERTIES ('replication_num' = '1')");
         } catch (final SQLException ex) {
             throw new RuntimeException(ex);

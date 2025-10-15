@@ -24,7 +24,7 @@ import org.apache.shardingsphere.infra.binder.context.segment.table.TablesContex
 import org.apache.shardingsphere.infra.binder.context.statement.type.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.metadata.statistics.collector.DialectDatabaseStatisticsCollector;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
-import org.apache.shardingsphere.proxy.backend.handler.admin.executor.AbstractDatabaseMetaDataExecutor.DefaultDatabaseMetaDataExecutor;
+import org.apache.shardingsphere.proxy.backend.handler.admin.executor.DatabaseMetaDataExecutor;
 import org.apache.shardingsphere.proxy.backend.handler.admin.executor.DatabaseAdminExecutor;
 import org.apache.shardingsphere.proxy.backend.opengauss.handler.admin.executor.OpenGaussSelectDatCompatibilityExecutor;
 import org.apache.shardingsphere.proxy.backend.opengauss.handler.admin.executor.OpenGaussSelectPasswordDeadlineExecutor;
@@ -60,7 +60,7 @@ class OpenGaussAdminExecutorCreatorTest {
     @Test
     void assertCreateExecutorForSelectDatCompatibilityFromPgDatabase() {
         initDialectDatabaseStatisticsCollector(false);
-        String sql = "select datcompatibility from pg_database where datname='sharding_db'";
+        String sql = "SELECT datcompatibility FROM pg_database WHERE datname='sharding_db'";
         String databaseName = "postgres";
         SelectStatementContext selectStatementContext = mockSelectStatementContext("pg_catalog", "pg_database", "datcompatibility");
         Optional<DatabaseAdminExecutor> actual = new OpenGaussAdminExecutorCreator().create(selectStatementContext, sql, databaseName, Collections.emptyList());
@@ -71,7 +71,7 @@ class OpenGaussAdminExecutorCreatorTest {
     @Test
     void assertCreateExecutorForSelectFromCollectedTable() {
         initDialectDatabaseStatisticsCollector(true);
-        String sql = "select relname from pg_class";
+        String sql = "SELECT relname FROM pg_class";
         String databaseName = "postgres";
         SelectStatementContext selectStatementContext = mockSelectStatementContext("pg_catalog", "pg_class", null);
         Optional<DatabaseAdminExecutor> actual = new OpenGaussAdminExecutorCreator().create(selectStatementContext, sql, databaseName, Collections.emptyList());
@@ -81,30 +81,30 @@ class OpenGaussAdminExecutorCreatorTest {
     @Test
     void assertCreateExecutorForSelectFromNotCollectedTable() {
         initDialectDatabaseStatisticsCollector(false);
-        String sql = "select * from pg_type";
+        String sql = "SELECT * FROM pg_type";
         SelectStatementContext selectStatementContext = mockSelectStatementContext("pg_catalog", "pg_type", null);
         Optional<DatabaseAdminExecutor> actual = new OpenGaussAdminExecutorCreator().create(selectStatementContext, sql, "postgres", Collections.emptyList());
         assertTrue(actual.isPresent());
-        assertThat(actual.get(), isA(DefaultDatabaseMetaDataExecutor.class));
+        assertThat(actual.get(), isA(DatabaseMetaDataExecutor.class));
     }
     
     @Test
     void assertCreateExecutorForSelectVersion() {
-        String sql = "select VERSION()";
+        String sql = "SELECT VERSION()";
         String expression = "VERSION()";
         assertCreateExecutorForFunction(sql, expression, OpenGaussSelectVersionExecutor.class);
     }
     
     @Test
     void assertCreateExecutorForSelectGsPasswordDeadline() {
-        String sql = "select pg_catalog.intervaltonum(pg_catalog.gs_password_deadline())";
+        String sql = "SELECT pg_catalog.intervaltonum(pg_catalog.gs_password_deadline())";
         String expression = "pg_catalog.intervaltonum(pg_catalog.gs_password_deadline())";
         assertCreateExecutorForFunction(sql, expression, OpenGaussSelectPasswordDeadlineExecutor.class);
     }
     
     @Test
     void assertCreateExecutorForSelectGsPasswordNotifyTime() {
-        String sql = "select pg_catalog.gs_password_notifytime()";
+        String sql = "SELECT pg_catalog.gs_password_notifytime()";
         String expression = "pg_catalog.gs_password_notifytime()";
         assertCreateExecutorForFunction(sql, expression, OpenGaussSelectPasswordNotifyTimeExecutor.class);
     }

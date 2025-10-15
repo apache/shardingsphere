@@ -127,7 +127,7 @@ class PostgreSQLComBindExecutorTest {
         when(connectionSession.getConnectionContext()).thenReturn(connectionContext);
         String statementId = "S_1";
         List<Object> parameters = Arrays.asList(1, "updated_name");
-        PostgreSQLServerPreparedStatement serverPreparedStatement = new PostgreSQLServerPreparedStatement("update test set name = $2 where id = $1",
+        PostgreSQLServerPreparedStatement serverPreparedStatement = new PostgreSQLServerPreparedStatement("UPDATE test SET name = $2 WHERE id = $1",
                 new CommonSQLStatementContext(new EmptyStatement(databaseType)), new HintValueContext(),
                 Arrays.asList(PostgreSQLColumnType.VARCHAR, PostgreSQLColumnType.INT4), Arrays.asList(1, 0));
         connectionSession.getServerPreparedStatementRegistry().addPreparedStatement(statementId, serverPreparedStatement);

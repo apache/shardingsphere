@@ -19,6 +19,7 @@ package org.apache.shardingsphere.proxy.backend.firebird.handler.admin.executor;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.proxy.backend.handler.admin.executor.DatabaseAdminExecutor;
 import org.apache.shardingsphere.proxy.backend.handler.admin.executor.variable.charset.CharsetSetExecutor;
@@ -38,7 +39,7 @@ public final class FirebirdSetVariableAdminExecutor implements DatabaseAdminExec
     private final SetStatement setStatement;
     
     @Override
-    public void execute(final ConnectionSession connectionSession) {
+    public void execute(final ConnectionSession connectionSession, final ShardingSphereMetaData metaData) {
         VariableAssignSegment variableAssignSegment = setStatement.getVariableAssigns().iterator().next();
         String variableName = variableAssignSegment.getVariable().getVariable().toLowerCase();
         String assignValue = variableAssignSegment.getAssignValue();

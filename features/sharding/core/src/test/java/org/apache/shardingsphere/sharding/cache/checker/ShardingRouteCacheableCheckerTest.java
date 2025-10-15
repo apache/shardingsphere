@@ -168,31 +168,31 @@ class ShardingRouteCacheableCheckerTest {
         return sqlParserRule.getSQLParserEngine(databaseType).parse(sql, false);
     }
     
-    private static class TestCaseArgumentsProvider implements ArgumentsProvider {
+    private static final class TestCaseArgumentsProvider implements ArgumentsProvider {
         
         @Override
         public Stream<? extends Arguments> provideArguments(final ParameterDeclarations parameters, final ExtensionContext context) {
             Collection<? extends Arguments> probablyCacheableCases = Arrays.asList(
-                    Arguments.of("insert into t_warehouse (id) values (?)", Collections.singletonList(1), true, Collections.singletonList(0)),
-                    Arguments.of("select * from t_warehouse where id = ?", Collections.singletonList(1), true, Collections.singletonList(0)),
-                    Arguments.of("select * from t_warehouse where id in (?, ?, ?)", Arrays.asList(1, 2, 3), true, Arrays.asList(0, 1, 2)),
-                    Arguments.of("select * from t_warehouse where id between ? and ?", Arrays.asList(1, 10), true, Arrays.asList(0, 1)),
-                    Arguments.of("select * from t_warehouse where id between ? and ? limit ? offset ?", Arrays.asList(1, 10, 100, 50), true, Arrays.asList(0, 1)),
-                    Arguments.of("update t_warehouse set warehouse_name = ? where id = ?", Arrays.asList("foo", 1), true, Collections.singletonList(1)),
-                    Arguments.of("delete from t_warehouse where id = ?", Collections.singletonList(1), true, Collections.singletonList(0)));
+                    Arguments.of("INSERT INTO t_warehouse (id) VALUES (?)", Collections.singletonList(1), true, Collections.singletonList(0)),
+                    Arguments.of("SELECT * FROM t_warehouse WHERE id = ?", Collections.singletonList(1), true, Collections.singletonList(0)),
+                    Arguments.of("SELECT * FROM t_warehouse WHERE id in (?, ?, ?)", Arrays.asList(1, 2, 3), true, Arrays.asList(0, 1, 2)),
+                    Arguments.of("SELECT * FROM t_warehouse WHERE id BETWEEN ? AND ?", Arrays.asList(1, 10), true, Arrays.asList(0, 1)),
+                    Arguments.of("SELECT * FROM t_warehouse WHERE id BETWEEN ? AND ? LIMIT ? OFFSET ?", Arrays.asList(1, 10, 100, 50), true, Arrays.asList(0, 1)),
+                    Arguments.of("UPDATE t_warehouse SET warehouse_name = ? WHERE id = ?", Arrays.asList("foo", 1), true, Collections.singletonList(1)),
+                    Arguments.of("DELETE FROM t_warehouse WHERE id = ?", Collections.singletonList(1), true, Collections.singletonList(0)));
             Collection<? extends Arguments> nonCacheableCases = Arrays.asList(
-                    Arguments.of("create table t_warehouse_for_create (id int4 not null primary key)", Collections.emptyList(), false, Collections.emptyList()),
-                    Arguments.of("insert into t_warehouse (id) select warehouse_id from t_order", Collections.emptyList(), false, Collections.emptyList()),
-                    Arguments.of("insert into t_warehouse (id) values (?), (?)", Arrays.asList(1, 2), false, Collections.emptyList()),
-                    Arguments.of("insert into t_non_sharding_table (id) values (?)", Collections.singletonList(1), false, Collections.emptyList()),
-                    Arguments.of("insert into t_non_cacheable_database_sharding (id) values (?)", Collections.singletonList(1), false, Collections.emptyList()),
-                    Arguments.of("insert into t_non_cacheable_table_sharding (id) values (?)", Collections.singletonList(1), false, Collections.emptyList()),
-                    Arguments.of("insert into t_warehouse (id) values (now())", Collections.emptyList(), false, Collections.emptyList()),
-                    Arguments.of("select * from t_warehouse w join t_order o on w.id = o.warehouse_id where w.id = ?", Collections.singletonList(1), false, Collections.emptyList()),
-                    Arguments.of("update t_warehouse set warehouse_name = ? where id = (select max(warehouse_id) from t_order)", Collections.singletonList("foo"), false, Collections.emptyList()),
-                    Arguments.of("delete from t_order where warehouse_id in (1, 2, now())", Collections.emptyList(), false, Collections.emptyList()),
-                    Arguments.of("delete from t_order where warehouse_id between now() and now()", Collections.emptyList(), false, Collections.emptyList()),
-                    Arguments.of("delete from t_order o where o.warehouse_id in (select w.id from t_warehouse w)", Collections.emptyList(), false, Collections.emptyList()));
+                    Arguments.of("CREATE TABLE t_warehouse_for_create (id int4 not null primary key)", Collections.emptyList(), false, Collections.emptyList()),
+                    Arguments.of("INSERT INTO t_warehouse (id) SELECT warehouse_id FROM t_order", Collections.emptyList(), false, Collections.emptyList()),
+                    Arguments.of("INSERT INTO t_warehouse (id) VALUES (?), (?)", Arrays.asList(1, 2), false, Collections.emptyList()),
+                    Arguments.of("INSERT INTO t_non_sharding_table (id) VALUES (?)", Collections.singletonList(1), false, Collections.emptyList()),
+                    Arguments.of("INSERT INTO t_non_cacheable_database_sharding (id) VALUES (?)", Collections.singletonList(1), false, Collections.emptyList()),
+                    Arguments.of("INSERT INTO t_non_cacheable_table_sharding (id) VALUES (?)", Collections.singletonList(1), false, Collections.emptyList()),
+                    Arguments.of("INSERT INTO t_warehouse (id) VALUES (now())", Collections.emptyList(), false, Collections.emptyList()),
+                    Arguments.of("SELECT * FROM t_warehouse w JOIN t_order o on w.id = o.warehouse_id WHERE w.id = ?", Collections.singletonList(1), false, Collections.emptyList()),
+                    Arguments.of("UPDATE t_warehouse SET warehouse_name = ? WHERE id = (SELECT max(warehouse_id) FROM t_order)", Collections.singletonList("foo"), false, Collections.emptyList()),
+                    Arguments.of("DELETE FROM t_order WHERE warehouse_id in (1, 2, now())", Collections.emptyList(), false, Collections.emptyList()),
+                    Arguments.of("DELETE FROM t_order WHERE warehouse_id BETWEEN now() AND now()", Collections.emptyList(), false, Collections.emptyList()),
+                    Arguments.of("DELETE FROM t_order o WHERE o.warehouse_id IN (SELECT w.id FROM t_warehouse w)", Collections.emptyList(), false, Collections.emptyList()));
             return Stream.of(probablyCacheableCases.stream(), nonCacheableCases.stream()).flatMap(Function.identity());
         }
     }

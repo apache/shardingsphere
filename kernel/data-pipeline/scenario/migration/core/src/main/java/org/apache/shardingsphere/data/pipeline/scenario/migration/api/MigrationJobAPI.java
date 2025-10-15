@@ -132,7 +132,7 @@ public final class MigrationJobAPI implements TransmissionJobAPI {
                 .sorted(Comparator.comparing(MigrationSourceTargetEntry::getTargetTableName).thenComparing(each -> each.getSource().format())).collect(Collectors.toList())) {
             sourceDataNodes.computeIfAbsent(each.getTargetTableName(), key -> new LinkedList<>()).add(each.getSource());
             ShardingSpherePreconditions.checkState(1 == sourceDataNodes.get(each.getTargetTableName()).size(),
-                    () -> new PipelineInvalidParameterException("more than one source table for " + each.getTargetTableName()));
+                    () -> new PipelineInvalidParameterException("More than one source table for " + each.getTargetTableName()));
             String dataSourceName = each.getSource().getDataSourceName();
             if (configSources.containsKey(dataSourceName)) {
                 continue;

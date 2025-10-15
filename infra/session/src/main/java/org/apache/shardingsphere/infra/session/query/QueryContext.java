@@ -73,12 +73,8 @@ public final class QueryContext {
     }
     
     private Collection<String> getUsedDatabaseNames(final SQLStatementContext sqlStatementContext, final ConnectionContext connectionContext) {
-        Collection<String> result = sqlStatementContext.getTablesContext().getDatabaseNames();
-        return result.isEmpty() ? getCurrentDatabaseNames(connectionContext) : result;
-    }
-    
-    private Collection<String> getCurrentDatabaseNames(final ConnectionContext connectionContext) {
-        return connectionContext.getCurrentDatabaseName().isPresent() ? Collections.singleton(connectionContext.getCurrentDatabaseName().get()) : Collections.emptyList();
+        Collection<String> databaseNamesFromSQL = sqlStatementContext.getTablesContext().getDatabaseNames();
+        return databaseNamesFromSQL.isEmpty() ? connectionContext.getCurrentDatabaseName().map(Collections::singletonList).orElse(Collections.emptyList()) : databaseNamesFromSQL;
     }
     
     /**
@@ -89,7 +85,8 @@ public final class QueryContext {
     public ShardingSphereDatabase getUsedDatabase() {
         ShardingSpherePreconditions.checkState(usedDatabaseNames.size() <= 1,
                 () -> new UnsupportedSQLOperationException(String.format("Can not support multiple logic databases [%s]", Joiner.on(", ").join(usedDatabaseNames))));
-        String databaseName = usedDatabaseNames.isEmpty() ? connectionContext.getCurrentDatabaseName().orElseThrow(NoDatabaseSelectedException::new) : usedDatabaseNames.iterator().next();
+        ShardingSpherePreconditions.checkState(usedDatabaseNames.size() == 1, NoDatabaseSelectedException::new);
+        String databaseName = usedDatabaseNames.iterator().next();
         ShardingSpherePreconditions.checkState(metaData.containsDatabase(databaseName), () -> new UnknownDatabaseException(databaseName));
         return metaData.getDatabase(databaseName);
     }

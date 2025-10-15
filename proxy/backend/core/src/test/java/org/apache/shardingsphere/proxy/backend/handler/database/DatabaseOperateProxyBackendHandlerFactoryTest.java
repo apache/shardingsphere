@@ -25,12 +25,10 @@ import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
-import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereStatistics;
-import org.apache.shardingsphere.infra.metadata.statistics.builder.ShardingSphereStatisticsFactory;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
-import org.apache.shardingsphere.mode.manager.ContextManager;
-import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
+import org.apache.shardingsphere.proxy.backend.handler.database.type.CreateDatabaseProxyBackendHandler;
+import org.apache.shardingsphere.proxy.backend.handler.database.type.DropDatabaseProxyBackendHandler;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
@@ -39,7 +37,6 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.da
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.database.DropDatabaseStatement;
 import org.apache.shardingsphere.test.infra.framework.mock.AutoMockExtension;
 import org.apache.shardingsphere.test.infra.framework.mock.StaticMockSettings;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -56,7 +53,6 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.isA;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -66,8 +62,8 @@ import static org.mockito.Mockito.when;
 @MockitoSettings(strictness = Strictness.LENIENT)
 class DatabaseOperateProxyBackendHandlerFactoryTest {
     
-    @Mock(answer = Answers.RETURNS_DEEP_STUBS)
-    private ContextManager contextManager;
+    private final ShardingSphereMetaData metaData = new ShardingSphereMetaData(
+            Collections.singleton(mockDatabase()), mock(ResourceMetaData.class), mock(RuleMetaData.class), new ConfigurationProperties(new Properties()));
     
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private ConnectionSession connectionSession;
@@ -75,24 +71,14 @@ class DatabaseOperateProxyBackendHandlerFactoryTest {
     @BeforeEach
     void setUp() {
         when(connectionSession.getConnectionContext().getGrantee()).thenReturn(null);
-        ShardingSphereMetaData metaData = new ShardingSphereMetaData(
-                Collections.singleton(mockDatabase()), mock(ResourceMetaData.class), mock(RuleMetaData.class), new ConfigurationProperties(new Properties()));
-        MetaDataContexts metaDataContexts = new MetaDataContexts(metaData, ShardingSphereStatisticsFactory.create(metaData, new ShardingSphereStatistics()));
-        when(contextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
-        when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
-        when(ProxyContext.getInstance().databaseExists("foo_db")).thenReturn(true);
-    }
-    
-    @AfterEach
-    void tearDown() {
-        setGovernanceMetaDataContexts(false);
+        when(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().containsDatabase("foo_db")).thenReturn(true);
+        when(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData()).thenReturn(metaData);
     }
     
     @Test
     void assertExecuteCreateDatabaseContext() throws SQLException {
         CreateDatabaseStatement sqlStatement = mock(CreateDatabaseStatement.class);
         when(sqlStatement.getDatabaseName()).thenReturn("new_db");
-        setGovernanceMetaDataContexts(true);
         ResponseHeader response = DatabaseOperateProxyBackendHandlerFactory.newInstance(sqlStatement, connectionSession).execute();
         assertThat(response, isA(UpdateResponseHeader.class));
     }
@@ -101,7 +87,6 @@ class DatabaseOperateProxyBackendHandlerFactoryTest {
     void assertExecuteDropDatabaseContext() throws SQLException {
         DropDatabaseStatement sqlStatement = mock(DropDatabaseStatement.class);
         when(sqlStatement.getDatabaseName()).thenReturn("foo_db");
-        setGovernanceMetaDataContexts(true);
         ResponseHeader response = DatabaseOperateProxyBackendHandlerFactory.newInstance(sqlStatement, connectionSession).execute();
         assertThat(response, isA(UpdateResponseHeader.class));
     }
@@ -110,7 +95,6 @@ class DatabaseOperateProxyBackendHandlerFactoryTest {
     void assertExecuteCreateDatabaseContextWithException() {
         CreateDatabaseStatement sqlStatement = mock(CreateDatabaseStatement.class);
         when(sqlStatement.getDatabaseName()).thenReturn("foo_db");
-        setGovernanceMetaDataContexts(true);
         try {
             DatabaseOperateProxyBackendHandlerFactory.newInstance(sqlStatement, connectionSession);
         } catch (final DatabaseCreateExistsException ex) {
@@ -122,18 +106,6 @@ class DatabaseOperateProxyBackendHandlerFactoryTest {
         ShardingSphereDatabase result = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         when(result.getName()).thenReturn("foo_db");
         when(result.getProtocolType()).thenReturn(TypedSPILoader.getService(DatabaseType.class, "FIXTURE"));
-        return result;
-    }
-    
-    private void setGovernanceMetaDataContexts(final boolean isGovernance) {
-        ShardingSphereMetaData metaData = new ShardingSphereMetaData();
-        MetaDataContexts metaDataContexts = isGovernance ? mockMetaDataContexts() : new MetaDataContexts(metaData, new ShardingSphereStatistics());
-        when(contextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
-    }
-    
-    private MetaDataContexts mockMetaDataContexts() {
-        MetaDataContexts result = ProxyContext.getInstance().getContextManager().getMetaDataContexts();
-        when(result.getMetaData().getDatabase("foo_db").getResourceMetaData().getNotExistedDataSources(any())).thenReturn(Collections.emptyList());
         return result;
     }
     

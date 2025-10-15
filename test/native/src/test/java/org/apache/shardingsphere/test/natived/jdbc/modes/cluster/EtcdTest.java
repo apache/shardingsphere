@@ -96,9 +96,9 @@ class EtcdTest {
         testShardingService.getAddressRepository().createTableIfNotExistsInMySQL();
         Awaitility.await().atMost(Duration.ofMinutes(2L)).ignoreExceptions().until(() -> {
             try (Connection connection = logicDataSource.getConnection()) {
-                connection.createStatement().execute("select * from t_order");
-                connection.createStatement().execute("select * from t_order_item");
-                connection.createStatement().execute("select * from t_address");
+                connection.createStatement().execute("SELECT * FROM t_order");
+                connection.createStatement().execute("SELECT * FROM t_order_item");
+                connection.createStatement().execute("SELECT * FROM t_address");
             }
             return true;
         });

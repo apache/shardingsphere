@@ -31,17 +31,17 @@ import java.util.Optional;
  */
 public final class OpenGaussStatisticsCollector implements DialectDatabaseStatisticsCollector {
     
-    private final PostgreSQLStatisticsCollector delegated = new PostgreSQLStatisticsCollector();
+    private final PostgreSQLStatisticsCollector delegate = new PostgreSQLStatisticsCollector();
     
     @Override
     public Optional<Collection<Map<String, Object>>> collectRowColumnValues(final String databaseName, final String schemaName, final String tableName,
                                                                             final ShardingSphereMetaData metaData) throws SQLException {
-        return delegated.collectRowColumnValues(databaseName, schemaName, tableName, metaData);
+        return delegate.collectRowColumnValues(databaseName, schemaName, tableName, metaData);
     }
     
     @Override
     public boolean isStatisticsTables(final Map<String, Collection<String>> schemaTables) {
-        return delegated.isStatisticsTables(schemaTables);
+        return delegate.isStatisticsTables(schemaTables);
     }
     
     @Override

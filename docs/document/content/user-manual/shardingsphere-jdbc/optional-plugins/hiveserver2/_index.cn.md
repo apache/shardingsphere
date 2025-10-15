@@ -207,7 +207,7 @@ ShardingSphere 配置文件中的 `standardJdbcUrl` 可配置连接至开启 Zoo
 name: test-1
 services:
   zookeeper:
-    image: zookeeper:3.9.3-jre-17
+    image: zookeeper:3.9.4-jre-17
     ports:
       - "2181:2181"
   apache-hive-1:

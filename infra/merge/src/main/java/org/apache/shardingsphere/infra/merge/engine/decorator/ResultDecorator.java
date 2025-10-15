@@ -22,6 +22,7 @@ import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 
 import java.sql.SQLException;
+import java.util.List;
 
 /**
  * Result decorator.
@@ -35,9 +36,10 @@ public interface ResultDecorator<T extends ShardingSphereRule> {
      *
      * @param mergedResult merged result
      * @param sqlStatementContext SQL statement context
+     * @param parameters parameters
      * @param rule ShardingSphere rule
      * @return merged result
      * @throws SQLException SQL exception
      */
-    MergedResult decorate(MergedResult mergedResult, SQLStatementContext sqlStatementContext, T rule) throws SQLException;
+    MergedResult decorate(MergedResult mergedResult, SQLStatementContext sqlStatementContext, List<Object> parameters, T rule) throws SQLException;
 }

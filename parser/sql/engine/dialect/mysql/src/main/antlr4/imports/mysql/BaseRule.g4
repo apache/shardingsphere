@@ -682,8 +682,12 @@ positionFunction
     ;
 
 substringFunction
-    : (SUBSTRING | SUBSTR | MID) LP_ expr FROM NUMBER_ (FOR NUMBER_)? RP_
-    | (SUBSTRING | SUBSTR | MID) LP_ expr COMMA_ NUMBER_ (COMMA_ NUMBER_)? RP_
+    : (SUBSTRING | SUBSTR | MID) LP_ expr FROM substringParam (FOR substringParam)? RP_
+    | (SUBSTRING | SUBSTR | MID) LP_ expr COMMA_ substringParam (COMMA_ substringParam)? RP_
+    ;
+
+substringParam
+    : numberLiterals | expr
     ;
 
 extractFunction

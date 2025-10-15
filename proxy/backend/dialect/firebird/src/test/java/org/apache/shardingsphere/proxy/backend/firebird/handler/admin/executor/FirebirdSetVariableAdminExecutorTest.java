@@ -52,7 +52,7 @@ class FirebirdSetVariableAdminExecutorTest {
             ReplayedSessionVariableProvider replayedSessionVariableProvider = mock(ReplayedSessionVariableProvider.class);
             when(replayedSessionVariableProvider.isNeedToReplay("key")).thenReturn(true);
             databaseTypedSPILoader.when(() -> DatabaseTypedSPILoader.findService(ReplayedSessionVariableProvider.class, databaseType)).thenReturn(Optional.of(replayedSessionVariableProvider));
-            executor.execute(connectionSession);
+            executor.execute(connectionSession, mock());
             verify(requiredSessionVariableRecorder).setVariable("key", "value");
         }
     }

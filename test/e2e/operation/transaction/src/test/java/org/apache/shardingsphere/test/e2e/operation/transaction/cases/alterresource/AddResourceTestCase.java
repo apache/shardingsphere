@@ -69,7 +69,7 @@ public final class AddResourceTestCase extends BaseTransactionTestCase {
         try (Connection connection = getDataSource().getConnection()) {
             connection.setAutoCommit(false);
             assertTableRowCount(connection, TransactionTestConstants.ACCOUNT, 0);
-            executeWithLog(connection, "insert into account(id, balance, transaction_id) values(1, 1, 1),(2, 2, 2),(3, 3, 3),(4, 4, 4),(5, 5, 5),(6, 6, 6);");
+            executeWithLog(connection, "INSERT INTO account(id, balance, transaction_id) VALUES(1, 1, 1),(2, 2, 2),(3, 3, 3),(4, 4, 4),(5, 5, 5),(6, 6, 6);");
             assertTableRowCount(connection, TransactionTestConstants.ACCOUNT, 6);
             connection.rollback();
             assertTableRowCount(connection, TransactionTestConstants.ACCOUNT, 0);
@@ -80,7 +80,7 @@ public final class AddResourceTestCase extends BaseTransactionTestCase {
         try (Connection connection = getDataSource().getConnection()) {
             connection.setAutoCommit(false);
             assertTableRowCount(connection, TransactionTestConstants.ACCOUNT, 0);
-            executeWithLog(connection, "insert into account(id, balance, transaction_id) values(1, 1, 1),(2, 2, 2),(3, 3, 3),(4, 4, 4),(5, 5, 5),(6, 6, 6);");
+            executeWithLog(connection, "INSERT INTO account(id, balance, transaction_id) VALUES(1, 1, 1),(2, 2, 2),(3, 3, 3),(4, 4, 4),(5, 5, 5),(6, 6, 6);");
             assertTableRowCount(connection, TransactionTestConstants.ACCOUNT, 6);
             connection.commit();
             assertTableRowCount(connection, TransactionTestConstants.ACCOUNT, 6);

@@ -292,7 +292,7 @@ public final class StandardDatabaseProxyConnector implements DatabaseProxyConnec
     
     private QueryResponseHeader processExecuteQuery(final SQLStatementContext sqlStatementContext, final List<QueryResult> queryResults, final QueryResult queryResultSample) throws SQLException {
         queryHeaders = createQueryHeaders(sqlStatementContext, queryResultSample);
-        mergedResult = mergeQuery(sqlStatementContext, queryResults);
+        mergedResult = mergeQuery(queryResults);
         return new QueryResponseHeader(queryHeaders);
     }
     
@@ -319,10 +319,10 @@ public final class StandardDatabaseProxyConnector implements DatabaseProxyConnec
                 : queryHeaderBuilderEngine.build(queryResultSample.getMetaData(), database, columnIndex);
     }
     
-    private MergedResult mergeQuery(final SQLStatementContext sqlStatementContext, final List<QueryResult> queryResults) throws SQLException {
+    private MergedResult mergeQuery(final List<QueryResult> queryResults) throws SQLException {
         MergeEngine mergeEngine = new MergeEngine(contextManager.getMetaDataContexts().getMetaData(),
                 database, contextManager.getMetaDataContexts().getMetaData().getProps(), databaseConnectionManager.getConnectionSession().getConnectionContext());
-        return mergeEngine.merge(queryResults, sqlStatementContext);
+        return mergeEngine.merge(queryResults, queryContext);
     }
     
     private UpdateResponseHeader processExecuteUpdate(final Collection<UpdateResult> updateResults) {

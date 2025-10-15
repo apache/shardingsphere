@@ -21,7 +21,8 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.session.query.QueryContext;
 import org.apache.shardingsphere.proxy.backend.connector.DatabaseProxyConnectorFactory;
-import org.apache.shardingsphere.proxy.backend.handler.data.impl.UnicastDatabaseProxyBackendHandler;
+import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
+import org.apache.shardingsphere.proxy.backend.handler.data.type.UnicastDatabaseProxyBackendHandler;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
@@ -51,7 +52,7 @@ public final class DatabaseProxyBackendHandlerFactory {
             return () -> new UpdateResponseHeader(sqlStatement);
         }
         if (sqlStatement instanceof DoStatement || isNotDatabaseSelectRequiredDALStatement(sqlStatement) || isNotContainFromSelectStatement(sqlStatement)) {
-            return new UnicastDatabaseProxyBackendHandler(queryContext, connectionSession);
+            return new UnicastDatabaseProxyBackendHandler(queryContext, ProxyContext.getInstance().getContextManager(), connectionSession);
         }
         return DatabaseProxyConnectorFactory.newInstance(queryContext, connectionSession.getDatabaseConnectionManager(), preferPreparedStatement);
     }

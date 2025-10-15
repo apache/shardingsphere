@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.proxy.backend.handler.admin.executor;
 
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 
 import java.sql.SQLException;
@@ -30,7 +31,8 @@ public interface DatabaseAdminExecutor {
      * Execute.
      *
      * @param connectionSession connection session
+     * @param metaData meta data
      * @throws SQLException SQLException
      */
-    void execute(ConnectionSession connectionSession) throws SQLException;
+    void execute(ConnectionSession connectionSession, ShardingSphereMetaData metaData) throws SQLException;
 }

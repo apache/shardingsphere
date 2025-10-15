@@ -60,13 +60,13 @@ class OpenGaussAdminExecutorFactoryTest {
     @BeforeEach
     void setup() throws ReflectiveOperationException {
         openGaussAdminExecutorFactory = new OpenGaussAdminExecutorCreator();
-        Plugins.getMemberAccessor().set(OpenGaussAdminExecutorCreator.class.getDeclaredField("delegated"), openGaussAdminExecutorFactory, postgresqlAdminExecutorFactory);
+        Plugins.getMemberAccessor().set(OpenGaussAdminExecutorCreator.class.getDeclaredField("delegate"), openGaussAdminExecutorFactory, postgresqlAdminExecutorFactory);
     }
     
     @Test
     void assertNewInstanceWithSQLStatementContext() {
         SQLStatementContext sqlStatementContext = new CommonSQLStatementContext(new ShowStatement(databaseType, "all"));
-        Optional<DatabaseAdminExecutor> actual = openGaussAdminExecutorFactory.create(sqlStatementContext);
+        Optional<DatabaseAdminExecutor> actual = openGaussAdminExecutorFactory.create(sqlStatementContext, "SHOW ALL", null, Collections.emptyList());
         assertTrue(actual.isPresent());
     }
     

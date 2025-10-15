@@ -125,7 +125,7 @@ public final class ProxyBackendHandlerFactory {
         }
         if (sqlStatement instanceof DistSQLStatement) {
             checkSupportedDistSQLStatementInTransaction(sqlStatement, connectionSession);
-            return DistSQLProxyBackendHandlerFactory.newInstance((DistSQLStatement) sqlStatement, connectionSession);
+            return DistSQLProxyBackendHandlerFactory.newInstance((DistSQLStatement) sqlStatement, queryContext, connectionSession);
         }
         handleAutoCommit(sqlStatement, connectionSession);
         if (sqlStatement instanceof TCLStatement) {
@@ -146,9 +146,8 @@ public final class ProxyBackendHandlerFactory {
         if (null == databaseName) {
             return DatabaseProxyBackendHandlerFactory.newInstance(queryContext, connectionSession, preferPreparedStatement);
         }
-        checkSQLExecution(queryContext, connectionSession, databaseName);
-        return DatabaseAdminProxyBackendHandlerFactory.newInstance(databaseType, sqlStatementContext, connectionSession)
-                .orElseGet(() -> DatabaseProxyBackendHandlerFactory.newInstance(queryContext, connectionSession, preferPreparedStatement));
+        checkSQLExecution(queryContext, connectionSession.getConnectionContext().getGrantee(), databaseName);
+        return DatabaseProxyBackendHandlerFactory.newInstance(queryContext, connectionSession, preferPreparedStatement);
     }
     
     private static void checkAllowedSQLStatementWhenTransactionFailed(final DatabaseType databaseType, final SQLStatement sqlStatement,
@@ -198,12 +197,10 @@ public final class ProxyBackendHandlerFactory {
                 : Optional.empty();
     }
     
-    private static void checkSQLExecution(final QueryContext queryContext, final ConnectionSession connectionSession, final String databaseName) {
-        Grantee grantee = connectionSession.getConnectionContext().getGrantee();
-        ShardingSphereMetaData metaData = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData();
-        ShardingSphereDatabase database = metaData.getDatabase(databaseName);
+    private static void checkSQLExecution(final QueryContext queryContext, final Grantee grantee, final String databaseName) {
+        ShardingSphereDatabase database = queryContext.getMetaData().getDatabase(databaseName);
         for (SQLExecutionChecker each : ShardingSphereServiceLoader.getServiceInstances(SQLExecutionChecker.class)) {
-            each.check(metaData, grantee, queryContext, database);
+            each.check(grantee, queryContext, database);
         }
     }
 }

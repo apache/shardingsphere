@@ -22,6 +22,7 @@ import com.google.common.collect.Sets;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.SneakyThrows;
+import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.expr.entry.InlineExpressionParserFactory;
@@ -37,6 +38,7 @@ import org.apache.shardingsphere.test.e2e.sql.cases.dataset.row.DataSetRow;
 import org.apache.shardingsphere.test.e2e.sql.env.DataSetEnvironmentManager;
 import org.apache.shardingsphere.test.e2e.sql.env.SQLE2EEnvironmentEngine;
 import org.apache.shardingsphere.test.e2e.sql.framework.metadata.DialectDatabaseAssertionMetaDataFactory;
+import org.apache.shardingsphere.test.e2e.sql.framework.metadata.DialectQueryBehaviorProvider;
 import org.apache.shardingsphere.test.e2e.sql.framework.param.model.AssertionTestParameter;
 import org.apache.shardingsphere.test.e2e.sql.framework.param.model.CaseTestParameter;
 import org.apache.shardingsphere.test.e2e.sql.framework.param.model.E2ETestParameter;
@@ -233,7 +235,10 @@ public abstract class BaseDMLE2EIT implements SQLE2EIT {
     private String generateFetchActualDataSQL(final Map<String, DataSource> actualDataSourceMap, final DataNode dataNode, final DatabaseType databaseType) throws SQLException {
         String tableName = dataNode.getTableName();
         Optional<String> primaryKeyColumnName = DialectDatabaseAssertionMetaDataFactory.getPrimaryKeyColumnName(databaseType, actualDataSourceMap.get(dataNode.getDataSourceName()), tableName);
-        return primaryKeyColumnName.map(optional -> String.format("SELECT * FROM %s ORDER BY %s ASC", tableName, optional)).orElseGet(() -> String.format("SELECT * FROM %s", tableName));
+        return primaryKeyColumnName.map(optional -> String.format("SELECT * FROM %s ORDER BY %s ASC", tableName, optional))
+                .orElseGet(() -> DatabaseTypedSPILoader.findService(DialectQueryBehaviorProvider.class, databaseType)
+                        .flatMap(DialectQueryBehaviorProvider::getFallbackOrderByWhenNoPrimaryKey).map(optional -> String.format("SELECT * FROM %s ORDER BY %s", tableName, optional))
+                        .orElseGet(() -> String.format("SELECT * FROM %s", tableName)));
     }
     
     private void assertMetaData(final ResultSetMetaData actual, final Collection<DataSetColumn> expected) throws SQLException {

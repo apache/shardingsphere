@@ -187,4 +187,8 @@
     <test-case sql="select * from shardingsphere.cluster_information;" db-types="MySQL,PostgreSQL,openGauss" scenario-types="db">
         <assertion expected-data-file="select_cluster_information.xml" />
     </test-case>
+
+    <test-case sql="SELECT user_name, telephone FROM t_user" db-types="Hive" scenario-types="mask">
+        <assertion expected-data-source-name="expected_dataset" />
+    </test-case>
 </e2e-test-cases>

@@ -22,7 +22,6 @@ import org.apache.shardingsphere.proxy.backend.handler.admin.executor.DatabaseAd
 import org.apache.shardingsphere.proxy.backend.handler.admin.executor.DatabaseAdminExecutorCreator;
 import org.apache.shardingsphere.proxy.backend.opengauss.handler.admin.executor.OpenGaussShowVariableExecutor;
 import org.apache.shardingsphere.proxy.backend.postgresql.handler.admin.PostgreSQLAdminExecutorCreator;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.ShowStatement;
 
 import java.util.List;
@@ -33,13 +32,7 @@ import java.util.Optional;
  */
 public final class OpenGaussAdminExecutorCreator implements DatabaseAdminExecutorCreator {
     
-    private final PostgreSQLAdminExecutorCreator delegated = new PostgreSQLAdminExecutorCreator();
-    
-    @Override
-    public Optional<DatabaseAdminExecutor> create(final SQLStatementContext sqlStatementContext) {
-        SQLStatement sqlStatement = sqlStatementContext.getSqlStatement();
-        return sqlStatement instanceof ShowStatement ? Optional.of(new OpenGaussShowVariableExecutor((ShowStatement) sqlStatement)) : Optional.empty();
-    }
+    private final PostgreSQLAdminExecutorCreator delegate = new PostgreSQLAdminExecutorCreator();
     
     @Override
     public Optional<DatabaseAdminExecutor> create(final SQLStatementContext sqlStatementContext, final String sql, final String databaseName, final List<Object> parameters) {
@@ -51,7 +44,10 @@ public final class OpenGaussAdminExecutorCreator implements DatabaseAdminExecuto
         if (functionQueryExecutorCreator.accept()) {
             return functionQueryExecutorCreator.create();
         }
-        return delegated.create(sqlStatementContext, sql, databaseName, parameters);
+        if (sqlStatementContext.getSqlStatement() instanceof ShowStatement) {
+            return Optional.of(new OpenGaussShowVariableExecutor((ShowStatement) sqlStatementContext.getSqlStatement()));
+        }
+        return delegate.create(sqlStatementContext, sql, databaseName, parameters);
     }
     
     @Override

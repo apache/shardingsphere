@@ -44,7 +44,7 @@ class MySQLComStmtSendLongDataExecutorTest {
         when(packet.getData()).thenReturn(data);
         ConnectionSession connectionSession = mock(ConnectionSession.class);
         when(connectionSession.getServerPreparedStatementRegistry()).thenReturn(new ServerPreparedStatementRegistry());
-        MySQLServerPreparedStatement preparedStatement = new MySQLServerPreparedStatement("insert into t (b) values (?)", mock(), new HintValueContext(), Collections.emptyList());
+        MySQLServerPreparedStatement preparedStatement = new MySQLServerPreparedStatement("INSERT INTO t (b) VALUES (?)", mock(), new HintValueContext(), Collections.emptyList());
         connectionSession.getServerPreparedStatementRegistry().addPreparedStatement(1, preparedStatement);
         MySQLComStmtSendLongDataExecutor executor = new MySQLComStmtSendLongDataExecutor(packet, connectionSession);
         Collection<DatabasePacket> actual = executor.execute();

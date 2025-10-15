@@ -31,7 +31,6 @@ import org.apache.shardingsphere.infra.util.props.PropertiesBuilder.Property;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.mode.persist.service.MetaDataManagerPersistService;
-import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.response.header.query.QueryResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
@@ -51,13 +50,12 @@ import org.apache.shardingsphere.shadow.distsql.statement.ShowShadowTableRulesSt
 import org.apache.shardingsphere.shadow.rule.ShadowRule;
 import org.apache.shardingsphere.sharding.distsql.statement.CreateShardingTableRuleStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.SQLStatementAttributes;
-import org.apache.shardingsphere.test.infra.framework.mock.AutoMockExtension;
-import org.apache.shardingsphere.test.infra.framework.mock.StaticMockSettings;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Answers;
 import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 
@@ -73,10 +71,11 @@ import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-@ExtendWith(AutoMockExtension.class)
-@StaticMockSettings(ProxyContext.class)
+@ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
 class DistSQLProxyBackendHandlerFactoryTest {
+    
+    private ContextManager contextManager;
     
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private ConnectionSession connectionSession;
@@ -84,9 +83,7 @@ class DistSQLProxyBackendHandlerFactoryTest {
     @BeforeEach
     void setUp() {
         ShardingSphereDatabase database = mockDatabase();
-        ContextManager contextManager = mockContextManager(database);
-        when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
-        when(ProxyContext.getInstance().databaseExists("foo_db")).thenReturn(true);
+        contextManager = mockContextManager(database);
         when(connectionSession.getUsedDatabaseName()).thenReturn("foo_db");
     }
     
@@ -117,132 +114,141 @@ class DistSQLProxyBackendHandlerFactoryTest {
     void assertExecuteDataSourcesContext() throws SQLException {
         RegisterStorageUnitStatement sqlStatement = mock(RegisterStorageUnitStatement.class);
         when(sqlStatement.getAttributes()).thenReturn(new SQLStatementAttributes());
-        assertThat(new DistSQLUpdateProxyBackendHandler(sqlStatement, connectionSession).execute(), isA(UpdateResponseHeader.class));
+        assertThat(new DistSQLUpdateProxyBackendHandler(sqlStatement, connectionSession, contextManager).execute(), isA(UpdateResponseHeader.class));
     }
     
     @Test
     void assertExecuteShardingTableRuleContext() throws SQLException {
-        when(ProxyContext.getInstance().getContextManager().getDatabase("foo_db").getRuleMetaData()).thenReturn(new RuleMetaData(Collections.emptyList()));
+        when(contextManager.getDatabase("foo_db").getRuleMetaData()).thenReturn(new RuleMetaData(Collections.emptyList()));
         CreateShardingTableRuleStatement sqlStatement = mock(CreateShardingTableRuleStatement.class);
         when(sqlStatement.getAttributes()).thenReturn(new SQLStatementAttributes());
-        assertThat(new DistSQLUpdateProxyBackendHandler(sqlStatement, connectionSession).execute(), isA(UpdateResponseHeader.class));
+        assertThat(new DistSQLUpdateProxyBackendHandler(sqlStatement, connectionSession, contextManager).execute(), isA(UpdateResponseHeader.class));
     }
     
     @Test
     void assertExecuteAddResourceContext() throws SQLException {
         RegisterStorageUnitStatement sqlStatement = mock(RegisterStorageUnitStatement.class);
         when(sqlStatement.getAttributes()).thenReturn(new SQLStatementAttributes());
-        assertThat(new DistSQLUpdateProxyBackendHandler(sqlStatement, connectionSession).execute(), isA(UpdateResponseHeader.class));
+        assertThat(new DistSQLUpdateProxyBackendHandler(sqlStatement, connectionSession, contextManager).execute(), isA(UpdateResponseHeader.class));
     }
     
     @Test
     void assertExecuteAlterResourceContext() throws SQLException {
         AlterStorageUnitStatement sqlStatement = mock(AlterStorageUnitStatement.class);
         when(sqlStatement.getAttributes()).thenReturn(new SQLStatementAttributes());
-        assertThat(new DistSQLUpdateProxyBackendHandler(sqlStatement, connectionSession).execute(), isA(UpdateResponseHeader.class));
+        assertThat(new DistSQLUpdateProxyBackendHandler(sqlStatement, connectionSession, contextManager).execute(), isA(UpdateResponseHeader.class));
     }
     
     @Test
     void assertExecuteAlterShadowRuleContext() throws SQLException {
-        mockRuleMetaData();
+        ShardingSphereDatabase database = mockDatabaseWithRule();
+        when(contextManager.getDatabase("foo_db")).thenReturn(database);
         AlterShadowRuleStatement sqlStatement = mock(AlterShadowRuleStatement.class);
         when(sqlStatement.getAttributes()).thenReturn(new SQLStatementAttributes());
-        assertThat(new DistSQLUpdateProxyBackendHandler(sqlStatement, connectionSession).execute(), isA(UpdateResponseHeader.class));
+        assertThat(new DistSQLUpdateProxyBackendHandler(sqlStatement, connectionSession, contextManager).execute(), isA(UpdateResponseHeader.class));
     }
     
     @Test
     void assertExecuteCreateShadowRuleContext() throws SQLException {
-        mockRuleMetaData();
+        ShardingSphereDatabase database = mockDatabaseWithRule();
+        when(contextManager.getDatabase("foo_db")).thenReturn(database);
         CreateShadowRuleStatement sqlStatement = mock(CreateShadowRuleStatement.class);
         when(sqlStatement.getAttributes()).thenReturn(new SQLStatementAttributes());
-        assertThat(new DistSQLUpdateProxyBackendHandler(sqlStatement, connectionSession).execute(), isA(UpdateResponseHeader.class));
+        assertThat(new DistSQLUpdateProxyBackendHandler(sqlStatement, connectionSession, contextManager).execute(), isA(UpdateResponseHeader.class));
     }
     
     @Test
     void assertExecuteDropShadowRuleContext() throws SQLException {
-        mockRuleMetaData();
+        ShardingSphereDatabase database = mockDatabaseWithRule();
+        when(contextManager.getDatabase("foo_db")).thenReturn(database);
         DropShadowRuleStatement sqlStatement = mock(DropShadowRuleStatement.class);
         when(sqlStatement.getAttributes()).thenReturn(new SQLStatementAttributes());
-        assertThat(new DistSQLUpdateProxyBackendHandler(sqlStatement, connectionSession).execute(), isA(UpdateResponseHeader.class));
+        assertThat(new DistSQLUpdateProxyBackendHandler(sqlStatement, connectionSession, contextManager).execute(), isA(UpdateResponseHeader.class));
     }
     
     @Test
     void assertExecuteAlterDefaultShadowAlgorithm() throws SQLException {
-        mockRuleMetaData();
+        ShardingSphereDatabase database = mockDatabaseWithRule();
+        when(contextManager.getDatabase("foo_db")).thenReturn(database);
         AlterDefaultShadowAlgorithmStatement statement = new AlterDefaultShadowAlgorithmStatement(
                 new ShadowAlgorithmSegment("foo", new AlgorithmSegment("SQL_HINT", PropertiesBuilder.build(new Property("type", "value")))));
-        assertThat(new DistSQLUpdateProxyBackendHandler(statement, connectionSession).execute(), isA(UpdateResponseHeader.class));
+        assertThat(new DistSQLUpdateProxyBackendHandler(statement, connectionSession, contextManager).execute(), isA(UpdateResponseHeader.class));
     }
     
     @Test
     void assertExecuteShowShadowRulesContext() throws SQLException {
-        mockRuleMetaData();
-        assertThat(new DistSQLQueryProxyBackendHandler(mock(ShowShadowRulesStatement.class, RETURNS_DEEP_STUBS), connectionSession).execute(), isA(QueryResponseHeader.class));
+        ShardingSphereDatabase database = mockDatabaseWithRule();
+        when(contextManager.getDatabase("foo_db")).thenReturn(database);
+        assertThat(new DistSQLQueryProxyBackendHandler(mock(ShowShadowRulesStatement.class, RETURNS_DEEP_STUBS), mock(), connectionSession, contextManager).execute(), isA(QueryResponseHeader.class));
     }
     
     @Test
     void assertExecuteShowShadowTableRulesContext() throws SQLException {
-        mockRuleMetaData();
+        mockDatabaseWithRule();
         ShowShadowTableRulesStatement sqlStatement = mock(ShowShadowTableRulesStatement.class);
         when(sqlStatement.getAttributes()).thenReturn(new SQLStatementAttributes());
-        assertThat(new DistSQLQueryProxyBackendHandler(sqlStatement, connectionSession).execute(), isA(QueryResponseHeader.class));
+        assertThat(new DistSQLQueryProxyBackendHandler(sqlStatement, mock(), connectionSession, contextManager).execute(), isA(QueryResponseHeader.class));
     }
     
     @Test
     void assertExecuteShowShadowAlgorithmsContext() throws SQLException {
-        mockRuleMetaData();
+        ShardingSphereDatabase database = mockDatabaseWithRule();
+        when(contextManager.getDatabase("foo_db")).thenReturn(database);
         ShowShadowAlgorithmsStatement sqlStatement = mock(ShowShadowAlgorithmsStatement.class);
         when(sqlStatement.getAttributes()).thenReturn(new SQLStatementAttributes());
-        assertThat(new DistSQLQueryProxyBackendHandler(sqlStatement, connectionSession).execute(), isA(QueryResponseHeader.class));
+        assertThat(new DistSQLQueryProxyBackendHandler(sqlStatement, mock(), connectionSession, contextManager).execute(), isA(QueryResponseHeader.class));
     }
     
     @Test
     void assertExecuteDropShadowAlgorithmContext() throws SQLException {
-        mockRuleMetaData();
+        ShardingSphereDatabase database = mockDatabaseWithRule();
+        when(contextManager.getDatabase("foo_db")).thenReturn(database);
         DropShadowAlgorithmStatement sqlStatement = mock(DropShadowAlgorithmStatement.class);
         when(sqlStatement.getAttributes()).thenReturn(new SQLStatementAttributes());
-        assertThat(new DistSQLUpdateProxyBackendHandler(sqlStatement, connectionSession).execute(), isA(UpdateResponseHeader.class));
+        assertThat(new DistSQLUpdateProxyBackendHandler(sqlStatement, connectionSession, contextManager).execute(), isA(UpdateResponseHeader.class));
     }
     
     @Test
     void assertExecuteDropResourceContext() throws SQLException {
         UnregisterStorageUnitStatement sqlStatement = mock(UnregisterStorageUnitStatement.class);
         when(sqlStatement.getAttributes()).thenReturn(new SQLStatementAttributes());
-        assertThat(new DistSQLUpdateProxyBackendHandler(sqlStatement, connectionSession).execute(), isA(UpdateResponseHeader.class));
+        assertThat(new DistSQLUpdateProxyBackendHandler(sqlStatement, connectionSession, contextManager).execute(), isA(UpdateResponseHeader.class));
     }
     
     @Test
     void assertExecuteDropReadwriteSplittingRuleContext() {
-        assertThrows(MissingRequiredRuleException.class, () -> new DistSQLUpdateProxyBackendHandler(mock(DropReadwriteSplittingRuleStatement.class, RETURNS_DEEP_STUBS), connectionSession).execute());
+        assertThrows(MissingRequiredRuleException.class,
+                () -> new DistSQLUpdateProxyBackendHandler(mock(DropReadwriteSplittingRuleStatement.class, RETURNS_DEEP_STUBS), connectionSession, contextManager).execute());
     }
     
     @Test
     void assertExecuteCreateReadwriteSplittingRuleContext() throws SQLException {
         CreateReadwriteSplittingRuleStatement sqlStatement = mock(CreateReadwriteSplittingRuleStatement.class);
         when(sqlStatement.getAttributes()).thenReturn(new SQLStatementAttributes());
-        assertThat(new DistSQLUpdateProxyBackendHandler(sqlStatement, connectionSession).execute(), isA(UpdateResponseHeader.class));
+        assertThat(new DistSQLUpdateProxyBackendHandler(sqlStatement, connectionSession, contextManager).execute(), isA(UpdateResponseHeader.class));
     }
     
     @Test
     void assertExecuteAlterReadwriteSplittingRuleContext() {
-        assertThrows(MissingRequiredRuleException.class, () -> new DistSQLUpdateProxyBackendHandler(mock(AlterReadwriteSplittingRuleStatement.class, RETURNS_DEEP_STUBS), connectionSession).execute());
+        assertThrows(MissingRequiredRuleException.class,
+                () -> new DistSQLUpdateProxyBackendHandler(mock(AlterReadwriteSplittingRuleStatement.class, RETURNS_DEEP_STUBS), connectionSession, contextManager).execute());
     }
     
-    private void mockRuleMetaData() {
-        ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
-        when(database.getName()).thenReturn("foo_db");
-        when(database.getResourceMetaData()).thenReturn(mock(ResourceMetaData.class));
+    private ShardingSphereDatabase mockDatabaseWithRule() {
+        ShardingSphereDatabase result = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
+        when(result.getName()).thenReturn("foo_db");
+        when(result.getResourceMetaData()).thenReturn(mock(ResourceMetaData.class));
         RuleMetaData ruleMetaData = mock(RuleMetaData.class);
-        ShadowRuleConfiguration ruleConfig = mockShadowRuleConfiguration();
+        ShadowRuleConfiguration ruleConfig = createShadowRuleConfiguration();
         when(ruleMetaData.getConfigurations()).thenReturn(Collections.singleton(ruleConfig));
         ShadowRule rule = mock(ShadowRule.class);
         when(rule.getConfiguration()).thenReturn(ruleConfig);
         when(ruleMetaData.findSingleRule(ShadowRule.class)).thenReturn(Optional.of(rule));
-        when(database.getRuleMetaData()).thenReturn(ruleMetaData);
-        when(ProxyContext.getInstance().getContextManager().getDatabase("foo_db")).thenReturn(database);
+        when(result.getRuleMetaData()).thenReturn(ruleMetaData);
+        return result;
     }
     
-    private ShadowRuleConfiguration mockShadowRuleConfiguration() {
+    private ShadowRuleConfiguration createShadowRuleConfiguration() {
         ShadowRuleConfiguration result = new ShadowRuleConfiguration();
         result.getShadowAlgorithms().put("default_shadow_algorithm", mock(AlgorithmConfiguration.class));
         return result;

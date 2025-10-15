@@ -44,8 +44,8 @@ public final class XATCLProxyBackendHandlerFactory {
     /**
      * New instance of XA TCL proxy backend handler.
      *
-     * @param connectionSession connection session
      * @param queryContext query context
+     * @param connectionSession connection session
      * @return created instance
      */
     public static ProxyBackendHandler newInstance(final QueryContext queryContext, final ConnectionSession connectionSession) {
@@ -55,7 +55,7 @@ public final class XATCLProxyBackendHandlerFactory {
             return new XARecoveryProxyBackendHandler(databaseProxyConnector);
         }
         if (sqlStatement instanceof XABeginStatement) {
-            return new XABeginProxyBackendHandler(connectionSession, databaseProxyConnector);
+            return new XABeginProxyBackendHandler(queryContext.getMetaData(), connectionSession, databaseProxyConnector);
         }
         if (sqlStatement instanceof XACommitStatement) {
             return new XACommitProxyBackendHandler(connectionSession, databaseProxyConnector);
