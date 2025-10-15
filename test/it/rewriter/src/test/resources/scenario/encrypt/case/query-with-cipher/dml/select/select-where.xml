@@ -82,43 +82,43 @@
     </rewrite-assertion>
 
     <rewrite-assertion id="select_where_with_cipher_column_like_concat_for_parameters" db-types="MySQL">
-        <input sql="SELECT a.account_id, a.password, a.amount AS a, a.status AS s FROM t_account_bak a WHERE a.account_id = 1 AND a.certificate_number like concat ('%', ? ,'%')" parameters="abc" />
-        <output sql="SELECT a.account_id, a.`cipher_password` AS password, a.`cipher_amount` AS a, a.status AS s FROM t_account_bak a WHERE a.account_id = 1 AND a.`like_query_certificate_number` like concat ('like_query_%', ?, 'like_query_%')" parameters="like_query_abc" />
+        <input sql="SELECT a.account_id, a.password, a.amount AS a, a.status AS s FROM t_account_bak a WHERE a.account_id = 1 AND a.certificate_number like concat('%', ? ,'%')" parameters="abc" />
+        <output sql="SELECT a.account_id, a.`cipher_password` AS password, a.`cipher_amount` AS a, a.status AS s FROM t_account_bak a WHERE a.account_id = 1 AND a.`like_query_certificate_number` like concat('like_query_%', ?, 'like_query_%')" parameters="like_query_abc" />
     </rewrite-assertion>
 
     <rewrite-assertion id="select_where_with_cipher_column_like_concat_for_parameters" db-types="PostgreSQL,openGauss">
-        <input sql="SELECT a.account_id, a.password, a.amount AS a, a.status AS s FROM t_account_bak a WHERE a.account_id = 1 AND a.certificate_number like concat ('%', ? ,'%')" parameters="abc" />
-        <output sql="SELECT a.account_id, a.&quot;cipher_password&quot; AS password, a.&quot;cipher_amount&quot; AS a, a.status AS s FROM t_account_bak a WHERE a.account_id = 1 AND a.&quot;like_query_certificate_number&quot; like concat ('like_query_%', ?, 'like_query_%')" parameters="like_query_abc" />
+        <input sql="SELECT a.account_id, a.password, a.amount AS a, a.status AS s FROM t_account_bak a WHERE a.account_id = 1 AND a.certificate_number like concat('%', ? ,'%')" parameters="abc" />
+        <output sql="SELECT a.account_id, a.&quot;cipher_password&quot; AS password, a.&quot;cipher_amount&quot; AS a, a.status AS s FROM t_account_bak a WHERE a.account_id = 1 AND a.&quot;like_query_certificate_number&quot; like concat('like_query_%', ?, 'like_query_%')" parameters="like_query_abc" />
     </rewrite-assertion>
 
     <rewrite-assertion id="select_where_with_cipher_column_like_concat_for_literals" db-types="MySQL">
-        <input sql="SELECT a.account_id, a.password, a.amount AS a, a.status AS s FROM t_account_bak a WHERE a.account_id = 1 AND a.certificate_number like concat ('%','abc','%')" />
-        <output sql="SELECT a.account_id, a.`cipher_password` AS password, a.`cipher_amount` AS a, a.status AS s FROM t_account_bak a WHERE a.account_id = 1 AND a.`like_query_certificate_number` like concat ('like_query_%', 'like_query_abc', 'like_query_%')" />
+        <input sql="SELECT a.account_id, a.password, a.amount AS a, a.status AS s FROM t_account_bak a WHERE a.account_id = 1 AND a.certificate_number like concat('%','abc','%')" />
+        <output sql="SELECT a.account_id, a.`cipher_password` AS password, a.`cipher_amount` AS a, a.status AS s FROM t_account_bak a WHERE a.account_id = 1 AND a.`like_query_certificate_number` like concat('like_query_%', 'like_query_abc', 'like_query_%')" />
     </rewrite-assertion>
 
     <rewrite-assertion id="select_where_with_cipher_column_like_concat_for_literals" db-types="PostgreSQL,openGauss">
-        <input sql="SELECT a.account_id, a.password, a.amount AS a, a.status AS s FROM t_account_bak a WHERE a.account_id = 1 AND a.certificate_number like concat ('%','abc','%')" />
-        <output sql="SELECT a.account_id, a.&quot;cipher_password&quot; AS password, a.&quot;cipher_amount&quot; AS a, a.status AS s FROM t_account_bak a WHERE a.account_id = 1 AND a.&quot;like_query_certificate_number&quot; like concat ('like_query_%', 'like_query_abc', 'like_query_%')" />
+        <input sql="SELECT a.account_id, a.password, a.amount AS a, a.status AS s FROM t_account_bak a WHERE a.account_id = 1 AND a.certificate_number like concat('%','abc','%')" />
+        <output sql="SELECT a.account_id, a.&quot;cipher_password&quot; AS password, a.&quot;cipher_amount&quot; AS a, a.status AS s FROM t_account_bak a WHERE a.account_id = 1 AND a.&quot;like_query_certificate_number&quot; like concat('like_query_%', 'like_query_abc', 'like_query_%')" />
     </rewrite-assertion>
 
     <rewrite-assertion id="select_where_with_cipher_column_like_nested_concat_for_parameters" db-types="MySQL">
-        <input sql="SELECT a.account_id, a.password, a.amount AS a, a.status AS s FROM t_account_bak a WHERE a.account_id = 1 AND a.certificate_number like concat (concat('', '%'), concat(?, '%'))" parameters="abc" />
-        <output sql="SELECT a.account_id, a.`cipher_password` AS password, a.`cipher_amount` AS a, a.status AS s FROM t_account_bak a WHERE a.account_id = 1 AND a.`like_query_certificate_number` like concat (concat ('like_query_', 'like_query_%'), concat (?, 'like_query_%'))" parameters="like_query_abc" />
+        <input sql="SELECT a.account_id, a.password, a.amount AS a, a.status AS s FROM t_account_bak a WHERE a.account_id = 1 AND a.certificate_number like concat(concat('', '%'), concat(?, '%'))" parameters="abc" />
+        <output sql="SELECT a.account_id, a.`cipher_password` AS password, a.`cipher_amount` AS a, a.status AS s FROM t_account_bak a WHERE a.account_id = 1 AND a.`like_query_certificate_number` like concat(concat('like_query_', 'like_query_%'), concat(?, 'like_query_%'))" parameters="like_query_abc" />
     </rewrite-assertion>
 
     <rewrite-assertion id="select_where_with_cipher_column_like_nested_concat_for_parameters" db-types="PostgreSQL,openGauss">
-        <input sql="SELECT a.account_id, a.password, a.amount AS a, a.status AS s FROM t_account_bak a WHERE a.account_id = 1 AND a.certificate_number like concat (concat('', '%'), concat(?, '%'))" parameters="abc" />
-        <output sql="SELECT a.account_id, a.&quot;cipher_password&quot; AS password, a.&quot;cipher_amount&quot; AS a, a.status AS s FROM t_account_bak a WHERE a.account_id = 1 AND a.&quot;like_query_certificate_number&quot; like concat (concat ('like_query_', 'like_query_%'), concat (?, 'like_query_%'))" parameters="like_query_abc" />
+        <input sql="SELECT a.account_id, a.password, a.amount AS a, a.status AS s FROM t_account_bak a WHERE a.account_id = 1 AND a.certificate_number like concat(concat('', '%'), concat(?, '%'))" parameters="abc" />
+        <output sql="SELECT a.account_id, a.&quot;cipher_password&quot; AS password, a.&quot;cipher_amount&quot; AS a, a.status AS s FROM t_account_bak a WHERE a.account_id = 1 AND a.&quot;like_query_certificate_number&quot; like concat(concat('like_query_', 'like_query_%'), concat(?, 'like_query_%'))" parameters="like_query_abc" />
     </rewrite-assertion>
 
     <rewrite-assertion id="select_where_with_cipher_column_like_nested_concat_for_literals" db-types="MySQL">
-        <input sql="SELECT a.account_id, a.password, a.amount AS a, a.status AS s FROM t_account_bak a WHERE a.account_id = 1 AND a.certificate_number like concat (concat('', '%'), concat('abc', '%'))" />
-        <output sql="SELECT a.account_id, a.`cipher_password` AS password, a.`cipher_amount` AS a, a.status AS s FROM t_account_bak a WHERE a.account_id = 1 AND a.`like_query_certificate_number` like concat (concat ('like_query_', 'like_query_%'), concat ('like_query_abc', 'like_query_%'))" />
+        <input sql="SELECT a.account_id, a.password, a.amount AS a, a.status AS s FROM t_account_bak a WHERE a.account_id = 1 AND a.certificate_number like concat(concat('', '%'), concat('abc', '%'))" />
+        <output sql="SELECT a.account_id, a.`cipher_password` AS password, a.`cipher_amount` AS a, a.status AS s FROM t_account_bak a WHERE a.account_id = 1 AND a.`like_query_certificate_number` like concat(concat('like_query_', 'like_query_%'), concat('like_query_abc', 'like_query_%'))" />
     </rewrite-assertion>
 
     <rewrite-assertion id="select_where_with_cipher_column_like_nested_concat_for_literals" db-types="PostgreSQL,openGauss">
-        <input sql="SELECT a.account_id, a.password, a.amount AS a, a.status AS s FROM t_account_bak a WHERE a.account_id = 1 AND a.certificate_number like concat (concat('', '%'), concat('abc', '%'))" />
-        <output sql="SELECT a.account_id, a.&quot;cipher_password&quot; AS password, a.&quot;cipher_amount&quot; AS a, a.status AS s FROM t_account_bak a WHERE a.account_id = 1 AND a.&quot;like_query_certificate_number&quot; like concat (concat ('like_query_', 'like_query_%'), concat ('like_query_abc', 'like_query_%'))" />
+        <input sql="SELECT a.account_id, a.password, a.amount AS a, a.status AS s FROM t_account_bak a WHERE a.account_id = 1 AND a.certificate_number like concat(concat('', '%'), concat('abc', '%'))" />
+        <output sql="SELECT a.account_id, a.&quot;cipher_password&quot; AS password, a.&quot;cipher_amount&quot; AS a, a.status AS s FROM t_account_bak a WHERE a.account_id = 1 AND a.&quot;like_query_certificate_number&quot; like concat(concat('like_query_', 'like_query_%'), concat('like_query_abc', 'like_query_%'))" />
     </rewrite-assertion>
 
     <rewrite-assertion id="select_from_user_with_column_alias" db-types="SQLServer">
