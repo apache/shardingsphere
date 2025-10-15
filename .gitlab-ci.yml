@@ -83,8 +83,8 @@ prepare_environment:
         CONTEXT=tag
       elif [[ "${CI_PIPELINE_SOURCE}" == "schedule" ]]; then
         DATE_TAG=$(date +"%y%m%d")
-        BUILDNO=$(relmanager_client genbuildno ${RELEASE_HUB_PROJECT} ${VERSION}-NIGTHLY)
         VERSION=$(echo ${CI_COMMIT_TAG}|sed 's/v//')
+        BUILDNO=$(relmanager_client genbuildno ${RELEASE_HUB_PROJECT} ${VERSION}-NIGTHLY)
         VERSION=${VERSION}_NIGHTLY_${DATE_TAG}_${BUILDNO}
         BRANCH=${CI_COMMIT_REF_NAME}
         CONTEXT=schedule
