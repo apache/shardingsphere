@@ -24,15 +24,20 @@ import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 class YamlAlgorithmConfigurationSwapperTest {
     
     @Test
-    void assertSwapToYaml() {
-        YamlAlgorithmConfiguration actual = new YamlAlgorithmConfigurationSwapper().swapToYamlConfiguration(
-                new AlgorithmConfiguration("TEST", PropertiesBuilder.build(new Property("key", "value"))));
+    void assertSwapToYamlConfiguration() {
+        YamlAlgorithmConfiguration actual = new YamlAlgorithmConfigurationSwapper().swapToYamlConfiguration(new AlgorithmConfiguration("TEST", PropertiesBuilder.build(new Property("key", "value"))));
         assertThat(actual.getType(), is("TEST"));
         assertThat(actual.getProps().getProperty("key"), is("value"));
+    }
+    
+    @Test
+    void assertSwapToYamlConfigurationWithNullInput() {
+        assertNull(new YamlAlgorithmConfigurationSwapper().swapToYamlConfiguration(null));
     }
     
     @Test
@@ -43,5 +48,10 @@ class YamlAlgorithmConfigurationSwapperTest {
         AlgorithmConfiguration actual = new YamlAlgorithmConfigurationSwapper().swapToObject(yamlConfig);
         assertThat(actual.getType(), is("TEST"));
         assertThat(actual.getProps().getProperty("key"), is("value"));
+    }
+    
+    @Test
+    void assertSwapToObjectWithNullInput() {
+        assertNull(new YamlAlgorithmConfigurationSwapper().swapToObject(null));
     }
 }
