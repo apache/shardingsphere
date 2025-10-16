@@ -56,13 +56,9 @@ Key directories and their purposes:
 - `jdbc/`: ShardingSphere-JDBC driver implementation
 - `test/`: E2E and IT test engine and cases
 
-## Development Guidelines
-
-Please follow these guidelines when developing: https://shardingsphere.apache.org/community/en/involved/contribute/dev-env/
-
 ## Code Standards and Conventions
 
-Please follow these guidelines when developing: https://shardingsphere.apache.org/community/en/involved/conduct/code/
+Please follow these guidelines in file [CODE_OF_CONDUCT.md] when developing
 
 ## Absolute Prohibitions (Zero-Tolerance Violations)
 
@@ -141,3 +137,4 @@ Please follow these guidelines when developing: https://shardingsphere.apache.or
   - Re-read this protocol before starting each new task.
   - Verify rule compliance after each user interaction.
   - Report violations through clear error messages.
+  - Use Spotless to enforce code style after code generated.
