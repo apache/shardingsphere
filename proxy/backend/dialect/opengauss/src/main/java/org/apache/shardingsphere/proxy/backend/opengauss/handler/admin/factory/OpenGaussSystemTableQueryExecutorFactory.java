@@ -52,6 +52,8 @@ import java.util.Optional;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class OpenGaussSystemTableQueryExecutorFactory {
     
+    private static final DatabaseType DATABASE_TYPE = TypedSPILoader.getService(DatabaseType.class, "openGauss");
+    
     private static final Map<String, Collection<String>> SCHEMA_TABLES = new CaseInsensitiveMap<>();
     
     static {
@@ -60,7 +62,7 @@ public final class OpenGaussSystemTableQueryExecutorFactory {
     
     /**
      * Create new instance of system table query executor.
-     * 
+     *
      * @param sqlStatementContext select statement context
      * @param sql SQL
      * @param parameters SQL parameters
@@ -119,8 +121,7 @@ public final class OpenGaussSystemTableQueryExecutorFactory {
     }
     
     private static boolean isSelectedStatisticsSystemTable(final Map<String, Collection<String>> selectedSchemaTables) {
-        DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "openGauss");
-        Optional<DialectDatabaseStatisticsCollector> dialectStatisticsCollector = DatabaseTypedSPILoader.findService(DialectDatabaseStatisticsCollector.class, databaseType);
+        Optional<DialectDatabaseStatisticsCollector> dialectStatisticsCollector = DatabaseTypedSPILoader.findService(DialectDatabaseStatisticsCollector.class, DATABASE_TYPE);
         return dialectStatisticsCollector.map(dialectDatabaseStatisticsCollector -> dialectDatabaseStatisticsCollector.isStatisticsTables(selectedSchemaTables)).orElse(false);
     }
     
