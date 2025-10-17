@@ -22,8 +22,7 @@ import org.apache.shardingsphere.infra.binder.context.statement.type.dml.SelectS
 import org.apache.shardingsphere.proxy.backend.handler.admin.executor.DatabaseAdminExecutor;
 import org.apache.shardingsphere.proxy.backend.handler.admin.executor.DatabaseAdminExecutorCreator;
 import org.apache.shardingsphere.proxy.backend.opengauss.handler.admin.executor.OpenGaussShowVariableExecutor;
-import org.apache.shardingsphere.proxy.backend.opengauss.handler.admin.factory.OpenGaussSystemFunctionQueryExecutorFactory;
-import org.apache.shardingsphere.proxy.backend.opengauss.handler.admin.factory.OpenGaussSystemTableQueryExecutorFactory;
+import org.apache.shardingsphere.proxy.backend.opengauss.handler.admin.factory.OpenGaussSelectAdminExecutorFactory;
 import org.apache.shardingsphere.proxy.backend.postgresql.handler.admin.PostgreSQLAdminExecutorCreator;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.ShowStatement;
 
@@ -40,13 +39,9 @@ public final class OpenGaussAdminExecutorCreator implements DatabaseAdminExecuto
     @Override
     public Optional<DatabaseAdminExecutor> create(final SQLStatementContext sqlStatementContext, final String sql, final String databaseName, final List<Object> parameters) {
         if (sqlStatementContext instanceof SelectStatementContext) {
-            Optional<DatabaseAdminExecutor> systemTableQueryExecutor = OpenGaussSystemTableQueryExecutorFactory.newInstance((SelectStatementContext) sqlStatementContext, sql, parameters);
-            if (systemTableQueryExecutor.isPresent()) {
-                return systemTableQueryExecutor;
-            }
-            Optional<DatabaseAdminExecutor> systemFunctionQueryExecutor = OpenGaussSystemFunctionQueryExecutorFactory.newInstance((SelectStatementContext) sqlStatementContext);
-            if (systemFunctionQueryExecutor.isPresent()) {
-                return systemFunctionQueryExecutor;
+            Optional<DatabaseAdminExecutor> selectAdminExecutor = OpenGaussSelectAdminExecutorFactory.newInstance((SelectStatementContext) sqlStatementContext, sql, parameters);
+            if (selectAdminExecutor.isPresent()) {
+                return selectAdminExecutor;
             }
         }
         if (sqlStatementContext.getSqlStatement() instanceof ShowStatement) {
