@@ -24,8 +24,8 @@ import org.apache.shardingsphere.infra.binder.context.segment.table.TablesContex
 import org.apache.shardingsphere.infra.binder.context.statement.type.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.metadata.statistics.collector.DialectDatabaseStatisticsCollector;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
-import org.apache.shardingsphere.proxy.backend.handler.admin.executor.DatabaseMetaDataExecutor;
 import org.apache.shardingsphere.proxy.backend.handler.admin.executor.DatabaseAdminExecutor;
+import org.apache.shardingsphere.proxy.backend.handler.admin.executor.DatabaseMetaDataExecutor;
 import org.apache.shardingsphere.proxy.backend.opengauss.handler.admin.executor.OpenGaussSelectDatCompatibilityExecutor;
 import org.apache.shardingsphere.proxy.backend.opengauss.handler.admin.executor.OpenGaussSelectPasswordDeadlineExecutor;
 import org.apache.shardingsphere.proxy.backend.opengauss.handler.admin.executor.OpenGaussSelectPasswordNotifyTimeExecutor;
@@ -59,7 +59,6 @@ class OpenGaussAdminExecutorCreatorTest {
     
     @Test
     void assertCreateExecutorForSelectDatCompatibilityFromPgDatabase() {
-        initDialectDatabaseStatisticsCollector(false);
         String sql = "SELECT datcompatibility FROM pg_database WHERE datname='sharding_db'";
         String databaseName = "postgres";
         SelectStatementContext selectStatementContext = mockSelectStatementContext("pg_catalog", "pg_database", "datcompatibility");
@@ -116,7 +115,6 @@ class OpenGaussAdminExecutorCreatorTest {
     }
     
     private void assertCreateExecutorForFunction(final String sql, final String expression, final Class<?> type) {
-        initDialectDatabaseStatisticsCollector(false);
         SelectStatementContext selectStatementContext = mock(SelectStatementContext.class, RETURNS_DEEP_STUBS);
         when(selectStatementContext.getSqlStatement().getProjections().getProjections())
                 .thenReturn(Collections.singletonList(new ExpressionProjectionSegment(-1, -1, expression)));
