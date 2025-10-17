@@ -15,14 +15,13 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.opengauss.handler.admin;
+package org.apache.shardingsphere.proxy.backend.opengauss.handler.admin.factory;
 
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.impl.ColumnProjection;
 import org.apache.shardingsphere.infra.binder.context.segment.table.TablesContext;
-import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.dml.SelectStatementContext;
-import org.apache.shardingsphere.proxy.backend.handler.admin.executor.DatabaseMetaDataExecutor;
 import org.apache.shardingsphere.proxy.backend.handler.admin.executor.DatabaseAdminExecutor;
+import org.apache.shardingsphere.proxy.backend.handler.admin.executor.DatabaseMetaDataExecutor;
 import org.apache.shardingsphere.proxy.backend.opengauss.handler.admin.executor.OpenGaussSelectDatCompatibilityExecutor;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.bound.ColumnSegmentBoundInfo;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.bound.TableSegmentBoundInfo;
@@ -41,15 +40,15 @@ import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-class OpenGaussSystemTableQueryExecutorCreatorTest {
+class OpenGaussSystemTableQueryExecutorFactoryTest {
     
     @Test
     void assertSelectDatCompatibilityFromPgDatabase() {
         String sql = "SELECT datcompatibility FROM pg_database WHERE datname='sharding_db'";
-        SQLStatementContext sqlStatementContext = mockSelectStatementContext("pg_catalog", "pg_database", "datcompatibility");
-        OpenGaussSystemTableQueryExecutorCreator creator = new OpenGaussSystemTableQueryExecutorCreator(sqlStatementContext, sql, Collections.emptyList());
+        SelectStatementContext sqlStatementContext = mockSelectStatementContext("pg_catalog", "pg_database", "datcompatibility");
+        OpenGaussSystemTableQueryExecutorFactory creator = new OpenGaussSystemTableQueryExecutorFactory(sqlStatementContext, sql, Collections.emptyList());
         assertTrue(creator.accept());
-        Optional<DatabaseAdminExecutor> actual = creator.create();
+        Optional<DatabaseAdminExecutor> actual = creator.newInstance();
         assertTrue(actual.isPresent());
         assertThat(actual.get(), isA(OpenGaussSelectDatCompatibilityExecutor.class));
     }
@@ -57,15 +56,15 @@ class OpenGaussSystemTableQueryExecutorCreatorTest {
     @Test
     void assertSelectFromNotCollectedTable() {
         String sql = "SELECT name FROM pg_type'";
-        SQLStatementContext sqlStatementContext = mockSelectStatementContext("pg_catalog", "pg_type", "name");
-        OpenGaussSystemTableQueryExecutorCreator creator = new OpenGaussSystemTableQueryExecutorCreator(sqlStatementContext, sql, Collections.emptyList());
+        SelectStatementContext sqlStatementContext = mockSelectStatementContext("pg_catalog", "pg_type", "name");
+        OpenGaussSystemTableQueryExecutorFactory creator = new OpenGaussSystemTableQueryExecutorFactory(sqlStatementContext, sql, Collections.emptyList());
         assertTrue(creator.accept());
-        Optional<DatabaseAdminExecutor> actual = creator.create();
+        Optional<DatabaseAdminExecutor> actual = creator.newInstance();
         assertTrue(actual.isPresent());
         assertThat(actual.get(), isA(DatabaseMetaDataExecutor.class));
     }
     
-    private SQLStatementContext mockSelectStatementContext(final String schemaName, final String tableName, final String columnName) {
+    private SelectStatementContext mockSelectStatementContext(final String schemaName, final String tableName, final String columnName) {
         TableSegmentBoundInfo tableSegmentBoundInfo = mock(TableSegmentBoundInfo.class, RETURNS_DEEP_STUBS);
         when(tableSegmentBoundInfo.getOriginalSchema().getValue()).thenReturn(schemaName);
         TableNameSegment tableNameSegment = mock(TableNameSegment.class, RETURNS_DEEP_STUBS);

@@ -15,10 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.opengauss.handler.admin;
+package org.apache.shardingsphere.proxy.backend.opengauss.handler.admin.factory;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
+import org.apache.shardingsphere.infra.binder.context.statement.type.dml.SelectStatementContext;
 import org.apache.shardingsphere.proxy.backend.handler.admin.executor.DatabaseAdminExecutor;
 import org.apache.shardingsphere.proxy.backend.opengauss.handler.admin.executor.OpenGaussSelectPasswordDeadlineExecutor;
 import org.apache.shardingsphere.proxy.backend.opengauss.handler.admin.executor.OpenGaussSelectPasswordNotifyTimeExecutor;
@@ -31,12 +31,12 @@ import java.util.Collection;
 import java.util.Optional;
 
 /**
- * OpenGauss system function query executor creator.
+ * System function query executor factory for openGauss.
  */
 @RequiredArgsConstructor
-public final class OpenGaussSystemFunctionQueryExecutorCreator {
+public final class OpenGaussSystemFunctionQueryExecutorFactory {
     
-    private final SQLStatementContext sqlStatementContext;
+    private final SelectStatementContext sqlStatementContext;
     
     private String functionName;
     
@@ -46,10 +46,7 @@ public final class OpenGaussSystemFunctionQueryExecutorCreator {
      * @return true or false
      */
     public boolean accept() {
-        if (!(sqlStatementContext.getSqlStatement() instanceof SelectStatement)) {
-            return false;
-        }
-        SelectStatement selectStatement = (SelectStatement) sqlStatementContext.getSqlStatement();
+        SelectStatement selectStatement = sqlStatementContext.getSqlStatement();
         Collection<ProjectionSegment> projections = selectStatement.getProjections().getProjections();
         if (1 == projections.size() && projections.iterator().next() instanceof ExpressionProjectionSegment) {
             functionName = ((ExpressionProjectionSegment) projections.iterator().next()).getText();
@@ -61,11 +58,11 @@ public final class OpenGaussSystemFunctionQueryExecutorCreator {
     }
     
     /**
-     * Create.
+     * Create new instance of system function query executor.
      *
-     * @return database admin executor
+     * @return created instance
      */
-    public Optional<DatabaseAdminExecutor> create() {
+    public Optional<DatabaseAdminExecutor> newInstance() {
         if (OpenGaussSelectVersionExecutor.accept(functionName)) {
             return Optional.of(new OpenGaussSelectVersionExecutor());
         }

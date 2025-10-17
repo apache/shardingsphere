@@ -18,9 +18,12 @@
 package org.apache.shardingsphere.proxy.backend.opengauss.handler.admin;
 
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
+import org.apache.shardingsphere.infra.binder.context.statement.type.dml.SelectStatementContext;
 import org.apache.shardingsphere.proxy.backend.handler.admin.executor.DatabaseAdminExecutor;
 import org.apache.shardingsphere.proxy.backend.handler.admin.executor.DatabaseAdminExecutorCreator;
 import org.apache.shardingsphere.proxy.backend.opengauss.handler.admin.executor.OpenGaussShowVariableExecutor;
+import org.apache.shardingsphere.proxy.backend.opengauss.handler.admin.factory.OpenGaussSystemFunctionQueryExecutorFactory;
+import org.apache.shardingsphere.proxy.backend.opengauss.handler.admin.factory.OpenGaussSystemTableQueryExecutorFactory;
 import org.apache.shardingsphere.proxy.backend.postgresql.handler.admin.PostgreSQLAdminExecutorCreator;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.ShowStatement;
 
@@ -36,13 +39,15 @@ public final class OpenGaussAdminExecutorCreator implements DatabaseAdminExecuto
     
     @Override
     public Optional<DatabaseAdminExecutor> create(final SQLStatementContext sqlStatementContext, final String sql, final String databaseName, final List<Object> parameters) {
-        OpenGaussSystemTableQueryExecutorCreator systemTableQueryExecutorCreator = new OpenGaussSystemTableQueryExecutorCreator(sqlStatementContext, sql, parameters);
-        if (systemTableQueryExecutorCreator.accept()) {
-            return systemTableQueryExecutorCreator.create();
-        }
-        OpenGaussSystemFunctionQueryExecutorCreator functionQueryExecutorCreator = new OpenGaussSystemFunctionQueryExecutorCreator(sqlStatementContext);
-        if (functionQueryExecutorCreator.accept()) {
-            return functionQueryExecutorCreator.create();
+        if (sqlStatementContext instanceof SelectStatementContext) {
+            OpenGaussSystemTableQueryExecutorFactory systemTableQueryExecutorCreator = new OpenGaussSystemTableQueryExecutorFactory((SelectStatementContext) sqlStatementContext, sql, parameters);
+            if (systemTableQueryExecutorCreator.accept()) {
+                return systemTableQueryExecutorCreator.newInstance();
+            }
+            OpenGaussSystemFunctionQueryExecutorFactory functionQueryExecutorCreator = new OpenGaussSystemFunctionQueryExecutorFactory((SelectStatementContext) sqlStatementContext);
+            if (functionQueryExecutorCreator.accept()) {
+                return functionQueryExecutorCreator.newInstance();
+            }
         }
         if (sqlStatementContext.getSqlStatement() instanceof ShowStatement) {
             return Optional.of(new OpenGaussShowVariableExecutor((ShowStatement) sqlStatementContext.getSqlStatement()));

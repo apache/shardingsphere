@@ -15,9 +15,8 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.opengauss.handler.admin;
+package org.apache.shardingsphere.proxy.backend.opengauss.handler.admin.factory;
 
-import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.dml.SelectStatementContext;
 import org.apache.shardingsphere.proxy.backend.handler.admin.executor.DatabaseAdminExecutor;
 import org.apache.shardingsphere.proxy.backend.opengauss.handler.admin.executor.OpenGaussSelectPasswordDeadlineExecutor;
@@ -37,39 +36,39 @@ import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-class OpenGaussSystemFunctionQueryExecutorCreatorTest {
+class OpenGaussSystemFunctionQueryExecutorFactoryTest {
     
     @Test
     void assertVersion() {
-        SQLStatementContext sqlStatementContext = mockSQLStatementContext("VERSION()");
-        OpenGaussSystemFunctionQueryExecutorCreator creator = new OpenGaussSystemFunctionQueryExecutorCreator(sqlStatementContext);
+        SelectStatementContext sqlStatementContext = mockSQLStatementContext("VERSION()");
+        OpenGaussSystemFunctionQueryExecutorFactory creator = new OpenGaussSystemFunctionQueryExecutorFactory(sqlStatementContext);
         assertTrue(creator.accept());
-        Optional<DatabaseAdminExecutor> actual = creator.create();
+        Optional<DatabaseAdminExecutor> actual = creator.newInstance();
         assertTrue(actual.isPresent());
         assertThat(actual.get(), isA(OpenGaussSelectVersionExecutor.class));
     }
     
     @Test
     void assertGsPasswordDeadline() {
-        SQLStatementContext sqlStatementContext = mockSQLStatementContext("gs_password_deadline()");
-        OpenGaussSystemFunctionQueryExecutorCreator creator = new OpenGaussSystemFunctionQueryExecutorCreator(sqlStatementContext);
+        SelectStatementContext sqlStatementContext = mockSQLStatementContext("gs_password_deadline()");
+        OpenGaussSystemFunctionQueryExecutorFactory creator = new OpenGaussSystemFunctionQueryExecutorFactory(sqlStatementContext);
         assertTrue(creator.accept());
-        Optional<DatabaseAdminExecutor> actual = creator.create();
+        Optional<DatabaseAdminExecutor> actual = creator.newInstance();
         assertTrue(actual.isPresent());
         assertThat(actual.get(), isA(OpenGaussSelectPasswordDeadlineExecutor.class));
     }
     
     @Test
     void assertGsPasswordNotifyTime() {
-        SQLStatementContext sqlStatementContext = mockSQLStatementContext("gs_password_notifytime()");
-        OpenGaussSystemFunctionQueryExecutorCreator creator = new OpenGaussSystemFunctionQueryExecutorCreator(sqlStatementContext);
+        SelectStatementContext sqlStatementContext = mockSQLStatementContext("gs_password_notifytime()");
+        OpenGaussSystemFunctionQueryExecutorFactory creator = new OpenGaussSystemFunctionQueryExecutorFactory(sqlStatementContext);
         assertTrue(creator.accept());
-        Optional<DatabaseAdminExecutor> actual = creator.create();
+        Optional<DatabaseAdminExecutor> actual = creator.newInstance();
         assertTrue(actual.isPresent());
         assertThat(actual.get(), isA(OpenGaussSelectPasswordNotifyTimeExecutor.class));
     }
     
-    private SQLStatementContext mockSQLStatementContext(final String functionName) {
+    private SelectStatementContext mockSQLStatementContext(final String functionName) {
         ExpressionProjectionSegment expressionProjection = mock(ExpressionProjectionSegment.class, RETURNS_DEEP_STUBS);
         when(expressionProjection.getText()).thenReturn(functionName);
         ProjectionsSegment projections = mock(ProjectionsSegment.class, RETURNS_DEEP_STUBS);

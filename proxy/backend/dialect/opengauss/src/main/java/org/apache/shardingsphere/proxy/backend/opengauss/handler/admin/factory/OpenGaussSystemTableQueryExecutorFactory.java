@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.opengauss.handler.admin;
+package org.apache.shardingsphere.proxy.backend.opengauss.handler.admin.factory;
 
 import com.cedarsoftware.util.CaseInsensitiveMap;
 import com.cedarsoftware.util.CaseInsensitiveSet;
@@ -25,7 +25,6 @@ import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.Projection;
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.impl.ColumnProjection;
 import org.apache.shardingsphere.infra.binder.context.segment.table.TablesContext;
-import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager;
 import org.apache.shardingsphere.infra.metadata.statistics.collector.DialectDatabaseStatisticsCollector;
@@ -37,8 +36,6 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.bound
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.bound.TableSegmentBoundInfo;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableNameSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 
 import java.util.Collection;
@@ -49,10 +46,10 @@ import java.util.Map.Entry;
 import java.util.Optional;
 
 /**
- * OpenGauss system table query executor creator.
+ * System table query executor factory for openGauss.
  */
 @RequiredArgsConstructor
-public final class OpenGaussSystemTableQueryExecutorCreator {
+public final class OpenGaussSystemTableQueryExecutorFactory {
     
     private static final Map<String, Collection<String>> SCHEMA_TABLES = new CaseInsensitiveMap<>();
     
@@ -60,7 +57,7 @@ public final class OpenGaussSystemTableQueryExecutorCreator {
         SCHEMA_TABLES.put("shardingsphere", new CaseInsensitiveSet<>(Collections.singletonList("cluster_information")));
     }
     
-    private final SQLStatementContext sqlStatementContext;
+    private final SelectStatementContext sqlStatementContext;
     
     private final String sql;
     
@@ -69,12 +66,12 @@ public final class OpenGaussSystemTableQueryExecutorCreator {
     private Map<String, Collection<String>> selectedSchemaTables = new CaseInsensitiveMap<>();
     
     /**
-     * Create.
+     * Create new instance of system table query executor.
      *
-     * @return database admin executor
+     * @return created instance
      */
-    public Optional<DatabaseAdminExecutor> create() {
-        if (isSelectSystemTable(selectedSchemaTables) && isSelectDatCompatibility((SelectStatementContext) sqlStatementContext)) {
+    public Optional<DatabaseAdminExecutor> newInstance() {
+        if (isSelectSystemTable(selectedSchemaTables) && isSelectDatCompatibility(sqlStatementContext)) {
             return Optional.of(new OpenGaussSelectDatCompatibilityExecutor());
         }
         if (isSelectedStatisticsSystemTable(selectedSchemaTables) || isSelectedShardingSphereSystemTable(selectedSchemaTables)) {
@@ -107,12 +104,8 @@ public final class OpenGaussSystemTableQueryExecutorCreator {
      * @return true or false
      */
     public boolean accept() {
-        SQLStatement sqlStatement = sqlStatementContext.getSqlStatement();
-        if (!(sqlStatement instanceof SelectStatement)) {
-            return false;
-        }
-        selectedSchemaTables = getSelectedSchemaTables((SelectStatementContext) sqlStatementContext);
-        return isSelectedStatisticsSystemTable(selectedSchemaTables) || isSelectedShardingSphereSystemTable(selectedSchemaTables) || isSelectSystemTable(selectedSchemaTables);
+        selectedSchemaTables = getSelectedSchemaTables(sqlStatementContext);
+        return isSelectSystemTable(selectedSchemaTables);
     }
     
     private Map<String, Collection<String>> getSelectedSchemaTables(final SelectStatementContext selectStatementContext) {
