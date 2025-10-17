@@ -44,9 +44,9 @@ public final class OpenGaussAdminExecutorCreator implements DatabaseAdminExecuto
             if (systemTableQueryExecutor.isPresent()) {
                 return systemTableQueryExecutor;
             }
-            OpenGaussSystemFunctionQueryExecutorFactory functionQueryExecutorCreator = new OpenGaussSystemFunctionQueryExecutorFactory((SelectStatementContext) sqlStatementContext);
-            if (functionQueryExecutorCreator.accept()) {
-                return functionQueryExecutorCreator.newInstance();
+            Optional<DatabaseAdminExecutor> systemFunctionQueryExecutor = OpenGaussSystemFunctionQueryExecutorFactory.newInstance((SelectStatementContext) sqlStatementContext);
+            if (systemFunctionQueryExecutor.isPresent()) {
+                return systemFunctionQueryExecutor;
             }
         }
         if (sqlStatementContext.getSqlStatement() instanceof ShowStatement) {
