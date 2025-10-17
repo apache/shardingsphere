@@ -40,9 +40,9 @@ public final class OpenGaussAdminExecutorCreator implements DatabaseAdminExecuto
     @Override
     public Optional<DatabaseAdminExecutor> create(final SQLStatementContext sqlStatementContext, final String sql, final String databaseName, final List<Object> parameters) {
         if (sqlStatementContext instanceof SelectStatementContext) {
-            OpenGaussSystemTableQueryExecutorFactory systemTableQueryExecutorCreator = new OpenGaussSystemTableQueryExecutorFactory((SelectStatementContext) sqlStatementContext, sql, parameters);
-            if (systemTableQueryExecutorCreator.accept()) {
-                return systemTableQueryExecutorCreator.newInstance();
+            Optional<DatabaseAdminExecutor> systemTableQueryExecutor = OpenGaussSystemTableQueryExecutorFactory.newInstance((SelectStatementContext) sqlStatementContext, sql, parameters);
+            if (systemTableQueryExecutor.isPresent()) {
+                return systemTableQueryExecutor;
             }
             OpenGaussSystemFunctionQueryExecutorFactory functionQueryExecutorCreator = new OpenGaussSystemFunctionQueryExecutorFactory((SelectStatementContext) sqlStatementContext);
             if (functionQueryExecutorCreator.accept()) {
