@@ -46,9 +46,7 @@ class OpenGaussSystemTableQueryExecutorFactoryTest {
     void assertSelectDatCompatibilityFromPgDatabase() {
         String sql = "SELECT datcompatibility FROM pg_database WHERE datname='sharding_db'";
         SelectStatementContext sqlStatementContext = mockSelectStatementContext("pg_catalog", "pg_database", "datcompatibility");
-        OpenGaussSystemTableQueryExecutorFactory creator = new OpenGaussSystemTableQueryExecutorFactory(sqlStatementContext, sql, Collections.emptyList());
-        assertTrue(creator.accept());
-        Optional<DatabaseAdminExecutor> actual = creator.newInstance();
+        Optional<DatabaseAdminExecutor> actual = OpenGaussSystemTableQueryExecutorFactory.newInstance(sqlStatementContext, sql, Collections.emptyList());
         assertTrue(actual.isPresent());
         assertThat(actual.get(), isA(OpenGaussSelectDatCompatibilityExecutor.class));
     }
@@ -57,9 +55,7 @@ class OpenGaussSystemTableQueryExecutorFactoryTest {
     void assertSelectFromNotCollectedTable() {
         String sql = "SELECT name FROM pg_type'";
         SelectStatementContext sqlStatementContext = mockSelectStatementContext("pg_catalog", "pg_type", "name");
-        OpenGaussSystemTableQueryExecutorFactory creator = new OpenGaussSystemTableQueryExecutorFactory(sqlStatementContext, sql, Collections.emptyList());
-        assertTrue(creator.accept());
-        Optional<DatabaseAdminExecutor> actual = creator.newInstance();
+        Optional<DatabaseAdminExecutor> actual = OpenGaussSystemTableQueryExecutorFactory.newInstance(sqlStatementContext, sql, Collections.emptyList());
         assertTrue(actual.isPresent());
         assertThat(actual.get(), isA(DatabaseMetaDataExecutor.class));
     }

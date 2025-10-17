@@ -19,7 +19,8 @@ package org.apache.shardingsphere.proxy.backend.opengauss.handler.admin.factory;
 
 import com.cedarsoftware.util.CaseInsensitiveMap;
 import com.cedarsoftware.util.CaseInsensitiveSet;
-import lombok.RequiredArgsConstructor;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.Projection;
@@ -48,7 +49,7 @@ import java.util.Optional;
 /**
  * System table query executor factory for openGauss.
  */
-@RequiredArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class OpenGaussSystemTableQueryExecutorFactory {
     
     private static final Map<String, Collection<String>> SCHEMA_TABLES = new CaseInsensitiveMap<>();
@@ -57,20 +58,16 @@ public final class OpenGaussSystemTableQueryExecutorFactory {
         SCHEMA_TABLES.put("shardingsphere", new CaseInsensitiveSet<>(Collections.singletonList("cluster_information")));
     }
     
-    private final SelectStatementContext sqlStatementContext;
-    
-    private final String sql;
-    
-    private final List<Object> parameters;
-    
-    private Map<String, Collection<String>> selectedSchemaTables = new CaseInsensitiveMap<>();
-    
     /**
      * Create new instance of system table query executor.
-     *
+     * 
+     * @param sqlStatementContext select statement context
+     * @param sql SQL
+     * @param parameters SQL parameters
      * @return created instance
      */
-    public Optional<DatabaseAdminExecutor> newInstance() {
+    public static Optional<DatabaseAdminExecutor> newInstance(final SelectStatementContext sqlStatementContext, final String sql, final List<Object> parameters) {
+        Map<String, Collection<String>> selectedSchemaTables = getSelectedSchemaTables(sqlStatementContext);
         if (isSelectSystemTable(selectedSchemaTables) && isSelectDatCompatibility(sqlStatementContext)) {
             return Optional.of(new OpenGaussSelectDatCompatibilityExecutor());
         }
@@ -83,7 +80,30 @@ public final class OpenGaussSystemTableQueryExecutorFactory {
         return Optional.empty();
     }
     
-    private boolean isSelectDatCompatibility(final SelectStatementContext selectStatementContext) {
+    private static Map<String, Collection<String>> getSelectedSchemaTables(final SelectStatementContext selectStatementContext) {
+        Map<String, Collection<String>> result = new CaseInsensitiveMap<>();
+        for (SimpleTableSegment each : selectStatementContext.getTablesContext().getSimpleTables()) {
+            TableNameSegment tableNameSegment = each.getTableName();
+            String tableName = tableNameSegment.getIdentifier().getValue();
+            String schemaName = tableNameSegment.getTableBoundInfo().map(TableSegmentBoundInfo::getOriginalSchema).map(IdentifierValue::getValue).orElse(null);
+            Optional.ofNullable(schemaName).ifPresent(optional -> result.computeIfAbsent(optional, key -> new CaseInsensitiveSet<>()).add(tableName));
+        }
+        return result;
+    }
+    
+    private static boolean isSelectSystemTable(final Map<String, Collection<String>> selectedSchemaTables) {
+        if (selectedSchemaTables.isEmpty()) {
+            return false;
+        }
+        for (Entry<String, Collection<String>> each : selectedSchemaTables.entrySet()) {
+            if (!SystemSchemaManager.isSystemTable("openGauss", each.getKey(), each.getValue())) {
+                return false;
+            }
+        }
+        return true;
+    }
+    
+    private static boolean isSelectDatCompatibility(final SelectStatementContext selectStatementContext) {
         TablesContext tablesContext = selectStatementContext.getTablesContext();
         boolean isSelectFromPgDatabase = 1 == tablesContext.getSimpleTables().size()
                 && "pg_database".equalsIgnoreCase(tablesContext.getSimpleTables().iterator().next().getTableName().getIdentifier().getValue());
@@ -98,35 +118,13 @@ public final class OpenGaussSystemTableQueryExecutorFactory {
         return false;
     }
     
-    /**
-     * Accept.
-     *
-     * @return true or false
-     */
-    public boolean accept() {
-        selectedSchemaTables = getSelectedSchemaTables(sqlStatementContext);
-        return isSelectSystemTable(selectedSchemaTables);
-    }
-    
-    private Map<String, Collection<String>> getSelectedSchemaTables(final SelectStatementContext selectStatementContext) {
-        Map<String, Collection<String>> result = new CaseInsensitiveMap<>();
-        TablesContext tablesContext = selectStatementContext.getTablesContext();
-        for (SimpleTableSegment each : tablesContext.getSimpleTables()) {
-            TableNameSegment tableNameSegment = each.getTableName();
-            String tableName = tableNameSegment.getIdentifier().getValue();
-            String schemaName = tableNameSegment.getTableBoundInfo().map(TableSegmentBoundInfo::getOriginalSchema).map(IdentifierValue::getValue).orElse(null);
-            Optional.ofNullable(schemaName).ifPresent(optional -> result.computeIfAbsent(optional, key -> new CaseInsensitiveSet<>()).add(tableName));
-        }
-        return result;
-    }
-    
-    private boolean isSelectedStatisticsSystemTable(final Map<String, Collection<String>> selectedSchemaTables) {
+    private static boolean isSelectedStatisticsSystemTable(final Map<String, Collection<String>> selectedSchemaTables) {
         DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "openGauss");
         Optional<DialectDatabaseStatisticsCollector> dialectStatisticsCollector = DatabaseTypedSPILoader.findService(DialectDatabaseStatisticsCollector.class, databaseType);
         return dialectStatisticsCollector.map(dialectDatabaseStatisticsCollector -> dialectDatabaseStatisticsCollector.isStatisticsTables(selectedSchemaTables)).orElse(false);
     }
     
-    private boolean isSelectedShardingSphereSystemTable(final Map<String, Collection<String>> selectedSchemaTables) {
+    private static boolean isSelectedShardingSphereSystemTable(final Map<String, Collection<String>> selectedSchemaTables) {
         if (selectedSchemaTables.isEmpty()) {
             return false;
         }
@@ -135,18 +133,6 @@ public final class OpenGaussSystemTableQueryExecutorFactory {
                 return false;
             }
             if (!SCHEMA_TABLES.get(each.getKey()).containsAll(each.getValue())) {
-                return false;
-            }
-        }
-        return true;
-    }
-    
-    private boolean isSelectSystemTable(final Map<String, Collection<String>> selectedSchemaTables) {
-        if (selectedSchemaTables.isEmpty()) {
-            return false;
-        }
-        for (Entry<String, Collection<String>> each : selectedSchemaTables.entrySet()) {
-            if (!SystemSchemaManager.isSystemTable("openGauss", each.getKey(), each.getValue())) {
                 return false;
             }
         }
