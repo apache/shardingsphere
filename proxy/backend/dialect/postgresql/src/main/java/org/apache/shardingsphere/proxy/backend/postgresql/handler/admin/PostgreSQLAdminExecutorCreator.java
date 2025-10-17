@@ -42,10 +42,7 @@ public final class PostgreSQLAdminExecutorCreator implements DatabaseAdminExecut
     public Optional<DatabaseAdminExecutor> create(final SQLStatementContext sqlStatementContext, final String sql, final String databaseName, final List<Object> parameters) {
         SQLStatement sqlStatement = sqlStatementContext.getSqlStatement();
         if (sqlStatement instanceof SelectStatement) {
-            Optional<DatabaseAdminExecutor> selectAdminExecutor = PostgreSQLSelectAdminExecutorFactory.newInstance((SelectStatement) sqlStatement, sql, parameters);
-            if (selectAdminExecutor.isPresent()) {
-                return selectAdminExecutor;
-            }
+            return PostgreSQLSelectAdminExecutorFactory.newInstance((SelectStatement) sqlStatement, sql, parameters);
         }
         if (sqlStatement instanceof SetStatement) {
             return Optional.of(new PostgreSQLSetVariableAdminExecutor((SetStatement) sqlStatement));
