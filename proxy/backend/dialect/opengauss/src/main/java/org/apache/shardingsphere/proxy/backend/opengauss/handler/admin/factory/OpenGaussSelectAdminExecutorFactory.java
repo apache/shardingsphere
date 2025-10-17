@@ -21,6 +21,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.binder.context.statement.type.dml.SelectStatementContext;
 import org.apache.shardingsphere.proxy.backend.handler.admin.executor.DatabaseAdminExecutor;
+import org.apache.shardingsphere.proxy.backend.postgresql.handler.admin.factory.PostgreSQLSelectAdminExecutorFactory;
 
 import java.util.List;
 import java.util.Optional;
@@ -44,6 +45,10 @@ public final class OpenGaussSelectAdminExecutorFactory {
         if (systemTableQueryExecutor.isPresent()) {
             return systemTableQueryExecutor;
         }
-        return OpenGaussSystemFunctionQueryExecutorFactory.newInstance(selectStatementContext);
+        Optional<DatabaseAdminExecutor> systemFunctionQueryExecutor = OpenGaussSystemFunctionQueryExecutorFactory.newInstance(selectStatementContext);
+        if (systemFunctionQueryExecutor.isPresent()) {
+            return systemFunctionQueryExecutor;
+        }
+        return PostgreSQLSelectAdminExecutorFactory.newInstance(selectStatementContext.getSqlStatement(), sql, parameters);
     }
 }
