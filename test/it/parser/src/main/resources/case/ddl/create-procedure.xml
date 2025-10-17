@@ -64,6 +64,42 @@
             <sql-statement start-index="152" stop-index="169" statement-class-simple-name="OpenCursorStatement" />
         </sql-statements>
     </create-procedure>
+    <create-procedure sql-case-id="create_procedure_if_not_exists">
+        <sql-statements>
+            <sql-statement start-index="0" stop-index="51" statement-class-simple-name="MySQLCreateProcedureStatement" />
+        </sql-statements>
+    </create-procedure>
+    <create-procedure sql-case-id="create_procedure_with_transaction">
+        <procedure-name name="proc1" />
+        <sql-statements>
+            <sql-statement start-index="30" stop-index="50" statement-class-simple-name="MySQLStartTransactionStatement" />
+            <sql-statement start-index="52" stop-index="83" statement-class-simple-name="MySQLCreateTableStatement" />
+            <sql-statement start-index="85" stop-index="93" statement-class-simple-name="MySQLRollbackStatement" />
+            <sql-statement start-index="95" stop-index="115" statement-class-simple-name="MySQLStartTransactionStatement" />
+            <sql-statement start-index="117" stop-index="148" statement-class-simple-name="MySQLCreateTableStatement" />
+            <sql-statement start-index="150" stop-index="158" statement-class-simple-name="MySQLCommitStatement" />
+        </sql-statements>
+    </create-procedure>
+    <create-procedure sql-case-id="create_procedure_with_charset_parameters_and_insert">
+        <procedure-name name="bug18293" />
+        <sql-statements>
+            <sql-statement start-index="125" stop-index="172" statement-class-simple-name="MySQLInsertStatement" />
+        </sql-statements>
+    </create-procedure>
+    <create-procedure sql-case-id="create_procedure_with_create_table_and_show_create_table_schema">
+        <procedure-name name="p2" />
+        <sql-statements>
+            <sql-statement start-index="47" stop-index="90" statement-class-simple-name="MySQLCreateTableStatement" />
+            <sql-statement start-index="92" stop-index="116" statement-class-simple-name="MySQLShowCreateTableStatement" />
+        </sql-statements>
+    </create-procedure>
+    <create-procedure sql-case-id="create_procedure_with_show_create_table_in_default_schema">
+        <procedure-name name="p1" />
+        <sql-statements>
+            <sql-statement start-index="33" stop-index="76" statement-class-simple-name="MySQLCreateTableStatement" />
+            <sql-statement start-index="78" stop-index="102" statement-class-simple-name="MySQLShowCreateTableStatement" />
+        </sql-statements>
+    </create-procedure>
     <create-procedure sql-case-id="create_procedure_with_handler_and_table_creation">
         <procedure-name name="peter1" />
         <sql-statements>
