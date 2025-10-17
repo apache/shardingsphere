@@ -105,7 +105,7 @@ public final class OpenGaussSystemTableQueryExecutorFactory {
      */
     public boolean accept() {
         selectedSchemaTables = getSelectedSchemaTables(sqlStatementContext);
-        return isSelectedStatisticsSystemTable(selectedSchemaTables) || isSelectedShardingSphereSystemTable(selectedSchemaTables) || isSelectSystemTable(selectedSchemaTables);
+        return isSelectSystemTable(selectedSchemaTables);
     }
     
     private Map<String, Collection<String>> getSelectedSchemaTables(final SelectStatementContext selectStatementContext) {
