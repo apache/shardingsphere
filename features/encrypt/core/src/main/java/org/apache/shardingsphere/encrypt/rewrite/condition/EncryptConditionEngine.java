@@ -162,15 +162,24 @@ public final class EncryptConditionEngine {
         if (!columnSegment.isPresent()) {
             return Collections.emptyList();
         }
+        return getEncryptConditions(tableName, expression, columnSegment.get());
+    }
+    
+    private Collection<EncryptCondition> getEncryptConditions(final String tableName, final BinaryOperationExpression expression, final ColumnSegment columnSegment) {
         ExpressionSegment compareValueSegment = isCompareValueSegment(expression.getLeft()) ? expression.getLeft() : expression.getRight();
-        if (compareValueSegment instanceof SimpleExpressionSegment) {
-            return Collections.singleton(createEncryptBinaryOperationCondition(tableName, expression, columnSegment.get(), compareValueSegment));
+        return getEncryptCondition(tableName, expression, compareValueSegment, columnSegment).map(Collections::singleton).orElseGet(Collections::emptySet);
+    }
+    
+    private Optional<EncryptCondition> getEncryptCondition(final String tableName, final BinaryOperationExpression expression, final ExpressionSegment expressionSegment,
+                                                           final ColumnSegment columnSegment) {
+        if (expressionSegment instanceof SimpleExpressionSegment) {
+            return Optional.of(createEncryptBinaryOperationCondition(tableName, expression, columnSegment, expressionSegment));
         }
-        if (compareValueSegment instanceof ListExpression) {
+        if (expressionSegment instanceof ListExpression) {
             // TODO check this logic when items contain multiple values @duanzhengqiang
-            return Collections.singleton(createEncryptBinaryOperationCondition(tableName, expression, columnSegment.get(), ((ListExpression) compareValueSegment).getItems().get(0)));
+            return Optional.of(createEncryptBinaryOperationCondition(tableName, expression, columnSegment, ((ListExpression) expressionSegment).getItems().get(0)));
         }
-        return Collections.emptyList();
+        return Optional.empty();
     }
     
     private boolean isCompareValueSegment(final ExpressionSegment expressionSegment) {

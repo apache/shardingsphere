@@ -49,6 +49,6 @@ public final class GroupByContextEngine {
             }
             groupByItems.add(orderByItem);
         }
-        return new GroupByContext(groupByItems);
+        return new GroupByContext(groupByItems, selectStatement.getHaving().orElse(null));
     }
 }
