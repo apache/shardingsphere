@@ -39,9 +39,9 @@ public final class OpenGaussAdminExecutorCreator implements DatabaseAdminExecuto
     @Override
     public Optional<DatabaseAdminExecutor> create(final SQLStatementContext sqlStatementContext, final String sql, final String databaseName, final List<Object> parameters) {
         if (sqlStatementContext instanceof SelectStatementContext) {
-            Optional<DatabaseAdminExecutor> queryExecutor = OpenGaussSelectAdminExecutorFactory.newInstance((SelectStatementContext) sqlStatementContext, sql, parameters);
-            if (queryExecutor.isPresent()) {
-                return queryExecutor;
+            Optional<DatabaseAdminExecutor> selectAdminExecutor = OpenGaussSelectAdminExecutorFactory.newInstance((SelectStatementContext) sqlStatementContext, sql, parameters);
+            if (selectAdminExecutor.isPresent()) {
+                return selectAdminExecutor;
             }
         }
         if (sqlStatementContext.getSqlStatement() instanceof ShowStatement) {
