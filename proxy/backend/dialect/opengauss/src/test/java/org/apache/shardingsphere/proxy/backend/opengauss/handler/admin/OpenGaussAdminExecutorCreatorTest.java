@@ -89,6 +89,7 @@ class OpenGaussAdminExecutorCreatorTest {
     
     @Test
     void assertCreateExecutorForSelectVersion() {
+        initDialectDatabaseStatisticsCollector(false);
         String sql = "SELECT VERSION()";
         String expression = "VERSION()";
         assertCreateExecutorForFunction(sql, expression, OpenGaussSelectVersionExecutor.class);
@@ -96,6 +97,7 @@ class OpenGaussAdminExecutorCreatorTest {
     
     @Test
     void assertCreateExecutorForSelectGsPasswordDeadline() {
+        initDialectDatabaseStatisticsCollector(false);
         String sql = "SELECT pg_catalog.intervaltonum(pg_catalog.gs_password_deadline())";
         String expression = "pg_catalog.intervaltonum(pg_catalog.gs_password_deadline())";
         assertCreateExecutorForFunction(sql, expression, OpenGaussSelectPasswordDeadlineExecutor.class);
@@ -103,6 +105,7 @@ class OpenGaussAdminExecutorCreatorTest {
     
     @Test
     void assertCreateExecutorForSelectGsPasswordNotifyTime() {
+        initDialectDatabaseStatisticsCollector(false);
         String sql = "SELECT pg_catalog.gs_password_notifytime()";
         String expression = "pg_catalog.gs_password_notifytime()";
         assertCreateExecutorForFunction(sql, expression, OpenGaussSelectPasswordNotifyTimeExecutor.class);
@@ -112,6 +115,7 @@ class OpenGaussAdminExecutorCreatorTest {
         DialectDatabaseStatisticsCollector statisticsCollector = mock(DialectDatabaseStatisticsCollector.class);
         when(statisticsCollector.isStatisticsTables(anyMap())).thenReturn(isStatisticsTables);
         when(DatabaseTypedSPILoader.findService(DialectDatabaseStatisticsCollector.class, TypedSPILoader.getService(DatabaseType.class, "openGauss"))).thenReturn(Optional.of(statisticsCollector));
+        when(DatabaseTypedSPILoader.findService(DialectDatabaseStatisticsCollector.class, TypedSPILoader.getService(DatabaseType.class, "PostgreSQL"))).thenReturn(Optional.of(statisticsCollector));
     }
     
     private void assertCreateExecutorForFunction(final String sql, final String expression, final Class<?> type) {
