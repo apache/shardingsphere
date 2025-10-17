@@ -20,6 +20,7 @@ package org.apache.shardingsphere.infra.binder.context.segment.select.groupby;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.binder.context.segment.select.orderby.OrderByItem;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.predicate.HavingSegment;
 
 import java.util.Collection;
 
@@ -31,4 +32,11 @@ import java.util.Collection;
 public final class GroupByContext {
     
     private final Collection<OrderByItem> items;
+    
+    private final HavingSegment havingSegment;
+    
+    public GroupByContext(final Collection<OrderByItem> items) {
+        this.items = items;
+        havingSegment = null;
+    }
 }
