@@ -17,7 +17,8 @@
 
 package org.apache.shardingsphere.proxy.backend.opengauss.handler.admin.factory;
 
-import lombok.RequiredArgsConstructor;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.binder.context.statement.type.dml.SelectStatementContext;
 import org.apache.shardingsphere.proxy.backend.handler.admin.executor.DatabaseAdminExecutor;
 import org.apache.shardingsphere.proxy.backend.opengauss.handler.admin.executor.OpenGaussSelectPasswordDeadlineExecutor;
@@ -25,7 +26,6 @@ import org.apache.shardingsphere.proxy.backend.opengauss.handler.admin.executor.
 import org.apache.shardingsphere.proxy.backend.opengauss.handler.admin.executor.OpenGaussSelectVersionExecutor;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ExpressionProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ProjectionSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.SelectStatement;
 
 import java.util.Collection;
 import java.util.Optional;
@@ -33,36 +33,21 @@ import java.util.Optional;
 /**
  * System function query executor factory for openGauss.
  */
-@RequiredArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class OpenGaussSystemFunctionQueryExecutorFactory {
-    
-    private final SelectStatementContext sqlStatementContext;
-    
-    private String functionName;
-    
-    /**
-     * Accept.
-     *
-     * @return true or false
-     */
-    public boolean accept() {
-        SelectStatement selectStatement = sqlStatementContext.getSqlStatement();
-        Collection<ProjectionSegment> projections = selectStatement.getProjections().getProjections();
-        if (1 == projections.size() && projections.iterator().next() instanceof ExpressionProjectionSegment) {
-            functionName = ((ExpressionProjectionSegment) projections.iterator().next()).getText();
-            return OpenGaussSelectVersionExecutor.accept(functionName)
-                    || OpenGaussSelectPasswordDeadlineExecutor.accept(functionName)
-                    || OpenGaussSelectPasswordNotifyTimeExecutor.accept(functionName);
-        }
-        return false;
-    }
     
     /**
      * Create new instance of system function query executor.
      *
+     * @param sqlStatementContext select statement context
      * @return created instance
      */
-    public Optional<DatabaseAdminExecutor> newInstance() {
+    public static Optional<DatabaseAdminExecutor> newInstance(final SelectStatementContext sqlStatementContext) {
+        Collection<ProjectionSegment> projections = sqlStatementContext.getSqlStatement().getProjections().getProjections();
+        if (1 != projections.size() || !(projections.iterator().next() instanceof ExpressionProjectionSegment)) {
+            return Optional.empty();
+        }
+        String functionName = ((ExpressionProjectionSegment) projections.iterator().next()).getText();
         if (OpenGaussSelectVersionExecutor.accept(functionName)) {
             return Optional.of(new OpenGaussSelectVersionExecutor());
         }

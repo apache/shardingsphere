@@ -41,9 +41,7 @@ class OpenGaussSystemFunctionQueryExecutorFactoryTest {
     @Test
     void assertVersion() {
         SelectStatementContext sqlStatementContext = mockSQLStatementContext("VERSION()");
-        OpenGaussSystemFunctionQueryExecutorFactory creator = new OpenGaussSystemFunctionQueryExecutorFactory(sqlStatementContext);
-        assertTrue(creator.accept());
-        Optional<DatabaseAdminExecutor> actual = creator.newInstance();
+        Optional<DatabaseAdminExecutor> actual = OpenGaussSystemFunctionQueryExecutorFactory.newInstance(sqlStatementContext);
         assertTrue(actual.isPresent());
         assertThat(actual.get(), isA(OpenGaussSelectVersionExecutor.class));
     }
@@ -51,9 +49,7 @@ class OpenGaussSystemFunctionQueryExecutorFactoryTest {
     @Test
     void assertGsPasswordDeadline() {
         SelectStatementContext sqlStatementContext = mockSQLStatementContext("gs_password_deadline()");
-        OpenGaussSystemFunctionQueryExecutorFactory creator = new OpenGaussSystemFunctionQueryExecutorFactory(sqlStatementContext);
-        assertTrue(creator.accept());
-        Optional<DatabaseAdminExecutor> actual = creator.newInstance();
+        Optional<DatabaseAdminExecutor> actual = OpenGaussSystemFunctionQueryExecutorFactory.newInstance(sqlStatementContext);
         assertTrue(actual.isPresent());
         assertThat(actual.get(), isA(OpenGaussSelectPasswordDeadlineExecutor.class));
     }
@@ -61,9 +57,7 @@ class OpenGaussSystemFunctionQueryExecutorFactoryTest {
     @Test
     void assertGsPasswordNotifyTime() {
         SelectStatementContext sqlStatementContext = mockSQLStatementContext("gs_password_notifytime()");
-        OpenGaussSystemFunctionQueryExecutorFactory creator = new OpenGaussSystemFunctionQueryExecutorFactory(sqlStatementContext);
-        assertTrue(creator.accept());
-        Optional<DatabaseAdminExecutor> actual = creator.newInstance();
+        Optional<DatabaseAdminExecutor> actual = OpenGaussSystemFunctionQueryExecutorFactory.newInstance(sqlStatementContext);
         assertTrue(actual.isPresent());
         assertThat(actual.get(), isA(OpenGaussSelectPasswordNotifyTimeExecutor.class));
     }
