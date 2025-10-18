@@ -31,7 +31,11 @@ public abstract class SQLToken implements Comparable<SQLToken> {
     
     @Override
     public final int compareTo(final SQLToken sqlToken) {
-        return startIndex - sqlToken.startIndex;
+        int value = startIndex - sqlToken.startIndex;
+        if (value == 0) {
+            return getSubSort() - sqlToken.getSubSort();
+        }
+        return value;
     }
     
     /**
@@ -40,4 +44,11 @@ public abstract class SQLToken implements Comparable<SQLToken> {
      * @return stop index
      */
     public abstract int getStopIndex();
+
+    /**
+     * When the startIndex is the same, sort according to subSort
+     */
+    protected int getSubSort() {
+        return 0;
+    }
 }
