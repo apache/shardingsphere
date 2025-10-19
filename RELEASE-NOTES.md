@@ -77,6 +77,7 @@
 1. Mode: Fix issue of drop schema can not work on standalone mode - [#34470](https://github.com/apache/shardingsphere/pull/34470)
 1. Encrypt: Resolve rewrite issue in nested concat function - [#35815](https://github.com/apache/shardingsphere/pull/35815)
 1. Sharding: Fix mod sharding algorithm judgement -[#36386](https://github.com/apache/shardingsphere/pull/36386)
+1. Encrypt: Resolve the conflict between encrypted derived columns and primary key columns -[#36899](https://github.com/apache/shardingsphere/pull/36899)
 
 ### Change Logs
 
