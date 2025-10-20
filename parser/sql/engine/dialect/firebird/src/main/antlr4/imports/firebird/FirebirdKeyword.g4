@@ -994,3 +994,51 @@ OPTIMIZE
 GEN_ID
     : G E N UL_ I D
     ;
+
+BLOB
+    : B L O B
+    ;
+
+SUB_TYPE
+    : S U B UL_ T Y P E
+    ;
+
+SEGMENT
+    : S E G M E N T
+    ;
+
+BINARY
+    : B I N A R Y
+    ;
+
+TEXT
+    : T E X T
+    ;
+
+BLR
+    : B L R
+    ;
+
+ACL
+    : A C L
+    ;
+
+RANGES
+    : R A N G E S
+    ;
+
+SUMMARY
+    : S U M M A R Y
+    ;
+
+FORMAT
+    : F O R M A T
+    ;
+
+TRANSACTION_DESCRIPTION
+    : T R A N S A C T I O N UL_ D E S C R I P T I O N
+    ;
+
+EXTERNAL_FILE_DESCRIPTION
+    : E X T E R N A L UL_ F I L E UL_ D E S C R I P T I O N
+    ;

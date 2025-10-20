@@ -19,6 +19,13 @@ package org.apache.shardingsphere.proxy.frontend.firebird.command;
 
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.FirebirdCommandPacketType;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.info.FirebirdInfoPacket;
+import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.blob.FirebirdCancelBlobCommandPacket;
+import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.blob.FirebirdCloseBlobCommandPacket;
+import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.blob.FirebirdCreateBlobCommandPacket;
+import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.blob.FirebirdGetBlobSegmentCommandPacket;
+import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.blob.FirebirdOpenBlobCommandPacket;
+import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.blob.FirebirdPutBlobSegmentCommandPacket;
+import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.blob.FirebirdSeekBlobCommandPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.statement.FirebirdAllocateStatementPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.statement.FirebirdFetchStatementPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.statement.FirebirdFreeStatementPacket;
@@ -32,6 +39,13 @@ import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.frontend.firebird.command.admin.FirebirdUnsupportedCommandExecutor;
 import org.apache.shardingsphere.proxy.frontend.firebird.command.query.info.FirebirdDatabaseInfoExecutor;
 import org.apache.shardingsphere.proxy.frontend.firebird.command.query.info.FirebirdSQLInfoExecutor;
+import org.apache.shardingsphere.proxy.frontend.firebird.command.query.blob.FirebirdCancelBlobCommandExecutor;
+import org.apache.shardingsphere.proxy.frontend.firebird.command.query.blob.FirebirdCloseBlobCommandExecutor;
+import org.apache.shardingsphere.proxy.frontend.firebird.command.query.blob.FirebirdCreateBlobCommandExecutor;
+import org.apache.shardingsphere.proxy.frontend.firebird.command.query.blob.FirebirdGetBlobSegmentCommandExecutor;
+import org.apache.shardingsphere.proxy.frontend.firebird.command.query.blob.FirebirdOpenBlobCommandExecutor;
+import org.apache.shardingsphere.proxy.frontend.firebird.command.query.blob.FirebirdPutBlobSegmentCommandExecutor;
+import org.apache.shardingsphere.proxy.frontend.firebird.command.query.blob.FirebirdSeekBlobCommandExecutor;
 import org.apache.shardingsphere.proxy.frontend.firebird.command.query.statement.FirebirdAllocateStatementCommandExecutor;
 import org.apache.shardingsphere.proxy.frontend.firebird.command.query.statement.FirebirdFetchStatementCommandExecutor;
 import org.apache.shardingsphere.proxy.frontend.firebird.command.query.statement.FirebirdFreeStatementCommandExecutor;
@@ -67,6 +81,60 @@ class FirebirdCommandExecutorFactoryTest {
     void assertNewInstanceWithTransaction() throws SQLException {
         assertThat(FirebirdCommandExecutorFactory.newInstance(FirebirdCommandPacketType.TRANSACTION, mock(FirebirdStartTransactionPacket.class), connectionSession),
                 isA(FirebirdStartTransactionCommandExecutor.class));
+    }
+    
+    @Test
+    void assertNewInstanceWithCreateBlob() throws SQLException {
+        assertThat(FirebirdCommandExecutorFactory.newInstance(FirebirdCommandPacketType.CREATE_BLOB, mock(FirebirdCreateBlobCommandPacket.class), connectionSession),
+                isA(FirebirdCreateBlobCommandExecutor.class));
+    }
+    
+    @Test
+    void assertNewInstanceWithCreateBlob2() throws SQLException {
+        assertThat(FirebirdCommandExecutorFactory.newInstance(FirebirdCommandPacketType.CREATE_BLOB2, mock(FirebirdCreateBlobCommandPacket.class), connectionSession),
+                isA(FirebirdCreateBlobCommandExecutor.class));
+    }
+    
+    @Test
+    void assertNewInstanceWithOpenBlob() throws SQLException {
+        assertThat(FirebirdCommandExecutorFactory.newInstance(FirebirdCommandPacketType.OPEN_BLOB, mock(FirebirdOpenBlobCommandPacket.class), connectionSession),
+                isA(FirebirdOpenBlobCommandExecutor.class));
+    }
+    
+    @Test
+    void assertNewInstanceWithOpenBlob2() throws SQLException {
+        assertThat(FirebirdCommandExecutorFactory.newInstance(FirebirdCommandPacketType.OPEN_BLOB2, mock(FirebirdOpenBlobCommandPacket.class), connectionSession),
+                isA(FirebirdOpenBlobCommandExecutor.class));
+    }
+    
+    @Test
+    void assertNewInstanceWithGetBlobSegment() throws SQLException {
+        assertThat(FirebirdCommandExecutorFactory.newInstance(FirebirdCommandPacketType.GET_SEGMENT, mock(FirebirdGetBlobSegmentCommandPacket.class), connectionSession),
+                isA(FirebirdGetBlobSegmentCommandExecutor.class));
+    }
+    
+    @Test
+    void assertNewInstanceWithPutBlobSegment() throws SQLException {
+        assertThat(FirebirdCommandExecutorFactory.newInstance(FirebirdCommandPacketType.PUT_SEGMENT, mock(FirebirdPutBlobSegmentCommandPacket.class), connectionSession),
+                isA(FirebirdPutBlobSegmentCommandExecutor.class));
+    }
+    
+    @Test
+    void assertNewInstanceWithCancelBlob() throws SQLException {
+        assertThat(FirebirdCommandExecutorFactory.newInstance(FirebirdCommandPacketType.CANCEL_BLOB, mock(FirebirdCancelBlobCommandPacket.class), connectionSession),
+                isA(FirebirdCancelBlobCommandExecutor.class));
+    }
+    
+    @Test
+    void assertNewInstanceWithCloseBlob() throws SQLException {
+        assertThat(FirebirdCommandExecutorFactory.newInstance(FirebirdCommandPacketType.CLOSE_BLOB, mock(FirebirdCloseBlobCommandPacket.class), connectionSession),
+                isA(FirebirdCloseBlobCommandExecutor.class));
+    }
+    
+    @Test
+    void assertNewInstanceWithSeekBlob() throws SQLException {
+        assertThat(FirebirdCommandExecutorFactory.newInstance(FirebirdCommandPacketType.SEEK_BLOB, mock(FirebirdSeekBlobCommandPacket.class), connectionSession),
+                isA(FirebirdSeekBlobCommandExecutor.class));
     }
     
     @Test
