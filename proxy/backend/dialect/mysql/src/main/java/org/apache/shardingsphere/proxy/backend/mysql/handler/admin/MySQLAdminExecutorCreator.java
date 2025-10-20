@@ -19,6 +19,7 @@ package org.apache.shardingsphere.proxy.backend.mysql.handler.admin;
 
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.dml.SelectStatementContext;
+import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.handler.admin.executor.DatabaseAdminExecutor;
 import org.apache.shardingsphere.proxy.backend.handler.admin.executor.DatabaseAdminExecutorCreator;
 import org.apache.shardingsphere.proxy.backend.mysql.handler.admin.executor.MySQLKillProcessExecutor;
@@ -42,7 +43,8 @@ public final class MySQLAdminExecutorCreator implements DatabaseAdminExecutorCre
     @Override
     public Optional<DatabaseAdminExecutor> create(final SQLStatementContext sqlStatementContext, final String sql, final String databaseName, final List<Object> parameters) {
         if (sqlStatementContext instanceof SelectStatementContext) {
-            return MySQLSelectAdminExecutorFactory.newInstance((SelectStatementContext) sqlStatementContext, sql, databaseName, parameters);
+            return MySQLSelectAdminExecutorFactory.newInstance((SelectStatementContext) sqlStatementContext, sql, parameters, databaseName,
+                    ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData());
         }
         SQLStatement sqlStatement = sqlStatementContext.getSqlStatement();
         Optional<DatabaseAdminExecutor> showExecutor = MySQLShowAdminExecutorFactory.newInstance(sqlStatement);

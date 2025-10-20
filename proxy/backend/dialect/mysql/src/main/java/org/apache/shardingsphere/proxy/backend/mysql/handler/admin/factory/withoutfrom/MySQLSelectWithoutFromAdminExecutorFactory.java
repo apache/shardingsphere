@@ -20,8 +20,8 @@ package org.apache.shardingsphere.proxy.backend.mysql.handler.admin.factory.with
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.binder.context.statement.type.dml.SelectStatementContext;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.handler.admin.executor.DatabaseAdminExecutor;
 import org.apache.shardingsphere.proxy.backend.mysql.handler.admin.executor.MySQLSystemVariableQueryExecutor;
 import org.apache.shardingsphere.proxy.backend.mysql.handler.admin.executor.select.NoResourceShowExecutor;
@@ -50,15 +50,18 @@ public final class MySQLSelectWithoutFromAdminExecutorFactory {
      * @param selectStatementContext select statement context
      * @param sql SQL
      * @param databaseName database name
+     * @param metaData meta data
      * @return created instance
      */
-    public static Optional<DatabaseAdminExecutor> newInstance(final SelectStatementContext selectStatementContext, final String sql, final String databaseName) {
+    public static Optional<DatabaseAdminExecutor> newInstance(final SelectStatementContext selectStatementContext, final String sql,
+                                                              final String databaseName, final ShardingSphereMetaData metaData) {
         SelectStatement selectStatement = selectStatementContext.getSqlStatement();
         Optional<DatabaseAdminExecutor> result = MySQLSystemVariableQueryExecutor.tryGetSystemVariableQueryExecutor(selectStatement);
-        return result.isPresent() ? result : getSelectFunctionOrVariableExecutor(selectStatement, sql, databaseName);
+        return result.isPresent() ? result : getSelectFunctionOrVariableExecutor(selectStatement, sql, databaseName, metaData);
     }
     
-    private static Optional<DatabaseAdminExecutor> getSelectFunctionOrVariableExecutor(final SelectStatement selectStatement, final String sql, final String databaseName) {
+    private static Optional<DatabaseAdminExecutor> getSelectFunctionOrVariableExecutor(final SelectStatement selectStatement, final String sql,
+                                                                                       final String databaseName, final ShardingSphereMetaData metaData) {
         if (isShowSpecialFunction(selectStatement, ShowConnectionIdExecutor.FUNCTION_NAME)) {
             return Optional.of(new ShowConnectionIdExecutor(selectStatement));
         }
@@ -71,7 +74,7 @@ public final class MySQLSelectWithoutFromAdminExecutorFactory {
         if (isShowSpecialFunction(selectStatement, ShowCurrentDatabaseExecutor.FUNCTION_NAME)) {
             return Optional.of(new ShowCurrentDatabaseExecutor());
         }
-        return mockExecutor(databaseName, selectStatement, sql);
+        return mockExecutor(selectStatement, sql, databaseName, metaData);
     }
     
     private static boolean isShowSpecialFunction(final SelectStatement sqlStatement, final String functionName) {
@@ -85,16 +88,16 @@ public final class MySQLSelectWithoutFromAdminExecutorFactory {
         return functionName.equalsIgnoreCase(trimmedText);
     }
     
-    private static Optional<DatabaseAdminExecutor> mockExecutor(final String databaseName, final SelectStatement sqlStatement, final String sql) {
-        if (isEmptyResource()) {
+    private static Optional<DatabaseAdminExecutor> mockExecutor(final SelectStatement sqlStatement, final String sql, final String databaseName, final ShardingSphereMetaData metaData) {
+        if (isEmptyResource(metaData)) {
             return Optional.of(new NoResourceShowExecutor(sqlStatement));
         }
         boolean isUseDatabase = null != databaseName || sqlStatement.getFrom().isPresent();
         return isUseDatabase ? Optional.empty() : Optional.of(new UnicastResourceShowExecutor(sqlStatement, sql));
     }
     
-    private static boolean isEmptyResource() {
-        Collection<ShardingSphereDatabase> databases = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getAllDatabases();
+    private static boolean isEmptyResource(final ShardingSphereMetaData metaData) {
+        Collection<ShardingSphereDatabase> databases = metaData.getAllDatabases();
         return databases.isEmpty() || databases.stream().noneMatch(ShardingSphereDatabase::containsDataSource);
     }
 }

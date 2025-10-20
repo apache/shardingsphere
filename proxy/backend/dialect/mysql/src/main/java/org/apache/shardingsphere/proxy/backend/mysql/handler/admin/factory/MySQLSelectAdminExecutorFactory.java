@@ -20,7 +20,7 @@ package org.apache.shardingsphere.proxy.backend.mysql.handler.admin.factory;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.binder.context.statement.type.dml.SelectStatementContext;
-import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.proxy.backend.handler.admin.executor.DatabaseAdminExecutor;
 import org.apache.shardingsphere.proxy.backend.mysql.handler.admin.factory.schema.MySQLInformationSchemaExecutorFactory;
 import org.apache.shardingsphere.proxy.backend.mysql.handler.admin.factory.schema.MySQLMySQLSchemaExecutorFactory;
@@ -50,24 +50,26 @@ public final class MySQLSelectAdminExecutorFactory {
      *
      * @param selectStatementContext select statement context
      * @param sql SQL
+     * @param parameters SQL parameters
      * @param databaseName database name
-     * @param parameters  SQL parameters
+     * @param metaData meta data
      * @return created instance
      */
-    public static Optional<DatabaseAdminExecutor> newInstance(final SelectStatementContext selectStatementContext, final String sql, final String databaseName, final List<Object> parameters) {
+    public static Optional<DatabaseAdminExecutor> newInstance(final SelectStatementContext selectStatementContext, final String sql, final List<Object> parameters,
+                                                              final String databaseName, final ShardingSphereMetaData metaData) {
         if (!selectStatementContext.getSqlStatement().getFrom().isPresent()) {
-            return MySQLSelectWithoutFromAdminExecutorFactory.newInstance(selectStatementContext, sql, databaseName);
+            return MySQLSelectWithoutFromAdminExecutorFactory.newInstance(selectStatementContext, sql, databaseName, metaData);
         }
-        if (INFORMATION_SCHEMA.equalsIgnoreCase(databaseName) && !ProxyContext.getInstance().getContextManager().getDatabase(databaseName).isComplete()) {
+        if (INFORMATION_SCHEMA.equalsIgnoreCase(databaseName) && !metaData.getDatabase(databaseName).isComplete()) {
             return MySQLInformationSchemaExecutorFactory.newInstance(selectStatementContext, sql, parameters);
         }
-        if (PERFORMANCE_SCHEMA.equalsIgnoreCase(databaseName) && !ProxyContext.getInstance().getContextManager().getDatabase(databaseName).isComplete()) {
+        if (PERFORMANCE_SCHEMA.equalsIgnoreCase(databaseName) && !metaData.getDatabase(databaseName).isComplete()) {
             return MySQLPerformanceSchemaExecutorFactory.newInstance(selectStatementContext, sql, parameters);
         }
-        if (MYSQL_SCHEMA.equalsIgnoreCase(databaseName) && !ProxyContext.getInstance().getContextManager().getDatabase(databaseName).isComplete()) {
+        if (MYSQL_SCHEMA.equalsIgnoreCase(databaseName) && !metaData.getDatabase(databaseName).isComplete()) {
             return MySQLMySQLSchemaExecutorFactory.newInstance(selectStatementContext, sql, parameters);
         }
-        if (SYS_SCHEMA.equalsIgnoreCase(databaseName) && !ProxyContext.getInstance().getContextManager().getDatabase(databaseName).isComplete()) {
+        if (SYS_SCHEMA.equalsIgnoreCase(databaseName) && !metaData.getDatabase(databaseName).isComplete()) {
             return MySQLSysSchemaExecutorFactory.newInstance(selectStatementContext, sql, parameters);
         }
         return Optional.empty();
