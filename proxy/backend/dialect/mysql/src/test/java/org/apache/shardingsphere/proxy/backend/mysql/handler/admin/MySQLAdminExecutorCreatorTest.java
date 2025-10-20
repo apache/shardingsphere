@@ -315,7 +315,10 @@ class MySQLAdminExecutorCreatorTest {
     
     @Test
     void assertCreateWithSelectStatementFromInformationSchemaOfDefaultExecutorTables() {
-        initProxyContext(Collections.emptyList());
+        ShardingSphereDatabase database = mock(ShardingSphereDatabase.class);
+        when(database.getName()).thenReturn("information_schema");
+        when(database.getProtocolType()).thenReturn(databaseType);
+        initProxyContext(Collections.singleton(database));
         SimpleTableSegment tableSegment = new SimpleTableSegment(new TableNameSegment(10, 13, new IdentifierValue("ENGINES")));
         tableSegment.setOwner(new OwnerSegment(7, 8, new IdentifierValue("information_schema")));
         SelectStatement selectStatement = mock(SelectStatement.class);
@@ -328,8 +331,12 @@ class MySQLAdminExecutorCreatorTest {
     }
     
     @Test
-    void assertCreateWithSelectStatementFromInformationSchemaOfSchemaTable() {
-        initProxyContext(Collections.emptyList());
+    void assertCreateWithSelectStatementFromInformationSchemaOfSchemaTableWithUnCompletedDatabase() {
+        ShardingSphereDatabase database = mock(ShardingSphereDatabase.class);
+        when(database.getName()).thenReturn("information_schema");
+        when(database.getProtocolType()).thenReturn(databaseType);
+        when(database.isComplete()).thenReturn(false);
+        initProxyContext(Collections.singleton(database));
         SimpleTableSegment tableSegment = new SimpleTableSegment(new TableNameSegment(10, 13, new IdentifierValue("SCHEMATA")));
         tableSegment.setOwner(new OwnerSegment(7, 8, new IdentifierValue("information_schema")));
         SelectStatement selectStatement = mock(SelectStatement.class);
@@ -339,8 +346,22 @@ class MySQLAdminExecutorCreatorTest {
         Optional<DatabaseAdminExecutor> actual = new MySQLAdminExecutorCreator().create(sqlStatementContext, "SELECT SCHEMA_NAME FROM SCHEMATA", "information_schema", Collections.emptyList());
         assertTrue(actual.isPresent());
         assertThat(actual.get(), isA(SelectInformationSchemataExecutor.class));
-        when(ProxyContext.getInstance().getContextManager().getDatabase("information_schema").isComplete()).thenReturn(true);
-        actual = new MySQLAdminExecutorCreator().create(sqlStatementContext, "SELECT SCHEMA_NAME FROM SCHEMATA", "information_schema", Collections.emptyList());
+    }
+    
+    @Test
+    void assertCreateWithSelectStatementFromInformationSchemaOfSchemaTableWithCompletedDatabase() {
+        ShardingSphereDatabase database = mock(ShardingSphereDatabase.class);
+        when(database.getName()).thenReturn("information_schema");
+        when(database.getProtocolType()).thenReturn(databaseType);
+        when(database.isComplete()).thenReturn(true);
+        initProxyContext(Collections.singleton(database));
+        SimpleTableSegment tableSegment = new SimpleTableSegment(new TableNameSegment(10, 13, new IdentifierValue("SCHEMATA")));
+        tableSegment.setOwner(new OwnerSegment(7, 8, new IdentifierValue("information_schema")));
+        SelectStatement selectStatement = mock(SelectStatement.class);
+        when(selectStatement.getFrom()).thenReturn(Optional.of(tableSegment));
+        SelectStatementContext sqlStatementContext = mock(SelectStatementContext.class);
+        when(sqlStatementContext.getSqlStatement()).thenReturn(selectStatement);
+        Optional<DatabaseAdminExecutor> actual = new MySQLAdminExecutorCreator().create(sqlStatementContext, "SELECT SCHEMA_NAME FROM SCHEMATA", "information_schema", Collections.emptyList());
         assertFalse(actual.isPresent());
     }
     
