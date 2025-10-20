@@ -41,7 +41,7 @@ public final class GeneratedKeyInsertColumnToken extends SQLToken implements Att
     public int getStopIndex() {
         return getStartIndex();
     }
-
+    
     /**
      * Make the GeneratedKeyInsertColumnToken appear later
      */
