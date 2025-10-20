@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.proxy.backend.postgresql.handler.admin;
 
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
+import org.apache.shardingsphere.infra.binder.context.statement.type.dml.SelectStatementContext;
 import org.apache.shardingsphere.proxy.backend.handler.admin.executor.DatabaseAdminExecutor;
 import org.apache.shardingsphere.proxy.backend.handler.admin.executor.DatabaseAdminExecutorCreator;
 import org.apache.shardingsphere.proxy.backend.postgresql.handler.admin.executor.PostgreSQLResetVariableAdminExecutor;
@@ -27,7 +28,6 @@ import org.apache.shardingsphere.proxy.backend.postgresql.handler.admin.factory.
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.SetStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.ShowStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.statement.postgresql.dal.PostgreSQLResetParameterStatement;
 
 import java.util.List;
@@ -40,10 +40,10 @@ public final class PostgreSQLAdminExecutorCreator implements DatabaseAdminExecut
     
     @Override
     public Optional<DatabaseAdminExecutor> create(final SQLStatementContext sqlStatementContext, final String sql, final String databaseName, final List<Object> parameters) {
-        SQLStatement sqlStatement = sqlStatementContext.getSqlStatement();
-        if (sqlStatement instanceof SelectStatement) {
-            return PostgreSQLSelectAdminExecutorFactory.newInstance((SelectStatement) sqlStatement, sql, parameters);
+        if (sqlStatementContext instanceof SelectStatementContext) {
+            return PostgreSQLSelectAdminExecutorFactory.newInstance((SelectStatementContext) sqlStatementContext, sql, parameters);
         }
+        SQLStatement sqlStatement = sqlStatementContext.getSqlStatement();
         if (sqlStatement instanceof SetStatement) {
             return Optional.of(new PostgreSQLSetVariableAdminExecutor((SetStatement) sqlStatement));
         }

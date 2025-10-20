@@ -35,7 +35,7 @@ public final class OpenGaussSelectAdminExecutorFactory {
     /**
      * Create new instance of database admin executor.
      *
-     * @param selectStatementContext select statement
+     * @param selectStatementContext select statement context
      * @param sql SQL
      * @param parameters SQL parameters
      * @return created instance
@@ -49,6 +49,6 @@ public final class OpenGaussSelectAdminExecutorFactory {
         if (systemFunctionQueryExecutor.isPresent()) {
             return systemFunctionQueryExecutor;
         }
-        return PostgreSQLSelectAdminExecutorFactory.newInstance(selectStatementContext.getSqlStatement(), sql, parameters);
+        return PostgreSQLSelectAdminExecutorFactory.newInstance(selectStatementContext, sql, parameters);
     }
 }
