@@ -41,6 +41,7 @@ import org.apache.shardingsphere.sql.parser.autogen.FirebirdStatementParser.CteC
 import org.apache.shardingsphere.sql.parser.autogen.FirebirdStatementParser.DataTypeContext;
 import org.apache.shardingsphere.sql.parser.autogen.FirebirdStatementParser.DataTypeLengthContext;
 import org.apache.shardingsphere.sql.parser.autogen.FirebirdStatementParser.DataTypeNameContext;
+import org.apache.shardingsphere.sql.parser.autogen.FirebirdStatementParser.BlobDataTypeContext;
 import org.apache.shardingsphere.sql.parser.autogen.FirebirdStatementParser.ExprContext;
 import org.apache.shardingsphere.sql.parser.autogen.FirebirdStatementParser.FunctionCallContext;
 import org.apache.shardingsphere.sql.parser.autogen.FirebirdStatementParser.GenIdFunctionContext;
@@ -597,6 +598,9 @@ public abstract class FirebirdStatementVisitor extends FirebirdStatementBaseVisi
     
     @Override
     public final ASTNode visitDataType(final DataTypeContext ctx) {
+        if (null != ctx.blobDataType()) {
+            return visitBlobDataType(ctx.blobDataType());
+        }
         DataTypeSegment result = new DataTypeSegment();
         result.setDataTypeName(((KeywordValue) visit(ctx.dataTypeName())).getValue());
         result.setStartIndex(ctx.start.getStartIndex());
@@ -606,6 +610,34 @@ public abstract class FirebirdStatementVisitor extends FirebirdStatementBaseVisi
             result.setDataLength(dataTypeLengthSegment);
         }
         return result;
+    }
+    
+    @Override
+    public final ASTNode visitBlobDataType(final BlobDataTypeContext ctx) {
+        DataTypeSegment result = new DataTypeSegment();
+        result.setStartIndex(ctx.start.getStartIndex());
+        result.setStopIndex(ctx.stop.getStopIndex());
+        result.setDataTypeName(buildBlobDataTypeName(ctx));
+        return result;
+    }
+    
+    private String buildBlobDataTypeName(final BlobDataTypeContext ctx) {
+        StringBuilder result = new StringBuilder(ctx.BLOB().getText());
+        appendClause(result, ctx.blobSubTypeDefinition());
+        appendClause(result, ctx.blobSegmentSizeClause());
+        appendClause(result, ctx.characterSet());
+        if (null != ctx.blobAbbreviatedAttributes()) {
+            result.append(" (")
+                    .append(getOriginalText(ctx.blobAbbreviatedAttributes()).trim())
+                    .append(')');
+        }
+        return result.toString();
+    }
+    
+    private void appendClause(final StringBuilder builder, final ParserRuleContext ctx) {
+        if (null != ctx) {
+            builder.append(' ').append(getOriginalText(ctx).trim());
+        }
     }
     
     @Override

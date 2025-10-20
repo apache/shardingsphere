@@ -21,6 +21,13 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.database.protocol.firebird.constant.protocol.FirebirdProtocolVersion;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.admin.FirebirdUnsupportedCommandPacket;
+import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.blob.FirebirdGetBlobSegmentCommandPacket;
+import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.blob.FirebirdOpenBlobCommandPacket;
+import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.blob.FirebirdPutBlobSegmentCommandPacket;
+import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.blob.FirebirdSeekBlobCommandPacket;
+import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.blob.FirebirdCreateBlobCommandPacket;
+import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.blob.FirebirdCloseBlobCommandPacket;
+import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.blob.FirebirdCancelBlobCommandPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.info.FirebirdInfoPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.info.type.database.FirebirdDatabaseInfoPacketType;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.info.type.sql.FirebirdSQLInfoPacketType;
@@ -54,6 +61,22 @@ public final class FirebirdCommandPacketFactory {
                 return FirebirdDatabaseInfoPacketType.createPacket(payload);
             case TRANSACTION:
                 return new FirebirdStartTransactionPacket(payload);
+            case CREATE_BLOB:
+            case CREATE_BLOB2:
+                return new FirebirdCreateBlobCommandPacket(commandPacketType, payload);
+            case OPEN_BLOB:
+            case OPEN_BLOB2:
+                return new FirebirdOpenBlobCommandPacket(commandPacketType, payload);
+            case GET_SEGMENT:
+                return new FirebirdGetBlobSegmentCommandPacket(payload);
+            case PUT_SEGMENT:
+                return new FirebirdPutBlobSegmentCommandPacket(payload);
+            case CANCEL_BLOB:
+                return new FirebirdCancelBlobCommandPacket(payload);
+            case CLOSE_BLOB:
+                return new FirebirdCloseBlobCommandPacket(payload);
+            case SEEK_BLOB:
+                return new FirebirdSeekBlobCommandPacket(payload);
             case ALLOCATE_STATEMENT:
                 return new FirebirdAllocateStatementPacket(payload);
             case PREPARE_STATEMENT:
@@ -77,21 +100,15 @@ public final class FirebirdCommandPacketFactory {
     }
     
     /**
-     * Validate length of command packet.
+     * Get expected length of command packet including message type.
      *
      * @param commandPacketType command packet type for Firebird
      * @param payload packet payload for Firebird
-     * @param capacity maximum allowed capacity
      * @param protocolVersion protocol version of Firebird
-     * @return true if length is valid, false otherwise
+     * @return expected length of packet, or 0 if length is variable
      */
-    public static boolean isValidLength(final FirebirdCommandPacketType commandPacketType, final FirebirdPacketPayload payload, final int capacity, final FirebirdProtocolVersion protocolVersion) {
-        try {
-            return getLength(commandPacketType, payload, protocolVersion) <= capacity;
-        } catch (final IndexOutOfBoundsException ignored) {
-            payload.getByteBuf().resetReaderIndex();
-            return false;
-        }
+    public static int getExpectedLength(final FirebirdCommandPacketType commandPacketType, final FirebirdPacketPayload payload, final FirebirdProtocolVersion protocolVersion) {
+        return getLength(commandPacketType, payload, protocolVersion);
     }
     
     private static int getLength(final FirebirdCommandPacketType commandPacketType, final FirebirdPacketPayload payload,
@@ -102,6 +119,22 @@ public final class FirebirdCommandPacketFactory {
                 return FirebirdInfoPacket.getLength(payload);
             case TRANSACTION:
                 return FirebirdStartTransactionPacket.getLength(payload);
+            case CREATE_BLOB:
+            case CREATE_BLOB2:
+                return FirebirdCreateBlobCommandPacket.getLength(commandPacketType, payload);
+            case OPEN_BLOB:
+            case OPEN_BLOB2:
+                return FirebirdOpenBlobCommandPacket.getLength(commandPacketType, payload);
+            case GET_SEGMENT:
+                return FirebirdGetBlobSegmentCommandPacket.getLength(payload);
+            case PUT_SEGMENT:
+                return FirebirdPutBlobSegmentCommandPacket.getLength(payload);
+            case CANCEL_BLOB:
+                return FirebirdCancelBlobCommandPacket.getLength();
+            case CLOSE_BLOB:
+                return FirebirdCloseBlobCommandPacket.getLength();
+            case SEEK_BLOB:
+                return FirebirdSeekBlobCommandPacket.getLength();
             case ALLOCATE_STATEMENT:
                 return FirebirdAllocateStatementPacket.getLength();
             case PREPARE_STATEMENT:

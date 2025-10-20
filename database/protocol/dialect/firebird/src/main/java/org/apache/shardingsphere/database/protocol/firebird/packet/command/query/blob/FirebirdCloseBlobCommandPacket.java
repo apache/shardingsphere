@@ -15,35 +15,36 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.database.protocol.firebird.packet.command.query.statement.execute.protocol;
+package org.apache.shardingsphere.database.protocol.firebird.packet.command.query.blob;
 
-import io.netty.buffer.ByteBuf;
+import lombok.Getter;
+import org.apache.shardingsphere.database.protocol.firebird.packet.command.FirebirdCommandPacket;
 import org.apache.shardingsphere.database.protocol.firebird.payload.FirebirdPacketPayload;
 
 /**
- * Binary protocol value for byte lenenc for Firebird.
+ * Firebird close blob command packet.
  */
-public final class FirebirdByteBinaryProtocolValue implements FirebirdBinaryProtocolValue {
+@Getter
+public final class FirebirdCloseBlobCommandPacket extends FirebirdCommandPacket {
     
-    @Override
-    public Object read(final FirebirdPacketPayload payload) {
-        ByteBuf buffer = payload.readBuffer();
-        byte[] result = new byte[buffer.readableBytes()];
-        buffer.getBytes(buffer.readerIndex(), result);
-        return result;
+    private final int blobHandle;
+    
+    public FirebirdCloseBlobCommandPacket(final FirebirdPacketPayload payload) {
+        payload.skipReserved(4);
+        blobHandle = payload.readInt4();
     }
     
     @Override
-    public void write(final FirebirdPacketPayload payload, final Object value) {
-        if (value instanceof String) {
-            payload.writeString((String) value);
-        } else {
-            payload.writeBuffer((byte[]) value);
-        }
+    protected void write(final FirebirdPacketPayload payload) {
     }
     
-    @Override
-    public int getLength(final FirebirdPacketPayload payload) {
-        return payload.getBufferLength(payload.getByteBuf().readerIndex());
+    /**
+     * Get length of packet.
+     *
+     * @return length of packet
+     */
+    public static int getLength() {
+        // 4 reserved + blobHandle(4)
+        return 8;
     }
 }
