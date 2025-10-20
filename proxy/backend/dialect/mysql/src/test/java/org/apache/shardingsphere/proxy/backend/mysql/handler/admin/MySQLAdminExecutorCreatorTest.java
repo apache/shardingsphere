@@ -201,7 +201,6 @@ class MySQLAdminExecutorCreatorTest {
     
     @Test
     void assertCreateWithSelectStatementForTransactionReadOnly() {
-        
         initProxyContext(Collections.emptyList());
         SelectStatement selectStatement = mock(SelectStatement.class);
         when(selectStatement.getFrom()).thenReturn(Optional.empty());
