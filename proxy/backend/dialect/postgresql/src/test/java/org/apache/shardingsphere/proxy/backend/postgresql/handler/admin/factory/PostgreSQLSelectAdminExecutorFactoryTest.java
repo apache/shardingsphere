@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.proxy.backend.postgresql.handler.admin.factory;
 
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.binder.context.statement.type.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.parser.config.SQLParserRuleConfiguration;
 import org.apache.shardingsphere.parser.rule.SQLParserRule;
@@ -29,6 +30,7 @@ import java.util.Collections;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.mock;
 
 class PostgreSQLSelectAdminExecutorFactoryTest {
     
@@ -36,19 +38,22 @@ class PostgreSQLSelectAdminExecutorFactoryTest {
     void assertNewInstanceWithPgDatabaseSystemTable() {
         String sql = "SELECT d.datname as \"Name\",pg_catalog.pg_get_userbyid(d.datdba) as \"Owner\",pg_catalog.pg_encoding_to_char(d.encoding) as \"Encoding\","
                 + "d.datcollate as \"Collate\",d.datctype as \"Ctype\",pg_catalog.array_to_string(d.datacl, E'\\n') AS \"Access privileges\" FROM pg_catalog.pg_database d ORDER BY 1";
-        assertTrue(PostgreSQLSelectAdminExecutorFactory.newInstance(parseSQL(sql), sql, Collections.emptyList()).isPresent());
+        SelectStatementContext selectStatementContext = new SelectStatementContext(parseSQL(sql), mock(), null, Collections.emptyList());
+        assertTrue(PostgreSQLSelectAdminExecutorFactory.newInstance(selectStatementContext, sql, Collections.emptyList()).isPresent());
     }
     
     @Test
     void assertNewInstanceWithShardingSphereSystemTable() {
         String sql = "SELECT * FROM shardingsphere.cluster_information";
-        assertFalse(PostgreSQLSelectAdminExecutorFactory.newInstance(parseSQL(sql), sql, Collections.emptyList()).isPresent());
+        SelectStatementContext selectStatementContext = new SelectStatementContext(parseSQL(sql), mock(), null, Collections.emptyList());
+        assertFalse(PostgreSQLSelectAdminExecutorFactory.newInstance(selectStatementContext, sql, Collections.emptyList()).isPresent());
     }
     
     @Test
     void assertNewInstanceWithSelectLogicSQL() {
         String sql = "SELECT * FROM foo_tbl";
-        assertFalse(PostgreSQLSelectAdminExecutorFactory.newInstance(parseSQL(sql), sql, Collections.emptyList()).isPresent());
+        SelectStatementContext selectStatementContext = new SelectStatementContext(parseSQL(sql), mock(), null, Collections.emptyList());
+        assertFalse(PostgreSQLSelectAdminExecutorFactory.newInstance(selectStatementContext, sql, Collections.emptyList()).isPresent());
     }
     
     private SelectStatement parseSQL(final String sql) {

@@ -23,6 +23,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.binder.context.statement.type.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager;
 import org.apache.shardingsphere.infra.metadata.statistics.collector.DialectDatabaseStatisticsCollector;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
@@ -60,13 +61,13 @@ public final class PostgreSQLSelectAdminExecutorFactory {
     /**
      * Create new instance of database admin executor.
      *
-     * @param sqlStatement select statement
+     * @param selectStatementContext select statement context
      * @param sql SQL
      * @param parameters SQL parameters
      * @return created instance
      */
-    public static Optional<DatabaseAdminExecutor> newInstance(final SelectStatement sqlStatement, final String sql, final List<Object> parameters) {
-        Map<String, Collection<String>> selectedSchemaTables = getSelectedSchemaTables(sqlStatement);
+    public static Optional<DatabaseAdminExecutor> newInstance(final SelectStatementContext selectStatementContext, final String sql, final List<Object> parameters) {
+        Map<String, Collection<String>> selectedSchemaTables = getSelectedSchemaTables(selectStatementContext.getSqlStatement());
         if (isSelectedStatisticsSystemTable(selectedSchemaTables) || isSelectedShardingSphereSystemTable(selectedSchemaTables)) {
             return Optional.empty();
         }
