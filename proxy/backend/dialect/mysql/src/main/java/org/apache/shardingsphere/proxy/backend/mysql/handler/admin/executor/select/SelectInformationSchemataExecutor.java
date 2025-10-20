@@ -106,7 +106,7 @@ public final class SelectInformationSchemataExecutor extends DatabaseMetaDataExe
     }
     
     private List<ColumnProjectionSegment> filterColumnProjections(final Collection<ProjectionSegment> projections) {
-        return projections.stream().filter(each -> each.getClass().isAssignableFrom(ColumnProjectionSegment.class)).map(each -> (ColumnProjectionSegment) each).collect(Collectors.toList());
+        return projections.stream().filter(each -> each.getClass().isAssignableFrom(ColumnProjectionSegment.class)).map(ColumnProjectionSegment.class::cast).collect(Collectors.toList());
     }
     
     private Map<String, String> getDefaultRowsFromColumnProjections(final Collection<ColumnProjectionSegment> projections) {
