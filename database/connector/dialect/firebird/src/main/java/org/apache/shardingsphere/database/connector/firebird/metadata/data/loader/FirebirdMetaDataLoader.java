@@ -24,12 +24,18 @@ import org.apache.shardingsphere.database.connector.core.metadata.data.loader.ty
 import org.apache.shardingsphere.database.connector.core.metadata.data.model.SchemaMetaData;
 import org.apache.shardingsphere.database.connector.core.metadata.data.model.TableMetaData;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeRegistry;
+import org.apache.shardingsphere.database.connector.firebird.metadata.data.FirebirdSizeRegistry;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
+import java.util.Locale;
+import java.util.Map;
+import java.util.HashMap;
+import java.util.Set;
+import java.util.HashSet;
 import java.util.Objects;
 
 /**
@@ -37,17 +43,25 @@ import java.util.Objects;
  */
 public final class FirebirdMetaDataLoader implements DialectMetaDataLoader {
 
+    private static final Set<String> LENGTH_AWARE_TYPES = new HashSet<>(3, 1F);
+
+    static {
+        LENGTH_AWARE_TYPES.add("VARYING");
+        LENGTH_AWARE_TYPES.add("VARCHAR");
+        LENGTH_AWARE_TYPES.add("LEGACY_VARYING");
+    }
+
     @Override
     public Collection<SchemaMetaData> load(final MetaDataLoaderMaterial material) throws SQLException {
         Collection<TableMetaData> tableMetaData = new LinkedList<>();
         for (String each : material.getActualTableNames()) {
             TableMetaDataLoader.load(material.getDataSource(), each, material.getStorageType()).ifPresent(tableMetaData::add);
         }
-        printColumnSizes(material);
+        loadColumnSizes(material);
         return Collections.singleton(new SchemaMetaData(material.getDefaultSchemaName(), tableMetaData));
     }
 
-    private void printColumnSizes(final MetaDataLoaderMaterial material) throws SQLException {
+    private void loadColumnSizes(final MetaDataLoaderMaterial material) throws SQLException {
         if (material.getActualTableNames().isEmpty()) {
             return;
         }
@@ -55,19 +69,37 @@ public final class FirebirdMetaDataLoader implements DialectMetaDataLoader {
         try (MetaDataLoaderConnection connection = new MetaDataLoaderConnection(material.getStorageType(), material.getDataSource().getConnection())) {
             for (String each : material.getActualTableNames()) {
                 String formattedTableName = databaseTypeRegistry.formatIdentifierPattern(each);
+                Map<String, Integer> columnSizes = new HashMap<>();
                 try (ResultSet resultSet = connection.getMetaData().getColumns(connection.getCatalog(), connection.getSchema(), formattedTableName, "%")) {
                     while (resultSet.next()) {
-                        String tableName = resultSet.getString("TABLE_NAME");
-                        if (!Objects.equals(formattedTableName, tableName)) {
+                        if (!Objects.equals(formattedTableName, resultSet.getString("TABLE_NAME"))) {
+                            continue;
+                        }
+                        if (!isLengthAwareType(resultSet.getString("TYPE_NAME"))) {
                             continue;
                         }
                         String columnName = resultSet.getString("COLUMN_NAME");
-                        int columnSize = resultSet.getInt("COLUMN_SIZE");
-                        System.out.printf("Firebird column size - table: %s, column: %s, size: %d%n", each, columnName, columnSize);
+                        if (null != columnName) {
+                            columnSizes.put(columnName, resultSet.getInt("COLUMN_SIZE"));
+                        }
                     }
                 }
+                FirebirdSizeRegistry.refreshTable(material.getDefaultSchemaName(), each, columnSizes);
             }
         }
+    }
+
+    private boolean isLengthAwareType(final String typeName) {
+        if (null == typeName) {
+            return false;
+        }
+        String normalized = typeName.toUpperCase(Locale.ENGLISH);
+        for (String each : LENGTH_AWARE_TYPES) {
+            if (normalized.startsWith(each)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     @Override

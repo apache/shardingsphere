@@ -47,6 +47,8 @@ public final class FirebirdReturnColumnPacket extends FirebirdPacket {
     private final String columnAlias;
     
     private final String owner;
+
+    private final Integer columnLength;
     
     @Override
     protected void write(final FirebirdPacketPayload payload) {
@@ -65,7 +67,10 @@ public final class FirebirdReturnColumnPacket extends FirebirdPacket {
                     FirebirdPrepareStatementReturnPacket.writeInt(FirebirdSQLInfoPacketType.SCALE, 0, payload);
                     break;
                 case LENGTH:
-                    FirebirdPrepareStatementReturnPacket.writeInt(FirebirdSQLInfoPacketType.LENGTH, FirebirdBinaryColumnType.valueOfJDBCType(column.getDataType()).getLength(), payload);
+                    int length = null != columnLength
+                            ? columnLength
+                            : FirebirdBinaryColumnType.valueOfJDBCType(column.getDataType()).getLength();
+                    FirebirdPrepareStatementReturnPacket.writeInt(FirebirdSQLInfoPacketType.LENGTH, length, payload);
                     break;
                 case FIELD:
                     FirebirdPrepareStatementReturnPacket.writeString(FirebirdSQLInfoPacketType.FIELD, column.getName(), payload);
