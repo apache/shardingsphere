@@ -20,10 +20,12 @@ package org.apache.shardingsphere.mode.manager.cluster.persist.service;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
+import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereStatistics;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.mode.manager.cluster.persist.coordinator.database.ClusterDatabaseListenerCoordinatorType;
 import org.apache.shardingsphere.mode.manager.cluster.persist.coordinator.database.ClusterDatabaseListenerPersistCoordinator;
@@ -79,6 +81,7 @@ class ClusterMetaDataManagerPersistServiceTest {
     
     @Test
     void assertCreateDatabase() {
+        when(metaDataContextManager.getMetaDataContexts().getMetaData().containsDatabase("foo_db")).thenReturn(true);
         metaDataManagerPersistService.createDatabase("foo_db");
         verify(metaDataPersistFacade.getDatabaseMetaDataFacade().getDatabase()).add("foo_db");
         verify(clusterDatabaseListenerPersistCoordinator).persist("foo_db", ClusterDatabaseListenerCoordinatorType.CREATE);
@@ -153,6 +156,8 @@ class ClusterMetaDataManagerPersistServiceTest {
     
     @Test
     void assertRemoveRuleConfiguration() {
+        when(metaDataContextManager.getMetaDataContexts().getMetaData()).thenReturn(mock(ShardingSphereMetaData.class)).thenReturn(mock(ShardingSphereMetaData.class));
+        when(metaDataContextManager.getMetaDataContexts().getStatistics()).thenReturn(mock(ShardingSphereStatistics.class)).thenReturn(mock(ShardingSphereStatistics.class));
         metaDataManagerPersistService.removeRuleConfiguration(new ShardingSphereDatabase("foo_db", mock(), mock(), mock(), Collections.emptyList()),
                 mock(RuleConfiguration.class), "fixtureRule");
         verify(metaDataPersistFacade.getDatabaseRuleService()).delete("foo_db", "fixtureRule");

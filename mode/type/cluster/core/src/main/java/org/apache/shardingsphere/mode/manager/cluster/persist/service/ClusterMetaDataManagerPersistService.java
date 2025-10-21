@@ -67,11 +67,13 @@ public final class ClusterMetaDataManagerPersistService implements MetaDataManag
     
     @Override
     public void createDatabase(final String databaseName) {
-        MetaDataContexts originalMetaDataContexts = new MetaDataContexts(metaDataContextManager.getMetaDataContexts().getMetaData(), metaDataContextManager.getMetaDataContexts().getStatistics());
         metaDataPersistFacade.getDatabaseMetaDataFacade().getDatabase().add(databaseName);
         clusterDatabaseListenerPersistCoordinator.persist(databaseName, ClusterDatabaseListenerCoordinatorType.CREATE);
-        ShardingSphereDatabase reloadDatabase = getReloadedMetaDataContexts(originalMetaDataContexts).getMetaData().getDatabase(databaseName);
-        metaDataPersistFacade.getDatabaseMetaDataFacade().getSchema().add(databaseName, reloadDatabase.getAllSchemas().iterator().next().getName());
+        RetryExecutor retryExecutor = new RetryExecutor(30000L, 1000L);
+        ShardingSpherePreconditions.checkState(retryExecutor.execute(arg -> metaDataContextManager.getMetaDataContexts().getMetaData().containsDatabase(databaseName), null),
+                ReloadMetaDataContextFailedException::new);
+        metaDataPersistFacade.getDatabaseMetaDataFacade().getSchema().add(databaseName, metaDataContextManager.getMetaDataContexts().getMetaData().getDatabase(databaseName)
+                .getAllSchemas().iterator().next().getName());
     }
     
     @Override
@@ -236,11 +238,16 @@ public final class ClusterMetaDataManagerPersistService implements MetaDataManag
     private MetaDataContexts getReloadedMetaDataContexts(final MetaDataContexts originalMetaDataContexts) {
         Thread.sleep(3000L);
         MetaDataContexts reloadMetaDataContexts = metaDataContextManager.getMetaDataContexts();
-        if (reloadMetaDataContexts.getMetaData() != originalMetaDataContexts.getMetaData() && reloadMetaDataContexts.getStatistics() != originalMetaDataContexts.getStatistics()) {
+        if (metadataUpdated(originalMetaDataContexts, reloadMetaDataContexts)) {
             return reloadMetaDataContexts;
         }
         RetryExecutor retryExecutor = new RetryExecutor(30000L, 1000L);
-        ShardingSpherePreconditions.checkState(retryExecutor.execute(arg -> metaDataContextManager.getMetaDataContexts() != arg, originalMetaDataContexts), ReloadMetaDataContextFailedException::new);
+        ShardingSpherePreconditions.checkState(retryExecutor.execute(arg -> metadataUpdated(originalMetaDataContexts, reloadMetaDataContexts), null), ReloadMetaDataContextFailedException::new);
         return metaDataContextManager.getMetaDataContexts();
+    }
+    
+    private boolean metadataUpdated(final MetaDataContexts originalMetaDataContexts, final MetaDataContexts reloadMetaDataContexts) {
+        return reloadMetaDataContexts.getMetaData() != originalMetaDataContexts.getMetaData()
+                && reloadMetaDataContexts.getStatistics() != originalMetaDataContexts.getStatistics();
     }
 }
