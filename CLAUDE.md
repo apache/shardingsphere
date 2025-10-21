@@ -58,7 +58,9 @@ Key directories and their purposes:
 
 ## Code Standards and Conventions
 
-Please follow these guidelines in file [CODE_OF_CONDUCT.md] when developing
+1. Please follow these guidelines in file [CODE_OF_CONDUCT.md] when developing.
+2. Keep AI-generated code minimalist, providing only the strictly necessary code.
+3. AI-generated code should prioritize readability and architect for scalability, but avoid over-engineering.
 
 ## Absolute Prohibitions (Zero-Tolerance Violations)
 
