@@ -35,6 +35,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.isA;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class DataSourceGeneratedDatabaseConfigurationTest {
     
@@ -95,5 +96,16 @@ class DataSourceGeneratedDatabaseConfigurationTest {
     private DataSourceConfiguration createDataSourceConfiguration() {
         PoolConfiguration poolConfig = new PoolConfiguration(2000L, 1000L, 1000L, 2, 1, false, new Properties());
         return new DataSourceConfiguration(new ConnectionConfiguration(MockedDataSource.class.getName(), "jdbc:mock://127.0.0.1/foo_db", "root", ""), poolConfig);
+    }
+    
+    @Test
+    void assertCloseDataSourcesWhenExceptionThrown() {
+        Map<String, DataSourceConfiguration> dataSourceConfigs = Collections.singletonMap("invalid_ds", createInvalidDataSourceConfiguration());
+        assertThrows(Exception.class, () -> new DataSourceGeneratedDatabaseConfiguration(dataSourceConfigs, Collections.singleton(new FixtureRuleConfiguration("foo_rule"))));
+    }
+    
+    private DataSourceConfiguration createInvalidDataSourceConfiguration() {
+        PoolConfiguration poolConfig = new PoolConfiguration(2000L, 1000L, 1000L, 2, 1, false, new Properties());
+        return new DataSourceConfiguration(new ConnectionConfiguration("non.existent.DataSourceClass", "jdbc:mock://127.0.0.1/invalid_ds", "root", ""), poolConfig);
     }
 }
