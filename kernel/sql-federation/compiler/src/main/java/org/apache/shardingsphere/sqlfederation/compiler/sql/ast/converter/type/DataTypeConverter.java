@@ -17,11 +17,11 @@
 
 package org.apache.shardingsphere.sqlfederation.compiler.sql.ast.converter.type;
 
+import com.cedarsoftware.util.CaseInsensitiveMap;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.calcite.sql.type.SqlTypeName;
 
-import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -30,7 +30,7 @@ import java.util.Map;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class DataTypeConverter {
     
-    private static final Map<String, SqlTypeName> REGISTRY = new HashMap<>();
+    private static final Map<String, SqlTypeName> REGISTRY = new CaseInsensitiveMap<>();
     
     static {
         registerDataType();
