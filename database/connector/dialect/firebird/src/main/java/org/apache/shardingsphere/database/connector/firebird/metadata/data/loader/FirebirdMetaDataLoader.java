@@ -18,25 +18,17 @@
 package org.apache.shardingsphere.database.connector.firebird.metadata.data.loader;
 
 import org.apache.shardingsphere.database.connector.core.metadata.data.loader.DialectMetaDataLoader;
-import org.apache.shardingsphere.database.connector.core.metadata.data.loader.MetaDataLoaderConnection;
 import org.apache.shardingsphere.database.connector.core.metadata.data.loader.MetaDataLoaderMaterial;
 import org.apache.shardingsphere.database.connector.core.metadata.data.loader.type.TableMetaDataLoader;
 import org.apache.shardingsphere.database.connector.core.metadata.data.model.SchemaMetaData;
 import org.apache.shardingsphere.database.connector.core.metadata.data.model.TableMetaData;
-import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.database.connector.firebird.metadata.data.FirebirdSizeRegistry;
 
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
-import java.util.Locale;
 import java.util.Map;
-import java.util.HashMap;
-import java.util.Set;
-import java.util.HashSet;
-import java.util.Objects;
 
 /**
  * Meta data loader for Firebird.

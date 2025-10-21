@@ -20,7 +20,6 @@ package org.apache.shardingsphere.database.connector.firebird.metadata.data.load
 import org.apache.shardingsphere.database.connector.core.metadata.data.loader.MetaDataLoaderConnection;
 import org.apache.shardingsphere.database.connector.core.metadata.data.loader.MetaDataLoaderMaterial;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeRegistry;
-import org.apache.shardingsphere.database.connector.firebird.metadata.data.FirebirdLengthAwareTypes;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -64,7 +63,7 @@ final class FirebirdColumnSizeLoader {
                 if (!Objects.equals(formattedTableName, resultSet.getString("TABLE_NAME"))) {
                     continue;
                 }
-                if (!FirebirdLengthAwareTypes.matches(resultSet.getString("TYPE_NAME"))) {
+                if (!isLengthAwareType(resultSet.getString("TYPE_NAME"))) {
                     continue;
                 }
                 String columnName = resultSet.getString("COLUMN_NAME");
@@ -74,5 +73,13 @@ final class FirebirdColumnSizeLoader {
             }
         }
         return result.isEmpty() ? Collections.emptyMap() : Collections.unmodifiableMap(result);
+    }
+
+    private boolean isLengthAwareType(final String typeName) {
+        if (null == typeName) {
+            return false;
+        }
+        String normalized = typeName.toUpperCase(Locale.ENGLISH);
+        return normalized.startsWith("VARCHAR") || normalized.startsWith("VARYING") || normalized.startsWith("LEGACY_VARYING");
     }
 }
