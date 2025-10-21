@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.sqlfederation.compiler.sql.ast.converter.segment.expression.impl;
 
+import com.cedarsoftware.util.CaseInsensitiveSet;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.calcite.avatica.util.TimeUnit;
@@ -28,7 +29,6 @@ import org.apache.calcite.sql.parser.SqlParserPos;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simple.LiteralExpressionSegment;
 
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.Optional;
 
 /**
@@ -37,9 +37,9 @@ import java.util.Optional;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class LiteralExpressionConverter {
     
-    private static final Collection<String> TRIM_FUNCTION_FLAGS = new HashSet<>(3, 1F);
+    private static final Collection<String> TRIM_FUNCTION_FLAGS = new CaseInsensitiveSet<>(3, 1F);
     
-    private static final Collection<String> TIME_UNIT_NAMES = new HashSet<>(7, 1F);
+    private static final Collection<String> TIME_UNIT_NAMES = new CaseInsensitiveSet<>(7, 1F);
     
     static {
         TRIM_FUNCTION_FLAGS.add("BOTH");
@@ -66,10 +66,10 @@ public final class LiteralExpressionConverter {
         }
         String literalValue = String.valueOf(segment.getLiterals());
         if (TRIM_FUNCTION_FLAGS.contains(literalValue)) {
-            return Optional.of(SqlLiteral.createSymbol(Flag.valueOf(literalValue), SqlParserPos.ZERO));
+            return Optional.of(SqlLiteral.createSymbol(Flag.valueOf(literalValue.toUpperCase()), SqlParserPos.ZERO));
         }
         if (TIME_UNIT_NAMES.contains(literalValue)) {
-            return Optional.of(new SqlIntervalQualifier(TimeUnit.valueOf(literalValue), null, SqlParserPos.ZERO));
+            return Optional.of(new SqlIntervalQualifier(TimeUnit.valueOf(literalValue.toUpperCase()), null, SqlParserPos.ZERO));
         }
         if (segment.getLiterals() instanceof Number) {
             return Optional.of(SqlLiteral.createExactNumeric(literalValue, SqlParserPos.ZERO));
