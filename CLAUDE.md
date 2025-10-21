@@ -139,3 +139,4 @@ Key directories and their purposes:
   - Verify rule compliance after each user interaction.
   - Report violations through clear error messages.
   - Use Spotless to enforce code style after code generated.
+  - Clean context after codes committed.
