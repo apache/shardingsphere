@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Licensed to the Apache Software Foundation (ASF) under one or more
+  ~ contributor license agreements.  See the NOTICE file distributed with
+  ~ this work for additional information regarding copyright ownership.
+  ~ The ASF licenses this file to You under the Apache License, Version 2.0
+  ~ (the "License"); you may not use this file except in compliance with
+  ~ the License.  You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<e2e-test-cases>
+    <test-case sql="SELECT table_schema, table_name FROM information_schema.tables WHERE table_schema = 'information_schema' ORDER BY table_name LIMIT 10" db-types="MySQL" scenario-types="db,tbl">
+        <assertion />
+    </test-case>
+
+    <!-- TODO: Support IN -->
+<!--    <test-case sql="SELECT schema_name FROM information_schema.schemata WHERE schema_name IN ('information_schema', 'performance_schema', 'mysql', 'sys') ORDER BY schema_name" db-types="MySQL" scenario-types="db,tbl">-->
+<!--        <assertion />-->
+<!--    </test-case>-->
+    
+    <test-case sql="SELECT column_name, data_type FROM information_schema.columns WHERE table_schema = 'information_schema' AND table_name = 'tables' LIMIT 5" db-types="MySQL" scenario-types="db,tbl">
+        <assertion />
+    </test-case>
+    
+    <test-case sql="SELECT table_name FROM information_schema.tables WHERE table_schema = 'mysql' ORDER BY table_name LIMIT 10" db-types="MySQL" scenario-types="db,tbl">
+        <assertion />
+    </test-case>
+    
+    <test-case sql="SELECT 'information_schema' as schema_name, COUNT(*) as table_count FROM information_schema.tables WHERE table_schema = 'information_schema' UNION ALL SELECT 'performance_schema' as schema_name, COUNT(*) as table_count FROM information_schema.tables WHERE table_schema = 'performance_schema' UNION ALL SELECT 'mysql' as schema_name, COUNT(*) as table_count FROM information_schema.tables WHERE table_schema = 'mysql' UNION ALL SELECT 'sys' as schema_name, COUNT(*) as table_count FROM information_schema.tables WHERE table_schema = 'sys' ORDER BY schema_name" db-types="MySQL" scenario-types="db,tbl">
+        <assertion />
+    </test-case>
+    
+    <!-- TODO: Support subquery -->
+<!--    <test-case sql="SELECT t.TABLE_SCHEMA, t.TABLE_NAME, t.TABLE_TYPE, c.column_count FROM information_schema.tables t LEFT JOIN (SELECT table_schema, table_name, COUNT(*) as column_count FROM information_schema.columns GROUP BY table_schema, table_name) c ON t.table_schema = c.table_schema AND t.table_name = c.table_name WHERE t.table_schema IN ('information_schema', 'performance_schema', 'mysql', 'sys') ORDER BY t.table_schema, t.table_name LIMIT 10" db-types="MySQL" scenario-types="db,tbl">-->
+<!--        <assertion />-->
+<!--    </test-case>-->
+    
+    <test-case sql="SELECT constraint_schema, constraint_name, table_name, constraint_type FROM information_schema.table_constraints WHERE constraint_schema IN ('mysql', 'information_schema') ORDER BY constraint_schema, constraint_name LIMIT 5" db-types="MySQL" scenario-types="db,tbl">
+        <assertion />
+    </test-case>
+    
+    <test-case sql="SELECT * FROM information_schema.engines WHERE engine IN ('InnoDB', 'MyISAM', 'MEMORY', 'CSV') ORDER BY engine" db-types="MySQL" scenario-types="db,tbl">
+        <assertion />
+    </test-case>
+    
+    <test-case sql="SELECT * FROM performance_schema.setup_instruments WHERE name LIKE 'statement/sql/%' ORDER BY name LIMIT 10" db-types="MySQL" scenario-types="db,tbl">
+        <assertion />
+    </test-case>
+    
+    <test-case sql="SELECT * FROM performance_schema.setup_consumers ORDER BY name LIMIT 5" db-types="MySQL" scenario-types="db,tbl">
+        <assertion />
+    </test-case>
+    
+    <test-case sql="SELECT Host, User FROM mysql.user WHERE host = 'localhost' LIMIT 5" db-types="MySQL" scenario-types="db,tbl">
+        <assertion />
+    </test-case>
+    
+    <test-case sql="SELECT Db, User FROM mysql.db ORDER BY db, user LIMIT 5" db-types="MySQL" scenario-types="db,tbl">
+        <assertion />
+    </test-case>
+    
+    <test-case sql="SELECT * FROM sys.schema_table_statistics ORDER BY total_latency DESC LIMIT 5" db-types="MySQL" scenario-types="db,tbl">
+        <assertion />
+    </test-case>
+    
+    <test-case sql="SELECT * FROM sys.processlist ORDER BY time DESC LIMIT 5" db-types="MySQL" scenario-types="db,tbl">
+        <assertion />
+    </test-case>
+    
+    <test-case sql="SELECT * FROM sys.sys_config ORDER BY variable LIMIT 5" db-types="MySQL" scenario-types="db,tbl">
+        <assertion />
+    </test-case>
+</e2e-test-cases>
