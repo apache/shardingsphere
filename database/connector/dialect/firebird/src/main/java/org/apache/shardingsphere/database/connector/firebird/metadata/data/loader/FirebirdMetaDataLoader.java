@@ -43,63 +43,18 @@ import java.util.Objects;
  */
 public final class FirebirdMetaDataLoader implements DialectMetaDataLoader {
 
-    private static final Set<String> LENGTH_AWARE_TYPES = new HashSet<>(3, 1F);
-
-    static {
-        LENGTH_AWARE_TYPES.add("VARYING");
-        LENGTH_AWARE_TYPES.add("VARCHAR");
-        LENGTH_AWARE_TYPES.add("LEGACY_VARYING");
-    }
-
     @Override
     public Collection<SchemaMetaData> load(final MetaDataLoaderMaterial material) throws SQLException {
         Collection<TableMetaData> tableMetaData = new LinkedList<>();
         for (String each : material.getActualTableNames()) {
             TableMetaDataLoader.load(material.getDataSource(), each, material.getStorageType()).ifPresent(tableMetaData::add);
         }
-        loadColumnSizes(material);
+        Map<String, Map<String, Integer>> columnSizes = new FirebirdColumnSizeLoader(material).load();
+        for (String each : material.getActualTableNames()) {
+            Map<String, Integer> tableSizes = columnSizes.getOrDefault(each, Collections.emptyMap());
+            FirebirdSizeRegistry.refreshTable(material.getDefaultSchemaName(), each, tableSizes);
+        }
         return Collections.singleton(new SchemaMetaData(material.getDefaultSchemaName(), tableMetaData));
-    }
-
-    private void loadColumnSizes(final MetaDataLoaderMaterial material) throws SQLException {
-        if (material.getActualTableNames().isEmpty()) {
-            return;
-        }
-        DatabaseTypeRegistry databaseTypeRegistry = new DatabaseTypeRegistry(material.getStorageType());
-        try (MetaDataLoaderConnection connection = new MetaDataLoaderConnection(material.getStorageType(), material.getDataSource().getConnection())) {
-            for (String each : material.getActualTableNames()) {
-                String formattedTableName = databaseTypeRegistry.formatIdentifierPattern(each);
-                Map<String, Integer> columnSizes = new HashMap<>();
-                try (ResultSet resultSet = connection.getMetaData().getColumns(connection.getCatalog(), connection.getSchema(), formattedTableName, "%")) {
-                    while (resultSet.next()) {
-                        if (!Objects.equals(formattedTableName, resultSet.getString("TABLE_NAME"))) {
-                            continue;
-                        }
-                        if (!isLengthAwareType(resultSet.getString("TYPE_NAME"))) {
-                            continue;
-                        }
-                        String columnName = resultSet.getString("COLUMN_NAME");
-                        if (null != columnName) {
-                            columnSizes.put(columnName, resultSet.getInt("COLUMN_SIZE"));
-                        }
-                    }
-                }
-                FirebirdSizeRegistry.refreshTable(material.getDefaultSchemaName(), each, columnSizes);
-            }
-        }
-    }
-
-    private boolean isLengthAwareType(final String typeName) {
-        if (null == typeName) {
-            return false;
-        }
-        String normalized = typeName.toUpperCase(Locale.ENGLISH);
-        for (String each : LENGTH_AWARE_TYPES) {
-            if (normalized.startsWith(each)) {
-                return true;
-            }
-        }
-        return false;
     }
 
     @Override

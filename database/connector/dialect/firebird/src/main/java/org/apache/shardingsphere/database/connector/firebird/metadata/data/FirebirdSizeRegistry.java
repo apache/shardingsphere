@@ -20,10 +20,7 @@ package org.apache.shardingsphere.database.connector.firebird.metadata.data;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
-import java.util.Collections;
-import java.util.Locale;
-import java.util.Map;
-import java.util.OptionalInt;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -50,17 +47,7 @@ public final class FirebirdSizeRegistry {
             COLUMN_SIZES.remove(tableKey);
             return;
         }
-        Map<String, Integer> normalized = new ConcurrentHashMap<>(columnSizes.size(), 1F);
-        columnSizes.forEach((column, size) -> {
-            if (null != column) {
-                normalized.put(toKey(column), size);
-            }
-        });
-        if (normalized.isEmpty()) {
-            COLUMN_SIZES.remove(tableKey);
-        } else {
-            COLUMN_SIZES.put(tableKey, Collections.unmodifiableMap(normalized));
-        }
+        COLUMN_SIZES.put(tableKey, Collections.unmodifiableMap(new HashMap<>(columnSizes)));
     }
 
     /**

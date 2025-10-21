@@ -455,13 +455,15 @@ public final class FirebirdPrepareStatementCommandExecutor implements CommandExe
         String tableAliasString = null == tableAlias ? table.getName() : tableAlias.getValue();
         String columnAliasString = null == columnAlias ? column.getName() : columnAlias.getValue();
         String owner = connectionSession.getConnectionContext().getGrantee().getUsername();
-        Integer columnLength = null;
-        if (null != table && null != column) {
-            OptionalInt columnSize = FirebirdSizeRegistry.findColumnSize(connectionSession.getCurrentDatabaseName(), table.getName(), column.getName());
-            if (columnSize.isPresent()) {
-                columnLength = columnSize.getAsInt();
-            }
-        }
+        Integer columnLength = resolveColumnLength(table, column);
         describeColumns.add(new FirebirdReturnColumnPacket(requestedItems, idx, table, column, tableAliasString, columnAliasString, owner, columnLength));
+    }
+
+    private Integer resolveColumnLength(final ShardingSphereTable table, final ShardingSphereColumn column) {
+        if (null == table || null == column) {
+            return null;
+        }
+        OptionalInt columnSize = FirebirdSizeRegistry.findColumnSize(connectionSession.getCurrentDatabaseName(), table.getName(), column.getName());
+        return columnSize.isPresent() ? columnSize.getAsInt() : null;
     }
 }
