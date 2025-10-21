@@ -26,7 +26,7 @@ import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.session.query.QueryContext;
 import org.apache.shardingsphere.parser.rule.SQLParserRule;
 import org.apache.shardingsphere.proxy.backend.connector.DatabaseProxyConnectorFactory;
-import org.apache.shardingsphere.proxy.backend.handler.admin.executor.DatabaseAdminExecutor;
+import org.apache.shardingsphere.proxy.backend.handler.admin.executor.DatabaseAdminUpdateExecutor;
 import org.apache.shardingsphere.proxy.backend.handler.admin.executor.variable.charset.CharsetSetExecutor;
 import org.apache.shardingsphere.proxy.backend.handler.admin.executor.variable.session.SessionVariableRecordExecutor;
 import org.apache.shardingsphere.proxy.backend.handler.data.DatabaseProxyBackendHandler;
@@ -48,7 +48,7 @@ import java.util.stream.Collectors;
  * Set variable admin executor for MySQL.
  */
 @RequiredArgsConstructor
-public final class MySQLSetVariableAdminExecutor implements DatabaseAdminExecutor {
+public final class MySQLSetVariableAdminExecutor implements DatabaseAdminUpdateExecutor {
     
     private final SetStatement sqlStatement;
     

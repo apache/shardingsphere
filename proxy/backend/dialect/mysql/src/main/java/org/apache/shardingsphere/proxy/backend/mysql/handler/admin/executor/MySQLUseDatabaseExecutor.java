@@ -23,7 +23,7 @@ import org.apache.shardingsphere.authority.rule.AuthorityRule;
 import org.apache.shardingsphere.database.exception.core.exception.syntax.database.UnknownDatabaseException;
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
-import org.apache.shardingsphere.proxy.backend.handler.admin.executor.DatabaseAdminExecutor;
+import org.apache.shardingsphere.proxy.backend.handler.admin.executor.DatabaseAdminUpdateExecutor;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.sql.parser.statement.core.util.SQLUtils;
 import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLUseStatement;
@@ -32,7 +32,7 @@ import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLUseStatemen
  * Use database executor for MySQL.
  */
 @RequiredArgsConstructor
-public final class MySQLUseDatabaseExecutor implements DatabaseAdminExecutor {
+public final class MySQLUseDatabaseExecutor implements DatabaseAdminUpdateExecutor {
     
     private final MySQLUseStatement sqlStatement;
     
