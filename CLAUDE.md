@@ -72,7 +72,6 @@ Please follow these guidelines in file [CODE_OF_CONDUCT.md] when developing
 
 3. **Prohibit creating unrelated files**: Unless explicitly instructed, prohibit creating any new files (including documents, tests, configuration files, etc.).
 
-
 ## Permission Framework Based on Whitelist
 
 1. Automatic approval scope, automated processing is only permitted for:

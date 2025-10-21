@@ -69,6 +69,7 @@ The following code of conduct is based on full compliance with [ASF CODE OF COND
  - Class for test case and `@Test` annotation do not need javadoc.
 
 ## Contributor Covenant G4 Code of Conduct
+
  - Common Conduct
    - Every line cannot over `200` chars, guarantee every line have complete semantics.
  - Lexer Conduct
