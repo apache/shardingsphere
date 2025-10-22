@@ -63,7 +63,8 @@ final class FirebirdColumnSizeLoader {
                 if (!Objects.equals(formattedTableName, resultSet.getString("TABLE_NAME"))) {
                     continue;
                 }
-                if (!(resultSet.getString("TYPE_NAME").toUpperCase(Locale.ENGLISH).startsWith("VARCHAR"))) {
+                String typeName = resultSet.getString("TYPE_NAME");
+                if (null == typeName || !typeName.toUpperCase(Locale.ENGLISH).startsWith("VARCHAR")) {
                     continue;
                 }
                 String columnName = resultSet.getString("COLUMN_NAME");
