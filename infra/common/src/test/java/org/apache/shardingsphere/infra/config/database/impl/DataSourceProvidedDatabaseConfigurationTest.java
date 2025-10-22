@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.infra.config.database.impl;
 
+import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePoolProperties;
 import org.apache.shardingsphere.infra.fixture.FixtureRuleConfiguration;
 import org.apache.shardingsphere.infra.metadata.database.resource.node.StorageNode;
 import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnit;
@@ -25,6 +26,7 @@ import org.junit.jupiter.api.Test;
 
 import javax.sql.DataSource;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -35,7 +37,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class DataSourceProvidedDatabaseConfigurationTest {
     
     @Test
-    void assertDataSourceProvidedDatabaseConfiguration() {
+    void assertNewWithDataSources() {
         DataSourceProvidedDatabaseConfiguration actual = new DataSourceProvidedDatabaseConfiguration(
                 Collections.singletonMap("foo_ds", new MockedDataSource()), Collections.singleton(new FixtureRuleConfiguration("foo_rule")));
         assertRuleConfigurations(actual);
@@ -46,6 +48,24 @@ class DataSourceProvidedDatabaseConfigurationTest {
     private void assertRuleConfigurations(final DataSourceProvidedDatabaseConfiguration actual) {
         FixtureRuleConfiguration ruleConfig = (FixtureRuleConfiguration) actual.getRuleConfigurations().iterator().next();
         assertThat(ruleConfig.getName(), is("foo_rule"));
+    }
+    
+    @Test
+    void assertNewWithStorageNodeDataSources() {
+        Map<String, DataSourcePoolProperties> dataSourcePoolPropsMap = Collections.singletonMap("foo_ds", new DataSourcePoolProperties("foo_ds", createConnectionProps()));
+        DataSourceProvidedDatabaseConfiguration actual = new DataSourceProvidedDatabaseConfiguration(
+                Collections.singletonMap(new StorageNode("foo_ds"), new MockedDataSource()), Collections.singleton(new FixtureRuleConfiguration("foo_rule")), dataSourcePoolPropsMap);
+        assertRuleConfigurations(actual);
+        assertStorageUnits(actual.getStorageUnits().get("foo_ds"));
+        assertDataSources((MockedDataSource) actual.getDataSources().get(new StorageNode("foo_ds")));
+    }
+    
+    private Map<String, Object> createConnectionProps() {
+        Map<String, Object> result = new HashMap<>(3, 1F);
+        result.put("url", "jdbc:mock://127.0.0.1/foo_ds");
+        result.put("username", "root");
+        result.put("password", "root");
+        return result;
     }
     
     private void assertStorageUnits(final StorageUnit actual) {
