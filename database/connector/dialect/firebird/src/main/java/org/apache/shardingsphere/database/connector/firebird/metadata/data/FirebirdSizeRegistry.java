@@ -32,9 +32,9 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class FirebirdSizeRegistry {
-
+    
     private static final Map<String, Map<String, Integer>> COLUMN_SIZES = new ConcurrentHashMap<>();
-
+    
     /**
      * Refresh column sizes for a table.
      *
@@ -64,7 +64,7 @@ public final class FirebirdSizeRegistry {
         }
         COLUMN_SIZES.put(tableKey, Collections.unmodifiableMap(normalizedColumnSizes));
     }
-
+    
     /**
      * Find registered column size.
      *
@@ -84,12 +84,12 @@ public final class FirebirdSizeRegistry {
         Integer columnSize = tableSizes.get(toKey(columnName));
         return null == columnSize ? OptionalInt.empty() : OptionalInt.of(columnSize);
     }
-
+    
     private static String buildTableKey(final String schemaName, final String tableName) {
         String schemaKey = null == schemaName ? "" : toKey(schemaName);
         return schemaKey + "." + toKey(tableName);
     }
-
+    
     private static String toKey(final String value) {
         return value.toUpperCase(Locale.ENGLISH);
     }

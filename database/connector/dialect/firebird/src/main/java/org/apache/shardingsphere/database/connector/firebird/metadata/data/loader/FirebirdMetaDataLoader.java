@@ -34,7 +34,7 @@ import java.util.Map;
  * Meta data loader for Firebird.
  */
 public final class FirebirdMetaDataLoader implements DialectMetaDataLoader {
-
+    
     @Override
     public Collection<SchemaMetaData> load(final MetaDataLoaderMaterial material) throws SQLException {
         Collection<TableMetaData> tableMetaData = new LinkedList<>();
@@ -48,7 +48,7 @@ public final class FirebirdMetaDataLoader implements DialectMetaDataLoader {
         }
         return Collections.singleton(new SchemaMetaData(material.getDefaultSchemaName(), tableMetaData));
     }
-
+    
     @Override
     public String getDatabaseType() {
         return "Firebird";

@@ -47,7 +47,7 @@ public final class FirebirdReturnColumnPacket extends FirebirdPacket {
     private final String columnAlias;
     
     private final String owner;
-
+    
     private final Integer columnLength;
     
     @Override

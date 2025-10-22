@@ -462,7 +462,7 @@ public final class FirebirdPrepareStatementCommandExecutor implements CommandExe
         Integer columnLength = resolveColumnLength(table, column);
         describeColumns.add(new FirebirdReturnColumnPacket(requestedItems, idx, table, column, tableAliasString, columnAliasString, owner, columnLength));
     }
-
+    
     private Integer resolveColumnLength(final ShardingSphereTable table, final ShardingSphereColumn column) {
         if (null == table || null == column) {
             return null;
