@@ -54,11 +54,11 @@ public final class ShardingSphereProxyVersion {
     
     private static String getProxyVersion() {
         String result = ShardingSphereVersion.VERSION;
-        if (!ShardingSphereVersion.IS_SNAPSHOT || Strings.isNullOrEmpty(ShardingSphereVersion.BUILD_GIT_COMMIT_ID_ABBREV)) {
+        if (!ShardingSphereVersion.IS_SNAPSHOT || Strings.isNullOrEmpty(ShardingSphereVersion.BUILD_COMMIT_ID_ABBREV)) {
             return result;
         }
-        result += ShardingSphereVersion.BUILD_GIT_DIRTY ? "-dirty" : "";
-        result += "-" + ShardingSphereVersion.BUILD_GIT_COMMIT_ID_ABBREV;
+        result += ShardingSphereVersion.BUILD_DIRTY ? "-dirty" : "";
+        result += "-" + ShardingSphereVersion.BUILD_COMMIT_ID_ABBREV;
         return result;
     }
     

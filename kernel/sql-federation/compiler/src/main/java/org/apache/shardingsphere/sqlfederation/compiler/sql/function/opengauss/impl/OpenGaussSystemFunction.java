@@ -38,7 +38,7 @@ public final class OpenGaussSystemFunction {
      */
     @SuppressWarnings("unused")
     public static String version() {
-        return "ShardingSphere-Proxy " + ShardingSphereVersion.VERSION + ("-" + ShardingSphereVersion.BUILD_GIT_COMMIT_ID_ABBREV) + (ShardingSphereVersion.BUILD_GIT_DIRTY ? "-dirty" : "");
+        return "ShardingSphere-Proxy " + ShardingSphereVersion.VERSION + ("-" + ShardingSphereVersion.BUILD_COMMIT_ID_ABBREV) + (ShardingSphereVersion.BUILD_DIRTY ? "-dirty" : "");
     }
     
     /**
