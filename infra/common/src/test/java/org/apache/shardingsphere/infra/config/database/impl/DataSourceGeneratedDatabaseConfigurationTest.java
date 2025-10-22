@@ -43,7 +43,7 @@ class DataSourceGeneratedDatabaseConfigurationTest {
     
     @Test
     void assertNewSuccess() {
-        DataSourceGeneratedDatabaseConfiguration actual = createDatabaseConfiguration(createDataSourceConfiguration(MockedDataSource.class.getName()));
+        DataSourceGeneratedDatabaseConfiguration actual = createDatabaseConfiguration(MockedDataSource.class.getName());
         assertRuleConfigurations(actual.getRuleConfigurations());
         assertStorageUnits(actual.getStorageUnits().get("foo_db"));
         assertDataSources((MockedDataSource) actual.getDataSources().get(new StorageNode("foo_db")));
@@ -87,15 +87,12 @@ class DataSourceGeneratedDatabaseConfigurationTest {
     
     @Test
     void assertNewWithException() {
-        assertThrows(Exception.class, () -> createDatabaseConfiguration(createDataSourceConfiguration("non.existent.DataSourceClass")));
+        assertThrows(Exception.class, () -> createDatabaseConfiguration("non.existent.DataSourceClass"));
     }
     
-    private DataSourceGeneratedDatabaseConfiguration createDatabaseConfiguration(final DataSourceConfiguration dataSourceConfig) {
-        return new DataSourceGeneratedDatabaseConfiguration(Collections.singletonMap("foo_db", dataSourceConfig), Collections.singleton(new FixtureRuleConfiguration("foo_rule")));
-    }
-    
-    private DataSourceConfiguration createDataSourceConfiguration(final String dataSourceClassName) {
-        return new DataSourceConfiguration(new ConnectionConfiguration(dataSourceClassName, "jdbc:mock://127.0.0.1/foo_db", "root", ""),
+    private DataSourceGeneratedDatabaseConfiguration createDatabaseConfiguration(final String dataSourceClassName) {
+        DataSourceConfiguration dataSourceConfig = new DataSourceConfiguration(new ConnectionConfiguration(dataSourceClassName, "jdbc:mock://127.0.0.1/foo_db", "root", ""),
                 new PoolConfiguration(2000L, 1000L, 1000L, 2, 1, false, new Properties()));
+        return new DataSourceGeneratedDatabaseConfiguration(Collections.singletonMap("foo_db", dataSourceConfig), Collections.singleton(new FixtureRuleConfiguration("foo_rule")));
     }
 }
