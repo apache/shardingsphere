@@ -63,7 +63,7 @@ final class FirebirdColumnSizeLoader {
                 if (!Objects.equals(formattedTableName, resultSet.getString("TABLE_NAME"))) {
                     continue;
                 }
-                if (!isLengthAwareType(resultSet.getString("TYPE_NAME"))) {
+                if (!(resultSet.getString("TYPE_NAME").toUpperCase(Locale.ENGLISH).startsWith("VARCHAR"))) {
                     continue;
                 }
                 String columnName = resultSet.getString("COLUMN_NAME");
@@ -73,13 +73,5 @@ final class FirebirdColumnSizeLoader {
             }
         }
         return result.isEmpty() ? Collections.emptyMap() : Collections.unmodifiableMap(result);
-    }
-
-    private boolean isLengthAwareType(final String typeName) {
-        if (null == typeName) {
-            return false;
-        }
-        String normalized = typeName.toUpperCase(Locale.ENGLISH);
-        return normalized.startsWith("VARCHAR") || normalized.startsWith("VARYING") || normalized.startsWith("LEGACY_VARYING");
     }
 }
