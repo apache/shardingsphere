@@ -19,7 +19,7 @@ package org.apache.shardingsphere.sqlfederation.compiler.sql.function.opengauss.
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.infra.autogen.version.ShardingSphereVersion;
+import org.apache.shardingsphere.infra.version.ShardingSphereVersion;
 
 /**
  * PostgreSQL system function.

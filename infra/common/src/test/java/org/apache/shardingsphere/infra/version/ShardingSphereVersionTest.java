@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.infra.version;
 
-import org.apache.shardingsphere.infra.autogen.version.ShardingSphereVersion;
 import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.CoreMatchers.is;
