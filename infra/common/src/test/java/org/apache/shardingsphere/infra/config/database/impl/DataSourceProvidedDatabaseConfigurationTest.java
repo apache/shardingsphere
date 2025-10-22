@@ -17,9 +17,9 @@
 
 package org.apache.shardingsphere.infra.config.database.impl;
 
-import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePoolProperties;
 import org.apache.shardingsphere.infra.fixture.FixtureRuleConfiguration;
 import org.apache.shardingsphere.infra.metadata.database.resource.node.StorageNode;
+import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnit;
 import org.apache.shardingsphere.test.infra.fixture.jdbc.MockedDataSource;
 import org.junit.jupiter.api.Test;
 
@@ -29,58 +29,46 @@ import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.isA;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class DataSourceProvidedDatabaseConfigurationTest {
     
     @Test
-    void assertGetDataSources() {
-        DataSourceProvidedDatabaseConfiguration databaseConfig = createDataSourceProvidedDatabaseConfiguration();
-        DataSource dataSource = databaseConfig.getStorageUnits().get("foo_ds").getDataSource();
-        assertTrue(dataSource instanceof MockedDataSource);
+    void assertDataSourceProvidedDatabaseConfiguration() {
+        DataSourceProvidedDatabaseConfiguration actual = new DataSourceProvidedDatabaseConfiguration(
+                Collections.singletonMap("foo_ds", new MockedDataSource()), Collections.singleton(new FixtureRuleConfiguration("foo_rule")));
+        assertRuleConfigurations(actual);
+        assertStorageUnits(actual.getStorageUnits().get("foo_ds"));
+        assertDataSources((MockedDataSource) actual.getDataSources().get(new StorageNode("foo_ds")));
     }
     
-    @Test
-    void assertGetStorageNodes() {
-        DataSourceProvidedDatabaseConfiguration databaseConfig = createDataSourceProvidedDatabaseConfiguration();
-        MockedDataSource dataSource = (MockedDataSource) databaseConfig.getDataSources().get(new StorageNode("foo_ds"));
-        assertThat(dataSource.getUrl(), is("jdbc:mock://127.0.0.1/foo_ds"));
-        assertThat(dataSource.getUsername(), is("root"));
-        assertThat(dataSource.getPassword(), is("root"));
+    private void assertRuleConfigurations(final DataSourceProvidedDatabaseConfiguration actual) {
+        FixtureRuleConfiguration ruleConfig = (FixtureRuleConfiguration) actual.getRuleConfigurations().iterator().next();
+        assertThat(ruleConfig.getName(), is("foo_rule"));
     }
     
-    @Test
-    void assertGetStorageUnits() {
-        DataSourceProvidedDatabaseConfiguration databaseConfig = createDataSourceProvidedDatabaseConfiguration();
-        DataSource dataSource = databaseConfig.getStorageUnits().get("foo_ds").getDataSource();
-        assertTrue(dataSource instanceof MockedDataSource);
+    private void assertStorageUnits(final StorageUnit actual) {
+        DataSource dataSource = actual.getDataSource();
+        assertThat(dataSource, isA(MockedDataSource.class));
+        assertPoolProperties(actual.getDataSourcePoolProperties().getPoolPropertySynonyms().getStandardProperties());
+        assertConnectionProperties(actual.getDataSourcePoolProperties().getConnectionPropertySynonyms().getStandardProperties());
     }
     
-    @Test
-    void assertGetRuleConfigurations() {
-        DataSourceProvidedDatabaseConfiguration databaseConfig = createDataSourceProvidedDatabaseConfiguration();
-        FixtureRuleConfiguration ruleConfig = (FixtureRuleConfiguration) databaseConfig.getRuleConfigurations().iterator().next();
-        assertThat(ruleConfig.getName(), is("test_rule"));
+    private void assertPoolProperties(final Map<String, Object> actual) {
+        assertTrue(actual.isEmpty());
     }
     
-    @Test
-    void assertGetDataSourcePoolProperties() {
-        DataSourceProvidedDatabaseConfiguration databaseConfig = createDataSourceProvidedDatabaseConfiguration();
-        DataSourcePoolProperties props = databaseConfig.getStorageUnits().get("foo_ds").getDataSourcePoolProperties();
-        Map<String, Object> poolStandardProps = props.getPoolPropertySynonyms().getStandardProperties();
-        assertTrue(poolStandardProps.isEmpty());
-        Map<String, Object> connStandardProps = props.getConnectionPropertySynonyms().getStandardProperties();
-        assertThat(connStandardProps.size(), is(3));
-        assertThat(connStandardProps.get("url"), is("jdbc:mock://127.0.0.1/foo_ds"));
-        assertThat(connStandardProps.get("username"), is("root"));
-        assertThat(connStandardProps.get("password"), is("root"));
+    private void assertConnectionProperties(final Map<String, Object> actual) {
+        assertThat(actual.size(), is(3));
+        assertThat(actual.get("url"), is("jdbc:mock://127.0.0.1/foo_ds"));
+        assertThat(actual.get("username"), is("root"));
+        assertThat(actual.get("password"), is("root"));
     }
     
-    private DataSourceProvidedDatabaseConfiguration createDataSourceProvidedDatabaseConfiguration() {
-        return new DataSourceProvidedDatabaseConfiguration(createDataSources(), Collections.singletonList(new FixtureRuleConfiguration("test_rule")));
-    }
-    
-    private Map<String, DataSource> createDataSources() {
-        return Collections.singletonMap("foo_ds", new MockedDataSource());
+    private void assertDataSources(final MockedDataSource actual) {
+        assertThat(actual.getUrl(), is("jdbc:mock://127.0.0.1/foo_ds"));
+        assertThat(actual.getUsername(), is("root"));
+        assertThat(actual.getPassword(), is("root"));
     }
 }
