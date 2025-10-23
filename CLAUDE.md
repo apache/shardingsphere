@@ -35,7 +35,10 @@ Maven build commands:
 
 ## Code Standards
 
-1. Follow CODE_OF_CONDUCT.md
+1. Follow CODE_OF_CONDUCT.md:
+   - Clean code principles (no duplication, high reusability)
+   - Naming conventions, formatting rules, access permissions
+   - AIR testing principle: Automatic, Independent, Repeatable
 2. Generate minimal essential code only
 3. Prioritize readability & scalability, avoid over-engineering
 
@@ -65,24 +68,24 @@ Maven build commands:
 ### Testing Standards
 
 1. **Coverage Requirements**:
-   - 100% line coverage for all new code
+   - Follow CODE_OF_CONDUCT.md: "Without particular reasons, test cases should be fully covered"
+   - 100% line coverage for all new code unless technically infeasible
    - 100% branch coverage where logically possible
-   - Test all edge cases and error conditions
-   - Validate both positive and negative scenarios
+   - Apply AIR principle: Automatic, Independent, Repeatable
+   - Apply BCDE design: Border, Correct, Design, Error testing
 
 2. **Test Case Principles**:
-   - Each test must validate unique behavior - no redundant tests
-   - Use clear, descriptive test names that indicate what is being tested
-   - Follow Arrange-Act-Assert pattern consistently
+   - Each test validates unique behavior - no redundancy
+   - Use descriptive test names indicating what is tested
+   - Follow Arrange-Act-Assert pattern
+   - Use precise assertions: `actualXXX`, `expectedXXX` naming
    - Mock external dependencies appropriately
-   - Keep tests fast, independent, and deterministic
 
 3. **Test Quality**:
-   - Tests should fail for the right reasons and be easy to debug
-   - Maintain test readability and maintainability
-   - Use parameterized tests for multiple similar scenarios
-   - Focus on behavior testing rather than implementation details
-   - Ensure tests provide meaningful failure messages
+   - Tests should fail for right reasons and be debuggable
+   - Fast, independent, and deterministic execution
+   - Use parameterized tests for similar scenarios
+   - Focus on behavior over implementation details
 
 ## Absolute Prohibitions (Zero-Tolerance)
 
