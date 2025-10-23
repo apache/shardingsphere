@@ -94,17 +94,19 @@ Key directories and their purposes:
    - Apply formatting tools automatically when needed
    - Make decisions independently within task scope
    - No need for permission or tentative language
+   - **IMPORTANT**: Automated code generation and tool calls are permitted, but automatic Git commits are strictly prohibited
 
 2. Code changes checklist:
   - Verify task matches user request
   - Confirm target files/lines are referenced
   - Declare changes if uncertainty exists
 
-2. Change implementation rules
+3. Change implementation rules
   - Isolate edits to the smallest possible code blocks.
   - Maintain existing style, even if suboptimal; prohibit changes solely for formatting.
   - Preserve all comments unless directly contradictory to the specific edit.
   - If using Git, record the rationale for each change in the commit message.
+  - **Prohibition**: Never automatically commit changes to Git without explicit user instruction
 
 ## Cognitive Constraints
 
