@@ -61,7 +61,7 @@ class DatabaseRuleConfigurationCheckEngineTest {
     private ResourceMetaData resourceMetaData;
     
     @Mock
-    private RuleMetaData ruleMetaData;;
+    private RuleMetaData ruleMetaData;
     
     @Mock
     private FixtureRuleConfiguration ruleConfig;
