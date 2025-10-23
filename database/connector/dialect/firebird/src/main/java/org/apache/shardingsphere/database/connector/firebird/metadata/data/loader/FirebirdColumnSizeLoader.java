@@ -24,6 +24,7 @@ import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeRegist
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Types;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Locale;
@@ -66,24 +67,27 @@ final class FirebirdColumnSizeLoader {
     
     private Map<String, Integer> loadTableColumnSizes(final MetaDataLoaderConnection connection, final String formattedTableName) throws SQLException {
         Map<String, Integer> result = new HashMap<>();
-        loadVarcharColumnSizes(connection, formattedTableName, result);
+        loadColumnSizesFromMetaData(connection, formattedTableName, result);
         loadBlobSegmentSizes(connection, formattedTableName, result);
         return result.isEmpty() ? Collections.emptyMap() : Collections.unmodifiableMap(result);
     }
     
-    private void loadVarcharColumnSizes(final MetaDataLoaderConnection connection, final String formattedTableName, final Map<String, Integer> result) throws SQLException {
+    private void loadColumnSizesFromMetaData(final MetaDataLoaderConnection connection, final String formattedTableName, final Map<String, Integer> result) throws SQLException {
         try (ResultSet resultSet = connection.getMetaData().getColumns(connection.getCatalog(), connection.getSchema(), formattedTableName, "%")) {
             while (resultSet.next()) {
                 if (!Objects.equals(formattedTableName, resultSet.getString("TABLE_NAME"))) {
                     continue;
                 }
-                String typeName = resultSet.getString("TYPE_NAME");
-                if (null == typeName || !typeName.toUpperCase(Locale.ENGLISH).startsWith("VARCHAR")) {
+                int dataType = resultSet.getInt("DATA_TYPE");
+                if (!isDynamicLengthType(dataType)) {
                     continue;
                 }
                 String columnName = resultSet.getString("COLUMN_NAME");
                 if (null != columnName) {
-                    result.put(columnName.toUpperCase(Locale.ENGLISH), resultSet.getInt("COLUMN_SIZE"));
+                    int columnSize = resultSet.getInt("COLUMN_SIZE");
+                    if (!resultSet.wasNull() && columnSize > 0) {
+                        result.put(columnName.toUpperCase(Locale.ENGLISH), columnSize);
+                    }
                 }
             }
         }
@@ -105,6 +109,23 @@ final class FirebirdColumnSizeLoader {
                     result.put(trimmedColumnName.toUpperCase(Locale.ENGLISH), resultSet.getInt("SEGMENT_SIZE"));
                 }
             }
+        }
+    }
+    
+    private boolean isDynamicLengthType(final int dataType) {
+        switch (dataType) {
+            case Types.CHAR:
+            case Types.NCHAR:
+            case Types.VARCHAR:
+            case Types.NVARCHAR:
+            case Types.LONGVARCHAR:
+            case Types.LONGNVARCHAR:
+            case Types.BINARY:
+            case Types.VARBINARY:
+            case Types.LONGVARBINARY:
+                return true;
+            default:
+                return false;
         }
     }
 }

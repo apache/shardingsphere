@@ -32,6 +32,7 @@ import java.sql.DatabaseMetaData;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Types;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
@@ -42,6 +43,7 @@ import static org.hamcrest.Matchers.hasKey;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
 @ExtendWith(MockitoExtension.class)
 class FirebirdColumnSizeLoaderTest {
@@ -83,11 +85,11 @@ class FirebirdColumnSizeLoaderTest {
     
     @Test
     void assertLoadReturnsCombinedVarcharAndBlobSizes() throws SQLException {
-        when(columnsResultSet.next()).thenReturn(true, true, false);
-        when(columnsResultSet.getString("TABLE_NAME")).thenReturn("TEST_TABLE", "TEST_TABLE");
-        when(columnsResultSet.getString("TYPE_NAME")).thenReturn("varchar", "integer");
-        when(columnsResultSet.getString("COLUMN_NAME")).thenReturn("varchar_col", "ignored_col");
-        when(columnsResultSet.getInt("COLUMN_SIZE")).thenReturn(128, 256);
+        when(columnsResultSet.next()).thenReturn(true, true, true, false);
+        when(columnsResultSet.getString("TABLE_NAME")).thenReturn("TEST_TABLE", "TEST_TABLE", "TEST_TABLE");
+        when(columnsResultSet.getInt("DATA_TYPE")).thenReturn(Types.CHAR, Types.BIGINT, Types.BLOB);
+        when(columnsResultSet.getString("COLUMN_NAME")).thenReturn("char_col", "bigint_col", "ignored_blob");
+        when(columnsResultSet.getInt("COLUMN_SIZE")).thenReturn(128, 19, 0);
         when(blobResultSet.next()).thenReturn(true, true, false);
         when(blobResultSet.getString("COLUMN_NAME")).thenReturn(" blob_col ", "   ");
         when(blobResultSet.getInt("SEGMENT_SIZE")).thenReturn(2048, 4096);
@@ -95,7 +97,8 @@ class FirebirdColumnSizeLoaderTest {
         assertThat(actual, hasKey("test_table"));
         Map<String, Integer> tableSizes = actual.get("test_table");
         assertThat(tableSizes.size(), is(2));
-        assertThat(tableSizes.get("VARCHAR_COL"), is(128));
+        assertThat(tableSizes.get("CHAR_COL"), is(128));
+        assertFalse(tableSizes.containsKey("BIGINT_COL"));
         assertThat(tableSizes.get("BLOB_COL"), is(2048));
         verify(preparedStatement).setString(1, "TEST_TABLE");
     }
