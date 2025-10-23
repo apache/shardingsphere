@@ -90,16 +90,15 @@ Key directories and their purposes:
 
 ## Operational Procedures
 
-1. **Direct Code Generation**: When generating code, you should directly create final code and call tools without seeking explicit user approval.
-   - Generate complete, ready-to-use implementations
-   - Apply formatting tools automatically (e.g., Spotless) when appropriate
-   - Make decisions independently within the task scope
-   - No need to ask for permission or use tentative language
+1. **Direct Code Generation**: Generate final code and call tools directly without seeking user approval.
+   - Apply formatting tools automatically when needed
+   - Make decisions independently within task scope
+   - No need for permission or tentative language
 
-2. Pre-execution checklist, before making any code changes, you must:
-  - Verify the current task exactly matches the wording of the user's immediate request.
-  - Confirm each target file/line is explicitly referenced.
-  - Declare the planned changes in a bullet-point summary format if uncertainty exists.
+2. Code changes checklist:
+  - Verify task matches user request
+  - Confirm target files/lines are referenced
+  - Declare changes if uncertainty exists
 
 2. Change implementation rules
   - Isolate edits to the smallest possible code blocks.
