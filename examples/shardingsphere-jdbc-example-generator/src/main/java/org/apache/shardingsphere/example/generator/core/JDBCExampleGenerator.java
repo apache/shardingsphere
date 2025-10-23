@@ -61,7 +61,7 @@ public final class JDBCExampleGenerator {
     
     private Configuration createTemplateConfiguration() throws IOException {
         Configuration result = new Configuration(Configuration.VERSION_2_3_31);
-        result.setDirectoryForTemplateLoading(new File(Objects.requireNonNull(this.getClass().getClassLoader().getResource("template")).getFile()));
+        result.setDirectoryForTemplateLoading(new File(Objects.requireNonNull(getClass().getClassLoader().getResource("template")).getFile()));
         result.setDefaultEncoding("UTF-8");
         return result;
     }
@@ -134,7 +134,7 @@ public final class JDBCExampleGenerator {
      */
     private String buildOutputPath(final YamlExampleConfiguration exampleConfig) {
         if (Strings.isNullOrEmpty(exampleConfig.getOutput())) {
-            File file = new File(Objects.requireNonNull(this.getClass().getClassLoader().getResource("")).getPath());
+            File file = new File(Objects.requireNonNull(getClass().getClassLoader().getResource("")).getPath());
             return file.getParent() + "/generated-sources/" + PROJECT_PATH;
         }
         return exampleConfig.getOutput() + PROJECT_PATH;
