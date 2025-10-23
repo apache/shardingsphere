@@ -19,7 +19,7 @@ package org.apache.shardingsphere.sqlfederation.compiler.sql.function.opengauss.
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.infra.autogen.version.ShardingSphereVersion;
+import org.apache.shardingsphere.infra.version.ShardingSphereVersion;
 
 /**
  * PostgreSQL system function.
@@ -38,7 +38,7 @@ public final class OpenGaussSystemFunction {
      */
     @SuppressWarnings("unused")
     public static String version() {
-        return "ShardingSphere-Proxy " + ShardingSphereVersion.VERSION + ("-" + ShardingSphereVersion.BUILD_GIT_COMMIT_ID_ABBREV) + (ShardingSphereVersion.BUILD_GIT_DIRTY ? "-dirty" : "");
+        return "ShardingSphere-Proxy " + ShardingSphereVersion.VERSION + ("-" + ShardingSphereVersion.BUILD_COMMIT_ID_ABBREV) + (ShardingSphereVersion.BUILD_DIRTY ? "-dirty" : "");
     }
     
     /**

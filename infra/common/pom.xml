@@ -95,17 +95,36 @@
     <build>
         <plugins>
             <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>templating-maven-plugin</artifactId>
-                <version>${templating-maven-plugin.version}</version>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <configuration>
+                    <archive>
+                        <manifestEntries>
+                            <Implementation-Version>${project.version}</Implementation-Version>
+                            <Implementation-Title>${project.name}</Implementation-Title>
+                            <Implementation-Vendor>${project.organization.name}</Implementation-Vendor>
+                        </manifestEntries>
+                    </archive>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <version>${maven-antrun-plugin.version}</version>
                 <executions>
                     <execution>
-                        <id>filtering-proxy-version</id>
+                        <id>generate-version-properties</id>
                         <goals>
-                            <goal>filter-sources</goal>
+                            <goal>run</goal>
                         </goals>
+                        <phase>generate-resources</phase>
                         <configuration>
-                            <sourceDirectory>src/main/templates</sourceDirectory>
+                            <target>
+                                <mkdir dir="${project.build.outputDirectory}" />
+                                <propertyfile comment="ShardingSphere Version Information" file="${project.build.outputDirectory}/shardingsphere-version.properties">
+                                    <entry key="version" value="${project.version}" />
+                                </propertyfile>
+                            </target>
                         </configuration>
                     </execution>
                 </executions>
