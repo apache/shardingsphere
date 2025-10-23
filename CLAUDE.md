@@ -35,57 +35,20 @@ Maven build commands:
 
 ## Code Standards
 
-1. Follow CODE_OF_CONDUCT.md:
-   - Clean code principles (no duplication, high reusability)
-   - Naming conventions, formatting rules, access permissions
-   - AIR testing principle: Automatic, Independent, Repeatable
-2. Generate minimal essential code only
-3. Prioritize readability & scalability, avoid over-engineering
+1. Follow CODE_OF_CONDUCT.md (clean code principles, naming conventions, formatting)
+2. **AI-Specific Requirements**:
+   - Generate minimal essential code only
+   - Prioritize readability as highest priority
+   - Consider extreme performance optimization
+3. Prioritize scalability, avoid over-engineering
 
-## Quality Assurance Standards
+## Testing Standards
 
-### Code Quality Requirements
-
-1. **Minimal Essential Code**: Write only the code needed to fulfill requirements
-   - Eliminate redundant variables, methods, and logic
-   - Remove dead code and unused imports
-   - Prefer concise expressions over verbose implementations
-
-2. **Readability First**: Code must be self-documenting and immediately understandable
-   - Use clear, descriptive variable and method names
-   - Write code that reads like natural language
-   - Add comments only when business logic is complex or non-obvious
-   - Structure code to minimize cognitive load
-
-3. **Performance Considerations**: Consider execution efficiency in all implementations
-   - Optimize algorithms for optimal time/space complexity
-   - Consider execution frequency and critical path optimization
-   - Minimize resource consumption (memory, CPU, I/O)
-   - Avoid unnecessary object creation and method calls in hot paths
-   - Use appropriate data structures for the use case
-   - Consider lazy evaluation where beneficial
-
-### Testing Standards
-
-1. **Coverage Requirements**:
-   - Follow CODE_OF_CONDUCT.md: "Without particular reasons, test cases should be fully covered"
-   - 100% line coverage for all new code unless technically infeasible
-   - 100% branch coverage where logically possible
-   - Apply AIR principle: Automatic, Independent, Repeatable
-   - Apply BCDE design: Border, Correct, Design, Error testing
-
-2. **Test Case Principles**:
-   - Each test validates unique behavior - no redundancy
-   - Use descriptive test names indicating what is tested
-   - Follow Arrange-Act-Assert pattern
-   - Use precise assertions: `actualXXX`, `expectedXXX` naming
-   - Mock external dependencies appropriately
-
-3. **Test Quality**:
-   - Tests should fail for right reasons and be debuggable
-   - Fast, independent, and deterministic execution
-   - Use parameterized tests for similar scenarios
-   - Focus on behavior over implementation details
+1. Follow CODE_OF_CONDUCT.md (AIR principle, BCDE design, naming conventions)
+2. **AI-Specific Requirements**:
+   - 100% line and branch coverage for all new code
+   - No redundant test cases - each test validates unique behavior
+   - Focus on behavior testing over implementation details
 
 ## Absolute Prohibitions (Zero-Tolerance)
 
