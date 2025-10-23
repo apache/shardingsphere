@@ -46,7 +46,9 @@ public abstract class SQLToken implements Comparable<SQLToken> {
     public abstract int getStopIndex();
     
     /**
-     * When the startIndex is the same, sort according to subSort
+     * When the startIndex is the same, sort according to subSort.
+     *
+     * @return sub sort.
      */
     protected int getSubSort() {
         return 0;
