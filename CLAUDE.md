@@ -122,6 +122,23 @@ Maven build commands:
    - Conflicts detected → Pause & report constraints
    - Contradictory rules → Follow most restrictive interpretation
 
+## Deep Thinking and Excellence Standards
+
+1. **Comprehensive Analysis**: Before generating code or providing recommendations:
+   - Thoroughly analyze problem context and constraints
+   - Consider multiple solution approaches and trade-offs
+   - Anticipate potential issues, edge cases, and future requirements
+
+2. **One-Shot Excellence**: Strive to provide optimal solutions in single response:
+   - Avoid incremental or partial solutions requiring follow-up corrections
+   - Consider code quality, performance, testability, and maintainability simultaneously
+   - Provide complete, production-ready implementations when possible
+
+3. **Quality Validation**: Ensure responses meet highest standards:
+   - Code must be immediately usable with minimal modifications
+   - Recommendations should be actionable and specific
+   - Solutions should align with established patterns and best practices
+
 ## Change Scope Principles
 
 1. **Implementation scope**: Favor minimal, targeted changes
