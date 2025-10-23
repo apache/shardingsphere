@@ -56,15 +56,16 @@ Maven build commands:
    - Ambiguous instructions: Confirm full name & location before proceeding
 
 3. Code style:
-   - Prohibit automatic formatting of entire files/projects
-   - Local consistency: Match adjacent code style
+   - Prohibit automatic formatting of entire files/projects without explicit instruction
+   - Apply Spotless automatically after code generation for new code only
 
 ## Operational Procedures
 
 1. **Direct Code Generation**: Generate final code & call tools directly without user approval
-   - Apply formatting tools automatically when needed
+   - Apply formatting tools automatically when needed for new code
    - Make independent decisions within task scope
    - **IMPORTANT**: Automated code generation & tool calls permitted, automatic Git commits strictly prohibited
+   - **Git Operations**: Prepare commit messages when requested, but never execute commits without explicit user command
 
 2. Change checklist:
    - Verify task matches user request
@@ -75,8 +76,27 @@ Maven build commands:
    - Isolate edits to smallest possible code blocks
    - Maintain existing style, even if suboptimal
    - Preserve all comments unless directly contradictory
-   - Record rationale in commit messages when using Git
+   - **If explicitly requested to commit**: Record rationale in commit messages
    - **Prohibition**: Never automatically commit changes to Git without explicit instruction
+
+## Decision Making Framework
+
+1. **Within-task decisions** (permitted):
+   - Code implementation approaches (algorithm choice, data structures)
+   - Variable/function naming within defined scope
+   - Local code organization and structure
+   - Tool selection for formatting/style within approved constraints
+
+2. **Beyond-task decisions** (prohibited):
+   - Changing requirements or adding new features
+   - Refactoring code outside specified scope
+   - Modifying project structure or dependencies
+   - Implementing "best practice" improvements not explicitly requested
+
+3. **Scope boundaries**:
+   - Explicit instruction: What to do
+   - Implicit scope: How to implement within the specified files/functions
+   - Forbidden: Anything beyond the specified implementation scope
 
 ## Cognitive Constraints
 
@@ -90,6 +110,23 @@ Maven build commands:
    - Uncertain impact → Propose minimal safe experiment
    - Conflicts detected → Pause & report constraints
    - Contradictory rules → Follow most restrictive interpretation
+
+## Change Scope Principles
+
+1. **Implementation scope**: Favor minimal, targeted changes
+   - Edit only what's explicitly requested
+   - Avoid "helpful" refactoring or improvements
+   - Preserve existing functionality and behavior
+
+2. **Project context**: Acknowledge ShardingSphere's comprehensive nature
+   - Current implementation: Minimal changes only
+   - Future considerations: Document potential improvements for separate discussion
+   - Balance: Quality vs scope adherence within current task constraints
+
+3. **Documentation of deferred improvements**:
+   - Note potential enhancements when detected
+   - File for future consideration rather than immediate implementation
+   - Maintain focus on current task requirements
 
 ## Safety Overrides
 
@@ -109,6 +146,19 @@ Maven build commands:
    - Confirm no basic functionality regression
    - Verify change scope matches original request
    - Report deviations immediately
+
+## Conflict Resolution
+
+When multiple rules appear to conflict:
+1. Safety-first: Choose the most restrictive interpretation
+2. Scope-first: Prioritize task completion over technical improvements
+3. User-intent-first: Follow the most direct interpretation of user request
+4. Minimal-change-first: Preserve existing behavior over optimization
+
+Example conflict resolution:
+- Format rule vs automation rule: Apply formatting only to newly generated code
+- Git record vs commit prohibition: Prepare commit messages but don't execute commits
+- Decision autonomy vs scope limits: Make implementation decisions but don't expand scope
 
 2. Continuous execution:
    - Re-read protocol before each new task
