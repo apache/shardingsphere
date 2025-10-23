@@ -148,7 +148,7 @@
         <native-maven-plugin.version>0.11.0</native-maven-plugin.version>
         
         <!-- Compile plugin versions -->
-        <templating-maven-plugin.version>1.0.0</templating-maven-plugin.version>
+        <maven-antrun-plugin.version>3.1.0</maven-antrun-plugin.version>
         <git-commit-id-plugin.version>4.9.10</git-commit-id-plugin.version>
         <maven-enforcer-plugin.version>3.2.1</maven-enforcer-plugin.version>
         <maven-compiler-plugin.version>3.13.0</maven-compiler-plugin.version>

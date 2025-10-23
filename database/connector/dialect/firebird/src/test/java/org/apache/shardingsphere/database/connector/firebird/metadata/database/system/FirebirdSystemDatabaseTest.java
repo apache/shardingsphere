@@ -32,12 +32,12 @@ import static org.hamcrest.MatcherAssert.assertThat;
 class FirebirdSystemDatabaseTest {
     
     private final DialectSystemDatabase systemDatabase = DatabaseTypedSPILoader.getService(DialectSystemDatabase.class, TypedSPILoader.getService(DatabaseType.class, "Firebird"));
-
+    
     @Test
     void assertGetSystemSchemas() {
         assertThat(systemDatabase.getSystemSchemas(), is(new HashSet<>(Collections.singletonList("system_tables"))));
     }
-
+    
     @Test
     void assertGetSystemSchemasByDatabaseName() {
         assertThat(systemDatabase.getSystemDatabaseSchemaMap().get("sharding_db"), is(Collections.singleton("system_tables")));

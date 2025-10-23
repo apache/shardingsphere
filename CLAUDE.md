@@ -58,7 +58,9 @@ Key directories and their purposes:
 
 ## Code Standards and Conventions
 
-Please follow these guidelines in file [CODE_OF_CONDUCT.md] when developing
+1. Please follow these guidelines in file [CODE_OF_CONDUCT.md] when developing.
+2. Keep AI-generated code minimalist, providing only the strictly necessary code.
+3. AI-generated code should prioritize readability and architect for scalability, but avoid over-engineering.
 
 ## Absolute Prohibitions (Zero-Tolerance Violations)
 
@@ -71,7 +73,6 @@ Please follow these guidelines in file [CODE_OF_CONDUCT.md] when developing
 2. **Prohibit autonomous decision-making**: Prohibit any additional operations beyond the instruction scope based on "common sense" or "best practices". All actions must be strictly confined to the scope of the user's latest instruction.
 
 3. **Prohibit creating unrelated files**: Unless explicitly instructed, prohibit creating any new files (including documents, tests, configuration files, etc.).
-
 
 ## Permission Framework Based on Whitelist
 
@@ -138,3 +139,4 @@ Please follow these guidelines in file [CODE_OF_CONDUCT.md] when developing
   - Verify rule compliance after each user interaction.
   - Report violations through clear error messages.
   - Use Spotless to enforce code style after code generated.
+  - Clean context after codes committed.

@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.proxy.backend.opengauss.handler.admin.executor;
 
 import lombok.Getter;
-import org.apache.shardingsphere.infra.autogen.version.ShardingSphereVersion;
+import org.apache.shardingsphere.infra.version.ShardingSphereVersion;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResultMetaData;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.raw.metadata.RawQueryResultColumnMetaData;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.raw.metadata.RawQueryResultMetaData;
@@ -45,7 +45,7 @@ public final class OpenGaussSelectVersionExecutor implements DatabaseAdminQueryE
     
     @Override
     public void execute(final ConnectionSession connectionSession, final ShardingSphereMetaData metaData) {
-        String version = "ShardingSphere-Proxy " + ShardingSphereVersion.VERSION + ("-" + ShardingSphereVersion.BUILD_GIT_COMMIT_ID_ABBREV) + (ShardingSphereVersion.BUILD_GIT_DIRTY ? "-dirty" : "");
+        String version = "ShardingSphere-Proxy " + ShardingSphereVersion.VERSION + ("-" + ShardingSphereVersion.BUILD_COMMIT_ID_ABBREV) + (ShardingSphereVersion.BUILD_DIRTY ? "-dirty" : "");
         mergedResult = new LocalDataMergedResult(Collections.singleton(new LocalDataQueryResultRow(version)));
     }
     

@@ -51,10 +51,8 @@ public final class StorageUnitNodeMapCreator {
     
     private static StorageNode create(final String storageUnitName, final DataSourcePoolProperties props) {
         Map<String, Object> standardProps = props.getConnectionPropertySynonyms().getStandardProperties();
-        return create(storageUnitName, standardProps.get("url").toString(), standardProps.get("username").toString());
-    }
-    
-    private static StorageNode create(final String storageUnitName, final String url, final String username) {
+        String url = standardProps.get("url").toString();
+        String username = standardProps.get("username").toString();
         boolean isInstanceConnectionAvailable = new DatabaseTypeRegistry(DatabaseTypeFactory.get(url)).getDialectDatabaseMetaData().getConnectionOption().isInstanceConnectionAvailable();
         try {
             ConnectionProperties connectionProps = DatabaseTypedSPILoader.getService(ConnectionPropertiesParser.class, DatabaseTypeFactory.get(url)).parse(url, username, null);
