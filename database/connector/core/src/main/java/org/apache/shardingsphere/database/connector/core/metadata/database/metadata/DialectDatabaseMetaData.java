@@ -168,9 +168,9 @@ public interface DialectDatabaseMetaData extends DatabaseTypedSPI {
     }
     
     /**
-     * Get sql batch option.
+     * Get SQL batch option.
      *
-     * @return sql batch option
+     * @return SQL batch option
      */
     default DialectSQLBatchOption getSQLBatchOption() {
         return new DialectSQLBatchOption(true);
