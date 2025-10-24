@@ -20,7 +20,13 @@ grammar DMLStatement;
 import BaseRule;
 
 insert
-    : INSERT insertSpecification INTO? tableName partitionNames? (insertValuesClause | setAssignmentsClause | insertSelectClause) onDuplicateKeyClause? returningClause?
+    : INSERT insertSpecification INTO? tableName partitionNames? insertBody onDuplicateKeyClause? returningClause?
+    ;
+
+insertBody
+    : insertValuesClause
+    | setAssignmentsClause valueReference?
+    | insertSelectClause valueReference?
     ;
 
 insertSpecification
@@ -47,8 +53,12 @@ insertSelectClause
     : valueReference? (LP_ fields? RP_)? (LP_ select RP_ | select)
     ;
 
+rowAlias
+    : AS alias derivedColumns?
+    ;
+
 onDuplicateKeyClause
-    : (AS identifier derivedColumns?)?  ON DUPLICATE KEY UPDATE assignment (COMMA_ assignment)*
+    : ON DUPLICATE KEY UPDATE assignment (COMMA_ assignment)*
     ;
 
 valueReference
@@ -88,7 +98,15 @@ assignment
     ;
 
 setAssignmentsClause
-    : SET assignment (COMMA_ assignment)*
+    : SET assignmentList setRowAlias?
+    ;
+
+assignmentList
+    : assignment (COMMA_ assignment)*
+    ;
+
+setRowAlias
+    : AS alias derivedColumns?
     ;
 
 assignmentValues
