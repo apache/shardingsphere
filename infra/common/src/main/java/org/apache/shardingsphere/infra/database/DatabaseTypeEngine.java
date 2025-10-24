@@ -19,18 +19,18 @@ package org.apache.shardingsphere.infra.database;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.database.connector.core.jdbcurl.DialectJdbcUrlFetcher;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeFactory;
 import org.apache.shardingsphere.infra.config.database.DatabaseConfiguration;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.exception.external.sql.type.wrapper.SQLWrapperException;
+import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 
 import javax.sql.DataSource;
-import java.lang.reflect.InvocationTargetException;
 import java.sql.Connection;
-import java.sql.DatabaseMetaData;
 import java.sql.SQLException;
 import java.sql.SQLFeatureNotSupportedException;
 import java.util.Collection;
@@ -100,9 +100,6 @@ public final class DatabaseTypeEngine {
     
     /**
      * Get storage type.
-     * Similar to <a href="https://github.com/apache/hive/pull/5554">apache/hive#5554</a>,
-     * apache/hive 4.0.1's `org.apache.hive.jdbc.HiveDatabaseMetaData` does not implement {@link DatabaseMetaData#getURL()}.
-     * So use {@link java.sql.Wrapper#isWrapperFor(Class)} to try fuzzy matching.
      *
      * @param dataSource data source
      * @return storage type
@@ -113,26 +110,23 @@ public final class DatabaseTypeEngine {
         try (Connection connection = dataSource.getConnection()) {
             return DatabaseTypeFactory.get(connection.getMetaData().getURL());
         } catch (final SQLFeatureNotSupportedException sqlFeatureNotSupportedException) {
-            return getStorageType(dataSource, sqlFeatureNotSupportedException);
+            return findStorageType(dataSource).orElseThrow(() -> new SQLWrapperException(sqlFeatureNotSupportedException));
         } catch (final SQLException ex) {
             throw new SQLWrapperException(ex);
         }
     }
     
-    private static DatabaseType getStorageType(final DataSource dataSource, final SQLFeatureNotSupportedException sqlFeatureNotSupportedException) {
+    private static Optional<DatabaseType> findStorageType(final DataSource dataSource) {
         try (Connection connection = dataSource.getConnection()) {
-            Class<?> hiveConnectionClass = Class.forName("org.apache.hive.jdbc.HiveConnection");
-            if (connection.isWrapperFor(hiveConnectionClass)) {
-                Object hiveConnection = connection.unwrap(hiveConnectionClass);
-                String connectedUrl = (String) hiveConnectionClass.getMethod("getConnectedUrl").invoke(hiveConnection);
-                return DatabaseTypeFactory.get(connectedUrl);
+            for (DialectJdbcUrlFetcher each : ShardingSphereServiceLoader.getServiceInstances(DialectJdbcUrlFetcher.class)) {
+                if (connection.isWrapperFor(each.getConnectionClass())) {
+                    return Optional.of(DatabaseTypeFactory.get(each.fetch(connection)));
+                }
             }
-            throw new SQLWrapperException(sqlFeatureNotSupportedException);
         } catch (final SQLException ex) {
             throw new SQLWrapperException(ex);
-        } catch (final ClassNotFoundException | NoSuchMethodException | InvocationTargetException | IllegalAccessException ex) {
-            throw new SQLWrapperException(new SQLException(ex));
         }
+        return Optional.empty();
     }
     
     /**
