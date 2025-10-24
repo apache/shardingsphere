@@ -110,23 +110,23 @@ public final class DatabaseTypeEngine {
         try (Connection connection = dataSource.getConnection()) {
             return DatabaseTypeFactory.get(connection.getMetaData().getURL());
         } catch (final SQLFeatureNotSupportedException sqlFeatureNotSupportedException) {
-            return getStorageType(dataSource, sqlFeatureNotSupportedException);
+            return findStorageType(dataSource).orElseThrow(() -> new SQLWrapperException(sqlFeatureNotSupportedException));
         } catch (final SQLException ex) {
             throw new SQLWrapperException(ex);
         }
     }
     
-    private static DatabaseType getStorageType(final DataSource dataSource, final SQLFeatureNotSupportedException sqlFeatureNotSupportedException) {
+    private static Optional<DatabaseType> findStorageType(final DataSource dataSource) {
         try (Connection connection = dataSource.getConnection()) {
             for (DialectJdbcUrlFetcher each : ShardingSphereServiceLoader.getServiceInstances(DialectJdbcUrlFetcher.class)) {
                 if (connection.isWrapperFor(each.getConnectionClass())) {
-                    return DatabaseTypeFactory.get(each.fetch(connection));
+                    return Optional.of(DatabaseTypeFactory.get(each.fetch(connection)));
                 }
             }
-            throw sqlFeatureNotSupportedException;
         } catch (final SQLException ex) {
             throw new SQLWrapperException(ex);
         }
+        return Optional.empty();
     }
     
     /**
