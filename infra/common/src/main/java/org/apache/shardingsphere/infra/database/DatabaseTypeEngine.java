@@ -31,7 +31,6 @@ import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
-import java.sql.DatabaseMetaData;
 import java.sql.SQLException;
 import java.sql.SQLFeatureNotSupportedException;
 import java.util.Collection;
@@ -101,9 +100,6 @@ public final class DatabaseTypeEngine {
     
     /**
      * Get storage type.
-     * Similar to <a href="https://github.com/apache/hive/pull/5554">apache/hive#5554</a>,
-     * apache/hive 4.0.1's `org.apache.hive.jdbc.HiveDatabaseMetaData` does not implement {@link DatabaseMetaData#getURL()}.
-     * So use {@link java.sql.Wrapper#isWrapperFor(Class)} to try fuzzy matching.
      *
      * @param dataSource data source
      * @return storage type
@@ -127,7 +123,7 @@ public final class DatabaseTypeEngine {
                     return DatabaseTypeFactory.get(each.fetch(connection));
                 }
             }
-            throw new SQLWrapperException(sqlFeatureNotSupportedException);
+            throw sqlFeatureNotSupportedException;
         } catch (final SQLException ex) {
             throw new SQLWrapperException(ex);
         }
