@@ -64,6 +64,14 @@ class DatabaseTypeEngineTest {
     }
     
     @Test
+    void assertGetProtocolTypeWithEmptyDataSources() {
+        DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "MySQL");
+        DatabaseConfiguration databaseConfig = new DataSourceProvidedDatabaseConfiguration(Collections.emptyMap(), Collections.singleton(new FixtureRuleConfiguration()));
+        assertThat(DatabaseTypeEngine.getProtocolType(databaseConfig, new ConfigurationProperties(new Properties())), is(databaseType));
+        assertThat(DatabaseTypeEngine.getProtocolType(Collections.singletonMap("foo_db", databaseConfig), new ConfigurationProperties(new Properties())), is(databaseType));
+    }
+    
+    @Test
     void assertGetStorageType() throws SQLException {
         DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "H2");
         assertThat(DatabaseTypeEngine.getStorageType(mockDataSource(databaseType)), is(databaseType));
