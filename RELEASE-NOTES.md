@@ -48,6 +48,7 @@
 1. Encrypt: Add quotes to encrypt rewrite derived columns - [#34950](https://github.com/apache/shardingsphere/pull/34950)
 1. Encrypt: Support NOT LIKE operator in encryption feature - [#35984](https://github.com/apache/shardingsphere/pull/35984)
 1. Readwrite-splitting: Update transactional read query strategy default type as PRIMARY - [#36477](https://github.com/apache/shardingsphere/pull/36477)
+1. Pipeline: InventoryDumperContextSplitter supports multi-columns unique key first integer column splitting - [#36935](https://github.com/apache/shardingsphere/pull/36935)
 
 ### Bug Fixes
 
