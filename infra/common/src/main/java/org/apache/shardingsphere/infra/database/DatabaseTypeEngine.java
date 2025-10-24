@@ -113,21 +113,25 @@ public final class DatabaseTypeEngine {
         try (Connection connection = dataSource.getConnection()) {
             return DatabaseTypeFactory.get(connection.getMetaData().getURL());
         } catch (final SQLFeatureNotSupportedException sqlFeatureNotSupportedException) {
-            try (Connection connection = dataSource.getConnection()) {
-                Class<?> hiveConnectionClass = Class.forName("org.apache.hive.jdbc.HiveConnection");
-                if (connection.isWrapperFor(hiveConnectionClass)) {
-                    Object hiveConnection = connection.unwrap(hiveConnectionClass);
-                    String connectedUrl = (String) hiveConnectionClass.getMethod("getConnectedUrl").invoke(hiveConnection);
-                    return DatabaseTypeFactory.get(connectedUrl);
-                }
-                throw new SQLWrapperException(sqlFeatureNotSupportedException);
-            } catch (final SQLException ex) {
-                throw new SQLWrapperException(ex);
-            } catch (final ClassNotFoundException | NoSuchMethodException | InvocationTargetException | IllegalAccessException ex) {
-                throw new SQLWrapperException(new SQLException(ex));
-            }
+            return getStorageType(dataSource, sqlFeatureNotSupportedException);
         } catch (final SQLException ex) {
             throw new SQLWrapperException(ex);
+        }
+    }
+    
+    private static DatabaseType getStorageType(final DataSource dataSource, final SQLFeatureNotSupportedException sqlFeatureNotSupportedException) {
+        try (Connection connection = dataSource.getConnection()) {
+            Class<?> hiveConnectionClass = Class.forName("org.apache.hive.jdbc.HiveConnection");
+            if (connection.isWrapperFor(hiveConnectionClass)) {
+                Object hiveConnection = connection.unwrap(hiveConnectionClass);
+                String connectedUrl = (String) hiveConnectionClass.getMethod("getConnectedUrl").invoke(hiveConnection);
+                return DatabaseTypeFactory.get(connectedUrl);
+            }
+            throw new SQLWrapperException(sqlFeatureNotSupportedException);
+        } catch (final SQLException ex) {
+            throw new SQLWrapperException(ex);
+        } catch (final ClassNotFoundException | NoSuchMethodException | InvocationTargetException | IllegalAccessException ex) {
+            throw new SQLWrapperException(new SQLException(ex));
         }
     }
     
