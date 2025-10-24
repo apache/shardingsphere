@@ -118,15 +118,15 @@ public final class InventoryDumperContextSplitter {
         if (!dumperContext.hasUniqueKey()) {
             return Collections.singleton(new UnsupportedKeyIngestPosition());
         }
+        DialectDataTypeOption dataTypeOption = new DatabaseTypeRegistry(sourceDataSource.getDatabaseType()).getDialectDatabaseMetaData().getDataTypeOption();
         List<PipelineColumnMetaData> uniqueKeyColumns = dumperContext.getUniqueKeyColumns();
+        int firstColumnDataType = uniqueKeyColumns.get(0).getDataType();
+        if (dataTypeOption.isIntegerDataType(firstColumnDataType)) {
+            Range<Long> uniqueKeyValuesRange = getUniqueKeyValuesRange(jobItemContext, dumperContext);
+            int shardingSize = jobItemContext.getJobProcessContext().getProcessConfiguration().getRead().getShardingSize();
+            return InventoryPositionCalculator.getPositionByIntegerUniqueKeyRange(tableRecordsCount, uniqueKeyValuesRange, shardingSize);
+        }
         if (1 == uniqueKeyColumns.size()) {
-            DialectDataTypeOption dataTypeOption = new DatabaseTypeRegistry(sourceDataSource.getDatabaseType()).getDialectDatabaseMetaData().getDataTypeOption();
-            int firstColumnDataType = uniqueKeyColumns.get(0).getDataType();
-            if (dataTypeOption.isIntegerDataType(firstColumnDataType)) {
-                Range<Long> uniqueKeyValuesRange = getUniqueKeyValuesRange(jobItemContext, dumperContext);
-                int shardingSize = jobItemContext.getJobProcessContext().getProcessConfiguration().getRead().getShardingSize();
-                return InventoryPositionCalculator.getPositionByIntegerUniqueKeyRange(tableRecordsCount, uniqueKeyValuesRange, shardingSize);
-            }
             if (dataTypeOption.isStringDataType(firstColumnDataType)) {
                 return Collections.singleton(new StringPrimaryKeyIngestPosition(null, null));
             }
