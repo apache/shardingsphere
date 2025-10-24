@@ -33,6 +33,7 @@ import org.junit.jupiter.api.Test;
 import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.sql.SQLFeatureNotSupportedException;
 import java.util.Collections;
 import java.util.Properties;
 
@@ -40,6 +41,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
+import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -82,6 +84,21 @@ class DatabaseTypeEngineTest {
         DataSource dataSource = mock(DataSource.class);
         when(dataSource.getConnection()).thenThrow(SQLException.class);
         assertThrows(SQLWrapperException.class, () -> DatabaseTypeEngine.getStorageType(dataSource));
+    }
+
+    @Test
+    void assertGetStorageTypeWithSQLFeatureNotSupportedExceptionReturnsEmpty() throws SQLException {
+        Connection connection = mock(Connection.class, RETURNS_DEEP_STUBS);
+        when(connection.getMetaData().getURL()).thenThrow(SQLFeatureNotSupportedException.class);
+        assertThrows(SQLWrapperException.class, () -> DatabaseTypeEngine.getStorageType(new MockedDataSource(connection)));
+    }
+    
+    @Test
+    void assertGetStorageTypeWithSQLFeatureNotSupportedExceptionAndSQLError() throws SQLException {
+        Connection connection = mock(Connection.class, RETURNS_DEEP_STUBS);
+        when(connection.getMetaData().getURL()).thenThrow(SQLFeatureNotSupportedException.class);
+        when(connection.isWrapperFor(any(Class.class))).thenThrow(SQLException.class);
+        assertThrows(SQLWrapperException.class, () -> DatabaseTypeEngine.getStorageType(new MockedDataSource(connection)));
     }
     
     @Test
