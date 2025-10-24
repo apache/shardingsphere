@@ -71,13 +71,13 @@ public final class DatabaseTypeEngine {
      * @param props configuration properties
      * @return protocol type
      */
-    public static DatabaseType getProtocolType(final Map<String, ? extends DatabaseConfiguration> databaseConfigs, final ConfigurationProperties props) {
+    public static DatabaseType getProtocolType(final Map<String, DatabaseConfiguration> databaseConfigs, final ConfigurationProperties props) {
         Optional<DatabaseType> configuredDatabaseType = findConfiguredDatabaseType(props);
         if (configuredDatabaseType.isPresent()) {
             return configuredDatabaseType.get();
         }
-        Map<String, DataSource> dataSources = getDataSources(databaseConfigs);
-        return dataSources.isEmpty() ? getDefaultStorageType() : getStorageType(dataSources.values().iterator().next());
+        Collection<DataSource> dataSources = getDataSources(databaseConfigs).values();
+        return dataSources.isEmpty() ? getDefaultStorageType() : getStorageType(dataSources.iterator().next());
     }
     
     private static Optional<DatabaseType> findConfiguredDatabaseType(final ConfigurationProperties props) {
@@ -85,9 +85,9 @@ public final class DatabaseTypeEngine {
         return null == configuredDatabaseType ? Optional.empty() : Optional.of(configuredDatabaseType.getTrunkDatabaseType().orElse(configuredDatabaseType));
     }
     
-    private static Map<String, DataSource> getDataSources(final Map<String, ? extends DatabaseConfiguration> databaseConfigs) {
+    private static Map<String, DataSource> getDataSources(final Map<String, DatabaseConfiguration> databaseConfigs) {
         Map<String, DataSource> result = new LinkedHashMap<>();
-        for (Entry<String, ? extends DatabaseConfiguration> entry : databaseConfigs.entrySet()) {
+        for (Entry<String, DatabaseConfiguration> entry : databaseConfigs.entrySet()) {
             result.putAll(getDataSources(entry.getValue()));
         }
         return result;
