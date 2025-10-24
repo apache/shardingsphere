@@ -83,7 +83,7 @@ class DatabaseTypeEngineTest {
         when(dataSource.getConnection()).thenThrow(SQLException.class);
         assertThrows(SQLWrapperException.class, () -> DatabaseTypeEngine.getStorageType(dataSource));
     }
-
+    
     @Test
     void assertGetDefaultStorageTypeWithEmptyDataSources() {
         DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "MySQL");
