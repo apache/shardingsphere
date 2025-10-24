@@ -85,7 +85,7 @@ class DatabaseTypeEngineTest {
         when(dataSource.getConnection()).thenThrow(SQLException.class);
         assertThrows(SQLWrapperException.class, () -> DatabaseTypeEngine.getStorageType(dataSource));
     }
-
+    
     @Test
     void assertGetStorageTypeWithSQLFeatureNotSupportedExceptionReturnsEmpty() throws SQLException {
         Connection connection = mock(Connection.class, RETURNS_DEEP_STUBS);
