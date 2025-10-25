@@ -131,7 +131,7 @@ class DatabaseTypeEngineTest {
                 throw new IllegalStateException("Unexpected value: " + databaseType.getType());
         }
     }
-
+    
     @Test
     void assertGetStorageTypeWithFoundDialectURLFetcher() throws SQLException {
         Connection connection = mock(Connection.class, RETURNS_DEEP_STUBS);
@@ -143,7 +143,7 @@ class DatabaseTypeEngineTest {
             assertThrows(UnsupportedStorageTypeException.class, () -> DatabaseTypeEngine.getStorageType(new MockedDataSource(connection)));
         }
     }
-
+    
     @Test
     void assertGetStorageTypeWithNotFoundDialectURLFetcher() throws SQLException {
         Connection connection = mock(Connection.class, RETURNS_DEEP_STUBS);
