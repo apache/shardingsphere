@@ -86,7 +86,7 @@ public final class DataNode {
         schemaName = getSchemaName(databaseName, dialectDatabaseMetaData, containsSchema, segments);
         tableName = containsSchema ? segments.get(2).toLowerCase() : segments.get(1).toLowerCase();
     }
-
+    
     private String getSchemaName(final String databaseName, final DialectDatabaseMetaData dialectDatabaseMetaData, final boolean containsSchema, final List<String> segments) {
         return dialectDatabaseMetaData.getSchemaOption().getDefaultSchema().map(defaultSchema -> containsSchema ? segments.get(1) : ASTERISK).orElse(databaseName);
     }
@@ -98,7 +98,7 @@ public final class DataNode {
         List<String> segments = Splitter.on(DELIMITER).splitToList(dataNodeStr);
         return isAnySegmentIsEmptyOrContainsOnlyWhitespace(tier, segments);
     }
-
+    
     private boolean hasInvalidDelimiterStructure(final String dataNodeStr) {
         return !dataNodeStr.contains(DELIMITER) || hasLeadingOrTrailingDelimiter(dataNodeStr) || hasConsecutiveDelimiters(dataNodeStr) || hasWhitespaceAroundDelimiters(dataNodeStr);
     }
@@ -137,7 +137,7 @@ public final class DataNode {
     public String format() {
         return null == schemaName ? formatWithoutSchema() : formatWithSchema();
     }
-
+    
     /**
      * Format data node as string.
      *
@@ -147,15 +147,15 @@ public final class DataNode {
     public String format(final DatabaseType databaseType) {
         return shouldIncludeSchema(databaseType) ? formatWithSchema() : formatWithoutSchema();
     }
-
+    
     private boolean shouldIncludeSchema(final DatabaseType databaseType) {
         return null != schemaName && new DatabaseTypeRegistry(databaseType).getDialectDatabaseMetaData().getSchemaOption().getDefaultSchema().isPresent();
     }
-
+    
     private String formatWithSchema() {
         return String.join(DELIMITER, dataSourceName, schemaName, tableName);
     }
-
+    
     private String formatWithoutSchema() {
         return String.join(DELIMITER, dataSourceName, tableName);
     }
@@ -173,7 +173,7 @@ public final class DataNode {
                 && Objects.equal(new CaseInsensitiveString(tableName), new CaseInsensitiveString(dataNode.tableName))
                 && Objects.equal(null == schemaName ? null : new CaseInsensitiveString(schemaName), null == dataNode.schemaName ? null : new CaseInsensitiveString(dataNode.schemaName));
     }
-
+    
     @Override
     public int hashCode() {
         return Objects.hashCode(new CaseInsensitiveString(dataSourceName), new CaseInsensitiveString(tableName), null == schemaName ? null : new CaseInsensitiveString(schemaName));
