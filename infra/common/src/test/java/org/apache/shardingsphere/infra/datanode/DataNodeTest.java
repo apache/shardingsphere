@@ -17,7 +17,9 @@
 
 package org.apache.shardingsphere.infra.datanode;
 
+import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.exception.kernel.metadata.datanode.InvalidDataNodeFormatException;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -201,5 +203,147 @@ class DataNodeTest {
         DataNode dataNode = new DataNode("prod-cluster-01.mysql-master.users");
         assertThat(dataNode.getDataSourceName(), is("prod-cluster-01.mysql-master"));
         assertThat(dataNode.getTableName(), is("users"));
+    }
+    
+    @Test
+    void assertNewDataNodeWithDatabaseType() {
+        DataNode dataNode = new DataNode("test_db", TypedSPILoader.getService(DatabaseType.class, "PostgreSQL"), "ds.schema.tbl");
+        assertThat(dataNode.getDataSourceName(), is("ds"));
+        assertThat(dataNode.getTableName(), is("tbl"));
+        assertThat(dataNode.getSchemaName(), is("schema"));
+    }
+    
+    @Test
+    void assertFormatWithDatabaseType() {
+        DataNode dataNode = new DataNode("ds", "tbl");
+        dataNode.setSchemaName("schema");
+        assertThat(dataNode.format(TypedSPILoader.getService(DatabaseType.class, "PostgreSQL")), is("ds.schema.tbl"));
+    }
+    
+    @Test
+    void assertFormatWithDatabaseTypeWithoutSchema() {
+        DataNode dataNode = new DataNode("ds", "tbl");
+        assertThat(dataNode.format(TypedSPILoader.getService(DatabaseType.class, "MySQL")), is("ds.tbl"));
+    }
+    
+    @Test
+    void assertEqualsCaseInsensitive() {
+        DataNode dataNode1 = new DataNode("DS", "TBL");
+        DataNode dataNode2 = new DataNode("ds", "tbl");
+        dataNode1.setSchemaName("schema");
+        dataNode2.setSchemaName("SCHEMA");
+        assertThat(dataNode1, is(dataNode2));
+    }
+    
+    @Test
+    void assertEqualsWithDifferentSchema() {
+        DataNode dataNode1 = new DataNode("ds", "tbl");
+        DataNode dataNode2 = new DataNode("ds", "tbl");
+        dataNode1.setSchemaName("schema1");
+        dataNode2.setSchemaName("schema2");
+        assertThat(dataNode1, not(dataNode2));
+    }
+    
+    @Test
+    void assertEqualsWithOneNullSchema() {
+        DataNode dataNode1 = new DataNode("ds", "tbl");
+        DataNode dataNode2 = new DataNode("ds", "tbl");
+        dataNode1.setSchemaName("schema");
+        assertThat(dataNode1, not(dataNode2));
+    }
+    
+    @Test
+    void assertNewDataNodeWithDatabaseTypeWithoutSchemaSupport() {
+        DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "MySQL");
+        DataNode dataNode = new DataNode("test_db", databaseType, "ds.tbl");
+        assertThat(dataNode.getDataSourceName(), is("ds"));
+        assertThat(dataNode.getTableName(), is("tbl"));
+        assertThat(dataNode.getSchemaName(), is("test_db"));
+    }
+    
+    @Test
+    void assertNewDataNodeWithDatabaseTypeAndInvalidThreeSegment() {
+        DataNode dataNode = new DataNode("test_db", TypedSPILoader.getService(DatabaseType.class, "MySQL"), "ds.schema.tbl");
+        assertThat(dataNode.getDataSourceName(), is("ds"));
+        assertThat(dataNode.getTableName(), is("schema.tbl"));
+        assertThat(dataNode.getSchemaName(), is("test_db"));
+    }
+    
+    @Test
+    void assertNewDataNodeWithDatabaseTypeCheckStateException() {
+        DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "PostgreSQL");
+        assertThrows(InvalidDataNodeFormatException.class, () -> new DataNode("test_db", databaseType, "invalid_format_without_delimiter"));
+    }
+    
+    @Test
+    void assertHashCodeWithSchema() {
+        DataNode dataNode1 = new DataNode("ds", "tbl");
+        DataNode dataNode2 = new DataNode("ds", "tbl");
+        dataNode1.setSchemaName("SCHEMA");
+        dataNode2.setSchemaName("schema");
+        assertThat(dataNode1.hashCode(), is(dataNode2.hashCode()));
+    }
+    
+    @Test
+    void assertHashCodeWithNullSchema() {
+        DataNode dataNode1 = new DataNode("ds", "tbl");
+        DataNode dataNode2 = new DataNode("ds", "tbl");
+        dataNode1.setSchemaName(null);
+        dataNode2.setSchemaName(null);
+        assertThat(dataNode1.hashCode(), is(dataNode2.hashCode()));
+    }
+    
+    @Test
+    void assertEqualsWithNullSchemas() {
+        DataNode dataNode1 = new DataNode("ds", "tbl");
+        DataNode dataNode2 = new DataNode("ds", "tbl");
+        dataNode1.setSchemaName(null);
+        dataNode2.setSchemaName(null);
+        assertThat(dataNode1, is(dataNode2));
+    }
+    
+    @Test
+    void assertFormatWithDatabaseTypeAndNullSchema() {
+        DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "PostgreSQL");
+        DataNode dataNode = new DataNode("ds", "tbl");
+        dataNode.setSchemaName(null);
+        assertThat(dataNode.format(databaseType), is("ds.tbl"));
+    }
+    
+    @Test
+    void assertFormatWithoutSchemaType() {
+        DataNode dataNode = new DataNode("ds", "tbl");
+        assertThat(dataNode.format(TypedSPILoader.getService(DatabaseType.class, "MySQL")), is("ds.tbl"));
+    }
+    
+    @Test
+    void assertEqualsWithDifferentClass() {
+        DataNode dataNode = new DataNode("ds.tbl");
+        assertThat(dataNode.equals("ds.tbl"), is(false));
+        assertThat(dataNode.equals(null), is(false));
+    }
+    
+    @Test
+    void assertHashCodeConsistency() {
+        DataNode dataNode1 = new DataNode("DS", "TBL");
+        DataNode dataNode2 = new DataNode("ds", "tbl");
+        dataNode1.setSchemaName("SCHEMA");
+        dataNode2.setSchemaName("schema");
+        assertThat(dataNode1.hashCode(), is(dataNode2.hashCode()));
+    }
+    
+    @Test
+    void assertToStringWithSchema() {
+        DataNode dataNode = new DataNode("ds", "tbl");
+        dataNode.setSchemaName("schema");
+        assertThat(dataNode.toString(), is("DataNode(dataSourceName=ds, tableName=tbl, schemaName=schema)"));
+    }
+    
+    @Test
+    void assertFormatMethodWithTableNameLowercasing() {
+        DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "PostgreSQL");
+        DataNode dataNode = new DataNode("test_db", databaseType, "ds.schema.TABLE");
+        assertThat(dataNode.getTableName(), is("table"));
+        assertThat(dataNode.getSchemaName(), is("schema"));
     }
 }
