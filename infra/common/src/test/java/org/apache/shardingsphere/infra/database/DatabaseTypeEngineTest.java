@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.infra.database;
 
+import org.apache.shardingsphere.database.connector.core.exception.UnsupportedStorageTypeException;
+import org.apache.shardingsphere.database.connector.core.jdbcurl.DialectJdbcUrlFetcher;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.config.database.DatabaseConfiguration;
 import org.apache.shardingsphere.infra.config.database.impl.DataSourceProvidedDatabaseConfiguration;
@@ -24,11 +26,13 @@ import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.exception.external.sql.type.wrapper.SQLWrapperException;
 import org.apache.shardingsphere.infra.fixture.FixtureRuleConfiguration;
+import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.infra.util.props.PropertiesBuilder;
 import org.apache.shardingsphere.infra.util.props.PropertiesBuilder.Property;
 import org.apache.shardingsphere.test.infra.fixture.jdbc.MockedDataSource;
 import org.junit.jupiter.api.Test;
+import org.mockito.MockedStatic;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -37,12 +41,14 @@ import java.sql.SQLFeatureNotSupportedException;
 import java.util.Collections;
 import java.util.Properties;
 
+import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.when;
 
 class DatabaseTypeEngineTest {
@@ -123,6 +129,43 @@ class DatabaseTypeEngineTest {
                 return "jdbc:postgresql://localhost:5432/test";
             default:
                 throw new IllegalStateException("Unexpected value: " + databaseType.getType());
+        }
+    }
+    
+    @Test
+    void assertGetStorageTypeWithFoundDialectURLFetcher() throws SQLException {
+        Connection connection = mock(Connection.class, RETURNS_DEEP_STUBS);
+        when(connection.getMetaData().getURL()).thenThrow(SQLFeatureNotSupportedException.class);
+        when(connection.isWrapperFor(any())).thenReturn(true);
+        DialectJdbcUrlFetcher dialectJdbcUrlFetcher = mock(DialectJdbcUrlFetcher.class);
+        try (MockedStatic<ShardingSphereServiceLoader> mocked = mockStatic(ShardingSphereServiceLoader.class)) {
+            mocked.when(() -> ShardingSphereServiceLoader.getServiceInstances(DialectJdbcUrlFetcher.class)).thenReturn(Collections.singleton(dialectJdbcUrlFetcher));
+            assertThrows(UnsupportedStorageTypeException.class, () -> DatabaseTypeEngine.getStorageType(new MockedDataSource(connection)));
+        }
+    }
+    
+    @Test
+    void assertGetStorageTypeWithNotFoundDialectURLFetcher() throws SQLException {
+        Connection connection = mock(Connection.class, RETURNS_DEEP_STUBS);
+        when(connection.getMetaData().getURL()).thenThrow(SQLFeatureNotSupportedException.class);
+        try (MockedStatic<ShardingSphereServiceLoader> mocked = mockStatic(ShardingSphereServiceLoader.class)) {
+            mocked.when(() -> ShardingSphereServiceLoader.getServiceInstances(DialectJdbcUrlFetcher.class)).thenReturn(Collections.singleton(mock(DialectJdbcUrlFetcher.class)));
+            SQLWrapperException exception = assertThrows(SQLWrapperException.class, () -> DatabaseTypeEngine.getStorageType(new MockedDataSource(connection)));
+            assertThat(exception.getCause(), instanceOf(SQLFeatureNotSupportedException.class));
+        }
+    }
+    
+    @Test
+    void assertGetStorageTypeWithDialectURLFetchException() throws SQLException {
+        Connection connection = mock(Connection.class, RETURNS_DEEP_STUBS);
+        when(connection.getMetaData().getURL()).thenThrow(SQLFeatureNotSupportedException.class);
+        when(connection.isWrapperFor(any())).thenReturn(true);
+        try (MockedStatic<ShardingSphereServiceLoader> mocked = mockStatic(ShardingSphereServiceLoader.class)) {
+            DialectJdbcUrlFetcher dialectJdbcUrlFetcher = mock(DialectJdbcUrlFetcher.class);
+            when(dialectJdbcUrlFetcher.fetch(connection)).thenThrow(SQLException.class);
+            mocked.when(() -> ShardingSphereServiceLoader.getServiceInstances(DialectJdbcUrlFetcher.class)).thenReturn(Collections.singleton(dialectJdbcUrlFetcher));
+            SQLWrapperException exception = assertThrows(SQLWrapperException.class, () -> DatabaseTypeEngine.getStorageType(new MockedDataSource(connection)));
+            assertThat(exception.getCause(), instanceOf(SQLException.class));
         }
     }
 }
