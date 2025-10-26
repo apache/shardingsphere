@@ -155,7 +155,7 @@ public final class ShardingTable {
         }
         List<String> dataSources = Strings.isNullOrEmpty(tableRuleConfig.getActualDataSources()) ? new ArrayList<>(dataSourceNames)
                 : InlineExpressionParserFactory.newInstance(tableRuleConfig.getActualDataSources()).splitAndEvaluate();
-        return DataNodeUtils.getFormatDataNodes(shardingAlgorithm.getAutoTablesAmount(), logicTable, dataSources);
+        return DataNodeUtils.getFormattedDataNodes(shardingAlgorithm.getAutoTablesAmount(), logicTable, dataSources);
     }
     
     private Set<String> getActualTables() {
