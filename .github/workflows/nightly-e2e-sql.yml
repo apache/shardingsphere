@@ -53,8 +53,7 @@ jobs:
           restore-keys: |
             ${{ needs.global-environment.outputs.GLOBAL_CACHE_PREFIX }}-maven-third-party-e2e-cache-
             ${{ needs.global-environment.outputs.GLOBAL_CACHE_PREFIX }}-maven-third-party-
-      - name: Set up Maven Daemon
-        uses: gauthamchandra/mvnd-action@v0.2.1
+      - uses: gauthamchandra/mvnd-action@v0.2.1
         with:
           version: '1.0.3'
       - name: Build E2E Image
@@ -119,8 +118,7 @@ jobs:
         with:
           distribution: 'temurin'
           java-version: 21
-      - name: Set up Maven Daemon
-        uses: gauthamchandra/mvnd-action@v0.2.1
+      - uses: gauthamchandra/mvnd-action@v0.2.1
         with:
           version: '1.0.3'
       - name: Download E2E Image
