@@ -58,13 +58,8 @@ public final class DataNode {
      * @param dataNode string of data node. use {@code .} to split data source name and table name.
      */
     public DataNode(final String dataNode) {
-        // Validate data node format first
         validateDataNodeFormat(dataNode);
-        
-        // Split only once
         List<String> segments = Splitter.on(DELIMITER).splitToList(dataNode);
-        
-        // Determine if instance is included and set fields accordingly
         boolean isIncludeInstance = segments.size() == 3;
         dataSourceName = isIncludeInstance ? segments.get(0) + DELIMITER + segments.get(1) : segments.get(0);
         tableName = segments.get(isIncludeInstance ? 2 : 1);
