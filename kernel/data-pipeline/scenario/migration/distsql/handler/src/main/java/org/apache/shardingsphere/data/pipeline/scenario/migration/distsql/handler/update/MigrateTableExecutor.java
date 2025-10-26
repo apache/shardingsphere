@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.data.pipeline.scenario.migration.distsql.handler.update;
 
 import lombok.Setter;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.api.type.StandardPipelineDataSourceConfiguration;
 import org.apache.shardingsphere.data.pipeline.core.context.PipelineContextKey;
 import org.apache.shardingsphere.data.pipeline.core.exception.job.MissingRequiredTargetDatabaseException;
@@ -48,7 +47,6 @@ import java.util.Optional;
 /**
  * Migrate table executor.
  */
-@Slf4j
 @Setter
 @DistSQLExecutorClusterModeRequired
 public final class MigrateTableExecutor implements DistSQLUpdateExecutor<MigrateTableStatement>, DistSQLExecutorDatabaseAware {
@@ -68,8 +66,8 @@ public final class MigrateTableExecutor implements DistSQLUpdateExecutor<Migrate
         Collection<MigrationSourceTargetEntry> result = new LinkedList<>();
         for (MigrationSourceTargetSegment each : sqlStatement.getSourceTargetEntries()) {
             DataNode dataNode = new DataNode(each.getSourceDatabaseName(), each.getSourceTableName());
-            if (null == each.getSourceSchemaName() && database.getResourceMetaData().getStorageUnits().containsKey(each.getSourceDatabaseName())) {
-                getDefaultSchemaName(each.getSourceDatabaseName()).ifPresent(dataNode::setSchemaName);
+            if (null == each.getSourceSchemaName()) {
+                getDefaultSchemaName().ifPresent(dataNode::setSchemaName);
             } else {
                 dataNode.setSchemaName(each.getSourceSchemaName());
             }
@@ -78,9 +76,12 @@ public final class MigrateTableExecutor implements DistSQLUpdateExecutor<Migrate
         return result;
     }
     
-    private Optional<String> getDefaultSchemaName(final String sourceDatabaseName) {
+    private Optional<String> getDefaultSchemaName() {
+        if (database.getResourceMetaData().getStorageUnits().isEmpty()) {
+            return Optional.empty();
+        }
         if (new DatabaseTypeRegistry(database.getProtocolType()).getDialectDatabaseMetaData().getSchemaOption().isSchemaAvailable()) {
-            StorageUnit storageUnit = database.getResourceMetaData().getStorageUnits().get(sourceDatabaseName);
+            StorageUnit storageUnit = database.getResourceMetaData().getStorageUnits().values().iterator().next();
             StandardPipelineDataSourceConfiguration pipelineDataSourceConfig = new StandardPipelineDataSourceConfiguration(
                     new YamlDataSourceConfigurationSwapper().swapToMap(storageUnit.getDataSourcePoolProperties()));
             return Optional.of(PipelineSchemaUtils.getDefaultSchema(pipelineDataSourceConfig));
