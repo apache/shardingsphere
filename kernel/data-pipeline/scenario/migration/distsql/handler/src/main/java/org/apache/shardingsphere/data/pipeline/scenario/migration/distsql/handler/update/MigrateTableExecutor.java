@@ -28,7 +28,6 @@ import org.apache.shardingsphere.data.pipeline.scenario.migration.api.MigrationJ
 import org.apache.shardingsphere.data.pipeline.scenario.migration.api.MigrationSourceTargetEntry;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.distsql.segment.MigrationSourceTargetSegment;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.distsql.statement.updatable.MigrateTableStatement;
-import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.DialectDatabaseMetaData;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.distsql.handler.aware.DistSQLExecutorDatabaseAware;
 import org.apache.shardingsphere.distsql.handler.engine.update.DistSQLUpdateExecutor;
@@ -44,6 +43,7 @@ import org.apache.shardingsphere.mode.manager.ContextManager;
 
 import java.util.Collection;
 import java.util.LinkedList;
+import java.util.Optional;
 
 /**
  * Migrate table executor.
@@ -68,36 +68,24 @@ public final class MigrateTableExecutor implements DistSQLUpdateExecutor<Migrate
         Collection<MigrationSourceTargetEntry> result = new LinkedList<>();
         for (MigrationSourceTargetSegment each : sqlStatement.getSourceTargetEntries()) {
             DataNode dataNode = new DataNode(each.getSourceDatabaseName(), each.getSourceTableName());
-
-            // Set schema name from SQL statement
-            dataNode.setSchemaName(each.getSourceSchemaName());
-
-            // If SQL doesn't provide schema name, try to set default schema
-            if (null == each.getSourceSchemaName()) {
-                try {
-                    String dataSourceName = each.getSourceDatabaseName();
-                    if (null != database.getResourceMetaData().getStorageUnits().get(dataSourceName)) {
-                        StorageUnit storageUnit = database.getResourceMetaData().getStorageUnits().get(dataSourceName);
-                        StandardPipelineDataSourceConfiguration sourceDataSourceConfig =
-                            new StandardPipelineDataSourceConfiguration(
-                                new YamlDataSourceConfigurationSwapper().swapToMap(storageUnit.getDataSourcePoolProperties())
-                            );
-
-                        DialectDatabaseMetaData dialectDatabaseMetaData = new DatabaseTypeRegistry(database.getProtocolType()).getDialectDatabaseMetaData();
-                        if (dialectDatabaseMetaData.getSchemaOption().isSchemaAvailable()) {
-                            String defaultSchema = PipelineSchemaUtils.getDefaultSchema(sourceDataSourceConfig);
-                            dataNode.setSchemaName(defaultSchema);
-                        }
-                    }
-                } catch (Exception ex) {
-                    // Ignore exception and keep schemaName as null
-                    log.debug("Failed to get default schema for data source: {}", each.getSourceDatabaseName(), ex);
-                }
+            if (null == each.getSourceSchemaName() && database.getResourceMetaData().getStorageUnits().containsKey(each.getSourceDatabaseName())) {
+                getDefaultSchemaName(each.getSourceDatabaseName()).ifPresent(dataNode::setSchemaName);
+            } else {
+                dataNode.setSchemaName(each.getSourceSchemaName());
             }
-
             result.add(new MigrationSourceTargetEntry(dataNode, each.getTargetTableName()));
         }
         return result;
+    }
+    
+    private Optional<String> getDefaultSchemaName(final String sourceDatabaseName) {
+        if (new DatabaseTypeRegistry(database.getProtocolType()).getDialectDatabaseMetaData().getSchemaOption().isSchemaAvailable()) {
+            StorageUnit storageUnit = database.getResourceMetaData().getStorageUnits().get(sourceDatabaseName);
+            StandardPipelineDataSourceConfiguration pipelineDataSourceConfig = new StandardPipelineDataSourceConfiguration(
+                    new YamlDataSourceConfigurationSwapper().swapToMap(storageUnit.getDataSourcePoolProperties()));
+            return Optional.of(PipelineSchemaUtils.getDefaultSchema(pipelineDataSourceConfig));
+        }
+        return Optional.empty();
     }
     
     @Override
