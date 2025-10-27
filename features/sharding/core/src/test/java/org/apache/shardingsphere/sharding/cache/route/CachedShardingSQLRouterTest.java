@@ -117,7 +117,7 @@ class CachedShardingSQLRouterTest {
         when(shardingCache.getRouteCache()).thenReturn(mock(ShardingRouteCache.class));
         RouteContext expected = new RouteContext();
         expected.getRouteUnits().add(new RouteUnit(new RouteMapper("ds_0", "ds_0"), Collections.singletonList(new RouteMapper("t", "t"))));
-        expected.getOriginalDataNodes().add(Collections.singletonList(new DataNode("ds_0", "t")));
+        expected.getOriginalDataNodes().add(Collections.singletonList(new DataNode("ds_0", (String) null, "t")));
         when(shardingCache.getRouteCache().get(any(ShardingRouteCacheKey.class))).thenReturn(Optional.empty());
         OriginSQLRouter router = (unused, globalRuleMetaData, database, rule, tableNames, props) -> expected;
         Collection<String> tableNames = Collections.singletonList("t");
@@ -137,7 +137,7 @@ class CachedShardingSQLRouterTest {
         when(shardingCache.getRouteCache()).thenReturn(mock(ShardingRouteCache.class));
         RouteContext expected = new RouteContext();
         expected.getRouteUnits().add(new RouteUnit(new RouteMapper("ds_0", "ds_0"), Collections.singletonList(new RouteMapper("t", "t"))));
-        expected.getOriginalDataNodes().add(Collections.singletonList(new DataNode("ds_0", "t")));
+        expected.getOriginalDataNodes().add(Collections.singletonList(new DataNode("ds_0", (String) null, "t")));
         when(shardingCache.getRouteCache().get(any(ShardingRouteCacheKey.class))).thenReturn(Optional.of(new ShardingRouteCacheValue(expected)));
         Optional<RouteContext> actual = new CachedShardingSQLRouter().loadRouteContext(null, queryContext, mock(RuleMetaData.class), null, shardingCache, Collections.singletonList("t"), null);
         assertTrue(actual.isPresent());
@@ -157,7 +157,7 @@ class CachedShardingSQLRouterTest {
         when(shardingCache.getRouteCache()).thenReturn(mock(ShardingRouteCache.class));
         RouteContext expected = new RouteContext();
         expected.getRouteUnits().add(new RouteUnit(new RouteMapper("ds_0", "ds_0"), Arrays.asList(new RouteMapper("t", "t_0"), new RouteMapper("t", "t_1"))));
-        expected.getOriginalDataNodes().add(Collections.singletonList(new DataNode("ds_0", "t_0")));
+        expected.getOriginalDataNodes().add(Collections.singletonList(new DataNode("ds_0", (String) null, "t_0")));
         OriginSQLRouter router = (unused, globalRuleMetaData, database, rule, tableNames, props) -> expected;
         RuleMetaData globalRuleMetaData = mock(RuleMetaData.class);
         Collection<String> tableNames = Collections.singletonList("t");

@@ -73,7 +73,7 @@ class ShardingInsertValuesTokenGeneratorTest {
     @Test
     void assertGenerateSQLTokenWithDataNodes() {
         RouteContext routeContext = new RouteContext();
-        routeContext.getOriginalDataNodes().add(Collections.singleton(new DataNode("foo_ds", "foo_tbl")));
+        routeContext.getOriginalDataNodes().add(Collections.singleton(new DataNode("foo_ds", (String) null, "foo_tbl")));
         generator.setRouteContext(routeContext);
         InsertValuesToken actual = generator.generateSQLToken(mockInsertStatementContext());
         ShardingInsertValue actualInsertValue = (ShardingInsertValue) actual.getInsertValues().get(0);
