@@ -274,7 +274,7 @@ public final class ShardingStandardRouteEngine implements ShardingRouteEngine {
                 : tableShardingStrategy.doSharding(availableTargetTables, tableShardingValues, shardingTable.getTableDataNode(), props);
         Collection<DataNode> result = new LinkedList<>();
         for (String each : routedTables) {
-            result.add(new DataNode(routedDataSource, each));
+            result.add(new DataNode(routedDataSource, (String) null, each));
         }
         return result;
     }

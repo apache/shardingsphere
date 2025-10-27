@@ -174,7 +174,7 @@ public final class ShardingTable {
         List<DataNode> result = new ArrayList<>(dataSourceNames.size());
         int index = 0;
         for (String each : dataSourceNames) {
-            DataNode dataNode = new DataNode(each, logicTable);
+            DataNode dataNode = new DataNode(each, (String) null, logicTable);
             result.add(dataNode);
             dataNodeIndexMap.put(dataNode, index);
             actualDataSourceNames.add(each);
@@ -228,7 +228,7 @@ public final class ShardingTable {
      * @return actual table index
      */
     public int findActualTableIndex(final String dataSourceName, final String actualTableName) {
-        return dataNodeIndexMap.getOrDefault(new DataNode(dataSourceName, actualTableName), -1);
+        return dataNodeIndexMap.getOrDefault(new DataNode(dataSourceName, (String) null, actualTableName), -1);
     }
     
     /**

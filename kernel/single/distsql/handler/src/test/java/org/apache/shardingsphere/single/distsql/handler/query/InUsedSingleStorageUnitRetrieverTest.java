@@ -47,7 +47,7 @@ class InUsedSingleStorageUnitRetrieverTest {
     private SingleRule mockRule() {
         SingleRule result = mock(SingleRule.class);
         SingleDataNodeRuleAttribute attribute = mock(SingleDataNodeRuleAttribute.class);
-        DataNode dataNode = new DataNode("foo_ds", "foo_table");
+        DataNode dataNode = new DataNode("foo_ds", (String) null, "foo_table");
         when(attribute.getAllDataNodes()).thenReturn(Collections.singletonMap("foo_table", Collections.singletonList(dataNode)));
         when(result.getAttributes()).thenReturn(new RuleAttributes(attribute));
         return result;

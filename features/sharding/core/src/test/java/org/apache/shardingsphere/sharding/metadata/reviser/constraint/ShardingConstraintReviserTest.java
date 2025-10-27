@@ -49,7 +49,7 @@ class ShardingConstraintReviserTest {
     void setUp() {
         shardingRule = createShardingRule();
         ShardingTable shardingTable = mock(ShardingTable.class);
-        when(shardingTable.getActualDataNodes()).thenReturn(Arrays.asList(new DataNode("schema_name", "table_name_0"), new DataNode("schema_name", "table_name_1")));
+        when(shardingTable.getActualDataNodes()).thenReturn(Arrays.asList(new DataNode("schema_name", (String) null, "table_name_0"), new DataNode("schema_name", (String) null, "table_name_1")));
         reviser = new ShardingConstraintReviser(shardingTable);
     }
     
