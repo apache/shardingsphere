@@ -61,7 +61,7 @@ public final class DataNodeUtils {
         }
         Collection<DataNode> result = new LinkedList<>();
         for (String each : dataSources.get(dataNode.getDataSourceName())) {
-            result.add(new DataNode(each, dataNode.getTableName()));
+            result.add(new DataNode(each, (String) null, dataNode.getTableName()));
         }
         return result;
     }

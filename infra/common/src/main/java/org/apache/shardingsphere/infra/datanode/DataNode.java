@@ -20,10 +20,8 @@ package org.apache.shardingsphere.infra.datanode;
 import com.cedarsoftware.util.CaseInsensitiveMap.CaseInsensitiveString;
 import com.google.common.base.Objects;
 import com.google.common.base.Splitter;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.Setter;
 import lombok.ToString;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.DialectDatabaseMetaData;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
@@ -36,10 +34,8 @@ import java.util.List;
 /**
  * Data node.
  */
-@AllArgsConstructor
 @RequiredArgsConstructor
 @Getter
-@Setter
 @ToString
 public final class DataNode {
     
@@ -49,8 +45,7 @@ public final class DataNode {
     
     private final String dataSourceName;
     
-    // TODO add final for schemaName
-    private String schemaName;
+    private final String schemaName;
     
     private final String tableName;
     
@@ -64,6 +59,7 @@ public final class DataNode {
         List<String> segments = Splitter.on(DELIMITER).splitToList(dataNode);
         boolean isIncludeInstance = 3 == segments.size();
         dataSourceName = isIncludeInstance ? segments.get(0) + DELIMITER + segments.get(1) : segments.get(0);
+        schemaName = null;
         tableName = segments.get(isIncludeInstance ? 2 : 1);
     }
     

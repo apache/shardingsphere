@@ -29,6 +29,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * Value of sharding route cache.
@@ -64,14 +65,7 @@ public final class ShardingRouteCacheValue {
     private Collection<Collection<DataNode>> deepCopyOriginalDataNodes() {
         Collection<Collection<DataNode>> result = new ArrayList<>(cachedRouteContext.getOriginalDataNodes().size());
         for (Collection<DataNode> eachDataNodes : cachedRouteContext.getOriginalDataNodes()) {
-            Collection<DataNode> eachResult = new ArrayList<>(eachDataNodes.size());
-            // TODO This could be simplified if all fields of DataNode were immutable
-            for (DataNode each : eachDataNodes) {
-                DataNode copiedDataNode = new DataNode(each.getDataSourceName(), each.getTableName());
-                copiedDataNode.setSchemaName(each.getSchemaName());
-                eachResult.add(copiedDataNode);
-            }
-            result.add(eachResult);
+            result.add(eachDataNodes.stream().map(each -> new DataNode(each.getDataSourceName(), each.getSchemaName(), each.getTableName())).collect(Collectors.toList()));
         }
         return result;
     }

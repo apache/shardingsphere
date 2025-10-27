@@ -59,7 +59,7 @@ class DataNodeTest {
     
     @Test
     void assertFormatWithoutSchema() {
-        DataNode dataNode = new DataNode("foo_ds", "foo_tbl");
+        DataNode dataNode = new DataNode("foo_ds", (String) null, "foo_tbl");
         assertThat(dataNode.format(), is("foo_ds.foo_tbl"));
     }
     
@@ -218,7 +218,7 @@ class DataNodeTest {
     
     @Test
     void assertFormatWithDatabaseTypeWithoutSchema() {
-        DataNode dataNode = new DataNode("ds", "tbl");
+        DataNode dataNode = new DataNode("ds", (String) null, "tbl");
         assertThat(dataNode.format(TypedSPILoader.getService(DatabaseType.class, "MySQL")), is("ds.tbl"));
     }
     
@@ -239,7 +239,7 @@ class DataNodeTest {
     @Test
     void assertEqualsWithOneNullSchema() {
         DataNode dataNode1 = new DataNode("ds", "schema", "tbl");
-        DataNode dataNode2 = new DataNode("ds", "tbl");
+        DataNode dataNode2 = new DataNode("ds", (String) null, "tbl");
         assertThat(dataNode1, not(dataNode2));
     }
     
@@ -275,28 +275,28 @@ class DataNodeTest {
     
     @Test
     void assertHashCodeWithNullSchema() {
-        DataNode dataNode1 = new DataNode("ds", "tbl");
-        DataNode dataNode2 = new DataNode("ds", "tbl");
+        DataNode dataNode1 = new DataNode("ds", (String) null, "tbl");
+        DataNode dataNode2 = new DataNode("ds", (String) null, "tbl");
         assertThat(dataNode1.hashCode(), is(dataNode2.hashCode()));
     }
     
     @Test
     void assertEqualsWithNullSchemas() {
-        DataNode dataNode1 = new DataNode("ds", "tbl");
-        DataNode dataNode2 = new DataNode("ds", "tbl");
+        DataNode dataNode1 = new DataNode("ds", (String) null, "tbl");
+        DataNode dataNode2 = new DataNode("ds", (String) null, "tbl");
         assertThat(dataNode1, is(dataNode2));
     }
     
     @Test
     void assertFormatWithDatabaseTypeAndNullSchema() {
         DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "PostgreSQL");
-        DataNode dataNode = new DataNode("ds", "tbl");
+        DataNode dataNode = new DataNode("ds", (String) null, "tbl");
         assertThat(dataNode.format(databaseType), is("ds.tbl"));
     }
     
     @Test
     void assertFormatWithoutSchemaType() {
-        DataNode dataNode = new DataNode("ds", "tbl");
+        DataNode dataNode = new DataNode("ds", (String) null, "tbl");
         assertThat(dataNode.format(TypedSPILoader.getService(DatabaseType.class, "MySQL")), is("ds.tbl"));
     }
     
