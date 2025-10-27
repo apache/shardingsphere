@@ -62,9 +62,6 @@ jobs:
         with:
           distribution: 'temurin'
           java-version: 11
-      - uses: ./.github/actions/mvnd-action
-        with:
-          version: '1.0.3'
       - uses: actions/cache@v4
         with:
           path: ~/.m2/repository
@@ -73,7 +70,7 @@ jobs:
             apache-shardingsphere-maven-third-party-e2e-cache-
             apache-shardingsphere-maven-third-party-
       - name: Build E2E Image
-        run: mvnd -B clean install -am -pl test/e2e/sql -Pe2e.env.docker -DskipTests -Dspotless.apply.skip=true
+        run: ./mvnw -B clean install -am -pl test/e2e/sql -Pe2e.env.docker -DskipTests -Dspotless.apply.skip=true
       - name: Save E2E Image
         run: docker save -o /tmp/apache-shardingsphere-proxy-test.tar apache/shardingsphere-proxy-test:latest
       - uses: actions/upload-artifact@v4
@@ -128,9 +125,6 @@ jobs:
         with:
           distribution: 'temurin'
           java-version: 11
-      - uses: ./.github/actions/mvnd-action
-        with:
-          version: '1.0.3'
       - name: Download E2E Image
         if: matrix.adapter == 'proxy'
         uses: actions/download-artifact@v4
@@ -141,4 +135,4 @@ jobs:
         if: matrix.adapter == 'proxy'
         run: docker load -i /tmp/apache-shardingsphere-proxy-test.tar
       - name: Run E2E Test
-        run: mvnd -nsu -B install -f test/e2e/sql/pom.xml -Dspotless.apply.skip=true -De2e.run.type=DOCKER -De2e.artifact.modes=${{ matrix.mode }} -De2e.artifact.adapters=${{ matrix.adapter }} -De2e.run.additional.cases=false -De2e.scenarios=${{ matrix.scenario }} -De2e.artifact.databases=${{ matrix.database }} ${{ matrix.additional-options }}
+        run: ./mvnw -nsu -B install -f test/e2e/sql/pom.xml -Dspotless.apply.skip=true -De2e.run.type=DOCKER -De2e.artifact.modes=${{ matrix.mode }} -De2e.artifact.adapters=${{ matrix.adapter }} -De2e.run.additional.cases=false -De2e.scenarios=${{ matrix.scenario }} -De2e.artifact.databases=${{ matrix.database }} ${{ matrix.additional-options }}
