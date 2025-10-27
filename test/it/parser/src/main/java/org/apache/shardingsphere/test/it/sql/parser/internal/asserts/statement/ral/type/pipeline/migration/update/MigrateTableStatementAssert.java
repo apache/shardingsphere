@@ -45,8 +45,7 @@ public final class MigrateTableStatementAssert {
         assertThat(assertContext.getText("target database name does not match"), actual.getTargetDatabaseName(), is(expected.getTargetDatabaseName()));
         assertThat(actual.getSourceTargetEntries().size(), is(1));
         for (MigrationSourceTargetSegment each : actual.getSourceTargetEntries()) {
-            DataNode dataNode = new DataNode(each.getSourceDatabaseName(), each.getSourceTableName());
-            dataNode.setSchemaName(each.getSourceSchemaName());
+            DataNode dataNode = new DataNode(each.getSourceDatabaseName(), each.getSourceSchemaName(), each.getSourceTableName());
             assertThat(assertContext.getText("source database name does not match"), dataNode.getDataSourceName(), is(expected.getSourceResourceName()));
             assertThat(assertContext.getText("source schema name does not match"), dataNode.getSchemaName(), is(expected.getSourceSchemaName()));
             assertThat(assertContext.getText("source table name does not match"), dataNode.getTableName(), is(expected.getSourceTableName()));
