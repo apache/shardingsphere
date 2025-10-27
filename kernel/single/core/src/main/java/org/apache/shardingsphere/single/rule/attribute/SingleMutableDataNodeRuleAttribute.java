@@ -56,9 +56,7 @@ public final class SingleMutableDataNodeRuleAttribute implements MutableDataNode
     public void put(final String dataSourceName, final String schemaName, final String tableName) {
         if (dataSourceNames.contains(dataSourceName)) {
             Collection<DataNode> dataNodes = singleTableDataNodes.computeIfAbsent(tableName.toLowerCase(), key -> new LinkedHashSet<>());
-            DataNode dataNode = new DataNode(dataSourceName, tableName);
-            dataNode.setSchemaName(schemaName);
-            dataNodes.add(dataNode);
+            dataNodes.add(new DataNode(dataSourceName, schemaName, tableName));
             tableMapperRuleAttribute.getLogicTableNames().add(tableName);
             addTableConfiguration(dataSourceName, schemaName, tableName);
         }
