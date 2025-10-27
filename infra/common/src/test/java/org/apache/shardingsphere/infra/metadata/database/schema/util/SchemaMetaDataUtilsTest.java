@@ -114,10 +114,8 @@ class SchemaMetaDataUtilsTest {
     }
     
     private List<DataNode> mockSingleTableDataNodes() {
-        DataNode firstDataNode = new DataNode("ds_0.t_single");
-        firstDataNode.setSchemaName("public");
-        DataNode secondDataNode = new DataNode("ds_0.t_single");
-        secondDataNode.setSchemaName("test");
+        DataNode firstDataNode = new DataNode("ds_0", "public", "t_single");
+        DataNode secondDataNode = new DataNode("ds_0", "test", "t_single");
         return Arrays.asList(firstDataNode, secondDataNode);
     }
     

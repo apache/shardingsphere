@@ -68,13 +68,8 @@ public final class MigrateTableExecutor implements DistSQLUpdateExecutor<Migrate
     private Collection<MigrationSourceTargetEntry> getMigrationSourceTargetEntries(final PipelineContextKey contextKey, final MigrateTableStatement sqlStatement) {
         Collection<MigrationSourceTargetEntry> result = new LinkedList<>();
         for (MigrationSourceTargetSegment each : sqlStatement.getSourceTargetEntries()) {
-            DataNode dataNode = new DataNode(each.getSourceDatabaseName(), each.getSourceTableName());
-            if (null == each.getSourceSchemaName()) {
-                getDefaultSchemaName(contextKey, each.getSourceDatabaseName()).ifPresent(dataNode::setSchemaName);
-            } else {
-                dataNode.setSchemaName(each.getSourceSchemaName());
-            }
-            result.add(new MigrationSourceTargetEntry(dataNode, each.getTargetTableName()));
+            String schemaName = null == each.getSourceSchemaName() ? getDefaultSchemaName(contextKey, each.getSourceDatabaseName()).orElse(null) : each.getSourceSchemaName();
+            result.add(new MigrationSourceTargetEntry(new DataNode(each.getSourceDatabaseName(), schemaName, each.getSourceTableName()), each.getTargetTableName()));
         }
         return result;
     }

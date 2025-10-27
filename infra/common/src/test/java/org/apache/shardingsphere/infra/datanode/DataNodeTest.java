@@ -54,9 +54,7 @@ class DataNodeTest {
     
     @Test
     void assertFormatWithSchema() {
-        DataNode dataNode = new DataNode("foo_ds", "foo_tbl");
-        dataNode.setSchemaName("foo_schema");
-        assertThat(dataNode.format(), is("foo_ds.foo_schema.foo_tbl"));
+        assertThat(new DataNode("foo_ds", "foo_schema", "foo_tbl").format(), is("foo_ds.foo_schema.foo_tbl"));
     }
     
     @Test
@@ -82,7 +80,7 @@ class DataNodeTest {
     
     @Test
     void assertToString() {
-        assertThat(new DataNode("ds_0.tbl_0").toString(), is("DataNode(dataSourceName=ds_0, tableName=tbl_0, schemaName=null)"));
+        assertThat(new DataNode("ds_0.tbl_0").toString(), is("DataNode(dataSourceName=ds_0, schemaName=null, tableName=tbl_0)"));
     }
     
     @Test
@@ -109,7 +107,7 @@ class DataNodeTest {
     
     @Test
     void assertToStringIncludeInstance() {
-        assertThat(new DataNode("ds_0.db_0.tbl_0").toString(), is("DataNode(dataSourceName=ds_0.db_0, tableName=tbl_0, schemaName=null)"));
+        assertThat(new DataNode("ds_0.db_0.tbl_0").toString(), is("DataNode(dataSourceName=ds_0.db_0, schemaName=null, tableName=tbl_0)"));
     }
     
     @Test
@@ -215,9 +213,7 @@ class DataNodeTest {
     
     @Test
     void assertFormatWithDatabaseType() {
-        DataNode dataNode = new DataNode("ds", "tbl");
-        dataNode.setSchemaName("schema");
-        assertThat(dataNode.format(TypedSPILoader.getService(DatabaseType.class, "PostgreSQL")), is("ds.schema.tbl"));
+        assertThat(new DataNode("ds", "schema", "tbl").format(TypedSPILoader.getService(DatabaseType.class, "PostgreSQL")), is("ds.schema.tbl"));
     }
     
     @Test
@@ -228,27 +224,22 @@ class DataNodeTest {
     
     @Test
     void assertEqualsCaseInsensitive() {
-        DataNode dataNode1 = new DataNode("DS", "TBL");
-        DataNode dataNode2 = new DataNode("ds", "tbl");
-        dataNode1.setSchemaName("schema");
-        dataNode2.setSchemaName("SCHEMA");
+        DataNode dataNode1 = new DataNode("DS", "SCHEMA", "TBL");
+        DataNode dataNode2 = new DataNode("ds", "schema", "tbl");
         assertThat(dataNode1, is(dataNode2));
     }
     
     @Test
     void assertEqualsWithDifferentSchema() {
-        DataNode dataNode1 = new DataNode("ds", "tbl");
-        DataNode dataNode2 = new DataNode("ds", "tbl");
-        dataNode1.setSchemaName("schema1");
-        dataNode2.setSchemaName("schema2");
+        DataNode dataNode1 = new DataNode("ds", "schema1", "tbl");
+        DataNode dataNode2 = new DataNode("ds", "schema2", "tbl");
         assertThat(dataNode1, not(dataNode2));
     }
     
     @Test
     void assertEqualsWithOneNullSchema() {
-        DataNode dataNode1 = new DataNode("ds", "tbl");
+        DataNode dataNode1 = new DataNode("ds", "schema", "tbl");
         DataNode dataNode2 = new DataNode("ds", "tbl");
-        dataNode1.setSchemaName("schema");
         assertThat(dataNode1, not(dataNode2));
     }
     
@@ -277,10 +268,8 @@ class DataNodeTest {
     
     @Test
     void assertHashCodeWithSchema() {
-        DataNode dataNode1 = new DataNode("ds", "tbl");
-        DataNode dataNode2 = new DataNode("ds", "tbl");
-        dataNode1.setSchemaName("SCHEMA");
-        dataNode2.setSchemaName("schema");
+        DataNode dataNode1 = new DataNode("DS", "SCHEMA", "TBL");
+        DataNode dataNode2 = new DataNode("ds", "schema", "tbl");
         assertThat(dataNode1.hashCode(), is(dataNode2.hashCode()));
     }
     
@@ -288,8 +277,6 @@ class DataNodeTest {
     void assertHashCodeWithNullSchema() {
         DataNode dataNode1 = new DataNode("ds", "tbl");
         DataNode dataNode2 = new DataNode("ds", "tbl");
-        dataNode1.setSchemaName(null);
-        dataNode2.setSchemaName(null);
         assertThat(dataNode1.hashCode(), is(dataNode2.hashCode()));
     }
     
@@ -297,8 +284,6 @@ class DataNodeTest {
     void assertEqualsWithNullSchemas() {
         DataNode dataNode1 = new DataNode("ds", "tbl");
         DataNode dataNode2 = new DataNode("ds", "tbl");
-        dataNode1.setSchemaName(null);
-        dataNode2.setSchemaName(null);
         assertThat(dataNode1, is(dataNode2));
     }
     
@@ -306,7 +291,6 @@ class DataNodeTest {
     void assertFormatWithDatabaseTypeAndNullSchema() {
         DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "PostgreSQL");
         DataNode dataNode = new DataNode("ds", "tbl");
-        dataNode.setSchemaName(null);
         assertThat(dataNode.format(databaseType), is("ds.tbl"));
     }
     
@@ -325,18 +309,15 @@ class DataNodeTest {
     
     @Test
     void assertHashCodeConsistency() {
-        DataNode dataNode1 = new DataNode("DS", "TBL");
-        DataNode dataNode2 = new DataNode("ds", "tbl");
-        dataNode1.setSchemaName("SCHEMA");
-        dataNode2.setSchemaName("schema");
+        DataNode dataNode1 = new DataNode("DS", "SCHEMA", "TBL");
+        DataNode dataNode2 = new DataNode("ds", "schema", "tbl");
         assertThat(dataNode1.hashCode(), is(dataNode2.hashCode()));
     }
     
     @Test
     void assertToStringWithSchema() {
-        DataNode dataNode = new DataNode("ds", "tbl");
-        dataNode.setSchemaName("schema");
-        assertThat(dataNode.toString(), is("DataNode(dataSourceName=ds, tableName=tbl, schemaName=schema)"));
+        DataNode dataNode = new DataNode("ds", "schema", "tbl");
+        assertThat(dataNode.toString(), is("DataNode(dataSourceName=ds, schemaName=schema, tableName=tbl)"));
     }
     
     @Test

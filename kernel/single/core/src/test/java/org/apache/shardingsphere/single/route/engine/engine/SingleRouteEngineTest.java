@@ -69,8 +69,8 @@ class SingleRouteEngineTest {
     void assertRouteInSameDataSource() throws SQLException {
         SingleRouteEngine engine = new SingleRouteEngine(mockQualifiedTables(), null, mock());
         SingleRule singleRule = new SingleRule(new SingleRuleConfiguration(), "foo_db", mock(), createDataSourceMap(), Collections.emptyList());
-        singleRule.getAttributes().getAttribute(DataNodeRuleAttribute.class).getAllDataNodes().put("t_order", Collections.singleton(mockDataNode("t_order")));
-        singleRule.getAttributes().getAttribute(DataNodeRuleAttribute.class).getAllDataNodes().put("t_order_item", Collections.singleton(mockDataNode("t_order_item")));
+        singleRule.getAttributes().getAttribute(DataNodeRuleAttribute.class).getAllDataNodes().put("t_order", Collections.singleton(new DataNode("ds_0", "foo_db", "t_order")));
+        singleRule.getAttributes().getAttribute(DataNodeRuleAttribute.class).getAllDataNodes().put("t_order_item", Collections.singleton(new DataNode("ds_0", "foo_db", "t_order_item")));
         RouteContext routeContext = new RouteContext();
         engine.route(routeContext, singleRule);
         List<RouteUnit> routeUnits = new ArrayList<>(routeContext.getRouteUnits());
@@ -84,12 +84,6 @@ class SingleRouteEngineTest {
         RouteMapper tableMapper1 = tableMappers.next();
         assertThat(tableMapper1.getActualName(), is("t_order_item"));
         assertThat(tableMapper1.getLogicName(), is("t_order_item"));
-    }
-    
-    private DataNode mockDataNode(final String tableName) {
-        DataNode result = new DataNode("ds_0", tableName);
-        result.setSchemaName("foo_db");
-        return result;
     }
     
     private Collection<QualifiedTable> mockQualifiedTables() {
