@@ -314,8 +314,6 @@ public abstract class BaseDMLE2EIT implements SQLE2EIT {
             } else {
                 assertThat(String.valueOf(actualValue), is(expected));
             }
-        } else if (Types.LONGVARCHAR == actual.getMetaData().getColumnType(columnIndex)) {
-            assertThat(String.valueOf(actual.getObject(columnIndex)), is(expected));
         } else if (Arrays.asList(Types.TINYINT, Types.SMALLINT, Types.INTEGER, Types.BIGINT).contains(actual.getMetaData().getColumnType(columnIndex))) {
             if (isNullValue(expected)) {
                 assertNull(actual.getObject(columnIndex));
