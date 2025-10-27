@@ -1,0 +1,32 @@
+name: 'Maven Daemon Action'
+description: Allows the use of Maven Daemon in your Github actions workflows.
+inputs:
+  version:
+    description: |
+      The version of Maven Daemon to install. See here for available versions: https://downloads.apache.org/maven/mvnd/
+      By default, it uses `1.0.2`. It doesn't yet utilize the later 2.x versions because 2.x utilizes Maven 4.x which is
+      still experimental and the majority of projects haven't switched over to using it yet.
+    required: false
+    default: '1.0.2'
+  hosted-binary-url:
+    description: The location as a URL where the mvnd binaries are hosted.
+    required: false
+    default: 'https://downloads.apache.org/maven/mvnd/'
+  cache-directory-override:
+    description: |
+      The directory to save the mvnd binaries. This is useful to configure if you want to use `actions/cache` to cache
+      the binaries.
+    required: false
+outputs:
+  cached-binary-path:
+    description: The fully qualified path where the mvnd binary was saved.
+  cached-directory-path:
+    description: |
+      The directory containing the extracted mvnd binary and all related files. Useful for caching the
+      entire directory with `actions/cache`.
+runs:
+  using: 'node20'
+  main: 'dist/index.js'
+branding:
+  icon: 'feather'
+  color: 'green'
