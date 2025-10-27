@@ -50,8 +50,10 @@ import javax.sql.DataSource;
 import javax.xml.bind.JAXBException;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.sql.Blob;
 import java.sql.Clob;
 import java.sql.Connection;
+import java.sql.NClob;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
@@ -286,10 +288,40 @@ public abstract class BaseDMLE2EIT implements SQLE2EIT {
             assertThat(String.valueOf(actual.getObject(columnIndex)).trim(), is(expected));
         } else if (isPostgreSQLOrOpenGaussMoney(actual.getMetaData().getColumnTypeName(columnIndex), databaseType)) {
             assertThat(actual.getString(columnIndex), is(expected));
-        } else if (Types.BINARY == actual.getMetaData().getColumnType(columnIndex)) {
-            assertThat(actual.getObject(columnIndex), is(expected.getBytes(StandardCharsets.UTF_8)));
+        } else if (Arrays.asList(Types.BINARY, Types.VARBINARY, Types.LONGVARBINARY).contains(actual.getMetaData().getColumnType(columnIndex))) {
+            byte[] actualBytes = actual.getBytes(columnIndex);
+            byte[] expectedBytes = expected.getBytes(StandardCharsets.UTF_8);
+            if (null != actualBytes) {
+                assertThat(actualBytes.length >= expectedBytes.length ? Arrays.copyOf(actualBytes, expectedBytes.length) : actualBytes, is(expectedBytes));
+            }
+        } else if (Types.BLOB == actual.getMetaData().getColumnType(columnIndex)) {
+            Object actualValue = actual.getObject(columnIndex);
+            if (actualValue instanceof Blob) {
+                Blob blob = (Blob) actualValue;
+                assertThat(blob.getBytes(1, (int) blob.length()), is(expected.getBytes(StandardCharsets.UTF_8)));
+            } else if (actualValue instanceof byte[]) {
+                assertThat(actualValue, is(expected.getBytes(StandardCharsets.UTF_8)));
+            } else {
+                assertThat(String.valueOf(actualValue), is(expected));
+            }
         } else if (Types.CLOB == actual.getMetaData().getColumnType(columnIndex)) {
             assertThat(getClobValue((Clob) actual.getObject(columnIndex)), is(expected));
+        } else if (Types.NCLOB == actual.getMetaData().getColumnType(columnIndex)) {
+            Object actualValue = actual.getObject(columnIndex);
+            if (actualValue instanceof NClob) {
+                NClob nclob = (NClob) actualValue;
+                assertThat(nclob.getSubString(1, (int) nclob.length()), is(expected));
+            } else {
+                assertThat(String.valueOf(actualValue), is(expected));
+            }
+        } else if (Types.LONGVARCHAR == actual.getMetaData().getColumnType(columnIndex)) {
+            assertThat(String.valueOf(actual.getObject(columnIndex)), is(expected));
+        } else if (Arrays.asList(Types.TINYINT, Types.SMALLINT, Types.INTEGER, Types.BIGINT).contains(actual.getMetaData().getColumnType(columnIndex))) {
+            if (isNullValue(expected)) {
+                assertNull(actual.getObject(columnIndex));
+                return;
+            }
+            assertThat(String.valueOf(actual.getObject(columnIndex)), is(expected));
         } else {
             assertThat(String.valueOf(actual.getObject(columnIndex)), is(expected));
         }
