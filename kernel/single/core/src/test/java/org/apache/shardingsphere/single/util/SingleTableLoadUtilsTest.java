@@ -96,9 +96,9 @@ class SingleTableLoadUtilsTest {
     
     @Test
     void assertConvertToDataNodes() {
-        DataNode expectedDataNode1 = new DataNode("foo_ds", "foo_db", "foo_tbl");
-        DataNode expectedDataNode2 = new DataNode("bar_ds", "foo_db", "bar_tbl");
-        assertThat(SingleTableLoadUtils.convertToDataNodes("foo_db", databaseType, Arrays.asList("foo_ds.foo_tbl", "bar_ds.bar_tbl")),
+        DataNode expectedDataNode1 = new DataNode("foo_db", "foo_db", "foo_tbl");
+        DataNode expectedDataNode2 = new DataNode("bar_db", "bar_db", "bar_tbl");
+        assertThat(SingleTableLoadUtils.convertToDataNodes(databaseType, Arrays.asList("foo_db.foo_tbl", "bar_db.bar_tbl")),
                 is(new LinkedHashSet<>(Arrays.asList(expectedDataNode1, expectedDataNode2))));
     }
     

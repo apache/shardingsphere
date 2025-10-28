@@ -71,7 +71,7 @@ public final class SingleRuleConfigurationDecorator implements RuleConfiguration
         if (splitTables.contains(SingleTableConstants.ALL_TABLES) || splitTables.contains(SingleTableConstants.ALL_SCHEMA_TABLES)) {
             return loadAllTables(isSchemaSupportedDatabaseType, actualDataNodes);
         }
-        Collection<DataNode> configuredDataNodes = SingleTableLoadUtils.convertToDataNodes(databaseName, databaseType, splitTables);
+        Collection<DataNode> configuredDataNodes = SingleTableLoadUtils.convertToDataNodes(databaseType, splitTables);
         return loadSpecifiedTables(isSchemaSupportedDatabaseType, actualDataNodes, builtRules, configuredDataNodes);
     }
     

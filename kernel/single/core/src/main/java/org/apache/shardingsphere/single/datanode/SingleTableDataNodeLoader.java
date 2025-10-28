@@ -68,7 +68,7 @@ public final class SingleTableDataNodeLoader {
         if (splitTables.contains(SingleTableConstants.ALL_TABLES) || splitTables.contains(SingleTableConstants.ALL_SCHEMA_TABLES)) {
             return actualDataNodes;
         }
-        Map<String, Map<String, Collection<String>>> configuredTableMap = getConfiguredTableMap(databaseName, protocolType, splitTables);
+        Map<String, Map<String, Collection<String>>> configuredTableMap = getConfiguredTableMap(protocolType, splitTables);
         return loadSpecifiedDataNodes(actualDataNodes, featureRequiredSingleTables, configuredTableMap);
     }
     
@@ -150,11 +150,11 @@ public final class SingleTableDataNodeLoader {
         return result;
     }
     
-    private static Map<String, Map<String, Collection<String>>> getConfiguredTableMap(final String databaseName, final DatabaseType protocolType, final Collection<String> configuredTables) {
+    private static Map<String, Map<String, Collection<String>>> getConfiguredTableMap(final DatabaseType protocolType, final Collection<String> configuredTables) {
         if (configuredTables.isEmpty()) {
             return Collections.emptyMap();
         }
-        Collection<DataNode> dataNodes = SingleTableLoadUtils.convertToDataNodes(databaseName, protocolType, configuredTables);
+        Collection<DataNode> dataNodes = SingleTableLoadUtils.convertToDataNodes(protocolType, configuredTables);
         Map<String, Map<String, Collection<String>>> result = new LinkedHashMap<>(dataNodes.size(), 1F);
         for (DataNode each : dataNodes) {
             Map<String, Collection<String>> schemaTables = result.getOrDefault(each.getDataSourceName(), new LinkedHashMap<>());

@@ -209,7 +209,7 @@ class DataNodeTest {
     
     @Test
     void assertNewDataNodeWithDatabaseType() {
-        DataNode dataNode = new DataNode("test_db", TypedSPILoader.getService(DatabaseType.class, "PostgreSQL"), "ds.schema.tbl");
+        DataNode dataNode = new DataNode(TypedSPILoader.getService(DatabaseType.class, "PostgreSQL"), "ds.schema.tbl");
         assertThat(dataNode.getDataSourceName(), is("ds"));
         assertThat(dataNode.getTableName(), is("tbl"));
         assertThat(dataNode.getSchemaName(), is("schema"));
@@ -229,24 +229,24 @@ class DataNodeTest {
     @Test
     void assertNewDataNodeWithDatabaseTypeWithoutSchemaSupport() {
         DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "MySQL");
-        DataNode dataNode = new DataNode("test_db", databaseType, "ds.tbl");
+        DataNode dataNode = new DataNode(databaseType, "ds.tbl");
         assertThat(dataNode.getDataSourceName(), is("ds"));
+        assertThat(dataNode.getSchemaName(), is("ds"));
         assertThat(dataNode.getTableName(), is("tbl"));
-        assertThat(dataNode.getSchemaName(), is("test_db"));
     }
     
     @Test
     void assertNewDataNodeWithDatabaseTypeAndInvalidThreeSegment() {
-        DataNode dataNode = new DataNode("test_db", TypedSPILoader.getService(DatabaseType.class, "MySQL"), "ds.schema.tbl");
+        DataNode dataNode = new DataNode(TypedSPILoader.getService(DatabaseType.class, "MySQL"), "ds.schema.tbl");
         assertThat(dataNode.getDataSourceName(), is("ds"));
+        assertThat(dataNode.getSchemaName(), is("ds"));
         assertThat(dataNode.getTableName(), is("schema.tbl"));
-        assertThat(dataNode.getSchemaName(), is("test_db"));
     }
     
     @Test
     void assertNewDataNodeWithDatabaseTypeCheckStateException() {
         DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "PostgreSQL");
-        assertThrows(InvalidDataNodeFormatException.class, () -> new DataNode("test_db", databaseType, "invalid_format_without_delimiter"));
+        assertThrows(InvalidDataNodeFormatException.class, () -> new DataNode(databaseType, "invalid_format_without_delimiter"));
     }
     
     @Test
@@ -265,8 +265,9 @@ class DataNodeTest {
     @Test
     void assertFormatMethodWithTableNameLowercasing() {
         DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "PostgreSQL");
-        DataNode dataNode = new DataNode("test_db", databaseType, "ds.schema.TABLE");
-        assertThat(dataNode.getTableName(), is("table"));
+        DataNode dataNode = new DataNode(databaseType, "ds.schema.TABLE");
+        assertThat(dataNode.getDataSourceName(), is("ds"));
         assertThat(dataNode.getSchemaName(), is("schema"));
+        assertThat(dataNode.getTableName(), is("table"));
     }
 }

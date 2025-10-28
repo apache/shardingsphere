@@ -66,22 +66,21 @@ public final class DataNode {
     /**
      * Constructs a data node with well-formatted string.
      *
-     * @param databaseName database name
      * @param databaseType database type
      * @param dataNode data node use {@code .} to split schema name and table name
      */
-    public DataNode(final String databaseName, final DatabaseType databaseType, final String dataNode) {
+    public DataNode(final DatabaseType databaseType, final String dataNode) {
         ShardingSpherePreconditions.checkState(dataNode.contains(DELIMITER), () -> new InvalidDataNodeFormatException(dataNode));
         DialectDatabaseMetaData dialectDatabaseMetaData = new DatabaseTypeRegistry(databaseType).getDialectDatabaseMetaData();
         boolean containsSchema = dialectDatabaseMetaData.getSchemaOption().isSchemaAvailable() && isValidDataNode(dataNode, 3);
         List<String> segments = Splitter.on(DELIMITER).limit(containsSchema ? 3 : 2).splitToList(dataNode);
         dataSourceName = segments.get(0);
-        schemaName = getSchemaName(databaseName, dialectDatabaseMetaData, containsSchema, segments);
+        schemaName = getSchemaName(dialectDatabaseMetaData, containsSchema, segments);
         tableName = containsSchema ? segments.get(2).toLowerCase() : segments.get(1).toLowerCase();
     }
     
-    private String getSchemaName(final String databaseName, final DialectDatabaseMetaData dialectDatabaseMetaData, final boolean containsSchema, final List<String> segments) {
-        return dialectDatabaseMetaData.getSchemaOption().getDefaultSchema().map(optional -> containsSchema ? segments.get(1) : ASTERISK).orElse(databaseName);
+    private String getSchemaName(final DialectDatabaseMetaData dialectDatabaseMetaData, final boolean containsSchema, final List<String> segments) {
+        return dialectDatabaseMetaData.getSchemaOption().getDefaultSchema().map(optional -> containsSchema ? segments.get(1) : ASTERISK).orElse(segments.get(0));
     }
     
     private boolean isValidDataNode(final String dataNodeStr, final int tier) {
