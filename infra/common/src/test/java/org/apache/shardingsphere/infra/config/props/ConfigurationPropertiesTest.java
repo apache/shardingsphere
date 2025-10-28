@@ -56,7 +56,7 @@ class ConfigurationPropertiesTest {
         assertTrue((Boolean) actual.getValue(ConfigurationPropertyKey.AGENT_PLUGINS_ENABLED));
         assertTrue((Boolean) actual.getValue(ConfigurationPropertyKey.PERSIST_SCHEMAS_TO_REPOSITORY_ENABLED));
     }
-
+    
     private Properties createProperties() {
         return PropertiesBuilder.build(
                 new Property(ConfigurationPropertyKey.SQL_SHOW.getKey(), Boolean.TRUE.toString()),
