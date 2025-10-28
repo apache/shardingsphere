@@ -68,7 +68,7 @@ public final class DataNode {
      *
      * @param databaseName database name
      * @param databaseType database type
-     * @param dataNode string of data node. use {@code .} to split data source name and table name
+     * @param dataNode data node use {@code .} to split schema name and table name
      */
     public DataNode(final String databaseName, final DatabaseType databaseType, final String dataNode) {
         ShardingSpherePreconditions.checkState(dataNode.contains(DELIMITER), () -> new InvalidDataNodeFormatException(dataNode));
@@ -81,7 +81,7 @@ public final class DataNode {
     }
     
     private String getSchemaName(final String databaseName, final DialectDatabaseMetaData dialectDatabaseMetaData, final boolean containsSchema, final List<String> segments) {
-        return dialectDatabaseMetaData.getSchemaOption().getDefaultSchema().map(defaultSchema -> containsSchema ? segments.get(1) : ASTERISK).orElse(databaseName);
+        return dialectDatabaseMetaData.getSchemaOption().getDefaultSchema().map(optional -> containsSchema ? segments.get(1) : ASTERISK).orElse(databaseName);
     }
     
     private boolean isValidDataNode(final String dataNodeStr, final int tier) {
