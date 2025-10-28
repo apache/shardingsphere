@@ -25,8 +25,8 @@ import org.apache.shardingsphere.mode.exception.ShardingSphereStateException;
 import org.apache.shardingsphere.proxy.backend.state.DialectProxyStateSupportedSQLProvider;
 import org.apache.shardingsphere.proxy.backend.state.type.UnavailableProxyStateChecker;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.DMLStatement;
-import org.apache.shardingsphere.test.infra.framework.mock.AutoMockExtension;
-import org.apache.shardingsphere.test.infra.framework.mock.StaticMockSettings;
+import org.apache.shardingsphere.test.infra.framework.extension.mock.AutoMockExtension;
+import org.apache.shardingsphere.test.infra.framework.extension.mock.StaticMockSettings;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 

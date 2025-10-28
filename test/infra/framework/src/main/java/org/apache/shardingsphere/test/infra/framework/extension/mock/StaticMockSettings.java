@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.infra.framework.mock;
+package org.apache.shardingsphere.test.infra.framework.extension.mock;
 
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -25,12 +25,12 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 /**
- * Construction mock settings.
+ * Static mock settings.
  */
 @ExtendWith(MockitoExtension.class)
 @Inherited
 @Retention(RetentionPolicy.RUNTIME)
-public @interface ConstructionMockSettings {
+public @interface StaticMockSettings {
     
     /**
      * Mock classes.
