@@ -211,8 +211,8 @@ class DataNodeTest {
     void assertNewDataNodeWithDatabaseType() {
         DataNode dataNode = new DataNode("test_db", TypedSPILoader.getService(DatabaseType.class, "PostgreSQL"), "ds.schema.tbl");
         assertThat(dataNode.getDataSourceName(), is("ds"));
-        assertThat(dataNode.getTableName(), is("tbl"));
         assertThat(dataNode.getSchemaName(), is("schema"));
+        assertThat(dataNode.getTableName(), is("tbl"));
     }
     
     @Test
@@ -231,16 +231,16 @@ class DataNodeTest {
         DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "MySQL");
         DataNode dataNode = new DataNode("test_db", databaseType, "ds.tbl");
         assertThat(dataNode.getDataSourceName(), is("ds"));
-        assertThat(dataNode.getTableName(), is("tbl"));
         assertThat(dataNode.getSchemaName(), is("test_db"));
+        assertThat(dataNode.getTableName(), is("tbl"));
     }
     
     @Test
     void assertNewDataNodeWithDatabaseTypeAndInvalidThreeSegment() {
         DataNode dataNode = new DataNode("test_db", TypedSPILoader.getService(DatabaseType.class, "MySQL"), "ds.schema.tbl");
         assertThat(dataNode.getDataSourceName(), is("ds"));
-        assertThat(dataNode.getTableName(), is("schema.tbl"));
         assertThat(dataNode.getSchemaName(), is("test_db"));
+        assertThat(dataNode.getTableName(), is("schema.tbl"));
     }
     
     @Test

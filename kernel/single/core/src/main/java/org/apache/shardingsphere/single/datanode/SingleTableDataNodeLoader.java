@@ -124,27 +124,27 @@ public final class SingleTableDataNodeLoader {
                                                               final Map<String, Map<String, Collection<String>>> configuredTableMap) {
         for (DataNode each : dataNodes) {
             if (featureRequiredSingleTables.contains(each.getTableName())) {
-                return getSingleDataNodeCollection(each);
+                return getSingleDataNodes(each);
             }
             Map<String, Collection<String>> configuredTablesForDataSource = configuredTableMap.get(each.getDataSourceName());
             if (null == configuredTablesForDataSource || configuredTablesForDataSource.isEmpty()) {
                 continue;
             }
             if (configuredTablesForDataSource.containsKey(SingleTableConstants.ASTERISK)) {
-                return getSingleDataNodeCollection(each);
+                return getSingleDataNodes(each);
             }
             Collection<String> configuredTablesForSchema = configuredTablesForDataSource.get(each.getSchemaName());
             if (null == configuredTablesForSchema || configuredTablesForSchema.isEmpty()) {
                 continue;
             }
             if (configuredTablesForSchema.contains(SingleTableConstants.ASTERISK) || configuredTablesForSchema.contains(each.getTableName().toLowerCase())) {
-                return getSingleDataNodeCollection(each);
+                return getSingleDataNodes(each);
             }
         }
         return Collections.emptyList();
     }
     
-    private static Collection<DataNode> getSingleDataNodeCollection(final DataNode dataNode) {
+    private static Collection<DataNode> getSingleDataNodes(final DataNode dataNode) {
         Collection<DataNode> result = new LinkedList<>();
         result.add(dataNode);
         return result;
