@@ -35,11 +35,11 @@ import static org.hamcrest.Matchers.is;
  * Log capture extension.
  */
 public final class LogCaptureExtension implements BeforeEachCallback, AfterEachCallback, ParameterResolver {
-
+    
     private ListAppender<ILoggingEvent> listAppender;
     
     private Logger logger;
-
+    
     @Override
     public void beforeEach(final ExtensionContext context) {
         String targetClassName = context.getRequiredTestClass().getName().substring(0, context.getRequiredTestClass().getName().lastIndexOf("Test"));
@@ -48,19 +48,19 @@ public final class LogCaptureExtension implements BeforeEachCallback, AfterEachC
         listAppender.start();
         logger.addAppender(listAppender);
     }
-
+    
     @Override
     public void afterEach(final ExtensionContext context) {
         if (null != logger && null != listAppender) {
             logger.detachAppender(listAppender);
         }
     }
-
+    
     @Override
     public boolean supportsParameter(final ParameterContext parameterContext, final ExtensionContext extensionContext) {
         return parameterContext.getParameter().getType() == LogCaptureExtension.class;
     }
-
+    
     @Override
     public Object resolveParameter(final ParameterContext parameterContext, final ExtensionContext extensionContext) {
         return this;
@@ -68,7 +68,7 @@ public final class LogCaptureExtension implements BeforeEachCallback, AfterEachC
     
     /**
      * Assert the number of captured logs.
-     * 
+     *
      * @param expectedCount expected log count
      */
     public void assertLogCount(final int expectedCount) {
@@ -77,7 +77,7 @@ public final class LogCaptureExtension implements BeforeEachCallback, AfterEachC
     
     /**
      * Assert the number of captured logs with specific level and message.
-     * 
+     *
      * @param actualLogEventIndex actual log event index
      * @param expectedLevel expected log level
      * @param expectedMessage expected log message
