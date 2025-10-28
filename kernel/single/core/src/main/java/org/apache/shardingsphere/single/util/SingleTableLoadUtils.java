@@ -103,11 +103,11 @@ public final class SingleTableLoadUtils {
      *
      * @param databaseName database name
      * @param databaseType database type
-     * @param tables tables in configuration
+     * @param dataNodes data nodes
      * @return data nodes
      */
-    public static Collection<DataNode> convertToDataNodes(final String databaseName, final DatabaseType databaseType, final Collection<String> tables) {
-        return tables.stream().map(each -> new DataNode(databaseName, databaseType, each)).collect(Collectors.toCollection(() -> new LinkedHashSet<>(tables.size(), 1F)));
+    public static Collection<DataNode> convertToDataNodes(final String databaseName, final DatabaseType databaseType, final Collection<String> dataNodes) {
+        return dataNodes.stream().map(each -> new DataNode(databaseName, databaseType, each)).collect(Collectors.toCollection(() -> new LinkedHashSet<>(dataNodes.size(), 1F)));
     }
     
     /**
