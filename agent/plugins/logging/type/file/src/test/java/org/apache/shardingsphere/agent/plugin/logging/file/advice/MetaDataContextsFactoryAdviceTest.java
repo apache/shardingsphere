@@ -18,42 +18,24 @@
 package org.apache.shardingsphere.agent.plugin.logging.file.advice;
 
 import ch.qos.logback.classic.Level;
-import ch.qos.logback.classic.Logger;
-import ch.qos.logback.classic.spi.ILoggingEvent;
-import ch.qos.logback.core.read.ListAppender;
 import org.apache.shardingsphere.agent.api.advice.TargetAdviceMethod;
-import org.junit.jupiter.api.BeforeEach;
+import org.apache.shardingsphere.test.infra.framework.extension.log.LogCaptureAssertion;
+import org.apache.shardingsphere.test.infra.framework.extension.log.LogCaptureExtension;
 import org.junit.jupiter.api.Test;
-import org.slf4j.LoggerFactory;
+import org.junit.jupiter.api.extension.ExtendWith;
 
-import java.util.List;
-
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.is;
 import static org.mockito.Mockito.mock;
 
+@ExtendWith(LogCaptureExtension.class)
 class MetaDataContextsFactoryAdviceTest {
     
-    private ListAppender<ILoggingEvent> listAppender;
-    
-    @BeforeEach
-    void setUp() {
-        Logger logger = (Logger) LoggerFactory.getLogger(MetaDataContextsFactoryAdvice.class);
-        listAppender = new ListAppender<>();
-        listAppender.start();
-        logger.addAppender(listAppender);
-    }
-    
     @Test
-    void assertLog() {
+    void assertLog(final LogCaptureAssertion logCaptureAssertion) {
         MetaDataContextsFactoryAdvice advice = new MetaDataContextsFactoryAdvice();
         TargetAdviceMethod method = mock(TargetAdviceMethod.class);
         advice.beforeMethod(null, method, new Object[]{}, "FIXTURE");
         advice.afterMethod(null, method, new Object[]{}, null, "FIXTURE");
-        List<ILoggingEvent> logsList = listAppender.list;
-        assertThat(logsList.size(), equalTo(1));
-        assertThat(logsList.get(0).getMessage(), is("Build meta data contexts finished, cost {} milliseconds."));
-        assertThat(logsList.get(0).getLevel(), is(Level.INFO));
+        logCaptureAssertion.assertLogCount(1);
+        logCaptureAssertion.assertLogContent(0, Level.INFO, "Build meta data contexts finished, cost {} milliseconds.", false);
     }
 }

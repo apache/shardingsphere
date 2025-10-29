@@ -17,19 +17,15 @@
 
 package org.apache.shardingsphere.test.infra.framework.extension.log;
 
-import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.Logger;
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.read.ListAppender;
-import org.hamcrest.MatcherAssert;
 import org.junit.jupiter.api.extension.AfterEachCallback;
 import org.junit.jupiter.api.extension.BeforeEachCallback;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.api.extension.ParameterContext;
 import org.junit.jupiter.api.extension.ParameterResolver;
 import org.slf4j.LoggerFactory;
-
-import static org.hamcrest.Matchers.is;
 
 /**
  * Log capture extension.
@@ -58,32 +54,11 @@ public final class LogCaptureExtension implements BeforeEachCallback, AfterEachC
     
     @Override
     public boolean supportsParameter(final ParameterContext parameterContext, final ExtensionContext extensionContext) {
-        return parameterContext.getParameter().getType() == LogCaptureExtension.class;
+        return parameterContext.getParameter().getType() == LogCaptureAssertion.class;
     }
     
     @Override
     public Object resolveParameter(final ParameterContext parameterContext, final ExtensionContext extensionContext) {
-        return this;
-    }
-    
-    /**
-     * Assert the number of captured logs.
-     *
-     * @param expectedCount expected log count
-     */
-    public void assertLogCount(final int expectedCount) {
-        MatcherAssert.assertThat(listAppender.list.size(), is(expectedCount));
-    }
-    
-    /**
-     * Assert the number of captured logs with specific level and message.
-     *
-     * @param actualLogEventIndex actual log event index
-     * @param expectedLevel expected log level
-     * @param expectedMessage expected log message
-     */
-    public void assertLogContent(final int actualLogEventIndex, final Level expectedLevel, final String expectedMessage) {
-        MatcherAssert.assertThat(listAppender.list.get(actualLogEventIndex).getLevel(), is(expectedLevel));
-        MatcherAssert.assertThat(listAppender.list.get(actualLogEventIndex).getFormattedMessage(), is(expectedMessage));
+        return new LogCaptureAssertion(listAppender.list);
     }
 }
