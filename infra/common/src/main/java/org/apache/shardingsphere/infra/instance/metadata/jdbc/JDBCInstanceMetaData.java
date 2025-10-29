@@ -60,10 +60,4 @@ public final class JDBCInstanceMetaData implements InstanceMetaData {
     public String getAttributes() {
         return ip;
     }
-    
-    @Override
-    public String getDatabaseName() {
-        return databaseName;
-    }
-    
 }
