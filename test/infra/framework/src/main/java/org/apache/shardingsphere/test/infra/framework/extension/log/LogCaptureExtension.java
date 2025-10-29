@@ -21,7 +21,6 @@ import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.Logger;
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.read.ListAppender;
-import org.hamcrest.MatcherAssert;
 import org.junit.jupiter.api.extension.AfterEachCallback;
 import org.junit.jupiter.api.extension.BeforeEachCallback;
 import org.junit.jupiter.api.extension.ExtensionContext;
@@ -29,6 +28,7 @@ import org.junit.jupiter.api.extension.ParameterContext;
 import org.junit.jupiter.api.extension.ParameterResolver;
 import org.slf4j.LoggerFactory;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 
 /**
@@ -72,7 +72,7 @@ public final class LogCaptureExtension implements BeforeEachCallback, AfterEachC
      * @param expectedCount expected log count
      */
     public void assertLogCount(final int expectedCount) {
-        MatcherAssert.assertThat(listAppender.list.size(), is(expectedCount));
+        assertThat(listAppender.list.size(), is(expectedCount));
     }
     
     /**
@@ -81,9 +81,14 @@ public final class LogCaptureExtension implements BeforeEachCallback, AfterEachC
      * @param actualLogEventIndex actual log event index
      * @param expectedLevel expected log level
      * @param expectedMessage expected log message
+     * @param isFormatMessage format message or not
      */
-    public void assertLogContent(final int actualLogEventIndex, final Level expectedLevel, final String expectedMessage) {
-        MatcherAssert.assertThat(listAppender.list.get(actualLogEventIndex).getLevel(), is(expectedLevel));
-        MatcherAssert.assertThat(listAppender.list.get(actualLogEventIndex).getFormattedMessage(), is(expectedMessage));
+    public void assertLogContent(final int actualLogEventIndex, final Level expectedLevel, final String expectedMessage, final boolean isFormatMessage) {
+        assertThat(listAppender.list.get(actualLogEventIndex).getLevel(), is(expectedLevel));
+        if (isFormatMessage) {
+            assertThat(listAppender.list.get(actualLogEventIndex).getFormattedMessage(), is(expectedMessage));
+        } else {
+            assertThat(listAppender.list.get(actualLogEventIndex).getMessage(), is(expectedMessage));
+        }
     }
 }
