@@ -19,6 +19,7 @@ package org.apache.shardingsphere.agent.plugin.logging.file.advice;
 
 import ch.qos.logback.classic.Level;
 import org.apache.shardingsphere.agent.api.advice.TargetAdviceMethod;
+import org.apache.shardingsphere.test.infra.framework.extension.log.LogCaptureAssertion;
 import org.apache.shardingsphere.test.infra.framework.extension.log.LogCaptureExtension;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -29,12 +30,12 @@ import static org.mockito.Mockito.mock;
 class MetaDataContextsFactoryAdviceTest {
     
     @Test
-    void assertLog(final LogCaptureExtension logCaptureExtension) {
+    void assertLog(final LogCaptureAssertion logCaptureAssertion) {
         MetaDataContextsFactoryAdvice advice = new MetaDataContextsFactoryAdvice();
         TargetAdviceMethod method = mock(TargetAdviceMethod.class);
         advice.beforeMethod(null, method, new Object[]{}, "FIXTURE");
         advice.afterMethod(null, method, new Object[]{}, null, "FIXTURE");
-        logCaptureExtension.assertLogCount(1);
-        logCaptureExtension.assertLogContent(0, Level.INFO, "Build meta data contexts finished, cost {} milliseconds.", false);
+        logCaptureAssertion.assertLogCount(1);
+        logCaptureAssertion.assertLogContent(0, Level.INFO, "Build meta data contexts finished, cost {} milliseconds.", false);
     }
 }

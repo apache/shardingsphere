@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.test.infra.framework.extension.log;
 
-import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.Logger;
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.read.ListAppender;
@@ -27,9 +26,6 @@ import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.api.extension.ParameterContext;
 import org.junit.jupiter.api.extension.ParameterResolver;
 import org.slf4j.LoggerFactory;
-
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
 
 /**
  * Log capture extension.
@@ -58,37 +54,11 @@ public final class LogCaptureExtension implements BeforeEachCallback, AfterEachC
     
     @Override
     public boolean supportsParameter(final ParameterContext parameterContext, final ExtensionContext extensionContext) {
-        return parameterContext.getParameter().getType() == LogCaptureExtension.class;
+        return parameterContext.getParameter().getType() == LogCaptureAssertion.class;
     }
     
     @Override
     public Object resolveParameter(final ParameterContext parameterContext, final ExtensionContext extensionContext) {
-        return this;
-    }
-    
-    /**
-     * Assert the number of captured logs.
-     *
-     * @param expectedCount expected log count
-     */
-    public void assertLogCount(final int expectedCount) {
-        assertThat(listAppender.list.size(), is(expectedCount));
-    }
-    
-    /**
-     * Assert the number of captured logs with specific level and message.
-     *
-     * @param actualLogEventIndex actual log event index
-     * @param expectedLevel expected log level
-     * @param expectedMessage expected log message
-     * @param isFormatMessage format message or not
-     */
-    public void assertLogContent(final int actualLogEventIndex, final Level expectedLevel, final String expectedMessage, final boolean isFormatMessage) {
-        assertThat(listAppender.list.get(actualLogEventIndex).getLevel(), is(expectedLevel));
-        if (isFormatMessage) {
-            assertThat(listAppender.list.get(actualLogEventIndex).getFormattedMessage(), is(expectedMessage));
-        } else {
-            assertThat(listAppender.list.get(actualLogEventIndex).getMessage(), is(expectedMessage));
-        }
+        return new LogCaptureAssertion(listAppender.list);
     }
 }
