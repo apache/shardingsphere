@@ -47,20 +47,19 @@ import static org.mockito.Mockito.when;
 
 class FirebirdMetaDataLoaderTest {
     
+    private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "Firebird");
+    
     @Test
     void assertLoadRefreshesSizeRegistry() throws SQLException {
         DataSource dataSource = mock(DataSource.class);
-        DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "Firebird");
-        MetaDataLoaderMaterial material = new MetaDataLoaderMaterial(Collections.singleton("test_table"), "logic_ds", dataSource,
-                databaseType, "schema");
+        MetaDataLoaderMaterial material = new MetaDataLoaderMaterial(Collections.singleton("test_table"), "logic_ds", dataSource, databaseType, "schema");
         TableMetaData tableMetaData = new TableMetaData("test_table", Collections.emptyList(), Collections.emptyList(), Collections.emptyList());
         Map<String, Integer> tableSizes = Collections.singletonMap("COLUMN", 16);
         Map<String, Map<String, Integer>> allSizes = Collections.singletonMap("test_table", tableSizes);
         try (
                 MockedStatic<TableMetaDataLoader> tableLoaderMocked = mockStatic(TableMetaDataLoader.class);
                 MockedStatic<FirebirdSizeRegistry> sizeRegistryMocked = mockStatic(FirebirdSizeRegistry.class);
-                MockedConstruction<FirebirdColumnSizeLoader> columnSizeLoaderMocked = mockConstruction(FirebirdColumnSizeLoader.class,
-                        (mock, context) -> when(mock.load()).thenReturn(allSizes))) {
+                MockedConstruction<FirebirdColumnSizeLoader> columnSizeLoaderMocked = mockConstruction(FirebirdColumnSizeLoader.class, (mock, context) -> when(mock.load()).thenReturn(allSizes))) {
             tableLoaderMocked.when(() -> TableMetaDataLoader.load(dataSource, "test_table", databaseType)).thenReturn(Optional.of(tableMetaData));
             Collection<SchemaMetaData> actual = new FirebirdMetaDataLoader().load(material);
             assertThat(actual, hasSize(1));
