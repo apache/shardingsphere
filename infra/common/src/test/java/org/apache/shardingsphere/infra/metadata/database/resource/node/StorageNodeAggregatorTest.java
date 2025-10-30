@@ -40,7 +40,7 @@ class StorageNodeAggregatorTest {
         assertThat(actual.size(), is(1));
         assertThat(actual.get(new StorageNode("foo_ds")), is(dataSource));
     }
-
+    
     @Test
     void assertAggregateDataSourcePoolProperties() {
         Map<String, Object> standardProps = new HashMap<>(2, 1F);
