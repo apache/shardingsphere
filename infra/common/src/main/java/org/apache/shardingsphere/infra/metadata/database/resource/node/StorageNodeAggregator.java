@@ -64,7 +64,8 @@ public final class StorageNodeAggregator {
             String url = standardProps.get("url").toString();
             String username = standardProps.get("username").toString();
             DatabaseType databaseType = DatabaseTypeFactory.get(url);
-            result.putIfAbsent(getStorageNode(entry.getKey(), url, username, databaseType), entry.getValue());
+            StorageNode storageNode = getStorageNode(entry.getKey(), url, username, databaseType);
+            result.putIfAbsent(storageNode, entry.getValue());
         }
         return result;
     }
@@ -72,9 +73,8 @@ public final class StorageNodeAggregator {
     private static StorageNode getStorageNode(final String dataSourceName, final String url, final String username, final DatabaseType databaseType) {
         try {
             ConnectionProperties connectionProps = DatabaseTypedSPILoader.getService(ConnectionPropertiesParser.class, databaseType).parse(url, username, null);
-            return new DatabaseTypeRegistry(databaseType).getDialectDatabaseMetaData().getConnectionOption().isInstanceConnectionAvailable()
-                    ? new StorageNode(connectionProps.getHostname(), connectionProps.getPort(), username)
-                    : new StorageNode(dataSourceName);
+            boolean isInstanceConnectionAvailable = new DatabaseTypeRegistry(databaseType).getDialectDatabaseMetaData().getConnectionOption().isInstanceConnectionAvailable();
+            return isInstanceConnectionAvailable ? new StorageNode(connectionProps.getHostname(), connectionProps.getPort(), username) : new StorageNode(dataSourceName);
         } catch (final UnrecognizedDatabaseURLException ex) {
             return new StorageNode(dataSourceName);
         }
