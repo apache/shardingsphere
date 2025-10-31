@@ -48,6 +48,7 @@ import java.util.stream.Collectors;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
@@ -96,22 +97,6 @@ class GenericSchemaBuilderTest {
     }
     
     @Test
-    void assertBuildWithDifferentProtocolAndStorageTypes() throws SQLException {
-        DatabaseType differentDatabaseType = TypedSPILoader.getService(DatabaseType.class, "PostgreSQL");
-        Collection<String> tableNames = Collections.singleton("foo_tbl");
-        Map<String, SchemaMetaData> schemaMetaDataMap = createSchemaMetaDataMap(tableNames, material);
-        when(MetaDataLoader.load(any())).thenReturn(schemaMetaDataMap);
-        StorageUnit storageUnit = mock(StorageUnit.class);
-        when(storageUnit.getStorageType()).thenReturn(differentDatabaseType);
-        Map<String, StorageUnit> storageUnits = Collections.singletonMap("foo_schema", storageUnit);
-        ShardingSphereRule rule = mock(ShardingSphereRule.class);
-        when(rule.getAttributes()).thenReturn(new RuleAttributes(mock(TableMapperRuleAttribute.class)));
-        GenericSchemaBuilderMaterial newMaterial = new GenericSchemaBuilderMaterial(storageUnits, Collections.singleton(rule), new ConfigurationProperties(new Properties()), "foo_schema");
-        Map<String, ShardingSphereSchema> actual = GenericSchemaBuilder.build(tableNames, databaseType, newMaterial);
-        assertThat(actual.size(), is(1));
-    }
-    
-    @Test
     void assertBuildWithEmptyTableNames() throws SQLException {
         when(MetaDataLoader.load(any())).thenReturn(Collections.emptyMap());
         Map<String, ShardingSphereSchema> actual = GenericSchemaBuilder.build(Collections.emptyList(), databaseType, material);
@@ -131,6 +116,26 @@ class GenericSchemaBuilderTest {
         Map<String, ShardingSphereSchema> actual = GenericSchemaBuilder.build(databaseType, newMaterial);
         assertThat(actual.size(), is(1));
         assertTables(new ShardingSphereSchema("foo_schema", actual.values().iterator().next().getAllTables(), Collections.emptyList()));
+    }
+
+    @Test
+    void assertBuildWithDifferentProtocolAndStorageTypes() throws SQLException {
+        DatabaseType differentDatabaseType = TypedSPILoader.getService(DatabaseType.class, "PostgreSQL");
+        Collection<String> tableNames = Collections.singleton("foo_tbl");
+        Map<String, SchemaMetaData> schemaMetaDataMap = createSchemaMetaDataMap(tableNames, material);
+        when(MetaDataLoader.load(any())).thenReturn(schemaMetaDataMap);
+        StorageUnit storageUnit = mock(StorageUnit.class);
+        when(storageUnit.getStorageType()).thenReturn(differentDatabaseType);
+        Map<String, StorageUnit> storageUnits = Collections.singletonMap("foo_schema", storageUnit);
+        ShardingSphereRule rule = mock(ShardingSphereRule.class);
+        when(rule.getAttributes()).thenReturn(new RuleAttributes(mock(TableMapperRuleAttribute.class)));
+        GenericSchemaBuilderMaterial newMaterial = new GenericSchemaBuilderMaterial(storageUnits, Collections.singleton(rule), new ConfigurationProperties(new Properties()), "foo_schema");
+        Map<String, ShardingSphereSchema> actual = GenericSchemaBuilder.build(tableNames, databaseType, newMaterial);
+        assertThat(actual.size(), is(1));
+        ShardingSphereSchema actualSchema = actual.values().iterator().next();
+        assertTrue(actualSchema.getAllTables().isEmpty());
+        assertNull(actualSchema.getTable("foo_tbl"));
+        assertThat(actualSchema.getName(), is("foo_schema"));
     }
     
     private Map<String, SchemaMetaData> createSchemaMetaDataMap(final Collection<String> tableNames, final GenericSchemaBuilderMaterial material) {
