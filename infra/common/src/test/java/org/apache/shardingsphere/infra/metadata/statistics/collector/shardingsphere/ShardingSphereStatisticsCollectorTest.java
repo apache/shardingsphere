@@ -17,12 +17,10 @@
 
 package org.apache.shardingsphere.infra.metadata.statistics.collector.shardingsphere;
 
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.statistics.collector.DialectDatabaseStatisticsCollector;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mock;
 import org.mockito.MockedStatic;
 import org.mockito.junit.jupiter.MockitoExtension;
 
@@ -45,14 +43,11 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 class ShardingSphereStatisticsCollectorTest {
     
-    @Mock
-    private ShardingSphereMetaData mockMetaData;
-    
     private final DialectDatabaseStatisticsCollector collector = new ShardingSphereStatisticsCollector();
     
     @Test
     void assertCollectRowColumnValuesWithoutAvailableCollector() throws SQLException {
-        assertFalse(collector.collectRowColumnValues("foo_db", "foo_schema", "foo_tbl", mockMetaData).isPresent());
+        assertFalse(collector.collectRowColumnValues("foo_db", "foo_schema", "foo_tbl", mock()).isPresent());
     }
     
     @Test
@@ -61,7 +56,7 @@ class ShardingSphereStatisticsCollectorTest {
         try (MockedStatic<TypedSPILoader> mockedLoader = mockStatic(TypedSPILoader.class)) {
             when(tableStatisticsCollector.collect(anyString(), anyString(), anyString(), any())).thenReturn(Collections.singleton(Collections.singletonMap("foo_db", "foo_schema")));
             mockedLoader.when(() -> TypedSPILoader.findService(ShardingSphereTableStatisticsCollector.class, "test_schema.error_table")).thenReturn(Optional.of(tableStatisticsCollector));
-            Optional<Collection<Map<String, Object>>> actual = collector.collectRowColumnValues("foo_db", "test_schema", "error_table", mockMetaData);
+            Optional<Collection<Map<String, Object>>> actual = collector.collectRowColumnValues("foo_db", "test_schema", "error_table", mock());
             assertTrue(actual.isPresent());
             assertThat(actual.get(), is(Collections.singleton(Collections.singletonMap("foo_db", "foo_schema"))));
         }
