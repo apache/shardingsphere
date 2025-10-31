@@ -96,7 +96,9 @@ class StorageUnitNodeMapCreatorTest {
     void assertNewWithUnrecognizedDatabaseURLException() {
         try (MockedStatic<DatabaseTypedSPILoader> mockedLoader = mockStatic(DatabaseTypedSPILoader.class)) {
             mockedLoader.when(() -> DatabaseTypedSPILoader.getService(DialectDatabaseMetaData.class, databaseType)).thenReturn(dialectDatabaseMetaData);
-            mockedLoader.when(() -> DatabaseTypedSPILoader.getService(ConnectionPropertiesParser.class, databaseType)).thenThrow(new UnrecognizedDatabaseURLException("foo_ds", "Invalid URL"));
+            ConnectionPropertiesParser parser = mock(ConnectionPropertiesParser.class);
+            when(parser.parse("jdbc:mock://127.0.0.1/foo_ds", "sa", null)).thenThrow(UnrecognizedDatabaseURLException.class);
+            mockedLoader.when(() -> DatabaseTypedSPILoader.getService(ConnectionPropertiesParser.class, databaseType)).thenReturn(parser);
             Map<String, StorageNode> actual = StorageUnitNodeMapCreator.create(Collections.singletonMap("foo_ds", dataSourcePoolProps));
             assertThat(actual.size(), is(1));
             assertTrue(actual.containsKey("foo_ds"));
