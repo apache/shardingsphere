@@ -69,9 +69,4 @@ public final class ShardingSphereStatisticsCollector implements DialectDatabaseS
         }
         return true;
     }
-    
-    @Override
-    public String getDatabaseType() {
-        return "ShardingSphere";
-    }
 }
