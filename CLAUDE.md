@@ -43,12 +43,23 @@ Core concepts:
 - Consider extreme performance optimization (<100ms for common operations)
 - Follow CODE_OF_CONDUCT.md (clean code principles, naming, formatting)
 
+### Formatting
+- < 200 chars per line, no unnecessary breaks
+- Keep empty lines between methods
+- Remove empty lines within methods
+- **Comments**: No code comments - "code as documentation"
+ 
 ### Testing Standards
 - 100% line and branch coverage for all new code
 - No redundant test cases - each test validates unique behavior
 - Test execution speed: <1 second per test case
 - Follow CODE_OF_CONDUCT.md (AIR principle, BCDE design, naming conventions)
 - Focus on behavior testing over implementation details
+
+### Test Code Standards
+- **Method Naming**: Test methods start with "assert" (not "test")
+- **Assertions**: Use AssertJ style: `assertThat(actual, is(expected))`
+- **Variables**: Name test results as "actual" (not "result")
 
 ### Intelligent Code Standards
 
@@ -83,6 +94,7 @@ Core concepts:
 - No functionality regression
 - Spotless formatting passes
 - 100% coverage for new code
+- Test code follows all formatting and style requirements
 
 ### Code Standards
 - **Simplicity**: <50 lines for simple functions, <200 lines for complex classes
@@ -152,6 +164,31 @@ public abstract class AbstractDatabaseConnector {
     return createConnection(config);
     }
 }
+
+### Example 4: Test Code Standards
+
+Before:
+```java
+@Test
+void testCalculateTotal() {
+    // Setup test data
+    List<Order> orders = Arrays.asList(new Order(100), new Order(200));
+    OrderService service = new OrderService();
+    double result = service.calculateTotal(orders);
+    assertEquals(300.0, result, 0.01);
+}
+```
+
+After:
+```java
+@Test
+void assertCalculateTotal() {
+    List<Order> orders = Arrays.asList(new Order(100), new Order(200));
+    OrderService service = new OrderService();
+    double actual = service.calculateTotal(orders);
+    assertThat(actual, is(300));
+}
+```
 
 ## Build System
 
