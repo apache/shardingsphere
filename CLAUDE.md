@@ -50,6 +50,17 @@ Core concepts:
 - Follow CODE_OF_CONDUCT.md (AIR principle, BCDE design, naming conventions)
 - Focus on behavior testing over implementation details
 
+### Test Code Formatting and Style Requirements
+- **Test Method Naming**: All test methods must start with "assert" instead of "test"
+- **Assertion Style**: Use AssertJ style assertions (`assertThat(actual, is(expected))`) instead of JUnit (`assertEquals(expected, actual)`)
+- **Variable Naming**: Use "actual" for test result variables instead of "result"
+- **Comments Policy**: Follow "code as comments" principle - remove all code comments from test methods
+- **Line Length**: Keep code under 200 characters per line - avoid unnecessary line breaks
+- **Empty Lines**:
+  - Preserve empty lines between methods for readability
+  - Remove empty lines within methods to keep code compact
+- **Imports**: Use proper imports for AssertJ assertions (`assertThat`, `is`)
+
 ### Intelligent Code Standards
 
 #### Contextual Intelligence
@@ -83,6 +94,7 @@ Core concepts:
 - No functionality regression
 - Spotless formatting passes
 - 100% coverage for new code
+- Test code follows all formatting and style requirements
 
 ### Code Standards
 - **Simplicity**: <50 lines for simple functions, <200 lines for complex classes
@@ -152,6 +164,33 @@ public abstract class AbstractDatabaseConnector {
     return createConnection(config);
     }
 }
+
+### Example 4: Test Code Formatting Standards
+
+```java
+@Test
+void assertCalculateTotal() {
+    List<Order> orders = Arrays.asList(
+        new Order(100),
+        new Order(200)
+    );
+    OrderService service = new OrderService();
+    double result = service.calculateTotal(orders);
+    assertThat(result, is(300));
+}
+```
+
+After (AssertJ style, no comments, proper formatting):
+
+```java
+@Test
+void assertCalculateTotal() {
+    List<Order> orders = Arrays.asList(new Order(100), new Order(200));
+    OrderService service = new OrderService();
+    double actual = service.calculateTotal(orders);
+    assertThat(actual, is(300));
+}
+```
 
 ## Build System
 
