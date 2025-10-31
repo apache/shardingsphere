@@ -41,6 +41,7 @@ import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -130,5 +131,53 @@ class SchemaMetaDataUtilsTest {
         when(storageUnit2.getDataSource()).thenReturn(new MockedDataSource());
         result.put("ds_1", storageUnit2);
         return result;
+    }
+    
+    @Test
+    void assertGetMetaDataLoaderMaterialsWhenEmptyDataNodesAndNotEmptyStorageUnits() {
+        ShardingSphereRule rule = mock(ShardingSphereRule.class);
+        DataNodeRuleAttribute ruleAttribute = mock(DataNodeRuleAttribute.class);
+        when(ruleAttribute.getDataNodesByTableName("t_order")).thenReturn(Collections.emptyList());
+        when(rule.getAttributes()).thenReturn(new RuleAttributes(ruleAttribute));
+        ConfigurationProperties props = mock(ConfigurationProperties.class);
+        when(props.getValue(ConfigurationPropertyKey.CHECK_TABLE_METADATA_ENABLED)).thenReturn(true);
+        when(props.getValue(ConfigurationPropertyKey.LOAD_TABLE_METADATA_BATCH_SIZE)).thenReturn(100);
+        GenericSchemaBuilderMaterial material = new GenericSchemaBuilderMaterial(mockStorageUnits(), Collections.singleton(rule), props, "sharding_db");
+        Collection<MetaDataLoaderMaterial> actual = SchemaMetaDataUtils.getMetaDataLoaderMaterials(Collections.singleton("t_order"), material);
+        assertThat(actual.size(), is(1));
+        Iterator<MetaDataLoaderMaterial> iterator = actual.iterator();
+        MetaDataLoaderMaterial firstMaterial = iterator.next();
+        assertThat(firstMaterial.getActualTableNames(), is(Collections.singletonList("t_order")));
+    }
+    
+    @Test
+    void assertGetMetaDataLoaderMaterialsWithDifferentSchemaName() {
+        ShardingSphereRule rule = mock(ShardingSphereRule.class);
+        DataNodeRuleAttribute ruleAttribute = mock(DataNodeRuleAttribute.class);
+        when(ruleAttribute.getDataNodesByTableName("t_order")).thenReturn(Collections.singleton(new DataNode("ds_0", "different_schema", "t_order")));
+        when(rule.getAttributes()).thenReturn(new RuleAttributes(ruleAttribute));
+        ConfigurationProperties props = mock(ConfigurationProperties.class);
+        when(props.getValue(ConfigurationPropertyKey.CHECK_TABLE_METADATA_ENABLED)).thenReturn(false);
+        when(props.getValue(ConfigurationPropertyKey.LOAD_TABLE_METADATA_BATCH_SIZE)).thenReturn(100);
+        GenericSchemaBuilderMaterial material = new GenericSchemaBuilderMaterial(mockStorageUnits(), Collections.singleton(rule), props, "default_schema");
+        Collection<MetaDataLoaderMaterial> actual = SchemaMetaDataUtils.getMetaDataLoaderMaterials(Collections.singleton("t_order"), material);
+        assertThat(actual.size(), is(1));
+        Iterator<MetaDataLoaderMaterial> iterator = actual.iterator();
+        MetaDataLoaderMaterial firstMaterial = iterator.next();
+        assertThat(firstMaterial.getActualTableNames(), is(Collections.singletonList("t_order")));
+    }
+
+    @Test
+    void assertGetMetaDataLoaderMaterialsWithEmptyStorageUnits() {
+        ShardingSphereRule rule = mock(ShardingSphereRule.class);
+        DataNodeRuleAttribute ruleAttribute = mock(DataNodeRuleAttribute.class);
+        when(ruleAttribute.getDataNodesByTableName("t_order")).thenReturn(Collections.emptyList());
+        when(rule.getAttributes()).thenReturn(new RuleAttributes(ruleAttribute));
+        ConfigurationProperties props = mock(ConfigurationProperties.class);
+        when(props.getValue(ConfigurationPropertyKey.CHECK_TABLE_METADATA_ENABLED)).thenReturn(true);
+        when(props.getValue(ConfigurationPropertyKey.LOAD_TABLE_METADATA_BATCH_SIZE)).thenReturn(100);
+        GenericSchemaBuilderMaterial material = new GenericSchemaBuilderMaterial(Collections.emptyMap(), Collections.singleton(rule), props, "sharding_db");
+        Collection<MetaDataLoaderMaterial> actual = SchemaMetaDataUtils.getMetaDataLoaderMaterials(Collections.singleton("t_order"), material);
+        assertTrue(actual.isEmpty());
     }
 }
