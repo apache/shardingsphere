@@ -55,14 +55,14 @@ public final class StorageUnit {
         String username = null == originUsername ? "" : originUsername.toString();
         storageType = DatabaseTypeFactory.get(url);
         boolean isInstanceConnectionAvailable = new DatabaseTypeRegistry(storageType).getDialectDatabaseMetaData().getConnectionOption().isInstanceConnectionAvailable();
-        String catalog = isInstanceConnectionAvailable ? DatabaseTypedSPILoader.getService(ConnectionPropertiesParser.class, storageType).parse(url, username, null).getCatalog() : null;
+        ConnectionPropertiesParser parser = DatabaseTypedSPILoader.getService(ConnectionPropertiesParser.class, storageType);
+        String catalog = isInstanceConnectionAvailable ? parser.parse(url, username, null).getCatalog() : null;
         this.dataSource = isInstanceConnectionAvailable ? new CatalogSwitchableDataSource(dataSource, catalog, url) : dataSource;
         dataSourcePoolProperties = dataSourcePoolProps;
-        connectionProperties = createConnectionProperties(catalog, standardProps);
+        connectionProperties = createConnectionProperties(parser, catalog, standardProps);
     }
     
-    private ConnectionProperties createConnectionProperties(final String catalog, final Map<String, Object> standardProps) {
-        ConnectionPropertiesParser parser = DatabaseTypedSPILoader.getService(ConnectionPropertiesParser.class, storageType);
+    private ConnectionProperties createConnectionProperties(final ConnectionPropertiesParser parser, final String catalog, final Map<String, Object> standardProps) {
         return parser.parse(standardProps.get("url").toString(), standardProps.getOrDefault("username", "").toString(), catalog);
     }
 }
