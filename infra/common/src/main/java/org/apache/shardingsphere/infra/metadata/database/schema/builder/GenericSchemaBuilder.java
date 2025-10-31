@@ -36,7 +36,6 @@ import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
-import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Optional;
@@ -102,9 +101,7 @@ public final class GenericSchemaBuilder {
             tableMetaDataList.addAll(Optional.ofNullable(schemaMetaDataMap.get(defaultSchemaName)).map(SchemaMetaData::getTables).orElseGet(Collections::emptyList));
         }
         String frontendSchemaName = new DatabaseTypeRegistry(protocolType).getDefaultSchemaName(material.getDefaultSchemaName());
-        Map<String, SchemaMetaData> result = new LinkedHashMap<>();
-        result.put(frontendSchemaName, new SchemaMetaData(frontendSchemaName, tableMetaDataList));
-        return result;
+        return Collections.singletonMap(frontendSchemaName, new SchemaMetaData(frontendSchemaName, tableMetaDataList));
     }
     
     private static Map<String, ShardingSphereSchema> revise(final Map<String, SchemaMetaData> schemaMetaDataMap, final GenericSchemaBuilderMaterial material) {
