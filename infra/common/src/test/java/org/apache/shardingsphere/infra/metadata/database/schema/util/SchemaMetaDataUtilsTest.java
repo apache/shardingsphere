@@ -166,7 +166,7 @@ class SchemaMetaDataUtilsTest {
         MetaDataLoaderMaterial firstMaterial = iterator.next();
         assertThat(firstMaterial.getActualTableNames(), is(Collections.singletonList("t_order")));
     }
-
+    
     @Test
     void assertGetMetaDataLoaderMaterialsWithEmptyStorageUnits() {
         ShardingSphereRule rule = mock(ShardingSphereRule.class);

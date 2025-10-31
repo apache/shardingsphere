@@ -110,7 +110,7 @@ class GenericSchemaBuilderTest {
         Map<String, ShardingSphereSchema> actual = GenericSchemaBuilder.build(tableNames, databaseType, newMaterial);
         assertThat(actual.size(), is(1));
     }
-
+    
     @Test
     void assertBuildWithEmptyTableNames() throws SQLException {
         when(MetaDataLoader.load(any())).thenReturn(Collections.emptyMap());
