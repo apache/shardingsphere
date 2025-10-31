@@ -93,7 +93,10 @@ class StorageUnitTest {
                     .thenReturn(new ConnectionProperties("127.0.0.1", 3307, "foo_catalog", "foo_schema", new Properties()));
             mockedLoader.when(() -> DatabaseTypedSPILoader.getService(ConnectionPropertiesParser.class, databaseType)).thenReturn(connectionPropsParser);
             StorageUnit actual = new StorageUnit(mock(), dataSourcePoolProperties, mock());
+            assertThat(actual.getConnectionProperties().getHostname(), is("127.0.0.1"));
+            assertThat(actual.getConnectionProperties().getPort(), is(3307));
             assertThat(actual.getConnectionProperties().getCatalog(), is("foo_catalog"));
+            assertThat(actual.getConnectionProperties().getSchema(), is("foo_schema"));
         }
     }
 }
