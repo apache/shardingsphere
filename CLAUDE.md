@@ -43,6 +43,12 @@ Core concepts:
 - Consider extreme performance optimization (<100ms for common operations)
 - Follow CODE_OF_CONDUCT.md (clean code principles, naming, formatting)
 
+### Formatting
+- < 200 chars per line, no unnecessary breaks
+- Keep empty lines between methods
+- Remove empty lines within methods
+- **Comments**: No code comments - "code as documentation"
+ 
 ### Testing Standards
 - 100% line and branch coverage for all new code
 - No redundant test cases - each test validates unique behavior
@@ -50,16 +56,10 @@ Core concepts:
 - Follow CODE_OF_CONDUCT.md (AIR principle, BCDE design, naming conventions)
 - Focus on behavior testing over implementation details
 
-### Test Code Formatting and Style Requirements
-- **Test Method Naming**: All test methods must start with "assert" instead of "test"
-- **Assertion Style**: Use AssertJ style assertions (`assertThat(actual, is(expected))`) instead of JUnit (`assertEquals(expected, actual)`)
-- **Variable Naming**: Use "actual" for test result variables instead of "result"
-- **Comments Policy**: Follow "code as comments" principle - remove all code comments from test methods
-- **Line Length**: Keep code under 200 characters per line - avoid unnecessary line breaks
-- **Empty Lines**:
-  - Preserve empty lines between methods for readability
-  - Remove empty lines within methods to keep code compact
-- **Imports**: Use proper imports for AssertJ assertions (`assertThat`, `is`)
+### Test Code Standards
+- **Method Naming**: Test methods start with "assert" (not "test")
+- **Assertions**: Use AssertJ style: `assertThat(actual, is(expected))`
+- **Variables**: Name test results as "actual" (not "result")
 
 ### Intelligent Code Standards
 
@@ -165,23 +165,21 @@ public abstract class AbstractDatabaseConnector {
     }
 }
 
-### Example 4: Test Code Formatting Standards
+### Example 4: Test Code Standards
 
+Before:
 ```java
 @Test
-void assertCalculateTotal() {
-    List<Order> orders = Arrays.asList(
-        new Order(100),
-        new Order(200)
-    );
+void testCalculateTotal() {
+    // Setup test data
+    List<Order> orders = Arrays.asList(new Order(100), new Order(200));
     OrderService service = new OrderService();
     double result = service.calculateTotal(orders);
-    assertThat(result, is(300));
+    assertEquals(300.0, result, 0.01);
 }
 ```
 
-After (AssertJ style, no comments, proper formatting):
-
+After:
 ```java
 @Test
 void assertCalculateTotal() {
