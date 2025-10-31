@@ -117,7 +117,7 @@ class GenericSchemaBuilderTest {
         assertThat(actual.size(), is(1));
         assertTables(new ShardingSphereSchema("foo_schema", actual.values().iterator().next().getAllTables(), Collections.emptyList()));
     }
-
+    
     @Test
     void assertBuildWithDifferentProtocolAndStorageTypes() throws SQLException {
         DatabaseType differentDatabaseType = TypedSPILoader.getService(DatabaseType.class, "PostgreSQL");
