@@ -48,7 +48,7 @@ class ShardingSphereDatabaseFactoryTest {
     void assertCreateDatabaseWithComputeNodeInstanceContext() {
         assertThrows(ServiceProviderNotFoundException.class, () -> ShardingSphereDatabaseFactory.create(null, mock(), mock(), new ConfigurationProperties(new Properties()), mock()));
     }
-        
+    
     @Test
     void assertCreateDatabaseWithSchemas() {
         ShardingSphereDatabase actual = ShardingSphereDatabaseFactory.create("foo_db", databaseType, mock(), mock(), Collections.emptyList());
