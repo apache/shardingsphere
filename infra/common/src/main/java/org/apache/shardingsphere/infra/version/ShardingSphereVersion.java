@@ -73,10 +73,7 @@ public final class ShardingSphereVersion {
             return versionFromGeneratedPropsFile.get();
         }
         Optional<String> versionFromManifest = loadVersionFromManifest();
-        if (versionFromManifest.isPresent()) {
-            return versionFromManifest.get();
-        }
-        return "";
+        return versionFromManifest.orElse("");
     }
     
     private static Optional<String> loadVersionFromGeneratedPropertiesFile() {
