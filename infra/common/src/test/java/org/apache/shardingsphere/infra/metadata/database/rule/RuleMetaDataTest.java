@@ -111,4 +111,17 @@ class RuleMetaDataTest {
         assertFalse(ruleMetaData.getAttributes(DataSourceMapperRuleAttribute.class).isEmpty());
         assertFalse(ruleMetaData.getAttributes(DataNodeRuleAttribute.class).isEmpty());
     }
+    
+    @Test
+    void assertFindAttribute() {
+        Optional<DataSourceMapperRuleAttribute> actual = ruleMetaData.findAttribute(DataSourceMapperRuleAttribute.class);
+        assertTrue(actual.isPresent());
+        assertThat(actual.get(), isA(DataSourceMapperRuleAttribute.class));
+    }
+    
+    @Test
+    void assertFindEmptyAttribute() {
+        RuleMetaData metaData = new RuleMetaData(Collections.singleton(mock(ShardingSphereRule.class, RETURNS_DEEP_STUBS)));
+        assertFalse(metaData.findAttribute(DataSourceMapperRuleAttribute.class).isPresent());
+    }
 }
