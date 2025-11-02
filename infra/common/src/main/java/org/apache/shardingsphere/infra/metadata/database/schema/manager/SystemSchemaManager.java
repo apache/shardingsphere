@@ -61,11 +61,11 @@ public final class SystemSchemaManager {
     }
     
     /**
-     * Judge whether current table is system table or not.
+     * Judge whether the current table is system table.
      *
      * @param schema schema
      * @param tableName table name
-     * @return whether current table is system table or not
+     * @return is system table or not
      */
     public static boolean isSystemTable(final String schema, final String tableName) {
         for (Entry<String, Map<String, Collection<String>>> entry : DATABASE_TYPE_SCHEMA_TABLE_MAP.entrySet()) {
@@ -77,12 +77,12 @@ public final class SystemSchemaManager {
     }
     
     /**
-     * Judge whether current table is system table or not.
+     * Judge whether the current table is system table.
      *
      * @param databaseType database type
      * @param schema schema
      * @param tableName table name
-     * @return whether current table is system table or not
+     * @return is system table or not
      */
     public static boolean isSystemTable(final String databaseType, final String schema, final String tableName) {
         Map<String, Collection<String>> schemaTableMap = DATABASE_TYPE_SCHEMA_TABLE_MAP.getOrDefault(databaseType, Collections.emptyMap());
@@ -94,12 +94,12 @@ public final class SystemSchemaManager {
     }
     
     /**
-     * Judge whether current table is system table or not.
+     * Judge whether the current table is system table.
      *
      * @param databaseType database type
      * @param schema schema
      * @param tableNames table names
-     * @return whether current table is system table or not
+     * @return is system table or not
      */
     public static boolean isSystemTable(final String databaseType, final String schema, final Collection<String> tableNames) {
         Collection<String> databaseTypeTables = Optional.ofNullable(DATABASE_TYPE_SCHEMA_TABLE_MAP.get(databaseType)).map(schemas -> schemas.get(schema)).orElse(Collections.emptyList());
@@ -131,7 +131,7 @@ public final class SystemSchemaManager {
      *
      * @param databaseType database type
      * @param schema schema
-     * @return inputStream collection
+     * @return input streams
      */
     public static Collection<InputStream> getAllInputStreams(final String databaseType, final String schema) {
         Collection<InputStream> result = new LinkedList<>();

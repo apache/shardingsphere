@@ -19,11 +19,15 @@ package org.apache.shardingsphere.infra.metadata.database.schema.manager;
 
 import org.junit.jupiter.api.Test;
 
+import java.io.InputStream;
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class SystemSchemaManagerTest {
@@ -82,5 +86,39 @@ class SystemSchemaManagerTest {
         assertFalse(SystemSchemaManager.isSystemTable("sharding_db", "t_order"));
         assertTrue(SystemSchemaManager.isSystemTable("shardingsphere", "cluster_information"));
         assertFalse(SystemSchemaManager.isSystemTable("shardingsphere", "nonexistent"));
+    }
+    
+    @Test
+    void assertIsSystemTableWithDatabaseTypeAndNullSchema() {
+        assertTrue(SystemSchemaManager.isSystemTable("MySQL", null, "columns"));
+        assertTrue(SystemSchemaManager.isSystemTable("PostgreSQL", null, "pg_database"));
+        assertFalse(SystemSchemaManager.isSystemTable("MySQL", null, "nonexistent_table"));
+    }
+    
+    @Test
+    void assertIsSystemTableWithDatabaseTypeAndSchema() {
+        assertTrue(SystemSchemaManager.isSystemTable("MySQL", "information_schema", "columns"));
+        assertTrue(SystemSchemaManager.isSystemTable("PostgreSQL", "pg_catalog", "pg_database"));
+        assertTrue(SystemSchemaManager.isSystemTable("MySQL", "shardingsphere", "cluster_information"));
+        assertFalse(SystemSchemaManager.isSystemTable("MySQL", "information_schema", "nonexistent_table"));
+        assertFalse(SystemSchemaManager.isSystemTable("NonExistentDB", "test_schema", "test_table"));
+    }
+    
+    @Test
+    void assertIsSystemTableWithTableNamesCollection() {
+        assertTrue(SystemSchemaManager.isSystemTable("MySQL", "information_schema", Arrays.asList("columns", "tables", "schemata")));
+        assertFalse(SystemSchemaManager.isSystemTable("MySQL", "information_schema", Arrays.asList("columns", "nonexistent_table")));
+        assertTrue(SystemSchemaManager.isSystemTable("PostgreSQL", "pg_catalog", Arrays.asList("pg_database", "pg_tables")));
+        assertFalse(SystemSchemaManager.isSystemTable("NonExistentDB", "test_schema", Collections.singleton("test_table")));
+        assertTrue(SystemSchemaManager.isSystemTable("MySQL", "nonexistent_schema", Collections.emptyList()));
+    }
+    
+    @Test
+    void assertGetAllInputStreams() {
+        java.util.Collection<java.io.InputStream> actual = SystemSchemaManager.getAllInputStreams("MySQL", "information_schema");
+        assertThat(actual.size(), is(95));
+        for (InputStream each : actual) {
+            assertNotNull(each);
+        }
     }
 }
