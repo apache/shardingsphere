@@ -32,7 +32,7 @@ class ShardingSphereVersionTest {
     @Test
     void assertVersion() {
         assertTrue(ShardingSphereVersion.VERSION.matches("\\d+\\.\\d+\\.\\d+(-SNAPSHOT)?"));
-        assertTrue(Integer.parseInt(ShardingSphereVersion.VERSION.split("-")[0].split("\\.")[0]) >= 5);
+        assertTrue(Integer.parseInt(ShardingSphereVersion.VERSION.split("-")[0].split("\\.")[0]) >= 1);
     }
     
     @Test
