@@ -52,12 +52,21 @@ public final class SystemSchemaManager {
         try (Stream<String> resourceNameStream = ClasspathResourceDirectoryReader.read("schema")) {
             resourceNames = resourceNameStream.filter(each -> each.endsWith(".yaml")).collect(Collectors.toList());
         }
-        DATABASE_TYPE_SCHEMA_TABLE_MAP = resourceNames.stream().map(resourceName -> resourceName.split("/")).filter(each -> each.length == 4)
-                .collect(Collectors.groupingBy(path -> path[1], CaseInsensitiveMap::new, Collectors.groupingBy(path -> path[2], CaseInsensitiveMap::new,
-                        Collectors.mapping(path -> StringUtils.removeEnd(path[3], ".yaml"), Collectors.toCollection(CaseInsensitiveSet::new)))));
-        DATABASE_TYPE_SCHEMA_RESOURCE_MAP = resourceNames.stream().map(resourceName -> resourceName.split("/")).filter(each -> each.length == 4)
-                .collect(Collectors.groupingBy(path -> path[1], CaseInsensitiveMap::new, Collectors.groupingBy(path -> path[2], CaseInsensitiveMap::new,
-                        Collectors.mapping(path -> String.join("/", path), Collectors.toCollection(CaseInsensitiveSet::new)))));
+        DATABASE_TYPE_SCHEMA_TABLE_MAP = new CaseInsensitiveMap<>();
+        DATABASE_TYPE_SCHEMA_RESOURCE_MAP = new CaseInsensitiveMap<>();
+        for (String each : resourceNames) {
+            String[] pathParts = each.split("/");
+            if (4 == pathParts.length) {
+                String databaseType = pathParts[1];
+                String schemaName = pathParts[2];
+                String tableName = StringUtils.removeEnd(pathParts[3], ".yaml");
+                String resourcePath = String.join("/", pathParts);
+                Map<String, Collection<String>> schemaTableMap = DATABASE_TYPE_SCHEMA_TABLE_MAP.computeIfAbsent(databaseType, key -> new CaseInsensitiveMap<>());
+                schemaTableMap.computeIfAbsent(schemaName, key -> new CaseInsensitiveSet<>()).add(tableName);
+                Map<String, Collection<String>> schemaResourceMap = DATABASE_TYPE_SCHEMA_RESOURCE_MAP.computeIfAbsent(databaseType, key -> new CaseInsensitiveMap<>());
+                schemaResourceMap.computeIfAbsent(schemaName, key -> new CaseInsensitiveSet<>()).add(resourcePath);
+            }
+        }
     }
     
     /**
