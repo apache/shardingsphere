@@ -18,11 +18,11 @@
 package org.apache.shardingsphere.infra.metadata.database.schema.manager;
 
 import com.cedarsoftware.util.CaseInsensitiveMap;
+import com.cedarsoftware.util.CaseInsensitiveSet;
 
 import java.io.InputStream;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.LinkedList;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -42,7 +42,7 @@ public final class DialectSystemSchemaManager {
      * @param tableName table name
      */
     public void putTable(final String schemaName, final String tableName) {
-        schemaAndTableMap.computeIfAbsent(schemaName, key -> new LinkedList<>()).add(tableName);
+        schemaAndTableMap.computeIfAbsent(schemaName, key -> new CaseInsensitiveSet<>()).add(tableName);
     }
     
     /**
@@ -52,7 +52,7 @@ public final class DialectSystemSchemaManager {
      * @param resourcePath resource path
      */
     public void putResource(final String schemaName, final String resourcePath) {
-        schemaAndResourceMap.computeIfAbsent(schemaName, key -> new LinkedList<>()).add(resourcePath);
+        schemaAndResourceMap.computeIfAbsent(schemaName, key -> new CaseInsensitiveSet<>()).add(resourcePath);
     }
     
     /**
