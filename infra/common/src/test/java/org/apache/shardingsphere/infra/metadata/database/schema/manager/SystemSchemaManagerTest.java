@@ -55,7 +55,7 @@ class SystemSchemaManagerTest {
     }
     
     @Test
-    void assertIsisSystemTable() {
+    void assertIsSystemTable() {
         assertTrue(SystemSchemaManager.isSystemTable("information_schema", "columns"));
         assertTrue(SystemSchemaManager.isSystemTable("pg_catalog", "pg_database"));
         assertTrue(SystemSchemaManager.isSystemTable("pg_catalog", "pg_tables"));
@@ -85,14 +85,14 @@ class SystemSchemaManagerTest {
         assertTrue(SystemSchemaManager.isSystemTable("pg_catalog", "pg_stat_progress_cluster"));
         assertFalse(SystemSchemaManager.isSystemTable("sharding_db", "t_order"));
         assertTrue(SystemSchemaManager.isSystemTable("shardingsphere", "cluster_information"));
-        assertFalse(SystemSchemaManager.isSystemTable("shardingsphere", "nonexistent"));
+        assertFalse(SystemSchemaManager.isSystemTable("shardingsphere", "foo_tbl"));
     }
     
     @Test
     void assertIsSystemTableWithDatabaseTypeAndNullSchema() {
         assertTrue(SystemSchemaManager.isSystemTable("MySQL", null, "columns"));
         assertTrue(SystemSchemaManager.isSystemTable("PostgreSQL", null, "pg_database"));
-        assertFalse(SystemSchemaManager.isSystemTable("MySQL", null, "nonexistent_table"));
+        assertFalse(SystemSchemaManager.isSystemTable("MySQL", null, "foo_tbl"));
     }
     
     @Test
@@ -100,17 +100,17 @@ class SystemSchemaManagerTest {
         assertTrue(SystemSchemaManager.isSystemTable("MySQL", "information_schema", "columns"));
         assertTrue(SystemSchemaManager.isSystemTable("PostgreSQL", "pg_catalog", "pg_database"));
         assertTrue(SystemSchemaManager.isSystemTable("MySQL", "shardingsphere", "cluster_information"));
-        assertFalse(SystemSchemaManager.isSystemTable("MySQL", "information_schema", "nonexistent_table"));
-        assertFalse(SystemSchemaManager.isSystemTable("NonExistentDB", "test_schema", "test_table"));
+        assertFalse(SystemSchemaManager.isSystemTable("MySQL", "information_schema", "foo_tbl"));
+        assertFalse(SystemSchemaManager.isSystemTable("NO_DB", "foo_schema", "foo_tbl"));
     }
     
     @Test
-    void assertIsSystemTableWithTableNamesCollection() {
+    void assertIsSystemTableWithTableNames() {
         assertTrue(SystemSchemaManager.isSystemTable("MySQL", "information_schema", Arrays.asList("columns", "tables", "schemata")));
         assertFalse(SystemSchemaManager.isSystemTable("MySQL", "information_schema", Arrays.asList("columns", "nonexistent_table")));
         assertTrue(SystemSchemaManager.isSystemTable("PostgreSQL", "pg_catalog", Arrays.asList("pg_database", "pg_tables")));
-        assertFalse(SystemSchemaManager.isSystemTable("NonExistentDB", "test_schema", Collections.singleton("test_table")));
-        assertTrue(SystemSchemaManager.isSystemTable("MySQL", "nonexistent_schema", Collections.emptyList()));
+        assertFalse(SystemSchemaManager.isSystemTable("NO_DB", "foo_schema", Collections.singleton("foo_tbl")));
+        assertTrue(SystemSchemaManager.isSystemTable("MySQL", "foo_schema", Collections.emptyList()));
     }
     
     @Test
