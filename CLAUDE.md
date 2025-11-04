@@ -8,14 +8,15 @@ Core concepts:
 - `Pluggable:` Micro-kernel + 3-layer pluggable architecture
 
 ## Quick Reference (Top 7 Rules)
+*Core rules - see detailed sections for complete requirements*
 
-1. Follow project coding standards
-2. Elegance-first, minimalism-second principle
-3. Prioritize readability as highest priority
-4. 100% test coverage for all new code
-5. NEVER auto-commit to Git without explicit instruction
+1. Follow project coding standards (see Elegant Code Standards)
+2. Elegance-first, minimalism-second principle (see Universal Design Philosophy)
+3. Prioritize readability as highest priority (see Elegance-First Principle)
+4. 100% test coverage for all new code (detailed requirements in Testing Philosophy)
+5. NEVER auto-commit to Git without explicit instruction (see Git Guidelines)
 6. ONLY modify explicitly mentioned files and directories
-7. Apply formatting to new code ONLY
+7. Apply formatting to new code ONLY (see Formatting Standards)
 
 ## Core Prohibitions
 
@@ -24,6 +25,7 @@ Core concepts:
 - NEVER create unrelated files without instruction
 
 ## Code Intelligence Principles
+*Core design principles that guide all coding decisions*
 
 ### Universal Design Philosophy
 - **Elegance-First Principle**: Readability first, maintainability second
@@ -37,11 +39,11 @@ Core concepts:
 Strictly follow all coding standards in [CODE_OF_CONDUCT.md](./CODE_OF_CONDUCT.md)
 
 ## Testing Philosophy
+*Comprehensive testing requirements and standards for all new code*
 
 ### Unified Testing Standards
 - 100% line and branch coverage for all new code
 - Test execution speed: <1 second per test case
-- Focus on behavior testing over implementation details
 - **Branch Minimal Coverage**: Analyze uncovered branches, write minimal test cases only
 - **Test Set Minimization**: No redundant tests, focus on branch coverage
 
@@ -50,7 +52,7 @@ Strictly follow all coding standards in [CODE_OF_CONDUCT.md](./CODE_OF_CONDUCT.m
 - **Assertions**: Use AssertJ style: `assertThat(actual, is(expected))`
 - **Variables**: Name test results as "actual" (not "result")
 - **Mock Priority**: Prioritize Mockito mock and mockStatic, avoid using spy
-- **Simplicity**: Test code must be simpler than business code
+- **Simplicity**: Test code must be simpler than business code, focus on behavior over implementation
 
 ### Testing Process
 - **Method Order Consistency**: Match source code method declaration order
@@ -58,9 +60,10 @@ Strictly follow all coding standards in [CODE_OF_CONDUCT.md](./CODE_OF_CONDUCT.m
 - **Integration Principle**: Seamlessly integrate with existing test files and conventions
 
 ## Quality Excellence
+*Code formatting, style, and quality requirements*
 
 ### Code Quality Requirements
-- Focus on elegant and minimal code expression
+- Focus on elegant and minimal code expression (see Universal Design Philosophy and Code Standards)
 
 ### Formatting Standards
 - < 200 chars per line, max 3 nested levels, no unnecessary breaks
@@ -84,6 +87,7 @@ Strictly follow all coding standards in [CODE_OF_CONDUCT.md](./CODE_OF_CONDUCT.m
 - **Intelligence**: Patterns recognized, architecture harmonized, future-proof
 
 ## Unified Guidelines
+*Operational scope, permissions, and decision-making framework*
 
 ### Scope & Permissions
 **Allowed Operations:**
