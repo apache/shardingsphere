@@ -62,6 +62,82 @@ Key areas covered in the coding standards file:
 *For detailed testing standards, see Coding Standards Reference above*
 
 
+## AI Code Understanding Guidelines
+*AI-specific capabilities for pattern recognition and style application*
+
+### Pattern Recognition Capabilities
+- Identify SPI implementation patterns from existing interface/implementation pairs
+- Recognize factory patterns, builder patterns, and strategy patterns from project structure
+- Learn field declaration order and naming conventions from existing classes in same package
+- Analyze test scenario design and boundary conditions from existing test files
+
+### Style Consistency Application
+- Match field access modifiers and declaration order from similar classes
+- Follow constructor chaining patterns used in the module
+- Apply consistent exception handling hierarchy from existing code
+- Use same dependency injection and configuration patterns as related classes
+
+
+## ShardingSphere Architecture Patterns
+*Architecture decision-making guidance for ShardingSphere-specific contexts*
+
+### Database Abstraction Design Principles
+- Create dialect-specific implementations for database-specific features
+- Use SPI for extensible components while keeping core logic database-agnostic
+- Maintain backward compatibility for metadata structures
+- Follow layered architecture: Connection layer, Enhancement layer, Pluggable layer
+
+### Meta-Data Design Patterns
+- Use immutable objects for metadata representation (final class + final fields)
+- Apply builder pattern and constructor chaining for complex metadata construction
+- Include basic validation logic in metadata objects
+- Use consistent naming mapping for database concepts
+
+### SPI Implementation Specifications
+- Place implementation classes in corresponding spi sub-packages
+- Use service discovery mechanism for registration
+- Maintain interface backward compatibility
+- Provide appropriate default implementations
+
+
+## Code Consistency Decision Making
+*Guidelines for maintaining consistency with existing project code*
+
+### Package Structure and Module Alignment
+- Place new classes in appropriate packages based on functional domain
+- Follow existing package naming conventions (org.apache.shardingsphere.*)
+- Maintain same directory structure and hierarchy as similar components
+- Respect module boundaries and avoid circular dependencies
+
+### API Design Consistency
+- Analyze existing APIs for parameter naming and type patterns
+- Follow established method naming conventions (verb + noun pattern)
+- Maintain consistent exception types and error handling mechanisms
+- Use same return value patterns as related functionality
+
+
+## AI Testing Strategy
+*AI-specific testing organization and design capabilities*
+
+### Test Data Construction Strategies
+- Build realistic test data that mirrors production scenarios
+- Use factory methods to create complex test objects
+- Maintain test data independence and repeatability
+- Avoid hardcoding; use parameterized tests
+
+### Test Class Organization Patterns
+- Group test methods by functionality
+- Maintain test method independence and idempotency
+- Properly use @BeforeEach and @AfterEach for resource management
+- Ensure test execution order independence
+
+### Test Scenario Design Capabilities
+- Identify business critical paths for focused testing
+- Design integration tests for complex business scenarios
+- Construct test cases for boundary conditions and exception situations
+- Simulate realistic data scales and concurrent scenarios
+
+
 ## Quality Standards
 *Code quality, formatting, and validation requirements*
 
