@@ -55,7 +55,6 @@ Key areas covered in the coding standards file:
 
 ### Unified Testing Standards
 - 100% line and branch coverage for all new code
-- Test execution speed: <1 second per test case
 - **Branch Minimal Coverage**: Analyze uncovered branches, write minimal test cases only
 - **Test Set Minimization**: Focus on branch coverage and eliminate redundancy
 
@@ -104,13 +103,11 @@ Key areas covered in the coding standards file:
 
 ### Package Structure and Module Alignment
 - Place new classes in appropriate packages based on functional domain
-- Follow existing package naming conventions (org.apache.shardingsphere.*)
 - Maintain same directory structure and hierarchy as similar components
 - Respect module boundaries and avoid circular dependencies
 
 ### API Design Consistency
 - Analyze existing APIs for parameter naming and type patterns
-- Follow established method naming conventions (verb + noun pattern)
 - Apply consistent patterns for exception handling and return values (see Style Consistency Application)
 
 
@@ -123,11 +120,7 @@ Key areas covered in the coding standards file:
 - Maintain test data independence and repeatability
 - Avoid hardcoding; use parameterized tests
 
-### Test Class Organization Patterns
-- Group test methods by functionality
-- Maintain test method independence and idempotency
-- Properly use @BeforeEach and @AfterEach for resource management
-- Ensure test execution order independence
+*For detailed test organization standards, see CODE_OF_CONDUCT.md reference in Elegant Code Standards section*
 
 ### Test Scenario Design Capabilities
 - Identify business critical paths for focused testing
@@ -140,7 +133,6 @@ Key areas covered in the coding standards file:
 *Code quality, formatting, and validation requirements*
 
 ### Quality Requirements
-- Follow Universal Design Philosophy for elegant and minimal code expression
 - **Comprehensive Analysis**: Thoroughly analyze problem context, consider multiple approaches
 - **Quality Validation**: Ensure immediate usability, actionable recommendations
 
@@ -201,11 +193,6 @@ Key areas covered in the coding standards file:
 - `test/`: E2E/IT test engine & cases
 
 ## Operational Procedures
-
-### Verification Process
-1. **Pre-change**: Verify task matches user request, analyze existing patterns
-2. **Post-change**: Run relevant tests, verify no regression
-3. **Continuous**: Re-read protocol before tasks, verify compliance
 
 ### Emergency Procedures
 - **Immediate termination** if code deletion exceeds 10 lines without instruction
