@@ -83,11 +83,9 @@ public final class IndexMetaDataUtils {
     }
     
     private static Optional<String> findLogicTableNameFromMetaData(final ShardingSphereSchema schema, final String logicIndexName) {
-        for (ShardingSphereTable each : schema.getAllTables()) {
-            if (each.containsIndex(logicIndexName)) {
-                return Optional.of(each.getName());
-            }
-        }
-        return Optional.empty();
+        return schema.getAllTables().stream()
+                .filter(table -> table.containsIndex(logicIndexName))
+                .findFirst()
+                .map(ShardingSphereTable::getName);
     }
 }
