@@ -45,7 +45,7 @@ public final class HashColumn {
     public boolean equals(final Object obj) {
         if (obj instanceof HashColumn) {
             HashColumn column = (HashColumn) obj;
-            return null != name && name.equalsIgnoreCase(column.name) && null != tableName && tableName.equalsIgnoreCase(column.tableName);
+            return name.equalsIgnoreCase(column.name) && tableName.equalsIgnoreCase(column.tableName);
         }
         return false;
     }
