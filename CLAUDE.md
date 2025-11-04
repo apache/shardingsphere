@@ -58,18 +58,25 @@ Core concepts:
 - Follow CODE_OF_CONDUCT.md (AIR principle, BCDE design, naming conventions)
 - Focus on behavior testing over implementation details
 - **Branch Minimal Coverage**: Analyze all conditional branches first, identify uncovered branches, then write minimal test cases for missing coverage only
+- **Test Case Merging Strategy**: Merge boundary condition tests (like null checks) into main test methods instead of creating separate test methods
+- **Test Set Minimization**: Avoid excessive test method splitting, maintain concise and effective test coverage
 
 #### Test Code Standards
-- **Method Naming**: Test methods start with "assert" (not "test")
+- **Method Naming**: Test methods start with "assert" (not "test"), use concise names focused on core functionality
 - **Assertions**: Use AssertJ style: `assertThat(actual, is(expected))`
 - **Variables**: Name test results as "actual" (not "result")
 - **Mock Priority Principle**: Prioritize using Mockito mock and mockStatic, avoid using spy
 - **Minimum Complexity Principle**: Test code must be simpler than business code, choose the simplest but effective testing method
+- **Direct Core Logic Testing**: Test methods should directly validate target method's core functionality
+- **Boundary Condition Integration**: Include critical boundary condition tests (like null checks) within main test methods
 
 #### Testing Process Standards
 - **Simplification Strategy**: Minimize test code lines, cognitive load, and maintenance costs
 - **Single Responsibility Testing**: Each test validates only one core functionality point
 - **Test Integration Principle**: New test cases should integrate seamlessly with existing test files, maintain consistent naming conventions, and follow established code style patterns
+- **Method Order Consistency**: Test method order should match source code method declaration order for better maintainability
+- **Redundancy Elimination**: Remove duplicate or unnecessary test cases to maintain concise and effective test coverage
+- **Test Case Merging over Splitting**: Prefer merging related tests into single comprehensive methods over creating multiple similar test methods
 
 ### Intelligent Code Standards
 
@@ -86,6 +93,7 @@ Core concepts:
 - **Effortless Reading**: Code reads like well-written prose
 - **Optimal Abstraction**: Create right level of abstraction for problem domain
 - **Minimum Complexity Principle**: As the highest priority guiding principle for all testing decisions, prioritize simplest implementation approach and minimal intermediate variables
+- **Test Merging over Splitting**: Prioritize merging related boundary condition tests into main test methods rather than creating separate test methods for each edge case
 
 #### Evolutionary Code Design
 - **Open-Closed Principle**: Code open for extension, closed for modification
@@ -247,6 +255,38 @@ void assertCalculateTotal() {
     OrderService service = new OrderService();
     double actual = service.calculateTotal(orders);
     assertThat(actual, is(300));
+}
+```
+
+### Example 6: Test Case Merging Strategy
+
+Before (excessive splitting):
+```java
+@Test
+void assertContainsColumn() {
+    Column column = new Column("id", Types.INTEGER);
+    Table table = new Table("users", Collections.singletonList(column));
+    assertTrue(table.containsColumn("id"));
+    assertFalse(table.containsColumn("name"));
+}
+
+@Test
+void assertContainsColumnWithNull() {
+    Column column = new Column("id", Types.INTEGER);
+    Table table = new Table("users", Collections.singletonList(column));
+    assertFalse(table.containsColumn(null));
+}
+```
+
+After (merged boundary conditions):
+```java
+@Test
+void assertContainsColumn() {
+    Column column = new Column("id", Types.INTEGER);
+    Table table = new Table("users", Collections.singletonList(column));
+    assertTrue(table.containsColumn("id"));
+    assertFalse(table.containsColumn("name"));
+    assertFalse(table.containsColumn(null));
 }
 ```
 
