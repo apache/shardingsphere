@@ -58,7 +58,8 @@ Core concepts:
 
 ### Test Code Standards
 - **Method Naming**: Test methods start with "assert" (not "test")
-- **Assertions**: Use AssertJ style: `assertThat(actual, is(expected))`
+- **Assertion Style**: Prefer JUnit 5's `assertTrue()` and `assertFalse()` over AssertJ's `assertThat(actual, is(expected))`
+- **Code Simplification**: Use direct assertions without unnecessary intermediate variables
 - **Variables**: Name test results as "actual" (not "result")
 
 ### Intelligent Code Standards
@@ -167,7 +168,7 @@ public abstract class AbstractDatabaseConnector {
 
 ### Example 4: Test Code Standards
 
-Before:
+Before (avoid - verbose):
 ```java
 @Test
 void testCalculateTotal() {
@@ -179,7 +180,7 @@ void testCalculateTotal() {
 }
 ```
 
-After:
+After (avoid - intermediate variable):
 ```java
 @Test
 void assertCalculateTotal() {
@@ -187,6 +188,16 @@ void assertCalculateTotal() {
     OrderService service = new OrderService();
     double actual = service.calculateTotal(orders);
     assertThat(actual, is(300));
+}
+```
+
+Preferred (concise and direct):
+```java
+@Test
+void assertCalculateTotal() {
+    List<Order> orders = Arrays.asList(new Order(100), new Order(200));
+    OrderService service = new OrderService();
+    assertFalse(service.calculateTotal(orders).isEmpty());
 }
 ```
 
