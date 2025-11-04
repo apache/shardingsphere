@@ -59,7 +59,6 @@ public class ShardingRuleChecker {
     public void check(final ShardingRuleConfiguration ruleConfig) {
         checkUniqueActualDataNodesInTableRules();
         checkBindingTableConfiguration(ruleConfig);
-        checkInlineShardingAlgorithmsInTableRules();
     }
     
     private void checkUniqueActualDataNodesInTableRules() {
