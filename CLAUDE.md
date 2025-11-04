@@ -57,6 +57,7 @@ Core concepts:
 - Test execution speed: <1 second per test case
 - Follow CODE_OF_CONDUCT.md (AIR principle, BCDE design, naming conventions)
 - Focus on behavior testing over implementation details
+- **Branch Minimal Coverage**: Analyze all conditional branches first, identify uncovered branches, then write minimal test cases for missing coverage only
 
 #### Test Code Standards
 - **Method Naming**: Test methods start with "assert" (not "test")
@@ -68,6 +69,7 @@ Core concepts:
 #### Testing Process Standards
 - **Simplification Strategy**: Minimize test code lines, cognitive load, and maintenance costs
 - **Single Responsibility Testing**: Each test validates only one core functionality point
+- **Test Integration Principle**: New test cases should integrate seamlessly with existing test files, maintain consistent naming conventions, and follow established code style patterns
 
 ### Intelligent Code Standards
 
@@ -80,9 +82,10 @@ Core concepts:
 #### Clean Code Intelligence
 - **Single Responsibility**: Each function/class has one clear purpose
 - **DRY Principle**: Detect and eliminate duplication automatically
+- **Constructor Chaining Principle**: Use this() for constructor chaining when multiple constructors exist, avoiding duplicate field assignment logic
 - **Effortless Reading**: Code reads like well-written prose
 - **Optimal Abstraction**: Create right level of abstraction for problem domain
-- **Minimum Complexity Principle**: As the highest priority guiding principle for all testing decisions
+- **Minimum Complexity Principle**: As the highest priority guiding principle for all testing decisions, prioritize simplest implementation approach and minimal intermediate variables
 
 #### Evolutionary Code Design
 - **Open-Closed Principle**: Code open for extension, closed for modification
@@ -185,7 +188,44 @@ public abstract class AbstractDatabaseConnector {
 }
 ```
 
-### Example 4: Test Code Standards
+### Example 4: Constructor Chaining Principle
+
+Before (duplicate field assignments):
+```java
+public final class ShardingSphereColumn {
+    
+    private final String name;
+    
+    private final int dataType;
+    // ... other fields
+    
+    public ShardingSphereColumn(final ColumnMetaData columnMetaData) {
+        name = columnMetaData.getName();
+        dataType = columnMetaData.getDataType();
+        // ... 8 manual field assignments
+    }
+}
+```
+
+After (constructor chaining):
+```java
+public final class ShardingSphereColumn {
+    
+    private final String name;
+    
+    private final int dataType;
+    // ... other fields
+    
+    public ShardingSphereColumn(final ColumnMetaData columnMetaData) {
+        this(columnMetaData.getName(), columnMetaData.getDataType(),
+            columnMetaData.isPrimaryKey(), columnMetaData.isGenerated(),
+            columnMetaData.isCaseSensitive(), columnMetaData.isVisible(),
+            columnMetaData.isUnsigned(), columnMetaData.isNullable());
+    }
+}
+```
+
+### Example 5: Test Code Standards
 
 Before:
 ```java
