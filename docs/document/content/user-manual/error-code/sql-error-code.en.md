@@ -188,8 +188,8 @@ SQL error codes provide by standard `SQL State`, `Vendor Code` and `Reason`, whi
 | 20051       | HY000     | Routed target '%s' does not exist, available targets are '%s'.                                                                      |
 | 20052       | 44000     | Inline sharding algorithms expression '%s' and sharding column '%s' do not match.                                                   |
 | 20053       | 44000     | Complex inline algorithm need %d sharding columns, but only found %d.                                                               |
-| 20054       | 44000     | No sharding database route info.                                                                                                    |
-| 20055       | 44000     | Some routed data sources do not belong to configured data sources. routed data sources '%s', configured data sources '%s'.          |
+| 20054       | 44000     | No sharding database route info, actual data source names: `%s`, sharding condition values: `%s`.                                   |
+| 20055       | 44000     | Some routed data sources do not belong to configured data sources. routed data sources '%s', configured data sources '%s', sharding condition values '%s'.          |
 | 20056       | 44000     | Please check your sharding conditions '%s' to avoid same record in table '%s' routing to multiple data nodes.                       |
 | 20057       | 44000     | Can not find routing table factor, data source '%s', actual table '%s'.                                                             |
 | 20060       | HY000     | Invalid %s strategy '%s', strategy does not match data nodes.                                                                       |
