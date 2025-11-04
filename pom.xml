@@ -108,7 +108,7 @@
         <jakarta.jakartaee-bom.version>8.0.0</jakarta.jakartaee-bom.version>
         
         <netty.version>4.1.126.Final</netty.version>
-        <bouncycastle.version>1.78.1</bouncycastle.version>
+        <bouncycastle.version>1.79</bouncycastle.version>
         
         <curator.version>5.7.0</curator.version>
         <zookeeper.version>3.9.4</zookeeper.version>
@@ -131,7 +131,7 @@
         
         <postgresql.version>42.7.5</postgresql.version>
         <mysql-connector-java.version>8.3.0</mysql-connector-java.version>
-        <mssql.version>12.10.1.jre8</mssql.version>
+        <mssql.version>12.10.2.jre8</mssql.version>
         <h2.version>2.2.224</h2.version>
         <opengauss.version>3.1.0-og</opengauss.version>
         <mariadb-java-client.version>2.4.2</mariadb-java-client.version>

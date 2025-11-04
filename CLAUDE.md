@@ -48,6 +48,9 @@ Key areas covered by coding standards file:
 - 100% line and branch coverage for all new code
 - **Branch Minimal Coverage**: Analyze uncovered branches, write only minimal test cases
 - **Test Set Minimization**: Focus on branch coverage and eliminate redundancy
+- **Test Integration Priority**: Prefer modifying existing test methods over creating new ones
+- **Single-Target Modification**: Each test change should focus on covering one specific uncovered branch
+- **Element Addition Strategy**: Add new elements to existing test data collections to trigger new branches
 
 *For detailed testing standards, see CODE_OF_CONDUCT.md reference in code standards section*
 
