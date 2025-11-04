@@ -150,34 +150,6 @@ public class ShardingRuleChecker {
         return null == shardingColumn ? "" : shardingColumn;
     }
     
-    private void checkInlineShardingAlgorithmsInTableRules() {
-        shardingRule.getShardingTables().forEach((key, value) -> {
-            validateInlineShardingAlgorithm(value, shardingRule.getTableShardingStrategyConfiguration(value), value.getTableDataNode());
-            validateInlineShardingAlgorithm(value, shardingRule.getDatabaseShardingStrategyConfiguration(value), value.getDataSourceDataNode());
-        });
-    }
-    
-    private void validateInlineShardingAlgorithm(final ShardingTable shardingTable, final ShardingStrategyConfiguration shardingStrategy, final DataNodeInfo dataNodeInfo) {
-        if (null == shardingStrategy) {
-            return;
-        }
-        ShardingAlgorithm shardingAlgorithm = shardingRule.getShardingAlgorithms().get(shardingStrategy.getShardingAlgorithmName());
-        if (shardingAlgorithm instanceof InlineShardingAlgorithm) {
-            String shardingColumn = null == ((StandardShardingStrategyConfiguration) shardingStrategy).getShardingColumn() ? shardingRule.getDefaultShardingColumn()
-                    : ((StandardShardingStrategyConfiguration) shardingStrategy).getShardingColumn();
-            String result = null;
-            try {
-                result = ((InlineShardingAlgorithm) shardingAlgorithm).doSharding(Collections.emptySet(), new PreciseShardingValue<>(shardingTable.getLogicTable(), shardingColumn, dataNodeInfo, 1));
-                // CHECKSTYLE:OFF
-            } catch (final Exception ignored) {
-                // CHECKSTYLE:ON
-            }
-            ShardingSpherePreconditions.checkState(null == result || result.startsWith(dataNodeInfo.getPrefix()),
-                    () -> new AlgorithmInitializationException(shardingAlgorithm, "`%s` sharding algorithm configuration of `%s` does not match the actual data nodes",
-                            shardingStrategy.getShardingAlgorithmName(), shardingTable.getLogicTable()));
-        }
-    }
-    
     /**
      * Check to be added data nodes.
      *
