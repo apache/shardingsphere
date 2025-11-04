@@ -34,10 +34,6 @@ Core concepts:
 
 ### Universal Design Philosophy
 - **Elegance-First Principle**: Readability first, maintainability second
-- **Logical Mapping**: Code organization follows natural business logic flow - methods grouped by business functionality, classes reflect domain concepts, packages follow feature boundaries
-- **Cohesion over Granularity**: Keep related functionality together rather than over-splitting
-- **Directness Principle**: Solve problems directly without unnecessary abstraction layers
-- **Essential Naming**: Names reflect the essence, not implementation details
 - **Minimalism**: Use the most concise expression that maintains elegance and functionality
 
 ### Elegant Code Standards
@@ -61,17 +57,10 @@ Key areas covered in the coding standards file:
 - 100% line and branch coverage for all new code
 - Test execution speed: <1 second per test case
 - **Branch Minimal Coverage**: Analyze uncovered branches, write minimal test cases only
-- **Test Set Minimization**: Focus on branch coverage (see Testing Process for redundancy elimination)
+- **Test Set Minimization**: Focus on branch coverage and eliminate redundancy
 
-### Test Code Standards
-- Core principle: Test code must be simpler than business code
-- Focus on behavior testing over implementation details
 *For detailed testing standards, see Coding Standards Reference above*
 
-### Testing Process
-- **Method Order Consistency**: Match source code method declaration order
-- **Redundancy Elimination**: Remove duplicate or unnecessary test cases
-- **Integration Principle**: Seamlessly integrate with existing test files and conventions
 
 ## Quality Standards
 *Code quality, formatting, and validation requirements*
@@ -87,10 +76,6 @@ Key areas covered in the coding standards file:
 ### Formatting Standards
 *For formatting guidelines, see Coding Standards Reference above*
 
-### Success Criteria
-- Code compiles without warnings
-- No functionality regression
-- Spotless formatting passes
 
 ## Unified Guidelines
 *Operational scope, permissions, and decision-making framework*
@@ -143,11 +128,6 @@ Key areas covered in the coding standards file:
 
 ## Operational Procedures
 
-### Implementation Rules
-1. **Direct Code Generation**: Generate final code & call tools directly
-2. **Isolate Changes**: Edit smallest possible blocks
-3. **Maintain Patterns**: Follow existing architectural conventions
-4. **Apply Context-Aware Design**: See Quality Requirements for comprehensive analysis
 
 ### Verification Process
 1. **Pre-change**: Verify task matches user request, analyze existing patterns
