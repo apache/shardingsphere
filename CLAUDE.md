@@ -50,17 +50,24 @@ Core concepts:
 - **Comments**: No code comments - "code as documentation"
  
 ### Testing Standards
+
+#### Testing Strategy Standards
 - 100% line and branch coverage for all new code
 - No redundant test cases - each test validates unique behavior
 - Test execution speed: <1 second per test case
 - Follow CODE_OF_CONDUCT.md (AIR principle, BCDE design, naming conventions)
 - Focus on behavior testing over implementation details
 
-### Test Code Standards
+#### Test Code Standards
 - **Method Naming**: Test methods start with "assert" (not "test")
-- **Assertion Style**: Prefer JUnit 5's `assertTrue()` and `assertFalse()` over AssertJ's `assertThat(actual, is(expected))`
-- **Code Simplification**: Use direct assertions without unnecessary intermediate variables
+- **Assertions**: Use AssertJ style: `assertThat(actual, is(expected))`
 - **Variables**: Name test results as "actual" (not "result")
+- **Mock Priority Principle**: Prioritize using Mockito mock and mockStatic, avoid using spy
+- **Minimum Complexity Principle**: Test code must be simpler than business code, choose the simplest but effective testing method
+
+#### Testing Process Standards
+- **Simplification Strategy**: Minimize test code lines, cognitive load, and maintenance costs
+- **Single Responsibility Testing**: Each test validates only one core functionality point
 
 ### Intelligent Code Standards
 
@@ -75,6 +82,7 @@ Core concepts:
 - **DRY Principle**: Detect and eliminate duplication automatically
 - **Effortless Reading**: Code reads like well-written prose
 - **Optimal Abstraction**: Create right level of abstraction for problem domain
+- **Minimum Complexity Principle**: As the highest priority guiding principle for all testing decisions
 
 #### Evolutionary Code Design
 - **Open-Closed Principle**: Code open for extension, closed for modification
@@ -168,7 +176,7 @@ public abstract class AbstractDatabaseConnector {
 
 ### Example 4: Test Code Standards
 
-Before (avoid - verbose):
+Before:
 ```java
 @Test
 void testCalculateTotal() {
@@ -180,7 +188,7 @@ void testCalculateTotal() {
 }
 ```
 
-After (avoid - intermediate variable):
+After:
 ```java
 @Test
 void assertCalculateTotal() {
@@ -188,16 +196,6 @@ void assertCalculateTotal() {
     OrderService service = new OrderService();
     double actual = service.calculateTotal(orders);
     assertThat(actual, is(300));
-}
-```
-
-Preferred (concise and direct):
-```java
-@Test
-void assertCalculateTotal() {
-    List<Order> orders = Arrays.asList(new Order(100), new Order(200));
-    OrderService service = new OrderService();
-    assertFalse(service.calculateTotal(orders).isEmpty());
 }
 ```
 
