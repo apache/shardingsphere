@@ -76,18 +76,13 @@ public final class IndexMetaDataUtils {
         String schemaName = new DatabaseTypeRegistry(protocolType).getDefaultSchemaName(database.getName());
         for (IndexSegment each : indexes) {
             String actualSchemaName = each.getOwner().map(optional -> optional.getIdentifier().getValue()).orElse(schemaName);
-            findLogicTableNameFromMetaData(database.getSchema(actualSchemaName),
-                    each.getIndexName().getIdentifier().getValue()).ifPresent(optional -> result.add(new QualifiedTable(actualSchemaName, optional)));
+            findLogicTableNameFromMetaData(database.getSchema(actualSchemaName), each.getIndexName().getIdentifier().getValue())
+                    .ifPresent(optional -> result.add(new QualifiedTable(actualSchemaName, optional)));
         }
         return result;
     }
     
     private static Optional<String> findLogicTableNameFromMetaData(final ShardingSphereSchema schema, final String logicIndexName) {
-        for (ShardingSphereTable each : schema.getAllTables()) {
-            if (each.containsIndex(logicIndexName)) {
-                return Optional.of(each.getName());
-            }
-        }
-        return Optional.empty();
+        return schema.getAllTables().stream().filter(table -> table.containsIndex(logicIndexName)).findFirst().map(ShardingSphereTable::getName);
     }
 }
