@@ -35,7 +35,6 @@ public final class ShardingSphereConstraint {
     private final String referencedTableName;
     
     public ShardingSphereConstraint(final ConstraintMetaData constraintMetaData) {
-        name = constraintMetaData.getName();
-        referencedTableName = constraintMetaData.getReferencedTableName();
+        this(constraintMetaData.getName(), constraintMetaData.getReferencedTableName());
     }
 }
