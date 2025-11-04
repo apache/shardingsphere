@@ -31,6 +31,13 @@ class HashColumnTest {
         assertThat(new HashColumn("col", "tbl"), is(new HashColumn("COL", "TBL")));
         assertThat(new HashColumn("col", "tbl"), not(new HashColumn("col1", "tbl")));
         assertThat(new HashColumn("col", "tbl"), not(new HashColumn("col", "tbl1")));
+        // Test explicit null parameter
+        assertThat(new HashColumn("col", "tbl").equals(null), is(false));
+        // Test equals symmetry
+        HashColumn column1 = new HashColumn("col", "tbl");
+        HashColumn column2 = new HashColumn("COL", "TBL");
+        assertThat(column1.equals(column2), is(true));
+        assertThat(column2.equals(column1), is(true));
     }
 
     @Test
