@@ -19,10 +19,6 @@ Core concepts:
 
 ## Core Prohibitions
 
-### Git Operations
-- NEVER auto-commit changes without explicit user command
-- Prepare commit messages when requested, but NEVER execute commits
-
 ### Code Changes
 - ONLY modify explicitly mentioned files, functions, or lines
 - NEVER make changes outside instruction scope
@@ -42,29 +38,8 @@ Core concepts:
 - **Essential Naming**: Names reflect the essence, not implementation details
 - **Minimalism**: Use the most concise expression that maintains elegance and functionality
 
-### Clean Code Standards
-- **Single Responsibility**: Each function/class has one clear purpose
-- **DRY Principle**: Detect and eliminate duplication automatically
-- **Constructor Chaining**: Use this() for multiple constructors, avoid duplicate field assignments
-- **Effortless Reading**: Code reads like well-written prose
-- **Optimal Abstraction**: Create the right level of abstraction - high enough to hide implementation details, low enough to remain understandable and testable
-- **Self-Documenting Design**: Code explains its purpose through structure
-
-### Evolutionary Design
-- **Open-Closed Principle**: Code open for extension, closed for modification
-- **Fail-Fast Design**: Detect errors early and exit cleanly
-- **Graceful Degradation**: Implement automatic recovery when possible
-- **Future-Proofing**: Anticipate likely future requirements
-
-### Error Handling Principles
-- **Explicit Error Handling**: Handle errors explicitly at the appropriate level, don't let exceptions bubble up unnecessarily
-- **Meaningful Error Messages**: Provide clear, actionable error information
-- **Fail-Safe Defaults**: Ensure system remains in safe state when errors occur
-
-### Concurrency Principles
-- **Thread Safety by Design**: Design for concurrent access from the beginning
-- **Minimal Shared State**: Reduce shared mutable state to prevent race conditions
-- **Clear Synchronization**: Use explicit, well-documented synchronization mechanisms
+### Elegant Code Standards
+Strictly follow all coding standards in [CODE_OF_CONDUCT.md](./CODE_OF_CONDUCT.md)
 
 ## Testing Philosophy
 
@@ -91,7 +66,7 @@ Core concepts:
 
 ### Code Quality Requirements
 - Follow CODE_OF_CONDUCT.md (clean code principles, naming, formatting)
-- Prioritize readability as highest priority (max 80 chars per line, max 3 nested levels)
+- Prioritize readability as highest priority (max 200 chars per line, max 3 nested levels)
 - Focus on elegant and minimal code expression
 
 ### Formatting Standards
@@ -115,7 +90,7 @@ Core concepts:
 
 ### Code Standards
 - **Simplicity**: <50 lines for simple functions, <200 lines for complex classes
-- **Readability**: <80 characters per line, max 3 nested levels
+- **Readability**: <200 characters per line, max 3 nested levels
 - **Intelligence**: Patterns recognized, architecture harmonized, future-proof
 
 ## Unified Guidelines
@@ -131,6 +106,10 @@ Core concepts:
 - **Explicit instruction**: What to do
 - **Implicit scope**: How to implement within specified files/functions
 - **Forbidden**: Anything beyond specified implementation scope
+
+### Git Operations Guidelines
+- NEVER auto-commit changes without explicit user command
+- Prepare commit messages when requested, but NEVER execute commits
 
 ### Decision & Safety
 **Ambiguous Situations:**
