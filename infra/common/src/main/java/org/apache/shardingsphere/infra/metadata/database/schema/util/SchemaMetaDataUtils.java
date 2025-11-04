@@ -73,7 +73,7 @@ public final class SchemaMetaDataUtils {
         int loadTableMetadataBatchSize = material.getProps().getValue(ConfigurationPropertyKey.LOAD_TABLE_METADATA_BATCH_SIZE);
         for (Entry<String, Collection<String>> entry : dataSourceTableGroups.entrySet()) {
             DatabaseType storageType = material.getStorageUnits().get(entry.getKey()).getStorageType();
-            String defaultSchemaName = getDefaultSchemaNameByStorageType(storageType, material.getDefaultSchemaName());
+            String defaultSchemaName = new DatabaseTypeRegistry(storageType).getDefaultSchemaName(material.getDefaultSchemaName());
             result.addAll(buildMaterials(material, entry.getKey(), entry.getValue(), storageType, defaultSchemaName, loadTableMetadataBatchSize));
         }
         return result;
@@ -89,16 +89,12 @@ public final class SchemaMetaDataUtils {
         return result;
     }
     
-    private static String getDefaultSchemaNameByStorageType(final DatabaseType storageType, final String databaseName) {
-        return new DatabaseTypeRegistry(storageType).getDefaultSchemaName(databaseName);
-    }
-    
     private static DataSource getDataSource(final GenericSchemaBuilderMaterial material, final String dataSourceName) {
         return material.getStorageUnits().get(dataSourceName.contains(".") ? dataSourceName.split("\\.")[0] : dataSourceName).getDataSource();
     }
     
-    private static void checkDataSourceTypeIncludeInstanceAndSetDatabaseTableMap(final Collection<DatabaseType> notSupportThreeTierStructureStorageTypes, final DataNodes dataNodes,
-                                                                                 final String tableName) {
+    private static void checkDataSourceTypeIncludeInstanceAndSetDatabaseTableMap(final Collection<DatabaseType> notSupportThreeTierStructureStorageTypes,
+                                                                                 final DataNodes dataNodes, final String tableName) {
         for (DataNode dataNode : dataNodes.getDataNodes(tableName)) {
             ShardingSpherePreconditions.checkState(notSupportThreeTierStructureStorageTypes.isEmpty() || !dataNode.getDataSourceName().contains("."),
                     () -> new UnsupportedActualDataNodeStructureException(
@@ -128,10 +124,7 @@ public final class SchemaMetaDataUtils {
     
     private static boolean isSameDataSourceNameSchemaName(final GenericSchemaBuilderMaterial material, final DataNode dataNode) {
         String dataSourceName = dataNode.getDataSourceName().contains(".") ? dataNode.getDataSourceName().split("\\.")[0] : dataNode.getDataSourceName();
-        if (!material.getStorageUnits().containsKey(dataSourceName)) {
-            return false;
-        }
-        return null == dataNode.getSchemaName() || dataNode.getSchemaName().equalsIgnoreCase(material.getDefaultSchemaName());
+        return material.getStorageUnits().containsKey(dataSourceName) && (null == dataNode.getSchemaName() || dataNode.getSchemaName().equalsIgnoreCase(material.getDefaultSchemaName()));
     }
     
     private static void addAllActualTableDataNode(final GenericSchemaBuilderMaterial material,
