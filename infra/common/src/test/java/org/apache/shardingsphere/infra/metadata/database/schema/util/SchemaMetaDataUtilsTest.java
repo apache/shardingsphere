@@ -60,7 +60,7 @@ class SchemaMetaDataUtilsTest {
         when(props.getValue(ConfigurationPropertyKey.LOAD_TABLE_METADATA_BATCH_SIZE)).thenReturn(100);
         GenericSchemaBuilderMaterial material = new GenericSchemaBuilderMaterial(mockStorageUnits(), Arrays.asList(rule0, rule1), props, "sharding_db");
         Collection<MetaDataLoaderMaterial> actual = SchemaMetaDataUtils.getMetaDataLoaderMaterials(Collections.singleton("t_order"), material);
-        assertThat(actual.size(), is(2));
+        assertThat(actual.size(), is(3));
         Iterator<MetaDataLoaderMaterial> iterator = actual.iterator();
         MetaDataLoaderMaterial firstMaterial = iterator.next();
         assertThat(firstMaterial.getDefaultSchemaName(), is("sharding_db"));
@@ -68,6 +68,9 @@ class SchemaMetaDataUtilsTest {
         MetaDataLoaderMaterial secondMaterial = iterator.next();
         assertThat(secondMaterial.getDefaultSchemaName(), is("sharding_db"));
         assertThat(secondMaterial.getActualTableNames(), is(Collections.singletonList("t_order_1")));
+        MetaDataLoaderMaterial thirdMaterial = iterator.next();
+        assertThat(thirdMaterial.getDefaultSchemaName(), is("sharding_db"));
+        assertThat(thirdMaterial.getActualTableNames(), is(Collections.singletonList("t_order_2")));
     }
     
     @Test
@@ -111,9 +114,9 @@ class SchemaMetaDataUtilsTest {
     }
     
     private Collection<DataNode> mockShardingDataNodes() {
-        return Arrays.asList(new DataNode("ds_0.t_order_0"), new DataNode("ds_1.t_order_1"));
+        return Arrays.asList(new DataNode("ds_0.t_order_0"), new DataNode("ds_1.t_order_1"), new DataNode("ds_2.t_order_2"));
     }
-    
+
     private List<DataNode> mockSingleTableDataNodes() {
         DataNode firstDataNode = new DataNode("ds_0", "public", "t_single");
         DataNode secondDataNode = new DataNode("ds_0", "test", "t_single");
@@ -121,7 +124,7 @@ class SchemaMetaDataUtilsTest {
     }
     
     private Map<String, StorageUnit> mockStorageUnits() {
-        Map<String, StorageUnit> result = new HashMap<>(2, 1F);
+        Map<String, StorageUnit> result = new HashMap<>(3, 1F);
         StorageUnit storageUnit1 = mock(StorageUnit.class);
         when(storageUnit1.getStorageType()).thenReturn(TypedSPILoader.getService(DatabaseType.class, "FIXTURE"));
         when(storageUnit1.getDataSource()).thenReturn(new MockedDataSource());
@@ -130,6 +133,10 @@ class SchemaMetaDataUtilsTest {
         when(storageUnit2.getStorageType()).thenReturn(TypedSPILoader.getService(DatabaseType.class, "FIXTURE"));
         when(storageUnit2.getDataSource()).thenReturn(new MockedDataSource());
         result.put("ds_1", storageUnit2);
+        StorageUnit storageUnit3 = mock(StorageUnit.class);
+        when(storageUnit3.getStorageType()).thenReturn(TypedSPILoader.getService(DatabaseType.class, "FIXTURE"));
+        when(storageUnit3.getDataSource()).thenReturn(new MockedDataSource());
+        result.put("ds_2", storageUnit3);
         return result;
     }
     
