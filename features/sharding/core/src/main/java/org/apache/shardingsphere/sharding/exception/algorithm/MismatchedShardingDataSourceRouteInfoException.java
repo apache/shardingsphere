@@ -30,8 +30,10 @@ public final class MismatchedShardingDataSourceRouteInfoException extends Shardi
     
     private static final long serialVersionUID = -345707079477626285L;
     
-    public MismatchedShardingDataSourceRouteInfoException(final Collection<String> routeDataSourceNames, final Collection<String> actualDataSourceNames, final Collection<ShardingConditionValue> shardingConditionValues) {
-        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 55, "Some routed data sources do not belong to configured data sources. routed data sources '%s', configured data sources '%s', sharding condition values '%s'.",
+    public MismatchedShardingDataSourceRouteInfoException(final Collection<String> routeDataSourceNames, final Collection<String> actualDataSourceNames,
+                                                          final Collection<ShardingConditionValue> shardingConditionValues) {
+        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 55,
+                "Some routed data sources do not belong to configured data sources. routed data sources '%s', configured data sources '%s', sharding condition values '%s'.",
                 routeDataSourceNames, actualDataSourceNames, shardingConditionValues);
     }
 }

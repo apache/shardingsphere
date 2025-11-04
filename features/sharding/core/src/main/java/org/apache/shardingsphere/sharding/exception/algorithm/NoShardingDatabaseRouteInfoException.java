@@ -31,6 +31,7 @@ public final class NoShardingDatabaseRouteInfoException extends ShardingSQLExcep
     private static final long serialVersionUID = -3091336980350038243L;
     
     public NoShardingDatabaseRouteInfoException(final Collection<String> actualDataSourceNames, final Collection<ShardingConditionValue> shardingConditionValues) {
-        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 54, "No sharding database route info, actual data source names: `%s`, sharding condition values: `%s`.", actualDataSourceNames, shardingConditionValues);
+        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 54, "No sharding database route info, actual data source names: `%s`, sharding condition values: `%s`.", actualDataSourceNames,
+                shardingConditionValues);
     }
 }
