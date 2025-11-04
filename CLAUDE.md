@@ -9,23 +9,18 @@ Core concepts:
 
 ## Quick Reference (Top 7 Rules)
 
-1. Follow CODE_OF_CONDUCT.md for coding standards
+1. Follow project coding standards
 2. Elegance-first, minimalism-second principle
 3. Prioritize readability as highest priority
 4. 100% test coverage for all new code
 5. NEVER auto-commit to Git without explicit instruction
-6. ONLY edit explicitly mentioned files
+6. ONLY modify explicitly mentioned files and directories
 7. Apply formatting to new code ONLY
 
 ## Core Prohibitions
 
-### Code Changes
-- ONLY modify explicitly mentioned files, functions, or lines
 - NEVER make changes outside instruction scope
 - NEVER perform "helpful" refactoring or improvements
-
-### File Creation
-- ONLY create files in explicitly specified directories
 - NEVER create unrelated files without instruction
 
 ## Code Intelligence Principles
@@ -65,12 +60,10 @@ Strictly follow all coding standards in [CODE_OF_CONDUCT.md](./CODE_OF_CONDUCT.m
 ## Quality Excellence
 
 ### Code Quality Requirements
-- Follow CODE_OF_CONDUCT.md (clean code principles, naming, formatting)
-- Prioritize readability as highest priority (max 200 chars per line, max 3 nested levels)
 - Focus on elegant and minimal code expression
 
 ### Formatting Standards
-- < 200 chars per line, no unnecessary breaks
+- < 200 chars per line, max 3 nested levels, no unnecessary breaks
 - Keep empty lines between methods
 - Remove empty lines within methods
 - **Javadoc Only**: Only Javadoc comments allowed, no inline comments
@@ -83,24 +76,18 @@ Strictly follow all coding standards in [CODE_OF_CONDUCT.md](./CODE_OF_CONDUCT.m
 
 ### Success Criteria
 - Code compiles without warnings
-- All tests pass in <5 minutes
 - No functionality regression
 - Spotless formatting passes
-- 100% coverage for new code
 
 ### Code Standards
 - **Simplicity**: <50 lines for simple functions, <200 lines for complex classes
-- **Readability**: <200 characters per line, max 3 nested levels
 - **Intelligence**: Patterns recognized, architecture harmonized, future-proof
 
 ## Unified Guidelines
 
 ### Scope & Permissions
 **Allowed Operations:**
-- Edit explicitly mentioned files
-- Create files in explicitly specified directories
 - Make independent decisions within task scope
-- Apply formatting tools to new code only
 
 **Scope Boundaries:**
 - **Explicit instruction**: What to do
@@ -108,7 +95,6 @@ Strictly follow all coding standards in [CODE_OF_CONDUCT.md](./CODE_OF_CONDUCT.m
 - **Forbidden**: Anything beyond specified implementation scope
 
 ### Git Operations Guidelines
-- NEVER auto-commit changes without explicit user command
 - Prepare commit messages when requested, but NEVER execute commits
 
 ### Decision & Safety
