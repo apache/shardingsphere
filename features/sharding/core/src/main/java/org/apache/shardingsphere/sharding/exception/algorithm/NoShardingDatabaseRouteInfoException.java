@@ -19,6 +19,9 @@ package org.apache.shardingsphere.sharding.exception.algorithm;
 
 import org.apache.shardingsphere.infra.exception.external.sql.sqlstate.XOpenSQLState;
 import org.apache.shardingsphere.sharding.exception.ShardingSQLException;
+import org.apache.shardingsphere.sharding.route.engine.condition.value.ShardingConditionValue;
+
+import java.util.Collection;
 
 /**
  * No database route info exception.
@@ -27,7 +30,8 @@ public final class NoShardingDatabaseRouteInfoException extends ShardingSQLExcep
     
     private static final long serialVersionUID = -3091336980350038243L;
     
-    public NoShardingDatabaseRouteInfoException() {
-        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 54, "No sharding database route info.");
+    public NoShardingDatabaseRouteInfoException(final Collection<String> actualDataSourceNames, final Collection<ShardingConditionValue> shardingConditionValues) {
+        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 54, "No sharding database route info, actual data source names: `%s`, sharding condition values: `%s`.", actualDataSourceNames,
+                shardingConditionValues);
     }
 }
