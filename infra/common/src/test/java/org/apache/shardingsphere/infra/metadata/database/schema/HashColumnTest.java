@@ -26,22 +26,16 @@ import static org.hamcrest.MatcherAssert.assertThat;
 class HashColumnTest {
     
     @Test
-    void assertEqualsForDifferentObjectType() {
-        assertThat(new HashColumn("col", "tbl"), not(new Object()));
-    }
-    
-    @Test
     void assertEquals() {
+        assertThat(new HashColumn("col", "tbl"), not(new Object()));
         assertThat(new HashColumn("col", "tbl"), is(new HashColumn("COL", "TBL")));
-    }
-    
-    @Test
-    void assertNotEqualsWhenColumnNameIsDifferent() {
         assertThat(new HashColumn("col", "tbl"), not(new HashColumn("col1", "tbl")));
-    }
-    
-    @Test
-    void assertNotEqualsWhenTableNameIsDifferent() {
         assertThat(new HashColumn("col", "tbl"), not(new HashColumn("col", "tbl1")));
+    }
+
+    @Test
+    void assertHashCode() {
+        assertThat(new HashColumn("col", "tbl").hashCode(), is(new HashColumn("COL", "TBL").hashCode()));
+        assertThat(new HashColumn("col", "tbl").hashCode(), not(new HashColumn("different_col", "tbl").hashCode()));
     }
 }
