@@ -16,10 +16,10 @@ Core concepts:
 *Core rules - see detailed sections for complete requirements*
 
 1. Follow project coding standards (see Elegant Code Standards)
-2. Elegance-first, minimalism-second principle (see Universal Design Philosophy & Quality Standards)
-3. Prioritize readability as highest priority (see Elegance-First Principle)
+2. Elegance-first, minimalism-second principle (see Minimalism in Universal Design Philosophy)
+3. Prioritize readability as highest priority
 4. 100% test coverage for all new code (detailed requirements in Testing Philosophy)
-5. NEVER auto-commit to Git without explicit instruction (see Git Guidelines)
+5. NEVER auto-commit to Git without explicit instruction
 6. ONLY work within explicitly specified scope (see Core Prohibitions)
 7. Apply formatting to new code ONLY (see Formatting Standards)
 
@@ -64,9 +64,9 @@ Key areas covered in the coding standards file:
 - **Test Set Minimization**: Focus on branch coverage (see Testing Process for redundancy elimination)
 
 ### Test Code Standards
-Follow detailed testing standards in [CODE_OF_CONDUCT.md](./CODE_OF_CONDUCT.md)
 - Core principle: Test code must be simpler than business code
 - Focus on behavior testing over implementation details
+*For detailed testing standards, see Coding Standards Reference above*
 
 ### Testing Process
 - **Method Order Consistency**: Match source code method declaration order
@@ -85,7 +85,7 @@ Follow detailed testing standards in [CODE_OF_CONDUCT.md](./CODE_OF_CONDUCT.md)
 - **Intelligence**: Patterns recognized, architecture harmonized, future-proof
 
 ### Formatting Standards
-Follow formatting guidelines in [CODE_OF_CONDUCT.md](./CODE_OF_CONDUCT.md)
+*For formatting guidelines, see Coding Standards Reference above*
 
 ### Success Criteria
 - Code compiles without warnings
@@ -100,7 +100,8 @@ Follow formatting guidelines in [CODE_OF_CONDUCT.md](./CODE_OF_CONDUCT.md)
 - Make independent decisions within task scope
 
 **Scope Boundaries:**
-- See Core Prohibitions for detailed scope limitations
+- Work only within explicitly specified scope
+- See Core Prohibitions for complete limitations
 
 ### Git Operations Guidelines
 - Prepare commit messages when requested, but NEVER execute commits
@@ -115,7 +116,7 @@ Follow formatting guidelines in [CODE_OF_CONDUCT.md](./CODE_OF_CONDUCT.md)
 **Safety Principles:**
 - Preserve existing functionality over adding features
 - Maintain current behavior over ideal implementation
-- Favor minimal changes over comprehensive solutions
+- Apply minimalism principle: Favor minimal changes over comprehensive solutions
 
 
 ## Build System
