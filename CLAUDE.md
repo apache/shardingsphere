@@ -7,16 +7,15 @@ Core concepts:
 - `Enhance:` Transparent features: sharding, encryption, security, governance
 - `Pluggable:` Micro-kernel + 3-layer pluggable architecture
 
-## Quick Reference (Top 8 Rules)
+## Quick Reference (Top 7 Rules)
 
 1. Follow CODE_OF_CONDUCT.md for coding standards
-2. Generate minimal essential code only
+2. Elegance-first, minimalism-second principle
 3. Prioritize readability as highest priority
 4. 100% test coverage for all new code
 5. NEVER auto-commit to Git without explicit instruction
 6. ONLY edit explicitly mentioned files
 7. Apply formatting to new code ONLY
-8. One-shot excellence - provide optimal solutions in single response
 
 ## Core Prohibitions
 
@@ -36,18 +35,19 @@ Core concepts:
 ## Code Intelligence Principles
 
 ### Universal Design Philosophy
-- **Boundary Condition Priority**: Handle edge cases naturally in main logic, not in separate methods
-- **Logical Mapping**: Code organization should reflect natural business logic flow
+- **Elegance-First Principle**: Readability first, maintainability second
+- **Logical Mapping**: Code organization follows natural business logic flow - methods grouped by business functionality, classes reflect domain concepts, packages follow feature boundaries
 - **Cohesion over Granularity**: Keep related functionality together rather than over-splitting
 - **Directness Principle**: Solve problems directly without unnecessary abstraction layers
 - **Essential Naming**: Names reflect the essence, not implementation details
+- **Minimalism**: Use the most concise expression that maintains elegance and functionality
 
 ### Clean Code Standards
 - **Single Responsibility**: Each function/class has one clear purpose
 - **DRY Principle**: Detect and eliminate duplication automatically
 - **Constructor Chaining**: Use this() for multiple constructors, avoid duplicate field assignments
 - **Effortless Reading**: Code reads like well-written prose
-- **Optimal Abstraction**: Create right level of abstraction for problem domain
+- **Optimal Abstraction**: Create the right level of abstraction - high enough to hide implementation details, low enough to remain understandable and testable
 - **Self-Documenting Design**: Code explains its purpose through structure
 
 ### Evolutionary Design
@@ -56,6 +56,16 @@ Core concepts:
 - **Graceful Degradation**: Implement automatic recovery when possible
 - **Future-Proofing**: Anticipate likely future requirements
 
+### Error Handling Principles
+- **Explicit Error Handling**: Handle errors explicitly at the appropriate level, don't let exceptions bubble up unnecessarily
+- **Meaningful Error Messages**: Provide clear, actionable error information
+- **Fail-Safe Defaults**: Ensure system remains in safe state when errors occur
+
+### Concurrency Principles
+- **Thread Safety by Design**: Design for concurrent access from the beginning
+- **Minimal Shared State**: Reduce shared mutable state to prevent race conditions
+- **Clear Synchronization**: Use explicit, well-documented synchronization mechanisms
+
 ## Testing Philosophy
 
 ### Unified Testing Standards
@@ -63,8 +73,7 @@ Core concepts:
 - Test execution speed: <1 second per test case
 - Focus on behavior testing over implementation details
 - **Branch Minimal Coverage**: Analyze uncovered branches, write minimal test cases only
-- **Test Case Merging**: Integrate boundary conditions into main test methods
-- **Test Set Minimization**: Avoid excessive splitting, maintain concise coverage
+- **Test Set Minimization**: No redundant tests, focus on branch coverage
 
 ### Test Code Standards
 - **Method Naming**: Start with "assert", use concise names focused on core functionality
@@ -81,20 +90,18 @@ Core concepts:
 ## Quality Excellence
 
 ### Code Quality Requirements
-- Generate minimal essential code only (<50 lines for simple functions)
-- Prioritize readability as highest priority (max 80 chars per line, max 3 nested levels)
-- Consider extreme performance optimization (<100ms for common operations)
 - Follow CODE_OF_CONDUCT.md (clean code principles, naming, formatting)
+- Prioritize readability as highest priority (max 80 chars per line, max 3 nested levels)
+- Focus on elegant and minimal code expression
 
 ### Formatting Standards
 - < 200 chars per line, no unnecessary breaks
 - Keep empty lines between methods
 - Remove empty lines within methods
-- **No Code Comments**: Code should be self-documenting
+- **Javadoc Only**: Only Javadoc comments allowed, no inline comments
 
 ### Excellence Requirements
 - **Comprehensive Analysis**: Thoroughly analyze problem context, consider multiple approaches
-- **One-Shot Excellence**: Provide optimal solutions in single response
 - **Quality Validation**: Ensure immediate usability, actionable recommendations
 
 ## Quality Metrics
@@ -108,7 +115,6 @@ Core concepts:
 
 ### Code Standards
 - **Simplicity**: <50 lines for simple functions, <200 lines for complex classes
-- **Performance**: <100ms execution time for common operations
 - **Readability**: <80 characters per line, max 3 nested levels
 - **Intelligence**: Patterns recognized, architecture harmonized, future-proof
 
@@ -140,30 +146,7 @@ Core concepts:
 
 ## Essential Examples
 
-### Example 1: Boundary Condition Priority
-Before (separate handling):
-```java
-public void processConnection(DatabaseConnection conn) {
-    conn.execute(sql);
-}
-
-public void validateConnection(DatabaseConnection conn) {
-    if (conn == null || !conn.isValid()) {
-        throw new IllegalArgumentException();
-    }
-}
-```
-
-After (integrated boundary conditions):
-```java
-public void processConnection(DatabaseConnection validConnection) {
-    if (validConnection != null && validConnection.isValid()) {
-        validConnection.execute(sql);
-    }
-}
-```
-
-### Example 2: Cohesion over Granularity
+### Example 1: Cohesion over Granularity
 Before (excessive splitting):
 ```java
 @Test
@@ -188,13 +171,18 @@ void assertContainsColumn() {
 }
 ```
 
-### Example 3: Constructor Chaining
+### Example 2: Constructor Chaining
 Before (duplicate assignments):
 ```java
 public ShardingSphereColumn(ColumnMetaData meta) {
     name = meta.getName();
     dataType = meta.getDataType();
-    // ... 8 manual field assignments
+    isPrimaryKey = meta.isPrimaryKey();
+    isGenerated = meta.isGenerated();
+    isCaseSensitive = meta.isCaseSensitive();
+    isVisible = meta.isVisible();
+    isUnsigned = meta.isUnsigned();
+    isNullable = meta.isNullable();
 }
 ```
 
@@ -208,7 +196,7 @@ public ShardingSphereColumn(ColumnMetaData meta) {
 }
 ```
 
-### Example 4: Test Code Standards
+### Example 3: Test Code Standards
 Before:
 ```java
 @Test
