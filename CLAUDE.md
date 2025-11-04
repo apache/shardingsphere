@@ -16,8 +16,8 @@ Core concepts:
 *Core rules - see detailed sections for complete requirements*
 
 1. Follow project coding standards (see Elegant Code Standards)
-2. Elegance-first, minimalism-second principle (see Minimalism in Universal Design Philosophy)
-3. Prioritize readability as highest priority
+2. Apply elegance-first and minimalism principles (see Universal Design Philosophy)
+3. Prioritize readability as highest priority (see Elegance-First Principle)
 4. 100% test coverage for all new code (detailed requirements in Testing Philosophy)
 5. NEVER auto-commit to Git without explicit instruction
 6. ONLY work within explicitly specified scope (see Core Prohibitions)
@@ -59,7 +59,7 @@ Key areas covered in the coding standards file:
 - **Branch Minimal Coverage**: Analyze uncovered branches, write minimal test cases only
 - **Test Set Minimization**: Focus on branch coverage and eliminate redundancy
 
-*For detailed testing standards, see Coding Standards Reference above*
+*For detailed testing standards, see CODE_OF_CONDUCT.md reference in Elegant Code Standards section*
 
 
 ## AI Code Understanding Guidelines
@@ -73,9 +73,8 @@ Key areas covered in the coding standards file:
 
 ### Style Consistency Application
 - Match field access modifiers and declaration order from similar classes
-- Follow constructor chaining patterns used in the module
-- Apply consistent exception handling hierarchy from existing code
-- Use same dependency injection and configuration patterns as related classes
+- Apply consistent exception handling and dependency injection patterns from related classes
+- Follow established patterns from module architecture (see also ShardingSphere Architecture Patterns)
 
 
 ## ShardingSphere Architecture Patterns
@@ -112,8 +111,7 @@ Key areas covered in the coding standards file:
 ### API Design Consistency
 - Analyze existing APIs for parameter naming and type patterns
 - Follow established method naming conventions (verb + noun pattern)
-- Maintain consistent exception types and error handling mechanisms
-- Use same return value patterns as related functionality
+- Apply consistent patterns for exception handling and return values (see Style Consistency Application)
 
 
 ## AI Testing Strategy
@@ -147,10 +145,10 @@ Key areas covered in the coding standards file:
 - **Quality Validation**: Ensure immediate usability, actionable recommendations
 
 ### Code Standards
-- **Intelligence**: Patterns recognized, architecture harmonized, future-proof
+- **Intelligence**: Apply pattern recognition capabilities from AI Code Understanding Guidelines above
 
 ### Formatting Standards
-*For formatting guidelines, see Coding Standards Reference above*
+*For formatting guidelines, see CODE_OF_CONDUCT.md reference in Elegant Code Standards section*
 
 
 ## Unified Guidelines
@@ -177,7 +175,7 @@ Key areas covered in the coding standards file:
 **Safety Principles:**
 - Preserve existing functionality over adding features
 - Maintain current behavior over ideal implementation
-- Apply minimalism principle: Favor minimal changes over comprehensive solutions
+- Apply minimalism principle (see Universal Design Philosophy)
 
 
 ## Build System
