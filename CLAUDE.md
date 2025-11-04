@@ -1,142 +1,185 @@
 # CLAUDE.md - Strict Mode Code of Conduct
 
-Apache ShardingSphere: Distributed SQL engine for sharding, scaling, encryption. Database Plus concept - unified service layer over existing databases.
+Apache ShardingSphere: Distributed SQL engine for data sharding, distributed transactions, data encryption, data masking, federated queries, read-write separation, and more. Adopts Database Plus concept - building a unified data access and management layer over existing databases.
 
 Core concepts:
-- `Connect:` Flexible adaptation of database protocol, SQL dialect and database storage
-- `Enhance:` Transparent features: sharding, encryption, security, governance
-- `Pluggable:` Micro-kernel + 3-layer pluggable architecture
+- `Connect:` Flexible adaptation of database protocols, SQL dialects, and database storage
+- `Enhance:` Weaving data sharding, encryption, and other features into projects as plugins
+- `Pluggable:` Micro-kernel + three-layer pluggable architecture
 
-## Quick Reference (Top 10 Rules)
+## Document Structure
+- **Principle Layer**: Core design principles and prohibitions
+- **Standard Layer**: Code, testing, and quality requirements
+- **Guidance Layer**: Operating procedures and examples
 
-1. Follow CODE_OF_CONDUCT.md for coding standards
-2. Generate minimal essential code only
-3. Prioritize readability as highest priority
-4. 100% test coverage for all new code
-5. NEVER auto-commit to Git without explicit instruction
-6. ONLY edit explicitly mentioned files
-7. Make decisions within task scope ONLY
-8. NEVER perform autonomous "best practice" improvements
-9. Apply formatting to new code ONLY
-10. Provide comprehensive analysis before coding
+## Quick Reference (5 Core Rules)
+*Core rules - see detailed sections for complete requirements*
 
-## Core Prohibitions (Unified)
+1. Follow project coding standards (see code standards)
+2. 100% test coverage for all new code (see testing philosophy for details)
+3. NEVER auto-commit to Git without explicit instruction
+4. Work only within explicitly specified scope (see core prohibitions)
+5. Apply formatting only to new code (see formatting standards)
 
-### Git Operations
-- NEVER auto-commit changes without explicit user command
-- Prepare commit messages when requested, but NEVER execute commits
+## Core Prohibitions
 
-### Code Changes
-- ONLY modify explicitly mentioned files, functions, or lines
 - NEVER make changes outside instruction scope
 - NEVER perform "helpful" refactoring or improvements
+- NEVER create unrelated files
 
-### File Creation
-- ONLY create files in explicitly specified directories
-- NEVER create unrelated files without instruction
-
-## AI-Enhanced Standards
-
-### Code Quality Requirements
-- Generate minimal essential code only (<50 lines for simple functions)
-- Prioritize readability as highest priority (max 80 chars per line, max 3 nested levels)
-- Consider extreme performance optimization (<100ms for common operations)
-- Follow CODE_OF_CONDUCT.md (clean code principles, naming, formatting)
-
-### Formatting
-- < 200 chars per line, no unnecessary breaks
-- Keep empty lines between methods
-- Remove empty lines within methods
-- **Comments**: No code comments - "code as documentation"
- 
-### Testing Standards
-
-#### Testing Strategy Standards
-- 100% line and branch coverage for all new code
-- No redundant test cases - each test validates unique behavior
-- Test execution speed: <1 second per test case
-- Follow CODE_OF_CONDUCT.md (AIR principle, BCDE design, naming conventions)
-- Focus on behavior testing over implementation details
-- **Branch Minimal Coverage**: Analyze all conditional branches first, identify uncovered branches, then write minimal test cases for missing coverage only
-- **Test Case Merging Strategy**: Merge boundary condition tests (like null checks) into main test methods instead of creating separate test methods
-- **Test Set Minimization**: Avoid excessive test method splitting, maintain concise and effective test coverage
-
-#### Test Code Standards
-- **Method Naming**: Test methods start with "assert" (not "test"), use concise names focused on core functionality
-- **Assertions**: Use AssertJ style: `assertThat(actual, is(expected))`
-- **Variables**: Name test results as "actual" (not "result")
-- **Mock Priority Principle**: Prioritize using Mockito mock and mockStatic, avoid using spy
-- **Minimum Complexity Principle**: Test code must be simpler than business code, choose the simplest but effective testing method
-- **Direct Core Logic Testing**: Test methods should directly validate target method's core functionality
-- **Boundary Condition Integration**: Include critical boundary condition tests (like null checks) within main test methods
-
-#### Testing Process Standards
-- **Simplification Strategy**: Minimize test code lines, cognitive load, and maintenance costs
-- **Single Responsibility Testing**: Each test validates only one core functionality point
-- **Test Integration Principle**: New test cases should integrate seamlessly with existing test files, maintain consistent naming conventions, and follow established code style patterns
-- **Method Order Consistency**: Test method order should match source code method declaration order for better maintainability
-- **Redundancy Elimination**: Remove duplicate or unnecessary test cases to maintain concise and effective test coverage
-- **Test Case Merging over Splitting**: Prefer merging related tests into single comprehensive methods over creating multiple similar test methods
-
-### Intelligent Code Standards
-
-#### Contextual Intelligence
-- **Pattern Recognition**: Identify and apply existing architectural patterns
-- **Style Adaptation**: Seamlessly match current codebase conventions
-- **Architectural Harmony**: Ensure new code fits existing design philosophy
-- **Self-Documenting Design**: Code should explain its purpose through structure
-
-#### Clean Code Intelligence
-- **Single Responsibility**: Each function/class has one clear purpose
-- **DRY Principle**: Detect and eliminate duplication automatically
-- **Constructor Chaining Principle**: Use this() for constructor chaining when multiple constructors exist, avoiding duplicate field assignment logic
-- **Effortless Reading**: Code reads like well-written prose
-- **Optimal Abstraction**: Create right level of abstraction for problem domain
-- **Minimum Complexity Principle**: As the highest priority guiding principle for all testing decisions, prioritize simplest implementation approach and minimal intermediate variables
-- **Test Merging over Splitting**: Prioritize merging related boundary condition tests into main test methods rather than creating separate test methods for each edge case
-
-#### Evolutionary Code Design
-- **Open-Closed Principle**: Code open for extension, closed for modification
-- **Fail-Fast Design**: Detect errors early and exit cleanly
-- **Graceful Degradation**: Implement automatic recovery when possible
-- **Future-Proofing**: Anticipate likely future requirements
-
-### Excellence Requirements
-- **Comprehensive Analysis**: Thoroughly analyze problem context, consider multiple approaches
-- **One-Shot Excellence**: Provide optimal solutions in single response
-- **Quality Validation**: Ensure immediate usability, actionable recommendations
-
-## Quality Metrics
-
-### Success Criteria
-- Code compiles without warnings
-- All tests pass in <5 minutes
-- No functionality regression
-- Spotless formatting passes
-- 100% coverage for new code
-- Test code follows all formatting and style requirements
+## Code Intelligence Principles
+*Core design principles guiding all coding decisions*
 
 ### Code Standards
-- **Simplicity**: <50 lines for simple functions, <200 lines for complex classes
-- **Performance**: <100ms execution time for common operations
-- **Readability**: <80 characters per line, max 3 nested levels
-- **Intelligence**: Patterns recognized, architecture harmonized, future-proof
+Strictly follow all coding standards in [CODE_OF_CONDUCT.md](./CODE_OF_CONDUCT.md)
+
+Key areas covered by coding standards file:
+- Naming conventions and code style
+- Data structure usage guidelines
+- Technical tool specifications
+- File format requirements
+- G4 grammar rules
+- Complete unit testing standards
+
+## Testing Philosophy
+*Comprehensive testing requirements and standards for all new code*
+
+### Unified Testing Standards
+- 100% line and branch coverage for all new code
+- **Branch Minimal Coverage**: Analyze uncovered branches, write only minimal test cases
+- **Test Set Minimization**: Focus on branch coverage and eliminate redundancy
+
+*For detailed testing standards, see CODE_OF_CONDUCT.md reference in code standards section*
+
+## AI Code Understanding Guidelines
+*AI-specific pattern recognition and style application capabilities*
+
+### Pattern Recognition Capabilities
+- Identify SPI implementation patterns from existing interfaces/implementations
+- Recognize factory patterns, builder patterns, and strategy patterns from project structure
+- Learn field declaration order and naming conventions from existing classes in same package
+- Analyze test scenario design and boundary conditions in existing test files
+
+### Style Consistency Application
+- Match field access modifiers and declaration order of similar classes
+- Apply consistent exception handling and dependency injection patterns of related classes
+- Follow established patterns of module architecture (see ShardingSphere Architecture Patterns)
+
+## ShardingSphere Architecture Patterns
+*Architecture decision guidance specific to ShardingSphere environment*
+
+### Database Abstraction Design Principles
+- Create specific dialect implementations for database-specific features
+- Use SPI for extensible components while keeping core logic database-agnostic
+
+### Metadata Design Patterns
+- Use immutable objects for metadata representation (final class + final fields)
+- Apply builder pattern and constructor chaining for complex metadata construction
+- Include basic validation logic in metadata objects
+- Use consistent naming mapping for database concepts
+
+### SPI Implementation Specifications
+- Use service discovery mechanism for registration
+- Provide appropriate default implementations
+
+## Code Consistency Decision Making
+*Guidelines for maintaining consistency with existing project code*
+
+### Package Structure and Module Alignment
+- Place new classes in appropriate packages based on functional domain
+- Maintain same directory structure and hierarchy as similar components
+- Respect module boundaries, avoid circular dependencies
+
+### API Design Consistency
+- Analyze parameter naming and type patterns of existing APIs
+- Apply consistent exception handling and return value patterns (see Style Consistency Application)
+
+## AI Testing Strategies
+*AI-specific testing organization and design capabilities*
+
+### Test Data Construction Strategies
+- Build realistic test data reflecting production scenarios
+- Maintain independence and repeatability of test data
+- Avoid hard-coding; use parameterized tests
+
+*For detailed test organization standards, see CODE_OF_CONDUCT.md reference in code standards section*
+
+### Test Scenario Design Capabilities
+- Identify business-critical paths for focused testing
+- Design integration tests for complex business scenarios
+- Build test cases for boundary conditions and exception situations
+
+## Dependency Injection Patterns
+*Standard dependency injection methods in ShardingSphere*
+
+### Constructor-Only Injection
+- Constructor-only injection (no field injection)
+- Final fields for all dependencies
+- Initialize dependencies in constructor, no lazy initialization
+
+### Dependency Management
+- Use interfaces for dependency types
+- Avoid circular dependencies
+- Keep constructor parameters minimal and focused
+
+## Configuration and Persistence Patterns
+*Configuration handling and persistence methods*
+
+### YAML-Based Configuration
+- YAML-based configuration using YamlEngine
+- Version-based persistence using VersionNodePath
+- NodePathGenerator for path construction
+- Swapper pattern for YAML/object conversion
+- Repository abstraction for data access
+
+### Persistence Operations
+- Repository abstraction for data access
+- Consistent atomic operations
+
+## Concurrency and Thread Safety
+*Concurrency and thread safety guidelines*
+
+### Immutable Design
+- Use final classes and fields for immutability
+- Use LinkedHashMap for thread-safe iteration order
+- Repository operations assume external synchronization
+- Avoid shared mutable state in service classes
+- Use concurrent collections when necessary
+
+### Thread Safety Patterns
+- Thread-safe publication with final fields
+- Immutable return objects
+- Stateless service methods
+- Appropriate synchronization for shared resources
+
+## Quality Standards
+*Code quality, formatting, and validation requirements*
+
+### Quality Requirements
+- **Comprehensive Analysis**: Thoroughly analyze problem context, consider multiple approaches
+- **Quality Validation**: Ensure immediate usability and actionable recommendations
+
+### Code Standards
+- **Intelligence**: Apply pattern recognition capabilities from AI Code Understanding Guidelines above
+
+### Formatting Standards
+*For formatting guidance, see CODE_OF_CONDUCT.md reference in elegant code standards section*
 
 ## Unified Guidelines
+*Operating scope, permissions, and decision framework*
 
-### Scope & Permissions
+### Scope and Permissions
 **Allowed Operations:**
-- Edit explicitly mentioned files
-- Create files in explicitly specified directories
 - Make independent decisions within task scope
-- Apply formatting tools to new code only
 
 **Scope Boundaries:**
-- **Explicit instruction**: What to do
-- **Implicit scope**: How to implement within specified files/functions
-- **Forbidden**: Anything beyond specified implementation scope
+- Work only within explicitly specified scope
+- See Core Prohibitions for complete restrictions
 
-### Decision & Safety
+### Git Operation Guidelines
+- Prepare commit messages (when requested), but never execute commits
+
+### Decision and Safety
 **Ambiguous Situations:**
 - **Scope unclear** → Request clarification
 - **Impact uncertain** → Propose minimal safe experiment
@@ -144,155 +187,10 @@ Core concepts:
 - **Emergency needed** → Stop and report constraints
 
 **Safety Principles:**
-- Preserve existing functionality over adding features
-- Maintain current behavior over ideal implementation
-- Favor minimal changes over comprehensive solutions
-
-## Practical Examples
-
-### Example 1: Intelligent Bug Fix
-Before (potential null pointer):
-```java
-public void processConnection(DatabaseConnection conn) {
-    conn.execute(sql);
-}
-```
-
-After (context-aware, self-documenting):
-```java
-public void processConnection(DatabaseConnection validConnection) {
-    if (validConnection.isValid()) {
-        validConnection.execute(sql);
-    }
-}
-```
-
-### Example 2: Pattern-Based New Feature
-Following Repository pattern for consistency:
-
-```java
-public class MySQLConnectionValidator implements DatabaseValidator {
-    
-    private static final int TIMEOUT_MS = 5000;
-    
-    public ValidationResult validate(ConnectionConfig config) {
-        return timeoutAwareValidation(config);
-    }
-}
-```
-
-### Example 3: Evolutionary Design
-Open-closed principle implementation:
-```java
-public abstract class AbstractDatabaseConnector {
-    
-    protected abstract Connection createConnection(Config config);
-    
-    public final ValidationResult validate(Config config) {
-        return preValidation(config);
-    // Implementation in child classes
-    return createConnection(config);
-    }
-}
-```
-
-### Example 4: Constructor Chaining Principle
-
-Before (duplicate field assignments):
-```java
-public final class ShardingSphereColumn {
-    
-    private final String name;
-    
-    private final int dataType;
-    // ... other fields
-    
-    public ShardingSphereColumn(final ColumnMetaData columnMetaData) {
-        name = columnMetaData.getName();
-        dataType = columnMetaData.getDataType();
-        // ... 8 manual field assignments
-    }
-}
-```
-
-After (constructor chaining):
-```java
-public final class ShardingSphereColumn {
-    
-    private final String name;
-    
-    private final int dataType;
-    // ... other fields
-    
-    public ShardingSphereColumn(final ColumnMetaData columnMetaData) {
-        this(columnMetaData.getName(), columnMetaData.getDataType(),
-            columnMetaData.isPrimaryKey(), columnMetaData.isGenerated(),
-            columnMetaData.isCaseSensitive(), columnMetaData.isVisible(),
-            columnMetaData.isUnsigned(), columnMetaData.isNullable());
-    }
-}
-```
-
-### Example 5: Test Code Standards
-
-Before:
-```java
-@Test
-void testCalculateTotal() {
-    // Setup test data
-    List<Order> orders = Arrays.asList(new Order(100), new Order(200));
-    OrderService service = new OrderService();
-    double result = service.calculateTotal(orders);
-    assertEquals(300.0, result, 0.01);
-}
-```
-
-After:
-```java
-@Test
-void assertCalculateTotal() {
-    List<Order> orders = Arrays.asList(new Order(100), new Order(200));
-    OrderService service = new OrderService();
-    double actual = service.calculateTotal(orders);
-    assertThat(actual, is(300));
-}
-```
-
-### Example 6: Test Case Merging Strategy
-
-Before (excessive splitting):
-```java
-@Test
-void assertContainsColumn() {
-    Column column = new Column("id", Types.INTEGER);
-    Table table = new Table("users", Collections.singletonList(column));
-    assertTrue(table.containsColumn("id"));
-    assertFalse(table.containsColumn("name"));
-}
-
-@Test
-void assertContainsColumnWithNull() {
-    Column column = new Column("id", Types.INTEGER);
-    Table table = new Table("users", Collections.singletonList(column));
-    assertFalse(table.containsColumn(null));
-}
-```
-
-After (merged boundary conditions):
-```java
-@Test
-void assertContainsColumn() {
-    Column column = new Column("id", Types.INTEGER);
-    Table table = new Table("users", Collections.singletonList(column));
-    assertTrue(table.containsColumn("id"));
-    assertFalse(table.containsColumn("name"));
-    assertFalse(table.containsColumn(null));
-}
-```
+- Preserve existing functionality rather than adding features
+- Maintain current behavior rather than ideal implementation
 
 ## Build System
-
-Maven build commands:
 
 ```bash
 # Full build with tests
@@ -301,41 +199,22 @@ Maven build commands:
 ./mvnw install -T1C -Dremoteresources.skip -DskipTests
 # Format code
 ./mvnw spotless:apply -Pcheck
-# Check code style
-./mvnw checkstyle:check -Pcheck
 ```
 
 ## Project Structure
 
-- `infra/`: SPI implementations & basic components
-- `parser/`: SQL parser for dialects & DistSQL
+- `infra/`: SPI implementations and basic components
+- `parser/`: SQL parsers for dialects and DistSQL
 - `kernel/`: Core functionality (metadata, transaction, authority)
 - `feature/`: Pluggable features (sharding, encryption, shadow)
-- `mode/`: Configuration persistence & coordination (standalone/cluster)
+- `mode/`: Configuration persistence and coordination
 - `proxy/`: Proxy implementation (MySQL/PostgreSQL/Firebird protocols)
 - `jdbc/`: JDBC driver implementation
-- `test/`: E2E/IT test engine & cases
+- `test/`: E2E/IT test engine and cases
 
-## Detailed Procedures
-
-### Operational Procedures
-1. **Direct Code Generation**: Generate final code & call tools directly
-   - Apply formatting tools for new code only
-   - Make intelligent decisions within task scope
-   - **CRITICAL**: Automated generation permitted, automatic Git commits forbidden
-
-2. **Implementation Rules**:
-   - Isolate edits to smallest possible blocks
-   - Maintain existing architectural patterns
-   - Preserve existing style and design philosophy
-   - Apply context-aware design principles
-
-### Verification Process
-1. **Pre-change**: Verify task matches user request, analyze existing patterns
-2. **Post-change**: Run relevant tests, verify no regression, confirm architectural harmony
-3. **Continuous**: Re-read protocol before tasks, verify compliance, report violations
+## Operating Procedures
 
 ### Emergency Procedures
-- **Immediate termination** if code deletion exceeds 10 lines without instruction
-- **Stop immediately** if tests fail after changes
-- **Report deviations** as soon as detected
+- **Immediate termination**: If code deletion exceeds 10 lines without instruction
+- **Immediate stop**: If tests fail after changes
+- **Immediate report deviations**: As soon as detected
