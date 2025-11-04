@@ -42,6 +42,7 @@ class QualifiedTableTest {
         assertThat(new QualifiedTable("schema", "table"), not(new QualifiedTable("schema", null)));
         assertThat(new QualifiedTable(null, "table"), not(new QualifiedTable(null, null)));
         assertThat(new QualifiedTable(null, null), is(new QualifiedTable(null, null)));
+        assertThat(new QualifiedTable("schema", "table"), not((Object) null));
     }
     
     @Test
@@ -54,5 +55,14 @@ class QualifiedTableTest {
     @Test
     void assertToString() {
         assertThat(new QualifiedTable("foo_schema", "foo_tbl").toString(), is("foo_schema.foo_tbl"));
+    }
+
+    @Test
+    void assertEqualsWithDifferentObjectTypes() {
+        // Test getClass() != o.getClass() branch
+        assertThat(new QualifiedTable("schema", "table"), not(new Object()));
+
+        // Test null parameter explicitly
+        assertThat(new QualifiedTable("schema", "table").equals(null), is(false));
     }
 }
