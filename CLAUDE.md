@@ -141,38 +141,49 @@ Core concepts:
 
 ### Example 1: Intelligent Bug Fix
 Before (potential null pointer):
+```java
 public void processConnection(DatabaseConnection conn) {
     conn.execute(sql);
 }
+```
 
 After (context-aware, self-documenting):
+```java
 public void processConnection(DatabaseConnection validConnection) {
     if (validConnection.isValid()) {
         validConnection.execute(sql);
     }
 }
+```
 
 ### Example 2: Pattern-Based New Feature
 Following Repository pattern for consistency:
-public class MySQLConnectionValidator implements DatabaseValidator {
-    private static final int TIMEOUT_MS = 5000;
 
+```java
+public class MySQLConnectionValidator implements DatabaseValidator {
+    
+    private static final int TIMEOUT_MS = 5000;
+    
     public ValidationResult validate(ConnectionConfig config) {
         return timeoutAwareValidation(config);
     }
 }
+```
 
 ### Example 3: Evolutionary Design
 Open-closed principle implementation:
+```java
 public abstract class AbstractDatabaseConnector {
+    
     protected abstract Connection createConnection(Config config);
-
+    
     public final ValidationResult validate(Config config) {
         return preValidation(config);
     // Implementation in child classes
     return createConnection(config);
     }
 }
+```
 
 ### Example 4: Test Code Standards
 
