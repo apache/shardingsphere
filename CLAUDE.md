@@ -43,6 +43,17 @@ Core concepts:
 ### Elegant Code Standards
 Strictly follow all coding standards in [CODE_OF_CONDUCT.md](./CODE_OF_CONDUCT.md)
 
+#### Coding Standards Reference
+For complete ShardingSphere coding standards and conventions, see: [CODE_OF_CONDUCT.md](./CODE_OF_CONDUCT.md)
+
+Key areas covered in the coding standards file:
+- Naming conventions and code style
+- Data structure usage guidelines
+- Technical tool specifications
+- File formatting requirements
+- G4 grammar rules
+- Complete unit testing standards
+
 ## Testing Philosophy
 *Comprehensive testing requirements and standards for all new code*
 
@@ -53,11 +64,9 @@ Strictly follow all coding standards in [CODE_OF_CONDUCT.md](./CODE_OF_CONDUCT.m
 - **Test Set Minimization**: Focus on branch coverage (see Testing Process for redundancy elimination)
 
 ### Test Code Standards
-- **Method Naming**: Start with "assert", use concise names focused on core functionality
-- **Assertions**: Use AssertJ style: `assertThat(actual, is(expected))`
-- **Variables**: Name test results as "actual" (not "result")
-- **Mock Priority**: Prioritize Mockito mock and mockStatic, avoid using spy
-- **Simplicity**: Test code must be simpler than business code, focus on behavior over implementation
+Follow detailed testing standards in [CODE_OF_CONDUCT.md](./CODE_OF_CONDUCT.md)
+- Core principle: Test code must be simpler than business code
+- Focus on behavior testing over implementation details
 
 ### Testing Process
 - **Method Order Consistency**: Match source code method declaration order
@@ -73,14 +82,10 @@ Strictly follow all coding standards in [CODE_OF_CONDUCT.md](./CODE_OF_CONDUCT.m
 - **Quality Validation**: Ensure immediate usability, actionable recommendations
 
 ### Code Standards
-- **Simplicity**: <50 lines for simple functions, <200 lines for complex classes
 - **Intelligence**: Patterns recognized, architecture harmonized, future-proof
 
 ### Formatting Standards
-- < 200 chars per line, max 3 nested levels, no unnecessary breaks
-- Keep empty lines between methods
-- Remove empty lines within methods
-- **Javadoc Only**: Only Javadoc comments allowed, no inline comments
+Follow formatting guidelines in [CODE_OF_CONDUCT.md](./CODE_OF_CONDUCT.md)
 
 ### Success Criteria
 - Code compiles without warnings
@@ -112,80 +117,6 @@ Strictly follow all coding standards in [CODE_OF_CONDUCT.md](./CODE_OF_CONDUCT.m
 - Maintain current behavior over ideal implementation
 - Favor minimal changes over comprehensive solutions
 
-## Essential Examples
-
-### Example 1: Cohesion over Granularity
-Before (excessive splitting):
-```java
-@Test
-void assertContainsColumn() {
-    assertTrue(table.containsColumn("id"));
-    assertFalse(table.containsColumn("name"));
-}
-
-@Test
-void assertContainsColumnWithNull() {
-    assertFalse(table.containsColumn(null));
-}
-```
-
-After (cohesive testing):
-```java
-@Test
-void assertContainsColumn() {
-    assertTrue(table.containsColumn("id"));
-    assertFalse(table.containsColumn("name"));
-    assertFalse(table.containsColumn(null));
-}
-```
-
-### Example 2: Constructor Chaining
-Before (duplicate assignments):
-```java
-public ShardingSphereColumn(ColumnMetaData meta) {
-    name = meta.getName();
-    dataType = meta.getDataType();
-    isPrimaryKey = meta.isPrimaryKey();
-    isGenerated = meta.isGenerated();
-    isCaseSensitive = meta.isCaseSensitive();
-    isVisible = meta.isVisible();
-    isUnsigned = meta.isUnsigned();
-    isNullable = meta.isNullable();
-}
-```
-
-After (constructor chaining):
-```java
-public ShardingSphereColumn(ColumnMetaData meta) {
-    this(meta.getName(), meta.getDataType(),
-        meta.isPrimaryKey(), meta.isGenerated(),
-        meta.isCaseSensitive(), meta.isVisible(),
-        meta.isUnsigned(), meta.isNullable());
-}
-```
-
-### Example 3: Test Code Standards
-Before:
-```java
-@Test
-void testCalculateTotal() {
-    List<Order> orders = Arrays.asList(new Order(100), new Order(200));
-    OrderService service = new OrderService();
-    double result = service.calculateTotal(orders);
-    assertEquals(300.0, result, 0.01);
-}
-```
-
-After:
-```java
-@Test
-void assertCalculateTotal() {
-    List<Order> orders = Arrays.asList(new Order(100), new Order(200));
-    OrderService service = new OrderService();
-    double actual = service.calculateTotal(orders);
-    assertThat(actual, is(300));
-}
-```
 
 ## Build System
 
