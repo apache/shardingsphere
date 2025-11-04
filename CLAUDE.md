@@ -7,15 +7,20 @@ Core concepts:
 - `Enhance:` Transparent features: sharding, encryption, security, governance
 - `Pluggable:` Micro-kernel + 3-layer pluggable architecture
 
+## Document Structure
+- **Principles Layer**: Core design principles and prohibitions
+- **Standards Layer**: Code, testing, and quality requirements
+- **Guidelines Layer**: Operational procedures and examples
+
 ## Quick Reference (Top 7 Rules)
 *Core rules - see detailed sections for complete requirements*
 
 1. Follow project coding standards (see Elegant Code Standards)
-2. Elegance-first, minimalism-second principle (see Universal Design Philosophy)
+2. Elegance-first, minimalism-second principle (see Universal Design Philosophy & Quality Standards)
 3. Prioritize readability as highest priority (see Elegance-First Principle)
 4. 100% test coverage for all new code (detailed requirements in Testing Philosophy)
 5. NEVER auto-commit to Git without explicit instruction (see Git Guidelines)
-6. ONLY modify explicitly mentioned files and directories
+6. ONLY work within explicitly specified scope (see Core Prohibitions)
 7. Apply formatting to new code ONLY (see Formatting Standards)
 
 ## Core Prohibitions
@@ -45,7 +50,7 @@ Strictly follow all coding standards in [CODE_OF_CONDUCT.md](./CODE_OF_CONDUCT.m
 - 100% line and branch coverage for all new code
 - Test execution speed: <1 second per test case
 - **Branch Minimal Coverage**: Analyze uncovered branches, write minimal test cases only
-- **Test Set Minimization**: No redundant tests, focus on branch coverage
+- **Test Set Minimization**: Focus on branch coverage (see Testing Process for redundancy elimination)
 
 ### Test Code Standards
 - **Method Naming**: Start with "assert", use concise names focused on core functionality
@@ -59,11 +64,17 @@ Strictly follow all coding standards in [CODE_OF_CONDUCT.md](./CODE_OF_CONDUCT.m
 - **Redundancy Elimination**: Remove duplicate or unnecessary test cases
 - **Integration Principle**: Seamlessly integrate with existing test files and conventions
 
-## Quality Excellence
-*Code formatting, style, and quality requirements*
+## Quality Standards
+*Code quality, formatting, and validation requirements*
 
-### Code Quality Requirements
-- Focus on elegant and minimal code expression (see Universal Design Philosophy and Code Standards)
+### Quality Requirements
+- Follow Universal Design Philosophy for elegant and minimal code expression
+- **Comprehensive Analysis**: Thoroughly analyze problem context, consider multiple approaches
+- **Quality Validation**: Ensure immediate usability, actionable recommendations
+
+### Code Standards
+- **Simplicity**: <50 lines for simple functions, <200 lines for complex classes
+- **Intelligence**: Patterns recognized, architecture harmonized, future-proof
 
 ### Formatting Standards
 - < 200 chars per line, max 3 nested levels, no unnecessary breaks
@@ -71,20 +82,10 @@ Strictly follow all coding standards in [CODE_OF_CONDUCT.md](./CODE_OF_CONDUCT.m
 - Remove empty lines within methods
 - **Javadoc Only**: Only Javadoc comments allowed, no inline comments
 
-### Excellence Requirements
-- **Comprehensive Analysis**: Thoroughly analyze problem context, consider multiple approaches
-- **Quality Validation**: Ensure immediate usability, actionable recommendations
-
-## Quality Metrics
-
 ### Success Criteria
 - Code compiles without warnings
 - No functionality regression
 - Spotless formatting passes
-
-### Code Standards
-- **Simplicity**: <50 lines for simple functions, <200 lines for complex classes
-- **Intelligence**: Patterns recognized, architecture harmonized, future-proof
 
 ## Unified Guidelines
 *Operational scope, permissions, and decision-making framework*
@@ -94,9 +95,7 @@ Strictly follow all coding standards in [CODE_OF_CONDUCT.md](./CODE_OF_CONDUCT.m
 - Make independent decisions within task scope
 
 **Scope Boundaries:**
-- **Explicit instruction**: What to do
-- **Implicit scope**: How to implement within specified files/functions
-- **Forbidden**: Anything beyond specified implementation scope
+- See Core Prohibitions for detailed scope limitations
 
 ### Git Operations Guidelines
 - Prepare commit messages when requested, but NEVER execute commits
@@ -216,7 +215,7 @@ void assertCalculateTotal() {
 1. **Direct Code Generation**: Generate final code & call tools directly
 2. **Isolate Changes**: Edit smallest possible blocks
 3. **Maintain Patterns**: Follow existing architectural conventions
-4. **Apply Context-Aware Design**: Use established design principles
+4. **Apply Context-Aware Design**: See Quality Requirements for comprehensive analysis
 
 ### Verification Process
 1. **Pre-change**: Verify task matches user request, analyze existing patterns
