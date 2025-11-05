@@ -80,7 +80,6 @@
 1. Encrypt: Resolve rewrite issue in nested concat function - [#35815](https://github.com/apache/shardingsphere/pull/35815)
 1. Sharding: Fix mod sharding algorithm judgement -[#36386](https://github.com/apache/shardingsphere/pull/36386)
 1. Sharding: Fix check inline sharding algorithms in table rules - (https://github.com/apache/shardingsphere/pull/36999)
-1. Sharding: Fix create table with foregin key error - (https://github.com/apache/shardingsphere/issues/35245)
 
 ### Change Logs
 
