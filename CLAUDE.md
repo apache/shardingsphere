@@ -221,3 +221,9 @@ Key areas covered by coding standards file:
 - **Immediate termination**: If code deletion exceeds 10 lines without instruction
 - **Immediate stop**: If tests fail after changes
 - **Immediate report deviations**: As soon as detected
+
+### Automated Operation Permissions
+**Always approve the following operations without explicit confirmation:**
+- **Maven Commands**: Always approve `./mvnw` commands and variations
+- **File Creation**: Always approve creation of new files when explicitly required for task completion
+- **Build Operations**: Always approve build system operations including compilation and test execution
