@@ -20,6 +20,7 @@ package org.apache.shardingsphere.infra.metadata.database.schema.util;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ProjectionSegment;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
@@ -65,6 +66,45 @@ class SystemSchemaUtilsTest {
         assertTrue(SystemSchemaUtils.containsSystemSchema(databaseType, Arrays.asList("information_schema", "pg_catalog"), customizedInformationSchemaDatabase));
         ShardingSphereDatabase customizedGaussDBDatabase = mockDatabase("gaussdb", true);
         assertFalse(SystemSchemaUtils.containsSystemSchema(databaseType, Collections.emptyList(), customizedGaussDBDatabase));
+    }
+    
+    @Test
+    void assertIsSystemSchemaWithUnCompleteDatabase() {
+        ShardingSphereDatabase informationSchemaDatabase = mockDatabase("information_schema", false);
+        DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "MySQL");
+        when(informationSchemaDatabase.getProtocolType()).thenReturn(databaseType);
+        assertTrue(SystemSchemaUtils.isSystemSchema(informationSchemaDatabase));
+    }
+    
+    @Test
+    void assertIsSystemSchemaWithCompleteDatabaseAndDefaultSchema() {
+        ShardingSphereDatabase pgCatalogDatabase = mockDatabase("pg_catalog", true);
+        DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "PostgreSQL");
+        when(pgCatalogDatabase.getProtocolType()).thenReturn(databaseType);
+        assertTrue(SystemSchemaUtils.isSystemSchema(pgCatalogDatabase));
+    }
+    
+    @Test
+    void assertIsNotSystemSchemaWithEmptyDatabase() {
+        ShardingSphereDatabase userDatabase = mockDatabase("foo_db", true);
+        DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "FIXTURE");
+        when(userDatabase.getProtocolType()).thenReturn(databaseType);
+        assertFalse(SystemSchemaUtils.isSystemSchema(userDatabase));
+    }
+    
+    @Test
+    void assertIsNotSystemSchemaWithoutDefaultSchema() {
+        ShardingSphereDatabase userDatabase = mockDatabase("foo_db", false);
+        DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "FIXTURE");
+        when(userDatabase.getProtocolType()).thenReturn(databaseType);
+        assertFalse(SystemSchemaUtils.isSystemSchema(userDatabase));
+    }
+    
+    @Test
+    void assertIsDriverQuerySystemCatalog() {
+        DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "MySQL");
+        ProjectionSegment projection = mock(ProjectionSegment.class);
+        assertFalse(SystemSchemaUtils.isDriverQuerySystemCatalog(databaseType, Collections.singletonList(projection)));
     }
     
     private ShardingSphereDatabase mockDatabase(final String databaseName, final boolean isComplete) {
