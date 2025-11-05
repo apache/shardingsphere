@@ -73,6 +73,7 @@ import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.HavingC
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.HexadecimalLiteralsContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.IdentifierContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.IndexNameContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.InsertBodyContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.InsertContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.InsertIdentifierContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.InsertSelectClauseContext;
@@ -114,12 +115,15 @@ import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.Regular
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ReplaceContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ReplaceSelectClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ReplaceValuesClauseContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.RowAliasContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.RowConstructorListContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ValueReferenceContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.SelectContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.SelectSpecificationContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.SelectWithIntoContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.SeparatorNameContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.SetAssignmentsClauseContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.SetRowAliasContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ShorthandRegularFunctionContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.SimpleExprContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.SingleTableClauseContext;
@@ -170,6 +174,8 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.Returning
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.assignment.ColumnAssignmentSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.assignment.InsertValuesSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.assignment.SetAssignmentSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.assignment.RowAliasSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.assignment.ValueReferenceSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.InsertColumnsSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.OnDuplicateKeyColumnsSegment;
@@ -1466,15 +1472,7 @@ public abstract class MySQLStatementVisitor extends MySQLStatementBaseVisitor<AS
     @Override
     public ASTNode visitInsert(final InsertContext ctx) {
         // TODO :FIXME, since there is no segment for insertValuesClause, InsertStatement is created by sub rule.
-        InsertStatement result;
-        if (null != ctx.insertValuesClause()) {
-            result = (InsertStatement) visit(ctx.insertValuesClause());
-        } else if (null != ctx.insertSelectClause()) {
-            result = (InsertStatement) visit(ctx.insertSelectClause());
-        } else {
-            result = new InsertStatement(databaseType);
-            result.setSetAssignment((SetAssignmentSegment) visit(ctx.setAssignmentsClause()));
-        }
+        InsertStatement result = (InsertStatement) visit(ctx.insertBody());
         if (null != ctx.onDuplicateKeyClause()) {
             result.setOnDuplicateKeyColumns((OnDuplicateKeyColumnsSegment) visit(ctx.onDuplicateKeyClause()));
         }
@@ -1482,6 +1480,29 @@ public abstract class MySQLStatementVisitor extends MySQLStatementBaseVisitor<AS
         result.addParameterMarkers(getParameterMarkerSegments());
         if (null != ctx.returningClause()) {
             result.setReturning((ReturningSegment) visit(ctx.returningClause()));
+        }
+        return result;
+    }
+    
+    @Override
+    public ASTNode visitInsertBody(final InsertBodyContext ctx) {
+        InsertStatement result;
+        if (null != ctx.insertValuesClause()) {
+            result = (InsertStatement) visit(ctx.insertValuesClause());
+        } else if (null != ctx.insertSelectClause()) {
+            result = (InsertStatement) visit(ctx.insertSelectClause());
+            if (null != ctx.valueReference()) {
+                result.setValueReference((ValueReferenceSegment) visit(ctx.valueReference()));
+            }
+        } else {
+            result = new InsertStatement(databaseType);
+            result.setSetAssignment((SetAssignmentSegment) visit(ctx.setAssignmentsClause()));
+            if (null != ctx.valueReference()) {
+                result.setValueReference((ValueReferenceSegment) visit(ctx.valueReference()));
+            }
+            if (null == ctx.valueReference() && null != ctx.setAssignmentsClause().setRowAlias()) {
+                result.setValueReference(createValueReferenceFromSetRowAlias(ctx.setAssignmentsClause().setRowAlias()));
+            }
         }
         return result;
     }
@@ -1500,6 +1521,20 @@ public abstract class MySQLStatementVisitor extends MySQLStatementBaseVisitor<AS
             result.setInsertColumns(new InsertColumnsSegment(ctx.start.getStartIndex() - 1, ctx.start.getStartIndex() - 1, Collections.emptyList()));
         }
         return result;
+    }
+    
+    private ValueReferenceSegment createValueReferenceFromSetRowAlias(final SetRowAliasContext ctx) {
+        AliasSegment alias = (AliasSegment) visit(ctx.alias());
+        Collection<ColumnSegment> derivedColumns = null;
+        if (null != ctx.derivedColumns()) {
+            derivedColumns = new LinkedList<>();
+            for (AliasContext each : ctx.derivedColumns().alias()) {
+                AliasSegment aliasSegment = (AliasSegment) visit(each);
+                ColumnSegment column = new ColumnSegment(each.getStart().getStartIndex(), each.getStop().getStopIndex(), aliasSegment.getIdentifier());
+                derivedColumns.add(column);
+            }
+        }
+        return new ValueReferenceSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), alias, derivedColumns);
     }
     
     private SubquerySegment createInsertSelectSegment(final InsertSelectClauseContext ctx) {
@@ -1521,6 +1556,10 @@ public abstract class MySQLStatementVisitor extends MySQLStatementBaseVisitor<AS
             result.setInsertColumns(new InsertColumnsSegment(ctx.start.getStartIndex() - 1, ctx.start.getStartIndex() - 1, Collections.emptyList()));
         }
         result.getValues().addAll(createInsertValuesSegments(ctx.assignmentValues()));
+        if (null != ctx.valueReference()) {
+            ValueReferenceSegment valueRef = (ValueReferenceSegment) visit(ctx.valueReference());
+            result.setValueReference(valueRef);
+        }
         return result;
     }
     
@@ -1530,6 +1569,36 @@ public abstract class MySQLStatementVisitor extends MySQLStatementBaseVisitor<AS
             result.add((InsertValuesSegment) visit(each));
         }
         return result;
+    }
+    
+    @Override
+    public ASTNode visitRowAlias(final RowAliasContext ctx) {
+        AliasSegment alias = (AliasSegment) visit(ctx.alias());
+        Collection<ColumnSegment> derivedColumns = null;
+        if (null != ctx.derivedColumns()) {
+            derivedColumns = new LinkedList<>();
+            for (AliasContext each : ctx.derivedColumns().alias()) {
+                AliasSegment aliasSegment = (AliasSegment) visit(each);
+                ColumnSegment column = new ColumnSegment(each.getStart().getStartIndex(), each.getStop().getStopIndex(), aliasSegment.getIdentifier());
+                derivedColumns.add(column);
+            }
+        }
+        return new RowAliasSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), alias, derivedColumns);
+    }
+    
+    @Override
+    public ASTNode visitValueReference(final ValueReferenceContext ctx) {
+        AliasSegment alias = (AliasSegment) visit(ctx.alias());
+        Collection<ColumnSegment> derivedColumns = null;
+        if (null != ctx.derivedColumns()) {
+            derivedColumns = new LinkedList<>();
+            for (AliasContext each : ctx.derivedColumns().alias()) {
+                AliasSegment aliasSegment = (AliasSegment) visit(each);
+                ColumnSegment column = new ColumnSegment(each.getStart().getStartIndex(), each.getStop().getStopIndex(), aliasSegment.getIdentifier());
+                derivedColumns.add(column);
+            }
+        }
+        return new ValueReferenceSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), alias, derivedColumns);
     }
     
     @Override
@@ -1631,7 +1700,7 @@ public abstract class MySQLStatementVisitor extends MySQLStatementBaseVisitor<AS
     @Override
     public ASTNode visitSetAssignmentsClause(final SetAssignmentsClauseContext ctx) {
         Collection<ColumnAssignmentSegment> assignments = new LinkedList<>();
-        for (AssignmentContext each : ctx.assignment()) {
+        for (AssignmentContext each : ctx.assignmentList().assignment()) {
             assignments.add((ColumnAssignmentSegment) visit(each));
         }
         return new SetAssignmentSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), assignments);
