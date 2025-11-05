@@ -58,7 +58,8 @@ class SchemaMetaDataUtilsTest {
         ConfigurationProperties props = new ConfigurationProperties(PropertiesBuilder.build(new Property(ConfigurationPropertyKey.CHECK_TABLE_METADATA_ENABLED.getKey(), Boolean.TRUE.toString())));
         GenericSchemaBuilderMaterial material = new GenericSchemaBuilderMaterial(
                 mockStorageUnits(), Arrays.asList(mockDataNodeRule(Arrays.asList(new DataNode("ds_0.foo_tbl_0"), new DataNode("ds_1.foo_tbl_1"))),
-                mock(ShardingSphereRule.class, RETURNS_DEEP_STUBS)), props, "foo_db");
+                        mock(ShardingSphereRule.class, RETURNS_DEEP_STUBS)),
+                props, "foo_db");
         List<MetaDataLoaderMaterial> actual = new ArrayList<>(SchemaMetaDataUtils.getMetaDataLoaderMaterials(Collections.singleton("foo_tbl"), material));
         assertThat(actual.size(), is(2));
         assertThat(actual.get(0).getDefaultSchemaName(), is("foo_db"));
@@ -71,7 +72,8 @@ class SchemaMetaDataUtilsTest {
     void assertGetMetaDataLoaderMaterialsWhenNotConfigCheckMetaDataEnable() {
         GenericSchemaBuilderMaterial material = new GenericSchemaBuilderMaterial(
                 mockStorageUnits(), Arrays.asList(mockDataNodeRule(Arrays.asList(new DataNode("ds_0.foo_tbl_0"), new DataNode("ds_1.foo_tbl_1"))),
-                mock(ShardingSphereRule.class, RETURNS_DEEP_STUBS)), new ConfigurationProperties(new Properties()), "foo_db");
+                        mock(ShardingSphereRule.class, RETURNS_DEEP_STUBS)),
+                new ConfigurationProperties(new Properties()), "foo_db");
         List<MetaDataLoaderMaterial> actual = new ArrayList<>(SchemaMetaDataUtils.getMetaDataLoaderMaterials(Collections.singleton("foo_tbl"), material));
         assertThat(actual.size(), is(1));
         assertThat(actual.get(0).getDefaultSchemaName(), is("foo_db"));
