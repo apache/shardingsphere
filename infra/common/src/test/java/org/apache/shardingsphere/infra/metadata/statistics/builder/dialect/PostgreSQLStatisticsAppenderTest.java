@@ -17,11 +17,15 @@
 
 package org.apache.shardingsphere.infra.metadata.statistics.builder.dialect;
 
+import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoader;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
 import org.apache.shardingsphere.infra.metadata.statistics.DatabaseStatistics;
+import org.apache.shardingsphere.infra.metadata.statistics.builder.DialectStatisticsAppender;
 import org.apache.shardingsphere.infra.metadata.statistics.builder.ShardingSphereDefaultStatisticsBuilder;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
@@ -33,18 +37,20 @@ import static org.mockito.Mockito.when;
 
 class PostgreSQLStatisticsAppenderTest {
     
+    private final DialectStatisticsAppender statisticsAppender = DatabaseTypedSPILoader.getService(DialectStatisticsAppender.class, TypedSPILoader.getService(DatabaseType.class, "PostgreSQL"));
+    
     @Test
     void assertAppend() {
         ShardingSphereDatabase database = mockDatabase();
         DatabaseStatistics databaseStatistics = new ShardingSphereDefaultStatisticsBuilder().build(database);
-        new PostgreSQLStatisticsAppender().append(databaseStatistics, database);
+        statisticsAppender.append(databaseStatistics, database);
         assertTrue(databaseStatistics.containsSchemaStatistics("pg_catalog"));
         assertTrue(databaseStatistics.getSchemaStatistics("pg_catalog").containsTableStatistics("pg_class"));
     }
     
     private ShardingSphereDatabase mockDatabase() {
         ShardingSphereDatabase result = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
-        when(result.getName()).thenReturn("logic_db");
+        when(result.getName()).thenReturn("foo_db");
         ShardingSphereSchema schema = mockSchema();
         when(result.getAllSchemas()).thenReturn(Collections.singleton(schema));
         when(result.getSchema("pg_catalog")).thenReturn(schema);
