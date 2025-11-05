@@ -96,24 +96,10 @@ public final class CreateTableStatement extends DDLStatement {
     
     @Override
     public SQLStatementAttributes getAttributes() {
-        return new SQLStatementAttributes(new TableSQLStatementAttribute(getTables()), new CreateTableConstraintSQLStatementAttribute(), new CreateTableIndexSQLStatementAttribute());
+        return new SQLStatementAttributes(new TableSQLStatementAttribute(table), new CreateTableConstraintSQLStatementAttribute(), new CreateTableIndexSQLStatementAttribute());
     }
     
-    private Collection<SimpleTableSegment> getTables() {
-        Collection<SimpleTableSegment> result = new LinkedList<>();
-        result.add(table);
-        for (ColumnDefinitionSegment each : columnDefinitions) {
-            result.addAll(each.getReferencedTables());
-        }
-        for (ConstraintDefinitionSegment each : constraintDefinitions) {
-            if (each.getReferencedTable().isPresent()) {
-                result.add(each.getReferencedTable().get());
-            }
-        }
-        return result;
-    }
-    
-    private class CreateTableConstraintSQLStatementAttribute implements ConstraintSQLStatementAttribute {
+    private final class CreateTableConstraintSQLStatementAttribute implements ConstraintSQLStatementAttribute {
         
         @Override
         public Collection<ConstraintSegment> getConstraints() {
@@ -125,7 +111,7 @@ public final class CreateTableStatement extends DDLStatement {
         }
     }
     
-    private class CreateTableIndexSQLStatementAttribute implements IndexSQLStatementAttribute {
+    private final class CreateTableIndexSQLStatementAttribute implements IndexSQLStatementAttribute {
         
         @Override
         public Collection<IndexSegment> getIndexes() {
