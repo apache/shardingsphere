@@ -86,7 +86,7 @@ class PostgreSQLStatisticsAppenderTest {
         assertTrue(databaseStatistics.containsSchemaStatistics("pg_catalog"));
         assertFalse(databaseStatistics.getSchemaStatistics("pg_catalog").containsTableStatistics("pg_class"));
     }
-
+    
     private ShardingSphereDatabase mockDatabaseWithUnmatchedTables() {
         ShardingSphereDatabase result = mock(ShardingSphereDatabase.class);
         when(result.getName()).thenReturn("foo_db");
@@ -96,7 +96,7 @@ class PostgreSQLStatisticsAppenderTest {
         when(result.getSchema("pg_catalog")).thenReturn(schema);
         return result;
     }
-
+    
     private ShardingSphereSchema mockSchemaWithUnmatchedTables() {
         ShardingSphereSchema result = mock(ShardingSphereSchema.class);
         when(result.getName()).thenReturn("pg_catalog");
