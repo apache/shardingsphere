@@ -20,6 +20,7 @@ package org.apache.shardingsphere.infra.metadata.database.schema.util;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ExpressionProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ProjectionSegment;
 import org.junit.jupiter.api.Test;
 
@@ -85,7 +86,7 @@ class SystemSchemaUtilsTest {
     }
     
     @Test
-    void assertIsNotSystemSchemaWithEmptyDatabase() {
+    void assertIsSystemSchemaWithEmptyDatabase() {
         ShardingSphereDatabase userDatabase = mockDatabase("foo_db", true);
         DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "FIXTURE");
         when(userDatabase.getProtocolType()).thenReturn(databaseType);
@@ -93,7 +94,7 @@ class SystemSchemaUtilsTest {
     }
     
     @Test
-    void assertIsNotSystemSchemaWithoutDefaultSchema() {
+    void assertIsSystemSchemaWithoutDefaultSchema() {
         ShardingSphereDatabase userDatabase = mockDatabase("foo_db", false);
         DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "FIXTURE");
         when(userDatabase.getProtocolType()).thenReturn(databaseType);
@@ -101,10 +102,31 @@ class SystemSchemaUtilsTest {
     }
     
     @Test
-    void assertIsDriverQuerySystemCatalog() {
+    void assertIsDriverQuerySystemCatalogWithoutOption() {
         DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "MySQL");
-        ProjectionSegment projection = mock(ProjectionSegment.class);
-        assertFalse(SystemSchemaUtils.isDriverQuerySystemCatalog(databaseType, Collections.singletonList(projection)));
+        ExpressionProjectionSegment projection = new ExpressionProjectionSegment(0, 10, "version()");
+        assertFalse(SystemSchemaUtils.isDriverQuerySystemCatalog(databaseType, Collections.singleton(projection)));
+    }
+    
+    @Test
+    void assertIsDriverQuerySystemCatalogWithMultipleProjections() {
+        DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "openGauss");
+        ExpressionProjectionSegment projection1 = new ExpressionProjectionSegment(0, 10, "version()");
+        ExpressionProjectionSegment projection2 = new ExpressionProjectionSegment(11, 20, "current_database()");
+        assertFalse(SystemSchemaUtils.isDriverQuerySystemCatalog(databaseType, Arrays.asList(projection1, projection2)));
+    }
+    
+    @Test
+    void assertIsDriverQuerySystemCatalogWithNonExpressionProjection() {
+        DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "openGauss");
+        assertFalse(SystemSchemaUtils.isDriverQuerySystemCatalog(databaseType, Collections.singleton(mock(ProjectionSegment.class))));
+    }
+    
+    @Test
+    void assertIsDriverQuerySystemCatalogWithValidExpression() {
+        DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "openGauss");
+        ExpressionProjectionSegment projection = new ExpressionProjectionSegment(0, 10, "version()");
+        assertTrue(SystemSchemaUtils.isDriverQuerySystemCatalog(databaseType, Collections.singleton(projection)));
     }
     
     private ShardingSphereDatabase mockDatabase(final String databaseName, final boolean isComplete) {
