@@ -96,6 +96,8 @@ Key areas covered by coding standards file:
 ### API Design Consistency
 - Analyze parameter naming and type patterns of existing APIs
 - Apply consistent exception handling and return value patterns (see Style Consistency Application)
+- **Test Method Organization**: Group test methods by functional scenarios, avoid redundancy
+- **Dependency Injection Simplification**: Keep dependency injection in tests concise, focus on test targets
 
 ## AI Testing Strategies
 *AI-specific testing organization and design capabilities*
@@ -104,6 +106,9 @@ Key areas covered by coding standards file:
 - Build realistic test data reflecting production scenarios
 - Maintain independence and repeatability of test data
 - Avoid hard-coding; use parameterized tests
+- **Configuration Object Building**: Use `PropertiesBuilder` and `Property` for type-safe configuration construction
+- **Mock Minimization**: Mock only necessary dependencies, use `RETURNS_DEEP_STUBS` for chained calls
+- **Logic Extraction**: Extract repetitive mock setup and assertion logic into private methods
 
 *For detailed test organization standards, see CODE_OF_CONDUCT.md reference in code standards section*
 
@@ -111,6 +116,10 @@ Key areas covered by coding standards file:
 - Identify business-critical paths for focused testing
 - Design integration tests for complex business scenarios
 - Build test cases for boundary conditions and exception situations
+- **Test Simplification Principle**: Focus on core functionality testing, avoid overly complex mock setups
+- **Modern Tool Usage**: Use `Plugins.getMemberAccessor()` instead of traditional reflection APIs
+- **State Management Strategy**: Leverage `@BeforeEach` and `@AfterEach` for shared reset logic
+- **Assertive Naming**: Test method names directly express verification intent
 
 ## Dependency Injection Patterns
 *Standard dependency injection methods in ShardingSphere*
@@ -221,9 +230,3 @@ Key areas covered by coding standards file:
 - **Immediate termination**: If code deletion exceeds 10 lines without instruction
 - **Immediate stop**: If tests fail after changes
 - **Immediate report deviations**: As soon as detected
-
-### Automated Operation Permissions
-**Always approve the following operations without explicit confirmation:**
-- **Maven Commands**: Always approve `./mvnw` commands and variations
-- **File Creation**: Always approve creation of new files when explicitly required for task completion
-- **Build Operations**: Always approve build system operations including compilation and test execution
