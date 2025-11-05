@@ -84,7 +84,6 @@ fi
 CGROUP_MEM_OPTS="${CGROUP_MEM_OPTS:-${DEFAULT_CGROUP_MEM_OPTS}}"
 
 JAVA_OPTS=" -Djava.awt.headless=true "
- # Merge user-defined JVM_OPTS
 if [ -n "${JVM_OPTS}" ]; then
     JAVA_OPTS="${JAVA_OPTS} ${JVM_OPTS}"
 fi
