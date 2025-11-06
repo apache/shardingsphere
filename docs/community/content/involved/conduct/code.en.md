@@ -111,6 +111,7 @@ The following code of conduct is based on full compliance with the [Apache Softw
     - For mocking static methods or constructors, consider using `AutoMockExtension` and `StaticMockSettings` provided by the testing framework for automatic resource release; if using Mockito's `mockStatic` and `mockConstruction` methods, must be paired with `try-with-resource` or closed in cleanup methods to avoid leaks.
     - When verifying only one call, there's no need to use `times(1)` parameter, the single-parameter method of `verify` is sufficient.
 - Use `assert` prefix for all test method names.
+- Test data should use standardized prefixes (e.g., `foo_`/`bar_`) to clearly identify their test purpose
 - Use `PropertiesBuilder` simplify `Properties` building.
 
 ## SQL Parsing Standards
