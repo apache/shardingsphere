@@ -118,7 +118,7 @@
         <jsr305.version>3.0.2</jsr305.version>
         <immutables.version>2.10.1</immutables.version>
         
-        <postgresql.version>42.7.5</postgresql.version>
+        <postgresql.version>42.7.8</postgresql.version>
         <mysql-connector-java.version>8.3.0</mysql-connector-java.version>
         <mssql.version>12.10.2.jre8</mssql.version>
         <h2.version>2.2.224</h2.version>
