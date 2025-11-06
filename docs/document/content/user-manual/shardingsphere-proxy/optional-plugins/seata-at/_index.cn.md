@@ -341,7 +341,7 @@ CREATE SHARDING TABLE RULE t_order (
 <dependency>
     <groupId>org.postgresql</groupId>
     <artifactId>postgresql</artifactId>
-    <version>42.7.5</version>
+    <version>42.7.8</version>
 </dependency>
 ```
 

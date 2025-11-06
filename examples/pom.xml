@@ -42,7 +42,7 @@
         <spring-boot.version>2.3.12.RELEASE</spring-boot.version>
         <hikari-cp.version>3.4.2</hikari-cp.version>
         <mysql-connector-java.version>8.3.0</mysql-connector-java.version>
-        <postgresql.version>42.7.5</postgresql.version>
+        <postgresql.version>42.7.8</postgresql.version>
         <h2.version>2.2.224</h2.version>
         <slf4j.version>1.7.7</slf4j.version>
         <logback.version>1.2.13</logback.version>
