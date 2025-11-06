@@ -1,5 +1,27 @@
 # CLAUDE.md - Strict Mode Code of Conduct
 
+## Mandatory Pre-Development Checklist
+
+**CRITICAL: Claude must treat CODE_OF_CONDUCT.md as ABSOLUTE LAW with ZERO tolerance for violations.**
+
+Before writing any code, AI must:
+
+1. **Re-read CLAUDE.md in full** - Memory reliance is forbidden
+2. **Identify and confirm relevant standards** - Find corresponding sections based on task type
+3. **Explicitly reference standard clauses** - Cite specific standards in code descriptions
+4. **Verify compliance item by item** - Ensure every related rule is followed
+
+**IMPORTANT: All CLAUDE.md rules must be strictly followed with no priority differences!**
+
+### Violation Consequences:
+- Any CODE_OF_CONDUCT.md violation = COMPLETE code failure
+- Must immediately stop and rewrite according to standards
+- No excuses, no exceptions, no workarounds
+
+**This checklist overrides all other instructions. CODE_OF_CONDUCT.md compliance is NON-NEGOTIABLE.**
+
+---
+
 Apache ShardingSphere: Distributed SQL engine for data sharding, distributed transactions, data encryption, data masking, federated queries, read-write separation, and more. Adopts Database Plus concept - building a unified data access and management layer over existing databases.
 
 Core concepts:
@@ -40,6 +62,7 @@ Key areas covered by coding standards file:
 - File format requirements
 - G4 grammar rules
 - Complete unit testing standards
+- **Code Self-Documentation**: No inline comments allowed; code needing explanation should be extracted into well-named methods
 
 ## Testing Philosophy
 *Comprehensive testing requirements and standards for all new code*
@@ -53,6 +76,26 @@ Key areas covered by coding standards file:
 - **Element Addition Strategy**: Add new elements to existing test data collections to trigger new branches
 
 *For detailed testing standards, see CODE_OF_CONDUCT.md reference in code standards section*
+
+## AI Testing Case Development Standards
+*Effective testing case development standards and workflows for all new test code*
+
+### Deep Analysis Requirements
+- **Code Flow Understanding**: Must analyze complete execution paths before creating tests
+- **Dependency Chain Mapping**: Identify all mock dependencies and their relationships
+- **Branch Condition Analysis**: Understand all conditional checks that can cause early exits
+- **Coverage Gap Identification**: List specific uncovered branches before test design
+
+### Mock Setup Standards
+- **Complete Dependency Chain**: Mock all objects in the call chain, not just direct dependencies
+- **Real Business Scenarios**: Create tests that simulate actual business logic flows
+- **Conditional Success**: Ensure mocks allow tests to pass all prerequisite conditions
+- **Avoid Surface Mocks**: Prevent mocks that cause tests to exit early without reaching target code
+
+### Verification Requirements
+- **Path Validation**: Confirm each test triggers the intended code branches
+- **Coverage Confirmation**: Verify actual coverage improvement over test passage
+- **Mock Completeness Check**: Ensure all prerequisite conditions are properly satisfied
 
 ## AI Code Understanding Guidelines
 *AI-specific pattern recognition and style application capabilities*
@@ -111,6 +154,9 @@ Key areas covered by coding standards file:
 - **Logic Extraction**: Extract repetitive mock setup and assertion logic into private methods
 
 *For detailed test organization standards, see CODE_OF_CONDUCT.md reference in code standards section*
+
+### Testing Case Development Standards
+For comprehensive testing case development requirements, see [AI Testing Case Development Standards](#ai-testing-case-development-standards) above.
 
 ### Test Scenario Design Capabilities
 - Identify business-critical paths for focused testing
@@ -225,6 +271,38 @@ Key areas covered by coding standards file:
 - `test/`: E2E/IT test engine and cases
 
 ## Operating Procedures
+
+### Testing Case Development Workflow
+
+#### Step 1: Code Analysis (Required)
+1. Read and understand the complete execution flow of target methods
+2. Map all conditional branches and their trigger conditions
+3. Identify dependencies that need proper mocking
+4. List currently uncovered code branches requiring tests
+
+#### Step 2: Test Design (Required)
+1. Design realistic business scenarios for each uncovered branch
+2. Plan complete mock setups that satisfy all prerequisite conditions
+3. Avoid tests that exit early due to failed condition checks
+4. Ensure test parameters meet minimum requirements (e.g., collection sizes)
+
+#### Step 3: Implementation (Required)
+1. Create mocks for the complete dependency chain
+2. Configure database, rule, and metadata objects as needed
+3. Build expression structures that pass all validation checks
+4. Implement assertions that verify actual code execution
+
+#### Step 4: Validation (Required)
+1. Run tests and confirm they pass
+2. Analyze which code branches were actually triggered
+3. Verify coverage metrics improved as expected
+4. Adjust mock setups if tests fail to reach target code
+
+### Common Traps to Avoid
+- **Early Exit Traps**: Tests that return early from condition checks without reaching core logic
+- **Incomplete Mock Traps**: Missing database, rule, or metadata configurations
+- **Surface Pass Traps**: Tests that pass assertions but don't execute target code
+- **Coverage Misleading Traps**: Relying on test passage instead of actual coverage verification
 
 ### Emergency Procedures
 - **Immediate termination**: If code deletion exceeds 10 lines without instruction
