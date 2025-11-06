@@ -29,7 +29,7 @@
     <logger name="org.apache.shardingsphere.infra.executor.sql.execute.engine.SQLExecutorExceptionHandler" level="off" />
     
     <appender name="SQLLoggerTestAppender" class="ch.qos.logback.core.read.ListAppender" />
-    <logger name="ShardingSphere-SQL" level="info" additivity="false">
+    <logger name="org.apache.shardingsphere.sql" level="info" additivity="false">
         <appender-ref ref="SQLLoggerTestAppender" />
     </logger>
     
