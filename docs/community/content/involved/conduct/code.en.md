@@ -29,6 +29,7 @@ The following code of conduct is based on full compliance with the [Apache Softw
 ## Coding Standards
 
 - Use Linux line endings.
+- No line breaks are needed if each line of code does not exceed 200 characters.
 - There should be no meaningless blank lines. Please extract private methods instead of using blank line spacing for overly long method bodies or logically closed code segments.
 - Naming conventions:
     - Naming should be self-explanatory.
@@ -109,6 +110,8 @@ The following code of conduct is based on full compliance with the [Apache Softw
     - When unit tests contain objects that are not easy to construct, for example: objects with more than two levels of nesting and unrelated to testing, `mock` should be used.
     - For mocking static methods or constructors, consider using `AutoMockExtension` and `StaticMockSettings` provided by the testing framework for automatic resource release; if using Mockito's `mockStatic` and `mockConstruction` methods, must be paired with `try-with-resource` or closed in cleanup methods to avoid leaks.
     - When verifying only one call, there's no need to use `times(1)` parameter, the single-parameter method of `verify` is sufficient.
+- Use `assert` prefix for all test method names.
+- Use `PropertiesBuilder` simplify `Properties` building.
 
 ## SQL Parsing Standards
 
@@ -135,8 +138,6 @@ The following code of conduct is based on full compliance with the [Apache Softw
 
 ### G4 Standards
 
-- Common specifications
-    - Each line does not exceed `200` characters, ensuring each line's semantic integrity for easy understanding.
 - Lexical parsing specifications
     - Each rule on one line, no blank lines needed between rules.
     - Rule names use uppercase letters. If the name consists of multiple words, use `underscore` separation. `DataType` and `Symbol` rule names end with `underscore`. Rules with the same name as ANTLR built-in variables or keywords add `underscore` at the end for distinction.
