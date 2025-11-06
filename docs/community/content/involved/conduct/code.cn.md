@@ -111,6 +111,7 @@ chapter = true
    - 模拟静态方法或构造器，应优先考虑使用测试框架提供的 `AutoMockExtension` 和 `StaticMockSettings` 自动释放资源；若使用 Mockito `mockStatic` 和 `mockConstruction` 方法，必须搭配 `try-with-resource` 或在清理方法中关闭，避免泄漏。
    - 校验仅有一次调用时，无需使用 `times(1)` 参数，使用 `verify` 的单参数方法即可。
  - 使用 `assert` 前缀命名所有的测试用例。
+ - 测试数据应使用标准化前缀（如 `foo_`/`bar_`）明确标识其测试用途。
  - 使用 `PropertiesBuilder` 简化 `Properties` 构造。
 
 ## SQL 解析规范
