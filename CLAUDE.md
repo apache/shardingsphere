@@ -289,6 +289,10 @@ For comprehensive testing case development requirements, see [AI Testing Case De
 ./mvnw install -T1C -Dremoteresources.skip -DskipTests
 # Format code
 ./mvnw spotless:apply -Pcheck
+# Generate test coverage report
+./mvnw test jacoco:report -Djacoco.skip=false
+# View coverage report
+open target/site/jacoco/index.html
 ```
 
 ## Project Structure
