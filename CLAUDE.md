@@ -77,6 +77,38 @@ Key areas covered by coding standards file:
 
 *For detailed testing standards, see CODE_OF_CONDUCT.md reference in code standards section*
 
+### Test Coverage Completeness Principles
+
+#### Test Coverage Analysis Standards
+- **Deep Branch Analysis**: Must analyze all if-else, ternary operations, and atomic conditions within compound conditions
+- **Short-Circuit Evaluation**: Must test each sub-condition of `&&` and `||` operators separately
+- **Optional Chain Decomposition**: Must test all path combinations in Optional chained calls
+- **Dependency Mapping**: Must pre-map complete mock dependency relationships
+
+#### Complex Condition Testing Strategies
+- **Atomic Condition Separation**: Decompose compound conditions into independently testable atomic conditions
+- **Boundary Value Priority**: Prioritize testing null values, empty collections, index out-of-bounds, and other boundary cases
+- **Type System Coverage**: Test all possible implementation types of instanceof checks
+- **Parameter Index Boundaries**: Test non-consecutive parameters, out-of-bounds indices, empty parameter lists, etc.
+
+#### Mock Configuration Completeness
+- **Dependency Chain Integrity**: Ensure complete configuration of all mock object dependencies
+- **Multi-Layer Nested Mocks**: Deep nested dependencies must be precisely mocked layer by layer
+- **Return Value Combination Coverage**: Test possible combinations of mock method return values
+- **Exception Path Testing**: Test possible exception throwing paths in dependency chains
+
+#### Coverage Verification Process
+- **Real-Time Coverage Monitoring**: Use coverage tools to verify branch coverage in real-time
+- **Systematic Coverage Verification**: Re-evaluate overall coverage after each test modification
+- **Uncovered Branch Analysis**: Perform root cause analysis on uncovered branches and supplement corresponding tests
+- **Boundary Case Review**: Specifically review easily overlooked boundary conditions and exception cases
+
+#### Test Design Principles
+- **Matrix-Based Test Design**: Design test matrices covering all critical parameter combinations
+- **Minimal Case Maximum Coverage**: Each test case should cover the maximum number of uncovered branches
+- **Complex Scenario Simplification**: Decompose complex business scenarios into independent testable units
+- **Coverage-Driven Iteration**: Guide test case supplementation and optimization based on coverage feedback
+
 ## AI Testing Case Development Standards
 *Effective testing case development standards and workflows for all new test code*
 
@@ -274,35 +306,52 @@ For comprehensive testing case development requirements, see [AI Testing Case De
 
 ### Testing Case Development Workflow
 
-#### Step 1: Code Analysis (Required)
-1. Read and understand the complete execution flow of target methods
+#### Step 1: Deep Code Analysis (Required)
+1. Understand the complete execution flow of target methods
 2. Map all conditional branches and their trigger conditions
 3. Identify dependencies that need proper mocking
-4. List currently uncovered code branches requiring tests
+4. List currently uncovered code branches
+5. **Decompose Compound Conditions**: Break down `&&` and `||` expressions into atomic conditions
+6. **Analyze Short-Circuit Paths**: Identify short-circuit evaluation paths of logical operators
+7. **Optional Chain Analysis**: Identify all possible paths of Optional chained calls
 
 #### Step 2: Test Design (Required)
 1. Design realistic business scenarios for each uncovered branch
 2. Plan complete mock setups that satisfy all prerequisite conditions
 3. Avoid tests that exit early due to failed condition checks
 4. Ensure test parameters meet minimum requirements (e.g., collection sizes)
+5. **Boundary Case Priority**: Prioritize designing null value, empty collection, index out-of-bounds tests
+6. **Atomic Condition Testing**: Design independent tests for each sub-condition of compound conditions
+7. **Mock Matrix Design**: Design test matrices covering all critical parameter combinations
 
 #### Step 3: Implementation (Required)
 1. Create mocks for the complete dependency chain
 2. Configure database, rule, and metadata objects as needed
 3. Build expression structures that pass all validation checks
 4. Implement assertions that verify actual code execution
+5. **Multi-Layer Nested Mocks**: Ensure precise layer-by-layer configuration of deep nested dependencies
+6. **Return Value Combinations**: Test all possible combinations of mock method return values
+7. **Exception Path Configuration**: Configure possible exception throwing paths in dependency chains
 
-#### Step 4: Validation (Required)
+#### Step 4: Verification (Required)
 1. Run tests and confirm they pass
 2. Analyze which code branches were actually triggered
 3. Verify coverage metrics improved as expected
 4. Adjust mock setups if tests fail to reach target code
+5. **Coverage-Driven Iteration**: Guide test case supplementation based on coverage feedback
+6. **Systematic Verification**: Re-evaluate overall coverage after each modification
+7. **Root Cause Analysis**: Conduct in-depth analysis of uncovered branches and supplement tests
 
-### Common Traps to Avoid
-- **Early Exit Traps**: Tests that return early from condition checks without reaching core logic
+### Common Traps and Avoidance Methods
+- **Early Exit Traps**: Tests exit early due to failed condition checks without reaching core logic
 - **Incomplete Mock Traps**: Missing database, rule, or metadata configurations
-- **Surface Pass Traps**: Tests that pass assertions but don't execute target code
+- **Surface Pass Traps**: Tests pass assertions but don't execute target code
 - **Coverage Misleading Traps**: Relying on test passage instead of actual coverage verification
+- **Short-Circuit Traps**: Not testing each sub-condition within compound conditions separately
+- **Optional Chain Traps**: Not covering all path combinations of Optional chained calls
+- **Boundary Value Traps**: Ignoring null values, empty collections, index out-of-bounds, and other boundary cases
+- **Mock Chain Traps**: Incomplete mock configuration for deep nested dependencies
+- **Atomic Condition Traps**: Testing compound conditions as a whole, missing sub-condition branches
 
 ### Emergency Procedures
 - **Immediate termination**: If code deletion exceeds 10 lines without instruction
