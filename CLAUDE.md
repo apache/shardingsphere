@@ -199,6 +199,14 @@ For comprehensive testing case development requirements, see [AI Testing Case De
 - **State Management Strategy**: Leverage `@BeforeEach` and `@AfterEach` for shared reset logic
 - **Assertive Naming**: Test method names directly express verification intent
 
+### Test Code Optimization Core Principles
+*Core principles for writing clean, efficient test code based on proven practices*
+
+- **Prefer Inline Creation**: Create required objects directly within test methods when possible, avoiding complex `@BeforeEach` configurations
+- **Self-Contained Tests**: Ensure each test method is self-contained and doesn't rely on complex external setup unless truly shared
+- **Utilize Tool Methods**: Leverage utility methods like `Collections.singleton()` and `Arrays.asList()` for efficient collection creation
+- **Simplify Dependency Chains**: Reduce multi-layer nested Mock configurations to maintain test code readability and maintainability
+
 ## Dependency Injection Patterns
 *Standard dependency injection methods in ShardingSphere*
 
@@ -289,11 +297,222 @@ For comprehensive testing case development requirements, see [AI Testing Case De
 ./mvnw install -T1C -Dremoteresources.skip -DskipTests
 # Format code
 ./mvnw spotless:apply -Pcheck
-# Generate test coverage report
-./mvnw test jacoco:report -Djacoco.skip=false
-# View coverage report
-open target/site/jacoco/index.html
+
+# Test Coverage Commands
+./mvnw test jacoco:report -Djacoco.skip=false -pl [module-name]
+# Example: Generate and view coverage for infra/common module
+./mvnw test jacoco:report -Djacoco.skip=false -pl infra/common
 ```
+
+## Test Coverage Verification Methods
+*Comprehensive test coverage verification and analysis methods for ShardingSphere development*
+
+### Coverage Generation Commands
+
+#### Basic Coverage Generation (Recommended)
+```bash
+# Navigate to project root first
+cd /path/to/shardingsphere
+
+# Generate coverage report for specific module with JaCoCo agent override
+JAVA_TOOL_OPTIONS="-javaagent:$HOME/.m2/repository/org/jacoco/org.jacoco.agent/0.8.8/org.jacoco.agent-0.8.8-runtime.jar=destfile=$(pwd)/[module-name]/target/jacoco.exec,excludes=**/*$Lombok*:**/lombok/**" ./mvnw test jacoco:report -Djacoco.skip=false -pl [module-name]
+
+# View HTML coverage report
+open [module-name]/target/site/jacoco/index.html
+```
+
+#### Module-Specific Examples
+```bash
+# infra/common module
+JAVA_TOOL_OPTIONS="-javaagent:$HOME/.m2/repository/org/jacoco/org.jacoco.agent/0.8.8/org.jacoco.agent-0.8.8-runtime.jar=destfile=$(pwd)/infra/common/target/jacoco.exec,excludes=**/*$Lombok*:**/lombok/**" ./mvnw test jacoco:report -Djacoco.skip=false -pl infra/common
+open infra/common/target/site/jacoco/index.html
+
+# kernel/metadata module
+JAVA_TOOL_OPTIONS="-javaagent:$HOME/.m2/repository/org/jacoco/org.jacoco.agent/0.8.8/org.jacoco.agent-0.8.8-runtime.jar=destfile=$(pwd)/kernel/metadata/target/jacoco.exec,excludes=**/*$Lombok*:**/lombok/**" ./mvnw test jacoco:report -Djacoco.skip=false -pl kernel/metadata
+open kernel/metadata/target/site/jacoco/index.html
+```
+
+### Coverage Report Analysis
+
+#### Quick Coverage Check for Specific Class
+```bash
+# Check coverage data from CSV report (format: MODULE,PACKAGE,CLASS,INSTRUCTION_MISSED,INSTRUCTION_COVERED,BRANCH_MISSED,BRANCH_COVERED,...)
+grep "ClassName" [module-name]/target/site/jacoco/jacoco.csv
+
+# Example: Check ShardingSphereStatisticsFactory coverage
+grep "ShardingSphereStatisticsFactory" infra/common/target/site/jacoco/jacoco.csv
+# Output format: shardingsphere-infra-common,org.apache.shardingsphere.infra.metadata.statistics.builder,ShardingSphereStatisticsFactory,228,0,24,0,41,0,20,0,8,0
+#                    ^MODULE                           ^PACKAGE                                                 ^CLASS      ^INST_MISS ^INST_COV ^BR_MISS ^BR_COV ^LINE_MISS ^LINE_COV ^METHOD_MISS ^METHOD_COV
+```
+
+#### Coverage Percentage Calculation
+```bash
+# Calculate instruction coverage percentage for a specific class
+grep "ClassName" module/target/site/jacoco/jacoco.csv | awk -F',' '{printf "Instruction Coverage: %.2f%% (%d/%d)\n", $5/($4+$5)*100, $5, $4+$5}'
+
+# Calculate branch coverage percentage
+grep "ClassName" module/target/site/jacoco/jacoco.csv | awk -F',' '{printf "Branch Coverage: %.2f%% (%d/%d)\n", $7/($6+$7)*100, $7, $6+$7}'
+```
+
+#### Batch Coverage Analysis
+```bash
+# Analyze coverage for all classes in a package
+grep "package.name" module/target/site/jacoco/jacoco.csv | while IFS=',' read module package class inst_miss inst_cov branch_miss branch_cov line_miss line_cov method_miss method_cov; do
+    inst_total=$((inst_miss + inst_cov))
+    branch_total=$((branch_miss + branch_cov))
+    inst_coverage=$(echo "scale=2; $inst_cov * 100 / $inst_total" | bc -l)
+    branch_coverage=$(echo "scale=2; $branch_cov * 100 / $branch_total" | bc -l)
+    echo "$class: Instructions ${inst_coverage}%, Branches ${branch_coverage}%"
+done
+```
+
+### Automated Coverage Verification
+
+#### Coverage Verification Script Template
+```bash
+#!/bin/bash
+# coverage-check.sh - Automated coverage verification script
+
+MODULE_NAME=$1
+CLASS_NAME=$2
+MINIMUM_COVERAGE=${3:-100}
+
+if [ $# -lt 2 ]; then
+    echo "Usage: $0 <module-name> <class-name> [minimum-coverage-percentage]"
+    echo "Example: $0 infra/common ShardingSphereStatisticsFactory 100"
+    exit 1
+fi
+
+echo "Checking coverage for $CLASS_NAME in module $MODULE_NAME..."
+
+# Generate coverage report
+JAVA_TOOL_OPTIONS="-javaagent:$HOME/.m2/repository/org/jacoco/org.jacoco.agent/0.8.8/org.jacoco.agent-0.8.8-runtime.jar=destfile=$(pwd)/$MODULE_NAME/target/jacoco.exec,excludes=**/*$Lombok*:**/lombok/**" ./mvnw test jacoco:report -Djacoco.skip=false -pl $MODULE_NAME
+
+# Extract coverage data
+COVERAGE_DATA=$(grep "$CLASS_NAME" "$MODULE_NAME/target/site/jacoco/jacoco.csv")
+
+if [ -z "$COVERAGE_DATA" ]; then
+    echo "ERROR: Class $CLASS_NAME not found in coverage report"
+    exit 1
+fi
+
+# Parse coverage data
+INST_MISSED=$(echo $COVERAGE_DATA | cut -d',' -f4)
+INST_COVERED=$(echo $COVERAGE_DATA | cut -d',' -f5)
+TOTAL_INSTRUCTIONS=$((INST_MISSED + INST_COVERED))
+
+if [ $TOTAL_INSTRUCTIONS -eq 0 ]; then
+    echo "ERROR: No instructions found for class $CLASS_NAME"
+    exit 1
+fi
+
+COVERAGE_PERCENTAGE=$((INST_COVERED * 100 / TOTAL_INSTRUCTIONS))
+
+echo "Coverage Results for $CLASS_NAME:"
+echo "- Instructions covered: $INST_COVERED/$TOTAL_INSTRUCTIONS"
+echo "- Coverage percentage: ${COVERAGE_PERCENTAGE}%"
+
+# Verify minimum coverage
+if [ $COVERAGE_PERCENTAGE -lt $MINIMUM_COVERAGE ]; then
+    echo "FAILED: Coverage ${COVERAGE_PERCENTAGE}% is below minimum ${MINIMUM_COVERAGE}%"
+    echo "Open the report for details: open $MODULE_NAME/target/site/jacoco/index.html"
+    exit 1
+else
+    echo "PASSED: Coverage ${COVERAGE_PERCENTAGE}% meets minimum requirement"
+fi
+```
+
+#### Multiple Class Coverage Check
+```bash
+#!/bin/bash
+# batch-coverage-check.sh - Check coverage for multiple classes
+
+MODULE_NAME=$1
+shift
+CLASSES=("$@")
+
+for class in "${CLASSES[@]}"; do
+    echo "Checking $class..."
+    ./coverage-check.sh "$MODULE_NAME" "$class" 100
+    if [ $? -ne 0 ]; then
+        echo "Coverage check failed for $class"
+        exit 1
+    fi
+    echo "---"
+done
+
+echo "All classes passed coverage verification!"
+```
+
+### Troubleshooting Guide
+
+#### Common Issues and Solutions
+
+**Issue 1: JaCoCo agent not loaded**
+```bash
+# Symptoms: No jacoco.exec file generated, coverage shows 0%
+# Solution: Verify JAVA_TOOL_OPTIONS and check agent path
+echo "Current JAVA_TOOL_OPTIONS: $JAVA_TOOL_OPTIONS"
+ls -la "$HOME/.m2/repository/org/jacoco/org.jacoco.agent/0.8.8/org.jacoco.agent-0.8.8-runtime.jar"
+```
+
+**Issue 2: Permission denied when accessing jacoco.exec**
+```bash
+# Solution: Check file permissions and ownership
+ls -la module/target/jacoco.exec
+chmod 644 module/target/jacoco.exec
+```
+
+**Issue 3: Coverage report not generated**
+```bash
+# Check if jacoco.exec exists and has content
+if [ -f "module/target/jacoco.exec" ]; then
+    echo "JaCoCo data file exists: $(wc -c < module/target/jacoco.exec) bytes"
+else
+    echo "ERROR: JaCoCo data file not found"
+    echo "Check if tests ran and JaCoCo agent was properly loaded"
+fi
+```
+
+**Issue 4: Multiple test runs corrupting coverage data**
+```bash
+# Solution: Clean before generating new coverage
+./mvnw clean -pl module-name
+JAVA_TOOL_OPTIONS="..." ./mvnw test jacoco:report -Djacoco.skip=false -pl module-name
+```
+
+#### Debug Mode Commands
+```bash
+# Enable verbose JaCoCo logging
+JAVA_TOOL_OPTIONS="-javaagent:$HOME/.m2/repository/org/jacoco/org.jacoco.agent/0.8.8/org.jacoco.agent-0.8.8-runtime.jar=destfile=$(pwd)/module/target/jacoco.exec,excludes=**/*$Lombok*:**/lombok/**,output=file" ./mvnw test -Djacoco.skip=false -pl module-name
+
+# Check test execution order
+./mvnw test -Djacoco.skip=false -pl module-name -Dmaven.surefire.debug
+```
+
+### Best Practices
+
+#### Coverage Verification Workflow
+1. **Before Writing Tests**: Identify target classes and current coverage gaps
+2. **During Test Development**: Use incremental coverage checks
+3. **After Test Completion**: Run full coverage verification
+4. **Before PR**: Ensure 100% coverage for all modified code
+
+#### Integration with Development Process
+```bash
+# Make coverage verification part of your development workflow
+alias verify-coverage='./coverage-check.sh infra/common ShardingSphereStatisticsFactory 100'
+
+# Quick coverage check for current module
+alias quick-coverage='JAVA_TOOL_OPTIONS="-javaagent:$HOME/.m2/repository/org/jacoco/org.jacoco.agent/0.8.8/org.jacoco.agent-0.8.8-runtime.jar=destfile=$(pwd)/$(basename $(pwd))/target/jacoco.exec,excludes=**/*$Lombok*:**/lombok/**" ./mvnw test jacoco:report -Djacoco.skip=false -pl $(basename $(pwd)) && open $(basename $(pwd))/target/site/jacoco/index.html'
+```
+
+#### Coverage Report Interpretation
+- **Green highlighting**: Fully covered code (100%)
+- **Yellow highlighting**: Partially covered code
+- **Red highlighting**: Uncovered code (0%)
+- **Diamond markers**: Branch coverage points
+- **Coverage percentages**: Instruction vs. Branch coverage
 
 ## Project Structure
 
