@@ -36,14 +36,14 @@ import java.util.List;
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public final class RowStatistics {
     
-    private final List<Object> rows;
-    
     @EqualsAndHashCode.Include
     private final String uniqueKey;
     
+    private final List<Object> rows;
+    
     public RowStatistics(final List<Object> rows) {
-        this.rows = rows;
         uniqueKey = generateUniqueKey(rows);
+        this.rows = rows;
     }
     
     private String generateUniqueKey(final List<Object> rows) {
