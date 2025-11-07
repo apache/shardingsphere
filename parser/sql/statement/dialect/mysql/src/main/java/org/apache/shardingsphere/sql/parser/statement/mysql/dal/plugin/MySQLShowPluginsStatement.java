@@ -18,6 +18,8 @@
 package org.apache.shardingsphere.sql.parser.statement.mysql.dal.plugin;
 
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.SQLStatementAttributes;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.type.AllowNotUseDatabaseSQLStatementAttribute;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.DALStatement;
 
 /**
@@ -27,5 +29,10 @@ public final class MySQLShowPluginsStatement extends DALStatement {
     
     public MySQLShowPluginsStatement(final DatabaseType databaseType) {
         super(databaseType);
+    }
+    
+    @Override
+    public SQLStatementAttributes getAttributes() {
+        return new SQLStatementAttributes(new AllowNotUseDatabaseSQLStatementAttribute(true));
     }
 }
