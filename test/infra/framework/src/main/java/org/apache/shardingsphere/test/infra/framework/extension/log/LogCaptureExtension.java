@@ -38,8 +38,8 @@ public final class LogCaptureExtension implements BeforeEachCallback, AfterEachC
     
     @Override
     public void beforeEach(final ExtensionContext context) {
-        String targetClassName = context.getRequiredTestClass().getName().substring(0, context.getRequiredTestClass().getName().lastIndexOf("Test"));
-        logger = (Logger) LoggerFactory.getLogger(targetClassName);
+        String logTopic = context.getRequiredTestClass().getName().substring(0, context.getRequiredTestClass().getName().lastIndexOf("Test"));
+        logger = (Logger) LoggerFactory.getLogger(logTopic);
         listAppender = new ListAppender<>();
         listAppender.start();
         logger.addAppender(listAppender);
