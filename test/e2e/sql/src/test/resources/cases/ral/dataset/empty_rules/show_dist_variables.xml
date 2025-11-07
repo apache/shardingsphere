@@ -24,6 +24,7 @@
     <row values="cached_connections| 0" />
     <row values="cdc_server_port| 33071" />
     <row values="check_table_metadata_enabled| false" />
+    <row values="groovy_inline_expression_parsing_cache_max_size| 1000" />
     <row values="kernel_executor_size| 16" />
     <row values="load_table_metadata_batch_size| 1000" />
     <row values="max_connections_size_per_query| 1" />
