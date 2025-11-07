@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.infra.expr.groovy;
 
+import com.github.benmanes.caffeine.cache.Cache;
+import com.github.benmanes.caffeine.cache.Caffeine;
 import com.google.common.base.Strings;
 import com.google.common.collect.Sets;
 import groovy.lang.Closure;
@@ -28,14 +30,15 @@ import org.apache.shardingsphere.infra.expr.core.GroovyUtils;
 import org.apache.shardingsphere.infra.expr.spi.InlineExpressionParser;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 /**
@@ -45,7 +48,7 @@ public final class GroovyInlineExpressionParser implements InlineExpressionParse
     
     private static final String INLINE_EXPRESSION_KEY = "inlineExpression";
     
-    private static final Map<String, Script> SCRIPTS = new ConcurrentHashMap<>();
+    private static final Cache<String, Script> SCRIPTS = Caffeine.newBuilder().maximumSize(1000L).softValues().build();
     
     private static final GroovyShell SHELL = new GroovyShell();
     
@@ -78,7 +81,13 @@ public final class GroovyInlineExpressionParser implements InlineExpressionParse
      */
     @Override
     public List<String> splitAndEvaluate() {
-        return Strings.isNullOrEmpty(inlineExpression) ? Collections.emptyList() : flatten(evaluate(GroovyUtils.split(handlePlaceHolder(inlineExpression))));
+        if (Strings.isNullOrEmpty(inlineExpression)) {
+            return Collections.emptyList();
+        }
+        if (isConstantExpression(inlineExpression)) {
+            return Arrays.stream(inlineExpression.split("\\s*,\\s*")).map(String::trim).filter(each -> !each.isEmpty()).collect(Collectors.toList());
+        }
+        return flatten(evaluate(GroovyUtils.split(handlePlaceHolder(inlineExpression))));
     }
     
     /**
@@ -88,10 +97,17 @@ public final class GroovyInlineExpressionParser implements InlineExpressionParse
      */
     @Override
     public String evaluateWithArgs(final Map<String, Comparable<?>> map) {
-        Closure<?> result = ((Closure<?>) evaluate("{it -> \"" + handlePlaceHolder(inlineExpression) + "\"}")).rehydrate(new Expando(), null, null);
-        result.setResolveStrategy(Closure.DELEGATE_ONLY);
-        map.forEach(result::setProperty);
-        return result.call().toString();
+        if (isConstantExpression(inlineExpression)) {
+            return inlineExpression;
+        }
+        Object scriptResult = evaluate("{it -> \"" + handlePlaceHolder(inlineExpression) + "\"}");
+        if (scriptResult instanceof Closure) {
+            Closure<?> result = ((Closure<?>) scriptResult).rehydrate(new Expando(), null, null);
+            result.setResolveStrategy(Closure.DELEGATE_ONLY);
+            map.forEach(result::setProperty);
+            return result.call().toString();
+        }
+        return scriptResult.toString();
     }
     
     private List<Object> evaluate(final List<String> inlineExpressions) {
@@ -110,14 +126,19 @@ public final class GroovyInlineExpressionParser implements InlineExpressionParse
     }
     
     private Object evaluate(final String expression) {
-        Script script;
-        if (SCRIPTS.containsKey(expression)) {
-            script = SCRIPTS.get(expression);
-        } else {
-            script = SHELL.parse(expression);
-            SCRIPTS.put(expression, script);
+        if (isConstantExpression(expression)) {
+            return expression.replaceAll("^\"|\"$", "");
         }
-        return script.run();
+        Script script = SCRIPTS.get(expression, SHELL::parse);
+        return null == script ? expression : script.run();
+    }
+    
+    private boolean isConstantExpression(final String expression) {
+        return Strings.isNullOrEmpty(expression) || !isDynamicExpression(expression);
+    }
+    
+    private boolean isDynamicExpression(final String expression) {
+        return expression.contains("${") || expression.contains("$->{");
     }
     
     private List<String> flatten(final List<Object> segments) {
@@ -125,6 +146,8 @@ public final class GroovyInlineExpressionParser implements InlineExpressionParse
         for (Object each : segments) {
             if (each instanceof GString) {
                 result.addAll(assemblyCartesianSegments((GString) each));
+            } else if (each instanceof Script) {
+                result.addAll(flattenScript((Script) each));
             } else {
                 result.add(each.toString());
             }
@@ -166,6 +189,19 @@ public final class GroovyInlineExpressionParser implements InlineExpressionParse
             }
         }
         return result.toString();
+    }
+    
+    private Collection<String> flattenScript(final Script script) {
+        Collection<String> result = new LinkedList<>();
+        Object scriptResult = script.run();
+        if (scriptResult instanceof Iterable) {
+            for (Object item : (Iterable<?>) scriptResult) {
+                result.add(item.toString());
+            }
+        } else {
+            result.add(scriptResult.toString());
+        }
+        return result;
     }
     
     @Override
