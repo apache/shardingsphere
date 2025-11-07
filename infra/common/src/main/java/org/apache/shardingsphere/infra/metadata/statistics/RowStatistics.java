@@ -26,7 +26,6 @@ import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.Collection;
 import java.util.List;
 
 /**
@@ -40,7 +39,7 @@ public final class RowStatistics {
     @EqualsAndHashCode.Include
     private final String uniqueKey;
     
-    private final Collection<Object> rows;
+    private final List<Object> rows;
     
     public RowStatistics(final List<Object> rows) {
         uniqueKey = generateUniqueKey(rows);

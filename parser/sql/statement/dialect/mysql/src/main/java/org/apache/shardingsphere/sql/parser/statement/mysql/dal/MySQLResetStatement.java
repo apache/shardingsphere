@@ -20,6 +20,8 @@ package org.apache.shardingsphere.sql.parser.statement.mysql.dal;
 import lombok.Getter;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.ResetOptionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.SQLStatementAttributes;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.type.AllowNotUseDatabaseSQLStatementAttribute;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.DALStatement;
 
 import java.util.List;
@@ -35,5 +37,10 @@ public final class MySQLResetStatement extends DALStatement {
     public MySQLResetStatement(final DatabaseType databaseType, final List<ResetOptionSegment> options) {
         super(databaseType);
         this.options = options;
+    }
+    
+    @Override
+    public SQLStatementAttributes getAttributes() {
+        return new SQLStatementAttributes(new AllowNotUseDatabaseSQLStatementAttribute(true));
     }
 }
