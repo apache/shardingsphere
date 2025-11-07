@@ -19,6 +19,8 @@ package org.apache.shardingsphere.sql.parser.statement.mysql.dal.show.event;
 
 import lombok.Getter;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.SQLStatementAttributes;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.type.AllowNotUseDatabaseSQLStatementAttribute;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.DALStatement;
 
 /**
@@ -32,5 +34,10 @@ public final class MySQLShowCreateEventStatement extends DALStatement {
     public MySQLShowCreateEventStatement(final DatabaseType databaseType, final String eventName) {
         super(databaseType);
         this.eventName = eventName;
+    }
+    
+    @Override
+    public SQLStatementAttributes getAttributes() {
+        return new SQLStatementAttributes(new AllowNotUseDatabaseSQLStatementAttribute(true));
     }
 }

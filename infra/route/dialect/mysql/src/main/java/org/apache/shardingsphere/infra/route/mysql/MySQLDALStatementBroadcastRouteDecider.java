@@ -18,11 +18,14 @@
 package org.apache.shardingsphere.infra.route.mysql;
 
 import org.apache.shardingsphere.infra.route.engine.tableless.DialectDALStatementBroadcastRouteDecider;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.type.AllowNotUseDatabaseSQLStatementAttribute;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.DALStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.dal.resource.MySQLAlterResourceGroupStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.dal.resource.MySQLCreateResourceGroupStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.dal.resource.MySQLDropResourceGroupStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.dal.resource.MySQLSetResourceGroupStatement;
+
+import java.util.Optional;
 
 /**
  * Dialect DAL statement broadcast route decider for MySQL.
@@ -36,6 +39,11 @@ public final class MySQLDALStatementBroadcastRouteDecider implements DialectDALS
     
     @Override
     public boolean isInstanceBroadcastRoute(final DALStatement sqlStatement) {
+        Optional<AllowNotUseDatabaseSQLStatementAttribute> attribute = sqlStatement.getAttributes().findAttribute(AllowNotUseDatabaseSQLStatementAttribute.class);
+        return isResourceGroupStatement(sqlStatement) || attribute.isPresent() && attribute.get().isAllowNotUseDatabase();
+    }
+    
+    private boolean isResourceGroupStatement(final DALStatement sqlStatement) {
         return sqlStatement instanceof MySQLCreateResourceGroupStatement || sqlStatement instanceof MySQLAlterResourceGroupStatement || sqlStatement instanceof MySQLDropResourceGroupStatement
                 || sqlStatement instanceof MySQLSetResourceGroupStatement;
     }
