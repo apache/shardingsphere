@@ -26,6 +26,8 @@ import groovy.lang.GString;
 import groovy.lang.GroovyShell;
 import groovy.lang.Script;
 import groovy.util.Expando;
+import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
+import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.expr.core.GroovyUtils;
 import org.apache.shardingsphere.infra.expr.spi.InlineExpressionParser;
 
@@ -48,15 +50,31 @@ public final class GroovyInlineExpressionParser implements InlineExpressionParse
     
     private static final String INLINE_EXPRESSION_KEY = "inlineExpression";
     
-    private static final Cache<String, Script> SCRIPTS = Caffeine.newBuilder().maximumSize(1000L).softValues().build();
-    
     private static final GroovyShell SHELL = new GroovyShell();
+    
+    private static volatile long currentCacheSize = Long.parseLong(ConfigurationPropertyKey.GROOVY_INLINE_EXPRESSION_PARSING_CACHE_MAX_SIZE.getDefaultValue());
+    
+    private static volatile Cache<String, Script> scriptCache = Caffeine.newBuilder().maximumSize(currentCacheSize).softValues().build();
     
     private String inlineExpression;
     
     @Override
     public void init(final Properties props) {
         inlineExpression = props.getProperty(INLINE_EXPRESSION_KEY);
+        long maxCacheSize = new ConfigurationProperties(props).getValue(ConfigurationPropertyKey.GROOVY_INLINE_EXPRESSION_PARSING_CACHE_MAX_SIZE);
+        updateMaxCacheSize(maxCacheSize);
+    }
+    
+    private static void updateMaxCacheSize(final long newMaxCacheSize) {
+        if (newMaxCacheSize == currentCacheSize) {
+            return;
+        }
+        synchronized (GroovyInlineExpressionParser.class) {
+            if (newMaxCacheSize != currentCacheSize) {
+                scriptCache = Caffeine.newBuilder().maximumSize(newMaxCacheSize).softValues().build();
+                currentCacheSize = newMaxCacheSize;
+            }
+        }
     }
     
     @Override
@@ -129,7 +147,7 @@ public final class GroovyInlineExpressionParser implements InlineExpressionParse
         if (isConstantExpression(expression)) {
             return expression.replaceAll("^\"|\"$", "");
         }
-        Script script = SCRIPTS.get(expression, SHELL::parse);
+        Script script = scriptCache.get(expression, SHELL::parse);
         return null == script ? expression : script.run();
     }
     
