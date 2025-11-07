@@ -41,7 +41,7 @@ Core concepts:
 2. 100% test coverage for all new code (see testing philosophy for details)
 3. NEVER auto-commit to Git without explicit instruction
 4. Work only within explicitly specified scope (see core prohibitions)
-5. Apply formatting only to new code (see formatting standards)
+5. Run spotless formatting validation before considering code complete
 
 ## Core Prohibitions
 
@@ -261,7 +261,10 @@ For comprehensive testing case development requirements, see [AI Testing Case De
 - **Intelligence**: Apply pattern recognition capabilities from AI Code Understanding Guidelines above
 
 ### Formatting Standards
-*For formatting guidance, see CODE_OF_CONDUCT.md reference in elegant code standards section*
+*Mandatory code formatting requirements for all new code*
+
+- **REQUIRED**: Apply spotless formatting to ALL new code before completion
+- **VALIDATION**: Must run `./mvnw spotless:apply -Pcheck` before considering code complete
 
 ## Unified Guidelines
 *Operating scope, permissions, and decision framework*
