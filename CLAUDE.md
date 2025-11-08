@@ -52,81 +52,81 @@ Core concepts:
 ## Code Intelligence Principles
 *Core design principles guiding all coding decisions*
 
-### 代码标准
-严格遵循 [CODE_OF_CONDUCT.md](./CODE_OF_CONDUCT.md) 中的所有代码标准
+### Code Standards
+Strictly follow all code standards in [CODE_OF_CONDUCT.md](./CODE_OF_CONDUCT.md)
 
-代码标准文件涵盖的关键领域：
-- 命名约定和代码风格
-- 数据结构使用指南
-- 技术工具规范
-- 文件格式要求
-- G4语法规则
-- 完整的单元测试标准
-- **代码自文档化**: 不允许内联注释；需要解释的代码应提取到命名良好的方法中
+Key areas covered by code standards documents:
+- Naming conventions and code style
+- Data structure usage guidelines
+- Technical tool specifications
+- File format requirements
+- G4 grammar rules
+- Complete unit testing standards
+- **Code self-documentation**: Inline comments are not allowed; code requiring explanation should be extracted to well-named methods
 
-## 测试理念
-*所有新代码的综合测试要求和标准*
+## Testing Philosophy
+*Comprehensive testing requirements and standards for all new code*
 
-### 统一测试标准
-- 所有新代码100%的行和分支覆盖率
-- **分支最小覆盖**: 分析未覆盖的分支，只编写最小化的测试用例
-- **测试集最小化**: 专注于分支覆盖，消除冗余
-- **测试集成优先**: 优先修改现有测试方法而非创建新方法
-- **单一目标修改**: 每次测试更改应专注于覆盖一个特定的未覆盖分支
-- **元素添加策略**: 向现有测试数据集合添加新元素以触发新分支
+### Unified Testing Standards
+- 100% line and branch coverage for all new code
+- **Minimal branch coverage**: Analyze uncovered branches and write only minimal test cases
+- **Test set minimization**: Focus on branch coverage, eliminate redundancy
+- **Test integration priority**: Prefer modifying existing test methods over creating new ones
+- **Single target modification**: Each test change should focus on covering one specific uncovered branch
+- **Element addition strategy**: Add new elements to existing test data collections to trigger new branches
 
-*详细测试标准请参见代码标准部分中的CODE_OF_CONDUCT.md引用*
+*For detailed testing standards, see CODE_OF_CONDUCT.md reference in code standards section*
 
-## AI测试用例开发标准
-*所有新测试代码的有效测试用例开发标准和工作流程*
+## AI Testing Case Development Standards
+*Effective testing case development standards and workflows for all new test code*
 
-### 深度分析要求
-- **代码流理解**: 创建测试前必须分析完整的执行路径
-- **依赖链映射**: 识别所有Mock依赖及其关系
-- **分支条件分析**: 理解所有可能导致早期退出的条件检查
-- **覆盖差距识别**: 测试设计前列出具体的未覆盖分支
+### Deep Analysis Requirements
+- **Code flow understanding**: Must analyze complete execution paths before creating tests
+- **Dependency chain mapping**: Identify all Mock dependencies and their relationships
+- **Branch condition analysis**: Understand all condition checks that may cause early exits
+- **Coverage gap identification**: List specific uncovered branches before test design
 
-### Mock设置标准
-- **完整依赖链**: Mock调用链中的所有对象，不仅仅是直接依赖
-- **真实业务场景**: 创建模拟实际业务逻辑流的测试
-- **条件成功**: 确保Mock允许测试通过所有先决条件
-- **避免表面Mock**: 防止导致测试早期退出而未到达目标代码的Mock
+### Mock Setup Standards
+- **Complete dependency chain**: Mock all objects in the call chain, not just direct dependencies
+- **Real business scenarios**: Create tests that simulate actual business logic flows
+- **Condition success**: Ensure Mocks allow tests to pass all prerequisite conditions
+- **Avoid surface Mocks**: Prevent Mocks that cause tests to exit early without reaching target code
 
-### 验证要求
-- **路径验证**: 确认每个测试触发预期的代码分支
-- **覆盖确认**: 验证实际覆盖率改善而非测试通过
-- **Mock完整性检查**: 确保所有先决条件得到正确满足
+### Verification Requirements
+- **Path verification**: Confirm each test triggers expected code branches
+- **Coverage confirmation**: Verify actual coverage improvement rather than test passing
+- **Mock completeness check**: Ensure all prerequisite conditions are properly satisfied
 
-## AI代码理解指南
-*AI特定的模式识别和风格应用能力*
+## AI Code Understanding Guide
+*AI-specific pattern recognition and style application capabilities*
 
-### 模式识别能力
-- 从现有接口/实现中识别SPI实现模式
-- 从项目结构中识别工厂模式、建造者模式和策略模式
-- 从同包现有类中学习字段声明顺序和命名约定
-- 分析现有测试文件中的测试场景设计和边界条件
+### Pattern Recognition Capabilities
+- Identify SPI implementation patterns from existing interfaces/implementations
+- Recognize factory patterns, builder patterns, and strategy patterns from project structure
+- Learn field declaration order and naming conventions from existing classes in same package
+- Analyze test scenario design and boundary conditions in existing test files
 
-### 风格一致性应用
-- 匹配类似类的字段访问修饰符和声明顺序
-- 应用相关类的一致异常处理和依赖注入模式
-- 遵循模块架构的既定模式（参见ShardingSphere架构模式）
+### Style Consistency Application
+- Match field access modifiers and declaration order of similar classes
+- Apply consistent exception handling and dependency injection patterns of related classes
+- Follow established patterns of module architecture (see ShardingSphere Architecture Patterns)
 
-## ShardingSphere架构模式
-*ShardingSphere环境特定的架构决策指导*
+## ShardingSphere Architecture Patterns
+*ShardingSphere environment-specific architecture decision guidance*
 
-### 数据库抽象设计原则
-- 为数据库特定功能创建特定方言实现
-- 对可扩展组件使用SPI，同时保持核心逻辑与数据库无关
+### Database Abstraction Design Principles
+- Create specific dialect implementations for database-specific features
+- Use SPI for extensible components while keeping core logic database-agnostic
 
-### 元数据设计模式
-- 使用不可变对象表示元数据（final类 + final字段）
-- 对复杂元数据构造应用建造者模式和构造函数链
-- 在元数据对象中包含基本验证逻辑
-- 对数据库概念使用一致的命名映射
+### Metadata Design Patterns
+- Use immutable objects to represent metadata (final classes + final fields)
+- Apply builder patterns and constructor chains for complex metadata construction
+- Include basic validation logic in metadata objects
+- Use consistent naming mapping for database concepts
 
-### SPI实现规范
-- 使用服务发现机制进行注册
-- 提供适当的默认实现
+### SPI Implementation Specifications
+- Use service discovery mechanism for registration
+- Provide appropriate default implementations
 
 ## Code Consistency Decision Making
 *Guidelines for maintaining consistency with existing project code*
@@ -275,55 +275,55 @@ For comprehensive testing case development requirements, see [AI Testing Case De
 
 ## Build System
 
-### 基础构建命令
+### Basic Build Commands
 ```bash
-# 完整构建（包含测试）
+# Complete build (including tests)
 ./mvnw install -T1C
-# 不包含测试的构建
+# Build without tests
 ./mvnw install -T1C -Dremoteresources.skip -DskipTests
 ```
 
-### 覆盖率验证工作流程
+### Coverage Verification Workflow
 
-#### 基础覆盖率检查
+#### Basic Coverage Check
 ```bash
-# 生成单个模块的测试覆盖率报告
+# Generate test coverage report for single module
 ./mvnw clean test jacoco:report -Djacoco.skip=false -pl {MODULE_PATH}
-# 验证测试覆盖率是否达标
+# Verify test coverage meets standards
 ./mvnw test jacoco:check@jacoco-check -Pcoverage-check -Djacoco.skip=false -Djacoco.check.class.pattern={FULLY_QUALIFIED_CLASS_NAME} -Djacoco.minimum.coverage=0.95 -pl {MODULE_PATH}
 ```
 
-#### 参数说明
-- `-Pcoverage-check`: 激活覆盖率检查配置
-- `jacoco:check@jacoco-check`: 执行特定的覆盖率检查目标
-- `-Djacoco.skip=false`: 启用JaCoCo（覆盖默认跳过设置）
-- `-Djacoco.check.class.pattern`: 指定目标类模式
-- `-Djacoco.minimum.coverage`: 设置覆盖率阈值（0.00-1.00，默认1.00）
-- `-pl module-path`: 指定目标模块
+#### Parameter Description
+- `-Pcoverage-check`: Activate coverage check configuration
+- `jacoco:check@jacoco-check`: Execute specific coverage check goal
+- `-Djacoco.skip=false`: Enable JaCoCo (override default skip setting)
+- `-Djacoco.check.class.pattern`: Specify target class pattern
+- `-Djacoco.minimum.coverage`: Set coverage threshold (0.00-1.00, default 1.00)
+- `-pl module-path`: Specify target module
 
-#### 模式匹配示例
+#### Pattern Matching Examples
 ```bash
-# 单个类
--Djacoco.check.class.pattern={完整类名}
+# Single class
+-Djacoco.check.class.pattern={full_class_name}
 
-# 包中所有类
--Djacoco.check.class.pattern="{包名}.**"
+# All classes in package
+-Djacoco.check.class.pattern="{package_name}.**"
 
-# 特定类型的类
+# Specific type of classes
 -Djacoco.check.class.pattern="**/*Service"
 
-# 多个模式（逗号分隔）
+# Multiple patterns (comma separated)
 -Djacoco.check.class.pattern="**/*Service,**/*Manager"
 ```
 
-#### 覆盖率报告解读
-- **BUILD SUCCESS**: 覆盖率满足要求
-- **BUILD FAILURE**: 覆盖率低于阈值，显示具体违规类和当前覆盖率
-- **CSV 数据**: 从 `module/target/site/jacoco/jacoco.csv` 获取详细数据
+#### Coverage Report Interpretation
+- **BUILD SUCCESS**: Coverage meets requirements
+- **BUILD FAILURE**: Coverage below threshold, shows specific violating classes and current coverage
+- **CSV Data**: Get detailed data from `module/target/site/jacoco/jacoco.csv`
 
-### 代码格式化
+### Code Formatting
 ```bash
-# 代码格式化
+# Code formatting
 ./mvnw spotless:apply -Pcheck
 ```
 
@@ -392,22 +392,22 @@ For comprehensive testing case development requirements, see [AI Testing Case De
   -pl your-module
 ```
 
-- **覆盖率满足要求**: BUILD SUCCESS，测试完成
-- **覆盖率不足**: BUILD FAILURE，返回步骤1分析未覆盖的分支
-- **详细分析**: 查看 `module/target/site/jacoco/index.html` 了解具体未覆盖的代码行
+- **Coverage meets requirements**: BUILD SUCCESS, testing complete
+- **Insufficient coverage**: BUILD FAILURE, return to step 1 to analyze uncovered branches
+- **Detailed analysis**: Check `module/target/site/jacoco/index.html` for specific uncovered code lines
 
-### 常见陷阱和避免方法
-- **早期退出陷阱**: 测试由于条件检查失败而提前退出，未到达核心逻辑
-- **不完整Mock陷阱**: 缺少数据库、规则或元数据配置
-- **表面通过陷阱**: 测试通过断言但未执行目标代码
-- **覆盖率误导陷阱**: 依赖测试通过而非实际覆盖率验证
-- **短路陷阱**: 未分别测试复合条件中的每个子条件
-- **Optional链陷阱**: 未覆盖Optional链式调用的所有路径组合
-- **边界值陷阱**: 忽略空值、空集合、索引越界等边界情况
-- **Mock链陷阱**: 深层嵌套依赖的不完整Mock配置
-- **原子条件陷阱**: 将复合条件作为一个整体测试，遗漏子条件分支
+### Common Pitfalls and Avoidance Methods
+- **Early exit pitfall**: Tests exit early due to failed condition checks, never reaching core logic
+- **Incomplete Mock pitfall**: Missing database, rule, or metadata configuration
+- **Surface passing pitfall**: Tests pass assertions but don't execute target code
+- **Coverage misleading pitfall**: Relying on test passing rather than actual coverage verification
+- **Short-circuit pitfall**: Not testing each sub-condition of compound conditions separately
+- **Optional chain pitfall**: Not covering all path combinations of Optional chained calls
+- **Boundary value pitfall**: Ignoring boundary cases like null values, empty collections, index out-of-bounds
+- **Mock chain pitfall**: Incomplete Mock configuration of deeply nested dependencies
+- **Atomic condition pitfall**: Testing compound conditions as a whole, missing sub-condition branches
 
-### 紧急程序
-- **立即终止**: 如果代码删除超过10行且没有指令
-- **立即停止**: 如果更改后测试失败
-- **立即报告偏差**: 一旦发现立即报告
+### Emergency Procedures
+- **Immediate termination**: If code deletion exceeds 10 lines without instruction
+- **Immediate stop**: If tests fail after changes
+- **Immediate deviation reporting**: Report immediately upon discovery
