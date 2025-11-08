@@ -34,6 +34,7 @@ import org.apache.shardingsphere.database.connector.core.metadata.database.metad
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.sqlbatch.DialectSQLBatchOption;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.table.DialectDriverQuerySystemCatalogOption;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.transaction.DialectTransactionOption;
+import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.version.DialectProtocolVersionOption;
 import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPI;
 import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
 
@@ -174,5 +175,14 @@ public interface DialectDatabaseMetaData extends DatabaseTypedSPI {
      */
     default DialectSQLBatchOption getSQLBatchOption() {
         return new DialectSQLBatchOption(true);
+    }
+    
+    /**
+     * Get protocol version option.
+     *
+     * @return protocol version option
+     */
+    default DialectProtocolVersionOption getProtocolVersionOption() {
+        return new DialectProtocolVersionOption("");
     }
 }

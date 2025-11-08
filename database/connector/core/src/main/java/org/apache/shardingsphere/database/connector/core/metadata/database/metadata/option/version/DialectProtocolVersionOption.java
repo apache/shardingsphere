@@ -15,22 +15,17 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.database.protocol.mysql.constant;
+package org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.version;
 
-import org.apache.shardingsphere.database.protocol.constant.DatabaseProtocolDefaultVersionProvider;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 /**
- * Default protocol version provider for MySQL.
+ * Dialect protocol version option.
  */
-public final class MySQLProtocolDefaultVersionProvider implements DatabaseProtocolDefaultVersionProvider {
+@RequiredArgsConstructor
+@Getter
+public final class DialectProtocolVersionOption {
     
-    @Override
-    public String provide() {
-        return "5.7.22";
-    }
-    
-    @Override
-    public String getDatabaseType() {
-        return "MySQL";
-    }
+    private final String defaultVersion;
 }

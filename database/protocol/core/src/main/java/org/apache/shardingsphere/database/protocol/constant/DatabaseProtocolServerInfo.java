@@ -19,8 +19,9 @@ package org.apache.shardingsphere.database.protocol.constant;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoader;
+import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.version.DialectProtocolVersionOption;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeRegistry;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -63,6 +64,7 @@ public final class DatabaseProtocolServerInfo {
      * @return default protocol version
      */
     public static String getDefaultProtocolVersion(final DatabaseType databaseType) {
-        return String.format(SERVER_INFORMATION_PATTERN, DatabaseTypedSPILoader.getService(DatabaseProtocolDefaultVersionProvider.class, databaseType).provide(), CommonConstants.PROXY_VERSION.get());
+        DialectProtocolVersionOption protocolVersionOption = new DatabaseTypeRegistry(databaseType).getDialectDatabaseMetaData().getProtocolVersionOption();
+        return String.format(SERVER_INFORMATION_PATTERN, protocolVersionOption.getDefaultVersion(), CommonConstants.PROXY_VERSION.get());
     }
 }

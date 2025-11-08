@@ -27,6 +27,7 @@ import org.apache.shardingsphere.database.connector.core.metadata.database.metad
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.join.DialectJoinOption;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.keygen.DialectGeneratedKeyOption;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.transaction.DialectTransactionOption;
+import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.version.DialectProtocolVersionOption;
 import org.apache.shardingsphere.database.connector.mysql.metadata.database.option.MySQLDataTypeOption;
 
 import java.sql.Connection;
@@ -79,6 +80,11 @@ public final class MySQLDatabaseMetaData implements DialectDatabaseMetaData {
     @Override
     public DialectGeneratedKeyOption getGeneratedKeyOption() {
         return new DialectGeneratedKeyOption(true);
+    }
+    
+    @Override
+    public DialectProtocolVersionOption getProtocolVersionOption() {
+        return new DialectProtocolVersionOption("5.7.22");
     }
     
     @Override
