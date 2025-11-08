@@ -32,17 +32,22 @@ import java.util.stream.Collectors;
 /**
  * Class path URL loader.
  */
-public final class ClassPathURLLoader implements ShardingSphereURLLoader {
+public final class ClassPathURLLoader implements ShardingSphereURLLoader<String> {
     
     @Override
     @SneakyThrows(IOException.class)
-    public String load(final String configurationSubject, final Properties queryProps) {
-        try (InputStream inputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream(configurationSubject)) {
+    public String load(final String configSubject, final Properties queryProps) {
+        try (InputStream inputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream(configSubject)) {
             Objects.requireNonNull(inputStream);
             try (BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8))) {
                 return reader.lines().collect(Collectors.joining(System.lineSeparator()));
             }
         }
+    }
+    
+    @Override
+    public boolean isLocalFile() {
+        return true;
     }
     
     @Override

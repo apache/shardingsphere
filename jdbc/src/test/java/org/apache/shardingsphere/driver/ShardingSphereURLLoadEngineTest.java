@@ -15,9 +15,11 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.url.core;
+package org.apache.shardingsphere.driver;
 
+import org.apache.shardingsphere.driver.jdbc.core.driver.ShardingSphereURLLoadEngine;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
+import org.apache.shardingsphere.infra.url.core.ShardingSphereURL;
 import org.apache.shardingsphere.infra.url.spi.ShardingSphereURLLoader;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockedStatic;
@@ -36,6 +38,7 @@ class ShardingSphereURLLoadEngineTest {
         final String lineSeparator = System.lineSeparator();
         String content = "foo_driver_fixture_db=2" + lineSeparator + "storage_unit_count=2" + lineSeparator;
         ShardingSphereURLLoader urlLoader = mock(ShardingSphereURLLoader.class);
+        when(urlLoader.isLocalFile()).thenReturn(true);
         when(urlLoader.load(any(), any())).thenReturn(content);
         try (MockedStatic<TypedSPILoader> typedSPILoaderMockedStatic = mockStatic(TypedSPILoader.class)) {
             typedSPILoaderMockedStatic.when(() -> TypedSPILoader.getService(ShardingSphereURLLoader.class, "classpath:")).thenReturn(urlLoader);

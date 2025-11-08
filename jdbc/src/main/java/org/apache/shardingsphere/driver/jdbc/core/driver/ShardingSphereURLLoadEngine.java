@@ -15,11 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.url.core;
+package org.apache.shardingsphere.driver.jdbc.core.driver;
 
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
+import org.apache.shardingsphere.infra.url.core.ShardingSphereURL;
 import org.apache.shardingsphere.infra.url.core.arg.URLArgumentLineRender;
 import org.apache.shardingsphere.infra.url.core.arg.URLArgumentPlaceholderTypeFactory;
-import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.infra.url.spi.ShardingSphereURLLoader;
 
 import java.util.Arrays;
@@ -32,7 +33,7 @@ public final class ShardingSphereURLLoadEngine {
     
     private final ShardingSphereURL url;
     
-    private final ShardingSphereURLLoader urlLoader;
+    private final ShardingSphereURLLoader<?> urlLoader;
     
     public ShardingSphereURLLoadEngine(final ShardingSphereURL url) {
         this.url = url;
@@ -44,8 +45,11 @@ public final class ShardingSphereURLLoadEngine {
      *
      * @return loaded content
      */
-    public byte[] loadContent() {
-        Collection<String> lines = Arrays.asList(urlLoader.load(url.getConfigurationSubject(), url.getQueryProps()).split(System.lineSeparator()));
-        return URLArgumentLineRender.render(lines, URLArgumentPlaceholderTypeFactory.valueOf(url.getQueryProps()));
+    public Object loadContent() {
+        if (urlLoader.isLocalFile()) {
+            Collection<String> lines = Arrays.asList(((String) urlLoader.load(url.getConfigurationSubject(), url.getQueryProps())).split(System.lineSeparator()));
+            return URLArgumentLineRender.render(lines, URLArgumentPlaceholderTypeFactory.valueOf(url.getQueryProps()));
+        }
+        return urlLoader.load(url.getConfigurationSubject(), url.getQueryProps());
     }
 }

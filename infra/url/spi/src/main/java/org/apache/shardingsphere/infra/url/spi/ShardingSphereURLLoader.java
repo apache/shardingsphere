@@ -24,16 +24,25 @@ import java.util.Properties;
 
 /**
  * ShardingSphere URL loader.
+ * 
+ * @param <T> type of load content
  */
 @SingletonSPI
-public interface ShardingSphereURLLoader extends TypedSPI {
+public interface ShardingSphereURLLoader<T> extends TypedSPI {
     
     /**
      * Load configuration content.
      *
-     * @param configurationSubject configuration subject
+     * @param configSubject configuration subject
      * @param queryProps query properties
      * @return loaded content
      */
-    String load(String configurationSubject, Properties queryProps);
+    T load(String configSubject, Properties queryProps);
+    
+    /**
+     * Whether load form local file.
+     *
+     * @return is load form local file or not
+     */
+    boolean isLocalFile();
 }

@@ -30,12 +30,17 @@ import java.util.stream.Collectors;
 /**
  * Absolute path URL loader.
  */
-public final class AbsolutePathURLLoader implements ShardingSphereURLLoader {
+public final class AbsolutePathURLLoader implements ShardingSphereURLLoader<String> {
     
     @Override
     @SneakyThrows(IOException.class)
-    public String load(final String configurationSubject, final Properties queryProps) {
-        return Files.readAllLines(getAbsoluteFile(configurationSubject).toPath(), StandardCharsets.UTF_8).stream().collect(Collectors.joining(System.lineSeparator()));
+    public String load(final String configSubject, final Properties queryProps) {
+        return Files.readAllLines(getAbsoluteFile(configSubject).toPath(), StandardCharsets.UTF_8).stream().collect(Collectors.joining(System.lineSeparator()));
+    }
+    
+    @Override
+    public boolean isLocalFile() {
+        return true;
     }
     
     private File getAbsoluteFile(final String configurationSubject) {
