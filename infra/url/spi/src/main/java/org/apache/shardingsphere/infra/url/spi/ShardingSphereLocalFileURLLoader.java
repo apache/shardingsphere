@@ -23,17 +23,17 @@ import org.apache.shardingsphere.infra.spi.type.typed.TypedSPI;
 import java.util.Properties;
 
 /**
- * ShardingSphere URL loader.
+ * ShardingSphere local file URL loader.
  */
 @SingletonSPI
-public interface ShardingSphereURLLoader extends TypedSPI {
+public interface ShardingSphereLocalFileURLLoader extends TypedSPI {
     
     /**
      * Load configuration content.
      *
-     * @param configurationSubject configuration subject
+     * @param configSubject configuration subject
      * @param queryProps query properties
      * @return loaded content
      */
-    String load(String configurationSubject, Properties queryProps);
+    String load(String configSubject, Properties queryProps);
 }

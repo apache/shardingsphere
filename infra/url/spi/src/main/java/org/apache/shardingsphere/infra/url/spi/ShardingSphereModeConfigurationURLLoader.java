@@ -15,32 +15,26 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.url.classpath;
+package org.apache.shardingsphere.infra.url.spi;
 
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.condition.EnabledOnOs;
-import org.junit.jupiter.api.condition.OS;
+import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
+import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPI;
 
 import java.util.Properties;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
-
-class ClassPathURLLoaderTest {
+/**
+ * ShardingSphere mode configuration URL loader.
+ */
+@SingletonSPI
+public interface ShardingSphereModeConfigurationURLLoader extends TypedSPI {
     
-    @Test
-    @EnabledOnOs({OS.LINUX, OS.MAC})
-    void assertGetContentOnLinux() {
-        assertGetContent(1783);
-    }
-    
-    @Test
-    @EnabledOnOs(OS.WINDOWS)
-    void assertGetContentOnWindows() {
-        assertGetContent(1839);
-    }
-    
-    private void assertGetContent(final int expectedLength) {
-        assertThat(new ClassPathLocalFileURLLoader().load("config/classpath/fixture.yaml", new Properties()).length(), is(expectedLength));
-    }
+    /**
+     * Load mode configuration.
+     *
+     * @param serverLists server lists
+     * @param queryProps query properties
+     * @return loaded mode configuration
+     */
+    ModeConfiguration load(String serverLists, Properties queryProps);
 }

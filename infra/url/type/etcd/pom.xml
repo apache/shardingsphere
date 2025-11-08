@@ -20,17 +20,17 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>org.apache.shardingsphere</groupId>
-        <artifactId>shardingsphere-infra-url</artifactId>
+        <artifactId>shardingsphere-infra-url-type</artifactId>
         <version>5.5.3-SNAPSHOT</version>
     </parent>
-    <artifactId>shardingsphere-infra-url-type</artifactId>
-    <packaging>pom</packaging>
+    <artifactId>shardingsphere-infra-url-type-etcd</artifactId>
     <name>${project.artifactId}</name>
     
-    <modules>
-        <module>classpath</module>
-        <module>absolutepath</module>
-        <module>zookeeper</module>
-        <module>etcd</module>
-    </modules>
+    <dependencies>
+        <dependency>
+            <groupId>org.apache.shardingsphere</groupId>
+            <artifactId>shardingsphere-infra-url-spi</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+    </dependencies>
 </project>
