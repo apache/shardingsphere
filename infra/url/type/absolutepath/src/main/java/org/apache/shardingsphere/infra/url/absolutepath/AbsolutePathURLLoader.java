@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.infra.url.absolutepath;
 
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.infra.url.spi.ShardingSphereURLLoader;
+import org.apache.shardingsphere.infra.url.spi.StandaloneShardingSphereURLLoader;
 
 import java.io.File;
 import java.io.IOException;
@@ -30,7 +30,7 @@ import java.util.stream.Collectors;
 /**
  * Absolute path URL loader.
  */
-public final class AbsolutePathURLLoader implements ShardingSphereURLLoader<String> {
+public final class AbsolutePathURLLoader implements StandaloneShardingSphereURLLoader {
     
     @Override
     @SneakyThrows(IOException.class)
@@ -40,11 +40,6 @@ public final class AbsolutePathURLLoader implements ShardingSphereURLLoader<Stri
     
     private File getAbsoluteFile(final String configurationSubject) {
         return new File(configurationSubject);
-    }
-    
-    @Override
-    public boolean isLocalFile() {
-        return true;
     }
     
     @Override

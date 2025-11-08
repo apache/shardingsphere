@@ -19,7 +19,7 @@ package org.apache.shardingsphere.infra.url.etcd;
 
 import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
-import org.apache.shardingsphere.infra.url.spi.ShardingSphereURLLoader;
+import org.apache.shardingsphere.infra.url.spi.ClusterShardingSphereURLLoader;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepositoryConfiguration;
 
 import java.util.Properties;
@@ -27,17 +27,12 @@ import java.util.Properties;
 /**
  * Etcd URL loader.
  */
-public final class EtcdURLLoader implements ShardingSphereURLLoader<ModeConfiguration> {
+public final class EtcdURLLoader implements ClusterShardingSphereURLLoader {
     
     @Override
-    public ModeConfiguration load(final String configSubject, final Properties queryProps) {
+    public ModeConfiguration create(final String configSubject, final Properties queryProps) {
         ShardingSpherePreconditions.checkState(queryProps.containsKey("namespace"), () -> new RuntimeException("Missing required property 'namespace' for ETCD URL loader."));
         return new ModeConfiguration("Cluster", new ClusterPersistRepositoryConfiguration("etcd", queryProps.getProperty("namespace"), configSubject, queryProps));
-    }
-    
-    @Override
-    public boolean isLocalFile() {
-        return false;
     }
     
     @Override

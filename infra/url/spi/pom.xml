@@ -29,7 +29,7 @@
     <dependencies>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-infra-spi</artifactId>
+            <artifactId>shardingsphere-cluster-mode-repository-api</artifactId>
             <version>${project.version}</version>
         </dependency>
     </dependencies>

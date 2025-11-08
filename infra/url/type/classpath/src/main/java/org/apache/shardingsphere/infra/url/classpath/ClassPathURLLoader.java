@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.infra.url.classpath;
 
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.infra.url.spi.ShardingSphereURLLoader;
+import org.apache.shardingsphere.infra.url.spi.StandaloneShardingSphereURLLoader;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -32,7 +32,7 @@ import java.util.stream.Collectors;
 /**
  * Class path URL loader.
  */
-public final class ClassPathURLLoader implements ShardingSphereURLLoader<String> {
+public final class ClassPathURLLoader implements StandaloneShardingSphereURLLoader {
     
     @Override
     @SneakyThrows(IOException.class)
@@ -43,11 +43,6 @@ public final class ClassPathURLLoader implements ShardingSphereURLLoader<String>
                 return reader.lines().collect(Collectors.joining(System.lineSeparator()));
             }
         }
-    }
-    
-    @Override
-    public boolean isLocalFile() {
-        return true;
     }
     
     @Override

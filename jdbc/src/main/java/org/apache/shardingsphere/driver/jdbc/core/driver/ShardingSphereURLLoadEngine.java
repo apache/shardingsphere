@@ -17,39 +17,43 @@
 
 package org.apache.shardingsphere.driver.jdbc.core.driver;
 
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.spi.exception.ServiceProviderNotFoundException;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.infra.url.core.ShardingSphereURL;
 import org.apache.shardingsphere.infra.url.core.arg.URLArgumentLineRender;
 import org.apache.shardingsphere.infra.url.core.arg.URLArgumentPlaceholderTypeFactory;
-import org.apache.shardingsphere.infra.url.spi.ShardingSphereURLLoader;
+import org.apache.shardingsphere.infra.url.spi.ClusterShardingSphereURLLoader;
+import org.apache.shardingsphere.infra.url.spi.StandaloneShardingSphereURLLoader;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Optional;
 
 /**
  * ShardingSphere URL load engine.
  */
+@RequiredArgsConstructor
 public final class ShardingSphereURLLoadEngine {
     
     private final ShardingSphereURL url;
-    
-    private final ShardingSphereURLLoader<?> urlLoader;
-    
-    public ShardingSphereURLLoadEngine(final ShardingSphereURL url) {
-        this.url = url;
-        urlLoader = TypedSPILoader.getService(ShardingSphereURLLoader.class, url.getSourceType());
-    }
     
     /**
      * Load configuration content.
      *
      * @return loaded content
+     * @throws ServiceProviderNotFoundException service provider not found exception
      */
     public Object loadContent() {
-        if (urlLoader.isLocalFile()) {
-            Collection<String> lines = Arrays.asList(((String) urlLoader.load(url.getConfigurationSubject(), url.getQueryProps())).split(System.lineSeparator()));
+        Optional<StandaloneShardingSphereURLLoader> standaloneShardingSphereURLLoader = TypedSPILoader.findService(StandaloneShardingSphereURLLoader.class, url.getSourceType());
+        if (standaloneShardingSphereURLLoader.isPresent()) {
+            Collection<String> lines = Arrays.asList(standaloneShardingSphereURLLoader.get().load(url.getConfigurationSubject(), url.getQueryProps()).split(System.lineSeparator()));
             return URLArgumentLineRender.render(lines, URLArgumentPlaceholderTypeFactory.valueOf(url.getQueryProps()));
         }
-        return urlLoader.load(url.getConfigurationSubject(), url.getQueryProps());
+        Optional<ClusterShardingSphereURLLoader> clusterShardingSphereURLLoader = TypedSPILoader.findService(ClusterShardingSphereURLLoader.class, url.getSourceType());
+        if (clusterShardingSphereURLLoader.isPresent()) {
+            return clusterShardingSphereURLLoader.get().create(url.getConfigurationSubject(), url.getQueryProps());
+        }
+        throw new ServiceProviderNotFoundException(ClusterShardingSphereURLLoader.class, url.getSourceType());
     }
 }
