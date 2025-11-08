@@ -17,37 +17,28 @@
 
 package org.apache.shardingsphere.transaction.xa.jta.datasource.swapper;
 
-import com.google.common.collect.ImmutableList;
+import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.transaction.DialectTransactionOption;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeRegistry;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.test.infra.fixture.jdbc.MockedDataSource;
-import org.apache.shardingsphere.transaction.xa.jta.datasource.properties.XADataSourceDefinition;
 import org.h2.jdbcx.JdbcDataSource;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
 
 import javax.sql.XADataSource;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.isA;
-import static org.mockito.Mockito.when;
 
-@ExtendWith(MockitoExtension.class)
 class DataSourceSwapperTest {
     
-    @Mock
-    private XADataSourceDefinition xaDataSourceDefinition;
-    
-    @BeforeEach
-    void setUp() {
-        when(xaDataSourceDefinition.getXADriverClassNames()).thenReturn(ImmutableList.of("org.h2.jdbcx.JdbcDataSource"));
-    }
+    private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "H2");
     
     @Test
     void assertSwap() {
-        DataSourceSwapper swapper = new DataSourceSwapper(xaDataSourceDefinition);
+        DialectTransactionOption transactionOption = new DatabaseTypeRegistry(databaseType).getDialectDatabaseMetaData().getTransactionOption();
+        DataSourceSwapper swapper = new DataSourceSwapper(databaseType, transactionOption.getXaDriverClassNames());
         assertResult(swapper.swap(new MockedDataSource()));
     }
     

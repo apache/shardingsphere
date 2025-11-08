@@ -17,11 +17,12 @@
 
 package org.apache.shardingsphere.transaction.xa.jta.datasource;
 
+import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.transaction.DialectTransactionOption;
 import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.util.reflection.ReflectionUtils;
 import org.apache.shardingsphere.transaction.xa.jta.connection.XAConnectionWrapper;
-import org.apache.shardingsphere.transaction.xa.jta.datasource.properties.XADataSourceDefinition;
 import org.apache.shardingsphere.transaction.xa.jta.datasource.swapper.DataSourceSwapper;
 import org.apache.shardingsphere.transaction.xa.spi.SingleXAResource;
 import org.apache.shardingsphere.transaction.xa.spi.XATransactionManagerProvider;
@@ -69,7 +70,8 @@ public final class XATransactionDataSource implements AutoCloseable {
         this.resourceName = resourceName;
         this.dataSource = dataSource;
         if (!CONTAINER_DATASOURCE_NAMES.contains(dataSource.getClass().getSimpleName())) {
-            xaDataSource = new DataSourceSwapper(DatabaseTypedSPILoader.getService(XADataSourceDefinition.class, databaseType)).swap(dataSource);
+            DialectTransactionOption transactionOption = new DatabaseTypeRegistry(databaseType).getDialectDatabaseMetaData().getTransactionOption();
+            xaDataSource = new DataSourceSwapper(databaseType, transactionOption.getXaDriverClassNames()).swap(dataSource);
             xaConnectionWrapper = DatabaseTypedSPILoader.getService(XAConnectionWrapper.class, databaseType);
             this.xaTransactionManagerProvider = xaTransactionManagerProvider;
             xaTransactionManagerProvider.registerRecoveryResource(resourceName, xaDataSource);
