@@ -27,7 +27,6 @@ import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Optional;
 
 /**
@@ -58,15 +57,11 @@ public final class PostgreSQLStatisticsCollector implements DialectDatabaseStati
         if (schemaTables.isEmpty()) {
             return false;
         }
-        for (Entry<String, Collection<String>> entry : schemaTables.entrySet()) {
-            if (!STATISTICS_SCHEMA_TABLES.containsKey(entry.getKey())) {
-                return false;
-            }
-            if (!STATISTICS_SCHEMA_TABLES.get(entry.getKey()).containsAll(entry.getValue())) {
-                return false;
-            }
-        }
-        return true;
+        return schemaTables.entrySet().stream().allMatch(entry -> isStatisticsTables(entry.getKey(), entry.getValue()));
+    }
+    
+    private boolean isStatisticsTables(final String schemaName, final Collection<String> tableNames) {
+        return STATISTICS_SCHEMA_TABLES.containsKey(schemaName) && STATISTICS_SCHEMA_TABLES.get(schemaName).containsAll(tableNames);
     }
     
     @Override

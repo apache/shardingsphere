@@ -174,6 +174,8 @@ Key areas covered by coding standards file:
 - Apply consistent exception handling and return value patterns (see Style Consistency Application)
 - **Test Method Organization**: Group test methods by functional scenarios, avoid redundancy
 - **Dependency Injection Simplification**: Keep dependency injection in tests concise, focus on test targets
+- **SPI Loading Consistency**: Use `DatabaseTypedSPILoader` and `TypedSPILoader` for database-specific components in tests
+- **Interface-Based Testing**: Test against interfaces rather than concrete implementations when SPI is available
 
 ## AI Testing Strategies
 *AI-specific testing organization and design capabilities*
@@ -184,12 +186,20 @@ Key areas covered by coding standards file:
 - Avoid hard-coding; use parameterized tests
 - **Configuration Object Building**: Use `PropertiesBuilder` and `Property` for type-safe configuration construction
 - **Mock Minimization**: Mock only necessary dependencies, use `RETURNS_DEEP_STUBS` for chained calls
+- **Inline Mock Creation**: Create mock objects directly where needed rather than declaring fields
+- **Framework Dependency Reduction**: Minimize test framework extensions and annotations when not necessary
 - **Logic Extraction**: Extract repetitive mock setup and assertion logic into private methods
 
 *For detailed test organization standards, see CODE_OF_CONDUCT.md reference in code standards section*
 
 ### Testing Case Development Standards
 For comprehensive testing case development requirements, see [AI Testing Case Development Standards](#ai-testing-case-development-standards) above.
+
+### Test Structure Minimalism Standards
+- **Framework Dependency Reduction**: Avoid `@ExtendWith` and similar framework extensions when simple mocks suffice
+- **Import Organization**: Group imports by source (java.*, org.*, static), keep them minimal and relevant
+- **Class Structure Simplification**: Focus on test logic rather than ceremonial code and annotations
+- **Code Density Optimization**: Maximize meaningful code per line while maintaining readability
 
 ### Test Scenario Design Capabilities
 - Identify business-critical paths for focused testing
@@ -199,6 +209,10 @@ For comprehensive testing case development requirements, see [AI Testing Case De
 - **Modern Tool Usage**: Use `Plugins.getMemberAccessor()` instead of traditional reflection APIs
 - **State Management Strategy**: Leverage `@BeforeEach` and `@AfterEach` for shared reset logic
 - **Assertive Naming**: Test method names directly express verification intent
+- **Method Naming Pattern**: Use `assert[MethodName]With[Condition]` pattern for clarity and consistency
+- **Single-Line Assertions**: Combine method calls and assertions into single statements when clear
+- **Chain Method Assertions**: Assert directly on method call results, avoiding intermediate variables
+- **Expression over Construction**: Use expressions and utility methods rather than step-by-step construction
 
 ### Test Code Optimization Core Principles
 *Core principles for writing clean, efficient test code based on proven practices*
@@ -207,6 +221,9 @@ For comprehensive testing case development requirements, see [AI Testing Case De
 - **Self-Contained Tests**: Ensure each test method is self-contained and doesn't rely on complex external setup unless truly shared
 - **Utilize Tool Methods**: Leverage utility methods like `Collections.singleton()` and `Arrays.asList()` for efficient collection creation
 - **Simplify Dependency Chains**: Reduce multi-layer nested Mock configurations to maintain test code readability and maintainability
+- **Collection Utility Optimization**: Prefer `Collections.emptyMap()`, `Collections.singleton()`, and `Arrays.asList()` for test data creation
+- **Immutable Test Data**: Use immutable collections for test data when possible to ensure test reliability
+- **Import Statement Minimization**: Keep imports minimal and relevant, avoiding framework dependencies when not needed
 
 ## Dependency Injection Patterns
 *Standard dependency injection methods in ShardingSphere*

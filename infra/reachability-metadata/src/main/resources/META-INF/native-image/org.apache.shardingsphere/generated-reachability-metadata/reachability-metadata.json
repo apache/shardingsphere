@@ -4213,7 +4213,7 @@
     },
     {
       "condition": {
-        "typeReached": "org.apache.shardingsphere.infra.url.core.ShardingSphereURLLoadEngine"
+        "typeReached": "org.apache.shardingsphere.driver.jdbc.core.driver.ShardingSphereURLLoadEngine"
       },
       "type": "org.apache.shardingsphere.infra.url.classpath.ClassPathURLLoader"
     },
@@ -11966,7 +11966,7 @@
     },
     {
       "condition": {
-        "typeReached": "org.apache.shardingsphere.infra.url.core.ShardingSphereURLLoadEngine"
+        "typeReached": "org.apache.shardingsphere.driver.jdbc.core.driver.ShardingSphereURLLoadEngine"
       },
       "glob": "META-INF/services/org.apache.shardingsphere.infra.url.spi.ShardingSphereURLLoader"
     },
