@@ -20,15 +20,16 @@ package org.apache.shardingsphere.transaction.xa.jta.datasource.swapper;
 import com.google.common.base.CaseFormat;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.datasource.pool.CatalogSwitchableDataSource;
 import org.apache.shardingsphere.infra.datasource.pool.props.creator.DataSourcePoolPropertiesCreator;
-import org.apache.shardingsphere.transaction.xa.jta.datasource.properties.XADataSourceDefinition;
 import org.apache.shardingsphere.transaction.xa.jta.exception.XADataSourceInitializeException;
 
 import javax.sql.DataSource;
 import javax.sql.XADataSource;
 import java.lang.reflect.Method;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -42,7 +43,9 @@ public final class DataSourceSwapper {
     
     private static final String SETTER_PREFIX = "set";
     
-    private final XADataSourceDefinition xaDataSourceDefinition;
+    private final DatabaseType databaseType;
+    
+    private final Collection<String> xaDriverClassNames;
     
     /**
      * Swap data source to database access configuration.
@@ -57,13 +60,13 @@ public final class DataSourceSwapper {
     }
     
     private XADataSource createXADataSource() {
-        for (String each : xaDataSourceDefinition.getXADriverClassNames()) {
+        for (String each : xaDriverClassNames) {
             try {
                 return loadXADataSource(each);
             } catch (final ReflectiveOperationException ignored) {
             }
         }
-        throw new XADataSourceInitializeException(xaDataSourceDefinition);
+        throw new XADataSourceInitializeException(databaseType);
     }
     
     private XADataSource loadXADataSource(final String xaDataSourceClassName) throws ReflectiveOperationException {

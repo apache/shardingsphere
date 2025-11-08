@@ -31,6 +31,7 @@ import org.apache.shardingsphere.database.connector.core.metadata.database.metad
 import org.apache.shardingsphere.database.connector.mysql.metadata.database.option.MySQLDataTypeOption;
 
 import java.sql.Connection;
+import java.util.Arrays;
 
 /**
  * Database meta data of MySQL.
@@ -69,7 +70,8 @@ public final class MySQLDatabaseMetaData implements DialectDatabaseMetaData {
     
     @Override
     public DialectTransactionOption getTransactionOption() {
-        return new DialectTransactionOption(false, false, true, false, true, Connection.TRANSACTION_REPEATABLE_READ, false, false);
+        return new DialectTransactionOption(false, false, true, false, true, Connection.TRANSACTION_REPEATABLE_READ, false, false,
+                Arrays.asList("com.mysql.jdbc.jdbc2.optional.MysqlXADataSource", "com.mysql.cj.jdbc.MysqlXADataSource"));
     }
     
     @Override

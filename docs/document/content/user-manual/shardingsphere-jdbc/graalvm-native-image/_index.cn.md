@@ -251,7 +251,7 @@ Caused by: java.io.UnsupportedEncodingException: Codepage Cp1252 is not supporte
 
 5. 讨论在 ShardingSphere JDBC 的 GraalVM Native Image 下使用 XA 分布式事务的所需步骤，则需要引入额外的已知前提，
    - `org.apache.shardingsphere.transaction.xa.jta.datasource.swapper.DataSourceSwapper#loadXADataSource(String)` 会通过 `java.lang.Class#getDeclaredConstructors` 实例化各数据库驱动的 `javax.sql.XADataSource` 实现类。
-   - 各数据库驱动的 `javax.sql.XADataSource` 实现类的全类名通过实现 `org.apache.shardingsphere.transaction.xa.jta.datasource.properties.XADataSourceDefinition` 的 SPI，来存入 ShardingSphere 的元数据。
+   - 各数据库驱动的 `javax.sql.XADataSource` 实现类的全类名通过实现 `org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.transaction.DialectTransactionOption` 的 SPI，来存入 ShardingSphere 的元数据。
 
 在 GraalVM Native Image 内部，这实际上要求定义第三方依赖的 GraalVM Reachability Metadata，而 ShardingSphere 自身仅为 `com.h2database:h2` 提供对应的 GraalVM Reachability Metadata。
 `com.mysql:mysql-connector-j` 等其他数据库驱动的 GraalVM Reachability Metadata 应自行定义，

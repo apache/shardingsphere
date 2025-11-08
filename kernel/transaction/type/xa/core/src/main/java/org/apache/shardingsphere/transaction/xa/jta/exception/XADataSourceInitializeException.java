@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.transaction.xa.jta.exception;
 
+import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.exception.external.sql.sqlstate.XOpenSQLState;
-import org.apache.shardingsphere.transaction.xa.jta.datasource.properties.XADataSourceDefinition;
 
 /**
  * XA data source initialize exception.
@@ -27,7 +27,7 @@ public final class XADataSourceInitializeException extends XATransactionSQLExcep
     
     private static final long serialVersionUID = -4515239569528215614L;
     
-    public XADataSourceInitializeException(final XADataSourceDefinition xaDataSourceDefinition) {
-        super(XOpenSQLState.INVALID_TRANSACTION_STATE, 0, "Failed to create '%s' XA data source.", xaDataSourceDefinition.getType());
+    public XADataSourceInitializeException(final DatabaseType databaseType) {
+        super(XOpenSQLState.INVALID_TRANSACTION_STATE, 0, "Failed to create '%s' XA data source.", databaseType.getType());
     }
 }

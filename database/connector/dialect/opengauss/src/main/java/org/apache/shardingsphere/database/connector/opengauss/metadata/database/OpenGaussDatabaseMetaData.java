@@ -32,6 +32,7 @@ import org.apache.shardingsphere.database.connector.opengauss.metadata.database.
 import org.apache.shardingsphere.database.connector.opengauss.metadata.database.option.OpenGaussSchemaOption;
 
 import java.sql.Connection;
+import java.util.Collections;
 import java.util.Optional;
 
 /**
@@ -76,7 +77,7 @@ public final class OpenGaussDatabaseMetaData implements DialectDatabaseMetaData 
     
     @Override
     public DialectTransactionOption getTransactionOption() {
-        return new DialectTransactionOption(true, false, false, true, false, Connection.TRANSACTION_READ_COMMITTED, true, true);
+        return new DialectTransactionOption(true, false, false, true, false, Connection.TRANSACTION_READ_COMMITTED, true, true, Collections.singleton("org.opengauss.xa.PGXADataSource"));
     }
     
     @Override

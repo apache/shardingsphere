@@ -53,84 +53,51 @@ Core concepts:
 *Core design principles guiding all coding decisions*
 
 ### Code Standards
-Strictly follow all coding standards in [CODE_OF_CONDUCT.md](./CODE_OF_CONDUCT.md)
+Strictly follow all code standards in [CODE_OF_CONDUCT.md](./CODE_OF_CONDUCT.md)
 
-Key areas covered by coding standards file:
+Key areas covered by code standards documents:
 - Naming conventions and code style
 - Data structure usage guidelines
 - Technical tool specifications
 - File format requirements
 - G4 grammar rules
 - Complete unit testing standards
-- **Code Self-Documentation**: No inline comments allowed; code needing explanation should be extracted into well-named methods
+- **Code self-documentation**: Inline comments are not allowed; code requiring explanation should be extracted to well-named methods
 
 ## Testing Philosophy
 *Comprehensive testing requirements and standards for all new code*
 
 ### Unified Testing Standards
 - 100% line and branch coverage for all new code
-- **Branch Minimal Coverage**: Analyze uncovered branches, write only minimal test cases
-- **Test Set Minimization**: Focus on branch coverage and eliminate redundancy
-- **Test Integration Priority**: Prefer modifying existing test methods over creating new ones
-- **Single-Target Modification**: Each test change should focus on covering one specific uncovered branch
-- **Element Addition Strategy**: Add new elements to existing test data collections to trigger new branches
+- **Minimal branch coverage**: Analyze uncovered branches and write only minimal test cases
+- **Test set minimization**: Focus on branch coverage, eliminate redundancy
+- **Test integration priority**: Prefer modifying existing test methods over creating new ones
+- **Single target modification**: Each test change should focus on covering one specific uncovered branch
+- **Element addition strategy**: Add new elements to existing test data collections to trigger new branches
 
 *For detailed testing standards, see CODE_OF_CONDUCT.md reference in code standards section*
-
-### Test Coverage Completeness Principles
-
-#### Test Coverage Analysis Standards
-- **Deep Branch Analysis**: Must analyze all if-else, ternary operations, and atomic conditions within compound conditions
-- **Short-Circuit Evaluation**: Must test each sub-condition of `&&` and `||` operators separately
-- **Optional Chain Decomposition**: Must test all path combinations in Optional chained calls
-- **Dependency Mapping**: Must pre-map complete mock dependency relationships
-
-#### Complex Condition Testing Strategies
-- **Atomic Condition Separation**: Decompose compound conditions into independently testable atomic conditions
-- **Boundary Value Priority**: Prioritize testing null values, empty collections, index out-of-bounds, and other boundary cases
-- **Type System Coverage**: Test all possible implementation types of instanceof checks
-- **Parameter Index Boundaries**: Test non-consecutive parameters, out-of-bounds indices, empty parameter lists, etc.
-
-#### Mock Configuration Completeness
-- **Dependency Chain Integrity**: Ensure complete configuration of all mock object dependencies
-- **Multi-Layer Nested Mocks**: Deep nested dependencies must be precisely mocked layer by layer
-- **Return Value Combination Coverage**: Test possible combinations of mock method return values
-- **Exception Path Testing**: Test possible exception throwing paths in dependency chains
-
-#### Coverage Verification Process
-- **Real-time Coverage Monitoring**: Use coverage tools to verify branch coverage in real-time
-- **Systematic Coverage Verification**: Re-evaluate overall coverage after each test modification
-- **Uncovered Branch Analysis**: Perform root cause analysis on uncovered branches and supplement corresponding tests
-- **Boundary Case Review**: Specifically review easily overlooked boundary conditions and exception cases
-- **Automated Verification**: Use JaCoCo coverage checking tools for automated verification (see Build System section)
-
-#### Test Design Principles
-- **Matrix-Based Test Design**: Design test matrices covering all critical parameter combinations
-- **Minimal Case Maximum Coverage**: Each test case should cover the maximum number of uncovered branches
-- **Complex Scenario Simplification**: Decompose complex business scenarios into independent testable units
-- **Coverage-Driven Iteration**: Guide test case supplementation and optimization based on coverage feedback
 
 ## AI Testing Case Development Standards
 *Effective testing case development standards and workflows for all new test code*
 
 ### Deep Analysis Requirements
-- **Code Flow Understanding**: Must analyze complete execution paths before creating tests
-- **Dependency Chain Mapping**: Identify all mock dependencies and their relationships
-- **Branch Condition Analysis**: Understand all conditional checks that can cause early exits
-- **Coverage Gap Identification**: List specific uncovered branches before test design
+- **Code flow understanding**: Must analyze complete execution paths before creating tests
+- **Dependency chain mapping**: Identify all Mock dependencies and their relationships
+- **Branch condition analysis**: Understand all condition checks that may cause early exits
+- **Coverage gap identification**: List specific uncovered branches before test design
 
 ### Mock Setup Standards
-- **Complete Dependency Chain**: Mock all objects in the call chain, not just direct dependencies
-- **Real Business Scenarios**: Create tests that simulate actual business logic flows
-- **Conditional Success**: Ensure mocks allow tests to pass all prerequisite conditions
-- **Avoid Surface Mocks**: Prevent mocks that cause tests to exit early without reaching target code
+- **Complete dependency chain**: Mock all objects in the call chain, not just direct dependencies
+- **Real business scenarios**: Create tests that simulate actual business logic flows
+- **Condition success**: Ensure Mocks allow tests to pass all prerequisite conditions
+- **Avoid surface Mocks**: Prevent Mocks that cause tests to exit early without reaching target code
 
 ### Verification Requirements
-- **Path Validation**: Confirm each test triggers the intended code branches
-- **Coverage Confirmation**: Verify actual coverage improvement over test passage
-- **Mock Completeness Check**: Ensure all prerequisite conditions are properly satisfied
+- **Path verification**: Confirm each test triggers expected code branches
+- **Coverage confirmation**: Verify actual coverage improvement rather than test passing
+- **Mock completeness check**: Ensure all prerequisite conditions are properly satisfied
 
-## AI Code Understanding Guidelines
+## AI Code Understanding Guide
 *AI-specific pattern recognition and style application capabilities*
 
 ### Pattern Recognition Capabilities
@@ -145,15 +112,15 @@ Key areas covered by coding standards file:
 - Follow established patterns of module architecture (see ShardingSphere Architecture Patterns)
 
 ## ShardingSphere Architecture Patterns
-*Architecture decision guidance specific to ShardingSphere environment*
+*ShardingSphere environment-specific architecture decision guidance*
 
 ### Database Abstraction Design Principles
 - Create specific dialect implementations for database-specific features
 - Use SPI for extensible components while keeping core logic database-agnostic
 
 ### Metadata Design Patterns
-- Use immutable objects for metadata representation (final class + final fields)
-- Apply builder pattern and constructor chaining for complex metadata construction
+- Use immutable objects to represent metadata (final classes + final fields)
+- Apply builder patterns and constructor chains for complex metadata construction
 - Include basic validation logic in metadata objects
 - Use consistent naming mapping for database concepts
 
@@ -310,38 +277,20 @@ For comprehensive testing case development requirements, see [AI Testing Case De
 
 ### Basic Build Commands
 ```bash
-# Full build with tests
+# Complete build (including tests)
 ./mvnw install -T1C
 # Build without tests
 ./mvnw install -T1C -Dremoteresources.skip -DskipTests
-# Format code
-./mvnw spotless:apply -Pcheck
 ```
 
-### Test Coverage Verification Workflow
+### Coverage Verification Workflow
 
 #### Basic Coverage Check
 ```bash
-# Check coverage for single class (100% requirement)
-./mvnw test jacoco:check@jacoco-check -Pcoverage-check -Djacoco.skip=false \
-  -Djacoco.check.class.pattern={FULLY_QUALIFIED_CLASS_NAME} \
-  -pl {MODULE_PATH}
-
-# Check coverage for all classes in package
-./mvnw test jacoco:check@jacoco-check -Pcoverage-check -Djacoco.skip=false \
-  -Djacoco.check.class.pattern="{PACKAGE_NAME}.**" \
-  -Djacoco.minimum.coverage=1.00 \
-  -pl {MODULE_PATH}
-```
-
-#### Step-by-step Execution (Recommended)
-```bash
-# 1. Run tests to generate coverage data
-./mvnw test -Pcoverage-check -Djacoco.skip=false -pl {MODULE_PATH}
-
-# 2. Check coverage for specific class
-./mvnw jacoco:check@jacoco-check -Pcoverage-check -Djacoco.skip=false \
-  -Djacoco.check.class.pattern={FULLY_QUALIFIED_CLASS_NAME}
+# Generate test coverage report for single module
+./mvnw clean test jacoco:report -Djacoco.skip=false -pl {MODULE_PATH}
+# Verify test coverage meets standards
+./mvnw test jacoco:check@jacoco-check -Pcoverage-check -Djacoco.skip=false -Djacoco.check.class.pattern={FULLY_QUALIFIED_CLASS_NAME} -Djacoco.minimum.coverage=0.95 -pl {MODULE_PATH}
 ```
 
 #### Parameter Description
@@ -355,15 +304,15 @@ For comprehensive testing case development requirements, see [AI Testing Case De
 #### Pattern Matching Examples
 ```bash
 # Single class
--Djacoco.check.class.pattern={FULLY_QUALIFIED_CLASS_NAME}
+-Djacoco.check.class.pattern={full_class_name}
 
 # All classes in package
--Djacoco.check.class.pattern="{PACKAGE_NAME}.**"
+-Djacoco.check.class.pattern="{package_name}.**"
 
 # Specific type of classes
 -Djacoco.check.class.pattern="**/*Service"
 
-# Multiple patterns (comma-separated)
+# Multiple patterns (comma separated)
 -Djacoco.check.class.pattern="**/*Service,**/*Manager"
 ```
 
@@ -372,51 +321,11 @@ For comprehensive testing case development requirements, see [AI Testing Case De
 - **BUILD FAILURE**: Coverage below threshold, shows specific violating classes and current coverage
 - **CSV Data**: Get detailed data from `module/target/site/jacoco/jacoco.csv`
 
-#### Coverage Check Best Practices
+### Code Formatting
 ```bash
-# Quick check during development
-./mvnw test jacoco:check@jacoco-check -Pcoverage-check -Djacoco.skip=false \
-  -Djacoco.check.class.pattern={TARGET_CLASS_NAME} \
-  -pl {MODULE_PATH}
-
-# Pre-commit verification (strict mode)
-./mvnw test jacoco:check@jacoco-check -Pcoverage-check -Djacoco.skip=false \
-  -Djacoco.check.class.pattern="{PACKAGE_NAME}.**" \
-  -Djacoco.minimum.coverage=1.00 \
-  -pl {MODULE_PATH}
-
-# AI Usage Template - Replace variables with actual values:
-# MODULE_PATH: Replace with actual module path (e.g., mode/core, infra/common)
-# FULLY_QUALIFIED_CLASS_NAME: Replace with complete package+class name (e.g., org.apache.shardingsphere.YourClass)
-./mvnw test jacoco:check@jacoco-check -Pcoverage-check -Djacoco.skip=false \
-  -Djacoco.check.class.pattern={FULLY_QUALIFIED_CLASS_NAME} \
-  -pl {MODULE_PATH}
-
-# Integration verification (package level)
-./mvnw test jacoco:check@jacoco-check -Pcoverage-check -Djacoco.skip=false \
-  -Djacoco.check.class.pattern="org.apache.shardingsphere.**" \
-  -Djacoco.minimum.coverage=0.95
+# Code formatting
+./mvnw spotless:apply -Pcheck
 ```
-
-#### Troubleshooting
-```bash
-# If coverage check fails, view detailed report
-open {MODULE_PATH}/target/site/jacoco/index.html
-
-# Parse CSV to get specific data
-grep "{CLASS_NAME}" {MODULE_PATH}/target/site/jacoco/jacoco.csv
-
-# Check specific coverage threshold
-./mvnw jacoco:check@jacoco-check -Pcoverage-check \
-  -Djacoco.check.class.pattern="{FULLY_QUALIFIED_CLASS_NAME}" \
-  -Djacoco.minimum.coverage=0.80
-
-# AI Helper: Variables to replace
-# {MODULE_PATH}: Module path like "mode/core", "infra/common", "kernel/metadata"
-# {CLASS_NAME}: Simple class name like "DeliverEventSubscriberRegistry"
-# {FULLY_QUALIFIED_CLASS_NAME}: Complete package+class name like "org.apache.shardingsphere.mode.deliver.DeliverEventSubscriberRegistry"
-```
-
 
 ## Project Structure
 
@@ -483,22 +392,22 @@ grep "{CLASS_NAME}" {MODULE_PATH}/target/site/jacoco/jacoco.csv
   -pl your-module
 ```
 
-- **Coverage Meets Requirement**: BUILD SUCCESS, testing complete
-- **Insufficient Coverage**: BUILD FAILURE, return to Step 1 to analyze uncovered branches
-- **Detailed Analysis**: View `module/target/site/jacoco/index.html` for specific uncovered code lines
+- **Coverage meets requirements**: BUILD SUCCESS, testing complete
+- **Insufficient coverage**: BUILD FAILURE, return to step 1 to analyze uncovered branches
+- **Detailed analysis**: Check `module/target/site/jacoco/index.html` for specific uncovered code lines
 
-### Common Traps and Avoidance Methods
-- **Early Exit Traps**: Tests exit early due to failed condition checks without reaching core logic
-- **Incomplete Mock Traps**: Missing database, rule, or metadata configurations
-- **Surface Pass Traps**: Tests pass assertions but don't execute target code
-- **Coverage Misleading Traps**: Relying on test passage instead of actual coverage verification
-- **Short-Circuit Traps**: Not testing each sub-condition within compound conditions separately
-- **Optional Chain Traps**: Not covering all path combinations of Optional chained calls
-- **Boundary Value Traps**: Ignoring null values, empty collections, index out-of-bounds, and other boundary cases
-- **Mock Chain Traps**: Incomplete mock configuration for deep nested dependencies
-- **Atomic Condition Traps**: Testing compound conditions as a whole, missing sub-condition branches
+### Common Pitfalls and Avoidance Methods
+- **Early exit pitfall**: Tests exit early due to failed condition checks, never reaching core logic
+- **Incomplete Mock pitfall**: Missing database, rule, or metadata configuration
+- **Surface passing pitfall**: Tests pass assertions but don't execute target code
+- **Coverage misleading pitfall**: Relying on test passing rather than actual coverage verification
+- **Short-circuit pitfall**: Not testing each sub-condition of compound conditions separately
+- **Optional chain pitfall**: Not covering all path combinations of Optional chained calls
+- **Boundary value pitfall**: Ignoring boundary cases like null values, empty collections, index out-of-bounds
+- **Mock chain pitfall**: Incomplete Mock configuration of deeply nested dependencies
+- **Atomic condition pitfall**: Testing compound conditions as a whole, missing sub-condition branches
 
 ### Emergency Procedures
 - **Immediate termination**: If code deletion exceeds 10 lines without instruction
 - **Immediate stop**: If tests fail after changes
-- **Immediate report deviations**: As soon as detected
+- **Immediate deviation reporting**: Report immediately upon discovery

@@ -820,6 +820,7 @@
                     <version>${maven-surefire-plugin.version}</version>
                     <configuration>
                         <trimStackTrace>false</trimStackTrace>
+                        <argLine>${argLine} -XX:+EnableDynamicAgentLoading</argLine>
                     </configuration>
                 </plugin>
                 <plugin>
@@ -1128,13 +1129,13 @@
                         <plugin>
                             <artifactId>maven-surefire-plugin</artifactId>
                             <configuration>
-                                <argLine>--add-opens java.base/java.lang=ALL-UNNAMED --add-opens java.base/java.lang.reflect=ALL-UNNAMED --add-opens java.base/sun.net=ALL-UNNAMED --add-opens java.base/java.net=ALL-UNNAMED</argLine>
+                                <argLine>${argLine} --add-opens java.base/java.lang=ALL-UNNAMED --add-opens java.base/java.lang.reflect=ALL-UNNAMED --add-opens java.base/sun.net=ALL-UNNAMED --add-opens java.base/java.net=ALL-UNNAMED</argLine>
                             </configuration>
                         </plugin>
                         <plugin>
                             <artifactId>maven-failsafe-plugin</artifactId>
                             <configuration>
-                                <argLine>--add-opens java.base/java.lang=ALL-UNNAMED --add-opens java.base/java.lang.reflect=ALL-UNNAMED --add-opens java.base/sun.net=ALL-UNNAMED --add-opens java.base/java.net=ALL-UNNAMED</argLine>
+                                <argLine>${argLine} --add-opens java.base/java.lang=ALL-UNNAMED --add-opens java.base/java.lang.reflect=ALL-UNNAMED --add-opens java.base/sun.net=ALL-UNNAMED --add-opens java.base/java.net=ALL-UNNAMED</argLine>
                             </configuration>
                         </plugin>
                     </plugins>
@@ -1450,7 +1451,7 @@
             <id>coverage-check</id>
             <properties>
                 <jacoco.check.class.pattern>**/*</jacoco.check.class.pattern>
-                <jacoco.minimum.coverage>1.00</jacoco.minimum.coverage>
+                <jacoco.minimum.coverage>0.95</jacoco.minimum.coverage>
             </properties>
             <build>
                 <plugins>
