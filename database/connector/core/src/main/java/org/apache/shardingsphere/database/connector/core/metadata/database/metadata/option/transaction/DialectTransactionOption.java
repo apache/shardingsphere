@@ -20,6 +20,8 @@ package org.apache.shardingsphere.database.connector.core.metadata.database.meta
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
+import java.util.Collection;
+
 /**
  * Dialect transaction option.
  */
@@ -43,4 +45,6 @@ public final class DialectTransactionOption {
     private final boolean isReturnRollbackStatementWhenCommitFailed;
     
     private final boolean isAllowCommitAndRollbackOnlyWhenTransactionFailed;
+    
+    private final Collection<String> xaDriverClassNames;
 }

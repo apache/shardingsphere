@@ -260,7 +260,7 @@ Caused by: java.io.UnsupportedEncodingException: Codepage Cp1252 is not supporte
 5. To discuss the steps required to use XA distributed transactions under the GraalVM Native Image of ShardingSphere JDBC, 
 additional known prerequisites need to be introduced,
    - `org.apache.shardingsphere.transaction.xa.jta.datasource.swapper.DataSourceSwapper#loadXADataSource(String)` will instantiate the `javax.sql.XADataSource` implementation class of each database driver through `java.lang.Class#getDeclaredConstructors`.
-   - The full class name of the `javax.sql.XADataSource` implementation class of each database driver is stored in the metadata of ShardingSphere by implementing the SPI of `org.apache.shardingsphere.transaction.xa.jta.datasource.properties.XADataSourceDefinition`.
+   - The full class name of the `javax.sql.XADataSource` implementation class of each database driver is stored in the metadata of ShardingSphere by implementing the SPI of `org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.transaction.DialectTransactionOption`.
 
 In the GraalVM Native Image, this actually requires the definition of the GraalVM Reachability Metadata of the third-party dependencies,
 while ShardingSphere itself only provides the corresponding GraalVM Reachability Metadata for `com.h2database:h2`.

@@ -15,83 +15,83 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.database.connector.oracle.metadata.database;
+package org.apache.shardingsphere.database.connector.mariadb.metadata.database;
 
 import org.apache.shardingsphere.database.connector.core.metadata.database.enums.NullsOrderType;
 import org.apache.shardingsphere.database.connector.core.metadata.database.enums.QuoteCharacter;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.DialectDatabaseMetaData;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.IdentifierPatternType;
-import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.altertable.DialectAlterTableOption;
+import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.column.DialectColumnOption;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.connection.DialectConnectionOption;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.datatype.DialectDataTypeOption;
-import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.index.DialectIndexOption;
-import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.pagination.DialectPaginationOption;
-import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.schema.DialectSchemaOption;
+import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.join.DialectJoinOption;
+import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.keygen.DialectGeneratedKeyOption;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.transaction.DialectTransactionOption;
-import org.apache.shardingsphere.database.connector.oracle.metadata.database.option.OracleDataTypeOption;
-import org.apache.shardingsphere.database.connector.oracle.metadata.database.option.OracleSchemaOption;
+import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.version.DialectProtocolVersionOption;
+import org.apache.shardingsphere.database.connector.mysql.metadata.database.MySQLDatabaseMetaData;
 
 import java.sql.Connection;
 import java.util.Collections;
-import java.util.Optional;
 
 /**
- * Database meta data of Oracle.
+ * Database meta data of MariaDB.
  */
-public final class OracleDatabaseMetaData implements DialectDatabaseMetaData {
+public final class MariaDBDatabaseMetaData implements DialectDatabaseMetaData {
+    
+    private final DialectDatabaseMetaData delegate = new MySQLDatabaseMetaData();
     
     @Override
     public QuoteCharacter getQuoteCharacter() {
-        return QuoteCharacter.QUOTE;
+        return delegate.getQuoteCharacter();
     }
     
     @Override
     public IdentifierPatternType getIdentifierPatternType() {
-        return IdentifierPatternType.UPPER_CASE;
+        return delegate.getIdentifierPatternType();
     }
     
     @Override
     public NullsOrderType getDefaultNullsOrderType() {
-        return NullsOrderType.HIGH;
+        return delegate.getDefaultNullsOrderType();
     }
     
     @Override
     public DialectDataTypeOption getDataTypeOption() {
-        return new OracleDataTypeOption();
+        return delegate.getDataTypeOption();
     }
     
     @Override
-    public DialectSchemaOption getSchemaOption() {
-        return new OracleSchemaOption();
-    }
-    
-    @Override
-    public DialectIndexOption getIndexOption() {
-        return new DialectIndexOption(true);
+    public DialectColumnOption getColumnOption() {
+        return delegate.getColumnOption();
     }
     
     @Override
     public DialectConnectionOption getConnectionOption() {
-        return new DialectConnectionOption(true, false);
+        return delegate.getConnectionOption();
     }
     
     @Override
     public DialectTransactionOption getTransactionOption() {
-        return new DialectTransactionOption(false, false, false, false, true, Connection.TRANSACTION_READ_COMMITTED, false, false, Collections.singleton("oracle.jdbc.xa.client.OracleXADataSource"));
+        return new DialectTransactionOption(false, false, true, false, true, Connection.TRANSACTION_REPEATABLE_READ, false, false, Collections.singleton("org.mariadb.jdbc.MariaDbDataSource"));
     }
     
     @Override
-    public DialectPaginationOption getPaginationOption() {
-        return new DialectPaginationOption(true, "ROWNUM", false);
+    public DialectJoinOption getJoinOption() {
+        return delegate.getJoinOption();
     }
     
     @Override
-    public Optional<DialectAlterTableOption> getAlterTableOption() {
-        return Optional.of(new DialectAlterTableOption(true, true));
+    public DialectGeneratedKeyOption getGeneratedKeyOption() {
+        return delegate.getGeneratedKeyOption();
+    }
+    
+    @Override
+    public DialectProtocolVersionOption getProtocolVersionOption() {
+        return delegate.getProtocolVersionOption();
     }
     
     @Override
     public String getDatabaseType() {
-        return "Oracle";
+        return "MariaDB";
     }
 }
