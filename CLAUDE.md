@@ -52,114 +52,81 @@ Core concepts:
 ## Code Intelligence Principles
 *Core design principles guiding all coding decisions*
 
-### Code Standards
-Strictly follow all coding standards in [CODE_OF_CONDUCT.md](./CODE_OF_CONDUCT.md)
+### 代码标准
+严格遵循 [CODE_OF_CONDUCT.md](./CODE_OF_CONDUCT.md) 中的所有代码标准
 
-Key areas covered by coding standards file:
-- Naming conventions and code style
-- Data structure usage guidelines
-- Technical tool specifications
-- File format requirements
-- G4 grammar rules
-- Complete unit testing standards
-- **Code Self-Documentation**: No inline comments allowed; code needing explanation should be extracted into well-named methods
+代码标准文件涵盖的关键领域：
+- 命名约定和代码风格
+- 数据结构使用指南
+- 技术工具规范
+- 文件格式要求
+- G4语法规则
+- 完整的单元测试标准
+- **代码自文档化**: 不允许内联注释；需要解释的代码应提取到命名良好的方法中
 
-## Testing Philosophy
-*Comprehensive testing requirements and standards for all new code*
+## 测试理念
+*所有新代码的综合测试要求和标准*
 
-### Unified Testing Standards
-- 100% line and branch coverage for all new code
-- **Branch Minimal Coverage**: Analyze uncovered branches, write only minimal test cases
-- **Test Set Minimization**: Focus on branch coverage and eliminate redundancy
-- **Test Integration Priority**: Prefer modifying existing test methods over creating new ones
-- **Single-Target Modification**: Each test change should focus on covering one specific uncovered branch
-- **Element Addition Strategy**: Add new elements to existing test data collections to trigger new branches
+### 统一测试标准
+- 所有新代码100%的行和分支覆盖率
+- **分支最小覆盖**: 分析未覆盖的分支，只编写最小化的测试用例
+- **测试集最小化**: 专注于分支覆盖，消除冗余
+- **测试集成优先**: 优先修改现有测试方法而非创建新方法
+- **单一目标修改**: 每次测试更改应专注于覆盖一个特定的未覆盖分支
+- **元素添加策略**: 向现有测试数据集合添加新元素以触发新分支
 
-*For detailed testing standards, see CODE_OF_CONDUCT.md reference in code standards section*
+*详细测试标准请参见代码标准部分中的CODE_OF_CONDUCT.md引用*
 
-### Test Coverage Completeness Principles
+## AI测试用例开发标准
+*所有新测试代码的有效测试用例开发标准和工作流程*
 
-#### Test Coverage Analysis Standards
-- **Deep Branch Analysis**: Must analyze all if-else, ternary operations, and atomic conditions within compound conditions
-- **Short-Circuit Evaluation**: Must test each sub-condition of `&&` and `||` operators separately
-- **Optional Chain Decomposition**: Must test all path combinations in Optional chained calls
-- **Dependency Mapping**: Must pre-map complete mock dependency relationships
+### 深度分析要求
+- **代码流理解**: 创建测试前必须分析完整的执行路径
+- **依赖链映射**: 识别所有Mock依赖及其关系
+- **分支条件分析**: 理解所有可能导致早期退出的条件检查
+- **覆盖差距识别**: 测试设计前列出具体的未覆盖分支
 
-#### Complex Condition Testing Strategies
-- **Atomic Condition Separation**: Decompose compound conditions into independently testable atomic conditions
-- **Boundary Value Priority**: Prioritize testing null values, empty collections, index out-of-bounds, and other boundary cases
-- **Type System Coverage**: Test all possible implementation types of instanceof checks
-- **Parameter Index Boundaries**: Test non-consecutive parameters, out-of-bounds indices, empty parameter lists, etc.
+### Mock设置标准
+- **完整依赖链**: Mock调用链中的所有对象，不仅仅是直接依赖
+- **真实业务场景**: 创建模拟实际业务逻辑流的测试
+- **条件成功**: 确保Mock允许测试通过所有先决条件
+- **避免表面Mock**: 防止导致测试早期退出而未到达目标代码的Mock
 
-#### Mock Configuration Completeness
-- **Dependency Chain Integrity**: Ensure complete configuration of all mock object dependencies
-- **Multi-Layer Nested Mocks**: Deep nested dependencies must be precisely mocked layer by layer
-- **Return Value Combination Coverage**: Test possible combinations of mock method return values
-- **Exception Path Testing**: Test possible exception throwing paths in dependency chains
+### 验证要求
+- **路径验证**: 确认每个测试触发预期的代码分支
+- **覆盖确认**: 验证实际覆盖率改善而非测试通过
+- **Mock完整性检查**: 确保所有先决条件得到正确满足
 
-#### Coverage Verification Process
-- **Real-time Coverage Monitoring**: Use coverage tools to verify branch coverage in real-time
-- **Systematic Coverage Verification**: Re-evaluate overall coverage after each test modification
-- **Uncovered Branch Analysis**: Perform root cause analysis on uncovered branches and supplement corresponding tests
-- **Boundary Case Review**: Specifically review easily overlooked boundary conditions and exception cases
-- **Automated Verification**: Use JaCoCo coverage checking tools for automated verification (see Build System section)
+## AI代码理解指南
+*AI特定的模式识别和风格应用能力*
 
-#### Test Design Principles
-- **Matrix-Based Test Design**: Design test matrices covering all critical parameter combinations
-- **Minimal Case Maximum Coverage**: Each test case should cover the maximum number of uncovered branches
-- **Complex Scenario Simplification**: Decompose complex business scenarios into independent testable units
-- **Coverage-Driven Iteration**: Guide test case supplementation and optimization based on coverage feedback
+### 模式识别能力
+- 从现有接口/实现中识别SPI实现模式
+- 从项目结构中识别工厂模式、建造者模式和策略模式
+- 从同包现有类中学习字段声明顺序和命名约定
+- 分析现有测试文件中的测试场景设计和边界条件
 
-## AI Testing Case Development Standards
-*Effective testing case development standards and workflows for all new test code*
+### 风格一致性应用
+- 匹配类似类的字段访问修饰符和声明顺序
+- 应用相关类的一致异常处理和依赖注入模式
+- 遵循模块架构的既定模式（参见ShardingSphere架构模式）
 
-### Deep Analysis Requirements
-- **Code Flow Understanding**: Must analyze complete execution paths before creating tests
-- **Dependency Chain Mapping**: Identify all mock dependencies and their relationships
-- **Branch Condition Analysis**: Understand all conditional checks that can cause early exits
-- **Coverage Gap Identification**: List specific uncovered branches before test design
+## ShardingSphere架构模式
+*ShardingSphere环境特定的架构决策指导*
 
-### Mock Setup Standards
-- **Complete Dependency Chain**: Mock all objects in the call chain, not just direct dependencies
-- **Real Business Scenarios**: Create tests that simulate actual business logic flows
-- **Conditional Success**: Ensure mocks allow tests to pass all prerequisite conditions
-- **Avoid Surface Mocks**: Prevent mocks that cause tests to exit early without reaching target code
+### 数据库抽象设计原则
+- 为数据库特定功能创建特定方言实现
+- 对可扩展组件使用SPI，同时保持核心逻辑与数据库无关
 
-### Verification Requirements
-- **Path Validation**: Confirm each test triggers the intended code branches
-- **Coverage Confirmation**: Verify actual coverage improvement over test passage
-- **Mock Completeness Check**: Ensure all prerequisite conditions are properly satisfied
+### 元数据设计模式
+- 使用不可变对象表示元数据（final类 + final字段）
+- 对复杂元数据构造应用建造者模式和构造函数链
+- 在元数据对象中包含基本验证逻辑
+- 对数据库概念使用一致的命名映射
 
-## AI Code Understanding Guidelines
-*AI-specific pattern recognition and style application capabilities*
-
-### Pattern Recognition Capabilities
-- Identify SPI implementation patterns from existing interfaces/implementations
-- Recognize factory patterns, builder patterns, and strategy patterns from project structure
-- Learn field declaration order and naming conventions from existing classes in same package
-- Analyze test scenario design and boundary conditions in existing test files
-
-### Style Consistency Application
-- Match field access modifiers and declaration order of similar classes
-- Apply consistent exception handling and dependency injection patterns of related classes
-- Follow established patterns of module architecture (see ShardingSphere Architecture Patterns)
-
-## ShardingSphere Architecture Patterns
-*Architecture decision guidance specific to ShardingSphere environment*
-
-### Database Abstraction Design Principles
-- Create specific dialect implementations for database-specific features
-- Use SPI for extensible components while keeping core logic database-agnostic
-
-### Metadata Design Patterns
-- Use immutable objects for metadata representation (final class + final fields)
-- Apply builder pattern and constructor chaining for complex metadata construction
-- Include basic validation logic in metadata objects
-- Use consistent naming mapping for database concepts
-
-### SPI Implementation Specifications
-- Use service discovery mechanism for registration
-- Provide appropriate default implementations
+### SPI实现规范
+- 使用服务发现机制进行注册
+- 提供适当的默认实现
 
 ## Code Consistency Decision Making
 *Guidelines for maintaining consistency with existing project code*
@@ -308,115 +275,57 @@ For comprehensive testing case development requirements, see [AI Testing Case De
 
 ## Build System
 
-### Basic Build Commands
+### 基础构建命令
 ```bash
-# Full build with tests
+# 完整构建（包含测试）
 ./mvnw install -T1C
-# Build without tests
+# 不包含测试的构建
 ./mvnw install -T1C -Dremoteresources.skip -DskipTests
-# Format code
-./mvnw spotless:apply -Pcheck
 ```
 
-### Test Coverage Verification Workflow
+### 覆盖率验证工作流程
 
-#### Basic Coverage Check
+#### 基础覆盖率检查
 ```bash
-# Check coverage for single class (100% requirement)
-./mvnw test jacoco:check@jacoco-check -Pcoverage-check -Djacoco.skip=false \
-  -Djacoco.check.class.pattern={FULLY_QUALIFIED_CLASS_NAME} \
-  -pl {MODULE_PATH}
-
-# Check coverage for all classes in package
-./mvnw test jacoco:check@jacoco-check -Pcoverage-check -Djacoco.skip=false \
-  -Djacoco.check.class.pattern="{PACKAGE_NAME}.**" \
-  -Djacoco.minimum.coverage=1.00 \
-  -pl {MODULE_PATH}
+# 生成单个模块的测试覆盖率报告
+./mvnw clean test jacoco:report -Djacoco.skip=false -pl {MODULE_PATH}
+# 验证测试覆盖率是否达标
+./mvnw test jacoco:check@jacoco-check -Pcoverage-check -Djacoco.skip=false -Djacoco.check.class.pattern={FULLY_QUALIFIED_CLASS_NAME} -Djacoco.minimum.coverage=0.95 -pl {MODULE_PATH}
 ```
 
-#### Step-by-step Execution (Recommended)
+#### 参数说明
+- `-Pcoverage-check`: 激活覆盖率检查配置
+- `jacoco:check@jacoco-check`: 执行特定的覆盖率检查目标
+- `-Djacoco.skip=false`: 启用JaCoCo（覆盖默认跳过设置）
+- `-Djacoco.check.class.pattern`: 指定目标类模式
+- `-Djacoco.minimum.coverage`: 设置覆盖率阈值（0.00-1.00，默认1.00）
+- `-pl module-path`: 指定目标模块
+
+#### 模式匹配示例
 ```bash
-# 1. Run tests to generate coverage data
-./mvnw test -Pcoverage-check -Djacoco.skip=false -pl {MODULE_PATH}
+# 单个类
+-Djacoco.check.class.pattern={完整类名}
 
-# 2. Check coverage for specific class
-./mvnw jacoco:check@jacoco-check -Pcoverage-check -Djacoco.skip=false \
-  -Djacoco.check.class.pattern={FULLY_QUALIFIED_CLASS_NAME}
-```
+# 包中所有类
+-Djacoco.check.class.pattern="{包名}.**"
 
-#### Parameter Description
-- `-Pcoverage-check`: Activate coverage check configuration
-- `jacoco:check@jacoco-check`: Execute specific coverage check goal
-- `-Djacoco.skip=false`: Enable JaCoCo (override default skip setting)
-- `-Djacoco.check.class.pattern`: Specify target class pattern
-- `-Djacoco.minimum.coverage`: Set coverage threshold (0.00-1.00, default 1.00)
-- `-pl module-path`: Specify target module
-
-#### Pattern Matching Examples
-```bash
-# Single class
--Djacoco.check.class.pattern={FULLY_QUALIFIED_CLASS_NAME}
-
-# All classes in package
--Djacoco.check.class.pattern="{PACKAGE_NAME}.**"
-
-# Specific type of classes
+# 特定类型的类
 -Djacoco.check.class.pattern="**/*Service"
 
-# Multiple patterns (comma-separated)
+# 多个模式（逗号分隔）
 -Djacoco.check.class.pattern="**/*Service,**/*Manager"
 ```
 
-#### Coverage Report Interpretation
-- **BUILD SUCCESS**: Coverage meets requirements
-- **BUILD FAILURE**: Coverage below threshold, shows specific violating classes and current coverage
-- **CSV Data**: Get detailed data from `module/target/site/jacoco/jacoco.csv`
+#### 覆盖率报告解读
+- **BUILD SUCCESS**: 覆盖率满足要求
+- **BUILD FAILURE**: 覆盖率低于阈值，显示具体违规类和当前覆盖率
+- **CSV 数据**: 从 `module/target/site/jacoco/jacoco.csv` 获取详细数据
 
-#### Coverage Check Best Practices
+### 代码格式化
 ```bash
-# Quick check during development
-./mvnw test jacoco:check@jacoco-check -Pcoverage-check -Djacoco.skip=false \
-  -Djacoco.check.class.pattern={TARGET_CLASS_NAME} \
-  -pl {MODULE_PATH}
-
-# Pre-commit verification (strict mode)
-./mvnw test jacoco:check@jacoco-check -Pcoverage-check -Djacoco.skip=false \
-  -Djacoco.check.class.pattern="{PACKAGE_NAME}.**" \
-  -Djacoco.minimum.coverage=1.00 \
-  -pl {MODULE_PATH}
-
-# AI Usage Template - Replace variables with actual values:
-# MODULE_PATH: Replace with actual module path (e.g., mode/core, infra/common)
-# FULLY_QUALIFIED_CLASS_NAME: Replace with complete package+class name (e.g., org.apache.shardingsphere.YourClass)
-./mvnw test jacoco:check@jacoco-check -Pcoverage-check -Djacoco.skip=false \
-  -Djacoco.check.class.pattern={FULLY_QUALIFIED_CLASS_NAME} \
-  -pl {MODULE_PATH}
-
-# Integration verification (package level)
-./mvnw test jacoco:check@jacoco-check -Pcoverage-check -Djacoco.skip=false \
-  -Djacoco.check.class.pattern="org.apache.shardingsphere.**" \
-  -Djacoco.minimum.coverage=0.95
+# 代码格式化
+./mvnw spotless:apply -Pcheck
 ```
-
-#### Troubleshooting
-```bash
-# If coverage check fails, view detailed report
-open {MODULE_PATH}/target/site/jacoco/index.html
-
-# Parse CSV to get specific data
-grep "{CLASS_NAME}" {MODULE_PATH}/target/site/jacoco/jacoco.csv
-
-# Check specific coverage threshold
-./mvnw jacoco:check@jacoco-check -Pcoverage-check \
-  -Djacoco.check.class.pattern="{FULLY_QUALIFIED_CLASS_NAME}" \
-  -Djacoco.minimum.coverage=0.80
-
-# AI Helper: Variables to replace
-# {MODULE_PATH}: Module path like "mode/core", "infra/common", "kernel/metadata"
-# {CLASS_NAME}: Simple class name like "DeliverEventSubscriberRegistry"
-# {FULLY_QUALIFIED_CLASS_NAME}: Complete package+class name like "org.apache.shardingsphere.mode.deliver.DeliverEventSubscriberRegistry"
-```
-
 
 ## Project Structure
 
@@ -483,22 +392,22 @@ grep "{CLASS_NAME}" {MODULE_PATH}/target/site/jacoco/jacoco.csv
   -pl your-module
 ```
 
-- **Coverage Meets Requirement**: BUILD SUCCESS, testing complete
-- **Insufficient Coverage**: BUILD FAILURE, return to Step 1 to analyze uncovered branches
-- **Detailed Analysis**: View `module/target/site/jacoco/index.html` for specific uncovered code lines
+- **覆盖率满足要求**: BUILD SUCCESS，测试完成
+- **覆盖率不足**: BUILD FAILURE，返回步骤1分析未覆盖的分支
+- **详细分析**: 查看 `module/target/site/jacoco/index.html` 了解具体未覆盖的代码行
 
-### Common Traps and Avoidance Methods
-- **Early Exit Traps**: Tests exit early due to failed condition checks without reaching core logic
-- **Incomplete Mock Traps**: Missing database, rule, or metadata configurations
-- **Surface Pass Traps**: Tests pass assertions but don't execute target code
-- **Coverage Misleading Traps**: Relying on test passage instead of actual coverage verification
-- **Short-Circuit Traps**: Not testing each sub-condition within compound conditions separately
-- **Optional Chain Traps**: Not covering all path combinations of Optional chained calls
-- **Boundary Value Traps**: Ignoring null values, empty collections, index out-of-bounds, and other boundary cases
-- **Mock Chain Traps**: Incomplete mock configuration for deep nested dependencies
-- **Atomic Condition Traps**: Testing compound conditions as a whole, missing sub-condition branches
+### 常见陷阱和避免方法
+- **早期退出陷阱**: 测试由于条件检查失败而提前退出，未到达核心逻辑
+- **不完整Mock陷阱**: 缺少数据库、规则或元数据配置
+- **表面通过陷阱**: 测试通过断言但未执行目标代码
+- **覆盖率误导陷阱**: 依赖测试通过而非实际覆盖率验证
+- **短路陷阱**: 未分别测试复合条件中的每个子条件
+- **Optional链陷阱**: 未覆盖Optional链式调用的所有路径组合
+- **边界值陷阱**: 忽略空值、空集合、索引越界等边界情况
+- **Mock链陷阱**: 深层嵌套依赖的不完整Mock配置
+- **原子条件陷阱**: 将复合条件作为一个整体测试，遗漏子条件分支
 
-### Emergency Procedures
-- **Immediate termination**: If code deletion exceeds 10 lines without instruction
-- **Immediate stop**: If tests fail after changes
-- **Immediate report deviations**: As soon as detected
+### 紧急程序
+- **立即终止**: 如果代码删除超过10行且没有指令
+- **立即停止**: 如果更改后测试失败
+- **立即报告偏差**: 一旦发现立即报告
