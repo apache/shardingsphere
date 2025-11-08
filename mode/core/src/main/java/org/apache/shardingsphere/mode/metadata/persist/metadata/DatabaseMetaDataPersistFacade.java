@@ -149,4 +149,19 @@ public final class DatabaseMetaDataPersistFacade {
             throw new LoadTableMetaDataFailedException(databaseName, needReloadTables, ex);
         }
     }
+    
+    /**
+     * Persist created database schemas.
+     *
+     * @param database database
+     */
+    public void persistCreatedDatabaseSchemas(final ShardingSphereDatabase database) {
+        database.getAllSchemas().forEach(each -> {
+            if (each.isEmpty()) {
+                schema.add(database.getName(), each.getName());
+            } else {
+                table.persist(database.getName(), each.getName(), each.getAllTables());
+            }
+        });
+    }
 }

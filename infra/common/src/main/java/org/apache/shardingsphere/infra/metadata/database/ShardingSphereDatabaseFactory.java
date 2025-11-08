@@ -58,7 +58,12 @@ public final class ShardingSphereDatabaseFactory {
     public static ShardingSphereDatabase create(final String name, final DatabaseType protocolType, final ConfigurationProperties props) {
         DatabaseConfiguration databaseConfig = new DataSourceProvidedDatabaseConfiguration(new LinkedHashMap<>(), new LinkedList<>());
         ResourceMetaData resourceMetaData = new ResourceMetaData(databaseConfig.getDataSources(), databaseConfig.getStorageUnits());
-        return new ShardingSphereDatabase(name, protocolType, resourceMetaData, new RuleMetaData(new LinkedList<>()), SystemSchemaBuilder.build(name, protocolType, props).values());
+        Map<String, ShardingSphereSchema> systemSchemas = SystemSchemaBuilder.build(name, protocolType, props);
+        String defaultSchemaName = new DatabaseTypeRegistry(protocolType).getDefaultSchemaName(name);
+        if (!systemSchemas.containsKey(defaultSchemaName)) {
+            systemSchemas.put(defaultSchemaName, new ShardingSphereSchema(defaultSchemaName));
+        }
+        return new ShardingSphereDatabase(name, protocolType, resourceMetaData, new RuleMetaData(new LinkedList<>()), systemSchemas.values());
     }
     
     /**
