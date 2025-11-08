@@ -30,9 +30,9 @@ import java.util.Properties;
 public final class EtcdModeConfigurationURLLoader implements ShardingSphereModeConfigurationURLLoader {
     
     @Override
-    public ModeConfiguration load(final String configSubject, final Properties queryProps) {
+    public ModeConfiguration load(final String serverLists, final Properties queryProps) {
         ShardingSpherePreconditions.checkState(queryProps.containsKey("namespace"), () -> new RuntimeException("Missing required property 'namespace' for ETCD URL loader."));
-        return new ModeConfiguration("Cluster", new ClusterPersistRepositoryConfiguration("etcd", queryProps.getProperty("namespace"), configSubject, queryProps));
+        return new ModeConfiguration("Cluster", new ClusterPersistRepositoryConfiguration("etcd", queryProps.getProperty("namespace"), serverLists, queryProps));
     }
     
     @Override
