@@ -28,7 +28,7 @@ import java.util.Properties;
  * Etcd URL loader.
  */
 public final class EtcdURLLoader implements ShardingSphereURLLoader<ModeConfiguration> {
-
+    
     @Override
     public ModeConfiguration load(final String configSubject, final Properties queryProps) {
         ShardingSpherePreconditions.checkState(queryProps.containsKey("namespace"), () -> new RuntimeException("Missing required property 'namespace' for ETCD URL loader."));
