@@ -38,13 +38,13 @@ public final class AbsolutePathURLLoader implements ShardingSphereURLLoader<Stri
         return Files.readAllLines(getAbsoluteFile(configSubject).toPath(), StandardCharsets.UTF_8).stream().collect(Collectors.joining(System.lineSeparator()));
     }
     
+    private File getAbsoluteFile(final String configurationSubject) {
+        return new File(configurationSubject);
+    }
+    
     @Override
     public boolean isLocalFile() {
         return true;
-    }
-    
-    private File getAbsoluteFile(final String configurationSubject) {
-        return new File(configurationSubject);
     }
     
     @Override
