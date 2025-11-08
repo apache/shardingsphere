@@ -15,28 +15,28 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.url.etcd;
+package org.apache.shardingsphere.infra.url.zookeeper;
 
 import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
-import org.apache.shardingsphere.infra.url.spi.ClusterShardingSphereURLLoader;
+import org.apache.shardingsphere.infra.url.spi.ShardingSphereModeConfigurationURLLoader;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepositoryConfiguration;
 
 import java.util.Properties;
 
 /**
- * Etcd URL loader.
+ * ZooKeeper mode configuration URL loader.
  */
-public final class EtcdURLLoader implements ClusterShardingSphereURLLoader {
+public final class ZooKeeperModeConfigurationURLLoader implements ShardingSphereModeConfigurationURLLoader {
     
     @Override
-    public ModeConfiguration create(final String configSubject, final Properties queryProps) {
-        ShardingSpherePreconditions.checkState(queryProps.containsKey("namespace"), () -> new RuntimeException("Missing required property 'namespace' for ETCD URL loader."));
-        return new ModeConfiguration("Cluster", new ClusterPersistRepositoryConfiguration("etcd", queryProps.getProperty("namespace"), configSubject, queryProps));
+    public ModeConfiguration load(final String configSubject, final Properties queryProps) {
+        ShardingSpherePreconditions.checkState(queryProps.containsKey("namespace"), () -> new RuntimeException("Missing required property 'namespace' for ZooKeeper URL loader."));
+        return new ModeConfiguration("Cluster", new ClusterPersistRepositoryConfiguration("ZooKeeper", queryProps.getProperty("namespace"), configSubject, queryProps));
     }
     
     @Override
     public String getType() {
-        return "etcd:";
+        return "zookeeper:";
     }
 }

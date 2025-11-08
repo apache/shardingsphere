@@ -24,17 +24,17 @@ import org.apache.shardingsphere.infra.spi.type.typed.TypedSPI;
 import java.util.Properties;
 
 /**
- * Cluster ShardingSphere URL loader.
+ * ShardingSphere mode configuration URL loader.
  */
 @SingletonSPI
-public interface ClusterShardingSphereURLLoader extends TypedSPI {
+public interface ShardingSphereModeConfigurationURLLoader extends TypedSPI {
     
     /**
-     * Create mode configuration.
+     * Load mode configuration.
      *
      * @param serverLists server lists
      * @param queryProps query properties
-     * @return created mode configuration
+     * @return loaded mode configuration
      */
-    ModeConfiguration create(String serverLists, Properties queryProps);
+    ModeConfiguration load(String serverLists, Properties queryProps);
 }

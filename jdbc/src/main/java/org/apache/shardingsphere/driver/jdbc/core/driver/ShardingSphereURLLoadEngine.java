@@ -23,8 +23,8 @@ import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.infra.url.core.ShardingSphereURL;
 import org.apache.shardingsphere.infra.url.core.arg.URLArgumentLineRender;
 import org.apache.shardingsphere.infra.url.core.arg.URLArgumentPlaceholderTypeFactory;
-import org.apache.shardingsphere.infra.url.spi.ClusterShardingSphereURLLoader;
-import org.apache.shardingsphere.infra.url.spi.StandaloneShardingSphereURLLoader;
+import org.apache.shardingsphere.infra.url.spi.ShardingSphereModeConfigurationURLLoader;
+import org.apache.shardingsphere.infra.url.spi.ShardingSphereLocalFileURLLoader;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -45,15 +45,15 @@ public final class ShardingSphereURLLoadEngine {
      * @throws ServiceProviderNotFoundException service provider not found exception
      */
     public Object loadContent() {
-        Optional<StandaloneShardingSphereURLLoader> standaloneShardingSphereURLLoader = TypedSPILoader.findService(StandaloneShardingSphereURLLoader.class, url.getSourceType());
-        if (standaloneShardingSphereURLLoader.isPresent()) {
-            Collection<String> lines = Arrays.asList(standaloneShardingSphereURLLoader.get().load(url.getConfigurationSubject(), url.getQueryProps()).split(System.lineSeparator()));
+        Optional<ShardingSphereLocalFileURLLoader> localFileURLLoader = TypedSPILoader.findService(ShardingSphereLocalFileURLLoader.class, url.getSourceType());
+        if (localFileURLLoader.isPresent()) {
+            Collection<String> lines = Arrays.asList(localFileURLLoader.get().load(url.getConfigurationSubject(), url.getQueryProps()).split(System.lineSeparator()));
             return URLArgumentLineRender.render(lines, URLArgumentPlaceholderTypeFactory.valueOf(url.getQueryProps()));
         }
-        Optional<ClusterShardingSphereURLLoader> clusterShardingSphereURLLoader = TypedSPILoader.findService(ClusterShardingSphereURLLoader.class, url.getSourceType());
-        if (clusterShardingSphereURLLoader.isPresent()) {
-            return clusterShardingSphereURLLoader.get().create(url.getConfigurationSubject(), url.getQueryProps());
+        Optional<ShardingSphereModeConfigurationURLLoader> modeConfigURLLoader = TypedSPILoader.findService(ShardingSphereModeConfigurationURLLoader.class, url.getSourceType());
+        if (modeConfigURLLoader.isPresent()) {
+            return modeConfigURLLoader.get().load(url.getConfigurationSubject(), url.getQueryProps());
         }
-        throw new ServiceProviderNotFoundException(ClusterShardingSphereURLLoader.class, url.getSourceType());
+        throw new ServiceProviderNotFoundException(ShardingSphereModeConfigurationURLLoader.class, url.getSourceType());
     }
 }

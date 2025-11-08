@@ -42,7 +42,7 @@ class AbsolutePathURLLoaderTest {
     }
     
     private void assertGetContent(final int expectedLength) {
-        String actual = new AbsolutePathURLLoader().load(
+        String actual = new AbsolutePathLocalFileURLLoader().load(
                 Objects.requireNonNull(Thread.currentThread().getContextClassLoader().getResource("config/absolutepath/fixture.yaml")).getPath(), new Properties());
         assertThat(actual.length(), is(expectedLength));
     }

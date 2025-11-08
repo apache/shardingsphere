@@ -23,10 +23,10 @@ import org.apache.shardingsphere.infra.spi.type.typed.TypedSPI;
 import java.util.Properties;
 
 /**
- * Standalone ShardingSphere URL loader.
+ * ShardingSphere local file URL loader.
  */
 @SingletonSPI
-public interface StandaloneShardingSphereURLLoader extends TypedSPI {
+public interface ShardingSphereLocalFileURLLoader extends TypedSPI {
     
     /**
      * Load configuration content.

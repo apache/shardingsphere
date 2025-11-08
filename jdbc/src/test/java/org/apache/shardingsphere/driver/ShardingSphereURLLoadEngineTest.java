@@ -20,7 +20,7 @@ package org.apache.shardingsphere.driver;
 import org.apache.shardingsphere.driver.jdbc.core.driver.ShardingSphereURLLoadEngine;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.infra.url.core.ShardingSphereURL;
-import org.apache.shardingsphere.infra.url.spi.StandaloneShardingSphereURLLoader;
+import org.apache.shardingsphere.infra.url.spi.ShardingSphereLocalFileURLLoader;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockedStatic;
 
@@ -39,10 +39,10 @@ class ShardingSphereURLLoadEngineTest {
     void assertLoadContent() {
         final String lineSeparator = System.lineSeparator();
         String content = "foo_driver_fixture_db=2" + lineSeparator + "storage_unit_count=2" + lineSeparator;
-        StandaloneShardingSphereURLLoader urlLoader = mock(StandaloneShardingSphereURLLoader.class);
+        ShardingSphereLocalFileURLLoader urlLoader = mock(ShardingSphereLocalFileURLLoader.class);
         when(urlLoader.load(any(), any())).thenReturn(content);
         try (MockedStatic<TypedSPILoader> typedSPILoaderMockedStatic = mockStatic(TypedSPILoader.class)) {
-            typedSPILoaderMockedStatic.when(() -> TypedSPILoader.findService(StandaloneShardingSphereURLLoader.class, "classpath:")).thenReturn(Optional.of(urlLoader));
+            typedSPILoaderMockedStatic.when(() -> TypedSPILoader.findService(ShardingSphereLocalFileURLLoader.class, "classpath:")).thenReturn(Optional.of(urlLoader));
             ShardingSphereURLLoadEngine loadEngine = new ShardingSphereURLLoadEngine(ShardingSphereURL.parse("classpath:xxx"));
             assertThat(loadEngine.loadContent(), is(content.getBytes()));
         }
