@@ -22,6 +22,7 @@
 1. Decouple database types as pluggable - [#35346](https://github.com/apache/shardingsphere/pull/35346)
 1. Decouple registry center types as pluggable - [#36087](https://github.com/apache/shardingsphere/pull/36087)
 1. Proxy: Support Firebird Proxy - [#35937](https://github.com/apache/shardingsphere/pull/35937)
+1. JDBC: Support ZooKeeper and ETCD URL format - [#37037](https://github.com/apache/shardingsphere/pull/37037)
 
 ### Enhancements
 

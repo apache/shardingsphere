@@ -15,38 +15,35 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.url.classpath;
+package org.apache.shardingsphere.infra.url.absolutepath;
 
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.infra.url.spi.ShardingSphereURLLoader;
+import org.apache.shardingsphere.infra.url.spi.ShardingSphereLocalFileURLLoader;
 
-import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
-import java.util.Objects;
+import java.nio.file.Files;
 import java.util.Properties;
 import java.util.stream.Collectors;
 
 /**
- * Class path URL loader.
+ * Absolute path URL loader.
  */
-public final class ClassPathURLLoader implements ShardingSphereURLLoader {
+public final class AbsolutePathLocalFileURLLoader implements ShardingSphereLocalFileURLLoader {
     
     @Override
     @SneakyThrows(IOException.class)
-    public String load(final String configurationSubject, final Properties queryProps) {
-        try (InputStream inputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream(configurationSubject)) {
-            Objects.requireNonNull(inputStream);
-            try (BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8))) {
-                return reader.lines().collect(Collectors.joining(System.lineSeparator()));
-            }
-        }
+    public String load(final String configSubject, final Properties queryProps) {
+        return Files.readAllLines(getAbsoluteFile(configSubject).toPath(), StandardCharsets.UTF_8).stream().collect(Collectors.joining(System.lineSeparator()));
+    }
+    
+    private File getAbsoluteFile(final String configurationSubject) {
+        return new File(configurationSubject);
     }
     
     @Override
     public String getType() {
-        return "classpath:";
+        return "absolutepath:";
     }
 }

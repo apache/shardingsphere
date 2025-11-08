@@ -41,7 +41,7 @@ Core concepts:
 2. 100% test coverage for all new code (see testing philosophy for details)
 3. NEVER auto-commit to Git without explicit instruction
 4. Work only within explicitly specified scope (see core prohibitions)
-5. Run spotless formatting validation before considering code complete
+5. Apply formatting only to new code (see formatting standards)
 
 ## Core Prohibitions
 
@@ -98,10 +98,11 @@ Key areas covered by coding standards file:
 - **Exception Path Testing**: Test possible exception throwing paths in dependency chains
 
 #### Coverage Verification Process
-- **Real-Time Coverage Monitoring**: Use coverage tools to verify branch coverage in real-time
+- **Real-time Coverage Monitoring**: Use coverage tools to verify branch coverage in real-time
 - **Systematic Coverage Verification**: Re-evaluate overall coverage after each test modification
 - **Uncovered Branch Analysis**: Perform root cause analysis on uncovered branches and supplement corresponding tests
 - **Boundary Case Review**: Specifically review easily overlooked boundary conditions and exception cases
+- **Automated Verification**: Use JaCoCo coverage checking tools for automated verification (see Build System section)
 
 #### Test Design Principles
 - **Matrix-Based Test Design**: Design test matrices covering all critical parameter combinations
@@ -261,10 +262,7 @@ For comprehensive testing case development requirements, see [AI Testing Case De
 - **Intelligence**: Apply pattern recognition capabilities from AI Code Understanding Guidelines above
 
 ### Formatting Standards
-*Mandatory code formatting requirements for all new code*
-
-- **REQUIRED**: Apply spotless formatting to ALL new code before completion
-- **VALIDATION**: Must run `./mvnw spotless:apply -Pcheck` before considering code complete
+*For formatting guidance, see CODE_OF_CONDUCT.md reference in elegant code standards section*
 
 ## Unified Guidelines
 *Operating scope, permissions, and decision framework*
@@ -293,6 +291,7 @@ For comprehensive testing case development requirements, see [AI Testing Case De
 
 ## Build System
 
+### Basic Build Commands
 ```bash
 # Full build with tests
 ./mvnw install -T1C
@@ -300,222 +299,107 @@ For comprehensive testing case development requirements, see [AI Testing Case De
 ./mvnw install -T1C -Dremoteresources.skip -DskipTests
 # Format code
 ./mvnw spotless:apply -Pcheck
-
-# Test Coverage Commands
-./mvnw test jacoco:report -Djacoco.skip=false -pl [module-name]
-# Example: Generate and view coverage for infra/common module
-./mvnw test jacoco:report -Djacoco.skip=false -pl infra/common
 ```
 
-## Test Coverage Verification Methods
-*Comprehensive test coverage verification and analysis methods for ShardingSphere development*
+### Test Coverage Verification Workflow
 
-### Coverage Generation Commands
-
-#### Basic Coverage Generation (Recommended)
+#### Basic Coverage Check
 ```bash
-# Navigate to project root first
-cd /path/to/shardingsphere
+# Check coverage for single class (100% requirement)
+./mvnw test jacoco:check@jacoco-check -Pcoverage-check -Djacoco.skip=false \
+  -Djacoco.check.class.pattern={FULLY_QUALIFIED_CLASS_NAME} \
+  -pl {MODULE_PATH}
 
-# Generate coverage report for specific module with JaCoCo agent override
-JAVA_TOOL_OPTIONS="-javaagent:$HOME/.m2/repository/org/jacoco/org.jacoco.agent/0.8.8/org.jacoco.agent-0.8.8-runtime.jar=destfile=$(pwd)/[module-name]/target/jacoco.exec,excludes=**/*$Lombok*:**/lombok/**" ./mvnw test jacoco:report -Djacoco.skip=false -pl [module-name]
-
-# View HTML coverage report
-open [module-name]/target/site/jacoco/index.html
+# Check coverage for all classes in package
+./mvnw test jacoco:check@jacoco-check -Pcoverage-check -Djacoco.skip=false \
+  -Djacoco.check.class.pattern="{PACKAGE_NAME}.**" \
+  -Djacoco.minimum.coverage=1.00 \
+  -pl {MODULE_PATH}
 ```
 
-#### Module-Specific Examples
+#### Step-by-step Execution (Recommended)
 ```bash
-# infra/common module
-JAVA_TOOL_OPTIONS="-javaagent:$HOME/.m2/repository/org/jacoco/org.jacoco.agent/0.8.8/org.jacoco.agent-0.8.8-runtime.jar=destfile=$(pwd)/infra/common/target/jacoco.exec,excludes=**/*$Lombok*:**/lombok/**" ./mvnw test jacoco:report -Djacoco.skip=false -pl infra/common
-open infra/common/target/site/jacoco/index.html
+# 1. Run tests to generate coverage data
+./mvnw test -Pcoverage-check -Djacoco.skip=false -pl {MODULE_PATH}
 
-# kernel/metadata module
-JAVA_TOOL_OPTIONS="-javaagent:$HOME/.m2/repository/org/jacoco/org.jacoco.agent/0.8.8/org.jacoco.agent-0.8.8-runtime.jar=destfile=$(pwd)/kernel/metadata/target/jacoco.exec,excludes=**/*$Lombok*:**/lombok/**" ./mvnw test jacoco:report -Djacoco.skip=false -pl kernel/metadata
-open kernel/metadata/target/site/jacoco/index.html
+# 2. Check coverage for specific class
+./mvnw jacoco:check@jacoco-check -Pcoverage-check -Djacoco.skip=false \
+  -Djacoco.check.class.pattern={FULLY_QUALIFIED_CLASS_NAME}
 ```
 
-### Coverage Report Analysis
+#### Parameter Description
+- `-Pcoverage-check`: Activate coverage check configuration
+- `jacoco:check@jacoco-check`: Execute specific coverage check goal
+- `-Djacoco.skip=false`: Enable JaCoCo (override default skip setting)
+- `-Djacoco.check.class.pattern`: Specify target class pattern
+- `-Djacoco.minimum.coverage`: Set coverage threshold (0.00-1.00, default 1.00)
+- `-pl module-path`: Specify target module
 
-#### Quick Coverage Check for Specific Class
+#### Pattern Matching Examples
 ```bash
-# Check coverage data from CSV report (format: MODULE,PACKAGE,CLASS,INSTRUCTION_MISSED,INSTRUCTION_COVERED,BRANCH_MISSED,BRANCH_COVERED,...)
-grep "ClassName" [module-name]/target/site/jacoco/jacoco.csv
+# Single class
+-Djacoco.check.class.pattern={FULLY_QUALIFIED_CLASS_NAME}
 
-# Example: Check ShardingSphereStatisticsFactory coverage
-grep "ShardingSphereStatisticsFactory" infra/common/target/site/jacoco/jacoco.csv
-# Output format: shardingsphere-infra-common,org.apache.shardingsphere.infra.metadata.statistics.builder,ShardingSphereStatisticsFactory,228,0,24,0,41,0,20,0,8,0
-#                    ^MODULE                           ^PACKAGE                                                 ^CLASS      ^INST_MISS ^INST_COV ^BR_MISS ^BR_COV ^LINE_MISS ^LINE_COV ^METHOD_MISS ^METHOD_COV
-```
+# All classes in package
+-Djacoco.check.class.pattern="{PACKAGE_NAME}.**"
 
-#### Coverage Percentage Calculation
-```bash
-# Calculate instruction coverage percentage for a specific class
-grep "ClassName" module/target/site/jacoco/jacoco.csv | awk -F',' '{printf "Instruction Coverage: %.2f%% (%d/%d)\n", $5/($4+$5)*100, $5, $4+$5}'
+# Specific type of classes
+-Djacoco.check.class.pattern="**/*Service"
 
-# Calculate branch coverage percentage
-grep "ClassName" module/target/site/jacoco/jacoco.csv | awk -F',' '{printf "Branch Coverage: %.2f%% (%d/%d)\n", $7/($6+$7)*100, $7, $6+$7}'
-```
-
-#### Batch Coverage Analysis
-```bash
-# Analyze coverage for all classes in a package
-grep "package.name" module/target/site/jacoco/jacoco.csv | while IFS=',' read module package class inst_miss inst_cov branch_miss branch_cov line_miss line_cov method_miss method_cov; do
-    inst_total=$((inst_miss + inst_cov))
-    branch_total=$((branch_miss + branch_cov))
-    inst_coverage=$(echo "scale=2; $inst_cov * 100 / $inst_total" | bc -l)
-    branch_coverage=$(echo "scale=2; $branch_cov * 100 / $branch_total" | bc -l)
-    echo "$class: Instructions ${inst_coverage}%, Branches ${branch_coverage}%"
-done
-```
-
-### Automated Coverage Verification
-
-#### Coverage Verification Script Template
-```bash
-#!/bin/bash
-# coverage-check.sh - Automated coverage verification script
-
-MODULE_NAME=$1
-CLASS_NAME=$2
-MINIMUM_COVERAGE=${3:-100}
-
-if [ $# -lt 2 ]; then
-    echo "Usage: $0 <module-name> <class-name> [minimum-coverage-percentage]"
-    echo "Example: $0 infra/common ShardingSphereStatisticsFactory 100"
-    exit 1
-fi
-
-echo "Checking coverage for $CLASS_NAME in module $MODULE_NAME..."
-
-# Generate coverage report
-JAVA_TOOL_OPTIONS="-javaagent:$HOME/.m2/repository/org/jacoco/org.jacoco.agent/0.8.8/org.jacoco.agent-0.8.8-runtime.jar=destfile=$(pwd)/$MODULE_NAME/target/jacoco.exec,excludes=**/*$Lombok*:**/lombok/**" ./mvnw test jacoco:report -Djacoco.skip=false -pl $MODULE_NAME
-
-# Extract coverage data
-COVERAGE_DATA=$(grep "$CLASS_NAME" "$MODULE_NAME/target/site/jacoco/jacoco.csv")
-
-if [ -z "$COVERAGE_DATA" ]; then
-    echo "ERROR: Class $CLASS_NAME not found in coverage report"
-    exit 1
-fi
-
-# Parse coverage data
-INST_MISSED=$(echo $COVERAGE_DATA | cut -d',' -f4)
-INST_COVERED=$(echo $COVERAGE_DATA | cut -d',' -f5)
-TOTAL_INSTRUCTIONS=$((INST_MISSED + INST_COVERED))
-
-if [ $TOTAL_INSTRUCTIONS -eq 0 ]; then
-    echo "ERROR: No instructions found for class $CLASS_NAME"
-    exit 1
-fi
-
-COVERAGE_PERCENTAGE=$((INST_COVERED * 100 / TOTAL_INSTRUCTIONS))
-
-echo "Coverage Results for $CLASS_NAME:"
-echo "- Instructions covered: $INST_COVERED/$TOTAL_INSTRUCTIONS"
-echo "- Coverage percentage: ${COVERAGE_PERCENTAGE}%"
-
-# Verify minimum coverage
-if [ $COVERAGE_PERCENTAGE -lt $MINIMUM_COVERAGE ]; then
-    echo "FAILED: Coverage ${COVERAGE_PERCENTAGE}% is below minimum ${MINIMUM_COVERAGE}%"
-    echo "Open the report for details: open $MODULE_NAME/target/site/jacoco/index.html"
-    exit 1
-else
-    echo "PASSED: Coverage ${COVERAGE_PERCENTAGE}% meets minimum requirement"
-fi
-```
-
-#### Multiple Class Coverage Check
-```bash
-#!/bin/bash
-# batch-coverage-check.sh - Check coverage for multiple classes
-
-MODULE_NAME=$1
-shift
-CLASSES=("$@")
-
-for class in "${CLASSES[@]}"; do
-    echo "Checking $class..."
-    ./coverage-check.sh "$MODULE_NAME" "$class" 100
-    if [ $? -ne 0 ]; then
-        echo "Coverage check failed for $class"
-        exit 1
-    fi
-    echo "---"
-done
-
-echo "All classes passed coverage verification!"
-```
-
-### Troubleshooting Guide
-
-#### Common Issues and Solutions
-
-**Issue 1: JaCoCo agent not loaded**
-```bash
-# Symptoms: No jacoco.exec file generated, coverage shows 0%
-# Solution: Verify JAVA_TOOL_OPTIONS and check agent path
-echo "Current JAVA_TOOL_OPTIONS: $JAVA_TOOL_OPTIONS"
-ls -la "$HOME/.m2/repository/org/jacoco/org.jacoco.agent/0.8.8/org.jacoco.agent-0.8.8-runtime.jar"
-```
-
-**Issue 2: Permission denied when accessing jacoco.exec**
-```bash
-# Solution: Check file permissions and ownership
-ls -la module/target/jacoco.exec
-chmod 644 module/target/jacoco.exec
-```
-
-**Issue 3: Coverage report not generated**
-```bash
-# Check if jacoco.exec exists and has content
-if [ -f "module/target/jacoco.exec" ]; then
-    echo "JaCoCo data file exists: $(wc -c < module/target/jacoco.exec) bytes"
-else
-    echo "ERROR: JaCoCo data file not found"
-    echo "Check if tests ran and JaCoCo agent was properly loaded"
-fi
-```
-
-**Issue 4: Multiple test runs corrupting coverage data**
-```bash
-# Solution: Clean before generating new coverage
-./mvnw clean -pl module-name
-JAVA_TOOL_OPTIONS="..." ./mvnw test jacoco:report -Djacoco.skip=false -pl module-name
-```
-
-#### Debug Mode Commands
-```bash
-# Enable verbose JaCoCo logging
-JAVA_TOOL_OPTIONS="-javaagent:$HOME/.m2/repository/org/jacoco/org.jacoco.agent/0.8.8/org.jacoco.agent-0.8.8-runtime.jar=destfile=$(pwd)/module/target/jacoco.exec,excludes=**/*$Lombok*:**/lombok/**,output=file" ./mvnw test -Djacoco.skip=false -pl module-name
-
-# Check test execution order
-./mvnw test -Djacoco.skip=false -pl module-name -Dmaven.surefire.debug
-```
-
-### Best Practices
-
-#### Coverage Verification Workflow
-1. **Before Writing Tests**: Identify target classes and current coverage gaps
-2. **During Test Development**: Use incremental coverage checks
-3. **After Test Completion**: Run full coverage verification
-4. **Before PR**: Ensure 100% coverage for all modified code
-
-#### Integration with Development Process
-```bash
-# Make coverage verification part of your development workflow
-alias verify-coverage='./coverage-check.sh infra/common ShardingSphereStatisticsFactory 100'
-
-# Quick coverage check for current module
-alias quick-coverage='JAVA_TOOL_OPTIONS="-javaagent:$HOME/.m2/repository/org/jacoco/org.jacoco.agent/0.8.8/org.jacoco.agent-0.8.8-runtime.jar=destfile=$(pwd)/$(basename $(pwd))/target/jacoco.exec,excludes=**/*$Lombok*:**/lombok/**" ./mvnw test jacoco:report -Djacoco.skip=false -pl $(basename $(pwd)) && open $(basename $(pwd))/target/site/jacoco/index.html'
+# Multiple patterns (comma-separated)
+-Djacoco.check.class.pattern="**/*Service,**/*Manager"
 ```
 
 #### Coverage Report Interpretation
-- **Green highlighting**: Fully covered code (100%)
-- **Yellow highlighting**: Partially covered code
-- **Red highlighting**: Uncovered code (0%)
-- **Diamond markers**: Branch coverage points
-- **Coverage percentages**: Instruction vs. Branch coverage
+- **BUILD SUCCESS**: Coverage meets requirements
+- **BUILD FAILURE**: Coverage below threshold, shows specific violating classes and current coverage
+- **CSV Data**: Get detailed data from `module/target/site/jacoco/jacoco.csv`
+
+#### Coverage Check Best Practices
+```bash
+# Quick check during development
+./mvnw test jacoco:check@jacoco-check -Pcoverage-check -Djacoco.skip=false \
+  -Djacoco.check.class.pattern={TARGET_CLASS_NAME} \
+  -pl {MODULE_PATH}
+
+# Pre-commit verification (strict mode)
+./mvnw test jacoco:check@jacoco-check -Pcoverage-check -Djacoco.skip=false \
+  -Djacoco.check.class.pattern="{PACKAGE_NAME}.**" \
+  -Djacoco.minimum.coverage=1.00 \
+  -pl {MODULE_PATH}
+
+# AI Usage Template - Replace variables with actual values:
+# MODULE_PATH: Replace with actual module path (e.g., mode/core, infra/common)
+# FULLY_QUALIFIED_CLASS_NAME: Replace with complete package+class name (e.g., org.apache.shardingsphere.YourClass)
+./mvnw test jacoco:check@jacoco-check -Pcoverage-check -Djacoco.skip=false \
+  -Djacoco.check.class.pattern={FULLY_QUALIFIED_CLASS_NAME} \
+  -pl {MODULE_PATH}
+
+# Integration verification (package level)
+./mvnw test jacoco:check@jacoco-check -Pcoverage-check -Djacoco.skip=false \
+  -Djacoco.check.class.pattern="org.apache.shardingsphere.**" \
+  -Djacoco.minimum.coverage=0.95
+```
+
+#### Troubleshooting
+```bash
+# If coverage check fails, view detailed report
+open {MODULE_PATH}/target/site/jacoco/index.html
+
+# Parse CSV to get specific data
+grep "{CLASS_NAME}" {MODULE_PATH}/target/site/jacoco/jacoco.csv
+
+# Check specific coverage threshold
+./mvnw jacoco:check@jacoco-check -Pcoverage-check \
+  -Djacoco.check.class.pattern="{FULLY_QUALIFIED_CLASS_NAME}" \
+  -Djacoco.minimum.coverage=0.80
+
+# AI Helper: Variables to replace
+# {MODULE_PATH}: Module path like "mode/core", "infra/common", "kernel/metadata"
+# {CLASS_NAME}: Simple class name like "DeliverEventSubscriberRegistry"
+# {FULLY_QUALIFIED_CLASS_NAME}: Complete package+class name like "org.apache.shardingsphere.mode.deliver.DeliverEventSubscriberRegistry"
+```
+
 
 ## Project Structure
 
@@ -567,6 +451,24 @@ alias quick-coverage='JAVA_TOOL_OPTIONS="-javaagent:$HOME/.m2/repository/org/jac
 5. **Coverage-Driven Iteration**: Guide test case supplementation based on coverage feedback
 6. **Systematic Verification**: Re-evaluate overall coverage after each modification
 7. **Root Cause Analysis**: Conduct in-depth analysis of uncovered branches and supplement tests
+
+#### Step 5: Coverage Verification (Required)
+```bash
+# Verify target class coverage
+./mvnw test jacoco:check@jacoco-check -Pcoverage-check -Djacoco.skip=false \
+  -Djacoco.check.class.pattern=your.target.ClassName \
+  -pl your-module
+
+# Verify package level coverage
+./mvnw test jacoco:check@jacoco-check -Pcoverage-check -Djacoco.skip=false \
+  -Djacoco.check.class.pattern="your.package.**" \
+  -Djacoco.minimum.coverage=1.00 \
+  -pl your-module
+```
+
+- **Coverage Meets Requirement**: BUILD SUCCESS, testing complete
+- **Insufficient Coverage**: BUILD FAILURE, return to Step 1 to analyze uncovered branches
+- **Detailed Analysis**: View `module/target/site/jacoco/index.html` for specific uncovered code lines
 
 ### Common Traps and Avoidance Methods
 - **Early Exit Traps**: Tests exit early due to failed condition checks without reaching core logic
