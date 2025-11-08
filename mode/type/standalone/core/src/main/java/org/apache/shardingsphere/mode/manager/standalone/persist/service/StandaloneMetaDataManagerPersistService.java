@@ -68,11 +68,9 @@ public final class StandaloneMetaDataManagerPersistService implements MetaDataMa
     
     @Override
     public void createDatabase(final String databaseName) {
-        MetaDataContexts originalMetaDataContexts = new MetaDataContexts(metaDataContextManager.getMetaDataContexts().getMetaData(), metaDataContextManager.getMetaDataContexts().getStatistics());
         metaDataPersistFacade.getDatabaseMetaDataFacade().getDatabase().add(databaseName);
         metaDataContextManager.getDatabaseMetaDataManager().addDatabase(databaseName);
-        metaDataPersistFacade.getDatabaseMetaDataFacade().persistReloadDatabase(databaseName, metaDataContextManager.getMetaDataContexts().getMetaData().getDatabase(databaseName),
-                originalMetaDataContexts.getMetaData().getDatabase(databaseName));
+        metaDataPersistFacade.getDatabaseMetaDataFacade().persistCreatedDatabaseSchemas(metaDataContextManager.getMetaDataContexts().getMetaData().getDatabase(databaseName));
         OrderedServicesCache.clearCache();
     }
     
