@@ -23,7 +23,7 @@
         <artifactId>shardingsphere-infra-url-type</artifactId>
         <version>5.5.3-SNAPSHOT</version>
     </parent>
-    <artifactId>shardingsphere-infra-url-type-etcd</artifactId>
+    <artifactId>shardingsphere-infra-url-etcd</artifactId>
     <name>${project.artifactId}</name>
     
     <dependencies>

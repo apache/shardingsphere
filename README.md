@@ -1,4 +1,6 @@
-## [Distributed SQL transaction & query engine for data sharding, scaling, encryption, and more - on any database.](https://shardingsphere.apache.org/)
+## [Apache ShardingSphere - Enterprise Distributed Database Ecosystem](https://shardingsphere.apache.org/)
+
+Building the standards and ecosystem on top of heterogeneous databases, empowering enterprise data architecture transformation
 
 **Official Website:** [https://shardingsphere.apache.org/](https://shardingsphere.apache.org/)
 
@@ -52,22 +54,63 @@
 
 <hr>
 
-Apache ShardingSphere is a distributed SQL transaction & query engine that allows for data sharding, scaling, encryption, and more - on any database. Our community's guiding development concept is Database Plus for creating a complete ecosystem that allows you to transform any database into a distributed database system. 
+Apache ShardingSphere is positioned as **Database Plus**, a standard and ecosystem built on top of heterogeneous databases. As an operating system layer above databases, ShardingSphere does not create new databases but focuses on maximizing the computing capabilities of existing databases, providing unified data access and enhanced computing capabilities.
 
-It focuses on repurposing existing databases, by placing a standardized upper layer above existing and fragmented databases, rather than creating a new database. 
+**Database Plus Core Concept**: By building a standardized and scalable enhancement layer above databases, it makes heterogeneous databases as simple to use as a single database, providing unified governance capabilities and distributed computing capabilities for enterprise data architectures.
 
-The goal is to provide unified database services and minimize or eliminate the challenges caused by underlying databases' fragmentation. 
-This results in applications only needing to communicate with a single standardized service.
+**Connect, Enhance, and Pluggable** are the three core pillars of Apache ShardingSphere:
 
-The concepts at the core of the project are `Connect`, `Enhance` and `Pluggable`.
+- **Connect:** Building database upper-layer standards, quickly connecting applications with multi-modal heterogeneous databases through flexible adaptation of database protocols, SQL dialects, and storage formats, providing unified data access experience;
 
-- `Connect:` Flexible adaptation of database protocol, SQL dialect and database storage. It can quickly connect applications and heterogeneous databases.
-- `Enhance:` Capture database access entry to provide additional features transparently, such as: redirect (sharding, readwrite-splitting and shadow), transform (data encrypt and mask), authentication (security, audit and authority), governance (circuit breaker and access limitation and analyze, QoS and observability).
-- `Pluggable:` Leveraging the micro kernel and 3 layers pluggable mode, features and database ecosystem can be embedded flexibly. Developers can customize their ShardingSphere just like building with LEGO blocks.
+- **Enhance:** As a database computing enhancement engine, transparently providing enterprise-grade capabilities including distributed computing (data sharding, readwrite-splitting, SQL federation), data security (encryption, masking, audit), traffic control (circuit breaker, rate limiting), and observability (monitoring, tracing, analysis);
 
-ShardingSphere became an [Apache](https://apache.org/index.html#projects-list) Top-Level Project on April 16, 2020.
+- **Pluggable:** Adopting a micro-kernel + 3-layer pluggable architecture to achieve complete decoupling of kernel, functional components, and ecosystem integration. Developers can flexibly customize unique data architecture solutions that meet enterprise needs, just like building with LEGO blocks.
 
-So far, ShardingSphere has been used by over [15,000 projects on GitHub](https://github.com/search?l=Maven+POM&q=shardingsphere+language%3A%22Maven+POM%22&type=Code).
+**Differentiation Advantages**:
+- **vs Distributed Databases**: More lightweight, protecting existing investments, avoiding vendor lock-in
+- **vs Traditional Middleware**: Richer features, more complete ecosystem, more flexible architecture
+- **vs Cloud Vendor Solutions**: Support multi-cloud deployment, avoid technology binding, autonomous and controllable
+
+ShardingSphere became an [Apache](https://apache.org/index.html#projects-list) Top-Level Project on April 16, 2020, and has been adopted by [19,000+ projects](https://github.com/search?l=Maven+POM&q=shardingsphere+language%3A%22Maven+POM%22&type=Code) worldwide.
+
+### DUAL-ACCESS ARCHITECTURE DESIGN
+
+<hr>
+
+ShardingSphere adopts a unique dual-access architecture design, providing two access ends - JDBC and Proxy - that can be deployed independently or in hybrid deployment, meeting diverse requirements for different scenarios.
+
+#### ShardingSphere-JDBC: Lightweight Access End
+
+**Positioning**: Lightweight Java framework, enhanced JDBC driver
+
+**Core Features**:
+- **Client-side direct connection**: Shares resources with applications, decentralized architecture
+- **High performance, low overhead**: Direct database connection with minimal performance loss
+- **Complete compatibility**: Compatible with all ORM frameworks (MyBatis, JPA, Hibernate, etc.)
+- **Zero additional deployment**: Provided as JAR package, no independent deployment and dependencies required
+
+**Use Cases**: High-performance Java applications, integrated deployment with business applications, pursuing ultimate performance
+
+#### ShardingSphere-Proxy: Enterprise Access End
+
+**Positioning**: Transparent database proxy, independently deployed server-side
+
+**Core Features**:
+- **Static entry point**: Independent deployment from applications, providing stable database access entry
+- **Heterogeneous language support**: Supports any MySQL/PostgreSQL protocol compatible client
+- **DBA friendly**: Database operation and maintenance management interface, convenient for O&M personnel
+- **Enterprise-grade features**: Supports cluster deployment, load balancing, failover
+
+**Use Cases**: Heterogeneous language environments, database operation and maintenance management, enterprise applications requiring unified access entry
+
+#### Hybrid Architecture Advantages
+
+By hybridizing ShardingSphere-JDBC and ShardingSphere-Proxy with unified configuration through the same registry center, you can flexibly build application systems suitable for various scenarios:
+
+- **Architectural flexibility**: Architects can freely adjust the optimal system architecture
+- **Scenario adaptability**: Select the most suitable access method according to different business scenarios
+- **Unified management**: Single configuration, multi-end collaboration, simplifying O&M complexity
+- **Progressive evolution**: Support smooth evolution path from JDBC to Proxy
 
 ### AI ABSTRACTION
 
@@ -114,18 +157,18 @@ We deeply appreciate [community contributors](https://shardingsphere.apache.org/
 
 ##
 
-### STATUS👀
+### PROJECT STATUS
 
 <hr>
 
-:white_check_mark: Version 5.5.2: released :tada:
+:white_check_mark: **Version 5.5.3-SNAPSHOT**: Actively under development :tada:
 
 🔗 For the release notes, follow this link to the relevant [GitHub page](https://github.com/apache/shardingsphere/blob/master/RELEASE-NOTES.md).
 
-:soon: Version 5.5.3
+:soon: **Version 5.5.3**
 
-We are currently working towards our 5.5.3 milestone.
-Keep an eye on the [milestones page](https://github.com/apache/shardingsphere/milestones) of this repo to stay up to date.
+We are currently developing version 5.5.3, which includes multiple security enhancements and performance optimizations.
+Keep an eye on the [milestones page](https://github.com/apache/shardingsphere/milestones) of this repo for the latest development progress.
 
 [comment]: <> (##)
 
@@ -151,12 +194,36 @@ Keep an eye on the [milestones page](https://github.com/apache/shardingsphere/mi
 
 ##
 
-### How it Works
+### TECHNICAL ARCHITECTURE EVOLUTION
 
 <hr>
 
-Apache ShardingSphere includes 2 independent products: JDBC & Proxy.
-They all provide functions of data scale-out, distributed transaction and distributed governance, applicable in a variety of situations such as Java-based isomorphism, heterogeneous language and Cloud-Native.
+Apache ShardingSphere adopts a micro-kernel + 3-layer pluggable architecture, achieving complete decoupling of the kernel, functional components, and ecosystem integration, providing developers with ultimate flexibility and extensibility.
+
+#### Micro-Kernel + 3-Layer Pluggable Model
+
+**Core Layer**:
+- Query optimizer: Intelligent SQL routing and execution plan optimization
+- Distributed transaction: ACID transaction guarantees and consistency coordination
+- Execution engine: Efficient distributed execution and result aggregation
+
+**Feature Layer**:
+- Data sharding, readwrite-splitting, federation query
+- Data encryption, data masking, SQL audit
+- Shadow database, observability, traffic control
+
+**Ecosystem Layer**:
+- Database protocol adaptation (MySQL, PostgreSQL, Oracle, etc.)
+- Registry center integration (ZooKeeper, ETCD, etc.)
+- Configuration management, service discovery, monitoring integration
+
+#### Technical Innovation Highlights
+
+**Complete Decoupling Architecture**:
+- Database types completely decoupled, supporting rapid integration of new databases
+- Functional modules completely decoupled, supporting on-demand feature combination
+
+Apache ShardingSphere consists of two access ends - JDBC and Proxy - that can be deployed independently or in hybrid deployment, providing unified distributed database solutions for diverse application scenarios including Java isomorphism, heterogeneous languages, and cloud-native environments.
 
 ### ShardingSphere-JDBC
 
@@ -198,17 +265,34 @@ Through the combination of ShardingSphere-JDBC & ShardingSphere-Proxy together w
 
 ##
 
-### Solution
+### CORE FEATURE MATRIX
 
 <hr>
 
-| *Solutions/Features* | *Distributed Database*  | *Data Security*      | *Database Gateway*                | *Stress Testing* |
-|----------------------|-------------------------|----------------------|-----------------------------------|------------------|
-|                      | Data Sharding           | Data Encryption      | Heterogeneous Databases Supported | Shadow Database  |
-|                      | Read/write Splitting    | Row Authority (TODO) | SQL Dialect Translate (TODO)      | Observability    |
-|                      | Distributed Transaction | SQL Audit (TODO)     |                                   |                  |
-|                      | Elastic Scale-out       | SQL Firewall (TODO)  |                                   |                  |
-|                      | High Availability       |                      |                                   |                  |
+#### Distributed Database Core Capabilities
+- **Data Sharding**: Horizontal sharding, vertical sharding, custom sharding strategies, automatic sharding routing
+- **Read/Write Splitting**: Master-slave replication, load balancing, failover, read weight configuration
+- **Distributed Transaction**: XA transactions, flexible transactions, Seata AT integration, transaction propagation
+
+#### Data Security & Governance
+- **Data Encryption**: Field-level encryption, transparent encryption, key management, encryption algorithm support
+- **Data Masking**: Sensitive data protection, masking strategy customization, dynamic masking rules
+- **Access Control**: Fine-grained permissions, access control, SQL firewall, security policies
+
+#### Database Gateway Capabilities
+- **Heterogeneous Databases**: MySQL, PostgreSQL, Oracle, SQL Server, Firebird, etc.
+- **SQL Dialect Translation**: Cross-database SQL compatibility, dialect adaptation, syntax conversion
+- **Protocol Adaptation**: Database protocol conversion, multi-protocol support, communication optimization
+
+#### Full-link Stress Testing & Observability
+- **Shadow Database**: Stress testing data isolation, environment separation, real data simulation
+- **Observability**: Performance monitoring, distributed tracing, QoS analysis, metrics collection
+- **Traffic Analysis**: SQL performance analysis, traffic statistics, bottleneck identification
+
+#### Enterprise-grade Features
+- **High Availability**: Cluster deployment, fault recovery, service discovery, health checks
+- **Cloud Native**: Containerized deployment, Kubernetes integration, native image support
+- **Monitoring & Alerting**: Real-time monitoring, alert notifications, performance metrics, O&M dashboard
 
 ##
 
