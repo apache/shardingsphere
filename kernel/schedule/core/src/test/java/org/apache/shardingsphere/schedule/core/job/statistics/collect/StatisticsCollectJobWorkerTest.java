@@ -28,6 +28,7 @@ import org.mockito.Mock;
 import org.mockito.internal.configuration.plugins.Plugins;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.Mockito.verify;
 
@@ -55,6 +56,11 @@ class StatisticsCollectJobWorkerTest {
     void assertInitializeWithNotZooKeeperRepository() {
         jobWorker.initialize(contextManager);
         assertNull(getScheduleJobBootstrap());
+    }
+    
+    @Test
+    void assertUpdateJobConfigurationWithNullContextManager() {
+        assertDoesNotThrow(() -> jobWorker.updateJobConfiguration());
     }
     
     @Test

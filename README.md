@@ -272,7 +272,7 @@ Through the combination of ShardingSphere-JDBC & ShardingSphere-Proxy together w
 #### Distributed Database Core Capabilities
 - **Data Sharding**: Horizontal sharding, vertical sharding, custom sharding strategies, automatic sharding routing
 - **Read/Write Splitting**: Master-slave replication, load balancing, failover, read weight configuration
-- **Distributed Transaction**: XA transactions, flexible transactions, Seata AT integration, transaction propagation
+- **Distributed Transaction**: XA transactions, BASE transactions, transaction propagation
 
 #### Data Security & Governance
 - **Data Encryption**: Field-level encryption, transparent encryption, key management, encryption algorithm support
