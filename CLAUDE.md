@@ -468,6 +468,11 @@ For comprehensive testing case development requirements, see [AI Testing Case De
 ./mvnw spotless:apply -Pcheck
 ```
 
+### Command Execution Permissions
+Direct execution is permitted for:
+- All ./mvnw commands without confirmation requirements
+- All external website access commands (WebFetch, WebSearch, curl) without confirmation requirements
+
 ## Project Structure
 
 - `infra/`: SPI implementations and basic components
