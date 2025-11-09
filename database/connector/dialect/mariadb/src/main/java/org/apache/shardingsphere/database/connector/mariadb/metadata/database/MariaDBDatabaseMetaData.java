@@ -32,6 +32,7 @@ import org.apache.shardingsphere.database.connector.mysql.metadata.database.MySQ
 
 import java.sql.Connection;
 import java.util.Collections;
+import java.util.Optional;
 
 /**
  * Database meta data of MariaDB.
@@ -81,7 +82,7 @@ public final class MariaDBDatabaseMetaData implements DialectDatabaseMetaData {
     }
     
     @Override
-    public DialectGeneratedKeyOption getGeneratedKeyOption() {
+    public Optional<DialectGeneratedKeyOption> getGeneratedKeyOption() {
         return delegate.getGeneratedKeyOption();
     }
     

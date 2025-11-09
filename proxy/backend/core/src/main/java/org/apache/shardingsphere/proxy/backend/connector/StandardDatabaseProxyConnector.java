@@ -262,7 +262,7 @@ public final class StandardDatabaseProxyConnector implements DatabaseProxyConnec
     private ResultSet doExecuteFederation() throws SQLException {
         SQLStatement sqlStatement = queryContext.getSqlStatementContext().getSqlStatement();
         DialectDatabaseMetaData dialectDatabaseMetaData = new DatabaseTypeRegistry(sqlStatement.getDatabaseType()).getDialectDatabaseMetaData();
-        boolean isReturnGeneratedKeys = sqlStatement instanceof InsertStatement && dialectDatabaseMetaData.getGeneratedKeyOption().isSupportReturnGeneratedKeys();
+        boolean isReturnGeneratedKeys = sqlStatement instanceof InsertStatement && dialectDatabaseMetaData.getGeneratedKeyOption().isPresent();
         DatabaseType protocolType = database.getProtocolType();
         ProxyJDBCExecutorCallback callback = ProxyJDBCExecutorCallbackFactory.newInstance(driverType, protocolType, database.getResourceMetaData(),
                 sqlStatement, this, isReturnGeneratedKeys, SQLExecutorExceptionHandler.isExceptionThrown(), true);
