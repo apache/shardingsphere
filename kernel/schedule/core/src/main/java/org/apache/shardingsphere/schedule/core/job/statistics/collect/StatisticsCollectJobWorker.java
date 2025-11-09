@@ -129,17 +129,18 @@ public final class StatisticsCollectJobWorker {
      * Update job configuration.
      */
     public void updateJobConfiguration() {
-        if (null != contextManager && null != registryCenter) {
-            String cron = contextManager.getMetaDataContexts().getMetaData().getTemporaryProps().getValue(TemporaryConfigurationPropertyKey.PROXY_META_DATA_COLLECTOR_CRON);
-            log.info("Changing cron of statistics collect job to `{}`", cron);
-            try {
-                new JobConfigurationAPIImpl(registryCenter).updateJobConfiguration(JobConfigurationPOJO.fromJobConfiguration(createJobConfiguration()));
-                log.info("Changed cron of statistics collect job to `{}`", cron);
-                // CHECKSTYLE:OFF
-            } catch (final Exception ex) {
-                // CHECKSTYLE:ON
-                log.error("Change statistics collect job cron value error", ex);
-            }
+        if (null == contextManager || null == registryCenter) {
+            return;
+        }
+        String cron = contextManager.getMetaDataContexts().getMetaData().getTemporaryProps().getValue(TemporaryConfigurationPropertyKey.PROXY_META_DATA_COLLECTOR_CRON);
+        log.info("Changing cron of statistics collect job to `{}`", cron);
+        try {
+            new JobConfigurationAPIImpl(registryCenter).updateJobConfiguration(JobConfigurationPOJO.fromJobConfiguration(createJobConfiguration()));
+            log.info("Changed cron of statistics collect job to `{}`", cron);
+            // CHECKSTYLE:OFF
+        } catch (final Exception ex) {
+            // CHECKSTYLE:ON
+            log.error("Change statistics collect job cron value error", ex);
         }
     }
 }
