@@ -46,8 +46,9 @@ class StatisticsCollectScheduleJobCronUpdateListenerTest {
     
     @Test
     void assertUpdateWithException() {
-        try (MockedConstruction<StatisticsCollectJobWorker> mocked = mockConstruction(StatisticsCollectJobWorker.class,
-                (mock, context) -> doThrow(new RuntimeException("test exception")).when(mock).updateJobConfiguration())) {
+        try (
+                MockedConstruction<StatisticsCollectJobWorker> mocked = mockConstruction(StatisticsCollectJobWorker.class,
+                        (mock, context) -> doThrow(new RuntimeException("test exception")).when(mock).updateJobConfiguration())) {
             StatisticsCollectScheduleJobCronUpdateListener listener = new StatisticsCollectScheduleJobCronUpdateListener();
             assertDoesNotThrow(listener::updated);
             assertThat(mocked.constructed().size(), is(1));
