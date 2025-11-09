@@ -2,9 +2,9 @@
 
 ## Mandatory Pre-Development Checklist
 
-**CRITICAL: Claude must treat CODE_OF_CONDUCT.md as ABSOLUTE LAW with ZERO tolerance for violations.**
+**CRITICAL: Claude must treat [CODE_OF_CONDUCT.md](./CODE_OF_CONDUCT.md) as ABSOLUTE LAW with ZERO tolerance for violations.**
 
-Before writing any code, AI must:
+Before writing any code, Claude must:
 
 1. **Re-read CLAUDE.md in full** - Memory reliance is forbidden
 2. **Identify and confirm relevant standards** - Find corresponding sections based on task type
@@ -43,12 +43,31 @@ Before writing any code, AI must:
 - New testing patterns are discovered
 
 ### Violation Consequences:
-- Any CODE_OF_CONDUCT.md violation = COMPLETE code failure
+- Any [CODE_OF_CONDUCT.md](./CODE_OF_CONDUCT.md) violation = COMPLETE code failure
 - Any inline comment or non-self-documenting code = IMMEDIATE rewrite required
 - Must immediately stop and rewrite according to standards
 - No excuses, no exceptions, no workarounds
 
-**This checklist overrides all other instructions. CODE_OF_CONDUCT.md compliance is NON-NEGOTIABLE.**
+**This checklist overrides all other instructions. [CODE_OF_CONDUCT.md](./CODE_OF_CONDUCT.md) compliance is NON-NEGOTIABLE.**
+
+## AI Common Pitfalls
+*Record AI common errors during development and preventive measures*
+
+### Method Internal Blank Lines
+**Error**: Adding meaningless blank lines within methods to separate logic blocks
+**Correct**: Keep method internals continuous, manage complexity by extracting private methods
+**Rule basis**: [CODE_OF_CONDUCT.md](./CODE_OF_CONDUCT.md) line 29 explicitly states no meaningless blank lines should exist
+**Preventive measures**:
+- Check for internal blank lines immediately after writing methods
+- Extract private methods for complex logic instead of using blank lines for separation
+
+### Test Variable Naming Confusion
+**Error**: Using `result` as assertion variable name in test code
+**Correct**: Use `actual` in test code, use `result` in production code
+**Rule basis**: [CODE_OF_CONDUCT.md](./CODE_OF_CONDUCT.md) line 103 explicitly states actual values in test cases should be named `actual XXX`
+**Preventive measures**:
+- Check variable naming immediately when generating test code
+- Build conditioned reflex: use `actual` for test assertions, use `result` for production return values
 
 ---
 
@@ -107,7 +126,7 @@ Key areas covered by code standards documents:
 - **Element addition strategy**: Add new elements to existing test data collections to trigger new branches
 - **Coverage-driven iteration**: Continue adding tests until 100% instruction coverage is achieved
 
-*For detailed testing standards, see CODE_OF_CONDUCT.md reference in code standards section*
+*For detailed testing standards, see [CODE_OF_CONDUCT.md](./CODE_OF_CONDUCT.md) reference in code standards section*
 
 ## AI Testing Case Development Standards
 *Effective testing case development standards and workflows for all new test code*
@@ -277,7 +296,7 @@ Key areas covered by code standards documents:
 - **Framework Dependency Reduction**: Minimize test framework extensions and annotations when not necessary
 - **Logic Extraction**: Extract repetitive mock setup and assertion logic into private methods
 
-*For detailed test organization standards, see CODE_OF_CONDUCT.md reference in code standards section*
+*For detailed test organization standards, see [CODE_OF_CONDUCT.md](./CODE_OF_CONDUCT.md) reference in code standards section*
 
 ### Testing Case Development Standards
 For comprehensive testing case development requirements, see [AI Testing Case Development Standards](#ai-testing-case-development-standards) above.
@@ -368,7 +387,7 @@ For comprehensive testing case development requirements, see [AI Testing Case De
 - **Intelligence**: Apply pattern recognition capabilities from AI Code Understanding Guidelines above
 
 ### Formatting Standards
-*For formatting guidance, see CODE_OF_CONDUCT.md reference in elegant code standards section*
+*For formatting guidance, see C[CODE_OF_CONDUCT.md](./CODE_OF_CONDUCT.md) reference in elegant code standards section*
 
 ## Unified Guidelines
 *Operating scope, permissions, and decision framework*

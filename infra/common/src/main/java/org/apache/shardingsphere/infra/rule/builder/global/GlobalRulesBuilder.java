@@ -67,13 +67,10 @@ public final class GlobalRulesBuilder {
     
     @SuppressWarnings("rawtypes")
     private static Map<RuleConfiguration, GlobalRuleBuilder> getMissedDefaultRuleBuilderMap(final Map<RuleConfiguration, GlobalRuleBuilder> builders) {
-        Map<RuleConfiguration, GlobalRuleBuilder> result = new LinkedHashMap<>();
         Map<GlobalRuleBuilder, DefaultGlobalRuleConfigurationBuilder> defaultBuilders = OrderedSPILoader.getServices(
                 DefaultGlobalRuleConfigurationBuilder.class, getMissedDefaultRuleBuilders(builders.values()));
-        for (Entry<GlobalRuleBuilder, DefaultGlobalRuleConfigurationBuilder> entry : defaultBuilders.entrySet()) {
-            result.put(entry.getValue().build(), entry.getKey());
-        }
-        return result;
+        return defaultBuilders.entrySet().stream().collect(
+                Collectors.toMap(entry -> entry.getValue().build(), Entry::getKey, (oldValue, currentValue) -> currentValue, LinkedHashMap::new));
     }
     
     @SuppressWarnings({"unchecked", "rawtypes"})

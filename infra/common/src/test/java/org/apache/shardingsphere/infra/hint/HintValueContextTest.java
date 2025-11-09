@@ -75,35 +75,35 @@ class HintValueContextTest {
     void assertGetHintShardingTableValueWithTableName() {
         HintValueContext hintValueContext = new HintValueContext();
         hintValueContext.getShardingTableValues().put("TABLE.SHARDING_TABLE_VALUE", "1");
-        Collection<Comparable<?>> result = hintValueContext.getHintShardingTableValue("table");
-        assertThat(result.size(), is(1));
-        assertThat(result.iterator().next(), is("1"));
+        Collection<Comparable<?>> actual = hintValueContext.getHintShardingTableValue("table");
+        assertThat(actual.size(), is(1));
+        assertThat(actual.iterator().next(), is("1"));
     }
     
     @Test
     void assertSetHintShardingTableValueWithoutTableName() {
         HintValueContext hintValueContext = new HintValueContext();
         hintValueContext.getShardingTableValues().put("SHARDING_TABLE_VALUE", "2");
-        Collection<Comparable<?>> result = hintValueContext.getHintShardingTableValue("other_table");
-        assertThat(result.size(), is(1));
-        assertThat(result.iterator().next(), is("2"));
+        Collection<Comparable<?>> actual = hintValueContext.getHintShardingTableValue("other_table");
+        assertThat(actual.size(), is(1));
+        assertThat(actual.iterator().next(), is("2"));
     }
     
     @Test
     void assertGetHintShardingDatabaseValueWithTableName() {
         HintValueContext hintValueContext = new HintValueContext();
         hintValueContext.getShardingDatabaseValues().put("TABLE.SHARDING_DATABASE_VALUE", "1");
-        Collection<Comparable<?>> result = hintValueContext.getHintShardingDatabaseValue("table");
-        assertThat(result.size(), is(1));
-        assertThat(result.iterator().next(), is("1"));
+        Collection<Comparable<?>> actual = hintValueContext.getHintShardingDatabaseValue("table");
+        assertThat(actual.size(), is(1));
+        assertThat(actual.iterator().next(), is("1"));
     }
     
     @Test
     void assertGetHintShardingDatabaseValueWithoutTableName() {
         HintValueContext hintValueContext = new HintValueContext();
         hintValueContext.getShardingDatabaseValues().put("SHARDING_DATABASE_VALUE", "2");
-        Collection<Comparable<?>> result = hintValueContext.getHintShardingDatabaseValue("other_table");
-        assertThat(result.size(), is(1));
-        assertThat(result.iterator().next(), is("2"));
+        Collection<Comparable<?>> actual = hintValueContext.getHintShardingDatabaseValue("other_table");
+        assertThat(actual.size(), is(1));
+        assertThat(actual.iterator().next(), is("2"));
     }
 }
