@@ -116,6 +116,26 @@ class ShardingSphereStatisticsFactoryTest {
         assertTrue(actualSchemaStatistics.containsTableStatistics("foo_tbl"));
         assertTrue(actualSchemaStatistics.containsTableStatistics("cluster_information"));
     }
+
+    @Test
+    void assertCreateWithTableLevelMergingSkipExistingTables() {
+        ShardingSphereDatabase database = mockPostgreSQLDatabaseWithShardingSphereSchema();
+        when(metaData.getAllDatabases()).thenReturn(Collections.singleton(database));
+        when(statistics.containsDatabaseStatistics("foo_db")).thenReturn(true);
+        SchemaStatistics schemaStatistics = new SchemaStatistics();
+        schemaStatistics.putTableStatistics("cluster_information", new TableStatistics("cluster_information"));
+        DatabaseStatistics databaseStatistics = new DatabaseStatistics();
+        databaseStatistics.putSchemaStatistics("shardingsphere", schemaStatistics);
+        when(statistics.getDatabaseStatisticsMap()).thenReturn(Collections.singletonMap("foo_db", databaseStatistics));
+        ShardingSphereStatistics actual = ShardingSphereStatisticsFactory.create(metaData, statistics);
+        assertThat(actual.getDatabaseStatisticsMap().size(), is(1));
+        assertTrue(actual.getDatabaseStatisticsMap().containsKey("foo_db"));
+        DatabaseStatistics actualDatabaseStatistics = actual.getDatabaseStatisticsMap().get("foo_db");
+        assertTrue(actualDatabaseStatistics.containsSchemaStatistics("shardingsphere"));
+        SchemaStatistics actualSchemaStatistics = actualDatabaseStatistics.getSchemaStatistics("shardingsphere");
+        assertTrue(actualSchemaStatistics.containsTableStatistics("cluster_information"));
+        assertThat(actualSchemaStatistics.getTableStatisticsMap().size(), is(1));
+    }
     
     private ShardingSphereDatabase mockPostgreSQLDatabaseWithPgCatalogSchema() {
         ShardingSphereDatabase result = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
