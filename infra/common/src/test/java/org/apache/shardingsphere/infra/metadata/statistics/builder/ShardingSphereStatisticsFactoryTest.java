@@ -116,7 +116,7 @@ class ShardingSphereStatisticsFactoryTest {
         assertTrue(actualSchemaStatistics.containsTableStatistics("foo_tbl"));
         assertTrue(actualSchemaStatistics.containsTableStatistics("cluster_information"));
     }
-
+    
     @Test
     void assertCreateWithTableLevelMergingSkipExistingTables() {
         ShardingSphereDatabase database = mockPostgreSQLDatabaseWithShardingSphereSchema();
