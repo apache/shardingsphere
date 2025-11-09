@@ -312,8 +312,8 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
     }
     
     private String getGeneratedKeysColumnName(final String columnName) {
-        DialectGeneratedKeyOption generatedKeyOption = new DatabaseTypeRegistry(usedDatabase.getProtocolType()).getDialectDatabaseMetaData().getGeneratedKeyOption();
-        return generatedKeyOption.getColumnName().orElse(columnName);
+        Optional<DialectGeneratedKeyOption> generatedKeyOption = new DatabaseTypeRegistry(usedDatabase.getProtocolType()).getDialectDatabaseMetaData().getGeneratedKeyOption();
+        return generatedKeyOption.isPresent() ? generatedKeyOption.get().getColumnName() : columnName;
     }
     
     @Override

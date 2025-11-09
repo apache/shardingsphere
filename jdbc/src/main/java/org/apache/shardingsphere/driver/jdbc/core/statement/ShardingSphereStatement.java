@@ -362,8 +362,9 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
     }
     
     private String getGeneratedKeysColumnName(final String columnName) {
-        DialectGeneratedKeyOption generatedKeyOption = new DatabaseTypeRegistry(metaData.getDatabase(usedDatabaseName).getProtocolType()).getDialectDatabaseMetaData().getGeneratedKeyOption();
-        return generatedKeyOption.getColumnName().orElse(columnName);
+        Optional<DialectGeneratedKeyOption> generatedKeyOption =
+                new DatabaseTypeRegistry(metaData.getDatabase(usedDatabaseName).getProtocolType()).getDialectDatabaseMetaData().getGeneratedKeyOption();
+        return generatedKeyOption.isPresent() ? generatedKeyOption.get().getColumnName() : columnName;
     }
     
     @Override
