@@ -32,7 +32,7 @@ import java.util.Set;
  * SQL logger.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-@Slf4j(topic = "ShardingSphere-SQL")
+@Slf4j(topic = "org.apache.shardingsphere.sql")
 public final class SQLLogger {
     
     /**
