@@ -39,7 +39,7 @@ public final class DialectGeneratedKeyOption {
     
     /**
      * Get column name.
-     * 
+     *
      * @return column name
      */
     public Optional<String> getColumnName() {
