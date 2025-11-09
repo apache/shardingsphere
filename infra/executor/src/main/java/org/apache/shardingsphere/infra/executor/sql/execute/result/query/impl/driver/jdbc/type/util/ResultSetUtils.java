@@ -196,6 +196,8 @@ public final class ResultSetUtils {
                 return new Time(value.getTime());
             case "java.sql.Timestamp":
                 return new Timestamp(value.getTime());
+            case "java.time.LocalDate":
+                return new java.sql.Date(value.getTime()).toLocalDate();
             case "java.lang.String":
                 return value.toString();
             default:
