@@ -20,6 +20,8 @@ package org.apache.shardingsphere.database.connector.core.metadata.database.meta
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
+import java.util.Optional;
+
 /**
  * Dialect generated key option.
  */
@@ -28,4 +30,19 @@ import lombok.RequiredArgsConstructor;
 public final class DialectGeneratedKeyOption {
     
     private final boolean isSupportReturnGeneratedKeys;
+    
+    private final String columnName;
+    
+    public DialectGeneratedKeyOption(final boolean isSupportReturnGeneratedKeys) {
+        this(isSupportReturnGeneratedKeys, null);
+    }
+    
+    /**
+     * Get column name.
+     *
+     * @return column name
+     */
+    public Optional<String> getColumnName() {
+        return Optional.ofNullable(columnName);
+    }
 }
