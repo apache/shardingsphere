@@ -80,8 +80,8 @@ The following code of conduct is based on full compliance with the [Apache Softw
         - Forbidden to call LinkedList's `get(int index)` method.
 - Comments & Logging standards:
     - Logs and comments must be in English.
-    - Comments can only contain javadoc, todo and fixme.
-    - Public classes and methods must have javadoc. Javadoc for user-facing APIs and SPIs needs to be clear and comprehensive. Other classes, methods, and methods overriding parent classes do not need javadoc.
+    - Comments can only contain JAVADOC, TODO and FIXME.
+    - Public classes and methods must have JAVADOC. JAVADOC for user-facing APIs and SPIs needs to be clear and comprehensive. Other classes, methods, and methods overriding parent classes do not need JAVADOC.
 
 ## Unit Testing Standards
 
@@ -102,9 +102,10 @@ The following code of conduct is based on full compliance with the [Apache Softw
 - Data assertion standards should follow:
     - Boolean type assertions should use `assertTrue` and `assertFalse`;
     - Null value assertions should use `assertNull` and `assertNotNull`;
-    - Other types should use `assertThat`.
+    - Other types should use `assertThat(actual, is(expected))` instead of `assertEquals`;
+    - Use Hamcrest matchers like `is()`, `not()` for precise and readable assertions.
 - The actual values in test cases should be named actual XXX, and expected values should be named expected XXX.
-- Test classes and methods marked with `@Test` do not need javadoc.
+- Test classes and methods marked with `@Test` do not need JAVADOC.
 - Using `mock` should follow the following specifications:
     - When unit tests need to connect to a certain environment, `mock` should be used;
     - When unit tests contain objects that are not easy to construct, for example: objects with more than two levels of nesting and unrelated to testing, `mock` should be used.
