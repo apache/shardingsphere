@@ -116,20 +116,10 @@ public final class StatisticsCollectJobWorker {
     }
     
     /**
-     * Destroy job worker.
-     */
-    public void destroy() {
-        if (WORKER_INITIALIZED.compareAndSet(true, false)) {
-            Optional.ofNullable(scheduleJobBootstrap).ifPresent(ScheduleJobBootstrap::shutdown);
-            scheduleJobBootstrap = null;
-        }
-    }
-    
-    /**
      * Update job configuration.
      */
     public void updateJobConfiguration() {
-        if (null == contextManager || null == registryCenter) {
+        if (null == contextManager) {
             return;
         }
         String cron = contextManager.getMetaDataContexts().getMetaData().getTemporaryProps().getValue(TemporaryConfigurationPropertyKey.PROXY_META_DATA_COLLECTOR_CRON);
@@ -141,6 +131,16 @@ public final class StatisticsCollectJobWorker {
         } catch (final Exception ex) {
             // CHECKSTYLE:ON
             log.error("Change statistics collect job cron value error", ex);
+        }
+    }
+    
+    /**
+     * Destroy job worker.
+     */
+    public void destroy() {
+        if (WORKER_INITIALIZED.compareAndSet(true, false)) {
+            Optional.ofNullable(scheduleJobBootstrap).ifPresent(ScheduleJobBootstrap::shutdown);
+            scheduleJobBootstrap = null;
         }
     }
 }
