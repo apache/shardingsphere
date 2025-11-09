@@ -156,8 +156,8 @@ public interface DialectDatabaseMetaData extends DatabaseTypedSPI {
      *
      * @return generated key option
      */
-    default DialectGeneratedKeyOption getGeneratedKeyOption() {
-        return new DialectGeneratedKeyOption(false);
+    default Optional<DialectGeneratedKeyOption> getGeneratedKeyOption() {
+        return Optional.empty();
     }
     
     /**
