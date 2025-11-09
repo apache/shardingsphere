@@ -10,11 +10,41 @@ Before writing any code, AI must:
 2. **Identify and confirm relevant standards** - Find corresponding sections based on task type
 3. **Explicitly reference standard clauses** - Cite specific standards in code descriptions
 4. **Verify compliance item by item** - Ensure every related rule is followed
+5. **Comment compliance verification**: Confirm no inline comments exist and code is self-documenting
 
 **IMPORTANT: All CLAUDE.md rules must be strictly followed with no priority differences!**
 
+## AI Self-Reflection and Continuous Improvement
+
+**After each development task, Claude must conduct systematic self-reflection:**
+
+### Task Completion Analysis
+- **Coverage achievement analysis**: Did we achieve 100% coverage? If not, why exactly?
+- **Initial failure root cause analysis**: What assumptions led to initial failures or underestimation?
+- **Methodology effectiveness assessment**: Which approaches worked and which failed?
+- **Knowledge gap identification**: What critical knowledge was missing at the start?
+
+### Process Improvement Rules
+- **Complexity assessment protocol**: Never underestimate SPI, recursive, or dependency complexity
+- **Coverage-driven development**: Always use coverage reports to guide test development, not test pass/fail status
+- **Iterative validation requirement**: After each change, validate actual impact on coverage metrics
+- **Real-world service preference**: When mocking becomes complex, prefer using real services via SPI loaders
+
+### Learning Integration
+- **Pattern recognition**: Document successful patterns for future reference
+- **Failure pattern documentation**: Document failure modes to prevent recurrence
+- **Standard refinement opportunity**: Update CLAUDE.md standards when new rules are discovered
+- **Knowledge transfer**: Apply lessons learned across different but similar scenarios
+
+**Self-reflection is mandatory when:**
+- Coverage targets are not met on first attempt
+- Initial estimates prove significantly incorrect
+- Unexpected technical challenges arise
+- New testing patterns are discovered
+
 ### Violation Consequences:
 - Any CODE_OF_CONDUCT.md violation = COMPLETE code failure
+- Any inline comment or non-self-documenting code = IMMEDIATE rewrite required
 - Must immediately stop and rewrite according to standards
 - No excuses, no exceptions, no workarounds
 
@@ -68,12 +98,14 @@ Key areas covered by code standards documents:
 *Comprehensive testing requirements and standards for all new code*
 
 ### Unified Testing Standards
-- 100% line and branch coverage for all new code
+- **100% mandatory coverage**: 100% instruction, line, branch, and method coverage for all new code
+- **Coverage validation requirement**: Must verify coverage improvement with JaCoCo reports after each test
 - **Minimal branch coverage**: Analyze uncovered branches and write only minimal test cases
 - **Test set minimization**: Focus on branch coverage, eliminate redundancy
 - **Test integration priority**: Prefer modifying existing test methods over creating new ones
 - **Single target modification**: Each test change should focus on covering one specific uncovered branch
 - **Element addition strategy**: Add new elements to existing test data collections to trigger new branches
+- **Coverage-driven iteration**: Continue adding tests until 100% instruction coverage is achieved
 
 *For detailed testing standards, see CODE_OF_CONDUCT.md reference in code standards section*
 
@@ -91,11 +123,99 @@ Key areas covered by code standards documents:
 - **Real business scenarios**: Create tests that simulate actual business logic flows
 - **Condition success**: Ensure Mocks allow tests to pass all prerequisite conditions
 - **Avoid surface Mocks**: Prevent Mocks that cause tests to exit early without reaching target code
+- **Self-documenting mock configuration**: Extract mock setup logic into well-named methods, no inline comments explaining mock purpose
 
 ### Verification Requirements
 - **Path verification**: Confirm each test triggers expected code branches
 - **Coverage confirmation**: Verify actual coverage improvement rather than test passing
 - **Mock completeness check**: Ensure all prerequisite conditions are properly satisfied
+
+### Code Self-Documentation Standards
+**MANDATORY: All code must be self-documenting with ABSOLUTELY ZERO inline comments**
+
+#### Forbidden Comment Types
+- **Explanatory inline comments**: Any `// comment` explaining code logic
+- **Descriptive comments**: Comments describing what code is doing
+- **Implementation comments**: Comments explaining how code works
+- **Chinese comments**: All comments must be in English (only javadoc/todo/fixme allowed)
+
+#### Required Self-Documentation Patterns
+- **Method naming**: Use descriptive method names that explain intent
+- **Logic extraction**: Extract complex code into well-named private methods
+- **Factory methods**: Use factory methods for object creation instead of descriptive comments
+- **Configuration methods**: Extract setup/mock configuration into named methods
+
+#### Allowed Comments Only
+- **Javadoc**: For public classes and methods only
+- **TODO**: For pending work items
+- **FIXME**: For code that needs fixing
+- **Database-specific markers**: For SQL parsing dialect differences only
+
+#### Violation Consequences
+- **Any inline comment** = Immediate code rewrite required
+- **Non-self-documenting code** = Complete refactoring mandatory
+- **Chinese comments** = Zero tolerance, immediate removal
+
+### Coverage-Driven Testing Workflow
+*Systematic workflow for achieving comprehensive test coverage through iterative analysis*
+
+#### Step 1: Pre-Test Coverage Analysis
+- **Generate baseline coverage report**: Run existing tests to identify current coverage gaps
+- **Analyze uncovered code paths**: Use JaCoCo HTML report to identify specific uncovered lines and branches
+- **Classify uncovered complexity**: Distinguish between simple branches and complex recursive/conditional logic
+- **Prioritize by impact**: Focus on critical business logic and complex code paths first
+
+#### Step 2: Scenario-Based Test Design
+- **Design for uncovered branches**: Create specific test scenarios that trigger each uncovered branch
+- **Business context simulation**: Ensure test scenarios reflect realistic business conditions
+- **Data structure precision**: Construct test data that satisfies all prerequisite conditions
+- **Avoid early exits**: Configure mocks to prevent premature test termination
+
+#### Step 3: Iterative Coverage Validation
+- **Test-add-verify cycle**: Add one test case → run tests → analyze coverage improvement
+- **Coverage delta analysis**: Verify each new test case actually improves coverage metrics
+- **Unnecessary test elimination**: Remove tests that don't contribute to coverage goals
+- **Branch coverage focus**: Prioritize branch coverage over redundant line coverage
+
+#### Step 4: Complex Logic Coverage Strategy
+- **Recursive path triggering**: Design tests that navigate deep recursive method calls
+- **Conditional chain completion**: Ensure all conditional logic chains are fully exercised
+- **SPI dependency handling**: Use real SPI services when mocking is impractical
+- **Multi-layer dependency satisfaction**: Configure complete mock chains for complex object interactions
+
+#### Step 5: Coverage Optimization
+- **Edge case identification**: Target remaining uncovered branches with specialized scenarios
+- **Mock refinement**: Eliminate unnecessary stubbing that violates strict mocking frameworks
+- **Test consolidation**: Merge redundant tests while maintaining coverage
+- **Final validation**: Achieve 100% instruction coverage with minimal test set
+
+### Common Coverage Pitfalls and Solutions
+*Systematic approaches to avoid common mistakes in test coverage implementation*
+
+#### Pitfall 1: Surface-Level Coverage
+- **Problem**: Tests pass but don't execute target code due to early exits
+- **Solution**: Use coverage reports to verify actual code execution paths
+- **Prevention**: Always validate coverage improvement after test implementation
+
+#### Pitfall 2: Mock Configuration Incompleteness
+- **Problem**: Missing mock dependencies cause tests to fail prerequisite conditions
+- **Solution**: Map complete dependency chains and configure all necessary mocks
+- **Prevention**: Use `RETURNS_DEEP_STUBS` for nested object access
+
+#### Pitfall 3: SPI Dependency Complexity
+- **Problem**: Underestimating SPI service discovery complexity in testing
+- **Solution**: Use real SPI services via `TypedSPILoader.getService()` when appropriate
+- **Prevention**: Analyze SPI dependencies before attempting to mock them
+
+#### Pitfall 4: Redundant Test Design
+- **Problem**: Creating multiple similar tests instead of targeting specific branches
+- **Solution**: Design each test to cover specific uncovered branches only
+- **Prevention**: Follow "minimal branch coverage" principle strictly
+
+#### Pitfall 5: Coverage Analysis Neglect
+- **Problem**: Failing to analyze which specific code paths remain uncovered
+- **Solution**: Use JaCoCo HTML reports to identify exact uncovered lines and conditions
+- **Prevention**: Make coverage analysis an integral part of the testing workflow
 
 ## AI Code Understanding Guide
 *AI-specific pattern recognition and style application capabilities*
@@ -167,6 +287,8 @@ For comprehensive testing case development requirements, see [AI Testing Case De
 - **Import Organization**: Group imports by source (java.*, org.*, static), keep them minimal and relevant
 - **Class Structure Simplification**: Focus on test logic rather than ceremonial code and annotations
 - **Code Density Optimization**: Maximize meaningful code per line while maintaining readability
+- **Assertion Style MANDATORY**: Use `assertThat(actual, is(expected))` instead of `assertEquals` for all non-boolean, non-null assertions
+- **Hamcrest Preference**: Prefer Hamcrest matchers (`is()`, `not()`, `equalTo()`) over direct JUnit assertions for better readability
 
 ### Test Scenario Design Capabilities
 - Identify business-critical paths for focused testing

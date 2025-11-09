@@ -80,8 +80,8 @@ chapter = true
      - 禁止调用 LinkedList 的 `get(int index)` 方法。
  - 注释 & 日志规范：
    - 日志与注释一律使用英文。
-   - 注释只能包含 javadoc，todo 和 fixme。
-   - 公开的类和方法必须有 javadoc，对用户的 API 和 SPI 的 javadoc 需要写的清晰全面，其他类和方法以及覆盖自父类的方法无需 javadoc。
+   - 注释只能包含 JAVADOC，TODO 和 FIXME。
+   - 公开的类和方法必须有 JAVADOC，对用户的 API 和 SPI 的 JAVADOC 需要写的清晰全面，其他类和方法以及覆盖自父类的方法无需 JAVADOC。
 
 ## 单元测试规范
 
@@ -102,9 +102,10 @@ chapter = true
  - 数据断言规范应遵循：
     - 布尔类型断言应使用 `assertTrue` 和 `assertFalse`；
     - 空值断言应使用 `assertNull` 和 `assertNotNull`；
-    - 其他类型应使用 `assertThat`。
+    - 其他类型断言应使用 `assertThat(actual, is(expected))` 代替 `assertEquals`；
+    - 使用 Hamcrest 匹配器（如 `is()`、`not()`）来进行精确且可读性高的断言。
  - 测试用例的真实值应名为为 actual XXX，期望值应命名为 expected XXX。
- - 测试类和 `@Test` 标注的方法无需 javadoc。
+ - 测试类和 `@Test` 标注的方法无需 JAVADOC。
  - 使用 `mock` 应遵循如下规范：
    - 单元测试需要连接某个环境时，应使用 `mock`；
    - 单元测试包含不容易构建的对象时，例如：超过两层嵌套并且和测试无关的对象，应使用 `mock`。
