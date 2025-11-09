@@ -71,7 +71,7 @@ Core concepts:
 2. 100% test coverage for all new code (see testing philosophy for details)
 3. NEVER auto-commit to Git without explicit instruction
 4. Work only within explicitly specified scope (see core prohibitions)
-5. Apply formatting only to new code (see formatting standards)
+5. Format all modified code before task completion (run ./mvnw spotless:apply -Pcheck)
 
 ## Core Prohibitions
 

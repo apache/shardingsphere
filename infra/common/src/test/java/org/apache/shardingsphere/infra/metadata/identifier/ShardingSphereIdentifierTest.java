@@ -23,8 +23,16 @@ import org.junit.jupiter.api.Test;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.mockito.Mockito.mock;
 
 class ShardingSphereIdentifierTest {
+    
+    @Test
+    void assertConstructor() {
+        assertThat(new ShardingSphereIdentifier("foo", mock()).getValue(), is("foo"));
+        assertThat(new ShardingSphereIdentifier(new IdentifierValue("`foo`")).getValue(), is("foo"));
+        assertThat(new ShardingSphereIdentifier(new IdentifierValue("`foo`"), mock()).getValue(), is("foo"));
+    }
     
     @Test
     void assertEqualsWithNotShardingSphereIdentifier() {
