@@ -53,7 +53,7 @@ public final class DatabaseRulesBuilder {
      * @param protocolType protocol type
      * @param databaseConfig database configuration
      * @param computeNodeInstanceContext compute node instance context
-     * @param resourceMetaData  resource meta data
+     * @param resourceMetaData resource meta data
      * @return built rules
      */
     @SuppressWarnings({"unchecked", "rawtypes"})
@@ -79,7 +79,7 @@ public final class DatabaseRulesBuilder {
      * @param rules rules
      * @param ruleConfig rule configuration
      * @param computeNodeInstanceContext compute node instance context
-     * @param resourceMetaData  resource meta data
+     * @param resourceMetaData resource meta data
      * @return built rule
      */
     @SuppressWarnings({"unchecked", "rawtypes"})

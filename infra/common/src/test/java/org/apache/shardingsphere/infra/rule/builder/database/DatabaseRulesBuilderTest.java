@@ -42,7 +42,7 @@ class DatabaseRulesBuilderTest {
         assertThat(actual.size(), is(1));
         assertThat(actual.get(0), isA(FixtureRule.class));
     }
-
+    
     @Test
     void assertBuildSingleRule() {
         ShardingSphereRule actual = DatabaseRulesBuilder.build("foo_db", mock(), Collections.emptyList(), new FixtureDatabaseRuleConfiguration(), mock(), mock());
