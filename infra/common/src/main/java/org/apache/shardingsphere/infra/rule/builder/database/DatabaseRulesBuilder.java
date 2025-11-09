@@ -53,7 +53,7 @@ public final class DatabaseRulesBuilder {
      * @param protocolType protocol type
      * @param databaseConfig database configuration
      * @param computeNodeInstanceContext compute node instance context
-     * @param resourceMetaData  resource meta data
+     * @param resourceMetaData resource meta data
      * @return built rules
      */
     @SuppressWarnings({"unchecked", "rawtypes"})
@@ -79,7 +79,7 @@ public final class DatabaseRulesBuilder {
      * @param rules rules
      * @param ruleConfig rule configuration
      * @param computeNodeInstanceContext compute node instance context
-     * @param resourceMetaData  resource meta data
+     * @param resourceMetaData resource meta data
      * @return built rule
      */
     @SuppressWarnings({"unchecked", "rawtypes"})
@@ -121,9 +121,9 @@ public final class DatabaseRulesBuilder {
     
     @SuppressWarnings("rawtypes")
     private static Map<RuleConfiguration, DatabaseRuleBuilder> getMissedDefaultRuleBuilderMap(final Collection<DatabaseRuleBuilder> configuredBuilders) {
-        Map<RuleConfiguration, DatabaseRuleBuilder> result = new LinkedHashMap<>();
         Map<DatabaseRuleBuilder, DefaultDatabaseRuleConfigurationBuilder> defaultBuilders =
                 OrderedSPILoader.getServices(DefaultDatabaseRuleConfigurationBuilder.class, getMissedDefaultRuleBuilders(configuredBuilders));
+        Map<RuleConfiguration, DatabaseRuleBuilder> result = new LinkedHashMap<>(defaultBuilders.size(), 1F);
         // TODO consider about order for new put items
         for (Entry<DatabaseRuleBuilder, DefaultDatabaseRuleConfigurationBuilder> entry : defaultBuilders.entrySet()) {
             result.put(entry.getValue().build(), entry.getKey());
