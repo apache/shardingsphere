@@ -12,13 +12,13 @@ mkdir -p $target/mergeReport
 mkdir -p $target/cli
 
 # Download jacoco's cli using curl
-curl -O https://repo1.maven.org/maven2/org/jacoco/jacoco/0.8.11/jacoco-0.8.11.zip
+curl -O https://repo1.maven.org/maven2/org/jacoco/jacoco/0.8.14/jacoco-0.8.14.zip
 
 # Extract the downloaded zip file
-unzip -o jacoco-0.8.11.zip -d jacoco-0.8.11
+unzip -o jacoco-0.8.14.zip -d jacoco-0.8.14
 
 # Move the decompressed jacococli.jar to the cli folder
-mv jacoco-0.8.11/lib/jacococli.jar $target/cli/jacococli.jar
+mv jacoco-0.8.14/lib/jacococli.jar $target/cli/jacococli.jar
 
 jacococli="$target/cli/jacococli.jar"
 
