@@ -1,0 +1,306 @@
+\usepackage{hyphsubst}
+
+\PassOptionsToPackage{english,russian}{babel}
+
+\usepackage{sphinx}
+
+% \usepackage[utf8]{inputenc}
+% \usepackage[T2A,T1]{fontenc}
+
+\usepackage{fancyhdr}
+
+
+\PassOptionsToPackage{pdftex}{graphicx}
+
+\usepackage{array}
+\usepackage{longtable}
+\usepackage{hhline}
+
+\usepackage{amsmath} %математические символы
+\usepackage{amssymb}
+\usepackage{amsfonts}
+\usepackage{textcomp} %шрифты
+\usepackage{type1ec} % для четкости шрифта
+
+\makeatletter
+\newcommand\arraybslash{\let\\\@arraycr}
+\makeatother
+
+\setlength\tabcolsep{1mm}
+\renewcommand\arraystretch{1.3}
+\newcounter{Table}[section]
+\renewcommand\theTable{\thesection.\arabic{Table}}
+
+\usepackage{color}
+\usepackage{framed}
+\usepackage[framemethod=tikz]{mdframed}
+\usepackage[tikz]{bclogo}
+
+\usepackage{titlesec}
+\usepackage{xhfill}
+\usepackage{booktabs}
+\usepackage{listingsutf8}
+\usepackage{float}
+\usepackage{tablefootnote}
+\usepackage{colortbl}
+%\usepackage{arydshln}
+\usepackage{multirow}
+\usepackage{tabularx}
+\usepackage{comment}
+\usepackage{enumitem}
+\usepackage{indentfirst}
+\usepackage{tcolorbox}
+\usepackage{afterpage}
+
+\emergencystretch=25pt 
+
+\tcbuselibrary{most}
+
+
+% чтобы разделы в оглавлении были не жирным а обычным шрифтом
+\makeatletter 
+\renewcommand*\l@section[2]{% 
+\ifnum \c@tocdepth >\z@ 
+\addpenalty\@secpenalty 
+\addvspace{1.0em \@plus\p@}% 
+\setlength\@tempdima{1.5em}% 
+\begingroup 
+\parindent \z@ \rightskip \@pnumwidth 
+\parfillskip -\@pnumwidth 
+\leavevmode 
+\advance\leftskip\@tempdima 
+\hskip -\leftskip 
+#1\nobreak\hfil \nobreak\hb@xt@\@pnumwidth{\hss~~~~~#2}\par 
+\endgroup 
+\fi} 
+\makeatother 
+
+\makeatletter
+\@addtoreset{figure}{section} % сбросит счетчик рисунков в начале каждого раздела. 
+\makeatother
+
+\makeatletter
+\@addtoreset{table}{section} % сбросит счетчик таблиц в начале каждого раздела. 
+\makeatother
+
+\renewcommand{\labelenumii}{\theenumii.}
+\renewcommand{\theenumii}{\arabic{enumii}}
+
+\newcounter{redlisting}[section]
+\renewcommand{\theredlisting}{\thesection.\arabic{redlisting}}
+\newcommand{\li}{\refstepcounter{redlisting} Листинг \theredlisting. }
+\newcommand{\enli}{\refstepcounter{redlisting} Listing \theredlisting. }
+
+
+%оформление таблиц и рисунков по ГОСТ
+\PassOptionsToPackage{tableposition=top}{caption}
+\usepackage{subcaption}
+\DeclareCaptionLabelFormat{gostfigure}{Рисунок #2} 
+\DeclareCaptionLabelFormat{gosttable}{Таблица #2} 
+\DeclareCaptionLabelSeparator{gost}{~---~}
+\captionsetup{labelsep=gost}
+\captionsetup[figure]{labelformat=gostfigure}
+\captionsetup[table]{labelformat=gosttable,justification=raggedright,slc=off} 
+
+
+%задает пустое пространство до и после таблицы
+\setlength{\LTpre}{5pt}
+\setlength{\LTpost}{5pt}
+
+\newcommand{\sectionbreak}{\clearpage}
+
+\hypersetup{urlcolor=blue}
+\usepackage{xparse}
+
+
+\setlist[enumerate]{leftmargin=25pt, labelsep = 8pt, itemsep = 5pt, topsep = 5pt} 
+\setlist[itemize]{leftmargin=25pt, labelsep = 8pt, itemsep = 5pt, topsep = 5pt} 
+\setlist[description]{labelsep=0pt, partopsep=0pt, itemsep = 5pt, leftmargin = 25pt}  
+
+
+%для отображения нумерованных подпунктов, например, 1.1
+\renewcommand{\labelenumii}{\arabic{enumi}.\arabic{enumii}}
+\renewcommand{\labelenumiii}{\arabic{enumi}.\arabic{enumii}.\arabic{enumiii}}
+\renewcommand{\labelenumiv}{\arabic{enumi}.\arabic{enumii}.\arabic{enumiii}.\arabic{enumiv}}
+
+
+% чтобы заголовки таблиц были выровнены по центру и имели обычный, жирный шрифт
+\protected\def\sphinxstyletheadfamily {\centering\arraybackslash\normalfont\bfseries }
+% замена текста сноски при разрыве longtable
+\protected\def\sphinxtablecontinued#1{\hspace{140mm}\textsf{\footnotesize{(pазрыв таблицы)}}}
+% замена текста сноски при разрыве code-block
+\protected\def\sphinxstylecodecontinued#1{\textsf{\footnotesize{(продолжение с предыдущей страницы)}}}
+\protected\def\sphinxstylecodecontinues#1{\textsf{\footnotesize{(продолжение на следующей странице)}}}
+
+\parskip = 2pt
+\parindent=25pt
+
+% настройка для блоков Note и Warning
+\sphinxsetup{ 
+	div.note_border-top-width = 0pt,
+	div.note_border-right-width = 0pt,
+	div.note_border-bottom-width = 0pt,
+	div.note_border-left-width = 4pt,
+	div.note_border-TeXcolor = green!50!black,
+	div.note_background-TeXcolor = green!8,
+	div.note_border-radius=0pt,
+	div.warning_border-top-width = 0pt,
+	div.warning_border-right-width = 0pt,
+	div.warning_border-bottom-width = 0pt,
+	div.warning_border-left-width = 4pt,
+	div.warning_border-TeXcolor = red,
+	div.warning_background-TeXcolor = red!8,
+	div.warning_border-radius=0pt,
+   }
+
+
+\renewenvironment{sphinxnote}[1]{\begin{sphinxheavybox}}{\end{sphinxheavybox}} % чтобы не печаталось слово "Примечание:"
+\renewenvironment{sphinxwarning}[1]{\begin{sphinxheavybox}}{\end{sphinxheavybox}} % чтобы не печаталось слово "Предупреждение:"
+\makeatletter
+\renewenvironment{sphinxuseclass}[1]{%
+  \par\begingroup
+  \renewcommand{\caption}[1]{}%
+}{%
+  \par\endgroup
+}
+\makeatother
+
+% команда для настройки Verbatim (код-блоков) 
+% потребовалось для отступа текста от рамки внутри блока кода
+\usepackage{fancyvrb}
+\fvset{
+	frame=single,
+	framerule=0mm,
+	xrightmargin=8pt,
+	xleftmargin=8pt,
+	framesep=6pt,
+}
+
+% настройка код-блоков
+% директива код-блоков переопределена в файле NewCodeBlockDirective.py
+\sphinxsetup{
+	verbatimvisiblespace = ,   % чтобы переносы строк в код-блоке были без 
+	verbatimcontinued = ,      % красных стрелок и подчеркивания пробела
+}
+
+\newcommand{\redlistingstyle}{
+	\sphinxsetup{
+       pre_border-width = 0.5pt , 
+	   pre_border-top-left-radius = 0pt,
+	   pre_border-top-right-radius = 0pt,
+	   pre_border-bottom-right-radius = 5pt,
+	   pre_border-bottom-left-radius = 5pt,
+	   pre_border-TeXcolor = black!90,
+	   pre_background-TeXcolor = white!98!black,
+	   pre_box-shadow = 2pt 2pt,
+	   pre_box-shadow-TeXcolor=gray!40,
+	   pre_padding-top=0pt,
+	   pre_padding-right = -0.5pt,
+       pre_padding-bottom = 0pt,
+       pre_padding-left = -0.5pt,
+   }
+}
+\newcommand{\redstatementstyle}{
+	\sphinxsetup{
+       pre_border-width = 0.5pt , 
+	   pre_border-radius=5pt,
+	   pre_border-TeXcolor = black!90,
+	   pre_background-TeXcolor = white!98!black,
+	   pre_box-shadow = 2pt 2pt,
+	   pre_box-shadow-TeXcolor=gray!40,
+	   pre_padding=-0.5pt,
+   }
+}
+
+\newcommand{\redbordlessstyle}{
+	\sphinxsetup{
+       pre_border-width = 0pt , 
+	   pre_border-radius=0pt,
+	   pre_background-TeXcolor = white,
+	   pre_box-shadow = 0pt 0pt,
+   }
+}
+
+\newcommand{\redexamplestyle}{
+	\sphinxsetup{
+		pre_border-radius=0pt,
+		pre_border-top-width = 0.5pt , 
+   		pre_border-bottom-width = 0.5pt , 
+		pre_border-right-width = 0pt,
+		pre_border-left-width = 0pt,
+    	pre_border-TeXcolor = yellow!70!black,
+   		pre_background-TeXcolor= yellow!10,
+		pre_box-shadow = 0pt 0pt,
+		pre_padding=-0.5pt,
+	}
+}
+
+% Листинг состоит из 2-х разных блоков: 
+% 1. Заголовок - в окружении tcolorbox
+% 2. Тело - стандартный код-блок
+\newcommand{\redlistingtitlestyle}[2]{\begin{tcolorbox}[%
+	enhanced, 
+	colback=white,      % цвет фона основого текста
+	width=\textwidth,
+	arc=5pt,
+	coltitle = white,   % цвет текста заголовка
+	fonttitle = \normalfont\bfseries,
+	title = {\li #1 \label{#2}},
+	toptitle = 3pt,     % отступ Текста заголовка от рамки сверху
+	bottomtitle = 2pt,  % отступ Текста заголовка от рамки снизу
+	shadow={2pt}{0pt}{0mm}{gray!43},
+	colbacktitle = black!65!white,      % цвет фона заголовка
+	colframe=white,                     % цвет рамки всего бокса 
+	boxrule = 0.5pt,                    % толщина рамки
+	attach boxed title to top,          % чтобы рамка была только 
+	boxed title style={colframe=black}, % у заголовка в черном цвете
+   ]%
+\end{tcolorbox}%
+\redlistingstyle
+}
+
+
+\renewenvironment{DUlineblock}[1]{%
+	\list{}{\setlength{\partopsep}{\parskip}%
+			\addtolength{\partopsep}{0.3\baselineskip}%
+			\setlength{\topsep}{0pt}%
+			\setlength{\itemsep}{0.15\baselineskip}%
+			\setlength{\parsep}{0pt}%
+			\setlength{\leftmargin}{#1}}%
+		\raggedright%
+}
+{\endlist}
+
+% окружение для директивы unindented_list (списки с маленьким отступом)
+% \newenvironment{listenv}{\setlist[itemize]{leftmargin=12pt, labelsep = 6pt}\setlist[enumerate]{leftmargin=17pt, labelsep = 6pt} }{}
+
+% чтобы в оглавлении было не присто А Б, а Приложение А, Приложение Б
+\renewcommand\appendixname{Приложение}
+
+\newcounter{application}
+\renewcommand{\theapplication}{\Asbuk{application}}
+\newcommand{\appcount}{\refstepcounter{application}}
+
+\makeatletter
+\def\redeflsection{\def\l@section{\@dottedtocline{1}{0em}{8em}}}
+\renewcommand\appendix{\par
+	\setcounter{application}{0}%
+	\setcounter{subsection}{0}%
+	\def\@chapapp{\appendixname}%
+	\addtocontents{toc}{\protect\redeflsection}	
+	\def\thesection{\appendixname\hspace{0.2cm}\Asbuk{application}}
+	}
+\makeatother
+
+\AtBeginEnvironment{sphinxadmonition}{\setlength{\parindent}{0pt}}  % чтобы текст внутри note и warning начинался без абзацного отступа
+
+
+\protected\def\sphinxcrossref#1{#1}
+
+\usepackage{lscape}
+
+\makeatletter          % Определяем макрос, который отвечает за err-токены (Pygments)
+\def\PYG@tok@err#1{#1} % Делаем его простым выводом текста без цветовой рамки
+\makeatother           % Иначе вокруг нераспознынных символов - красная рамка
+
+\setcounter{secnumdepth}{5}
