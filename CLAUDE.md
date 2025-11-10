@@ -36,24 +36,93 @@ Built on Database Plus concept - unified data access layer over existing databas
    - Always run `./mvnw spotless:apply -Pcheck` before task completion
    - Ensure all modified code follows project formatting
 
+### Task Classification Standards
+
+#### Task Type Identification
+
+**Source Code Tasks**
+- **File Patterns**: `**/src/main/java/**/*.java`, `**/src/test/java/**/*.java`, `**/pom.xml`
+- **Impact**: Code compilation, test execution, coverage analysis, functionality
+- **Examples**: New feature development, bug fixes, test improvements, configuration changes
+
+**Documentation Tasks**
+- **File Patterns**: `**/*.md`, `docs/**/*`, `**/README*`, `.github/**/*.md`
+- **Impact**: Content accuracy, user experience, knowledge transfer
+- **Examples**: API documentation, user guides, architecture docs, release notes
+
+**Mixed Tasks**
+- **Characteristics**: Involves both source code and documentation changes
+- **Approach**: Apply combined validation based on changed file types
+- **Examples**: Feature additions with documentation, API changes with examples
+
+#### Differentiated Validation Standards
+
+**Source Code Task Requirements**
+- ✅ 100% test coverage (JaCoCo validation)
+- ✅ Code compilation and build success
+- ✅ Code formatting with Spotless
+- ✅ All quality checks pass (Checkstyle, etc.)
+- ✅ Self-documenting code with zero inline comments
+
+**Documentation Task Requirements**
+- ✅ Link validity verification
+- ✅ Markdown format consistency
+- ✅ Content accuracy review
+- ✅ Spelling and grammar check
+- ❌ No test coverage or compilation required
+
+**Mixed Task Requirements**
+- Apply source code standards to `.java` files
+- Apply documentation standards to `.md` files
+- Ensure consistency between code and documentation changes
+
 ### Quick Checklists
 
 #### Before Starting Any Task
 - [ ] Re-read relevant sections of this guide
-- [ ] Identify specific standards for your task type
-- [ ] Understand the success criteria and coverage requirements
+- [ ] **Identify task type**: Source code, documentation, or mixed task
+- [ ] Understand the success criteria and validation requirements for your task type
+- [ ] Review specific standards for your task type
 
 #### Before Task Completion
+
+**For Source Code Tasks:**
 - [ ] All tests pass with 100% coverage
 - [ ] Code is self-documenting with zero inline comments
 - [ ] Code formatting applied: `./mvnw spotless:apply -Pcheck`
 - [ ] All changes are within specified scope
+- [ ] Remove unused mock objects and imports
+- [ ] Extract duplicate mock configurations to helper methods
+- [ ] Verify all tests contribute to branch coverage
+- [ ] Confirm no dead code remains
+
+**For Documentation Tasks:**
+- [ ] All links are valid and functional
+- [ ] Markdown formatting is consistent
+- [ ] Content is accurate and up-to-date
+- [ ] Spelling and grammar are correct
+- [ ] Documentation follows project style guide
+- [ ] Examples and code snippets are tested (if applicable)
+- [ ] Changes are within specified scope
+
+**For Mixed Tasks:**
+- [ ] Apply source code checklist to all `.java` files
+- [ ] Apply documentation checklist to all `.md` files
+- [ ] Ensure consistency between code and documentation
+- [ ] Verify all changes are within specified scope
 
 ### Common Pitfalls to Avoid
 - **Internal blank lines** in methods - extract private methods instead
 - **Variable naming confusion** - use `actual` in tests, `result` in production
 - **Early test exits** - configure mocks properly to reach target code
 - **Surface-level coverage** - verify actual coverage improvement with JaCoCo
+
+#### Code Cleanup Standards
+- **Dead Mock Objects**: Remove all mock objects never referenced in tests
+- **Unused Imports**: Remove imports that are not used in the file
+- **Redundant Mock Setup**: Extract common mock configurations to private methods
+- **Unreachable Code**: Remove any code that can never be executed
+- **Duplicate Test Logic**: Eliminate tests that don't improve branch coverage
 
 ---
 
@@ -63,12 +132,24 @@ Built on Database Plus concept - unified data access layer over existing databas
 
 ```mermaid
 graph LR
-A[Analyze Task] --> B[Coverage Analysis]
-B --> C[Design & Implement]
-C --> D[Verify Coverage]
-D --> E[Format Code]
-E --> F[Complete]
+A[Analyze Task] --> B[Identify Task Type]
+B --> C[Choose Validation Strategy]
+C --> D[Design & Implement]
+D --> E[Task-Specific Validation]
+E --> F[Format Code]
+F --> G[Complete]
 ```
+
+#### Task-Specific Workflows
+
+**Source Code Tasks:**
+1. Analyze Task → Identify as Source Code → Coverage Analysis → Design & Implement → Verify Coverage → Format Code → Complete
+
+**Documentation Tasks:**
+1. Analyze Task → Identify as Documentation → Content Review → Design & Implement → Content Validation → Format Check → Complete
+
+**Mixed Tasks:**
+1. Analyze Task → Identify as Mixed → Combined Strategy → Design & Implement → Multi-Type Validation → Format & Complete → Complete
 
 ### Simplified Testing Process
 
@@ -282,6 +363,7 @@ void assertMethodWithCondition() {
 
 ### Quick Reference Commands
 
+**Source Code Tasks**
 ```bash
 # === Development ===
 ./mvnw install -T1C                           # Full build
@@ -297,6 +379,34 @@ void assertMethodWithCondition() {
 -Djacoco.check.class.pattern="com.example.**"        # Package level
 -Djacoco.check.class.pattern="**/*Service"           # By type
 -Djacoco.check.class.pattern="**/*Service,**/*Manager" # Multiple
+```
+
+**Documentation Tasks**
+```bash
+# === Documentation Validation ===
+# Quick link check (if available)
+find . -name "*.md" -exec grep -l "http" {} \;  # Find docs with links
+
+# Markdown format check
+markdownlint docs/**/*.md                       # If markdownlint is available
+
+# Spell check (if available)
+cspell docs/**/*.md                             # If cspell is configured
+
+# === Documentation Quick Fix ===
+./mvnw spotless:apply -Pcheck                 # Format any code examples
+```
+
+**Mixed Tasks**
+```bash
+# === Combined Validation ===
+# Apply source code commands to .java files only
+# Apply documentation commands to .md files only
+# Use file-specific validation based on changed file patterns
+
+# Example: Check changed files
+git diff --name-only HEAD~1 | grep "\.java$"   # Changed Java files
+git diff --name-only HEAD~1 | grep "\.md$"     # Changed Markdown files
 ```
 
 ### Common Issues & Solutions

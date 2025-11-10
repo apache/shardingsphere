@@ -19,6 +19,7 @@
 
 ### New Features
 
+1. Add ShardingSphere BOM - [#36866](https://github.com/apache/shardingsphere/issues/36866)
 1. Decouple feature modules as pluggable - [#36086](https://github.com/apache/shardingsphere/pull/36086)
 1. Decouple database types as pluggable - [#35346](https://github.com/apache/shardingsphere/pull/35346)
 1. Decouple registry center types as pluggable - [#36087](https://github.com/apache/shardingsphere/pull/36087)
