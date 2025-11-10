@@ -43,13 +43,13 @@ After importing the BOM, you can declare ShardingSphere dependencies without ver
     <!-- ShardingSphere JDBC Driver -->
     <dependency>
         <groupId>org.apache.shardingsphere</groupId>
-        <artifactId>shardingsphere-jdbc-core</artifactId>
+        <artifactId>shardingsphere-jdbc</artifactId>
     </dependency>
 
     <!-- ShardingSphere Parser for MySQL -->
     <dependency>
         <groupId>org.apache.shardingsphere</groupId>
-        <artifactId>shardingsphere-sql-parser-mysql</artifactId>
+        <artifactId>shardingsphere-parser-sql-engine-mysql</artifactId>
     </dependency>
 
     <!-- Data Source Pool Implementation -->
@@ -59,81 +59,6 @@ After importing the BOM, you can declare ShardingSphere dependencies without ver
     </dependency>
 </dependencies>
 ```
-
-## Complete Example
-
-Here's a complete example of a `pom.xml` using ShardingSphere BOM:
-
-```xml
-<?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
-         http://maven.apache.org/xsd/maven-4.0.0.xsd">
-
-    <modelVersion>4.0.0</modelVersion>
-    <groupId>com.example</groupId>
-    <artifactId>shardingsphere-example</artifactId>
-    <version>1.0.0</version>
-    <packaging>jar</packaging>
-
-    <properties>
-        <maven.compiler.source>1.8</maven.compiler.source>
-        <maven.compiler.target>1.8</maven.compiler.target>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <shardingsphere.version>5.5.2</shardingsphere.version>
-    </properties>
-
-    <dependencyManagement>
-        <dependencies>
-            <dependency>
-                <groupId>org.apache.shardingsphere</groupId>
-                <artifactId>shardingsphere-bom</artifactId>
-                <version>${shardingsphere.version}</version>
-                <type>pom</type>
-                <scope>import</scope>
-            </dependency>
-        </dependencies>
-    </dependencyManagement>
-
-    <dependencies>
-        <!-- Core ShardingSphere JDBC -->
-        <dependency>
-            <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-jdbc-core</artifactId>
-        </dependency>
-
-        <!-- Database Dialects -->
-        <dependency>
-            <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-sql-parser-mysql</artifactId>
-        </dependency>
-
-        <!-- Connection Pool -->
-        <dependency>
-            <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-infra-data-source-pool-hikari</artifactId>
-        </dependency>
-
-        <!-- Spring Boot Integration (if needed) -->
-        <dependency>
-            <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-spring-boot-starter</artifactId>
-        </dependency>
-    </dependencies>
-</project>
-```
-
-## Available Modules
-
-The ShardingSphere BOM includes version information for all major modules, including but not limited to:
-
-* **Core Modules**: `shardingsphere-jdbc-core`, `shardingsphere-proxy-core`
-* **SQL Parsers**: `shardingsphere-sql-parser-mysql`, `shardingsphere-sql-parser-postgresql`, etc.
-* **Feature Modules**: `shardingsphere-sharding`, `shardingsphere-encryption`, etc.
-* **Infrastructure**: `shardingsphere-infra-annotation`, `shardingsphere-infra-spi`, etc.
-* **Data Source Pools**: `shardingsphere-infra-data-source-pool-hikari`, etc.
-* **Spring Integration**: `shardingsphere-spring-boot-starter`, etc.
 
 ## Gradle Support
 
@@ -152,7 +77,7 @@ dependencyManagement {
 }
 
 dependencies {
-    implementation 'org.apache.shardingsphere:shardingsphere-jdbc-core'
-    implementation 'org.apache.shardingsphere:shardingsphere-sql-parser-mysql'
+    implementation 'org.apache.shardingsphere:shardingsphere-jdbc'
+    implementation 'org.apache.shardingsphere:shardingsphere-parser-sql-engine-mysql'
 }
 ```
