@@ -111,9 +111,7 @@ public final class SQLFederationEngine implements AutoCloseable {
         this.currentDatabaseName = currentDatabaseName;
         this.currentSchemaName = currentSchemaName;
         sqlFederationRule = metaData.getGlobalRuleMetaData().getSingleRule(SQLFederationRule.class);
-        // SPEX CHANEGED: BEGIN
         processor = SQLFederationProcessorFactory.getInstance().newInstance(statistics, jdbcExecutor);
-        // SPEX CHANEGED: END
     }
     
     /**
