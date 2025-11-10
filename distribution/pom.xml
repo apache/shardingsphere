@@ -29,6 +29,7 @@
     
     <modules>
         <module>src</module>
+        <module>bom</module>
         <module>agent</module>
         <module>jdbc</module>
         <module>proxy</module>
