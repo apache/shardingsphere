@@ -67,6 +67,11 @@
             </dependency>
             <dependency>
                 <groupId>org.apache.shardingsphere</groupId>
+                <artifactId>shardingsphere-infra-url-spi</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.shardingsphere</groupId>
                 <artifactId>shardingsphere-infra-url-core</artifactId>
                 <version>${project.version}</version>
             </dependency>
@@ -93,6 +98,16 @@
             <dependency>
                 <groupId>org.apache.shardingsphere</groupId>
                 <artifactId>shardingsphere-infra-algorithm-core</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.shardingsphere</groupId>
+                <artifactId>shardingsphere-infra-algorithm-cryptographic-spi</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.shardingsphere</groupId>
+                <artifactId>shardingsphere-infra-algorithm-cryptographic-aes</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
@@ -332,7 +347,7 @@
             </dependency>
             <dependency>
                 <groupId>org.apache.shardingsphere</groupId>
-                <artifactId>shardingsphere-database-connector-dialect-firebird</artifactId>
+                <artifactId>shardingsphere-database-connector-firebird</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
@@ -342,12 +357,12 @@
             </dependency>
             <dependency>
                 <groupId>org.apache.shardingsphere</groupId>
-                <artifactId>shardingsphere-database-exception-dialect-mysql</artifactId>
+                <artifactId>shardingsphere-database-exception-mysql</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.shardingsphere</groupId>
-                <artifactId>shardingsphere-database-exception-dialect-postgresql</artifactId>
+                <artifactId>shardingsphere-database-exception-postgresql</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
@@ -497,6 +512,11 @@
             </dependency>
             <dependency>
                 <groupId>org.apache.shardingsphere</groupId>
+                <artifactId>shardingsphere-cluster-mode-core</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.shardingsphere</groupId>
                 <artifactId>shardingsphere-cluster-mode-repository-api</artifactId>
                 <version>${project.version}</version>
             </dependency>
@@ -513,6 +533,11 @@
             <dependency>
                 <groupId>org.apache.shardingsphere</groupId>
                 <artifactId>shardingsphere-cluster-mode-repository-etcd</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.shardingsphere</groupId>
+                <artifactId>shardingsphere-standalone-mode-core</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
@@ -662,11 +687,6 @@
             </dependency>
             <dependency>
                 <groupId>org.apache.shardingsphere</groupId>
-                <artifactId>shardingsphere-sql-translator-provider</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.shardingsphere</groupId>
                 <artifactId>shardingsphere-sql-translator-native-provider</artifactId>
                 <version>${project.version}</version>
             </dependency>
@@ -693,11 +713,6 @@
             <dependency>
                 <groupId>org.apache.shardingsphere</groupId>
                 <artifactId>shardingsphere-time-service-core</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.shardingsphere</groupId>
-                <artifactId>shardingsphere-time-service-type</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
@@ -758,11 +773,6 @@
             <dependency>
                 <groupId>org.apache.shardingsphere</groupId>
                 <artifactId>shardingsphere-transaction-xa-narayana</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.shardingsphere</groupId>
-                <artifactId>shardingsphere-transaction-xa-provider</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
@@ -843,11 +853,6 @@
             <dependency>
                 <groupId>org.apache.shardingsphere</groupId>
                 <artifactId>shardingsphere-data-pipeline-distsql-statement</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.shardingsphere</groupId>
-                <artifactId>shardingsphere-data-pipeline-distsql-parser</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
@@ -1222,17 +1227,7 @@
             </dependency>
             <dependency>
                 <groupId>org.apache.shardingsphere</groupId>
-                <artifactId>shardingsphere-agent-plugins</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.shardingsphere</groupId>
                 <artifactId>shardingsphere-agent-plugin-core</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.shardingsphere</groupId>
-                <artifactId>shardingsphere-agent-plugin-metrics</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
@@ -1247,17 +1242,17 @@
             </dependency>
             <dependency>
                 <groupId>org.apache.shardingsphere</groupId>
-                <artifactId>shardingsphere-agent-plugin-tracing</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.shardingsphere</groupId>
                 <artifactId>shardingsphere-agent-tracing-core</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.shardingsphere</groupId>
-                <artifactId>shardingsphere-agent-logging-type</artifactId>
+                <artifactId>shardingsphere-agent-tracing-opentelemetry</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.shardingsphere</groupId>
+                <artifactId>shardingsphere-agent-logging-file</artifactId>
                 <version>${project.version}</version>
             </dependency>
         </dependencies>
