@@ -21,7 +21,6 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
-import org.apache.shardingsphere.infra.executor.sql.context.ExecutionContext;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.rule.attribute.RuleAttributes;
 import org.apache.shardingsphere.infra.rule.scope.GlobalRule;
@@ -99,19 +98,20 @@ public final class TransactionRule implements GlobalRule, AutoCloseable {
     /**
      * Judge whether to implicit commit transaction.
      *
-     * @param executionContext execution context
+     * @param sqlStatement sql statement
+     * @param multiExecutionUnits is multiple execution units
      * @param connectionTransaction connection transaction
      * @param isAutoCommit is auto commit
      * @return is implicit commit transaction or not
      */
-    public boolean isImplicitCommitTransaction(final ExecutionContext executionContext, final ConnectionTransaction connectionTransaction, final boolean isAutoCommit) {
+    public boolean isImplicitCommitTransaction(final SQLStatement sqlStatement, final boolean multiExecutionUnits, final ConnectionTransaction connectionTransaction, final boolean isAutoCommit) {
         if (!isAutoCommit) {
             return false;
         }
         if (!TransactionType.isDistributedTransaction(defaultType) || connectionTransaction.isInDistributedTransaction()) {
             return false;
         }
-        return isWriteDMLStatement(executionContext.getSqlStatementContext().getSqlStatement()) && executionContext.getExecutionUnits().size() > 1;
+        return isWriteDMLStatement(sqlStatement) && multiExecutionUnits;
     }
     
     private boolean isWriteDMLStatement(final SQLStatement sqlStatement) {

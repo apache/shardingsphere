@@ -74,6 +74,8 @@ public final class InsertStatementBinder implements SQLStatementBinder<InsertSta
         result.setSetAssignment(boundSetAssignment);
         result.setInsertSelect(boundInsertSelect);
         result.getValues().addAll(sqlStatement.getValues());
+        result.setIgnore(sqlStatement.isIgnore());
+        result.setReplace(sqlStatement.isReplace());
         sqlStatement.getOnDuplicateKeyColumns().ifPresent(result::setOnDuplicateKeyColumns);
         sqlStatement.getOutput().ifPresent(result::setOutput);
         sqlStatement.getMultiTableInsertType().ifPresent(result::setMultiTableInsertType);
