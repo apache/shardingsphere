@@ -14,12 +14,12 @@ Built on Database Plus concept - unified data access layer over existing databas
 
 1. **Code Self-Documentation**
    - Zero inline comments - code explains itself through clear naming
-   - Extract complex logic to well-named methods (see Self-Documentation Patterns in Part 2)
+   - Extract complex logic to well-named methods
    - Use factory methods for object creation
 
 2. **100% Test Coverage**
    - Every line, branch, and method must be tested
-   - Coverage-driven development - use JaCoCo reports to guide testing (see Part 2: Coverage Tools Reference)
+   - Coverage-driven development - use JaCoCo reports to guide testing
    - Focus on branch coverage, eliminate redundant tests
 
 3. **Follow Project Standards**
@@ -87,12 +87,12 @@ Built on Database Plus concept - unified data access layer over existing databas
 #### Before Task Completion
 
 **For Source Code Tasks:**
-- [ ] All validation requirements from Differentiated Validation Standards (Lines 60-77)
+- [ ] All validation requirements from Differentiated Validation Standards (see above)
 - [ ] Additional cleanup: Remove unused mocks, imports, and dead code
 - [ ] Optimize mock configurations and branch coverage
 
 **For Documentation Tasks:**
-- [ ] All validation requirements from Differentiated Validation Standards (Lines 60-77)
+- [ ] All validation requirements from Differentiated Validation Standards (see above)
 - [ ] Test code examples and snippets when applicable
 
 **For Mixed Tasks:**
@@ -146,7 +146,7 @@ F --> G[Complete]
 - **Code Flow Analysis**: Understand complete execution paths
 - **Coverage Gap Identification**: Use JaCoCo to find uncovered branches
 - **Dependency Mapping**: Identify all mocks needed for complete chain
-- **Test Scenarios**: Design realistic business cases for uncovered branches (see Mock Configuration Standards)
+- **Test Scenarios**: Design realistic business cases for uncovered branches
 
 #### Step 2: Implement & Verify
 - **Mock Configuration**: Set up complete dependency chains with `RETURNS_DEEP_STUBS`
@@ -243,9 +243,13 @@ void assert[MethodName]When[BranchCondition]Expects[Result]() {
 - **Resource management**: Always clean up MockedConstruction with try-with-resources
 - **Verification focus**: Each test validates one specific branch outcome
 
-#### Mock Configuration Standards
+#### Mock Configuration Standards & Strategies
+
+Mock configuration is essential for comprehensive testing. Use these patterns to control dependencies and achieve 100% branch coverage.
+
+##### Core Mock Configuration Patterns
 ```java
-// ✅ Complete dependency chain
+// ✅ Complete dependency chain with deep stubs
 when(dependencyA.getDependencyB().process(input)).thenReturn(result);
 
 // ✅ Self-documenting mock setup
@@ -272,23 +276,21 @@ try (MockedConstruction<ExternalClass> mocked = mockConstruction(ExternalClass.c
 }
 ```
 
-#### Advanced Mock Configuration with MockedConstruction
-Use `MockedConstruction` when testing code that creates objects with `new`:
-- **Constructor interception**: Control how dependency objects are created
-- **Complete call chain**: Configure full dependency paths with `RETURNS_DEEP_STUBS`
-- **Try-with-resources**: Automatically clean up mock constructions
-- **Utility class testing**: Perfect for static utility methods with external dependencies
+##### Mock Configuration Strategies
 
-#### Mock Configuration Strategies
+**MockedStatic vs MockedConstruction**
+- **MockedStatic**: For static method calls (`UtilityClass.staticMethod()`)
+- **MockedConstruction**: For object creation (`new UtilityClass()`)
+- **Placement**: MockedConstruction must wrap the code that creates the objects
+
+**Key Configuration Principles**
 - **Deep stubs**: Use `RETURNS_DEEP_STUBS` for complex nested dependencies
 - **Resource management**: Always use try-with-resources for MockedConstruction
 - **Behavior isolation**: Each test controls specific constructor behaviors
 - **Constructor identification**: Look for `new SomeClass()` in target methods
-
-#### MockedStatic vs MockedConstruction
-- **MockedStatic**: For static method calls (`UtilityClass.staticMethod()`)
-- **MockedConstruction**: For object creation (`new UtilityClass()`)
-- **Placement**: MockedConstruction must wrap the code that creates the objects
+- **Constructor interception**: Control how dependency objects are created
+- **Complete call chain**: Configure full dependency paths with `RETURNS_DEEP_STUBS`
+- **Utility class testing**: Perfect for static utility methods with external dependencies
 
 #### Assertion Style (Mandatory)
 ```java
@@ -352,7 +354,7 @@ open target/site/jacoco/index.html  # Check red diamonds for missing branches
 
 #### Constructor Path Testing
 - **Identify `new` operators**: Look for `new SomeClass()` in target code
-- **Use MockedConstruction**: Intercept constructor calls to control behavior (see Mock Configuration Standards)
+- **Use MockedConstruction**: Intercept constructor calls to control behavior
 - **Configure complete mock chains**: Ensure all dependency paths are properly mocked
 - **Test each branch**: Create focused tests for each conditional branch
 
@@ -395,7 +397,7 @@ test/      - E2E/IT test engine and cases
 **SPI Implementation**
 - Service discovery mechanism for registration
 - Appropriate default implementations
-- Use `TypedSPILoader.getService()` in tests when mocking is complex (see Appendix: Common Issues & Solutions)
+- Use `TypedSPILoader.getService()` in tests when mocking is complex
 
 ### Development Patterns
 
@@ -420,25 +422,7 @@ Properties props = PropertiesBuilder.build(new Property("key", "value"));
 Repository repository = new YamlRepository(path);
 ```
 
-// Test patterns and organization covered in Comprehensive Test Patterns (Part 2)
-
-### Utility Class Testing Best Practices
-
-#### Static Method Testing Strategy
-- **Branch mapping**: Map each conditional statement to specific test scenarios
-- **Constructor control**: Use MockedConstruction to control external dependencies
-- **Complete path coverage**: Ensure both true and false branches are tested
-- **Minimal test set**: One test per branch, no redundant coverage
-
-// Constructor behavior validation examples covered in Mock Configuration Standards (Part 2)
-
-#### Complete Branch Coverage Implementation
-- **Identify all branches**: Use JaCoCo HTML reports to find uncovered conditional branches
-- **Create targeted tests**: One test method per missing branch
-- **Mock external dependencies**: Control all external object creation paths
-- **Verify 100% coverage**: Confirm all branch diamonds are green in JaCoCo reports
-
-// Test method organization principles covered in Comprehensive Test Patterns (Part 2)
+// For testing patterns and organization, see Part 2: Comprehensive Test Patterns & Mock Configuration Standards
 
 #### Priority Guidelines
 1. **Quality > Speed**: Never compromise on 100% coverage or code standards
@@ -477,12 +461,12 @@ Repository repository = new YamlRepository(path);
 ./mvnw install -T1C -DskipTests              # Build without tests
 ./mvnw spotless:apply -Pcheck                 # Format code
 
-# === Coverage ===
+# === Coverage (Quick Reference) ===
 ./mvnw clean test jacoco:report -Djacoco.skip=false -pl module/path
 ./mvnw test jacoco:check@jacoco-check -Pcoverage-check -Djacoco.skip=false \
   -Djacoco.check.class.pattern=ClassName
 
-# See Part 2: Coverage Tools Reference for complete command patterns and advanced strategies
+# See Part 2: Coverage Tools Reference for detailed commands and strategies
 ```
 
 **Documentation Tasks**
@@ -524,7 +508,7 @@ git diff --name-only HEAD~1 | grep "\.md$"     # Changed Markdown files
 - **Issue**: Complex nested mocks become unmanageable
 - **Solution**: Use `RETURNS_DEEP_STUBS`, extract mock setup to private methods
 
-// Constructor mocking problems and solutions covered in Mock Configuration Standards (Part 2)
+// For constructor mocking techniques, see Mock Configuration Standards (Part 2)
 
 #### Branch Coverage Challenges
 - **Issue**: Tests pass but coverage doesn't reach 100%
