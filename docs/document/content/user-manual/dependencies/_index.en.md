@@ -1,7 +1,7 @@
 +++
-pre = "<b>4.4. </b>"
+pre = "<b>4.5. </b>"
 title = "Dependency Management"
-weight = 4
+weight = 5
 chapter = true
 +++
 
@@ -16,7 +16,6 @@ The key topics covered in this chapter include:
 * **Bill of Materials (BOM)**: Centralized dependency version management for Maven projects
 * **Version Compatibility**: Understanding version relationships and compatibility matrices
 * **Build Tool Integration**: Configuration examples for Maven and Gradle
-* **Enterprise Best Practices**: Dependency management strategies for production environments
 
 Whether you are starting a new project or maintaining an existing enterprise application, proper dependency management helps avoid common pitfalls such as version conflicts, dependency hell, and deployment issues.
 
