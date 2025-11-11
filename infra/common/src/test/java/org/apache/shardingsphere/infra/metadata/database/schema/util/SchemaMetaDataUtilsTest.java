@@ -110,7 +110,7 @@ class SchemaMetaDataUtilsTest {
         GenericSchemaBuilderMaterial material = new GenericSchemaBuilderMaterial(Collections.emptyMap(), Collections.singleton(mockDataNodeRule(Collections.emptyList())), props, "foo_db");
         assertTrue(SchemaMetaDataUtils.getMetaDataLoaderMaterials(Collections.singleton("foo_tbl"), material).isEmpty());
     }
-
+    
     @Test
     void assertGetMetaDataLoaderMaterialsWithEmptyDataNodesAndCheckTableMetadataDisabled() {
         ConfigurationProperties props = new ConfigurationProperties(PropertiesBuilder.build(new Property(ConfigurationPropertyKey.CHECK_TABLE_METADATA_ENABLED.getKey(), Boolean.FALSE.toString())));
