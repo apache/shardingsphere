@@ -88,6 +88,7 @@ class DataNodeTest {
         assertThat(new DataNode("ds_0.tbl_0").hashCode(), is(new DataNode("DS_0.TBL_0").hashCode()));
         assertThat(new DataNode("ds_0.db_0.tbl_0").hashCode(), is(new DataNode("ds_0.db_0.tbl_0").hashCode()));
         assertThat(new DataNode("ds_0.db_0.tbl_0").hashCode(), is(new DataNode("DS_0.DB_0.TBL_0").hashCode()));
+        assertThat(new DataNode("DS", "SCHEMA", "TBL").hashCode(), is(new DataNode("ds", "schema", "tbl").hashCode()));
     }
     
     @Test
