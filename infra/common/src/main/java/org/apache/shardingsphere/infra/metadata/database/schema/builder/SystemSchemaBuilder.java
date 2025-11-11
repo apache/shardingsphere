@@ -93,6 +93,9 @@ public final class SystemSchemaBuilder {
     }
     
     private static boolean isSupportedSystemTable(final DatabaseType databaseType, final String schemaName, final String tableName) {
+        if ("shardingsphere".equals(schemaName) && "cluster_information".equals(tableName)) {
+            return true;
+        }
         Optional<DialectKernelSupportedSystemTable> kernelSupportedSystemTable = DatabaseTypedSPILoader.findService(DialectKernelSupportedSystemTable.class, databaseType);
         return kernelSupportedSystemTable.map(optional -> optional.getSchemaAndTablesMap().getOrDefault(schemaName, Collections.emptySet()).contains(tableName)).orElse(false);
     }

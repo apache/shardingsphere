@@ -21,8 +21,6 @@ import org.apache.shardingsphere.database.connector.core.metadata.database.syste
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
 
 /**
@@ -32,10 +30,7 @@ public final class MySQLKernelSupportedSystemTable implements DialectKernelSuppo
     
     @Override
     public Map<String, Collection<String>> getSchemaAndTablesMap() {
-        Map<String, Collection<String>> result = new HashMap<>(2, 1F);
-        result.put("sys", new HashSet<>(Collections.singleton("sys_config")));
-        result.put("shardingsphere", Collections.singleton("cluster_information"));
-        return result;
+        return Collections.singletonMap("sys", Collections.singleton("sys_config"));
     }
     
     @Override

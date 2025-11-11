@@ -32,7 +32,7 @@ public final class OpenGaussKernelSupportedSystemTable implements DialectKernelS
     
     @Override
     public Map<String, Collection<String>> getSchemaAndTablesMap() {
-        Map<String, Collection<String>> result = new HashMap<>(16, 1F);
+        Map<String, Collection<String>> result = new HashMap<>(15, 1F);
         result.put("information_schema", Collections.emptySet());
         result.put("pg_catalog", Arrays.asList("pg_class", "pg_namespace", "pg_database", "pg_roles", "pg_tables", "pg_tablespace"));
         result.put("blockchain", Collections.emptySet());
@@ -48,7 +48,6 @@ public final class OpenGaussKernelSupportedSystemTable implements DialectKernelS
         result.put("pg_toast", Collections.emptySet());
         result.put("pkg_util", Collections.emptySet());
         result.put("sqladvisor", Collections.emptySet());
-        result.put("shardingsphere", Collections.singleton("cluster_information"));
         return result;
     }
     

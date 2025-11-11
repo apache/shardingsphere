@@ -21,7 +21,6 @@ import org.apache.shardingsphere.database.connector.core.metadata.database.syste
 
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -33,10 +32,9 @@ public final class PostgreSQLKernelSupportedSystemTable implements DialectKernel
     
     @Override
     public Map<String, Collection<String>> getSchemaAndTablesMap() {
-        Map<String, Collection<String>> result = new HashMap<>(3, 1F);
+        Map<String, Collection<String>> result = new HashMap<>(2, 1F);
         result.put("information_schema", new HashSet<>(Arrays.asList("columns", "tables", "views")));
         result.put("pg_catalog", Arrays.asList("pg_aggregate", "pg_class", "pg_database", "pg_tables", "pg_inherits", "pg_tablespace", "pg_trigger", "pg_namespace", "pg_roles"));
-        result.put("shardingsphere", Collections.singleton("cluster_information"));
         return result;
     }
     
