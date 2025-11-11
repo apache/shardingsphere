@@ -67,7 +67,7 @@ class YamlModeConfigurationSwapperTest {
         ModeConfiguration actual = swapper.swapToObject(yamlConfig);
         assertThat(actual.getType(), is(TEST_TYPE));
     }
-
+    
     @Test
     void assertSwapToObjectWithNotNullRepository() {
         PersistRepositoryConfiguration mockRepoConfig = mock(PersistRepositoryConfiguration.class);

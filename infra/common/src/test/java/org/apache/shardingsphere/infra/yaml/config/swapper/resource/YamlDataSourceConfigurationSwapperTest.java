@@ -92,7 +92,7 @@ class YamlDataSourceConfigurationSwapperTest {
         result.put("password", "root");
         return result;
     }
-
+    
     @Test
     void assertGetDataSourcePoolPropertiesMap() {
         Map<String, Map<String, Object>> dataSources = new LinkedHashMap<>(2, 1F);
@@ -105,7 +105,7 @@ class YamlDataSourceConfigurationSwapperTest {
         assertThat(actual.get("ds_1").getPoolClassName(), is(MockedDataSource.class.getName()));
         assertThat(actual.get("ds_2").getPoolClassName(), is(MockedDataSource.class.getName()));
     }
-
+    
     @Test
     void assertSwapToDataSourcePoolPropertiesWithHikariDataSource() {
         Map<String, Object> yamlConfig = new HashMap<>(4, 1F);
@@ -119,7 +119,7 @@ class YamlDataSourceConfigurationSwapperTest {
         assertThat(actual.getAllLocalProperties().get("url").toString(), is("jdbc:h2:mem:test"));
         assertThat(actual.getAllLocalProperties().get("username").toString(), is("sa"));
     }
-
+    
     @Test
     void assertSwapToDataSourcePoolPropertiesWithCustomPoolProps() {
         Map<String, Object> yamlConfig = new HashMap<>(5, 1F);
