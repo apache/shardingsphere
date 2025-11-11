@@ -41,8 +41,16 @@ public final class CaseWhenExpression implements ExpressionSegment {
     
     private final ExpressionSegment elseExpr;
     
-    @Override
-    public String getText() {
-        return null == caseExpr ? "" : caseExpr.getText();
+    private final String text;
+    
+    public CaseWhenExpression(final int startIndex, final int stopIndex, final ExpressionSegment caseExpr, final Collection<ExpressionSegment> whenExprs,
+                              final Collection<ExpressionSegment> thenExprs, final ExpressionSegment elseExpr) {
+        this.startIndex = startIndex;
+        this.stopIndex = stopIndex;
+        this.caseExpr = caseExpr;
+        this.whenExprs = whenExprs;
+        this.thenExprs = thenExprs;
+        this.elseExpr = elseExpr;
+        text = null == caseExpr ? "" : caseExpr.getText();
     }
 }

@@ -1351,7 +1351,7 @@ public abstract class MySQLStatementVisitor extends MySQLStatementBaseVisitor<AS
         }
         ExpressionSegment caseExpr = null == ctx.expr() ? null : (ExpressionSegment) visit(ctx.expr());
         ExpressionSegment elseExpr = null == ctx.caseElse() ? null : (ExpressionSegment) visit(ctx.caseElse().expr());
-        return new CaseWhenExpression(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), caseExpr, whenExprs, thenExprs, elseExpr);
+        return new CaseWhenExpression(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), caseExpr, whenExprs, thenExprs, elseExpr, getOriginalText(ctx));
     }
     
     @Override
