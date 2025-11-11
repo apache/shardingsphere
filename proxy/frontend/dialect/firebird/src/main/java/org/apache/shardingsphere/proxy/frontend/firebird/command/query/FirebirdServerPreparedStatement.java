@@ -19,15 +19,9 @@ package org.apache.shardingsphere.proxy.frontend.firebird.command.query;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.FirebirdBinaryColumnType;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.apache.shardingsphere.proxy.backend.session.ServerPreparedStatement;
-
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * Prepared statement for Firebird.
@@ -41,8 +35,4 @@ public final class FirebirdServerPreparedStatement implements ServerPreparedStat
     private final SQLStatementContext sqlStatementContext;
     
     private final HintValueContext hintValueContext;
-    
-    private final List<FirebirdBinaryColumnType> parameterTypes = new CopyOnWriteArrayList<>();
-    
-    private final Map<Integer, byte[]> longData = new ConcurrentHashMap<>();
 }

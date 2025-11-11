@@ -36,6 +36,7 @@ import java.util.Collections;
 
 import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -52,14 +53,14 @@ class FirebirdFetchResponsePacketTest {
     private FirebirdBinaryProtocolValue protocolValue;
     
     @Test
-    void assertWriteWithRow() {
+    void assertWriteRow() {
         when(payload.getByteBuf()).thenReturn(byteBuf);
         when(byteBuf.writerIndex()).thenReturn(0);
         when(byteBuf.writeZero(4)).thenReturn(byteBuf);
         BinaryRow row = new BinaryRow(Collections.singleton(new BinaryCell(FirebirdBinaryColumnType.LONG, 123)));
         try (MockedStatic<FirebirdBinaryProtocolValueFactory> mocked = mockStatic(FirebirdBinaryProtocolValueFactory.class)) {
             mocked.when(() -> FirebirdBinaryProtocolValueFactory.getBinaryProtocolValue(FirebirdBinaryColumnType.LONG)).thenReturn(protocolValue);
-            FirebirdFetchResponsePacket packet = new FirebirdFetchResponsePacket(row);
+            FirebirdFetchResponsePacket packet = FirebirdFetchResponsePacket.getFetchRowPacket(row);
             packet.write(payload);
             verify(payload).writeInt4(FirebirdCommandPacketType.FETCH_RESPONSE.getValue());
             verify(payload).writeInt4(ISCConstants.FETCH_OK);
@@ -70,12 +71,21 @@ class FirebirdFetchResponsePacketTest {
     }
     
     @Test
-    void assertWriteWithoutRow() {
-        FirebirdFetchResponsePacket packet = new FirebirdFetchResponsePacket();
+    void assertWriteNoMoreRows() {
+        FirebirdFetchResponsePacket packet = FirebirdFetchResponsePacket.getFetchNoMoreRowsPacket();
         packet.write(payload);
         verify(payload).writeInt4(FirebirdCommandPacketType.FETCH_RESPONSE.getValue());
         verify(payload).writeInt4(ISCConstants.FETCH_NO_MORE_ROWS);
         verify(payload).writeInt4(0);
+        verify(payload, never()).getByteBuf();
+    }
+    
+    @Test
+    void assertWriteEnd() {
+        FirebirdFetchResponsePacket packet = FirebirdFetchResponsePacket.getFetchEndPacket();
+        packet.write(payload);
+        verify(payload).writeInt4(FirebirdCommandPacketType.FETCH_RESPONSE.getValue());
+        verify(payload, times(2)).writeInt4(0);
         verify(payload, never()).getByteBuf();
     }
 }
