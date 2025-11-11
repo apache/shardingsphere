@@ -196,8 +196,11 @@ public final class EncryptConditionEngine {
     }
     
     private static Collection<EncryptCondition> createInEncryptCondition(final String tableName, final InExpression inExpression, final ExpressionSegment inRightValue) {
+        ColumnSegment columnSegment;
         if (!(inExpression.getLeft() instanceof ColumnSegment)) {
             return Collections.emptyList();
+        } else {
+            columnSegment = (ColumnSegment) inExpression.getLeft();
         }
         List<ExpressionSegment> expressionSegments = new LinkedList<>();
         for (ExpressionSegment each : inExpression.getExpressionList()) {
@@ -208,7 +211,6 @@ public final class EncryptConditionEngine {
         if (expressionSegments.isEmpty()) {
             return Collections.emptyList();
         }
-        ColumnSegment columnSegment = (ColumnSegment) inExpression.getLeft();
         return Collections.singleton(new EncryptInCondition(columnSegment, tableName, inRightValue.getStartIndex(), inRightValue.getStopIndex(), expressionSegments));
     }
 }

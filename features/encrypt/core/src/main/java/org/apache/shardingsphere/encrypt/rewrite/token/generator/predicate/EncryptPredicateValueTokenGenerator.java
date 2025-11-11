@@ -100,7 +100,7 @@ public final class EncryptPredicateValueTokenGenerator implements CollectionSQLT
     }
     
     private List<Object> getEncryptedValues(final String schemaName, final EncryptTable encryptTable, final EncryptCondition encryptCondition, final List<Object> originalValues) {
-        String columnName = encryptCondition.getColumnSegment().getIdentifier().getValue();
+        String columnName = encryptCondition.getColumnSegment().getColumnBoundInfo().getOriginalColumn().getValue();
         EncryptColumn encryptColumn = encryptTable.getEncryptColumn(columnName);
         if (encryptCondition instanceof EncryptBinaryCondition && ("LIKE".equalsIgnoreCase(((EncryptBinaryCondition) encryptCondition).getOperator())
                 || "NOT LIKE".equalsIgnoreCase(((EncryptBinaryCondition) encryptCondition).getOperator()))) {

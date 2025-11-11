@@ -56,6 +56,6 @@ public final class CaseWhenExpressionBinder {
         segment.getWhenExprs().forEach(each -> boundWhenExprs.add(ExpressionSegmentBinder.bind(each, parentSegmentType, binderContext, tableBinderContexts, outerTableBinderContexts)));
         segment.getThenExprs().forEach(each -> boundThenExprs.add(ExpressionSegmentBinder.bind(each, parentSegmentType, binderContext, tableBinderContexts, outerTableBinderContexts)));
         ExpressionSegment boundElseExpr = ExpressionSegmentBinder.bind(segment.getElseExpr(), parentSegmentType, binderContext, tableBinderContexts, outerTableBinderContexts);
-        return new CaseWhenExpression(segment.getStartIndex(), segment.getStopIndex(), boundCaseExpr, boundWhenExprs, boundThenExprs, boundElseExpr);
+        return new CaseWhenExpression(segment.getStartIndex(), segment.getStopIndex(), boundCaseExpr, boundWhenExprs, boundThenExprs, boundElseExpr, segment.getText());
     }
 }
