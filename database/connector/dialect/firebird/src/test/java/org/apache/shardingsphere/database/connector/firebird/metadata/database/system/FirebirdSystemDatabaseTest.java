@@ -24,7 +24,6 @@ import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
-import java.util.HashSet;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -34,14 +33,14 @@ class FirebirdSystemDatabaseTest {
     private final DialectSystemDatabase systemDatabase = DatabaseTypedSPILoader.getService(DialectSystemDatabase.class, TypedSPILoader.getService(DatabaseType.class, "Firebird"));
     
     @Test
-    void assertGetSystemSchemas() {
-        assertThat(systemDatabase.getSystemSchemas(), is(new HashSet<>(Collections.singletonList("system_tables"))));
-    }
-    
-    @Test
     void assertGetSystemSchemasByDatabaseName() {
         assertThat(systemDatabase.getSystemDatabaseSchemaMap().get("sharding_db"), is(Collections.singleton("system_tables")));
         assertThat(systemDatabase.getSystemDatabaseSchemaMap().get("logic_db"), is(Collections.singleton("system_tables")));
         assertThat(systemDatabase.getSystemDatabaseSchemaMap().get("firebird"), is(Collections.singleton("system_tables")));
+    }
+    
+    @Test
+    void assertGetSystemSchemas() {
+        assertThat(systemDatabase.getSystemSchemas(), is(Collections.singleton("system_tables")));
     }
 }
