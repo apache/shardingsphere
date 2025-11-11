@@ -15,27 +15,26 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.metadata.database.schema.builder;
+package org.apache.shardingsphere.database.connector.mysql.metadata.database.system;
 
-import org.junit.jupiter.api.Test;
+import org.apache.shardingsphere.database.connector.core.metadata.database.system.DialectKernelSupportedSystemTable;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Map;
 
-class KernelSupportedSystemTablesTest {
+/**
+ * Kernel supported system table for MySQL.
+ */
+public final class MySQLKernelSupportedSystemTable implements DialectKernelSupportedSystemTable {
     
-    @Test
-    void assertIsSupportedSystemTableWithMatchingSchemaAndTable() {
-        assertTrue(KernelSupportedSystemTables.isSupportedSystemTable("sys", "sys_config"));
+    @Override
+    public Map<String, Collection<String>> getSchemaAndTablesMap() {
+        return Collections.singletonMap("sys", Collections.singleton("sys_config"));
     }
     
-    @Test
-    void assertIsNotSupportedSystemTableWithMatchingSchemaButWrongTable() {
-        assertFalse(KernelSupportedSystemTables.isSupportedSystemTable("sys", "non_existent_table"));
-    }
-    
-    @Test
-    void assertIsNotSupportedSystemTableWithUnmatchedSchema() {
-        assertFalse(KernelSupportedSystemTables.isSupportedSystemTable("non_existent_schema", "any_table"));
+    @Override
+    public String getDatabaseType() {
+        return "MySQL";
     }
 }
