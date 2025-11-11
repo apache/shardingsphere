@@ -64,7 +64,7 @@ class GeneralDQLE2EIT extends BaseDQLE2EIT {
     }
     
     private void assertExecuteQueryWithXmlExpected(final AssertionTestParameter testParam, final SQLE2EITContext context) throws SQLException {
-        // TODO Fix jdbc adapter and empty_storage_units proxy adapter
+        // TODO Fix jdbc adapter
         if (isNeedSkipExecuteQueryWithXmlExcepted(testParam)) {
             return;
         }
@@ -76,8 +76,7 @@ class GeneralDQLE2EIT extends BaseDQLE2EIT {
     }
     
     private boolean isNeedSkipExecuteQueryWithXmlExcepted(final AssertionTestParameter testParam) {
-        return "jdbc".equals(testParam.getAdapter()) && !"empty_storage_units".equalsIgnoreCase(testParam.getScenario())
-                || "proxy".equals(testParam.getAdapter()) && "empty_storage_units".equalsIgnoreCase(testParam.getScenario());
+        return "jdbc".equals(testParam.getAdapter());
     }
     
     private void assertQueryForStatementWithXmlExpected(final SQLE2EITContext context) throws SQLException {

@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.sqlfederation.compiler.sql.ast.converter.statement.update;
 
+import org.apache.calcite.sql.SqlBasicCall;
+import org.apache.calcite.sql.SqlIdentifier;
 import org.apache.calcite.sql.SqlNode;
 import org.apache.calcite.sql.SqlNodeList;
 import org.apache.calcite.sql.SqlOrderBy;
@@ -27,8 +29,9 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.Co
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.pagination.limit.LimitSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.UpdateStatement;
-import org.apache.shardingsphere.sqlfederation.compiler.sql.ast.converter.segment.expression.impl.ColumnConverter;
+import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 import org.apache.shardingsphere.sqlfederation.compiler.sql.ast.converter.segment.expression.ExpressionConverter;
+import org.apache.shardingsphere.sqlfederation.compiler.sql.ast.converter.segment.expression.impl.ColumnConverter;
 import org.apache.shardingsphere.sqlfederation.compiler.sql.ast.converter.segment.from.TableConverter;
 import org.apache.shardingsphere.sqlfederation.compiler.sql.ast.converter.segment.limit.PaginationValueSQLConverter;
 import org.apache.shardingsphere.sqlfederation.compiler.sql.ast.converter.segment.orderby.OrderByConverter;
@@ -59,6 +62,7 @@ public final class UpdateStatementConverter implements SQLStatementConverter<Upd
     
     private SqlUpdate convertUpdate(final UpdateStatement updateStatement) {
         SqlNode table = TableConverter.convert(updateStatement.getTable()).orElseThrow(IllegalStateException::new);
+        SqlIdentifier alias = convertTableAlias(updateStatement);
         SqlNode condition = updateStatement.getWhere().flatMap(WhereConverter::convert).orElse(null);
         SqlNodeList columns = new SqlNodeList(SqlParserPos.ZERO);
         SqlNodeList expressions = new SqlNodeList(SqlParserPos.ZERO);
@@ -66,7 +70,15 @@ public final class UpdateStatementConverter implements SQLStatementConverter<Upd
             columns.addAll(convertColumn(each.getColumns()));
             expressions.add(convertExpression(each.getValue()));
         }
-        return new SqlUpdate(SqlParserPos.ZERO, table, columns, expressions, condition, null, null);
+        return new SqlUpdate(SqlParserPos.ZERO, getTargetTableName(table), columns, expressions, condition, null, alias);
+    }
+    
+    private SqlIdentifier convertTableAlias(final UpdateStatement updateStatement) {
+        if (updateStatement.getTable().getAlias().isPresent()) {
+            IdentifierValue aliasIdentifier = updateStatement.getTable().getAlias().get();
+            return new SqlIdentifier(aliasIdentifier.getValue(), SqlParserPos.ZERO);
+        }
+        return null;
     }
     
     private List<SqlNode> convertColumn(final List<ColumnSegment> columnSegments) {
@@ -75,5 +87,9 @@ public final class UpdateStatementConverter implements SQLStatementConverter<Upd
     
     private SqlNode convertExpression(final ExpressionSegment expressionSegment) {
         return ExpressionConverter.convert(expressionSegment).orElseThrow(IllegalStateException::new);
+    }
+    
+    private SqlNode getTargetTableName(final SqlNode deleteTable) {
+        return deleteTable instanceof SqlBasicCall ? ((SqlBasicCall) deleteTable).getOperandList().iterator().next() : deleteTable;
     }
 }

@@ -81,7 +81,8 @@ public final class ShardingProjectionsTokenGenerator implements OptionalSQLToken
     private Map<RouteUnit, Collection<String>> getDerivedProjectionTexts(final SelectStatementContext selectStatementContext) {
         Map<RouteUnit, Collection<String>> result = new HashMap<>(routeContext.getRouteUnits().size(), 1F);
         for (RouteUnit each : routeContext.getRouteUnits()) {
-            result.put(each, getDerivedProjectionTexts(selectStatementContext, each));
+            Collection<String> projectionTexts = getDerivedProjectionTexts(selectStatementContext, each);
+            result.put(each, projectionTexts);
         }
         return result;
     }

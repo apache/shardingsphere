@@ -188,7 +188,7 @@ public final class StandardDatabaseProxyConnector implements DatabaseProxyConnec
     @Override
     public ResponseHeader execute() throws SQLException {
         if (proxySQLExecutor.getSqlFederationEngine().decide(queryContext, contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData())) {
-            return processExecuteFederation(doExecuteFederation());
+            return doExecuteFederation();
         }
         if (proxySQLExecutor.getSqlFederationEngine().isSqlFederationEnabled() && federationMetaDataRefreshEngine.isNeedRefresh(queryContext.getSqlStatementContext())) {
             federationMetaDataRefreshEngine.refresh(queryContext.getSqlStatementContext());
@@ -259,7 +259,7 @@ public final class StandardDatabaseProxyConnector implements DatabaseProxyConnec
         return !databaseConnectionManager.getConnectionSession().isAutoCommit() && sqlStatement instanceof DDLStatement && transactionOption.isDDLNeedImplicitCommit();
     }
     
-    private ResultSet doExecuteFederation() throws SQLException {
+    private ResponseHeader doExecuteFederation() throws SQLException {
         SQLStatement sqlStatement = queryContext.getSqlStatementContext().getSqlStatement();
         DialectDatabaseMetaData dialectDatabaseMetaData = new DatabaseTypeRegistry(sqlStatement.getDatabaseType()).getDialectDatabaseMetaData();
         boolean isReturnGeneratedKeys = sqlStatement instanceof InsertStatement && dialectDatabaseMetaData.getGeneratedKeyOption().isPresent();
@@ -267,9 +267,9 @@ public final class StandardDatabaseProxyConnector implements DatabaseProxyConnec
         ProxyJDBCExecutorCallback callback = ProxyJDBCExecutorCallbackFactory.newInstance(driverType, protocolType, database.getResourceMetaData(),
                 sqlStatement, this, isReturnGeneratedKeys, SQLExecutorExceptionHandler.isExceptionThrown(), true);
         DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine = createDriverExecutionPrepareEngine(isReturnGeneratedKeys, contextManager.getMetaDataContexts());
-        SQLFederationContext context = new SQLFederationContext(
-                false, queryContext, contextManager.getMetaDataContexts().getMetaData(), databaseConnectionManager.getConnectionSession().getProcessId());
-        return proxySQLExecutor.getSqlFederationEngine().executeQuery(prepareEngine, callback, context);
+        SQLFederationContext context = new SQLFederationContext(false, queryContext, contextManager.getMetaDataContexts().getMetaData(),
+                databaseConnectionManager.getConnectionSession().getProcessId());
+        return processExecuteQueryFederation(proxySQLExecutor.getSqlFederationEngine().executeQuery(prepareEngine, callback, context));
     }
     
     private DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> createDriverExecutionPrepareEngine(final boolean isReturnGeneratedKeys, final MetaDataContexts metaData) {
@@ -279,7 +279,7 @@ public final class StandardDatabaseProxyConnector implements DatabaseProxyConnec
                 new StatementOption(isReturnGeneratedKeys), database.getRuleMetaData().getRules(), metaData.getMetaData());
     }
     
-    private ResponseHeader processExecuteFederation(final ResultSet resultSet) throws SQLException {
+    private ResponseHeader processExecuteQueryFederation(final ResultSet resultSet) throws SQLException {
         int columnCount = resultSet.getMetaData().getColumnCount();
         queryHeaders = new ArrayList<>(columnCount);
         QueryHeaderBuilderEngine queryHeaderBuilderEngine = new QueryHeaderBuilderEngine(null == database ? null : database.getProtocolType());

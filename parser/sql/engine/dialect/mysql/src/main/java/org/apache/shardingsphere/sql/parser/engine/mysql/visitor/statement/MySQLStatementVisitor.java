@@ -25,6 +25,7 @@ import org.antlr.v4.runtime.Token;
 import org.antlr.v4.runtime.misc.Interval;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.TerminalNode;
+import org.antlr.v4.runtime.tree.TerminalNodeImpl;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.api.ASTNode;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementBaseVisitor;
@@ -867,8 +868,12 @@ public abstract class MySQLStatementVisitor extends MySQLStatementBaseVisitor<AS
     
     private Collection<InsertValuesSegment> createRowConstructorList(final RowConstructorListContext ctx) {
         Collection<InsertValuesSegment> result = new LinkedList<>();
-        for (AssignmentValuesContext each : ctx.assignmentValues()) {
-            result.add((InsertValuesSegment) visit(each));
+        for (int index = 0; index < ctx.getChildCount(); index++) {
+            if (!(ctx.getChild(index) instanceof AssignmentValuesContext)) {
+                continue;
+            }
+            InsertValuesSegment valuesSegment = (InsertValuesSegment) visit(ctx.getChild(index));
+            result.add(new InsertValuesSegment(((TerminalNodeImpl) ctx.getChild(index - 1)).symbol.getStartIndex(), valuesSegment.getStopIndex(), valuesSegment.getValues()));
         }
         return result;
     }
@@ -1478,6 +1483,7 @@ public abstract class MySQLStatementVisitor extends MySQLStatementBaseVisitor<AS
         if (null != ctx.onDuplicateKeyClause()) {
             result.setOnDuplicateKeyColumns((OnDuplicateKeyColumnsSegment) visit(ctx.onDuplicateKeyClause()));
         }
+        result.setIgnore(null != ctx.insertSpecification().IGNORE());
         result.setTable((SimpleTableSegment) visit(ctx.tableName()));
         result.addParameterMarkers(getParameterMarkerSegments());
         if (null != ctx.returningClause()) {
@@ -1520,7 +1526,9 @@ public abstract class MySQLStatementVisitor extends MySQLStatementBaseVisitor<AS
         } else {
             result.setInsertColumns(new InsertColumnsSegment(ctx.start.getStartIndex() - 1, ctx.start.getStartIndex() - 1, Collections.emptyList()));
         }
-        result.getValues().addAll(createInsertValuesSegments(ctx.assignmentValues()));
+        Collection<InsertValuesSegment> insertValuesSegments =
+                null == ctx.rowConstructorList() ? createInsertValuesSegments(ctx.assignmentValues()) : createRowConstructorList(ctx.rowConstructorList());
+        result.getValues().addAll(insertValuesSegments);
         return result;
     }
     
@@ -1553,6 +1561,7 @@ public abstract class MySQLStatementVisitor extends MySQLStatementBaseVisitor<AS
             result = new InsertStatement(databaseType);
             result.setSetAssignment((SetAssignmentSegment) visit(ctx.setAssignmentsClause()));
         }
+        result.setReplace(true);
         result.setTable((SimpleTableSegment) visit(ctx.tableName()));
         result.addParameterMarkers(getParameterMarkerSegments());
         if (null != ctx.returningClause()) {

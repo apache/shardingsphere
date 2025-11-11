@@ -92,7 +92,7 @@ jobs:
         adapter: [ proxy, jdbc ]
         mode: [ Standalone, Cluster ]
         database: [ MySQL, PostgreSQL ]
-        scenario: [ empty_rules, distsql_rdl, passthrough, db, tbl, encrypt, readwrite_splitting, shadow, mask, dbtbl_with_readwrite_splitting, dbtbl_with_readwrite_splitting_and_encrypt, sharding_and_encrypt, encrypt_and_readwrite_splitting, encrypt_shadow, readwrite_splitting_and_shadow, sharding_and_shadow, sharding_encrypt_shadow, mask_encrypt, mask_sharding, mask_encrypt_sharding, db_tbl_sql_federation, empty_storage_units ]
+        scenario: [ empty_rules, distsql_rdl, passthrough, db, tbl, encrypt, readwrite_splitting, shadow, mask, dbtbl_with_readwrite_splitting, dbtbl_with_readwrite_splitting_and_encrypt, sharding_and_encrypt, encrypt_and_readwrite_splitting, encrypt_shadow, readwrite_splitting_and_shadow, sharding_and_shadow, sharding_encrypt_shadow, mask_encrypt, mask_sharding, mask_encrypt_sharding, db_tbl_sql_federation ]
         additional-options: [ '' ]
         include:
           - adapter: proxy
@@ -113,8 +113,6 @@ jobs:
           - adapter: proxy
             mode: Standalone
             scenario: passthrough
-          - adapter: proxy
-            scenario: empty_storage_units
     steps:
       - uses: actions/checkout@v4
       - uses: actions/cache@v4
