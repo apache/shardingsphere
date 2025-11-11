@@ -19,21 +19,31 @@ package org.apache.shardingsphere.database.connector.firebird.metadata.database.
 
 import org.apache.shardingsphere.database.connector.core.metadata.database.system.DialectSystemDatabase;
 
+import java.util.AbstractMap;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * System database of Firebird.
  */
 public final class FirebirdSystemDatabase implements DialectSystemDatabase {
     
-    private static final Map<String, Collection<String>> SYSTEM_DATABASE_SCHEMA_MAP = new HashMap<>();
+    private static final Collection<String> SYSTEM_SCHEMAS = Collections.singleton("system_tables");
     
-    static {
-        SYSTEM_DATABASE_SCHEMA_MAP.put("system_tables", Collections.singleton("system_tables"));
-    }
+    private static final Map<String, Collection<String>> SYSTEM_DATABASE_SCHEMA_MAP = new AbstractMap<String, Collection<String>>() {
+        
+        @Override
+        public Collection<String> get(final Object key) {
+            return SYSTEM_SCHEMAS;
+        }
+        
+        @Override
+        public Set<Entry<String, Collection<String>>> entrySet() {
+            return Collections.emptySet();
+        }
+    };
     
     @Override
     public Map<String, Collection<String>> getSystemDatabaseSchemaMap() {
@@ -42,7 +52,7 @@ public final class FirebirdSystemDatabase implements DialectSystemDatabase {
     
     @Override
     public Collection<String> getSystemSchemas() {
-        return SYSTEM_DATABASE_SCHEMA_MAP.keySet();
+        return SYSTEM_SCHEMAS;
     }
     
     @Override
