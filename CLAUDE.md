@@ -1,11 +1,91 @@
 # CLAUDE.md - ShardingSphere AI Programming Guide
 
-*AI Programming Guide for ShardingSphere Code Development*
+*Professional Guide for AI Programming Assistants - Best Practices for ShardingSphere Code Development*
+
+## 🚀 AI Programming Best Practices
+
+### How to Obtain High-Quality Code
+
+#### 1. Source Code Development Request Template
+```
+Please implement [feature description] for [class name], requirements:
+1. Follow ShardingSphere project coding standards and constraints
+2. Use self-documenting programming, no comments
+3. Extract complex logic into private methods
+4. 100% test coverage unit tests
+5. Pass spotless code formatting checks
+6. Use @RequiredArgsConstructor constructor injection
+```
+
+#### 2. Unit Test Request Templates
+
+**Basic Style-Consistent Testing**:
+```
+Please write unit tests for [class name], requirements:
+1. Use ShardingSphere project testing style
+2. Test method naming with assert*() prefix
+3. Use Hamcrest assertion style assertThat(actual, is(expected))
+4. Use Mockito for Mocking, follow project boundary principles
+5. Maintain clear Given-When-Then structure
+```
+
+**Complex Tests for First-Pass Success**:
+```
+Please write complete unit tests for [complex class name], requirements:
+1. First analyze the dependency relationships and complexity of the class under test
+2. Identify all external dependencies that need Mocking
+3. Gradually build test fixtures, ensure complete Mock chains
+4. Write corresponding test methods for each branch
+5. Use @BeforeEach to set up common Mocks
+6. Use try-with-resources to manage MockedConstruction
+7. Ensure all tests can run independently and pass
+
+If you encounter uncertain dependency relationships, please ask me for confirmation.
+```
+
+**100% Coverage Testing**:
+```
+Please implement 100% test coverage for [specific class name] in shardingsphere-[module] module:
+1. First generate coverage report to check current status:
+   ./mvnw clean test jacoco:report -Djacoco.skip=false -pl [submodule]
+   open [submodule]/target/site/jacoco/index.html
+2. Identify all branches that need testing (red diamond markers)
+3. Write multiple sets of test data for complex conditions
+4. Ensure all exception paths have tests
+5. Verify final coverage reaches 100%:
+   ./mvnw test jacoco:check@jacoco-check -Pcoverage-check -Djacoco.check.class.pattern=[ClassName] -pl [submodule]
+
+If dead code or uncovered branches are found, please explain in detail.
+```
+
+**Special Case Handling Testing**:
+```
+Please write unit tests for [class name], requirements:
+1. Make every effort to achieve 100% coverage
+2. If you encounter the following situations, please report to me:
+   - Truly unreachable dead code (e.g., never-thrown exceptions)
+   - Functions dependent on specific runtime environments (e.g., OS-specific functions)
+   - Features requiring special hardware or network conditions
+   - Protective programming code for extreme cases
+
+Report format:
+- Code location: [class name:line number]
+- Uncoverage reason: [detailed explanation]
+- Suggested solution: [if any]
+
+Let me confirm before skipping coverage requirements for these codes.
+```
+
+#### 3. Key Points for Best Results
+- **Provide complete context**: Tell me the specific class path, module information, and related dependencies
+- **Clarify complexity**: If the class is particularly complex, specify which part to test first
+- **Progressive development**: For complex features, request step-by-step implementation
+- **Quality verification**: Ask me to run actual test commands to verify pass rates
 
 ## 🤖 AI Usage Guidelines
 
 ### Core Principles
-- **AI-First Principle**: All content in this document is oriented towards AI programming assistants, not human developers
+- **AI-First Principle**: All content is oriented towards AI programming assistants, not human developers
 - **Actionability Priority**: Every instruction must be directly executable by AI, avoid theoretical descriptions
 - **Unambiguous Expression**: Use clear instructions and parameterized templates, avoid vague expressions
 - **Search Efficiency Priority**: Information organization facilitates AI quick positioning, reduces understanding cost
@@ -28,6 +108,7 @@
 - "Mock external dependencies" → Code Templates.Mock Configuration Template
 - "Coverage check" → Quick Commands Reference.Validation Commands
 - "Format code" → Quick Commands Reference.Validation Commands
+- "Test style requirements" → AI Programming Best Practices.Unit Test Request Templates
 
 ### AI Decision Rules
 ```yaml
@@ -61,7 +142,7 @@ decision_logic:
 ./mvnw test jacoco:check@jacoco-check -Pcoverage-check -Djacoco.skip=false \
   -Djacoco.check.class.pattern=${ClassName} -pl ${submodule}  # Coverage check
 
-# Placeholder instructions:
+# Parameter instructions:
 # ${ClassName} - Specific class name for coverage check (e.g., ShardingRuleService)
 # ${submodule} - Specific submodule name (e.g., shardingsphere-jdbc, shardingsphere-proxy)
 ```
@@ -157,7 +238,7 @@ try (MockedConstruction<DatabaseMetaData> mocked = mockConstruction(DatabaseMeta
 }
 ```
 
-### SPI实现模板
+### SPI Implementation Template
 ```java
 package org.apache.shardingsphere.${module}.spi;
 
@@ -165,7 +246,7 @@ package org.apache.shardingsphere.${module}.spi;
 public final class ${SPIName}Impl implements ${SPIName}SPI {
     @Override
     public ${ResultType} execute(${ContextType} context) {
-        // 实现逻辑
+        // Implementation logic
         return ${result};
     }
 
@@ -175,6 +256,68 @@ public final class ${SPIName}Impl implements ${SPIName}SPI {
     }
 }
 ```
+
+## 🧪 ShardingSphere Testing Style Guide
+
+### Project Testing Style Summary
+
+#### 1. Naming Conventions
+- **Test Classes**: `*Test.java` suffix
+- **Test Methods**: `assert*()` prefix with descriptive naming
+  - Examples: `assertConnectWithInvalidURL()`, `assertDriverWorks()`, `assertLoadEmptyConfiguration()`
+- **Integration Tests**: `*IT.java` suffix
+
+#### 2. Mock Usage Patterns
+- **Framework**: Mockito + Mockito Extension
+- **Annotations**: `@Mock`, `@InjectMocks`, `@ExtendWith(MockitoExtension.class)`
+- **Deep Stubs**: `@Mock(answer = Answers.RETURNS_DEEP_STUBS)`
+- **Constructor Mocks**: `MockedConstruction` for complex objects
+- **Boundary Principle**: Direct creation for simple objects, Mock only complex dependencies
+
+#### 3. Assertion Styles
+- **Primary**: Hamcrest matchers
+- **Pattern**: `assertThat(actual, is(expected))`
+- **Custom**: `ShardingSphereAssertionMatchers.deepEqual()` for deep equality comparisons
+
+#### 4. Test Structure
+- **Single Responsibility**: Each test method focuses on one scenario
+- **Given-When-Then**: Clear three-part structure
+- **Independence**: Complete isolation between tests
+- **Resource Management**: `try-with-resources` for Mock resource management
+
+#### 5. Coverage Requirements
+- **Target**: 100% branch coverage
+- **Focus**: Algorithm execution paths, boundary conditions, exception handling
+- **Method**: Independent testing of each conditional branch
+
+### Module-Specific Testing Patterns
+
+#### JDBC Module Testing
+- **Driver Testing**: JDBC driver registration and functionality
+- **Connection Testing**: Connection pooling and state management
+- **Adapter Testing**: JDBC adapter implementations
+
+#### Proxy Module Testing
+- **Configuration Testing**: Proxy configuration loading
+- **Protocol Testing**: Database protocol implementations
+- **Handler Testing**: Request/response handlers
+
+#### Kernel Module Testing
+- **Algorithm Testing**: Core algorithms (sharding, encryption, etc.)
+- **Rule Testing**: Business rule implementations
+- **Pipeline Testing**: Data pipeline operations
+
+### Advanced Testing Patterns
+
+#### Concurrency Testing
+- **Multi-threaded Tests**: Thread safety validation
+- **Async Testing**: Asynchronous operation testing with Awaitility
+- **Race Condition Testing**: Concurrent access scenarios
+
+#### Integration Testing Patterns
+- **YAML Integration**: Configuration serialization/deserialization
+- **SPI Integration**: Service provider interface testing
+- **Database Integration**: Mocked database interactions for metadata testing
 
 ## 🎯 Task Execution Workflow
 
@@ -295,6 +438,10 @@ quick_search_index:
     target: "Quick Commands Reference.Validation Commands"
     description: "Apply code formatting"
 
+  "Test style requirements":
+    target: "AI Programming Best Practices.Unit Test Request Templates"
+    description: "View testing style requirements"
+
   "Naming rules":
     target: "Project Constraint Rules.class_design.naming_conventions"
     description: "View naming conventions"
@@ -306,6 +453,10 @@ quick_search_index:
   "Quality issues":
     target: "Troubleshooting Guide"
     description: "Solve common quality issues"
+
+  "ShardingSphere test style":
+    target: "ShardingSphere Testing Style Guide"
+    description: "Complete project testing style guide"
 
 error_recovery_index:
   "Coverage not met":
@@ -323,6 +474,10 @@ error_recovery_index:
   "Test failures":
     solution: "Check Mock configuration and assertion logic"
     reference: "Code Templates.Test Method Template"
+
+  "Complex mock setup":
+    solution: "Use Mock boundary judgment and complex dependency handling"
+    reference: "ShardingSphere Testing Style Guide.Mock Usage Patterns"
 ```
 
 ## 🛠️ Troubleshooting Guide
