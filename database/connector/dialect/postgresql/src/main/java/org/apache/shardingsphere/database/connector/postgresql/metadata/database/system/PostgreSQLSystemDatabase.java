@@ -22,7 +22,6 @@ import org.apache.shardingsphere.database.connector.core.metadata.database.syste
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
 
 /**
@@ -32,7 +31,7 @@ public final class PostgreSQLSystemDatabase implements DialectSystemDatabase {
     
     private static final Map<String, Collection<String>> SYSTEM_DATABASE_SCHEMA_MAP = new HashMap<>();
     
-    private static final Collection<String> SYSTEM_SCHEMAS = new HashSet<>(Arrays.asList("information_schema", "pg_catalog", "shardingsphere"));
+    private static final Collection<String> SYSTEM_SCHEMAS = Arrays.asList("information_schema", "pg_catalog", "shardingsphere");
     
     static {
         SYSTEM_DATABASE_SCHEMA_MAP.put("postgres", SYSTEM_SCHEMAS);

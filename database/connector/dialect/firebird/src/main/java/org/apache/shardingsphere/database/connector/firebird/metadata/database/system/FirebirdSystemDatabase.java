@@ -22,7 +22,6 @@ import org.apache.shardingsphere.database.connector.core.metadata.database.syste
 import java.util.AbstractMap;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
@@ -31,7 +30,7 @@ import java.util.Set;
  */
 public final class FirebirdSystemDatabase implements DialectSystemDatabase {
     
-    private static final Collection<String> SYSTEM_SCHEMAS = new HashSet<>(Collections.singletonList("system_tables"));
+    private static final Collection<String> SYSTEM_SCHEMAS = Collections.singleton("system_tables");
     
     private static final Map<String, Collection<String>> SYSTEM_DATABASE_SCHEMA_MAP = new AbstractMap<String, Collection<String>>() {
         
