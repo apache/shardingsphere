@@ -34,7 +34,7 @@ public final class MySQLKernelSupportedSystemTable implements DialectKernelSuppo
     public Map<String, Collection<String>> getSchemaAndTablesMap() {
         Map<String, Collection<String>> result = new HashMap<>(2, 1F);
         result.put("sys", new HashSet<>(Collections.singleton("sys_config")));
-        result.put("shardingsphere", new HashSet<>(Collections.singletonList("cluster_information")));
+        result.put("shardingsphere", Collections.singleton("cluster_information"));
         return result;
     }
     
