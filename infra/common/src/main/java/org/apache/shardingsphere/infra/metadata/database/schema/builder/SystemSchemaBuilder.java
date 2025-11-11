@@ -39,12 +39,15 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Properties;
+import java.util.stream.Collectors;
 
 /**
  * System schema builder.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class SystemSchemaBuilder {
+    
+    private static final YamlTableSwapper TABLE_SWAPPER = new YamlTableSwapper();
     
     /**
      * Build system schema.
@@ -56,13 +59,11 @@ public final class SystemSchemaBuilder {
      */
     public static Map<String, ShardingSphereSchema> build(final String databaseName, final DatabaseType databaseType, final ConfigurationProperties props) {
         SystemDatabase systemDatabase = new SystemDatabase(databaseType);
-        Map<String, ShardingSphereSchema> result = new LinkedHashMap<>(systemDatabase.getSystemSchemas().size(), 1F);
         boolean isSystemSchemaMetaDataEnabled = isSystemSchemaMetaDataEnabled(props.getProps());
-        YamlTableSwapper swapper = new YamlTableSwapper();
-        for (String each : getSystemSchemas(databaseName, databaseType, systemDatabase)) {
-            result.put(each.toLowerCase(), createSchema(each, SystemSchemaManager.getAllInputStreams(databaseType.getType(), each), swapper, isSystemSchemaMetaDataEnabled));
-        }
-        return result;
+        return getSystemSchemas(databaseName, databaseType, systemDatabase).stream()
+                .collect(Collectors.toMap(
+                        String::toLowerCase, each -> createSchema(databaseType, each, SystemSchemaManager.getAllInputStreams(databaseType.getType(), each), isSystemSchemaMetaDataEnabled),
+                        (oldValue, currentValue) -> currentValue, LinkedHashMap::new));
     }
     
     private static boolean isSystemSchemaMetaDataEnabled(final Properties props) {
@@ -76,13 +77,13 @@ public final class SystemSchemaBuilder {
         return systemDatabase.getSystemDatabaseSchemaMap().getOrDefault(databaseName, Collections.emptyList());
     }
     
-    private static ShardingSphereSchema createSchema(final String schemaName, final Collection<InputStream> schemaStreams, final YamlTableSwapper swapper,
+    private static ShardingSphereSchema createSchema(final DatabaseType databaseType, final String schemaName, final Collection<InputStream> schemaStreams,
                                                      final boolean isSystemSchemaMetadataEnabled) {
         Collection<ShardingSphereTable> tables = new LinkedList<>();
         for (InputStream each : schemaStreams) {
             YamlShardingSphereTable metaData = new Yaml().loadAs(each, YamlShardingSphereTable.class);
-            if (isSystemSchemaMetadataEnabled || KernelSupportedSystemTables.isSupportedSystemTable(schemaName, metaData.getName())) {
-                tables.add(swapper.swapToObject(metaData));
+            if (isSystemSchemaMetadataEnabled || KernelSupportedSystemTables.isSupportedSystemTable(databaseType.getType(), schemaName, metaData.getName())) {
+                tables.add(TABLE_SWAPPER.swapToObject(metaData));
             }
         }
         return new ShardingSphereSchema(schemaName, tables, Collections.emptyList());

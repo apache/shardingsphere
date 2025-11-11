@@ -26,16 +26,16 @@ class KernelSupportedSystemTablesTest {
     
     @Test
     void assertIsSupportedSystemTableWithMatchingSchemaAndTable() {
-        assertTrue(KernelSupportedSystemTables.isSupportedSystemTable("sys", "sys_config"));
+        assertTrue(KernelSupportedSystemTables.isSupportedSystemTable("MySQL", "sys", "sys_config"));
     }
     
     @Test
     void assertIsNotSupportedSystemTableWithMatchingSchemaButWrongTable() {
-        assertFalse(KernelSupportedSystemTables.isSupportedSystemTable("sys", "non_existent_table"));
+        assertFalse(KernelSupportedSystemTables.isSupportedSystemTable("MySQL", "sys", "non_existent_table"));
     }
     
     @Test
     void assertIsNotSupportedSystemTableWithUnmatchedSchema() {
-        assertFalse(KernelSupportedSystemTables.isSupportedSystemTable("non_existent_schema", "any_table"));
+        assertFalse(KernelSupportedSystemTables.isSupportedSystemTable("MySQL", "non_existent_schema", "any_table"));
     }
 }

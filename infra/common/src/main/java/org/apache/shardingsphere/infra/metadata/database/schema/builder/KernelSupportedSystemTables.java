@@ -17,21 +17,17 @@
 
 package org.apache.shardingsphere.infra.metadata.database.schema.builder;
 
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Map;
 
 /**
  * Kernel supported system tables.
  */
 @RequiredArgsConstructor
-@Getter
 public enum KernelSupportedSystemTables {
     
     MYSQL_SYS("MySQL", "sys", new HashSet<>(Collections.singleton("sys_config"))),
@@ -77,33 +73,25 @@ public enum KernelSupportedSystemTables {
     
     OPEN_GAUSS_SHARDING_SPHERE("openGauss", "shardingsphere", new HashSet<>(Collections.singletonList("cluster_information")));
     
-    private static final Map<String, KernelSupportedSystemTables> SCHEMA_NAME_TO_TABLES = new HashMap<>(values().length, 1F);
-    
     private final String databaseType;
     
     private final String schema;
     
     private final Collection<String> tables;
     
-    static {
-        for (KernelSupportedSystemTables each : values()) {
-            SCHEMA_NAME_TO_TABLES.put(each.getDatabaseType() + "." + each.getSchema(), each);
-        }
-    }
-    
     /**
      * Judge whether current table is kernel supported system table or not.
      *
-     * @param schema schema
+     * @param databaseType database type
+     * @param schemaName schema name
      * @param tableName table name
      * @return whether current table is kernel supported system table or not
      */
-    public static boolean isSupportedSystemTable(final String schema, final String tableName) {
-        for (KernelSupportedSystemTables each : values()) {
-            if (each.getSchema().equals(schema) && each.getTables().contains(tableName)) {
-                return true;
-            }
-        }
-        return false;
+    public static boolean isSupportedSystemTable(final String databaseType, final String schemaName, final String tableName) {
+        return Arrays.stream(values()).anyMatch(each -> each.isSupported(databaseType, schemaName, tableName));
+    }
+    
+    private boolean isSupported(final String databaseType, final String schemaName, final String tableName) {
+        return this.databaseType.equals(databaseType) && schema.equals(schemaName) && tables.contains(tableName);
     }
 }
