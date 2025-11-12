@@ -20,6 +20,7 @@ package org.apache.shardingsphere.infra.metadata.database.rule;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.attribute.RuleAttribute;
+import org.apache.shardingsphere.infra.rule.attribute.RuleAttributes;
 import org.apache.shardingsphere.infra.rule.attribute.datanode.DataNodeRuleAttribute;
 import org.apache.shardingsphere.infra.rule.attribute.datasource.DataSourceMapperRuleAttribute;
 import org.apache.shardingsphere.infra.rule.scope.GlobalRule;
@@ -103,6 +104,40 @@ class RuleMetaDataTest {
         assertThat(actual.size(), is(2));
         assertTrue(actual.containsKey("foo_ds"));
         assertTrue(actual.containsKey("foo_db"));
+    }
+    
+    @Test
+    void assertGetInUsedStorageUnitNameAndRulesMapWhenRuleClassAddedForExistingStorageUnit() {
+        ShardingSphereRule firstRule = mockRuleMetaDataShardingSphereRuleFixture("shared_ds");
+        ShardingSphereRule secondRule = mockShardingSphereRule();
+        Map<String, Collection<Class<? extends ShardingSphereRule>>> actual = new RuleMetaData(Arrays.asList(firstRule, secondRule)).getInUsedStorageUnitNameAndRulesMap();
+        Collection<Class<? extends ShardingSphereRule>> ruleClasses = actual.get("shared_ds");
+        assertThat(ruleClasses.size(), is(2));
+        assertTrue(ruleClasses.contains(firstRule.getClass()));
+        assertTrue(ruleClasses.contains(secondRule.getClass()));
+    }
+    
+    @Test
+    void assertGetInUsedStorageUnitNameAndRulesMapWhenDuplicatedRuleClassSkippedForExistingStorageUnit() {
+        ShardingSphereRule duplicatedRule = mockRuleMetaDataShardingSphereRuleFixture("dup_ds");
+        RuleMetaData metaData = new RuleMetaData(Arrays.asList(duplicatedRule, duplicatedRule));
+        assertThat(metaData.getInUsedStorageUnitNameAndRulesMap().get("dup_ds").size(), is(1));
+    }
+    
+    private RuleMetaDataShardingSphereRuleFixture mockRuleMetaDataShardingSphereRuleFixture(final String storageUnitName) {
+        RuleMetaDataShardingSphereRuleFixture result = mock(RuleMetaDataShardingSphereRuleFixture.class, RETURNS_DEEP_STUBS);
+        DataSourceMapperRuleAttribute ruleAttribute = mock(DataSourceMapperRuleAttribute.class);
+        when(ruleAttribute.getDataSourceMapper()).thenReturn(Collections.singletonMap("logic_db", Collections.singleton(storageUnitName)));
+        when(result.getAttributes()).thenReturn(new RuleAttributes(ruleAttribute));
+        return result;
+    }
+    
+    private ShardingSphereRule mockShardingSphereRule() {
+        ShardingSphereRule result = mock(ShardingSphereRule.class, RETURNS_DEEP_STUBS);
+        DataSourceMapperRuleAttribute ruleAttribute = mock(DataSourceMapperRuleAttribute.class);
+        when(ruleAttribute.getDataSourceMapper()).thenReturn(Collections.singletonMap("logic_db", Collections.singleton("shared_ds")));
+        when(result.getAttributes()).thenReturn(new RuleAttributes(ruleAttribute));
+        return result;
     }
     
     @Test

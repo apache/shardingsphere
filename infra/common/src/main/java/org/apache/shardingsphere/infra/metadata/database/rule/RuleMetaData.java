@@ -119,10 +119,7 @@ public final class RuleMetaData {
     private Map<String, Collection<Class<? extends ShardingSphereRule>>> getInUsedStorageUnitNameAndRulesMap(final ShardingSphereRule rule, final Collection<String> inUsedStorageUnitNames) {
         Map<String, Collection<Class<? extends ShardingSphereRule>>> result = new LinkedHashMap<>();
         for (String each : inUsedStorageUnitNames) {
-            if (!result.containsKey(each)) {
-                result.put(each, new LinkedHashSet<>());
-            }
-            result.get(each).add(rule.getClass());
+            result.computeIfAbsent(each, unused -> new LinkedHashSet<>()).add(rule.getClass());
         }
         return result;
     }
