@@ -21,6 +21,7 @@ import org.apache.shardingsphere.database.connector.core.metadata.database.syste
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -38,8 +39,13 @@ public final class PostgreSQLSystemDatabase implements DialectSystemDatabase {
     }
     
     @Override
-    public Map<String, Collection<String>> getSystemDatabaseSchemaMap() {
-        return SYSTEM_DATABASE_SCHEMA_MAP;
+    public Collection<String> getSystemDatabases() {
+        return SYSTEM_DATABASE_SCHEMA_MAP.keySet();
+    }
+    
+    @Override
+    public Collection<String> getSystemSchemas(final String databaseName) {
+        return SYSTEM_DATABASE_SCHEMA_MAP.getOrDefault(databaseName, Collections.emptyList());
     }
     
     @Override

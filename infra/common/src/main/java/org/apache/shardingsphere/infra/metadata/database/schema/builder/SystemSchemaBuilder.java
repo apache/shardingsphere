@@ -64,9 +64,7 @@ public final class SystemSchemaBuilder {
         SystemDatabase systemDatabase = new SystemDatabase(databaseType);
         boolean isSystemSchemaMetaDataEnabled = isSystemSchemaMetaDataEnabled(props.getProps());
         return getSystemSchemas(databaseName, databaseType, systemDatabase).stream()
-                .collect(Collectors.toMap(
-                        String::toLowerCase, each -> createSchema(databaseType, each, SystemSchemaManager.getAllInputStreams(databaseType.getType(), each), isSystemSchemaMetaDataEnabled),
-                        (oldValue, currentValue) -> currentValue, LinkedHashMap::new));
+                .collect(Collectors.toMap(String::toLowerCase, each -> createSchema(each, databaseType, isSystemSchemaMetaDataEnabled), (oldValue, currentValue) -> currentValue, LinkedHashMap::new));
     }
     
     private static boolean isSystemSchemaMetaDataEnabled(final Properties props) {
@@ -76,14 +74,12 @@ public final class SystemSchemaBuilder {
     
     private static Collection<String> getSystemSchemas(final String originalDatabaseName, final DatabaseType databaseType, final SystemDatabase systemDatabase) {
         DialectDatabaseMetaData dialectDatabaseMetaData = new DatabaseTypeRegistry(databaseType).getDialectDatabaseMetaData();
-        String databaseName = dialectDatabaseMetaData.getSchemaOption().getDefaultSchema().isPresent() ? "postgres" : originalDatabaseName;
-        return systemDatabase.getSystemDatabaseSchemaMap().getOrDefault(databaseName, Collections.emptyList());
+        return systemDatabase.getSystemSchemas(dialectDatabaseMetaData.getSchemaOption().getDefaultSchema().isPresent() ? "postgres" : originalDatabaseName);
     }
     
-    private static ShardingSphereSchema createSchema(final DatabaseType databaseType, final String schemaName, final Collection<InputStream> schemaStreams,
-                                                     final boolean isSystemSchemaMetadataEnabled) {
+    private static ShardingSphereSchema createSchema(final String schemaName, final DatabaseType databaseType, final boolean isSystemSchemaMetadataEnabled) {
         Collection<ShardingSphereTable> tables = new LinkedList<>();
-        for (InputStream each : schemaStreams) {
+        for (InputStream each : SystemSchemaManager.getAllInputStreams(databaseType.getType(), schemaName)) {
             YamlShardingSphereTable metaData = new Yaml().loadAs(each, YamlShardingSphereTable.class);
             if (isSystemSchemaMetadataEnabled || isSupportedSystemTable(databaseType, schemaName, metaData.getName())) {
                 tables.add(TABLE_SWAPPER.swapToObject(metaData));

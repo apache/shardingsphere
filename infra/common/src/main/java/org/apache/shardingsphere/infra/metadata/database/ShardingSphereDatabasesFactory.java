@@ -100,8 +100,8 @@ public final class ShardingSphereDatabasesFactory {
     
     private static Collection<ShardingSphereDatabase> createSystemDatabases(final Map<String, DatabaseConfiguration> databaseConfigMap, final DatabaseType protocolType,
                                                                             final SystemDatabase systemDatabase, final ConfigurationProperties props) {
-        Collection<ShardingSphereDatabase> result = new HashSet<>(systemDatabase.getSystemDatabaseSchemaMap().size(), 1F);
-        for (String each : systemDatabase.getSystemDatabaseSchemaMap().keySet()) {
+        Collection<ShardingSphereDatabase> result = new HashSet<>(systemDatabase.getSystemDatabases().size(), 1F);
+        for (String each : systemDatabase.getSystemDatabases()) {
             if (!databaseConfigMap.containsKey(each) || databaseConfigMap.get(each).getStorageUnits().isEmpty()) {
                 result.add(ShardingSphereDatabaseFactory.create(each, protocolType, props));
             }

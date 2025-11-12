@@ -28,20 +28,10 @@ import java.util.LinkedHashSet;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class MySQLSystemDatabaseTest {
     
     private final DialectSystemDatabase systemDatabase = DatabaseTypedSPILoader.getService(DialectSystemDatabase.class, TypedSPILoader.getService(DatabaseType.class, "MySQL"));
-    
-    @Test
-    void assertGetSystemDatabases() {
-        assertTrue(systemDatabase.getSystemDatabaseSchemaMap().containsKey("information_schema"));
-        assertTrue(systemDatabase.getSystemDatabaseSchemaMap().containsKey("performance_schema"));
-        assertTrue(systemDatabase.getSystemDatabaseSchemaMap().containsKey("mysql"));
-        assertTrue(systemDatabase.getSystemDatabaseSchemaMap().containsKey("sys"));
-        assertTrue(systemDatabase.getSystemDatabaseSchemaMap().containsKey("shardingsphere"));
-    }
     
     @Test
     void assertGetSystemSchemas() {

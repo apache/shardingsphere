@@ -21,7 +21,6 @@ import org.apache.shardingsphere.database.connector.core.metadata.database.syste
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Map;
 
 /**
  * System database of H2.
@@ -29,8 +28,13 @@ import java.util.Map;
 public final class H2SystemDatabase implements DialectSystemDatabase {
     
     @Override
-    public Map<String, Collection<String>> getSystemDatabaseSchemaMap() {
-        return Collections.emptyMap();
+    public Collection<String> getSystemDatabases() {
+        return Collections.emptyList();
+    }
+    
+    @Override
+    public Collection<String> getSystemSchemas(final String databaseName) {
+        return Collections.emptyList();
     }
     
     @Override

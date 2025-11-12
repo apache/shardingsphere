@@ -21,7 +21,6 @@ import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPI;
 import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
 
 import java.util.Collection;
-import java.util.Map;
 
 /**
  * Dialect system database.
@@ -30,11 +29,19 @@ import java.util.Map;
 public interface DialectSystemDatabase extends DatabaseTypedSPI {
     
     /**
+     * Get system databases.
+     *
+     * @return system databases
+     */
+    Collection<String> getSystemDatabases();
+    
+    /**
      * Get system database schema map.
      *
+     * @param databaseName database name
      * @return system database schema map
      */
-    Map<String, Collection<String>> getSystemDatabaseSchemaMap();
+    Collection<String> getSystemSchemas(String databaseName);
     
     /**
      * Get system schemas.
