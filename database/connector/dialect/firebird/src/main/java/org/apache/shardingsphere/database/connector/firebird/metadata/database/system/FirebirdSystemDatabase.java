@@ -51,6 +51,11 @@ public final class FirebirdSystemDatabase implements DialectSystemDatabase {
     }
     
     @Override
+    public Collection<String> getSystemSchemas(final String databaseName) {
+        return SYSTEM_SCHEMAS;
+    }
+    
+    @Override
     public Collection<String> getSystemSchemas() {
         return SYSTEM_SCHEMAS;
     }
