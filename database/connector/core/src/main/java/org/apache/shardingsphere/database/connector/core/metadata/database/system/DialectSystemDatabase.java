@@ -37,6 +37,14 @@ public interface DialectSystemDatabase extends DatabaseTypedSPI {
     Map<String, Collection<String>> getSystemDatabaseSchemaMap();
     
     /**
+     * Get system database schema map.
+     *
+     * @param databaseName database name
+     * @return system database schema map
+     */
+    Collection<String> getSystemSchemas(String databaseName);
+    
+    /**
      * Get system schemas.
      *
      * @return system schemas

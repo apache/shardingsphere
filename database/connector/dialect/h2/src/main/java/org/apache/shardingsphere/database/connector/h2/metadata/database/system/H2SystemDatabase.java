@@ -34,6 +34,11 @@ public final class H2SystemDatabase implements DialectSystemDatabase {
     }
     
     @Override
+    public Collection<String> getSystemSchemas(final String databaseName) {
+        return Collections.emptyList();
+    }
+    
+    @Override
     public Collection<String> getSystemSchemas() {
         return Collections.emptyList();
     }

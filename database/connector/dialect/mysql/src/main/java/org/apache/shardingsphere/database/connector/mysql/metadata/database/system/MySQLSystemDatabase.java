@@ -45,6 +45,11 @@ public final class MySQLSystemDatabase implements DialectSystemDatabase {
     }
     
     @Override
+    public Collection<String> getSystemSchemas(final String databaseName) {
+        return SYSTEM_DATABASE_SCHEMA_MAP.getOrDefault(databaseName, Collections.emptyList());
+    }
+    
+    @Override
     public Collection<String> getSystemSchemas() {
         return SYSTEM_DATABASE_SCHEMA_MAP.keySet();
     }

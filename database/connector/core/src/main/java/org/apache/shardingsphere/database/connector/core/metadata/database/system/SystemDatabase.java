@@ -45,6 +45,16 @@ public final class SystemDatabase {
     /**
      * Get system schemas.
      *
+     * @param databaseName database name
+     * @return system schemas
+     */
+    public Collection<String> getSystemSchemas(final String databaseName) {
+        return DatabaseTypedSPILoader.findService(DialectSystemDatabase.class, databaseType).map(optional -> optional.getSystemSchemas(databaseName)).orElse(Collections.emptyList());
+    }
+    
+    /**
+     * Get system schemas.
+     *
      * @return system schemas
      */
     public Collection<String> getSystemSchemas() {
