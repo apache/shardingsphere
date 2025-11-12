@@ -35,7 +35,7 @@ import java.util.LinkedList;
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class MultiSQLSplitter {
-
+    
     /**
      * Determine whether SQL contains multi statements that match the same DML type.
      *
@@ -54,7 +54,7 @@ public final class MultiSQLSplitter {
         }
         return true;
     }
-
+    
     private static String stripLeadingComments(final String sql) {
         int index = 0;
         while (index < sql.length()) {
@@ -82,12 +82,12 @@ public final class MultiSQLSplitter {
         }
         return sql.substring(index).trim();
     }
-
+    
     private static int skipWhitespace(final String sql, final int start) {
         int index = CharMatcher.whitespace().negate().indexIn(sql, start);
         return -1 == index ? sql.length() : index;
     }
-
+    
     private static int skipLine(final String sql, final int startIndex) {
         int index = startIndex;
         while (index < sql.length()) {
@@ -105,9 +105,9 @@ public final class MultiSQLSplitter {
         }
         return index;
     }
-
+    
     private static boolean matchesStatementType(final String sql,
-            final SQLStatement sqlStatementSample) {
+                                                final SQLStatement sqlStatementSample) {
         if (sql.isEmpty()) {
             return false;
         }
@@ -122,11 +122,11 @@ public final class MultiSQLSplitter {
         }
         return false;
     }
-
+    
     private static boolean startsWithIgnoreCase(final String text, final String prefix) {
         return text.regionMatches(true, 0, prefix, 0, prefix.length());
     }
-
+    
     /**
      * Split SQL text by semicolon ignoring literals and comments.
      *
@@ -218,7 +218,7 @@ public final class MultiSQLSplitter {
         appendStatement(result, current);
         return result;
     }
-
+    
     private static void appendStatement(final Collection<String> statements, final StringBuilder current) {
         String value = current.toString().trim();
         if (!value.isEmpty()) {
@@ -226,7 +226,7 @@ public final class MultiSQLSplitter {
         }
         current.setLength(0);
     }
-
+    
     private static boolean isDashCommentStart(final String sql, final int index) {
         if (index + 1 >= sql.length()) {
             return false;
@@ -237,24 +237,24 @@ public final class MultiSQLSplitter {
         int commentContentIndex = index + 2;
         return commentContentIndex >= sql.length() || Character.isWhitespace(sql.charAt(commentContentIndex));
     }
-
+    
     private static boolean isSupportedQuote(final QuoteCharacter quote) {
         return QuoteCharacter.SINGLE_QUOTE == quote || QuoteCharacter.QUOTE == quote || QuoteCharacter.BACK_QUOTE == quote;
     }
-
+    
     private static boolean isQuoteEnd(final QuoteCharacter quote, final char ch) {
         return QuoteCharacter.NONE != quote && quote.getEndDelimiter().charAt(0) == ch;
     }
-
+    
     private static boolean isRepeatedQuote(final String sql, final QuoteCharacter quote, final int index) {
         int nextIndex = index + 1;
         return nextIndex < sql.length() && sql.charAt(nextIndex) == quote.getEndDelimiter().charAt(0);
     }
-
+    
     private static boolean hasNextChar(final int index, final int length) {
         return index + 1 < length;
     }
-
+    
     private enum ScanState {
         NORMAL, QUOTE, LINE_COMMENT, BLOCK_COMMENT
     }

@@ -62,8 +62,7 @@ class MultiSQLSplitterTest {
                 Arguments.of("updateTypeMismatch", new UpdateStatement(DATABASE_TYPE), Arrays.asList("update t_order set status='PAID' where id=1;", "select * from t_order"), false),
                 Arguments.of("unterminatedBlockComment", new InsertStatement(DATABASE_TYPE), Arrays.asList("/* incomplete comment", "insert into t_order values (1);"), false),
                 Arguments.of("dashCommentOnlySegment", new UpdateStatement(DATABASE_TYPE), Arrays.asList("--", "update t_order set status='DONE' where id=1;"), false),
-                Arguments.of("whitespaceOnlySegment", new UpdateStatement(DATABASE_TYPE), Arrays.asList("   \t ", "update t_order set status='DONE' where id=1;"), false)
-        );
+                Arguments.of("whitespaceOnlySegment", new UpdateStatement(DATABASE_TYPE), Arrays.asList("   \t ", "update t_order set status='DONE' where id=1;"), false));
     }
     
     @ParameterizedTest(name = "{0}")
@@ -92,7 +91,6 @@ class MultiSQLSplitterTest {
                 Arguments.of("doubleQuoteIdentifiersWithSemicolon", "insert into \"T;ORDER\" values (1);", Collections.singletonList("insert into \"T;ORDER\" values (1)")),
                 Arguments.of("unterminatedStringHandled", "update t_order set status='OPEN\\", Collections.singletonList("update t_order set status='OPEN\\")),
                 Arguments.of("doubleDashWithoutWhitespaceTreatedAsText", "--not comment; update t_order set status=1;", Arrays.asList("--not comment", "update t_order set status=1")),
-                Arguments.of("singleTrailingDash", "update t_order set price = price -", Collections.singletonList("update t_order set price = price -"))
-        );
+                Arguments.of("singleTrailingDash", "update t_order set price = price -", Collections.singletonList("update t_order set price = price -")));
     }
 }
