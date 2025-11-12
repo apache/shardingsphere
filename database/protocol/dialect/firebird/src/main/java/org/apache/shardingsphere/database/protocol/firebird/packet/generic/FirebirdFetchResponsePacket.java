@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.database.protocol.firebird.packet.generic;
 
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.database.protocol.binary.BinaryCell;
 import org.apache.shardingsphere.database.protocol.binary.BinaryRow;
 import org.apache.shardingsphere.database.protocol.firebird.packet.FirebirdPacket;
@@ -31,44 +32,33 @@ import org.firebirdsql.gds.ISCConstants;
  * SQL fetch packet for Firebird.
  */
 @Getter
+@RequiredArgsConstructor
 public final class FirebirdFetchResponsePacket extends FirebirdPacket {
     
     private final int status;
     
     private final int count;
     
-    private final BinaryRow data;
-    
-    public FirebirdFetchResponsePacket(final BinaryRow row) {
-        status = ISCConstants.FETCH_OK;
-        count = 1;
-        data = row;
-    }
-    
-    public FirebirdFetchResponsePacket() {
-        status = ISCConstants.FETCH_NO_MORE_ROWS;
-        count = 0;
-        data = null;
-    }
+    private final BinaryRow row;
     
     @Override
     protected void write(final FirebirdPacketPayload payload) {
         payload.writeInt4(FirebirdCommandPacketType.FETCH_RESPONSE.getValue());
         payload.writeInt4(status);
         payload.writeInt4(count);
-        writeData(payload, data);
+        writeRowData(payload, row);
     }
     
-    static void writeData(final FirebirdPacketPayload payload, final BinaryRow data) {
-        if (data == null) {
+    static void writeRowData(final FirebirdPacketPayload payload, final BinaryRow row) {
+        if (row == null) {
             return;
         }
         int nullBitsStartIndex = payload.getByteBuf().writerIndex();
-        int nullBits = (data.getCells().size() + 7) / 8;
+        int nullBits = (row.getCells().size() + 7) / 8;
         nullBits += (4 - nullBits) & 3;
         payload.getByteBuf().writeZero(nullBits);
         int i = 0;
-        for (BinaryCell cell : data.getCells()) {
+        for (BinaryCell cell : row.getCells()) {
             if (null != cell.getData()) {
                 FirebirdBinaryProtocolValue type = FirebirdBinaryProtocolValueFactory.getBinaryProtocolValue(cell.getColumnType());
                 type.write(payload, cell.getData());
@@ -79,5 +69,33 @@ public final class FirebirdFetchResponsePacket extends FirebirdPacket {
             }
             i++;
         }
+    }
+    
+    /**
+     * Get fetch row response packet.
+     *
+     * @param row binary row
+     * @return fetch response packet
+     */
+    public static FirebirdFetchResponsePacket getFetchRowPacket(final BinaryRow row) {
+        return new FirebirdFetchResponsePacket(ISCConstants.FETCH_OK, 1, row);
+    }
+    
+    /**
+     * Get fetch no more rows response packet.
+     *
+     * @return fetch response packet
+     */
+    public static FirebirdFetchResponsePacket getFetchNoMoreRowsPacket() {
+        return new FirebirdFetchResponsePacket(ISCConstants.FETCH_NO_MORE_ROWS, 0, null);
+    }
+    
+    /**
+     * Get fetch end response packet.
+     *
+     * @return fetch response packet
+     */
+    public static FirebirdFetchResponsePacket getFetchEndPacket() {
+        return new FirebirdFetchResponsePacket(ISCConstants.FETCH_OK, 0, null);
     }
 }
