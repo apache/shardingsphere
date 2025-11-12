@@ -74,7 +74,7 @@
 1. SQL Parser: Fix set OnDuplicateKeyColumnsSegment on INSERT for PostgreSQL - [#34425](https://github.com/apache/shardingsphere/pull/34425)
 1. SQL Parser: Fix SQL parser error when SQL contains implicit concat expression for MySQL - [#34660](https://github.com/apache/shardingsphere/pull/34660)
 1. SQL Parser: Fix SQL parser error when SQL contains subquery with alias for Oracle - [#35239](https://github.com/apache/shardingsphere/pull/35239)
-1. SQL Parser: Fix multiple SQLs spilt error when comma contained - [#31609](https://github.com/apache/shardingsphere/pull/31609)
+1. SQL Parser: Fix multiple SQLs split error when comma contained - [#31609](https://github.com/apache/shardingsphere/pull/31609)
 1. SQL Binder: Fix unable to find the outer table in the NotExpressionBinder - [36135](https://github.com/apache/shardingsphere/pull/36135)
 1. SQL Binder: Fix unable to find the outer table in the ExistsSubqueryExpressionBinder - [#36068](https://github.com/apache/shardingsphere/pull/36068)
 1. SQL Binder: Fix column bind exception caused by oracle XMLELEMENT function first parameter without quote - [#36963](https://github.com/apache/shardingsphere/pull/36963)
