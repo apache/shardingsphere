@@ -42,6 +42,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatemen
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.DeleteStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.InsertStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.UpdateStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.util.MultiSQLSplitter;
 
 import java.sql.SQLException;
 import java.util.Collection;
@@ -72,8 +73,9 @@ public final class MySQLComQueryPacketExecutor implements QueryCommandExecutor {
     }
     
     private boolean areMultiStatements(final ConnectionSession connectionSession, final SQLStatement sqlStatement, final String sql) {
-        // TODO Multi statements should be identified by SQL Parser instead of checking if sql contains ";".
-        return isMultiStatementsEnabled(connectionSession) && isSuitableMultiStatementsSQLStatement(sqlStatement) && sql.contains(";");
+        return isMultiStatementsEnabled(connectionSession)
+                && isSuitableMultiStatementsSQLStatement(sqlStatement)
+                && MultiSQLSplitter.hasSameTypeMultiStatements(sqlStatement, MultiSQLSplitter.split(sql));
     }
     
     private boolean isMultiStatementsEnabled(final ConnectionSession connectionSession) {

@@ -54,29 +54,20 @@ import org.apache.shardingsphere.proxy.backend.response.header.update.MultiState
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.InsertStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.UpdateStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.util.MultiSQLSplitter;
 
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.regex.Pattern;
 
 /**
  * MySQL multi-statements proxy backend handler.
  */
 public final class MySQLMultiStatementsProxyBackendHandler implements ProxyBackendHandler {
-    
-    private static final Pattern MULTI_INSERT_STATEMENTS = Pattern.compile(";(?=\\s*insert)", Pattern.CASE_INSENSITIVE);
-    
-    private static final Pattern MULTI_UPDATE_STATEMENTS = Pattern.compile(";(?=\\s*update)", Pattern.CASE_INSENSITIVE);
-    
-    private static final Pattern MULTI_DELETE_STATEMENTS = Pattern.compile(";(?=\\s*delete)", Pattern.CASE_INSENSITIVE);
     
     private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "MySQL");
     
@@ -96,30 +87,17 @@ public final class MySQLMultiStatementsProxyBackendHandler implements ProxyBacke
         this.sqlStatementSample = sqlStatementSample;
         JDBCExecutor jdbcExecutor = new JDBCExecutor(BackendExecutorContext.getInstance().getExecutorEngine(), connectionSession.getConnectionContext());
         batchExecutor = new BatchPreparedStatementExecutor(metaDataContexts.getMetaData().getDatabase(connectionSession.getUsedDatabaseName()), jdbcExecutor, connectionSession.getProcessId());
-        Pattern pattern = getPattern(sqlStatementSample);
         SQLParserEngine sqlParserEngine = getSQLParserEngine();
-        for (String each : extractMultiStatements(pattern, sql)) {
+        for (String each : MultiSQLSplitter.split(sql)) {
             SQLStatement eachSQLStatement = sqlParserEngine.parse(each, false);
             multiSQLQueryContexts.add(createQueryContext(each, eachSQLStatement));
         }
-    }
-    
-    private Pattern getPattern(final SQLStatement sqlStatementSample) {
-        if (sqlStatementSample instanceof InsertStatement) {
-            return MULTI_INSERT_STATEMENTS;
-        }
-        return sqlStatementSample instanceof UpdateStatement ? MULTI_UPDATE_STATEMENTS : MULTI_DELETE_STATEMENTS;
     }
     
     private SQLParserEngine getSQLParserEngine() {
         MetaDataContexts metaDataContexts = ProxyContext.getInstance().getContextManager().getMetaDataContexts();
         SQLParserRule sqlParserRule = metaDataContexts.getMetaData().getGlobalRuleMetaData().getSingleRule(SQLParserRule.class);
         return sqlParserRule.getSQLParserEngine(databaseType);
-    }
-    
-    private List<String> extractMultiStatements(final Pattern pattern, final String sql) {
-        // TODO Multi statements should be split by SQL Parser instead of simple regexp.
-        return Arrays.asList(pattern.split(sql));
     }
     
     private QueryContext createQueryContext(final String sql, final SQLStatement sqlStatement) {
