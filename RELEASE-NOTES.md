@@ -53,6 +53,16 @@
 1. Encrypt: Add quotes to encrypt rewrite derived columns - [#34950](https://github.com/apache/shardingsphere/pull/34950)
 1. Encrypt: Support NOT LIKE operator in encryption feature - [#35984](https://github.com/apache/shardingsphere/pull/35984)
 1. Readwrite-splitting: Update transactional read query strategy default type as PRIMARY - [#36477](https://github.com/apache/shardingsphere/pull/36477)
+1. Pipeline: Improve pipeline job progress incremental latestActiveTimeMillis persistence - [#34655](https://github.com/apache/shardingsphere/pull/34655)
+1. Pipeline: Improve heterogeneous databases migration - [#35424](https://github.com/apache/shardingsphere/pull/35424)
+1. Pipeline: Improve DATA_MATCH data consistency check to use range streaming query - [#35740](https://github.com/apache/shardingsphere/pull/35740)
+1. Pipeline: Add streaming-range-type property and LARGE impl in DATA_MATCH consistency check on MySQL sharding table for better performance - [#35786](https://github.com/apache/shardingsphere/pull/35786)
+1. Pipeline: Improve migration consistency check to reflect storage unit maxPoolSize dynamically - [#36507](https://github.com/apache/shardingsphere/pull/36507)
+1. Pipeline: Improve "show migration check status" inventory_finished_percentage column inaccurate result - [#36509](https://github.com/apache/shardingsphere/pull/36509)
+1. Pipeline: Compatible with COMPLEX_INLINE allow-range-query-with-inline-sharding - [#36524](https://github.com/apache/shardingsphere/pull/36524)
+1. Pipeline: Support pipeline job realtime reflection on proxy global properties after restarting - [#36749](https://github.com/apache/shardingsphere/pull/36749)
+1. Pipeline: InventoryDumper reuse table inventory calculator for better function and performance - [#36830](https://github.com/apache/shardingsphere/pull/36830)
+1. Pipeline: Improve "alter transmission rule": verify STREAM_CHANNEL TYPE NAME - [#36864](https://github.com/apache/shardingsphere/pull/36864)
 1. Pipeline: InventoryDumperContextSplitter supports multi-columns unique key first integer column splitting - [#36935](https://github.com/apache/shardingsphere/pull/36935)
 
 ### Bug Fixes
@@ -87,6 +97,10 @@
 1. Encrypt: Resolve rewrite issue in nested concat function - [#35815](https://github.com/apache/shardingsphere/pull/35815)
 1. Sharding: Fix mod sharding algorithm judgement -[#36386](https://github.com/apache/shardingsphere/pull/36386)
 1. Sharding: Fix check inline sharding algorithms in table rules - [#36999](https://github.com/apache/shardingsphere/pull/36999)
+1. Pipeline: Recover value of migration incremental importer batch size - [#34670](https://github.com/apache/shardingsphere/pull/34670)
+1. Pipeline: Fix InventoryDumper first time dump SQL without ORDER BY on multiple columns unique key table - [#34736](https://github.com/apache/shardingsphere/pull/34736)
+1. Pipeline: Fix MySQL JDBC query properties extension when SSL is required on server - [#36581](https://github.com/apache/shardingsphere/pull/36581)
+1. Pipeline: Fix migration might skip some records on big table after job restarting - [#36878](https://github.com/apache/shardingsphere/pull/36878)
 
 ### Change Logs
 
