@@ -15,12 +15,15 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.frontend.firebird.command.query.statement;
+package org.apache.shardingsphere.proxy.frontend.firebird.command.query.statement.allocate;
 
-import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.statement.FirebirdFetchStatementPacket;
-import org.apache.shardingsphere.database.protocol.firebird.packet.generic.FirebirdFetchResponsePacket;
+import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.statement.FirebirdAllocateStatementPacket;
+import org.apache.shardingsphere.database.protocol.firebird.packet.generic.FirebirdGenericResponsePacket;
 import org.apache.shardingsphere.database.protocol.packet.DatabasePacket;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
+import org.apache.shardingsphere.proxy.frontend.firebird.command.query.statement.FirebirdStatementIdGenerator;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Answers;
@@ -30,22 +33,39 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.sql.SQLException;
 import java.util.Collection;
 
+import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.isA;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-class FirebirdFetchStatementCommandExecutorTest {
+class FirebirdAllocateStatementCommandExecutorTest {
+    
+    private static final int CONNECTION_ID = 1;
     
     @Mock
-    private FirebirdFetchStatementPacket packet;
+    private FirebirdAllocateStatementPacket packet;
     
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private ConnectionSession connectionSession;
     
+    @BeforeEach
+    void setup() {
+        FirebirdStatementIdGenerator.getInstance().registerConnection(CONNECTION_ID);
+        when(connectionSession.getConnectionId()).thenReturn(CONNECTION_ID);
+    }
+    
+    @AfterEach
+    void tearDown() {
+        FirebirdStatementIdGenerator.getInstance().unregisterConnection(CONNECTION_ID);
+    }
+    
     @Test
     void assertExecute() throws SQLException {
-        FirebirdFetchStatementCommandExecutor executor = new FirebirdFetchStatementCommandExecutor(packet, connectionSession);
+        FirebirdAllocateStatementCommandExecutor executor = new FirebirdAllocateStatementCommandExecutor(packet, connectionSession);
         Collection<DatabasePacket> actual = executor.execute();
-        assertThat(actual.iterator().next(), isA(FirebirdFetchResponsePacket.class));
+        assertThat(actual.size(), is(1));
+        assertThat(actual.iterator().next(), isA(FirebirdGenericResponsePacket.class));
+        assertThat(((FirebirdGenericResponsePacket) actual.iterator().next()).getHandle(), is(1));
     }
 }

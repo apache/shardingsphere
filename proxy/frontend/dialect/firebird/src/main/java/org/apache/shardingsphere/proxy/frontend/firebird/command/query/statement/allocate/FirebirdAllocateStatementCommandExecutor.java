@@ -15,43 +15,33 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.frontend.firebird.command.query.statement;
+package org.apache.shardingsphere.proxy.frontend.firebird.command.query.statement.allocate;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.database.protocol.firebird.exception.FirebirdProtocolException;
-import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.statement.FirebirdFreeStatementPacket;
+import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.statement.FirebirdAllocateStatementPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.generic.FirebirdGenericResponsePacket;
 import org.apache.shardingsphere.database.protocol.packet.DatabasePacket;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.frontend.command.executor.CommandExecutor;
+import org.apache.shardingsphere.proxy.frontend.firebird.command.query.statement.FirebirdStatementIdGenerator;
 
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Collections;
 
 /**
- * Firebird free statement command executor.
+ * Firebird allocate statement command executor.
  */
 @RequiredArgsConstructor
-public final class FirebirdFreeStatementCommandExecutor implements CommandExecutor {
+public final class FirebirdAllocateStatementCommandExecutor implements CommandExecutor {
     
-    private final FirebirdFreeStatementPacket packet;
+    private final FirebirdAllocateStatementPacket packet;
     
     private final ConnectionSession connectionSession;
     
     @Override
     public Collection<DatabasePacket> execute() throws SQLException {
-        switch (packet.getOption()) {
-            case FirebirdFreeStatementPacket.DROP:
-            case FirebirdFreeStatementPacket.UNPREPARE:
-                connectionSession.getServerPreparedStatementRegistry().removePreparedStatement(packet.getStatementId());
-                break;
-            case FirebirdFreeStatementPacket.CLOSE:
-                connectionSession.getConnectionContext().clearCursorContext();
-                break;
-            default:
-                throw new FirebirdProtocolException("Unknown DSQL option type %d", packet.getOption());
-        }
-        return Collections.singleton(new FirebirdGenericResponsePacket());
+        int statementId = FirebirdStatementIdGenerator.getInstance().nextStatementId(connectionSession.getConnectionId());
+        return Collections.singleton(new FirebirdGenericResponsePacket().setHandle(statementId));
     }
 }
