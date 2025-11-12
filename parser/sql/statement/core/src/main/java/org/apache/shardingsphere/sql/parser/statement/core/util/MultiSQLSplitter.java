@@ -106,8 +106,7 @@ public final class MultiSQLSplitter {
         return index;
     }
     
-    private static boolean matchesStatementType(final String sql,
-                                                final SQLStatement sqlStatementSample) {
+    private static boolean matchesStatementType(final String sql, final SQLStatement sqlStatementSample) {
         if (sql.isEmpty()) {
             return false;
         }
@@ -150,7 +149,7 @@ public final class MultiSQLSplitter {
             switch (state) {
                 case QUOTE:
                     current.append(ch);
-                    if (QuoteCharacter.BACK_QUOTE != quote && '\\' == ch && hasNextChar(index, length)) {
+                    if (QuoteCharacter.BACK_QUOTE != quote && '\\' == ch && index + 1 < length) {
                         current.append(sql.charAt(index + 1));
                         step = 2;
                         break;
@@ -249,10 +248,6 @@ public final class MultiSQLSplitter {
     private static boolean isRepeatedQuote(final String sql, final QuoteCharacter quote, final int index) {
         int nextIndex = index + 1;
         return nextIndex < sql.length() && sql.charAt(nextIndex) == quote.getEndDelimiter().charAt(0);
-    }
-    
-    private static boolean hasNextChar(final int index, final int length) {
-        return index + 1 < length;
     }
     
     private enum ScanState {
