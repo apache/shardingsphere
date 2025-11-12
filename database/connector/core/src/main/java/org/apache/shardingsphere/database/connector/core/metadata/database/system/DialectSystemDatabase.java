@@ -30,7 +30,7 @@ public interface DialectSystemDatabase extends DatabaseTypedSPI {
     
     /**
      * Get system databases.
-     * 
+     *
      * @return system databases
      */
     Collection<String> getSystemDatabases();
