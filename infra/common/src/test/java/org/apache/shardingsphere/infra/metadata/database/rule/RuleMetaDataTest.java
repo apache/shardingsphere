@@ -125,17 +125,17 @@ class RuleMetaDataTest {
     }
     
     private RuleMetaDataShardingSphereRuleFixture mockRuleMetaDataShardingSphereRuleFixture(final String storageUnitName) {
-        RuleMetaDataShardingSphereRuleFixture result = mock(RuleMetaDataShardingSphereRuleFixture.class, RETURNS_DEEP_STUBS);
-        DataSourceMapperRuleAttribute ruleAttribute = mock(DataSourceMapperRuleAttribute.class);
-        when(ruleAttribute.getDataSourceMapper()).thenReturn(Collections.singletonMap("logic_db", Collections.singleton(storageUnitName)));
-        when(result.getAttributes()).thenReturn(new RuleAttributes(ruleAttribute));
-        return result;
+        return mockDataSourceMapperRuleAttributeRule(RuleMetaDataShardingSphereRuleFixture.class, storageUnitName);
     }
     
     private ShardingSphereRule mockShardingSphereRule() {
-        ShardingSphereRule result = mock(ShardingSphereRule.class, RETURNS_DEEP_STUBS);
+        return mockDataSourceMapperRuleAttributeRule(ShardingSphereRule.class, "shared_ds");
+    }
+    
+    private <T extends ShardingSphereRule> T mockDataSourceMapperRuleAttributeRule(final Class<T> type, final String storageUnitName) {
+        T result = mock(type, RETURNS_DEEP_STUBS);
         DataSourceMapperRuleAttribute ruleAttribute = mock(DataSourceMapperRuleAttribute.class);
-        when(ruleAttribute.getDataSourceMapper()).thenReturn(Collections.singletonMap("logic_db", Collections.singleton("shared_ds")));
+        when(ruleAttribute.getDataSourceMapper()).thenReturn(Collections.singletonMap("logic_db", Collections.singleton(storageUnitName)));
         when(result.getAttributes()).thenReturn(new RuleAttributes(ruleAttribute));
         return result;
     }
