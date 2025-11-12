@@ -71,7 +71,7 @@
         <checker-qual.version>3.39.0</checker-qual.version>
         <error_prone_annotations.version>2.22.0</error_prone_annotations.version>
         <java-util.version>2.4.0</java-util.version>
-        <calcite.version>1.40.0</calcite.version>
+        <calcite.version>1.41.0</calcite.version>
         
         <commons-lang3.version>3.18.0</commons-lang3.version>
         <commons-codec.version>1.16.0</commons-codec.version>

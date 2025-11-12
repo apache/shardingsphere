@@ -6,6 +6,10 @@
 1. Fix CVE-2025-48924 [#36085](https://github.com/apache/shardingsphere/pull/36085)
 1. Fix CVE-2024-7254 [#36153](https://github.com/apache/shardingsphere/pull/36153)
 
+### Build & Dependencies
+
+1. Upgrade calcite version to 1.41.0 - [#37076](https://github.com/apache/shardingsphere/pull/37076)
+
 ### Metadata Storage Changes
 
 1. Remove `default_strategies` prefix on sharding rule metadata persist - [#34664](https://github.com/apache/shardingsphere/pull/34664)

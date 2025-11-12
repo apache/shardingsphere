@@ -37,42 +37,42 @@ import org.apache.shardingsphere.sqlfederation.compiler.sql.ast.converter.operat
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class SQLExtensionOperatorTable {
     
-    public static final SqlBinaryOperator DIV = new SqlBinaryOperator("DIV", SqlKind.OTHER, 60, true, null, null, null);
+    public static final SqlBinaryOperator DIV = new SqlBinaryOperator("DIV", SqlKind.OTHER_FUNCTION, 60, true, null, null, null);
     
-    public static final SqlBinaryOperator CARET = new SqlBinaryOperator("^", SqlKind.OTHER, 30, true, null, null, null);
+    public static final SqlBinaryOperator CARET = new SqlBinaryOperator("^", SqlKind.OTHER_FUNCTION, 30, true, null, null, null);
     
-    public static final SqlBinaryOperator AMPERSAND = new SqlBinaryOperator("&", SqlKind.OTHER, 24, true, null, null, null);
+    public static final SqlBinaryOperator AMPERSAND = new SqlBinaryOperator("&", SqlKind.OTHER_FUNCTION, 24, true, null, null, null);
     
-    public static final SqlBinaryOperator SIGNED_LEFT_SHIFT = new SqlBinaryOperator("<<", SqlKind.OTHER, 30, true, null, null, null);
+    public static final SqlBinaryOperator SIGNED_LEFT_SHIFT = new SqlBinaryOperator("<<", SqlKind.OTHER_FUNCTION, 30, true, null, null, null);
     
-    public static final SqlBinaryOperator SIGNED_RIGHT_SHIFT = new SqlBinaryOperator(">>", SqlKind.OTHER, 30, true, null, null, null);
+    public static final SqlBinaryOperator SIGNED_RIGHT_SHIFT = new SqlBinaryOperator(">>", SqlKind.OTHER_FUNCTION, 30, true, null, null, null);
     
-    public static final SqlPrefixOperator NOT_SIGN = new SqlPrefixOperator("!", SqlKind.OTHER, 26, null, null, null);
+    public static final SqlPrefixOperator NOT_SIGN = new SqlPrefixOperator("!", SqlKind.OTHER_FUNCTION, 26, null, null, null);
     
-    public static final SqlBinaryOperator XOR = new SqlBinaryOperator("XOR", SqlKind.OTHER, 30, true, null, null, null);
+    public static final SqlBinaryOperator XOR = new SqlBinaryOperator("XOR", SqlKind.OTHER_FUNCTION, 30, true, null, null, null);
     
-    public static final SqlBinaryOperator NULL_SAFE = new SqlBinaryOperator("<=>", SqlKind.OTHER, 30, true, null, null, null);
+    public static final SqlBinaryOperator NULL_SAFE = new SqlBinaryOperator("<=>", SqlKind.OTHER_FUNCTION, 30, true, null, null, null);
     
-    public static final SqlBinaryOperator LOGICAL_AND = new SqlBinaryOperator("&&", SqlKind.OTHER, 24, true, null, null, null);
+    public static final SqlBinaryOperator LOGICAL_AND = new SqlBinaryOperator("&&", SqlKind.OTHER_FUNCTION, 24, true, null, null, null);
     
-    public static final SqlBinaryOperator REGEXP = new SqlBinaryOperator("REGEXP", SqlKind.OTHER, 30, true, null, null, null);
+    public static final SqlBinaryOperator REGEXP = new SqlBinaryOperator("REGEXP", SqlKind.OTHER_FUNCTION, 30, true, null, null, null);
     
-    public static final SqlBinaryOperator NOT_REGEXP = new SqlBinaryOperator("NOT REGEXP", SqlKind.OTHER, 30, true, null, null, null);
+    public static final SqlBinaryOperator NOT_REGEXP = new SqlBinaryOperator("NOT REGEXP", SqlKind.OTHER_FUNCTION, 30, true, null, null, null);
     
-    public static final SqlBinaryOperator SOUNDS_LIKE = new SqlBinaryOperator("SOUNDS LIKE", SqlKind.OTHER, 30, true, null, null, null);
+    public static final SqlBinaryOperator SOUNDS_LIKE = new SqlBinaryOperator("SOUNDS LIKE", SqlKind.OTHER_FUNCTION, 30, true, null, null, null);
     
-    public static final SqlBinaryOperator COLLATE = new SqlBinaryOperator("COLLATE", SqlKind.OTHER, 30, true, null, null, null);
+    public static final SqlBinaryOperator COLLATE = new SqlBinaryOperator("COLLATE", SqlKind.OTHER_FUNCTION, 30, true, null, null, null);
     
-    public static final SqlBinaryOperator ASSIGNMENT = new SqlBinaryOperator(":=", SqlKind.OTHER, 30, true, null, null, null);
+    public static final SqlBinaryOperator ASSIGNMENT = new SqlBinaryOperator(":=", SqlKind.OTHER_FUNCTION, 30, true, null, null, null);
     
-    public static final SqlPrefixOperator TILDE = new SqlPrefixOperator("~", SqlKind.OTHER, 26, null, null, null);
+    public static final SqlPrefixOperator TILDE = new SqlPrefixOperator("~", SqlKind.OTHER_FUNCTION, 26, null, null, null);
     
     public static final SqlPrefixOperator NOT = new SqlPrefixOperator("NOT", SqlKind.NOT, 26, ReturnTypes.BIGINT, InferTypes.BOOLEAN, OperandTypes.ANY);
     
     public static final MySQLMatchAgainstOperator MATCH_AGAINST = new MySQLMatchAgainstOperator();
     
     public static final SqlFunction INTERVAL_OPERATOR =
-            new SqlFunction("INTERVAL_OPERATOR", SqlKind.OTHER, ReturnTypes.BIGINT_NULLABLE, InferTypes.FIRST_KNOWN, OperandTypes.VARIADIC, SqlFunctionCategory.STRING) {
+            new SqlFunction("INTERVAL_OPERATOR", SqlKind.OTHER_FUNCTION, ReturnTypes.BIGINT_NULLABLE, InferTypes.FIRST_KNOWN, OperandTypes.VARIADIC, SqlFunctionCategory.STRING) {
                 
                 @Override
                 public void unparse(final SqlWriter writer, final SqlCall call, final int leftPrec, final int rightPrec) {
