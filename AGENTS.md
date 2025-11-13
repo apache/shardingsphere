@@ -65,27 +65,18 @@ Mention which topology you target, the registry used, and any compatibility cons
 | `./mvnw -pl proxy -am -DskipTests package && shardingsphere-proxy/bin/start.sh -c conf/perf.yaml` | Proxy packaging + lightweight perf smoke | When change may influence runtime characteristics; capture QPS/latency deltas |
 
 ## Testing Expectations
-- Use JUnit 5 + Mockito; tests mirror package paths and follow the `ClassNameTest` convention.
-- Method names read `assertXxxCondition`; structure tests as Arrange–Act–Assert sections with explicit separators/comments when clarity drops.
-- Mock databases, time, and network boundaries; build POJOs directly. When production code keeps static guards or caches, add shared setup/teardown helpers that reset them between tests so cases stay isolated.
-- When Jacoco fails, open `{module}/target/site/jacoco/index.html`, note uncovered branches, and explain how new tests address them.
-- Need a quick coverage view? Run `./mvnw -pl {module} -am -Djacoco.skip=false test jacoco:report` and open `{module}/target/site/jacoco/index.html`.
-- Jacoco is disabled by default (the top-level POM sets `jacoco.skip=true`), so explicitly pass `-Djacoco.skip=false` when you need coverage data, then run `jacoco:report` for the same module scope.
-- Aggregator modules do not produce `jacoco.exec`; run tests under the concrete module (`-pl {module} -am ... test`) before invoking `./mvnw -pl {module} jacoco:report -Djacoco.skip=false`, otherwise the report step will be skipped.
-- When static mocking is required, prefer `@ExtendWith(AutoMockExtension.class)` plus `@StaticMockSettings` to manage Mockito static mocks; avoid manual `mockStatic` blocks unless absolutely necessary.
+- Use JUnit 5 + Mockito; tests mirror production packages, are named `ClassNameTest`, and assert via `assertXxxCondition`. Keep Arrange–Act–Assert, adding separators only when clarity demands.
+- Mock databases/time/network; instantiate simple POJOs. Reset static caches/guards between cases if production code retains global state.
+- Jacoco workflow: `./mvnw -pl {module} -am -Djacoco.skip=false test jacoco:report`, then inspect `{module}/target/site/jacoco/index.html`. Aggregator modules require testing concrete submodules before running `jacoco:report`. When Jacoco fails, describe uncovered branches and the new tests that cover them.
+- Static / constructor mocking: prefer `@ExtendWith(AutoMockExtension.class)` with `@StaticMockSettings`/`@ConstructionMockSettings`; avoid manual `mockStatic`/`mockConstruction`. Ensure the module `pom.xml` has the `shardingsphere-test-infra-framework` test dependency before using these annotations.
+- For coverage gating, run `./mvnw test jacoco:check@jacoco-check -Pcoverage-check` and report results. If code is truly unreachable, cite file/line and explain why, noting whether cleanup is recommended.
 
-### Unit Test Style Recap
-- Mirror production package paths, keep tests named `ClassNameTest`, and express assertions through `assertXxxCondition` methods.
-- Follow a strict Arrange–Act–Assert narrative; add inline separators/comments only when complex flows would otherwise be unclear.
-- Prefer Mockito mocks over heavyweight fixtures for external systems (DB, time, network) while directly instantiating simple POJOs.
-- Validate with module-scoped Maven commands such as `./mvnw test -pl {module} -am`, then inspect Jacoco reports to plug remaining coverage gaps.
-
-### Test Request Auto-Directives
-- Whenever the AI detects that a task involves authoring or updating unit tests, it must automatically:
-  1. Apply the style and dependency rules above (JUnit5 + Mockito, `ClassNameTest`, `assertXxxCondition`, AAA structure, external dependencies mocked).
-  2. Design tests that pass on the first execution and reason about them using `./mvnw test -pl {module} -am` (or an equivalent command); when fixtures grow heavy, prefer mocks and document the trade-off.
-  3. Target 100% statement and branch coverage for the relevant classes and paths, running `./mvnw test jacoco:check@jacoco-check -Pcoverage-check` when needed and summarizing coverage in the report.
-  4. Leave truly unreachable dead code uncovered only if the report lists the file and line numbers, explains why it is unreachable, and states whether cleanup is recommended.
+### Test Auto-Directives
+When a task requires tests, automatically:
+1. Apply the above style/dependency rules (JUnit5 + Mockito, naming, AAA, mocks for externals).
+2. Plan for first-pass success; reason against `./mvnw test -pl {module} -am` (or equivalent) and note fixture trade-offs when heavy.
+3. Target 100% relevant coverage; run Jacoco check when appropriate and summarize the outcome.
+4. Document any unreachable code (file + line + rationale) and suggest cleanup if applicable.
 
 ### How To Ask Me (Tests)
 - "Implement or update unit tests for {class|scenario} following the AGENTS.md testing guidelines."
@@ -97,15 +88,14 @@ Mention which topology you target, the registry used, and any compatibility cons
 
 | Scenario | How to run / inspect | AI response pattern |
 | --- | --- | --- |
-| Proxy quick start | `./mvnw -pl proxy -am package`; run `shardingsphere-proxy/bin/start.sh -c conf/server.yaml` using configs from `examples/src/resources/conf` | Record command + exit code, cite config path, include protocol info if issues arise |
-| JDBC smoke | `./mvnw -pl jdbc -am test -Dtest=YourTest` with datasource configs copied from `examples` | Note which test ran, describe datasource setup, mention log excerpts on failure |
-| Config change validation | Update both standalone `server.yaml` and cluster `mode/` configs; document defaults under `docs/content` | Explain affected deployment mode(s), show sample snippet, list docs touched |
-| Failure triage | Gather `proxy/logs/` and `target/surefire-reports`; capture error codes/messages | Quote relevant log lines, map them to data-flow steps, propose next diagnostic |
-| SQL routes wrong/missing shards | Check feature rule configs, metadata freshness, parser dialect | Provide reproduction SQL + config snippet, point to impacted module (`features`/`kernel`), add/plan targeted tests |
-| `jacoco:check` fails | Review `{module}/target/site/jacoco` for uncovered branches | Describe uncovered branch, add focused unit tests, rerun module tests |
-| Proxy won’t start | Validate `conf/server.yaml`, mode settings, port conflicts; reuse configs from `examples` | Share exact log snippet, list configs inspected, suggest fix without editing generated files |
-| Spotless/checkstyle errors | Run `./mvnw spotless:apply -Pcheck [-pl module]` (or `spotless:check` in read-only) | Mention command result, confirm ASF header/import order adjustments |
-| Sandbox/network block | Command denied due to sandbox or dependency fetch | State attempted command + purpose, ask for approval or alternative artifact |
+| Proxy quick start | `./mvnw -pl proxy -am package`; run `shardingsphere-proxy/bin/start.sh -c conf/server.yaml` (use `examples/src/resources/conf`) | Record command + exit code, cite config path, include protocol info |
+| JDBC smoke | `./mvnw -pl jdbc -am test -Dtest=YourTest` with datasource configs from `examples` | Note test name, datasource setup, key log excerpts on failure |
+| Config change validation | Update standalone `server.yaml` and cluster `mode/` configs; document defaults under `docs/content` | Explain affected deployment mode(s), show snippet, list docs touched |
+| Failure triage | Gather `proxy/logs/` + `target/surefire-reports` | Quote relevant log lines, map to data-flow step, propose next diagnostic |
+| SQL routes wrong/missing shards | Check feature rule configs, metadata freshness, parser dialect | Provide SQL + config snippet, identify impacted module (`features`/`kernel`), add/plan targeted tests |
+| Proxy won’t start | Validate configs/mode/ports, reuse example configs | Share exact log snippet, list configs inspected, suggest fix (without editing generated files) |
+| Spotless/checkstyle errors | `./mvnw spotless:apply -Pcheck [-pl module]` (or `spotless:check`) | Mention command result, confirm ASF headers/import order |
+| Sandbox/network block | Command denied due to sandbox/dependency fetch | State attempted command + purpose, request approval or alternative plan |
 
 ## Compatibility, Performance & External Systems
 - **Database/protocol support:** note targeted engines (MySQL 5.7/8.0, PostgreSQL 13+, openGauss, etc.) and ensure new behavior stays backward compatible; link to affected dialect files.
