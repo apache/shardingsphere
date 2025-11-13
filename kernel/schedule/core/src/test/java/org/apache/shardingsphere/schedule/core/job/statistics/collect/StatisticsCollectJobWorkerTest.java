@@ -163,8 +163,9 @@ class StatisticsCollectJobWorkerTest {
         when(contextManager.getMetaDataContexts().getMetaData().getTemporaryProps()).thenReturn(
                 new TemporaryConfigurationProperties(PropertiesBuilder.build(new Property(TemporaryConfigurationPropertyKey.PROXY_META_DATA_COLLECTOR_CRON.getKey(), "invalid"))));
         AtomicReference<Object> constructorRegistryCenter = new AtomicReference<>();
-        try (MockedConstruction<JobConfigurationAPIImpl> jobConfigurationAPIConstruction = mockConstruction(JobConfigurationAPIImpl.class,
-                (mock, context) -> constructorRegistryCenter.set(context.arguments().get(0)))) {
+        try (
+                MockedConstruction<JobConfigurationAPIImpl> jobConfigurationAPIConstruction = mockConstruction(JobConfigurationAPIImpl.class,
+                        (mock, context) -> constructorRegistryCenter.set(context.arguments().get(0)))) {
             jobWorker.updateJobConfiguration();
             assertThat(constructorRegistryCenter.get(), is(registryCenter));
             ArgumentCaptor<JobConfigurationPOJO> argumentCaptor = ArgumentCaptor.forClass(JobConfigurationPOJO.class);
@@ -180,8 +181,9 @@ class StatisticsCollectJobWorkerTest {
         setStaticField("registryCenter", mock(CoordinatorRegistryCenter.class));
         when(contextManager.getMetaDataContexts().getMetaData().getTemporaryProps()).thenReturn(
                 new TemporaryConfigurationProperties(PropertiesBuilder.build(new Property(TemporaryConfigurationPropertyKey.PROXY_META_DATA_COLLECTOR_CRON.getKey(), "0 0/2 * * * ?"))));
-        try (MockedConstruction<JobConfigurationAPIImpl> jobConfigurationAPIConstruction = mockConstruction(JobConfigurationAPIImpl.class,
-                (mock, context) -> doThrow(RuntimeException.class).when(mock).updateJobConfiguration(any(JobConfigurationPOJO.class)))) {
+        try (
+                MockedConstruction<JobConfigurationAPIImpl> jobConfigurationAPIConstruction = mockConstruction(JobConfigurationAPIImpl.class,
+                        (mock, context) -> doThrow(RuntimeException.class).when(mock).updateJobConfiguration(any(JobConfigurationPOJO.class)))) {
             assertDoesNotThrow(() -> jobWorker.updateJobConfiguration());
             verify(jobConfigurationAPIConstruction.constructed().get(0)).updateJobConfiguration(any(JobConfigurationPOJO.class));
         }
