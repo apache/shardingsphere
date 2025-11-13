@@ -156,7 +156,7 @@ Mention which topology you target, the registry used, and any compatibility cons
 - If an SPI returns an object that is not the subject under test, use `mockStatic` (or equivalent) to provide canned behavior.
 - When only a few properties of a complex object are used, mock it rather than assembling the full graph.
 - Do not mock simple objects that can be instantiated directly with `new`.
-- Prefer plain mocks; only opt into Mockito’s `RETURNS_DEEP_STUBS` when cascading (chained) interactions truly require it.
+- Do not enable Mockito’s `RETURNS_DEEP_STUBS` unless unavoidable chained interactions make explicit stubs impractical; if you must enable it, mention the justification in the test description.
 
 ## AI Self-Check Checklist (Pre-Submission Must-Do)
 1. Instruction precedence: `CODE_OF_CONDUCT.md` → user request → this guide → other docs. Are any conflicts unresolved?
