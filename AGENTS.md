@@ -46,7 +46,7 @@ Mention which topology you target, the registry used, and any compatibility cons
 
 ## AI Execution Workflow
 1. **Intake & Clarify** — restate the ask, map affected modules, confirm sandbox/approval/network constraints.
-2. **Plan & Reason** — write a multi-step plan with checkpoints (analysis, edits, tests). Align scope with release tempo (prefer incremental fixes unless told otherwise).
+2. **Plan & Reason** — write a multi-step plan with checkpoints (analysis, edits, tests). Align scope with release tempo (prefer incremental fixes unless told otherwise). When the user demands precise branch coverage or “minimum test” constraints, first enumerate the target branches and map each to the single test case that will cover it before touching code.
 3. **Implement** — touch only necessary files, reuse abstractions, keep ASF headers.
 4. **Validate** — choose the smallest meaningful command, announce the intent before execution, summarize exit codes afterward; if blocked (sandbox, missing deps), explain what would have run and why it matters.
 5. **Report** — lead with intent, list edited files with rationale and line references, state verification results, propose next actions.
