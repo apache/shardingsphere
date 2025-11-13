@@ -162,6 +162,10 @@ Mention which topology you target, the registry used, and any compatibility cons
 - Do not mock simple objects that can be instantiated directly with `new`.
 - Do not enable Mockito’s `RETURNS_DEEP_STUBS` unless unavoidable chained interactions make explicit stubs impractical; if you must enable it, mention the justification in the test description.
 
+## SPI Loader Usage
+- Cache services obtained through SPI loaders (`OrderedSPILoader`, `TypedSPILoader`, `DatabaseTypedSPILoader`, etc.) at the test-class or suite level whenever the same type is reused, so repeated lookups do not slow tests or introduce ordering surprises.
+- When multiple loader invocations require different keys (e.g., different database types), scope and document each cached instance per key instead of calling the loader inline inside every test.
+
 ## AI Self-Check Checklist (Pre-Submission Must-Do)
 1. Instruction precedence: `CODE_OF_CONDUCT.md` → user request → this guide → other docs. Are any conflicts unresolved?
 2. Are edited files minimal, include ASF headers, and pass Spotless?
