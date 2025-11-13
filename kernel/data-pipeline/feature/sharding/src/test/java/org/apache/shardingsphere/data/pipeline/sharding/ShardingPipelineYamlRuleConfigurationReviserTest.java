@@ -35,8 +35,8 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 class ShardingPipelineYamlRuleConfigurationReviserTest {
     
     @SuppressWarnings("unchecked")
-    private final PipelineYamlRuleConfigurationReviser<YamlShardingRuleConfiguration> reviser = (PipelineYamlRuleConfigurationReviser<YamlShardingRuleConfiguration>)
-            OrderedSPILoader.getServicesByClass(PipelineYamlRuleConfigurationReviser.class, Collections.singleton(YamlShardingRuleConfiguration.class)).get(YamlShardingRuleConfiguration.class);
+    private final PipelineYamlRuleConfigurationReviser<YamlShardingRuleConfiguration> reviser = (PipelineYamlRuleConfigurationReviser<YamlShardingRuleConfiguration>) OrderedSPILoader
+            .getServicesByClass(PipelineYamlRuleConfigurationReviser.class, Collections.singleton(YamlShardingRuleConfiguration.class)).get(YamlShardingRuleConfiguration.class);
     
     @Test
     void assertReviseInlineAlgorithmsAndAuditStrategies() {
