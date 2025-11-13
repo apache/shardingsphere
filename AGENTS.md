@@ -40,7 +40,7 @@ Mention which topology you target, the registry used, and any compatibility cons
 - **Styles to favor:** elegant, minimal solutions—express intent with the smallest construct that works, keep methods/tests lean, and avoid incidental complexity.
 - **Patterns to lean on:** builder/factory helpers in `infra`, SPI-based extension points, immutable DTOs for plan descriptions, explicit strategy enums for behavior toggles.
 - **Anti-patterns:** duplicating SQL parsing logic, bypassing metadata caches, silent fallbacks when configuration is invalid, adding static singletons in shared modules, over-engineering simple flows.
-- **Known pitfalls:** routing regressions when skipping shadow rules, timezone drift when mocking time poorly, forgetting to validate both standalone and cluster (`mode`) settings, missing ASF headers in new files.
+- **Known pitfalls:** routing regressions when skipping shadow rules, timezone drift when mocking time poorly, forgetting to validate both standalone and cluster (`mode`) settings, missing ASF headers in new files, Mockito inline mocks failing on GraalVM or other JDKs that block self-attach (run inline-mocking suites on HotSpot/Temurin or document the limitation), reflexively poking private methods instead of driving logic through public APIs.
 - **Success recipe:** describe why a change is needed, point to affected data flow step, keep public APIs backwards compatible, and document defaults in `docs`.
 - **Case in point:** a prior shadow-rule regression was fixed by (1) reproducing via `proxy` + sample config, (2) adding a `kernel` unit test covering the skipped branch, (3) updating docs with the exact YAML flag—mirror that discipline for new features.
 
@@ -67,7 +67,7 @@ Mention which topology you target, the registry used, and any compatibility cons
 ## Testing Expectations
 - Use JUnit 5 + Mockito; tests mirror package paths and follow the `ClassNameTest` convention.
 - Method names read `assertXxxCondition`; structure tests as Arrange–Act–Assert sections with explicit separators/comments when clarity drops.
-- Mock databases, time, and network boundaries; build POJOs directly.
+- Mock databases, time, and network boundaries; build POJOs directly. When production code keeps static guards or caches, add shared setup/teardown helpers that reset them between tests so cases stay isolated.
 - When Jacoco fails, open `{module}/target/site/jacoco/index.html`, note uncovered branches, and explain how new tests address them.
 - Need a quick coverage view? Run `./mvnw -pl {module} -am -Djacoco.skip=false test jacoco:report` and open `{module}/target/site/jacoco/index.html`.
 - Jacoco is disabled by default (the top-level POM sets `jacoco.skip=true`), so explicitly pass `-Djacoco.skip=false` when you need coverage data, then run `jacoco:report` for the same module scope.
