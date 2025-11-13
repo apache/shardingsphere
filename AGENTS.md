@@ -73,6 +73,8 @@ Mention which topology you target, the registry used, and any compatibility cons
 - Jacoco is disabled by default (the top-level POM sets `jacoco.skip=true`), so explicitly pass `-Djacoco.skip=false` when you need coverage data, then run `jacoco:report` for the same module scope.
 - Aggregator modules do not produce `jacoco.exec`; run tests under the concrete module (`-pl {module} -am ... test`) before invoking `./mvnw -pl {module} jacoco:report -Djacoco.skip=false`, otherwise the report step will be skipped.
 - When static mocking is required, prefer `@ExtendWith(AutoMockExtension.class)` plus `@StaticMockSettings` to manage Mockito static mocks; avoid manual `mockStatic` blocks unless absolutely necessary.
+- When production code instantiates collaborators internally, use `@ConstructionMockSettings` with `AutoMockExtension` to intercept those constructors instead of manual reflection or hand-rolled `mockConstruction` blocks.
+- Before using `AutoMockExtension`, `StaticMockSettings`, or `ConstructionMockSettings` in a module, confirm its `pom.xml` declares the `shardingsphere-test-infra-framework` test dependency; add it if absent to avoid compilation failures.
 
 ### Unit Test Style Recap
 - Mirror production package paths, keep tests named `ClassNameTest`, and express assertions through `assertXxxCondition` methods.
