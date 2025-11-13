@@ -20,9 +20,8 @@ package org.apache.shardingsphere.infra.metadata.database.schema.builder;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.DialectDatabaseMetaData;
-import org.apache.shardingsphere.database.connector.core.metadata.database.system.DialectKernelSupportedSystemTable;
 import org.apache.shardingsphere.database.connector.core.metadata.database.system.SystemDatabase;
-import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoader;
+import org.apache.shardingsphere.database.connector.core.metadata.database.system.SystemTable;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
@@ -40,7 +39,6 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Properties;
 import java.util.stream.Collectors;
 
@@ -79,20 +77,13 @@ public final class SystemSchemaBuilder {
     
     private static ShardingSphereSchema createSchema(final String schemaName, final DatabaseType databaseType, final boolean isSystemSchemaMetadataEnabled) {
         Collection<ShardingSphereTable> tables = new LinkedList<>();
+        SystemTable systemTable = new SystemTable(databaseType);
         for (InputStream each : SystemSchemaManager.getAllInputStreams(databaseType.getType(), schemaName)) {
             YamlShardingSphereTable metaData = new Yaml().loadAs(each, YamlShardingSphereTable.class);
-            if (isSystemSchemaMetadataEnabled || isSupportedSystemTable(databaseType, schemaName, metaData.getName())) {
+            if (isSystemSchemaMetadataEnabled || systemTable.isSupportedSystemTable(schemaName, metaData.getName())) {
                 tables.add(TABLE_SWAPPER.swapToObject(metaData));
             }
         }
         return new ShardingSphereSchema(schemaName, tables, Collections.emptyList());
-    }
-    
-    private static boolean isSupportedSystemTable(final DatabaseType databaseType, final String schemaName, final String tableName) {
-        if ("shardingsphere".equals(schemaName) && "cluster_information".equals(tableName)) {
-            return true;
-        }
-        Optional<DialectKernelSupportedSystemTable> kernelSupportedSystemTable = DatabaseTypedSPILoader.findService(DialectKernelSupportedSystemTable.class, databaseType);
-        return kernelSupportedSystemTable.map(optional -> optional.getSchemaAndTablesMap().getOrDefault(schemaName, Collections.emptySet()).contains(tableName)).orElse(false);
     }
 }

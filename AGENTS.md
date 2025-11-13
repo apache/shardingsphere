@@ -37,8 +37,9 @@ Reference this flow when reasoning about new features or debugging regressions.
 Mention which topology you target, the registry used, and any compatibility constraints (e.g., MySQL 5.7 vs 8.0) when proposing changes.
 
 ## Design Playbook
+- **Styles to favor:** elegant, minimal solutions—express intent with the smallest construct that works, keep methods/tests lean, and avoid incidental complexity.
 - **Patterns to lean on:** builder/factory helpers in `infra`, SPI-based extension points, immutable DTOs for plan descriptions, explicit strategy enums for behavior toggles.
-- **Anti-patterns:** duplicating SQL parsing logic, bypassing metadata caches, silent fallbacks when configuration is invalid, adding static singletons in shared modules.
+- **Anti-patterns:** duplicating SQL parsing logic, bypassing metadata caches, silent fallbacks when configuration is invalid, adding static singletons in shared modules, over-engineering simple flows.
 - **Known pitfalls:** routing regressions when skipping shadow rules, timezone drift when mocking time poorly, forgetting to validate both standalone and cluster (`mode`) settings, missing ASF headers in new files.
 - **Success recipe:** describe why a change is needed, point to affected data flow step, keep public APIs backwards compatible, and document defaults in `docs`.
 - **Case in point:** a prior shadow-rule regression was fixed by (1) reproducing via `proxy` + sample config, (2) adding a `kernel` unit test covering the skipped branch, (3) updating docs with the exact YAML flag—mirror that discipline for new features.
@@ -69,6 +70,9 @@ Mention which topology you target, the registry used, and any compatibility cons
 - Mock databases, time, and network boundaries; build POJOs directly.
 - When Jacoco fails, open `{module}/target/site/jacoco/index.html`, note uncovered branches, and explain how new tests address them.
 - Need a quick coverage view? Run `./mvnw -pl {module} -am -Djacoco.skip=false test jacoco:report` and open `{module}/target/site/jacoco/index.html`.
+- Jacoco is disabled by default (the top-level POM sets `jacoco.skip=true`), so explicitly pass `-Djacoco.skip=false` when you need coverage data, then run `jacoco:report` for the same module scope.
+- Aggregator modules do not produce `jacoco.exec`; run tests under the concrete module (`-pl {module} -am ... test`) before invoking `./mvnw -pl {module} jacoco:report -Djacoco.skip=false`, otherwise the report step will be skipped.
+- When static mocking is required, prefer `@ExtendWith(AutoMockExtension.class)` plus `@StaticMockSettings` to manage Mockito static mocks; avoid manual `mockStatic` blocks unless absolutely necessary.
 
 ### Unit Test Style Recap
 - Mirror production package paths, keep tests named `ClassNameTest`, and express assertions through `assertXxxCondition` methods.
