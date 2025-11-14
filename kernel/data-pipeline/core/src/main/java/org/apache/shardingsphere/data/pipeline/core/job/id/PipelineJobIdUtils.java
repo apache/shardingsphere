@@ -27,11 +27,11 @@ import org.apache.commons.codec.binary.Hex;
 import org.apache.shardingsphere.data.pipeline.core.context.PipelineContextKey;
 import org.apache.shardingsphere.data.pipeline.core.exception.job.PipelineJobNotFoundException;
 import org.apache.shardingsphere.data.pipeline.core.job.api.PipelineAPIFactory;
-import org.apache.shardingsphere.data.pipeline.core.job.type.JobCodeRegistry;
 import org.apache.shardingsphere.data.pipeline.core.job.type.PipelineJobType;
 import org.apache.shardingsphere.elasticjob.infra.pojo.JobConfigurationPOJO;
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.instance.metadata.InstanceType;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 
 import java.nio.charset.StandardCharsets;
 
@@ -39,6 +39,7 @@ import java.nio.charset.StandardCharsets;
  * Pipeline job id utility class.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
+@SuppressWarnings("rawtypes")
 public final class PipelineJobIdUtils {
     
     /**
@@ -56,7 +57,7 @@ public final class PipelineJobIdUtils {
         String databaseName = instanceType == InstanceType.PROXY ? "" : contextKey.getDatabaseName();
         String databaseNameHex = Hex.encodeHexString(databaseName.getBytes(StandardCharsets.UTF_8), true);
         String databaseNameLengthHex = Hex.encodeHexString(Shorts.toByteArray((short) databaseNameHex.length()), true);
-        return 'j' + jobType.getCode() + PipelineJobId.CURRENT_VERSION + instanceType.getCode() + databaseNameLengthHex + databaseNameHex;
+        return 'j' + jobType.getOption().getCode() + PipelineJobId.CURRENT_VERSION + instanceType.getCode() + databaseNameLengthHex + databaseNameHex;
     }
     
     /**
@@ -67,7 +68,7 @@ public final class PipelineJobIdUtils {
      */
     public static PipelineJobType parseJobType(final String jobId) {
         verifyJobId(jobId);
-        return JobCodeRegistry.getJobType(jobId.substring(1, 3));
+        return TypedSPILoader.getService(PipelineJobType.class, jobId.substring(1, 3));
     }
     
     /**

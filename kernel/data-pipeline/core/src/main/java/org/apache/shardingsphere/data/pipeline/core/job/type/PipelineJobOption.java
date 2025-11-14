@@ -21,7 +21,9 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.data.pipeline.core.job.PipelineJob;
 import org.apache.shardingsphere.data.pipeline.core.job.config.yaml.swapper.YamlPipelineJobConfigurationSwapper;
+import org.apache.shardingsphere.data.pipeline.core.job.progress.yaml.swapper.YamlConsistencyCheckJobItemProgressSwapper;
 import org.apache.shardingsphere.data.pipeline.core.job.progress.yaml.swapper.YamlPipelineJobItemProgressSwapper;
+import org.apache.shardingsphere.data.pipeline.core.job.progress.yaml.swapper.YamlTransmissionJobItemProgressSwapper;
 
 /**
  * Pipeline job type.
@@ -32,19 +34,26 @@ public final class PipelineJobOption {
     
     private final String code;
     
+    private final Class<? extends PipelineJob> jobClass;
+    
     private final boolean isTransmissionJob;
     
     private final YamlPipelineJobConfigurationSwapper<?, ?> yamlJobConfigurationSwapper;
     
-    private final YamlPipelineJobItemProgressSwapper<?, ?> yamlJobItemProgressSwapper;
-    
-    private final Class<? extends PipelineJob> jobClass;
-    
     private final boolean isIgnoreToStartDisabledJobWhenJobItemProgressIsFinished;
     
-    private final String getToBeStartDisabledNextJobType;
+    private final String toBeStartDisabledNextJobType;
     
-    private final String getToBeStoppedPreviousJobType;
+    private final String toBeStoppedPreviousJobType;
     
     private final boolean isForceNoShardingWhenConvertToJobConfigurationPOJO;
+    
+    /**
+     * Get YAML job item progress swapper.
+     *
+     * @return YAML job item progress swapper
+     */
+    public YamlPipelineJobItemProgressSwapper<?, ?> getYamlJobItemProgressSwapper() {
+        return isTransmissionJob ? new YamlTransmissionJobItemProgressSwapper() : new YamlConsistencyCheckJobItemProgressSwapper();
+    }
 }

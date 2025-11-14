@@ -99,7 +99,7 @@ public final class MigrationJobAPI implements TransmissionJobAPI {
     public MigrationJobAPI() {
         PipelineJobType jobType = new MigrationJobType();
         jobManager = new PipelineJobManager(jobType);
-        jobConfigManager = new PipelineJobConfigurationManager(jobType);
+        jobConfigManager = new PipelineJobConfigurationManager(jobType.getOption());
         dataSourcePersistService = new PipelineDataSourcePersistService();
     }
     
@@ -326,7 +326,7 @@ public final class MigrationJobAPI implements TransmissionJobAPI {
     }
     
     private void cleanTempTableOnRollback(final String jobId) throws SQLException {
-        MigrationJobConfiguration jobConfig = new PipelineJobConfigurationManager(TypedSPILoader.getService(PipelineJobType.class, getType())).getJobConfiguration(jobId);
+        MigrationJobConfiguration jobConfig = new PipelineJobConfigurationManager(TypedSPILoader.getService(PipelineJobType.class, getType()).getOption()).getJobConfiguration(jobId);
         PipelinePrepareSQLBuilder pipelineSQLBuilder = new PipelinePrepareSQLBuilder(jobConfig.getTargetDatabaseType());
         TableAndSchemaNameMapper mapping = new TableAndSchemaNameMapper(jobConfig.getTargetTableSchemaMap());
         try (

@@ -15,17 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.core.job.type;
+package org.apache.shardingsphere.data.pipeline.core.pojo;
 
-import org.junit.jupiter.api.Test;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
-
-class JobCodeRegistryTest {
+/**
+ * Pipeline job target.
+ */
+@RequiredArgsConstructor
+@Getter
+public final class PipelineJobTarget {
     
-    @Test
-    void assertGetJobType() {
-        assertThat(JobCodeRegistry.getJobType("00").getType(), is("FIXTURE"));
-    }
+    private final String databaseName;
+    
+    private final String tableName;
 }

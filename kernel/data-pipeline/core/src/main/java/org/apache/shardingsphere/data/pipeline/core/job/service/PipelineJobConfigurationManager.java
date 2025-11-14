@@ -20,8 +20,9 @@ package org.apache.shardingsphere.data.pipeline.core.job.service;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.data.pipeline.core.execute.ShardingTotalCountUsageJobExecutorServiceHandler;
 import org.apache.shardingsphere.data.pipeline.core.job.config.PipelineJobConfiguration;
+import org.apache.shardingsphere.data.pipeline.core.job.config.yaml.swapper.YamlPipelineJobConfigurationSwapper;
 import org.apache.shardingsphere.data.pipeline.core.job.id.PipelineJobIdUtils;
-import org.apache.shardingsphere.data.pipeline.core.job.type.PipelineJobType;
+import org.apache.shardingsphere.data.pipeline.core.job.type.PipelineJobOption;
 import org.apache.shardingsphere.data.pipeline.core.listener.PipelineElasticJobListener;
 import org.apache.shardingsphere.elasticjob.infra.pojo.JobConfigurationPOJO;
 import org.apache.shardingsphere.infra.util.datetime.DateTimeFormatterFactory;
@@ -36,7 +37,7 @@ import java.util.Collections;
 @RequiredArgsConstructor
 public final class PipelineJobConfigurationManager {
     
-    private final PipelineJobType jobType;
+    private final PipelineJobOption jobOption;
     
     /**
      * Get job configuration.
@@ -47,7 +48,7 @@ public final class PipelineJobConfigurationManager {
      */
     @SuppressWarnings("unchecked")
     public <T extends PipelineJobConfiguration> T getJobConfiguration(final String jobId) {
-        return (T) jobType.getYamlJobConfigurationSwapper().swapToObject(PipelineJobIdUtils.getElasticJobConfigurationPOJO(jobId).getJobParameter());
+        return (T) jobOption.getYamlJobConfigurationSwapper().swapToObject(PipelineJobIdUtils.getElasticJobConfigurationPOJO(jobId).getJobParameter());
     }
     
     /**
@@ -56,11 +57,13 @@ public final class PipelineJobConfigurationManager {
      * @param jobConfig pipeline job configuration
      * @return converted job configuration POJO
      */
+    @SuppressWarnings({"unchecked", "rawtypes"})
     public JobConfigurationPOJO convertToJobConfigurationPOJO(final PipelineJobConfiguration jobConfig) {
         JobConfigurationPOJO result = new JobConfigurationPOJO();
         result.setJobName(jobConfig.getJobId());
-        result.setShardingTotalCount(jobType.isForceNoShardingWhenConvertToJobConfigurationPOJO() ? 1 : jobConfig.getJobShardingCount());
-        result.setJobParameter(YamlEngine.marshal(jobType.getYamlJobConfigurationSwapper().swapToYamlConfiguration(jobConfig)));
+        result.setShardingTotalCount(jobOption.isForceNoShardingWhenConvertToJobConfigurationPOJO() ? 1 : jobConfig.getJobShardingCount());
+        YamlPipelineJobConfigurationSwapper swapper = jobOption.getYamlJobConfigurationSwapper();
+        result.setJobParameter(YamlEngine.marshal(swapper.swapToYamlConfiguration(jobConfig)));
         String createTimeFormat = LocalDateTime.now().format(DateTimeFormatterFactory.getDatetimeFormatter());
         result.getProps().setProperty("create_time", createTimeFormat);
         result.getProps().setProperty("start_time_millis", String.valueOf(System.currentTimeMillis()));

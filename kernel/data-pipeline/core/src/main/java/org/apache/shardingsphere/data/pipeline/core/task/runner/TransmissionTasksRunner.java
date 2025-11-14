@@ -63,7 +63,7 @@ public final class TransmissionTasksRunner implements PipelineTasksRunner {
         inventoryTasks = jobItemContext.getInventoryTasks();
         incrementalTasks = jobItemContext.getIncrementalTasks();
         jobType = TypedSPILoader.getService(PipelineJobType.class, PipelineJobIdUtils.parseJobType(jobItemContext.getJobId()).getType());
-        jobItemManager = new PipelineJobItemManager<>(jobType.getYamlJobItemProgressSwapper());
+        jobItemManager = new PipelineJobItemManager<>(jobType.getOption().getYamlJobItemProgressSwapper());
     }
     
     @Override

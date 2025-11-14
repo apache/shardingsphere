@@ -72,7 +72,7 @@ class ConsistencyCheckJobExecutorCallbackTest {
                 YamlEngine.marshal(createYamlConsistencyCheckJobItemProgress(expectedYamlTableCheckRangePositions)));
         ConsistencyCheckJobExecutorCallback callback = new ConsistencyCheckJobExecutorCallback();
         ConsistencyCheckJobConfiguration jobConfig = new YamlConsistencyCheckJobConfigurationSwapper().swapToObject(createYamlConsistencyCheckJobConfiguration(checkJobId));
-        PipelineJobItemManager<ConsistencyCheckJobItemProgress> jobItemManager = new PipelineJobItemManager<>(new ConsistencyCheckJobType().getYamlJobItemProgressSwapper());
+        PipelineJobItemManager<ConsistencyCheckJobItemProgress> jobItemManager = new PipelineJobItemManager<>(new ConsistencyCheckJobType().getOption().getYamlJobItemProgressSwapper());
         Optional<ConsistencyCheckJobItemProgress> jobItemProgress = jobItemManager.getProgress(jobConfig.getJobId(), 0);
         ConsistencyCheckJobItemContext actual = callback.buildJobItemContext(jobConfig, 0, jobItemProgress.orElse(null), null, null);
         YamlTableCheckRangePositionSwapper tableCheckPositionSwapper = new YamlTableCheckRangePositionSwapper();

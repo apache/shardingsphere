@@ -113,10 +113,10 @@ class MigrationJobAPITest {
         PipelineContextUtils.initPipelineContextManager();
         jobType = new MigrationJobType();
         jobAPI = (MigrationJobAPI) TypedSPILoader.getService(TransmissionJobAPI.class, "MIGRATION");
-        jobConfigManager = new PipelineJobConfigurationManager(jobType);
+        jobConfigManager = new PipelineJobConfigurationManager(jobType.getOption());
         jobManager = new PipelineJobManager(jobType);
         transmissionJobManager = new TransmissionJobManager(jobType);
-        jobItemManager = new PipelineJobItemManager<>(jobType.getYamlJobItemProgressSwapper());
+        jobItemManager = new PipelineJobItemManager<>(jobType.getOption().getYamlJobItemProgressSwapper());
         String jdbcUrl = "jdbc:h2:mem:test_ds_0;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL";
         databaseType = DatabaseTypeFactory.get(jdbcUrl);
         Map<String, Object> props = new HashMap<>(3, 1F);

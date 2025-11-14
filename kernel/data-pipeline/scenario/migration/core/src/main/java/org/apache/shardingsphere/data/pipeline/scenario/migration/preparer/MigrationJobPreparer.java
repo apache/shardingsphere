@@ -80,7 +80,7 @@ import java.util.Collections;
 @Slf4j
 public final class MigrationJobPreparer implements PipelineJobPreparer<MigrationJobItemContext> {
     
-    private final PipelineJobItemManager<TransmissionJobItemProgress> jobItemManager = new PipelineJobItemManager<>(new MigrationJobType().getYamlJobItemProgressSwapper());
+    private final PipelineJobItemManager<TransmissionJobItemProgress> jobItemManager = new PipelineJobItemManager<>(new MigrationJobType().getOption().getYamlJobItemProgressSwapper());
     
     @Override
     public void prepare(final MigrationJobItemContext jobItemContext) throws SQLException {
