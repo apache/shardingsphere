@@ -59,7 +59,7 @@ public final class ConsistencyCheckTasksRunner implements PipelineTasksRunner {
     
     private final PipelineJobManager jobManager = new PipelineJobManager(jobType);
     
-    private final PipelineJobItemManager<TransmissionJobItemProgress> jobItemManager = new PipelineJobItemManager<>(jobType.getYamlJobItemProgressSwapper());
+    private final PipelineJobItemManager<TransmissionJobItemProgress> jobItemManager = new PipelineJobItemManager<>(jobType.getOption().getYamlJobItemProgressSwapper());
     
     private final PipelineProcessConfigurationPersistService processConfigPersistService = new PipelineProcessConfigurationPersistService();
     
@@ -90,7 +90,7 @@ public final class ConsistencyCheckTasksRunner implements PipelineTasksRunner {
             return;
         }
         new PipelineJobItemManager<>(TypedSPILoader.getService(PipelineJobType.class, PipelineJobIdUtils.parseJobType(jobItemContext.getJobId()).getType())
-                .getYamlJobItemProgressSwapper()).persistProgress(jobItemContext);
+                .getOption().getYamlJobItemProgressSwapper()).persistProgress(jobItemContext);
         CompletableFuture<?> future = jobItemContext.getProcessContext().getConsistencyCheckExecuteEngine().submit(checkExecutor);
         PipelineExecuteEngine.trigger(Collections.singletonList(future), new CheckExecuteCallback());
     }

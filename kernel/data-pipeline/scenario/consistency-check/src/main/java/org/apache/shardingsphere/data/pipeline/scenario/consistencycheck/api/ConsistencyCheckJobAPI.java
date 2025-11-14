@@ -68,7 +68,7 @@ public final class ConsistencyCheckJobAPI {
     private final PipelineJobItemManager<ConsistencyCheckJobItemProgress> jobItemManager;
     
     public ConsistencyCheckJobAPI(final ConsistencyCheckJobType jobType) {
-        progressSwapper = jobType.getYamlJobItemProgressSwapper();
+        progressSwapper = (YamlConsistencyCheckJobItemProgressSwapper) jobType.getOption().getYamlJobItemProgressSwapper();
         jobManager = new PipelineJobManager(jobType);
         jobConfigManager = new PipelineJobConfigurationManager(jobType);
         jobItemManager = new PipelineJobItemManager<>(progressSwapper);

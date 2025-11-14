@@ -35,8 +35,8 @@ public final class JobCodeRegistry {
     
     static {
         for (PipelineJobType each : ShardingSphereServiceLoader.getServiceInstances(PipelineJobType.class)) {
-            Preconditions.checkArgument(2 == each.getCode().length(), "Job type code length is not 2.");
-            JOB_CODE_AND_TYPE_MAP.put(each.getCode(), each);
+            Preconditions.checkArgument(2 == each.getOption().getCode().length(), "Job type code length is not 2.");
+            JOB_CODE_AND_TYPE_MAP.put(each.getOption().getCode(), each);
         }
     }
     
