@@ -6,6 +6,7 @@ This guide is written **for AI coding agents only**. Follow it literally; improv
 - `CODE_OF_CONDUCT.md` is the binding “law” for any generated artifact. Review it once per session and refuse to keep code that conflicts with it (copyright, inclusivity, licensing, etc.).
 - Technical choices must honor ASF expectations: license headers, transparent intent, explicit rationale in user-facing notes.
 - Instruction precedence: `CODE_OF_CONDUCT.md` > user directive > this guide > other repository documents.
+- Coding style (assertions, formatting, etc.) always follows the standards referenced by `CODE_OF_CONDUCT.md`; this guide only adds on top of them.
 
 ## Team Signals
 - **Release tempo:** expect monthly feature trains plus weekly patch windows. Default to smallest safe change unless explicitly asked for broader refactors.
@@ -67,6 +68,7 @@ Mention which topology you target, the registry used, and any compatibility cons
 ## Testing Expectations
 - Use JUnit 5 + Mockito; tests mirror production packages, are named `ClassNameTest`, and assert via `assertXxxCondition`. Keep Arrange–Act–Assert, adding separators only when clarity demands.
 - Mock databases/time/network; instantiate simple POJOs. Reset static caches/guards between cases if production code retains global state.
+- Keep static mocks minimal—only stub SPI/static calls actually reached by the scenario to avoid `UnnecessaryStubbingException`.
 - Jacoco workflow: `./mvnw -pl {module} -am -Djacoco.skip=false test jacoco:report`, then inspect `{module}/target/site/jacoco/index.html`. Aggregator modules require testing concrete submodules before running `jacoco:report`. When Jacoco fails, describe uncovered branches and the new tests that cover them.
 - Static / constructor mocking: prefer `@ExtendWith(AutoMockExtension.class)` with `@StaticMockSettings`/`@ConstructionMockSettings`; avoid manual `mockStatic`/`mockConstruction`. Ensure the module `pom.xml` has the `shardingsphere-test-infra-framework` test dependency before using these annotations.
 - For coverage gating, run `./mvnw test jacoco:check@jacoco-check -Pcoverage-check` and report results. If code is truly unreachable, cite file/line and explain why, noting whether cleanup is recommended.
@@ -151,6 +153,7 @@ When a task requires tests, automatically:
 - When only a few properties of a complex object are used, mock it rather than assembling the full graph.
 - Do not mock simple objects that can be instantiated directly with `new`.
 - Do not enable Mockito’s `RETURNS_DEEP_STUBS` unless unavoidable chained interactions make explicit stubs impractical; if you must enable it, mention the justification in the test description.
+- If a production class hides dependencies behind private finals (no constructor/setter), you may instantiate it directly and use reflection to inject mocks, but document why SPI creation is bypassed and still mock the SPI interactions the code triggers.
 
 ## SPI Loader Usage
 - Cache services obtained through SPI loaders (`OrderedSPILoader`, `TypedSPILoader`, `DatabaseTypedSPILoader`, etc.) at the test-class or suite level whenever the same type is reused, so repeated lookups do not slow tests or introduce ordering surprises.
