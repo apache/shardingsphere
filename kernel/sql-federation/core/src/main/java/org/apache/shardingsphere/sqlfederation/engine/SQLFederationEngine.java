@@ -33,6 +33,7 @@ import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
+import org.apache.shardingsphere.infra.exception.kernel.connection.SQLExecutionInterruptedException;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroupContext;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroupReportContext;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutionUnit;
@@ -205,6 +206,9 @@ public final class SQLFederationEngine implements AutoCloseable {
             // CHECKSTYLE:ON
             log.error("SQL Federation execute failed, sql {}, parameters {}", queryContext.getSql(), queryContext.getParameters(), ex);
             closeResources(federationContext);
+            if (ex instanceof SQLExecutionInterruptedException) {
+                throw ex;
+            }
             throw new SQLFederationUnsupportedSQLException(queryContext.getSql(), ex);
         }
     }
