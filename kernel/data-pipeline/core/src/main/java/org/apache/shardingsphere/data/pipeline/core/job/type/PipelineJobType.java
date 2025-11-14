@@ -42,6 +42,13 @@ import java.util.Optional;
 public interface PipelineJobType extends TypedSPI {
     
     /**
+     * Get pipeline job option.
+     *
+     * @return pipeline job option
+     */
+    PipelineJobOption getOption();
+    
+    /**
      * Get job type code.
      *
      * @return job type code
@@ -49,7 +56,7 @@ public interface PipelineJobType extends TypedSPI {
     String getCode();
     
     /**
-     * Is transmission job.
+     * Whether transmission job.
      *
      * @return is transmission job or not
      */
@@ -132,8 +139,8 @@ public interface PipelineJobType extends TypedSPI {
      * @return all logic tables check result
      * @throws UnsupportedOperationException unsupported operation exception
      */
-    default PipelineDataConsistencyChecker buildDataConsistencyChecker(PipelineJobConfiguration jobConfig,
-                                                                       TransmissionProcessContext processContext, ConsistencyCheckJobItemProgressContext progressContext) {
+    default PipelineDataConsistencyChecker buildDataConsistencyChecker(final PipelineJobConfiguration jobConfig,
+                                                                       final TransmissionProcessContext processContext, final ConsistencyCheckJobItemProgressContext progressContext) {
         throw new UnsupportedOperationException("Build data consistency checker is not supported.");
     }
     
