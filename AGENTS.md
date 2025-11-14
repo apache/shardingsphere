@@ -47,7 +47,8 @@ Mention which topology you target, the registry used, and any compatibility cons
 
 ## AI Execution Workflow
 1. **Intake & Clarify** — restate the ask, map affected modules, confirm sandbox/approval/network constraints.
-2. **Plan & Reason** — write a multi-step plan with checkpoints (analysis, edits, tests). Align scope with release tempo (prefer incremental fixes unless told otherwise). When the user demands precise branch coverage or “minimum test” constraints, first enumerate the target branches and map each to the single test case that will cover it before touching code.
+   - After clarifying, jot down a “constraint checklist” capturing any user-specific rules (forbidden APIs/assertions, output formats, required order of operations) plus coverage targets; revisit this list before making edits.
+2. **Plan & Reason** — write a multi-step plan with checkpoints (analysis, edits, tests). Align scope with release tempo (prefer incremental fixes unless told otherwise). When the user demands precise branch coverage or “minimum test” constraints, first enumerate the target branches and map each to the single test case that will cover it before touching code, and reply with that list (or test plan) for confirmation before modifying files whenever the user explicitly asks for it. If the user supplies extra constraints (e.g., “no `assertEquals`”), record them in the plan and refer back before making changes. Pick validation commands up front: favor `./mvnw -pl <module> -am <goals>` (or other scoped commands) so tests run once; only add `-Dtest=Pattern` when you are sure the scoped module contains matching classes (otherwise Surefire fails fast).
 3. **Implement** — touch only necessary files, reuse abstractions, keep ASF headers.
 4. **Validate** — choose the smallest meaningful command, announce the intent before execution, summarize exit codes afterward; if blocked (sandbox, missing deps), explain what would have run and why it matters.
 5. **Report** — lead with intent, list edited files with rationale and line references, state verification results, propose next actions.
@@ -67,12 +68,15 @@ Mention which topology you target, the registry used, and any compatibility cons
 
 ## Testing Expectations
 - Use JUnit 5 + Mockito; tests mirror production packages, are named `ClassNameTest`, and assert via `assertXxxCondition`. Keep Arrange–Act–Assert, adding separators only when clarity demands.
+- Before writing code, outline how each branch/scenario will be exercised (single test vs combined, data setup strategy) so you implement the intended coverage in one pass.
 - Mock databases/time/network; instantiate simple POJOs. Reset static caches/guards between cases if production code retains global state.
+- When pipeline/tests require job parameters or data-source configs, prefer constructing them via existing swapper/helpers (e.g., `YamlMigrationJobConfigurationSwapper`, `YamlPipelineDataSourceConfigurationSwapper`) instead of hand-written YAML so production parsing paths are exercised.
 - Keep static mocks minimal—only stub SPI/static calls actually reached by the scenario to avoid `UnnecessaryStubbingException`.
 - Jacoco workflow: `./mvnw -pl {module} -am -Djacoco.skip=false test jacoco:report`, then inspect `{module}/target/site/jacoco/index.html`. Aggregator modules require testing concrete submodules before running `jacoco:report`. When Jacoco fails, describe uncovered branches and the new tests that cover them.
 - Static / constructor mocking: prefer `@ExtendWith(AutoMockExtension.class)` with `@StaticMockSettings`/`@ConstructionMockSettings`; avoid manual `mockStatic`/`mockConstruction`. Ensure the module `pom.xml` has the `shardingsphere-test-infra-framework` test dependency before using these annotations.
 - For coverage gating, run `./mvnw test jacoco:check@jacoco-check -Pcoverage-check` and report results. If code is truly unreachable, cite file/line and explain why, noting whether cleanup is recommended.
 - When a request calls for “minimal branch coverage” or “each branch appears only once,” list every branch up front, map each to a single test, and explicitly document any uncovered branches (file, line, reason) to avoid redundant cases.
+- If the user bans specific assertions/tools (e.g., “don’t use `assertEquals`”), add that rule to your test plan, avoid the disallowed API during implementation, and run a quick search (e.g., `rg assertEquals`) before finishing to ensure compliance.
 
 ### Test Auto-Directives
 When a task requires tests, automatically:
@@ -101,6 +105,7 @@ When a task requires tests, automatically:
 | Sandbox/network block | Command denied due to sandbox/dependency fetch | State attempted command + purpose, request approval or alternative plan |
 
 - When touching a single module/class, prefer the narrowest Maven command such as `./mvnw -pl <module> -am -Dspotless.skip=true -DskipITs -Dtest=TargetTest test` (or an equivalent) for fast feedback, and cite the exact command in the report.
+- Avoid running `-Dtest=Pattern` from the repo root unless you are certain the selected modules contain matching test classes; otherwise Surefire fails fast. If in doubt, run the module’s full suite (preferred) or add `-Dsurefire.failIfNoSpecifiedTests=false`.
 
 ## Compatibility, Performance & External Systems
 - **Database/protocol support:** note targeted engines (MySQL 5.7/8.0, PostgreSQL 13+, openGauss, etc.) and ensure new behavior stays backward compatible; link to affected dialect files.
@@ -170,7 +175,8 @@ When a task requires tests, automatically:
 4. Does run/triage information cite real file paths plus log/config snippets?
 5. Does the report list touched files, verification results, known risks, and recommended next steps?
 6. For new or updated tests, did you inspect the target production code paths, enumerate the branches being covered, and explain that in your answer?
-7. Before finishing, did you re-check the latest verification command succeeded (rerun if needed) so the final state is green?
+7. Have you enforced every user-specific constraint on the checklist (e.g., forbidden assertions), including a final search/inspection to confirm compliance?
+8. Before finishing, did you re-check the latest verification command succeeded (rerun if needed) so the final state is green, and were the commands scoped to the smallest necessary modules to avoid redundant reruns?
 
 ## Brevity & Signal
 - Prefer tables/bullets over prose walls; cite file paths (`kernel/src/...`) directly.
