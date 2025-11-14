@@ -72,6 +72,7 @@ Mention which topology you target, the registry used, and any compatibility cons
 - Jacoco workflow: `./mvnw -pl {module} -am -Djacoco.skip=false test jacoco:report`, then inspect `{module}/target/site/jacoco/index.html`. Aggregator modules require testing concrete submodules before running `jacoco:report`. When Jacoco fails, describe uncovered branches and the new tests that cover them.
 - Static / constructor mocking: prefer `@ExtendWith(AutoMockExtension.class)` with `@StaticMockSettings`/`@ConstructionMockSettings`; avoid manual `mockStatic`/`mockConstruction`. Ensure the module `pom.xml` has the `shardingsphere-test-infra-framework` test dependency before using these annotations.
 - For coverage gating, run `./mvnw test jacoco:check@jacoco-check -Pcoverage-check` and report results. If code is truly unreachable, cite file/line and explain why, noting whether cleanup is recommended.
+- When a request calls for “minimal branch coverage” or “each branch appears only once,” list every branch up front, map each to a single test, and explicitly document any uncovered branches (file, line, reason) to avoid redundant cases.
 
 ### Test Auto-Directives
 When a task requires tests, automatically:
@@ -98,6 +99,8 @@ When a task requires tests, automatically:
 | Proxy won’t start | Validate configs/mode/ports, reuse example configs | Share exact log snippet, list configs inspected, suggest fix (without editing generated files) |
 | Spotless/checkstyle errors | `./mvnw spotless:apply -Pcheck [-pl module]` (or `spotless:check`) | Mention command result, confirm ASF headers/import order |
 | Sandbox/network block | Command denied due to sandbox/dependency fetch | State attempted command + purpose, request approval or alternative plan |
+
+- When touching a single module/class, prefer the narrowest Maven command such as `./mvnw -pl <module> -am -Dspotless.skip=true -DskipITs -Dtest=TargetTest test` (or an equivalent) for fast feedback, and cite the exact command in the report.
 
 ## Compatibility, Performance & External Systems
 - **Database/protocol support:** note targeted engines (MySQL 5.7/8.0, PostgreSQL 13+, openGauss, etc.) and ensure new behavior stays backward compatible; link to affected dialect files.
@@ -154,6 +157,7 @@ When a task requires tests, automatically:
 - Do not mock simple objects that can be instantiated directly with `new`.
 - Do not enable Mockito’s `RETURNS_DEEP_STUBS` unless unavoidable chained interactions make explicit stubs impractical; if you must enable it, mention the justification in the test description.
 - If a production class hides dependencies behind private finals (no constructor/setter), you may instantiate it directly and use reflection to inject mocks, but document why SPI creation is bypassed and still mock the SPI interactions the code triggers.
+- If a class hard-wires collaborators in its constructor (e.g., ConsistencyCheckJob’s executor delegate), use Mockito’s `Plugins.getMemberAccessor()` to inject mocks and explain why, instead of adding new constructors or test-only helpers.
 
 ## SPI Loader Usage
 - Cache services obtained through SPI loaders (`OrderedSPILoader`, `TypedSPILoader`, `DatabaseTypedSPILoader`, etc.) at the test-class or suite level whenever the same type is reused, so repeated lookups do not slow tests or introduce ordering surprises.
