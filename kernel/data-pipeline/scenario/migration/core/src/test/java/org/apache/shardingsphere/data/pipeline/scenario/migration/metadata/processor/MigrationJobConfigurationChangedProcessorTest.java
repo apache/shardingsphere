@@ -70,12 +70,13 @@ class MigrationJobConfigurationChangedProcessorTest {
         JobConfiguration jobConfig = mock(JobConfiguration.class);
         when(jobConfig.getJobParameter()).thenReturn(createJobParameter());
         AtomicInteger constructionIndex = new AtomicInteger();
-        try (MockedConstruction<IncrementalTaskPositionManager> mockedConstruction = mockConstruction(IncrementalTaskPositionManager.class,
-                (mock, context) -> {
-                    if (1 == constructionIndex.getAndIncrement()) {
-                        doThrow(SQLException.class).when(mock).destroyPosition(eq("job-branches"), any(PipelineDataSourceConfiguration.class));
-                    }
-                })) {
+        try (
+                MockedConstruction<IncrementalTaskPositionManager> mockedConstruction = mockConstruction(IncrementalTaskPositionManager.class,
+                        (mock, context) -> {
+                            if (1 == constructionIndex.getAndIncrement()) {
+                                doThrow(SQLException.class).when(mock).destroyPosition(eq("job-branches"), any(PipelineDataSourceConfiguration.class));
+                            }
+                        })) {
             assertDoesNotThrow(() -> processor.clean(jobConfig));
             assertThat(mockedConstruction.constructed().size(), is(2));
             verify(mockedConstruction.constructed().get(0)).destroyPosition(eq("job-branches"), any(PipelineDataSourceConfiguration.class));
