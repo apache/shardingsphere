@@ -48,9 +48,10 @@ Mention which topology you target, the registry used, and any compatibility cons
 ## AI Execution Workflow
 1. **Intake & Clarify** — restate the ask, map affected modules, confirm sandbox/approval/network constraints.
    - After clarifying, jot down a “constraint checklist” capturing any user-specific rules (forbidden APIs/assertions, output formats, required order of operations) plus coverage targets; revisit this list before making edits.
+   - Mirror the checklist in your first substantive reply so every user-specific requirement (e.g., “must use `assertThat+is`”) is written down verbatim; update the list as scope evolves and explicitly re-check each item before the final response.
 2. **Plan & Reason** — write a multi-step plan with checkpoints (analysis, edits, tests). Align scope with release tempo (prefer incremental fixes unless told otherwise). When the user demands precise branch coverage or “minimum test” constraints, first enumerate the target branches and map each to the single test case that will cover it before touching code, and reply with that list (or test plan) for confirmation before modifying files whenever the user explicitly asks for it. If the user supplies extra constraints (e.g., “no `assertEquals`”), record them in the plan and refer back before making changes. Pick validation commands up front: favor `./mvnw -pl <module> -am <goals>` (or other scoped commands) so tests run once; only add `-Dtest=Pattern` when you are sure the scoped module contains matching classes (otherwise Surefire fails fast).
 3. **Implement** — touch only necessary files, reuse abstractions, keep ASF headers.
-4. **Validate** — choose the smallest meaningful command, announce the intent before execution, summarize exit codes afterward; if blocked (sandbox, missing deps), explain what would have run and why it matters.
+4. **Validate** — choose the smallest meaningful command, announce the intent before execution, summarize exit codes afterward; if blocked (sandbox, missing deps), explain what would have run and why it matters. When edits only touch tests or assertions, run the narrowest viable command (e.g., `./mvnw -pl <module> -DskipITs -Dspotless.skip=true -Dtest=ClassName test`) before rerunning heavier `-am` builds.
 5. **Report** — lead with intent, list edited files with rationale and line references, state verification results, propose next actions.
 
 ## Tooling & Verification Matrix
@@ -76,7 +77,7 @@ Mention which topology you target, the registry used, and any compatibility cons
 - Static / constructor mocking: prefer `@ExtendWith(AutoMockExtension.class)` with `@StaticMockSettings`/`@ConstructionMockSettings`; avoid manual `mockStatic`/`mockConstruction`. Ensure the module `pom.xml` has the `shardingsphere-test-infra-framework` test dependency before using these annotations.
 - For coverage gating, run `./mvnw test jacoco:check@jacoco-check -Pcoverage-check` and report results. If code is truly unreachable, cite file/line and explain why, noting whether cleanup is recommended.
 - When a request calls for “minimal branch coverage” or “each branch appears only once,” list every branch up front, map each to a single test, and explicitly document any uncovered branches (file, line, reason) to avoid redundant cases.
-- If the user bans specific assertions/tools (e.g., “don’t use `assertEquals`”), add that rule to your test plan, avoid the disallowed API during implementation, and run a quick search (e.g., `rg assertEquals`) before finishing to ensure compliance.
+- If the user bans specific assertions/tools (e.g., “don’t use `assertEquals`”), add that rule to your test plan, avoid the disallowed API during implementation, and run a quick search (e.g., `rg assertEquals`) before finishing to ensure compliance; mention the search command and result in the final report.
 
 ### Test Auto-Directives
 When a task requires tests, automatically:
