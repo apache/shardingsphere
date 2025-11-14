@@ -183,9 +183,9 @@ class ConsistencyCheckTasksRunnerTest {
         jobItemContext.setStopping(true);
         ConsistencyCheckTasksRunner runner = new ConsistencyCheckTasksRunner(jobItemContext);
         PipelineJobItemManager<TransmissionJobItemProgress> jobItemManager = mock(PipelineJobItemManager.class);
-        setField(runner, ConsistencyCheckTasksRunner.class, "jobItemManager", jobItemManager);
+        Plugins.getMemberAccessor().set(ConsistencyCheckTasksRunner.class.getDeclaredField("jobItemManager"), runner, jobItemManager);
         PipelineProcessConfigurationPersistService processConfigPersistService = mock(PipelineProcessConfigurationPersistService.class);
-        setField(runner, ConsistencyCheckTasksRunner.class, "processConfigPersistService", processConfigPersistService);
+        Plugins.getMemberAccessor().set(ConsistencyCheckTasksRunner.class.getDeclaredField("processConfigPersistService"), runner, processConfigPersistService);
         PipelineProcessConfiguration processConfig = new PipelineProcessConfiguration(new PipelineReadConfiguration(1, 1, 1, null),
                 new PipelineWriteConfiguration(1, 1, null), null);
         PipelineDataConsistencyChecker checker = mock(PipelineDataConsistencyChecker.class);
@@ -220,9 +220,9 @@ class ConsistencyCheckTasksRunnerTest {
         jobItemContext.setStopping(true);
         ConsistencyCheckTasksRunner runner = new ConsistencyCheckTasksRunner(jobItemContext);
         PipelineJobManager jobManager = mock(PipelineJobManager.class);
+        Plugins.getMemberAccessor().set(ConsistencyCheckTasksRunner.class.getDeclaredField("jobManager"), runner, jobManager);
         PipelineJobItemManager<TransmissionJobItemProgress> jobItemManager = mock(PipelineJobItemManager.class);
-        setField(runner, "jobManager", jobManager);
-        setField(runner, "jobItemManager", jobItemManager);
+        Plugins.getMemberAccessor().set(ConsistencyCheckTasksRunner.class.getDeclaredField("jobItemManager"), runner, jobItemManager);
         ExecuteCallback callback = createCheckExecuteCallback(runner);
         callback.onSuccess();
         assertThat(jobItemContext.getStatus(), is(JobStatus.RUNNING));
@@ -235,9 +235,9 @@ class ConsistencyCheckTasksRunnerTest {
         ConsistencyCheckJobItemContext jobItemContext = createJobItemContext();
         ConsistencyCheckTasksRunner runner = new ConsistencyCheckTasksRunner(jobItemContext);
         PipelineJobManager jobManager = mock(PipelineJobManager.class);
+        Plugins.getMemberAccessor().set(ConsistencyCheckTasksRunner.class.getDeclaredField("jobManager"), runner, jobManager);
         PipelineJobItemManager<TransmissionJobItemProgress> jobItemManager = mock(PipelineJobItemManager.class);
-        setField(runner, "jobManager", jobManager);
-        setField(runner, "jobItemManager", jobItemManager);
+        Plugins.getMemberAccessor().set(ConsistencyCheckTasksRunner.class.getDeclaredField("jobItemManager"), runner, jobItemManager);
         PipelineContextKey parentContextKey = new PipelineContextKey("parent_db", InstanceType.JDBC);
         when(PipelineJobIdUtils.parseContextKey(PARENT_JOB_ID)).thenReturn(parentContextKey);
         PipelineGovernanceFacade governanceFacade = mock(PipelineGovernanceFacade.class);
@@ -260,9 +260,9 @@ class ConsistencyCheckTasksRunnerTest {
         ConsistencyCheckJobItemContext jobItemContext = createJobItemContext();
         ConsistencyCheckTasksRunner runner = new ConsistencyCheckTasksRunner(jobItemContext);
         PipelineJobManager jobManager = mock(PipelineJobManager.class);
+        Plugins.getMemberAccessor().set(ConsistencyCheckTasksRunner.class.getDeclaredField("jobManager"), runner, jobManager);
         PipelineJobItemManager<TransmissionJobItemProgress> jobItemManager = mock(PipelineJobItemManager.class);
-        setField(runner, "jobManager", jobManager);
-        setField(runner, "jobItemManager", jobItemManager);
+        Plugins.getMemberAccessor().set(ConsistencyCheckTasksRunner.class.getDeclaredField("jobItemManager"), runner, jobItemManager);
         PipelineContextKey parentContextKey = new PipelineContextKey("parent_db", InstanceType.JDBC);
         when(PipelineJobIdUtils.parseContextKey(PARENT_JOB_ID)).thenReturn(parentContextKey);
         PipelineGovernanceFacade governanceFacade = mock(PipelineGovernanceFacade.class);
@@ -284,7 +284,7 @@ class ConsistencyCheckTasksRunnerTest {
         ConsistencyCheckJobItemContext jobItemContext = createJobItemContext();
         ConsistencyCheckTasksRunner runner = new ConsistencyCheckTasksRunner(jobItemContext);
         PipelineJobManager jobManager = mock(PipelineJobManager.class);
-        setField(runner, "jobManager", jobManager);
+        Plugins.getMemberAccessor().set(ConsistencyCheckTasksRunner.class.getDeclaredField("jobManager"), runner, jobManager);
         PipelineDataConsistencyChecker checker = mock(PipelineDataConsistencyChecker.class);
         when(checker.isCanceling()).thenReturn(true);
         setConsistencyChecker(runner, checker);
@@ -298,7 +298,7 @@ class ConsistencyCheckTasksRunnerTest {
         ConsistencyCheckJobItemContext jobItemContext = createJobItemContext();
         ConsistencyCheckTasksRunner runner = new ConsistencyCheckTasksRunner(jobItemContext);
         PipelineJobManager jobManager = mock(PipelineJobManager.class);
-        setField(runner, "jobManager", jobManager);
+        Plugins.getMemberAccessor().set(ConsistencyCheckTasksRunner.class.getDeclaredField("jobManager"), runner, jobManager);
         PipelineDataConsistencyChecker checker = mock(PipelineDataConsistencyChecker.class);
         when(checker.isCanceling()).thenReturn(false);
         setConsistencyChecker(runner, checker);
@@ -378,15 +378,5 @@ class ConsistencyCheckTasksRunnerTest {
         Method method = runnable.getClass().getDeclaredMethod("doStop");
         method.setAccessible(true);
         method.invoke(runnable);
-    }
-    
-    private void setField(final Object target, final String fieldName, final Object value) throws ReflectiveOperationException {
-        setField(target, target.getClass(), fieldName, value);
-    }
-    
-    private void setField(final Object target, final Class<?> owner, final String fieldName, final Object value) throws ReflectiveOperationException {
-        Field field = owner.getDeclaredField(fieldName);
-        field.setAccessible(true);
-        field.set(target, value);
     }
 }
