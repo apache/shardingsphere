@@ -24,6 +24,7 @@ import org.apache.shardingsphere.data.pipeline.core.job.config.PipelineJobConfig
 import org.apache.shardingsphere.data.pipeline.core.job.id.PipelineJobIdUtils;
 import org.apache.shardingsphere.data.pipeline.core.job.progress.yaml.swapper.YamlTransmissionJobItemProgressSwapper;
 import org.apache.shardingsphere.data.pipeline.core.job.service.PipelineJobConfigurationManager;
+import org.apache.shardingsphere.data.pipeline.core.job.type.PipelineJobOption;
 import org.apache.shardingsphere.data.pipeline.core.job.type.PipelineJobType;
 import org.apache.shardingsphere.data.pipeline.core.pojo.PipelineJobInfo;
 import org.apache.shardingsphere.data.pipeline.core.pojo.PipelineJobMetaData;
@@ -39,6 +40,12 @@ import java.util.Optional;
  * Migration job type.
  */
 public final class MigrationJobType implements PipelineJobType {
+    
+    @Override
+    public PipelineJobOption getOption() {
+        return new PipelineJobOption("01", 
+                true, new YamlMigrationJobConfigurationSwapper(), new YamlTransmissionJobItemProgressSwapper(), MigrationJob.class, false, "CONSISTENCY_CHECK", "CONSISTENCY_CHECK", false);
+    }
     
     @Override
     public String getCode() {
