@@ -33,8 +33,7 @@ public final class FixtureJobType implements PipelineJobType {
     
     @Override
     public PipelineJobOption getOption() {
-        return new PipelineJobOption("00",
-                true, null, null, null, false, null, null, false);
+        return new PipelineJobOption("00", true, null, null, null, false, null, null, false);
     }
     
     @Override
