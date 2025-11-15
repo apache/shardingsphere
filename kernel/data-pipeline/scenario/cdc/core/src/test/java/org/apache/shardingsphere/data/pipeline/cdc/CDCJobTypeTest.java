@@ -17,15 +17,12 @@
 
 package org.apache.shardingsphere.data.pipeline.cdc;
 
-import org.apache.shardingsphere.data.pipeline.api.type.ShardingSpherePipelineDataSourceConfiguration;
 import org.apache.shardingsphere.data.pipeline.cdc.config.CDCJobConfiguration;
 import org.apache.shardingsphere.data.pipeline.cdc.config.yaml.swapper.YamlCDCJobConfigurationSwapper;
-import org.apache.shardingsphere.data.pipeline.core.datanode.JobDataNodeLine;
 import org.apache.shardingsphere.data.pipeline.core.job.progress.yaml.swapper.YamlTransmissionJobItemProgressSwapper;
 import org.apache.shardingsphere.data.pipeline.core.job.type.PipelineJobOption;
 import org.apache.shardingsphere.data.pipeline.core.job.type.PipelineJobType;
 import org.apache.shardingsphere.data.pipeline.core.pojo.PipelineJobObjective;
-import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.junit.jupiter.api.Test;
 
@@ -38,6 +35,7 @@ import static org.hamcrest.Matchers.isA;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.mock;
 
 class CDCJobTypeTest {
     
@@ -61,15 +59,10 @@ class CDCJobTypeTest {
     @SuppressWarnings("unchecked")
     @Test
     void assertGetJobObjective() {
-        CDCJobConfiguration jobConfig = new CDCJobConfiguration("foo_job", "foo_db", Arrays.asList("foo_schema.foo_tbl", "bar_schema.bar_tbl"),
-                false, mock(DatabaseType.class), mock(ShardingSpherePipelineDataSourceConfiguration.class), mock(JobDataNodeLine.class), Collections.emptyList(),
-                false, mock(CDCJobConfiguration.SinkConfiguration.class), 1, 3);
+        CDCJobConfiguration jobConfig = new CDCJobConfiguration("foo_job",
+                "foo_db", Arrays.asList("foo_schema.foo_tbl", "bar_schema.bar_tbl"), false, mock(), mock(), mock(), Collections.emptyList(), false, mock(), 1, 3);
         PipelineJobObjective actual = jobType.getJobObjective(jobConfig);
         assertThat(actual.getDatabaseName(), is("foo_db"));
         assertThat(actual.getTableName(), is("foo_schema.foo_tbl, bar_schema.bar_tbl"));
-    }
-    
-    private static <T> T mock(final Class<T> type) {
-        return org.mockito.Mockito.mock(type);
     }
 }
