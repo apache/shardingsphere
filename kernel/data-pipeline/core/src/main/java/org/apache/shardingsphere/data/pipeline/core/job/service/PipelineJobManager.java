@@ -88,7 +88,7 @@ public final class PipelineJobManager {
             }
         }
         startCurrentDisabledJob(jobId);
-        String toBeStartDisabledNextJobType = jobType.getOption().getGetToBeStartDisabledNextJobType();
+        String toBeStartDisabledNextJobType = jobType.getOption().getToBeStartDisabledNextJobType();
         if (null != toBeStartDisabledNextJobType) {
             startNextDisabledJob(jobId, toBeStartDisabledNextJobType);
         }
@@ -126,7 +126,7 @@ public final class PipelineJobManager {
      * @param jobId job id
      */
     public void stop(final String jobId) {
-        String toBeStoppedPreviousJobType = jobType.getOption().getGetToBeStoppedPreviousJobType();
+        String toBeStoppedPreviousJobType = jobType.getOption().getToBeStoppedPreviousJobType();
         if (null != toBeStoppedPreviousJobType) {
             stopPreviousJob(jobId, toBeStoppedPreviousJobType);
         }

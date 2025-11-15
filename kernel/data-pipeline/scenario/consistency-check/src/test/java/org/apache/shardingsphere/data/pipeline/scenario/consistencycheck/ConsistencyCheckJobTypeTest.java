@@ -47,6 +47,8 @@ class ConsistencyCheckJobTypeTest {
         assertThat(actual.getYamlJobItemProgressSwapper(), isA(YamlConsistencyCheckJobItemProgressSwapper.class));
         assertThat(actual.getJobClass(), is(ConsistencyCheckJob.class));
         assertTrue(actual.isIgnoreToStartDisabledJobWhenJobItemProgressIsFinished());
+        assertNull(actual.getToBeStartDisabledNextJobType());
+        assertNull(actual.getToBeStoppedPreviousJobType());
         assertFalse(actual.isForceNoShardingWhenConvertToJobConfigurationPOJO());
     }
     
