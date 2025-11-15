@@ -26,6 +26,9 @@ import org.apache.shardingsphere.data.pipeline.core.pojo.PipelineJobObjective;
 import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPI;
 
+import java.util.Collection;
+import java.util.Collections;
+
 /**
  * Pipeline job type.
  * 
@@ -66,4 +69,9 @@ public interface PipelineJobType<T extends PipelineJobConfiguration> extends Typ
     
     @Override
     String getType();
+    
+    @Override
+    default Collection<Object> getTypeAliases() {
+        return Collections.singleton(getType());
+    }
 }
