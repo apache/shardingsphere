@@ -17,15 +17,30 @@
 
 package org.apache.shardingsphere.data.pipeline.core.job.type;
 
+import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
+import org.apache.shardingsphere.test.infra.framework.extension.mock.AutoMockExtension;
+import org.apache.shardingsphere.test.infra.framework.extension.mock.StaticMockSettings;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+
+import java.util.Collections;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
+@ExtendWith(AutoMockExtension.class)
+@StaticMockSettings(ShardingSphereServiceLoader.class)
 class JobCodeRegistryTest {
     
     @Test
     void assertGetJobType() {
-        assertThat(JobCodeRegistry.getJobType("00").getType(), is("FIXTURE"));
+        PipelineJobType<?> pipelineJobType = mock(PipelineJobType.class, RETURNS_DEEP_STUBS);
+        when(pipelineJobType.getOption().getCode()).thenReturn("-1");
+        when(pipelineJobType.getType()).thenReturn("FIXTURE");
+        when(ShardingSphereServiceLoader.getServiceInstances(PipelineJobType.class)).thenReturn(Collections.singleton(pipelineJobType));
+        assertThat(JobCodeRegistry.getJobType("-1").getType(), is("FIXTURE"));
     }
 }

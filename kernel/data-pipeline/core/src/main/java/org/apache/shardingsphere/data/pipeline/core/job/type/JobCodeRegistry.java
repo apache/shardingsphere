@@ -29,6 +29,7 @@ import java.util.Map;
  * Job code registry.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
+@SuppressWarnings("rawtypes")
 public final class JobCodeRegistry {
     
     private static final Map<String, PipelineJobType> JOB_CODE_AND_TYPE_MAP = new HashMap<>();
