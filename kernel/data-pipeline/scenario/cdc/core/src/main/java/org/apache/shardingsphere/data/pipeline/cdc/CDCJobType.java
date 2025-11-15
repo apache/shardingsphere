@@ -30,7 +30,7 @@ public final class CDCJobType implements PipelineJobType<CDCJobConfiguration> {
     
     @Override
     public PipelineJobOption getOption() {
-        return new PipelineJobOption("03", true, new YamlCDCJobConfigurationSwapper(), CDCJob.class, false, null, null, true);
+        return new PipelineJobOption("03", CDCJob.class, true, new YamlCDCJobConfigurationSwapper(), false, null, null, true);
     }
     
     @Override

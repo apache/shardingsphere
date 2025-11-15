@@ -30,7 +30,7 @@ public final class ConsistencyCheckJobType implements PipelineJobType<PipelineJo
     
     @Override
     public PipelineJobOption getOption() {
-        return new PipelineJobOption("02", false, new YamlConsistencyCheckJobConfigurationSwapper(), ConsistencyCheckJob.class, true, null, null, false);
+        return new PipelineJobOption("02", ConsistencyCheckJob.class, false, new YamlConsistencyCheckJobConfigurationSwapper(), true, null, null, false);
     }
     
     @Override

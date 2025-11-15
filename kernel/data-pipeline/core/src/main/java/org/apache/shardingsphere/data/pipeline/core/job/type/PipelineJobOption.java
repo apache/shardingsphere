@@ -34,11 +34,11 @@ public final class PipelineJobOption {
     
     private final String code;
     
+    private final Class<? extends PipelineJob> jobClass;
+    
     private final boolean isTransmissionJob;
     
     private final YamlPipelineJobConfigurationSwapper<?, ?> yamlJobConfigurationSwapper;
-    
-    private final Class<? extends PipelineJob> jobClass;
     
     private final boolean isIgnoreToStartDisabledJobWhenJobItemProgressIsFinished;
     
