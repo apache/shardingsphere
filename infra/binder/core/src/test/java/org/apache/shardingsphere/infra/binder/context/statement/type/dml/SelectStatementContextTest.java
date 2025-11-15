@@ -270,7 +270,7 @@ class SelectStatementContextTest {
                 Collections.singleton(mockDatabase()), mock(ResourceMetaData.class), mock(RuleMetaData.class), mock(ConfigurationProperties.class));
         assertTrue(new SelectStatementContext(selectStatement, metaData, "foo_db", Collections.emptyList()).isContainsSubquery());
     }
-
+    
     @Test
     void assertFindColumnBoundInfoHandlesColumnsAndSubquery() {
         ProjectionsSegment projectionsSegment = new ProjectionsSegment(0, 0);
@@ -324,7 +324,7 @@ class SelectStatementContextTest {
         SelectStatementContext selectStatementContext = new SelectStatementContext(selectStatement, metaData, "foo_db", Collections.emptyList());
         assertTrue(selectStatementContext.isContainsPartialDistinctAggregation());
     }
-
+    
     @Test
     void assertJoinHavingCombineAndDelegatedGetters() {
         SelectStatement selectStatement = new SelectStatement(databaseType);
@@ -347,7 +347,7 @@ class SelectStatementContextTest {
         assertThat(selectStatementContext.getSqlStatement(), is(selectStatement));
         assertNotNull(selectStatementContext.getProjectionsContext());
     }
-
+    
     @Test
     void assertBindParametersPopulatePaginationContext() {
         SelectStatement selectStatement = new SelectStatement(databaseType);
