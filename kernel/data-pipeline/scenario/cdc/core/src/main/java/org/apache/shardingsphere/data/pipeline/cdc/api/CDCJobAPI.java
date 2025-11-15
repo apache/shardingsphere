@@ -110,7 +110,7 @@ public final class CDCJobAPI implements TransmissionJobAPI {
     public CDCJobAPI() {
         jobType = new CDCJobType();
         jobManager = new PipelineJobManager(jobType);
-        jobConfigManager = new PipelineJobConfigurationManager(jobType);
+        jobConfigManager = new PipelineJobConfigurationManager(jobType.getOption());
         dataSourceConfigSwapper = new YamlDataSourceConfigurationSwapper();
         ruleConfigSwapperEngine = new YamlRuleConfigurationSwapperEngine();
         pipelineDataSourceConfigSwapper = new YamlPipelineDataSourceConfigurationSwapper();
@@ -285,7 +285,7 @@ public final class CDCJobAPI implements TransmissionJobAPI {
      * @return job item infos
      */
     public Collection<CDCJobItemInfo> getJobItemInfos(final String jobId) {
-        CDCJobConfiguration jobConfig = new PipelineJobConfigurationManager(jobType).getJobConfiguration(jobId);
+        CDCJobConfiguration jobConfig = new PipelineJobConfigurationManager(jobType.getOption()).getJobConfiguration(jobId);
         ShardingSphereDatabase database = PipelineContextManager.getProxyContext().getMetaDataContexts().getMetaData().getDatabase(jobConfig.getDatabaseName());
         Collection<CDCJobItemInfo> result = new LinkedList<>();
         for (TransmissionJobItemInfo each : new TransmissionJobManager(jobType).getJobItemInfos(jobId)) {

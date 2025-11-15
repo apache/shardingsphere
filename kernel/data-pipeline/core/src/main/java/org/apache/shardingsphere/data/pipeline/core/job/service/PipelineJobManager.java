@@ -69,7 +69,7 @@ public final class PipelineJobManager {
             return;
         }
         governanceFacade.getJobFacade().getJob().create(jobId, jobType.getOption().getJobClass());
-        governanceFacade.getJobFacade().getConfiguration().persist(jobId, new PipelineJobConfigurationManager(jobType).convertToJobConfigurationPOJO(jobConfig));
+        governanceFacade.getJobFacade().getConfiguration().persist(jobId, new PipelineJobConfigurationManager(jobType.getOption()).convertToJobConfigurationPOJO(jobConfig));
     }
     
     /**

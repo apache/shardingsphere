@@ -48,7 +48,7 @@ public final class MigrationJobType implements PipelineJobType {
     @Override
     public PipelineJobInfo getJobInfo(final PipelineJobMetaData jobMetaData) {
         Collection<String> sourceTables = new LinkedList<>();
-        new PipelineJobConfigurationManager(new MigrationJobType()).<MigrationJobConfiguration>getJobConfiguration(jobMetaData.getJobId()).getJobShardingDataNodes()
+        new PipelineJobConfigurationManager(new MigrationJobType().getOption()).<MigrationJobConfiguration>getJobConfiguration(jobMetaData.getJobId()).getJobShardingDataNodes()
                 .forEach(each -> each.getEntries().forEach(entry -> entry.getDataNodes().forEach(dataNode -> sourceTables.add(dataNode.format()))));
         return new PipelineJobInfo(jobMetaData, null, String.join(",", sourceTables));
     }
