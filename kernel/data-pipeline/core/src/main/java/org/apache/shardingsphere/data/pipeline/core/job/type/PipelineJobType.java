@@ -22,7 +22,7 @@ import org.apache.shardingsphere.data.pipeline.core.consistencycheck.Consistency
 import org.apache.shardingsphere.data.pipeline.core.consistencycheck.PipelineDataConsistencyChecker;
 import org.apache.shardingsphere.data.pipeline.core.context.TransmissionProcessContext;
 import org.apache.shardingsphere.data.pipeline.core.job.config.PipelineJobConfiguration;
-import org.apache.shardingsphere.data.pipeline.core.pojo.PipelineJobObjective;
+import org.apache.shardingsphere.data.pipeline.core.pojo.PipelineJobTarget;
 import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPI;
 
@@ -46,12 +46,12 @@ public interface PipelineJobType<T extends PipelineJobConfiguration> extends Typ
     PipelineJobOption getOption();
     
     /**
-     * Get pipeline job objective.
+     * Get pipeline job target.
      *
      * @param jobConfig pipeline job configuration
-     * @return pipeline pipeline job objective
+     * @return pipeline job target
      */
-    PipelineJobObjective getJobObjective(T jobConfig);
+    PipelineJobTarget getJobTarget(T jobConfig);
     
     /**
      * Build pipeline data consistency checker.

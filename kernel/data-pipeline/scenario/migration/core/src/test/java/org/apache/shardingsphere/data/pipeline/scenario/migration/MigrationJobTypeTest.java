@@ -23,7 +23,7 @@ import org.apache.shardingsphere.data.pipeline.core.datanode.JobDataNodeLine;
 import org.apache.shardingsphere.data.pipeline.core.job.progress.yaml.swapper.YamlTransmissionJobItemProgressSwapper;
 import org.apache.shardingsphere.data.pipeline.core.job.type.PipelineJobOption;
 import org.apache.shardingsphere.data.pipeline.core.job.type.PipelineJobType;
-import org.apache.shardingsphere.data.pipeline.core.pojo.PipelineJobObjective;
+import org.apache.shardingsphere.data.pipeline.core.pojo.PipelineJobTarget;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.config.MigrationJobConfiguration;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.config.yaml.swapper.YamlMigrationJobConfigurationSwapper;
 import org.apache.shardingsphere.infra.datanode.DataNode;
@@ -63,12 +63,12 @@ class MigrationJobTypeTest {
     
     @SuppressWarnings("unchecked")
     @Test
-    void assertGetJobObjective() {
+    void assertGetJobTarget() {
         JobDataNodeEntry dataNodeEntry1 = new JobDataNodeEntry("foo_tbl", Arrays.asList(new DataNode("db.foo_tbl_0"), new DataNode("db.foo_tbl_1")));
         JobDataNodeEntry dataNodeEntry2 = new JobDataNodeEntry("bar_tbl", Arrays.asList(new DataNode("db.bar_tbl_0"), new DataNode("db.bar_tbl_1")));
         MigrationJobConfiguration jobConfig = mock(MigrationJobConfiguration.class);
         when(jobConfig.getJobShardingDataNodes()).thenReturn(Collections.singletonList(new JobDataNodeLine(Arrays.asList(dataNodeEntry1, dataNodeEntry2))));
-        PipelineJobObjective actual = jobType.getJobObjective(jobConfig);
+        PipelineJobTarget actual = jobType.getJobTarget(jobConfig);
         assertNull(actual.getDatabaseName());
         assertThat(actual.getTableName(), is("db.foo_tbl_0,db.foo_tbl_1,db.bar_tbl_0,db.bar_tbl_1"));
     }

@@ -22,7 +22,7 @@ import org.apache.shardingsphere.data.pipeline.core.consistencycheck.PipelineDat
 import org.apache.shardingsphere.data.pipeline.core.context.TransmissionProcessContext;
 import org.apache.shardingsphere.data.pipeline.core.job.type.PipelineJobOption;
 import org.apache.shardingsphere.data.pipeline.core.job.type.PipelineJobType;
-import org.apache.shardingsphere.data.pipeline.core.pojo.PipelineJobObjective;
+import org.apache.shardingsphere.data.pipeline.core.pojo.PipelineJobTarget;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.check.consistency.MigrationDataConsistencyChecker;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.config.MigrationJobConfiguration;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.config.yaml.swapper.YamlMigrationJobConfigurationSwapper;
@@ -41,10 +41,10 @@ public final class MigrationJobType implements PipelineJobType<MigrationJobConfi
     }
     
     @Override
-    public PipelineJobObjective getJobObjective(final MigrationJobConfiguration jobConfig) {
+    public PipelineJobTarget getJobTarget(final MigrationJobConfiguration jobConfig) {
         Collection<String> sourceTables = new LinkedList<>();
         jobConfig.getJobShardingDataNodes().forEach(each -> each.getEntries().forEach(entry -> entry.getDataNodes().forEach(dataNode -> sourceTables.add(dataNode.format()))));
-        return new PipelineJobObjective(null, String.join(",", sourceTables));
+        return new PipelineJobTarget(null, String.join(",", sourceTables));
     }
     
     @Override

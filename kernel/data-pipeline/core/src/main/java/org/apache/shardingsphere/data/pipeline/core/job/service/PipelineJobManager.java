@@ -179,7 +179,7 @@ public final class PipelineJobManager {
         try {
             return PipelineAPIFactory.getJobStatisticsAPI(contextKey).getAllJobsBriefInfo().stream().filter(this::isValidJob)
                     .map(each -> new PipelineJobInfo(new PipelineJobMetaData(PipelineJobIdUtils.getElasticJobConfigurationPOJO(each.getJobName())),
-                            jobType.getJobObjective(new PipelineJobConfigurationManager(jobType.getOption()).getJobConfiguration(each.getJobName()))))
+                            jobType.getJobTarget(new PipelineJobConfigurationManager(jobType.getOption()).getJobConfiguration(each.getJobName()))))
                     .collect(Collectors.toList());
         } catch (final UnsupportedOperationException ex) {
             return Collections.emptyList();

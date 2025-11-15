@@ -21,7 +21,7 @@ import org.apache.shardingsphere.data.pipeline.cdc.config.CDCJobConfiguration;
 import org.apache.shardingsphere.data.pipeline.cdc.config.yaml.swapper.YamlCDCJobConfigurationSwapper;
 import org.apache.shardingsphere.data.pipeline.core.job.type.PipelineJobOption;
 import org.apache.shardingsphere.data.pipeline.core.job.type.PipelineJobType;
-import org.apache.shardingsphere.data.pipeline.core.pojo.PipelineJobObjective;
+import org.apache.shardingsphere.data.pipeline.core.pojo.PipelineJobTarget;
 
 /**
  * CDC job type.
@@ -34,8 +34,8 @@ public final class CDCJobType implements PipelineJobType<CDCJobConfiguration> {
     }
     
     @Override
-    public PipelineJobObjective getJobObjective(final CDCJobConfiguration jobConfig) {
-        return new PipelineJobObjective(jobConfig.getDatabaseName(), String.join(", ", jobConfig.getSchemaTableNames()));
+    public PipelineJobTarget getJobTarget(final CDCJobConfiguration jobConfig) {
+        return new PipelineJobTarget(jobConfig.getDatabaseName(), String.join(", ", jobConfig.getSchemaTableNames()));
     }
     
     @Override

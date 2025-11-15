@@ -22,7 +22,7 @@ import org.apache.shardingsphere.data.pipeline.cdc.config.yaml.swapper.YamlCDCJo
 import org.apache.shardingsphere.data.pipeline.core.job.progress.yaml.swapper.YamlTransmissionJobItemProgressSwapper;
 import org.apache.shardingsphere.data.pipeline.core.job.type.PipelineJobOption;
 import org.apache.shardingsphere.data.pipeline.core.job.type.PipelineJobType;
-import org.apache.shardingsphere.data.pipeline.core.pojo.PipelineJobObjective;
+import org.apache.shardingsphere.data.pipeline.core.pojo.PipelineJobTarget;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.junit.jupiter.api.Test;
 
@@ -58,11 +58,11 @@ class CDCJobTypeTest {
     
     @SuppressWarnings("unchecked")
     @Test
-    void assertGetJobObjective() {
+    void assertGetJobTarget() {
         CDCJobConfiguration jobConfig = mock(CDCJobConfiguration.class);
         when(jobConfig.getDatabaseName()).thenReturn("foo_db");
         when(jobConfig.getSchemaTableNames()).thenReturn(Arrays.asList("foo_schema.foo_tbl", "bar_schema.bar_tbl"));
-        PipelineJobObjective actual = jobType.getJobObjective(jobConfig);
+        PipelineJobTarget actual = jobType.getJobTarget(jobConfig);
         assertThat(actual.getDatabaseName(), is("foo_db"));
         assertThat(actual.getTableName(), is("foo_schema.foo_tbl, bar_schema.bar_tbl"));
     }

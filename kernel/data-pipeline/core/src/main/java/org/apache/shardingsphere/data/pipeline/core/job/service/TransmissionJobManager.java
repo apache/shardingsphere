@@ -24,7 +24,7 @@ import org.apache.shardingsphere.data.pipeline.core.job.config.PipelineJobConfig
 import org.apache.shardingsphere.data.pipeline.core.job.id.PipelineJobIdUtils;
 import org.apache.shardingsphere.data.pipeline.core.job.progress.TransmissionJobItemProgress;
 import org.apache.shardingsphere.data.pipeline.core.job.type.PipelineJobType;
-import org.apache.shardingsphere.data.pipeline.core.pojo.PipelineJobObjective;
+import org.apache.shardingsphere.data.pipeline.core.pojo.PipelineJobTarget;
 import org.apache.shardingsphere.data.pipeline.core.pojo.TransmissionJobItemInfo;
 import org.apache.shardingsphere.elasticjob.infra.pojo.JobConfigurationPOJO;
 
@@ -58,17 +58,17 @@ public final class TransmissionJobManager {
         long startTimeMillis = Long.parseLong(Optional.ofNullable(PipelineJobIdUtils.getElasticJobConfigurationPOJO(jobId).getProps().getProperty("start_time_millis")).orElse("0"));
         Map<Integer, TransmissionJobItemProgress> jobProgress = getJobProgress(jobConfig);
         List<TransmissionJobItemInfo> result = new LinkedList<>();
-        PipelineJobObjective jobObjective = jobType.getJobObjective(jobConfig);
+        PipelineJobTarget jobTarget = jobType.getJobTarget(jobConfig);
         for (Entry<Integer, TransmissionJobItemProgress> entry : jobProgress.entrySet()) {
             int shardingItem = entry.getKey();
             TransmissionJobItemProgress jobItemProgress = entry.getValue();
             String errorMessage = PipelineAPIFactory.getPipelineGovernanceFacade(PipelineJobIdUtils.parseContextKey(jobId)).getJobItemFacade().getErrorMessage().load(jobId, shardingItem);
             if (null == jobItemProgress) {
-                result.add(new TransmissionJobItemInfo(shardingItem, jobObjective.getTableName(), null, startTimeMillis, 0, errorMessage));
+                result.add(new TransmissionJobItemInfo(shardingItem, jobTarget.getTableName(), null, startTimeMillis, 0, errorMessage));
                 continue;
             }
             int inventoryFinishedPercentage = getInventoryFinishedPercentage(jobItemProgress);
-            result.add(new TransmissionJobItemInfo(shardingItem, jobObjective.getTableName(), jobItemProgress, startTimeMillis, inventoryFinishedPercentage, errorMessage));
+            result.add(new TransmissionJobItemInfo(shardingItem, jobTarget.getTableName(), jobItemProgress, startTimeMillis, inventoryFinishedPercentage, errorMessage));
         }
         return result;
     }

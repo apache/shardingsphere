@@ -21,11 +21,11 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 /**
- * Pipeline job objective.
+ * Pipeline job target.
  */
 @RequiredArgsConstructor
 @Getter
-public final class PipelineJobObjective {
+public final class PipelineJobTarget {
     
     private final String databaseName;
     
