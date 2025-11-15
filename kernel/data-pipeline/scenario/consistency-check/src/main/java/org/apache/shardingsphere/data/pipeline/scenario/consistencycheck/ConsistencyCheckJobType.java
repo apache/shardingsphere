@@ -17,17 +17,17 @@
 
 package org.apache.shardingsphere.data.pipeline.scenario.consistencycheck;
 
+import org.apache.shardingsphere.data.pipeline.core.job.config.PipelineJobConfiguration;
 import org.apache.shardingsphere.data.pipeline.core.job.progress.yaml.swapper.YamlConsistencyCheckJobItemProgressSwapper;
 import org.apache.shardingsphere.data.pipeline.core.job.type.PipelineJobOption;
 import org.apache.shardingsphere.data.pipeline.core.job.type.PipelineJobType;
-import org.apache.shardingsphere.data.pipeline.core.pojo.PipelineJobInfo;
-import org.apache.shardingsphere.data.pipeline.core.pojo.PipelineJobMetaData;
+import org.apache.shardingsphere.data.pipeline.core.pojo.PipelineJobObjective;
 import org.apache.shardingsphere.data.pipeline.scenario.consistencycheck.config.yaml.swapper.YamlConsistencyCheckJobConfigurationSwapper;
 
 /**
  * Consistency check job type.
  */
-public final class ConsistencyCheckJobType implements PipelineJobType {
+public final class ConsistencyCheckJobType implements PipelineJobType<PipelineJobConfiguration> {
     
     @Override
     public PipelineJobOption getOption() {
@@ -36,7 +36,7 @@ public final class ConsistencyCheckJobType implements PipelineJobType {
     }
     
     @Override
-    public PipelineJobInfo getJobInfo(final PipelineJobMetaData jobMetaData) {
+    public PipelineJobObjective getJobObjective(final PipelineJobConfiguration jobConfig) {
         return null;
     }
     

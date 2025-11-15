@@ -21,13 +21,13 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 /**
- * Pipeline job info.
+ * Pipeline job objective.
  */
 @RequiredArgsConstructor
 @Getter
-public final class PipelineJobInfo {
+public final class PipelineJobObjective {
     
-    private final PipelineJobMetaData jobMetaData;
+    private final String databaseName;
     
-    private final PipelineJobObjective jobObjective;
+    private final String tableName;
 }

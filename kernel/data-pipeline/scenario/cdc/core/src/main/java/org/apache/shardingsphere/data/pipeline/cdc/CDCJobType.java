@@ -20,16 +20,14 @@ package org.apache.shardingsphere.data.pipeline.cdc;
 import org.apache.shardingsphere.data.pipeline.cdc.config.CDCJobConfiguration;
 import org.apache.shardingsphere.data.pipeline.cdc.config.yaml.swapper.YamlCDCJobConfigurationSwapper;
 import org.apache.shardingsphere.data.pipeline.core.job.progress.yaml.swapper.YamlTransmissionJobItemProgressSwapper;
-import org.apache.shardingsphere.data.pipeline.core.job.service.PipelineJobConfigurationManager;
 import org.apache.shardingsphere.data.pipeline.core.job.type.PipelineJobOption;
 import org.apache.shardingsphere.data.pipeline.core.job.type.PipelineJobType;
-import org.apache.shardingsphere.data.pipeline.core.pojo.PipelineJobInfo;
-import org.apache.shardingsphere.data.pipeline.core.pojo.PipelineJobMetaData;
+import org.apache.shardingsphere.data.pipeline.core.pojo.PipelineJobObjective;
 
 /**
  * CDC job type.
  */
-public final class CDCJobType implements PipelineJobType {
+public final class CDCJobType implements PipelineJobType<CDCJobConfiguration> {
     
     @Override
     public PipelineJobOption getOption() {
@@ -37,9 +35,8 @@ public final class CDCJobType implements PipelineJobType {
     }
     
     @Override
-    public PipelineJobInfo getJobInfo(final PipelineJobMetaData jobMetaData) {
-        CDCJobConfiguration jobConfig = new PipelineJobConfigurationManager(getOption()).getJobConfiguration(jobMetaData.getJobId());
-        return new PipelineJobInfo(jobMetaData, jobConfig.getDatabaseName(), String.join(", ", jobConfig.getSchemaTableNames()));
+    public PipelineJobObjective getJobObjective(final CDCJobConfiguration jobConfig) {
+        return new PipelineJobObjective(jobConfig.getDatabaseName(), String.join(", ", jobConfig.getSchemaTableNames()));
     }
     
     @Override
