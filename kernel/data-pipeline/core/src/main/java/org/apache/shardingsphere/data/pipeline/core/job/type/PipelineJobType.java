@@ -72,6 +72,6 @@ public interface PipelineJobType<T extends PipelineJobConfiguration> extends Typ
     
     @Override
     default Collection<Object> getTypeAliases() {
-        return Collections.singleton(getType());
+        return Collections.singleton(getOption().getCode());
     }
 }
