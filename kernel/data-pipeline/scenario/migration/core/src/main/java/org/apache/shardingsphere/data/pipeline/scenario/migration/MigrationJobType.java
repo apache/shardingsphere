@@ -34,7 +34,6 @@ import org.apache.shardingsphere.data.pipeline.scenario.migration.config.yaml.sw
 
 import java.util.Collection;
 import java.util.LinkedList;
-import java.util.Optional;
 
 /**
  * Migration job type.
@@ -45,43 +44,6 @@ public final class MigrationJobType implements PipelineJobType {
     public PipelineJobOption getOption() {
         return new PipelineJobOption("01",
                 true, new YamlMigrationJobConfigurationSwapper(), new YamlTransmissionJobItemProgressSwapper(), MigrationJob.class, false, "CONSISTENCY_CHECK", "CONSISTENCY_CHECK", false);
-    }
-    
-    @Override
-    public String getCode() {
-        return "01";
-    }
-    
-    @Override
-    public boolean isTransmissionJob() {
-        return true;
-    }
-    
-    @SuppressWarnings("unchecked")
-    @Override
-    public YamlMigrationJobConfigurationSwapper getYamlJobConfigurationSwapper() {
-        return new YamlMigrationJobConfigurationSwapper();
-    }
-    
-    @SuppressWarnings("unchecked")
-    @Override
-    public YamlTransmissionJobItemProgressSwapper getYamlJobItemProgressSwapper() {
-        return new YamlTransmissionJobItemProgressSwapper();
-    }
-    
-    @Override
-    public Class<MigrationJob> getJobClass() {
-        return MigrationJob.class;
-    }
-    
-    @Override
-    public Optional<String> getToBeStartDisabledNextJobType() {
-        return Optional.of("CONSISTENCY_CHECK");
-    }
-    
-    @Override
-    public Optional<String> getToBeStoppedPreviousJobType() {
-        return Optional.of("CONSISTENCY_CHECK");
     }
     
     @Override

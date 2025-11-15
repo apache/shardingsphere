@@ -38,38 +38,6 @@ public final class CDCJobType implements PipelineJobType {
     }
     
     @Override
-    public String getCode() {
-        return "03";
-    }
-    
-    @Override
-    public boolean isTransmissionJob() {
-        return true;
-    }
-    
-    @SuppressWarnings("unchecked")
-    @Override
-    public YamlCDCJobConfigurationSwapper getYamlJobConfigurationSwapper() {
-        return new YamlCDCJobConfigurationSwapper();
-    }
-    
-    @SuppressWarnings("unchecked")
-    @Override
-    public YamlTransmissionJobItemProgressSwapper getYamlJobItemProgressSwapper() {
-        return new YamlTransmissionJobItemProgressSwapper();
-    }
-    
-    @Override
-    public Class<CDCJob> getJobClass() {
-        return CDCJob.class;
-    }
-    
-    @Override
-    public boolean isForceNoShardingWhenConvertToJobConfigurationPOJO() {
-        return true;
-    }
-    
-    @Override
     public PipelineJobInfo getJobInfo(final String jobId) {
         PipelineJobMetaData jobMetaData = new PipelineJobMetaData(PipelineJobIdUtils.getElasticJobConfigurationPOJO(jobId));
         CDCJobConfiguration jobConfig = new PipelineJobConfigurationManager(new CDCJobType()).getJobConfiguration(jobId);
