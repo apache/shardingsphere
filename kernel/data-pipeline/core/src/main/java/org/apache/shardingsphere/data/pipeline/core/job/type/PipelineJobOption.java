@@ -50,7 +50,7 @@ public final class PipelineJobOption {
     
     /**
      * Get YAML job item progress swapper.
-     * 
+     *
      * @return YAML job item progress swapper
      */
     public YamlPipelineJobItemProgressSwapper<?, ?> getYamlJobItemProgressSwapper() {
