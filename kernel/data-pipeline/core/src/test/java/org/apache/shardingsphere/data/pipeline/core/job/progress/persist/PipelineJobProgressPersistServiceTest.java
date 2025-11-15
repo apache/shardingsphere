@@ -20,8 +20,8 @@ package org.apache.shardingsphere.data.pipeline.core.job.progress.persist;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.data.pipeline.core.context.PipelineJobItemContext;
 import org.apache.shardingsphere.data.pipeline.core.job.PipelineJobRegistry;
-import org.apache.shardingsphere.data.pipeline.core.job.service.PipelineJobItemManager;
 import org.apache.shardingsphere.data.pipeline.core.job.id.PipelineJobIdUtils;
+import org.apache.shardingsphere.data.pipeline.core.job.service.PipelineJobItemManager;
 import org.apache.shardingsphere.data.pipeline.core.job.type.PipelineJobOption;
 import org.apache.shardingsphere.data.pipeline.core.job.type.PipelineJobType;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
@@ -34,6 +34,7 @@ import org.mockito.MockedConstruction;
 import org.mockito.MockedStatic;
 import org.mockito.internal.configuration.plugins.Plugins;
 
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.util.Map;
 import java.util.Optional;
@@ -98,6 +99,43 @@ class PipelineJobProgressPersistServiceTest {
     void assertPersistNowSkipsWhenUnhandledCountIsZero() {
         PipelineJobProgressPersistService.add("foo_id", 1);
         assertDoesNotThrow(() -> PipelineJobProgressPersistService.persistNow("foo_id", 1));
+    }
+    
+    @SuppressWarnings("rawtypes")
+    @SneakyThrows(ReflectiveOperationException.class)
+    @Test
+    void assertPersistJobContextRunnableIteratesEntries() {
+        String jobId = "foo_scheduler_job";
+        int shardingItem = 2;
+        PipelineJobItemContext jobItemContext = mock(PipelineJobItemContext.class);
+        when(PipelineJobRegistry.getItemContext(jobId, shardingItem)).thenReturn(Optional.of(jobItemContext));
+        PipelineJobType<?> jobType = mock(PipelineJobType.class);
+        PipelineJobOption jobOption = mock(PipelineJobOption.class);
+        when(jobOption.getYamlJobItemProgressSwapper()).thenReturn(null);
+        when(jobType.getOption()).thenReturn(jobOption);
+        when(jobType.getType()).thenReturn("TEST");
+        ThreadLocalRandom randomMock = mock(ThreadLocalRandom.class);
+        when(ThreadLocalRandom.current()).thenReturn(randomMock);
+        when(randomMock.nextInt(100)).thenReturn(0);
+        try (
+                MockedStatic<PipelineJobIdUtils> jobIdUtilsMock = mockStatic(PipelineJobIdUtils.class);
+                MockedStatic<TypedSPILoader> typedSpiLoaderStatic = mockStatic(TypedSPILoader.class);
+                MockedConstruction<PipelineJobItemManager> mockedConstruction = mockConstruction(PipelineJobItemManager.class,
+                        (mock, context) -> doNothing().when(mock).updateProgress(jobItemContext))) {
+            jobIdUtilsMock.when(() -> PipelineJobIdUtils.parseJobType(jobId)).thenReturn(jobType);
+            typedSpiLoaderStatic.when(() -> TypedSPILoader.getService(PipelineJobType.class, "TEST")).thenReturn(jobType);
+            PipelineJobProgressPersistService.add(jobId, shardingItem);
+            PipelineJobProgressPersistService.notifyPersist(jobId, shardingItem);
+            Class<?> runnableClass = Class.forName(PipelineJobProgressPersistService.class.getName() + "$PersistJobContextRunnable");
+            Constructor<?> constructor = runnableClass.getDeclaredConstructor();
+            constructor.setAccessible(true);
+            Runnable runnable = (Runnable) constructor.newInstance();
+            assertDoesNotThrow(runnable::run);
+            assertThat(getJobProgressPersistMap().get(jobId).get(shardingItem).getUnhandledEventCount().get(), is(0L));
+            verify(mockedConstruction.constructed().get(0)).updateProgress(jobItemContext);
+        } finally {
+            PipelineJobProgressPersistService.remove(jobId);
+        }
     }
     
     @SuppressWarnings("rawtypes")
