@@ -19,7 +19,6 @@ package org.apache.shardingsphere.data.pipeline.cdc;
 
 import org.apache.shardingsphere.data.pipeline.cdc.config.CDCJobConfiguration;
 import org.apache.shardingsphere.data.pipeline.cdc.config.yaml.swapper.YamlCDCJobConfigurationSwapper;
-import org.apache.shardingsphere.data.pipeline.core.job.progress.yaml.swapper.YamlTransmissionJobItemProgressSwapper;
 import org.apache.shardingsphere.data.pipeline.core.job.type.PipelineJobOption;
 import org.apache.shardingsphere.data.pipeline.core.job.type.PipelineJobType;
 import org.apache.shardingsphere.data.pipeline.core.pojo.PipelineJobObjective;
@@ -31,7 +30,7 @@ public final class CDCJobType implements PipelineJobType<CDCJobConfiguration> {
     
     @Override
     public PipelineJobOption getOption() {
-        return new PipelineJobOption("03", true, new YamlCDCJobConfigurationSwapper(), new YamlTransmissionJobItemProgressSwapper(), CDCJob.class, false, null, null, true);
+        return new PipelineJobOption("03", true, new YamlCDCJobConfigurationSwapper(), CDCJob.class, false, null, null, true);
     }
     
     @Override

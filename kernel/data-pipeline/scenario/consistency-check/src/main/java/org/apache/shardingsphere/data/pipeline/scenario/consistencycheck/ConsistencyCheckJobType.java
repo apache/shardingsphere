@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.data.pipeline.scenario.consistencycheck;
 
 import org.apache.shardingsphere.data.pipeline.core.job.config.PipelineJobConfiguration;
-import org.apache.shardingsphere.data.pipeline.core.job.progress.yaml.swapper.YamlConsistencyCheckJobItemProgressSwapper;
 import org.apache.shardingsphere.data.pipeline.core.job.type.PipelineJobOption;
 import org.apache.shardingsphere.data.pipeline.core.job.type.PipelineJobType;
 import org.apache.shardingsphere.data.pipeline.core.pojo.PipelineJobObjective;
@@ -31,8 +30,7 @@ public final class ConsistencyCheckJobType implements PipelineJobType<PipelineJo
     
     @Override
     public PipelineJobOption getOption() {
-        return new PipelineJobOption("02",
-                false, new YamlConsistencyCheckJobConfigurationSwapper(), new YamlConsistencyCheckJobItemProgressSwapper(), ConsistencyCheckJob.class, true, null, null, false);
+        return new PipelineJobOption("02", false, new YamlConsistencyCheckJobConfigurationSwapper(), ConsistencyCheckJob.class, true, null, null, false);
     }
     
     @Override
