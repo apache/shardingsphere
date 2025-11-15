@@ -35,38 +35,6 @@ public final class ConsistencyCheckJobType implements PipelineJobType {
     }
     
     @Override
-    public String getCode() {
-        return "02";
-    }
-    
-    @Override
-    public boolean isTransmissionJob() {
-        return false;
-    }
-    
-    @SuppressWarnings("unchecked")
-    @Override
-    public YamlConsistencyCheckJobConfigurationSwapper getYamlJobConfigurationSwapper() {
-        return new YamlConsistencyCheckJobConfigurationSwapper();
-    }
-    
-    @SuppressWarnings("unchecked")
-    @Override
-    public YamlConsistencyCheckJobItemProgressSwapper getYamlJobItemProgressSwapper() {
-        return new YamlConsistencyCheckJobItemProgressSwapper();
-    }
-    
-    @Override
-    public Class<ConsistencyCheckJob> getJobClass() {
-        return ConsistencyCheckJob.class;
-    }
-    
-    @Override
-    public boolean isIgnoreToStartDisabledJobWhenJobItemProgressIsFinished() {
-        return true;
-    }
-    
-    @Override
     public PipelineJobInfo getJobInfo(final String jobId) {
         return null;
     }

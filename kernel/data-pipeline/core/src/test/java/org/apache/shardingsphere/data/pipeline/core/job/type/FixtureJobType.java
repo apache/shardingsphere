@@ -17,14 +17,7 @@
 
 package org.apache.shardingsphere.data.pipeline.core.job.type;
 
-import org.apache.shardingsphere.data.pipeline.core.job.PipelineJob;
-import org.apache.shardingsphere.data.pipeline.core.job.config.PipelineJobConfiguration;
-import org.apache.shardingsphere.data.pipeline.core.job.config.yaml.swapper.YamlPipelineJobConfigurationSwapper;
-import org.apache.shardingsphere.data.pipeline.core.job.progress.PipelineJobItemProgress;
-import org.apache.shardingsphere.data.pipeline.core.job.progress.yaml.config.YamlPipelineJobItemProgressConfiguration;
-import org.apache.shardingsphere.data.pipeline.core.job.progress.yaml.swapper.YamlPipelineJobItemProgressSwapper;
 import org.apache.shardingsphere.data.pipeline.core.pojo.PipelineJobInfo;
-import org.apache.shardingsphere.infra.util.yaml.YamlConfiguration;
 
 /**
  * Fixture job type.
@@ -34,31 +27,6 @@ public final class FixtureJobType implements PipelineJobType {
     @Override
     public PipelineJobOption getOption() {
         return new PipelineJobOption("00", true, null, null, null, false, null, null, false);
-    }
-    
-    @Override
-    public String getCode() {
-        return "00";
-    }
-    
-    @Override
-    public boolean isTransmissionJob() {
-        return true;
-    }
-    
-    @Override
-    public <Y extends YamlConfiguration, T extends PipelineJobConfiguration> YamlPipelineJobConfigurationSwapper<Y, T> getYamlJobConfigurationSwapper() {
-        return null;
-    }
-    
-    @Override
-    public <T extends PipelineJobItemProgress> YamlPipelineJobItemProgressSwapper<YamlPipelineJobItemProgressConfiguration, T> getYamlJobItemProgressSwapper() {
-        return null;
-    }
-    
-    @Override
-    public Class<? extends PipelineJob> getJobClass() {
-        return null;
     }
     
     @Override

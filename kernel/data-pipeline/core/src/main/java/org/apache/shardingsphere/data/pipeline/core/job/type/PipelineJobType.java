@@ -21,18 +21,10 @@ import com.fasterxml.jackson.annotation.JsonIgnoreType;
 import org.apache.shardingsphere.data.pipeline.core.consistencycheck.ConsistencyCheckJobItemProgressContext;
 import org.apache.shardingsphere.data.pipeline.core.consistencycheck.PipelineDataConsistencyChecker;
 import org.apache.shardingsphere.data.pipeline.core.context.TransmissionProcessContext;
-import org.apache.shardingsphere.data.pipeline.core.job.PipelineJob;
 import org.apache.shardingsphere.data.pipeline.core.job.config.PipelineJobConfiguration;
-import org.apache.shardingsphere.data.pipeline.core.job.config.yaml.swapper.YamlPipelineJobConfigurationSwapper;
-import org.apache.shardingsphere.data.pipeline.core.job.progress.PipelineJobItemProgress;
-import org.apache.shardingsphere.data.pipeline.core.job.progress.yaml.config.YamlPipelineJobItemProgressConfiguration;
-import org.apache.shardingsphere.data.pipeline.core.job.progress.yaml.swapper.YamlPipelineJobItemProgressSwapper;
 import org.apache.shardingsphere.data.pipeline.core.pojo.PipelineJobInfo;
 import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPI;
-import org.apache.shardingsphere.infra.util.yaml.YamlConfiguration;
-
-import java.util.Optional;
 
 /**
  * Pipeline job type.
@@ -47,80 +39,6 @@ public interface PipelineJobType extends TypedSPI {
      * @return pipeline job option
      */
     PipelineJobOption getOption();
-    
-    /**
-     * Get job type code.
-     *
-     * @return job type code
-     */
-    String getCode();
-    
-    /**
-     * Whether transmission job.
-     *
-     * @return is transmission job or not
-     */
-    boolean isTransmissionJob();
-    
-    /**
-     * Get YAML pipeline job configuration swapper.
-     *
-     * @param <T> type of YAML configuration
-     * @param <Y> type of pipeline job configuration
-     * @return YAML pipeline job configuration swapper
-     */
-    <Y extends YamlConfiguration, T extends PipelineJobConfiguration> YamlPipelineJobConfigurationSwapper<Y, T> getYamlJobConfigurationSwapper();
-    
-    /**
-     * Get YAML pipeline job item progress swapper.
-     *
-     * @param <T> type of pipeline job item progress
-     * @return YAML pipeline job item progress swapper
-     */
-    <T extends PipelineJobItemProgress> YamlPipelineJobItemProgressSwapper<YamlPipelineJobItemProgressConfiguration, T> getYamlJobItemProgressSwapper();
-    
-    /**
-     * Get pipeline job class.
-     *
-     * @return pipeline job class
-     */
-    Class<? extends PipelineJob> getJobClass();
-    
-    /**
-     * Whether to ignore to start disabled job when job item progress is finished.
-     *
-     * @return ignore to start disabled job when job item progress is finished or not
-     */
-    default boolean isIgnoreToStartDisabledJobWhenJobItemProgressIsFinished() {
-        return false;
-    }
-    
-    /**
-     * Get to be start disabled next job type.
-     *
-     * @return to be start disabled next job type
-     */
-    default Optional<String> getToBeStartDisabledNextJobType() {
-        return Optional.empty();
-    }
-    
-    /**
-     * Get to be stopped previous job type.
-     *
-     * @return to be stopped previous job type
-     */
-    default Optional<String> getToBeStoppedPreviousJobType() {
-        return Optional.empty();
-    }
-    
-    /**
-     * Whether to force no sharding when convert to job configuration POJO.
-     *
-     * @return without sharding or not
-     */
-    default boolean isForceNoShardingWhenConvertToJobConfigurationPOJO() {
-        return false;
-    }
     
     /**
      * Get pipeline job info.
