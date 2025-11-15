@@ -67,7 +67,7 @@ public final class PipelineJobManager {
             log.warn("jobId already exists in registry center, ignore, job id is `{}`", jobId);
             return;
         }
-        governanceFacade.getJobFacade().getJob().create(jobId, jobType.getJobClass());
+        governanceFacade.getJobFacade().getJob().create(jobId, jobType.getOption().getJobClass());
         governanceFacade.getJobFacade().getConfiguration().persist(jobId, new PipelineJobConfigurationManager(jobType).convertToJobConfigurationPOJO(jobConfig));
     }
     
@@ -77,16 +77,18 @@ public final class PipelineJobManager {
      * @param jobId job id
      */
     public void resume(final String jobId) {
-        if (jobType.isIgnoreToStartDisabledJobWhenJobItemProgressIsFinished()) {
-            Optional<? extends PipelineJobItemProgress> jobItemProgress = new PipelineJobItemManager<>(jobType.getYamlJobItemProgressSwapper()).getProgress(jobId, 0);
+        if (jobType.getOption().isIgnoreToStartDisabledJobWhenJobItemProgressIsFinished()) {
+            Optional<? extends PipelineJobItemProgress> jobItemProgress = new PipelineJobItemManager<>(jobType.getOption().getYamlJobItemProgressSwapper()).getProgress(jobId, 0);
             if (jobItemProgress.isPresent() && JobStatus.FINISHED == jobItemProgress.get().getStatus()) {
                 log.info("job status is FINISHED, ignore, jobId={}", jobId);
                 return;
             }
         }
         startCurrentDisabledJob(jobId);
-        jobType.getToBeStartDisabledNextJobType().ifPresent(optional -> startNextDisabledJob(jobId, optional));
-        
+        String toBeStartDisabledNextJobType = jobType.getOption().getGetToBeStartDisabledNextJobType();
+        if (null != toBeStartDisabledNextJobType) {
+            startNextDisabledJob(jobId, toBeStartDisabledNextJobType);
+        }
     }
     
     private void startCurrentDisabledJob(final String jobId) {
@@ -121,7 +123,10 @@ public final class PipelineJobManager {
      * @param jobId job id
      */
     public void stop(final String jobId) {
-        jobType.getToBeStoppedPreviousJobType().ifPresent(optional -> stopPreviousJob(jobId, optional));
+        String toBeStoppedPreviousJobType = jobType.getOption().getGetToBeStoppedPreviousJobType();
+        if (null != toBeStoppedPreviousJobType) {
+            stopPreviousJob(jobId, toBeStoppedPreviousJobType);
+        }
         stopCurrentJob(jobId);
     }
     

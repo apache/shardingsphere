@@ -56,7 +56,7 @@ public final class PipelineJobIdUtils {
         String databaseName = instanceType == InstanceType.PROXY ? "" : contextKey.getDatabaseName();
         String databaseNameHex = Hex.encodeHexString(databaseName.getBytes(StandardCharsets.UTF_8), true);
         String databaseNameLengthHex = Hex.encodeHexString(Shorts.toByteArray((short) databaseNameHex.length()), true);
-        return 'j' + jobType.getCode() + PipelineJobId.CURRENT_VERSION + instanceType.getCode() + databaseNameLengthHex + databaseNameHex;
+        return 'j' + jobType.getOption().getCode() + PipelineJobId.CURRENT_VERSION + instanceType.getCode() + databaseNameLengthHex + databaseNameHex;
     }
     
     /**

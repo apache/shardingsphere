@@ -78,7 +78,7 @@ public final class PipelineContextManagerLifecycleListener implements ContextMan
                 log.warn("Parse job type failed, job name: {}, error: {}", each.getJobName(), ex.getMessage());
                 continue;
             }
-            if ("CONSISTENCY_CHECK".equals(jobType.getCode())) {
+            if ("CONSISTENCY_CHECK".equals(jobType.getType())) {
                 continue;
             }
             JobConfigurationPOJO jobConfig;
