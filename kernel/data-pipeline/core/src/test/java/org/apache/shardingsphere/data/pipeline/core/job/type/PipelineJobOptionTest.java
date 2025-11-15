@@ -28,11 +28,11 @@ class PipelineJobOptionTest {
     
     @Test
     void assertGetYamlJobItemProgressSwapperWithTransmissionJob() {
-        assertThat(new PipelineJobOption("00", true, null, null, false, null, null, false).getYamlJobItemProgressSwapper(), isA(YamlTransmissionJobItemProgressSwapper.class));
+        assertThat(new PipelineJobOption("00", null, true, null, false, null, null, false).getYamlJobItemProgressSwapper(), isA(YamlTransmissionJobItemProgressSwapper.class));
     }
     
     @Test
     void assertGetYamlJobItemProgressSwapperWithNotTransmissionJob() {
-        assertThat(new PipelineJobOption("00", false, null, null, false, null, null, false).getYamlJobItemProgressSwapper(), isA(YamlConsistencyCheckJobItemProgressSwapper.class));
+        assertThat(new PipelineJobOption("00", null, false, null, false, null, null, false).getYamlJobItemProgressSwapper(), isA(YamlConsistencyCheckJobItemProgressSwapper.class));
     }
 }

@@ -37,7 +37,7 @@ public final class MigrationJobType implements PipelineJobType<MigrationJobConfi
     
     @Override
     public PipelineJobOption getOption() {
-        return new PipelineJobOption("01", true, new YamlMigrationJobConfigurationSwapper(), MigrationJob.class, false, "CONSISTENCY_CHECK", "CONSISTENCY_CHECK", false);
+        return new PipelineJobOption("01", MigrationJob.class, true, new YamlMigrationJobConfigurationSwapper(), false, "CONSISTENCY_CHECK", "CONSISTENCY_CHECK", false);
     }
     
     @Override
