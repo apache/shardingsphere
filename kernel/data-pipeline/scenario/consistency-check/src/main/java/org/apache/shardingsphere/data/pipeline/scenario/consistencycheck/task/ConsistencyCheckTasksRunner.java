@@ -107,7 +107,7 @@ public final class ConsistencyCheckTasksRunner implements PipelineTasksRunner {
         protected void runBlocking() {
             jobItemManager.persistProgress(jobItemContext);
             PipelineJobType jobType = PipelineJobIdUtils.parseJobType(parentJobId);
-            PipelineJobConfiguration parentJobConfig = new PipelineJobConfigurationManager(jobType).getJobConfiguration(parentJobId);
+            PipelineJobConfiguration parentJobConfig = new PipelineJobConfigurationManager(jobType.getOption()).getJobConfiguration(parentJobId);
             try {
                 PipelineProcessConfiguration processConfig = PipelineProcessConfigurationUtils.fillInDefaultValue(
                         processConfigPersistService.load(PipelineJobIdUtils.parseContextKey(parentJobConfig.getJobId()), jobType.getType()));

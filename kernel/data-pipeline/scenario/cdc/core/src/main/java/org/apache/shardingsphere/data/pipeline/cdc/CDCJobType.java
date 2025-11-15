@@ -38,7 +38,7 @@ public final class CDCJobType implements PipelineJobType {
     
     @Override
     public PipelineJobInfo getJobInfo(final PipelineJobMetaData jobMetaData) {
-        CDCJobConfiguration jobConfig = new PipelineJobConfigurationManager(new CDCJobType()).getJobConfiguration(jobMetaData.getJobId());
+        CDCJobConfiguration jobConfig = new PipelineJobConfigurationManager(getOption()).getJobConfiguration(jobMetaData.getJobId());
         return new PipelineJobInfo(jobMetaData, jobConfig.getDatabaseName(), String.join(", ", jobConfig.getSchemaTableNames()));
     }
     

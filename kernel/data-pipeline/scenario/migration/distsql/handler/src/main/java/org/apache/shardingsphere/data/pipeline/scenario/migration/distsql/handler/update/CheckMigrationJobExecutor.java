@@ -51,7 +51,7 @@ public final class CheckMigrationJobExecutor implements DistSQLUpdateExecutor<Ch
         String algorithmTypeName = null == typeStrategy ? null : typeStrategy.getName();
         Properties algorithmProps = null == typeStrategy ? null : typeStrategy.getProps();
         String jobId = sqlStatement.getJobId();
-        MigrationJobConfiguration jobConfig = new PipelineJobConfigurationManager(migrationJobType).getJobConfiguration(jobId);
+        MigrationJobConfiguration jobConfig = new PipelineJobConfigurationManager(migrationJobType.getOption()).getJobConfiguration(jobId);
         verifyInventoryFinished(jobConfig);
         checkJobAPI.start(new CreateConsistencyCheckJobParameter(jobId, algorithmTypeName, algorithmProps, jobConfig.getSourceDatabaseType(), jobConfig.getTargetDatabaseType()));
     }

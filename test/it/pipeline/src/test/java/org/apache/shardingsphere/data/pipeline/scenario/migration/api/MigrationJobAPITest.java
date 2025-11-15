@@ -113,7 +113,7 @@ class MigrationJobAPITest {
         PipelineContextUtils.initPipelineContextManager();
         jobType = new MigrationJobType();
         jobAPI = (MigrationJobAPI) TypedSPILoader.getService(TransmissionJobAPI.class, "MIGRATION");
-        jobConfigManager = new PipelineJobConfigurationManager(jobType);
+        jobConfigManager = new PipelineJobConfigurationManager(jobType.getOption());
         jobManager = new PipelineJobManager(jobType);
         transmissionJobManager = new TransmissionJobManager(jobType);
         jobItemManager = new PipelineJobItemManager<>(jobType.getOption().getYamlJobItemProgressSwapper());
