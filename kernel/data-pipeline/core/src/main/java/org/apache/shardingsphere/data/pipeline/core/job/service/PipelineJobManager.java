@@ -54,6 +54,7 @@ import java.util.stream.Collectors;
 @Slf4j
 public final class PipelineJobManager {
     
+    @SuppressWarnings("rawtypes")
     private final PipelineJobType jobType;
     
     /**
@@ -173,10 +174,12 @@ public final class PipelineJobManager {
      * @param contextKey context key
      * @return jobs info
      */
+    @SuppressWarnings("unchecked")
     public List<PipelineJobInfo> getJobInfos(final PipelineContextKey contextKey) {
         try {
             return PipelineAPIFactory.getJobStatisticsAPI(contextKey).getAllJobsBriefInfo().stream().filter(this::isValidJob)
-                    .map(each -> jobType.getJobInfo(new PipelineJobMetaData(PipelineJobIdUtils.getElasticJobConfigurationPOJO(each.getJobName()))))
+                    .map(each -> new PipelineJobInfo(new PipelineJobMetaData(PipelineJobIdUtils.getElasticJobConfigurationPOJO(each.getJobName())),
+                            jobType.getJobObjective(new PipelineJobConfigurationManager(jobType.getOption()).getJobConfiguration(each.getJobName()))))
                     .collect(Collectors.toList());
         } catch (final UnsupportedOperationException ex) {
             return Collections.emptyList();

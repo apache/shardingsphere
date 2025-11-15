@@ -22,17 +22,18 @@ import org.apache.shardingsphere.data.pipeline.core.consistencycheck.Consistency
 import org.apache.shardingsphere.data.pipeline.core.consistencycheck.PipelineDataConsistencyChecker;
 import org.apache.shardingsphere.data.pipeline.core.context.TransmissionProcessContext;
 import org.apache.shardingsphere.data.pipeline.core.job.config.PipelineJobConfiguration;
-import org.apache.shardingsphere.data.pipeline.core.pojo.PipelineJobInfo;
-import org.apache.shardingsphere.data.pipeline.core.pojo.PipelineJobMetaData;
+import org.apache.shardingsphere.data.pipeline.core.pojo.PipelineJobObjective;
 import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPI;
 
 /**
  * Pipeline job type.
+ * 
+ * @param <T> type of pipeline job configuration
  */
 @SingletonSPI
 @JsonIgnoreType
-public interface PipelineJobType extends TypedSPI {
+public interface PipelineJobType<T extends PipelineJobConfiguration> extends TypedSPI {
     
     /**
      * Get pipeline job option.
@@ -42,23 +43,23 @@ public interface PipelineJobType extends TypedSPI {
     PipelineJobOption getOption();
     
     /**
-     * Get pipeline job info.
+     * Get pipeline job objective.
      *
-     * @param jobMetaData job meta data
-     * @return pipeline job info
+     * @param jobConfig pipeline job configuration
+     * @return pipeline pipeline job objective
      */
-    PipelineJobInfo getJobInfo(PipelineJobMetaData jobMetaData);
+    PipelineJobObjective getJobObjective(T jobConfig);
     
     /**
      * Build pipeline data consistency checker.
      *
-     * @param jobConfig job configuration
+     * @param jobConfig pipeline job configuration
      * @param processContext process context
      * @param progressContext consistency check job item progress context
      * @return all logic tables check result
      * @throws UnsupportedOperationException unsupported operation exception
      */
-    default PipelineDataConsistencyChecker buildDataConsistencyChecker(final PipelineJobConfiguration jobConfig,
+    default PipelineDataConsistencyChecker buildDataConsistencyChecker(final T jobConfig,
                                                                        final TransmissionProcessContext processContext, final ConsistencyCheckJobItemProgressContext progressContext) {
         throw new UnsupportedOperationException("Build data consistency checker is not supported.");
     }

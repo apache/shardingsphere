@@ -20,13 +20,10 @@ package org.apache.shardingsphere.data.pipeline.scenario.migration;
 import org.apache.shardingsphere.data.pipeline.core.consistencycheck.ConsistencyCheckJobItemProgressContext;
 import org.apache.shardingsphere.data.pipeline.core.consistencycheck.PipelineDataConsistencyChecker;
 import org.apache.shardingsphere.data.pipeline.core.context.TransmissionProcessContext;
-import org.apache.shardingsphere.data.pipeline.core.job.config.PipelineJobConfiguration;
 import org.apache.shardingsphere.data.pipeline.core.job.progress.yaml.swapper.YamlTransmissionJobItemProgressSwapper;
-import org.apache.shardingsphere.data.pipeline.core.job.service.PipelineJobConfigurationManager;
 import org.apache.shardingsphere.data.pipeline.core.job.type.PipelineJobOption;
 import org.apache.shardingsphere.data.pipeline.core.job.type.PipelineJobType;
-import org.apache.shardingsphere.data.pipeline.core.pojo.PipelineJobInfo;
-import org.apache.shardingsphere.data.pipeline.core.pojo.PipelineJobMetaData;
+import org.apache.shardingsphere.data.pipeline.core.pojo.PipelineJobObjective;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.check.consistency.MigrationDataConsistencyChecker;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.config.MigrationJobConfiguration;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.config.yaml.swapper.YamlMigrationJobConfigurationSwapper;
@@ -37,7 +34,7 @@ import java.util.LinkedList;
 /**
  * Migration job type.
  */
-public final class MigrationJobType implements PipelineJobType {
+public final class MigrationJobType implements PipelineJobType<MigrationJobConfiguration> {
     
     @Override
     public PipelineJobOption getOption() {
@@ -46,17 +43,16 @@ public final class MigrationJobType implements PipelineJobType {
     }
     
     @Override
-    public PipelineJobInfo getJobInfo(final PipelineJobMetaData jobMetaData) {
-        MigrationJobConfiguration jobConfig = new PipelineJobConfigurationManager(getOption()).getJobConfiguration(jobMetaData.getJobId());
+    public PipelineJobObjective getJobObjective(final MigrationJobConfiguration jobConfig) {
         Collection<String> sourceTables = new LinkedList<>();
         jobConfig.getJobShardingDataNodes().forEach(each -> each.getEntries().forEach(entry -> entry.getDataNodes().forEach(dataNode -> sourceTables.add(dataNode.format()))));
-        return new PipelineJobInfo(jobMetaData, null, String.join(",", sourceTables));
+        return new PipelineJobObjective(null, String.join(",", sourceTables));
     }
     
     @Override
-    public PipelineDataConsistencyChecker buildDataConsistencyChecker(final PipelineJobConfiguration jobConfig,
+    public PipelineDataConsistencyChecker buildDataConsistencyChecker(final MigrationJobConfiguration jobConfig,
                                                                       final TransmissionProcessContext processContext, final ConsistencyCheckJobItemProgressContext progressContext) {
-        return new MigrationDataConsistencyChecker((MigrationJobConfiguration) jobConfig, processContext, progressContext);
+        return new MigrationDataConsistencyChecker(jobConfig, processContext, progressContext);
     }
     
     @Override

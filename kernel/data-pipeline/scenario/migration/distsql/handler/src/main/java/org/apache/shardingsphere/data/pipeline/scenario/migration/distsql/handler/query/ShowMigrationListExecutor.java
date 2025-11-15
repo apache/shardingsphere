@@ -53,7 +53,7 @@ public final class ShowMigrationListExecutor implements DistSQLQueryExecutor<Sho
     private LocalDataQueryResultRow getRow(final PipelineContextKey contextKey, final PipelineJobInfo jobInfo) {
         boolean active = jobInfo.getJobMetaData().isActive();
         String jobShardingNodes = active ? getJobShardingNodes(contextKey, jobInfo.getJobMetaData().getJobId()) : "";
-        return new LocalDataQueryResultRow(jobInfo.getJobMetaData().getJobId(), jobInfo.getTableName(), active, jobInfo.getJobMetaData().getCreateTime(),
+        return new LocalDataQueryResultRow(jobInfo.getJobMetaData().getJobId(), jobInfo.getJobObjective().getTableName(), active, jobInfo.getJobMetaData().getCreateTime(),
                 jobInfo.getJobMetaData().getStopTime(), jobInfo.getJobMetaData().getJobItemCount(), jobShardingNodes);
     }
     

@@ -45,7 +45,7 @@ public final class ShowStreamingListExecutor implements DistSQLQueryExecutor<Sho
     @Override
     public Collection<LocalDataQueryResultRow> getRows(final ShowStreamingListStatement sqlStatement, final ContextManager contextManager) {
         return pipelineJobManager.getJobInfos(new PipelineContextKey(InstanceType.PROXY)).stream().map(each -> new LocalDataQueryResultRow(each.getJobMetaData().getJobId(),
-                each.getDatabaseName(), each.getTableName(), each.getJobMetaData().getJobItemCount(), each.getJobMetaData().isActive(),
+                each.getJobObjective().getDatabaseName(), each.getJobObjective().getTableName(), each.getJobMetaData().getJobItemCount(), each.getJobMetaData().isActive(),
                 each.getJobMetaData().getCreateTime(), each.getJobMetaData().getStopTime())).collect(Collectors.toList());
     }
     

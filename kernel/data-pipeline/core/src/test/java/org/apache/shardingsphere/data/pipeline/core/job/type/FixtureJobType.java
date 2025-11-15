@@ -17,13 +17,13 @@
 
 package org.apache.shardingsphere.data.pipeline.core.job.type;
 
-import org.apache.shardingsphere.data.pipeline.core.pojo.PipelineJobInfo;
-import org.apache.shardingsphere.data.pipeline.core.pojo.PipelineJobMetaData;
+import org.apache.shardingsphere.data.pipeline.core.job.config.PipelineJobConfiguration;
+import org.apache.shardingsphere.data.pipeline.core.pojo.PipelineJobObjective;
 
 /**
  * Fixture job type.
  */
-public final class FixtureJobType implements PipelineJobType {
+public final class FixtureJobType implements PipelineJobType<PipelineJobConfiguration> {
     
     @Override
     public PipelineJobOption getOption() {
@@ -31,7 +31,7 @@ public final class FixtureJobType implements PipelineJobType {
     }
     
     @Override
-    public PipelineJobInfo getJobInfo(final PipelineJobMetaData jobMetaData) {
+    public PipelineJobObjective getJobObjective(final PipelineJobConfiguration jobConfig) {
         return null;
     }
     
