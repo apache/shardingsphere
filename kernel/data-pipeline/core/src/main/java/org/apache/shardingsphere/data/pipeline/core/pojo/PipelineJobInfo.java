@@ -27,7 +27,7 @@ import lombok.RequiredArgsConstructor;
 @Getter
 public final class PipelineJobInfo {
     
-    private final PipelineJobMetaData jobMetaData;
+    private final PipelineJobMetaData metaData;
     
-    private final PipelineJobObjective jobObjective;
+    private final PipelineJobTarget target;
 }

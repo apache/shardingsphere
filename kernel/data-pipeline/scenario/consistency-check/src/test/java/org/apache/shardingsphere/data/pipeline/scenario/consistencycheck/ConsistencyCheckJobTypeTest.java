@@ -54,7 +54,7 @@ class ConsistencyCheckJobTypeTest {
     
     @SuppressWarnings("unchecked")
     @Test
-    void assertGetJobObjective() {
-        assertNull(jobType.getJobObjective(mock(PipelineJobConfiguration.class)));
+    void assertGetJobTarget() {
+        assertNull(jobType.getJobTarget(mock(PipelineJobConfiguration.class)));
     }
 }
