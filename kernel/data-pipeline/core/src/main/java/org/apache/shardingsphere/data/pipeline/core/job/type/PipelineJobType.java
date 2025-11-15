@@ -23,6 +23,7 @@ import org.apache.shardingsphere.data.pipeline.core.consistencycheck.PipelineDat
 import org.apache.shardingsphere.data.pipeline.core.context.TransmissionProcessContext;
 import org.apache.shardingsphere.data.pipeline.core.job.config.PipelineJobConfiguration;
 import org.apache.shardingsphere.data.pipeline.core.pojo.PipelineJobInfo;
+import org.apache.shardingsphere.data.pipeline.core.pojo.PipelineJobMetaData;
 import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPI;
 
@@ -43,10 +44,10 @@ public interface PipelineJobType extends TypedSPI {
     /**
      * Get pipeline job info.
      *
-     * @param jobId job ID
+     * @param jobMetaData job meta data
      * @return pipeline job info
      */
-    PipelineJobInfo getJobInfo(String jobId);
+    PipelineJobInfo getJobInfo(PipelineJobMetaData jobMetaData);
     
     /**
      * Build pipeline data consistency checker.
