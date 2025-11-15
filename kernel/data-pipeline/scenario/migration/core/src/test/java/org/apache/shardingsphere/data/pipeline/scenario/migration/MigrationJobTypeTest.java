@@ -40,6 +40,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 class MigrationJobTypeTest {
     
@@ -65,9 +66,8 @@ class MigrationJobTypeTest {
     void assertGetJobObjective() {
         JobDataNodeEntry dataNodeEntry1 = new JobDataNodeEntry("foo_tbl", Arrays.asList(new DataNode("db.foo_tbl_0"), new DataNode("db.foo_tbl_1")));
         JobDataNodeEntry dataNodeEntry2 = new JobDataNodeEntry("bar_tbl", Arrays.asList(new DataNode("db.bar_tbl_0"), new DataNode("db.bar_tbl_1")));
-        MigrationJobConfiguration jobConfig = new MigrationJobConfiguration("foo_job",
-                "foo_db", mock(), mock(), Collections.emptyMap(), mock(), Collections.emptyList(), Collections.emptyMap(), mock(),
-                Collections.singletonList(new JobDataNodeLine(Arrays.asList(dataNodeEntry1, dataNodeEntry2))), 1, 1);
+        MigrationJobConfiguration jobConfig = mock(MigrationJobConfiguration.class);
+        when(jobConfig.getJobShardingDataNodes()).thenReturn(Collections.singletonList(new JobDataNodeLine(Arrays.asList(dataNodeEntry1, dataNodeEntry2))));
         PipelineJobObjective actual = jobType.getJobObjective(jobConfig);
         assertNull(actual.getDatabaseName());
         assertThat(actual.getTableName(), is("db.foo_tbl_0,db.foo_tbl_1,db.bar_tbl_0,db.bar_tbl_1"));

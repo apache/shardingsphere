@@ -27,7 +27,6 @@ import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
-import java.util.Collections;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -36,6 +35,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 class CDCJobTypeTest {
     
@@ -59,8 +59,9 @@ class CDCJobTypeTest {
     @SuppressWarnings("unchecked")
     @Test
     void assertGetJobObjective() {
-        CDCJobConfiguration jobConfig = new CDCJobConfiguration("foo_job",
-                "foo_db", Arrays.asList("foo_schema.foo_tbl", "bar_schema.bar_tbl"), false, mock(), mock(), mock(), Collections.emptyList(), false, mock(), 1, 3);
+        CDCJobConfiguration jobConfig = mock(CDCJobConfiguration.class);
+        when(jobConfig.getDatabaseName()).thenReturn("foo_db");
+        when(jobConfig.getSchemaTableNames()).thenReturn(Arrays.asList("foo_schema.foo_tbl", "bar_schema.bar_tbl"));
         PipelineJobObjective actual = jobType.getJobObjective(jobConfig);
         assertThat(actual.getDatabaseName(), is("foo_db"));
         assertThat(actual.getTableName(), is("foo_schema.foo_tbl, bar_schema.bar_tbl"));

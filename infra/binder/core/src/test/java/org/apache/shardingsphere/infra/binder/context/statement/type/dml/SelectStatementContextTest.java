@@ -30,6 +30,8 @@ import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.AggregationType;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.OrderDirection;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.ParameterMarkerType;
+import org.apache.shardingsphere.sql.parser.statement.core.enums.SubqueryType;
+import org.apache.shardingsphere.sql.parser.statement.core.enums.CombineType;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.BinaryOperationExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simple.LiteralExpressionSegment;
@@ -48,23 +50,31 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.order.ite
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.order.item.IndexOrderByItemSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.order.item.OrderByItemSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.predicate.WhereSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.predicate.HavingSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.AliasSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.OwnerSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.bound.TableSegmentBoundInfo;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.JoinTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SubqueryTableSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.combine.CombineSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableNameSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.pagination.limit.LimitSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.pagination.limit.NumberLiteralLimitValueSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.pagination.limit.ParameterMarkerLimitValueSegment;
+import org.apache.shardingsphere.infra.binder.context.segment.select.pagination.PaginationContext;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
@@ -190,6 +200,10 @@ class SelectStatementContextTest {
         SelectStatementContext selectStatementContext = new SelectStatementContext(selectStatement, createShardingSphereMetaData(database), "foo_db", Collections.emptyList());
         selectStatementContext.setIndexes(Collections.singletonMap("id", 3));
         assertThat(selectStatementContext.getOrderByContext().getItems().iterator().next().getIndex(), is(3));
+        selectStatementContext.setNeedAggregateRewrite(true);
+        assertTrue(selectStatementContext.isNeedAggregateRewrite());
+        selectStatementContext.setNeedAggregateRewrite(false);
+        assertFalse(selectStatementContext.isNeedAggregateRewrite());
     }
     
     @Test
@@ -217,6 +231,7 @@ class SelectStatementContextTest {
         ProjectionsSegment subqueryProjections = new ProjectionsSegment(0, 0);
         subqueryProjections.getProjections().add(new ColumnProjectionSegment(new ColumnSegment(0, 0, new IdentifierValue("order_id"))));
         subSelectStatement.setProjections(subqueryProjections);
+        subSelectStatement.setSubqueryType(SubqueryType.PROJECTION);
         ProjectionsSegment projectionsSegment = new ProjectionsSegment(0, 0);
         SubquerySegment subquerySegment = new SubquerySegment(0, 0, subSelectStatement, "");
         SubqueryProjectionSegment subqueryProjectionSegment = new SubqueryProjectionSegment(subquerySegment, "");
@@ -224,7 +239,10 @@ class SelectStatementContextTest {
         SelectStatement selectStatement = new SelectStatement(databaseType);
         selectStatement.setProjections(projectionsSegment);
         ShardingSphereDatabase database = mockDatabase();
-        assertTrue(new SelectStatementContext(selectStatement, createShardingSphereMetaData(database), "foo_db", Collections.emptyList()).isContainsSubquery());
+        SelectStatementContext selectStatementContext = new SelectStatementContext(selectStatement, createShardingSphereMetaData(database), "foo_db", Collections.emptyList());
+        assertTrue(selectStatementContext.isContainsSubquery());
+        assertThat(selectStatementContext.getSubqueryContexts().size(), is(1));
+        assertThat(selectStatementContext.getSubqueryContexts().values().iterator().next().getSubqueryType(), is(SubqueryType.PROJECTION));
     }
     
     @Test
@@ -251,6 +269,29 @@ class SelectStatementContextTest {
         ShardingSphereMetaData metaData = new ShardingSphereMetaData(
                 Collections.singleton(mockDatabase()), mock(ResourceMetaData.class), mock(RuleMetaData.class), mock(ConfigurationProperties.class));
         assertTrue(new SelectStatementContext(selectStatement, metaData, "foo_db", Collections.emptyList()).isContainsSubquery());
+    }
+    
+    @Test
+    void assertFindColumnBoundInfoHandlesColumnsAndSubquery() {
+        ProjectionsSegment projectionsSegment = new ProjectionsSegment(0, 0);
+        ColumnProjectionSegment columnProjectionSegment = new ColumnProjectionSegment(new ColumnSegment(0, 0, new IdentifierValue("id")));
+        projectionsSegment.getProjections().add(columnProjectionSegment);
+        SelectStatement innerSelectStatement = new SelectStatement(databaseType);
+        ProjectionsSegment innerProjectionsSegment = new ProjectionsSegment(0, 0);
+        ColumnProjectionSegment innerColumnProjection = new ColumnProjectionSegment(new ColumnSegment(0, 0, new IdentifierValue("sub_id")));
+        innerProjectionsSegment.getProjections().add(innerColumnProjection);
+        innerSelectStatement.setProjections(innerProjectionsSegment);
+        SubquerySegment subquerySegment = new SubquerySegment(0, 0, innerSelectStatement, "");
+        SubqueryProjectionSegment subqueryProjectionSegment = new SubqueryProjectionSegment(subquerySegment, "");
+        projectionsSegment.getProjections().add(subqueryProjectionSegment);
+        SelectStatement selectStatement = new SelectStatement(databaseType);
+        selectStatement.setProjections(projectionsSegment);
+        SelectStatementContext selectStatementContext = createSelectStatementContext(selectStatement);
+        assertTrue(selectStatementContext.findColumnBoundInfo(1).isPresent());
+        assertThat(selectStatementContext.findColumnBoundInfo(1).get().getOriginalColumn().getValue(), is("id"));
+        assertTrue(selectStatementContext.findColumnBoundInfo(2).isPresent());
+        assertThat(selectStatementContext.findColumnBoundInfo(2).get().getOriginalColumn().getValue(), is("sub_id"));
+        assertFalse(selectStatementContext.findColumnBoundInfo(3).isPresent());
     }
     
     @Test
@@ -282,6 +323,46 @@ class SelectStatementContextTest {
                 Collections.singleton(mockDatabase()), mock(ResourceMetaData.class), mock(RuleMetaData.class), mock(ConfigurationProperties.class));
         SelectStatementContext selectStatementContext = new SelectStatementContext(selectStatement, metaData, "foo_db", Collections.emptyList());
         assertTrue(selectStatementContext.isContainsPartialDistinctAggregation());
+    }
+    
+    @Test
+    void assertJoinHavingCombineAndDelegatedGetters() {
+        SelectStatement selectStatement = new SelectStatement(databaseType);
+        selectStatement.setProjections(new ProjectionsSegment(0, 0));
+        selectStatement.setFrom(new JoinTableSegment());
+        ColumnSegment left = new ColumnSegment(0, 0, new IdentifierValue("left_id"));
+        ColumnSegment right = new ColumnSegment(0, 0, new IdentifierValue("right_id"));
+        BinaryOperationExpression joinCondition = new BinaryOperationExpression(0, 0, left, right, "=", "");
+        selectStatement.setWhere(new WhereSegment(0, 0, joinCondition));
+        selectStatement.setHaving(new HavingSegment(0, 0, new LiteralExpressionSegment(0, 0, 1)));
+        CombineSegment combineSegment = new CombineSegment(
+                0, 0, new SubquerySegment(0, 0, createSubSelectStatement(), ""), CombineType.UNION, new SubquerySegment(0, 0, createSubSelectStatement(), ""));
+        selectStatement.setCombine(combineSegment);
+        SelectStatementContext selectStatementContext = createSelectStatementContext(selectStatement);
+        assertTrue(selectStatementContext.isContainsJoinQuery());
+        assertTrue(selectStatementContext.isContainsHaving());
+        assertTrue(selectStatementContext.isContainsCombine());
+        assertThat(selectStatementContext.getJoinConditions(), is(Collections.singletonList(joinCondition)));
+        assertThat(selectStatementContext.getColumnSegments().size(), is(2));
+        assertThat(selectStatementContext.getSqlStatement(), is(selectStatement));
+        assertNotNull(selectStatementContext.getProjectionsContext());
+    }
+    
+    @Test
+    void assertBindParametersPopulatePaginationContext() {
+        SelectStatement selectStatement = new SelectStatement(databaseType);
+        selectStatement.setProjections(new ProjectionsSegment(0, 0));
+        LimitSegment limitSegment = new LimitSegment(0, 0,
+                new ParameterMarkerLimitValueSegment(0, 0, 0), new NumberLiteralLimitValueSegment(1, 1, 5L));
+        selectStatement.setLimit(limitSegment);
+        SelectStatementContext selectStatementContext = createSelectStatementContext(selectStatement);
+        selectStatementContext.bindParameters(Collections.singletonList(7L));
+        PaginationContext paginationContext = selectStatementContext.getPaginationContext();
+        assertTrue(paginationContext.getOffsetParameterIndex().isPresent());
+        assertThat(paginationContext.getOffsetParameterIndex().get(), is(0));
+        assertThat(paginationContext.getActualOffset(), is(7L));
+        assertFalse(paginationContext.getRowCountParameterIndex().isPresent());
+        assertThat(paginationContext.getActualRowCount(), is(Optional.of(5L)));
     }
     
     private ShardingSphereMetaData createShardingSphereMetaData(final ShardingSphereDatabase database) {
@@ -340,6 +421,7 @@ class SelectStatementContextTest {
                 Collections.singleton(mockDatabase()), mock(ResourceMetaData.class), mock(RuleMetaData.class), mock(ConfigurationProperties.class));
         SelectStatementContext actual = new SelectStatementContext(selectStatement, metaData, "foo_db", Collections.emptyList());
         assertTrue(actual.isContainsEnhancedTable());
+        assertTrue(actual.containsDerivedProjections());
     }
     
     @Test
