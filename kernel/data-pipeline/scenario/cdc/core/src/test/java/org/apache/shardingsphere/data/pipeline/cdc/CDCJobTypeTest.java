@@ -68,7 +68,7 @@ class CDCJobTypeTest {
         assertThat(actual.getDatabaseName(), is("foo_db"));
         assertThat(actual.getTableName(), is("foo_schema.foo_tbl, bar_schema.bar_tbl"));
     }
-
+    
     private static <T> T mock(final Class<T> type) {
         return org.mockito.Mockito.mock(type);
     }
