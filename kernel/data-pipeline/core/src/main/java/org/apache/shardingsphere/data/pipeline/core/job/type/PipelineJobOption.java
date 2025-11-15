@@ -42,9 +42,9 @@ public final class PipelineJobOption {
     
     private final boolean isIgnoreToStartDisabledJobWhenJobItemProgressIsFinished;
     
-    private final String getToBeStartDisabledNextJobType;
+    private final String toBeStartDisabledNextJobType;
     
-    private final String getToBeStoppedPreviousJobType;
+    private final String toBeStoppedPreviousJobType;
     
     private final boolean isForceNoShardingWhenConvertToJobConfigurationPOJO;
 }
