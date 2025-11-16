@@ -87,39 +87,23 @@ class PostgreSQLColumnPropertiesAppenderTest {
     
     @Test
     void assertAppendUsesDefaultInheritedFromWithEmptyInheritsAndInheritedColumns() throws SQLException {
-        // Given: Context with BOTH typoid (null) and empty coll_inherits to trigger the missing branch
         Map<String, Object> context = new LinkedHashMap<>();
-        context.put("typoid", null);  // Explicitly set to null
-        context.put("coll_inherits", new SimpleArray(new String[0]));  // Empty array, not null
-
-        // Mock base column properties
+        context.put("typoid", null);
+        context.put("coll_inherits", new SimpleArray(new String[0]));
         Map<String, Object> baseColumn = createColumnWithName("test_col");
         baseColumn.put("inheritedfrom", "parent_table");
-
-        // Mock inherited columns to trigger the inheritance processing logic through getColumnFromType
         Map<String, Object> inheritedColumn = new LinkedHashMap<>();
         inheritedColumn.put("name", "test_col");
         inheritedColumn.put("inheritedfrom", "parent_table");
-
-        // Even with null typoid, getTypeAndInheritedColumns should return columns through getColumnFromType if properly mocked
-        when(templateExecutor.executeByTemplate(context, "component/columns/%s/properties.ftl"))
-                .thenReturn(Collections.singletonList(baseColumn));
-        when(templateExecutor.executeByTemplate(anyMap(), eq("table/%s/get_columns_for_table.ftl")))
-                .thenReturn(Collections.singletonList(inheritedColumn));
-        when(templateExecutor.executeByTemplate(anyMap(), eq("component/columns/%s/edit_mode_types_multi.ftl")))
-                .thenReturn(Collections.emptyList());
+        when(templateExecutor.executeByTemplate(context, "component/columns/%s/properties.ftl")).thenReturn(Collections.singletonList(baseColumn));
+        when(templateExecutor.executeByTemplate(anyMap(), eq("table/%s/get_columns_for_table.ftl"))).thenReturn(Collections.singletonList(inheritedColumn));
+        when(templateExecutor.executeByTemplate(anyMap(), eq("component/columns/%s/edit_mode_types_multi.ftl"))).thenReturn(Collections.emptyList());
         doNothing().when(templateExecutor).formatSecurityLabels(anyMap());
-
-        // When
         appender.append(context);
-
-        // Then
         @SuppressWarnings("unchecked")
         Collection<Map<String, Object>> columns = (Collection<Map<String, Object>>) context.get("columns");
         assertThat(columns, hasSize(1));
         Map<String, Object> resultColumn = columns.iterator().next();
-
-        // This should use default "inheritedfrom" since typoid is null and coll_inherits is empty
         assertThat(resultColumn.get("inheritedfrom"), is("parent_table"));
         assertThat(resultColumn.containsKey("inheritedfromtype"), is(false));
         assertThat(resultColumn.containsKey("inheritedfromtable"), is(false));
