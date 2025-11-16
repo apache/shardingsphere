@@ -41,7 +41,6 @@ import java.util.Map;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.contains;
-import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.mockito.ArgumentMatchers.anyMap;
@@ -78,7 +77,7 @@ class PostgreSQLColumnPropertiesAppenderTest {
     void assertGetTypeAndInheritedColumnsFromInheritsWithNoMatchReturnsEmpty() {
         Map<String, Object> context = new LinkedHashMap<>();
         context.put("coll_inherits", new SimpleArray(new String[]{"missing"}));
-        when(templateExecutor.executeByTemplate(anyMap(), eq("component/table/%s/get_inherits.ftl"))).thenReturn(Collections.singleton(createInheritEntry("parent", 1L)));
+        when(templateExecutor.executeByTemplate(anyMap(), eq("component/table/%s/get_inherits.ftl"))).thenReturn(Collections.singleton(createInheritEntry(1L)));
         when(templateExecutor.executeByTemplate(anyMap(), eq("component/columns/%s/properties.ftl"))).thenReturn(Collections.emptyList());
         appender.append(context);
         assertThat(context.get("coll_inherits"), is(Collections.singletonList("missing")));
@@ -96,16 +95,13 @@ class PostgreSQLColumnPropertiesAppenderTest {
         inheritedColumn.put("name", "test_col");
         inheritedColumn.put("inheritedfrom", "parent_table");
         when(templateExecutor.executeByTemplate(context, "component/columns/%s/properties.ftl")).thenReturn(Collections.singletonList(baseColumn));
-        when(templateExecutor.executeByTemplate(anyMap(), eq("table/%s/get_columns_for_table.ftl"))).thenReturn(Collections.singletonList(inheritedColumn));
-        when(templateExecutor.executeByTemplate(anyMap(), eq("component/columns/%s/edit_mode_types_multi.ftl"))).thenReturn(Collections.emptyList());
+        when(templateExecutor.executeByTemplate(context, "table/%s/get_columns_for_table.ftl")).thenReturn(Collections.singletonList(inheritedColumn));
+        when(templateExecutor.executeByTemplate(context, "component/columns/%s/edit_mode_types_multi.ftl")).thenReturn(Collections.emptyList());
         appender.append(context);
-        @SuppressWarnings("unchecked")
-        Collection<Map<String, Object>> columns = (Collection<Map<String, Object>>) context.get("columns");
-        assertThat(columns, hasSize(1));
-        Map<String, Object> resultColumn = columns.iterator().next();
-        assertThat(resultColumn.get("inheritedfrom"), is("parent_table"));
-        assertThat(resultColumn.containsKey("inheritedfromtype"), is(false));
-        assertThat(resultColumn.containsKey("inheritedfromtable"), is(false));
+        Map<String, Object> singleColumn = getSingleColumn(context);
+        assertThat(singleColumn.get("inheritedfrom"), is("parent_table"));
+        assertFalse(singleColumn.containsKey("inheritedfromtype"));
+        assertFalse(singleColumn.containsKey("inheritedfromtable"));
     }
     
     @Test
@@ -114,8 +110,9 @@ class PostgreSQLColumnPropertiesAppenderTest {
         context.put("typoid", 1L);
         Map<String, Object> column = createColumnWithName("pk_col");
         column.put("attnum", 1);
-        stubEmptyTypeColumns();
-        stubColumnProperties(column);
+        when(templateExecutor.executeByTemplate(context, "component/table/%s/get_columns_for_table.ftl")).thenReturn(Collections.emptyList());
+        when(templateExecutor.executeByTemplate(anyMap(), eq("component/columns/%s/properties.ftl"))).thenReturn(Collections.singletonList(column));
+        when(templateExecutor.executeByTemplate(anyMap(), eq("component/columns/%s/edit_mode_types_multi.ftl"))).thenReturn(Collections.emptyList());
         appender.append(context);
         assertFalse(getSingleColumn(context).containsKey("is_pk"));
     }
@@ -127,8 +124,9 @@ class PostgreSQLColumnPropertiesAppenderTest {
         Map<String, Object> column = createColumnWithName("pk_col");
         column.put("attnum", 1);
         column.put("indkey", "2");
-        stubEmptyTypeColumns();
-        stubColumnProperties(column);
+        when(templateExecutor.executeByTemplate(context, "component/table/%s/get_columns_for_table.ftl")).thenReturn(Collections.emptyList());
+        when(templateExecutor.executeByTemplate(anyMap(), eq("component/columns/%s/properties.ftl"))).thenReturn(Collections.singletonList(column));
+        when(templateExecutor.executeByTemplate(anyMap(), eq("component/columns/%s/edit_mode_types_multi.ftl"))).thenReturn(Collections.emptyList());
         appender.append(context);
         Map<String, Object> singleColumn = getSingleColumn(context);
         assertThat(singleColumn.get("is_pk"), is(false));
@@ -143,8 +141,9 @@ class PostgreSQLColumnPropertiesAppenderTest {
         column.put("elemoid", 1231L);
         column.put("typname", "numeric");
         column.put("atttypmod", -1);
-        stubEmptyTypeColumns();
-        stubColumnProperties(column);
+        when(templateExecutor.executeByTemplate(context, "component/table/%s/get_columns_for_table.ftl")).thenReturn(Collections.emptyList());
+        when(templateExecutor.executeByTemplate(anyMap(), eq("component/columns/%s/properties.ftl"))).thenReturn(Collections.singletonList(column));
+        when(templateExecutor.executeByTemplate(anyMap(), eq("component/columns/%s/edit_mode_types_multi.ftl"))).thenReturn(Collections.emptyList());
         appender.append(context);
         assertFalse(getSingleColumn(context).containsKey("attlen"));
     }
@@ -157,8 +156,9 @@ class PostgreSQLColumnPropertiesAppenderTest {
         column.put("elemoid", 1043L);
         column.put("typname", "text");
         column.put("atttypmod", -1);
-        stubEmptyTypeColumns();
-        stubColumnProperties(column);
+        when(templateExecutor.executeByTemplate(context, "component/table/%s/get_columns_for_table.ftl")).thenReturn(Collections.emptyList());
+        when(templateExecutor.executeByTemplate(anyMap(), eq("component/columns/%s/properties.ftl"))).thenReturn(Collections.singletonList(column));
+        when(templateExecutor.executeByTemplate(anyMap(), eq("component/columns/%s/edit_mode_types_multi.ftl"))).thenReturn(Collections.emptyList());
         appender.append(context);
         Map<String, Object> singleColumn = getSingleColumn(context);
         assertFalse(singleColumn.containsKey("attlen"));
@@ -169,8 +169,8 @@ class PostgreSQLColumnPropertiesAppenderTest {
     void assertAppendHandlesDateLengthBranch() {
         Map<String, Object> context = new LinkedHashMap<>();
         context.put("typoid", 1L);
-        Map<String, Object> typeColumn = createMapWithNameAndInherited("col", "parent_type");
-        when(templateExecutor.executeByTemplate(anyMap(), eq("component/table/%s/get_columns_for_table.ftl"))).thenReturn(Collections.singletonList(typeColumn));
+        Map<String, Object> typeColumn = createMapWithNameAndInherited();
+        when(templateExecutor.executeByTemplate(context, "component/table/%s/get_columns_for_table.ftl")).thenReturn(Collections.singleton(typeColumn));
         Map<String, Object> column = createColumnWithName("date_col");
         column.put("elemoid", 1114L);
         column.put("typname", "timestamp without time zone");
@@ -178,8 +178,8 @@ class PostgreSQLColumnPropertiesAppenderTest {
         column.put("atttypmod", 4 + (3 << 16));
         column.put("indkey", "1");
         column.put("attnum", 1);
-        when(templateExecutor.executeByTemplate(anyMap(), eq("component/columns/%s/properties.ftl"))).thenReturn(Collections.singletonList(column));
-        when(templateExecutor.executeByTemplate(anyMap(), eq("component/columns/%s/edit_mode_types_multi.ftl"))).thenReturn(Collections.emptyList());
+        when(templateExecutor.executeByTemplate(context, "component/columns/%s/properties.ftl")).thenReturn(Collections.singleton(column));
+        when(templateExecutor.executeByTemplate(context, "component/columns/%s/edit_mode_types_multi.ftl")).thenReturn(Collections.emptyList());
         appender.append(context);
         assertThat(getSingleColumn(context).get("cltype"), is("timestamp without time zone"));
     }
@@ -188,15 +188,16 @@ class PostgreSQLColumnPropertiesAppenderTest {
     void assertAppendSkipsLengthWhenElemoidUnknown() {
         Map<String, Object> context = new LinkedHashMap<>();
         context.put("typoid", 2L);
-        Map<String, Object> typeColumn = createMapWithNameAndInherited("col", "parent_type");
-        when(templateExecutor.executeByTemplate(anyMap(), eq("component/table/%s/get_columns_for_table.ftl"))).thenReturn(Collections.singletonList(typeColumn));
+        Map<String, Object> typeColumn = createMapWithNameAndInherited();
+        when(templateExecutor.executeByTemplate(context, "component/table/%s/get_columns_for_table.ftl")).thenReturn(Collections.singletonList(typeColumn));
         Map<String, Object> column = createColumnWithName("unknown_col");
         column.put("elemoid", 9999L);
         column.put("typname", "unknown");
         column.put("cltype", "unknown");
         column.put("indkey", "1");
         column.put("attnum", 1);
-        stubColumnProperties(column);
+        when(templateExecutor.executeByTemplate(anyMap(), eq("component/columns/%s/properties.ftl"))).thenReturn(Collections.singletonList(column));
+        when(templateExecutor.executeByTemplate(anyMap(), eq("component/columns/%s/edit_mode_types_multi.ftl"))).thenReturn(Collections.emptyList());
         appender.append(context);
         Map<String, Object> singleColumn = getSingleColumn(context);
         assertFalse(singleColumn.containsKey("attlen"));
@@ -209,8 +210,9 @@ class PostgreSQLColumnPropertiesAppenderTest {
         context.put("typoid", 1L);
         Map<String, Object> column = createColumnWithName("opt_col");
         column.put("attoptions", new SimpleArray(new String[]{"foo=bar"}));
-        stubEmptyTypeColumns();
-        stubColumnProperties(column);
+        when(templateExecutor.executeByTemplate(context, "component/table/%s/get_columns_for_table.ftl")).thenReturn(Collections.emptyList());
+        when(templateExecutor.executeByTemplate(anyMap(), eq("component/columns/%s/properties.ftl"))).thenReturn(Collections.singletonList(column));
+        when(templateExecutor.executeByTemplate(anyMap(), eq("component/columns/%s/edit_mode_types_multi.ftl"))).thenReturn(Collections.emptyList());
         appender.append(context);
         Collection<?> options = (Collection<?>) getSingleColumn(context).get("attoptions");
         assertThat(options.size(), is(1));
@@ -224,16 +226,15 @@ class PostgreSQLColumnPropertiesAppenderTest {
         Map<String, Object> context = new LinkedHashMap<>();
         context.put("coll_inherits", new SimpleArray(new String[]{"parent"}));
         when(templateExecutor.executeByTemplate(anyMap(), eq("component/table/%s/get_columns_for_table.ftl"))).thenReturn(Collections.emptyList());
-        when(templateExecutor.executeByTemplate(anyMap(), eq("component/table/%s/get_inherits.ftl"))).thenReturn(Collections.singletonList(createInheritEntry("parent", 5L)));
+        when(templateExecutor.executeByTemplate(anyMap(), eq("component/table/%s/get_inherits.ftl"))).thenReturn(Collections.singletonList(createInheritEntry(5L)));
         Map<String, Object> inheritedColumn = new LinkedHashMap<>();
         inheritedColumn.put("name", "col");
         inheritedColumn.put("inheritedfrom", "parent_table");
         when(templateExecutor.executeByTemplate(anyMap(), eq("table/%s/get_columns_for_table.ftl"))).thenReturn(Collections.singletonList(inheritedColumn));
-        Map<String, Object> propColumn = createColumnWithName("col");
-        stubColumnProperties(propColumn);
+        when(templateExecutor.executeByTemplate(anyMap(), eq("component/columns/%s/properties.ftl"))).thenReturn(Collections.singletonList(createColumnWithName("col")));
+        when(templateExecutor.executeByTemplate(anyMap(), eq("component/columns/%s/edit_mode_types_multi.ftl"))).thenReturn(Collections.emptyList());
         appender.append(context);
-        Map<String, Object> result = getSingleColumn(context);
-        assertThat(result.get("inheritedfromtable"), is("parent_table"));
+        assertThat(getSingleColumn(context).get("inheritedfromtable"), is("parent_table"));
     }
     
     @Test
@@ -413,60 +414,49 @@ class PostgreSQLColumnPropertiesAppenderTest {
         when(templateExecutor.executeByTemplate(anyMap(), eq("component/columns/%s/properties.ftl"))).thenReturn(Arrays.asList(column, unmatchedColumn));
         when(templateExecutor.executeByTemplate(anyMap(), eq("component/columns/%s/edit_mode_types_multi.ftl"))).thenReturn(Collections.singletonList(createEditModeTypesEntry("1", "alpha")));
         appender.append(context);
-        Collection<?> resultColumns = (Collection<?>) context.get("columns");
-        assertThat(resultColumns, hasSize(2));
+        Collection<?> columns = (Collection<?>) context.get("columns");
+        assertThat(columns.size(), is(2));
         @SuppressWarnings("unchecked")
-        Map<String, Object> resultColumn = resultColumns.stream()
-                .map(each -> (Map<String, Object>) each)
-                .filter(each -> "col".equals(each.get("name")))
-                .findFirst()
-                .orElseThrow(() -> new AssertionError("missing column 'col'"));
-        assertThat(resultColumn.get("inheritedfromtype"), is("parent"));
-        assertThat(resultColumn.get("attlen"), is("5"));
-        assertThat(resultColumn.get("attprecision"), is("2"));
-        assertThat(resultColumn.get("is_pk"), is(true));
-        assertThat(resultColumn.get("cltype"), is("numeric"));
-        assertThat((Collection<?>) resultColumn.get("edit_types"), contains("alpha", "numeric(5,2)"));
+        Map<String, Object> actualColumn = columns.stream().map(each -> (Map<String, Object>) each)
+                .filter(each -> "col".equals(each.get("name"))).findFirst().orElseThrow(() -> new AssertionError("missing column 'col'"));
+        assertThat(actualColumn.get("inheritedfromtype"), is("parent"));
+        assertThat(actualColumn.get("attlen"), is("5"));
+        assertThat(actualColumn.get("attprecision"), is("2"));
+        assertThat(actualColumn.get("is_pk"), is(true));
+        assertThat(actualColumn.get("cltype"), is("numeric"));
+        assertThat((Collection<?>) actualColumn.get("edit_types"), contains("alpha", "numeric(5,2)"));
     }
 
-    private static Map<String, Object> createInheritEntry(final String inherits, final long oid) {
-        Map<String, Object> entry = new LinkedHashMap<>();
-        entry.put("inherits", inherits);
-        entry.put("oid", oid);
-        return entry;
+    private static Map<String, Object> createInheritEntry(final long oid) {
+        Map<String, Object> result = new LinkedHashMap<>(2, 1F);
+        result.put("inherits", "parent");
+        result.put("oid", oid);
+        return result;
     }
 
     private Map<String, Object> createColumnWithName(final String name) {
-        Map<String, Object> column = new LinkedHashMap<>();
-        column.put("name", name);
-        column.put("cltype", "text");
-        column.put("typname", "text");
-        column.put("typnspname", "public");
-        column.put("attndims", 0);
-        column.put("atttypmod", -1);
-        column.put("atttypid", 1);
-        return column;
+        Map<String, Object> result = new LinkedHashMap<>(7, 1F);
+        result.put("name", name);
+        result.put("cltype", "text");
+        result.put("typname", "text");
+        result.put("typnspname", "public");
+        result.put("attndims", 0);
+        result.put("atttypmod", -1);
+        result.put("atttypid", 1);
+        return result;
     }
 
-    private Map<String, Object> createMapWithNameAndInherited(final String name, final String inheritedFrom) {
-        Map<String, Object> column = new LinkedHashMap<>();
-        column.put("name", name);
-        column.put("inheritedfrom", inheritedFrom);
-        return column;
-    }
-    
-    private void stubEmptyTypeColumns() {
-        when(templateExecutor.executeByTemplate(anyMap(), eq("component/table/%s/get_columns_for_table.ftl"))).thenReturn(Collections.emptyList());
-    }
-
-    private void stubColumnProperties(final Map<String, Object> column) {
-        when(templateExecutor.executeByTemplate(anyMap(), eq("component/columns/%s/properties.ftl"))).thenReturn(Collections.singletonList(column));
-        when(templateExecutor.executeByTemplate(anyMap(), eq("component/columns/%s/edit_mode_types_multi.ftl"))).thenReturn(Collections.emptyList());
+    private Map<String, Object> createMapWithNameAndInherited() {
+        Map<String, Object> result = new LinkedHashMap<>(2, 1F);
+        result.put("name", "col");
+        result.put("inheritedfrom", "parent_type");
+        return result;
     }
 
     private Map<String, Object> getSingleColumn(final Map<String, Object> context) {
         @SuppressWarnings("unchecked")
         Collection<Map<String, Object>> columns = (Collection<Map<String, Object>>) context.get("columns");
+        assertThat(columns.size(), is(1));
         return columns.iterator().next();
     }
 
