@@ -78,43 +78,71 @@ class PostgreSQLColumnPropertiesAppenderTest {
         assertThat(context.size(), is(1));
         assertThat(context.get("columns"), is(Collections.emptyList()));
     }
-
+    
     @Test
-    void assertGetTypeAndInheritedColumnsFromTypeUsesTemplate() throws ReflectiveOperationException {
+    void assertGetTypeAndInheritedColumnsFromTypeUsesTemplate() throws SQLException {
         Map<String, Object> context = new LinkedHashMap<>();
         context.put("typoid", 10L);
-        Collection<Map<String, Object>> expected = Collections.singletonList(Collections.singletonMap("name", "col"));
-        when(templateExecutor.executeByTemplate(anyMap(), eq("component/table/%s/get_columns_for_table.ftl"))).thenReturn(expected);
-        Collection<Map<String, Object>> result = invoke(appender, "getTypeAndInheritedColumns", Map.class, context);
-        assertThat(result, is(expected));
+        Map<String, Object> typeColumn = new LinkedHashMap<>();
+        typeColumn.put("name", "col");
+        typeColumn.put("atttypid", 1);
+        typeColumn.put("attnum", 1);
+        typeColumn.put("typnspname", "public");
+        typeColumn.put("typname", "text");
+        typeColumn.put("cltype", "text");
+        typeColumn.put("attndims", 0);
+        typeColumn.put("atttypmod", -1);
+        when(templateExecutor.executeByTemplate(anyMap(), eq("component/table/%s/get_columns_for_table.ftl"))).thenReturn(Collections.singletonList(typeColumn));
+        when(templateExecutor.executeByTemplate(anyMap(), eq("component/columns/%s/properties.ftl"))).thenReturn(Collections.singletonList(typeColumn));
+        when(templateExecutor.executeByTemplate(anyMap(), eq("component/columns/%s/edit_mode_types_multi.ftl"))).thenReturn(Collections.emptyList());
+        doNothing().when(templateExecutor).formatSecurityLabels(anyMap());
+        appender.append(context);
+        @SuppressWarnings("unchecked")
+        Collection<Map<String, Object>> result = (Collection<Map<String, Object>>) context.get("columns");
+        assertThat(result, hasSize(1));
+        assertThat(result.iterator().next().get("name"), is("col"));
     }
-
+    
     @Test
-    void assertGetTypeAndInheritedColumnsFromInheritsFiltersByName() throws ReflectiveOperationException {
+    void assertGetTypeAndInheritedColumnsFromInheritsFiltersByName() throws SQLException {
         Map<String, Object> context = new LinkedHashMap<>();
         context.put("coll_inherits", new SimpleArray(new String[]{"parent"}));
         when(templateExecutor.executeByTemplate(anyMap(), eq("component/table/%s/get_inherits.ftl"))).thenReturn(Collections.singletonList(createInheritEntry("parent", 1L)));
-        when(templateExecutor.executeByTemplate(anyMap(), eq("table/%s/get_columns_for_table.ftl"))).thenReturn(Collections.singletonList(Collections.singletonMap("name", "col")));
-        Collection<Map<String, Object>> result = invoke(appender, "getTypeAndInheritedColumns", Map.class, context);
-        assertThat(result, hasSize(1));
+        Map<String, Object> inheritedColumn = createColumnWithName("col");
+        inheritedColumn.put("inheritedfrom", "parent_table");
+        when(templateExecutor.executeByTemplate(anyMap(), eq("table/%s/get_columns_for_table.ftl"))).thenReturn(Collections.singletonList(inheritedColumn));
+        when(templateExecutor.executeByTemplate(anyMap(), eq("component/columns/%s/properties.ftl"))).thenReturn(Collections.singletonList(inheritedColumn));
+        when(templateExecutor.executeByTemplate(anyMap(), eq("component/columns/%s/edit_mode_types_multi.ftl"))).thenReturn(Collections.emptyList());
+        doNothing().when(templateExecutor).formatSecurityLabels(anyMap());
+        appender.append(context);
         assertThat(context.get("coll_inherits"), is(Arrays.asList("parent")));
+        @SuppressWarnings("unchecked")
+        Collection<Map<String, Object>> result = (Collection<Map<String, Object>>) context.get("columns");
+        assertThat(result, hasSize(1));
+        assertThat(result.iterator().next().get("name"), is("col"));
     }
 
     @Test
-    void assertGetTypeAndInheritedColumnsFromInheritsWithNoMatchReturnsEmpty() throws ReflectiveOperationException {
+    void assertGetTypeAndInheritedColumnsFromInheritsWithNoMatchReturnsEmpty() {
         Map<String, Object> context = new LinkedHashMap<>();
         context.put("coll_inherits", new SimpleArray(new String[]{"missing"}));
         when(templateExecutor.executeByTemplate(anyMap(), eq("component/table/%s/get_inherits.ftl"))).thenReturn(Collections.singletonList(createInheritEntry("parent", 1L)));
-        Collection<Map<String, Object>> result = invoke(appender, "getTypeAndInheritedColumns", Map.class, context);
-        assertThat(result, hasSize(0));
+        when(templateExecutor.executeByTemplate(anyMap(), eq("component/columns/%s/properties.ftl"))).thenReturn(Collections.emptyList());
+        appender.append(context);
         assertThat(context.get("coll_inherits"), is(Collections.singletonList("missing")));
+        @SuppressWarnings("unchecked")
+        Collection<Map<String, Object>> result = (Collection<Map<String, Object>>) context.get("columns");
+        assertThat(result, hasSize(0));
     }
-
+    
     @Test
-    void assertGetTypeAndInheritedColumnsFromEmptyInheritsReturnsEmpty() throws ReflectiveOperationException {
+    void assertGetTypeAndInheritedColumnsFromEmptyInheritsReturnsEmpty() {
         Map<String, Object> context = new LinkedHashMap<>();
         context.put("coll_inherits", new SimpleArray(new String[0]));
-        Collection<Map<String, Object>> result = invoke(appender, "getTypeAndInheritedColumns", Map.class, context);
+        when(templateExecutor.executeByTemplate(anyMap(), eq("component/columns/%s/properties.ftl"))).thenReturn(Collections.emptyList());
+        appender.append(context);
+        @SuppressWarnings("unchecked")
+        Collection<Map<String, Object>> result = (Collection<Map<String, Object>>) context.get("columns");
         assertThat(result, hasSize(0));
         assertThat(context.get("coll_inherits"), is(Collections.emptyList()));
     }
@@ -695,7 +723,7 @@ class PostgreSQLColumnPropertiesAppenderTest {
     }
 
     @Test
-    void assertAppendPopulatesInheritedAndEditTypes() throws ReflectiveOperationException, SQLException {
+    void assertAppendPopulatesInheritedAndEditTypes() throws SQLException {
         Map<String, Object> context = new LinkedHashMap<>();
         context.put("typoid", 20L);
         Map<String, Object> typeColumn = new LinkedHashMap<>();
@@ -780,15 +808,6 @@ class PostgreSQLColumnPropertiesAppenderTest {
         @SuppressWarnings("unchecked")
         Collection<Map<String, Object>> columns = (Collection<Map<String, Object>>) context.get("columns");
         return columns.iterator().next();
-    }
-
-    private static Map<String, Object> createDefaultColumn() {
-        Map<String, Object> column = new LinkedHashMap<>();
-        column.put("typname", "text");
-        column.put("typnspname", "public");
-        column.put("attndims", 0);
-        column.put("atttypmod", -1);
-        return column;
     }
 
     private static Map<String, Object> createUnmatchedColumn() {
