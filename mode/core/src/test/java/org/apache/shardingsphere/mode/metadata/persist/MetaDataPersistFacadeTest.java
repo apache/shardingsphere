@@ -59,7 +59,7 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(AutoMockExtension.class)
 @StaticMockSettings({TypedSPILoader.class, DataSourcePoolPropertiesCreator.class, GenericSchemaManager.class})
-class MetaDataPersistServiceTest {
+class MetaDataPersistFacadeTest {
     
     @Mock
     private DataSourceUnitPersistService dataSourceUnitService;
