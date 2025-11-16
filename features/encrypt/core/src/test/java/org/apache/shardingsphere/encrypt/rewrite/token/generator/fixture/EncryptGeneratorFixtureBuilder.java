@@ -211,11 +211,10 @@ public final class EncryptGeneratorFixtureBuilder {
     /**
      * Create insert select statement context.
      *
-     * @param params parameters
      * @param containsInsertColumns contains insert columns
      * @return created insert select statement context
      */
-    public static InsertStatementContext createInsertSelectStatementContext(final List<Object> params, final boolean containsInsertColumns) {
+    public static InsertStatementContext createInsertSelectStatementContext(final boolean containsInsertColumns) {
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         when(database.getName()).thenReturn("foo_db");
         ShardingSphereSchema schema = mock(ShardingSphereSchema.class);
