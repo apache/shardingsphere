@@ -117,14 +117,9 @@ public final class PostgreSQLColumnPropertiesAppender {
         return result;
     }
     
-    @SuppressWarnings("unchecked")
     private String getInheritedFromTableOrType(final Map<String, Object> context) {
         String result = "inheritedfrom";
-        if (null != context.get("typoid")) {
-            result += "type";
-        } else if (!((Collection<String>) context.getOrDefault("coll_inherits", Collections.emptyList())).isEmpty()) {
-            result += "table";
-        }
+        result += null == context.get("typoid") ? "table" : "type";
         return result;
     }
     
