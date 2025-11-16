@@ -45,6 +45,7 @@ import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.nullValue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doNothing;
@@ -151,11 +152,22 @@ class PostgreSQLColumnPropertiesAppenderTest {
     }
 
     @Test
-    void assertGetInheritedFromTableOrTypeAppendsTableWhenInheritsPresent() throws ReflectiveOperationException {
+    void assertAppendUsesTableInheritanceFieldWhenInheritsPresent() {
         Map<String, Object> context = new LinkedHashMap<>();
-        context.put("coll_inherits", Collections.singletonList("parent"));
-        String result = invoke(appender, "getInheritedFromTableOrType", Map.class, context);
-        assertThat(result, is("inheritedfromtable"));
+        context.put("coll_inherits", new SimpleArray(new String[]{"parent"}));
+        when(templateExecutor.executeByTemplate(anyMap(), eq("component/table/%s/get_inherits.ftl"))).thenReturn(Collections.singleton(createInheritEntry("parent", 1L)));
+        Map<String, Object> inheritedColumn = createColumnWithName("col");
+        inheritedColumn.put("inheritedfrom", "parent_table");
+        when(templateExecutor.executeByTemplate(anyMap(), eq("table/%s/get_columns_for_table.ftl"))).thenReturn(Collections.singleton(inheritedColumn));
+        stubColumnProperties(createColumnWithName("col"));
+        appender.append(context);
+        @SuppressWarnings("unchecked")
+        Collection<Map<String, Object>> columns = (Collection<Map<String, Object>>) context.get("columns");
+        assertThat(columns.size(), is(1));
+        Map<String, Object> resultColumn = columns.iterator().next();
+        assertThat(resultColumn.get("name"), is("col"));
+        assertThat(resultColumn.get("inheritedfromtable"), is("parent_table"));
+        assertFalse(resultColumn.containsKey("inheritedfromtype"));
     }
 
     @Test
