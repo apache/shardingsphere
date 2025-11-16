@@ -132,11 +132,48 @@ Report format:
 Let me confirm before skipping coverage requirements for these codes.
 ```
 
+**SQL Generation Class Testing**:
+```
+Please write comprehensive tests for [SQLGeneratorClass] in [module], requirements:
+1. Use efficient test development workflow:
+   - Analyze existing test Mock patterns first (DatabaseTypedSPILoader + TypedSPILoader)
+   - Write most complex scenario test first to verify feasibility
+   - Run test to get actual SQL output, then correct expected values
+   - Batch copy verified patterns to other simple scenarios
+
+2. SQL syntax verification:
+   - For Oracle: verify MERGE INTO, ROWNUM, NVL syntax formats
+   - For MySQL: verify LIMIT, IFNULL, REPLACE syntax formats
+   - Use database-specific official docs for syntax validation
+
+3. Mock dependency reuse:
+   - 100% reuse existing test Mock configuration patterns
+   - Avoid redesigning Mock chains for SPI loaders
+   - Use DatabaseTypedSPILoader.getService(DialectPipelineSQLBuilder.class, databaseType) pattern
+
+4. Branch coverage strategy:
+   - Merge simple methods into single tests where possible
+   - Focus independent tests on truly complex conditional branches
+   - Ensure each boolean/enum branch has at least one dedicated test
+
+5. Quality assurance:
+   - Run complete test suite in one batch after all tests written
+   - Use Jacoco to verify 100% branch coverage
+   - Minimize iterative modifications during development
+```
+
 #### 3. Key Points for Best Results
 - **Provide complete context**: Tell me the specific class path, module information, and related dependencies
 - **Clarify complexity**: If the class is particularly complex, specify which part to test first
 - **Progressive development**: For complex features, request step-by-step implementation
 - **Quality verification**: Ask me to run actual test commands to verify pass rates
+
+#### 4. Critical Success Factors for Testing Tasks
+- **Pattern Analysis First**: Always analyze existing test patterns before writing new tests
+- **Validation-Driven Development**: Write tests to discover actual behavior before defining expectations
+- **Mock Reuse Principle**: Never redesign Mock configurations when existing patterns work
+- **Branch Efficiency**: Focus on conditional branches, not method count, for test coverage
+- **Batch Validation**: Run complete test suites at once, avoid frequent incremental checks
 
 ## 🤖 AI Usage Guidelines
 
@@ -415,11 +452,36 @@ public final class ${SPIName}Impl implements ${SPIName}SPI {
 6. **Complete Validation** → Ensure all quality checks pass
 
 ### Test Task Steps
+
+#### Standard Testing Workflow
 1. **Analyze Test Scenarios** → Identify branches that need testing
 2. **Mock Configuration** → Use Mock Configuration Template
 3. **Write Tests** → Apply Test Method Template
 4. **Verify Coverage** → Ensure complete branch coverage
 5. **Assertion Validation** → Use correct assertion patterns
+
+#### SQL Generation Class Workflow (High-Efficiency)
+**Phase 1: Comprehensive Analysis (One-time)**
+```
+Task agent analysis should include:
+- Complete class structure and method listing
+- Complexity and branch count for each method
+- All existing test patterns and configurations
+- Dependency relationships and Mock requirements
+- Identification of any non-coverable code
+```
+
+**Phase 2: Validation-First Development**
+1. **Select most complex scenario** and write one test first
+2. **Verify Mock configuration and syntax expectations** by running the test
+3. **Batch copy verified patterns** to other simple scenarios
+4. **Write dedicated tests only for truly complex conditional branches**
+
+**Phase 3: Quality Assurance**
+- Run complete test suite and coverage checks in one batch
+- Avoid frequent iterative modifications
+- Use Jacoco to verify 100% branch coverage
+```
 
 ### Documentation Task Steps
 1. **Content Review** → Check accuracy and formatting
@@ -543,6 +605,26 @@ error_recovery_index:
 ```
 
 ## 🛠️ Common Issues & Solutions
+
+### SQL Generation Class Issues
+
+#### Expected SQL Syntax Errors
+- **Issue**: Expected SQL assertion doesn't match actual generated SQL
+- **Solution**: Run test first to get actual output, then correct expected values
+- **Prevention**: Use database official documentation to verify syntax formats
+- **Oracle Common Issues**: MERGE INTO ON clause format, ROWNUM positioning, NVL parameter order
+
+#### Mock Configuration Complexity
+- **Issue**: Over-engineering Mock configurations for SPI loaders
+- **Solution**: 100% reuse existing test Mock patterns instead of redesigning
+- **Pattern**: Use `DatabaseTypedSPILoader.getService(DialectPipelineSQLBuilder.class, databaseType)` + `TypedSPILoader.getService(DatabaseType.class, "Oracle")` combination
+- **Prevention**: Analyze existing tests completely before writing new ones
+
+#### Branch Coverage Strategy Inefficiency
+- **Issue**: Writing too many granular tests for simple methods
+- **Solution**: Merge simple method tests, focus independent tests on complex branches only
+- **Guideline**: One test per conditional branch, not one test per method
+- **Example**: Test all simple SQL formatting methods in one focused test
 
 ### Coverage Problems
 - **Issue**: Mock configuration incomplete, branches not executed
