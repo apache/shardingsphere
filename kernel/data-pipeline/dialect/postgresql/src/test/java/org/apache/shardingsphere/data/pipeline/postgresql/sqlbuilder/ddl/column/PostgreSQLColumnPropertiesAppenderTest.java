@@ -43,6 +43,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
@@ -116,8 +117,7 @@ class PostgreSQLColumnPropertiesAppenderTest {
         stubEmptyTypeColumns();
         stubColumnProperties(column);
         appender.append(context);
-        Map<String, Object> result = onlyColumn(context);
-        assertThat(result.containsKey("is_pk"), is(false));
+        assertFalse(getSingleColumn(context).containsKey("is_pk"));
     }
 
     @Test
@@ -130,9 +130,9 @@ class PostgreSQLColumnPropertiesAppenderTest {
         stubEmptyTypeColumns();
         stubColumnProperties(column);
         appender.append(context);
-        Map<String, Object> result = onlyColumn(context);
-        assertThat(result.get("is_pk"), is(false));
-        assertThat(result.get("is_primary_key"), is(false));
+        Map<String, Object> singleColumn = getSingleColumn(context);
+        assertThat(singleColumn.get("is_pk"), is(false));
+        assertThat(singleColumn.get("is_primary_key"), is(false));
     }
     
     @Test
@@ -146,8 +146,7 @@ class PostgreSQLColumnPropertiesAppenderTest {
         stubEmptyTypeColumns();
         stubColumnProperties(column);
         appender.append(context);
-        Map<String, Object> result = onlyColumn(context);
-        assertThat(result.containsKey("attlen"), is(false));
+        assertFalse(getSingleColumn(context).containsKey("attlen"));
     }
 
     @Test
@@ -161,9 +160,9 @@ class PostgreSQLColumnPropertiesAppenderTest {
         stubEmptyTypeColumns();
         stubColumnProperties(column);
         appender.append(context);
-        Map<String, Object> result = onlyColumn(context);
-        assertThat(result.containsKey("attlen"), is(false));
-        assertThat(result.containsKey("attprecision"), is(false));
+        Map<String, Object> singleColumn = getSingleColumn(context);
+        assertFalse(singleColumn.containsKey("attlen"));
+        assertFalse(singleColumn.containsKey("attprecision"));
     }
     
     @Test
@@ -182,8 +181,7 @@ class PostgreSQLColumnPropertiesAppenderTest {
         when(templateExecutor.executeByTemplate(anyMap(), eq("component/columns/%s/properties.ftl"))).thenReturn(Collections.singletonList(column));
         when(templateExecutor.executeByTemplate(anyMap(), eq("component/columns/%s/edit_mode_types_multi.ftl"))).thenReturn(Collections.emptyList());
         appender.append(context);
-        Map<String, Object> result = onlyColumn(context);
-        assertThat(result.get("cltype"), is("timestamp without time zone"));
+        assertThat(getSingleColumn(context).get("cltype"), is("timestamp without time zone"));
     }
 
     @Test
@@ -200,9 +198,9 @@ class PostgreSQLColumnPropertiesAppenderTest {
         column.put("attnum", 1);
         stubColumnProperties(column);
         appender.append(context);
-        Map<String, Object> result = onlyColumn(context);
-        assertThat(result.containsKey("attlen"), is(false));
-        assertThat(result.containsKey("attprecision"), is(false));
+        Map<String, Object> singleColumn = getSingleColumn(context);
+        assertFalse(singleColumn.containsKey("attlen"));
+        assertFalse(singleColumn.containsKey("attprecision"));
     }
 
     @Test
@@ -214,9 +212,8 @@ class PostgreSQLColumnPropertiesAppenderTest {
         stubEmptyTypeColumns();
         stubColumnProperties(column);
         appender.append(context);
-        Map<String, Object> result = onlyColumn(context);
-        Collection<?> options = (Collection<?>) result.get("attoptions");
-        assertThat(options, hasSize(1));
+        Collection<?> options = (Collection<?>) getSingleColumn(context).get("attoptions");
+        assertThat(options.size(), is(1));
         Map<?, ?> option = (Map<?, ?>) options.iterator().next();
         assertThat(option.get("name"), is("foo"));
         assertThat(option.get("value"), is("bar"));
@@ -235,7 +232,7 @@ class PostgreSQLColumnPropertiesAppenderTest {
         Map<String, Object> propColumn = createColumnWithName("col");
         stubColumnProperties(propColumn);
         appender.append(context);
-        Map<String, Object> result = onlyColumn(context);
+        Map<String, Object> result = getSingleColumn(context);
         assertThat(result.get("inheritedfromtable"), is("parent_table"));
     }
     
@@ -467,7 +464,7 @@ class PostgreSQLColumnPropertiesAppenderTest {
         when(templateExecutor.executeByTemplate(anyMap(), eq("component/columns/%s/edit_mode_types_multi.ftl"))).thenReturn(Collections.emptyList());
     }
 
-    private Map<String, Object> onlyColumn(final Map<String, Object> context) {
+    private Map<String, Object> getSingleColumn(final Map<String, Object> context) {
         @SuppressWarnings("unchecked")
         Collection<Map<String, Object>> columns = (Collection<Map<String, Object>>) context.get("columns");
         return columns.iterator().next();
