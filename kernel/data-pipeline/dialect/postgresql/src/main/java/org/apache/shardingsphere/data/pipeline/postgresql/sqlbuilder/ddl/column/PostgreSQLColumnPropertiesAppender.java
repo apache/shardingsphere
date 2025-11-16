@@ -122,7 +122,7 @@ public final class PostgreSQLColumnPropertiesAppender {
         String result = "inheritedfrom";
         if (null != context.get("typoid")) {
             result += "type";
-        } else if (null != context.get("coll_inherits") && !((Collection<String>) context.get("coll_inherits")).isEmpty()) {
+        } else if (!((Collection<String>) context.getOrDefault("coll_inherits", Collections.emptyList())).isEmpty()) {
             result += "table";
         }
         return result;

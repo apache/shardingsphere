@@ -146,13 +146,14 @@ class PostgreSQLColumnPropertiesAppenderTest {
         assertThat(result, hasSize(0));
         assertThat(context.get("coll_inherits"), is(Collections.emptyList()));
     }
-
+    
     @Test
-    void assertGetInheritedFromTableOrTypeReturnsDefaultWhenNoTypeAndEmptyInherits() throws ReflectiveOperationException {
+    void assertAppendHandlesEmptyInheritsWithoutType() {
         Map<String, Object> context = new LinkedHashMap<>();
-        context.put("coll_inherits", Collections.emptyList());
-        String result = invoke(appender, "getInheritedFromTableOrType", Map.class, context);
-        assertThat(result, is("inheritedfrom"));
+        context.put("coll_inherits", new SimpleArray(new String[0]));
+        when(templateExecutor.executeByTemplate(context, "component/columns/%s/properties.ftl")).thenReturn(Collections.emptyList());
+        appender.append(context);
+        assertThat(context.get("columns"), is(Collections.emptyList()));
     }
 
     @Test
