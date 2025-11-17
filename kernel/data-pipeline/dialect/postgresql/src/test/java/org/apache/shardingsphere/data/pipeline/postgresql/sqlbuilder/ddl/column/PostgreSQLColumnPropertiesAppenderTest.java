@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.data.pipeline.postgresql.sqlbuilder.ddl.column;
 
+import lombok.SneakyThrows;
 import org.apache.shardingsphere.data.pipeline.postgresql.sqlbuilder.ddl.PostgreSQLDDLTemplateExecutor;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -29,9 +30,7 @@ import org.mockito.quality.Strictness;
 
 import java.sql.Array;
 import java.sql.Connection;
-import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.SQLFeatureNotSupportedException;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -45,6 +44,7 @@ import static org.hamcrest.Matchers.nullValue;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.when;
@@ -76,7 +76,7 @@ class PostgreSQLColumnPropertiesAppenderTest {
     @Test
     void assertGetTypeAndInheritedColumnsFromInheritsWithNoMatchReturnsEmpty() {
         Map<String, Object> context = new LinkedHashMap<>();
-        context.put("coll_inherits", new SimpleArray(new String[]{"missing"}));
+        context.put("coll_inherits", createMockArray(new String[]{"missing"}));
         when(templateExecutor.executeByTemplate(anyMap(), eq("component/table/%s/get_inherits.ftl"))).thenReturn(Collections.singleton(createInheritEntry(1L)));
         when(templateExecutor.executeByTemplate(anyMap(), eq("component/columns/%s/properties.ftl"))).thenReturn(Collections.emptyList());
         appender.append(context);
@@ -88,7 +88,7 @@ class PostgreSQLColumnPropertiesAppenderTest {
     void assertAppendUsesDefaultInheritedFromWithEmptyInheritsAndInheritedColumns() {
         Map<String, Object> context = new LinkedHashMap<>();
         context.put("typoid", null);
-        context.put("coll_inherits", new SimpleArray(new String[0]));
+        context.put("coll_inherits", createMockArray(new String[0]));
         Map<String, Object> baseColumn = createColumnWithName("test_col");
         baseColumn.put("inheritedfrom", "parent_table");
         Map<String, Object> inheritedColumn = new LinkedHashMap<>();
@@ -209,7 +209,7 @@ class PostgreSQLColumnPropertiesAppenderTest {
         Map<String, Object> context = new LinkedHashMap<>();
         context.put("typoid", 1L);
         Map<String, Object> column = createColumnWithName("opt_col");
-        column.put("attoptions", new SimpleArray(new String[]{"foo=bar"}));
+        column.put("attoptions", createMockArray(new String[]{"foo=bar"}));
         when(templateExecutor.executeByTemplate(context, "component/table/%s/get_columns_for_table.ftl")).thenReturn(Collections.emptyList());
         when(templateExecutor.executeByTemplate(anyMap(), eq("component/columns/%s/properties.ftl"))).thenReturn(Collections.singletonList(column));
         when(templateExecutor.executeByTemplate(anyMap(), eq("component/columns/%s/edit_mode_types_multi.ftl"))).thenReturn(Collections.emptyList());
@@ -224,7 +224,7 @@ class PostgreSQLColumnPropertiesAppenderTest {
     @Test
     void assertAppendCopiesInheritedFromTable() {
         Map<String, Object> context = new LinkedHashMap<>();
-        context.put("coll_inherits", new SimpleArray(new String[]{"parent"}));
+        context.put("coll_inherits", createMockArray(new String[]{"parent"}));
         when(templateExecutor.executeByTemplate(anyMap(), eq("component/table/%s/get_columns_for_table.ftl"))).thenReturn(Collections.emptyList());
         when(templateExecutor.executeByTemplate(anyMap(), eq("component/table/%s/get_inherits.ftl"))).thenReturn(Collections.singletonList(createInheritEntry(5L)));
         Map<String, Object> inheritedColumn = new LinkedHashMap<>();
@@ -789,7 +789,8 @@ class PostgreSQLColumnPropertiesAppenderTest {
         column.put("cltype", "numeric(5,2)");
         Map<String, Object> unmatchedColumn = createUnmatchedColumn();
         when(templateExecutor.executeByTemplate(anyMap(), eq("component/columns/%s/properties.ftl"))).thenReturn(Arrays.asList(column, unmatchedColumn));
-        when(templateExecutor.executeByTemplate(anyMap(), eq("component/columns/%s/edit_mode_types_multi.ftl"))).thenReturn(Collections.singleton(createEditModeTypesEntry("1", "alpha")));
+        Map<String, Object> editModeTypesEntry = createEditModeTypesEntry("1", "alpha");
+        when(templateExecutor.executeByTemplate(anyMap(), eq("component/columns/%s/edit_mode_types_multi.ftl"))).thenReturn(Collections.singleton(editModeTypesEntry));
         appender.append(context);
         Collection<?> columns = (Collection<?>) context.get("columns");
         assertThat(columns.size(), is(2));
@@ -804,7 +805,7 @@ class PostgreSQLColumnPropertiesAppenderTest {
         assertThat((Collection<?>) actualColumn.get("edit_types"), contains("alpha", "numeric(5,2)"));
     }
     
-    private static Map<String, Object> createInheritEntry(final long oid) {
+    private Map<String, Object> createInheritEntry(final long oid) {
         Map<String, Object> result = new LinkedHashMap<>(2, 1F);
         result.put("inherits", "parent");
         result.put("oid", oid);
@@ -837,7 +838,7 @@ class PostgreSQLColumnPropertiesAppenderTest {
         return columns.iterator().next();
     }
     
-    private static Map<String, Object> createUnmatchedColumn() {
+    private Map<String, Object> createUnmatchedColumn() {
         Map<String, Object> result = new LinkedHashMap<>();
         result.put("name", "other");
         result.put("atttypid", 2);
@@ -849,73 +850,17 @@ class PostgreSQLColumnPropertiesAppenderTest {
         return result;
     }
     
-    private static Map<String, Object> createEditModeTypesEntry(final String mainOid, final String... editTypes) {
+    private Map<String, Object> createEditModeTypesEntry(final String mainOid, final String... editTypes) {
         Map<String, Object> entry = new LinkedHashMap<>();
         entry.put("main_oid", mainOid);
-        entry.put("edit_types", new SimpleArray(editTypes));
+        entry.put("edit_types", createMockArray(editTypes));
         return entry;
     }
     
-    private static final class SimpleArray implements Array {
-        
-        private final Object data;
-        
-        private SimpleArray(final Object data) {
-            this.data = data;
-        }
-        
-        @Override
-        public String getBaseTypeName() {
-            return null;
-        }
-        
-        @Override
-        public int getBaseType() {
-            return 0;
-        }
-        
-        @Override
-        public Object getArray() {
-            return data;
-        }
-        
-        @Override
-        public Object getArray(final Map<String, Class<?>> map) {
-            return data;
-        }
-        
-        @Override
-        public Object getArray(final long index, final int count) {
-            return data;
-        }
-        
-        @Override
-        public Object getArray(final long index, final int count, final Map<String, Class<?>> map) {
-            return data;
-        }
-        
-        @Override
-        public ResultSet getResultSet() throws SQLException {
-            throw new SQLFeatureNotSupportedException();
-        }
-        
-        @Override
-        public ResultSet getResultSet(final Map<String, Class<?>> map) throws SQLException {
-            throw new SQLFeatureNotSupportedException();
-        }
-        
-        @Override
-        public ResultSet getResultSet(final long index, final int count) throws SQLException {
-            throw new SQLFeatureNotSupportedException();
-        }
-        
-        @Override
-        public ResultSet getResultSet(final long index, final int count, final Map<String, Class<?>> map) throws SQLException {
-            throw new SQLFeatureNotSupportedException();
-        }
-        
-        @Override
-        public void free() {
-        }
+    @SneakyThrows(SQLException.class)
+    private Array createMockArray(final Object data) {
+        Array result = mock(Array.class);
+        doReturn(data).when(result).getArray();
+        return result;
     }
 }
