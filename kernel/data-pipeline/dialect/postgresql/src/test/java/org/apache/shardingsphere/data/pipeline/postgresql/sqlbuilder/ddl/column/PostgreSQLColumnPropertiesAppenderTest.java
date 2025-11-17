@@ -616,15 +616,15 @@ class PostgreSQLColumnPropertiesAppenderTest {
     }
 
     private static Map<String, Object> createUnmatchedColumn() {
-        Map<String, Object> column = new LinkedHashMap<>();
-        column.put("name", "other");
-        column.put("atttypid", 2);
-        column.put("cltype", "text");
-        column.put("typname", "text");
-        column.put("typnspname", "public");
-        column.put("attndims", 0);
-        column.put("atttypmod", -1);
-        return column;
+        Map<String, Object> result = new LinkedHashMap<>();
+        result.put("name", "other");
+        result.put("atttypid", 2);
+        result.put("cltype", "text");
+        result.put("typname", "text");
+        result.put("typnspname", "public");
+        result.put("attndims", 0);
+        result.put("atttypmod", -1);
+        return result;
     }
 
     private static Map<String, Object> createEditModeTypesEntry(final String mainOid, final String... editTypes) {
