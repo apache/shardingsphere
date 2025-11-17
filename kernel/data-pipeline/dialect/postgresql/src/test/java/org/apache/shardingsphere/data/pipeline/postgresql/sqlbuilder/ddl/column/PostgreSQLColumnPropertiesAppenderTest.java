@@ -261,28 +261,95 @@ class PostgreSQLColumnPropertiesAppenderTest {
     }
 
     @Test
-    void assertCheckTypmodDate() throws ReflectiveOperationException {
-        String result = invoke(appender, "checkTypmod", Integer.class, String.class, 1, "date");
-        assertThat(result, is(""));
+    void assertCheckTypmodDate() {
+        Map<String, Object> context = new LinkedHashMap<>();
+        context.put("typoid", 1L);
+        Map<String, Object> dateColumn = createColumnWithName("date_col");
+        dateColumn.put("elemoid", 1083L);
+        dateColumn.put("typname", "date");
+        dateColumn.put("typnspname", "pg_catalog");
+        dateColumn.put("atttypmod", 1);
+        dateColumn.put("cltype", "date");
+        dateColumn.put("attndims", 0);
+        when(templateExecutor.executeByTemplate(context, "component/table/%s/get_columns_for_table.ftl")).thenReturn(Collections.emptyList());
+        when(templateExecutor.executeByTemplate(context, "component/columns/%s/properties.ftl")).thenReturn(Collections.singleton(dateColumn));
+        when(templateExecutor.executeByTemplate(context, "component/columns/%s/edit_mode_types_multi.ftl")).thenReturn(Collections.emptyList());
+        appender.append(context);
+        Map<String, Object> singleColumn = getSingleColumn(context);
+        assertThat(singleColumn.get("atttypmod"), is(1));
+        assertThat(singleColumn.get("typname"), is("date"));
+        @SuppressWarnings("unchecked")
+        Collection<String> editTypes = (Collection<String>) singleColumn.get("edit_types");
+        assertThat(editTypes, contains("date"));
     }
 
     @Test
-    void assertCheckTypmodBitType() throws ReflectiveOperationException {
-        String result = invoke(appender, "checkTypmod", Integer.class, String.class, 5, "bit");
-        assertThat(result, is("(5)"));
+    void assertCheckTypmodBitType() {
+        Map<String, Object> context = new LinkedHashMap<>();
+        context.put("typoid", 1L);
+        Map<String, Object> bitColumn = createColumnWithName("bit_col");
+        bitColumn.put("elemoid", 1560L);
+        bitColumn.put("typname", "bit");
+        bitColumn.put("typnspname", "pg_catalog");
+        bitColumn.put("atttypmod", 5);
+        bitColumn.put("cltype", "bit");
+        bitColumn.put("attndims", 0);
+        when(templateExecutor.executeByTemplate(context, "component/table/%s/get_columns_for_table.ftl")).thenReturn(Collections.emptyList());
+        when(templateExecutor.executeByTemplate(anyMap(), eq("component/columns/%s/properties.ftl"))).thenReturn(Collections.singleton(bitColumn));
+        when(templateExecutor.executeByTemplate(anyMap(), eq("component/columns/%s/edit_mode_types_multi.ftl"))).thenReturn(Collections.emptyList());
+        appender.append(context);
+        Map<String, Object> singleColumn = getSingleColumn(context);
+        assertThat(singleColumn.get("atttypmod"), is(5));
+        assertThat(singleColumn.get("typname"), is("bit"));
+        @SuppressWarnings("unchecked")
+        Collection<String> editTypes = (Collection<String>) singleColumn.get("edit_types");
+        assertThat(editTypes, contains("bit"));
     }
 
     @Test
-    void assertCheckTypmodDefaultCaseSubtractsFour() throws ReflectiveOperationException {
-        String result = invoke(appender, "checkTypmod", Integer.class, String.class, 10, "text");
-        assertThat(result, is("(6)"));
+    void assertCheckTypmodDefaultCaseSubtractsFour() {
+        Map<String, Object> context = new LinkedHashMap<>();
+        context.put("typoid", 1L);
+        Map<String, Object> textColumn = createColumnWithName("text_col");
+        textColumn.put("elemoid", 9999L);
+        textColumn.put("typname", "text");
+        textColumn.put("typnspname", "pg_catalog");
+        textColumn.put("atttypmod", 10);
+        textColumn.put("cltype", "text");
+        textColumn.put("attndims", 0);
+        when(templateExecutor.executeByTemplate(context, "component/table/%s/get_columns_for_table.ftl")).thenReturn(Collections.emptyList());
+        when(templateExecutor.executeByTemplate(anyMap(), eq("component/columns/%s/properties.ftl"))).thenReturn(Collections.singleton(textColumn));
+        when(templateExecutor.executeByTemplate(anyMap(), eq("component/columns/%s/edit_mode_types_multi.ftl"))).thenReturn(Collections.emptyList());
+        appender.append(context);
+        Map<String, Object> singleColumn = getSingleColumn(context);
+        assertThat(singleColumn.get("atttypmod"), is(10));
+        assertThat(singleColumn.get("typname"), is("text"));
+        @SuppressWarnings("unchecked")
+        Collection<String> editTypes = (Collection<String>) singleColumn.get("edit_types");
+        assertThat(editTypes, contains("text"));
     }
 
     @Test
-    void assertCheckTypmodIntervalLenGreaterThanSixProducesEmptyPrecision() throws ReflectiveOperationException {
-        int typmod = 7;
-        String result = invoke(appender, "checkTypmod", Integer.class, String.class, typmod, "interval");
-        assertThat(result, is("()"));
+    void assertCheckTypmodIntervalLenGreaterThanSixProducesEmptyPrecision() {
+        Map<String, Object> context = new LinkedHashMap<>();
+        context.put("typoid", 1L);
+        Map<String, Object> intervalColumn = createColumnWithName("interval_col");
+        intervalColumn.put("elemoid", 1186L);
+        intervalColumn.put("typname", "interval");
+        intervalColumn.put("typnspname", "pg_catalog");
+        intervalColumn.put("atttypmod", 7);
+        intervalColumn.put("cltype", "interval");
+        intervalColumn.put("attndims", 0);
+        when(templateExecutor.executeByTemplate(context, "component/table/%s/get_columns_for_table.ftl")).thenReturn(Collections.emptyList());
+        when(templateExecutor.executeByTemplate(anyMap(), eq("component/columns/%s/properties.ftl"))).thenReturn(Collections.singleton(intervalColumn));
+        when(templateExecutor.executeByTemplate(anyMap(), eq("component/columns/%s/edit_mode_types_multi.ftl"))).thenReturn(Collections.emptyList());
+        appender.append(context);
+        Map<String, Object> singleColumn = getSingleColumn(context);
+        assertThat(singleColumn.get("atttypmod"), is(7));
+        assertThat(singleColumn.get("typname"), is("interval"));
+        @SuppressWarnings("unchecked")
+        Collection<String> editTypes = (Collection<String>) singleColumn.get("edit_types");
+        assertThat(editTypes, contains("interval"));
     }
 
     @Test
