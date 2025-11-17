@@ -353,27 +353,98 @@ class PostgreSQLColumnPropertiesAppenderTest {
     }
 
     @Test
-    void assertGetFullTypeValueCharCatalog() throws ReflectiveOperationException {
-        String result = invoke(appender, "getFullTypeValue", String.class, String.class, String.class, String.class, "char", "pg_catalog", "(2)", "[]");
-        assertThat(result, is("\"char\"[]"));
+    void assertGetFullTypeValueCharCatalog() {
+        Map<String, Object> context = new LinkedHashMap<>();
+        context.put("typoid", 1L);
+        Map<String, Object> charColumn = createColumnWithName("char_col");
+        charColumn.put("elemoid", 18L);
+        charColumn.put("typname", "\"char\"");
+        charColumn.put("typnspname", "pg_catalog");
+        charColumn.put("atttypmod", 2);
+        charColumn.put("cltype", "\"char\"");
+        charColumn.put("attndims", 1);
+        when(templateExecutor.executeByTemplate(context, "component/table/%s/get_columns_for_table.ftl")).thenReturn(Collections.emptyList());
+        when(templateExecutor.executeByTemplate(context, "component/columns/%s/properties.ftl")).thenReturn(Collections.singleton(charColumn));
+        when(templateExecutor.executeByTemplate(context, "component/columns/%s/edit_mode_types_multi.ftl")).thenReturn(Collections.emptyList());
+        appender.append(context);
+        Map<String, Object> singleColumn = getSingleColumn(context);
+        assertThat(singleColumn.get("typname"), is("\"char\""));
+        assertThat(singleColumn.get("typnspname"), is("pg_catalog"));
+        assertThat(singleColumn.get("atttypmod"), is(2));
+        @SuppressWarnings("unchecked")
+        Collection<String> editTypes = (Collection<String>) singleColumn.get("edit_types");
+        assertThat(editTypes, contains("\"char\""));
     }
 
     @Test
-    void assertGetFullTypeValueTimeWithTimeZone() throws ReflectiveOperationException {
-        String result = invoke(appender, "getFullTypeValue", String.class, String.class, String.class, String.class, "time with time zone", "public", "", "");
-        assertThat(result, is("time with time zone"));
+    void assertGetFullTypeValueTimeWithTimeZone() {
+        Map<String, Object> context = new LinkedHashMap<>();
+        context.put("typoid", 1L);
+        Map<String, Object> timeColumn = createColumnWithName("time_col");
+        timeColumn.put("elemoid", 1186L);
+        timeColumn.put("typname", "time with time zone");
+        timeColumn.put("typnspname", "public");
+        timeColumn.put("atttypmod", -1);
+        timeColumn.put("cltype", "time with time zone");
+        timeColumn.put("attndims", 0);
+        when(templateExecutor.executeByTemplate(context, "component/table/%s/get_columns_for_table.ftl")).thenReturn(Collections.emptyList());
+        when(templateExecutor.executeByTemplate(context, "component/columns/%s/properties.ftl")).thenReturn(Collections.singleton(timeColumn));
+        when(templateExecutor.executeByTemplate(context, "component/columns/%s/edit_mode_types_multi.ftl")).thenReturn(Collections.emptyList());
+        appender.append(context);
+        Map<String, Object> singleColumn = getSingleColumn(context);
+        assertThat(singleColumn.get("typname"), is("time with time zone"));
+        assertThat(singleColumn.get("typnspname"), is("public"));
+        @SuppressWarnings("unchecked")
+        Collection<String> editTypes = (Collection<String>) singleColumn.get("edit_types");
+        assertThat(editTypes, contains("time with time zone"));
     }
 
     @Test
-    void assertGetFullTypeValueTimeWithoutTimeZone() throws ReflectiveOperationException {
-        String result = invoke(appender, "getFullTypeValue", String.class, String.class, String.class, String.class, "time without time zone", "public", "(2)", "[]");
-        assertThat(result, is("time(2) without time zone[]"));
+    void assertGetFullTypeValueTimeWithoutTimeZone() {
+        Map<String, Object> context = new LinkedHashMap<>();
+        context.put("typoid", 1L);
+        Map<String, Object> timeColumn = createColumnWithName("time_col");
+        timeColumn.put("elemoid", 1183L);
+        timeColumn.put("typname", "time without time zone");
+        timeColumn.put("typnspname", "public");
+        timeColumn.put("atttypmod", 2);
+        timeColumn.put("cltype", "time without time zone");
+        timeColumn.put("attndims", 1);
+        when(templateExecutor.executeByTemplate(context, "component/table/%s/get_columns_for_table.ftl")).thenReturn(Collections.emptyList());
+        when(templateExecutor.executeByTemplate(context, "component/columns/%s/properties.ftl")).thenReturn(Collections.singleton(timeColumn));
+        when(templateExecutor.executeByTemplate(context, "component/columns/%s/edit_mode_types_multi.ftl")).thenReturn(Collections.emptyList());
+        appender.append(context);
+        Map<String, Object> singleColumn = getSingleColumn(context);
+        assertThat(singleColumn.get("typname"), is("time without time zone"));
+        assertThat(singleColumn.get("typnspname"), is("public"));
+        assertThat(singleColumn.get("atttypmod"), is(2));
+        assertThat(singleColumn.get("attndims"), is(1));
+        @SuppressWarnings("unchecked")
+        Collection<String> editTypes = (Collection<String>) singleColumn.get("edit_types");
+        assertThat(editTypes, contains("time without time zone"));
     }
 
     @Test
-    void assertGetFullTypeValueTimestampWithTimeZone() throws ReflectiveOperationException {
-        String result = invoke(appender, "getFullTypeValue", String.class, String.class, String.class, String.class, "timestamp with time zone", "public", "", "");
-        assertThat(result, is("timestamp with time zone"));
+    void assertGetFullTypeValueTimestampWithTimeZone() {
+        Map<String, Object> context = new LinkedHashMap<>();
+        context.put("typoid", 1L);
+        Map<String, Object> timestampColumn = createColumnWithName("timestamp_col");
+        timestampColumn.put("elemoid", 1184L);
+        timestampColumn.put("typname", "timestamp with time zone");
+        timestampColumn.put("typnspname", "public");
+        timestampColumn.put("atttypmod", -1);
+        timestampColumn.put("cltype", "timestamp with time zone");
+        timestampColumn.put("attndims", 0);
+        when(templateExecutor.executeByTemplate(context, "component/table/%s/get_columns_for_table.ftl")).thenReturn(Collections.emptyList());
+        when(templateExecutor.executeByTemplate(context, "component/columns/%s/properties.ftl")).thenReturn(Collections.singleton(timestampColumn));
+        when(templateExecutor.executeByTemplate(context, "component/columns/%s/edit_mode_types_multi.ftl")).thenReturn(Collections.emptyList());
+        appender.append(context);
+        Map<String, Object> singleColumn = getSingleColumn(context);
+        assertThat(singleColumn.get("typname"), is("timestamp with time zone"));
+        assertThat(singleColumn.get("typnspname"), is("public"));
+        @SuppressWarnings("unchecked")
+        Collection<String> editTypes = (Collection<String>) singleColumn.get("edit_types");
+        assertThat(editTypes, contains("timestamp with time zone"));
     }
     
     @Test
