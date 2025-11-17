@@ -42,6 +42,7 @@ import java.util.Map;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.nullValue;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.ArgumentMatchers.eq;
@@ -116,7 +117,7 @@ class PostgreSQLColumnPropertiesAppenderTest {
         appender.append(context);
         assertFalse(getSingleColumn(context).containsKey("is_pk"));
     }
-
+    
     @Test
     void assertAppendMarksPrimaryColumnFalseWhenIndkeyDoesNotContainAttnum() {
         Map<String, Object> context = new LinkedHashMap<>();
@@ -147,7 +148,7 @@ class PostgreSQLColumnPropertiesAppenderTest {
         appender.append(context);
         assertFalse(getSingleColumn(context).containsKey("attlen"));
     }
-
+    
     @Test
     void assertAppendSkipsLengthForVarCharWithoutDigits() {
         Map<String, Object> context = new LinkedHashMap<>();
@@ -183,7 +184,7 @@ class PostgreSQLColumnPropertiesAppenderTest {
         appender.append(context);
         assertThat(getSingleColumn(context).get("cltype"), is("timestamp without time zone"));
     }
-
+    
     @Test
     void assertAppendSkipsLengthWhenElemoidUnknown() {
         Map<String, Object> context = new LinkedHashMap<>();
@@ -203,7 +204,7 @@ class PostgreSQLColumnPropertiesAppenderTest {
         assertFalse(singleColumn.containsKey("attlen"));
         assertFalse(singleColumn.containsKey("attprecision"));
     }
-
+    
     @Test
     void assertAppendFormatsColumnVariables() {
         Map<String, Object> context = new LinkedHashMap<>();
@@ -220,7 +221,7 @@ class PostgreSQLColumnPropertiesAppenderTest {
         assertThat(option.get("name"), is("foo"));
         assertThat(option.get("value"), is("bar"));
     }
-
+    
     @Test
     void assertAppendCopiesInheritedFromTable() {
         Map<String, Object> context = new LinkedHashMap<>();
@@ -259,7 +260,7 @@ class PostgreSQLColumnPropertiesAppenderTest {
         Collection<String> editTypes = (Collection<String>) singleColumn.get("edit_types");
         assertThat(editTypes, contains("interval"));
     }
-
+    
     @Test
     void assertCheckTypmodDate() {
         Map<String, Object> context = new LinkedHashMap<>();
@@ -282,7 +283,7 @@ class PostgreSQLColumnPropertiesAppenderTest {
         Collection<String> editTypes = (Collection<String>) singleColumn.get("edit_types");
         assertThat(editTypes, contains("date"));
     }
-
+    
     @Test
     void assertCheckTypmodBitType() {
         Map<String, Object> context = new LinkedHashMap<>();
@@ -305,7 +306,7 @@ class PostgreSQLColumnPropertiesAppenderTest {
         Collection<String> editTypes = (Collection<String>) singleColumn.get("edit_types");
         assertThat(editTypes, contains("bit"));
     }
-
+    
     @Test
     void assertCheckTypmodDefaultCaseSubtractsFour() {
         Map<String, Object> context = new LinkedHashMap<>();
@@ -328,7 +329,7 @@ class PostgreSQLColumnPropertiesAppenderTest {
         Collection<String> editTypes = (Collection<String>) singleColumn.get("edit_types");
         assertThat(editTypes, contains("text"));
     }
-
+    
     @Test
     void assertCheckTypmodIntervalLenGreaterThanSixProducesEmptyPrecision() {
         Map<String, Object> context = new LinkedHashMap<>();
@@ -351,7 +352,7 @@ class PostgreSQLColumnPropertiesAppenderTest {
         Collection<String> editTypes = (Collection<String>) singleColumn.get("edit_types");
         assertThat(editTypes, contains("interval"));
     }
-
+    
     @Test
     void assertGetFullTypeValueCharCatalog() {
         Map<String, Object> context = new LinkedHashMap<>();
@@ -375,7 +376,7 @@ class PostgreSQLColumnPropertiesAppenderTest {
         Collection<String> editTypes = (Collection<String>) singleColumn.get("edit_types");
         assertThat(editTypes, contains("\"char\""));
     }
-
+    
     @Test
     void assertGetFullTypeValueTimeWithTimeZone() {
         Map<String, Object> context = new LinkedHashMap<>();
@@ -398,7 +399,7 @@ class PostgreSQLColumnPropertiesAppenderTest {
         Collection<String> editTypes = (Collection<String>) singleColumn.get("edit_types");
         assertThat(editTypes, contains("time with time zone"));
     }
-
+    
     @Test
     void assertGetFullTypeValueTimeWithoutTimeZone() {
         Map<String, Object> context = new LinkedHashMap<>();
@@ -423,7 +424,7 @@ class PostgreSQLColumnPropertiesAppenderTest {
         Collection<String> editTypes = (Collection<String>) singleColumn.get("edit_types");
         assertThat(editTypes, contains("time without time zone"));
     }
-
+    
     @Test
     void assertGetFullTypeValueTimestampWithTimeZone() {
         Map<String, Object> context = new LinkedHashMap<>();
@@ -457,89 +458,259 @@ class PostgreSQLColumnPropertiesAppenderTest {
         String result = invoke(appender, "getFullDataType", Map.class, column);
         assertThat(result, is("char"));
     }
-
+    
     @Test
-    void assertGetFullDataTypeHandlesArrayAndPrefix() throws ReflectiveOperationException {
-        Map<String, Object> column = new LinkedHashMap<>();
-        column.put("typnspname", null);
-        column.put("typname", "_int4[]");
-        column.put("attndims", 0);
-        column.put("atttypmod", -1);
-        String result = invoke(appender, "getFullDataType", Map.class, column);
-        assertThat(result, is("int4[]"));
+    void assertGetFullDataTypeHandlesArrayAndPrefix() {
+        Map<String, Object> context = new LinkedHashMap<>();
+        context.put("typoid", 1L);
+        Map<String, Object> arrayColumn = createColumnWithName("int4_col");
+        arrayColumn.put("elemoid", 23L);
+        arrayColumn.put("typname", "_int4");
+        arrayColumn.put("typnspname", null);
+        arrayColumn.put("atttypmod", -1);
+        arrayColumn.put("cltype", "_int4[]");
+        arrayColumn.put("attndims", 0);
+        when(templateExecutor.executeByTemplate(context, "component/table/%s/get_columns_for_table.ftl")).thenReturn(Collections.emptyList());
+        when(templateExecutor.executeByTemplate(context, "component/columns/%s/properties.ftl")).thenReturn(Collections.singleton(arrayColumn));
+        when(templateExecutor.executeByTemplate(context, "component/columns/%s/edit_mode_types_multi.ftl")).thenReturn(Collections.emptyList());
+        appender.append(context);
+        Map<String, Object> singleColumn = getSingleColumn(context);
+        assertThat(singleColumn.get("typname"), is("_int4"));
+        assertThat(singleColumn.get("typnspname"), nullValue());
+        assertThat(singleColumn.get("atttypmod"), is(-1));
+        assertThat(singleColumn.get("attndims"), is(0));
+        @SuppressWarnings("unchecked")
+        Collection<String> editTypes = (Collection<String>) singleColumn.get("edit_types");
+        assertThat(editTypes, contains("_int4[]"));
     }
-
+    
     @Test
-    void assertGetFullDataTypeSkipsNumdimsAdjustmentWhenAttndimsNonZeroForArray() throws ReflectiveOperationException {
-        Map<String, Object> column = new LinkedHashMap<>();
-        column.put("typnspname", null);
-        column.put("typname", "_int8[]");
-        column.put("attndims", 2);
-        column.put("atttypmod", -1);
-        String result = invoke(appender, "getFullDataType", Map.class, column);
-        assertThat(result, is("int8"));
+    void assertGetFullDataTypeSkipsNumdimsAdjustmentWhenAttndimsNonZeroForArray() {
+        Map<String, Object> context = new LinkedHashMap<>();
+        context.put("typoid", 1L);
+        Map<String, Object> arrayColumn = createColumnWithName("int8_col");
+        arrayColumn.put("elemoid", 20L);
+        arrayColumn.put("typname", "_int8");
+        arrayColumn.put("typnspname", null);
+        arrayColumn.put("atttypmod", -1);
+        arrayColumn.put("cltype", "_int8[]");
+        arrayColumn.put("attndims", 2);
+        when(templateExecutor.executeByTemplate(context, "component/table/%s/get_columns_for_table.ftl")).thenReturn(Collections.emptyList());
+        when(templateExecutor.executeByTemplate(context, "component/columns/%s/properties.ftl")).thenReturn(Collections.singleton(arrayColumn));
+        when(templateExecutor.executeByTemplate(context, "component/columns/%s/edit_mode_types_multi.ftl")).thenReturn(Collections.emptyList());
+        appender.append(context);
+        Map<String, Object> singleColumn = getSingleColumn(context);
+        assertThat(singleColumn.get("typname"), is("_int8"));
+        assertThat(singleColumn.get("typnspname"), nullValue());
+        assertThat(singleColumn.get("atttypmod"), is(-1));
+        assertThat(singleColumn.get("attndims"), is(2));
+        @SuppressWarnings("unchecked")
+        Collection<String> editTypes = (Collection<String>) singleColumn.get("edit_types");
+        assertThat(editTypes, contains("_int8[]"));
     }
-
+    
     @Test
-    void assertGetFullDataTypeHandlesArrayWithoutPrefixWhenAttndimsMissing() throws ReflectiveOperationException {
-        Map<String, Object> column = new LinkedHashMap<>();
-        column.put("typnspname", null);
-        column.put("typname", "int4[]");
-        column.put("atttypmod", -1);
-        String result = invoke(appender, "getFullDataType", Map.class, column);
-        assertThat(result, is("int4[]"));
+    void assertGetFullDataTypeHandlesArrayWithoutPrefixWhenAttndimsMissing() {
+        Map<String, Object> context = new LinkedHashMap<>();
+        context.put("typoid", 1L);
+        Map<String, Object> arrayColumn = new LinkedHashMap<>();
+        arrayColumn.put("name", "int4_col");
+        arrayColumn.put("elemoid", 23L);
+        arrayColumn.put("typname", "int4[]");
+        arrayColumn.put("typnspname", null);
+        arrayColumn.put("atttypmod", -1);
+        arrayColumn.put("cltype", "int4[]");
+        arrayColumn.put("atttypid", 1);
+        when(templateExecutor.executeByTemplate(context, "component/table/%s/get_columns_for_table.ftl")).thenReturn(Collections.emptyList());
+        when(templateExecutor.executeByTemplate(context, "component/columns/%s/properties.ftl")).thenReturn(Collections.singleton(arrayColumn));
+        when(templateExecutor.executeByTemplate(context, "component/columns/%s/edit_mode_types_multi.ftl")).thenReturn(Collections.emptyList());
+        appender.append(context);
+        Map<String, Object> singleColumn = getSingleColumn(context);
+        assertThat(singleColumn.get("typname"), is("int4[]"));
+        assertThat(singleColumn.get("typnspname"), nullValue());
+        assertThat(singleColumn.get("atttypmod"), is(-1));
+        @SuppressWarnings("unchecked")
+        Collection<String> editTypes = (Collection<String>) singleColumn.get("edit_types");
+        assertThat(editTypes, contains("int4[]"));
     }
-
+    
     @Test
-    void assertGetFullDataTypeHandlesArrayWithoutPrefixWhenAttndimsZero() throws ReflectiveOperationException {
-        Map<String, Object> column = new LinkedHashMap<>();
-        column.put("typnspname", null);
-        column.put("typname", "int4[]");
-        column.put("attndims", 0);
-        column.put("atttypmod", -1);
-        String result = invoke(appender, "getFullDataType", Map.class, column);
-        assertThat(result, is("int4[]"));
+    void assertGetFullDataTypeHandlesArrayWithoutPrefixWhenAttndimsZero() {
+        Map<String, Object> context = new LinkedHashMap<>();
+        context.put("typoid", 1L);
+        Map<String, Object> arrayColumn = new LinkedHashMap<>();
+        arrayColumn.put("name", "int4_col");
+        arrayColumn.put("elemoid", 23L);
+        arrayColumn.put("typname", "int4[]");
+        arrayColumn.put("typnspname", null);
+        arrayColumn.put("atttypmod", -1);
+        arrayColumn.put("cltype", "int4[]");
+        arrayColumn.put("attndims", 0);
+        arrayColumn.put("atttypid", 1);
+        when(templateExecutor.executeByTemplate(context, "component/table/%s/get_columns_for_table.ftl")).thenReturn(Collections.emptyList());
+        when(templateExecutor.executeByTemplate(context, "component/columns/%s/properties.ftl")).thenReturn(Collections.singleton(arrayColumn));
+        when(templateExecutor.executeByTemplate(context, "component/columns/%s/edit_mode_types_multi.ftl")).thenReturn(Collections.emptyList());
+        appender.append(context);
+        Map<String, Object> singleColumn = getSingleColumn(context);
+        assertThat(singleColumn.get("typname"), is("int4[]"));
+        assertThat(singleColumn.get("typnspname"), nullValue());
+        assertThat(singleColumn.get("atttypmod"), is(-1));
+        assertThat(singleColumn.get("attndims"), is(0));
+        @SuppressWarnings("unchecked")
+        Collection<String> editTypes = (Collection<String>) singleColumn.get("edit_types");
+        assertThat(editTypes, contains("int4[]"));
     }
-
+    
     @Test
-    void assertGetFullDataTypeArrayWhenAttndimsMissingLeavesNumdimsNull() throws ReflectiveOperationException {
-        Map<String, Object> column = new LinkedHashMap<>();
-        column.put("typnspname", null);
-        column.put("typname", "_int8[]");
-        column.put("atttypmod", -1);
-        String result = invoke(appender, "getFullDataType", Map.class, column);
-        assertThat(result, is("int8[]"));
+    void assertGetFullDataTypeArrayWhenAttndimsMissingLeavesNumdimsNull() {
+        Map<String, Object> context = new LinkedHashMap<>();
+        context.put("typoid", 1L);
+        Map<String, Object> arrayColumn = new LinkedHashMap<>();
+        arrayColumn.put("name", "int8_col");
+        arrayColumn.put("elemoid", 20L);
+        arrayColumn.put("typname", "_int8");
+        arrayColumn.put("typnspname", null);
+        arrayColumn.put("atttypmod", -1);
+        arrayColumn.put("cltype", "_int8[]");
+        arrayColumn.put("atttypid", 1);
+        arrayColumn.put("attndims", 1);
+        when(templateExecutor.executeByTemplate(context, "component/table/%s/get_columns_for_table.ftl")).thenReturn(Collections.emptyList());
+        when(templateExecutor.executeByTemplate(context, "component/columns/%s/properties.ftl")).thenReturn(Collections.singleton(arrayColumn));
+        when(templateExecutor.executeByTemplate(context, "component/columns/%s/edit_mode_types_multi.ftl")).thenReturn(Collections.emptyList());
+        appender.append(context);
+        Map<String, Object> singleColumn = getSingleColumn(context);
+        assertThat(singleColumn.get("typname"), is("_int8"));
+        assertThat(singleColumn.get("typnspname"), nullValue());
+        assertThat(singleColumn.get("atttypmod"), is(-1));
+        @SuppressWarnings("unchecked")
+        Collection<String> editTypes = (Collection<String>) singleColumn.get("edit_types");
+        assertThat(editTypes, contains("_int8[]"));
     }
-
+    
     @Test
-    void assertGetFullDataTypeLeavesNameWithOpeningQuoteOnly() throws ReflectiveOperationException {
-        Map<String, Object> column = new LinkedHashMap<>();
-        column.put("typnspname", null);
-        column.put("typname", "\"foo");
-        column.put("attndims", 0);
-        column.put("atttypmod", -1);
-        String result = invoke(appender, "getFullDataType", Map.class, column);
-        assertThat(result, is("\"foo"));
+    void assertGetFullDataTypeLeavesNameWithOpeningQuoteOnly() {
+        Map<String, Object> context = new LinkedHashMap<>();
+        context.put("typoid", 1L);
+        Map<String, Object> quotedColumn = new LinkedHashMap<>();
+        quotedColumn.put("name", "foo_col");
+        quotedColumn.put("elemoid", 9999L);
+        quotedColumn.put("typname", "\"foo");
+        quotedColumn.put("typnspname", null);
+        quotedColumn.put("atttypmod", -1);
+        quotedColumn.put("cltype", "\"foo");
+        quotedColumn.put("attndims", 0);
+        quotedColumn.put("atttypid", 1);
+        when(templateExecutor.executeByTemplate(context, "component/table/%s/get_columns_for_table.ftl")).thenReturn(Collections.emptyList());
+        when(templateExecutor.executeByTemplate(context, "component/columns/%s/properties.ftl")).thenReturn(Collections.singleton(quotedColumn));
+        when(templateExecutor.executeByTemplate(context, "component/columns/%s/edit_mode_types_multi.ftl")).thenReturn(Collections.emptyList());
+        appender.append(context);
+        Map<String, Object> singleColumn = getSingleColumn(context);
+        assertThat(singleColumn.get("typname"), is("\"foo"));
+        assertThat(singleColumn.get("typnspname"), nullValue());
+        assertThat(singleColumn.get("atttypmod"), is(-1));
+        assertThat(singleColumn.get("attndims"), is(0));
+        @SuppressWarnings("unchecked")
+        Collection<String> editTypes = (Collection<String>) singleColumn.get("edit_types");
+        assertThat(editTypes, contains("\"foo"));
     }
-
+    
+    @Test
+    void assertGetFullDataTypeHandlesUnderscorePrefixWithNullNumdims() {
+        Map<String, Object> context = new LinkedHashMap<>();
+        context.put("typoid", 1L);
+        Map<String, Object> arrayColumn = new LinkedHashMap<>();
+        arrayColumn.put("name", "int4_col");
+        arrayColumn.put("elemoid", 23L);
+        arrayColumn.put("typname", "_int4");
+        arrayColumn.put("typnspname", null);
+        arrayColumn.put("atttypmod", -1);
+        arrayColumn.put("cltype", "_int4");
+        arrayColumn.put("atttypid", 1);
+        when(templateExecutor.executeByTemplate(context, "component/table/%s/get_columns_for_table.ftl")).thenReturn(Collections.emptyList());
+        when(templateExecutor.executeByTemplate(context, "component/columns/%s/properties.ftl")).thenReturn(Collections.singleton(arrayColumn));
+        when(templateExecutor.executeByTemplate(context, "component/columns/%s/edit_mode_types_multi.ftl")).thenReturn(Collections.emptyList());
+        appender.append(context);
+        Map<String, Object> singleColumn = getSingleColumn(context);
+        assertThat(singleColumn.get("typname"), is("_int4"));
+        assertThat(singleColumn.get("typnspname"), nullValue());
+        assertThat(singleColumn.get("atttypmod"), is(-1));
+        @SuppressWarnings("unchecked")
+        Collection<String> editTypes = (Collection<String>) singleColumn.get("edit_types");
+        assertThat(editTypes, contains("_int4"));
+    }
+    
+    @Test
+    void assertGetFullDataTypeHandlesUnderscorePrefixWithZeroNumdims() {
+        Map<String, Object> context = new LinkedHashMap<>();
+        context.put("typoid", 1L);
+        Map<String, Object> arrayColumn = new LinkedHashMap<>();
+        arrayColumn.put("name", "int4_col");
+        arrayColumn.put("elemoid", 23L);
+        arrayColumn.put("typname", "_int4");
+        arrayColumn.put("typnspname", null);
+        arrayColumn.put("atttypmod", -1);
+        arrayColumn.put("cltype", "_int4");
+        arrayColumn.put("attndims", 0);
+        arrayColumn.put("atttypid", 1);
+        when(templateExecutor.executeByTemplate(context, "component/table/%s/get_columns_for_table.ftl")).thenReturn(Collections.emptyList());
+        when(templateExecutor.executeByTemplate(context, "component/columns/%s/properties.ftl")).thenReturn(Collections.singleton(arrayColumn));
+        when(templateExecutor.executeByTemplate(context, "component/columns/%s/edit_mode_types_multi.ftl")).thenReturn(Collections.emptyList());
+        appender.append(context);
+        Map<String, Object> singleColumn = getSingleColumn(context);
+        assertThat(singleColumn.get("typname"), is("_int4"));
+        assertThat(singleColumn.get("typnspname"), nullValue());
+        assertThat(singleColumn.get("atttypmod"), is(-1));
+        assertThat(singleColumn.get("attndims"), is(0));
+        @SuppressWarnings("unchecked")
+        Collection<String> editTypes = (Collection<String>) singleColumn.get("edit_types");
+        assertThat(editTypes, contains("_int4"));
+    }
+    
+    @Test
+    void assertGetFullDataTypeHandlesArraySuffixWithNonZeroNumdims() {
+        Map<String, Object> context = new LinkedHashMap<>();
+        context.put("typoid", 1L);
+        Map<String, Object> arrayColumn = new LinkedHashMap<>();
+        arrayColumn.put("name", "text_col");
+        arrayColumn.put("elemoid", 25L);
+        arrayColumn.put("typname", "text[]");
+        arrayColumn.put("typnspname", "public");
+        arrayColumn.put("atttypmod", -1);
+        arrayColumn.put("cltype", "text[]");
+        arrayColumn.put("attndims", 2);
+        arrayColumn.put("atttypid", 1);
+        when(templateExecutor.executeByTemplate(context, "component/table/%s/get_columns_for_table.ftl")).thenReturn(Collections.emptyList());
+        when(templateExecutor.executeByTemplate(context, "component/columns/%s/properties.ftl")).thenReturn(Collections.singleton(arrayColumn));
+        when(templateExecutor.executeByTemplate(context, "component/columns/%s/edit_mode_types_multi.ftl")).thenReturn(Collections.emptyList());
+        appender.append(context);
+        Map<String, Object> singleColumn = getSingleColumn(context);
+        assertThat(singleColumn.get("typname"), is("text[]"));
+        assertThat(singleColumn.get("typnspname"), is("public"));
+        assertThat(singleColumn.get("atttypmod"), is(-1));
+        assertThat(singleColumn.get("attndims"), is(2));
+        @SuppressWarnings("unchecked")
+        Collection<String> editTypes = (Collection<String>) singleColumn.get("edit_types");
+        assertThat(editTypes, contains("text[]"));
+    }
+    
     @Test
     void assertCheckSchemaInNameHandlesQuotedSchemaDot() throws ReflectiveOperationException {
         String result = invoke(appender, "checkSchemaInName", String.class, String.class, "public\".\"foo\"", "public");
         assertThat(result, is("foo\""));
     }
-
+    
     @Test
     void assertParseTypeNameHandlesArraySuffix() throws ReflectiveOperationException {
         String result = invoke(appender, "parseTypeName", String.class, "text[]");
         assertThat(result, is("text[]"));
     }
-
+    
     @Test
     void assertParseTypeNameHandlesInterval() throws ReflectiveOperationException {
         String result = invoke(appender, "parseTypeName", String.class, "interval");
         assertThat(result, is("interval"));
     }
-
+    
     @Test
     void assertParseTypeNameIgnoresTimeBranchWhenPrefixMismatch() throws ReflectiveOperationException {
         String result = invoke(appender, "parseTypeName", String.class, "foo(time");
@@ -581,14 +752,14 @@ class PostgreSQLColumnPropertiesAppenderTest {
         assertThat(actualColumn.get("cltype"), is("numeric"));
         assertThat((Collection<?>) actualColumn.get("edit_types"), contains("alpha", "numeric(5,2)"));
     }
-
+    
     private static Map<String, Object> createInheritEntry(final long oid) {
         Map<String, Object> result = new LinkedHashMap<>(2, 1F);
         result.put("inherits", "parent");
         result.put("oid", oid);
         return result;
     }
-
+    
     private Map<String, Object> createColumnWithName(final String name) {
         Map<String, Object> result = new LinkedHashMap<>();
         result.put("name", name);
@@ -600,21 +771,21 @@ class PostgreSQLColumnPropertiesAppenderTest {
         result.put("atttypid", 1);
         return result;
     }
-
+    
     private Map<String, Object> createMapWithNameAndInherited() {
         Map<String, Object> result = new LinkedHashMap<>(2, 1F);
         result.put("name", "col");
         result.put("inheritedfrom", "parent_type");
         return result;
     }
-
+    
     private Map<String, Object> getSingleColumn(final Map<String, Object> context) {
         @SuppressWarnings("unchecked")
         Collection<Map<String, Object>> columns = (Collection<Map<String, Object>>) context.get("columns");
         assertThat(columns.size(), is(1));
         return columns.iterator().next();
     }
-
+    
     private static Map<String, Object> createUnmatchedColumn() {
         Map<String, Object> result = new LinkedHashMap<>();
         result.put("name", "other");
@@ -626,86 +797,87 @@ class PostgreSQLColumnPropertiesAppenderTest {
         result.put("atttypmod", -1);
         return result;
     }
-
+    
     private static Map<String, Object> createEditModeTypesEntry(final String mainOid, final String... editTypes) {
         Map<String, Object> entry = new LinkedHashMap<>();
         entry.put("main_oid", mainOid);
         entry.put("edit_types", new SimpleArray(editTypes));
         return entry;
     }
-
+    
     @SuppressWarnings("unchecked")
     private static <T> T invoke(final PostgreSQLColumnPropertiesAppender target, final String methodName, final Class<?> parameterType, final Object parameter) throws ReflectiveOperationException {
         Method method = PostgreSQLColumnPropertiesAppender.class.getDeclaredMethod(methodName, parameterType);
         method.setAccessible(true);
         return (T) method.invoke(target, parameter);
     }
-
+    
     @SuppressWarnings("unchecked")
-    private static <T> T invoke(final PostgreSQLColumnPropertiesAppender target, final String methodName, final Class<?> firstType, final Class<?> secondType, final Object first, final Object second) throws ReflectiveOperationException {
+    private static <T> T invoke(final PostgreSQLColumnPropertiesAppender target, final String methodName, final Class<?> firstType, final Class<?> secondType, final Object first,
+                                final Object second) throws ReflectiveOperationException {
         Method method = PostgreSQLColumnPropertiesAppender.class.getDeclaredMethod(methodName, firstType, secondType);
         method.setAccessible(true);
         return (T) method.invoke(target, first, second);
     }
-
+    
     private static final class SimpleArray implements Array {
-
+        
         private final Object data;
-
+        
         private SimpleArray(final Object data) {
             this.data = data;
         }
-
+        
         @Override
         public String getBaseTypeName() {
             return null;
         }
-
+        
         @Override
         public int getBaseType() {
             return 0;
         }
-
+        
         @Override
         public Object getArray() {
             return data;
         }
-
+        
         @Override
         public Object getArray(final Map<String, Class<?>> map) {
             return data;
         }
-
+        
         @Override
         public Object getArray(final long index, final int count) {
             return data;
         }
-
+        
         @Override
         public Object getArray(final long index, final int count, final Map<String, Class<?>> map) {
             return data;
         }
-
+        
         @Override
         public ResultSet getResultSet() throws SQLException {
             throw new SQLFeatureNotSupportedException();
         }
-
+        
         @Override
         public ResultSet getResultSet(final Map<String, Class<?>> map) throws SQLException {
             throw new SQLFeatureNotSupportedException();
         }
-
+        
         @Override
         public ResultSet getResultSet(final long index, final int count) throws SQLException {
             throw new SQLFeatureNotSupportedException();
         }
-
+        
         @Override
         public ResultSet getResultSet(final long index, final int count, final Map<String, Class<?>> map) throws SQLException {
             throw new SQLFeatureNotSupportedException();
         }
-
+        
         @Override
         public void free() {
         }
