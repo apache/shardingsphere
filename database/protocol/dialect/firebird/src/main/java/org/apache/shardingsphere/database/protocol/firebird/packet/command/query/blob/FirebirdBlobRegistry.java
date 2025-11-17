@@ -19,14 +19,18 @@ package org.apache.shardingsphere.database.protocol.firebird.packet.command.quer
 
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufAllocator;
-import java.nio.charset.Charset;
+import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.apache.shardingsphere.database.protocol.firebird.payload.FirebirdPacketPayload;
+
+import java.nio.charset.Charset;
 
 /**
  * Registry for the BLOB segment.
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class FirebirdBlobRegistry {
     
     @Getter
