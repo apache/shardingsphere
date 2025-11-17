@@ -76,7 +76,7 @@ class PostgreSQLColumnPropertiesAppenderTest {
     @Test
     void assertGetTypeAndInheritedColumnsFromInheritsWithNoMatchReturnsEmpty() {
         Map<String, Object> context = new LinkedHashMap<>();
-        context.put("coll_inherits", createMockArray(new String[]{"missing"}));
+        context.put("coll_inherits", mockSQLArray(new String[]{"missing"}));
         when(templateExecutor.executeByTemplate(anyMap(), eq("component/table/%s/get_inherits.ftl"))).thenReturn(Collections.singleton(createInheritEntry(1L)));
         when(templateExecutor.executeByTemplate(anyMap(), eq("component/columns/%s/properties.ftl"))).thenReturn(Collections.emptyList());
         appender.append(context);
@@ -88,8 +88,8 @@ class PostgreSQLColumnPropertiesAppenderTest {
     void assertAppendUsesDefaultInheritedFromWithEmptyInheritsAndInheritedColumns() {
         Map<String, Object> context = new LinkedHashMap<>();
         context.put("typoid", null);
-        context.put("coll_inherits", createMockArray(new String[0]));
-        Map<String, Object> baseColumn = createColumnWithName("test_col");
+        context.put("coll_inherits", mockSQLArray(new String[0]));
+        Map<String, Object> baseColumn = createTextColumnWithName("test_col");
         baseColumn.put("inheritedfrom", "parent_table");
         Map<String, Object> inheritedColumn = new LinkedHashMap<>();
         inheritedColumn.put("name", "test_col");
@@ -108,7 +108,7 @@ class PostgreSQLColumnPropertiesAppenderTest {
     void assertAppendLeavesPrimaryMarkersMissingWhenIndkeyMissing() {
         Map<String, Object> context = new LinkedHashMap<>();
         context.put("typoid", 1L);
-        Map<String, Object> column = createColumnWithName("pk_col");
+        Map<String, Object> column = createTextColumnWithName("pk_col");
         column.put("attnum", 1);
         when(templateExecutor.executeByTemplate(context, "component/table/%s/get_columns_for_table.ftl")).thenReturn(Collections.emptyList());
         when(templateExecutor.executeByTemplate(anyMap(), eq("component/columns/%s/properties.ftl"))).thenReturn(Collections.singletonList(column));
@@ -121,7 +121,7 @@ class PostgreSQLColumnPropertiesAppenderTest {
     void assertAppendMarksPrimaryColumnFalseWhenIndkeyDoesNotContainAttnum() {
         Map<String, Object> context = new LinkedHashMap<>();
         context.put("typoid", 1L);
-        Map<String, Object> column = createColumnWithName("pk_col");
+        Map<String, Object> column = createTextColumnWithName("pk_col");
         column.put("attnum", 1);
         column.put("indkey", "2");
         when(templateExecutor.executeByTemplate(context, "component/table/%s/get_columns_for_table.ftl")).thenReturn(Collections.emptyList());
@@ -137,7 +137,7 @@ class PostgreSQLColumnPropertiesAppenderTest {
     void assertAppendKeepsLengthAbsentWhenTypmodMissing() {
         Map<String, Object> context = new LinkedHashMap<>();
         context.put("typoid", 1L);
-        Map<String, Object> column = createColumnWithName("numeric_col");
+        Map<String, Object> column = createTextColumnWithName("numeric_col");
         column.put("elemoid", 1231L);
         column.put("typname", "numeric");
         column.put("atttypmod", -1);
@@ -152,7 +152,7 @@ class PostgreSQLColumnPropertiesAppenderTest {
     void assertAppendSkipsLengthForVarCharWithoutDigits() {
         Map<String, Object> context = new LinkedHashMap<>();
         context.put("typoid", 1L);
-        Map<String, Object> column = createColumnWithName("var_char_col");
+        Map<String, Object> column = createTextColumnWithName("var_char_col");
         column.put("elemoid", 1043L);
         column.put("typname", "text");
         column.put("atttypmod", -1);
@@ -171,7 +171,7 @@ class PostgreSQLColumnPropertiesAppenderTest {
         context.put("typoid", 1L);
         Map<String, Object> typeColumn = createMapWithNameAndInherited();
         when(templateExecutor.executeByTemplate(context, "component/table/%s/get_columns_for_table.ftl")).thenReturn(Collections.singleton(typeColumn));
-        Map<String, Object> column = createColumnWithName("date_col");
+        Map<String, Object> column = createTextColumnWithName("date_col");
         column.put("elemoid", 1114L);
         column.put("typname", "timestamp without time zone");
         column.put("cltype", "timestamp(3) without time zone");
@@ -190,7 +190,7 @@ class PostgreSQLColumnPropertiesAppenderTest {
         context.put("typoid", 2L);
         Map<String, Object> typeColumn = createMapWithNameAndInherited();
         when(templateExecutor.executeByTemplate(context, "component/table/%s/get_columns_for_table.ftl")).thenReturn(Collections.singletonList(typeColumn));
-        Map<String, Object> column = createColumnWithName("unknown_col");
+        Map<String, Object> column = createTextColumnWithName("unknown_col");
         column.put("elemoid", 9999L);
         column.put("typname", "unknown");
         column.put("cltype", "unknown");
@@ -208,8 +208,8 @@ class PostgreSQLColumnPropertiesAppenderTest {
     void assertAppendFormatsColumnVariables() {
         Map<String, Object> context = new LinkedHashMap<>();
         context.put("typoid", 1L);
-        Map<String, Object> column = createColumnWithName("opt_col");
-        column.put("attoptions", createMockArray(new String[]{"foo=bar"}));
+        Map<String, Object> column = createTextColumnWithName("opt_col");
+        column.put("attoptions", mockSQLArray(new String[]{"foo=bar"}));
         when(templateExecutor.executeByTemplate(context, "component/table/%s/get_columns_for_table.ftl")).thenReturn(Collections.emptyList());
         when(templateExecutor.executeByTemplate(anyMap(), eq("component/columns/%s/properties.ftl"))).thenReturn(Collections.singletonList(column));
         when(templateExecutor.executeByTemplate(anyMap(), eq("component/columns/%s/edit_mode_types_multi.ftl"))).thenReturn(Collections.emptyList());
@@ -224,14 +224,14 @@ class PostgreSQLColumnPropertiesAppenderTest {
     @Test
     void assertAppendCopiesInheritedFromTable() {
         Map<String, Object> context = new LinkedHashMap<>();
-        context.put("coll_inherits", createMockArray(new String[]{"parent"}));
+        context.put("coll_inherits", mockSQLArray(new String[]{"parent"}));
         when(templateExecutor.executeByTemplate(anyMap(), eq("component/table/%s/get_columns_for_table.ftl"))).thenReturn(Collections.emptyList());
         when(templateExecutor.executeByTemplate(anyMap(), eq("component/table/%s/get_inherits.ftl"))).thenReturn(Collections.singletonList(createInheritEntry(5L)));
         Map<String, Object> inheritedColumn = new LinkedHashMap<>();
         inheritedColumn.put("name", "col");
         inheritedColumn.put("inheritedfrom", "parent_table");
         when(templateExecutor.executeByTemplate(anyMap(), eq("table/%s/get_columns_for_table.ftl"))).thenReturn(Collections.singletonList(inheritedColumn));
-        when(templateExecutor.executeByTemplate(anyMap(), eq("component/columns/%s/properties.ftl"))).thenReturn(Collections.singletonList(createColumnWithName("col")));
+        when(templateExecutor.executeByTemplate(anyMap(), eq("component/columns/%s/properties.ftl"))).thenReturn(Collections.singletonList(createTextColumnWithName("col")));
         when(templateExecutor.executeByTemplate(anyMap(), eq("component/columns/%s/edit_mode_types_multi.ftl"))).thenReturn(Collections.emptyList());
         appender.append(context);
         assertThat(getSingleColumn(context).get("inheritedfromtable"), is("parent_table"));
@@ -241,7 +241,7 @@ class PostgreSQLColumnPropertiesAppenderTest {
     void assertCheckTypmodInterval() {
         Map<String, Object> context = new LinkedHashMap<>();
         context.put("typoid", 1L);
-        Map<String, Object> intervalColumn = createColumnWithName("interval_col");
+        Map<String, Object> intervalColumn = createTextColumnWithName("interval_col");
         intervalColumn.put("elemoid", 1186L);
         intervalColumn.put("typname", "interval");
         intervalColumn.put("typnspname", "pg_catalog");
@@ -264,7 +264,7 @@ class PostgreSQLColumnPropertiesAppenderTest {
     void assertCheckTypmodDate() {
         Map<String, Object> context = new LinkedHashMap<>();
         context.put("typoid", 1L);
-        Map<String, Object> dateColumn = createColumnWithName("date_col");
+        Map<String, Object> dateColumn = createTextColumnWithName("date_col");
         dateColumn.put("elemoid", 1083L);
         dateColumn.put("typname", "date");
         dateColumn.put("typnspname", "pg_catalog");
@@ -287,7 +287,7 @@ class PostgreSQLColumnPropertiesAppenderTest {
     void assertCheckTypmodBitType() {
         Map<String, Object> context = new LinkedHashMap<>();
         context.put("typoid", 1L);
-        Map<String, Object> bitColumn = createColumnWithName("bit_col");
+        Map<String, Object> bitColumn = createTextColumnWithName("bit_col");
         bitColumn.put("elemoid", 1560L);
         bitColumn.put("typname", "bit");
         bitColumn.put("typnspname", "pg_catalog");
@@ -310,7 +310,7 @@ class PostgreSQLColumnPropertiesAppenderTest {
     void assertCheckTypmodDefaultCaseSubtractsFour() {
         Map<String, Object> context = new LinkedHashMap<>();
         context.put("typoid", 1L);
-        Map<String, Object> textColumn = createColumnWithName("text_col");
+        Map<String, Object> textColumn = createTextColumnWithName("text_col");
         textColumn.put("elemoid", 9999L);
         textColumn.put("typname", "text");
         textColumn.put("typnspname", "pg_catalog");
@@ -333,7 +333,7 @@ class PostgreSQLColumnPropertiesAppenderTest {
     void assertCheckTypmodIntervalLenGreaterThanSixProducesEmptyPrecision() {
         Map<String, Object> context = new LinkedHashMap<>();
         context.put("typoid", 1L);
-        Map<String, Object> intervalColumn = createColumnWithName("interval_col");
+        Map<String, Object> intervalColumn = createTextColumnWithName("interval_col");
         intervalColumn.put("elemoid", 1186L);
         intervalColumn.put("typname", "interval");
         intervalColumn.put("typnspname", "pg_catalog");
@@ -356,7 +356,7 @@ class PostgreSQLColumnPropertiesAppenderTest {
     void assertGetFullTypeValueCharCatalog() {
         Map<String, Object> context = new LinkedHashMap<>();
         context.put("typoid", 1L);
-        Map<String, Object> charColumn = createColumnWithName("char_col");
+        Map<String, Object> charColumn = createTextColumnWithName("char_col");
         charColumn.put("elemoid", 18L);
         charColumn.put("typname", "\"char\"");
         charColumn.put("typnspname", "pg_catalog");
@@ -380,7 +380,7 @@ class PostgreSQLColumnPropertiesAppenderTest {
     void assertGetFullTypeValueTimeWithTimeZone() {
         Map<String, Object> context = new LinkedHashMap<>();
         context.put("typoid", 1L);
-        Map<String, Object> timeColumn = createColumnWithName("time_col");
+        Map<String, Object> timeColumn = createTextColumnWithName("time_col");
         timeColumn.put("elemoid", 1186L);
         timeColumn.put("typname", "time with time zone");
         timeColumn.put("typnspname", "public");
@@ -403,7 +403,7 @@ class PostgreSQLColumnPropertiesAppenderTest {
     void assertGetFullTypeValueTimeWithoutTimeZone() {
         Map<String, Object> context = new LinkedHashMap<>();
         context.put("typoid", 1L);
-        Map<String, Object> timeColumn = createColumnWithName("time_col");
+        Map<String, Object> timeColumn = createTextColumnWithName("time_col");
         timeColumn.put("elemoid", 1183L);
         timeColumn.put("typname", "time without time zone");
         timeColumn.put("typnspname", "public");
@@ -428,7 +428,7 @@ class PostgreSQLColumnPropertiesAppenderTest {
     void assertGetFullTypeValueTimestampWithTimeZone() {
         Map<String, Object> context = new LinkedHashMap<>();
         context.put("typoid", 1L);
-        Map<String, Object> timestampColumn = createColumnWithName("timestamp_col");
+        Map<String, Object> timestampColumn = createTextColumnWithName("timestamp_col");
         timestampColumn.put("elemoid", 1184L);
         timestampColumn.put("typname", "timestamp with time zone");
         timestampColumn.put("typnspname", "public");
@@ -451,7 +451,7 @@ class PostgreSQLColumnPropertiesAppenderTest {
     void assertGetFullDataTypeHandlesSchemaWithQuotes() {
         Map<String, Object> context = new LinkedHashMap<>();
         context.put("typoid", 1L);
-        Map<String, Object> column = createColumnWithName("char_col");
+        Map<String, Object> column = createTextColumnWithName("char_col");
         column.put("typname", "public.\"char\"");
         column.put("typnspname", "public");
         column.put("atttypmod", -1);
@@ -468,7 +468,7 @@ class PostgreSQLColumnPropertiesAppenderTest {
     void assertGetFullDataTypeHandlesArrayAndPrefix() {
         Map<String, Object> context = new LinkedHashMap<>();
         context.put("typoid", 1L);
-        Map<String, Object> arrayColumn = createColumnWithName("int4_col");
+        Map<String, Object> arrayColumn = createTextColumnWithName("int4_col");
         arrayColumn.put("elemoid", 23L);
         arrayColumn.put("typname", "_int4");
         arrayColumn.put("typnspname", null);
@@ -493,7 +493,7 @@ class PostgreSQLColumnPropertiesAppenderTest {
     void assertGetFullDataTypeSkipsNumdimsAdjustmentWhenAttndimsNonZeroForArray() {
         Map<String, Object> context = new LinkedHashMap<>();
         context.put("typoid", 1L);
-        Map<String, Object> arrayColumn = createColumnWithName("int8_col");
+        Map<String, Object> arrayColumn = createTextColumnWithName("int8_col");
         arrayColumn.put("elemoid", 20L);
         arrayColumn.put("typname", "_int8");
         arrayColumn.put("typnspname", null);
@@ -702,7 +702,7 @@ class PostgreSQLColumnPropertiesAppenderTest {
     void assertCheckSchemaInNameHandlesQuotedSchemaDot() {
         Map<String, Object> context = new LinkedHashMap<>();
         context.put("typoid", 1L);
-        Map<String, Object> column = createColumnWithName("test_col");
+        Map<String, Object> column = createTextColumnWithName("test_col");
         column.put("typname", "public\".\"foo\"");
         column.put("typnspname", "public");
         column.put("atttypmod", -1);
@@ -719,7 +719,7 @@ class PostgreSQLColumnPropertiesAppenderTest {
     void assertParseTypeNameHandlesArraySuffix() {
         Map<String, Object> context = new LinkedHashMap<>();
         context.put("typoid", 1L);
-        Map<String, Object> column = createColumnWithName("text_col");
+        Map<String, Object> column = createTextColumnWithName("text_col");
         column.put("typname", "text[]");
         column.put("typnspname", "public");
         column.put("atttypmod", -1);
@@ -736,7 +736,7 @@ class PostgreSQLColumnPropertiesAppenderTest {
     void assertParseTypeNameHandlesInterval() {
         Map<String, Object> context = new LinkedHashMap<>();
         context.put("typoid", 1L);
-        Map<String, Object> column = createColumnWithName("interval_col");
+        Map<String, Object> column = createTextColumnWithName("interval_col");
         column.put("typname", "interval");
         column.put("typnspname", "public");
         column.put("atttypmod", -1);
@@ -754,7 +754,7 @@ class PostgreSQLColumnPropertiesAppenderTest {
     void assertParseTypeNameIgnoresTimeBranchWhenPrefixMismatch() {
         Map<String, Object> context = new LinkedHashMap<>();
         context.put("typoid", 1L);
-        Map<String, Object> column = createColumnWithName("foo_time_col");
+        Map<String, Object> column = createTextColumnWithName("foo_time_col");
         column.put("typname", "foo(time");
         column.put("typnspname", "public");
         column.put("atttypmod", -1);
@@ -789,7 +789,7 @@ class PostgreSQLColumnPropertiesAppenderTest {
         column.put("cltype", "numeric(5,2)");
         Map<String, Object> unmatchedColumn = createUnmatchedColumn();
         when(templateExecutor.executeByTemplate(anyMap(), eq("component/columns/%s/properties.ftl"))).thenReturn(Arrays.asList(column, unmatchedColumn));
-        Map<String, Object> editModeTypesEntry = createEditModeTypesEntry("1", "alpha");
+        Map<String, Object> editModeTypesEntry = createEditModeTypesEntry("alpha");
         when(templateExecutor.executeByTemplate(anyMap(), eq("component/columns/%s/edit_mode_types_multi.ftl"))).thenReturn(Collections.singleton(editModeTypesEntry));
         appender.append(context);
         Collection<?> columns = (Collection<?>) context.get("columns");
@@ -812,7 +812,7 @@ class PostgreSQLColumnPropertiesAppenderTest {
         return result;
     }
     
-    private Map<String, Object> createColumnWithName(final String name) {
+    private Map<String, Object> createTextColumnWithName(final String name) {
         Map<String, Object> result = new LinkedHashMap<>();
         result.put("name", name);
         result.put("cltype", "text");
@@ -831,13 +831,6 @@ class PostgreSQLColumnPropertiesAppenderTest {
         return result;
     }
     
-    private Map<String, Object> getSingleColumn(final Map<String, Object> context) {
-        @SuppressWarnings("unchecked")
-        Collection<Map<String, Object>> columns = (Collection<Map<String, Object>>) context.get("columns");
-        assertThat(columns.size(), is(1));
-        return columns.iterator().next();
-    }
-    
     private Map<String, Object> createUnmatchedColumn() {
         Map<String, Object> result = new LinkedHashMap<>();
         result.put("name", "other");
@@ -850,17 +843,24 @@ class PostgreSQLColumnPropertiesAppenderTest {
         return result;
     }
     
-    private Map<String, Object> createEditModeTypesEntry(final String mainOid, final String... editTypes) {
+    private Map<String, Object> createEditModeTypesEntry(final String... editTypes) {
         Map<String, Object> entry = new LinkedHashMap<>();
-        entry.put("main_oid", mainOid);
-        entry.put("edit_types", createMockArray(editTypes));
+        entry.put("main_oid", "1");
+        entry.put("edit_types", mockSQLArray(editTypes));
         return entry;
     }
     
     @SneakyThrows(SQLException.class)
-    private Array createMockArray(final Object data) {
+    private Array mockSQLArray(final Object data) {
         Array result = mock(Array.class);
         doReturn(data).when(result).getArray();
         return result;
+    }
+    
+    private Map<String, Object> getSingleColumn(final Map<String, Object> context) {
+        @SuppressWarnings("unchecked")
+        Collection<Map<String, Object>> columns = (Collection<Map<String, Object>>) context.get("columns");
+        assertThat(columns.size(), is(1));
+        return columns.iterator().next();
     }
 }

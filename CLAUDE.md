@@ -2,6 +2,62 @@
 
 *Professional Guide for AI Programming Assistants - Best Practices for ShardingSphere Code Development*
 
+## 🏗️ ShardingSphere Architecture Overview
+
+### Project Overview
+ShardingSphere is an ecosystem of distributed database solutions with JDBC driver, database proxy, and planned Sidecar modes.
+
+### Core Module Architecture
+```yaml
+module_hierarchy:
+  infrastructure_layer:
+    - shardingsphere-infra: Common utilities, SPI definitions
+    - shardingsphere-parser: SQL parsing (ANTLR4-based)
+  engine_layer:
+    - shardingsphere-mode: Configuration management
+    - shardingsphere-kernel: Core execution engine
+  access_layer:
+    - shardingsphere-jdbc: Java JDBC driver
+    - shardingsphere-proxy: Database proxy
+  feature_layer:
+    - shardingsphere-sharding: Data sharding
+    - shardingsphere-encryption: Data encryption
+    - shardingsphere-readwrite-splitting: Read/write splitting
+```
+
+### Technology Stack Decisions
+- **ANTLR4**: SQL parsing and abstract syntax tree generation
+- **Netty**: High-performance network communication (proxy mode)
+- **Apache Calcite**: Query optimization and execution plans
+- **SPI**: Plugin architecture for hot-pluggable extensions
+
+### JDBC vs Proxy Patterns
+- **JDBC**: Zero invasion, Java-only, highest performance
+- **Proxy**: Language-agnostic, centralized management, advanced features
+
+### Key Concepts
+- **Sharding**: Horizontal data partitioning
+- **DistSQL**: Distributed SQL for dynamic configuration
+- **SPI Extension**: Algorithm, protocol, and execution extensions
+- **Data Pipeline**: Migration and synchronization functionality
+
+### Code Quality Standards
+```yaml
+self_documenting_code:
+  method_naming: "10-15 characters, verb-noun patterns, no comments needed"
+  examples: ["isValidEmailAddress()", "calculateOrderTotal()"]
+  anti_examples: ["proc()", "getData()", "handle()"]
+
+complex_logic:
+  definition: "3+ nested levels or 20+ lines per method"
+  handling: "Extract to meaningful private methods"
+
+mock_boundaries:
+  no_mock: "Simple objects, DTOs, stateless utilities"
+  must_mock: "Database connections, network services, third-party interfaces"
+  judgment: "Mock only with external dependencies or high construction cost"
+```
+
 ## 🚀 AI Programming Best Practices
 
 ### How to Obtain High-Quality Code
@@ -132,26 +188,35 @@ decision_logic:
 
 ### Build Commands
 ```bash
-./mvnw install -T1C                           # Full build
+./mvnw install -T1C                           # Full build with parallel execution
 ./mvnw install -T1C -DskipTests              # Build without tests
+./mvnw clean compile                          # Compile only
 ```
 
-### Validation Commands
+### Code Quality Commands
 ```bash
 ./mvnw spotless:apply -Pcheck                 # Format code
+./mvnw checkstyle:check                      # Code style checking
+./mvnw pmd:check                             # Static code analysis
+./mvnw spotbugs:check                        # Bug detection
+./mvnw dependency-check                      # Security vulnerability scan
+./mvnw archunit:test                         # Architecture rule validation
+```
+
+### Testing Commands
+```bash
+./mvnw test                                  # Run all tests
+./mvnw test -Dtest=${TestClassName}          # Run specific test class
+./mvnw test -pl ${submodule}                 # Run tests for specific module
+./mvnw test jacoco:report -Djacoco.skip=false -pl ${submodule}  # Generate coverage report
 ./mvnw test jacoco:check@jacoco-check -Pcoverage-check -Djacoco.skip=false \
   -Djacoco.check.class.pattern=${ClassName} -pl ${submodule}  # Coverage check
 
-# Parameter instructions:
-# ${ClassName} - Specific class name for coverage check (e.g., ShardingRuleService)
-# ${submodule} - Specific submodule name (e.g., shardingsphere-jdbc, shardingsphere-proxy)
+# Performance Testing
+./mvnw jmh:benchmark                         # Run performance benchmarks
 ```
 
-### Troubleshooting Commands
-```bash
-./mvnw clean test jacoco:report -Djacoco.skip=false -pl ${submodule}  # Generate coverage report
-open ${submodule}/target/site/jacoco/index.html                       # View coverage details
-```
+# Parameters: ${ClassName}, ${TestClassName}, ${submodule}
 
 ## 📝 Code Templates
 
@@ -209,33 +274,53 @@ void assert${MethodName}With${Condition}Expects${Result}() {
 
 ### Mock Configuration Template
 
-**Mock Usage Boundary Principles:**
-- ✅ **No Mock Needed**: Simple objects (String, basic types, DTOs, POJOs), stateless utility classes, configuration objects
-- ✅ **Mock Required**: Complex external dependencies (database connections, network services, file systems), third-party interfaces, SPI services, stateful objects
-- ✅ **Judgment Criteria**: If object construction cost is high or has external dependencies, Mock is needed
+**Mock Usage Boundaries:**
+- **No Mock**: Simple objects, DTOs, stateless utilities, configuration objects
+- **Must Mock**: Database connections, network services, third-party interfaces, SPI services
+- **Judgment**: Mock only with external dependencies or high construction cost
 
+**Basic Mock Patterns:**
 ```java
-// Basic Mock configuration - for interface method Mock
-when(dependency.${method}(any())).thenReturn(${result});
+// Interface method Mock
+when(dependency.method(any())).thenReturn(result);
 
-// Complex dependency Mock - for constructor objects that need Mock
-try (MockedConstruction<${ClassName}> mocked = mockConstruction(${ClassName}.class, (mock, context) -> {
-    ${DependencyChainSetup}
-    when(mock.${getMethod}()).thenReturn(${mockResult});
-})) {
-    // Test code - code paths involving new ${ClassName}()
+// Constructor Mock with MockedConstruction
+try (MockedConstruction<ClassName> mocked = mockConstruction(ClassName.class)) {
+    // Test code involving new ClassName()
+}
+```
+
+**Advanced Mock Patterns:**
+```java
+// Static method Mocking (avoid UnfinishedStubbingException)
+@SneakyThrows(SQLException.class)
+private static Array createMockArray(final Object data) {
+    Array result = mock(Array.class);
+    doReturn(data).when(result).getArray();
+    return result;
 }
 
-// Mock configuration example comparison:
-// ❌ No Mock needed - simple objects
-String result = "testValue";  // Direct creation
-Map<String, Object> config = new HashMap<>();  // Direct creation
+// Deep stubs for complex dependencies
+@Mock(answer = Answers.RETURNS_DEEP_STUBS)
+private ComplexService complexService;
 
-// ✅ Mock needed - complex dependencies
-when(dataSource.getConnection()).thenReturn(mockConnection);  // External dependency
-try (MockedConstruction<DatabaseMetaData> mocked = mockConstruction(DatabaseMetaData.class)) {
-    // Constructor needs Mock case
+// MockedStatic for static method calls
+try (MockedStatic<UtilityClass> mocked = mockStatic(UtilityClass.class)) {
+    when(UtilityClass.staticMethod(any())).thenReturn(value);
+    // Test code
 }
+```
+
+**Example Comparison:**
+```java
+// ❌ Over-mocking simple objects
+String result = mock(String.class);  // Unnecessary
+
+// ✅ Direct creation for simple objects
+String result = "testValue";
+
+// ✅ Mock external dependencies
+when(dataSource.getConnection()).thenReturn(mockConnection);
 ```
 
 ### SPI Implementation Template
@@ -344,74 +429,51 @@ public final class ${SPIName}Impl implements ${SPIName}SPI {
 
 ## 📋 Project Constraint Rules
 
-### YAML Format Constraint Configuration
+### Core Design Principles
 ```yaml
-# Package naming conventions
-package_naming:
+class_design:
+  - final classes with final fields
+  - constructor injection only
+  - @RequiredArgsConstructor for dependencies
+  - self-documenting code (no comments)
+
+package_structure:
   service: "org.apache.shardingsphere.{module}.service"
   spi: "org.apache.shardingsphere.{module}.spi"
   config: "org.apache.shardingsphere.{module}.config"
   util: "org.apache.shardingsphere.{module}.util"
-
-# Class design rules
-class_design:
-  services:
-    - final_class_with_final_fields
-    - constructor_injection_only
-    - use_requiredArgsConstructor
-    - self_documenting_code_only
-
-  naming_conventions:
-    test_methods: "assert{MethodName}With{Condition}Expects{Result}"
-    production_variables: "result"
-    test_variables: "actual"
-    private_methods: "descriptive_verb_noun"
-
-  test_organization:
-    - one_test_per_branch
-    - branch_first_naming
-    - minimal_test_count
-    - test_isolation
-    - try_with_resources_for_mocks
-
-# Quality requirements
-quality_requirements:
-  test_coverage: "100%"
-  code_formatting: "spotless_applied"
-  documentation: "self_documenting_only"
-  mock_strategy: "use_mockedconstruction_for_external_deps"
-
-# Assertion standards
-assertion_standards:
-  preferred_style: "hamcrest_matchers"
-  usage_pattern: "assertThat(actual, is(expected))"
-  variable_naming: "use_actual_for_assertions"
 ```
 
-### Code Pattern Examples
+### Code Patterns
 ```java
-// Self-documenting code pattern (must follow)
-if (userIsAdminWithPermission()) {
-    // Complex logic extracted to private method
+// Self-documenting pattern
+if (isValidUserWithPermission()) {
+    processPayment();
 }
 
-private boolean userIsAdminWithPermission() {
-    return user.isAdmin() && user.hasPermission();
+private boolean isValidUserWithPermission() {
+    return user.isValid() && user.hasPermission();
 }
 
-// Standard test structure (must follow)
+// Test structure
 @Test
-void assertMethodNameWithConditionExpectsResult() {
+void assertMethodWithConditionExpectsResult() {
     // Given
-    mockDependencyChain();
+    mockDependencies();
 
     // When
-    MyResult actual = target.methodUnderTest(input);
+    Result actual = target.method(input);
 
     // Then
-    assertThat(actual, is(expectedResult));
+    assertThat(actual, is(expected));
 }
 ```
+
+### Quality Requirements
+- **Test Coverage**: 100% branch coverage
+- **Code Formatting**: Spotless applied
+- **Mock Strategy**: Mock only external dependencies
+- **Naming**: Test methods use assert*() prefix
 
 ## 🔍 Quick Search Index
 
@@ -480,116 +542,55 @@ error_recovery_index:
     reference: "ShardingSphere Testing Style Guide.Mock Usage Patterns"
 ```
 
-## 🛠️ Troubleshooting Guide
+## 🛠️ Common Issues & Solutions
 
-### Common Problem Diagnosis
+### Coverage Problems
+- **Issue**: Mock configuration incomplete, branches not executed
+- **Solution**: Use MockedConstruction, create dedicated test methods for each branch
+- **Command**: `./mvnw clean test jacoco:report -pl ${submodule}`
 
-#### Coverage Issues
-```yaml
-problem: "Coverage not met"
-cause_check:
-  - Mock configuration incomplete, some branches not executed
-  - Tests exit early, not covering target code
-  - Complex conditional statement branch testing missing
+### Mock Configuration Errors
+- **Issue**: UnfinishedStubbingException in static methods
+- **Solution**: Use `doReturn().when()` instead of `when().thenReturn()`
+- **Pattern**: `@SneakyThrows(SQLException.class) private static Array createMockArray()`
 
-solution:
-  1. Check Mock configuration, use MockedConstruction to control external dependencies
-  2. View JaCoCo HTML report, locate red diamond marked uncovered branches
-  3. Create dedicated test methods for each conditional branch
+### Test Failures
+- **Issue**: Mock dependency chain broken
+- **Solution**: Verify complete dependency chain, use RETURNS_DEEP_STUBS
+- **Check**: Mock calls with `verify(mock).method(params)`
 
-reference_commands:
-  ./mvnw clean test jacoco:report -Djacoco.skip=false -pl ${submodule}
-  open ${submodule}/target/site/jacoco/index.html
+### Compilation Errors
+- **Issue**: Dependency conflicts, syntax errors
+- **Solution**: Check versions, verify imports, run `./mvnw dependency:tree`
+
+### Quick Reference
+```bash
+# Generate coverage report
+./mvnw clean test jacoco:report -Djacoco.skip=false -pl ${submodule}
+
+# View coverage details
+open ${submodule}/target/site/jacoco/index.html
+
+# Check dependencies
+./mvnw dependency:tree
 ```
-
-#### Compilation Errors
-```yaml
-problem: "Compilation failure"
-cause_check:
-  - Dependency version conflicts
-  - Syntax errors
-  - Package import errors
-
-solution:
-  1. Check dependency versions and compatibility
-  2. Verify syntax correctness
-  3. Confirm package paths and import statements
-
-reference_commands:
-  ./mvnw clean compile
-  ./mvnw dependency:tree
-```
-
-#### Test Failures
-```yaml
-problem: "Test execution failure"
-cause_check:
-  - Mock configuration incorrect
-  - Assertion logic errors
-  - Test data construction problems
-
-solution:
-  1. Check Mock configuration, ensure complete dependency chain
-  2. Verify assertion logic, use Hamcrest matchers
-  3. Confirm test data validity
-
-reference_template: "Code Templates.Test Method Template"
-```
-
-#### Mock Configuration Issues
-```yaml
-problem: "Mock configuration complex and difficult to manage"
-cause_check:
-  - Nested dependencies too deep
-  - Constructor Mock missing
-  - Static method call Mock inappropriate
-  - Mock object selection inappropriate (over-Mocking simple objects)
-
-solution:
-  1. Identify Mock boundaries: direct creation for simple objects, Mock only for complex objects
-  2. Use RETURNS_DEEP_STUBS to handle complex dependencies
-  3. Use MockedConstruction for constructor calls
-  4. Use MockedStatic for static method calls
-  5. Reduce unnecessary Mock, improve test readability
-
-mock_boundary_judgment:
-  - No Mock needed: String, basic types, DTOs, POJOs, stateless utility classes
-  - Must Mock: database connections, network services, file systems, third-party interfaces
-
-reference_template: "Code Templates.Mock Configuration Template"
-```
-
-### Debugging Techniques
-
-#### Coverage Debugging
-1. **Generate detailed report**: `./mvnw clean test jacoco:report -Djacoco.skip=false -pl ${submodule}`
-2. **View HTML report**: `open ${submodule}/target/site/jacoco/index.html`
-3. **Locate uncovered lines**: Look for red-marked code lines
-4. **Analyze branch conditions**: Identify unexecuted conditional statement branches
-
-#### Mock Debugging
-1. **Verify Mock calls**: `verify(mock).method(params)`
-2. **Check Mock state**: Confirm Mock configuration is correct
-3. **Debug dependency chain**: Verify Mock configuration layer by layer
 
 ---
 
-## 📋 Quick Checklist
+## 📋 Quality Checklist
 
-### Pre-Task Check
-- [ ] Clarify task type (source code/test/documentation)
-- [ ] Understand quality requirements (100% coverage/formatting/self-documenting)
-- [ ] Find relevant templates and constraint rules
+### Before Starting
+- [ ] Task type identified (source/test/docs)
+- [ ] Quality requirements understood
+- [ ] Relevant templates found
 
-### Pre-Completion Check
-- [ ] Source code task: 100% test coverage
-- [ ] Source code task: Code formatting
-- [ ] Source code task: Self-documenting code
-- [ ] Test task: Complete branch coverage
-- [ ] Documentation task: Link validity
-- [ ] All tasks: Conform to project constraint rules
+### Before Completing
+- [ ] Source: 100% coverage + formatting + self-documenting
+- [ ] Test: Complete branch coverage
+- [ ] Docs: Valid links + consistent format
+- [ ] All: Project constraints satisfied
 
 ### Final Verification
-- [ ] Run full build: `./mvnw install -T1C`
-- [ ] Verify coverage: `./mvnw test jacoco:check@jacoco-check -Pcoverage-check`
-- [ ] Check formatting: `./mvnw spotless:apply -Pcheck`
+- [ ] Build: `./mvnw install -T1C`
+- [ ] Coverage: `./mvnw test jacoco:check@jacoco-check -Pcoverage-check`
+- [ ] Format: `./mvnw spotless:apply -Pcheck`
