@@ -789,7 +789,7 @@ class PostgreSQLColumnPropertiesAppenderTest {
         column.put("cltype", "numeric(5,2)");
         Map<String, Object> unmatchedColumn = createUnmatchedColumn();
         when(templateExecutor.executeByTemplate(anyMap(), eq("component/columns/%s/properties.ftl"))).thenReturn(Arrays.asList(column, unmatchedColumn));
-        when(templateExecutor.executeByTemplate(anyMap(), eq("component/columns/%s/edit_mode_types_multi.ftl"))).thenReturn(Collections.singletonList(createEditModeTypesEntry("1", "alpha")));
+        when(templateExecutor.executeByTemplate(anyMap(), eq("component/columns/%s/edit_mode_types_multi.ftl"))).thenReturn(Collections.singleton(createEditModeTypesEntry("1", "alpha")));
         appender.append(context);
         Collection<?> columns = (Collection<?>) context.get("columns");
         assertThat(columns.size(), is(2));
