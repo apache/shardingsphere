@@ -27,7 +27,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 
-import java.lang.reflect.Method;
 import java.sql.Array;
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -449,14 +448,20 @@ class PostgreSQLColumnPropertiesAppenderTest {
     }
     
     @Test
-    void assertGetFullDataTypeHandlesSchemaWithQuotes() throws ReflectiveOperationException {
-        Map<String, Object> column = new LinkedHashMap<>();
-        column.put("typnspname", "public");
+    void assertGetFullDataTypeHandlesSchemaWithQuotes() {
+        Map<String, Object> context = new LinkedHashMap<>();
+        context.put("typoid", 1L);
+        Map<String, Object> column = createColumnWithName("char_col");
         column.put("typname", "public.\"char\"");
-        column.put("attndims", 0);
+        column.put("typnspname", "public");
         column.put("atttypmod", -1);
-        String result = invoke(appender, "getFullDataType", Map.class, column);
-        assertThat(result, is("char"));
+        column.put("cltype", "\"char\"");
+        when(templateExecutor.executeByTemplate(context, "component/table/%s/get_columns_for_table.ftl")).thenReturn(Collections.emptyList());
+        when(templateExecutor.executeByTemplate(context, "component/columns/%s/properties.ftl")).thenReturn(Collections.singletonList(column));
+        when(templateExecutor.executeByTemplate(context, "component/columns/%s/edit_mode_types_multi.ftl")).thenReturn(Collections.emptyList());
+        appender.append(context);
+        Map<String, Object> singleColumn = getSingleColumn(context);
+        assertThat(singleColumn.get("cltype"), is("\"char\""));
     }
     
     @Test
@@ -694,27 +699,73 @@ class PostgreSQLColumnPropertiesAppenderTest {
     }
     
     @Test
-    void assertCheckSchemaInNameHandlesQuotedSchemaDot() throws ReflectiveOperationException {
-        String result = invoke(appender, "checkSchemaInName", String.class, String.class, "public\".\"foo\"", "public");
-        assertThat(result, is("foo\""));
+    void assertCheckSchemaInNameHandlesQuotedSchemaDot() {
+        Map<String, Object> context = new LinkedHashMap<>();
+        context.put("typoid", 1L);
+        Map<String, Object> column = createColumnWithName("test_col");
+        column.put("typname", "public\".\"foo\"");
+        column.put("typnspname", "public");
+        column.put("atttypmod", -1);
+        column.put("cltype", "public\".\"foo\"");
+        when(templateExecutor.executeByTemplate(context, "component/table/%s/get_columns_for_table.ftl")).thenReturn(Collections.emptyList());
+        when(templateExecutor.executeByTemplate(context, "component/columns/%s/properties.ftl")).thenReturn(Collections.singletonList(column));
+        when(templateExecutor.executeByTemplate(context, "component/columns/%s/edit_mode_types_multi.ftl")).thenReturn(Collections.emptyList());
+        appender.append(context);
+        Map<String, Object> singleColumn = getSingleColumn(context);
+        assertThat(singleColumn.get("cltype"), is("public\".\"foo\""));
     }
     
     @Test
-    void assertParseTypeNameHandlesArraySuffix() throws ReflectiveOperationException {
-        String result = invoke(appender, "parseTypeName", String.class, "text[]");
-        assertThat(result, is("text[]"));
+    void assertParseTypeNameHandlesArraySuffix() {
+        Map<String, Object> context = new LinkedHashMap<>();
+        context.put("typoid", 1L);
+        Map<String, Object> column = createColumnWithName("text_col");
+        column.put("typname", "text[]");
+        column.put("typnspname", "public");
+        column.put("atttypmod", -1);
+        column.put("cltype", "text[]");
+        when(templateExecutor.executeByTemplate(context, "component/table/%s/get_columns_for_table.ftl")).thenReturn(Collections.emptyList());
+        when(templateExecutor.executeByTemplate(context, "component/columns/%s/properties.ftl")).thenReturn(Collections.singletonList(column));
+        when(templateExecutor.executeByTemplate(context, "component/columns/%s/edit_mode_types_multi.ftl")).thenReturn(Collections.emptyList());
+        appender.append(context);
+        Map<String, Object> singleColumn = getSingleColumn(context);
+        assertThat(singleColumn.get("cltype"), is("text[]"));
     }
     
     @Test
-    void assertParseTypeNameHandlesInterval() throws ReflectiveOperationException {
-        String result = invoke(appender, "parseTypeName", String.class, "interval");
-        assertThat(result, is("interval"));
+    void assertParseTypeNameHandlesInterval() {
+        Map<String, Object> context = new LinkedHashMap<>();
+        context.put("typoid", 1L);
+        Map<String, Object> column = createColumnWithName("interval_col");
+        column.put("typname", "interval");
+        column.put("typnspname", "public");
+        column.put("atttypmod", -1);
+        column.put("cltype", "interval");
+        column.put("atttypid", 1186);
+        when(templateExecutor.executeByTemplate(context, "component/table/%s/get_columns_for_table.ftl")).thenReturn(Collections.emptyList());
+        when(templateExecutor.executeByTemplate(context, "component/columns/%s/properties.ftl")).thenReturn(Collections.singletonList(column));
+        when(templateExecutor.executeByTemplate(context, "component/columns/%s/edit_mode_types_multi.ftl")).thenReturn(Collections.emptyList());
+        appender.append(context);
+        Map<String, Object> singleColumn = getSingleColumn(context);
+        assertThat(singleColumn.get("cltype"), is("interval"));
     }
     
     @Test
-    void assertParseTypeNameIgnoresTimeBranchWhenPrefixMismatch() throws ReflectiveOperationException {
-        String result = invoke(appender, "parseTypeName", String.class, "foo(time");
-        assertThat(result, is("foo(time"));
+    void assertParseTypeNameIgnoresTimeBranchWhenPrefixMismatch() {
+        Map<String, Object> context = new LinkedHashMap<>();
+        context.put("typoid", 1L);
+        Map<String, Object> column = createColumnWithName("foo_time_col");
+        column.put("typname", "foo(time");
+        column.put("typnspname", "public");
+        column.put("atttypmod", -1);
+        column.put("cltype", "foo(time");
+        column.put("atttypid", 25);
+        when(templateExecutor.executeByTemplate(context, "component/table/%s/get_columns_for_table.ftl")).thenReturn(Collections.emptyList());
+        when(templateExecutor.executeByTemplate(context, "component/columns/%s/properties.ftl")).thenReturn(Collections.singletonList(column));
+        when(templateExecutor.executeByTemplate(context, "component/columns/%s/edit_mode_types_multi.ftl")).thenReturn(Collections.emptyList());
+        appender.append(context);
+        Map<String, Object> singleColumn = getSingleColumn(context);
+        assertThat(singleColumn.get("cltype"), is("foo(time"));
     }
     
     @Test
@@ -805,21 +856,7 @@ class PostgreSQLColumnPropertiesAppenderTest {
         return entry;
     }
     
-    @SuppressWarnings("unchecked")
-    private static <T> T invoke(final PostgreSQLColumnPropertiesAppender target, final String methodName, final Class<?> parameterType, final Object parameter) throws ReflectiveOperationException {
-        Method method = PostgreSQLColumnPropertiesAppender.class.getDeclaredMethod(methodName, parameterType);
-        method.setAccessible(true);
-        return (T) method.invoke(target, parameter);
-    }
-    
-    @SuppressWarnings("unchecked")
-    private static <T> T invoke(final PostgreSQLColumnPropertiesAppender target, final String methodName, final Class<?> firstType, final Class<?> secondType, final Object first,
-                                final Object second) throws ReflectiveOperationException {
-        Method method = PostgreSQLColumnPropertiesAppender.class.getDeclaredMethod(methodName, firstType, secondType);
-        method.setAccessible(true);
-        return (T) method.invoke(target, first, second);
-    }
-    
+        
     private static final class SimpleArray implements Array {
         
         private final Object data;
