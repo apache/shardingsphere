@@ -67,7 +67,7 @@ public final class SQLRewriteContext {
         parameters = queryContext.getParameters();
         connectionContext = queryContext.getConnectionContext();
         if (!queryContext.getHintValueContext().isSkipSQLRewrite()) {
-            addSQLTokenGenerators(new DefaultTokenGeneratorBuilder(sqlStatementContext).getSQLTokenGenerators());
+            addSQLTokenGenerators(new DefaultTokenGeneratorBuilder(database, sqlStatementContext).getSQLTokenGenerators());
         }
         parameterBuilder = containsGroupedParameter(sqlStatementContext) ? buildGroupedParameterBuilder(sqlStatementContext) : new StandardParameterBuilder(parameters);
     }

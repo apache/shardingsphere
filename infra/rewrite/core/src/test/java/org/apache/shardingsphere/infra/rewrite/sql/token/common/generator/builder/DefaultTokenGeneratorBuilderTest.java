@@ -20,6 +20,7 @@ package org.apache.shardingsphere.infra.rewrite.sql.token.common.generator.build
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.CommonSQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.dml.SelectStatementContext;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.rewrite.sql.token.common.generator.SQLTokenGenerator;
 import org.apache.shardingsphere.infra.rewrite.sql.token.common.generator.generic.RemoveTokenGenerator;
 import org.junit.jupiter.api.Test;
@@ -56,7 +57,7 @@ class DefaultTokenGeneratorBuilderTest {
     }
     
     private void assertGetSQLTokenGenerators(final SQLStatementContext sqlStatementContext) {
-        DefaultTokenGeneratorBuilder defaultTokenGeneratorBuilder = new DefaultTokenGeneratorBuilder(sqlStatementContext);
+        DefaultTokenGeneratorBuilder defaultTokenGeneratorBuilder = new DefaultTokenGeneratorBuilder(mock(ShardingSphereDatabase.class), sqlStatementContext);
         Collection<SQLTokenGenerator> sqlTokenGenerators = defaultTokenGeneratorBuilder.getSQLTokenGenerators();
         assertThat(sqlTokenGenerators.size(), is(1));
         Iterator<SQLTokenGenerator> iterator = sqlTokenGenerators.iterator();

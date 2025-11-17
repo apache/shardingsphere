@@ -47,6 +47,10 @@ public abstract class AbstractSQLBuilder implements SQLBuilder {
         result.append(sql, 0, sqlTokens.get(0).getStartIndex());
         Optional<SQLToken> previousToken = Optional.empty();
         for (SQLToken each : sqlTokens) {
+            Optional<SQLToken> nextSQLToken = getNextSQLToken(each, sqlTokens);
+            if (nextSQLToken.isPresent() && nextSQLToken.get().getStartIndex() == each.getStartIndex() && nextSQLToken.get().getPriority() < each.getPriority()) {
+                continue;
+            }
             if (isContainsAttachableToken(each, previousToken.orElse(null)) || each.getStartIndex() > previousToken.map(SQLToken::getStopIndex).orElse(0)) {
                 appendRewriteSQL(each, result);
                 previousToken = Optional.of(each);
@@ -78,8 +82,19 @@ public abstract class AbstractSQLBuilder implements SQLBuilder {
     }
     
     private int getStopIndex(final SQLToken sqlToken, final List<SQLToken> sqlTokens, final int sqlLength, final int startIndex) {
+        Optional<SQLToken> nextSQLToken = getNextSQLToken(sqlToken, sqlTokens);
+        if (!nextSQLToken.isPresent()) {
+            return sqlLength;
+        }
+        int stopIndex = nextSQLToken.get().getStartIndex();
+        return startIndex <= stopIndex ? stopIndex : getStopIndex(nextSQLToken.get(), sqlTokens, sqlLength, startIndex);
+    }
+    
+    private Optional<SQLToken> getNextSQLToken(final SQLToken sqlToken, final List<SQLToken> sqlTokens) {
         int currentSQLTokenIndex = sqlTokens.indexOf(sqlToken);
-        int stopIndex = sqlTokens.size() - 1 == currentSQLTokenIndex ? sqlLength : sqlTokens.get(currentSQLTokenIndex + 1).getStartIndex();
-        return startIndex <= stopIndex ? stopIndex : getStopIndex(sqlTokens.get(currentSQLTokenIndex + 1), sqlTokens, sqlLength, startIndex);
+        if (sqlTokens.size() - 1 == currentSQLTokenIndex) {
+            return Optional.empty();
+        }
+        return Optional.ofNullable(sqlTokens.get(currentSQLTokenIndex + 1));
     }
 }
