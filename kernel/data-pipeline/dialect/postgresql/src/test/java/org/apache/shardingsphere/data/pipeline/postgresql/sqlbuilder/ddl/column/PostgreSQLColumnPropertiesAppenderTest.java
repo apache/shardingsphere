@@ -856,7 +856,6 @@ class PostgreSQLColumnPropertiesAppenderTest {
         return entry;
     }
     
-        
     private static final class SimpleArray implements Array {
         
         private final Object data;
