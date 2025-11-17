@@ -648,13 +648,6 @@ class PostgreSQLColumnPropertiesAppenderTest {
         return (T) method.invoke(target, first, second);
     }
 
-    @SuppressWarnings("unchecked")
-    private static <T> T invoke(final PostgreSQLColumnPropertiesAppender target, final String methodName, final Class<?> firstType, final Class<?> secondType, final Class<?> thirdType, final Class<?> fourthType, final Object first, final Object second, final Object third, final Object fourth) throws ReflectiveOperationException {
-        Method method = PostgreSQLColumnPropertiesAppender.class.getDeclaredMethod(methodName, firstType, secondType, thirdType, fourthType);
-        method.setAccessible(true);
-        return (T) method.invoke(target, first, second, third, fourth);
-    }
-
     private static final class SimpleArray implements Array {
 
         private final Object data;
