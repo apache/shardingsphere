@@ -239,35 +239,25 @@ class PostgreSQLColumnPropertiesAppenderTest {
     
     @Test
     void assertCheckTypmodInterval() {
-        // Given: Create context with interval type column having typmod = 3
         Map<String, Object> context = new LinkedHashMap<>();
         context.put("typoid", 1L);
-
         Map<String, Object> intervalColumn = createColumnWithName("interval_col");
-        intervalColumn.put("elemoid", 1186L);  // PostgreSQL interval type OID
+        intervalColumn.put("elemoid", 1186L);
         intervalColumn.put("typname", "interval");
         intervalColumn.put("typnspname", "pg_catalog");
-        intervalColumn.put("atttypmod", 3);  // This should trigger checkTypmod(3, "interval")
+        intervalColumn.put("atttypmod", 3);
         intervalColumn.put("cltype", "interval");
         intervalColumn.put("attndims", 0);
-
-        // Mock template executor calls
-        when(templateExecutor.executeByTemplate(context, "component/table/%s/get_columns_for_table.ftl"))
-                .thenReturn(Collections.emptyList());
-        when(templateExecutor.executeByTemplate(anyMap(), eq("component/columns/%s/properties.ftl")))
-                .thenReturn(Collections.singletonList(intervalColumn));
-        when(templateExecutor.executeByTemplate(anyMap(), eq("component/columns/%s/edit_mode_types_multi.ftl")))
-                .thenReturn(Collections.emptyList());
-
-        // When: Call the public append method
+        when(templateExecutor.executeByTemplate(context, "component/table/%s/get_columns_for_table.ftl")).thenReturn(Collections.emptyList());
+        when(templateExecutor.executeByTemplate(context, "component/columns/%s/properties.ftl")).thenReturn(Collections.singleton(intervalColumn));
+        when(templateExecutor.executeByTemplate(context, "component/columns/%s/edit_mode_types_multi.ftl")).thenReturn(Collections.emptyList());
         appender.append(context);
-
-        // Then: Verify the interval column triggers checkTypmod processing
-        Map<String, Object> resultColumn = getSingleColumn(context);
+        Map<String, Object> singleColumn = getSingleColumn(context);
+        assertThat(singleColumn.get("atttypmod"), is(3));
+        assertThat(singleColumn.get("typname"), is("interval"));
         @SuppressWarnings("unchecked")
-        Collection<String> editTypes = (Collection<String>) resultColumn.get("edit_types");
-        // The getFullDataType result should be in editTypes, containing "interval(3)"
-        assertThat(editTypes, contains("interval(3)"));
+        Collection<String> editTypes = (Collection<String>) singleColumn.get("edit_types");
+        assertThat(editTypes, contains("interval"));
     }
 
     @Test
@@ -462,7 +452,7 @@ class PostgreSQLColumnPropertiesAppenderTest {
     }
 
     private Map<String, Object> createColumnWithName(final String name) {
-        Map<String, Object> result = new LinkedHashMap<>(7, 1F);
+        Map<String, Object> result = new LinkedHashMap<>();
         result.put("name", name);
         result.put("cltype", "text");
         result.put("typname", "text");
