@@ -78,8 +78,19 @@ public abstract class AbstractSQLBuilder implements SQLBuilder {
     }
     
     private int getStopIndex(final SQLToken sqlToken, final List<SQLToken> sqlTokens, final int sqlLength, final int startIndex) {
+        Optional<SQLToken> nextSQLToken = getNextSQLToken(sqlToken, sqlTokens);
+        if (!nextSQLToken.isPresent()) {
+            return sqlLength;
+        }
+        int stopIndex = nextSQLToken.get().getStartIndex();
+        return startIndex <= stopIndex ? stopIndex : getStopIndex(nextSQLToken.get(), sqlTokens, sqlLength, startIndex);
+    }
+    
+    private Optional<SQLToken> getNextSQLToken(final SQLToken sqlToken, final List<SQLToken> sqlTokens) {
         int currentSQLTokenIndex = sqlTokens.indexOf(sqlToken);
-        int stopIndex = sqlTokens.size() - 1 == currentSQLTokenIndex ? sqlLength : sqlTokens.get(currentSQLTokenIndex + 1).getStartIndex();
-        return startIndex <= stopIndex ? stopIndex : getStopIndex(sqlTokens.get(currentSQLTokenIndex + 1), sqlTokens, sqlLength, startIndex);
+        if (sqlTokens.size() - 1 == currentSQLTokenIndex) {
+            return Optional.empty();
+        }
+        return Optional.ofNullable(sqlTokens.get(currentSQLTokenIndex + 1));
     }
 }
