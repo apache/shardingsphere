@@ -56,10 +56,10 @@ public final class TestCaseClassScanner {
     @SneakyThrows({IOException.class, ClassNotFoundException.class})
     public static List<Class<? extends BaseTransactionTestCase>> scan() {
         Enumeration<URL> urls = Thread.currentThread().getContextClassLoader().getResources(TEST_CASE_PACKAGE_NAME.replace(".", File.separator));
-        return scanURL(urls);
+        return scanURL(urls, TEST_CASE_PACKAGE_NAME);
     }
     
-    private static List<Class<? extends BaseTransactionTestCase>> scanURL(final Enumeration<URL> urls) throws IOException, ClassNotFoundException {
+    private static List<Class<? extends BaseTransactionTestCase>> scanURL(final Enumeration<URL> urls, final String packageName) throws IOException, ClassNotFoundException {
         List<Class<? extends BaseTransactionTestCase>> result = new LinkedList<>();
         while (urls.hasMoreElements()) {
             URL url = urls.nextElement();
@@ -69,7 +69,7 @@ public final class TestCaseClassScanner {
                     addTestCaseClassesFromClassFiles(url, result);
                     break;
                 case "jar":
-                    addTestCaseClassesInJars(url, result);
+                    addTestCaseClassesInJars(url, result, packageName);
                     break;
                 default:
                     break;
@@ -85,7 +85,7 @@ public final class TestCaseClassScanner {
         addTestCaseClasses(caseClasses);
     }
     
-    private static void addTestCaseClassesInJars(final URL url, final List<Class<? extends BaseTransactionTestCase>> caseClasses) throws IOException, ClassNotFoundException {
+    private static void addTestCaseClassesInJars(final URL url, final List<Class<? extends BaseTransactionTestCase>> caseClasses, final String packageName) throws IOException, ClassNotFoundException {
         JarURLConnection connection = (JarURLConnection) url.openConnection();
         if (null == connection) {
             return;
@@ -98,7 +98,7 @@ public final class TestCaseClassScanner {
         while (jarEntryEnumeration.hasMoreElements()) {
             JarEntry entry = jarEntryEnumeration.nextElement();
             String jarEntryName = entry.getName();
-            if (jarEntryName.contains(CLASS_SUFFIX) && jarEntryName.replace(File.separator, ".").startsWith(TEST_CASE_PACKAGE_NAME)) {
+            if (jarEntryName.contains(CLASS_SUFFIX) && jarEntryName.replace(File.separator, ".").startsWith(packageName)) {
                 String className = jarEntryName.substring(0, jarEntryName.lastIndexOf(".")).replace(File.separator, ".");
                 Class<?> clazz = Class.forName(className);
                 addClass(caseClasses, clazz);
