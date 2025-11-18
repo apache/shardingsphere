@@ -53,7 +53,9 @@ public final class EnvironmentPropertiesLoader {
     public static Properties loadProperties(final String fileName) {
         Properties result = new Properties();
         try (InputStream inputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream(fileName)) {
-            result.load(inputStream);
+            if (null != inputStream) {
+                result.load(inputStream);
+            }
         }
         for (String each : System.getProperties().stringPropertyNames()) {
             result.setProperty(each, System.getProperty(each));
