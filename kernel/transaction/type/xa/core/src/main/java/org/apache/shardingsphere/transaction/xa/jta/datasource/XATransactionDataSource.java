@@ -54,7 +54,7 @@ public final class XATransactionDataSource implements AutoCloseable {
     
     private final ThreadLocal<Map<Transaction, Collection<Connection>>> enlistedTransactions = ThreadLocal.withInitial(HashMap::new);
     
-    private final AtomicInteger uniqueName = new AtomicInteger();
+    private final ThreadLocal<AtomicInteger> sequence = ThreadLocal.withInitial(AtomicInteger::new);
     
     private final String resourceName;
     
@@ -93,13 +93,20 @@ public final class XATransactionDataSource implements AutoCloseable {
         Transaction transaction = xaTransactionManagerProvider.getTransactionManager().getTransaction();
         Connection connection = dataSource.getConnection();
         XAConnection xaConnection = xaConnectionWrapper.wrap(xaDataSource, connection);
-        transaction.enlistResource(new SingleXAResource(resourceName, String.valueOf(uniqueName.getAndIncrement()), xaConnection.getXAResource()));
+        transaction.enlistResource(new SingleXAResource(resourceName, String.valueOf(sequence.get().getAndIncrement()), xaConnection.getXAResource()));
+        registerSynchronization(transaction);
+        enlistedTransactions.get().computeIfAbsent(transaction, key -> new LinkedList<>());
+        enlistedTransactions.get().get(transaction).add(connection);
+        return connection;
+    }
+    
+    private void registerSynchronization(final Transaction transaction) throws RollbackException, SystemException {
         transaction.registerSynchronization(new Synchronization() {
             
             @Override
             public void beforeCompletion() {
                 enlistedTransactions.get().remove(transaction);
-                uniqueName.set(0);
+                sequence.remove();
             }
             
             @Override
@@ -107,9 +114,6 @@ public final class XATransactionDataSource implements AutoCloseable {
                 enlistedTransactions.get().clear();
             }
         });
-        enlistedTransactions.get().computeIfAbsent(transaction, key -> new LinkedList<>());
-        enlistedTransactions.get().get(transaction).add(connection);
-        return connection;
     }
     
     @Override
