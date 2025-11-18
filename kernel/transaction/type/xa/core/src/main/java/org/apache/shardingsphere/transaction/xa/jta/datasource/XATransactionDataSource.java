@@ -54,7 +54,7 @@ public final class XATransactionDataSource implements AutoCloseable {
     
     private final ThreadLocal<Map<Transaction, Collection<Connection>>> enlistedTransactions = ThreadLocal.withInitial(HashMap::new);
     
-    private final ThreadLocal<AtomicInteger> sequence = ThreadLocal.withInitial(AtomicInteger::new);
+    private final ThreadLocal<AtomicInteger> uniqueName = ThreadLocal.withInitial(AtomicInteger::new);
     
     private final String resourceName;
     
@@ -93,7 +93,7 @@ public final class XATransactionDataSource implements AutoCloseable {
         Transaction transaction = xaTransactionManagerProvider.getTransactionManager().getTransaction();
         Connection connection = dataSource.getConnection();
         XAConnection xaConnection = xaConnectionWrapper.wrap(xaDataSource, connection);
-        transaction.enlistResource(new SingleXAResource(resourceName, String.valueOf(sequence.get().getAndIncrement()), xaConnection.getXAResource()));
+        transaction.enlistResource(new SingleXAResource(resourceName, String.valueOf(uniqueName.get().getAndIncrement()), xaConnection.getXAResource()));
         registerSynchronization(transaction);
         enlistedTransactions.get().computeIfAbsent(transaction, key -> new LinkedList<>());
         enlistedTransactions.get().get(transaction).add(connection);
@@ -106,7 +106,7 @@ public final class XATransactionDataSource implements AutoCloseable {
             @Override
             public void beforeCompletion() {
                 enlistedTransactions.get().remove(transaction);
-                sequence.remove();
+                uniqueName.remove();
             }
             
             @Override
