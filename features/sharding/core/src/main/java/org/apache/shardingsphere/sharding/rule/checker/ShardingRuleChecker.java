@@ -69,11 +69,40 @@ public class ShardingRuleChecker {
     }
     
     private void checkBindingTableConfiguration(final ShardingRuleConfiguration ruleConfig) {
-        ShardingSpherePreconditions.checkState(
-                isValidBindingTableConfiguration(shardingRule.getShardingTables(),
-                        new BindingTableCheckedConfiguration(shardingRule.getDataSourceNames(), shardingRule.getShardingAlgorithms(), ruleConfig.getBindingTableGroups(),
-                                shardingRule.getDefaultDatabaseShardingStrategyConfig(), shardingRule.getDefaultTableShardingStrategyConfig(), shardingRule.getDefaultShardingColumn())),
-                InvalidBindingTablesException::new);
+        checkBindingTablesNumericSuffix(ruleConfig.getBindingTableGroups(), shardingRule.getShardingTables());
+        BindingTableCheckedConfiguration checkedConfig = new BindingTableCheckedConfiguration(shardingRule.getDataSourceNames(), shardingRule.getShardingAlgorithms(),
+                ruleConfig.getBindingTableGroups(), shardingRule.getDefaultDatabaseShardingStrategyConfig(), shardingRule.getDefaultTableShardingStrategyConfig(),
+                shardingRule.getDefaultShardingColumn());
+        ShardingSpherePreconditions.checkState(isValidBindingTableConfiguration(shardingRule.getShardingTables(), checkedConfig),
+                () -> new InvalidBindingTablesException("Invalid binding table configuration."));
+    }
+    
+    private void checkBindingTablesNumericSuffix(final Collection<ShardingTableReferenceRuleConfiguration> bindingTableGroups, final Map<String, ShardingTable> shardingTables) {
+        for (ShardingTableReferenceRuleConfiguration each : bindingTableGroups) {
+            Collection<String> bindingTables = Splitter.on(",").trimResults().splitToList(each.getReference());
+            if (bindingTables.size() <= 1) {
+                continue;
+            }
+            for (String logicTable : bindingTables) {
+                ShardingSpherePreconditions.checkState(hasValidNumericSuffix(getShardingTable(logicTable, shardingTables)),
+                        () -> new InvalidBindingTablesException(String.format("Alphabetical table suffixes are not supported in binding tables '%s'.", each.getReference())));
+            }
+        }
+    }
+    
+    private boolean hasValidNumericSuffix(final ShardingTable shardingTable) {
+        String logicTable = shardingTable.getLogicTable();
+        int logicTableLength = logicTable.length();
+        for (DataNode each : shardingTable.getActualDataNodes()) {
+            String tableName = each.getTableName();
+            if (tableName.equalsIgnoreCase(logicTable)) {
+                continue;
+            }
+            if (tableName.length() > logicTableLength && tableName.regionMatches(true, 0, logicTable, 0, logicTableLength) && !Character.isDigit(tableName.charAt(tableName.length() - 1))) {
+                return false;
+            }
+        }
+        return true;
     }
     
     private boolean isValidBindingTableConfiguration(final Map<String, ShardingTable> shardingTables, final BindingTableCheckedConfiguration checkedConfig) {
