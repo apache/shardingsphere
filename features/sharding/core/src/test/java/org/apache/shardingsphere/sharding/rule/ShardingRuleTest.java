@@ -448,6 +448,23 @@ class ShardingRuleTest {
     }
     
     @Test
+    void assertCreateBindingTablesWithAlphabeticalSuffixesFailure() {
+        ShardingTableRuleConfiguration shardingTableRuleConfig = new ShardingTableRuleConfiguration("t_order", "ds_${0..1}.t_order_${['a','b']}");
+        shardingTableRuleConfig.setDatabaseShardingStrategy(new NoneShardingStrategyConfiguration());
+        shardingTableRuleConfig.setTableShardingStrategy(new NoneShardingStrategyConfiguration());
+        ShardingTableRuleConfiguration subTableRuleConfig = new ShardingTableRuleConfiguration("t_order_item", "ds_${0..1}.t_order_item_${['a','b']}");
+        subTableRuleConfig.setDatabaseShardingStrategy(new NoneShardingStrategyConfiguration());
+        subTableRuleConfig.setTableShardingStrategy(new NoneShardingStrategyConfiguration());
+        ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
+        shardingRuleConfig.getTables().add(shardingTableRuleConfig);
+        shardingRuleConfig.getTables().add(subTableRuleConfig);
+        shardingRuleConfig.getBindingTableGroups().add(new ShardingTableReferenceRuleConfiguration("foo", "t_order,t_order_item"));
+        InvalidBindingTablesException actual = assertThrows(InvalidBindingTablesException.class,
+                () -> new ShardingRule(shardingRuleConfig, createDataSources(), mock(ComputeNodeInstanceContext.class), Collections.emptyList()));
+        assertThat(actual.getMessage(), is("Alphabetical table suffixes are not supported in binding tables 't_order,t_order_item'."));
+    }
+    
+    @Test
     void assertGenerateKeyWithDefaultKeyGenerator() {
         AlgorithmSQLContext generateContext = mock(AlgorithmSQLContext.class);
         when(generateContext.getTableName()).thenReturn("logic_table");

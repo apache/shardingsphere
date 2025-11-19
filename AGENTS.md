@@ -98,7 +98,6 @@ This guide is written **for AI coding agents only**. Follow it literally; improv
 ### After Completion
 - Validate functional correctness and code quality.
 - Update related tests and documentation.
-- Summarize key learnings, constraints, and best practices for this task inside `AGENTS.md`.
 
 ## Terminal Output Style Guide
 
