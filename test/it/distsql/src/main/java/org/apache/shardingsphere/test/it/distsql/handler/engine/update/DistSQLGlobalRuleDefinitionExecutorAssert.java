@@ -22,7 +22,6 @@ import org.apache.shardingsphere.distsql.handler.engine.update.DistSQLUpdateExec
 import org.apache.shardingsphere.distsql.statement.DistSQLStatement;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.rule.scope.GlobalRuleConfiguration;
-import org.apache.shardingsphere.infra.exception.kernel.metadata.rule.InvalidRuleConfigurationException;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.rule.scope.GlobalRule;
 import org.apache.shardingsphere.mode.manager.ContextManager;
@@ -38,17 +37,29 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+/**
+ * DistSQL global rule definition executor assert.
+ */
 @RequiredArgsConstructor
-public abstract class GlobalRuleDefinitionExecutorTest {
+public final class DistSQLGlobalRuleDefinitionExecutorAssert {
     
     private final GlobalRule mockedRule;
     
-    protected void assertExecuteUpdate(final GlobalRuleConfiguration ruleConfig,
-                                       final DistSQLStatement sqlStatement, final RuleConfiguration matchedRuleConfig, final Class<? extends Exception> expectedException) throws SQLException {
+    /**
+     * Assert execute update.
+     *
+     * @param ruleConfig global rule configuration
+     * @param sqlStatement SQL statement
+     * @param matchedRuleConfig persisted rule configuration
+     * @param expectedException expected exception
+     * @throws SQLException SQL exception
+     */
+    public void assertExecuteUpdate(final GlobalRuleConfiguration ruleConfig,
+                                    final DistSQLStatement sqlStatement, final RuleConfiguration matchedRuleConfig, final Class<? extends Exception> expectedException) throws SQLException {
         ContextManager contextManager = mockContextManager(ruleConfig);
         DistSQLUpdateExecuteEngine engine = new DistSQLUpdateExecuteEngine(sqlStatement, null, contextManager);
         if (null != expectedException) {
-            assertThrows(InvalidRuleConfigurationException.class, engine::executeUpdate);
+            assertThrows(expectedException, engine::executeUpdate);
             return;
         }
         engine.executeUpdate();
