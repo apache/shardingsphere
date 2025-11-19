@@ -129,6 +129,12 @@ Answer:
 
 A table that does not use sharding is called single table in ShardingSphere, and you can use [LOAD statements](https://shardingsphere.apache.org/document/current/cn/user-manual/shardingsphere-proxy/distsql/syntax/rdl/rule-definition/single-table/load-single-table/) or [SINGLE rule](https://shardingsphere.apache.org/document/current/en/user-manual/shardingsphere-jdbc/yaml-config/rules/single/) to configure the single table that needs to be loaded.
 
+### Why are binding tables rejected when my table names already end with digits?
+
+Answer:
+
+Binding-table validation assumes that digits at the end of an actual table name are sharding suffixes derived from the logical table (for example `t_order_0`). When the business table name itself ends with digits (for example `AllPatientsV1`), those digits are interpreted as suffixes, so ShardingSphere cannot align the binding tables and will report `Invalid binding table configuration`. To avoid this, reserve the trailing digits exclusively for sharding suffixes (add a separator such as `_` before the suffix) or skip binding-table configuration for tables whose names inherently contain digits.
+
 ### When generic Long type `SingleKeyTableShardingAlgorithm` is used, why does the `ClassCastException: Integer can not cast to Long` exception appear?
 
 Answer:

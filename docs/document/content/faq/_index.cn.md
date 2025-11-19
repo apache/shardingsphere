@@ -127,6 +127,12 @@ Java的整数相除结果是整数，但是对于 inline 表达式中的 Groovy 
 
 不分库分表的表在 ShardingSphere 中叫做单表，可以使用 [LOAD 语句](https://shardingsphere.apache.org/document/current/cn/user-manual/shardingsphere-proxy/distsql/syntax/rdl/rule-definition/single-table/load-single-table/)或者 [SINGLE 规则](https://shardingsphere.apache.org/document/current/cn/user-manual/shardingsphere-jdbc/yaml-config/rules/single/)配置需要加载的单表。
 
+### 为什么绑定表中包含数字结尾的表名时会提示配置无效？
+
+回答：
+
+绑定表校验会把真实表名末尾的数字当作逻辑表的分片后缀（如 `t_order_0`），再据此对齐其它表。如果业务表名本身就以数字结尾（例如 `AllPatientsV1`），这些数字会被误判为分片后缀，最终抛出 `Invalid binding table configuration`。请为分片后缀保留额外的分隔符（例如 `AllPatientsV_1`、`table_${0..1}`），或者不要为此类表启用绑定表。
+
 ### 指定了泛型为 Long 的 `SingleKeyTableShardingAlgorithm`，遇到 `ClassCastException: Integer can not cast to Long`?
 
 回答：
