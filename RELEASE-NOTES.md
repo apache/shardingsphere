@@ -49,6 +49,7 @@
 1. Proxy: Implement write bool binary data type for PostgreSQL protocol - [#35831](https://github.com/apache/shardingsphere/pull/35831)
 1. Proxy: Add authority check on SQL `SHOW CREATE DATABASE` for MySQL - [#36862](https://github.com/apache/shardingsphere/pull/36862)
 1. Sharding: Using cache to avoid memory overflow from inline expression parsing - [#22196](https://github.com/apache/shardingsphere/issues/22196)
+1. Sharding: Add digital suffix check with binding table names - [#35293](https://github.com/apache/shardingsphere/issues/35293)
 1. Encrypt: Use EncryptDerivedColumnSuffix to enhance encrypt table subquery rewrite logic - [#34829](https://github.com/apache/shardingsphere/pull/34829)
 1. Encrypt: Add quotes to encrypt rewrite derived columns - [#34950](https://github.com/apache/shardingsphere/pull/34950)
 1. Encrypt: Support NOT LIKE operator in encryption feature - [#35984](https://github.com/apache/shardingsphere/pull/35984)
