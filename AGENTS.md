@@ -30,6 +30,7 @@ This guide is written **for AI coding agents only**. Follow it literally; improv
 - **Test-Driven**: design for testability, ensure unit-test coverage, and keep background unit tests under 60s to avoid job stalls.
 - **Quality Assurance**: run static checks, formatting, and code reviews.
 - **Continuous Verification**: rely on automated tests and integration validation.
+- **Public-Only Tests**: unit tests must exercise behavior via public APIs only; never use reflection to access private members.
 
 ## Tool Usage Guide
 
@@ -181,7 +182,7 @@ Always state which topology, registry, and engine versions (e.g., MySQL 5.7 vs 8
 
 ## Execution Loop
 1. **Intake & Clarify** – restate the request, map affected modules, confirm sandbox/network/approval constraints, and capture a constraint checklist (forbidden APIs, output formats, ordering rules, coverage targets).
-2. **Plan & Reason** – craft a multi-step plan (analysis, edits, tests). Enumerate branches/tests upfront whenever the user demands minimum coverage; add rule-specific constraints (e.g., “no `assertEquals`”) to the plan and re-check them before edits.
+2. **Plan & Reason** – craft a multi-step plan (analysis, edits, tests). Enumerate branches/tests upfront whenever the user demands minimum coverage; add rule-specific constraints (e.g., “no `assertEquals`”) to the plan and re-check them before edits. Before altering tests or mocks, inspect how `AutoMockExtension`, `@StaticMockSettings`, or other helpers already handle static/construction mocks and list every static dependency you will touch so you can confirm whether it is already covered or needs an explicit override. If a user request is scoped (e.g., “replace `anyCollection` with concrete matchers”), confirm that no broader refactor is expected and keep the change surface constrained unless they explicitly expand it.
 3. **Implement** – touch only the required files, reuse abstractions, preserve ASF headers, and document major decisions.
 4. **Validate** – run the narrowest meaningful command (e.g., `./mvnw -pl <module> -am test`, `./mvnw -pl <module> -DskipITs -Dspotless.skip=true -Dtest=ClassName test`). Announce intent beforehand and summarize exit codes afterward; when blocked, state the command you intended to run and why it matters.
 5. **Report** – lead with intent, list edited files plus rationale/line refs, cite verification commands + results, and propose next steps.
@@ -237,6 +238,7 @@ Always state which topology, registry, and engine versions (e.g., MySQL 5.7 vs 8
 - Use marker interfaces when distinct rule/attribute types are needed; reuse SPI types such as `ShardingSphereRule` where possible.
 - Name tests after the production method under test; never probe private helpers directly—document unreachable branches instead.
 - Mock heavy dependencies (database/cache/registry/network) and prefer mocking over building deep object graphs; avoid `RETURNS_DEEP_STUBS` unless chained interactions demand it.
+- Before changing how mocks are created, scan the repository for similar tests (e.g., other rule decorators or executor tests) and reuse their proven mocking pattern instead of inventing a new structure.
 - When constructors hide collaborators, use `Plugins.getMemberAccessor()` to inject mocks and document why SPI creation is bypassed.
 - Cache SPI loader results (`OrderedSPILoader`, `TypedSPILoader`, `DatabaseTypedSPILoader`, etc.) per key at the test-class level to avoid redundant lookups.
 
