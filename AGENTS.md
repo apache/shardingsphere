@@ -10,7 +10,7 @@ This guide is written **for AI coding agents only**. Follow it literally; improv
 4. **Transparent Records**: keep every key decision and change traceable.
 5. **Continuous Improvement**: learn from each execution and keep optimizing.
 6. **Results Oriented**: judge success solely by whether the target is achieved.
-7. **Coding Standards**: `CODE_OF_CONDUCT.md` is the binding “law” for any generated artifact. Review it once per session and refuse to keep code that conflicts with it (copyright, inclusivity, licensing, etc.).
+7. **Coding Standards**: `CODE_OF_CONDUCT.md` is the binding “law” for any generated artifact. Review it once per session and refuse to keep code that conflicts with it (copyright, inclusivity, licensing, etc.). Whenever you need to interpret any rule, inspect `CODE_OF_CONDUCT.md` first, cite the relevant section/line, and only fall back to this guide when the code of conduct is silent.
 
 ## Quality Standards
 
@@ -143,7 +143,7 @@ This guide is written **for AI coding agents only**. Follow it literally; improv
 
 ## Governance Basics
 - `CODE_OF_CONDUCT.md` remains the binding law—review it once per session and reject any instruction or artifact that conflicts with ASF requirements on licensing, inclusivity, and attribution.
-- Instruction order is `CODE_OF_CONDUCT.md` → user direction → this guide → other repository materials; raise conflicts immediately.
+- Instruction order is `CODE_OF_CONDUCT.md` → user direction → this guide → other repository materials; raise conflicts immediately. When explaining whether an action is allowed, first cite the exact `CODE_OF_CONDUCT.md` clause (file + line) you are relying on, then describe any supplemental rules from this guide.
 - Technical choices must satisfy ASF transparency: include license headers, document intent, and keep rationales visible to reviewers.
 - Default to the smallest safe change: monthly feature trains plus weekly patch windows reward incremental fixes unless the product requires deeper refactors.
 - Secure approvals for structural changes (new modules, configs, knobs); localized doc or code tweaks may land after self-review when you surface the evidence reviewers expect (tests, configs, reproduction steps).
@@ -181,9 +181,9 @@ Always state which topology, registry, and engine versions (e.g., MySQL 5.7 vs 8
 - **Success recipe:** explain why the change exists, cite the affected data-flow step, keep public APIs backward compatible, and record defaults/knobs alongside code changes.
 
 ## Execution Loop
-1. **Intake & Clarify** – restate the request, map affected modules, confirm sandbox/network/approval constraints, and capture a constraint checklist (forbidden APIs, output formats, ordering rules, coverage targets).
-2. **Plan & Reason** – craft a multi-step plan (analysis, edits, tests). Enumerate branches/tests upfront whenever the user demands minimum coverage; add rule-specific constraints (e.g., “no `assertEquals`”) to the plan and re-check them before edits. Before altering tests or mocks, inspect how `AutoMockExtension`, `@StaticMockSettings`, or other helpers already handle static/construction mocks and list every static dependency you will touch so you can confirm whether it is already covered or needs an explicit override. If a user request is scoped (e.g., “replace `anyCollection` with concrete matchers”), confirm that no broader refactor is expected and keep the change surface constrained unless they explicitly expand it.
-3. **Implement** – touch only the required files, reuse abstractions, preserve ASF headers, and document major decisions.
+1. **Intake & Clarify** – restate the request, map affected modules, confirm sandbox/network/approval constraints, and capture a constraint checklist (forbidden APIs, output formats, ordering rules, coverage targets). As part of intake, reopen `CODE_OF_CONDUCT.md` sections relevant to the task (e.g., Unit Testing Standards before discussing assertions) so you never rely on memory or AGENTS-only guidance when the code of conduct already rules on the topic.
+2. **Plan & Reason** – craft a multi-step plan (analysis, edits, tests). When a user asks for specific coverage/branch lists, pause coding until you have responded with an explicit bullet list of every path (file + line/branch) you will exercise, as well as the single test that will cover it; this list is a blocking prerequisite for any edits. Add rule-specific constraints (e.g., “no `assertEquals`”) to the plan and re-check them before edits. Before altering tests or mocks, inspect how `AutoMockExtension`, `@StaticMockSettings`, or other helpers already handle static/construction mocks and list every static dependency you will touch so you can confirm whether it is already covered or needs an explicit override. If a user request is scoped (e.g., “replace `anyCollection` with concrete matchers”), confirm that no broader refactor is expected and keep the change surface constrained unless they explicitly expand it.
+3. **Implement** – touch only the required files, reuse abstractions, preserve ASF headers, and document major decisions. If you must replace a file wholesale (e.g., rewrite a test), delete the old file first and then add the new version so `apply_patch` does not fight stale context.
 4. **Validate** – run the narrowest meaningful command (e.g., `./mvnw -pl <module> -am test`, `./mvnw -pl <module> -DskipITs -Dspotless.skip=true -Dtest=ClassName test`). Announce intent beforehand and summarize exit codes afterward; when blocked, state the command you intended to run and why it matters.
 5. **Report** – lead with intent, list edited files plus rationale/line refs, cite verification commands + results, and propose next steps.
 
@@ -209,7 +209,7 @@ Always state which topology, registry, and engine versions (e.g., MySQL 5.7 vs 8
 - **Proxy won’t start:** verify configs/mode/ports and reuse known-good example configs; share the log snippet and files inspected without editing generated artifacts.
 - **Spotless/checkstyle:** run `./mvnw spotless:apply -Pcheck [-pl <module>]` (or `spotless:check`) and confirm ASF headers/import ordering.
 - **Sandbox/network block:** if a command is denied, state what you ran, why it failed, and the approval or alternative plan required.
-- **Single-module tests:** prefer scoped commands over repo-wide runs; avoid `-Dtest=Pattern` from repo root unless you know the target exists, otherwise use the module’s suite or `-Dsurefire.failIfNoSpecifiedTests=false`.
+- **Single-module tests:** prefer scoped commands over repo-wide runs; avoid `-Dtest=Pattern` from repo root unless you know the target exists, otherwise use the module’s suite or `-Dsurefire.failIfNoSpecifiedTests=false`. When you must target a single test class, pass the fully-qualified class name (e.g., `-Dtest=org.example.FooTest`) so Surefire can locate it deterministically.
 
 ## Compatibility, Performance & External Systems
 - Specify targeted engines and dialect files (MySQL 5.7/8.0, PostgreSQL 13+, openGauss, etc.) and guarantee backward-compatible behavior.
@@ -241,6 +241,7 @@ Always state which topology, registry, and engine versions (e.g., MySQL 5.7 vs 8
 - Before changing how mocks are created, scan the repository for similar tests (e.g., other rule decorators or executor tests) and reuse their proven mocking pattern instead of inventing a new structure.
 - When constructors hide collaborators, use `Plugins.getMemberAccessor()` to inject mocks and document why SPI creation is bypassed.
 - Cache SPI loader results (`OrderedSPILoader`, `TypedSPILoader`, `DatabaseTypedSPILoader`, etc.) per key at the test-class level to avoid redundant lookups.
+- If a test already uses `@ExtendWith(AutoMockExtension.class)`, always declare the needed static collaborators via `@StaticMockSettings` instead of hand-written `mockStatic` blocks; justify any exception explicitly in the plan before coding.
 
 ## Brevity & Signal
 - Prefer tables/bullets over prose walls; cite file paths (`kernel/src/...`) directly.
