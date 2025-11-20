@@ -24,8 +24,6 @@ import org.apache.shardingsphere.infra.config.rule.decorator.RuleConfigurationDe
 import org.apache.shardingsphere.infra.database.DatabaseTypeEngine;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
-import org.apache.shardingsphere.infra.rule.attribute.RuleAttributes;
-import org.apache.shardingsphere.infra.rule.attribute.table.TableMapperRuleAttribute;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.single.config.SingleRuleConfiguration;
 import org.apache.shardingsphere.single.constant.SingleTableConstants;
@@ -88,7 +86,7 @@ class SingleRuleConfigurationDecoratorTest {
         mockSplitAndConvert(Collections.singleton(SingleTableConstants.ALL_TABLES), Collections.emptyList(), Collections.emptyList(), Collections.emptyList());
         Map<String, DataSource> dataSources = Collections.singletonMap("foo_ds", mock(DataSource.class));
         SingleRuleConfiguration ruleConfig = new SingleRuleConfiguration(Collections.emptyList(), null);
-        assertThat(decorator.decorate("foo_db", dataSources, Collections.singleton(mockSingleRule()), ruleConfig).getTables(), contains("foo_ds.t_order"));
+        assertThat(decorator.decorate("foo_db", dataSources, Collections.singleton(mock(ShardingSphereRule.class, RETURNS_DEEP_STUBS)), ruleConfig).getTables(), contains("foo_ds.t_order"));
     }
     
     @Test
@@ -120,7 +118,8 @@ class SingleRuleConfigurationDecoratorTest {
         mockSplitAndConvert(splitTables, configuredDataNodes, Collections.emptyList(), Collections.emptyList());
         SingleRuleConfiguration ruleConfig = new SingleRuleConfiguration(Collections.singleton("*.foo_schema.t_order"), null);
         try (MockedConstruction<DatabaseTypeRegistry> ignored = mockSchemaAwareRegistry()) {
-            assertThat(decorator.decorate("foo_db", Collections.emptyMap(), Collections.singleton(mockSingleRule()), ruleConfig).getTables(), contains("foo_ds.foo_schema.t_order"));
+            assertThat(decorator.decorate("foo_db", Collections.emptyMap(), Collections.singleton(mock(ShardingSphereRule.class, RETURNS_DEEP_STUBS)), ruleConfig).getTables(),
+                    contains("foo_ds.foo_schema.t_order"));
         }
     }
     
@@ -133,7 +132,8 @@ class SingleRuleConfigurationDecoratorTest {
         mockSplitAndConvert(splitTables, configuredDataNodes, Collections.emptyList(), Collections.emptyList());
         Map<String, DataSource> dataSources = Collections.singletonMap("foo_ds", mock(DataSource.class));
         SingleRuleConfiguration ruleConfig = new SingleRuleConfiguration(Collections.singleton("*.foo_schema.t_order"), null);
-        assertThrows(InvalidSingleRuleConfigurationException.class, () -> decorator.decorate("foo_db", dataSources, Collections.singleton(mockSingleRule()), ruleConfig));
+        assertThrows(InvalidSingleRuleConfigurationException.class,
+                () -> decorator.decorate("foo_db", dataSources, Collections.singleton(mock(ShardingSphereRule.class, RETURNS_DEEP_STUBS)), ruleConfig));
     }
     
     @Test
@@ -150,7 +150,8 @@ class SingleRuleConfigurationDecoratorTest {
         mockSplitAndConvert(splitTables, configuredDataNodes, Collections.emptyList(), Collections.singleton("feature_tbl"));
         SingleRuleConfiguration ruleConfig = new SingleRuleConfiguration(Arrays.asList("expand_ds.*", "bar_ds.bar_tbl"), null);
         Map<String, DataSource> dataSources = Collections.singletonMap("foo_ds", mock(DataSource.class));
-        assertThat(decorator.decorate("foo_db", dataSources, Collections.singleton(mockSingleRule()), ruleConfig).getTables(), contains("expand_ds.expanded_tbl", "bar_ds.matched_tbl"));
+        assertThat(decorator.decorate("foo_db", dataSources, Collections.singleton(mock(ShardingSphereRule.class, RETURNS_DEEP_STUBS)), ruleConfig).getTables(),
+                contains("expand_ds.expanded_tbl", "bar_ds.matched_tbl"));
     }
     
     @Test
@@ -167,7 +168,8 @@ class SingleRuleConfigurationDecoratorTest {
         mockSplitAndConvert(splitTables, configuredDataNodes, Collections.emptyList(), Collections.emptyList());
         SingleRuleConfiguration ruleConfig = new SingleRuleConfiguration(Arrays.asList("expand_ds.*", "bar_ds.bar_tbl"), null);
         Map<String, DataSource> dataSources = Collections.singletonMap("foo_ds", mock(DataSource.class));
-        assertThat(decorator.decorate("foo_db", dataSources, Collections.singleton(mockSingleRule()), ruleConfig).getTables(), contains("expand_ds.expanded_tbl", "bar_ds.matched_tbl"));
+        assertThat(decorator.decorate("foo_db", dataSources, Collections.singleton(mock(ShardingSphereRule.class, RETURNS_DEEP_STUBS)), ruleConfig).getTables(),
+                contains("expand_ds.expanded_tbl", "bar_ds.matched_tbl"));
     }
     
     @Test
@@ -181,7 +183,8 @@ class SingleRuleConfigurationDecoratorTest {
         mockSplitAndConvert(splitTables, configuredDataNodes, Collections.emptyList(), Collections.emptyList());
         SingleRuleConfiguration ruleConfig = new SingleRuleConfiguration(Arrays.asList("expand_ds.*", "expand_ds.t_order"), null);
         Map<String, DataSource> dataSources = Collections.singletonMap("foo_ds", mock(DataSource.class));
-        assertThrows(InvalidSingleRuleConfigurationException.class, () -> decorator.decorate("foo_db", dataSources, Collections.singleton(mockSingleRule()), ruleConfig));
+        assertThrows(InvalidSingleRuleConfigurationException.class,
+                () -> decorator.decorate("foo_db", dataSources, Collections.singleton(mock(ShardingSphereRule.class, RETURNS_DEEP_STUBS)), ruleConfig));
     }
     
     private MockedConstruction<DatabaseTypeRegistry> mockSchemaAwareRegistry() {
@@ -200,11 +203,5 @@ class SingleRuleConfigurationDecoratorTest {
     
     private Map<String, Collection<DataNode>> createActualDataNodes(final DataNode dataNode) {
         return Collections.singletonMap(dataNode.getTableName(), Collections.singleton(dataNode));
-    }
-    
-    private ShardingSphereRule mockSingleRule() {
-        ShardingSphereRule result = mock(ShardingSphereRule.class);
-        when(result.getAttributes()).thenReturn(new RuleAttributes(mock(TableMapperRuleAttribute.class)));
-        return result;
     }
 }
