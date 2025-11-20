@@ -497,7 +497,7 @@
                 <expr>
                     <function start-index="7" stop-index="59" text="CONVERT(TIMESTAMP &quot;2004-01-22 21:45:33&quot; USING latin1)" function-name="CONVERT">
                         <parameter>
-                            <common-expression start-index="15" stop-index="45" text="TIMESTAMP&quot;2004-01-22 21:45:33&quot;" />
+                            <literal-expression value="2004-01-22 21:45:33" start-index="15" stop-index="45" />
                         </parameter>
                         <parameter start-index="53" stop-index="58">
                             <literal-expression value="latin1" start-index="53" stop-index="58"/>
@@ -514,7 +514,7 @@
                 <expr>
                     <function start-index="7" stop-index="57" text="CONVERT(TIMESTAMP &quot;2004-01-22 21:45:33&quot;, BINARY(4))" function-name="CONVERT" >
                         <parameter>
-                            <common-expression start-index="15" stop-index="45" text="TIMESTAMP&quot;2004-01-22 21:45:33&quot;" function-name="GROUPING(f1)" />
+                            <literal-expression value="2004-01-22 21:45:33" start-index="15" stop-index="45" />
                         </parameter>
                         <parameter start-index="48" stop-index="56">
                             <data-type value="BINARY" start-index="48" stop-index="56"/>
@@ -531,7 +531,7 @@
                 <expr>
                     <function start-index="7" stop-index="55" text="CONVERT(TIMESTAMP &quot;2004-01-22 21:45:33&quot;, CHAR(4))" function-name="CONVERT">
                         <parameter>
-                            <common-expression start-index="15" stop-index="45" text="TIMESTAMP&quot;2004-01-22 21:45:33&quot;" />
+                            <literal-expression value="2004-01-22 21:45:33" start-index="15" stop-index="45" />
                         </parameter>
                         <parameter start-index="48" stop-index="54">
                             <data-type value="CHAR" start-index="48" stop-index="54"/>
@@ -548,7 +548,7 @@
                 <expr>
                     <function start-index="7" stop-index="52" text="CONVERT(TIMESTAMP &quot;2004-01-22 21:45:33&quot;, CHAR)" function-name="CONVERT">
                         <parameter>
-                            <common-expression start-index="15" stop-index="45" text="TIMESTAMP&quot;2004-01-22 21:45:33&quot;" />
+                            <literal-expression value="2004-01-22 21:45:33" start-index="15" stop-index="45" />
                         </parameter>
                         <parameter start-index="48" stop-index="51">
                             <data-type value="CHAR" start-index="48" stop-index="51"/>
