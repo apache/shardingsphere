@@ -70,6 +70,7 @@ import org.apache.shardingsphere.sqlfederation.spi.SQLFederationDecider;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.SQLIntegrityConstraintViolationException;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -86,6 +87,8 @@ import java.util.Optional;
 @Slf4j
 @Getter
 public final class SQLFederationEngine implements AutoCloseable {
+    
+    private static final Collection<Class<?>> NEED_THROW_EXCEPTION_TYPES = Arrays.asList(SQLExecutionInterruptedException.class, SQLIntegrityConstraintViolationException.class);
     
     private final ProcessEngine processEngine = new ProcessEngine();
     
@@ -206,11 +209,20 @@ public final class SQLFederationEngine implements AutoCloseable {
             // CHECKSTYLE:ON
             log.error("SQL Federation execute failed, sql {}, parameters {}", queryContext.getSql(), queryContext.getParameters(), ex);
             closeResources(federationContext);
-            if (ex instanceof SQLExecutionInterruptedException) {
+            if (isNeedThrowException(ex)) {
                 throw ex;
             }
             throw new SQLFederationUnsupportedSQLException(queryContext.getSql(), ex);
         }
+    }
+    
+    private boolean isNeedThrowException(final Exception ex) {
+        for (Class<?> each : NEED_THROW_EXCEPTION_TYPES) {
+            if (each.isAssignableFrom(ex.getClass())) {
+                return true;
+            }
+        }
+        return false;
     }
     
     private void closeResources(final SQLFederationContext federationContext) {

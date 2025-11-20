@@ -34,6 +34,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.value.literal.impl.Nu
 import org.apache.shardingsphere.sql.parser.statement.core.value.literal.impl.NumberLiteralValue;
 import org.apache.shardingsphere.sql.parser.statement.core.value.literal.impl.OtherLiteralValue;
 import org.apache.shardingsphere.sql.parser.statement.core.value.literal.impl.StringLiteralValue;
+import org.apache.shardingsphere.sql.parser.statement.core.value.literal.impl.TemporalLiteralValue;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -241,6 +242,9 @@ public final class SQLUtils {
         }
         if (astNode instanceof NullLiteralValue) {
             return new LiteralExpressionSegment(startIndex, stopIndex, null);
+        }
+        if (astNode instanceof TemporalLiteralValue) {
+            return new LiteralExpressionSegment(startIndex, stopIndex, ((TemporalLiteralValue) astNode).getValue());
         }
         if (astNode instanceof OtherLiteralValue) {
             return new CommonExpressionSegment(startIndex, stopIndex, ((OtherLiteralValue) astNode).getValue());

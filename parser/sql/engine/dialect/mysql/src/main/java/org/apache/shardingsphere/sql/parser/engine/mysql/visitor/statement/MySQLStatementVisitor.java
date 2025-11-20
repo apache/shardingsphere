@@ -249,6 +249,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.value.literal.impl.Nu
 import org.apache.shardingsphere.sql.parser.statement.core.value.literal.impl.NumberLiteralValue;
 import org.apache.shardingsphere.sql.parser.statement.core.value.literal.impl.OtherLiteralValue;
 import org.apache.shardingsphere.sql.parser.statement.core.value.literal.impl.StringLiteralValue;
+import org.apache.shardingsphere.sql.parser.statement.core.value.literal.impl.TemporalLiteralValue;
 import org.apache.shardingsphere.sql.parser.statement.core.value.parametermarker.ParameterMarkerValue;
 
 import java.math.BigDecimal;
@@ -321,8 +322,15 @@ public abstract class MySQLStatementVisitor extends MySQLStatementBaseVisitor<AS
     
     @Override
     public ASTNode visitTemporalLiterals(final TemporalLiteralsContext ctx) {
-        // TODO deal with TemporalLiterals
-        return new OtherLiteralValue(ctx.getText());
+        String temporalType;
+        if (null != ctx.DATE()) {
+            temporalType = "DATE";
+        } else if (null != ctx.TIME()) {
+            temporalType = "TIME";
+        } else {
+            temporalType = "TIMESTAMP";
+        }
+        return new TemporalLiteralValue(temporalType, ctx.textString().getText());
     }
     
     @Override
