@@ -30,6 +30,7 @@ This guide is written **for AI coding agents only**. Follow it literally; improv
 - **Test-Driven**: design for testability, ensure unit-test coverage, and keep background unit tests under 60s to avoid job stalls.
 - **Quality Assurance**: run static checks, formatting, and code reviews.
 - **Continuous Verification**: rely on automated tests and integration validation.
+- **Public-Only Tests**: unit tests must exercise behavior via public APIs only; never use reflection to access private members.
 
 ## Tool Usage Guide
 
