@@ -21,12 +21,15 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
+import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
+import org.apache.shardingsphere.infra.exception.kernel.metadata.resource.storageunit.MissingRequiredStorageUnitsException;
 import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.identifier.ShardingSphereIdentifier;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.attribute.datanode.MutableDataNodeRuleAttribute;
+import org.apache.shardingsphere.infra.rule.attribute.datasource.DataSourceMapperRuleAttribute;
 
 import javax.sql.DataSource;
 import java.util.Collection;
@@ -144,5 +147,18 @@ public final class ShardingSphereDatabase {
         });
         ruleMetaData.getRules().clear();
         ruleMetaData.getRules().addAll(rules);
+    }
+    
+    /**
+     * Check storage units existed.
+     *
+     * @param storageUnitNames storage unit names
+     */
+    public void checkStorageUnitsExisted(final Collection<String> storageUnitNames) {
+        Collection<String> notExistedDataSources = resourceMetaData.getNotExistedDataSources(storageUnitNames);
+        Collection<String> logicDataSources = ruleMetaData.getAttributes(DataSourceMapperRuleAttribute.class).stream()
+                .flatMap(each -> each.getDataSourceMapper().keySet().stream()).collect(Collectors.toSet());
+        notExistedDataSources.removeIf(logicDataSources::contains);
+        ShardingSpherePreconditions.checkMustEmpty(notExistedDataSources, () -> new MissingRequiredStorageUnitsException(name, notExistedDataSources));
     }
 }

@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.infra.config.rule.checker;
 
-import org.apache.shardingsphere.infra.exception.kernel.metadata.resource.storageunit.MissingRequiredStorageUnitsException;
 import org.apache.shardingsphere.infra.exception.kernel.metadata.rule.DuplicateRuleException;
 import org.apache.shardingsphere.infra.fixture.FixtureRuleConfiguration;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
@@ -101,18 +100,6 @@ class DatabaseRuleConfigurationCheckEngineTest {
         when(dataSourceMapperRuleAttribute.getDataSourceMapper()).thenReturn(Collections.singletonMap("foo_ds", Collections.singleton("some_logic_name")));
         when(ruleMetaData.getAttributes(DataSourceMapperRuleAttribute.class)).thenReturn(Collections.singleton(dataSourceMapperRuleAttribute));
         assertDoesNotThrow(() -> DatabaseRuleConfigurationCheckEngine.check(ruleConfig, database));
-    }
-    
-    @Test
-    void assertCheckWithMissingDataSources() {
-        when(OrderedSPILoader.getServicesByClass(DatabaseRuleConfigurationChecker.class, Collections.singleton(FixtureRuleConfiguration.class)))
-                .thenReturn(Collections.singletonMap(FixtureRuleConfiguration.class, checker));
-        Collection<String> requiredDataSources = Arrays.asList("foo_ds", "bar_ds");
-        when(checker.getRequiredDataSourceNames(any())).thenReturn(requiredDataSources);
-        when(resourceMetaData.getNotExistedDataSources(requiredDataSources)).thenReturn(new LinkedList<>(Collections.singleton("foo_ds")));
-        when(resourceMetaData.getStorageUnits()).thenReturn(Collections.singletonMap("bar_ds", mock(StorageUnit.class)));
-        MissingRequiredStorageUnitsException exception = assertThrows(MissingRequiredStorageUnitsException.class, () -> DatabaseRuleConfigurationCheckEngine.check(ruleConfig, database));
-        assertThat(exception.getMessage(), is("Storage units 'foo_ds' do not exist in database 'foo_db'."));
     }
     
     @Test

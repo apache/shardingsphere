@@ -21,10 +21,8 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
-import org.apache.shardingsphere.infra.exception.kernel.metadata.resource.storageunit.MissingRequiredStorageUnitsException;
 import org.apache.shardingsphere.infra.exception.kernel.metadata.rule.DuplicateRuleException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.rule.attribute.datasource.DataSourceMapperRuleAttribute;
 import org.apache.shardingsphere.infra.spi.type.ordered.OrderedSPILoader;
 
 import javax.sql.DataSource;
@@ -55,7 +53,7 @@ public final class DatabaseRuleConfigurationCheckEngine {
         }
         Collection<String> requiredDataSourceNames = checker.getRequiredDataSourceNames(ruleConfig);
         if (!requiredDataSourceNames.isEmpty()) {
-            checkDataSourcesExisted(database, requiredDataSourceNames);
+            database.checkStorageUnitsExisted(requiredDataSourceNames);
         }
         Collection<String> tableNames = checker.getTableNames(ruleConfig);
         if (!tableNames.isEmpty()) {
@@ -63,14 +61,6 @@ public final class DatabaseRuleConfigurationCheckEngine {
         }
         Map<String, DataSource> dataSources = database.getResourceMetaData().getStorageUnits().entrySet().stream().collect(Collectors.toMap(Entry::getKey, entry -> entry.getValue().getDataSource()));
         checker.check(database.getName(), ruleConfig, dataSources, database.getRuleMetaData().getRules());
-    }
-    
-    private static void checkDataSourcesExisted(final ShardingSphereDatabase database, final Collection<String> requiredDataSourceNames) {
-        Collection<String> notExistedDataSources = database.getResourceMetaData().getNotExistedDataSources(requiredDataSourceNames);
-        Collection<String> logicDataSources = database.getRuleMetaData().getAttributes(DataSourceMapperRuleAttribute.class).stream()
-                .flatMap(each -> each.getDataSourceMapper().keySet().stream()).collect(Collectors.toSet());
-        notExistedDataSources.removeIf(logicDataSources::contains);
-        ShardingSpherePreconditions.checkMustEmpty(notExistedDataSources, () -> new MissingRequiredStorageUnitsException(database.getName(), notExistedDataSources));
     }
     
     private static void checkTablesNotDuplicated(final RuleConfiguration ruleConfig, final String databaseName, final Collection<String> tableNames) {
