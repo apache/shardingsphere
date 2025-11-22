@@ -40,18 +40,6 @@
         <maven.deploy.skip>true</maven.deploy.skip>
     </properties>
     
-    <build>
-        <outputDirectory>${project.build.directory}/shardingsphere-test-classes</outputDirectory>
-        <testOutputDirectory>${project.build.directory}/shardingsphere-test-test-classes</testOutputDirectory>
-        <plugins>
-            <plugin>
-                <groupId>org.jacoco</groupId>
-                <artifactId>jacoco-maven-plugin</artifactId>
-                <executions combine.self="override" />
-            </plugin>
-        </plugins>
-    </build>
-    
     <dependencyManagement>
         <dependencies>
             <dependency>
@@ -70,4 +58,16 @@
             </dependency>
         </dependencies>
     </dependencyManagement>
+    
+    <build>
+        <outputDirectory>${project.build.directory}/shardingsphere-test-classes</outputDirectory>
+        <testOutputDirectory>${project.build.directory}/shardingsphere-test-test-classes</testOutputDirectory>
+        <plugins>
+            <plugin>
+                <groupId>org.jacoco</groupId>
+                <artifactId>jacoco-maven-plugin</artifactId>
+                <executions combine.self="override" />
+            </plugin>
+        </plugins>
+    </build>
 </project>
