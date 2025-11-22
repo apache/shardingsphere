@@ -38,7 +38,7 @@ import org.mockito.quality.Strictness;
 import java.util.Collections;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -62,13 +62,13 @@ class ShowProcessListHandlerTest {
     @Test
     void assertHandleWithInvalidShowProcessListTriggerEventKey() {
         handler.handle(contextManager, new DataChangedEvent("/nodes/compute_nodes/show_process_list_trigger/foo_instance_id", "", Type.DELETED));
-        verify(ProcessOperationLockRegistry.getInstance(), times(0)).notify(any());
+        verify(ProcessOperationLockRegistry.getInstance(), never()).notify(any());
     }
     
     @Test
     void assertHandleReportLocalProcessesWithNotCurrentInstance() {
         handler.handle(contextManager, new DataChangedEvent("/nodes/compute_nodes/show_process_list_trigger/bar_instance_id:foo_task_id", "", Type.ADDED));
-        verify(contextManager.getPersistServiceFacade().getRepository(), times(0)).delete(any());
+        verify(contextManager.getPersistServiceFacade().getRepository(), never()).delete(any());
     }
     
     @Test

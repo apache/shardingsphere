@@ -32,7 +32,7 @@ import java.util.Arrays;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -54,7 +54,7 @@ class VersionPersistServiceTest {
         assertThat(persistService.persist(new VersionNodePath(new MetaDataVersionNodePathFixture()), "foo_metadata"), is(0));
         verify(repository).persist("/foo/versions/0", "foo_metadata");
         verify(repository).persist("/foo/active_version", "0");
-        verify(repository, times(0)).delete(any());
+        verify(repository, never()).delete(any());
     }
     
     @Test

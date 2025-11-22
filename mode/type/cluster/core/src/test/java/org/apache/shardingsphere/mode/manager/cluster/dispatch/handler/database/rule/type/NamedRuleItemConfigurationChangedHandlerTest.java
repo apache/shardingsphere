@@ -31,7 +31,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import static org.apache.shardingsphere.test.infra.framework.matcher.ShardingSphereArgumentVerifyMatchers.deepEq;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
@@ -50,15 +50,15 @@ class NamedRuleItemConfigurationChangedHandlerTest {
     @Test
     void assertHandleWithInvalidPath() {
         handler.handle("foo_db", new DataChangedEvent("/metadata/foo_db/rules/fixture", "0", Type.ADDED));
-        verify(contextManager.getMetaDataContextManager().getDatabaseRuleItemManager(), times(0)).alter(any());
-        verify(contextManager.getMetaDataContextManager().getDatabaseRuleItemManager(), times(0)).drop(any());
+        verify(contextManager.getMetaDataContextManager().getDatabaseRuleItemManager(), never()).alter(any());
+        verify(contextManager.getMetaDataContextManager().getDatabaseRuleItemManager(), never()).drop(any());
     }
     
     @Test
     void assertHandleWithIgnoreType() {
         handler.handle("foo_db", new DataChangedEvent("/metadata/foo_db/rules/fixture/named/foo_rule_item/active_version", "0", Type.IGNORED));
-        verify(contextManager.getMetaDataContextManager().getDatabaseRuleItemManager(), times(0)).alter(any());
-        verify(contextManager.getMetaDataContextManager().getDatabaseRuleItemManager(), times(0)).drop(any());
+        verify(contextManager.getMetaDataContextManager().getDatabaseRuleItemManager(), never()).alter(any());
+        verify(contextManager.getMetaDataContextManager().getDatabaseRuleItemManager(), never()).drop(any());
     }
     
     @Test

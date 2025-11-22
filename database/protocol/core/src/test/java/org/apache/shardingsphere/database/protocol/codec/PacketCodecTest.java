@@ -29,7 +29,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.Collections;
 
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -65,7 +65,7 @@ class PacketCodecTest {
         when(byteBuf.readableBytes()).thenReturn(1);
         when(databasePacketCodecEngine.isValidHeader(1)).thenReturn(false);
         packetCodec.decode(context, byteBuf, Collections.emptyList());
-        verify(databasePacketCodecEngine, times(0)).decode(context, byteBuf, Collections.emptyList());
+        verify(databasePacketCodecEngine, never()).decode(context, byteBuf, Collections.emptyList());
     }
     
     @Test

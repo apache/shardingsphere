@@ -23,7 +23,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -34,7 +34,7 @@ class PipelineJdbcUtilsTest {
         Statement statement = mock(Statement.class);
         when(statement.isClosed()).thenReturn(true);
         PipelineJdbcUtils.cancelStatement(statement);
-        verify(statement, times(0)).cancel();
+        verify(statement, never()).cancel();
     }
     
     @Test
@@ -49,6 +49,6 @@ class PipelineJdbcUtilsTest {
         Statement statement = mock(Statement.class);
         when(statement.isClosed()).thenThrow(SQLException.class);
         PipelineJdbcUtils.cancelStatement(statement);
-        verify(statement, times(0)).cancel();
+        verify(statement, never()).cancel();
     }
 }

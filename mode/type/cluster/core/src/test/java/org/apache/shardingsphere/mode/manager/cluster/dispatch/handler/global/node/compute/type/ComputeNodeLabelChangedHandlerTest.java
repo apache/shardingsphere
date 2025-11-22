@@ -32,7 +32,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Collections;
 
-import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
@@ -52,7 +52,7 @@ class ComputeNodeLabelChangedHandlerTest {
     @Test
     void assertHandleWithEmptyInstanceId() {
         handler.handle(contextManager, new DataChangedEvent("/nodes/compute_nodes/labels", "", Type.ADDED));
-        verify(contextManager, times(0)).getComputeNodeInstanceContext();
+        verify(contextManager, never()).getComputeNodeInstanceContext();
     }
     
     @Test

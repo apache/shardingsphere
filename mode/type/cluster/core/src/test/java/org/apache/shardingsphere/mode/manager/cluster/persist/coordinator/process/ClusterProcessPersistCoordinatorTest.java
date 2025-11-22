@@ -33,7 +33,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -55,7 +55,7 @@ class ClusterProcessPersistCoordinatorTest {
     void assertReportEmptyLocalProcesses() {
         when(ProcessRegistry.getInstance().listAll()).thenReturn(Collections.emptyList());
         processPersistCoordinator.reportLocalProcesses("foo_instance_id", "foo_task_id");
-        verify(repository, times(0)).persist(any(), any());
+        verify(repository, never()).persist(any(), any());
         verify(repository).delete("/nodes/compute_nodes/show_process_list_trigger/foo_instance_id:foo_task_id");
     }
     

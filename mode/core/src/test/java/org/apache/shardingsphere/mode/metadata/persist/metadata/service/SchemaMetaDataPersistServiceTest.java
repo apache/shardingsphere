@@ -33,7 +33,7 @@ import java.util.Collections;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -80,7 +80,7 @@ class SchemaMetaDataPersistServiceTest {
         ShardingSphereTable table = mock(ShardingSphereTable.class);
         when(table.getName()).thenReturn("foo_tbl");
         persistService.alterByRefresh("foo_db", new ShardingSphereSchema("foo_schema", Collections.singleton(table), Collections.emptyList()));
-        verify(repository, times(0)).persist("/metadata/foo_db/schemas/foo_schema/tables", "");
+        verify(repository, never()).persist("/metadata/foo_db/schemas/foo_schema/tables", "");
         verify(tableMetaDataPersistService).persist("foo_db", "foo_schema", Collections.singletonList(table));
     }
     
@@ -89,7 +89,7 @@ class SchemaMetaDataPersistServiceTest {
         ShardingSphereView view = mock(ShardingSphereView.class);
         when(view.getName()).thenReturn("foo_view");
         persistService.alterByRefresh("foo_db", new ShardingSphereSchema("foo_schema", Collections.emptyList(), Collections.singleton(view)));
-        verify(repository, times(0)).persist("/metadata/foo_db/schemas/foo_schema/tables", "");
+        verify(repository, never()).persist("/metadata/foo_db/schemas/foo_schema/tables", "");
         verify(tableMetaDataPersistService).persist("foo_db", "foo_schema", Collections.emptyList());
     }
     

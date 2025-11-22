@@ -61,7 +61,7 @@ import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -207,7 +207,7 @@ class ZookeeperRepositoryTest {
     @Test
     void assertDeleteNotExistKey() {
         REPOSITORY.delete("/test/children/1");
-        verify(client, times(0)).delete();
+        verify(client, never()).delete();
     }
     
     @Test

@@ -50,7 +50,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -98,7 +98,7 @@ class ShardingSQLAuditorTest {
         when(queryContext.getSqlStatementContext()).thenReturn(sqlStatementContext);
         when(queryContext.getMetaData().getGlobalRuleMetaData()).thenReturn(globalRuleMetaData);
         sqlAuditor.audit(queryContext, database, rule);
-        verify(queryContext, times(0)).getHintValueContext();
+        verify(queryContext, never()).getHintValueContext();
     }
     
     @Test
@@ -108,7 +108,7 @@ class ShardingSQLAuditorTest {
         when(metaData.getGlobalRuleMetaData()).thenReturn(globalRuleMetaData);
         QueryContext queryContext = new QueryContext(sqlStatementContext, "", Collections.emptyList(), hintValueContext, mock(ConnectionContext.class), metaData);
         sqlAuditor.audit(queryContext, database, rule);
-        verify(rule.getAuditors().get("foo_auditor"), times(0)).check(sqlStatementContext, Collections.emptyList(), globalRuleMetaData, database);
+        verify(rule.getAuditors().get("foo_auditor"), never()).check(sqlStatementContext, Collections.emptyList(), globalRuleMetaData, database);
     }
     
     @Test
