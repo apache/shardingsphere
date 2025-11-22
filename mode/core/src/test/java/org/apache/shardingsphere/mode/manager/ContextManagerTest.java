@@ -199,9 +199,9 @@ class ContextManagerTest {
             globalRulesBuilder.when(() -> GlobalRulesBuilder.buildRules(anyCollection(), anyCollection(), any(ConfigurationProperties.class))).thenReturn(Collections.emptyList());
             statisticsFactory.when(() -> ShardingSphereStatisticsFactory.create(any(), any())).thenReturn(mock(ShardingSphereStatistics.class));
             contextManager.reloadDatabase(database);
-            verify(persistServiceFacade.getMetaDataFacade().getDatabaseMetaDataFacade().getSchema()).drop("foo_db", "foo_schema");
-            verify(persistServiceFacade.getMetaDataFacade().getDatabaseMetaDataFacade().getSchema()).alterByRefresh(eq("foo_db"), any(ShardingSphereSchema.class));
         }
+        verify(persistServiceFacade.getMetaDataFacade().getDatabaseMetaDataFacade().getSchema()).drop("foo_db", "foo_schema");
+        verify(persistServiceFacade.getMetaDataFacade().getDatabaseMetaDataFacade().getSchema()).alterByRefresh(eq("foo_db"), any(ShardingSphereSchema.class));
     }
     
     @Test
@@ -227,9 +227,9 @@ class ContextManagerTest {
             schemaBuilderMock.when(() -> GenericSchemaBuilder.build(any(DatabaseType.class), any(GenericSchemaBuilderMaterial.class)))
                     .thenReturn(Collections.singletonMap("foo_schema", emptySchema));
             contextManager.reloadSchema(database, "foo_schema", "foo_ds");
-            verify(database).dropSchema("foo_schema");
-            verify(persistServiceFacade.getMetaDataFacade().getDatabaseMetaDataFacade().getSchema()).drop("foo_db", "foo_schema");
         }
+        verify(database).dropSchema("foo_schema");
+        verify(persistServiceFacade.getMetaDataFacade().getDatabaseMetaDataFacade().getSchema()).drop("foo_db", "foo_schema");
     }
     
     @Test
@@ -244,9 +244,9 @@ class ContextManagerTest {
             schemaBuilderMock.when(() -> GenericSchemaBuilder.build(any(DatabaseType.class), any(GenericSchemaBuilderMaterial.class)))
                     .thenReturn(Collections.singletonMap("foo_schema", reloadedSchema));
             contextManager.reloadSchema(database, "foo_schema", "foo_ds");
-            verify(database).addSchema(reloadedSchema);
-            verify(persistServiceFacade.getMetaDataFacade().getDatabaseMetaDataFacade().getSchema()).alterByRefresh("foo_db", reloadedSchema);
         }
+        verify(database).addSchema(reloadedSchema);
+        verify(persistServiceFacade.getMetaDataFacade().getDatabaseMetaDataFacade().getSchema()).alterByRefresh("foo_db", reloadedSchema);
     }
     
     @Test
@@ -269,8 +269,8 @@ class ContextManagerTest {
             schemaBuilderMock.when(() -> GenericSchemaBuilder.build(anySet(), any(DatabaseType.class), any(GenericSchemaBuilderMaterial.class)))
                     .thenReturn(Collections.singletonMap("foo_schema", schema));
             contextManager.reloadTable(database, "foo_schema", "foo_tbl");
-            verify(persistServiceFacade.getMetaDataFacade().getDatabaseMetaDataFacade().getTable()).persist("foo_db", "foo_schema", Collections.singleton(table));
         }
+        verify(persistServiceFacade.getMetaDataFacade().getDatabaseMetaDataFacade().getTable()).persist("foo_db", "foo_schema", Collections.singleton(table));
     }
     
     @Test
@@ -282,8 +282,8 @@ class ContextManagerTest {
             schemaBuilderMock.when(() -> GenericSchemaBuilder.build(anySet(), any(DatabaseType.class), any(GenericSchemaBuilderMaterial.class)))
                     .thenReturn(Collections.singletonMap("foo_schema", schema));
             contextManager.reloadTable(database, "foo_schema", "foo_ds", "foo_tbl");
-            verify(persistServiceFacade.getModeFacade().getMetaDataManagerService()).dropTables(database, "foo_schema", Collections.singleton("foo_tbl"));
         }
+        verify(persistServiceFacade.getModeFacade().getMetaDataManagerService()).dropTables(database, "foo_schema", Collections.singleton("foo_tbl"));
     }
     
     @Test
