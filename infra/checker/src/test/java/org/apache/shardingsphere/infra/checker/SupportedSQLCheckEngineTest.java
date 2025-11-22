@@ -36,7 +36,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -62,6 +62,6 @@ class SupportedSQLCheckEngineTest {
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class);
         new SupportedSQLCheckEngine().checkSQL(Collections.singleton(rule), sqlStatementContext, database);
         verify(supportedSQLChecker).check(eq(rule), eq(database), any(), eq(sqlStatementContext));
-        verify(unsupportedSQLChecker, times(0)).check(eq(rule), eq(database), any(), eq(sqlStatementContext));
+        verify(unsupportedSQLChecker, never()).check(eq(rule), eq(database), any(), eq(sqlStatementContext));
     }
 }

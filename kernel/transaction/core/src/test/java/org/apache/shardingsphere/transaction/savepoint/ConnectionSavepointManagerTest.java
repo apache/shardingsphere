@@ -34,7 +34,6 @@ import java.sql.Statement;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -71,7 +70,7 @@ class ConnectionSavepointManagerTest {
     @Test
     void assertRollbackWithoutSavepoint() throws SQLException {
         ConnectionSavepointManager.getInstance().rollbackToSavepoint(connection, SAVE_POINT);
-        verify(connection, times(0)).rollback(savepoint);
+        verify(connection, never()).rollback(savepoint);
     }
     
     @Test
