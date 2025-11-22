@@ -211,8 +211,9 @@ class ContextManagerTest {
         SwitchingResource switchingResource = new SwitchingResource(Collections.emptyMap(), Collections.emptyMap(), Collections.emptyList(), Collections.emptyMap());
         when(metaDataContextManager.getResourceSwitchManager().switchByAlterStorageUnit(any(ResourceMetaData.class), anyMap())).thenReturn(switchingResource);
         setMetaDataContextManager(metaDataContextManager);
-        try (MockedConstruction<MetaDataContextsFactory> ignored = mockConstruction(MetaDataContextsFactory.class,
-                (mock, context) -> when(mock.createChangedDatabase("foo_db", false, switchingResource, Collections.emptyList(), metaDataContexts)).thenThrow(SQLException.class))) {
+        try (
+                MockedConstruction<MetaDataContextsFactory> ignored = mockConstruction(MetaDataContextsFactory.class,
+                        (mock, context) -> when(mock.createChangedDatabase("foo_db", false, switchingResource, Collections.emptyList(), metaDataContexts)).thenThrow(SQLException.class))) {
             contextManager.reloadDatabase(database);
         }
     }
