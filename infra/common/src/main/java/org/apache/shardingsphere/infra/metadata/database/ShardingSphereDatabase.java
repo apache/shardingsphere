@@ -151,7 +151,7 @@ public final class ShardingSphereDatabase {
     
     /**
      * Check storage units existed.
-     * 
+     *
      * @param storageUnitNames storage unit names
      */
     public void checkStorageUnitsExisted(final Collection<String> storageUnitNames) {
