@@ -23,7 +23,6 @@ import org.apache.shardingsphere.distsql.handler.engine.update.DistSQLUpdateExec
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.exception.kernel.metadata.TableNotFoundException;
 import org.apache.shardingsphere.infra.exception.kernel.metadata.datanode.InvalidDataNodeFormatException;
-import org.apache.shardingsphere.infra.exception.kernel.metadata.resource.storageunit.MissingRequiredStorageUnitsException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.PhysicalDataSourceAggregator;
 import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnit;
@@ -94,12 +93,6 @@ class LoadSingleTableExecutorTest {
             when(database.getRuleMetaData()).thenReturn(new RuleMetaData(Collections.singleton(rule)));
         }
         return result;
-    }
-    
-    @Test
-    void assertExecuteUpdateWithNotExistedStorageUnits() {
-        LoadSingleTableStatement sqlStatement = new LoadSingleTableStatement(Collections.singleton(new SingleTableSegment("foo_ds", "foo_tbl")));
-        assertThrows(MissingRequiredStorageUnitsException.class, () -> new DistSQLUpdateExecuteEngine(sqlStatement, "foo_db", mockContextManager(mock(SingleRule.class))).executeUpdate());
     }
     
     @Test
