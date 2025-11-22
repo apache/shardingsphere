@@ -33,7 +33,6 @@ import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.SQLFeatureNotSupportedException;
-import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -56,12 +55,7 @@ public final class DatabaseTypeEngine {
      * @return protocol type
      */
     public static DatabaseType getProtocolType(final DatabaseConfiguration databaseConfig, final ConfigurationProperties props) {
-        Optional<DatabaseType> configuredDatabaseType = findConfiguredDatabaseType(props);
-        if (configuredDatabaseType.isPresent()) {
-            return configuredDatabaseType.get();
-        }
-        Collection<DataSource> dataSources = getDataSources(databaseConfig).values();
-        return dataSources.isEmpty() ? getDefaultStorageType() : getStorageType(dataSources.iterator().next());
+        return getDatabaseType(getDataSources(databaseConfig), props);
     }
     
     /**
@@ -72,12 +66,11 @@ public final class DatabaseTypeEngine {
      * @return protocol type
      */
     public static DatabaseType getProtocolType(final Map<String, DatabaseConfiguration> databaseConfigs, final ConfigurationProperties props) {
-        Optional<DatabaseType> configuredDatabaseType = findConfiguredDatabaseType(props);
-        if (configuredDatabaseType.isPresent()) {
-            return configuredDatabaseType.get();
-        }
-        Collection<DataSource> dataSources = getDataSources(databaseConfigs).values();
-        return dataSources.isEmpty() ? getDefaultStorageType() : getStorageType(dataSources.iterator().next());
+        return getDatabaseType(getDataSources(databaseConfigs), props);
+    }
+    
+    private static DatabaseType getDatabaseType(final Map<String, DataSource> dataSources, final ConfigurationProperties props) {
+        return findConfiguredDatabaseType(props).orElseGet(() -> dataSources.isEmpty() ? getDefaultStorageType() : getStorageType(dataSources.values().iterator().next()));
     }
     
     private static Optional<DatabaseType> findConfiguredDatabaseType(final ConfigurationProperties props) {
