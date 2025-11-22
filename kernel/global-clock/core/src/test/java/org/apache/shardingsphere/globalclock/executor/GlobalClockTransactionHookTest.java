@@ -40,7 +40,7 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -78,7 +78,7 @@ class GlobalClockTransactionHookTest {
     @Test
     void assertAfterBeginWhenGlobalClockProviderAbsent() {
         transactionHook.afterBegin(rule, databaseType, transactionContext);
-        verify(transactionContext, times(0)).setBeginMillis(anyLong());
+        verify(transactionContext, never()).setBeginMillis(anyLong());
     }
     
     @Test
@@ -92,7 +92,7 @@ class GlobalClockTransactionHookTest {
     @Test
     void assertAfterCreateConnectionsWhenDisabledGlobalClockRule() throws SQLException {
         transactionHook.afterCreateConnections(rule, databaseType, Collections.emptyList(), transactionContext);
-        verify(globalClockTransactionExecutor, times(0)).sendSnapshotTimestamp(any(), anyLong());
+        verify(globalClockTransactionExecutor, never()).sendSnapshotTimestamp(any(), anyLong());
     }
     
     @Test
@@ -100,7 +100,7 @@ class GlobalClockTransactionHookTest {
         when(DatabaseTypedSPILoader.findService(GlobalClockTransactionExecutor.class, databaseType)).thenReturn(Optional.empty());
         when(rule.getConfiguration().isEnabled()).thenReturn(true);
         transactionHook.afterCreateConnections(rule, databaseType, Collections.emptyList(), transactionContext);
-        verify(globalClockTransactionExecutor, times(0)).sendSnapshotTimestamp(any(), anyLong());
+        verify(globalClockTransactionExecutor, never()).sendSnapshotTimestamp(any(), anyLong());
     }
     
     @Test
@@ -114,14 +114,14 @@ class GlobalClockTransactionHookTest {
     @Test
     void assertBeforeExecuteSQLWhenDisabledGlobalClockRule() throws SQLException {
         transactionHook.beforeExecuteSQL(rule, databaseType, Collections.emptyList(), transactionContext, TransactionIsolationLevel.READ_COMMITTED);
-        verify(rule, times(0)).getGlobalClockProvider();
+        verify(rule, never()).getGlobalClockProvider();
     }
     
     @Test
     void assertBeforeExecuteSQLWhenNotReadCommittedIsolationLevel() throws SQLException {
         when(rule.getConfiguration().isEnabled()).thenReturn(true);
         transactionHook.beforeExecuteSQL(rule, databaseType, Collections.emptyList(), transactionContext, TransactionIsolationLevel.REPEATABLE_READ);
-        verify(rule, times(0)).getGlobalClockProvider();
+        verify(rule, never()).getGlobalClockProvider();
     }
     
     @Test
@@ -130,7 +130,7 @@ class GlobalClockTransactionHookTest {
         when(rule.getGlobalClockProvider()).thenReturn(Optional.of(globalClockProvider));
         transactionHook.beforeExecuteSQL(rule, databaseType, Collections.emptyList(), transactionContext, TransactionIsolationLevel.READ_COMMITTED);
         when(DatabaseTypedSPILoader.findService(GlobalClockTransactionExecutor.class, databaseType)).thenReturn(Optional.empty());
-        verify(globalClockTransactionExecutor, times(0)).sendSnapshotTimestamp(any(), anyLong());
+        verify(globalClockTransactionExecutor, never()).sendSnapshotTimestamp(any(), anyLong());
     }
     
     @Test
@@ -156,7 +156,7 @@ class GlobalClockTransactionHookTest {
     @Test
     void assertAfterCommitWhenGlobalClockProviderAbsent() {
         transactionHook.afterCommit(rule, databaseType, Collections.emptyList(), transactionContext);
-        verify(globalClockProvider, times(0)).getNextTimestamp();
+        verify(globalClockProvider, never()).getNextTimestamp();
     }
     
     @Test

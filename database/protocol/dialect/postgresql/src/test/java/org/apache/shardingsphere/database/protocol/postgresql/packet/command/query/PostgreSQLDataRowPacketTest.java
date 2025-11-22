@@ -38,7 +38,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -97,7 +97,7 @@ class PostgreSQLDataRowPacketTest {
         when(sqlxml.getString()).thenThrow(new SQLException("mock"));
         PostgreSQLDataRowPacket actual = new PostgreSQLDataRowPacket(Collections.singleton(sqlxml));
         assertThrows(RuntimeException.class, () -> actual.write(payload));
-        verify(payload, times(0)).writeStringEOF(any());
+        verify(payload, never()).writeStringEOF(any());
     }
     
     @Test

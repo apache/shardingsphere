@@ -34,7 +34,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -59,7 +59,7 @@ class ComputeNodeOnlineHandlerTest {
     @Test
     void assertHandleWithInvalidInstanceOnlinePath() {
         handler.handle(contextManager, new DataChangedEvent("/nodes/compute_nodes/online/foo", "{attribute: 127.0.0.1@3307,version: 1}", Type.ADDED));
-        verify(contextManager.getComputeNodeInstanceContext(), times(0)).getClusterInstanceRegistry();
+        verify(contextManager.getComputeNodeInstanceContext(), never()).getClusterInstanceRegistry();
     }
     
     @Test

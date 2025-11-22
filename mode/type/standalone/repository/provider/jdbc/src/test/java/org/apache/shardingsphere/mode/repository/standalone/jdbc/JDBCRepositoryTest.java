@@ -45,6 +45,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.anyString;
 import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.mockConstruction;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -226,7 +227,7 @@ class JDBCRepositoryTest {
         when(mockResultSet.next()).thenReturn(true);
         when(mockJdbcConnection.prepareStatement(repositorySQL.getUpdateSQL())).thenReturn(mockPreparedStatement);
         repository.persist(key, "value");
-        verify(mockPreparedStatementForPersist, times(0)).executeUpdate();
+        verify(mockPreparedStatementForPersist, never()).executeUpdate();
     }
     
     @Test
@@ -253,7 +254,7 @@ class JDBCRepositoryTest {
         when(mockResultSet.next()).thenReturn(false);
         when(mockJdbcConnection.prepareStatement(repositorySQL.getInsertSQL())).thenReturn(mockPreparedStatement);
         repository.persist("key", "value");
-        verify(mockPreparedStatementForPersist, times(0)).executeUpdate();
+        verify(mockPreparedStatementForPersist, never()).executeUpdate();
     }
     
     @Test
@@ -273,7 +274,7 @@ class JDBCRepositoryTest {
         String value = "value";
         when(mockJdbcConnection.prepareStatement(repositorySQL.getUpdateSQL())).thenThrow(new SQLException(""));
         repository.update(key, value);
-        verify(mockPreparedStatement, times(0)).executeUpdate();
+        verify(mockPreparedStatement, never()).executeUpdate();
     }
     
     @Test
@@ -290,7 +291,7 @@ class JDBCRepositoryTest {
         String key = "key";
         when(mockJdbcConnection.prepareStatement(repositorySQL.getDeleteSQL())).thenThrow(new SQLException(""));
         repository.delete(key);
-        verify(mockPreparedStatement, times(0)).executeUpdate();
+        verify(mockPreparedStatement, never()).executeUpdate();
     }
     
     @Test
