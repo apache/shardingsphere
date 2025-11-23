@@ -381,6 +381,7 @@ public final class DorisDALStatementVisitor extends DorisStatementVisitor implem
         return new AnalyzeTableStatement(getDatabaseType(), ((CollectionValue<SimpleTableSegment>) visit(ctx.tableList())).getValue());
     }
     
+    @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitCacheIndex(final CacheIndexContext ctx) {
         IdentifierValue name = null == ctx.DEFAULT() ? (IdentifierValue) visit(ctx.identifier()) : new IdentifierValue(ctx.DEFAULT().getText());
@@ -417,6 +418,7 @@ public final class DorisDALStatementVisitor extends DorisStatementVisitor implem
         return new PartitionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), (IdentifierValue) visit(ctx.identifier()));
     }
     
+    @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitChecksumTable(final ChecksumTableContext ctx) {
         return new MySQLChecksumTableStatement(getDatabaseType(), ((CollectionValue<SimpleTableSegment>) visit(ctx.tableList())).getValue());
@@ -442,6 +444,7 @@ public final class DorisDALStatementVisitor extends DorisStatementVisitor implem
         return new MySQLLoadIndexInfoStatement(getDatabaseType(), ctx.loadTableIndexList().stream().map(each -> (LoadTableIndexSegment) visit(each)).collect(Collectors.toList()));
     }
     
+    @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitLoadTableIndexList(final LoadTableIndexListContext ctx) {
         LoadTableIndexSegment result = new LoadTableIndexSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), (SimpleTableSegment) visit(ctx.tableName()));
@@ -883,6 +886,7 @@ public final class DorisDALStatementVisitor extends DorisStatementVisitor implem
         return new MySQLSetResourceGroupStatement(getDatabaseType(), ((IdentifierValue) visit(ctx.groupName())).getValue());
     }
     
+    @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitCheckTable(final CheckTableContext ctx) {
         return new MySQLCheckTableStatement(getDatabaseType(), ((CollectionValue<SimpleTableSegment>) visit(ctx.tableList())).getValue());

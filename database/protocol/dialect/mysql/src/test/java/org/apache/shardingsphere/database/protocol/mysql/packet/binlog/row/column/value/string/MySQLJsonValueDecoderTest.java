@@ -323,6 +323,7 @@ class MySQLJsonValueDecoderTest {
         }
     }
     
+    @SuppressWarnings("unchecked")
     private void writeValueToByteBuf(final JsonEntry jsonEntry, final ByteBuf byteBuf, final boolean isSmall) {
         switch (jsonEntry.getType()) {
             case JsonValueTypes.SMALL_JSON_OBJECT:

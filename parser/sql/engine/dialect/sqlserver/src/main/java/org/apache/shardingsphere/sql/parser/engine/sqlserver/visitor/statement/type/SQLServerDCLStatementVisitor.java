@@ -81,6 +81,7 @@ public final class SQLServerDCLStatementVisitor extends SQLServerStatementVisito
         super(databaseType);
     }
     
+    @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitGrant(final GrantContext ctx) {
         SQLServerGrantStatement result = new SQLServerGrantStatement(getDatabaseType());
@@ -98,6 +99,7 @@ public final class SQLServerDCLStatementVisitor extends SQLServerStatementVisito
         return result;
     }
     
+    @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitRevoke(final RevokeContext ctx) {
         SQLServerRevokeStatement result = new SQLServerRevokeStatement(getDatabaseType());
@@ -183,6 +185,7 @@ public final class SQLServerDCLStatementVisitor extends SQLServerStatementVisito
         return new AlterUserStatement(getDatabaseType(), (UserSegment) visit(ctx.userName()));
     }
     
+    @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitDeny(final DenyContext ctx) {
         SQLServerDenyUserStatement result = new SQLServerDenyUserStatement(getDatabaseType());

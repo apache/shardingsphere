@@ -58,12 +58,12 @@ public final class IndexMetaDataLoader {
                 if (null == indexName) {
                     continue;
                 }
-                if (!result.containsKey(indexName)) {
+                if (result.containsKey(indexName)) {
+                    result.get(indexName).getColumns().add(resultSet.getString("COLUMN_NAME"));
+                } else {
                     IndexMetaData indexMetaData = new IndexMetaData(indexName, new LinkedList<>(Collections.singleton(resultSet.getString("COLUMN_NAME"))));
                     indexMetaData.setUnique(!resultSet.getBoolean("NON_UNIQUE"));
                     result.put(indexName, indexMetaData);
-                } else {
-                    result.get(indexName).getColumns().add(resultSet.getString("COLUMN_NAME"));
                 }
             }
         } catch (final SQLException ex) {

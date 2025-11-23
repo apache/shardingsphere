@@ -479,6 +479,7 @@ public final class OracleDMLStatementVisitor extends OracleStatementVisitor impl
         return result;
     }
     
+    @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitPivotClause(final PivotClauseContext ctx) {
         Collection<ColumnSegment> pivotInColumns = new LinkedList<>();
@@ -493,6 +494,7 @@ public final class OracleDMLStatementVisitor extends OracleStatementVisitor impl
         return new PivotSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ((CollectionValue<ColumnSegment>) visit(ctx.pivotForClause().columnNames())).getValue(), pivotInColumns);
     }
     
+    @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitUnpivotClause(final UnpivotClauseContext ctx) {
         Collection<ColumnSegment> unpivotInColumns = new LinkedList<>();

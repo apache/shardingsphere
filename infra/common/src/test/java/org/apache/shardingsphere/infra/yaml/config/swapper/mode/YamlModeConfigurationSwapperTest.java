@@ -49,7 +49,7 @@ class YamlModeConfigurationSwapperTest {
         YamlPersistRepositoryConfiguration yamlRepoConfig = new YamlPersistRepositoryConfiguration();
         yamlRepoConfig.setType(TEST_TYPE);
         try (MockedStatic<TypedSPILoader> mockedLoader = mockStatic(TypedSPILoader.class)) {
-            YamlPersistRepositoryConfigurationSwapper mockSwapper = mock(YamlPersistRepositoryConfigurationSwapper.class);
+            YamlPersistRepositoryConfigurationSwapper<?> mockSwapper = mock(YamlPersistRepositoryConfigurationSwapper.class);
             when(mockSwapper.swapToYamlConfiguration(any())).thenReturn(yamlRepoConfig);
             when(mockSwapper.getType()).thenReturn(TEST_TYPE);
             mockedLoader.when(() -> TypedSPILoader.getService(YamlPersistRepositoryConfigurationSwapper.class, TEST_TYPE)).thenReturn(mockSwapper);
@@ -68,11 +68,12 @@ class YamlModeConfigurationSwapperTest {
         assertThat(actual.getType(), is(TEST_TYPE));
     }
     
+    @SuppressWarnings("unchecked")
     @Test
     void assertSwapToObjectWithNotNullRepository() {
         PersistRepositoryConfiguration mockRepoConfig = mock(PersistRepositoryConfiguration.class);
         try (MockedStatic<TypedSPILoader> mockedLoader = mockStatic(TypedSPILoader.class)) {
-            YamlPersistRepositoryConfigurationSwapper mockSwapper = mock(YamlPersistRepositoryConfigurationSwapper.class);
+            YamlPersistRepositoryConfigurationSwapper<PersistRepositoryConfiguration> mockSwapper = mock(YamlPersistRepositoryConfigurationSwapper.class);
             when(mockSwapper.swapToObject(any())).thenReturn(mockRepoConfig);
             when(mockSwapper.getType()).thenReturn(TEST_TYPE);
             mockedLoader.when(() -> TypedSPILoader.getService(YamlPersistRepositoryConfigurationSwapper.class, TEST_TYPE)).thenReturn(mockSwapper);

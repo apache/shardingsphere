@@ -82,11 +82,7 @@ public enum FirebirdArchType {
         } else if (SystemUtils.IS_OS_AIX) {
             ARCHITECTURE = ARCH_RT;
         } else if (SystemUtils.IS_OS_LINUX) {
-            if (!SystemUtils.OS_ARCH.toLowerCase().contains("loong")) {
-                ARCHITECTURE = ARCH_LINUX;
-            } else {
-                ARCHITECTURE = ARCH_LINUX_LOONG;
-            }
+            ARCHITECTURE = SystemUtils.OS_ARCH.toLowerCase().contains("loong") ? ARCH_LINUX_LOONG : ARCH_LINUX;
         } else if (SystemUtils.IS_OS_FREE_BSD) {
             ARCHITECTURE = ARCH_FREEBSD;
         } else if (SystemUtils.IS_OS_NET_BSD) {

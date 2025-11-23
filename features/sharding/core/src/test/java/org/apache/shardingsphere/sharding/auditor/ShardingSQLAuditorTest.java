@@ -68,7 +68,7 @@ class ShardingSQLAuditorTest {
     private RuleMetaData globalRuleMetaData;
     
     @Mock
-    private ShardingSphereDatabase database = mock(ShardingSphereDatabase.class);
+    private ShardingSphereDatabase database;
     
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private ShardingRule rule;

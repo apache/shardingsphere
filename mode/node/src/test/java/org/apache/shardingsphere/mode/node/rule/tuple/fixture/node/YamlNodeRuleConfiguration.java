@@ -32,7 +32,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
 
-@RuleNodeTupleEntity(value = "node")
+@RuleNodeTupleEntity("node")
 @Getter
 @Setter
 public final class YamlNodeRuleConfiguration implements YamlRuleConfiguration {

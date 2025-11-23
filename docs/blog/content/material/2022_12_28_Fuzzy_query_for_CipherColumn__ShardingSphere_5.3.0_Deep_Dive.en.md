@@ -165,7 +165,7 @@ public final class CharDigestLikeEncryptAlgorithm implements LikeEncryptAlgorith
   
             @Override
             public boolean processLine(final String line) {
-                if (line.startsWith("#") || 0 == line.length()) {
+                if (line.startsWith("#") || line.isEmpty()) {
                     return true;
                 } else {
                     builder.append(line);

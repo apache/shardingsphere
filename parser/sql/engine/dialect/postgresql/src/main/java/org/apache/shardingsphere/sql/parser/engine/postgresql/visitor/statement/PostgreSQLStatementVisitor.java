@@ -730,6 +730,7 @@ public abstract class PostgreSQLStatementVisitor extends PostgreSQLStatementPars
         return result;
     }
     
+    @SuppressWarnings({"rawtypes", "unchecked"})
     @Override
     public ASTNode visitQualifiedNameList(final QualifiedNameListContext ctx) {
         CollectionValue<SimpleTableSegment> result = new CollectionValue<>();
@@ -761,6 +762,7 @@ public abstract class PostgreSQLStatementVisitor extends PostgreSQLStatementPars
         return new SimpleTableSegment(new TableNameSegment(ctx.colId().start.getStartIndex(), ctx.colId().stop.getStopIndex(), new IdentifierValue(ctx.colId().getText())));
     }
     
+    @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitInsertRest(final InsertRestContext ctx) {
         InsertStatement result = new InsertStatement(databaseType);
@@ -782,6 +784,7 @@ public abstract class PostgreSQLStatementVisitor extends PostgreSQLStatementPars
         return result;
     }
     
+    @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitInsertColumnList(final InsertColumnListContext ctx) {
         CollectionValue<ColumnSegment> result = new CollectionValue<>();

@@ -1248,6 +1248,7 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
         return result;
     }
     
+    @SuppressWarnings("unchecked")
     private Collection<CommonTableExpressionSegment> getCommonTableExpressionSegmentsUsingCteClauseSet(final CteClauseSetContext ctx) {
         Collection<CommonTableExpressionSegment> result = new LinkedList<>();
         for (CteClauseContext each : ctx.cteClause()) {
@@ -1571,6 +1572,7 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
         return result;
     }
     
+    @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitOutputClause(final OutputClauseContext ctx) {
         OutputSegment result = new OutputSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex());
@@ -1998,6 +2000,7 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
         return result;
     }
     
+    @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitPivotClause(final PivotClauseContext ctx) {
         String pivotType = null == ctx.PIVOT() ? "UNPIVOT" : "PIVOT";
@@ -2099,6 +2102,7 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
         return visit(ctx.aggregationClause());
     }
     
+    @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitCreateTableAsSelectClause(final CreateTableAsSelectClauseContext ctx) {
         CreateTableStatement result = new CreateTableStatement(databaseType);

@@ -103,10 +103,11 @@ public final class ConsistencyCheckTasksRunner implements PipelineTasksRunner {
     
     private final class CheckPipelineLifecycleRunnable extends AbstractPipelineLifecycleRunnable {
         
+        @SuppressWarnings("unchecked")
         @Override
         protected void runBlocking() {
             jobItemManager.persistProgress(jobItemContext);
-            PipelineJobType jobType = PipelineJobIdUtils.parseJobType(parentJobId);
+            PipelineJobType<PipelineJobConfiguration> jobType = PipelineJobIdUtils.parseJobType(parentJobId);
             PipelineJobConfiguration parentJobConfig = new PipelineJobConfigurationManager(jobType.getOption()).getJobConfiguration(parentJobId);
             try {
                 PipelineProcessConfiguration processConfig = PipelineProcessConfigurationUtils.fillInDefaultValue(

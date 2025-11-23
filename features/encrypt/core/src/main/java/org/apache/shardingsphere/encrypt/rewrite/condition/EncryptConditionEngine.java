@@ -197,10 +197,10 @@ public final class EncryptConditionEngine {
     
     private static Collection<EncryptCondition> createInEncryptCondition(final String tableName, final InExpression inExpression, final ExpressionSegment inRightValue) {
         ColumnSegment columnSegment;
-        if (!(inExpression.getLeft() instanceof ColumnSegment)) {
-            return Collections.emptyList();
-        } else {
+        if (inExpression.getLeft() instanceof ColumnSegment) {
             columnSegment = (ColumnSegment) inExpression.getLeft();
+        } else {
+            return Collections.emptyList();
         }
         List<ExpressionSegment> expressionSegments = new LinkedList<>();
         for (ExpressionSegment each : inExpression.getExpressionList()) {

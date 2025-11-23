@@ -39,6 +39,6 @@ public final class StringLiteralValue implements LiteralValue<String> {
         for (StringLiteralValue each : stringLiteralValues) {
             result.append(each.getValue());
         }
-        this.value = result.toString();
+        value = result.toString();
     }
 }
