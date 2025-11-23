@@ -51,20 +51,7 @@ class YamlRuleNodeTupleSwapperEngineTest {
     
     @Test
     void assertSwapToTuplesWithNodeYamlRuleConfiguration() {
-        YamlNodeRuleConfiguration yamlRuleConfig = new YamlNodeRuleConfiguration();
-        yamlRuleConfig.setMapValue(Collections.singletonMap("k", new YamlLeafRuleConfiguration("v")));
-        yamlRuleConfig.setCollectionValue(Collections.singletonList(new YamlLeafRuleConfiguration("foo")));
-        yamlRuleConfig.setStringValue("str");
-        yamlRuleConfig.setBooleanValue(true);
-        yamlRuleConfig.setIntegerValue(1);
-        yamlRuleConfig.setLongValue(10L);
-        yamlRuleConfig.setEnumValue(YamlNodeRuleConfigurationEnum.FOO);
-        YamlLeafRuleConfiguration leaf = new YamlLeafRuleConfiguration();
-        leaf.setValue("leaf");
-        yamlRuleConfig.setLeaf(leaf);
-        yamlRuleConfig.setGens(Collections.singleton("value"));
-        yamlRuleConfig.setGen("single_gen");
-        List<RuleNodeTuple> actual = new ArrayList<>(new YamlRuleNodeTupleSwapperEngine().swapToTuples("foo_db", yamlRuleConfig));
+        List<RuleNodeTuple> actual = new ArrayList<>(new YamlRuleNodeTupleSwapperEngine().swapToTuples("foo_db", createYamlNodeRuleConfiguration()));
         assertThat(actual.size(), is(10));
         assertThat(actual.get(0).getPath(), is("/metadata/foo_db/rules/node/map_value/k"));
         assertThat(actual.get(0).getContent(), is("value: v" + System.lineSeparator()));
@@ -86,6 +73,23 @@ class YamlRuleNodeTupleSwapperEngineTest {
         assertThat(actual.get(8).getContent(), is("value"));
         assertThat(actual.get(9).getPath(), is("/metadata/foo_db/rules/node/gen"));
         assertThat(actual.get(9).getContent(), is("single_gen"));
+    }
+    
+    private YamlNodeRuleConfiguration createYamlNodeRuleConfiguration() {
+        YamlNodeRuleConfiguration result = new YamlNodeRuleConfiguration();
+        result.setMapValue(Collections.singletonMap("k", new YamlLeafRuleConfiguration("v")));
+        result.setCollectionValue(Collections.singletonList(new YamlLeafRuleConfiguration("foo")));
+        result.setStringValue("str");
+        result.setBooleanValue(true);
+        result.setIntegerValue(1);
+        result.setLongValue(10L);
+        result.setEnumValue(YamlNodeRuleConfigurationEnum.FOO);
+        YamlLeafRuleConfiguration leaf = new YamlLeafRuleConfiguration();
+        leaf.setValue("leaf");
+        result.setLeaf(leaf);
+        result.setGens(Collections.singleton("value"));
+        result.setGen("single_gen");
+        return result;
     }
     
     @Test

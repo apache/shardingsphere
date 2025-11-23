@@ -122,21 +122,25 @@ class YamlDataSourceConfigurationSwapperTest {
     
     @Test
     void assertSwapToDataSourcePoolPropertiesWithCustomPoolProps() {
-        Map<String, Object> yamlConfig = new HashMap<>(5, 1F);
-        yamlConfig.put("dataSourceClassName", MockedDataSource.class.getName());
-        yamlConfig.put("url", "jdbc:test:memory:");
-        yamlConfig.put("username", "test");
-        yamlConfig.put("password", "test");
-        Map<String, Object> customProps = new HashMap<>(2, 1F);
-        customProps.put("customKey1", "customValue1");
-        customProps.put("customKey2", "customValue2");
-        yamlConfig.put("customPoolProps", customProps);
-        DataSourcePoolProperties actual = swapper.swapToDataSourcePoolProperties(yamlConfig);
+        DataSourcePoolProperties actual = swapper.swapToDataSourcePoolProperties(createYamlConfiguration());
         assertThat(actual.getPoolClassName(), is(MockedDataSource.class.getName()));
         assertThat(actual.getAllLocalProperties().get("url").toString(), is("jdbc:test:memory:"));
         assertThat(actual.getAllLocalProperties().get("username").toString(), is("test"));
         assertThat(actual.getAllLocalProperties().get("customKey1").toString(), is("customValue1"));
         assertThat(actual.getAllLocalProperties().get("customKey2").toString(), is("customValue2"));
         assertFalse(actual.getAllLocalProperties().containsKey("customPoolProps"));
+    }
+    
+    private Map<String, Object> createYamlConfiguration() {
+        Map<String, Object> result = new HashMap<>(5, 1F);
+        result.put("dataSourceClassName", MockedDataSource.class.getName());
+        result.put("url", "jdbc:test:memory:");
+        result.put("username", "test");
+        result.put("password", "test");
+        Map<String, Object> customProps = new HashMap<>(2, 1F);
+        customProps.put("customKey1", "customValue1");
+        customProps.put("customKey2", "customValue2");
+        result.put("customPoolProps", customProps);
+        return result;
     }
 }
