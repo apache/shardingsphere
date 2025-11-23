@@ -24,7 +24,6 @@ import org.apache.shardingsphere.infra.spi.ShardingSphereSPI;
 import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 
-import java.sql.SQLException;
 import java.util.List;
 
 /**
@@ -41,7 +40,6 @@ public interface AdvancedProxySQLExecutor extends ShardingSphereSPI {
      * @param database database
      * @param databaseProxyConnector database proxy connector
      * @return execute result
-     * @throws SQLException SQL exception
      */
-    List<ExecuteResult> execute(ExecutionContext executionContext, ContextManager contextManager, ShardingSphereDatabase database, DatabaseProxyConnector databaseProxyConnector) throws SQLException;
+    List<ExecuteResult> execute(ExecutionContext executionContext, ContextManager contextManager, ShardingSphereDatabase database, DatabaseProxyConnector databaseProxyConnector);
 }

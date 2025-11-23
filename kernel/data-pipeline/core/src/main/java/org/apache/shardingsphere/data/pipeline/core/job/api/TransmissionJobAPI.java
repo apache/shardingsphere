@@ -32,7 +32,7 @@ public interface TransmissionJobAPI extends TypedSPI {
      * Commit pipeline job.
      *
      * @param jobId job ID
-     * @throws SQLException sql exception
+     * @throws SQLException SQL exception
      */
     void commit(String jobId) throws SQLException;
     

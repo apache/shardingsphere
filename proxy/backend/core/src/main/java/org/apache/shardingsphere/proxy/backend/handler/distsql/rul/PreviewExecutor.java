@@ -131,8 +131,7 @@ public final class PreviewExecutor implements DistSQLQueryExecutor<PreviewStatem
         toBePreviewedStatementContext.setCursorStatementContext(cursorStatementContext);
     }
     
-    private Collection<ExecutionUnit> getFederationExecutionUnits(final QueryContext queryContext, final ShardingSphereMetaData metaData,
-                                                                  final SQLFederationEngine federationEngine) throws SQLException {
+    private Collection<ExecutionUnit> getFederationExecutionUnits(final QueryContext queryContext, final ShardingSphereMetaData metaData, final SQLFederationEngine federationEngine) {
         SQLStatement sqlStatement = queryContext.getSqlStatementContext().getSqlStatement();
         DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine = createDriverExecutionPrepareEngine(metaData);
         SQLFederationContext context = new SQLFederationContext(true, queryContext, metaData,

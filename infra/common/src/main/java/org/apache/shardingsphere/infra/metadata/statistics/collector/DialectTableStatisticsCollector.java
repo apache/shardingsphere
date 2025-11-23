@@ -20,7 +20,6 @@ package org.apache.shardingsphere.infra.metadata.statistics.collector;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPI;
 
-import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Map;
 
@@ -51,7 +50,6 @@ public interface DialectTableStatisticsCollector extends TypedSPI {
      * @param tableName table name
      * @param metaData shardingsphere meta data
      * @return row columns data
-     * @throws SQLException SQL exception
      */
-    Collection<Map<String, Object>> collect(String databaseName, String schemaName, String tableName, ShardingSphereMetaData metaData) throws SQLException;
+    Collection<Map<String, Object>> collect(String databaseName, String schemaName, String tableName, ShardingSphereMetaData metaData);
 }

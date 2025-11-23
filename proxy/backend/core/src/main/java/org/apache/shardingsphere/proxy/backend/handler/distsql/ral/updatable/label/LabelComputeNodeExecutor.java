@@ -24,7 +24,6 @@ import org.apache.shardingsphere.infra.instance.ComputeNodeInstance;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.cluster.persist.facade.ClusterPersistServiceFacade;
 
-import java.sql.SQLException;
 import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
@@ -37,7 +36,7 @@ import java.util.Optional;
 public final class LabelComputeNodeExecutor implements DistSQLUpdateExecutor<LabelComputeNodeStatement> {
     
     @Override
-    public void executeUpdate(final LabelComputeNodeStatement sqlStatement, final ContextManager contextManager) throws SQLException {
+    public void executeUpdate(final LabelComputeNodeStatement sqlStatement, final ContextManager contextManager) {
         String instanceId = sqlStatement.getInstanceId();
         Optional<ComputeNodeInstance> computeNodeInstance = contextManager.getComputeNodeInstanceContext().getClusterInstanceRegistry().find(instanceId);
         if (computeNodeInstance.isPresent()) {

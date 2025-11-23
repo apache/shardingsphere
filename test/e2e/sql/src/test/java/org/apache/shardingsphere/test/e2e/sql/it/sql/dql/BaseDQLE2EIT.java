@@ -70,7 +70,7 @@ public abstract class BaseDQLE2EIT implements SQLE2EIT {
     @Setter
     private SQLE2EEnvironmentEngine environmentEngine;
     
-    protected final void init(final AssertionTestParameter testParam, final SQLE2EITContext context) throws SQLException, IOException, JAXBException {
+    protected final void init(final AssertionTestParameter testParam, final SQLE2EITContext context) throws IOException, JAXBException {
         fillDataOnlyOnce(testParam);
         expectedDataSource = null == context.getAssertion().getExpectedDataSourceName() || 1 == getEnvironmentEngine().getExpectedDataSourceMap().size()
                 ? getFirstExpectedDataSource(getEnvironmentEngine().getExpectedDataSourceMap().values())

@@ -22,8 +22,6 @@ import org.apache.shardingsphere.distsql.handler.engine.update.rdl.rule.spi.glob
 import org.apache.shardingsphere.distsql.statement.type.rdl.rule.global.GlobalRuleDefinitionStatement;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 
-import java.sql.SQLException;
-
 /**
  * Global rule definition execute engine.
  */
@@ -39,11 +37,9 @@ public final class GlobalRuleDefinitionExecuteEngine {
     
     /**
      * Execute update.
-     *
-     * @throws SQLException SQL exception
      */
     @SuppressWarnings("unchecked")
-    public void executeUpdate() throws SQLException {
+    public void executeUpdate() {
         executor.checkBeforeUpdate(sqlStatement);
         contextManager.getPersistServiceFacade().getModeFacade().getMetaDataManagerService().alterGlobalRuleConfiguration(executor.buildToBeAlteredRuleConfiguration(sqlStatement));
     }

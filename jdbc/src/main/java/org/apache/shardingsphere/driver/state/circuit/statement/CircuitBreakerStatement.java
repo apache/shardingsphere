@@ -22,7 +22,6 @@ import org.apache.shardingsphere.driver.state.circuit.connection.CircuitBreakerC
 
 import java.sql.Connection;
 import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.sql.SQLWarning;
 import java.sql.Statement;
 
@@ -130,7 +129,7 @@ public final class CircuitBreakerStatement extends WrapperAdapter implements Sta
     }
     
     @Override
-    public int[] executeBatch() throws SQLException {
+    public int[] executeBatch() {
         return new int[0];
     }
     

@@ -31,7 +31,6 @@ import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnit;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 
-import java.sql.SQLException;
 import java.util.Collections;
 import java.util.Map;
 
@@ -44,7 +43,7 @@ public final class RefreshTableMetaDataExecutor implements DistSQLUpdateExecutor
     private ShardingSphereDatabase database;
     
     @Override
-    public void executeUpdate(final RefreshTableMetaDataStatement sqlStatement, final ContextManager contextManager) throws SQLException {
+    public void executeUpdate(final RefreshTableMetaDataStatement sqlStatement, final ContextManager contextManager) {
         String schemaName = getSchemaName(sqlStatement);
         checkBeforeUpdate(sqlStatement, schemaName);
         if (sqlStatement.getStorageUnitName().isPresent()) {

@@ -316,11 +316,11 @@ public final class CDCJobAPI implements TransmissionJobAPI {
     }
     
     @Override
-    public void commit(final String jobId) throws SQLException {
+    public void commit(final String jobId) {
     }
     
     @Override
-    public void rollback(final String jobId) throws SQLException {
+    public void rollback(final String jobId) {
     }
     
     @Override

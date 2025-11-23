@@ -24,7 +24,6 @@ import org.apache.shardingsphere.infra.executor.sql.execute.result.ExecuteResult
 import org.apache.shardingsphere.infra.executor.sql.process.ProcessEngine;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 
-import java.sql.SQLException;
 import java.util.Collection;
 
 /**
@@ -44,7 +43,7 @@ public final class RawSQLExecutorCallback implements ExecutorCallback<RawSQLExec
     
     @SuppressWarnings("unchecked")
     @Override
-    public Collection<ExecuteResult> execute(final Collection<RawSQLExecutionUnit> inputs, final boolean isTrunkThread, final String processId) throws SQLException {
+    public Collection<ExecuteResult> execute(final Collection<RawSQLExecutionUnit> inputs, final boolean isTrunkThread, final String processId) {
         Collection<ExecuteResult> result = callbacks.iterator().next().execute(inputs, isTrunkThread);
         for (RawSQLExecutionUnit each : inputs) {
             processEngine.completeSQLUnitExecution(each, processId);

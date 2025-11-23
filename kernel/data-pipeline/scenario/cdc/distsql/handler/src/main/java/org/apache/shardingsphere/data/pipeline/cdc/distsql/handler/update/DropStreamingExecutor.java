@@ -24,8 +24,6 @@ import org.apache.shardingsphere.distsql.handler.engine.update.DistSQLUpdateExec
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 
-import java.sql.SQLException;
-
 /**
  * Drop streaming executor.
  */
@@ -34,7 +32,7 @@ public final class DropStreamingExecutor implements DistSQLUpdateExecutor<DropSt
     private final CDCJobAPI jobAPI = (CDCJobAPI) TypedSPILoader.getService(TransmissionJobAPI.class, "STREAMING");
     
     @Override
-    public void executeUpdate(final DropStreamingStatement sqlStatement, final ContextManager contextManager) throws SQLException {
+    public void executeUpdate(final DropStreamingStatement sqlStatement, final ContextManager contextManager) {
         jobAPI.drop(sqlStatement.getJobId());
     }
     

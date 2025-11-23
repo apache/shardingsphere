@@ -20,7 +20,6 @@ package org.apache.shardingsphere.data.pipeline.core.datasource;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.api.PipelineDataSourceConfiguration;
 
-import java.sql.SQLException;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -63,11 +62,7 @@ public final class PipelineDataSourceManager implements AutoCloseable {
             if (each.isClosed()) {
                 continue;
             }
-            try {
-                each.close();
-            } catch (final SQLException ex) {
-                log.error("An exception occurred while closing the data source.", ex);
-            }
+            each.close();
         }
         cachedDataSources.clear();
     }
