@@ -82,7 +82,7 @@ class OpenGaussComQueryExecutorTest {
     void assertExecuteQueryAndReturnEmptyResult() throws SQLException {
         QueryResponseHeader queryResponseHeader = mock(QueryResponseHeader.class);
         when(proxyBackendHandler.execute()).thenReturn(queryResponseHeader);
-        Collection actual = queryExecutor.execute();
+        Collection<DatabasePacket> actual = queryExecutor.execute();
         assertThat(actual.size(), is(1));
         assertThat(actual.iterator().next(), is(isA(PostgreSQLRowDescriptionPacket.class)));
         assertThat(queryExecutor.getResponseType(), is(ResponseType.QUERY));
@@ -94,7 +94,7 @@ class OpenGaussComQueryExecutorTest {
         QueryResponseHeader queryResponseHeader = mock(QueryResponseHeader.class);
         when(queryResponseHeader.getQueryHeaders()).thenReturn(Collections.singletonList(new QueryHeader("schema", "table", "label", "column", 1, "type", 2, 3, true, true, true, true)));
         when(proxyBackendHandler.execute()).thenReturn(queryResponseHeader);
-        Collection actual = queryExecutor.execute();
+        Collection<DatabasePacket> actual = queryExecutor.execute();
         assertThat(actual.size(), is(1));
         assertThat(actual.iterator().next(), is(isA(PostgreSQLRowDescriptionPacket.class)));
         assertThat(queryExecutor.getResponseType(), is(ResponseType.QUERY));

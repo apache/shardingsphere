@@ -101,7 +101,7 @@ public final class CDCJob implements PipelineJob {
     public void execute(final ShardingContext shardingContext) {
         String jobId = shardingContext.getJobName();
         log.info("Execute job {}", jobId);
-        PipelineJobType jobType = PipelineJobIdUtils.parseJobType(jobId);
+        PipelineJobType<?> jobType = PipelineJobIdUtils.parseJobType(jobId);
         PipelineContextKey contextKey = PipelineJobIdUtils.parseContextKey(jobId);
         CDCJobConfiguration jobConfig = (CDCJobConfiguration) jobType.getOption().getYamlJobConfigurationSwapper().swapToObject(shardingContext.getJobParameter());
         PipelineJobItemManager<TransmissionJobItemProgress> jobItemManager = new PipelineJobItemManager<>(jobType.getOption().getYamlJobItemProgressSwapper());

@@ -68,7 +68,7 @@ public final class DistributedPipelineJobExecutor {
             log.info("Job is stopping, ignore.");
             return;
         }
-        PipelineJobType jobType = PipelineJobIdUtils.parseJobType(jobId);
+        PipelineJobType<?> jobType = PipelineJobIdUtils.parseJobType(jobId);
         PipelineContextKey contextKey = PipelineJobIdUtils.parseContextKey(jobId);
         PipelineJobConfiguration jobConfig = jobType.getOption().getYamlJobConfigurationSwapper().swapToObject(shardingContext.getJobParameter());
         PipelineJobItemManager<PipelineJobItemProgress> jobItemManager = new PipelineJobItemManager<>(jobType.getOption().getYamlJobItemProgressSwapper());
@@ -111,7 +111,7 @@ public final class DistributedPipelineJobExecutor {
         return true;
     }
     
-    private TransmissionProcessContext createTransmissionProcessContext(final String jobId, final PipelineJobType jobType, final PipelineContextKey contextKey) {
+    private TransmissionProcessContext createTransmissionProcessContext(final String jobId, final PipelineJobType<?> jobType, final PipelineContextKey contextKey) {
         if (!jobType.getOption().isTransmissionJob()) {
             return null;
         }
