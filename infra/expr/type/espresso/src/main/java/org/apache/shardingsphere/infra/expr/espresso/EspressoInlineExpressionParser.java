@@ -111,10 +111,10 @@ public final class EspressoInlineExpressionParser implements InlineExpressionPar
     private List<String> flatten(final List<ReflectValue> segments) {
         List<String> result = new ArrayList<>();
         for (ReflectValue each : segments) {
-            if (!each.isString()) {
-                result.addAll(assemblyCartesianSegments(each));
-            } else {
+            if (each.isString()) {
                 result.add(each.as(String.class));
+            } else {
+                result.addAll(assemblyCartesianSegments(each));
             }
         }
         return result;

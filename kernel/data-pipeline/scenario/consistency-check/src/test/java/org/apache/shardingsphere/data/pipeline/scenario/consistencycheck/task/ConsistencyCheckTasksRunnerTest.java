@@ -137,6 +137,7 @@ class ConsistencyCheckTasksRunnerTest {
         verify(checkExecutor).stop();
     }
     
+    @SuppressWarnings({"unchecked", "rawtypes"})
     @Test
     void assertRunBlockingPersistResultWhenNotStopping() throws ReflectiveOperationException {
         ConsistencyCheckJobItemContext jobItemContext = createJobItemContext();
@@ -164,7 +165,7 @@ class ConsistencyCheckTasksRunnerTest {
         when(governanceFacade.getJobFacade()).thenReturn(jobFacade);
         when(jobFacade.getCheck()).thenReturn(checkRepository);
         try (
-                MockedConstruction<PipelineJobConfigurationManager> mockedConstruction = mockConstruction(PipelineJobConfigurationManager.class,
+                MockedConstruction<PipelineJobConfigurationManager> ignore = mockConstruction(PipelineJobConfigurationManager.class,
                         (mock, context) -> when(mock.getJobConfiguration(PARENT_JOB_ID)).thenReturn(parentJobConfig));
                 MockedStatic<PipelineProcessConfigurationUtils> processConfigMocked = mockStatic(PipelineProcessConfigurationUtils.class)) {
             processConfigMocked.when(() -> PipelineProcessConfigurationUtils.fillInDefaultValue(processConfig)).thenReturn(processConfig);
@@ -177,6 +178,7 @@ class ConsistencyCheckTasksRunnerTest {
         }
     }
     
+    @SuppressWarnings({"unchecked", "rawtypes"})
     @Test
     void assertRunBlockingSkipPersistWhenStopping() throws ReflectiveOperationException {
         ConsistencyCheckJobItemContext jobItemContext = createJobItemContext();
@@ -201,7 +203,7 @@ class ConsistencyCheckTasksRunnerTest {
         when(checker.check(jobItemContext.getJobConfig().getAlgorithmTypeName(), jobItemContext.getJobConfig().getAlgorithmProps())).thenReturn(checkResult);
         PipelineJobCheckGovernanceRepository checkRepository = mock(PipelineJobCheckGovernanceRepository.class);
         try (
-                MockedConstruction<PipelineJobConfigurationManager> mockedConstruction = mockConstruction(PipelineJobConfigurationManager.class,
+                MockedConstruction<PipelineJobConfigurationManager> ignored = mockConstruction(PipelineJobConfigurationManager.class,
                         (mock, context) -> when(mock.getJobConfiguration(PARENT_JOB_ID)).thenReturn(parentJobConfig));
                 MockedStatic<PipelineProcessConfigurationUtils> processConfigMocked = mockStatic(PipelineProcessConfigurationUtils.class)) {
             processConfigMocked.when(() -> PipelineProcessConfigurationUtils.fillInDefaultValue(processConfig)).thenReturn(processConfig);
@@ -214,6 +216,7 @@ class ConsistencyCheckTasksRunnerTest {
         }
     }
     
+    @SuppressWarnings("unchecked")
     @Test
     void assertOnSuccessWhenStopping() throws ReflectiveOperationException {
         ConsistencyCheckJobItemContext jobItemContext = createJobItemContext();
@@ -230,6 +233,7 @@ class ConsistencyCheckTasksRunnerTest {
         verifyNoInteractions(jobItemManager);
     }
     
+    @SuppressWarnings("unchecked")
     @Test
     void assertOnSuccessUpdateToFinished() throws ReflectiveOperationException {
         ConsistencyCheckJobItemContext jobItemContext = createJobItemContext();
@@ -255,6 +259,7 @@ class ConsistencyCheckTasksRunnerTest {
         verify(jobManager).stop(CHECK_JOB_ID);
     }
     
+    @SuppressWarnings("unchecked")
     @Test
     void assertOnSuccessUpdateToFailure() throws ReflectiveOperationException {
         ConsistencyCheckJobItemContext jobItemContext = createJobItemContext();

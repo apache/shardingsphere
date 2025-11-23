@@ -123,6 +123,7 @@ class ZookeeperRepositoryTest {
         when(client.blockUntilConnected(anyInt(), eq(TimeUnit.MILLISECONDS))).thenReturn(true);
     }
     
+    @SuppressWarnings("unchecked")
     private void mockBuilder() {
         when(client.checkExists()).thenReturn(existsBuilder);
         when(client.create()).thenReturn(createBuilder);

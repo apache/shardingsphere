@@ -224,7 +224,7 @@ public final class CallTimeRecordDataSource implements DataSource, AutoCloseable
         
         @Override
         public int getTransactionIsolation() {
-            return Connection.TRANSACTION_NONE;
+            return TRANSACTION_NONE;
         }
         
         @Override
