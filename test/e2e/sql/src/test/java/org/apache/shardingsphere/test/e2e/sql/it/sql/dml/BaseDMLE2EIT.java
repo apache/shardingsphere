@@ -91,11 +91,10 @@ public abstract class BaseDMLE2EIT implements SQLE2EIT {
      * Init.
      *
      * @param testParam test parameter
-     * @throws SQLException SQL exception
      * @throws IOException IO exception
      * @throws JAXBException JAXB exception
      */
-    protected void init(final E2ETestParameter testParam) throws SQLException, IOException, JAXBException {
+    protected void init(final E2ETestParameter testParam) throws IOException, JAXBException {
         dataSetEnvironmentManager = new DataSetEnvironmentManager(
                 new ScenarioDataPath(testParam.getScenario(), Type.ACTUAL).getDataSetFile(), getEnvironmentEngine().getActualDataSourceMap(), testParam.getDatabaseType());
         dataSetEnvironmentManager.fillData();

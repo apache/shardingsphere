@@ -71,7 +71,7 @@ public final class SwitchingTransactionRuleTestCase extends BaseTransactionTestC
     }
     
     @Override
-    protected void executeTest(final TransactionContainerComposer containerComposer) throws SQLException {
+    protected void executeTest(final TransactionContainerComposer containerComposer) {
         innerRun(containerComposer);
     }
     

@@ -116,7 +116,7 @@ public final class InventoryDumper extends AbstractPipelineLifecycleRunnable imp
         }
     }
     
-    private void dumpByCalculator() throws SQLException {
+    private void dumpByCalculator() {
         String schemaName = dumperContext.getCommonContext().getTableAndSchemaNameMapper().getSchemaName(dumperContext.getLogicTableName());
         QualifiedTable table = new QualifiedTable(schemaName, dumperContext.getActualTableName());
         IngestPosition initialPosition = dumperContext.getCommonContext().getPosition();
