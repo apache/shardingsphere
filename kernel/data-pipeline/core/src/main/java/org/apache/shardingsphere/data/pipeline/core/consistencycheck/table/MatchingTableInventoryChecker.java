@@ -79,10 +79,7 @@ public abstract class MatchingTableInventoryChecker implements TableInventoryChe
         TableCheckRangePosition checkRangePosition = param.getProgressContext().getTableCheckRangePositions().get(param.getSplittingItem());
         sourceParam.setQueryRange(new QueryRange(null != checkRangePosition.getSourcePosition() ? checkRangePosition.getSourcePosition() : checkRangePosition.getSourceRange().getBeginValue(),
                 true, checkRangePosition.getSourceRange().getEndValue()));
-        TableInventoryCalculateParameter targetParam = new TableInventoryCalculateParameter(param.getTargetDataSource(), param.getTargetTable(),
-                param.getColumnNames(), param.getUniqueKeys(), QueryType.RANGE_QUERY, param.getQueryCondition());
-        targetParam.setQueryRange(new QueryRange(null != checkRangePosition.getTargetPosition() ? checkRangePosition.getTargetPosition() : checkRangePosition.getTargetRange().getBeginValue(),
-                true, checkRangePosition.getTargetRange().getEndValue()));
+        TableInventoryCalculateParameter targetParam = getTableInventoryCalculateParameter(param, checkRangePosition);
         TableInventoryCalculator<TableInventoryCheckCalculatedResult> sourceCalculator = buildSingleTableInventoryCalculator();
         this.sourceCalculator = sourceCalculator;
         TableInventoryCalculator<TableInventoryCheckCalculatedResult> targetCalculator = buildSingleTableInventoryCalculator();
@@ -130,6 +127,14 @@ public abstract class MatchingTableInventoryChecker implements TableInventoryChe
         }
         checkRangePosition.setMatched(checkResult.isMatched());
         return new YamlTableDataConsistencyCheckResultSwapper().swapToObject(checkResult);
+    }
+    
+    private TableInventoryCalculateParameter getTableInventoryCalculateParameter(final TableInventoryCheckParameter param, final TableCheckRangePosition checkRangePosition) {
+        TableInventoryCalculateParameter result = new TableInventoryCalculateParameter(param.getTargetDataSource(), param.getTargetTable(),
+                param.getColumnNames(), param.getUniqueKeys(), QueryType.RANGE_QUERY, param.getQueryCondition());
+        result.setQueryRange(new QueryRange(null != checkRangePosition.getTargetPosition() ? checkRangePosition.getTargetPosition() : checkRangePosition.getTargetRange().getBeginValue(),
+                true, checkRangePosition.getTargetRange().getEndValue()));
+        return result;
     }
     
     protected abstract TableInventoryCalculator<TableInventoryCheckCalculatedResult> buildSingleTableInventoryCalculator();

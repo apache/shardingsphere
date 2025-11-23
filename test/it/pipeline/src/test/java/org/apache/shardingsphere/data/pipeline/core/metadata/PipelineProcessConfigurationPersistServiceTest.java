@@ -40,20 +40,25 @@ class PipelineProcessConfigurationPersistServiceTest {
     
     @Test
     void assertLoadAndPersist() {
-        YamlPipelineProcessConfiguration yamlProcessConfig = new YamlPipelineProcessConfiguration();
-        YamlPipelineReadConfiguration yamlReadConfig = new YamlPipelineReadConfiguration();
-        yamlReadConfig.setShardingSize(10);
-        yamlProcessConfig.setRead(yamlReadConfig);
-        YamlPipelineWriteConfiguration yamlWriteConfig = new YamlPipelineWriteConfiguration();
-        yamlProcessConfig.setWrite(yamlWriteConfig);
-        YamlAlgorithmConfiguration yamlStreamChannel = new YamlAlgorithmConfiguration();
-        yamlStreamChannel.setType("MEMORY");
-        yamlProcessConfig.setStreamChannel(yamlStreamChannel);
+        YamlPipelineProcessConfiguration yamlProcessConfig = createYamlPipelineProcessConfiguration();
         String expectedYamlText = YamlEngine.marshal(yamlProcessConfig);
         PipelineProcessConfiguration processConfig = new YamlPipelineProcessConfigurationSwapper().swapToObject(yamlProcessConfig);
         PipelineProcessConfigurationPersistService persistService = new PipelineProcessConfigurationPersistService();
         persistService.persist(PipelineContextUtils.getContextKey(), "MIGRATION", processConfig);
         String actualYamlText = YamlEngine.marshal(new YamlPipelineProcessConfigurationSwapper().swapToYamlConfiguration(persistService.load(PipelineContextUtils.getContextKey(), "MIGRATION")));
         assertThat(actualYamlText, is(expectedYamlText));
+    }
+    
+    private YamlPipelineProcessConfiguration createYamlPipelineProcessConfiguration() {
+        YamlPipelineProcessConfiguration result = new YamlPipelineProcessConfiguration();
+        YamlPipelineReadConfiguration yamlReadConfig = new YamlPipelineReadConfiguration();
+        yamlReadConfig.setShardingSize(10);
+        result.setRead(yamlReadConfig);
+        YamlPipelineWriteConfiguration yamlWriteConfig = new YamlPipelineWriteConfiguration();
+        result.setWrite(yamlWriteConfig);
+        YamlAlgorithmConfiguration yamlStreamChannel = new YamlAlgorithmConfiguration();
+        yamlStreamChannel.setType("MEMORY");
+        result.setStreamChannel(yamlStreamChannel);
+        return result;
     }
 }

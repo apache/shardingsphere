@@ -117,10 +117,7 @@ class EncryptOrderByItemSupportedCheckerTest {
     private SelectStatementContext mockSelectStatementContext(final String tableName) {
         SimpleTableSegment simpleTableSegment = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue(tableName)));
         simpleTableSegment.setAlias(new AliasSegment(0, 0, new IdentifierValue("a")));
-        ColumnSegment columnSegment = new ColumnSegment(0, 0, new IdentifierValue("foo_col"));
-        columnSegment.setOwner(new OwnerSegment(0, 0, new IdentifierValue("a")));
-        TableSegmentBoundInfo tableSegmentBoundInfo = new TableSegmentBoundInfo(new IdentifierValue("foo_db"), new IdentifierValue("foo_db"));
-        columnSegment.setColumnBoundInfo(new ColumnSegmentBoundInfo(tableSegmentBoundInfo, new IdentifierValue(tableName), new IdentifierValue("foo_col"), TableSourceType.TEMPORARY_TABLE));
+        ColumnSegment columnSegment = getColumnSegment(tableName);
         SelectStatementContext result = mock(SelectStatementContext.class, RETURNS_DEEP_STUBS);
         when(result.getSqlStatement().getDatabaseType()).thenReturn(databaseType);
         ColumnOrderByItemSegment columnOrderByItemSegment = new ColumnOrderByItemSegment(columnSegment, OrderDirection.ASC, NullsOrderType.FIRST);
@@ -129,6 +126,14 @@ class EncryptOrderByItemSupportedCheckerTest {
         when(result.getGroupByContext().getItems()).thenReturn(Collections.emptyList());
         when(result.getSubqueryContexts().values()).thenReturn(Collections.emptyList());
         when(result.getTablesContext()).thenReturn(new TablesContext(Collections.singleton(simpleTableSegment)));
+        return result;
+    }
+    
+    private ColumnSegment getColumnSegment(final String tableName) {
+        ColumnSegment result = new ColumnSegment(0, 0, new IdentifierValue("foo_col"));
+        result.setOwner(new OwnerSegment(0, 0, new IdentifierValue("a")));
+        TableSegmentBoundInfo tableSegmentBoundInfo = new TableSegmentBoundInfo(new IdentifierValue("foo_db"), new IdentifierValue("foo_db"));
+        result.setColumnBoundInfo(new ColumnSegmentBoundInfo(tableSegmentBoundInfo, new IdentifierValue(tableName), new IdentifierValue("foo_col"), TableSourceType.TEMPORARY_TABLE));
         return result;
     }
 }
