@@ -32,6 +32,7 @@ import org.apache.shardingsphere.test.it.distsql.handler.engine.update.jaxb.Dist
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.ArgumentsProvider;
+import org.junit.jupiter.params.support.ParameterDeclarations;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
@@ -50,8 +51,8 @@ public final class DistSQLRuleDefinitionExecutorTestCaseArgumentsProvider implem
     
     @SneakyThrows(JAXBException.class)
     @Override
-    public Stream<? extends Arguments> provideArguments(final ExtensionContext extensionContext) {
-        DistSQLRuleDefinitionExecutorSettings settings = extensionContext.getRequiredTestClass().getAnnotation(DistSQLRuleDefinitionExecutorSettings.class);
+    public Stream<? extends Arguments> provideArguments(final ParameterDeclarations parameters, final ExtensionContext context) {
+        DistSQLRuleDefinitionExecutorSettings settings = context.getRequiredTestClass().getAnnotation(DistSQLRuleDefinitionExecutorSettings.class);
         Preconditions.checkNotNull(settings, "Annotation DistSQLRuleDefinitionExecutorSettings is required.");
         DistSQLRuleDefinitionExecutorTestCases testCases = (DistSQLRuleDefinitionExecutorTestCases) JAXBContext.newInstance(DistSQLRuleDefinitionExecutorTestCases.class)
                 .createUnmarshaller().unmarshal(Thread.currentThread().getContextClassLoader().getResource(settings.value()));
