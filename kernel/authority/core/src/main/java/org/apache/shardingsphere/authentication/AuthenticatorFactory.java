@@ -50,7 +50,7 @@ public final class AuthenticatorFactory<E extends Enum<E> & AuthenticatorType> {
     
     private E getAuthenticatorType(final String authenticationMethodName) {
         try {
-            return E.valueOf(authenticatorTypeClass, authenticationMethodName.toUpperCase());
+            return Enum.valueOf(authenticatorTypeClass, authenticationMethodName.toUpperCase());
         } catch (final IllegalArgumentException ignored) {
             return Arrays.stream(authenticatorTypeClass.getEnumConstants()).filter(AuthenticatorType::isDefault).findAny().orElseThrow(IllegalArgumentException::new);
         }

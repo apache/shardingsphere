@@ -81,8 +81,6 @@ public final class SQLValue {
             case "bigint":
             case "long":
                 return Long.parseLong(value);
-            case "bigint unsigned":
-                return new BigDecimal(value);
             case "float":
             case "real":
                 return Float.parseFloat(value);
@@ -94,6 +92,7 @@ public final class SQLValue {
             case "decimal":
             case "numeric unsigned":
             case "decimal unsigned":
+            case "bigint unsigned":
                 return new BigDecimal(value);
             case "boolean":
                 return Boolean.parseBoolean(value);
