@@ -203,6 +203,7 @@ class DDLE2EIT implements SQLE2EIT {
         assertFalse(connection.getMetaData().getTables(null, null, tableName, new String[]{"TABLE"}).next(), String.format("Table `%s` should not existed", tableName));
     }
     
+    @SuppressWarnings("CollectionWithoutInitialCapacity")
     private List<DataSetColumn> getActualColumns(final Collection<DataNode> dataNodes) throws SQLException {
         Set<DataSetColumn> result = new LinkedHashSet<>();
         for (DataNode each : dataNodes) {
@@ -228,6 +229,7 @@ class DDLE2EIT implements SQLE2EIT {
         }
     }
     
+    @SuppressWarnings("CollectionWithoutInitialCapacity")
     private List<DataSetIndex> getActualIndexes(final Collection<DataNode> dataNodes) throws SQLException {
         Set<DataSetIndex> result = new LinkedHashSet<>();
         for (DataNode each : dataNodes) {
