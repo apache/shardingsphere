@@ -50,8 +50,7 @@ class CreateBroadcastTableRuleExecutorTest {
         CreateBroadcastTableRuleStatement sqlStatement = new CreateBroadcastTableRuleStatement(false, Collections.singleton("t_address"));
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         when(database.getResourceMetaData().getStorageUnits()).thenReturn(Collections.emptyMap());
-        BroadcastRule rule = mock(BroadcastRule.class);
-        assertThrows(EmptyStorageUnitException.class, () -> new DistSQLUpdateExecuteEngine(sqlStatement, "foo_db", mockContextManager(database, rule)).executeUpdate());
+        assertThrows(EmptyStorageUnitException.class, () -> new DistSQLUpdateExecuteEngine(sqlStatement, "foo_db", mockContextManager(database, mock(BroadcastRule.class))).executeUpdate());
     }
     
     @Test
@@ -101,9 +100,10 @@ class CreateBroadcastTableRuleExecutorTest {
     }
     
     private ContextManager mockContextManager(final ShardingSphereDatabase database, final BroadcastRule rule) {
-        ContextManager result = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         when(database.getName()).thenReturn("foo_db");
         when(database.getRuleMetaData()).thenReturn(new RuleMetaData(null == rule ? Collections.emptyList() : Collections.singleton(rule)));
+        when(database.decorateRuleConfiguration(any())).thenReturn(new BroadcastRuleConfiguration(new HashSet<>(Arrays.asList("foo_tbl", "bar_tbl"))));
+        ContextManager result = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         when(result.getDatabase("foo_db")).thenReturn(database);
         return result;
     }
