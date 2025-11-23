@@ -43,5 +43,5 @@ public abstract class PipelineLazyInitializer<T> extends LazyInitializer<T> {
         return initialized.get();
     }
     
-    protected abstract T doInitialize() throws ConcurrentException;
+    protected abstract T doInitialize();
 }

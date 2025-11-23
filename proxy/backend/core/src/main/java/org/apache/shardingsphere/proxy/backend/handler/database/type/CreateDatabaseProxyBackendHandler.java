@@ -26,8 +26,6 @@ import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.database.CreateDatabaseStatement;
 
-import java.sql.SQLException;
-
 /**
  * Create database proxy backend handler.
  */
@@ -39,7 +37,7 @@ public final class CreateDatabaseProxyBackendHandler implements ProxyBackendHand
     private final ContextManager contextManager;
     
     @Override
-    public ResponseHeader execute() throws SQLException {
+    public ResponseHeader execute() {
         ShardingSpherePreconditions.checkState(sqlStatement.isIfNotExists() || !contextManager.getMetaDataContexts().getMetaData().containsDatabase(sqlStatement.getDatabaseName()),
                 () -> new DatabaseCreateExistsException(sqlStatement.getDatabaseName()));
         contextManager.getPersistServiceFacade().getModeFacade().getMetaDataManagerService().createDatabase(sqlStatement.getDatabaseName());

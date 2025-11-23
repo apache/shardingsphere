@@ -22,7 +22,6 @@ import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.statistics.collector.postgresql.PostgreSQLTableStatisticsCollector;
 
-import java.sql.SQLException;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.Map;
@@ -37,7 +36,7 @@ public final class PostgreSQLPgNamespaceTableStatisticsCollector implements Post
     private static final Long PUBLIC_SCHEMA_OID = 0L;
     
     @Override
-    public Collection<Map<String, Object>> collect(final String databaseName, final String schemaName, final String tableName, final ShardingSphereMetaData metaData) throws SQLException {
+    public Collection<Map<String, Object>> collect(final String databaseName, final String schemaName, final String tableName, final ShardingSphereMetaData metaData) {
         Collection<Map<String, Object>> result = new LinkedList<>();
         long oid = 1L;
         for (ShardingSphereSchema each : metaData.getDatabase(databaseName).getAllSchemas()) {
