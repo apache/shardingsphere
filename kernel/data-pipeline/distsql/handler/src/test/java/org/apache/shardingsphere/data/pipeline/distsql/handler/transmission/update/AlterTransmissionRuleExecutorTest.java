@@ -72,7 +72,7 @@ class AlterTransmissionRuleExecutorTest {
     
     @Test
     void assertExecuteUpdate() {
-        PipelineJobType jobType = mock(PipelineJobType.class);
+        PipelineJobType<?> jobType = mock(PipelineJobType.class);
         when(jobType.getType()).thenReturn(JOB_TYPE);
         TransmissionRuleSegment segment = new TransmissionRuleSegment();
         segment.setReadSegment(new ReadOrWriteSegment(5, 1000, 200, new AlgorithmSegment("READ_LIMITER", PropertiesBuilder.build(new Property("qps", "50")))));
@@ -102,7 +102,7 @@ class AlterTransmissionRuleExecutorTest {
     
     @Test
     void assertExecuteUpdatePersistWhenStreamChannelIsNull() {
-        PipelineJobType jobType = mock(PipelineJobType.class);
+        PipelineJobType<?> jobType = mock(PipelineJobType.class);
         when(jobType.getType()).thenReturn(JOB_TYPE);
         AlterTransmissionRuleStatement sqlStatement = new AlterTransmissionRuleStatement(JOB_TYPE, new TransmissionRuleSegment());
         try (MockedStatic<TypedSPILoader> mockedStatic = mockStatic(TypedSPILoader.class)) {

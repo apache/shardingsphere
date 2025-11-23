@@ -21,7 +21,6 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.data.pipeline.core.context.PipelineContextKey;
 import org.apache.shardingsphere.data.pipeline.core.job.id.PipelineJobId;
-import org.apache.shardingsphere.data.pipeline.core.job.type.PipelineJobType;
 
 import java.util.List;
 
@@ -32,7 +31,7 @@ import java.util.List;
 @Getter
 public final class MigrationJobId implements PipelineJobId {
     
-    private final PipelineJobType jobType = new MigrationJobType();
+    private final MigrationJobType jobType = new MigrationJobType();
     
     private final PipelineContextKey contextKey;
     

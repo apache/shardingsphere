@@ -82,9 +82,11 @@ class EtcdRepositoryTest {
     @Mock
     private Lease lease;
     
+    @SuppressWarnings("rawtypes")
     @Mock
     private CompletableFuture getFuture;
     
+    @SuppressWarnings("rawtypes")
     @Mock
     private CompletableFuture leaseFuture;
     
@@ -94,6 +96,7 @@ class EtcdRepositoryTest {
     @Mock
     private GetResponse getResponse;
     
+    @SuppressWarnings("rawtypes")
     @Mock
     private CompletableFuture putFuture;
     

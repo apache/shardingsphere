@@ -67,7 +67,6 @@ class RecordTableInventoryCheckCalculatedResultTest {
     
     @Test
     void assertFullTypeRecordsEqualsWithDifferentDecimalScale() {
-        RecordTableInventoryCheckCalculatedResult expected = new RecordTableInventoryCheckCalculatedResult(1000, Collections.singletonList(buildFixedFullTypeRecord()));
         Map<String, Object> recordMap = buildFixedFullTypeRecord();
         recordMap.forEach((key, value) -> {
             if (value instanceof BigDecimal) {
@@ -76,6 +75,7 @@ class RecordTableInventoryCheckCalculatedResultTest {
             }
         });
         RecordTableInventoryCheckCalculatedResult actual = new RecordTableInventoryCheckCalculatedResult(1000, Collections.singletonList(recordMap));
+        RecordTableInventoryCheckCalculatedResult expected = new RecordTableInventoryCheckCalculatedResult(1000, Collections.singletonList(buildFixedFullTypeRecord()));
         assertThat(actual, is(expected));
     }
     
@@ -96,18 +96,14 @@ class RecordTableInventoryCheckCalculatedResultTest {
         Map<String, Object> record = buildFixedFullTypeRecord();
         RecordTableInventoryCheckCalculatedResult result1 = new RecordTableInventoryCheckCalculatedResult(1000, Collections.singletonList(record));
         record.forEach((key, value) -> {
-            RecordTableInventoryCheckCalculatedResult result2 = new RecordTableInventoryCheckCalculatedResult(1000,
-                    Collections.singletonList(modifyColumnValueRandomly(buildFixedFullTypeRecord(), key)));
+            RecordTableInventoryCheckCalculatedResult result2 = new RecordTableInventoryCheckCalculatedResult(
+                    1000, Collections.singletonList(ConsistencyCheckDataBuilder.modifyColumnValueRandomly(buildFixedFullTypeRecord(), key)));
             assertThat(result1, not(result2));
         });
     }
     
     private Map<String, Object> buildFixedFullTypeRecord() {
         return ConsistencyCheckDataBuilder.buildFixedFullTypeRecord(1);
-    }
-    
-    private Map<String, Object> modifyColumnValueRandomly(final Map<String, Object> record, final String key) {
-        return ConsistencyCheckDataBuilder.modifyColumnValueRandomly(record, key);
     }
     
     @Test
