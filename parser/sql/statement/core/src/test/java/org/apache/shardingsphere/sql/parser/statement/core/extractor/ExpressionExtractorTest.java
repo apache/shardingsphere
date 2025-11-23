@@ -111,7 +111,7 @@ class ExpressionExtractorTest {
     }
     
     private BinaryOperationExpression createBinaryOperationExpression(final ColumnSegment statusColumn,
-                                                                             final ParameterMarkerExpressionSegment statusParameterExpression, final ColumnSegment countColumn) {
+                                                                      final ParameterMarkerExpressionSegment statusParameterExpression, final ColumnSegment countColumn) {
         ParameterMarkerExpressionSegment countParameterExpression = new ParameterMarkerExpressionSegment(0, 0, 1);
         ExpressionSegment subLeftExpression = new BinaryOperationExpression(0, 0, statusColumn, statusParameterExpression, "=", "status=?");
         ExpressionSegment subRightExpression = new BinaryOperationExpression(0, 0, countColumn, countParameterExpression, "=", "count=?");
