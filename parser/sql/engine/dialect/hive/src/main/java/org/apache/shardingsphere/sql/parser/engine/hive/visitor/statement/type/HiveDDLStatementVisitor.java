@@ -162,7 +162,6 @@ public final class HiveDDLStatementVisitor extends HiveStatementVisitor implemen
         return result;
     }
     
-    @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitDropTable(final DropTableContext ctx) {
         DropTableStatement result = new DropTableStatement(getDatabaseType());
@@ -171,7 +170,6 @@ public final class HiveDDLStatementVisitor extends HiveStatementVisitor implemen
         return result;
     }
     
-    @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitTruncateTable(final TruncateTableContext ctx) {
         return new TruncateStatement(getDatabaseType(), Collections.singleton((SimpleTableSegment) visit(ctx.tableNameWithDb())));
