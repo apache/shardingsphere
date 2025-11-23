@@ -50,8 +50,7 @@ class CreateBroadcastTableRuleExecutorTest {
         CreateBroadcastTableRuleStatement sqlStatement = new CreateBroadcastTableRuleStatement(false, Collections.singleton("t_address"));
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         when(database.getResourceMetaData().getStorageUnits()).thenReturn(Collections.emptyMap());
-        BroadcastRule rule = mock(BroadcastRule.class);
-        assertThrows(EmptyStorageUnitException.class, () -> new DistSQLUpdateExecuteEngine(sqlStatement, "foo_db", mockContextManager(database, rule)).executeUpdate());
+        assertThrows(EmptyStorageUnitException.class, () -> new DistSQLUpdateExecuteEngine(sqlStatement, "foo_db", mockContextManager(database, mock(BroadcastRule.class))).executeUpdate());
     }
     
     @Test
