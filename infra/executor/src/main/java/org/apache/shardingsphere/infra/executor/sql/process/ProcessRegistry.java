@@ -110,7 +110,7 @@ public final class ProcessRegistry {
      * @throws SQLException SQL exception
      */
     public void kill(final String processId) throws SQLException {
-        Process process = ProcessRegistry.getInstance().get(processId);
+        Process process = getInstance().get(processId);
         if (null != process) {
             process.kill();
         }

@@ -46,6 +46,7 @@ import static org.mockito.Mockito.when;
 @StaticMockSettings(ColumnSegmentBinder.class)
 class InsertColumnsSegmentBinderTest {
     
+    @SuppressWarnings("unchecked")
     @Test
     void assertBind() {
         ColumnSegment firstColumn = new ColumnSegment(0, 1, new IdentifierValue("order_id"));

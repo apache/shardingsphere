@@ -187,6 +187,7 @@ class MigrationJobAPITest {
         assertThat(jobProgressMap.size(), is(1));
     }
     
+    @SuppressWarnings("unchecked")
     @Test
     void assertDataConsistencyCheck() {
         MigrationJobConfiguration jobConfig = JobConfigurationBuilder.createJobConfiguration();

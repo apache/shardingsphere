@@ -44,6 +44,7 @@ import static org.mockito.Mockito.when;
 @StaticMockSettings(TableSegmentBinder.class)
 class DeleteMultiTableSegmentBinderTest {
     
+    @SuppressWarnings("unchecked")
     @Test
     void assertBind() {
         DeleteMultiTableSegment segment = new DeleteMultiTableSegment();

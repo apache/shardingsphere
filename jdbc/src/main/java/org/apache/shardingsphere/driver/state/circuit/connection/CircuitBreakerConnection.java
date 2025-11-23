@@ -24,7 +24,6 @@ import org.apache.shardingsphere.driver.state.circuit.statement.CircuitBreakerSt
 
 import java.sql.Array;
 import java.sql.Clob;
-import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
@@ -67,7 +66,7 @@ public final class CircuitBreakerConnection extends AbstractUnsupportedOperation
     
     @Override
     public int getTransactionIsolation() {
-        return Connection.TRANSACTION_NONE;
+        return TRANSACTION_NONE;
     }
     
     @Override
