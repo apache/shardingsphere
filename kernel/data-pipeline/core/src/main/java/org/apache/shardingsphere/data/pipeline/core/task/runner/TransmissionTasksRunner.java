@@ -54,7 +54,7 @@ public final class TransmissionTasksRunner implements PipelineTasksRunner {
     
     private final Collection<PipelineTask> incrementalTasks;
     
-    private final PipelineJobType jobType;
+    private final PipelineJobType<?> jobType;
     
     private final PipelineJobItemManager<TransmissionJobItemProgress> jobItemManager;
     

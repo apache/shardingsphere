@@ -730,7 +730,7 @@ public abstract class PostgreSQLStatementVisitor extends PostgreSQLStatementPars
         return result;
     }
     
-    @SuppressWarnings({"rawtypes", "unchecked"})
+    @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitQualifiedNameList(final QualifiedNameListContext ctx) {
         CollectionValue<SimpleTableSegment> result = new CollectionValue<>();
@@ -738,7 +738,7 @@ public abstract class PostgreSQLStatementVisitor extends PostgreSQLStatementPars
             result.getValue().add((SimpleTableSegment) visit(ctx.qualifiedName()));
         }
         if (null != ctx.qualifiedNameList()) {
-            result.combine((CollectionValue) visit(ctx.qualifiedNameList()));
+            result.combine((CollectionValue<SimpleTableSegment>) visit(ctx.qualifiedNameList()));
         }
         return result;
     }

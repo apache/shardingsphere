@@ -120,7 +120,7 @@ public final class PipelineContainerComposer implements AutoCloseable {
     
     private Thread increaseTaskThread;
     
-    public PipelineContainerComposer(final PipelineTestParameter testParam, final PipelineJobType jobType) {
+    public PipelineContainerComposer(final PipelineTestParameter testParam, final PipelineJobType<?> jobType) {
         databaseType = testParam.getDatabaseType();
         Type type = E2ETestEnvironment.getInstance().getRunEnvironment().getType();
         containerComposer = Type.DOCKER == type
@@ -142,7 +142,7 @@ public final class PipelineContainerComposer implements AutoCloseable {
     }
     
     @SneakyThrows(SQLException.class)
-    private void init(final PipelineJobType jobType) {
+    private void init(final PipelineJobType<?> jobType) {
         String jdbcUrl = containerComposer.getProxyJdbcUrl(databaseType instanceof PostgreSQLDatabaseType || databaseType instanceof OpenGaussDatabaseType ? "postgres" : "");
         try (Connection connection = DriverManager.getConnection(jdbcUrl, ProxyContainerConstants.USER, ProxyContainerConstants.PASSWORD)) {
             cleanUpPipelineJobs(connection, jobType);
@@ -154,7 +154,7 @@ public final class PipelineContainerComposer implements AutoCloseable {
         cleanUpDataSource();
     }
     
-    private void cleanUpPipelineJobs(final Connection connection, final PipelineJobType jobType) throws SQLException {
+    private void cleanUpPipelineJobs(final Connection connection, final PipelineJobType<?> jobType) throws SQLException {
         if (Type.NATIVE != E2ETestEnvironment.getInstance().getRunEnvironment().getType()) {
             return;
         }
@@ -170,18 +170,18 @@ public final class PipelineContainerComposer implements AutoCloseable {
         }
     }
     
-    private String getOperationType(final PipelineJobType jobType, final String status) {
+    private String getOperationType(final PipelineJobType<?> jobType, final String status) {
         if (JobStatus.FINISHED.name().equals(status)) {
             return isSupportCommit(jobType) ? "COMMIT" : "DROP";
         }
         return isSupportRollback(jobType) ? "ROLLBACK" : "DROP";
     }
     
-    private boolean isSupportCommit(final PipelineJobType jobType) {
+    private boolean isSupportCommit(final PipelineJobType<?> jobType) {
         return !(jobType instanceof CDCJobType);
     }
     
-    private boolean isSupportRollback(final PipelineJobType jobType) {
+    private boolean isSupportRollback(final PipelineJobType<?> jobType) {
         return !(jobType instanceof CDCJobType);
     }
     

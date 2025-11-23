@@ -55,7 +55,7 @@ import java.util.concurrent.atomic.AtomicReference;
 @Slf4j
 public final class ConsistencyCheckTasksRunner implements PipelineTasksRunner {
     
-    private final PipelineJobType jobType = new ConsistencyCheckJobType();
+    private final ConsistencyCheckJobType jobType = new ConsistencyCheckJobType();
     
     private final PipelineJobManager jobManager = new PipelineJobManager(jobType);
     

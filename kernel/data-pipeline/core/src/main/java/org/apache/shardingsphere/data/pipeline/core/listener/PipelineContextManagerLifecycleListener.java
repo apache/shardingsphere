@@ -71,7 +71,7 @@ public final class PipelineContextManagerLifecycleListener implements ContextMan
                 .stream().filter(each -> !each.getJobName().startsWith("_")).collect(Collectors.toList());
         log.info("All job names: {}", allJobsBriefInfo.stream().map(JobBriefInfo::getJobName).collect(Collectors.joining(",")));
         for (JobBriefInfo each : allJobsBriefInfo) {
-            PipelineJobType jobType;
+            PipelineJobType<?> jobType;
             try {
                 jobType = PipelineJobIdUtils.parseJobType(each.getJobName());
             } catch (final IllegalArgumentException ex) {

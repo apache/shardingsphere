@@ -137,7 +137,7 @@ class ConsistencyCheckTasksRunnerTest {
         verify(checkExecutor).stop();
     }
     
-    @SuppressWarnings({"unchecked", "rawtypes"})
+    @SuppressWarnings("unchecked")
     @Test
     void assertRunBlockingPersistResultWhenNotStopping() throws ReflectiveOperationException {
         ConsistencyCheckJobItemContext jobItemContext = createJobItemContext();
@@ -147,7 +147,7 @@ class ConsistencyCheckTasksRunnerTest {
         PipelineProcessConfigurationPersistService processConfigPersistService = mock(PipelineProcessConfigurationPersistService.class);
         Plugins.getMemberAccessor().set(ConsistencyCheckTasksRunner.class.getDeclaredField("processConfigPersistService"), runner, processConfigPersistService);
         PipelineProcessConfiguration processConfig = new PipelineProcessConfiguration(new PipelineReadConfiguration(1, 1, 1, null), new PipelineWriteConfiguration(1, 1, null), null);
-        PipelineJobType parentJobType = mock(PipelineJobType.class);
+        PipelineJobType<PipelineJobConfiguration> parentJobType = mock(PipelineJobType.class);
         when(parentJobType.getType()).thenReturn("CONSISTENCY_CHECK");
         when(PipelineJobIdUtils.parseJobType(PARENT_JOB_ID)).thenReturn(parentJobType);
         PipelineJobConfiguration parentJobConfig = mock(PipelineJobConfiguration.class);
@@ -178,7 +178,7 @@ class ConsistencyCheckTasksRunnerTest {
         }
     }
     
-    @SuppressWarnings({"unchecked", "rawtypes"})
+    @SuppressWarnings("unchecked")
     @Test
     void assertRunBlockingSkipPersistWhenStopping() throws ReflectiveOperationException {
         ConsistencyCheckJobItemContext jobItemContext = createJobItemContext();
@@ -191,7 +191,7 @@ class ConsistencyCheckTasksRunnerTest {
         PipelineProcessConfiguration processConfig = new PipelineProcessConfiguration(new PipelineReadConfiguration(1, 1, 1, null),
                 new PipelineWriteConfiguration(1, 1, null), null);
         PipelineDataConsistencyChecker checker = mock(PipelineDataConsistencyChecker.class);
-        PipelineJobType parentJobType = mock(PipelineJobType.class);
+        PipelineJobType<PipelineJobConfiguration> parentJobType = mock(PipelineJobType.class);
         when(parentJobType.getType()).thenReturn("CONSISTENCY_CHECK");
         when(PipelineJobIdUtils.parseJobType(PARENT_JOB_ID)).thenReturn(parentJobType);
         PipelineJobConfiguration parentJobConfig = mock(PipelineJobConfiguration.class);
