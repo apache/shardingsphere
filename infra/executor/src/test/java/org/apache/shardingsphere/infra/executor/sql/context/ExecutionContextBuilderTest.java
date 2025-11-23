@@ -92,23 +92,27 @@ class ExecutionContextBuilderTest {
     
     @Test
     void assertBuildRouteSQLRewriteResult() {
-        RouteUnit routeUnit1 = new RouteUnit(new RouteMapper("foo_db_1", "actual_db_1"), Collections.singletonList(new RouteMapper("foo_tbl", "actual_tbl")));
-        SQLRewriteUnit sqlRewriteUnit1 = new SQLRewriteUnit("sql1", Collections.singletonList("parameter1"));
-        RouteUnit routeUnit2 = new RouteUnit(new RouteMapper("foo_db_2", "actual_db_2"), Collections.singletonList(new RouteMapper("foo_tbl", "actual_tbl")));
-        SQLRewriteUnit sqlRewriteUnit2 = new SQLRewriteUnit("sql2", Collections.singletonList("parameter2"));
-        Map<RouteUnit, SQLRewriteUnit> sqlRewriteUnits = new HashMap<>(2, 1F);
-        sqlRewriteUnits.put(routeUnit1, sqlRewriteUnit1);
-        sqlRewriteUnits.put(routeUnit2, sqlRewriteUnit2);
         ResourceMetaData resourceMetaData = new ResourceMetaData(Collections.emptyMap());
         RuleMetaData ruleMetaData = new RuleMetaData(Collections.emptyList());
         ShardingSphereDatabase database = new ShardingSphereDatabase("foo_db", mock(DatabaseType.class), resourceMetaData, ruleMetaData, buildSchemas());
-        Collection<ExecutionUnit> actual = ExecutionContextBuilder.build(database, new RouteSQLRewriteResult(sqlRewriteUnits), mock(SQLStatementContext.class));
+        Collection<ExecutionUnit> actual = ExecutionContextBuilder.build(database, new RouteSQLRewriteResult(createRouteUnitSQLRewriteUnitMap()), mock(SQLStatementContext.class));
         ExecutionUnit expectedUnit1 = new ExecutionUnit("actual_db_1", new SQLUnit("sql1", Collections.singletonList("parameter1")));
         ExecutionUnit expectedUnit2 = new ExecutionUnit("actual_db_2", new SQLUnit("sql2", Collections.singletonList("parameter2")));
         Collection<ExecutionUnit> expected = new LinkedHashSet<>(2, 1F);
         expected.add(expectedUnit1);
         expected.add(expectedUnit2);
         assertThat(actual, is(expected));
+    }
+    
+    private Map<RouteUnit, SQLRewriteUnit> createRouteUnitSQLRewriteUnitMap() {
+        RouteUnit routeUnit1 = new RouteUnit(new RouteMapper("foo_db_1", "actual_db_1"), Collections.singletonList(new RouteMapper("foo_tbl", "actual_tbl")));
+        SQLRewriteUnit sqlRewriteUnit1 = new SQLRewriteUnit("sql1", Collections.singletonList("parameter1"));
+        RouteUnit routeUnit2 = new RouteUnit(new RouteMapper("foo_db_2", "actual_db_2"), Collections.singletonList(new RouteMapper("foo_tbl", "actual_tbl")));
+        SQLRewriteUnit sqlRewriteUnit2 = new SQLRewriteUnit("sql2", Collections.singletonList("parameter2"));
+        Map<RouteUnit, SQLRewriteUnit> result = new HashMap<>(2, 1F);
+        result.put(routeUnit1, sqlRewriteUnit1);
+        result.put(routeUnit2, sqlRewriteUnit2);
+        return result;
     }
     
     @Test

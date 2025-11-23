@@ -94,20 +94,28 @@ class ExpressionExtractorTest {
     void assertExtractAndPredicatesOrAndCondition() {
         ColumnSegment statusColumn = new ColumnSegment(0, 0, new IdentifierValue("status"));
         ParameterMarkerExpressionSegment statusParameterExpression = new ParameterMarkerExpressionSegment(0, 0, 0);
-        ExpressionSegment leftExpression = new BinaryOperationExpression(0, 0, statusColumn, statusParameterExpression, "=", "status=?");
-        ColumnSegment countColumn = new ColumnSegment(0, 0, new IdentifierValue("count"));
-        ParameterMarkerExpressionSegment countParameterExpression = new ParameterMarkerExpressionSegment(0, 0, 1);
-        ExpressionSegment subLeftExpression = new BinaryOperationExpression(0, 0, statusColumn, statusParameterExpression, "=", "status=?");
-        ExpressionSegment subRightExpression = new BinaryOperationExpression(0, 0, countColumn, countParameterExpression, "=", "count=?");
-        BinaryOperationExpression rightExpression = new BinaryOperationExpression(0, 0, subLeftExpression, subRightExpression, "AND", "status=? AND count=?");
-        BinaryOperationExpression expression = new BinaryOperationExpression(0, 0, leftExpression, rightExpression, "OR", "status=? OR status=? AND count=?");
-        Collection<AndPredicate> actual = ExpressionExtractor.extractAndPredicates(expression);
+        Collection<AndPredicate> actual = ExpressionExtractor.extractAndPredicates(createBinaryOperationExpression(statusColumn, statusParameterExpression));
         assertThat(actual.size(), is(2));
         Iterator<AndPredicate> iterator = actual.iterator();
         AndPredicate andPredicate1 = iterator.next();
         AndPredicate andPredicate2 = iterator.next();
         assertThat(andPredicate1.getPredicates().size(), is(1));
         assertThat(andPredicate2.getPredicates().size(), is(2));
+    }
+    
+    private BinaryOperationExpression createBinaryOperationExpression(final ColumnSegment statusColumn, final ParameterMarkerExpressionSegment statusParameterExpression) {
+        ExpressionSegment leftExpression = new BinaryOperationExpression(0, 0, statusColumn, statusParameterExpression, "=", "status=?");
+        ColumnSegment countColumn = new ColumnSegment(0, 0, new IdentifierValue("count"));
+        BinaryOperationExpression rightExpression = createBinaryOperationExpression(statusColumn, statusParameterExpression, countColumn);
+        return new BinaryOperationExpression(0, 0, leftExpression, rightExpression, "OR", "status=? OR status=? AND count=?");
+    }
+    
+    private BinaryOperationExpression createBinaryOperationExpression(final ColumnSegment statusColumn,
+                                                                             final ParameterMarkerExpressionSegment statusParameterExpression, final ColumnSegment countColumn) {
+        ParameterMarkerExpressionSegment countParameterExpression = new ParameterMarkerExpressionSegment(0, 0, 1);
+        ExpressionSegment subLeftExpression = new BinaryOperationExpression(0, 0, statusColumn, statusParameterExpression, "=", "status=?");
+        ExpressionSegment subRightExpression = new BinaryOperationExpression(0, 0, countColumn, countParameterExpression, "=", "count=?");
+        return new BinaryOperationExpression(0, 0, subLeftExpression, subRightExpression, "AND", "status=? AND count=?");
     }
     
     @Test
