@@ -291,8 +291,7 @@ public abstract class HiveStatementVisitor extends HiveStatementBaseVisitor<ASTN
             // TODO optimize operatorToken
             String rightText = "";
             if (null != ctx.NOT()) {
-                rightText = rightText.concat(ctx.start.getInputStream().getText(new Interval(ctx.NOT().getSymbol().getStartIndex(),
-                        ctx.NOT().getSymbol().getStopIndex()))).concat(" ");
+                rightText = rightText + ctx.start.getInputStream().getText(new Interval(ctx.NOT().getSymbol().getStartIndex(), ctx.NOT().getSymbol().getStopIndex())) + " ";
             }
             Token operatorToken = null;
             if (null != ctx.NULL()) {
@@ -305,7 +304,7 @@ public abstract class HiveStatementVisitor extends HiveStatementBaseVisitor<ASTN
                 operatorToken = ctx.FALSE().getSymbol();
             }
             int startIndex = null == operatorToken ? ctx.IS().getSymbol().getStopIndex() + 2 : operatorToken.getStartIndex();
-            rightText = rightText.concat(ctx.start.getInputStream().getText(new Interval(startIndex, ctx.stop.getStopIndex())));
+            rightText = rightText + ctx.start.getInputStream().getText(new Interval(startIndex, ctx.stop.getStopIndex()));
             ExpressionSegment right = new LiteralExpressionSegment(ctx.IS().getSymbol().getStopIndex() + 2, ctx.stop.getStopIndex(), rightText);
             String text = ctx.start.getInputStream().getText(new Interval(ctx.start.getStartIndex(), ctx.stop.getStopIndex()));
             ExpressionSegment left = (ExpressionSegment) visit(ctx.booleanPrimary());
