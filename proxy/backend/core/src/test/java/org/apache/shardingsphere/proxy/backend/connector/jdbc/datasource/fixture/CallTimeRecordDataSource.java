@@ -97,7 +97,7 @@ public final class CallTimeRecordDataSource implements DataSource, AutoCloseable
     public void close() {
     }
     
-    private final class CallTimeRecordConnection implements Connection {
+    private class CallTimeRecordConnection implements Connection {
         
         @Override
         public Statement createStatement() {
