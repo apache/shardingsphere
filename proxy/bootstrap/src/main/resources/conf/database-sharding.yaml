@@ -199,3 +199,22 @@
 #- !BROADCAST
 #  tables:
 #    - t_address
+
+databaseName: mattermost_db
+
+dataSources:
+  mattermost_db:
+    url: jdbc:postgresql://193.168.2.100:30724/mattermost
+#    url: jdbc:postgresql://127.0.0.1/mattermost
+    username: postgres
+    password: lnx@2025
+    connectionTimeoutMilliseconds: 30000
+    idleTimeoutMilliseconds: 300000
+    maxLifetimeMilliseconds: 600000
+    maxPoolSize: 300
+    minPoolSize: 1
+
+rules:
+  - !SINGLE
+    tables:
+      - "*.*"

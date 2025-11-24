@@ -17,6 +17,9 @@
 
 package org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.datatype;
 
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
@@ -65,4 +68,7 @@ public interface DialectDataTypeOption {
      * @return is binary type or not
      */
     boolean isBinaryDataType(int sqlType);
+
+    Map<String, Integer> loadUDTTypes(Connection connection) throws SQLException;
+
 }

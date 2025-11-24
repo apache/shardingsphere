@@ -23,21 +23,9 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.database.protocol.binary.BinaryColumnType;
 import org.apache.shardingsphere.database.protocol.postgresql.exception.PostgreSQLProtocolException;
 import org.apache.shardingsphere.database.protocol.postgresql.packet.command.query.extended.bind.protocol.text.PostgreSQLTextValueParser;
-import org.apache.shardingsphere.database.protocol.postgresql.packet.command.query.extended.bind.protocol.text.impl.PostgreSQLBitValueParser;
-import org.apache.shardingsphere.database.protocol.postgresql.packet.command.query.extended.bind.protocol.text.impl.PostgreSQLBoolValueParser;
-import org.apache.shardingsphere.database.protocol.postgresql.packet.command.query.extended.bind.protocol.text.impl.PostgreSQLDateValueParser;
-import org.apache.shardingsphere.database.protocol.postgresql.packet.command.query.extended.bind.protocol.text.impl.PostgreSQLDoubleValueParser;
-import org.apache.shardingsphere.database.protocol.postgresql.packet.command.query.extended.bind.protocol.text.impl.PostgreSQLFloatValueParser;
-import org.apache.shardingsphere.database.protocol.postgresql.packet.command.query.extended.bind.protocol.text.impl.PostgreSQLIntValueParser;
-import org.apache.shardingsphere.database.protocol.postgresql.packet.command.query.extended.bind.protocol.text.impl.PostgreSQLJsonValueParser;
-import org.apache.shardingsphere.database.protocol.postgresql.packet.command.query.extended.bind.protocol.text.impl.PostgreSQLLongValueParser;
-import org.apache.shardingsphere.database.protocol.postgresql.packet.command.query.extended.bind.protocol.text.impl.PostgreSQLNumericValueParser;
-import org.apache.shardingsphere.database.protocol.postgresql.packet.command.query.extended.bind.protocol.text.impl.PostgreSQLTextArrayValueParser;
-import org.apache.shardingsphere.database.protocol.postgresql.packet.command.query.extended.bind.protocol.text.impl.PostgreSQLTimeValueParser;
-import org.apache.shardingsphere.database.protocol.postgresql.packet.command.query.extended.bind.protocol.text.impl.PostgreSQLTimestampValueParser;
-import org.apache.shardingsphere.database.protocol.postgresql.packet.command.query.extended.bind.protocol.text.impl.PostgreSQLUnspecifiedValueParser;
-import org.apache.shardingsphere.database.protocol.postgresql.packet.command.query.extended.bind.protocol.text.impl.PostgreSQLVarcharArrayValueParser;
-import org.apache.shardingsphere.database.protocol.postgresql.packet.command.query.extended.bind.protocol.text.impl.PostgreSQLVarcharValueParser;
+import org.apache.shardingsphere.database.protocol.postgresql.packet.command.query.extended.bind.protocol.text.impl.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.sql.Types;
 import java.util.HashMap;
@@ -49,6 +37,8 @@ import java.util.Map;
 @RequiredArgsConstructor
 @Getter
 public enum PostgreSQLColumnType implements BinaryColumnType {
+
+
     
     UNSPECIFIED(0, new PostgreSQLUnspecifiedValueParser()),
     
@@ -143,6 +133,8 @@ public enum PostgreSQLColumnType implements BinaryColumnType {
     CHAR_ARRAY(1002, new PostgreSQLVarcharValueParser()),
     
     VARBIT(1562, new PostgreSQLVarcharValueParser()),
+
+    UDT_GENERIC(1633, new PostgreSQLVarcharValueParser()),
     
     VARBIT_ARRAY(1563, new PostgreSQLVarcharValueParser()),
     
@@ -159,6 +151,8 @@ public enum PostgreSQLColumnType implements BinaryColumnType {
     POINT_ARRAY(1017, new PostgreSQLVarcharValueParser()),
     
     BOX(603, new PostgreSQLVarcharValueParser()),
+
+    JSONB(1634,new PostgreSQLUDTValueParser()),
     
     JSONB_ARRAY(3807, new PostgreSQLVarcharValueParser()),
     
@@ -169,6 +163,14 @@ public enum PostgreSQLColumnType implements BinaryColumnType {
     REF_CURSOR(1790, new PostgreSQLVarcharValueParser()),
     
     REF_CURSOR_ARRAY(2201, new PostgreSQLVarcharValueParser());
+
+    private static final Logger log = LoggerFactory.getLogger(PostgreSQLColumnType.class);
+    private String typeName;
+
+    public PostgreSQLColumnType withTypeName(String typeName) {
+        this.typeName = typeName;
+        return this;
+    }
     
     private static final Map<Integer, PostgreSQLColumnType> JDBC_TYPE_AND_COLUMN_TYPE_MAP = new HashMap<>(values().length, 1F);
     
@@ -199,7 +201,11 @@ public enum PostgreSQLColumnType implements BinaryColumnType {
         JDBC_TYPE_AND_COLUMN_TYPE_MAP.put(Types.STRUCT, VARCHAR);
         JDBC_TYPE_AND_COLUMN_TYPE_MAP.put(Types.ARRAY, TEXT_ARRAY);
     }
-    
+
+    private static boolean isVarbit(final int jdbcType, final String columnTypeName) {
+        return Types.OTHER == jdbcType && ("varbit".equalsIgnoreCase(columnTypeName) || "bit varying".equalsIgnoreCase(columnTypeName));
+    }
+
     /**
      * Value of JDBC type.
      *
@@ -208,6 +214,10 @@ public enum PostgreSQLColumnType implements BinaryColumnType {
      */
     public static PostgreSQLColumnType valueOfJDBCType(final int jdbcType) {
         Preconditions.checkArgument(JDBC_TYPE_AND_COLUMN_TYPE_MAP.containsKey(jdbcType), "Can not find JDBC type `%s` in PostgreSQL column type", jdbcType);
+        //todo 新增
+        if (jdbcType == Types.OTHER) {
+            return UDT_GENERIC;
+        }
         return JDBC_TYPE_AND_COLUMN_TYPE_MAP.get(jdbcType);
     }
     
@@ -227,6 +237,13 @@ public enum PostgreSQLColumnType implements BinaryColumnType {
         }
         if (isUUID(jdbcType, columnTypeName)) {
             return UUID;
+        }
+        if (isVarbit(jdbcType, columnTypeName)) {
+            return VARBIT;
+        }
+        if (Types.OTHER == jdbcType && columnTypeName != null && !columnTypeName.isEmpty()) {
+            log.info("ColumnTypeName " + columnTypeName);
+            return UDT_GENERIC.withTypeName(columnTypeName);
         }
         return valueOfJDBCType(jdbcType);
     }
