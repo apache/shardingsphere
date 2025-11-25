@@ -290,7 +290,7 @@ public final class MySQLBinlogClient {
         return Optional.of(future);
     }
     
-    private final class MySQLCommandResponseHandler extends ChannelInboundHandlerAdapter {
+    private class MySQLCommandResponseHandler extends ChannelInboundHandlerAdapter {
         
         @Override
         public void channelRead(final ChannelHandlerContext ctx, final Object msg) {
@@ -308,7 +308,7 @@ public final class MySQLBinlogClient {
         }
     }
     
-    private final class MySQLBinlogEventHandler extends ChannelInboundHandlerAdapter {
+    private class MySQLBinlogEventHandler extends ChannelInboundHandlerAdapter {
         
         private final AtomicReference<MySQLBaseBinlogEvent> lastBinlogEvent;
         

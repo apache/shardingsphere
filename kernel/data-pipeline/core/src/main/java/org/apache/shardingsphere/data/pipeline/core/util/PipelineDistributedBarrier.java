@@ -158,8 +158,7 @@ public final class PipelineDistributedBarrier {
         private final CountDownLatch countDownLatch;
     }
     
-    @RequiredArgsConstructor
-    private final class PersistRepositoryLazyInitializer extends LazyInitializer<ClusterPersistRepository> {
+    private class PersistRepositoryLazyInitializer extends LazyInitializer<ClusterPersistRepository> {
         
         @Override
         protected ClusterPersistRepository initialize() {

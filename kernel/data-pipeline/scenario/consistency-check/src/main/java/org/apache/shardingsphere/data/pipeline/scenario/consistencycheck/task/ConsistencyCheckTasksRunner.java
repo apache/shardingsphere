@@ -101,7 +101,7 @@ public final class ConsistencyCheckTasksRunner implements PipelineTasksRunner {
         checkExecutor.stop();
     }
     
-    private final class CheckPipelineLifecycleRunnable extends AbstractPipelineLifecycleRunnable {
+    private class CheckPipelineLifecycleRunnable extends AbstractPipelineLifecycleRunnable {
         
         @SuppressWarnings("unchecked")
         @Override
@@ -136,7 +136,7 @@ public final class ConsistencyCheckTasksRunner implements PipelineTasksRunner {
         }
     }
     
-    private final class CheckExecuteCallback implements ExecuteCallback {
+    private class CheckExecuteCallback implements ExecuteCallback {
         
         @Override
         public void onSuccess() {

@@ -233,7 +233,7 @@ public final class CDCJob implements PipelineJob {
     }
     
     @RequiredArgsConstructor
-    private final class CDCExecuteCallback implements ExecuteCallback {
+    private class CDCExecuteCallback implements ExecuteCallback {
         
         private final String identifier;
         
