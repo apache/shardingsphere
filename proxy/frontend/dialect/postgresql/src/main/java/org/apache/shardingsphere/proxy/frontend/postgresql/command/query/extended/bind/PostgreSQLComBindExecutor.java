@@ -19,6 +19,7 @@ package org.apache.shardingsphere.proxy.frontend.postgresql.command.query.extend
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.database.protocol.packet.DatabasePacket;
+import org.apache.shardingsphere.database.protocol.postgresql.packet.command.query.extended.PostgreSQLColumnType;
 import org.apache.shardingsphere.database.protocol.postgresql.packet.command.query.extended.bind.PostgreSQLBindCompletePacket;
 import org.apache.shardingsphere.database.protocol.postgresql.packet.command.query.extended.bind.PostgreSQLComBindPacket;
 import org.apache.shardingsphere.proxy.backend.connector.ProxyDatabaseConnectionManager;
@@ -27,6 +28,7 @@ import org.apache.shardingsphere.proxy.frontend.command.executor.CommandExecutor
 import org.apache.shardingsphere.proxy.frontend.postgresql.command.PortalContext;
 import org.apache.shardingsphere.proxy.frontend.postgresql.command.query.extended.Portal;
 import org.apache.shardingsphere.proxy.frontend.postgresql.command.query.extended.PostgreSQLServerPreparedStatement;
+import org.postgresql.util.PGobject;
 
 import java.sql.SQLException;
 import java.util.Collection;
@@ -44,15 +46,57 @@ public final class PostgreSQLComBindExecutor implements CommandExecutor {
     private final PostgreSQLComBindPacket packet;
     
     private final ConnectionSession connectionSession;
-    
+
     @Override
     public Collection<DatabasePacket> execute() throws SQLException {
-        PostgreSQLServerPreparedStatement preparedStatement = connectionSession.getServerPreparedStatementRegistry().getPreparedStatement(packet.getStatementId());
-        ProxyDatabaseConnectionManager databaseConnectionManager = connectionSession.getDatabaseConnectionManager();
-        List<Object> parameters = preparedStatement.adjustParametersOrder(packet.readParameters(preparedStatement.getParameterTypes()));
-        Portal portal = new Portal(packet.getPortal(), preparedStatement, parameters, packet.readResultFormats(), databaseConnectionManager);
+        PostgreSQLServerPreparedStatement preparedStatement =
+                connectionSession.getServerPreparedStatementRegistry().getPreparedStatement(packet.getStatementId());
+
+        ProxyDatabaseConnectionManager databaseConnectionManager =
+                connectionSession.getDatabaseConnectionManager();
+
+        // 1. 原始参数（String 或 byte[]），由协议层读取
+        List<Object> rawParams = packet.readParameters(preparedStatement.getParameterTypes());
+
+        // 2. 替换 JSONB/UDT
+        List<PostgreSQLColumnType> types = preparedStatement.getParameterTypes();
+        List<String> typeNames = preparedStatement.getParameterTypeNames();
+
+        for (int i = 0; i < rawParams.size(); i++) {
+            PostgreSQLColumnType type = types.get(i);
+            Object value = rawParams.get(i);
+
+            if (value == null) {
+                continue;
+            }
+
+            // 判断 UDT 或 JSONB
+            if (type == PostgreSQLColumnType.UDT_GENERIC || type == PostgreSQLColumnType.JSONB) {
+                String typeName = typeNames.get(i);
+                String text = value.toString();
+
+                PGobject obj = new PGobject();
+                obj.setType(typeName);
+                obj.setValue(text);
+
+                rawParams.set(i, obj);
+            }
+        }
+
+        // 3. 调整占位符顺序
+        List<Object> parameters = preparedStatement.adjustParametersOrder(rawParams);
+
+        // 4. 建 Portal
+        Portal portal = new Portal(
+                packet.getPortal(),
+                preparedStatement,
+                parameters,
+                packet.readResultFormats(),
+                databaseConnectionManager);
+
         portalContext.add(portal);
         portal.bind();
+
         return Collections.singleton(PostgreSQLBindCompletePacket.getInstance());
     }
 }
