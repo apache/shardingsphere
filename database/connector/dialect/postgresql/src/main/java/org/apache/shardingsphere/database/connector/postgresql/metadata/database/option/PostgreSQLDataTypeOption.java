@@ -49,6 +49,8 @@ public final class PostgreSQLDataTypeOption implements DialectDataTypeOption {
         result.put("REAL", Types.REAL);
         result.put("BOOL", Types.BOOLEAN);
         result.put("CHARACTER VARYING", Types.VARCHAR);
+        result.put("VARBIT", Types.OTHER);  // Keep as OTHER but let column type detection handle it
+        result.put("BIT VARYING", Types.OTHER);
         return result;
     }
     

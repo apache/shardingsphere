@@ -154,7 +154,7 @@ class OpenGaussComBatchBindExecutorTest {
         when(result.getRuleMetaData()).thenReturn(new RuleMetaData(Collections.emptyList()));
         when(result.containsSchema("public")).thenReturn(true);
         when(result.getSchema("public").containsTable("bmsql")).thenReturn(true);
-        when(result.getSchema("public").getTable("bmsql").getAllColumns()).thenReturn(Collections.singleton(new ShardingSphereColumn("id", Types.VARCHAR, false, false, false, true, false, false)));
+        when(result.getSchema("public").getTable("bmsql").getAllColumns()).thenReturn(Collections.singleton(new ShardingSphereColumn("id", Types.VARCHAR, false, false,"占位", false, true, false, false)));
         return result;
     }
 }

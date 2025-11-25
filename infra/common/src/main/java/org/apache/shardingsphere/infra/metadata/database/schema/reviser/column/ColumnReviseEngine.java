@@ -56,7 +56,7 @@ public final class ColumnReviseEngine<T extends ShardingSphereRule> {
             }
             String name = nameReviser.isPresent() ? nameReviser.get().revise(each.getName()) : each.getName();
             boolean generated = generatedReviser.map(optional -> optional.revise(each)).orElseGet(each::isGenerated);
-            result.add(new ColumnMetaData(name, each.getDataType(), each.isPrimaryKey(), generated,"", each.isCaseSensitive(), each.isVisible(), each.isUnsigned(), each.isNullable()));
+            result.add(new ColumnMetaData(name, each.getDataType(), each.isPrimaryKey(), generated,each.getTypeName(), each.isCaseSensitive(), each.isVisible(), each.isUnsigned(), each.isNullable()));
         }
         return result;
     }

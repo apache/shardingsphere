@@ -132,7 +132,7 @@ public enum PostgreSQLColumnType implements BinaryColumnType {
     
     CHAR_ARRAY(1002, new PostgreSQLVarcharValueParser()),
     
-    VARBIT(1562, new PostgreSQLVarcharValueParser()),
+    VARBIT(1562, new PostgreSQLVarBitValueParser()),
 
     UDT_GENERIC(1633, new PostgreSQLVarcharValueParser()),
     

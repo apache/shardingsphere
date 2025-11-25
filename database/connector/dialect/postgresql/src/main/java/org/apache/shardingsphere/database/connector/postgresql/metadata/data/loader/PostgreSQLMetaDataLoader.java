@@ -213,12 +213,11 @@ public final class PostgreSQLMetaDataLoader implements DialectMetaDataLoader {
         String dataType = resultSet.getString("udt_name");
         boolean isPrimaryKey = primaryKeys.contains(schemaName + "," + tableName + "," + columnName);
         String columnDefault = resultSet.getString("column_default");
-        String columnTypeName = resultSet.getString("type_name");
         boolean generated = null != columnDefault && columnDefault.startsWith("nextval(");
         // TODO user defined collation which deterministic is false
         boolean caseSensitive = true;
         boolean isNullable = "YES".equals(resultSet.getString("is_nullable"));
-        return new ColumnMetaData(columnName, DataTypeRegistry.getDataType(getDatabaseType(), dataType).orElse(Types.OTHER), isPrimaryKey, generated,columnTypeName, caseSensitive, true, false, isNullable);
+        return new ColumnMetaData(columnName, DataTypeRegistry.getDataType(getDatabaseType(), dataType).orElse(Types.OTHER), isPrimaryKey, generated,dataType, caseSensitive, true, false, isNullable);
     }
     
     private Map<String, Multimap<String, ConstraintMetaData>> loadConstraintMetaDataMap(final Connection connection, final Collection<String> schemaNames) throws SQLException {

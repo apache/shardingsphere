@@ -265,7 +265,10 @@ public final class PostgreSQLComDescribeExecutor implements CommandExecutor {
         ParameterMetaData parameterMetaData = actualPreparedStatement.getParameterMetaData();
         for (int i = 0; i < logicPreparedStatement.getSqlStatementContext().getSqlStatement().getParameterCount(); i++) {
             if (PostgreSQLColumnType.UNSPECIFIED == logicPreparedStatement.getParameterTypes().get(i)) {
+                String columnTypeName = parameterMetaData.getParameterTypeName(i + 1);
                 logicPreparedStatement.getParameterTypes().set(i, PostgreSQLColumnType.valueOfJDBCType(parameterMetaData.getParameterType(i + 1), parameterMetaData.getParameterTypeName(i + 1)));
+                // 把 JDBC 的 typeName 也记录下来，给 Bind 阶段构造 PGobject 用 (非Insert)
+                logicPreparedStatement.getParameterTypeNames().set(i, columnTypeName);
             }
         }
     }
