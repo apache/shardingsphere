@@ -139,7 +139,7 @@ class JDBCBackendDataSourceTest {
     }
     
     @RequiredArgsConstructor
-    private final class CallableTask implements Callable<List<Connection>> {
+    private class CallableTask implements Callable<List<Connection>> {
         
         private final JDBCBackendDataSource jdbcBackendDataSource;
         

@@ -51,7 +51,7 @@ public abstract class AbstractStreamingTableInventoryCalculator<S> extends Abstr
      * It's not thread-safe, it should be executed in only one thread at the same time.
      */
     @RequiredArgsConstructor
-    private final class ResultIterable implements Iterable<S> {
+    private class ResultIterable implements Iterable<S> {
         
         private final TableInventoryCalculateParameter param;
         
@@ -62,7 +62,7 @@ public abstract class AbstractStreamingTableInventoryCalculator<S> extends Abstr
     }
     
     @RequiredArgsConstructor
-    private final class ResultIterator implements Iterator<S> {
+    private class ResultIterator implements Iterator<S> {
         
         private final AtomicBoolean currentChunkCalculated = new AtomicBoolean();
         

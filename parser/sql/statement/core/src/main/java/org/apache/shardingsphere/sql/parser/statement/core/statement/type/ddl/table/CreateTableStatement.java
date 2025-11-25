@@ -113,7 +113,7 @@ public final class CreateTableStatement extends DDLStatement {
         return result;
     }
     
-    private final class CreateTableConstraintSQLStatementAttribute implements ConstraintSQLStatementAttribute {
+    private class CreateTableConstraintSQLStatementAttribute implements ConstraintSQLStatementAttribute {
         
         @Override
         public Collection<ConstraintSegment> getConstraints() {
@@ -125,7 +125,7 @@ public final class CreateTableStatement extends DDLStatement {
         }
     }
     
-    private final class CreateTableIndexSQLStatementAttribute implements IndexSQLStatementAttribute {
+    private class CreateTableIndexSQLStatementAttribute implements IndexSQLStatementAttribute {
         
         @Override
         public Collection<IndexSegment> getIndexes() {
