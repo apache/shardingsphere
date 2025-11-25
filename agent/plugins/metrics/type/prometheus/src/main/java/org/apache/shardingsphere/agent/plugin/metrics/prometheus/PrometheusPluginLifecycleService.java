@@ -29,6 +29,7 @@ import org.apache.shardingsphere.agent.plugin.metrics.core.exporter.impl.jdbc.JD
 import org.apache.shardingsphere.agent.plugin.metrics.core.exporter.impl.jdbc.JDBCStateExporter;
 import org.apache.shardingsphere.agent.plugin.metrics.core.exporter.impl.proxy.ProxyMetaDataInfoExporter;
 import org.apache.shardingsphere.agent.plugin.metrics.core.exporter.impl.proxy.ProxyStateExporter;
+import org.apache.shardingsphere.agent.plugin.metrics.prometheus.datasource.HikariMonitor;
 import org.apache.shardingsphere.agent.plugin.metrics.prometheus.exoprter.PrometheusMetricsExporter;
 import org.apache.shardingsphere.agent.spi.PluginLifecycleService;
 
@@ -55,6 +56,8 @@ public final class PrometheusPluginLifecycleService implements PluginLifecycleSe
     private void startServer(final PluginConfiguration pluginConfig, final boolean isEnhancedForProxy) {
         registerCollector(Boolean.parseBoolean(pluginConfig.getProps().getProperty(KEY_JVM_INFORMATION_COLLECTOR_ENABLED)), isEnhancedForProxy);
         InetSocketAddress socketAddress = getSocketAddress(pluginConfig);
+        HikariMonitor hikaricpMonitor = new HikariMonitor();
+        hikaricpMonitor.startScheduleMonitor(pluginConfig.getProps().getProperty("hikaricp-jmx-port"));
         try {
             httpServer = new HTTPServer(socketAddress, CollectorRegistry.defaultRegistry, true);
             log.info("Prometheus metrics HTTP server `{}:{}` start success.", socketAddress.getHostString(), socketAddress.getPort());
