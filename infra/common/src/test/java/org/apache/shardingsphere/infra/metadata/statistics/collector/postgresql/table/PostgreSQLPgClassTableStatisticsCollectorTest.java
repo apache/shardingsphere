@@ -27,7 +27,6 @@ import org.mockito.Answers;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
@@ -47,7 +46,7 @@ class PostgreSQLPgClassTableStatisticsCollectorTest {
     private ShardingSphereMetaData metaData;
     
     @Test
-    void assertCollectWithPublicSchemaExists() throws SQLException {
+    void assertCollectWithPublicSchemaExists() {
         ShardingSphereTable table = mock(ShardingSphereTable.class);
         when(table.getName()).thenReturn("foo_tbl");
         when(metaData.getDatabase("foo_db").getSchema("public").getAllTables()).thenReturn(Collections.singleton(table));
@@ -61,7 +60,7 @@ class PostgreSQLPgClassTableStatisticsCollectorTest {
     }
     
     @Test
-    void assertCollectWithPublicSchemaNotExists() throws SQLException {
+    void assertCollectWithPublicSchemaNotExists() {
         when(metaData.getDatabase("foo_db").getSchema("public")).thenReturn(null);
         Collection<Map<String, Object>> actual = collector.collect("foo_db", "pg_catalog", "pg_class", metaData);
         assertTrue(actual.isEmpty());

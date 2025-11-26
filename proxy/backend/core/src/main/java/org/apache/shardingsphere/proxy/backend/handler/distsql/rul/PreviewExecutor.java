@@ -110,8 +110,7 @@ public final class PreviewExecutor implements DistSQLQueryExecutor<PreviewStatem
         return sqlStatementContext.getTablesContext().getSchemaName().orElse(defaultSchemaName);
     }
     
-    private Collection<ExecutionUnit> getExecutionUnits(final ContextManager contextManager, final String schemaName, final ShardingSphereMetaData metaData,
-                                                        final QueryContext queryContext) throws SQLException {
+    private Collection<ExecutionUnit> getExecutionUnits(final ContextManager contextManager, final String schemaName, final ShardingSphereMetaData metaData, final QueryContext queryContext) {
         JDBCExecutor jdbcExecutor = new JDBCExecutor(BackendExecutorContext.getInstance().getExecutorEngine(), connectionContext.getQueryContext().getConnectionContext());
         SQLFederationEngine federationEngine = new SQLFederationEngine(database.getName(), schemaName, metaData, contextManager.getMetaDataContexts().getStatistics(), jdbcExecutor);
         if (federationEngine.decide(queryContext, metaData.getGlobalRuleMetaData())) {

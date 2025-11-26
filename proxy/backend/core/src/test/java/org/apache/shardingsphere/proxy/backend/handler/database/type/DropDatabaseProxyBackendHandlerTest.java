@@ -38,7 +38,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 
-import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.Collections;
 
@@ -103,7 +102,7 @@ class DropDatabaseProxyBackendHandlerTest {
     }
     
     @Test
-    void assertExecuteDropWithoutCurrentDatabase() throws SQLException {
+    void assertExecuteDropWithoutCurrentDatabase() {
         when(sqlStatement.getDatabaseName()).thenReturn("foo_db");
         ResponseHeader responseHeader = handler.execute();
         assertThat(responseHeader, isA(UpdateResponseHeader.class));
@@ -111,7 +110,7 @@ class DropDatabaseProxyBackendHandlerTest {
     }
     
     @Test
-    void assertExecuteDropCurrentDatabaseWithMySQL() throws SQLException {
+    void assertExecuteDropCurrentDatabaseWithMySQL() {
         when(connectionSession.getUsedDatabaseName()).thenReturn("foo_db");
         when(connectionSession.getProtocolType()).thenReturn(TypedSPILoader.getService(DatabaseType.class, "MySQL"));
         when(sqlStatement.getDatabaseName()).thenReturn("foo_db");
@@ -129,7 +128,7 @@ class DropDatabaseProxyBackendHandlerTest {
     }
     
     @Test
-    void assertExecuteDropOtherDatabase() throws SQLException {
+    void assertExecuteDropOtherDatabase() {
         when(connectionSession.getUsedDatabaseName()).thenReturn("foo_db");
         when(sqlStatement.getDatabaseName()).thenReturn("bar_db");
         ResponseHeader responseHeader = handler.execute();
