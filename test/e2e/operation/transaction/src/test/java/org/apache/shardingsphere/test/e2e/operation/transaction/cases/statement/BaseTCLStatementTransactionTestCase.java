@@ -27,7 +27,7 @@ import java.sql.SQLException;
  */
 public abstract class BaseTCLStatementTransactionTestCase extends BaseTransactionTestCase {
     
-    public BaseTCLStatementTransactionTestCase(final TransactionTestCaseParameter testCaseParam) {
+    protected BaseTCLStatementTransactionTestCase(final TransactionTestCaseParameter testCaseParam) {
         super(testCaseParam);
     }
     

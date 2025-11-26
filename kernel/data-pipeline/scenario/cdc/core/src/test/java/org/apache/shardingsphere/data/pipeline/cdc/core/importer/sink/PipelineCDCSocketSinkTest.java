@@ -26,7 +26,6 @@ import org.apache.shardingsphere.data.pipeline.core.job.progress.listener.Pipeli
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.junit.jupiter.api.Test;
 
-import java.io.IOException;
 import java.util.Collections;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -37,7 +36,7 @@ import static org.mockito.Mockito.when;
 class PipelineCDCSocketSinkTest {
     
     @Test
-    void assertWrite() throws IOException {
+    void assertWrite() {
         Channel mockChannel = mock(Channel.class);
         when(mockChannel.isWritable()).thenReturn(false, true);
         when(mockChannel.isActive()).thenReturn(true);

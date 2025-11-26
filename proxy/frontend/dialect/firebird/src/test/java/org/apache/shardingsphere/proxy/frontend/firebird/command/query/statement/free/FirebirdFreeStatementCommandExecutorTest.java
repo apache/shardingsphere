@@ -36,7 +36,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 
-import java.sql.SQLException;
 import java.util.Collection;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -86,7 +85,7 @@ class FirebirdFreeStatementCommandExecutorTest {
     }
     
     @Test
-    void assertExecuteWithDrop() throws SQLException {
+    void assertExecuteWithDrop() {
         when(packet.getOption()).thenReturn(FirebirdFreeStatementPacket.DROP);
         FirebirdFreeStatementCommandExecutor executor = new FirebirdFreeStatementCommandExecutor(packet, connectionSession);
         Collection<DatabasePacket> actual = executor.execute();
@@ -95,7 +94,7 @@ class FirebirdFreeStatementCommandExecutorTest {
     }
     
     @Test
-    void assertExecuteWithUnprepare() throws SQLException {
+    void assertExecuteWithUnprepare() {
         when(packet.getOption()).thenReturn(FirebirdFreeStatementPacket.UNPREPARE);
         FirebirdFreeStatementCommandExecutor executor = new FirebirdFreeStatementCommandExecutor(packet, connectionSession);
         Collection<DatabasePacket> actual = executor.execute();
@@ -104,7 +103,7 @@ class FirebirdFreeStatementCommandExecutorTest {
     }
     
     @Test
-    void assertExecuteWithClose() throws SQLException {
+    void assertExecuteWithClose() {
         when(packet.getOption()).thenReturn(FirebirdFreeStatementPacket.CLOSE);
         FirebirdFreeStatementCommandExecutor executor = new FirebirdFreeStatementCommandExecutor(packet, connectionSession);
         executor.execute();

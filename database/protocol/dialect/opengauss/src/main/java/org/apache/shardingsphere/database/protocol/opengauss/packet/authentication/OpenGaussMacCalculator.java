@@ -137,7 +137,7 @@ public final class OpenGaussMacCalculator {
     }
     
     @RequiredArgsConstructor
-    enum MacType {
+    private enum MacType {
         
         SERVER("Server Key"),
         CLIENT("Client Key");

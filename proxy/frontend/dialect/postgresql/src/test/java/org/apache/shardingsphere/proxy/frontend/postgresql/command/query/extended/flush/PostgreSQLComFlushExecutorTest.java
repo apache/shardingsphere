@@ -19,7 +19,6 @@ package org.apache.shardingsphere.proxy.frontend.postgresql.command.query.extend
 
 import org.junit.jupiter.api.Test;
 
-import java.sql.SQLException;
 import java.util.Collections;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -28,7 +27,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 class PostgreSQLComFlushExecutorTest {
     
     @Test
-    void assertNewInstance() throws SQLException {
+    void assertNewInstance() {
         PostgreSQLComFlushExecutor actual = new PostgreSQLComFlushExecutor();
         assertThat(actual.execute(), is(Collections.emptyList()));
     }

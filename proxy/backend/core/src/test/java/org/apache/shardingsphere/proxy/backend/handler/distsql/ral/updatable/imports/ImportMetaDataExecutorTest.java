@@ -53,7 +53,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import javax.sql.DataSource;
-import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
@@ -98,7 +97,7 @@ class ImportMetaDataExecutorTest {
     }
     
     @Test
-    void assertImportMetaDataFromJsonValue() throws SQLException {
+    void assertImportMetaDataFromJsonValue() {
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         ImportMetaDataExecutor executor = new ImportMetaDataExecutor();
         executor.executeUpdate(new ImportMetaDataStatement(Base64.encodeBase64String(METADATA_VALUE.getBytes()), null), contextManager);

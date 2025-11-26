@@ -30,7 +30,6 @@ import org.mockito.Answers;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.sql.SQLException;
 import java.util.Collection;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -61,7 +60,7 @@ class FirebirdGetBlobSegmentCommandExecutorTest {
     }
     
     @Test
-    void assertExecute() throws SQLException {
+    void assertExecute() {
         FirebirdGetBlobSegmentCommandExecutor executor = new FirebirdGetBlobSegmentCommandExecutor(packet, connectionSession);
         Collection<DatabasePacket> actual = executor.execute();
         assertThat(actual.size(), is(1));

@@ -64,7 +64,7 @@ public abstract class AbstractRecordTableInventoryCalculator<S, C> extends Abstr
     
     private final StreamingRangeType streamingRangeType;
     
-    public AbstractRecordTableInventoryCalculator(final int chunkSize, final StreamingRangeType streamingRangeType) {
+    protected AbstractRecordTableInventoryCalculator(final int chunkSize, final StreamingRangeType streamingRangeType) {
         this(chunkSize, DEFAULT_STREAMING_CHUNK_COUNT, streamingRangeType);
     }
     

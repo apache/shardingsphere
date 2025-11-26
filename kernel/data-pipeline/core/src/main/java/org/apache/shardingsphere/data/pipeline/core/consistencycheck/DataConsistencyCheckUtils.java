@@ -151,7 +151,7 @@ public final class DataConsistencyCheckUtils {
     /**
      * Check two BigDecimal whether equals or not.
      *
-     * <p>Scale will be ignored, so <code>332.2</code> is equals to <code>332.20</code>.</p>
+     * <p>Scale will be ignored, so ${@code 332.2} is equals to {@code 332.20}.</p>
      *
      * @param one first BigDecimal
      * @param another second BigDecimal
