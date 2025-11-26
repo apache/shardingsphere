@@ -91,7 +91,9 @@ public final class ResultSetMapper {
             case Types.ARRAY:
                 return resultSet.getArray(columnIndex);
             default:
-                return resultSet.getObject(columnIndex);
+                return dialectResultSetMapper.isPresent()
+                        ? dialectResultSetMapper.get().getTimestampValue(resultSet, columnIndex, metaData.getColumnType(columnIndex))
+                        : resultSet.getObject(columnIndex);
         }
     }
 }
