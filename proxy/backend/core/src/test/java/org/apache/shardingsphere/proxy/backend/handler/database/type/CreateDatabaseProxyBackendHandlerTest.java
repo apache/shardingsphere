@@ -27,8 +27,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.sql.SQLException;
-
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.isA;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -43,7 +41,7 @@ class CreateDatabaseProxyBackendHandlerTest {
     private CreateDatabaseStatement statement;
     
     @Test
-    void assertExecuteCreateNewDatabase() throws SQLException {
+    void assertExecuteCreateNewDatabase() {
         when(statement.getDatabaseName()).thenReturn("bar_db");
         assertThat(new CreateDatabaseProxyBackendHandler(statement, mock(ContextManager.class, RETURNS_DEEP_STUBS)).execute(), isA(UpdateResponseHeader.class));
     }
@@ -59,7 +57,7 @@ class CreateDatabaseProxyBackendHandlerTest {
     }
     
     @Test
-    void assertExecuteCreateExistDatabaseWithIfNotExists() throws SQLException {
+    void assertExecuteCreateExistDatabaseWithIfNotExists() {
         when(statement.getDatabaseName()).thenReturn("foo_db");
         when(statement.isIfNotExists()).thenReturn(true);
         assertThat(new CreateDatabaseProxyBackendHandler(statement, mock(ContextManager.class, RETURNS_DEEP_STUBS)).execute(), isA(UpdateResponseHeader.class));

@@ -27,7 +27,6 @@ import org.mockito.Answers;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Map;
@@ -46,7 +45,7 @@ class PostgreSQLPgNamespaceTableStatisticsCollectorTest {
     
     @SuppressWarnings("unchecked")
     @Test
-    void assertCollectWithMultipleSchemas() throws SQLException {
+    void assertCollectWithMultipleSchemas() {
         when(metaData.getDatabase("foo_db").getAllSchemas())
                 .thenReturn(Arrays.asList(new ShardingSphereSchema("public"), new ShardingSphereSchema("foo_schema"), new ShardingSphereSchema("bar_schema")));
         Collection<Map<String, Object>> actual = collector.collect("foo_db", "pg_catalog", "pg_namespace", metaData);
