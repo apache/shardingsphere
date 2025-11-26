@@ -19,7 +19,6 @@ package org.apache.shardingsphere.infra.expr.espresso;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.Sets;
-import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.expr.core.GroovyUtils;
 import org.apache.shardingsphere.infra.expr.spi.InlineExpressionParser;
 
@@ -29,6 +28,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Properties;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -44,8 +44,7 @@ public final class EspressoInlineExpressionParser implements InlineExpressionPar
     
     static {
         URL groovyJarUrl = EspressoInlineExpressionParser.class.getClassLoader().getResource("build/libs/groovy.jar");
-        ShardingSpherePreconditions.checkNotNull(groovyJarUrl, NullPointerException::new);
-        JAVA_CLASSPATH = groovyJarUrl.getPath();
+        JAVA_CLASSPATH = Objects.requireNonNull(groovyJarUrl).getPath();
     }
     
     @Override
@@ -65,7 +64,7 @@ public final class EspressoInlineExpressionParser implements InlineExpressionPar
      * @return result inline expression with {@code $}
      */
     private String handlePlaceHolder(final String inlineExpression) {
-        return inlineExpression.contains("$->{") ? inlineExpression.replaceAll("\\$->\\{", "\\$\\{") : inlineExpression;
+        return inlineExpression.contains("$->{") ? inlineExpression.replaceAll("\\$->\\{", "\\${") : inlineExpression;
     }
     
     @Override
