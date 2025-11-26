@@ -89,7 +89,7 @@ public final class GroovyInlineExpressionParser implements InlineExpressionParse
      * @return result inline expression with {@code $}
      */
     private String handlePlaceHolder(final String inlineExpression) {
-        return inlineExpression.contains("$->{") ? inlineExpression.replaceAll("\\$->\\{", "\\$\\{") : inlineExpression;
+        return inlineExpression.contains("$->{") ? inlineExpression.replaceAll("\\$->\\{", "\\${") : inlineExpression;
     }
     
     /**
