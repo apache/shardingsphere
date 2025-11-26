@@ -19,12 +19,9 @@ package org.apache.shardingsphere.test.e2e.operation.transaction.engine.base;
 
 import lombok.Getter;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
-import org.apache.shardingsphere.test.e2e.env.runtime.E2ETestEnvironment;
 import org.apache.shardingsphere.test.e2e.env.runtime.type.ArtifactEnvironment.Adapter;
-import org.apache.shardingsphere.test.e2e.env.runtime.type.RunEnvironment.Type;
 import org.apache.shardingsphere.test.e2e.operation.transaction.framework.container.compose.TransactionBaseContainerComposer;
 import org.apache.shardingsphere.test.e2e.operation.transaction.framework.container.compose.TransactionDockerContainerComposer;
-import org.apache.shardingsphere.test.e2e.operation.transaction.framework.container.compose.TransactionNativeContainerComposer;
 import org.apache.shardingsphere.test.e2e.operation.transaction.framework.param.TransactionTestParameter;
 
 import javax.sql.DataSource;
@@ -48,9 +45,7 @@ public final class TransactionContainerComposer implements AutoCloseable {
     }
     
     private TransactionBaseContainerComposer initContainerComposer(final TransactionTestParameter testParam) {
-        TransactionBaseContainerComposer result = Type.NATIVE == E2ETestEnvironment.getInstance().getRunEnvironment().getType()
-                ? new TransactionNativeContainerComposer()
-                : new TransactionDockerContainerComposer(testParam);
+        TransactionDockerContainerComposer result = new TransactionDockerContainerComposer(testParam);
         result.start();
         return result;
     }
