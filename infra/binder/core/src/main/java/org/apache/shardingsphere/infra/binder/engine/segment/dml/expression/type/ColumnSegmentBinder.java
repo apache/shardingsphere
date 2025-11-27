@@ -306,7 +306,7 @@ public final class ColumnSegmentBinder {
     
     @RequiredArgsConstructor
     @Getter
-    static class ColumnSegmentInfo {
+    private static class ColumnSegmentInfo {
         
         private final ColumnSegment inputColumnSegment;
         

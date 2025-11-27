@@ -63,7 +63,7 @@ class RecordTableInventoryCheckCalculatorTest {
     }
     
     @AfterAll
-    static void tearDown() throws Exception {
+    static void tearDown() {
         dataSource.close();
     }
     
