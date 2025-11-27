@@ -57,7 +57,7 @@ public final class FederationMetaDataRefreshEngine {
     
     /**
      * Refresh federation meta data.
-     * 
+     *
      * @param metaDataManagerPersistService meta data manager persist service
      * @param database database
      */
