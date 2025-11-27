@@ -48,6 +48,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(AutoMockExtension.class)
@@ -70,7 +71,7 @@ class TableRefreshUtilsTest {
         DatabaseType upperCaseDatabaseType = mock(DatabaseType.class);
         DialectDatabaseMetaData dialectDatabaseMetaData = mock(DialectDatabaseMetaData.class);
         when(dialectDatabaseMetaData.getIdentifierPatternType()).thenReturn(IdentifierPatternType.UPPER_CASE);
-        try (MockedStatic<DatabaseTypedSPILoader> mockedStatic = org.mockito.Mockito.mockStatic(DatabaseTypedSPILoader.class)) {
+        try (MockedStatic<DatabaseTypedSPILoader> mockedStatic = mockStatic(DatabaseTypedSPILoader.class)) {
             mockedStatic.when(() -> DatabaseTypedSPILoader.getService(DialectDatabaseMetaData.class, upperCaseDatabaseType)).thenReturn(dialectDatabaseMetaData);
             assertThat(TableRefreshUtils.getTableName(new IdentifierValue("foo_table"), upperCaseDatabaseType), is("FOO_TABLE"));
         }
@@ -81,7 +82,7 @@ class TableRefreshUtilsTest {
         DatabaseType lowerCaseDatabaseType = mock(DatabaseType.class);
         DialectDatabaseMetaData dialectDatabaseMetaData = mock(DialectDatabaseMetaData.class);
         when(dialectDatabaseMetaData.getIdentifierPatternType()).thenReturn(IdentifierPatternType.LOWER_CASE);
-        try (MockedStatic<DatabaseTypedSPILoader> mockedStatic = org.mockito.Mockito.mockStatic(DatabaseTypedSPILoader.class)) {
+        try (MockedStatic<DatabaseTypedSPILoader> mockedStatic = mockStatic(DatabaseTypedSPILoader.class)) {
             mockedStatic.when(() -> DatabaseTypedSPILoader.getService(DialectDatabaseMetaData.class, lowerCaseDatabaseType)).thenReturn(dialectDatabaseMetaData);
             assertThat(TableRefreshUtils.getTableName(new IdentifierValue("Foo_Table"), lowerCaseDatabaseType), is("foo_table"));
         }
