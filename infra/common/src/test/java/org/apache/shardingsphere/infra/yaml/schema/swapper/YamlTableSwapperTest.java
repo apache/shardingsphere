@@ -64,7 +64,7 @@ class YamlTableSwapperTest {
     
     private ShardingSphereTable createShardingSphereTable() {
         return new ShardingSphereTable("foo_tbl",
-                Collections.singleton(new ShardingSphereColumn("foo_col", 0, true, false, false, true, false, false)),
+                Collections.singleton(new ShardingSphereColumn("foo_col", 0, true, false,"", false, true, false, false)),
                 Collections.singleton(new ShardingSphereIndex("PRIMARY", Collections.emptyList(), false)),
                 Collections.singleton(new ShardingSphereConstraint("foo_constraint", "foo_tbl")), null);
     }

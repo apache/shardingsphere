@@ -82,9 +82,9 @@ class SchemaMetaDataReviseEngineTest {
     }
     
     private TableMetaData createTableMetaData() {
-        Collection<ColumnMetaData> columns = new LinkedHashSet<>(Arrays.asList(new ColumnMetaData("id", Types.INTEGER, true, true, true, true, false, false),
-                new ColumnMetaData("pwd_cipher", Types.VARCHAR, false, false, true, true, false, false),
-                new ColumnMetaData("pwd_like", Types.VARCHAR, false, false, true, true, false, false)));
+        Collection<ColumnMetaData> columns = new LinkedHashSet<>(Arrays.asList(new ColumnMetaData("id", Types.INTEGER, true, true, "",true, true, false, false),
+                new ColumnMetaData("pwd_cipher", Types.VARCHAR, false, false,"", true, true, false, false),
+                new ColumnMetaData("pwd_like", Types.VARCHAR, false, false,"", true, true, false, false)));
         IndexMetaData indexMetaData = new IndexMetaData("index_name");
         ConstraintMetaData constraintMetaData = new ConstraintMetaData("constraint_name", "table_name_2");
         return new TableMetaData("table_name", columns, Collections.singletonList(indexMetaData), Collections.singleton(constraintMetaData));
