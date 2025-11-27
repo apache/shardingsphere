@@ -49,6 +49,7 @@ import java.util.Properties;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -81,6 +82,21 @@ class CreateTablePushDownMetaDataRefresherTest {
         when(GenericSchemaBuilder.build(eq(Collections.singletonList("foo_tbl")), eq(database.getProtocolType()), any())).thenReturn(schemas);
         refresher.refresh(metaDataManagerPersistService, database, "logic_ds", "foo_schema", databaseType, sqlStatement, new ConfigurationProperties(new Properties()));
         verify(mutableDataNodeRuleAttribute).put("logic_ds", "foo_schema", "foo_tbl");
+        verify(metaDataManagerPersistService).createTable(database, "foo_schema", loadedTable);
+    }
+
+    @Test
+    void assertRefreshCreatesTableWithoutSingleTableMapping() throws Exception {
+        ShardingSphereTable loadedTable = new ShardingSphereTable("foo_tbl", Collections.emptyList(), Collections.emptyList(), Collections.emptyList());
+        Map<String, ShardingSphereSchema> schemas = Collections.singletonMap("foo_schema", new ShardingSphereSchema("foo_schema", Collections.singleton(loadedTable), Collections.emptyList()));
+        ShardingSphereDatabase database = new ShardingSphereDatabase(
+                "foo_db", databaseType, new ResourceMetaData(Collections.emptyMap()), new RuleMetaData(Collections.emptyList()), Collections.emptyList());
+        CreateTableStatement sqlStatement = new CreateTableStatement(databaseType);
+        sqlStatement.setTable(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("foo_tbl"))));
+        when(TableRefreshUtils.getTableName(sqlStatement.getTable().getTableName().getIdentifier(), databaseType)).thenReturn("foo_tbl");
+        when(GenericSchemaBuilder.build(eq(Collections.singletonList("foo_tbl")), eq(database.getProtocolType()), any())).thenReturn(schemas);
+        refresher.refresh(metaDataManagerPersistService, database, "logic_ds", "foo_schema", databaseType, sqlStatement, new ConfigurationProperties(new Properties()));
+        verify(mutableDataNodeRuleAttribute, never()).put("logic_ds", "foo_schema", "foo_tbl");
         verify(metaDataManagerPersistService).createTable(database, "foo_schema", loadedTable);
     }
 }
