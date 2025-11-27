@@ -128,7 +128,9 @@ public final class InsertStatementContext implements SQLStatementContext, Parame
     
     @Override
     public void bindParameters(final List<Object> params) {
-        bindingContext = new InsertStatementBindingContext(baseContext, params, baseContext.getMetaData(), baseContext.getCurrentDatabaseName());
+        if (!params.isEmpty()) {
+            bindingContext = new InsertStatementBindingContext(baseContext, params, baseContext.getMetaData(), baseContext.getCurrentDatabaseName());
+        }
     }
     
     @Override
