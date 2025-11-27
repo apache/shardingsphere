@@ -36,12 +36,12 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableNameSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.table.AlterTableStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
+import org.apache.shardingsphere.test.infra.framework.extension.mock.AutoMockExtension;
+import org.apache.shardingsphere.test.infra.framework.extension.mock.StaticMockSettings;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
-import org.mockito.MockedStatic;
-import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -54,11 +54,11 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-@ExtendWith(MockitoExtension.class)
+@ExtendWith(AutoMockExtension.class)
+@StaticMockSettings({TableRefreshUtils.class, GenericSchemaBuilder.class})
 class AlterTablePushDownMetaDataRefresherTest {
     
     private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "FIXTURE");
@@ -83,21 +83,17 @@ class AlterTablePushDownMetaDataRefresherTest {
         AlterTableStatement sqlStatement = new AlterTableStatement(databaseType);
         sqlStatement.setTable(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("foo_tbl"))));
         sqlStatement.setRenameTable(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("bar_tbl"))));
-        try (
-                MockedStatic<TableRefreshUtils> tableRefreshUtils = mockStatic(TableRefreshUtils.class);
-                MockedStatic<GenericSchemaBuilder> genericSchemaBuilder = mockStatic(GenericSchemaBuilder.class)) {
-            tableRefreshUtils.when(() -> TableRefreshUtils.getTableName(sqlStatement.getTable().getTableName().getIdentifier(), databaseType)).thenReturn("foo_tbl");
-            tableRefreshUtils.when(() -> TableRefreshUtils.isSingleTable(any(), any())).thenReturn(true);
-            genericSchemaBuilder.when(() -> GenericSchemaBuilder.build(eq(Collections.singletonList("bar_tbl")), eq(database.getProtocolType()), any())).thenReturn(schemas);
-            refresher.refresh(metaDataManagerPersistService, database, "logic_ds", "foo_schema", databaseType, sqlStatement, new ConfigurationProperties(new Properties()));
-            ArgumentCaptor<Collection<ShardingSphereTable>> alteredTablesCaptor = ArgumentCaptor.forClass(Collection.class);
-            ArgumentCaptor<Collection<String>> droppedTablesCaptor = ArgumentCaptor.forClass(Collection.class);
-            verify(mutableDataNodeRuleAttribute).put("logic_ds", "foo_schema", "bar_tbl");
-            verify(metaDataManagerPersistService).alterTables(eq(database), eq("foo_schema"), alteredTablesCaptor.capture());
-            verify(metaDataManagerPersistService).dropTables(eq(database), eq("foo_schema"), droppedTablesCaptor.capture());
-            assertThat(alteredTablesCaptor.getValue().iterator().next().getName(), is("bar_tbl"));
-            assertThat(droppedTablesCaptor.getValue().iterator().next(), is("foo_tbl"));
-        }
+        when(TableRefreshUtils.getTableName(sqlStatement.getTable().getTableName().getIdentifier(), databaseType)).thenReturn("foo_tbl");
+        when(TableRefreshUtils.isSingleTable(any(), any())).thenReturn(true);
+        when(GenericSchemaBuilder.build(eq(Collections.singletonList("bar_tbl")), eq(database.getProtocolType()), any())).thenReturn(schemas);
+        refresher.refresh(metaDataManagerPersistService, database, "logic_ds", "foo_schema", databaseType, sqlStatement, new ConfigurationProperties(new Properties()));
+        ArgumentCaptor<Collection<ShardingSphereTable>> alteredTablesCaptor = ArgumentCaptor.forClass(Collection.class);
+        ArgumentCaptor<Collection<String>> droppedTablesCaptor = ArgumentCaptor.forClass(Collection.class);
+        verify(mutableDataNodeRuleAttribute).put("logic_ds", "foo_schema", "bar_tbl");
+        verify(metaDataManagerPersistService).alterTables(eq(database), eq("foo_schema"), alteredTablesCaptor.capture());
+        verify(metaDataManagerPersistService).dropTables(eq(database), eq("foo_schema"), droppedTablesCaptor.capture());
+        assertThat(alteredTablesCaptor.getValue().iterator().next().getName(), is("bar_tbl"));
+        assertThat(droppedTablesCaptor.getValue().iterator().next(), is("foo_tbl"));
     }
     
     @SuppressWarnings("unchecked")
@@ -110,19 +106,15 @@ class AlterTablePushDownMetaDataRefresherTest {
                 "foo_db", databaseType, new ResourceMetaData(Collections.emptyMap()), new RuleMetaData(Collections.singleton(rule)), Collections.emptyList());
         AlterTableStatement sqlStatement = new AlterTableStatement(databaseType);
         sqlStatement.setTable(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("foo_tbl"))));
-        try (
-                MockedStatic<TableRefreshUtils> tableRefreshUtils = mockStatic(TableRefreshUtils.class);
-                MockedStatic<GenericSchemaBuilder> genericSchemaBuilder = mockStatic(GenericSchemaBuilder.class)) {
-            tableRefreshUtils.when(() -> TableRefreshUtils.getTableName(sqlStatement.getTable().getTableName().getIdentifier(), databaseType)).thenReturn("foo_tbl");
-            tableRefreshUtils.when(() -> TableRefreshUtils.isSingleTable("foo_tbl", database)).thenReturn(false);
-            genericSchemaBuilder.when(() -> GenericSchemaBuilder.build(eq(Collections.singletonList("foo_tbl")), eq(database.getProtocolType()), any())).thenReturn(schemas);
-            refresher.refresh(metaDataManagerPersistService, database, "logic_ds", "foo_schema", databaseType, sqlStatement, new ConfigurationProperties(new Properties()));
-            ArgumentCaptor<Collection<ShardingSphereTable>> alteredTablesCaptor = ArgumentCaptor.forClass(Collection.class);
-            ArgumentCaptor<Collection<String>> droppedTablesCaptor = ArgumentCaptor.forClass(Collection.class);
-            verify(metaDataManagerPersistService).alterTables(eq(database), eq("foo_schema"), alteredTablesCaptor.capture());
-            verify(metaDataManagerPersistService).dropTables(eq(database), eq("foo_schema"), droppedTablesCaptor.capture());
-            assertThat(alteredTablesCaptor.getValue().iterator().next().getName(), is("foo_tbl"));
-            assertTrue(droppedTablesCaptor.getValue().isEmpty());
-        }
+        when(TableRefreshUtils.getTableName(sqlStatement.getTable().getTableName().getIdentifier(), databaseType)).thenReturn("foo_tbl");
+        when(TableRefreshUtils.isSingleTable("foo_tbl", database)).thenReturn(false);
+        when(GenericSchemaBuilder.build(eq(Collections.singletonList("foo_tbl")), eq(database.getProtocolType()), any())).thenReturn(schemas);
+        refresher.refresh(metaDataManagerPersistService, database, "logic_ds", "foo_schema", databaseType, sqlStatement, new ConfigurationProperties(new Properties()));
+        ArgumentCaptor<Collection<ShardingSphereTable>> alteredTablesCaptor = ArgumentCaptor.forClass(Collection.class);
+        ArgumentCaptor<Collection<String>> droppedTablesCaptor = ArgumentCaptor.forClass(Collection.class);
+        verify(metaDataManagerPersistService).alterTables(eq(database), eq("foo_schema"), alteredTablesCaptor.capture());
+        verify(metaDataManagerPersistService).dropTables(eq(database), eq("foo_schema"), droppedTablesCaptor.capture());
+        assertThat(alteredTablesCaptor.getValue().iterator().next().getName(), is("foo_tbl"));
+        assertTrue(droppedTablesCaptor.getValue().isEmpty());
     }
 }

@@ -84,7 +84,7 @@ class CreateTablePushDownMetaDataRefresherTest {
         verify(mutableDataNodeRuleAttribute).put("logic_ds", "foo_schema", "foo_tbl");
         verify(metaDataManagerPersistService).createTable(database, "foo_schema", loadedTable);
     }
-
+    
     @Test
     void assertRefreshCreatesTableWithoutSingleTableMapping() throws Exception {
         ShardingSphereTable loadedTable = new ShardingSphereTable("foo_tbl", Collections.emptyList(), Collections.emptyList(), Collections.emptyList());
