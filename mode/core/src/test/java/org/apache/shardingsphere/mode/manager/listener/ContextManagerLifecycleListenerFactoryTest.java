@@ -55,7 +55,7 @@ class ContextManagerLifecycleListenerFactoryTest {
         assertTrue(actual.contains(matchedModeListener));
         assertFalse(actual.contains(mismatchedModeListener));
     }
-
+    
     @ContextManagerLifecycleListenerModeRequired("Cluster")
     private static final class MatchedModeListener implements ContextManagerLifecycleListener {
         
