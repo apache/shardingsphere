@@ -18,6 +18,9 @@
 package org.apache.shardingsphere.mode.metadata.refresher.util;
 
 import org.apache.shardingsphere.database.connector.core.metadata.database.enums.QuoteCharacter;
+import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.DialectDatabaseMetaData;
+import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.IdentifierPatternType;
+import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.datanode.DataNode;
@@ -34,6 +37,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.Iden
 import org.apache.shardingsphere.test.infra.framework.extension.mock.AutoMockExtension;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.MockedStatic;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -49,16 +53,38 @@ import static org.mockito.Mockito.when;
 @ExtendWith(AutoMockExtension.class)
 class TableRefreshUtilsTest {
     
-    private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "FIXTURE");
+    private final DatabaseType fixtureDatabaseType = TypedSPILoader.getService(DatabaseType.class, "FIXTURE");
     
     @Test
     void assertGetTableNameFormatsWithIdentifierPattern() {
-        assertThat(TableRefreshUtils.getTableName(new IdentifierValue("Foo_Table"), databaseType), is("Foo_Table"));
+        assertThat(TableRefreshUtils.getTableName(new IdentifierValue("Foo_Table"), fixtureDatabaseType), is("Foo_Table"));
     }
     
     @Test
     void assertGetTableNameWithQuotedIdentifierReturnsOriginal() {
-        assertThat(TableRefreshUtils.getTableName(new IdentifierValue("FooTable", QuoteCharacter.QUOTE), databaseType), is("FooTable"));
+        assertThat(TableRefreshUtils.getTableName(new IdentifierValue("FooTable", QuoteCharacter.QUOTE), fixtureDatabaseType), is("FooTable"));
+    }
+    
+    @Test
+    void assertGetTableNameFormatsUpperCase() {
+        DatabaseType upperCaseDatabaseType = mock(DatabaseType.class);
+        DialectDatabaseMetaData dialectDatabaseMetaData = mock(DialectDatabaseMetaData.class);
+        when(dialectDatabaseMetaData.getIdentifierPatternType()).thenReturn(IdentifierPatternType.UPPER_CASE);
+        try (MockedStatic<DatabaseTypedSPILoader> mockedStatic = org.mockito.Mockito.mockStatic(DatabaseTypedSPILoader.class)) {
+            mockedStatic.when(() -> DatabaseTypedSPILoader.getService(DialectDatabaseMetaData.class, upperCaseDatabaseType)).thenReturn(dialectDatabaseMetaData);
+            assertThat(TableRefreshUtils.getTableName(new IdentifierValue("foo_table"), upperCaseDatabaseType), is("FOO_TABLE"));
+        }
+    }
+    
+    @Test
+    void assertGetTableNameFormatsLowerCase() {
+        DatabaseType lowerCaseDatabaseType = mock(DatabaseType.class);
+        DialectDatabaseMetaData dialectDatabaseMetaData = mock(DialectDatabaseMetaData.class);
+        when(dialectDatabaseMetaData.getIdentifierPatternType()).thenReturn(IdentifierPatternType.LOWER_CASE);
+        try (MockedStatic<DatabaseTypedSPILoader> mockedStatic = org.mockito.Mockito.mockStatic(DatabaseTypedSPILoader.class)) {
+            mockedStatic.when(() -> DatabaseTypedSPILoader.getService(DialectDatabaseMetaData.class, lowerCaseDatabaseType)).thenReturn(dialectDatabaseMetaData);
+            assertThat(TableRefreshUtils.getTableName(new IdentifierValue("Foo_Table"), lowerCaseDatabaseType), is("foo_table"));
+        }
     }
     
     @Test
@@ -102,6 +128,17 @@ class TableRefreshUtilsTest {
         MutableDataNodeRuleAttribute mutableDataNodeRuleAttribute = mock(MutableDataNodeRuleAttribute.class);
         SingleRuleConfiguration ruleConfig = new SingleRuleConfiguration();
         ruleConfig.setTables(Collections.singletonList(SingleTableConstants.ALL_TABLES));
+        ShardingSphereRule rule = mock(ShardingSphereRule.class);
+        when(rule.getConfiguration()).thenReturn(ruleConfig);
+        when(rule.getAttributes()).thenReturn(new RuleAttributes(mutableDataNodeRuleAttribute));
+        assertFalse(TableRefreshUtils.isNeedRefresh(new RuleMetaData(Collections.singleton(rule)), "foo_schema", "foo_tbl"));
+    }
+    
+    @Test
+    void assertIsNeedRefreshWhenAllSchemaTablesConfigured() {
+        MutableDataNodeRuleAttribute mutableDataNodeRuleAttribute = mock(MutableDataNodeRuleAttribute.class);
+        SingleRuleConfiguration ruleConfig = new SingleRuleConfiguration();
+        ruleConfig.setTables(Collections.singletonList(SingleTableConstants.ALL_SCHEMA_TABLES));
         ShardingSphereRule rule = mock(ShardingSphereRule.class);
         when(rule.getConfiguration()).thenReturn(ruleConfig);
         when(rule.getAttributes()).thenReturn(new RuleAttributes(mutableDataNodeRuleAttribute));
@@ -155,5 +192,38 @@ class TableRefreshUtilsTest {
         when(rule.getConfiguration()).thenReturn(ruleConfig);
         when(rule.getAttributes()).thenReturn(new RuleAttributes(mutableDataNodeRuleAttribute));
         assertTrue(TableRefreshUtils.isNeedRefresh(new RuleMetaData(Collections.singleton(rule)), "foo_schema", Arrays.asList("bar_tbl", "foo_tbl")));
+    }
+    
+    @Test
+    void assertIsNeedRefreshBlockedByDataSourceSchemaWildcard() {
+        MutableDataNodeRuleAttribute mutableDataNodeRuleAttribute = mock(MutableDataNodeRuleAttribute.class);
+        DataNode dataNode = new DataNode("foo_ds", "foo_schema", "foo_tbl");
+        when(mutableDataNodeRuleAttribute.findTableDataNode("foo_schema", "foo_tbl")).thenReturn(Optional.of(dataNode));
+        SingleRuleConfiguration ruleConfig = new SingleRuleConfiguration();
+        ruleConfig.setTables(Collections.singletonList("foo_ds.*.*"));
+        ShardingSphereRule rule = mock(ShardingSphereRule.class);
+        when(rule.getConfiguration()).thenReturn(ruleConfig);
+        when(rule.getAttributes()).thenReturn(new RuleAttributes(mutableDataNodeRuleAttribute));
+        assertFalse(TableRefreshUtils.isNeedRefresh(new RuleMetaData(Collections.singleton(rule)), "foo_schema", "foo_tbl"));
+    }
+    
+    @Test
+    void assertIsNeedRefreshBlockedBySchemaSpecificWildcard() {
+        MutableDataNodeRuleAttribute mutableDataNodeRuleAttribute = mock(MutableDataNodeRuleAttribute.class);
+        DataNode dataNode = new DataNode("foo_ds", "foo_schema", "foo_tbl");
+        when(mutableDataNodeRuleAttribute.findTableDataNode("foo_schema", "foo_tbl")).thenReturn(Optional.of(dataNode));
+        SingleRuleConfiguration ruleConfig = new SingleRuleConfiguration();
+        ruleConfig.setTables(Collections.singletonList("foo_ds.foo_schema.*"));
+        ShardingSphereRule rule = mock(ShardingSphereRule.class);
+        when(rule.getConfiguration()).thenReturn(ruleConfig);
+        when(rule.getAttributes()).thenReturn(new RuleAttributes(mutableDataNodeRuleAttribute));
+        assertFalse(TableRefreshUtils.isNeedRefresh(new RuleMetaData(Collections.singleton(rule)), "foo_schema", "foo_tbl"));
+    }
+    
+    @Test
+    void assertIsNeedRefreshWithTableCollectionWhenNoTableNeedsRefresh() {
+        ShardingSphereRule rule = mock(ShardingSphereRule.class);
+        when(rule.getAttributes()).thenReturn(new RuleAttributes());
+        assertFalse(TableRefreshUtils.isNeedRefresh(new RuleMetaData(Collections.singleton(rule)), "foo_schema", Arrays.asList("bar_tbl", "foo_tbl")));
     }
 }
