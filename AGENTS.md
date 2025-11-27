@@ -242,10 +242,8 @@ Always state which topology, registry, and engine versions (e.g., MySQL 5.7 vs 8
 - When constructors hide collaborators, use `Plugins.getMemberAccessor()` to inject mocks and document why SPI creation is bypassed.
 - Cache SPI loader results (`OrderedSPILoader`, `TypedSPILoader`, `DatabaseTypedSPILoader`, etc.) per key at the test-class level to avoid redundant lookups.
 - If a test already uses `@ExtendWith(AutoMockExtension.class)`, always declare the needed static collaborators via `@StaticMockSettings` instead of hand-written `mockStatic` blocks; justify any exception explicitly in the plan before coding.
-- When a binder under test instantiates another binder (e.g., `SelectStatementBinder`, `TableSegmentBinder`), prefer `mockConstruction` and capture the injected context rather than reimplementing the constructor logic; only skip this approach if the plan explains why it cannot work.
-- Manage every static binder (`ColumnSegmentBinder`, `ExpressionSegmentBinder`, etc.) via `@StaticMockSettings` to avoid ad-hoc try-with-resources `mockStatic` blocks; if multiple static dependencies are needed, list each one in the plan.
-- For identifier formatting or dialect-dependent logic, default to mocking `DatabaseTypedSPILoader`/`TypedSPILoader` with scoped `MockedStatic` instead of loading real database types, to avoid ClassCast issues and environment-dependent casing.
 - Before adding coverage to a utility with multiple return paths, list every branch (no rule, non-Single config, wildcard blocks, missing data node, positive path, collection overload) and map each to a test; update the plan whenever this checklist changes.
+- Prefer imports over fully-qualified class names inside code and tests; if a class is used, add an import rather than using the full package path inline.
 
 ## Brevity & Signal
 - Prefer tables/bullets over prose walls; cite file paths (`kernel/src/...`) directly.
