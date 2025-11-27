@@ -248,6 +248,7 @@ Always state which topology, registry, and engine versions (e.g., MySQL 5.7 vs 8
 - Do not mix Mockito matchers with raw arguments; choose a single style per invocation, and ensure the Mockito extension aligns with the mocking approach.
 - Never leave fully-qualified class names in production or test code; if a class is referenced, add an import and verify via a quick scan (`rg "\\." <path>`) before finishing.
 - When the user requires full branch/line coverage, treat 100% coverage as a blocking condition: enumerate branches, map tests, and keep adding cases until all branches are covered or explicitly waived; record the coverage requirement in the plan and self-check before concluding.
+- Compliance is mandatory: before any coding, re-read AGENTS.md and convert all hard requirements (SPI usage, no FQCN, mocking rules, coverage targets, planning steps) into a checklist in the plan; do not proceed or report completion until every item is satisfied or explicitly waived by the user.
 
 ## Brevity & Signal
 - Prefer tables/bullets over prose walls; cite file paths (`kernel/src/...`) directly.
