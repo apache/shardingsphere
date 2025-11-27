@@ -17,6 +17,16 @@
 
 <profile version="1.0">
   <option name="myName" value="ShardingSphere" />
+  <option name="scopesOrder">
+    <list>
+      <option value="All Changed Files" />
+      <option value="Open Files" />
+      <option value="Production" />
+      <option value="Project Files" />
+      <option value="Scratches and Consoles" />
+      <option value="Tests" />
+    </list>
+  </option>
   <inspection_tool class="AbstractBeanReferencesInspection" enabled="false" level="ERROR" enabled_by_default="false" />
   <inspection_tool class="AbstractClassExtendsConcreteClass" enabled="true" level="WARNING" enabled_by_default="true" />
   <inspection_tool class="AbstractClassNeverImplemented" enabled="true" level="WARNING" enabled_by_default="true" />
@@ -35,7 +45,6 @@
   <inspection_tool class="AmbiguousFieldAccess" enabled="true" level="WARNING" enabled_by_default="true" />
   <inspection_tool class="AmbiguousMethodCall" enabled="true" level="WARNING" enabled_by_default="true" />
   <inspection_tool class="AmbiguousNonLocalJump" enabled="false" level="WEAK WARNING" enabled_by_default="false" />
-  <inspection_tool class="AnonymousClassVariableHidesContainingMethodVariable" enabled="true" level="WARNING" enabled_by_default="true" />
   <inspection_tool class="ArrayEquality" enabled="true" level="WARNING" enabled_by_default="true" />
   <inspection_tool class="ArrayInDataClass" enabled="false" level="WEAK WARNING" enabled_by_default="false" />
   <inspection_tool class="AssertStatement" enabled="true" level="WARNING" enabled_by_default="true" />
@@ -200,6 +209,7 @@
   <inspection_tool class="DifferentMavenStdlibVersion" enabled="false" level="WARNING" enabled_by_default="false" />
   <inspection_tool class="DollarSignInName" enabled="true" level="WARNING" enabled_by_default="true" />
   <inspection_tool class="DoubleLiteralMayBeFloatLiteral" enabled="true" level="WARNING" enabled_by_default="true" />
+  <inspection_tool class="DuplicateExpressions" enabled="false" level="WEAK WARNING" enabled_by_default="false" />
   <inspection_tool class="DuplicatedBeanNamesInspection" enabled="false" level="WARNING" enabled_by_default="false" />
   <inspection_tool class="DynamicRegexReplaceableByCompiledPattern" enabled="true" level="WARNING" enabled_by_default="true" />
   <inspection_tool class="EmptyClass" enabled="true" level="WARNING" enabled_by_default="true">
@@ -448,7 +458,6 @@
   <inspection_tool class="MemberVisibilityCanBePrivate" enabled="false" level="WEAK WARNING" enabled_by_default="false" />
   <inspection_tool class="MethodMayBeSynchronized" enabled="true" level="WARNING" enabled_by_default="true" />
   <inspection_tool class="MethodNameSameAsParentName" enabled="true" level="WARNING" enabled_by_default="true" />
-  <inspection_tool class="MethodOverloadsParentMethod" enabled="true" level="WARNING" enabled_by_default="true" />
   <inspection_tool class="MethodOverridesInaccessibleMethodOfSuper" enabled="true" level="WARNING" enabled_by_default="true" />
   <inspection_tool class="MethodOverridesStaticMethod" enabled="true" level="WARNING" enabled_by_default="true" />
   <inspection_tool class="MigrateAssertToMatcherAssert" enabled="true" level="WARNING" enabled_by_default="true" />
@@ -482,11 +491,6 @@
   <inspection_tool class="NewExceptionWithoutArguments" enabled="true" level="WARNING" enabled_by_default="true" />
   <inspection_tool class="NewInstanceOfSingleton" enabled="false" level="WARNING" enabled_by_default="false" />
   <inspection_tool class="NewMethodNamingConvention" enabled="true" level="WARNING" enabled_by_default="true" />
-  <inspection_tool class="NonBooleanMethodNameMayNotStartWithQuestion" enabled="true" level="WARNING" enabled_by_default="true">
-    <option name="questionString" value="are,can,check,contains,could,endsWith,equals,has,is,matches,must,shall,should,startsWith,was,were,will,would" />
-    <option name="ignoreBooleanMethods" value="false" />
-    <option name="onlyWarnOnBaseMethods" value="true" />
-  </inspection_tool>
   <inspection_tool class="NonExceptionNameEndsWithException" enabled="true" level="WARNING" enabled_by_default="true" />
   <inspection_tool class="NonExternalClassifierExtendingStateOrProps" enabled="false" level="WARNING" enabled_by_default="false" />
   <inspection_tool class="NonFinalClone" enabled="true" level="WARNING" enabled_by_default="true" />
@@ -532,10 +536,6 @@
   <inspection_tool class="OpenRewriteYamlRecipe" enabled="false" level="ERROR" enabled_by_default="false" />
   <inspection_tool class="OptionalContainsCollection" enabled="true" level="WARNING" enabled_by_default="true" />
   <inspection_tool class="OptionalExpectation" enabled="false" level="INFORMATION" enabled_by_default="false" />
-  <inspection_tool class="OverloadedMethodsWithSameNumberOfParameters" enabled="true" level="WARNING" enabled_by_default="true">
-    <option name="ignoreInconvertibleTypes" value="true" />
-  </inspection_tool>
-  <inspection_tool class="OverloadedVarargsMethod" enabled="true" level="WARNING" enabled_by_default="true" />
   <inspection_tool class="OverlyComplexArithmeticExpression" enabled="true" level="WARNING" enabled_by_default="true">
     <option name="m_limit" value="6" />
   </inspection_tool>
@@ -550,10 +550,6 @@
   <inspection_tool class="PackageVisibleInnerClass" enabled="true" level="WARNING" enabled_by_default="true">
     <option name="ignoreEnums" value="false" />
     <option name="ignoreInterfaces" value="false" />
-  </inspection_tool>
-  <inspection_tool class="ParameterNameDiffersFromOverriddenParameter" enabled="true" level="WARNING" enabled_by_default="true">
-    <option name="m_ignoreSingleCharacterNames" value="false" />
-    <option name="m_ignoreOverridesOfLibraryMethods" value="false" />
   </inspection_tool>
   <inspection_tool class="ParameterTypePreventsOverriding" enabled="true" level="WARNING" enabled_by_default="true" />
   <inspection_tool class="PatternVariableCanBeUsed" enabled="false" level="WARNING" enabled_by_default="false" />
@@ -570,10 +566,6 @@
   </inspection_tool>
   <inspection_tool class="PublicConstructorInNonPublicClass" enabled="true" level="WARNING" enabled_by_default="true" />
   <inspection_tool class="PublicFieldAccessedInSynchronizedContext" enabled="true" level="WARNING" enabled_by_default="true" />
-  <inspection_tool class="PublicInnerClass" enabled="true" level="WARNING" enabled_by_default="true">
-    <option name="ignoreEnums" value="false" />
-    <option name="ignoreInterfaces" value="false" />
-  </inspection_tool>
   <inspection_tool class="PublicStaticArrayField" enabled="true" level="WARNING" enabled_by_default="true" />
   <inspection_tool class="PublicStaticCollectionField" enabled="true" level="WARNING" enabled_by_default="true" />
   <inspection_tool class="QuestionableName" enabled="true" level="WARNING" enabled_by_default="true">

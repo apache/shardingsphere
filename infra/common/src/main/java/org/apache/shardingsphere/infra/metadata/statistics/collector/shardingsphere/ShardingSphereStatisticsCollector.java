@@ -46,9 +46,8 @@ public final class ShardingSphereStatisticsCollector implements DialectDatabaseS
     
     @Override
     public Optional<Collection<Map<String, Object>>> collectRowColumnValues(final String databaseName, final String schemaName, final String tableName, final ShardingSphereMetaData metaData) {
-        Optional<ShardingSphereTableStatisticsCollector> tableStatisticsCollector = TypedSPILoader.findService(
-                ShardingSphereTableStatisticsCollector.class, String.format("%s.%s", schemaName, tableName));
-        return tableStatisticsCollector.map(optional -> optional.collect(databaseName, schemaName, tableName, metaData));
+        return TypedSPILoader.findService(ShardingSphereTableStatisticsCollector.class, String.format("%s.%s", schemaName, tableName))
+                .map(optional -> optional.collect(databaseName, schemaName, tableName, metaData));
     }
     
     @Override

@@ -46,8 +46,8 @@ public final class PostgreSQLStatisticsCollector implements DialectDatabaseStati
     
     @Override
     public Optional<Collection<Map<String, Object>>> collectRowColumnValues(final String databaseName, final String schemaName, final String tableName, final ShardingSphereMetaData metaData) {
-        Optional<PostgreSQLTableStatisticsCollector> tableStatisticsCollector = TypedSPILoader.findService(PostgreSQLTableStatisticsCollector.class, String.format("%s.%s", schemaName, tableName));
-        return tableStatisticsCollector.map(postgreSQLTableStatisticsCollector -> postgreSQLTableStatisticsCollector.collect(databaseName, schemaName, tableName, metaData));
+        return TypedSPILoader.findService(PostgreSQLTableStatisticsCollector.class, String.format("%s.%s", schemaName, tableName))
+                .map(optional -> optional.collect(databaseName, schemaName, tableName, metaData));
     }
     
     @Override

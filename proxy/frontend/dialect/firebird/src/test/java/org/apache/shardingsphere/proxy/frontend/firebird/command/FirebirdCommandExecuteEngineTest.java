@@ -141,7 +141,7 @@ class FirebirdCommandExecuteEngineTest {
     }
     
     @Test
-    void assertGetCommandExecutor() throws SQLException {
+    void assertGetCommandExecutor() {
         when(FirebirdCommandExecutorFactory.newInstance(FirebirdCommandPacketType.EXECUTE, packet, connectionSession)).thenReturn(executor);
         assertThat(engine.getCommandExecutor(FirebirdCommandPacketType.EXECUTE, packet, connectionSession), is(executor));
     }

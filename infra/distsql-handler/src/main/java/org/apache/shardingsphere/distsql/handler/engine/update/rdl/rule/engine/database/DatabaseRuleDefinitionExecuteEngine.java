@@ -27,7 +27,6 @@ import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 
-import java.sql.SQLException;
 import java.util.Optional;
 
 /**
@@ -47,11 +46,9 @@ public final class DatabaseRuleDefinitionExecuteEngine {
     
     /**
      * Execute update.
-     *
-     * @throws SQLException SQL Exception
      */
     @SuppressWarnings("unchecked")
-    public void executeUpdate() throws SQLException {
+    public void executeUpdate() {
         checkBeforeUpdate();
         Optional<ShardingSphereRule> rule = database.getRuleMetaData().findSingleRule(executor.getRuleClass());
         if (getRefreshStatus(rule.isPresent())) {
