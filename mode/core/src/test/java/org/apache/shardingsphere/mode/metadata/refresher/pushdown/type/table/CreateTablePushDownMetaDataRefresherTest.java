@@ -78,8 +78,9 @@ class CreateTablePushDownMetaDataRefresherTest {
                 "foo_db", databaseType, new ResourceMetaData(Collections.emptyMap()), new RuleMetaData(Collections.singleton(rule)), Collections.emptyList());
         CreateTableStatement sqlStatement = new CreateTableStatement(databaseType);
         sqlStatement.setTable(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("foo_tbl"))));
-        try (MockedStatic<TableRefreshUtils> tableRefreshUtils = mockStatic(TableRefreshUtils.class);
-             MockedStatic<GenericSchemaBuilder> genericSchemaBuilder = mockStatic(GenericSchemaBuilder.class)) {
+        try (
+                MockedStatic<TableRefreshUtils> tableRefreshUtils = mockStatic(TableRefreshUtils.class);
+                MockedStatic<GenericSchemaBuilder> genericSchemaBuilder = mockStatic(GenericSchemaBuilder.class)) {
             tableRefreshUtils.when(() -> TableRefreshUtils.getTableName(sqlStatement.getTable().getTableName().getIdentifier(), databaseType)).thenReturn("foo_tbl");
             tableRefreshUtils.when(() -> TableRefreshUtils.isSingleTable("foo_tbl", database)).thenReturn(true);
             genericSchemaBuilder.when(() -> GenericSchemaBuilder.build(eq(Collections.singletonList("foo_tbl")), eq(database.getProtocolType()), any())).thenReturn(schemas);
