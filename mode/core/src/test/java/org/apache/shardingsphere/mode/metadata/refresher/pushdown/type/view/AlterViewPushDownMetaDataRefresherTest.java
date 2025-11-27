@@ -79,15 +79,15 @@ class AlterViewPushDownMetaDataRefresherTest {
     @SuppressWarnings("unchecked")
     @Test
     void assertRefreshRenameView() throws Exception {
-        ShardingSphereView existingView = new ShardingSphereView("foo_view", "SELECT 1");
         ShardingSphereRule rule = mock(ShardingSphereRule.class);
         when(rule.getAttributes()).thenReturn(new RuleAttributes(mutableDataNodeRuleAttribute));
-        ShardingSphereDatabase database = new ShardingSphereDatabase("foo_db", databaseType, new ResourceMetaData(Collections.emptyMap()), new RuleMetaData(Collections.singleton(rule)),
-                Collections.singleton(new ShardingSphereSchema("foo_schema", Collections.emptyList(), Collections.singleton(existingView))));
         AlterViewStatement sqlStatement = new AlterViewStatement(databaseType);
         sqlStatement.setView(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("foo_view"))));
         sqlStatement.setRenameView(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("bar_view"))));
         when(TableRefreshUtils.getTableName(sqlStatement.getView().getTableName().getIdentifier(), databaseType)).thenReturn("foo_view");
+        ShardingSphereView existingView = new ShardingSphereView("foo_view", "SELECT 1");
+        ShardingSphereDatabase database = new ShardingSphereDatabase("foo_db", databaseType, new ResourceMetaData(Collections.emptyMap()), new RuleMetaData(Collections.singleton(rule)),
+                Collections.singleton(new ShardingSphereSchema("foo_schema", Collections.emptyList(), Collections.singleton(existingView))));
         when(TableRefreshUtils.isSingleTable(eq("bar_view"), eq(database))).thenReturn(true);
         ShardingSphereTable renamedTable = new ShardingSphereTable("bar_view", Collections.emptyList(), Collections.emptyList(), Collections.emptyList());
         Map<String, ShardingSphereSchema> schemas = Collections.singletonMap("foo_schema", new ShardingSphereSchema("foo_schema", Collections.singleton(renamedTable), Collections.emptyList()));
@@ -107,12 +107,12 @@ class AlterViewPushDownMetaDataRefresherTest {
     void assertRefreshUpdatesViewDefinitionWithoutRename() throws Exception {
         ShardingSphereRule rule = mock(ShardingSphereRule.class);
         when(rule.getAttributes()).thenReturn(new RuleAttributes(mutableDataNodeRuleAttribute));
-        ShardingSphereDatabase database = new ShardingSphereDatabase("foo_db", databaseType, new ResourceMetaData(Collections.emptyMap()), new RuleMetaData(Collections.singleton(rule)),
-                Collections.singleton(new ShardingSphereSchema("foo_schema", Collections.emptyList(), Collections.emptyList())));
         AlterViewStatement sqlStatement = new AlterViewStatement(databaseType);
         sqlStatement.setView(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("foo_view"))));
         sqlStatement.setViewDefinition("SELECT * FROM t_order");
         when(TableRefreshUtils.getTableName(sqlStatement.getView().getTableName().getIdentifier(), databaseType)).thenReturn("foo_view");
+        ShardingSphereDatabase database = new ShardingSphereDatabase("foo_db", databaseType, new ResourceMetaData(Collections.emptyMap()), new RuleMetaData(Collections.singleton(rule)),
+                Collections.singleton(new ShardingSphereSchema("foo_schema", Collections.emptyList(), Collections.emptyList())));
         ShardingSphereTable table = new ShardingSphereTable("foo_view", Collections.emptyList(), Collections.emptyList(), Collections.emptyList());
         Map<String, ShardingSphereSchema> schemas = Collections.singletonMap("foo_schema", new ShardingSphereSchema("foo_schema", Collections.singleton(table), Collections.emptyList()));
         when(GenericSchemaBuilder.build(eq(Collections.singletonList("foo_view")), eq(database.getProtocolType()), any())).thenReturn(schemas);
