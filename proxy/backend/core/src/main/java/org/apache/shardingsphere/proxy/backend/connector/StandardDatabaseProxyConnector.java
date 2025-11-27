@@ -118,8 +118,6 @@ public final class StandardDatabaseProxyConnector implements DatabaseProxyConnec
     
     private final PushDownMetaDataRefreshEngine pushDownMetaDataRefreshEngine;
     
-    private final FederationMetaDataRefreshEngine federationMetaDataRefreshEngine;
-    
     private final Collection<Statement> cachedStatements = Collections.newSetFromMap(new ConcurrentHashMap<>());
     
     private final Collection<ResultSet> cachedResultSets = Collections.newSetFromMap(new ConcurrentHashMap<>());
@@ -143,7 +141,6 @@ public final class StandardDatabaseProxyConnector implements DatabaseProxyConnec
         proxySQLExecutor = new ProxySQLExecutor(driverType, databaseConnectionManager, this, sqlStatementContext);
         pushDownMetaDataRefreshEngine = new PushDownMetaDataRefreshEngine(
                 contextManager.getPersistServiceFacade().getModeFacade().getMetaDataManagerService(), database, contextManager.getMetaDataContexts().getMetaData().getProps());
-        federationMetaDataRefreshEngine = new FederationMetaDataRefreshEngine(contextManager.getPersistServiceFacade().getModeFacade().getMetaDataManagerService(), database);
     }
     
     private void checkBackendReady(final SQLStatementContext sqlStatementContext) {
@@ -190,8 +187,9 @@ public final class StandardDatabaseProxyConnector implements DatabaseProxyConnec
         if (proxySQLExecutor.getSqlFederationEngine().decide(queryContext, contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData())) {
             return doExecuteFederation();
         }
-        if (proxySQLExecutor.getSqlFederationEngine().isSqlFederationEnabled() && federationMetaDataRefreshEngine.isNeedRefresh(queryContext.getSqlStatementContext())) {
-            federationMetaDataRefreshEngine.refresh(queryContext.getSqlStatementContext());
+        FederationMetaDataRefreshEngine federationMetaDataRefreshEngine = new FederationMetaDataRefreshEngine(queryContext.getSqlStatementContext());
+        if (proxySQLExecutor.getSqlFederationEngine().isSqlFederationEnabled() && federationMetaDataRefreshEngine.isNeedRefresh()) {
+            federationMetaDataRefreshEngine.refresh(contextManager.getPersistServiceFacade().getModeFacade().getMetaDataManagerService(), database);
             return new UpdateResponseHeader(queryContext.getSqlStatementContext().getSqlStatement());
         }
         ExecutionContext executionContext = generateExecutionContext();
