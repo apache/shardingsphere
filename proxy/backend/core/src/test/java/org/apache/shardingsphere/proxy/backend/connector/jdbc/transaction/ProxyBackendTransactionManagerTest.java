@@ -111,9 +111,9 @@ class ProxyBackendTransactionManagerTest {
     void assertBeginForDistributedTransaction() {
         ContextManager contextManager = mockContextManager(TransactionType.XA);
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
-        newTransactionManager(TransactionType.XA, true);
+        newTransactionManager(TransactionType.XA, false);
         transactionManager.begin();
-        verify(transactionStatus, never()).setInTransaction(true);
+        verify(transactionStatus, times(1)).setInTransaction(true);
         verify(databaseConnectionManager, times(1)).closeConnections(false);
         verify(distributedTransactionManager).begin();
     }
