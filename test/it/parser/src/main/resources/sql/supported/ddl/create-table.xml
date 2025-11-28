@@ -509,6 +509,9 @@
           JOIN dim_dates ds ON u.date_id = ds.date_id
           WHERE u.status = 'active';" db-types="Hive" />
     <sql-case id="create_table_like_all_options" value="CREATE TEMPORARY EXTERNAL TABLE IF NOT EXISTS test_db.target_table LIKE source_db.source_table LOCATION '/user/hive/warehouse/test_db.db/target_table';" db-types="Hive" />
+    <sql-case id="create_iceberg_table" value="CREATE EXTERNAL TABLE user_log (user_name STRING) STORED BY ICEBERG;" db-types="Hive" />
+    <sql-case id="create_iceberg_table_partition" value="CREATE TABLE user_log (user_name STRING) PARTITIONED BY (year int) STORED BY ICEBERG;" db-types="Hive" />
+    <sql-case id="create_iceberg_table_orc" value="CREATE TABLE user_log (user_name STRING) STORED BY ICEBERG STORED AS ORC;" db-types="Hive" />
     <sql-case id="create_table_with_blob" value="CREATE TABLE t_blob (id INT, payload BLOB)" db-types="Firebird" />
     <sql-case id="create_table_with_blob_subtype_numeric" value="CREATE TABLE t_blob_subtype_numeric (payload BLOB SUB_TYPE 1)" db-types="Firebird" />
     <sql-case id="create_table_with_blob_subtype_text" value="CREATE TABLE t_blob_subtype_text (payload BLOB SUB_TYPE TEXT CHARACTER SET UTF8)" db-types="Firebird" />

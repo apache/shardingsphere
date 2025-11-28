@@ -92,12 +92,16 @@ public final class XATransactionDataSource implements AutoCloseable {
         }
         Transaction transaction = xaTransactionManagerProvider.getTransactionManager().getTransaction();
         Connection connection = dataSource.getConnection();
+        enlistResource(connection, transaction);
+        return connection;
+    }
+    
+    private void enlistResource(final Connection connection, final Transaction transaction) throws SQLException, RollbackException, SystemException {
         XAConnection xaConnection = xaConnectionWrapper.wrap(xaDataSource, connection);
         transaction.enlistResource(new SingleXAResource(resourceName, String.valueOf(uniqueName.get().getAndIncrement()), xaConnection.getXAResource()));
         registerSynchronization(transaction);
         enlistedTransactions.get().computeIfAbsent(transaction, key -> new LinkedList<>());
         enlistedTransactions.get().get(transaction).add(connection);
-        return connection;
     }
     
     private void registerSynchronization(final Transaction transaction) throws RollbackException, SystemException {

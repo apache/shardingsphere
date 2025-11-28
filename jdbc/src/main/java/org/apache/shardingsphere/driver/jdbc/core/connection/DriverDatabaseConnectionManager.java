@@ -130,6 +130,9 @@ public final class DriverDatabaseConnectionManager implements DatabaseConnection
     public void begin() throws SQLException {
         ConnectionTransaction connectionTransaction = getConnectionTransaction();
         connectionContext.getTransactionContext().beginTransaction(connectionTransaction.getTransactionType().name(), connectionTransaction.getDistributedTransactionManager());
+        if (!connectionTransaction.isLocalTransaction()) {
+            close();
+        }
         doBegin(connectionTransaction);
     }
     
@@ -137,7 +140,6 @@ public final class DriverDatabaseConnectionManager implements DatabaseConnection
         if (connectionTransaction.isLocalTransaction()) {
             setAutoCommit(false);
         } else {
-            close();
             connectionTransaction.begin();
         }
     }
