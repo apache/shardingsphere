@@ -74,9 +74,9 @@ class ShardingMetaDataReviseEngineTest {
     }
     
     private TableMetaData createTableMetaData() {
-        Collection<ColumnMetaData> columns = Arrays.asList(new ColumnMetaData("id", Types.INTEGER, true, true, true, true, false, false),
-                new ColumnMetaData("pwd_cipher", Types.VARCHAR, false, false, true, true, false, false),
-                new ColumnMetaData("product_id", Types.INTEGER, false, false, true, true, false, false));
+        Collection<ColumnMetaData> columns = Arrays.asList(new ColumnMetaData("id", Types.INTEGER, true, true,"int", true, true, false, false),
+                new ColumnMetaData("pwd_cipher", Types.VARCHAR, false, false,"varchar", true, true, false, false),
+                new ColumnMetaData("product_id", Types.INTEGER, false, false,"int", true, true, false, false));
         return new TableMetaData("t_order", columns, Collections.emptyList(), Collections.emptyList());
     }
 }

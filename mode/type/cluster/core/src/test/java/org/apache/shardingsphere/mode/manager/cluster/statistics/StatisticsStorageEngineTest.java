@@ -63,8 +63,8 @@ class StatisticsStorageEngineTest {
     private static ShardingSphereTable mockTable() {
         ShardingSphereTable result = mock(ShardingSphereTable.class, RETURNS_DEEP_STUBS);
         when(result.getName()).thenReturn("foo_table");
-        ShardingSphereColumn column1 = new ShardingSphereColumn("col_1", Types.INTEGER, false, false, false, true, false, false);
-        ShardingSphereColumn column2 = new ShardingSphereColumn("col_2", Types.INTEGER, false, false, false, true, false, false);
+        ShardingSphereColumn column1 = new ShardingSphereColumn("col_1", Types.INTEGER, false, false,"int", false, true, false, false);
+        ShardingSphereColumn column2 = new ShardingSphereColumn("col_2", Types.INTEGER, false, false,"int", false, true, false, false);
         when(result.getAllColumns()).thenReturn(Arrays.asList(column1, column2));
         return result;
     }

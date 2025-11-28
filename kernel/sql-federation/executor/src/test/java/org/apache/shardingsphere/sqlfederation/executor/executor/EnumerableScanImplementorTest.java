@@ -59,7 +59,7 @@ class EnumerableScanImplementorTest {
         when(executorContext.getStatistics()).thenReturn(statistics);
         ShardingSphereTable table = mock(ShardingSphereTable.class, RETURNS_DEEP_STUBS);
         when(table.getName()).thenReturn("test");
-        when(table.getAllColumns()).thenReturn(Collections.singleton(new ShardingSphereColumn("id", Types.INTEGER, true, false, false, false, true, false)));
+        when(table.getAllColumns()).thenReturn(Collections.singleton(new ShardingSphereColumn("id", Types.INTEGER, true, false,"int", false, false, true, false)));
         QueryContext queryContext = mock(QueryContext.class, RETURNS_DEEP_STUBS);
         SelectStatementContext selectStatementContext = mockSelectStatementContext();
         when(queryContext.getSqlStatementContext()).thenReturn(selectStatementContext);

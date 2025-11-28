@@ -89,7 +89,7 @@ class OpenGaussComBatchBindExecutorTest {
         when(sqlStatementContext.getSqlStatement()).thenReturn(sqlStatement);
         ConnectionSession connectionSession = mockConnectionSession();
         PostgreSQLServerPreparedStatement serverPreparedStatement = new PostgreSQLServerPreparedStatement(
-                sql, sqlStatementContext, new HintValueContext(), Collections.emptyList(), Collections.emptyList());
+                sql, sqlStatementContext, new HintValueContext(), Collections.emptyList(),Collections.emptyList(), Collections.emptyList());
         connectionSession.getServerPreparedStatementRegistry().addPreparedStatement(statement, serverPreparedStatement);
         ContextManager contextManager = mockContextManager();
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);

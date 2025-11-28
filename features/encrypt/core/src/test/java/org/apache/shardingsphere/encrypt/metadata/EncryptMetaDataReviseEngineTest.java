@@ -72,9 +72,9 @@ class EncryptMetaDataReviseEngineTest {
     }
     
     private TableMetaData createTableMetaData() {
-        Collection<ColumnMetaData> columns = Arrays.asList(new ColumnMetaData("id", Types.INTEGER, true, true, true, true, false, false),
-                new ColumnMetaData("pwd_cipher", Types.VARCHAR, false, false, true, true, false, false),
-                new ColumnMetaData("pwd_like", Types.VARCHAR, false, false, true, true, false, false));
+        Collection<ColumnMetaData> columns = Arrays.asList(new ColumnMetaData("id", Types.INTEGER, true, true,"int", true, true, false, false),
+                new ColumnMetaData("pwd_cipher", Types.VARCHAR, false, false,"varchar", true, true, false, false),
+                new ColumnMetaData("pwd_like", Types.VARCHAR, false, false,"varchar", true, true, false, false));
         return new TableMetaData("foo_tbl", columns, Collections.emptyList(), Collections.emptyList());
     }
 }
