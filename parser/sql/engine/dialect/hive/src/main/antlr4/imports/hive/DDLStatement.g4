@@ -36,7 +36,7 @@ use
     ;
 
 createTable
-    : createTableCommonClause createDefinitionClause? commentClause? partitionedBy? clusteredBy? skewedBy? rowFormat? storedClause? storageLocation? tblProperties? (AS select)?
+    : createTableCommonClause createDefinitionClause? commentClause? partitionedBy? clusteredBy? skewedBy? rowFormat? storedByIceberg? storedClause? storageLocation? tblProperties? (AS select)?
     | createTableCommonClause LIKE existingTableName storageLocation?
     ;
 
@@ -352,6 +352,10 @@ skewedLocationPair
 
 tblProperties
     : TBLPROPERTIES propertyListCommonClause
+    ;
+
+storedByIceberg
+    : STORED BY ICEBERG
     ;
 
 addConstraint
