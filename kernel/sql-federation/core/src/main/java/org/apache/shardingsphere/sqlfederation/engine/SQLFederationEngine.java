@@ -315,4 +315,14 @@ public final class SQLFederationEngine implements AutoCloseable {
             processor.release(currentDatabaseName, currentSchemaName, queryContext, schemaPlus);
         }
     }
+    
+    /**
+     * Get result set.
+     *
+     * @return result set
+     */
+    public ResultSet getResultSet() {
+        SQLStatement sqlStatement = queryContext.getSqlStatementContext().getSqlStatement();
+        return sqlStatement instanceof SelectStatement || sqlStatement instanceof ExplainStatement ? resultSet : null;
+    }
 }

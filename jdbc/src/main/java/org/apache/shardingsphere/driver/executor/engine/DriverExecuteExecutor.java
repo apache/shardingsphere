@@ -140,7 +140,7 @@ public final class DriverExecuteExecutor {
         }
         switch (executeType) {
             case FEDERATION:
-                return Optional.of(sqlFederationEngine.getResultSet());
+                return Optional.ofNullable(sqlFederationEngine.getResultSet());
             case JDBC_PUSH_DOWN:
                 return jdbcPushDownExecutor.getResultSet(database, queryContext, statement, statements);
             default:
