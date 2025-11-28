@@ -108,13 +108,13 @@ public final class DriverJDBCPushDownExecuteUpdateExecutor {
             JDBCExecutorCallback<Integer> callback = new ExecuteUpdateCallbackFactory(prepareEngine.getType())
                     .newInstance(database, executionContext.getSqlStatementContext().getSqlStatement(), updateCallback);
             List<Integer> updateCounts = jdbcExecutor.execute(executionGroupContext, callback);
-            PushDownMetaDataRefreshEngine pushDownMetaDataRefreshEngine =
-                    new PushDownMetaDataRefreshEngine(connection.getContextManager().getPersistServiceFacade().getModeFacade().getMetaDataManagerService(), database, props);
-            if (pushDownMetaDataRefreshEngine.isNeedRefresh(executionContext.getSqlStatementContext())) {
+            PushDownMetaDataRefreshEngine pushDownMetaDataRefreshEngine = new PushDownMetaDataRefreshEngine(executionContext.getSqlStatementContext());
+            if (pushDownMetaDataRefreshEngine.isNeedRefresh()) {
                 if (isNeedImplicitCommit(executionContext.getSqlStatementContext().getSqlStatement())) {
                     connection.commit();
                 }
-                pushDownMetaDataRefreshEngine.refresh(executionContext.getSqlStatementContext(), executionContext.getRouteContext().getRouteUnits());
+                pushDownMetaDataRefreshEngine.refresh(
+                        connection.getContextManager().getPersistServiceFacade().getModeFacade().getMetaDataManagerService(), database, props, executionContext.getRouteContext().getRouteUnits());
             }
             return isNeedAccumulate(database.getRuleMetaData().getRules(), executionContext.getSqlStatementContext()) ? accumulate(updateCounts) : updateCounts.get(0);
         } finally {
