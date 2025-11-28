@@ -140,7 +140,7 @@ public final class DriverExecuteBatchExecutor {
             executionUnits.add(executionUnit);
         }
         batchExecutor.init(prepareEngine
-                .prepare(database.getName(), executionContext.getRouteContext(), executionUnits, new ExecutionGroupReportContext(connection.getProcessId(), database.getName())));
+                .prepare(database.getName(), executionContext, executionUnits, new ExecutionGroupReportContext(connection.getProcessId(), database.getName())));
         setBatchParameters(replayCallback);
     }
     

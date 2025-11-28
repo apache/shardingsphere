@@ -132,7 +132,7 @@ public final class EnumerableScanImplementor implements ScanImplementor {
     
     private ExecutionGroupContext<JDBCExecutionUnit> prepare(final ShardingSphereDatabase database, final ExecutionContext executionContext) throws SQLException {
         // TODO pass grantee from proxy and jdbc adapter
-        return executorContext.getPrepareEngine().prepare(database.getName(), executionContext.getRouteContext(), executorContext.getConnectionOffsets(), executionContext.getExecutionUnits(),
+        return executorContext.getPrepareEngine().prepare(database.getName(), executionContext, executorContext.getConnectionOffsets(), executionContext.getExecutionUnits(),
                 new ExecutionGroupReportContext(executorContext.getProcessId(), database.getName()));
     }
     

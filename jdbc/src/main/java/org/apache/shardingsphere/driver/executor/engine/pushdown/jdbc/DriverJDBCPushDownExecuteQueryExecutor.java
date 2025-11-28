@@ -102,7 +102,7 @@ public final class DriverJDBCPushDownExecuteQueryExecutor {
                                               final StatementAddCallback addCallback, final StatementReplayCallback replayCallback) throws SQLException {
         statements.clear();
         ExecutionContext executionContext = new KernelProcessor().generateExecutionContext(queryContext, metaData.getGlobalRuleMetaData(), props);
-        ExecutionGroupContext<JDBCExecutionUnit> executionGroupContext = prepareEngine.prepare(database.getName(), executionContext.getRouteContext(), executionContext.getExecutionUnits(),
+        ExecutionGroupContext<JDBCExecutionUnit> executionGroupContext = prepareEngine.prepare(database.getName(), executionContext, executionContext.getExecutionUnits(),
                 new ExecutionGroupReportContext(processId, database.getName(), connectionContext.getGrantee()));
         for (ExecutionGroup<JDBCExecutionUnit> each : executionGroupContext.getInputGroups()) {
             Collection<Statement> statements = getStatements(each);
