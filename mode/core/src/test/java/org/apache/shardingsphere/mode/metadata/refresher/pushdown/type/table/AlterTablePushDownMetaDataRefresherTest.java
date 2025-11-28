@@ -43,6 +43,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 
+import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
@@ -73,7 +74,7 @@ class AlterTablePushDownMetaDataRefresherTest {
     
     @SuppressWarnings("unchecked")
     @Test
-    void assertRefreshRenameTable() throws Exception {
+    void assertRefreshRenameTable() throws SQLException {
         ShardingSphereRule rule = mock(ShardingSphereRule.class);
         when(rule.getAttributes()).thenReturn(new RuleAttributes(mutableDataNodeRuleAttribute));
         AlterTableStatement sqlStatement = new AlterTableStatement(databaseType);
@@ -98,7 +99,7 @@ class AlterTablePushDownMetaDataRefresherTest {
     
     @SuppressWarnings("unchecked")
     @Test
-    void assertRefreshAlterTableWithoutRename() throws Exception {
+    void assertRefreshAlterTableWithoutRename() throws SQLException {
         ShardingSphereRule rule = mock(ShardingSphereRule.class);
         ShardingSphereDatabase database = new ShardingSphereDatabase(
                 "foo_db", databaseType, new ResourceMetaData(Collections.emptyMap()), new RuleMetaData(Collections.singleton(rule)), Collections.emptyList());
