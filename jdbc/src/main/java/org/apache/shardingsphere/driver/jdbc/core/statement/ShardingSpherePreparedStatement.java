@@ -353,7 +353,7 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
         executeBatchExecutor.clear();
         clearParameters();
     }
-
+    
     private void closeCurrentBatchGeneratedKeysResultSet() {
         if (null != currentBatchGeneratedKeysResultSet) {
             try {
