@@ -66,10 +66,10 @@ import org.mockito.quality.Strictness;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashMap;
-import java.util.LinkedList;
 import java.util.Map;
 import java.util.Properties;
 
@@ -188,6 +188,8 @@ class MetaDataContextsFactoryTest {
     
     @Test
     void assertCreateByAlterRuleLoadsSchemasFromRepositoryWhenPersistenceDisabled() throws SQLException {
+        Collection<ShardingSphereSchema> loadedSchemas = Arrays.asList(createSchemaWithTable("foo_schema", "persisted_table"), createSchemaWithTable("new_schema", "new_table"));
+        when(metaDataPersistFacade.getDatabaseMetaDataFacade().getSchema().load("foo_db")).thenReturn(loadedSchemas);
         ShardingSphereSchema originSchema = createSchemaWithTable("foo_schema", "origin_table");
         ShardingSphereDatabase database = new ShardingSphereDatabase("foo_db", databaseType, createResourceMetaDataWithSingleUnit(),
                 new RuleMetaData(Collections.emptyList()), Collections.singleton(originSchema));
@@ -195,10 +197,6 @@ class MetaDataContextsFactoryTest {
                 Collections.singleton(database), new ResourceMetaData(Collections.emptyMap(), Collections.emptyMap()), new RuleMetaData(Collections.emptyList()),
                 new ConfigurationProperties(PropertiesBuilder.build(new Property(ConfigurationPropertyKey.PERSIST_SCHEMAS_TO_REPOSITORY_ENABLED.getKey(), Boolean.FALSE.toString()))));
         MetaDataContexts originalMetaDataContexts = new MetaDataContexts(metaData, new ShardingSphereStatistics());
-        Collection<ShardingSphereSchema> loadedSchemas = new LinkedList<>();
-        loadedSchemas.add(createSchemaWithTable("foo_schema", "persisted_table"));
-        loadedSchemas.add(createSchemaWithTable("new_schema", "new_table"));
-        when(metaDataPersistFacade.getDatabaseMetaDataFacade().getSchema().load("foo_db")).thenReturn(loadedSchemas);
         MetaDataContexts actual = new MetaDataContextsFactory(metaDataPersistFacade, mock())
                 .createByAlterRule("foo_db", true, Collections.singleton(new MockedRuleConfiguration("alter_rule")), originalMetaDataContexts);
         ShardingSphereSchema mergedSchema = loadedSchemas.stream().filter(each -> "foo_schema".equals(each.getName())).findFirst().orElseThrow(IllegalStateException::new);
