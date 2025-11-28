@@ -40,49 +40,48 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public final class PushDownMetaDataRefreshEngine {
     
-    private final MetaDataManagerPersistService metaDataManagerPersistService;
+    private final SQLStatementContext sqlStatementContext;
     
-    private final ShardingSphereDatabase database;
+    @SuppressWarnings("rawtypes")
+    private final PushDownMetaDataRefresher refresher;
     
-    private final ConfigurationProperties props;
-    
-    /**
-     * Whether to need refresh meta data.
-     *
-     * @param sqlStatementContext SQL statement context
-     * @return is need refresh meta data or not
-     */
-    public boolean isNeedRefresh(final SQLStatementContext sqlStatementContext) {
-        return findPushDownMetaDataRefresher(sqlStatementContext).isPresent();
-    }
-    
-    /**
-     * Refresh meta data.
-     *
-     * @param sqlStatementContext SQL statement context
-     * @param routeUnits route units
-     * @throws SQLException SQL exception
-     */
-    @SuppressWarnings({"unchecked", "rawtypes"})
-    public void refresh(final SQLStatementContext sqlStatementContext, final Collection<RouteUnit> routeUnits) throws SQLException {
-        Optional<PushDownMetaDataRefresher> refresher = findPushDownMetaDataRefresher(sqlStatementContext);
-        if (!refresher.isPresent()) {
-            return;
-        }
-        Collection<String> logicDataSourceNames = routeUnits.stream().map(each -> each.getDataSourceMapper().getLogicName()).collect(Collectors.toList());
-        String schemaName = SchemaRefreshUtils.getSchemaName(database, sqlStatementContext);
-        DatabaseType databaseType = routeUnits.stream().map(each -> database.getResourceMetaData().getStorageUnits().get(each.getDataSourceMapper().getActualName()))
-                .filter(Objects::nonNull).findFirst().map(StorageUnit::getStorageType).orElseGet(() -> sqlStatementContext.getSqlStatement().getDatabaseType());
-        refresher.get().refresh(metaDataManagerPersistService, database, logicDataSourceNames.isEmpty() ? null : logicDataSourceNames.iterator().next(),
-                schemaName, databaseType, sqlStatementContext.getSqlStatement(), props);
+    public PushDownMetaDataRefreshEngine(final SQLStatementContext sqlStatementContext) {
+        this.sqlStatementContext = sqlStatementContext;
+        refresher = findPushDownMetaDataRefresher(sqlStatementContext).orElse(null);
     }
     
     @SuppressWarnings("rawtypes")
     private Optional<PushDownMetaDataRefresher> findPushDownMetaDataRefresher(final SQLStatementContext sqlStatementContext) {
         Optional<PushDownMetaDataRefresher> refresher = TypedSPILoader.findService(PushDownMetaDataRefresher.class, sqlStatementContext.getSqlStatement().getClass());
-        if (!refresher.isPresent()) {
-            refresher = TypedSPILoader.findService(PushDownMetaDataRefresher.class, sqlStatementContext.getSqlStatement().getClass().getSuperclass());
-        }
-        return refresher;
+        return refresher.isPresent() ? refresher : TypedSPILoader.findService(PushDownMetaDataRefresher.class, sqlStatementContext.getSqlStatement().getClass().getSuperclass());
+    }
+    
+    /**
+     * Whether to need refresh meta data.
+     *
+     * @return is need refresh meta data or not
+     */
+    public boolean isNeedRefresh() {
+        return null != refresher;
+    }
+    
+    /**
+     * Refresh push down meta data.
+     *
+     * @param metaDataManagerPersistService meta data manager persist service
+     * @param database database
+     * @param props configuration properties
+     * @param routeUnits route units
+     * @throws SQLException SQL exception
+     */
+    @SuppressWarnings("unchecked")
+    public void refresh(final MetaDataManagerPersistService metaDataManagerPersistService,
+                        final ShardingSphereDatabase database, final ConfigurationProperties props, final Collection<RouteUnit> routeUnits) throws SQLException {
+        Collection<String> logicDataSourceNames = routeUnits.stream().map(each -> each.getDataSourceMapper().getLogicName()).collect(Collectors.toList());
+        String schemaName = SchemaRefreshUtils.getSchemaName(database, sqlStatementContext);
+        DatabaseType databaseType = routeUnits.stream().map(each -> database.getResourceMetaData().getStorageUnits().get(each.getDataSourceMapper().getActualName()))
+                .filter(Objects::nonNull).findFirst().map(StorageUnit::getStorageType).orElseGet(() -> sqlStatementContext.getSqlStatement().getDatabaseType());
+        refresher.refresh(metaDataManagerPersistService, database,
+                logicDataSourceNames.isEmpty() ? null : logicDataSourceNames.iterator().next(), schemaName, databaseType, sqlStatementContext.getSqlStatement(), props);
     }
 }

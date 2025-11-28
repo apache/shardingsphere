@@ -116,8 +116,6 @@ public final class StandardDatabaseProxyConnector implements DatabaseProxyConnec
     
     private final ProxySQLExecutor proxySQLExecutor;
     
-    private final PushDownMetaDataRefreshEngine pushDownMetaDataRefreshEngine;
-    
     private final Collection<Statement> cachedStatements = Collections.newSetFromMap(new ConcurrentHashMap<>());
     
     private final Collection<ResultSet> cachedResultSets = Collections.newSetFromMap(new ConcurrentHashMap<>());
@@ -139,8 +137,6 @@ public final class StandardDatabaseProxyConnector implements DatabaseProxyConnec
             prepareCursorStatementContext(sqlStatementContext);
         }
         proxySQLExecutor = new ProxySQLExecutor(driverType, databaseConnectionManager, this, sqlStatementContext);
-        pushDownMetaDataRefreshEngine = new PushDownMetaDataRefreshEngine(
-                contextManager.getPersistServiceFacade().getModeFacade().getMetaDataManagerService(), database, contextManager.getMetaDataContexts().getMetaData().getProps());
     }
     
     private void checkBackendReady(final SQLStatementContext sqlStatementContext) {
@@ -245,7 +241,11 @@ public final class StandardDatabaseProxyConnector implements DatabaseProxyConnec
             ProxyBackendTransactionManager transactionManager = new ProxyBackendTransactionManager(databaseConnectionManager);
             transactionManager.commit();
         }
-        pushDownMetaDataRefreshEngine.refresh(queryContext.getSqlStatementContext(), executionContext.getRouteContext().getRouteUnits());
+        PushDownMetaDataRefreshEngine pushDownMetaDataRefreshEngine = new PushDownMetaDataRefreshEngine(queryContext.getSqlStatementContext());
+        if (pushDownMetaDataRefreshEngine.isNeedRefresh()) {
+            pushDownMetaDataRefreshEngine.refresh(contextManager.getPersistServiceFacade().getModeFacade().getMetaDataManagerService(),
+                    database, contextManager.getMetaDataContexts().getMetaData().getProps(), executionContext.getRouteContext().getRouteUnits());
+        }
         Object executeResultSample = executeResults.iterator().next();
         return executeResultSample instanceof QueryResult
                 ? processExecuteQuery(queryContext.getSqlStatementContext(), executeResults.stream().map(QueryResult.class::cast).collect(Collectors.toList()), (QueryResult) executeResultSample)

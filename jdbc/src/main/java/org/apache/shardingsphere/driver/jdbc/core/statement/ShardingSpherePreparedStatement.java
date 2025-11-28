@@ -349,8 +349,20 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
     @Override
     public void clearBatch() {
         currentResultSet = null;
+        closeCurrentBatchGeneratedKeysResultSet();
         executeBatchExecutor.clear();
         clearParameters();
+    }
+    
+    private void closeCurrentBatchGeneratedKeysResultSet() {
+        if (null != currentBatchGeneratedKeysResultSet) {
+            try {
+                currentBatchGeneratedKeysResultSet.close();
+            } catch (final SQLException ignored) {
+            } finally {
+                currentBatchGeneratedKeysResultSet = null;
+            }
+        }
     }
     
     @SuppressWarnings("MagicConstant")

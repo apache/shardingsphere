@@ -180,24 +180,25 @@ class ShardingPreparedStatementTest extends AbstractShardingDriverTest {
             for (int each : result) {
                 assertThat(each, is(4));
             }
-            ResultSet generateKeyResultSet = preparedStatement.getGeneratedKeys();
-            assertTrue(generateKeyResultSet.next());
-            assertThat(generateKeyResultSet.getLong(1), is(11L));
-            assertTrue(generateKeyResultSet.next());
-            assertThat(generateKeyResultSet.getLong(1), is(12L));
-            assertTrue(generateKeyResultSet.next());
-            assertThat(generateKeyResultSet.getLong(1), is(13L));
-            assertTrue(generateKeyResultSet.next());
-            assertThat(generateKeyResultSet.getLong(1), is(14L));
-            assertTrue(generateKeyResultSet.next());
-            assertThat(generateKeyResultSet.getLong(1), is(15L));
-            assertTrue(generateKeyResultSet.next());
-            assertThat(generateKeyResultSet.getLong(1), is(16L));
-            assertTrue(generateKeyResultSet.next());
-            assertThat(generateKeyResultSet.getLong(1), is(17L));
-            assertTrue(generateKeyResultSet.next());
-            assertThat(generateKeyResultSet.getLong(1), is(18L));
-            assertFalse(generateKeyResultSet.next());
+            try (ResultSet generateKeyResultSet = preparedStatement.getGeneratedKeys()) {
+                assertTrue(generateKeyResultSet.next());
+                assertThat(generateKeyResultSet.getLong(1), is(11L));
+                assertTrue(generateKeyResultSet.next());
+                assertThat(generateKeyResultSet.getLong(1), is(12L));
+                assertTrue(generateKeyResultSet.next());
+                assertThat(generateKeyResultSet.getLong(1), is(13L));
+                assertTrue(generateKeyResultSet.next());
+                assertThat(generateKeyResultSet.getLong(1), is(14L));
+                assertTrue(generateKeyResultSet.next());
+                assertThat(generateKeyResultSet.getLong(1), is(15L));
+                assertTrue(generateKeyResultSet.next());
+                assertThat(generateKeyResultSet.getLong(1), is(16L));
+                assertTrue(generateKeyResultSet.next());
+                assertThat(generateKeyResultSet.getLong(1), is(17L));
+                assertTrue(generateKeyResultSet.next());
+                assertThat(generateKeyResultSet.getLong(1), is(18L));
+                assertFalse(generateKeyResultSet.next());
+            }
             try (ResultSet resultSet = queryStatement.executeQuery(String.format(SELECT_FOR_INSERT_MULTI_VALUES_WITH_GENERATE_SHARDING_KEY_SQL, 11L))) {
                 assertTrue(resultSet.next());
                 assertThat(resultSet.getString(1), is("BATCH1"));
