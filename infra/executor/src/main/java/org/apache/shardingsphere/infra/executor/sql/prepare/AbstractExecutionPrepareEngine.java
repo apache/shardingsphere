@@ -22,6 +22,7 @@ import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroup;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroupContext;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroupReportContext;
+import org.apache.shardingsphere.infra.executor.sql.context.ExecutionContext;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.ConnectionMode;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
@@ -57,13 +58,13 @@ public abstract class AbstractExecutionPrepareEngine<T> implements ExecutionPrep
     }
     
     @Override
-    public final ExecutionGroupContext<T> prepare(final String databaseName, final RouteContext routeContext, final Collection<ExecutionUnit> executionUnits,
+    public final ExecutionGroupContext<T> prepare(final String databaseName, final ExecutionContext executionContext, final Collection<ExecutionUnit> executionUnits,
                                                   final ExecutionGroupReportContext reportContext) throws SQLException {
-        return prepare(databaseName, routeContext, Collections.emptyMap(), executionUnits, reportContext);
+        return prepare(databaseName, executionContext, Collections.emptyMap(), executionUnits, reportContext);
     }
     
     @Override
-    public final ExecutionGroupContext<T> prepare(final String databaseName, final RouteContext routeContext, final Map<String, Integer> connectionOffsets,
+    public final ExecutionGroupContext<T> prepare(final String databaseName, final ExecutionContext executionContext, final Map<String, Integer> connectionOffsets,
                                                   final Collection<ExecutionUnit> executionUnits, final ExecutionGroupReportContext reportContext) throws SQLException {
         Collection<ExecutionGroup<T>> result = new LinkedList<>();
         for (Entry<String, List<ExecutionUnit>> entry : aggregateExecutionUnitGroups(executionUnits).entrySet()) {
@@ -73,7 +74,7 @@ public abstract class AbstractExecutionPrepareEngine<T> implements ExecutionPrep
             ConnectionMode connectionMode = maxConnectionsSizePerQuery < groupedExecutionUnits.size() ? ConnectionMode.CONNECTION_STRICTLY : ConnectionMode.MEMORY_STRICTLY;
             result.addAll(group(databaseName, dataSourceName, connectionOffsets.getOrDefault(dataSourceName, 0), executionUnitGroups, connectionMode));
         }
-        return decorate(routeContext, result, reportContext);
+        return decorate(executionContext.getRouteContext(), result, reportContext);
     }
     
     private List<List<ExecutionUnit>> group(final List<ExecutionUnit> sqlUnits) {

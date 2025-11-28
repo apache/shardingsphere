@@ -71,7 +71,7 @@ class SQLRewriteEntryTest {
     }
     
     private QueryContext createQueryContext() {
-        QueryContext result = mock(QueryContext.class);
+        QueryContext result = mock(QueryContext.class, RETURNS_DEEP_STUBS);
         when(result.getSql()).thenReturn("SELECT ?");
         when(result.getParameters()).thenReturn(Collections.singletonList(1));
         SQLStatementContext sqlStatementContext = mock(SQLStatementContext.class, RETURNS_DEEP_STUBS);
