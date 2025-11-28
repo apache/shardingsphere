@@ -89,6 +89,7 @@
 1. JDBC: Support set data source properties type with java.time.Duration - [#35241](https://github.com/apache/shardingsphere/pull/35241)
 1. JDBC: Resolve statement manager leaks when creating multiple statements - [#35665](https://github.com/apache/shardingsphere/pull/35665)
 1. JDBC: Fix the issue where cached connections in DriverDatabaseConnectionManager were not released in time - [35834](https://github.com/apache/shardingsphere/pull/35834)
+1. JDBC: Clear batch generated keys result set when call clearBatch method - [37204](https://github.com/apache/shardingsphere/pull/37204)
 1. Proxy: Fix `SHOW PROCESSLIST` not wait for all nodes - [#35348](https://github.com/apache/shardingsphere/pull/35348)
 1. Proxy: Fix NoSuchElementException exception when execute MySQL SHOW VARIABLES without current database - [#35550](https://github.com/apache/shardingsphere/pull/35550)
 1. Proxy: Fix column length for PostgreSQL string binary protocol value - [35840](https://github.com/apache/shardingsphere/pull/35840)
