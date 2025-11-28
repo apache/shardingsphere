@@ -67,7 +67,7 @@ public final class PushDownMetaDataRefreshEngine {
     
     /**
      * Refresh push down meta data.
-     * 
+     *
      * @param metaDataManagerPersistService meta data manager persist service
      * @param database database
      * @param props configuration properties
