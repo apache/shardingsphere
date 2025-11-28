@@ -46,6 +46,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 
+import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
@@ -78,7 +79,7 @@ class AlterViewPushDownMetaDataRefresherTest {
     
     @SuppressWarnings("unchecked")
     @Test
-    void assertRefreshRenameView() throws Exception {
+    void assertRefreshRenameView() throws SQLException {
         ShardingSphereRule rule = mock(ShardingSphereRule.class);
         when(rule.getAttributes()).thenReturn(new RuleAttributes(mutableDataNodeRuleAttribute));
         AlterViewStatement sqlStatement = new AlterViewStatement(databaseType);
@@ -104,7 +105,7 @@ class AlterViewPushDownMetaDataRefresherTest {
     
     @SuppressWarnings("unchecked")
     @Test
-    void assertRefreshUpdatesViewDefinitionWithoutRename() throws Exception {
+    void assertRefreshUpdatesViewDefinitionWithoutRename() throws SQLException {
         ShardingSphereRule rule = mock(ShardingSphereRule.class);
         when(rule.getAttributes()).thenReturn(new RuleAttributes(mutableDataNodeRuleAttribute));
         AlterViewStatement sqlStatement = new AlterViewStatement(databaseType);
