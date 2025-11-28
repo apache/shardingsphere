@@ -77,6 +77,8 @@ public final class ProxyBackendTransactionManager {
      */
     public void begin() {
         if (!connection.getConnectionSession().getTransactionStatus().isInTransaction()) {
+            connection.closeHandlers(true);
+            connection.closeConnections(false);
             connection.getConnectionSession().getTransactionStatus().setInTransaction(true);
             transactionContext.beginTransaction(transactionType.name(), distributedTransactionManager);
         }
@@ -84,8 +86,6 @@ public final class ProxyBackendTransactionManager {
     }
     
     private void doBegin() {
-        connection.closeHandlers(true);
-        connection.closeConnections(false);
         DatabaseType databaseType = ProxyContext.getInstance().getContextManager().getDatabaseType();
         for (Entry<ShardingSphereRule, TransactionHook> entry : transactionHooks.entrySet()) {
             entry.getValue().beforeBegin(entry.getKey(), databaseType, transactionContext);
