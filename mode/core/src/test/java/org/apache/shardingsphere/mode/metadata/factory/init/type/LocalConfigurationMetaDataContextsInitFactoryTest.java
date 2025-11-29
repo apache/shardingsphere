@@ -94,8 +94,9 @@ class LocalConfigurationMetaDataContextsInitFactoryTest {
         when(GlobalRulesBuilder.buildRules(anyCollection(), anyCollection(), any(ConfigurationProperties.class))).thenReturn(Collections.emptyList());
         when(ShardingSphereStatisticsFactory.create(any(), any())).thenReturn(statistics);
         Properties props = PropertiesBuilder.build(new Property(ConfigurationPropertyKey.PERSIST_SCHEMAS_TO_REPOSITORY_ENABLED.getKey(), Boolean.TRUE.toString()));
-        try (MockedConstruction<MetaDataPersistFacade> persistFacadeMocked = mockConstruction(MetaDataPersistFacade.class, withSettings().defaultAnswer(RETURNS_DEEP_STUBS),
-                (mock, context) -> when(mock.getStatisticsService().load(any())).thenReturn(new ShardingSphereStatistics()))) {
+        try (
+                MockedConstruction<MetaDataPersistFacade> persistFacadeMocked = mockConstruction(MetaDataPersistFacade.class, withSettings().defaultAnswer(RETURNS_DEEP_STUBS),
+                        (mock, context) -> when(mock.getStatisticsService().load(any())).thenReturn(new ShardingSphereStatistics()))) {
             LocalConfigurationMetaDataContextsInitFactory factory = new LocalConfigurationMetaDataContextsInitFactory(repository, instanceContext, props);
             MetaDataContexts actual = factory.create(createContextManagerBuilderParameter(databaseConfigs, new Properties()));
             assertThat(actual, is(notNullValue()));
@@ -120,8 +121,9 @@ class LocalConfigurationMetaDataContextsInitFactoryTest {
         when(GlobalRulesBuilder.buildRules(anyCollection(), anyCollection(), any(ConfigurationProperties.class))).thenReturn(Collections.emptyList());
         when(ShardingSphereStatisticsFactory.create(any(), any())).thenReturn(new ShardingSphereStatistics());
         Properties props = PropertiesBuilder.build(new Property(ConfigurationPropertyKey.PERSIST_SCHEMAS_TO_REPOSITORY_ENABLED.getKey(), Boolean.FALSE.toString()));
-        try (MockedConstruction<MetaDataPersistFacade> persistFacadeMocked = mockConstruction(MetaDataPersistFacade.class, withSettings().defaultAnswer(RETURNS_DEEP_STUBS),
-                (mock, context) -> when(mock.getStatisticsService().load(any())).thenReturn(new ShardingSphereStatistics()))) {
+        try (
+                MockedConstruction<MetaDataPersistFacade> persistFacadeMocked = mockConstruction(MetaDataPersistFacade.class, withSettings().defaultAnswer(RETURNS_DEEP_STUBS),
+                        (mock, context) -> when(mock.getStatisticsService().load(any())).thenReturn(new ShardingSphereStatistics()))) {
             LocalConfigurationMetaDataContextsInitFactory factory = new LocalConfigurationMetaDataContextsInitFactory(repository, instanceContext, props);
             factory.create(createContextManagerBuilderParameter(databaseConfigs, new Properties()));
             MetaDataPersistFacade persistFacade = persistFacadeMocked.constructed().get(0);
