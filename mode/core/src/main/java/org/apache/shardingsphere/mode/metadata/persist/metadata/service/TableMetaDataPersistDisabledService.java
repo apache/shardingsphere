@@ -54,8 +54,7 @@ public final class TableMetaDataPersistDisabledService implements TableMetaDataP
     @Override
     public void persist(final String databaseName, final String schemaName, final Collection<ShardingSphereTable> tables) {
         for (ShardingSphereTable each : tables) {
-            TableCoordinatorTypeNodePath tableCoordinatorTypeNodePath = new TableCoordinatorTypeNodePath(Joiner.on(".").join(databaseName, schemaName, each.getName()),
-                    CoordinatorType.CREATE.name());
+            TableCoordinatorTypeNodePath tableCoordinatorTypeNodePath = new TableCoordinatorTypeNodePath(Joiner.on(".").join(databaseName, schemaName, each.getName()), CoordinatorType.CREATE.name());
             repository.persist(NodePathGenerator.toPath(tableCoordinatorTypeNodePath), YamlEngine.marshal(swapper.swapToYamlConfiguration(each)));
             repository.delete(NodePathGenerator.toPath(tableCoordinatorTypeNodePath.getTableCoordinatorPath()));
         }
@@ -63,8 +62,7 @@ public final class TableMetaDataPersistDisabledService implements TableMetaDataP
     
     @Override
     public void drop(final String databaseName, final String schemaName, final String tableName) {
-        TableCoordinatorTypeNodePath tableCoordinatorTypeNodePath = new TableCoordinatorTypeNodePath(Joiner.on(".").join(databaseName, schemaName, tableName),
-                CoordinatorType.DROP.name());
+        TableCoordinatorTypeNodePath tableCoordinatorTypeNodePath = new TableCoordinatorTypeNodePath(Joiner.on(".").join(databaseName, schemaName, tableName), CoordinatorType.DROP.name());
         repository.persist(NodePathGenerator.toPath(tableCoordinatorTypeNodePath), tableName);
         repository.delete(NodePathGenerator.toPath(tableCoordinatorTypeNodePath.getTableCoordinatorPath()));
     }
