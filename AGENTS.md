@@ -29,8 +29,10 @@ This guide is written **for AI coding agents only**. Follow it literally; improv
 ### Testing Requirements
 - **Test-Driven**: design for testability, ensure unit-test coverage, and keep background unit tests under 60s to avoid job stalls.
 - **Quality Assurance**: run static checks, formatting, and code reviews.
+- **Checkstyle Gate**: do not hand off code with Checkstyle/Spotless failures—run the relevant module check locally and fix before completion.
 - **Continuous Verification**: rely on automated tests and integration validation.
 - **Public-Only Tests**: unit tests must exercise behavior via public APIs only; never use reflection to access private members.
+- **Coverage Pledge**: when 100% coverage is required, enumerate every branch/path and its planned test before coding, then implement once to reach 100% without post-hoc fixes.
 
 ## Tool Usage Guide
 
