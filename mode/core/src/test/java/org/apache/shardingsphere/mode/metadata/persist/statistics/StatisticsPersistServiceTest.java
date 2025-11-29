@@ -20,7 +20,11 @@ package org.apache.shardingsphere.mode.metadata.persist.statistics;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereColumn;
+import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
+import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
+import org.apache.shardingsphere.infra.metadata.statistics.RowStatistics;
 import org.apache.shardingsphere.infra.metadata.statistics.SchemaStatistics;
+import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereStatistics;
 import org.apache.shardingsphere.infra.metadata.statistics.TableStatistics;
 import org.apache.shardingsphere.infra.yaml.data.pojo.YamlRowStatistics;
 import org.apache.shardingsphere.mode.metadata.persist.metadata.service.TableRowDataPersistService;
@@ -32,6 +36,7 @@ import org.mockito.Mock;
 import org.mockito.internal.configuration.plugins.Plugins;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.sql.Types;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -39,6 +44,8 @@ import java.util.Collections;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
+import static org.mockito.Mockito.argThat;
+import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -62,50 +69,70 @@ class StatisticsPersistServiceTest {
     
     @Test
     void assertLoadWithEmptyDatabases() {
-        assertTrue(persistService.load(mock(ShardingSphereMetaData.class)).getDatabaseStatisticsMap().isEmpty());
+        when(repository.getChildrenKeys("/statistics/databases")).thenReturn(Collections.emptyList());
+        ShardingSphereStatistics actual = persistService.load(mock(ShardingSphereMetaData.class));
+        assertTrue(actual.getDatabaseStatisticsMap().isEmpty());
     }
     
     @Test
-    void assertLoad() {
-        when(repository.getChildrenKeys("/statistics/databases")).thenReturn(Arrays.asList("foo_db", "bar_db"));
-        when(repository.getChildrenKeys("/statistics/databases/foo_db/schemas")).thenReturn(Collections.singletonList("foo_schema"));
-        when(repository.getChildrenKeys("/statistics/databases/foo_db/schemas/foo_schema/tables")).thenReturn(Collections.singletonList("foo_tbl"));
-        assertFalse(persistService.load(mockMetaData()).getDatabaseStatisticsMap().isEmpty());
-    }
-    
-    private ShardingSphereMetaData mockMetaData() {
-        ShardingSphereMetaData result = mock(ShardingSphereMetaData.class, RETURNS_DEEP_STUBS);
-        when(result.containsDatabase("foo_db")).thenReturn(true);
-        when(result.getDatabase("foo_db").getName()).thenReturn("foo_db");
-        when(result.getDatabase("foo_db").containsSchema("foo_schema")).thenReturn(true);
-        when(result.getDatabase("foo_db").getSchema("foo_schema").getName()).thenReturn("foo_schema");
-        when(result.getDatabase("foo_db").getSchema("foo_schema").containsTable("foo_tbl")).thenReturn(true);
-        when(result.getDatabase("foo_db").getSchema("foo_schema").getTable("foo_tbl").getAllColumns()).thenReturn(Collections.emptyList());
-        when(result.containsDatabase("bar_db")).thenReturn(true);
-        when(result.getDatabase("bar_db").getName()).thenReturn("bar_db");
-        return result;
+    void assertLoadFiltersUnavailableMetadata() {
+        when(repository.getChildrenKeys("/statistics/databases")).thenReturn(Arrays.asList("foo_db", "miss_db"));
+        when(repository.getChildrenKeys("/statistics/databases/foo_db/schemas")).thenReturn(Arrays.asList("foo_schema", "miss_schema"));
+        when(repository.getChildrenKeys("/statistics/databases/foo_db/schemas/foo_schema/tables")).thenReturn(Arrays.asList("foo_tbl", "miss_tbl"));
+        ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class, RETURNS_DEEP_STUBS);
+        ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
+        ShardingSphereSchema schema = mock(ShardingSphereSchema.class, RETURNS_DEEP_STUBS);
+        ShardingSphereTable table = mock(ShardingSphereTable.class);
+        when(metaData.containsDatabase("foo_db")).thenReturn(true);
+        when(metaData.containsDatabase("miss_db")).thenReturn(false);
+        when(metaData.getDatabase("foo_db")).thenReturn(database);
+        when(database.getName()).thenReturn("foo_db");
+        when(database.containsSchema("foo_schema")).thenReturn(true);
+        when(database.containsSchema("miss_schema")).thenReturn(false);
+        when(database.getSchema("foo_schema")).thenReturn(schema);
+        when(schema.getName()).thenReturn("foo_schema");
+        when(schema.containsTable("foo_tbl")).thenReturn(true);
+        when(schema.containsTable("miss_tbl")).thenReturn(false);
+        when(schema.getTable("foo_tbl")).thenReturn(table);
+        TableStatistics tableStatistics = new TableStatistics("foo_tbl");
+        when(tableRowDataPersistService.load("foo_db", "foo_schema", table)).thenReturn(tableStatistics);
+        ShardingSphereStatistics statistics = persistService.load(metaData);
+        assertTrue(statistics.getDatabaseStatisticsMap().containsKey("foo_db"));
+        assertFalse(statistics.getDatabaseStatisticsMap().containsKey("miss_db"));
+        assertTrue(statistics.getDatabaseStatisticsMap().get("foo_db").getSchemaStatisticsMap().containsKey("foo_schema"));
+        assertFalse(statistics.getDatabaseStatisticsMap().get("foo_db").getSchemaStatisticsMap().containsKey("miss_schema"));
+        assertTrue(statistics.getDatabaseStatisticsMap().get("foo_db").getSchemaStatisticsMap().get("foo_schema").getTableStatisticsMap().containsKey("foo_tbl"));
+        assertFalse(statistics.getDatabaseStatisticsMap().get("foo_db").getSchemaStatisticsMap().get("foo_schema").getTableStatisticsMap().containsKey("miss_tbl"));
+        verify(tableRowDataPersistService).load("foo_db", "foo_schema", table);
     }
     
     @Test
     void assertPersistWithEmptyTableData() {
+        SchemaStatistics schemaStatistics = new SchemaStatistics();
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class);
         when(database.getName()).thenReturn("foo_db");
-        persistService.persist(database, "foo_schema", mock(SchemaStatistics.class));
+        persistService.persist(database, "foo_schema", schemaStatistics);
         verify(repository).persist("/statistics/databases/foo_db/schemas/foo_schema", "");
     }
     
     @Test
-    void assertPersist() {
-        SchemaStatistics schemaStatistics = mock(SchemaStatistics.class, RETURNS_DEEP_STUBS);
-        when(schemaStatistics.getTableStatisticsMap().isEmpty()).thenReturn(false);
-        TableStatistics tableStatistics = mock(TableStatistics.class);
-        when(tableStatistics.getName()).thenReturn("foo_tbl");
-        when(schemaStatistics.getTableStatisticsMap().values()).thenReturn(Collections.singleton(tableStatistics));
+    void assertPersistWithExistingAndMissingTables() {
+        SchemaStatistics schemaStatistics = new SchemaStatistics();
+        TableStatistics existingTableStatistics = new TableStatistics("foo_tbl");
+        existingTableStatistics.getRows().add(new RowStatistics(Collections.singletonList("foo_value")));
+        schemaStatistics.putTableStatistics("foo_tbl", existingTableStatistics);
+        schemaStatistics.putTableStatistics("missing_tbl", new TableStatistics("missing_tbl"));
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
+        ShardingSphereSchema schema = mock(ShardingSphereSchema.class, RETURNS_DEEP_STUBS);
+        ShardingSphereTable table = mock(ShardingSphereTable.class);
+        when(table.getAllColumns()).thenReturn(Collections.singleton(new ShardingSphereColumn("foo_col", Types.VARCHAR, false, false, true, true, false, true)));
         when(database.getName()).thenReturn("foo_db");
-        when(database.getSchema("foo_schema").getTable("foo_tbl").getAllColumns()).thenReturn(Collections.singleton(mock(ShardingSphereColumn.class)));
+        when(database.getSchema("foo_schema")).thenReturn(schema);
+        when(schema.containsTable("foo_tbl")).thenReturn(true);
+        when(schema.getTable("foo_tbl")).thenReturn(table);
         persistService.persist(database, "foo_schema", schemaStatistics);
-        verify(tableRowDataPersistService).persist("foo_db", "foo_schema", "foo_tbl", Collections.emptyList());
+        verify(tableRowDataPersistService).persist(eq("foo_db"), eq("foo_schema"), eq("foo_tbl"), argThat(rows -> !rows.isEmpty()));
+        verify(tableRowDataPersistService).persist("foo_db", "foo_schema", "missing_tbl", Collections.emptyList());
     }
     
     @Test

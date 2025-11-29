@@ -80,16 +80,12 @@ class MetaDataPersistFacadeTest {
     
     @BeforeEach
     void setUp() throws ReflectiveOperationException {
-        metaDataPersistFacade = new MetaDataPersistFacade(mock(PersistRepository.class), true);
-        setField("dataSourceUnitService", dataSourceUnitService);
-        setField("databaseMetaDataFacade", databaseMetaDataFacade);
-        setField("databaseRuleService", databaseRuleService);
-        setField("globalRuleService", globalRuleService);
-        setField("propsService", propsService);
-    }
-    
-    private void setField(final String name, final Object value) throws ReflectiveOperationException {
-        Plugins.getMemberAccessor().set(MetaDataPersistFacade.class.getDeclaredField(name), metaDataPersistFacade, value);
+        metaDataPersistFacade = new MetaDataPersistFacade(mock(PersistRepository.class));
+        Plugins.getMemberAccessor().set(MetaDataPersistFacade.class.getDeclaredField("dataSourceUnitService"), metaDataPersistFacade, dataSourceUnitService);
+        Plugins.getMemberAccessor().set(MetaDataPersistFacade.class.getDeclaredField("databaseMetaDataFacade"), metaDataPersistFacade, databaseMetaDataFacade);
+        Plugins.getMemberAccessor().set(MetaDataPersistFacade.class.getDeclaredField("databaseRuleService"), metaDataPersistFacade, databaseRuleService);
+        Plugins.getMemberAccessor().set(MetaDataPersistFacade.class.getDeclaredField("globalRuleService"), metaDataPersistFacade, globalRuleService);
+        Plugins.getMemberAccessor().set(MetaDataPersistFacade.class.getDeclaredField("propsService"), metaDataPersistFacade, propsService);
     }
     
     @Test
