@@ -92,7 +92,7 @@ public final class ResultSetMapper {
                 return resultSet.getArray(columnIndex);
             default:
                 return dialectResultSetMapper.isPresent()
-                        ? dialectResultSetMapper.get().getTimestampValue(resultSet, columnIndex, metaData.getColumnType(columnIndex))
+                        ? dialectResultSetMapper.get().getDefaultValue(resultSet, columnIndex, metaData.getColumnType(columnIndex))
                         : resultSet.getObject(columnIndex);
         }
     }

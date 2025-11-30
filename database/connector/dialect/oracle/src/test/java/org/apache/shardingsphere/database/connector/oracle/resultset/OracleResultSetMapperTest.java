@@ -64,23 +64,23 @@ class OracleResultSetMapperTest {
     }
     
     @Test
-    void assertGetTimestampValueWithOracleTimestampWithTimeZone() throws SQLException {
+    void assertGetDefaultValueWithOracleTimestampWithTimeZone() throws SQLException {
         Timestamp expected = new Timestamp(System.currentTimeMillis());
         when(resultSet.getTimestamp(1)).thenReturn(expected);
-        assertThat(dialectResultSetMapper.getTimestampValue(resultSet, 1, ORACLE_TIMESTAMP_WITH_TIME_ZONE), is(expected));
+        assertThat(dialectResultSetMapper.getDefaultValue(resultSet, 1, ORACLE_TIMESTAMP_WITH_TIME_ZONE), is(expected));
     }
     
     @Test
-    void assertGetTimestampValueWithOracleTimestampWithLocalTimeZone() throws SQLException {
+    void assertGetDefaultValueWithOracleTimestampWithLocalTimeZone() throws SQLException {
         Timestamp expected = new Timestamp(System.currentTimeMillis());
         when(resultSet.getTimestamp(1)).thenReturn(expected);
-        assertThat(dialectResultSetMapper.getTimestampValue(resultSet, 1, ORACLE_TIMESTAMP_WITH_LOCAL_TIME_ZONE), is(expected));
+        assertThat(dialectResultSetMapper.getDefaultValue(resultSet, 1, ORACLE_TIMESTAMP_WITH_LOCAL_TIME_ZONE), is(expected));
     }
     
     @Test
-    void assertGetTimestampValueWithStandardTimestamp() throws SQLException {
+    void assertGetDefaultValueWithUnhandledType() throws SQLException {
         Object expected = new Object();
         when(resultSet.getObject(1)).thenReturn(expected);
-        assertThat(dialectResultSetMapper.getTimestampValue(resultSet, 1, java.sql.Types.TIMESTAMP), is(expected));
+        assertThat(dialectResultSetMapper.getDefaultValue(resultSet, 1, java.sql.Types.OTHER), is(expected));
     }
 }

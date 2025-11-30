@@ -50,7 +50,7 @@ public final class OracleResultSetMapper implements DialectResultSetMapper {
     }
     
     @Override
-    public Object getTimestampValue(final ResultSet resultSet, final int columnIndex, final int columnType) throws SQLException {
+    public Object getDefaultValue(final ResultSet resultSet, final int columnIndex, final int columnType) throws SQLException {
         if (isOracleTimestampWithTimeZone(columnType)) {
             return resultSet.getTimestamp(columnIndex);
         }
