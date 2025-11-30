@@ -68,7 +68,7 @@ public interface DialectDataTypeOption {
      * @return is binary type or not
      */
     boolean isBinaryDataType(int sqlType);
-
+    
     Map<String, Integer> loadUDTTypes(Connection connection) throws SQLException;
-
+    
 }

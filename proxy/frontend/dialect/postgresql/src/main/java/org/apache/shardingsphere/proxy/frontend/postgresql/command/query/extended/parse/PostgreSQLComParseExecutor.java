@@ -83,7 +83,7 @@ public final class PostgreSQLComParseExecutor implements CommandExecutor {
                 ? new DistSQLStatementContext((DistSQLStatement) sqlStatement)
                 : new SQLBindEngine(metaData, connectionSession.getCurrentDatabaseName(), packet.getHintValueContext()).bind(sqlStatement);
         PostgreSQLServerPreparedStatement serverPreparedStatement = new PostgreSQLServerPreparedStatement(
-                sql, sqlStatementContext, packet.getHintValueContext(), paddedColumnTypes,paddingTypeNames, actualParameterMarkerIndexes);
+                sql, sqlStatementContext, packet.getHintValueContext(), paddedColumnTypes, paddingTypeNames, actualParameterMarkerIndexes);
         connectionSession.getServerPreparedStatementRegistry().addPreparedStatement(packet.getStatementId(), serverPreparedStatement);
         return Collections.singleton(PostgreSQLParseCompletePacket.getInstance());
     }
@@ -114,8 +114,7 @@ public final class PostgreSQLComParseExecutor implements CommandExecutor {
         }
         return result;
     }
-
-    // 初始化TypeNames长度
+    
     private List<String> paddingTypeNames(final List<PostgreSQLColumnType> paddedColumnTypes) {
         List<String> result = new ArrayList<>(paddedColumnTypes.size());
         for (PostgreSQLColumnType ignored : paddedColumnTypes) {

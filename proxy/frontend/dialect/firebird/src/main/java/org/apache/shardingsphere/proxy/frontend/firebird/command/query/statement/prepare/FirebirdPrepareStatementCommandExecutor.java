@@ -83,7 +83,6 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.type.tcl.Ro
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.tcl.SavepointStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 
-import java.sql.SQLException;
 import java.sql.Types;
 import java.util.Collection;
 import java.util.Collections;
@@ -104,7 +103,7 @@ public final class FirebirdPrepareStatementCommandExecutor implements CommandExe
     private ReturningSegment returningSegment;
     
     @Override
-    public Collection<DatabasePacket> execute() throws SQLException {
+    public Collection<DatabasePacket> execute() {
         MetaDataContexts metaDataContexts = ProxyContext.getInstance().getContextManager().getMetaDataContexts();
         SQLParserRule sqlParserRule = metaDataContexts.getMetaData().getGlobalRuleMetaData().getSingleRule(SQLParserRule.class);
         DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "Firebird");
@@ -450,7 +449,7 @@ public final class FirebirdPrepareStatementCommandExecutor implements CommandExe
     private void processCustomColumn(final String tableName, final String columnName, final IdentifierValue columnAlias, final int dataType,
                                      final Collection<FirebirdReturnColumnPacket> describeColumns, final Collection<FirebirdSQLInfoPacketType> requestedItems, final int columnCount) {
         ShardingSphereTable table = new ShardingSphereTable(tableName, Collections.emptyList(), Collections.emptyList(), Collections.emptyList());
-        ShardingSphereColumn column = new ShardingSphereColumn(columnName, dataType, false, false,"占位", true, true, false, false);
+        ShardingSphereColumn column = new ShardingSphereColumn(columnName, dataType, false, false, "", true, true, false, false);
         processColumn(describeColumns, requestedItems, table, column, null, columnAlias, columnCount);
     }
     

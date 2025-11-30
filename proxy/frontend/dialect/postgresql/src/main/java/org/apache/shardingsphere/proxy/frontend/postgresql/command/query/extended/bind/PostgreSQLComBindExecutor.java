@@ -42,65 +42,63 @@ import java.util.List;
  */
 @RequiredArgsConstructor
 public final class PostgreSQLComBindExecutor implements CommandExecutor {
-
+    
     private static final Logger log = LoggerFactory.getLogger(PostgreSQLComBindExecutor.class);
     private final PortalContext portalContext;
     
     private final PostgreSQLComBindPacket packet;
     
     private final ConnectionSession connectionSession;
-
+    
     @Override
     public Collection<DatabasePacket> execute() throws SQLException {
         PostgreSQLServerPreparedStatement preparedStatement =
                 connectionSession.getServerPreparedStatementRegistry().getPreparedStatement(packet.getStatementId());
-
+        
         ProxyDatabaseConnectionManager databaseConnectionManager =
                 connectionSession.getDatabaseConnectionManager();
-
-        // 1. 原始参数（String 或 byte[]），由协议层读取
+        
         List<Object> rawParams = packet.readParameters(preparedStatement.getParameterTypes());
-
-        // 2. 替换 JSONB/UDT
+        
         List<PostgreSQLColumnType> types = preparedStatement.getParameterTypes();
         List<String> typeNames = preparedStatement.getParameterTypeNames();
-
+        
         for (int i = 0; i < rawParams.size(); i++) {
             PostgreSQLColumnType type = types.get(i);
             Object value = rawParams.get(i);
-
+            
             if (value == null) {
                 continue;
             }
-
-            // 判断 UDT 或 JSONB
-            if (type == PostgreSQLColumnType.UDT_GENERIC || type == PostgreSQLColumnType.JSONB) {
-                String typeName = typeNames.get(i);
+            
+            if (type == PostgreSQLColumnType.JSONB || type == PostgreSQLColumnType.JSON) {
+                String typeName = (typeNames.size() > i) ? typeNames.get(i) : null;
+                
+                if (typeName == null || typeName.isEmpty()) {
+                    typeName = (type == PostgreSQLColumnType.JSONB) ? "jsonb" : "json";
+                }
+                
                 String text = value.toString();
-
                 PGobject obj = new PGobject();
                 obj.setType(typeName);
                 obj.setValue(text);
-
+                
                 rawParams.set(i, obj);
             }
         }
-
-        // 3. 调整占位符顺序
+        
         List<Object> parameters = preparedStatement.adjustParametersOrder(rawParams);
-
-        // 4. 建 Portal
+        
         Portal portal = new Portal(
                 packet.getPortal(),
                 preparedStatement,
                 parameters,
                 packet.readResultFormats(),
                 databaseConnectionManager);
-
+        
         portalContext.add(portal);
-        log.info("sql: " + preparedStatement.getSql());
         portal.bind();
-
+        
         return Collections.singleton(PostgreSQLBindCompletePacket.getInstance());
     }
 }

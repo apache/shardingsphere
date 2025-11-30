@@ -79,7 +79,7 @@ public final class DefaultDataTypeOption implements DialectDataTypeOption {
                 return false;
         }
     }
-
+    
     @Override
     public Map<String, Integer> loadUDTTypes(Connection connection) throws SQLException {
         return new HashMap<>();

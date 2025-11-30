@@ -146,11 +146,11 @@ public final class PostgreSQLComDescribeExecutor implements CommandExecutor {
                     continue;
                 }
                 String columnName = columnNamesOfInsert.get(i).toString();
-                String typeName = table.getColumn(columnName).getTypeName();
                 ShardingSpherePreconditions.checkState(table.containsColumn(columnName), () -> new ColumnNotFoundException(logicTableName, columnName));
-                preparedStatement.getParameterTypes().set(parameterMarkerIndex, PostgreSQLColumnType.valueOfJDBCType(table.getColumn(columnName).getDataType(),typeName));
+                String typeName = table.getColumn(columnName).getTypeName();
+                preparedStatement.getParameterTypes().set(parameterMarkerIndex, PostgreSQLColumnType.valueOfJDBCType(table.getColumn(columnName).getDataType(), typeName));
                 preparedStatement.getParameterTypeNames().set(parameterMarkerIndex, typeName);
-                parameterMarkerIndex ++;
+                parameterMarkerIndex++;
             }
         }
     }
@@ -199,10 +199,9 @@ public final class PostgreSQLComDescribeExecutor implements CommandExecutor {
         }
         return new PostgreSQLRowDescriptionPacket(result);
     }
-
-    // todo 这里看默认的TypeName应该给什么
+    
     private ShardingSphereColumn generateDefaultColumn(final ColumnProjectionSegment segment) {
-        return new ShardingSphereColumn(segment.getColumn().getIdentifier().getValue(), Types.VARCHAR, false, false,"varchar", false, true, false, false);
+        return new ShardingSphereColumn(segment.getColumn().getIdentifier().getValue(), Types.VARCHAR, false, false, "varchar", false, true, false, false);
     }
     
     private PostgreSQLColumnDescription convertExpressionToDescription(final ExpressionProjectionSegment expressionProjectionSegment) {
@@ -267,7 +266,6 @@ public final class PostgreSQLComDescribeExecutor implements CommandExecutor {
             if (PostgreSQLColumnType.UNSPECIFIED == logicPreparedStatement.getParameterTypes().get(i)) {
                 String columnTypeName = parameterMetaData.getParameterTypeName(i + 1);
                 logicPreparedStatement.getParameterTypes().set(i, PostgreSQLColumnType.valueOfJDBCType(parameterMetaData.getParameterType(i + 1), parameterMetaData.getParameterTypeName(i + 1)));
-                // 把 JDBC 的 typeName 也记录下来，给 Bind 阶段构造 PGobject 用 (非Insert)
                 logicPreparedStatement.getParameterTypeNames().set(i, columnTypeName);
             }
         }

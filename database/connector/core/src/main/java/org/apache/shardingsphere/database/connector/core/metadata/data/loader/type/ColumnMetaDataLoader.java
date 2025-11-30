@@ -51,7 +51,7 @@ public final class ColumnMetaDataLoader {
     private static final String TABLE_NAME = "TABLE_NAME";
     
     private static final String IS_NULLABLE = "IS_NULLABLE";
-
+    
     private static final String TYPE_NAME = "TYPE_NAME";
     
     /**
@@ -91,9 +91,10 @@ public final class ColumnMetaDataLoader {
                 ResultSet resultSet = statement.executeQuery(emptyResultSQL)) {
             for (int i = 0; i < columnNames.size(); i++) {
                 boolean generated = resultSet.getMetaData().isAutoIncrement(i + 1);
-
+                
                 caseSensitiveFlags.add(resultSet.getMetaData().isCaseSensitive(resultSet.findColumn(columnNames.get(i))));
-                result.add(new ColumnMetaData(columnNames.get(i), columnTypes.get(i), primaryKeyFlags.get(i), generated,columnTypeNames.get(i), caseSensitiveFlags.get(i), true, false, nullableFlags.get(i)));
+                result.add(new ColumnMetaData(columnNames.get(i), columnTypes.get(i), primaryKeyFlags.get(i), generated, columnTypeNames.get(i), caseSensitiveFlags.get(i), true, false,
+                        nullableFlags.get(i)));
             }
         } catch (final SQLException ex) {
             log.error("Error occurred while loading column meta data, SQL: {}", emptyResultSQL, ex);
