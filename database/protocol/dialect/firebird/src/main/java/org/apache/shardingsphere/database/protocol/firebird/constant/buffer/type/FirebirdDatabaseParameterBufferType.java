@@ -175,8 +175,8 @@ public enum FirebirdDatabaseParameterBufferType implements FirebirdParameterBuff
     /**
      * Decides whether to use a traditional type for integers.
      *
-     * @param version verstion of parameter buffer
-     * @return Is traditional type
+     * @param version version of parameter buffer
+     * @return is traditional type
      */
     public static boolean isTraditionalType(final int version) {
         return version == 1;

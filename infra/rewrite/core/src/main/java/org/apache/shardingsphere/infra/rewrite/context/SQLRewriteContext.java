@@ -82,7 +82,7 @@ public final class SQLRewriteContext {
         List<Object> afterGenericParams = new ArrayList<>();
         if (sqlStatementContext instanceof InsertStatementContext) {
             groupedParams.addAll(((InsertStatementContext) sqlStatementContext).getGroupedParameters());
-            // TODO check insertstatment whether has beforeGenericParams
+            // TODO check insert statement whether has beforeGenericParams
             afterGenericParams.addAll(((InsertStatementContext) sqlStatementContext).getOnDuplicateKeyUpdateParameters());
         }
         return new GroupedParameterBuilder(groupedParams, beforeGenericParams, afterGenericParams);

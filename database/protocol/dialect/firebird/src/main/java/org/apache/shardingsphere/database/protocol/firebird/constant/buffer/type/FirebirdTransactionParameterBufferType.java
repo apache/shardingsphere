@@ -89,7 +89,7 @@ public enum FirebirdTransactionParameterBufferType implements FirebirdParameterB
     /**
      * Decides whether to use a traditional type for integers.
      *
-     * @param version verstion of parameter buffer
+     * @param version version of parameter buffer
      * @return Is traditional type
      */
     public static boolean isTraditionalType(final int version) {

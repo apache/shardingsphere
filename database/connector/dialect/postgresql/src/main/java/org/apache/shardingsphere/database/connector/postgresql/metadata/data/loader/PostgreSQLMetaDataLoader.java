@@ -121,11 +121,11 @@ public final class PostgreSQLMetaDataLoader implements DialectMetaDataLoader {
                 String columnName = resultSet.getString("column_name");
                 String indexName = resultSet.getString("index_name");
                 boolean isUnique = resultSet.getBoolean("is_unique");
-                Collection<IndexMetaData> indexMetaDatas = result.getOrDefault(schemaName, LinkedHashMultimap.create()).get(tableName);
-                if (indexMetaDatas.isEmpty()) {
+                Collection<IndexMetaData> indexMetaDataList = result.getOrDefault(schemaName, LinkedHashMultimap.create()).get(tableName);
+                if (indexMetaDataList.isEmpty()) {
                     continue;
                 }
-                Optional<IndexMetaData> indexMetaData = indexMetaDatas.stream().filter(each -> each.getName().equals(indexName)).findFirst();
+                Optional<IndexMetaData> indexMetaData = indexMetaDataList.stream().filter(each -> each.getName().equals(indexName)).findFirst();
                 if (indexMetaData.isPresent()) {
                     indexMetaData.get().setUnique(isUnique);
                     indexMetaData.get().getColumns().add(columnName);

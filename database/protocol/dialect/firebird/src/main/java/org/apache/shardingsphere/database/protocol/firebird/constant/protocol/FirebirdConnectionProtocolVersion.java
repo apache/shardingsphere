@@ -53,7 +53,7 @@ public final class FirebirdConnectionProtocolVersion {
     }
     
     /**
-     * Get current Firebird protocl version for connection.
+     * Get the current Firebird protocol version for connection.
      *
      * @param connectionId connection ID
      * @return Firebird protocol version
