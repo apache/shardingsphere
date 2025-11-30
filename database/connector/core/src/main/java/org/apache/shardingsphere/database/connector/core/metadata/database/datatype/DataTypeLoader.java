@@ -45,8 +45,7 @@ public final class DataTypeLoader {
         DialectDataTypeOption dataTypeOption = new DatabaseTypeRegistry(databaseType).getDialectDatabaseMetaData().getDataTypeOption();
         result.putAll(dataTypeOption.getExtraDataTypes());
         result.putAll(dataTypeOption.loadUDTTypes(databaseMetaData.getConnection()));
-
-
+        
         return result;
     }
     

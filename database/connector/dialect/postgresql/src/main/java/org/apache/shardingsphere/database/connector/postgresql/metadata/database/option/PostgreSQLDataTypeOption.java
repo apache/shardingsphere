@@ -49,7 +49,7 @@ public final class PostgreSQLDataTypeOption implements DialectDataTypeOption {
         result.put("REAL", Types.REAL);
         result.put("BOOL", Types.BOOLEAN);
         result.put("CHARACTER VARYING", Types.VARCHAR);
-        result.put("VARBIT", Types.OTHER);  // Keep as OTHER but let column type detection handle it
+        result.put("VARBIT", Types.OTHER); // Keep as OTHER but let column type detection handle it
         result.put("BIT VARYING", Types.OTHER);
         return result;
     }
@@ -81,11 +81,11 @@ public final class PostgreSQLDataTypeOption implements DialectDataTypeOption {
     public boolean isBinaryDataType(final int sqlType) {
         return delegate.isBinaryDataType(sqlType);
     }
-
+    
     @Override
     public Map<String, Integer> loadUDTTypes(Connection connection) throws SQLException {
         Map<String, Integer> result = new CaseInsensitiveMap<>();
-
+        
         String sql =
                 "SELECT\n" +
                         "    t.typname AS udt_name,\n" +
@@ -99,10 +99,10 @@ public final class PostgreSQLDataTypeOption implements DialectDataTypeOption {
                         "  AND t.typtype IN ('c', 'e', 'd')   -- 复合类型、枚举、domain\n" +
                         "  AND (c.relkind IS NULL OR c.relkind = 'c')  -- 过滤掉 table rowtype (r)\n" +
                         "ORDER BY udt_name;";
-
-
-        try (PreparedStatement ps = connection.prepareStatement(sql);
-             ResultSet rs = ps.executeQuery()) {
+        
+        try (
+                PreparedStatement ps = connection.prepareStatement(sql);
+                ResultSet rs = ps.executeQuery()) {
             while (rs.next()) {
                 result.put(rs.getString("udt_name"), Types.OTHER);
             }
