@@ -192,10 +192,10 @@ public final class PostgreSQLConstraintsPropertiesAppender {
                 cols.add((String) col.get("conattname"));
             }
             setRemoteName(each, columns);
-            Optional<String> coveringindex = searchCoveringIndex(tid, cols);
-            each.put("coveringindex", coveringindex.orElse(null));
-            each.put("autoindex", !coveringindex.isPresent());
-            each.put("hasindex", coveringindex.isPresent());
+            Optional<String> coveringIndex = searchCoveringIndex(tid, cols);
+            each.put("coveringindex", coveringIndex.orElse(null));
+            each.put("autoindex", !coveringIndex.isPresent());
+            each.put("hasindex", coveringIndex.isPresent());
             each.put("columns", columns);
         }
         return result;

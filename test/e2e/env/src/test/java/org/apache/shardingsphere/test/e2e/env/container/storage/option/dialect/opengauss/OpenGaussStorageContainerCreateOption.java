@@ -28,7 +28,7 @@ import java.util.Map;
 import java.util.Optional;
 
 /**
- * Storage container craete option for openGauss.
+ * Storage container create option for openGauss.
  */
 public final class OpenGaussStorageContainerCreateOption implements StorageContainerCreateOption {
     
