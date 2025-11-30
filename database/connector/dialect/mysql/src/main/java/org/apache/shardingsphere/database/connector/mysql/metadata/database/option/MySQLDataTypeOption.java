@@ -22,10 +22,7 @@ import org.apache.shardingsphere.database.connector.core.metadata.database.metad
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.datatype.DialectDataTypeOption;
 
 import java.math.BigInteger;
-import java.sql.Connection;
-import java.sql.SQLException;
 import java.sql.Types;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
@@ -89,10 +86,5 @@ public final class MySQLDataTypeOption implements DialectDataTypeOption {
     @Override
     public boolean isBinaryDataType(final int sqlType) {
         return delegate.isBinaryDataType(sqlType);
-    }
-
-    @Override
-    public Map<String, Integer> loadUDTTypes(Connection connection) throws SQLException {
-        return new HashMap<>();
     }
 }

@@ -159,7 +159,7 @@ public final class MySQLMetaDataLoader implements DialectMetaDataLoader {
         boolean visible = !"INVISIBLE".equalsIgnoreCase(extra);
         boolean unsigned = resultSet.getString("COLUMN_TYPE").toUpperCase().contains("UNSIGNED");
         boolean nullable = "YES".equals(resultSet.getString("IS_NULLABLE"));
-        return new ColumnMetaData(columnName, DataTypeRegistry.getDataType(getDatabaseType(), dataType).orElse(Types.OTHER), primaryKey, generated, "", caseSensitive, visible, unsigned, nullable);
+        return new ColumnMetaData(columnName, DataTypeRegistry.getDataType(getDatabaseType(), dataType).orElse(Types.OTHER), primaryKey, generated, caseSensitive, visible, unsigned, nullable);
     }
     
     private String getTableMetaDataSQL(final Collection<String> tables) {

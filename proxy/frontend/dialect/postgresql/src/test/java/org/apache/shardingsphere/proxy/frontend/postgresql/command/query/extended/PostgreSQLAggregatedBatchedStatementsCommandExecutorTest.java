@@ -167,7 +167,7 @@ class PostgreSQLAggregatedBatchedStatementsCommandExecutorTest {
         when(result.getMetaDataContexts().getMetaData().getDatabase("foo_db")).thenReturn(database);
         when(result.getMetaDataContexts().getMetaData().containsDatabase("foo_db")).thenReturn(true);
         when(database.getSchema("public").getTable("t_order").getAllColumns())
-                .thenReturn(Collections.singleton(new ShardingSphereColumn("id", Types.VARCHAR, false, false,"", false, true, false, false)));
+                .thenReturn(Collections.singleton(new ShardingSphereColumn("id", Types.VARCHAR, false, false, false, true, false, false)));
         return result;
     }
 }
