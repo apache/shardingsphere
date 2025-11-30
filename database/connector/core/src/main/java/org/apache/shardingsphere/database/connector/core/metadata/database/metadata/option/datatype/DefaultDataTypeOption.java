@@ -17,8 +17,11 @@
 
 package org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.datatype;
 
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.sql.Types;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
@@ -75,5 +78,10 @@ public final class DefaultDataTypeOption implements DialectDataTypeOption {
             default:
                 return false;
         }
+    }
+    
+    @Override
+    public Map<String, Integer> loadUDTTypes(Connection connection) throws SQLException {
+        return new HashMap<>();
     }
 }
