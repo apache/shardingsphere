@@ -175,11 +175,11 @@ public final class SQLUtils {
      */
     public static String getExpressionWithoutOutsideParentheses(final String value) {
         int parenthesesOffset = getParenthesesOffset(value);
-        String result = 0 == parenthesesOffset ? value : value.substring(parenthesesOffset, value.length() - parenthesesOffset);
-        if (isValidParenthesis(result)) {
-            return result;
+        if (0 == parenthesesOffset) {
+            return value;
         }
-        return value;
+        String result = value.substring(parenthesesOffset, value.length() - parenthesesOffset);
+        return isValidParenthesis(result) ? result : value;
     }
     
     private static int getParenthesesOffset(final String value) {
@@ -194,6 +194,21 @@ public final class SQLUtils {
             right--;
         }
         return left;
+    }
+    
+    private static boolean isValidParenthesis(final String text) {
+        int count = 0;
+        for (char each : text.toCharArray()) {
+            if (Paren.PARENTHESES.getLeftParen() == each) {
+                count++;
+            } else if (Paren.PARENTHESES.getRightParen() == each) {
+                if (count == 0) {
+                    return false;
+                }
+                count--;
+            }
+        }
+        return count == 0;
     }
     
     /**
@@ -284,26 +299,5 @@ public final class SQLUtils {
             result = result.substring(0, result.length() - 1);
         }
         return result.trim();
-    }
-    
-    /**
-     * Check for valid parenthesis in String.
-     *
-     * @param text to be checked for valid parenthesis
-     * @return true or false
-     */
-    public static boolean isValidParenthesis(final String text) {
-        int count = 0;
-        for (char c : text.toCharArray()) {
-            if (Paren.PARENTHESES.getLeftParen() == c) {
-                count++;
-            } else if (Paren.PARENTHESES.getRightParen() == c) {
-                if (count == 0) {
-                    return false;
-                }
-                count--;
-            }
-        }
-        return count == 0;
     }
 }
