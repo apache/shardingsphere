@@ -35,7 +35,7 @@ public final class CompareUtils {
      * @param otherValue other value
      * @param orderDirection order direction 
      * @param nullsOrderType order type for nulls value
-     * @param caseSensitive case sensitive
+     * @param caseSensitive case-sensitive
      * @return compare result
      */
     @SuppressWarnings({"unchecked", "rawtypes"})

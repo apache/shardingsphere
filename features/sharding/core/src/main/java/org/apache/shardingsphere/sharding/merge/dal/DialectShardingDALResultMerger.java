@@ -30,7 +30,7 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- * Sharding diialect DAL result merger.
+ * Sharding dialect DAL result merger.
  */
 @SingletonSPI
 public interface DialectShardingDALResultMerger extends DatabaseTypedSPI {

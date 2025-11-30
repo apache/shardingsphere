@@ -27,7 +27,7 @@ import java.util.Map;
 import java.util.Optional;
 
 /**
- * Storage container craete option for Hive.
+ * Storage container create option for Hive.
  */
 public final class HiveStorageContainerCreateOption implements StorageContainerCreateOption {
     

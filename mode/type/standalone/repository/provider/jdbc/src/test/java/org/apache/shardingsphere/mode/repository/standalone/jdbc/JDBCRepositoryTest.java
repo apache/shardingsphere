@@ -94,7 +94,7 @@ class JDBCRepositoryTest {
     }
     
     @Test
-    void assertInit() throws Exception {
+    void assertInit() throws SQLException {
         verify(mockStatement).execute(repositorySQL.getCreateTableSQL());
     }
     
@@ -200,22 +200,15 @@ class JDBCRepositoryTest {
                 nextSeparatorIndex = key.length();
             }
             String directoryPath = key.substring(0, nextSeparatorIndex);
-            // Verifying if get operation is called for every directory level
             verify(mockPreparedStatement).setString(1, directoryPath);
-            // Verifying that during insert operation, setString at index 2 is called for every directory level
             verify(mockPreparedStatementForPersist).setString(2, directoryPath);
-            // Verifying that during insert operation, setString at index 4 is called for every parent directory
             verify(mockPreparedStatementForPersist).setString(4, parentDirectory);
             beginIndex = nextSeparatorIndex;
             parentDirectory = directoryPath;
         }
-        // Verifying that during insert operation, setString at index 3 is called with "" for all the parent directories
         verify(mockPreparedStatementForPersist, times(depthOfDirectory - 1)).setString(3, "");
-        // Verifying that during insert operation, setString at index 3 is called with the leaf node once
         verify(mockPreparedStatementForPersist).setString(3, "test1_content");
-        // Verifying that during insert operation, setString at index 1 is called with a UUID
         verify(mockPreparedStatementForPersist, times(depthOfDirectory)).setString(eq(1), anyString());
-        // Verifying that executeOperation in insert is called for all the directory levels
         verify(mockPreparedStatementForPersist, times(depthOfDirectory)).executeUpdate();
     }
     

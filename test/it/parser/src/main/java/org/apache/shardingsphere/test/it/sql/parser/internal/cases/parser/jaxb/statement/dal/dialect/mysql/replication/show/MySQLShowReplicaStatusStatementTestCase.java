@@ -24,7 +24,7 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.S
 import javax.xml.bind.annotation.XmlAttribute;
 
 /**
- * Show peplica status statement test case for MySQL.
+ * Show replica status statement test case for MySQL.
  */
 @Getter
 @Setter

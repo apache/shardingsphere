@@ -28,7 +28,7 @@ import java.util.Map;
 import java.util.Optional;
 
 /**
- * Storage container craete option for MariaDB.
+ * Storage container create option for MariaDB.
  */
 public final class MariaDBStorageContainerCreateOption implements StorageContainerCreateOption {
     

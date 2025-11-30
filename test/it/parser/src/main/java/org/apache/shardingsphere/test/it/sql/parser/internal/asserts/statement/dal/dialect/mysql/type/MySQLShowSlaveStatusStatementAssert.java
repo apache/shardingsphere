@@ -27,21 +27,21 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 /**
- * Show slave status statement assert for MySQL.
+ * Show replica status statement assert for MySQL.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class MySQLShowSlaveStatusStatementAssert {
     
     /**
-     * Assert show slave status statement is correct with expected show slave status statement test case.
+     * Assert show replica status statement is correct with expected show replica status statement test case.
      *
      * @param assertContext assert context
-     * @param actual actual show slave status statement
-     * @param expected expected show slave status statement test case
+     * @param actual actual show replica status statement
+     * @param expected expected show replica status statement test case
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final MySQLShowSlaveStatusStatement actual, final MySQLShowSlaveStatusStatementTestCase expected) {
         if (null != expected.getChannel()) {
-            assertThat(assertContext.getText("Actual show slave status channel name assertion error: "), actual.getChannel(), is(expected.getChannel()));
+            assertThat(assertContext.getText("Actual show replica status channel name assertion error: "), actual.getChannel(), is(expected.getChannel()));
         }
     }
 }

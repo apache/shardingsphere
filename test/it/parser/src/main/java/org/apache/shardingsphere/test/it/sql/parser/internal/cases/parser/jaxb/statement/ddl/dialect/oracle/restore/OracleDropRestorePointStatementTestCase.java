@@ -20,7 +20,7 @@ package org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.SQLParserTestCase;
 
 /**
- * Drop restore point statement test case for Orcale.
+ * Drop restore point statement test case for Oracle.
  */
 public final class OracleDropRestorePointStatementTestCase extends SQLParserTestCase {
 }

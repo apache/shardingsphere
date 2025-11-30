@@ -162,6 +162,6 @@ class PostgreSQLBatchedStatementsExecutorTest {
     @SneakyThrows(ReflectiveOperationException.class)
     private void prepareExecutionUnitParameters(final PostgreSQLBatchedStatementsExecutor target, final List<List<Object>> parameterSets) {
         ((Map<ExecutionUnit, List<List<Object>>>) Plugins.getMemberAccessor().get(PostgreSQLBatchedStatementsExecutor.class.getDeclaredField("executionUnitParams"), target))
-                .replaceAll((key, vvalue) -> parameterSets);
+                .replaceAll((key, value) -> parameterSets);
     }
 }

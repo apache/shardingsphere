@@ -28,7 +28,7 @@ import java.util.Map;
 import java.util.Optional;
 
 /**
- * Storage container craete option for PostgreSQL.
+ * Storage container create option for PostgreSQL.
  */
 public final class PostgreSQLStorageContainerCreateOption implements StorageContainerCreateOption {
     

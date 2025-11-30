@@ -25,6 +25,8 @@ import org.apache.shardingsphere.infra.exception.external.sql.type.kernel.catego
  */
 public abstract class MetaDataPersistException extends MetaDataSQLException {
     
+    private static final long serialVersionUID = 8997644844343785667L;
+    
     protected MetaDataPersistException(final SQLState sqlState, final int errorCode, final Exception cause, final String reason, final Object... messageArgs) {
         super(sqlState, errorCode, cause, reason, messageArgs);
     }
