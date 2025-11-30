@@ -20,9 +20,8 @@ package org.apache.shardingsphere.sharding.algorithm.audit;
 import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 import org.apache.shardingsphere.infra.binder.context.segment.insert.keygen.GeneratedKeyContext;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.binder.context.statement.dml.InsertStatementContext;
-import org.apache.shardingsphere.infra.binder.context.type.TableAvailable;
-import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
+import org.apache.shardingsphere.infra.binder.context.statement.type.dml.InsertStatementContext;
+import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.sharding.exception.audit.DMLWithoutShardingKeyException;
@@ -45,7 +44,7 @@ public final class DMLShardingConditionsShardingAuditAlgorithm implements Shardi
     public void check(final SQLStatementContext sqlStatementContext, final List<Object> params, final RuleMetaData globalRuleMetaData, final ShardingSphereDatabase database) {
         if (sqlStatementContext.getSqlStatement() instanceof DMLStatement) {
             ShardingRule rule = database.getRuleMetaData().getSingleRule(ShardingRule.class);
-            if (((TableAvailable) sqlStatementContext).getTablesContext().getTableNames().stream().anyMatch(rule::isShardingTable)) {
+            if (sqlStatementContext.getTablesContext().getTableNames().stream().anyMatch(rule::isShardingTable)) {
                 if (sqlStatementContext instanceof InsertStatementContext) {
                     InsertStatementContext context = (InsertStatementContext) sqlStatementContext;
                     Collection<Comparable<?>> savedGeneratedValues = context.getGeneratedKeyContext().map(GeneratedKeyContext::getGeneratedValues).orElse(new LinkedList<>());
