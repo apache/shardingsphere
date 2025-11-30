@@ -38,7 +38,7 @@
             <version>${r'${project.version}'}</version>
         </dependency>
     </#if>
-    <#if mode?contains("standalone") && repository == "JDBC">
+    <#if mode?contains("standalone") && (repository?? && repository == "JDBC")>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
             <artifactId>shardingsphere-standalone-mode-repository-jdbc</artifactId>
