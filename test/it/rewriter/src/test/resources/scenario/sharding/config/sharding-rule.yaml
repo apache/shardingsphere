@@ -19,7 +19,7 @@ databaseName: sharding_db
 
 dataSources:
   db:
-    dataSourceClassName: org.apache.shardingsphere.test.fixture.jdbc.MockedDataSource
+    dataSourceClassName: org.apache.shardingsphere.test.infra.fixture.jdbc.MockedDataSource
 
 rules:
 - !SHARDING

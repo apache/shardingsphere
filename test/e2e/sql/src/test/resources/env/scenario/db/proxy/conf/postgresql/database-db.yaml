@@ -21,7 +21,7 @@ dataSources:
   ds_0:
     url: jdbc:postgresql://postgresql.db.host:5432/db_0
     username: test_user
-    password: Test@123
+    password: Test@9876
     connectionTimeoutMilliseconds: 30000
     idleTimeoutMilliseconds: 60000
     maxLifetimeMilliseconds: 1800000
@@ -30,7 +30,7 @@ dataSources:
   ds_1:
     url: jdbc:postgresql://postgresql.db.host:5432/db_1
     username: test_user
-    password: Test@123
+    password: Test@9876
     connectionTimeoutMilliseconds: 30000
     idleTimeoutMilliseconds: 60000
     maxLifetimeMilliseconds: 1800000
@@ -39,7 +39,7 @@ dataSources:
   ds_2:
     url: jdbc:postgresql://postgresql.db.host:5432/db_2
     username: test_user
-    password: Test@123
+    password: Test@9876
     connectionTimeoutMilliseconds: 30000
     idleTimeoutMilliseconds: 60000
     maxLifetimeMilliseconds: 1800000
@@ -48,7 +48,7 @@ dataSources:
   ds_3:
     url: jdbc:postgresql://postgresql.db.host:5432/db_3
     username: test_user
-    password: Test@123
+    password: Test@9876
     connectionTimeoutMilliseconds: 30000
     idleTimeoutMilliseconds: 60000
     maxLifetimeMilliseconds: 1800000
@@ -57,7 +57,7 @@ dataSources:
   ds_4:
     url: jdbc:postgresql://postgresql.db.host:5432/db_4
     username: test_user
-    password: Test@123
+    password: Test@9876
     connectionTimeoutMilliseconds: 30000
     idleTimeoutMilliseconds: 60000
     maxLifetimeMilliseconds: 1800000
@@ -66,7 +66,7 @@ dataSources:
   ds_5:
     url: jdbc:postgresql://postgresql.db.host:5432/db_5
     username: test_user
-    password: Test@123
+    password: Test@9876
     connectionTimeoutMilliseconds: 30000
     idleTimeoutMilliseconds: 60000
     maxLifetimeMilliseconds: 1800000
@@ -75,7 +75,7 @@ dataSources:
   ds_6:
     url: jdbc:postgresql://postgresql.db.host:5432/db_6
     username: test_user
-    password: Test@123
+    password: Test@9876
     connectionTimeoutMilliseconds: 30000
     idleTimeoutMilliseconds: 60000
     maxLifetimeMilliseconds: 1800000
@@ -84,7 +84,7 @@ dataSources:
   ds_7:
     url: jdbc:postgresql://postgresql.db.host:5432/db_7
     username: test_user
-    password: Test@123
+    password: Test@9876
     connectionTimeoutMilliseconds: 30000
     idleTimeoutMilliseconds: 60000
     maxLifetimeMilliseconds: 1800000
@@ -93,7 +93,7 @@ dataSources:
   ds_8:
     url: jdbc:postgresql://postgresql.db.host:5432/db_8
     username: test_user
-    password: Test@123
+    password: Test@9876
     connectionTimeoutMilliseconds: 30000
     idleTimeoutMilliseconds: 60000
     maxLifetimeMilliseconds: 1800000
@@ -102,7 +102,7 @@ dataSources:
   ds_9:
     url: jdbc:postgresql://postgresql.db.host:5432/db_9
     username: test_user
-    password: Test@123
+    password: Test@9876
     connectionTimeoutMilliseconds: 30000
     idleTimeoutMilliseconds: 60000
     maxLifetimeMilliseconds: 1800000
@@ -120,13 +120,13 @@ rules:
       databaseStrategy:
         standard:
           shardingColumn: user_id
-          shardingAlgorithmName: it_standard_fixture
+          shardingAlgorithmName: e2e_standard_fixture
     t_order_item:
       actualDataNodes: ds_${0..9}.t_order_item
       databaseStrategy:
         standard:
           shardingColumn: user_id
-          shardingAlgorithmName: it_standard_fixture
+          shardingAlgorithmName: e2e_standard_fixture
       keyGenerateStrategy:
         column: item_id
         keyGeneratorName: auto_increment
@@ -139,26 +139,26 @@ rules:
       databaseStrategy:
         standard:
           shardingColumn: user_id
-          shardingAlgorithmName: it_standard_fixture
+          shardingAlgorithmName: e2e_standard_fixture
     t_order_details:
       actualDataNodes: ds_${0..9}.t_order_details
       databaseStrategy:
         standard:
           shardingColumn: user_id
-          shardingAlgorithmName: it_standard_fixture
+          shardingAlgorithmName: e2e_standard_fixture
   bindingTables:
     - ref_0:t_order,t_order_item,t_order_sharding_view,t_order_details
   shardingAlgorithms:
-    it_standard_fixture:
-      type: IT.STANDARD.FIXTURE
+    e2e_standard_fixture:
+      type: E2E.SHARDING.STANDARD.FIXTURE
 
   keyGenerators:
       auto_increment:
-        type: IT.AUTO_INCREMENT.FIXTURE
+        type: E2E.AUTO_INCREMENT.FIXTURE
 
   auditors:
     auditor_constant:
-      type: IT.AUDITOR.FIXTURE
+      type: E2E.AUDITOR.FIXTURE
 
 - !BROADCAST
   tables:

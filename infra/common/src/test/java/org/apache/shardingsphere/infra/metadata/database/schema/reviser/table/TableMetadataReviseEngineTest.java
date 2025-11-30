@@ -17,18 +17,16 @@
 
 package org.apache.shardingsphere.infra.metadata.database.schema.reviser.table;
 
-import org.apache.shardingsphere.infra.database.core.metadata.data.model.ColumnMetaData;
-import org.apache.shardingsphere.infra.database.core.metadata.data.model.IndexMetaData;
-import org.apache.shardingsphere.infra.database.core.metadata.data.model.TableMetaData;
+import org.apache.shardingsphere.database.connector.core.metadata.data.model.ColumnMetaData;
+import org.apache.shardingsphere.database.connector.core.metadata.data.model.IndexMetaData;
+import org.apache.shardingsphere.database.connector.core.metadata.data.model.TableMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.reviser.MetaDataReviseEntry;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
-import org.apache.shardingsphere.test.mock.AutoMockExtension;
-import org.apache.shardingsphere.test.mock.StaticMockSettings;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoSettings;
-import org.mockito.quality.Strictness;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -38,13 +36,10 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-@ExtendWith(AutoMockExtension.class)
-@StaticMockSettings(TableMetaDataReviseEngine.class)
-@MockitoSettings(strictness = Strictness.LENIENT)
+@ExtendWith(MockitoExtension.class)
 class TableMetadataReviseEngineTest<T extends ShardingSphereRule> {
     
     @Mock
@@ -54,19 +49,25 @@ class TableMetadataReviseEngineTest<T extends ShardingSphereRule> {
     @Mock
     private MetaDataReviseEntry metaDataReviseEntry;
     
+    private TableMetaDataReviseEngine<T> engine;
+    
+    @SuppressWarnings("unchecked")
+    @BeforeEach
+    void setUp() {
+        engine = new TableMetaDataReviseEngine<T>(rule, metaDataReviseEntry);
+    }
+    
     @SuppressWarnings({"rawtypes", "unchecked"})
     @Test
     void assertGetRevisedTableName() {
         TableNameReviser tableNameReviser = mock(TableNameReviser.class);
         TableMetaData originalMetaData = new TableMetaData("originalTableName", new LinkedList<>(), null, null);
-        TableMetaDataReviseEngine<T> tableMetaDataReviseEngine = new TableMetaDataReviseEngine<T>(rule, metaDataReviseEntry);
-        doReturn(Optional.of(tableNameReviser)).when(metaDataReviseEntry).getTableNameReviser();
+        when(metaDataReviseEntry.getTableNameReviser()).thenReturn(Optional.of(tableNameReviser));
         when(tableNameReviser.revise(anyString(), eq(rule))).thenReturn("revisedTableName");
-        TableMetaData revisedMetaData = tableMetaDataReviseEngine.revise(originalMetaData);
+        TableMetaData revisedMetaData = engine.revise(originalMetaData);
         assertThat(revisedMetaData.getName(), is("revisedTableName"));
     }
     
-    @SuppressWarnings("unchecked")
     @Test
     void assertGetOriginalTableName() {
         Collection<ColumnMetaData> columns = new LinkedList<>();
@@ -74,9 +75,8 @@ class TableMetadataReviseEngineTest<T extends ShardingSphereRule> {
         Collection<IndexMetaData> indexes = new LinkedList<>();
         indexes.add(new IndexMetaData("index1"));
         TableMetaData tableMetaData = new TableMetaData("originalTableName", columns, indexes, null);
-        TableMetaDataReviseEngine<T> tableMetaDataReviseEngine = new TableMetaDataReviseEngine<T>(rule, metaDataReviseEntry);
         when(metaDataReviseEntry.getTableNameReviser()).thenReturn(Optional.empty());
-        TableMetaData revisedMetaData = tableMetaDataReviseEngine.revise(tableMetaData);
+        TableMetaData revisedMetaData = engine.revise(tableMetaData);
         assertThat(revisedMetaData.getName(), is("originalTableName"));
     }
 }

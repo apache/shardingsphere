@@ -335,7 +335,7 @@
     
     <select sql-case-id="select_with_exists_sub_query_with_project">
         <projections start-index="7" stop-index="36">
-            <subquery-projection start-index="14" stop-index="36" text="EXISTS (SELECT 1 FROM t_order)" literal-text="EXISTS (SELECT 1 FROM t_order)">
+            <expression-projection start-index="7" stop-index="36" text="EXISTS (SELECT 1 FROM t_order)" literal-text="EXISTS (SELECT 1 FROM t_order)">
                 <subquery start-index="15" stop-index="35">
                     <select>
                         <from>
@@ -346,7 +346,7 @@
                         </projections>
                     </select>
                 </subquery>
-            </subquery-projection>
+            </expression-projection>
         </projections>
     </select>
 
@@ -902,5 +902,53 @@
                 </binary-operation-expression>
             </expr>
         </where>
+    </select>
+
+    <select sql-case-id="select_sub_query_with_alias">
+        <projections start-index="7" stop-index="9">
+            <shorthand-projection start-index="7" stop-index="9">
+                <owner start-index="7" stop-index="7" name="B" />
+            </shorthand-projection>
+        </projections>
+        <from>
+            <subquery-table alias="B" start-index="16" stop-index="93">
+                <subquery>
+                    <select>
+                        <projections start-index="24" stop-index="26">
+                            <shorthand-projection  start-index="24" stop-index="26">
+                                <owner start-index="24" stop-index="24" name="A" />
+                            </shorthand-projection>
+                        </projections>
+                        <from>
+                            <subquery-table alias="A" start-index="33" stop-index="87">
+                                <subquery>
+                                    <select>
+                                        <projections start-index="41" stop-index="41">
+                                            <shorthand-projection start-index="41" stop-index="41" />
+                                        </projections>
+                                        <from>
+                                            <simple-table start-index="48" stop-index="62" name="ACT_DEPLOY_FORM" />
+                                        </from>
+                                        <where start-index="64" stop-index="81">
+                                            <expr>
+                                                <binary-operation-expression start-index="70" stop-index="81">
+                                                    <left>
+                                                        <column start-index="70" stop-index="77" name="FORM_KEY" />
+                                                    </left>
+                                                    <operator>=</operator>
+                                                    <right>
+                                                        <literal-expression value="1" start-index="81" stop-index="81" />
+                                                    </right>
+                                                </binary-operation-expression>
+                                            </expr>
+                                        </where>
+                                    </select>
+                                </subquery>
+                            </subquery-table>
+                        </from>
+                    </select>
+                </subquery>
+            </subquery-table>
+        </from>
     </select>
 </sql-parser-test-cases>

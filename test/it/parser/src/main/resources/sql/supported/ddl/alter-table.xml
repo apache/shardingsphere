@@ -248,4 +248,115 @@
     <sql-case id="alter_table_add_unique" value="ALTER TABLE xwarehouses ADD (UNIQUE(XMLDATA.&quot;WarehouseId&quot;))" db-types="Oracle" />
     <sql-case id="alter_table_add_edge_constraints" value="ALTER TABLE bought ADD CONSTRAINT EC_BOUGHT1 CONNECTION (Customer TO Product, Supplier TO Product);" db-types="SQLServer"/>
     <sql-case id="alter_table_drop_edge_constraints" value="ALTER TABLE bought DROP CONSTRAINT EC_BOUGHT;" db-types="SQLServer"/>
+    <sql-case id="alter_table_rename_to" value="ALTER TABLE stu RENAME TO stu1;" db-types="Hive" />
+    <sql-case id="alter_table_set_tblproperties_comment" value="ALTER TABLE sales SET TBLPROPERTIES ('comment'='Sales data with partition by date')" db-types="Hive" />
+    <sql-case id="alter_table_set_serde_basic" value="ALTER TABLE test_table SET SERDE 'org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe'" db-types="Hive" />
+    <sql-case id="alter_table_set_serde_with_partition_basic" value="ALTER TABLE test_table PARTITION (dt='2025-01-01') SET SERDE 'org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe'" db-types="Hive" />
+    <sql-case id="alter_table_set_serde_with_basic_properties" value="ALTER TABLE test_table SET SERDE 'org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe' WITH SERDEPROPERTIES ('field.delim'='\t', 'collection.delim'=',')" db-types="Hive" />
+    <sql-case id="alter_table_set_serde_with_all_options" value="ALTER TABLE sales PARTITION (dt='2025-07-01') SET SERDE 'org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe' WITH SERDEPROPERTIES ('field.delim'='|', 'collection.delim'=',')" db-types="Hive" />
+    <sql-case id="alter_table_set_serdeproperties_field_delim" value="ALTER TABLE sales SET SERDEPROPERTIES ('field.delim' = ',')" db-types="Hive" />
+    <sql-case id="alter_table_set_serdeproperties_with_partition" value="ALTER TABLE sales PARTITION (dt='2025-07-01') SET SERDEPROPERTIES ('field.delim' = ',')" db-types="Hive" />
+    <sql-case id="alter_table_unset_serdeproperties" value="ALTER TABLE sales UNSET SERDEPROPERTIES ('field.delim');" db-types="Hive" />
+    <sql-case id="alter_table_unset_serdeproperties_with_partition" value="ALTER TABLE sales PARTITION (dt='2025-07-01') UNSET SERDEPROPERTIES ('field.delim');" db-types="Hive" />
+    <sql-case id="alter_table_clustered_by_basic" value="ALTER TABLE sales CLUSTERED BY (id, region) INTO 8 BUCKETS" db-types="Hive" />
+    <sql-case id="alter_table_clustered_with_sorted_by" value="ALTER TABLE sales CLUSTERED BY (id, region) SORTED BY (id ASC) INTO 8 BUCKETS" db-types="Hive" />
+    <sql-case id="alter_table_skewed_by_basic" value="ALTER TABLE user_logs SKEWED BY (region, status) ON (('Beijing', 'active'), ('Shanghai', 'inactive'))" db-types="Hive" />
+    <sql-case id="alter_table_skewed_by_with_directories" value="ALTER TABLE user_logs SKEWED BY (region, status) ON (('Beijing', 'active'), ('Shanghai', 'inactive')) STORED AS DIRECTORIES" db-types="Hive" />
+    <sql-case id="alter_table_not_skewed_basic" value="ALTER TABLE user_logs NOT SKEWED" db-types="Hive" />
+    <sql-case id="alter_table_not_stored_as_directories_basic" value="ALTER TABLE user_logs NOT STORED AS DIRECTORIES" db-types="Hive" />
+    <sql-case id="alter_table_set_skewed_location_basic" value="ALTER TABLE user_logs SET SKEWED LOCATION (region='/user/hive/skewed/region')" db-types="Hive" />
+    <sql-case id="alter_table_add_primary_key_hive" value="ALTER TABLE employees ADD CONSTRAINT emp_pk PRIMARY KEY (emp_id) DISABLE NOVALIDATE" db-types="Hive" />
+    <sql-case id="alter_table_add_foreign_key_hive" value="ALTER TABLE orders ADD CONSTRAINT orders_emp_fk FOREIGN KEY (emp_id) REFERENCES employees(emp_id) DISABLE NOVALIDATE RELY" db-types="Hive" />
+    <sql-case id="alter_table_add_unique_hive" value="ALTER TABLE users ADD CONSTRAINT users_email_unique UNIQUE (email) DISABLE NOVALIDATE" db-types="Hive" />
+    <sql-case id="alter_table_change_column_not_null" value="ALTER TABLE products CHANGE COLUMN prod_id prod_id INT CONSTRAINT prod_id_not_null NOT NULL ENABLE" db-types="Hive" />
+    <sql-case id="alter_table_change_column_default" value="ALTER TABLE products CHANGE COLUMN status status STRING CONSTRAINT status_default DEFAULT 'active' ENABLE" db-types="Hive" />
+    <sql-case id="alter_table_change_column_check" value="ALTER TABLE orders CHANGE COLUMN amount amount DECIMAL(10,2) CONSTRAINT amount_check CHECK (amount &gt; 0) ENABLE" db-types="Hive" />
+    <sql-case id="alter_table_drop_constraint_hive" value="ALTER TABLE employees DROP CONSTRAINT emp_pk" db-types="Hive" />
+    <sql-case id="alter_table_set_fileformat_basic_textfile" value="ALTER TABLE user_logs SET FILEFORMAT TEXTFILE" db-types="Hive" />
+    <sql-case id="alter_table_set_fileformat_with_partition_orc" value="ALTER TABLE user_logs PARTITION (dt='2025-07-01') SET FILEFORMAT ORC" db-types="Hive" />
+    <sql-case id="alter_table_set_location_basic" value="ALTER TABLE logs SET LOCATION '/user/hive/warehouse/new_logs'" db-types="Hive" />
+    <sql-case id="alter_table_set_location_with_partition" value="ALTER TABLE logs PARTITION (dt='2025-07-01') SET LOCATION '/user/hive/warehouse/logs/dt=2025-07-01_new'" db-types="Hive" />
+    <sql-case id="alter_table_touch_basic" value="ALTER TABLE sales TOUCH" db-types="Hive" />
+    <sql-case id="alter_table_touch_with_partition" value="ALTER TABLE sales TOUCH PARTITION (region='asia')" db-types="Hive" />
+    <sql-case id="alter_table_compact_basic" value="ALTER TABLE transaction_logs COMPACT 'MINOR'" db-types="Hive" />
+    <sql-case id="alter_table_compact_with_partition" value="ALTER TABLE transaction_logs PARTITION (dt='2025-07-01') COMPACT 'MAJOR'" db-types="Hive" />
+    <sql-case id="alter_table_compact_and_wait" value="ALTER TABLE user_actions COMPACT 'REBALANCE' AND WAIT" db-types="Hive" />
+    <sql-case id="alter_table_compact_with_pool" value="ALTER TABLE order_details COMPACT 'MAJOR' POOL 'high_priority_pool'" db-types="Hive" />
+    <sql-case id="alter_table_compact_rebalance" value="ALTER TABLE product_data COMPACT 'REBALANCE' CLUSTERED INTO 16 BUCKETS" db-types="Hive" />
+    <sql-case id="alter_table_compact_with_pool_partition" value="ALTER TABLE order_records PARTITION (region='asia') COMPACT 'MINOR' POOL 'high_priority_pool'" db-types="Hive" />
+    <sql-case id="alter_table_compact_with_tblproperties" value="ALTER TABLE product_data COMPACT 'MAJOR' WITH OVERWRITE TBLPROPERTIES ('mapreduce.job.queuename'='compaction_queue')" db-types="Hive" />
+    <sql-case id="alter_table_compact_rebalance_clustered" value="ALTER TABLE customer_logs COMPACT 'REBALANCE' CLUSTERED INTO 10 BUCKETS" db-types="Hive" />
+    <sql-case id="alter_table_compact_rebalance_orderby" value="ALTER TABLE customer_logs COMPACT 'REBALANCE' ORDER BY user_id" db-types="Hive" />
+    <sql-case id="alter_table_compact_rebalance_clustered_order" value="ALTER TABLE customer_logs COMPACT 'REBALANCE' CLUSTERED INTO 10 BUCKETS ORDER BY user_id" db-types="Hive" />
+    <sql-case id="alter_table_compact_rebalance_combined" value="ALTER TABLE sales_data PARTITION (month='2025-07') COMPACT 'REBALANCE' AND WAIT CLUSTERED INTO 5 BUCKETS ORDER BY amount" db-types="Hive" />
+    <sql-case id="alter_table_compact_multi_options" value="ALTER TABLE log_data PARTITION (service='payment') COMPACT 'MAJOR' AND WAIT POOL 'medium_pool' WITH OVERWRITE TBLPROPERTIES ('hive.compaction.major.threshold'='10')" db-types="Hive" />
+    <sql-case id="alter_table_concatenate_basic" value="ALTER TABLE sales_rcfile CONCATENATE" db-types="Hive" />
+    <sql-case id="alter_table_partition_concatenate" value="ALTER TABLE sales_orc PARTITION (region='asia', dt='2025-07-23') CONCATENATE" db-types="Hive" />
+    <sql-case id="alter_table_update_columns_basic" value="ALTER TABLE avro_user_data UPDATE COLUMNS" db-types="Hive" />
+    <sql-case id="alter_table_partition_update_columns" value="ALTER TABLE parquet_event_log PARTITION (event_type='click') UPDATE COLUMNS" db-types="Hive" />
+    <sql-case id="alter_table_add_partition_basic" value="ALTER TABLE test_table ADD PARTITION (part_col='part_value')" db-types="Hive" />
+    <sql-case id="alter_table_add_more_partition" value="ALTER TABLE test_table ADD PARTITION (dt='2008-08-08', country='us')" db-types="Hive" />
+    <sql-case id="alter_table_add_partition_with_if_not_exists" value="ALTER TABLE test_table ADD IF NOT EXISTS PARTITION (part_col='part_value')" db-types="Hive" />
+    <sql-case id="alter_table_add_partition_with_location" value="ALTER TABLE test_table ADD PARTITION (part_col='part_value') LOCATION '/user/hive/warehouse/test_table/part_value'" db-types="Hive" />
+    <sql-case id="alter_table_add_partition_with_both_options" value="ALTER TABLE test_table ADD IF NOT EXISTS PARTITION (part_col='part_value') LOCATION '/user/hive/warehouse/test_partition'" db-types="Hive" />
+    <sql-case id="alter_table_rename_partition_basic" value="ALTER TABLE sales PARTITION (dt='2025-07-01') RENAME TO PARTITION (dt='20250701')" db-types="Hive" />
+    <sql-case id="alter_table_exchange_partition_basic" value="ALTER TABLE target_table EXCHANGE PARTITION (dt='2025-07-25') WITH TABLE source_table" db-types="Hive" />
+    <sql-case id="alter_table_exchange_partition_multiple" value="ALTER TABLE target_table EXCHANGE PARTITION (dt='2025-07-25', region='asia') WITH TABLE source_table" db-types="Hive" />
+    <sql-case id="alter_table_set_partition_retention_basic" value="ALTER TABLE log_data SET TBLPROPERTIES ('partition.retention.period'='30d')" db-types="Hive" />
+    <sql-case id="alter_table_set_partition_retention_with_discover" value="ALTER TABLE log_data SET TBLPROPERTIES ('partition.retention.period'='7d', 'discover.partitions'='true')" db-types="Hive" />
+    <sql-case id="msck_check_table" value="MSCK TABLE sales" db-types="Hive" />
+    <sql-case id="msck_repair_table_basic" value="MSCK REPAIR TABLE sales" db-types="Hive" />
+    <sql-case id="msck_check_table_add" value="MSCK TABLE sales ADD PARTITIONS" db-types="Hive" />
+    <sql-case id="msck_check_table_drop" value="MSCK TABLE sales DROP PARTITIONS" db-types="Hive" />
+    <sql-case id="msck_check_table_sync" value="MSCK TABLE sales SYNC PARTITIONS" db-types="Hive" />
+    <sql-case id="msck_repair_table_add" value="MSCK REPAIR TABLE sales ADD PARTITIONS" db-types="Hive" />
+    <sql-case id="msck_repair_table_drop" value="MSCK REPAIR TABLE sales DROP PARTITIONS" db-types="Hive" />
+    <sql-case id="msck_repair_table_sync" value="MSCK REPAIR TABLE sales SYNC PARTITIONS" db-types="Hive" />
+    <sql-case id="alter_table_recover_partitions_emr" value="ALTER TABLE sales RECOVER PARTITIONS" db-types="Hive" />
+    <sql-case id="alter_table_drop_partition_basic" value="ALTER TABLE page_view DROP PARTITION (dt='2008-08-08', country='us')" db-types="Hive" />
+    <sql-case id="alter_table_drop_partition_if_exists" value="ALTER TABLE page_view DROP IF EXISTS PARTITION (dt='2008-08-08', country='us')" db-types="Hive" />
+    <sql-case id="alter_table_drop_partition_purge" value="ALTER TABLE page_view DROP PARTITION (dt='2008-08-08', country='us') PURGE" db-types="Hive" />
+    <sql-case id="alter_table_drop_partition_ignore_protection" value="ALTER TABLE page_view DROP PARTITION (dt='2008-08-08', country='us') IGNORE PROTECTION" db-types="Hive" />
+    <sql-case id="alter_table_drop_partition_if_exists_purge" value="ALTER TABLE page_view DROP IF EXISTS PARTITION (dt='2008-08-08', country='us') PURGE" db-types="Hive" />
+    <sql-case id="alter_table_drop_partition_if_exists_ignore_protection" value="ALTER TABLE page_view DROP IF EXISTS PARTITION (dt='2008-08-08', country='us') IGNORE PROTECTION" db-types="Hive" />
+    <sql-case id="alter_table_drop_multiple_partitions_if_exists_purge" value="ALTER TABLE page_view DROP IF EXISTS PARTITION (dt='2008-08-08', country='us'), PARTITION (dt='2008-08-09', country='cn') PURGE" db-types="Hive" />
+    <sql-case id="alter_table_drop_partition_all_options" value="ALTER TABLE page_view DROP IF EXISTS PARTITION (dt='2008-08-08', country='us') IGNORE PROTECTION PURGE" db-types="Hive" />
+    <sql-case id="alter_table_drop_multiple_partitions_all_options" value="ALTER TABLE page_view DROP IF EXISTS PARTITION (dt='2008-08-08', country='us'), PARTITION (dt='2008-08-09', country='cn') IGNORE PROTECTION PURGE" db-types="Hive" />
+    <sql-case id="alter_table_archive_partition_basic" value="ALTER TABLE log_table ARCHIVE PARTITION (dt='2025-07-25')" db-types="Hive" />
+    <sql-case id="alter_table_unarchive_partition_basic" value="ALTER TABLE log_table UNARCHIVE PARTITION (dt='2025-07-25')" db-types="Hive" />
+    <sql-case id="alter_table_change_column_basic" value="ALTER TABLE test_change CHANGE a a1 INT" db-types="Hive" />
+    <sql-case id="alter_table_change_with_partition_column_comment_first_cascade" value="ALTER TABLE sales PARTITION (dt='2025-07') CHANGE COLUMN dt sale_date STRING COMMENT 'move to first with comment' FIRST CASCADE" db-types="Hive" />
+    <sql-case id="alter_table_change_with_partition_column_comment_first_restrict" value="ALTER TABLE logs PARTITION (level='warn') CHANGE COLUMN msg warning_msg STRING COMMENT 'set as first column' FIRST RESTRICT" db-types="Hive" />
+    <sql-case id="alter_table_change_with_partition_column_comment_after_cascade" value="ALTER TABLE sales PARTITION (dt='2025-07') CHANGE COLUMN dt sale_date STRING COMMENT 'move after region with comment' AFTER region CASCADE" db-types="Hive" />
+    <sql-case id="alter_table_change_with_partition_column_comment_after_restrict" value="ALTER TABLE logs PARTITION (level='info') CHANGE COLUMN msg log_msg STRING COMMENT 'position after timestamp' AFTER timestamp RESTRICT" db-types="Hive" />
+    <sql-case id="alter_table_change_with_quoted_column1" value="ALTER TABLE sales CHANGE COLUMN `order.date` `order_date` STRING COMMENT 'rename column with dot' FIRST CASCADE" db-types="Hive" />
+    <sql-case id="alter_table_change_with_quoted_column2" value="ALTER TABLE logs PARTITION (level='error') CHANGE COLUMN `msg:content` `message_content` STRING COMMENT 'rename column with colon' AFTER timestamp RESTRICT" db-types="Hive" />
+    <sql-case id="alter_table_add_columns_basic" value="ALTER TABLE sales ADD COLUMNS (gender STRING)" db-types="Hive" />
+    <sql-case id="alter_table_replace_columns_basic" value="ALTER TABLE users REPLACE COLUMNS (id INT, name STRING)" db-types="Hive" />
+    <sql-case id="alter_table_add_columns_with_partition" value="ALTER TABLE sales PARTITION (dt='2025-07') ADD COLUMNS (gender STRING)" db-types="Hive" />
+    <sql-case id="alter_table_replace_columns_with_partition" value="ALTER TABLE logs PARTITION (level='info') REPLACE COLUMNS (timestamp STRING, message STRING)" db-types="Hive" />
+    <sql-case id="alter_table_add_columns_with_comment" value="ALTER TABLE products ADD COLUMNS (gender STRING COMMENT 'This is a comment')" db-types="Hive" />
+    <sql-case id="alter_table_replace_columns_with_comment" value="ALTER TABLE orders REPLACE COLUMNS (order_id INT COMMENT 'unique order identifier', total DECIMAL(10,2))" db-types="Hive" />
+    <sql-case id="alter_table_add_columns_with_cascade" value="ALTER TABLE sales ADD COLUMNS (tax_rate FLOAT) CASCADE" db-types="Hive" />
+    <sql-case id="alter_table_add_columns_with_restrict" value="ALTER TABLE sales ADD COLUMNS (tax_rate FLOAT) RESTRICT" db-types="Hive" />
+    <sql-case id="alter_table_replace_columns_with_cascade" value="ALTER TABLE users REPLACE COLUMNS (user_id INT, email STRING) CASCADE" db-types="Hive" />
+    <sql-case id="alter_table_replace_columns_with_restrict" value="ALTER TABLE users REPLACE COLUMNS (user_id INT, email STRING) RESTRICT" db-types="Hive" />
+    <sql-case id="alter_table_add_columns_with_partition_and_comment" value="ALTER TABLE sales PARTITION (dt='2025-07') ADD COLUMNS (shipping_fee DECIMAL(8,2) COMMENT 'delivery cost for the order')" db-types="Hive" />
+    <sql-case id="alter_table_add_columns_partition_cascade1" value="ALTER TABLE sales PARTITION (dt='2025-08') ADD COLUMNS (refund_amt DECIMAL(10,2)) CASCADE" db-types="Hive" />
+    <sql-case id="alter_table_add_columns_partition_restrict1" value="ALTER TABLE users PARTITION (region='asia') ADD COLUMNS (login_count INT) RESTRICT" db-types="Hive" />
+    <sql-case id="alter_table_add_columns_comment_cascade" value="ALTER TABLE sales ADD COLUMNS (discountverseas_fee DECIMAL(8,2) COMMENT 'international shipping fee') CASCADE" db-types="Hive" />
+    <sql-case id="alter_table_add_columns_comment_restrict" value="ALTER TABLE products ADD COLUMNS (material STRING COMMENT 'product material composition') RESTRICT" db-types="Hive" />
+    <sql-case id="alter_table_replace_columns_with_partition_and_comment" value="ALTER TABLE sales PARTITION (dt='2025-07') REPLACE COLUMNS (order_id INT, shipping_fee DECIMAL(8,2) COMMENT 'delivery cost for the order')" db-types="Hive" />
+    <sql-case id="alter_table_replace_columns_partition_cascade1" value="ALTER TABLE sales PARTITION (dt='2025-08') REPLACE COLUMNS (product_id INT, refund_amt DECIMAL(10,2)) CASCADE" db-types="Hive" />
+    <sql-case id="alter_table_replace_columns_partition_restrict1" value="ALTER TABLE users PARTITION (region='asia') REPLACE COLUMNS (username STRING, login_count INT) RESTRICT" db-types="Hive" />
+    <sql-case id="alter_table_replace_columns_comment_cascade" value="ALTER TABLE sales REPLACE COLUMNS (overseas_fee DECIMAL(8,2) COMMENT 'international shipping fee', service_charge DECIMAL(6,2) COMMENT 'platform service fee') CASCADE" db-types="Hive" />
+    <sql-case id="alter_table_replace_columns_comment_restrict" value="ALTER TABLE products REPLACE COLUMNS (material STRING COMMENT 'product material composition', origin STRING COMMENT 'production place') RESTRICT" db-types="Hive" />
+    <sql-case id="alter_table_add_columns_full_combination1" value="ALTER TABLE sales PARTITION (dt='2025-09') ADD COLUMNS (insurance_fee DECIMAL(6,2) COMMENT 'order insurance cost') CASCADE" db-types="Hive" />
+    <sql-case id="alter_table_add_columns_full_combination2" value="ALTER TABLE users PARTITION (region='europe') ADD COLUMNS (last_login TIMESTAMP COMMENT 'latest login time') RESTRICT" db-types="Hive" />
+    <sql-case id="alter_replace_columns_partition_comment_cascade1" value="ALTER TABLE sales PARTITION (dt='2025-10') REPLACE COLUMNS (order_id INT COMMENT 'unique order identifier', final_amount DECIMAL(10,2) COMMENT 'total amount after discounts') CASCADE" db-types="Hive" />
+    <sql-case id="alter_replace_columns_partition_comment_restrict1" value="ALTER TABLE users PARTITION (region='africa') REPLACE COLUMNS (user_name STRING COMMENT 'user full name', signup_date DATE COMMENT 'account creation date') RESTRICT" db-types="Hive" />
+    <sql-case id="alter_replace_columns_quoted1" value="ALTER TABLE sales PARTITION (dt='2025-11') REPLACE COLUMNS (`order id` INT COMMENT 'unique order number', `final amount` DECIMAL(10,2) COMMENT 'total after tax') CASCADE" db-types="Hive" />
+    <sql-case id="alter_replace_columns_quoted2" value="ALTER TABLE users PARTITION (region='south_america') REPLACE COLUMNS (`user name` STRING COMMENT 'full name of user', `login count` INT COMMENT 'number of logins') RESTRICT" db-types="Hive" />
+    <sql-case id="alter_replace_columns_quoted3" value="ALTER TABLE products PARTITION (cat='clothing') REPLACE COLUMNS (`size info` STRING COMMENT 'size specification', `color code` INT COMMENT 'RGB color value') CASCADE" db-types="Hive" />
+    <sql-case id="alter_replace_columns_quoted4" value="ALTER TABLE orders PARTITION (status='shipped') REPLACE COLUMNS (`ship date` DATE COMMENT 'actual shipping date', `tracking id` STRING COMMENT 'logistics tracking number') RESTRICT" db-types="Hive" />
 </sql-cases>

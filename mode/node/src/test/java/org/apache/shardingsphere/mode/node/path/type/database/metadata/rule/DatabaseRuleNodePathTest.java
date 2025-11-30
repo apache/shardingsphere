@@ -25,6 +25,7 @@ import org.junit.jupiter.api.Test;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class DatabaseRuleNodePathTest {
     
@@ -56,5 +57,12 @@ class DatabaseRuleNodePathTest {
                 DatabaseRuleNodePath.createRuleItemNameSearchCriteria("foo_db", "foo_rule", "foo_rule_item")).isPresent());
         assertFalse(NodePathSearcher.find("/metadata/foo_db/rules/bar_rule/foo_rule_item/item_value",
                 DatabaseRuleNodePath.createRuleItemNameSearchCriteria("foo_db", "foo_rule", "foo_rule_item")).isPresent());
+    }
+    
+    @Test
+    void assertCreateRuleTypeSearchCriteria() {
+        assertTrue(NodePathSearcher.isMatchedPath("/metadata/foo_db/rules/foo_rule", DatabaseRuleNodePath.createRuleTypeSearchCriteria("foo_db")));
+        assertTrue(DatabaseRuleNodePath.isRuleTypePath("foo_db", "/metadata/foo_db/rules/foo_rule"));
+        assertFalse(DatabaseRuleNodePath.isRuleTypePath("foo_db", "/metadata/foo_db/rules/foo_rule/foo_rule_item"));
     }
 }

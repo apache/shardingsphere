@@ -46,4 +46,8 @@
     <sql-case id="delete_with_simple_condition" value="DELETE FROM Q1_2000_sales WHERE amount_sold &lt; 0" db-types="Oracle" />
     <sql-case id="delete_with_output_clause_with_compress_function" value="DELETE FROM player OUTPUT deleted.id,deleted.name, deleted.surname,deleted.datemodifier,COMPRESS(deleted.info) INTO dbo.inactivePlayers WHERE datemodified &lt; @startOfYear" db-types="SQLServer" />
     <sql-case id="delete_returning_expressions" value="DELETE FROM t2 WHERE id = 2 RETURNING id,t&amp;t" db-types="MySQL,Firebird" />
+    <sql-case id="delete_with_table_hint" value="DELETE TOP(1) dbo.DatabaseLog WITH (READPAST) OUTPUT DELETED.* WHERE DatabaseLogID = 7;" db-types="SQLServer"/>
+    <sql-case id="delete_rowset_function" value="DELETE FROM OPENDATASOURCE('SQLNCLI', 'Data Source= &lt;server_name&gt;; Integrated Security=SSPI').AdventureWorks2022.HumanResources.Department WHERE DepartmentID = 17;" db-types="SQLServer" />
+    <sql-case id="delete_hive_basic" value="DELETE FROM orders" db-types="Hive" />
+    <sql-case id="delete_with_where" value="DELETE FROM orders WHERE order_id = 9527;" db-types="Hive" />
 </sql-cases>

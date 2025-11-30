@@ -21,9 +21,9 @@
         <assertion parameters="1000:int" expected-data-source-name="read_dataset" />
     </test-case>
 
-    <test-case sql="SELECT * FROM (SELECT o.* FROM t_order o WHERE o.user_id IN (10, 11, 12)) AS t, t_order_item i WHERE t.order_id = i.order_id AND t.order_id > ? ORDER BY item_id" db-types="MySQL,PostgreSQL,openGauss" scenario-types="db_tbl_sql_federation">
+    <!--<test-case sql="SELECT * FROM (SELECT o.* FROM t_order o WHERE o.user_id IN (10, 11, 12)) AS t, t_order_item i WHERE t.order_id = i.order_id AND t.order_id > ? ORDER BY item_id" db-types="MySQL,PostgreSQL,openGauss" scenario-types="db_tbl_sql_federation">
         <assertion parameters="1200:int" expected-data-source-name="read_dataset" />
-    </test-case>
+    </test-case>-->
     
     <test-case sql="SELECT * FROM t_order o WHERE o.order_id IN (SELECT i.order_id FROM t_order_item i INNER JOIN t_product p ON i.product_id = p.product_id WHERE p.product_id = ?) ORDER BY order_id" db-types="MySQL,PostgreSQL,openGauss" scenario-types="db_tbl_sql_federation">
         <assertion parameters="10:int" expected-data-source-name="read_dataset" />

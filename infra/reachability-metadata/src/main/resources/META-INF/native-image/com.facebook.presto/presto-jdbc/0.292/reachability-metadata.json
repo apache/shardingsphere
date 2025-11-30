@@ -1,0 +1,392 @@
+{
+  "reflection": [
+    {
+      "condition": {
+        "typeReached": "com.facebook.presto.jdbc.internal.client.StatementClientV1"
+      },
+      "type": "com.facebook.presto.jdbc.internal.client.ClientTypeSignature",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": [
+            "java.lang.String",
+            "java.util.List",
+            "java.util.List",
+            "java.util.List"
+          ]
+        }
+      ]
+    },
+    {
+      "condition": {
+        "typeReached": "com.facebook.presto.jdbc.internal.jackson.databind.ObjectReader"
+      },
+      "type": "com.facebook.presto.jdbc.internal.client.ClientTypeSignature",
+      "allDeclaredFields": true
+    },
+    {
+      "condition": {
+        "typeReached": "com.facebook.presto.jdbc.internal.jackson.databind.deser.DefaultDeserializationContext"
+      },
+      "type": "com.facebook.presto.jdbc.internal.client.ClientTypeSignatureParameter$ClientTypeSignatureParameterDeserializer",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "condition": {
+        "typeReached": "com.facebook.presto.jdbc.internal.client.StatementClientV1"
+      },
+      "type": "com.facebook.presto.jdbc.internal.client.Column",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": [
+            "java.lang.String",
+            "java.lang.String",
+            "com.facebook.presto.jdbc.internal.client.ClientTypeSignature"
+          ]
+        }
+      ]
+    },
+    {
+      "condition": {
+        "typeReached": "com.facebook.presto.jdbc.internal.jackson.databind.ObjectReader"
+      },
+      "type": "com.facebook.presto.jdbc.internal.client.Column",
+      "allDeclaredFields": true
+    },
+    {
+      "condition": {
+        "typeReached": "com.facebook.presto.jdbc.internal.jackson.databind.ObjectReader"
+      },
+      "type": "com.facebook.presto.jdbc.internal.client.ErrorLocation",
+      "allDeclaredFields": true
+    },
+    {
+      "condition": {
+        "typeReached": "com.facebook.presto.jdbc.internal.jackson.databind.ObjectReader"
+      },
+      "type": "com.facebook.presto.jdbc.internal.client.FailureInfo",
+      "allDeclaredFields": true,
+      "allPublicConstructors": true
+    },
+    {
+      "condition": {
+        "typeReached": "com.facebook.presto.jdbc.internal.jackson.databind.ObjectReader"
+      },
+      "type": "com.facebook.presto.jdbc.internal.client.QueryData"
+    },
+    {
+      "condition": {
+        "typeReached": "com.facebook.presto.jdbc.internal.jackson.databind.ObjectReader"
+      },
+      "type": "com.facebook.presto.jdbc.internal.client.QueryError",
+      "allDeclaredFields": true,
+      "allPublicConstructors": true
+    },
+    {
+      "condition": {
+        "typeReached": "com.facebook.presto.jdbc.internal.jackson.databind.ObjectReader"
+      },
+      "type": "com.facebook.presto.jdbc.internal.client.QueryResults",
+      "allDeclaredFields": true,
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": [
+            "java.lang.String",
+            "java.net.URI",
+            "java.net.URI",
+            "java.net.URI",
+            "java.util.List",
+            "java.util.List",
+            "java.util.List",
+            "com.facebook.presto.jdbc.internal.client.StatementStats",
+            "com.facebook.presto.jdbc.internal.client.QueryError",
+            "java.util.List",
+            "java.lang.String",
+            "java.lang.Long"
+          ]
+        }
+      ]
+    },
+    {
+      "condition": {
+        "typeReached": "com.facebook.presto.jdbc.internal.jackson.databind.ObjectReader"
+      },
+      "type": "com.facebook.presto.jdbc.internal.client.QueryStatusInfo"
+    },
+    {
+      "condition": {
+        "typeReached": "com.facebook.presto.jdbc.PrestoPreparedStatement"
+      },
+      "type": "com.facebook.presto.jdbc.internal.client.StageStats",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": [
+            "java.lang.String",
+            "java.lang.String",
+            "boolean",
+            "int",
+            "int",
+            "int",
+            "int",
+            "int",
+            "long",
+            "long",
+            "long",
+            "long",
+            "java.util.List"
+          ]
+        }
+      ]
+    },
+    {
+      "condition": {
+        "typeReached": "com.facebook.presto.jdbc.PrestoResultSet$ResultsPageIterator"
+      },
+      "type": "com.facebook.presto.jdbc.internal.client.StageStats",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": [
+            "java.lang.String",
+            "java.lang.String",
+            "boolean",
+            "int",
+            "int",
+            "int",
+            "int",
+            "int",
+            "long",
+            "long",
+            "long",
+            "long",
+            "java.util.List"
+          ]
+        }
+      ]
+    },
+    {
+      "condition": {
+        "typeReached": "com.facebook.presto.jdbc.PrestoStatement"
+      },
+      "type": "com.facebook.presto.jdbc.internal.client.StageStats",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": [
+            "java.lang.String",
+            "java.lang.String",
+            "boolean",
+            "int",
+            "int",
+            "int",
+            "int",
+            "int",
+            "long",
+            "long",
+            "long",
+            "long",
+            "java.util.List"
+          ]
+        }
+      ]
+    },
+    {
+      "condition": {
+        "typeReached": "com.facebook.presto.jdbc.internal.jackson.databind.ObjectReader"
+      },
+      "type": "com.facebook.presto.jdbc.internal.client.StageStats",
+      "allDeclaredFields": true
+    },
+    {
+      "condition": {
+        "typeReached": "com.facebook.presto.jdbc.internal.jackson.databind.ObjectReader"
+      },
+      "type": "com.facebook.presto.jdbc.internal.client.StatementStats",
+      "allDeclaredFields": true,
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": [
+            "java.lang.String",
+            "boolean",
+            "boolean",
+            "boolean",
+            "int",
+            "int",
+            "int",
+            "int",
+            "int",
+            "long",
+            "long",
+            "long",
+            "long",
+            "long",
+            "long",
+            "long",
+            "long",
+            "long",
+            "long",
+            "long",
+            "com.facebook.presto.jdbc.internal.client.StageStats",
+            "com.facebook.presto.jdbc.internal.common.RuntimeStats"
+          ]
+        }
+      ]
+    },
+    {
+      "condition": {
+        "typeReached": "com.facebook.presto.jdbc.internal.jackson.databind.deser.std.MapDeserializer"
+      },
+      "type": "com.facebook.presto.jdbc.internal.common.RuntimeMetric",
+      "allDeclaredFields": true,
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": [
+            "java.lang.String",
+            "com.facebook.presto.jdbc.internal.common.RuntimeUnit",
+            "long",
+            "long",
+            "long",
+            "long"
+          ]
+        }
+      ]
+    },
+    {
+      "condition": {
+        "typeReached": "com.facebook.presto.jdbc.internal.jackson.databind.ObjectReader"
+      },
+      "type": "com.facebook.presto.jdbc.internal.common.RuntimeStats",
+      "allDeclaredFields": true
+    },
+    {
+      "condition": {
+        "typeReached": "com.facebook.presto.jdbc.internal.jackson.databind.introspect.AnnotatedConstructor"
+      },
+      "type": "com.facebook.presto.jdbc.internal.common.RuntimeStats",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": [
+            "java.util.Map"
+          ]
+        }
+      ]
+    },
+    {
+      "condition": {
+        "typeReached": "com.facebook.presto.jdbc.internal.jackson.databind.deser.std.MapDeserializer"
+      },
+      "type": "com.facebook.presto.jdbc.internal.common.RuntimeUnit",
+      "allDeclaredFields": true
+    },
+    {
+      "condition": {
+        "typeReached": "com.facebook.presto.jdbc.internal.jackson.databind.introspect.JacksonAnnotationIntrospector"
+      },
+      "type": "com.facebook.presto.jdbc.internal.common.RuntimeUnit",
+      "allDeclaredFields": true
+    },
+    {
+      "condition": {
+        "typeReached": "com.facebook.presto.jdbc.internal.jackson.databind.util.ClassUtil"
+      },
+      "type": "com.facebook.presto.jdbc.internal.common.RuntimeUnit",
+      "allDeclaredFields": true
+    },
+    {
+      "condition": {
+        "typeReached": "com.facebook.presto.jdbc.internal.jackson.databind.ObjectMapper"
+      },
+      "type": "com.facebook.presto.jdbc.internal.common.type.ParameterKind",
+      "allDeclaredFields": true
+    },
+    {
+      "condition": {
+        "typeReached": "com.facebook.presto.jdbc.internal.jackson.databind.introspect.AnnotatedMethod"
+      },
+      "type": "com.facebook.presto.jdbc.internal.common.type.ParameterKind",
+      "methods": [
+        {
+          "name": "fromJsonValue",
+          "parameterTypes": [
+            "java.lang.String"
+          ]
+        }
+      ]
+    },
+    {
+      "condition": {
+        "typeReached": "com.facebook.presto.jdbc.internal.guava.reflect.Types$TypeVariableInvocationHandler"
+      },
+      "type": "com.facebook.presto.jdbc.internal.guava.reflect.Types$TypeVariableImpl"
+    },
+    {
+      "condition": {
+        "typeReached": "com.facebook.presto.jdbc.internal.jackson.databind.ext.Java7Handlers"
+      },
+      "type": "com.facebook.presto.jdbc.internal.jackson.databind.ext.Java7HandlersImpl",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "condition": {
+        "typeReached": "com.facebook.presto.jdbc.internal.jackson.databind.ext.Java7Support"
+      },
+      "type": "com.facebook.presto.jdbc.internal.jackson.databind.ext.Java7SupportImpl",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "condition": {
+        "typeReached": "com.facebook.presto.jdbc.internal.com.facebook.airlift.json.ObjectMapperProvider"
+      },
+      "type": "com.facebook.presto.jdbc.internal.joda.time.DateTime"
+    },
+    {
+      "condition": {
+        "typeReached": "com.facebook.presto.jdbc.internal.jackson.databind.ObjectReader"
+      },
+      "type": "com.facebook.presto.jdbc.internal.spi.PrestoWarning",
+      "allDeclaredFields": true
+    },
+    {
+      "condition": {
+        "typeReached": "com.facebook.presto.jdbc.internal.jackson.databind.ObjectReader"
+      },
+      "type": "com.facebook.presto.jdbc.internal.spi.WarningCode",
+      "allDeclaredFields": true
+    }
+  ],
+  "resources": [
+    {
+      "condition": {
+        "typeReached": "com.facebook.presto.jdbc.internal.joda.time.tz.ZoneInfoProvider"
+      },
+      "glob": "com/facebook/presto/jdbc/internal/joda/time/tz/data/**"
+    },
+    {
+      "condition": {
+        "typeReached": "com.facebook.presto.jdbc.internal.common.type.TimeZoneKey"
+      },
+      "glob": "com/facebook/presto/jdbc/internal/common/type/zone-index.properties"
+    }
+  ]
+}

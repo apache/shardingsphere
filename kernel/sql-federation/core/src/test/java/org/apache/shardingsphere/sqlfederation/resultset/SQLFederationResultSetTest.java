@@ -19,13 +19,11 @@ package org.apache.shardingsphere.sqlfederation.resultset;
 
 import org.apache.calcite.linq4j.Enumerator;
 import org.apache.calcite.rel.type.RelDataType;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.Projection;
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.impl.ColumnProjection;
-import org.apache.shardingsphere.infra.binder.context.segment.table.TablesContext;
-import org.apache.shardingsphere.infra.binder.context.statement.dml.SelectStatementContext;
-import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
-import org.apache.shardingsphere.sqlfederation.optimizer.metadata.schema.SQLFederationSchema;
+import org.apache.shardingsphere.sqlfederation.compiler.metadata.schema.SQLFederationSchema;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -46,16 +44,14 @@ import java.sql.Time;
 import java.sql.Timestamp;
 import java.util.Arrays;
 import java.util.Calendar;
-import java.util.Collections;
 import java.util.List;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.isA;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -68,20 +64,15 @@ class SQLFederationResultSetTest {
     @BeforeEach
     void setUp() {
         enumerator = createEnumerator();
-        federationResultSet = new SQLFederationResultSet(enumerator, mock(SQLFederationSchema.class), createSelectStatementContext(), mock(RelDataType.class));
+        federationResultSet =
+                new SQLFederationResultSet(enumerator, mock(SQLFederationSchema.class), createExpandProjections(), TypedSPILoader.getService(DatabaseType.class, "FIXTURE"), mock(RelDataType.class),
+                        "1");
     }
     
-    private SelectStatementContext createSelectStatementContext() {
-        SelectStatementContext result = mock(SelectStatementContext.class, RETURNS_DEEP_STUBS);
-        List<Projection> projections = Arrays.asList(new ColumnProjection("o", "order_id", null, mock(DatabaseType.class)), new ColumnProjection("o", "user_id", null, mock(DatabaseType.class)),
+    private List<Projection> createExpandProjections() {
+        return Arrays.asList(new ColumnProjection("o", "order_id", null, mock(DatabaseType.class)), new ColumnProjection("o", "user_id", null, mock(DatabaseType.class)),
                 new ColumnProjection("o", "status", null, mock(DatabaseType.class)),
                 new ColumnProjection("i", "item_id", null, mock(DatabaseType.class)));
-        when(result.getProjectionsContext().getExpandProjections()).thenReturn(projections);
-        TablesContext tablesContext = mock(TablesContext.class);
-        when(tablesContext.getTableNames()).thenReturn(Collections.emptyList());
-        when(result.getTablesContext()).thenReturn(tablesContext);
-        when(result.getDatabaseType()).thenReturn(TypedSPILoader.getService(DatabaseType.class, "FIXTURE"));
-        return result;
     }
     
     @SuppressWarnings("unchecked")
@@ -455,14 +446,14 @@ class SQLFederationResultSetTest {
     void assertGetArrayWithColumnIndex() throws SQLException {
         when(enumerator.current()).thenReturn(new Object[]{mock(Array.class), 1, "OK", 1});
         federationResultSet.next();
-        assertThat(federationResultSet.getArray(1), instanceOf(Array.class));
+        assertThat(federationResultSet.getArray(1), isA(Array.class));
     }
     
     @Test
     void assertGetArrayWithColumnLabel() throws SQLException {
         when(enumerator.current()).thenReturn(new Object[]{mock(Array.class), 1, "OK", 1});
         federationResultSet.next();
-        assertThat(federationResultSet.getArray("order_id"), instanceOf(Array.class));
+        assertThat(federationResultSet.getArray("order_id"), isA(Array.class));
     }
     
     @Test

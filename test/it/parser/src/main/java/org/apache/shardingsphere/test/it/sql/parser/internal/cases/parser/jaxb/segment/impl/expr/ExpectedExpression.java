@@ -110,8 +110,14 @@ public final class ExpectedExpression extends AbstractExpectedSQLSegment {
     @XmlElement(name = "outer-join-expression")
     private ExpectedOuterJoinExpression outerJoinExpression;
     
+    @XmlElement(name = "interval-expression-projection")
+    private ExpectedIntervalExpressionProjection intervalExpressionProjection;
+    
     @XmlElement(name = "interval-expression")
     private ExpectedIntervalExpression intervalExpression;
+    
+    @XmlElement(name = "quantify-subquery-expression")
+    private ExpectedQuantifySubqueryExpression quantifySubqueryExpression;
     
     @XmlElement(name = "multiset-expression")
     private ExpectedMultisetExpression multisetExpression;

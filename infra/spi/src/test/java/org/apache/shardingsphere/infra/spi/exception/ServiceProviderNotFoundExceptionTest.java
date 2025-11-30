@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.infra.spi.exception;
 
+import org.apache.shardingsphere.infra.spi.ShardingSphereSPI;
 import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -26,6 +27,7 @@ class ServiceProviderNotFoundExceptionTest {
     
     @Test
     void assertGetMessageWithClassAndType() {
-        assertThat(new ServiceProviderNotFoundException(Object.class, "Foo").getMessage(), is("SPI-00001: No implementation class load from SPI 'java.lang.Object' with type 'Foo'."));
+        assertThat(new ServiceProviderNotFoundException(ShardingSphereSPI.class, "Foo").getMessage(),
+                is("SPI-00001: No implementation class load from SPI 'org.apache.shardingsphere.infra.spi.ShardingSphereSPI' with type 'Foo'."));
     }
 }

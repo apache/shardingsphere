@@ -25,8 +25,7 @@ import org.apache.shardingsphere.data.pipeline.core.exception.PipelineInternalEx
 import org.apache.shardingsphere.data.pipeline.core.metadata.model.PipelineColumnMetaData;
 import org.apache.shardingsphere.data.pipeline.core.metadata.model.PipelineIndexMetaData;
 import org.apache.shardingsphere.data.pipeline.core.metadata.model.PipelineTableMetaData;
-import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.DialectDatabaseMetaData;
-import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.metadata.identifier.ShardingSphereIdentifier;
 
 import java.sql.Connection;
@@ -73,8 +72,8 @@ public final class StandardPipelineTableMetaDataLoader implements PipelineTableM
     
     private void loadTableMetaData(final String schemaName, final String tableName) throws SQLException {
         try (Connection connection = dataSource.getConnection()) {
-            DialectDatabaseMetaData dialectDatabaseMetaData = new DatabaseTypeRegistry(dataSource.getDatabaseType()).getDialectDatabaseMetaData();
-            tableMetaDataMap.putAll(loadTableMetaData(connection, dialectDatabaseMetaData.getSchemaOption().isSchemaAvailable() ? schemaName : null, tableName));
+            DatabaseTypeRegistry databaseTypeRegistry = new DatabaseTypeRegistry(dataSource.getDatabaseType());
+            tableMetaDataMap.putAll(loadTableMetaData(connection, databaseTypeRegistry.getDialectDatabaseMetaData().getSchemaOption().isSchemaAvailable() ? schemaName : null, tableName));
         }
     }
     

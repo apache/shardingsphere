@@ -29,12 +29,13 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.ArgumentsProvider;
 import org.junit.jupiter.params.provider.ArgumentsSource;
+import org.junit.jupiter.params.support.ParameterDeclarations;
 
 import java.util.Collections;
 import java.util.stream.Stream;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.isA;
 import static org.mockito.Mockito.mock;
 
 class AllPermittedPrivilegeProviderTest {
@@ -45,13 +46,13 @@ class AllPermittedPrivilegeProviderTest {
         AuthorityRuleConfiguration ruleConfig = new AuthorityRuleConfiguration(
                 Collections.singleton(new UserConfiguration("root", "", "%", null, false)), mock(AlgorithmConfiguration.class), Collections.emptyMap(), null);
         ShardingSpherePrivileges actual = provider.build(ruleConfig, new Grantee("root@%"));
-        assertThat(actual, instanceOf(AllPermittedPrivileges.class));
+        assertThat(actual, isA(AllPermittedPrivileges.class));
     }
     
     private static final class TestCaseArgumentsProvider implements ArgumentsProvider {
         
         @Override
-        public Stream<? extends Arguments> provideArguments(final ExtensionContext extensionContext) {
+        public Stream<? extends Arguments> provideArguments(final ParameterDeclarations parameters, final ExtensionContext context) {
             return Stream.of(Arguments.of("withType", TypedSPILoader.getService(PrivilegeProvider.class, "ALL_PERMITTED")),
                     Arguments.of("withAlias", TypedSPILoader.getService(PrivilegeProvider.class, "ALL_PRIVILEGES_PERMITTED")),
                     Arguments.of("withDefault", TypedSPILoader.getService(PrivilegeProvider.class, null)));

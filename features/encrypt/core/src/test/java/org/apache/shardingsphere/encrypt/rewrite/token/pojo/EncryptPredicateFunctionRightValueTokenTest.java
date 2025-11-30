@@ -42,7 +42,7 @@ class EncryptPredicateFunctionRightValueTokenTest {
         functionSegment.getParameters().add(new LiteralExpressionSegment(0, 0, "%"));
         EncryptPredicateFunctionRightValueToken actual =
                 new EncryptPredicateFunctionRightValueToken(0, 0, functionSegment.getFunctionName(), functionSegment.getParameters(), indexValues, Collections.emptyList());
-        assertThat(actual.toString(), is("CONCAT ('%', 'abc', '%')"));
+        assertThat(actual.toString(), is("CONCAT('%', 'abc', '%')"));
     }
     
     @Test
@@ -59,6 +59,6 @@ class EncryptPredicateFunctionRightValueTokenTest {
         functionSegment.getParameters().add(nestedFunctionSegment);
         EncryptPredicateFunctionRightValueToken actual =
                 new EncryptPredicateFunctionRightValueToken(0, 0, functionSegment.getFunctionName(), functionSegment.getParameters(), indexValues, Collections.emptyList());
-        assertThat(actual.toString(), is("CONCAT ('%', CONCAT ('abc', '%'))"));
+        assertThat(actual.toString(), is("CONCAT('%', CONCAT('abc', '%'))"));
     }
 }

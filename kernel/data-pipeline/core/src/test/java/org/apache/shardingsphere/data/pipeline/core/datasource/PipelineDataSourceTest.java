@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.data.pipeline.core.datasource;
 
-import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -106,7 +106,7 @@ class PipelineDataSourceTest {
     }
     
     @Test
-    void assertCloseTwice() throws SQLException {
+    void assertCloseTwice() {
         assertFalse(pipelineDataSource.isClosed());
         pipelineDataSource.close();
         assertTrue(pipelineDataSource.isClosed());
@@ -115,7 +115,7 @@ class PipelineDataSourceTest {
     }
     
     @Test
-    void assertCloseWithNotAutoCloseableDataSource() throws SQLException {
+    void assertCloseWithNotAutoCloseableDataSource() {
         PipelineDataSource pipelineDataSource = new PipelineDataSource(mock(DataSource.class), TypedSPILoader.getService(DatabaseType.class, "FIXTURE"));
         assertFalse(pipelineDataSource.isClosed());
         pipelineDataSource.close();

@@ -25,8 +25,8 @@ import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.isA;
 import static org.mockito.Mockito.mock;
 
 class ShadowRuleBuilderTest {
@@ -36,6 +36,6 @@ class ShadowRuleBuilderTest {
     void assertBuild() {
         ShadowRuleConfiguration ruleConfig = new ShadowRuleConfiguration();
         DatabaseRuleBuilder builder = OrderedSPILoader.getServices(DatabaseRuleBuilder.class, Collections.singleton(ruleConfig)).get(ruleConfig);
-        assertThat(builder.build(ruleConfig, "", mock(), mock(), Collections.emptyList(), mock()), instanceOf(ShadowRule.class));
+        assertThat(builder.build(ruleConfig, "", mock(), mock(), Collections.emptyList(), mock()), isA(ShadowRule.class));
     }
 }

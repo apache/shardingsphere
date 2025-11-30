@@ -54,7 +54,7 @@ public final class ClusterProcessPersistService implements ProcessPersistService
         boolean isCompleted = false;
         try {
             triggerPaths.forEach(each -> repository.persist(each, ""));
-            isCompleted = ProcessOperationLockRegistry.getInstance().waitUntilReleaseReady(taskId, () -> isReady(triggerPaths));
+            isCompleted = ProcessOperationLockRegistry.getInstance().waitUntilReleaseReady(taskId, triggerPaths.size(), () -> isReady(triggerPaths));
             return getShowProcessListData(taskId);
         } finally {
             repository.delete(NodePathGenerator.toPath(new ProcessNodePath(taskId, null)));
@@ -86,7 +86,7 @@ public final class ClusterProcessPersistService implements ProcessPersistService
         boolean isCompleted = false;
         try {
             triggerPaths.forEach(each -> repository.persist(each, ""));
-            isCompleted = ProcessOperationLockRegistry.getInstance().waitUntilReleaseReady(processId, () -> isReady(triggerPaths));
+            isCompleted = ProcessOperationLockRegistry.getInstance().waitUntilReleaseReady(processId, triggerPaths.size(), () -> isReady(triggerPaths));
         } finally {
             if (!isCompleted) {
                 triggerPaths.forEach(repository::delete);

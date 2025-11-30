@@ -24,13 +24,16 @@
     <sql-case id="create_index" value="CREATE INDEX t_log_index ON t_log (id)" db-types="H2,MySQL,PostgreSQL,openGauss,Oracle,SQLServer" />
     <sql-case id="create_unique_index" value="CREATE UNIQUE INDEX t_log_index ON t_log (id)" db-types="H2,MySQL,PostgreSQL,openGauss,Oracle,SQLServer" />
     <sql-case id="create_composite_index" value="CREATE INDEX order_index ON t_order (order_id, user_id, status)" db-types="H2,MySQL,PostgreSQL,openGauss,Oracle,SQLServer" />
+    <!-- TODO should assert index for all databases (only Oracle can support parse index right now)
     <sql-case id="create_btree_index" value="CREATE INDEX order_index ON t_order USING BTREE (order_id)" db-types="PostgreSQL,openGauss" />
     <sql-case id="create_index_with_space" value="    CREATE INDEX
         order_index
     ON
         t_order (order_id)    " db-types="MySQL,SQLServer" />
     <sql-case id="create_index_with_back_quota" value="CREATE INDEX `order_index` ON `t_order` (`order_id`)" db-types="MySQL" />
+     -->
     <sql-case id="create_index_with_quota" value="CREATE INDEX &quot;order_index&quot; ON &quot;t_order&quot; (&quot;order_id&quot;)" db-types="Oracle" />
+    <!-- TODO should assert index for all databases (only Oracle can support parse index right now)
     <sql-case id="create_index_with_function" value="CREATE INDEX idx_upper_status ON t_order (UPPER(status))" db-types="Oracle,PostgreSQL,openGauss" />
     <sql-case id="create_index_with_bracket" value="CREATE INDEX [order_index] ON [t_order] ([order_id])" db-types="SQLServer" />
     <sql-case id="create_index_with_no_default_fill_factor" value="CREATE UNIQUE INDEX order_index ON t_order (order_id) WITH (fillfactor = 70)" db-types="PostgreSQL,openGauss" />
@@ -42,17 +45,51 @@
     <sql-case id="create_index_concurrently" value="CREATE INDEX CONCURRENTLY order_index ON t_order (order_id)" db-types="PostgreSQL,openGauss" />
     <sql-case id="create_index_if_not_exists" value="CREATE INDEX IF NOT EXISTS order_index ON t_order (order_id)" db-types="PostgreSQL,openGauss" />
     <sql-case id="create_index_using_btree" value="CREATE INDEX order_index ON t_order USING BTREE (order_id)" db-types="PostgreSQL,openGauss" />
-    <sql-case id="create_index_with_unique" value="CREATE UNIQUE INDEX order_index ON t_order (order_id)" db-types="Oracle" />
+    -->
+    <sql-case id="create_index_with_unique" value="CREATE UNIQUE INDEX order_index ON t_order (order_id)" db-types="Oracle, MySQL" />
     <sql-case id="create_index_with_usable" value="CREATE UNIQUE INDEX order_index ON t_order (order_id) USABLE" db-types="Oracle" />
     <sql-case id="create_index_with_unusable" value="CREATE UNIQUE INDEX order_index ON t_order (order_id) UNUSABLE" db-types="Oracle" />
     <sql-case id="create_index_with_immediate_invalidation" value="CREATE UNIQUE INDEX order_index ON t_order (order_id) IMMEDIATE INVALIDATION" db-types="Oracle" />
     <sql-case id="create_index_with_cluster_index" value="CREATE UNIQUE INDEX order_index ON CLUSTER t_cluster" db-types="Oracle" />
     <sql-case id="create_index_with_bitmap" value="CREATE BITMAP INDEX order_index ON t_order (order_id)" db-types="Oracle" />
+    <!-- TODO should assert index for all databases (only Oracle can support parse index right now)
     <sql-case id="create_gin_index" value="CREATE INDEX gin_idx ON t_order USING GIN (locations) WITH (fastupdate = off)" db-types="PostgreSQL,openGauss" />
     <sql-case id="create_index_using_ignore_dup_key" value="CREATE UNIQUE INDEX AK_Index ON t_order (order_id) WITH (IGNORE_DUP_KEY = ON)" db-types="SQLServer" />
     <sql-case id="create_index_using_drop_existing" value="CREATE NONCLUSTERED INDEX IX_WorkOrder_ProductID ON t_order(order_id)
         WITH (FILLFACTOR = 80, PAD_INDEX = ON, DROP_EXISTING = ON);" db-types="SQLServer" />
+    -->
     <sql-case id="create_index_on_local_parallel_nologging" value="CREATE INDEX from_number_ix ON call_detail_records(from_number) LOCAL PARALLEL NOLOGGING" db-types="Oracle" />
     <sql-case id="create_bitmap_index_on_local_parallel_nologging" value="CREATE BITMAP INDEX is_active_bix ON credit_card_accounts(is_active) LOCAL PARALLEL NOLOGGING" db-types="Oracle" />
     <sql-case id="create_index_with_engine_attribute" value="CREATE INDEX i1 ON t1 (c1) ENGINE_ATTRIBUTE='{&quot;key&quot;:&quot;value&quot;}';" db-types="MySQL"/>
+    <sql-case id="create_index_with_partitions" value="CREATE INDEX &quot;IDX_ORDER_ID&quot; ON &quot;T_ORDER&quot; (&quot;ORDER_ID&quot;)
+    PCTFREE 10 INITRANS 2 MAXTRANS 255
+    STORAGE(
+    BUFFER_POOL DEFAULT FLASH_CACHE DEFAULT CELL_FLASH_CACHE DEFAULT) LOCAL
+    (PARTITION &quot;PARTITION1&quot;
+    PCTFREE 10 INITRANS 2 MAXTRANS 255 LOGGING
+    STORAGE(INITIAL 4096 NEXT 4096 MINEXTENTS 1 MAXEXTENTS 40960
+    PCTINCREASE 0 FREELISTS 1 FREELIST GROUPS 1
+    BUFFER_POOL DEFAULT FLASH_CACHE DEFAULT CELL_FLASH_CACHE DEFAULT)
+    TABLESPACE &quot;TS_CHNLMGR_BUSI_IDX&quot; ,
+    PARTITION &quot;PARTITION2&quot;
+    PCTFREE 10 INITRANS 2 MAXTRANS 255 LOGGING
+    STORAGE(INITIAL 4096 NEXT 4096 MINEXTENTS 1 MAXEXTENTS 40960
+    PCTINCREASE 0 FREELISTS 1 FREELIST GROUPS 1
+    BUFFER_POOL DEFAULT FLASH_CACHE DEFAULT CELL_FLASH_CACHE DEFAULT)
+    TABLESPACE &quot;TS_CHNLMGR_BUSI_IDX&quot;
+    );" db-types="Oracle"/>
+    <sql-case id="create_index_basic" value="CREATE INDEX idx_product_id ON TABLE orders (product_id) AS 'org.apache.hadoop.hive.ql.index.compact.CompactIndexHandler'" db-types="Hive" />
+    <sql-case id="create_index_with_deferred_rebuild" value="CREATE INDEX idx_order_date ON TABLE orders (order_date) AS 'org.apache.hadoop.hive.ql.index.compact.CompactIndexHandler' WITH DEFERRED REBUILD" db-types="Hive" />
+    <sql-case id="create_index_with_idxproperties" value="CREATE INDEX idx_customer_id ON TABLE customers (customer_id) AS 'org.apache.hadoop.hive.ql.index.compact.CompactIndexHandler' IDXPROPERTIES ('index_priority' = 'high', 'storage_level' = 'memory')" db-types="Hive" />
+    <sql-case id="create_index_with_in_table" value="CREATE INDEX idx_product_category ON TABLE products (category) AS 'org.apache.hadoop.hive.ql.index.compact.CompactIndexHandler' IN TABLE idx_products_category" db-types="Hive" />
+    <sql-case id="create_index_with_row_format" value="CREATE INDEX idx_sales_region ON TABLE sales (region) AS 'org.apache.hadoop.hive.ql.index.compact.CompactIndexHandler' ROW FORMAT DELIMITED FIELDS TERMINATED BY ',' STORED AS TEXTFILE" db-types="Hive" />
+    <sql-case id="create_index_with_stored_by" value="CREATE INDEX idx_user_email ON TABLE users (email) AS 'org.apache.hadoop.hive.ql.index.compact.CompactIndexHandler' STORED BY 'org.apache.hadoop.hive.hbase.HBaseStorageHandler'" db-types="Hive" />
+    <sql-case id="create_index_with_location" value="CREATE INDEX idx_order_amount_STATUS ON TABLE orders (status) AS 'org.apache.hadoop.hive.ql.index.compact.CompactIndexHandler' LOCATION '/user/hive/indexes/order_status_idx'" db-types="Hive" />
+    <sql-case id="create_index_with_tblproperties" value="CREATE INDEX idx_customer_country ON TABLE customers (country) AS 'org.apache.hadoop.hive.ql.index.compact.CompactIndexHandler' TBLPROPERTIES ('retention_days' = '30', 'update_frequency' = 'daily')" db-types="Hive" />
+    <sql-case id="create_index_with_comment" value="CREATE INDEX idx_product_price ON TABLE products (price) AS 'org.apache.hadoop.hive.ql.index.compact.CompactIndexHandler' COMMENT 'Index on product price for fast range queries'" db-types="Hive" />
+    <sql-case id="create_index_full_options" value="CREATE INDEX idx_orders_full ON TABLE orders (order_id, customer_id, order_date) AS 'org.apache.hadoop.hive.ql.index.compact.CompactIndexHandler' WITH DEFERRED REBUILD IDXPROPERTIES ('index_version' = '1.0') IN TABLE idx_orders_data ROW FORMAT DELIMITED STORED AS ORC LOCATION '/user/hive/indexes/orders_full_idx' TBLPROPERTIES ('index_retention_days' = '180') COMMENT 'Full index on orders table with multiple columns and ORC storage'" db-types="Hive" />
+    <sql-case id="create_index_stored_as" value="CREATE INDEX idx_orders_full ON TABLE orders (order_id, customer_id, order_date) AS 'org.apache.hadoop.hive.ql.index.compact.CompactIndexHandler' WITH DEFERRED REBUILD IDXPROPERTIES ('index_version' = '1.0', 'query_optimize' = 'true') IN TABLE idx_orders_data STORED AS ORC LOCATION '/user/hive/indexes/orders_full_idx' TBLPROPERTIES ('index_retention_days' = '180') COMMENT 'Full index on orders table with multiple columns and ORC storage'" db-types="Hive" />
+    <sql-case id="create_index_full_options_with_stored_by" value="CREATE INDEX idx_products_full ON TABLE products (product_id, category, price) AS 'org.apache.hadoop.hive.ql.index.compact.CompactIndexHandler' WITH DEFERRED REBUILD IDXPROPERTIES ('index_type' = 'secondary') IN TABLE idx_products_data STORED BY 'org.apache.hadoop.hive.hbase.HBaseStorageHandler' WITH SERDEPROPERTIES ('hbase.table.name' = 'products:index') LOCATION '/user/hive/indexes/products_full_idx' TBLPROPERTIES ('hbase.mapred.output.key.class' = 'org.apache.hadoop.hbase.io.ImmutableBytesWritable') COMMENT 'Full index on products table stored in HBase'" db-types="Hive" />
+    <sql-case id="create_index_with_deferred_rebuild_and_in_table" value="CREATE INDEX idx_order_customer ON TABLE orders (customer_id) AS 'org.apache.hadoop.hive.ql.index.compact.CompactIndexHandler' WITH DEFERRED REBUILD IN TABLE idx_orders_customer" db-types="Hive" />
+    <sql-case id="create_index_with_location_tblproperties_comment" value="CREATE INDEX idx_product_quantity ON TABLE inventory (quantity) AS 'org.apache.hadoop.hive.ql.index.compact.CompactIndexHandler' LOCATION '/user/hive/indexes/inventory_quantity_idx' TBLPROPERTIES ('storage_policy' = 'hot', 'compression' = 'lzo') COMMENT 'Index on inventory quantity for stock level queries'" db-types="Hive" />
 </sql-cases>

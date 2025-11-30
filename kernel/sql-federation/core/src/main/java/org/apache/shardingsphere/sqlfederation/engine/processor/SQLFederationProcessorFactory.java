@@ -20,7 +20,6 @@ package org.apache.shardingsphere.sqlfederation.engine.processor;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutor;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereStatistics;
 import org.apache.shardingsphere.sqlfederation.engine.processor.impl.StandardSQLFederationProcessor;
 
@@ -44,12 +43,11 @@ public final class SQLFederationProcessorFactory {
     /**
      * Create new instance of {@link SQLFederationProcessor}.
      *
-     * @param metaData shardingSphere meta data
      * @param statistics shardingSphere statistics
      * @param jdbcExecutor JDBC executor
      * @return created instance
      */
-    public SQLFederationProcessor newInstance(final ShardingSphereMetaData metaData, final ShardingSphereStatistics statistics, final JDBCExecutor jdbcExecutor) {
-        return new StandardSQLFederationProcessor(metaData, statistics, jdbcExecutor);
+    public SQLFederationProcessor newInstance(final ShardingSphereStatistics statistics, final JDBCExecutor jdbcExecutor) {
+        return new StandardSQLFederationProcessor(statistics, jdbcExecutor);
     }
 }

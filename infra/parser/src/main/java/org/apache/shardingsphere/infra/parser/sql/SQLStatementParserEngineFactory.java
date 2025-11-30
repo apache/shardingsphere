@@ -19,8 +19,8 @@ package org.apache.shardingsphere.infra.parser.sql;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
-import org.apache.shardingsphere.sql.parser.api.CacheOption;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
+import org.apache.shardingsphere.sql.parser.engine.api.CacheOption;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -46,8 +46,7 @@ public final class SQLStatementParserEngineFactory {
         if (null == result) {
             result = ENGINES.computeIfAbsent(databaseType, key -> new SQLStatementParserEngine(key, sqlStatementCacheOption, parseTreeCacheOption));
         } else if (!result.getSqlStatementCacheOption().equals(sqlStatementCacheOption) || !result.getParseTreeCacheOption().equals(parseTreeCacheOption)) {
-            result = new SQLStatementParserEngine(databaseType, sqlStatementCacheOption, parseTreeCacheOption);
-            ENGINES.put(databaseType, result);
+            result.updateCacheOption(sqlStatementCacheOption, parseTreeCacheOption);
         }
         return result;
     }

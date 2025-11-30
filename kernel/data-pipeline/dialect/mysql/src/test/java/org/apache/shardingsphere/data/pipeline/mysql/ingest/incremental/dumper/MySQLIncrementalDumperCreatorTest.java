@@ -22,15 +22,15 @@ import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.incremental.Cr
 import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.incremental.DialectIncrementalDumperCreator;
 import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.incremental.IncrementalDumperContext;
 import org.apache.shardingsphere.data.pipeline.mysql.ingest.incremental.binlog.position.MySQLBinlogPosition;
-import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPILoader;
-import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoader;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.isA;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -47,6 +47,6 @@ class MySQLIncrementalDumperCreatorTest {
         when(dumperContext.getCommonContext().getDataSourceConfig()).thenReturn(new StandardPipelineDataSourceConfiguration(Collections.singletonMap("url", "jdbc:mock://127.0.0.1/foo_ds")));
         MySQLBinlogPosition position = mock(MySQLBinlogPosition.class, RETURNS_DEEP_STUBS);
         CreateIncrementalDumperParameter param = new CreateIncrementalDumperParameter(dumperContext, position, null, null, null);
-        assertThat(creator.create(param), instanceOf(MySQLIncrementalDumper.class));
+        assertThat(creator.create(param), isA(MySQLIncrementalDumper.class));
     }
 }

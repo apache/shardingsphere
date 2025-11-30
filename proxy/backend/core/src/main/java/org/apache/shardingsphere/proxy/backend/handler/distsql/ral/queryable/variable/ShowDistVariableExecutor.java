@@ -21,25 +21,21 @@ import lombok.Setter;
 import org.apache.shardingsphere.distsql.handler.aware.DistSQLExecutorConnectionContextAware;
 import org.apache.shardingsphere.distsql.handler.engine.DistSQLConnectionContext;
 import org.apache.shardingsphere.distsql.handler.engine.query.DistSQLQueryExecutor;
-import org.apache.shardingsphere.distsql.statement.ral.queryable.show.ShowDistVariableStatement;
+import org.apache.shardingsphere.distsql.statement.type.ral.queryable.show.ShowDistVariableStatement;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.config.props.temporary.TemporaryConfigurationPropertyKey;
-import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
+import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.exception.kernel.syntax.UnsupportedVariableException;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPI;
-import org.apache.shardingsphere.logging.constant.LoggingConstants;
-import org.apache.shardingsphere.logging.logger.ShardingSphereLogger;
-import org.apache.shardingsphere.logging.rule.LoggingRule;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.common.DistSQLVariable;
 
+import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Optional;
-import java.util.Properties;
 
 /**
  * Show dist variable executor.
@@ -72,25 +68,6 @@ public final class ShowDistVariableExecutor implements DistSQLQueryExecutor<Show
     }
     
     private String getConfigurationValue(final ShardingSphereMetaData metaData, final String variableName) {
-        return LoggingConstants.SQL_SHOW_VARIABLE_NAME.equalsIgnoreCase(variableName) || LoggingConstants.SQL_SIMPLE_VARIABLE_NAME.equalsIgnoreCase(variableName)
-                ? getLoggingPropsValue(metaData, variableName)
-                : getStringResult(metaData.getProps().getValue(ConfigurationPropertyKey.valueOf(variableName)));
-    }
-    
-    private String getLoggingPropsValue(final ShardingSphereMetaData metaData, final String variableName) {
-        Optional<ShardingSphereLogger> sqlLogger = metaData.getGlobalRuleMetaData().findSingleRule(LoggingRule.class).flatMap(LoggingRule::getSQLLogger);
-        if (sqlLogger.isPresent()) {
-            Properties props = sqlLogger.get().getProps();
-            switch (variableName) {
-                case LoggingConstants.SQL_SHOW_VARIABLE_NAME:
-                    return props.getOrDefault(LoggingConstants.SQL_LOG_ENABLE,
-                            metaData.getProps().getValue(ConfigurationPropertyKey.valueOf(variableName)).toString()).toString();
-                case LoggingConstants.SQL_SIMPLE_VARIABLE_NAME:
-                    return props.getOrDefault(LoggingConstants.SQL_LOG_SIMPLE,
-                            metaData.getProps().getValue(ConfigurationPropertyKey.valueOf(variableName)).toString()).toString();
-                default:
-            }
-        }
         return getStringResult(metaData.getProps().getValue(ConfigurationPropertyKey.valueOf(variableName)));
     }
     
@@ -99,7 +76,7 @@ public final class ShowDistVariableExecutor implements DistSQLQueryExecutor<Show
     }
     
     private String getTemporaryConfigurationValue(final ShardingSphereMetaData metaData, final String variableName) {
-        return getStringResult(metaData.getTemporaryProps().getValue(TemporaryConfigurationPropertyKey.valueOf(variableName)).toString());
+        return getStringResult(metaData.getTemporaryProps().getValue(TemporaryConfigurationPropertyKey.valueOf(variableName)));
     }
     
     private String getConnectionSize(final String variableName) {
@@ -110,6 +87,9 @@ public final class ShowDistVariableExecutor implements DistSQLQueryExecutor<Show
     private String getStringResult(final Object value) {
         if (null == value) {
             return "";
+        }
+        if (value instanceof Float || value instanceof Double) {
+            return new BigDecimal(String.valueOf(value)).toPlainString();
         }
         return value instanceof TypedSPI ? ((TypedSPI) value).getType().toString() : value.toString();
     }

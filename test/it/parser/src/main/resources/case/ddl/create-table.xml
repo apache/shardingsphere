@@ -2443,7 +2443,7 @@
                     <owner name="test_schema" start-index="152" stop-index="162"/>
                 </simple-table>
             </from>
-            <combine combine-type="UNION_ALL" start-index="240" stop-index="775">
+            <combine combine-type="UNION_ALL" start-index="56" stop-index="775">
                 <left start-index="56" stop-index="230">
                     <projections start-index="63" stop-index="137">
                         <column-projection name="id" start-index="63" stop-index="67">
@@ -2892,6 +2892,843 @@
         <table name="t" start-index="13" stop-index="13" />
         <column-definition type="VARCHAR" start-index="16" stop-index="53">
             <column name="c" />
+        </column-definition>
+    </create-table>
+    
+    <create-table sql-case-id="create_table_with_storage_and_lob">
+        <table name="TEST" start-index="13" stop-index="16"/>
+        <column-definition type="NUMBER" primary-key="false" auto-increment="false" not-null="false" start-index="19" stop-index="29">
+            <column name="ID" start-index="19" stop-index="22" />
+            <dataType value="NUMBER" start-index="24" stop-index="29" />
+        </column-definition>
+    </create-table>
+
+    <create-table sql-case-id="create_table_with_tinyint">
+        <table name="test_tinyint" start-index="13" stop-index="24" />
+        <column-definition type="TINYINT" start-index="27" stop-index="37">
+            <column name="col" />
+        </column-definition>
+    </create-table>
+
+    <create-table sql-case-id="create_table_with_smallint">
+        <table name="test_smallint" start-index="13" stop-index="25" />
+        <column-definition type="SMALLINT" start-index="28" stop-index="39">
+            <column name="col" />
+        </column-definition>
+    </create-table>
+
+    <create-table sql-case-id="create_table_with_int">
+        <table name="test_int" start-index="13" stop-index="20" />
+        <column-definition type="INT" start-index="23" stop-index="29">
+            <column name="col" />
+        </column-definition>
+    </create-table>
+
+    <create-table sql-case-id="create_table_with_bigint">
+        <table name="test_bigint" start-index="13" stop-index="23" />
+        <column-definition type="BIGINT" start-index="26" stop-index="35">
+            <column name="col" />
+        </column-definition>
+    </create-table>
+
+    <create-table sql-case-id="create_table_with_boolean">
+        <table name="test_boolean" start-index="13" stop-index="24" />
+        <column-definition type="BOOLEAN" start-index="27" stop-index="37">
+            <column name="col" />
+        </column-definition>
+    </create-table>
+
+    <create-table sql-case-id="create_table_with_float">
+        <table name="test_float" start-index="13" stop-index="22" />
+        <column-definition type="FLOAT" start-index="25" stop-index="33">
+            <column name="col" />
+        </column-definition>
+    </create-table>
+
+    <create-table sql-case-id="create_table_with_double">
+        <table name="test_double" start-index="13" stop-index="23" />
+        <column-definition type="DOUBLE" start-index="26" stop-index="35">
+            <column name="col" />
+        </column-definition>
+    </create-table>
+
+    <create-table sql-case-id="create_table_with_double_precision">
+        <table name="test_double_precision" start-index="13" stop-index="33" />
+        <column-definition type="DOUBLEPRECISION" start-index="36" stop-index="55">
+            <column name="col" />
+        </column-definition>
+    </create-table>
+
+    <create-table sql-case-id="create_table_with_string">
+        <table name="test_string" start-index="13" stop-index="23" />
+        <column-definition type="STRING" start-index="26" stop-index="35">
+            <column name="col" />
+        </column-definition>
+    </create-table>
+
+    <create-table sql-case-id="create_table_with_binary">
+        <table name="test_binary" start-index="13" stop-index="23" />
+        <column-definition type="BINARY" start-index="26" stop-index="35">
+            <column name="col" />
+        </column-definition>
+    </create-table>
+
+    <create-table sql-case-id="create_table_with_timestamp">
+        <table name="test_timestamp" start-index="13" stop-index="26" />
+        <column-definition type="TIMESTAMP" start-index="29" stop-index="41">
+            <column name="col" />
+        </column-definition>
+    </create-table>
+
+    <create-table sql-case-id="create_table_with_decimal">
+        <table name="test_decimal" start-index="13" stop-index="24" />
+        <column-definition type="DECIMAL" start-index="27" stop-index="37">
+            <column name="col" />
+        </column-definition>
+    </create-table>
+
+    <create-table sql-case-id="create_table_with_decimal_precision_scale">
+        <table name="test_decimal_precision_scale" start-index="13" stop-index="40" />
+        <column-definition type="DECIMAL(10,2)" start-index="43" stop-index="59">
+            <column name="col" />
+        </column-definition>
+    </create-table>
+
+    <create-table sql-case-id="create_table_with_date">
+        <table name="test_date" start-index="13" stop-index="21" />
+        <column-definition type="DATE" start-index="24" stop-index="31">
+            <column name="col" />
+        </column-definition>
+    </create-table>
+
+    <create-table sql-case-id="create_table_with_varchar">
+        <table name="test_varchar" start-index="13" stop-index="24" />
+        <column-definition type="VARCHAR(50)" start-index="27" stop-index="41">
+            <column name="col" />
+        </column-definition>
+    </create-table>
+
+    <create-table sql-case-id="create_table_with_char">
+        <table name="test_char" start-index="13" stop-index="21" />
+        <column-definition type="CHAR(10)" start-index="24" stop-index="35">
+            <column name="col" />
+        </column-definition>
+    </create-table>
+
+    <create-table sql-case-id="create_table_with_array">
+        <table name="test_array" start-index="13" stop-index="22" />
+        <column-definition type="ARRAY&lt;INT&gt;" start-index="25" stop-index="41">
+            <column name="col" />
+        </column-definition>
+    </create-table>
+
+    <create-table sql-case-id="create_table_with_map">
+        <table name="test_map" start-index="13" stop-index="20" />
+        <column-definition type="MAP&lt;STRING,INT&gt;" start-index="23" stop-index="45">
+            <column name="col" />
+        </column-definition>
+    </create-table>
+
+    <create-table sql-case-id="create_table_with_struct">
+        <table name="test_struct" start-index="13" stop-index="23" />
+        <column-definition type="STRUCT&lt;id:INT,name:STRING&gt;" start-index="26" stop-index="58">
+            <column name="col" />
+        </column-definition>
+    </create-table>
+
+    <create-table sql-case-id="create_table_with_uniontype">
+        <table name="test_uniontype" start-index="13" stop-index="26" />
+        <column-definition type="UNIONTYPE&lt;INT,STRING&gt;" start-index="29" stop-index="56">
+            <column name="col" />
+        </column-definition>
+    </create-table>
+
+    <create-table sql-case-id="create_table_with_primary_key_constraint_rely">
+        <table name="test_primary_key_rely" start-index="13" stop-index="33" />
+        <column-definition type="INT" primary-key="false" start-index="36" stop-index="41">
+            <column name="id" />
+        </column-definition>
+        <column-definition type="STRING" start-index="44" stop-index="54">
+            <column name="name" />
+        </column-definition>
+        <constraint-definition start-index="57" stop-index="96" />
+    </create-table>
+
+    <create-table sql-case-id="create_table_with_primary_key_constraint_norely">
+        <table name="test_primary_key_norely" start-index="13" stop-index="35" />
+        <column-definition type="INT" primary-key="false" start-index="38" stop-index="43">
+            <column name="id" />
+        </column-definition>
+        <column-definition type="STRING" start-index="46" stop-index="56">
+            <column name="name" />
+        </column-definition>
+        <constraint-definition start-index="59" stop-index="100" />
+    </create-table>
+
+    <create-table sql-case-id="create_table_with_foreign_key_constraint">
+        <table name="test_foreign_key" start-index="13" stop-index="28" />
+        <column-definition type="INT" start-index="31" stop-index="36">
+            <column name="id" />
+        </column-definition>
+        <column-definition type="INT" foreign-key="true" referenced-table="test_primary_key" start-index="39" stop-index="48">
+            <column name="ref_id" />
+        </column-definition>
+        <constraint-definition start-index="51" stop-index="139" />
+    </create-table>
+
+    <create-table sql-case-id="create_table_with_unique_constraint_rely">
+        <table name="test_unique_rely" start-index="13" stop-index="28" />
+        <column-definition type="INT" start-index="31" stop-index="36">
+            <column name="id" />
+        </column-definition>
+        <column-definition type="STRING" unique="true" start-index="39" stop-index="50">
+            <column name="email" />
+        </column-definition>
+        <constraint-definition start-index="53" stop-index="110" />
+    </create-table>
+
+    <create-table sql-case-id="create_table_with_unique_constraint_norely">
+        <table name="test_unique_norely" start-index="13" stop-index="30" />
+        <column-definition type="INT" start-index="33" stop-index="38">
+            <column name="id" />
+        </column-definition>
+        <column-definition type="STRING" unique="true" start-index="41" stop-index="52">
+            <column name="email" />
+        </column-definition>
+        <constraint-definition start-index="55" stop-index="114" />
+    </create-table>
+
+    <create-table sql-case-id="create_table_with_check_constraint_rely">
+        <table name="test_check_rely" start-index="13" stop-index="27" />
+        <column-definition type="INT" start-index="30" stop-index="36">
+            <column name="age" />
+        </column-definition>
+        <constraint-definition start-index="39" stop-index="97" />
+    </create-table>
+
+    <create-table sql-case-id="create_table_with_check_constraint_norely">
+        <table name="test_check_norely" start-index="13" stop-index="29" />
+        <column-definition type="INT" start-index="32" stop-index="38">
+            <column name="age" />
+        </column-definition>
+        <constraint-definition start-index="41" stop-index="101" />
+    </create-table>
+    <create-table sql-case-id="create_table_with_col_pk_disable_norely">
+        <table name="test_col_pk1" start-index="13" stop-index="24" />
+        <column-definition type="INT" primary-key="false" start-index="27" stop-index="70">
+            <column name="id" />
+        </column-definition>
+    </create-table>
+
+    <create-table sql-case-id="create_table_with_col_pk_disable_rely">
+        <table name="test_col_pk2" start-index="13" stop-index="24" />
+        <column-definition type="INT" primary-key="false" start-index="27" stop-index="68">
+            <column name="id" />
+        </column-definition>
+    </create-table>
+
+    <create-table sql-case-id="create_table_with_col_pk_enable_norely">
+        <table name="test_col_pk3" start-index="13" stop-index="24" />
+        <column-definition type="INT" primary-key="false" start-index="27" stop-index="69">
+            <column name="id" />
+        </column-definition>
+    </create-table>
+
+    <create-table sql-case-id="create_table_with_col_pk_enable_rely">
+        <table name="test_col_pk4" start-index="13" stop-index="24" />
+        <column-definition type="INT" primary-key="false" start-index="27" stop-index="67">
+            <column name="id" />
+        </column-definition>
+    </create-table>
+
+    <create-table sql-case-id="create_table_with_col_unique_disable_norely">
+        <table name="test_col_unique1" start-index="13" stop-index="28" />
+        <column-definition type="STRING" unique="true" start-index="31" stop-index="75">
+            <column name="email" />
+        </column-definition>
+    </create-table>
+
+    <create-table sql-case-id="create_table_with_col_unique_disable_rely">
+        <table name="test_col_unique2" start-index="13" stop-index="28" />
+        <column-definition type="STRING" unique="true" start-index="31" stop-index="73">
+            <column name="email" />
+        </column-definition>
+    </create-table>
+
+    <create-table sql-case-id="create_table_with_col_unique_enable_norely">
+        <table name="test_col_unique3" start-index="13" stop-index="28" />
+        <column-definition type="STRING" unique="true" start-index="31" stop-index="74">
+            <column name="email" />
+        </column-definition>
+    </create-table>
+
+    <create-table sql-case-id="create_table_with_col_unique_enable_rely">
+        <table name="test_col_unique4" start-index="13" stop-index="28" />
+        <column-definition type="STRING" unique="true" start-index="31" stop-index="72">
+            <column name="email" />
+        </column-definition>
+    </create-table>
+
+    <create-table sql-case-id="create_table_with_col_not_null_basic">
+        <table name="test_col_not_null" start-index="13" stop-index="29" />
+        <column-definition type="STRING" not-null="false" start-index="32" stop-index="51">
+            <column name="name" />
+        </column-definition>
+    </create-table>
+
+    <create-table sql-case-id="create_table_with_col_default_literal">
+        <table name="test_col_default1" start-index="13" stop-index="29" />
+        <column-definition type="STRING" default-value="'active'" start-index="32" stop-index="61">
+            <column name="status" />
+        </column-definition>
+    </create-table>
+
+    <create-table sql-case-id="create_table_with_col_default_current_user">
+        <table name="test_col_default2" start-index="13" stop-index="29" />
+        <column-definition type="STRING" default-value="CURRENT_USER()" start-index="32" stop-index="68">
+            <column name="creator" />
+        </column-definition>
+    </create-table>
+
+    <create-table sql-case-id="create_table_with_col_default_current_date">
+        <table name="test_col_default3" start-index="13" stop-index="29" />
+        <column-definition type="DATE" default-value="CURRENT_DATE()" start-index="32" stop-index="69">
+            <column name="create_day" />
+        </column-definition>
+    </create-table>
+
+    <create-table sql-case-id="create_table_with_col_default_current_timestamp">
+        <table name="test_col_default4" start-index="13" stop-index="29" />
+        <column-definition type="TIMESTAMP" default-value="CURRENT_TIMESTAMP()" start-index="32" stop-index="80">
+            <column name="create_time" />
+        </column-definition>
+    </create-table>
+
+    <create-table sql-case-id="create_table_with_col_default_null">
+        <table name="test_col_default5" start-index="13" stop-index="29" />
+        <column-definition type="STRING" default-value="NULL" start-index="32" stop-index="57">
+            <column name="remark" />
+        </column-definition>
+    </create-table>
+
+    <create-table sql-case-id="create_table_with_col_check_disable_norely">
+        <table name="test_col_check1" start-index="13" stop-index="27" />
+        <column-definition type="INT" check-constraint="age > 0" start-index="30" stop-index="80">
+            <column name="age" />
+        </column-definition>
+    </create-table>
+
+    <create-table sql-case-id="create_table_with_col_check_disable_rely">
+        <table name="test_col_check2" start-index="13" stop-index="27" />
+        <column-definition type="INT" check-constraint="age > 0 AND age  &lt;  150" start-index="30" stop-index="92">
+            <column name="age" />
+        </column-definition>
+    </create-table>
+
+    <create-table sql-case-id="create_table_with_col_check_enable_norely">
+        <table name="test_col_check3" start-index="13" stop-index="27" />
+        <column-definition type="DOUBLE" check-constraint="score BETWEEN 0 AND 100" start-index="30" stop-index="98">
+            <column name="score" />
+        </column-definition>
+    </create-table>
+
+    <create-table sql-case-id="create_table_with_col_check_enable_rely">
+        <table name="test_col_check4" start-index="13" stop-index="27" />
+        <column-definition type="DECIMAL" check-constraint="amount >= 0" start-index="30" stop-index="87">
+            <column name="amount" />
+        </column-definition>
+    </create-table>
+
+    <create-table sql-case-id="row_format_delimited_fields_terminated">
+        <table name="test_row_delim_fields" start-index="13" stop-index="33" />
+        <column-definition type="int" start-index="36" stop-index="41">
+            <column name="id" />
+        </column-definition>
+        <column-definition type="string" start-index="44" stop-index="54">
+            <column name="name" />
+        </column-definition>
+        <row-format delimited="true" fields-terminated="," start-index="63" stop-index="115" />
+    </create-table>
+
+    <create-table sql-case-id="row_format_delim_fields_escaped">
+        <table name="test_row_delim_escaped" start-index="13" stop-index="34" />
+        <column-definition type="int" start-index="37" stop-index="42">
+            <column name="id" />
+        </column-definition>
+        <column-definition type="string" start-index="45" stop-index="55">
+            <column name="name" />
+        </column-definition>
+        <row-format delimited="true" fields-terminated="|" escaped-by="'" start-index="64" stop-index="131" />
+    </create-table>
+
+    <create-table sql-case-id="row_format_delim_collection">
+        <table name="test_row_delim_collection" start-index="13" stop-index="37" />
+        <column-definition type="array&lt;string&gt;" start-index="40" stop-index="63">
+            <column name="hobbies" />
+        </column-definition>
+        <row-format delimited="true" collection-items-terminated=";" start-index="62" stop-index="127" />
+    </create-table>
+
+    <create-table sql-case-id="row_format_delim_map_keys">
+        <table name="test_row_delim_map" start-index="13" stop-index="30" />
+        <column-definition type="map&lt;string,int&gt;" start-index="33" stop-index="58">
+            <column name="scores" />
+        </column-definition>
+        <row-format delimited="true" map-keys-terminated=":" start-index="58" stop-index="117" />
+    </create-table>
+
+    <create-table sql-case-id="row_format_delim_lines">
+        <table name="test_row_delim_lines" start-index="13" stop-index="32" />
+        <column-definition type="int" start-index="35" stop-index="40">
+            <column name="id" />
+        </column-definition>
+        <column-definition type="string" start-index="43" stop-index="53">
+            <column name="name" />
+        </column-definition>
+        <row-format delimited="true" lines-terminated="\n" start-index="61" stop-index="113" />
+    </create-table>
+
+    <create-table sql-case-id="row_format_delim_null">
+        <table name="test_row_delim_null" start-index="13" stop-index="31" />
+        <column-definition type="int" start-index="34" stop-index="39">
+            <column name="id" />
+        </column-definition>
+        <column-definition type="string" start-index="42" stop-index="52">
+            <column name="name" />
+        </column-definition>
+        <row-format delimited="true" null-defined="\N" start-index="60" stop-index="112" />
+    </create-table>
+
+    <create-table sql-case-id="row_format_serde_basic">
+        <table name="test_row_serde_basic" start-index="13" stop-index="32" />
+        <column-definition type="string" start-index="35" stop-index="45">
+            <column name="data" />
+        </column-definition>
+        <row-format serde="org.apache.hadoop.hive.serde2.JsonSerDe" start-index="51" stop-index="115" />
+    </create-table>
+
+    <create-table sql-case-id="row_format_serde_with_props">
+        <table name="test_row_serde_props" start-index="13" stop-index="32" />
+        <column-definition type="int" start-index="35" stop-index="40">
+            <column name="id" />
+        </column-definition>
+        <column-definition type="string" start-index="43" stop-index="53">
+            <column name="name" />
+        </column-definition>
+        <row-format serde="org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe" serde-properties="{'field.delim':'\t', 'serialization.format':'\t'}" start-index="64" stop-index="204" />
+    </create-table>
+
+    <create-table sql-case-id="file_format_sequencefile">
+        <table name="test_file_seq" start-index="13" stop-index="25" />
+        <column-definition type="int" start-index="28" stop-index="33">
+            <column name="id" />
+        </column-definition>
+        <column-definition type="string" start-index="36" stop-index="46">
+            <column name="name" />
+        </column-definition>
+        <file-format type="sequencefile" start-index="57" stop-index="76" />
+    </create-table>
+
+    <create-table sql-case-id="file_format_textfile">
+        <table name="test_file_text" start-index="13" stop-index="26" />
+        <column-definition type="int" start-index="29" stop-index="34">
+            <column name="id" />
+        </column-definition>
+        <column-definition type="string" start-index="37" stop-index="47">
+            <column name="name" />
+        </column-definition>
+        <file-format type="textfile" start-index="57" stop-index="72" />
+    </create-table>
+
+    <create-table sql-case-id="file_format_rcfile">
+        <table name="test_file_rc" start-index="13" stop-index="24" />
+        <column-definition type="int" start-index="27" stop-index="32">
+            <column name="id" />
+        </column-definition>
+        <column-definition type="string" start-index="35" stop-index="45">
+            <column name="name" />
+        </column-definition>
+        <file-format type="rcfile" start-index="53" stop-index="66" />
+    </create-table>
+
+    <create-table sql-case-id="file_format_orc">
+        <table name="test_file_orc" start-index="13" stop-index="25" />
+        <column-definition type="int" start-index="28" stop-index="33">
+            <column name="id" />
+        </column-definition>
+        <column-definition type="string" start-index="36" stop-index="46">
+            <column name="name" />
+        </column-definition>
+        <file-format type="orc" start-index="53" stop-index="63" />
+    </create-table>
+
+    <create-table sql-case-id="file_format_parquet">
+        <table name="test_file_parquet" start-index="13" stop-index="29" />
+        <column-definition type="int" start-index="32" stop-index="37">
+            <column name="id" />
+        </column-definition>
+        <column-definition type="string" start-index="40" stop-index="50">
+            <column name="name" />
+        </column-definition>
+        <file-format type="parquet" start-index="59" stop-index="74" />
+    </create-table>
+
+    <create-table sql-case-id="file_format_avro">
+        <table name="test_file_avro" start-index="13" stop-index="26" />
+        <column-definition type="int" start-index="29" stop-index="34">
+            <column name="id" />
+        </column-definition>
+        <column-definition type="string" start-index="37" stop-index="47">
+            <column name="name" />
+        </column-definition>
+        <file-format type="avro" start-index="55" stop-index="66" />
+    </create-table>
+
+    <create-table sql-case-id="file_format_jsonfile">
+        <table name="test_file_json" start-index="13" stop-index="26" />
+        <column-definition type="int" start-index="29" stop-index="34">
+            <column name="id" />
+        </column-definition>
+        <column-definition type="string" start-index="37" stop-index="47">
+            <column name="name" />
+        </column-definition>
+        <file-format type="jsonfile" start-index="56" stop-index="71" />
+    </create-table>
+
+    <create-table sql-case-id="file_format_custom_io">
+        <table name="test_file_custom_io" start-index="13" stop-index="31" />
+        <column-definition type="int" start-index="34" stop-index="39">
+            <column name="id" />
+        </column-definition>
+        <column-definition type="string" start-index="42" stop-index="52">
+            <column name="name" />
+        </column-definition>
+        <file-format input-format="org.apache.hadoop.mapred.TextInputFormat" output-format="org.apache.hadoop.hive.ql.io.HiveIgnoreKeyTextOutputFormat" start-index="61" stop-index="208" />
+    </create-table>
+
+    <create-table sql-case-id="create_table_basic">
+        <table name="test_table" start-index="13" stop-index="22" />
+        <column-definition type="int" start-index="25" stop-index="30">
+            <column name="id" />
+        </column-definition>
+        <column-definition type="string" start-index="33" stop-index="43">
+            <column name="name" />
+        </column-definition>
+    </create-table>
+
+    <create-table sql-case-id="create_temporary_basic_table">
+        <table name="test_table" temporary="true" start-index="23" stop-index="32" />
+        <column-definition type="int" start-index="35" stop-index="39">
+            <column name="a" />
+        </column-definition>
+        <column-definition type="string" start-index="42" stop-index="49">
+            <column name="b" />
+        </column-definition>
+    </create-table>
+
+    <create-table sql-case-id="create_external_basic_table">
+        <table name="test_table" external="true" start-index="22" stop-index="31" />
+        <column-definition type="double" start-index="34" stop-index="41">
+            <column name="x" />
+        </column-definition>
+        <column-definition type="date" start-index="44" stop-index="49">
+            <column name="y" />
+        </column-definition>
+    </create-table>
+
+    <create-table sql-case-id="create_table_if_not_exists_hive">
+        <table name="test_table" if-not-exists="true" start-index="27" stop-index="36" />
+        <column-definition type="int" start-index="39" stop-index="44">
+            <column name="id" />
+        </column-definition>
+    </create-table>
+
+    <create-table sql-case-id="create_table_with_db">
+        <table name="test_table" start-index="13" stop-index="30">
+            <owner name="db_test" start-index="13" stop-index="19" />
+        </table>
+        <column-definition type="string" start-index="33" stop-index="43">
+            <column name="name" />
+        </column-definition>
+        <column-definition type="int" start-index="46" stop-index="52">
+            <column name="age" />
+        </column-definition>
+    </create-table>
+
+    <create-table sql-case-id="create_table_with_col_comment">
+        <table name="test_col_comment" start-index="13" stop-index="28" />
+        <column-definition type="int" comment="unique identifier" start-index="31" stop-index="64">
+            <column name="id" />
+        </column-definition>
+        <column-definition type="string" comment="user name" start-index="67" stop-index="97">
+            <column name="name" />
+        </column-definition>
+    </create-table>
+
+    <create-table sql-case-id="create_table_with_table_comment">
+        <table name="test_table_comment" comment="test_table" start-index="13" stop-index="30" />
+        <column-definition type="int" start-index="33" stop-index="38">
+            <column name="id" />
+        </column-definition>
+    </create-table>
+
+    <create-table sql-case-id="create_table_only_partitioned">
+        <table name="test_only_partitioned" start-index="13" stop-index="33" />
+        <column-definition type="string" start-index="36" stop-index="46">
+            <column name="name" />
+        </column-definition>
+        <partition column="dt" type="string" start-index="63" stop-index="71">
+            <column name="dt" />
+        </partition>
+    </create-table>
+
+    <create-table sql-case-id="create_table_partitioned_with col_comment">
+        <table name="test_partitioned_comment" start-index="13" stop-index="36" />
+        <column-definition type="string" start-index="39" stop-index="49">
+            <column name="name" />
+        </column-definition>
+        <partition column="dt" type="string" comment="user name" start-index="69" stop-index="100">
+            <column name="dt" />
+        </partition>
+    </create-table>
+
+    <create-table sql-case-id="create_table_only_clustered">
+        <table name="test_only_clustered" start-index="13" stop-index="31" />
+        <column-definition type="int" start-index="34" stop-index="44">
+            <column name="user_id" />
+        </column-definition>
+        <cluster by="user_id" buckets="2" start-index="59" stop-index="96" />
+    </create-table>
+
+    <create-table sql-case-id="create_table_clustered_sorted_asc">
+        <table name="test_clustered_sorted" start-index="13" stop-index="33" />
+        <column-definition type="int" start-index="36" stop-index="41">
+            <column name="id" />
+        </column-definition>
+        <column-definition type="int" start-index="44" stop-index="52">
+            <column name="score" />
+        </column-definition>
+        <cluster by="id" sorted-by="score" sort-order="asc" buckets="4" start-index="71" stop-index="125" />
+    </create-table>
+
+    <create-table sql-case-id="create_table_clustered_sorted_desc">
+        <table name="test_clustered_sorted" start-index="13" stop-index="33" />
+        <column-definition type="int" start-index="36" stop-index="41">
+            <column name="id" />
+        </column-definition>
+        <column-definition type="int" start-index="44" stop-index="52">
+            <column name="score" />
+        </column-definition>
+        <cluster by="id" sorted-by="score" sort-order="desc" buckets="4" start-index="71" stop-index="126" />
+    </create-table>
+
+    <create-table sql-case-id="create_table_only_skewed">
+        <table name="test_only_skewed" start-index="13" stop-index="28" />
+        <column-definition type="string" start-index="31" stop-index="40">
+            <column name="key" />
+        </column-definition>
+        <column-definition type="int" start-index="43" stop-index="51">
+            <column name="value" />
+        </column-definition>
+        <skew by="key" on="('x', 'y')" start-index="70" stop-index="107" />
+    </create-table>
+
+    <create-table sql-case-id="create_table_skewed_dirs">
+        <table name="test_skewed_dirs" start-index="13" stop-index="28" />
+        <column-definition type="string" start-index="31" stop-index="38">
+            <column name="a" />
+        </column-definition>
+        <column-definition type="int" start-index="41" stop-index="45">
+            <column name="b" />
+        </column-definition>
+        <skew by="a" on="(('p', 1), ('q', 2))" stored-as-directories="true" start-index="64" stop-index="145" />
+    </create-table>
+
+    <create-table sql-case-id="create_table_stored_by_basic">
+        <table name="test_stored_by_basic" start-index="13" stop-index="32" />
+        <column-definition type="int" start-index="35" stop-index="40">
+            <column name="id" />
+        </column-definition>
+        <column-definition type="string" start-index="43" stop-index="53">
+            <column name="name" />
+        </column-definition>
+        <stored-by handler="org.apache.hadoop.hive.hbase.HBaseStorageHandler" start-index="62" stop-index="125" />
+    </create-table>
+
+    <create-table sql-case-id="create_table_stored_by_with_props">
+        <table name="test_stored_by_props" start-index="13" stop-index="32" />
+        <column-definition type="string" start-index="35" stop-index="47">
+            <column name="rowkey" />
+        </column-definition>
+        <column-definition type="map&lt;string,string&gt;" start-index="50" stop-index="75">
+            <column name="cf1" />
+        </column-definition>
+        <stored-by handler="org.apache.hadoop.hive.hbase.HBaseStorageHandler" serde-properties="{'hbase.table.name':'hbase_test', 'hbase.columns.mapping':':key,cf1:'}" start-index="70" stop-index="215" />
+    </create-table>
+
+    <create-table sql-case-id="create_table_with_location">
+        <table name="test_with_location" start-index="13" stop-index="30" />
+        <column-definition type="string" start-index="33" stop-index="43">
+            <column name="data" />
+        </column-definition>
+        <location path="/user/hive/test_location" start-index="46" stop-index="82" />
+    </create-table>
+
+    <create-table sql-case-id="create_table_with_tblproperties">
+        <table name="test_tblproperties" start-index="13" stop-index="30" />
+        <column-definition type="int" start-index="33" stop-index="38">
+            <column name="id" />
+        </column-definition>
+        <tblproperties props="{'owner':'admin', 'version':'1.0'}" start-index="44" stop-index="93" />
+    </create-table>
+
+    <create-table sql-case-id="create_table_ctas_basic">
+        <table name="test_ctas" start-index="13" stop-index="21" />
+        <as-select query="select id, name from source_table where status = 'active'" start-index="26" stop-index="86" />
+    </create-table>
+
+    <create-table sql-case-id="create_table_like_basic">
+        <table name="test_like" like="source_table" start-index="13" stop-index="21" />
+    </create-table>
+
+    <create-table sql-case-id="create_temp_table_like">
+        <table name="test_temp_like" temporary="true" like="source_table" start-index="23" stop-index="36" />
+    </create-table>
+
+    <create-table sql-case-id="create_external_table_like">
+        <table name="test_ext_like" external="true" like="source_table" start-index="22" stop-index="34" />
+    </create-table>
+
+    <create-table sql-case-id="create_table_like_if_not_exists">
+        <table name="test_like_ine" if-not-exists="true" like="source_table" start-index="27" stop-index="39" />
+    </create-table>
+
+    <create-table sql-case-id="create_db_table_like">
+        <table name="test_like_db" like="source_table" start-index="13" stop-index="32">
+            <owner name="test_db" start-index="13" stop-index="19" />
+        </table>
+        <tblproperties properties="" start-index="0" stop-index="0" />
+    </create-table>
+
+    <create-table sql-case-id="create_table_like_location">
+        <table name="test_like_loc" like="source_table" start-index="13" stop-index="25" />
+        <location path="/user/hive/warehouse/test_like_loc" start-index="45" stop-index="89" />
+    </create-table>
+
+    <create-table sql-case-id="combine_all_options">
+        <table name="test_table" temporary="true" external="true" if-not-exists="true" comment="Test table with all Hive optional clauses" start-index="46" stop-index="63">
+            <owner name="test_db" start-index="46" stop-index="52" />
+        </table>
+        <column-definition type="INT" primary-key="false" start-index="89" stop-index="125">
+            <column name="id" />
+        </column-definition>
+        <column-definition type="STRING" not-null="false" comment="User name" start-index="140" stop-index="179">
+            <column name="name" />
+        </column-definition>
+        <column-definition type="INT" check-constraint="age&gt;0 AND age&lt;150" start-index="194" stop-index="253">
+            <column name="age" />
+        </column-definition>
+        <column-definition type="STRING" unique="false" start-index="268" stop-index="312">
+            <column name="email" />
+        </column-definition>
+        <column-definition type="DOUBLE" default-value="0.0" start-index="327" stop-index="350">
+            <column name="score" />
+        </column-definition>
+        <column-definition type="STRUCT&lt;city:STRING,street:STRING&gt;" start-index="365" stop-index="409">
+            <column name="address" />
+        </column-definition>
+        <column-definition type="ARRAY&lt;STRING&gt;" start-index="425" stop-index="448">
+            <column name="hobbies" />
+        </column-definition>
+        <column-definition type="MAP&lt;STRING,STRING&gt;" start-index="464" stop-index="494">
+            <column name="metadata" />
+        </column-definition>
+        <column-definition type="UNIONTYPE&lt;INT,STRING&gt;" start-index="510" stop-index="539">
+            <column name="info" />
+        </column-definition>
+        <partition column="dt" type="STRING" comment="Partition date" start-index="463" stop-index="503">
+            <column name="dt" />
+        </partition>
+        <partition column="country" type="STRING" comment="Country" start-index="506" stop-index="543">
+            <column name="country" />
+        </partition>
+        <cluster by="id" sorted-by="score" sort-order="desc" buckets="4" start-index="551" stop-index="609">
+            <sort-column name="score" order="desc" />
+        </cluster>
+        <skew by="name" on="(('Alice', 'Bob'), ('Charlie', 'David'))" stored-as-directories="true" start-index="617" stop-index="703" />
+        <row-format serde="org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe" start-index="711" stop-index="761">
+            <serde-properties properties="{'field.delim':'\t', 'collection.delim'=',', 'mapkey.delim'=':'}" start-index="764" stop-index="893" />
+        </row-format>
+        <file-format type="orc" start-index="896" stop-index="905" />
+        <location path="/user/hive/warehouse/test_db.db/test_table" start-index="908" stop-index="956" />
+        <tblproperties properties="{'version':'1.0', 'orc.compress':'SNAPPY', 'transactional':'true'}" start-index="966" stop-index="1053" />
+        <as-select query="SELECT u.id, u.name, u.age, u.email, u.score, named_struct('city', u.city, 'street', u.street) AS address, split(u.hobbies, ',') AS hobbies, str_to_map(u.metadata, ',', '=') AS metadata, case when u.flag = 1 then create_union(0, u.id) else create_union(1, u.name) end AS info, ds.dt, u.country FROM source_users u JOIN dim_dates ds ON u.date_id = ds.date_id WHERE u.status = 'active'" start-index="1061" stop-index="1598" />
+    </create-table>
+
+    <create-table sql-case-id="create_table_like_all_options">
+        <table name="target_table" temporary="true" external="true" if-not-exists="true" like="source_db.source_table" start-index="46" stop-index="65">
+            <owner name="test_db" start-index="46" stop-index="52" />
+        </table>
+        <location path="/user/hive/warehouse/test_db.db/target_table" start-index="85" stop-index="135" />
+        <tblproperties properties="" start-index="0" stop-index="0" />
+    </create-table>
+
+    <create-table sql-case-id="create_iceberg_table">
+        <table name="user_log" temporary="false" external="true" if-not-exists="false" start-index="22" stop-index="29" />
+        <column-definition type="STRING" start-index="32" stop-index="47" >
+            <column name="user_name" />
+        </column-definition>
+        <stored-by handler="ICEBERG" start-index="61" stop-index="68" />
+    </create-table>
+    
+    <create-table sql-case-id="create_iceberg_table_partition">
+        <table name="user_log" temporary="false" external="false" if-not-exists="false" start-index="13" stop-index="20" />
+        <column-definition type="STRING" start-index="23" stop-index="38" >
+            <column name="user_name" />
+        </column-definition>
+        <partition column="year" type="int" start-index="57" stop-index="66"  >
+            <column name="year" />
+        </partition>
+        <stored-by handler="ICEBERG" start-index="81" stop-index="88" />
+    </create-table>
+    
+    <create-table sql-case-id="create_iceberg_table_orc">
+        <table name="user_log" temporary="false" external="false" if-not-exists="false" start-index="13" stop-index="20" />
+        <column-definition type="STRING" start-index="23" stop-index="38" >
+            <column name="user_name" />
+        </column-definition>
+        <storage-handler name="ICEBERG" start-index="54" stop-index="61" />
+        <storage-format type="ORC" start-index="73" stop-index="76" />
+    </create-table>
+
+    <create-table sql-case-id="create_table_with_blob">
+        <table name="t_blob" start-index="13" stop-index="18" />
+        <column-definition type="INT" start-index="21" stop-index="26">
+            <column name="id" />
+        </column-definition>
+        <column-definition type="BLOB" start-index="29" stop-index="40">
+            <column name="payload" />
+        </column-definition>
+    </create-table>
+
+    <create-table sql-case-id="create_table_with_blob_subtype_numeric">
+        <table name="t_blob_subtype_numeric" start-index="13" stop-index="34" />
+        <column-definition type="BLOB SUB_TYPE 1" start-index="37" stop-index="59">
+            <column name="payload" />
+        </column-definition>
+    </create-table>
+
+    <create-table sql-case-id="create_table_with_blob_subtype_text">
+        <table name="t_blob_subtype_text" start-index="13" stop-index="31" />
+        <column-definition type="BLOB SUB_TYPE TEXT CHARACTER SET UTF8" start-index="34" stop-index="78">
+            <column name="payload" />
+        </column-definition>
+    </create-table>
+
+    <create-table sql-case-id="create_table_with_blob_segment_size">
+        <table name="t_blob_segment" start-index="13" stop-index="26" />
+        <column-definition type="BLOB SUB_TYPE 0 SEGMENT SIZE 80" start-index="29" stop-index="67">
+            <column name="payload" />
         </column-definition>
     </create-table>
 </sql-parser-test-cases>

@@ -21,7 +21,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.util.json.JsonUtils;
-import org.apache.shardingsphere.test.e2e.agent.engine.util.HttpUtils;
+import org.apache.shardingsphere.test.e2e.agent.engine.util.AgentE2EHttpUtils;
 import org.apache.shardingsphere.test.e2e.agent.metrics.asserts.response.MetricsMetaDataResponse;
 import org.apache.shardingsphere.test.e2e.agent.metrics.asserts.response.MetricsMetaDataResponse.Metric;
 import org.apache.shardingsphere.test.e2e.agent.metrics.asserts.response.MetricsQueryResponse;
@@ -59,7 +59,7 @@ public final class MetricAssert {
     private static void assertMetaData(final String metaDataURL, final MetricE2ETestCase expected) {
         String metricName = getMetricName(expected);
         String metaDataQueryURL = String.join("", metaDataURL, "?metric=", encode(metricName));
-        MetricsMetaDataResponse actual = JsonUtils.fromJsonString(HttpUtils.getInstance().query(metaDataQueryURL), MetricsMetaDataResponse.class);
+        MetricsMetaDataResponse actual = JsonUtils.fromJsonString(AgentE2EHttpUtils.query(metaDataQueryURL), MetricsMetaDataResponse.class);
         assertThat(String.format("Metric `%s` status is not success, error is `%s`", expected.getMetricName(), actual.getError()), actual.getStatus(), is("success"));
         assertFalse(actual.getData().isEmpty(), String.format("Metric `%s` is empty.", expected.getMetricName()));
         Collection<Metric> metrics = actual.getData().get(metricName);
@@ -81,7 +81,7 @@ public final class MetricAssert {
     @SneakyThrows(IOException.class)
     private static void assertQueryData(final String queryURL, final MetricQueryAssertion expected) {
         String queryURLWithParam = String.join("", queryURL, "?query=", encode(expected.getQuery()));
-        MetricsQueryResponse actual = JsonUtils.fromJsonString(HttpUtils.getInstance().query(queryURLWithParam), MetricsQueryResponse.class);
+        MetricsQueryResponse actual = JsonUtils.fromJsonString(AgentE2EHttpUtils.query(queryURLWithParam), MetricsQueryResponse.class);
         assertThat(String.format("The query `%s` is not success, error message is `%s`", expected.getQuery(), actual.getError()), actual.getStatus(), is("success"));
         assertFalse(actual.getData().getResult().isEmpty(), String.format("The query `%s` is empty.", expected.getQuery()));
         actual.getData().getResult().forEach(each -> assertMetricData(each, expected));

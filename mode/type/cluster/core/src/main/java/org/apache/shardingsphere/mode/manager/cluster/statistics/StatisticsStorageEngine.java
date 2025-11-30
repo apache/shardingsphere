@@ -33,6 +33,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -66,19 +67,18 @@ public final class StatisticsStorageEngine {
     }
     
     private TableStatistics getCurrentTableStatistics() {
+        TableStatistics result = new TableStatistics(tableName);
         ShardingSphereStatistics currentStatistics = contextManager.getMetaDataContexts().getStatistics();
         if (!currentStatistics.containsDatabaseStatistics(databaseName)) {
-            return new TableStatistics(tableName);
+            return result;
         }
         DatabaseStatistics databaseStatistics = currentStatistics.getDatabaseStatistics(databaseName);
         if (!databaseStatistics.containsSchemaStatistics(schemaName)) {
-            return new TableStatistics(tableName);
+            return result;
         }
         SchemaStatistics schemaStatistics = databaseStatistics.getSchemaStatistics(schemaName);
-        if (!schemaStatistics.containsTableStatistics(tableName)) {
-            return new TableStatistics(tableName);
-        }
-        return schemaStatistics.getTableStatistics(tableName);
+        Optional.ofNullable(schemaStatistics.getTableStatistics(tableName)).ifPresent(optional -> result.getRows().addAll(optional.getRows()));
+        return result;
     }
     
     private AlteredDatabaseStatistics createAlteredDatabaseStatistics(final ShardingSphereTable table, final TableStatistics currentTableStatistics, final TableStatistics changedTableStatistics) {

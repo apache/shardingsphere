@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.infra.session.connection.cursor;
 
-import org.apache.shardingsphere.infra.binder.context.statement.ddl.CursorStatementContext;
+import org.apache.shardingsphere.infra.binder.context.statement.type.ddl.CursorStatementContext;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collections;

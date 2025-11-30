@@ -17,11 +17,10 @@
 
 package org.apache.shardingsphere.infra.metadata.statistics.collector;
 
-import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPI;
+import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPI;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
 
-import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Optional;
@@ -40,9 +39,8 @@ public interface DialectDatabaseStatisticsCollector extends DatabaseTypedSPI {
      * @param tableName table name
      * @param metaData shardingsphere meta data
      * @return row column datas
-     * @throws SQLException SQL exception
      */
-    Optional<Collection<Map<String, Object>>> collectRowColumnValues(String databaseName, String schemaName, String tableName, ShardingSphereMetaData metaData) throws SQLException;
+    Optional<Collection<Map<String, Object>>> collectRowColumnValues(String databaseName, String schemaName, String tableName, ShardingSphereMetaData metaData);
     
     /**
      * Is statistics tables.

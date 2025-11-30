@@ -26,7 +26,7 @@ import org.mockito.Answers;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -46,7 +46,7 @@ class StatisticsCollectJobTest {
     @Test
     void assertExecuteWithStandaloneMode() {
         job.execute(null);
-        verify(contextManager.getMetaDataContexts().getMetaData().getTemporaryProps(), times(0)).getValue(TemporaryConfigurationPropertyKey.PROXY_META_DATA_COLLECTOR_ENABLED);
+        verify(contextManager.getMetaDataContexts().getMetaData().getTemporaryProps(), never()).getValue(TemporaryConfigurationPropertyKey.PROXY_META_DATA_COLLECTOR_ENABLED);
     }
     
     @Test

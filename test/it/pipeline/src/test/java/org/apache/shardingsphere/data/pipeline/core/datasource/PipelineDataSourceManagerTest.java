@@ -30,9 +30,9 @@ import org.mockito.internal.configuration.plugins.Plugins;
 import javax.sql.DataSource;
 import java.util.Map;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.isA;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class PipelineDataSourceManagerTest {
@@ -41,7 +41,7 @@ class PipelineDataSourceManagerTest {
     
     @BeforeAll
     static void beforeClass() {
-        PipelineContextUtils.mockModeConfigAndContextManager();
+        PipelineContextUtils.initPipelineContextManager();
     }
     
     @BeforeEach
@@ -54,7 +54,7 @@ class PipelineDataSourceManagerTest {
         try (PipelineDataSourceManager dataSourceManager = new PipelineDataSourceManager()) {
             PipelineDataSourceConfiguration source = jobConfig.getSources().values().iterator().next();
             DataSource actual = dataSourceManager.getDataSource(PipelineDataSourceConfigurationFactory.newInstance(source.getType(), source.getParameter()));
-            assertThat(actual, instanceOf(PipelineDataSource.class));
+            assertThat(actual, isA(PipelineDataSource.class));
         }
     }
     

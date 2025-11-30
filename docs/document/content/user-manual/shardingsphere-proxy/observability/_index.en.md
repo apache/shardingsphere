@@ -12,7 +12,7 @@ Download Apache ShardingSphere from GitHub,Then compile.
 ```shell
 git clone --depth 1 https://github.com/apache/shardingsphere.git
 cd shardingsphere
-mvn clean install -DskipITs -DskipTests -Prelease
+mvn clean install -DskipITs -DskipTests -P-dev,release,all
 ```
 
 Agent artifact is `distribution/agent/target/apache-shardingsphere-${latest.release.version}-shardingsphere-agent-bin.tar.gz`

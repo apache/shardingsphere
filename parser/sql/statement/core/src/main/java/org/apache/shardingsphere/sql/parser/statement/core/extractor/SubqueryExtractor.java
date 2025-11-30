@@ -32,6 +32,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.Func
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.InExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ListExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.NotExpression;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.QuantifySubqueryExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.TypeCastExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.complex.CommonTableExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.subquery.SubqueryExpressionSegment;
@@ -44,7 +45,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.match
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.JoinTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SubqueryTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.SelectStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.SelectStatement;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -79,8 +80,8 @@ public final class SubqueryExtractor {
         if (selectStatement.getCombine().isPresent()) {
             extractSubquerySegmentsFromCombine(result, selectStatement.getCombine().get(), needRecursive, parentSubqueryType);
         }
-        if (selectStatement.getWithSegment().isPresent()) {
-            extractSubquerySegmentsFromCTEs(result, selectStatement.getWithSegment().get().getCommonTableExpressions(), needRecursive);
+        if (selectStatement.getWith().isPresent()) {
+            extractSubquerySegmentsFromCTEs(result, selectStatement.getWith().get().getCommonTableExpressions(), needRecursive);
         }
     }
     
@@ -151,6 +152,12 @@ public final class SubqueryExtractor {
                                                               final boolean needRecursive) {
         if (expressionSegment instanceof SubqueryExpressionSegment) {
             SubquerySegment subquery = ((SubqueryExpressionSegment) expressionSegment).getSubquery();
+            subquery.getSelect().setSubqueryType(subqueryType);
+            result.add(subquery);
+            extractRecursive(needRecursive, result, subquery.getSelect(), SubqueryType.TABLE);
+        }
+        if (expressionSegment instanceof QuantifySubqueryExpression) {
+            SubquerySegment subquery = ((QuantifySubqueryExpression) expressionSegment).getSubquery();
             subquery.getSelect().setSubqueryType(subqueryType);
             result.add(subquery);
             extractRecursive(needRecursive, result, subquery.getSelect(), SubqueryType.TABLE);

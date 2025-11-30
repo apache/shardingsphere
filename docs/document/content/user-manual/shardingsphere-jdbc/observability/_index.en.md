@@ -12,7 +12,7 @@ Download Apache ShardingSphere from GitHub,Then compile.
 ```shell
 git clone --depth 1 https://github.com/apache/shardingsphere.git
 cd shardingsphere
-mvn clean install -DskipITs -DskipTests -Prelease
+mvn clean install -DskipITs -DskipTests -P-dev,release,all
 ```
 
 Agent artifact is `distribution/agent/target/apache-shardingsphere-${latest.release.version}-shardingsphere-agent-bin.tar.gz`
@@ -121,7 +121,7 @@ ShardingSphere Agent has a `Dockerfile` available for easy distribution. You can
 ```shell
 git clone git@github.com:apache/shardingsphere.git
 cd ./shardingsphere/
-./mvnw -am -pl distribution/agent -Prelease,docker -T1C -DskipTests clean package
+./mvnw -am -pl distribution/agent -P-dev,release,all,docker -T1C -DskipTests clean package
 ```
 
 If you add the following statement in your custom `Dockerfile`, it will copy the ShardingSphere Agent directory to `/shardingsphere-agent/`.

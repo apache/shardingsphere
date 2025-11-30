@@ -20,13 +20,13 @@ package org.apache.shardingsphere.mode.manager.standalone;
 import org.apache.shardingsphere.infra.config.mode.PersistRepositoryConfiguration;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstance;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstanceContext;
-import org.apache.shardingsphere.mode.lock.LockContext;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.infra.util.eventbus.EventBusContext;
+import org.apache.shardingsphere.mode.exclusive.ExclusiveOperatorEngine;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.builder.ContextManagerBuilder;
 import org.apache.shardingsphere.mode.manager.builder.ContextManagerBuilderParameter;
-import org.apache.shardingsphere.mode.manager.standalone.lock.StandaloneLockContext;
+import org.apache.shardingsphere.mode.manager.standalone.exclusive.StandaloneExclusiveOperatorContext;
 import org.apache.shardingsphere.mode.manager.standalone.workerid.StandaloneWorkerIdGenerator;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.mode.metadata.factory.MetaDataContextsFactory;
@@ -48,9 +48,9 @@ public final class StandaloneContextManagerBuilder implements ContextManagerBuil
         computeNodeInstanceContext.init(new StandaloneWorkerIdGenerator());
         StandalonePersistRepository repository = TypedSPILoader.getService(
                 StandalonePersistRepository.class, null == repositoryConfig ? null : repositoryConfig.getType(), null == repositoryConfig ? new Properties() : repositoryConfig.getProps());
-        LockContext lockContext = new StandaloneLockContext();
+        ExclusiveOperatorEngine exclusiveOperatorEngine = new ExclusiveOperatorEngine(new StandaloneExclusiveOperatorContext());
         MetaDataContexts metaDataContexts = new MetaDataContextsFactory(new MetaDataPersistFacade(repository), computeNodeInstanceContext).create(param);
-        return new ContextManager(metaDataContexts, computeNodeInstanceContext, lockContext, repository);
+        return new ContextManager(metaDataContexts, computeNodeInstanceContext, exclusiveOperatorEngine, repository);
     }
     
     @Override

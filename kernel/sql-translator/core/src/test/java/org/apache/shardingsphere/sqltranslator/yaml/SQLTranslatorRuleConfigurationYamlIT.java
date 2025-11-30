@@ -17,14 +17,14 @@
 
 package org.apache.shardingsphere.sqltranslator.yaml;
 
+import org.apache.shardingsphere.infra.util.props.PropertiesBuilder;
+import org.apache.shardingsphere.infra.util.props.PropertiesBuilder.Property;
 import org.apache.shardingsphere.sqltranslator.config.SQLTranslatorRuleConfiguration;
 import org.apache.shardingsphere.test.it.yaml.YamlRuleConfigurationIT;
-import org.apache.shardingsphere.test.util.PropertiesBuilder;
-import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
 
 class SQLTranslatorRuleConfigurationYamlIT extends YamlRuleConfigurationIT {
     
     SQLTranslatorRuleConfigurationYamlIT() {
-        super("yaml/sql-translator-rule.yaml", new SQLTranslatorRuleConfiguration("FIXTURE", PropertiesBuilder.build(new Property("k0", "v0"), new Property("k1", "v1")), true));
+        super("yaml/sql-translator-rule.yaml", new SQLTranslatorRuleConfiguration("CORE:FIXTURE", PropertiesBuilder.build(new Property("k0", "v0"), new Property("k1", "v1")), true));
     }
 }

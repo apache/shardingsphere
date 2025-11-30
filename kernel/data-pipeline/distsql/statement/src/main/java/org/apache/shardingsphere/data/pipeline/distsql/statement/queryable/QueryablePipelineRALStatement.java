@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.data.pipeline.distsql.statement.queryable;
 
 import org.apache.shardingsphere.data.pipeline.distsql.statement.PipelineRALStatement;
-import org.apache.shardingsphere.distsql.statement.ral.queryable.QueryableRALStatement;
+import org.apache.shardingsphere.distsql.statement.type.ral.queryable.QueryableRALStatement;
 
 /**
  * Queryable pipeline RAL statement.

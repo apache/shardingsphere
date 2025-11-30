@@ -19,11 +19,11 @@ package org.apache.shardingsphere.infra.datasource.pool.props.validator;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.infra.database.core.checker.DialectDatabasePrivilegeChecker;
-import org.apache.shardingsphere.infra.database.core.checker.PrivilegeCheckType;
-import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPILoader;
-import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
-import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeFactory;
+import org.apache.shardingsphere.database.connector.core.checker.DialectDatabasePrivilegeChecker;
+import org.apache.shardingsphere.database.connector.core.checker.PrivilegeCheckType;
+import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoader;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeFactory;
 import org.apache.shardingsphere.infra.datasource.pool.creator.DataSourcePoolCreator;
 import org.apache.shardingsphere.infra.datasource.pool.destroyer.DataSourcePoolDestroyer;
 import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePoolProperties;
@@ -77,8 +77,8 @@ public final class DataSourcePoolPropertiesValidator {
         DataSource dataSource = null;
         try {
             dataSource = DataSourcePoolCreator.create(props);
+            checkFailFast(dataSource);
             if (expectedPrivileges.isEmpty() || expectedPrivileges.contains(PrivilegeCheckType.NONE)) {
-                checkFailFast(dataSource);
                 return;
             }
             checkPrivileges(dataSource, props, expectedPrivileges);

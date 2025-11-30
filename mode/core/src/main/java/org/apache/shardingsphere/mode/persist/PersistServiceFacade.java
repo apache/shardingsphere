@@ -19,6 +19,7 @@ package org.apache.shardingsphere.mode.persist;
 
 import lombok.Getter;
 import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
+import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.mode.metadata.manager.MetaDataContextManager;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistFacade;
@@ -46,7 +47,8 @@ public final class PersistServiceFacade implements AutoCloseable {
     
     public PersistServiceFacade(final PersistRepository repository, final ModeConfiguration modeConfig, final MetaDataContextManager metaDataContextManager) {
         this.repository = repository;
-        metaDataFacade = new MetaDataPersistFacade(repository);
+        metaDataFacade = new MetaDataPersistFacade(repository, metaDataContextManager.getMetaDataContexts().getMetaData()
+                .getProps().getValue(ConfigurationPropertyKey.PERSIST_SCHEMAS_TO_REPOSITORY_ENABLED));
         stateService = new StatePersistService(repository);
         qualifiedDataSourceStateService = new QualifiedDataSourceStatePersistService(repository);
         modeFacade = TypedSPILoader.getService(ModePersistServiceFacadeBuilder.class, modeConfig.getType()).build(metaDataContextManager, repository);

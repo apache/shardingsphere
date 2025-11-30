@@ -22,13 +22,11 @@ import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 import org.apache.shardingsphere.infra.binder.context.extractor.SQLStatementContextExtractor;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.binder.context.type.WithAvailable;
 import org.apache.shardingsphere.infra.checker.SupportedSQLChecker;
-import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
+import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
-
-import java.util.Collection;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.type.WithSQLStatementAttribute;
 
 /**
  * With clause supported checker for encrypt.
@@ -38,13 +36,12 @@ public final class EncryptWithClauseSupportedChecker implements SupportedSQLChec
     
     @Override
     public boolean isCheck(final SQLStatementContext sqlStatementContext) {
-        return sqlStatementContext instanceof WithAvailable && ((WithAvailable) sqlStatementContext).getWith().isPresent();
+        return sqlStatementContext.getSqlStatement().getAttributes().findAttribute(WithSQLStatementAttribute.class).map(WithSQLStatementAttribute::containsWith).orElse(false);
     }
     
     @Override
     public void check(final EncryptRule rule, final ShardingSphereDatabase database, final ShardingSphereSchema currentSchema, final SQLStatementContext sqlStatementContext) {
-        Collection<String> tableNames = SQLStatementContextExtractor.getTableNames(database, sqlStatementContext);
-        for (String each : tableNames) {
+        for (String each : SQLStatementContextExtractor.getTableNames(database, sqlStatementContext)) {
             ShardingSpherePreconditions.checkState(!rule.findEncryptTable(each).isPresent(), () -> new UnsupportedEncryptSQLException("WITH"));
         }
     }

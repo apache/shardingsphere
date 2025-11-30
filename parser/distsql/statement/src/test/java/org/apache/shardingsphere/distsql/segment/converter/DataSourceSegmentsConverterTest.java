@@ -17,14 +17,14 @@
 
 package org.apache.shardingsphere.distsql.segment.converter;
 
+import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.distsql.segment.DataSourceSegment;
 import org.apache.shardingsphere.distsql.segment.HostnameAndPortBasedDataSourceSegment;
 import org.apache.shardingsphere.distsql.segment.URLBasedDataSourceSegment;
-import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePoolProperties;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
-import org.apache.shardingsphere.test.util.PropertiesBuilder;
-import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
+import org.apache.shardingsphere.infra.util.props.PropertiesBuilder;
+import org.apache.shardingsphere.infra.util.props.PropertiesBuilder.Property;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
@@ -41,7 +41,7 @@ class DataSourceSegmentsConverterTest {
     
     @Test
     void assertConvert() {
-        Map<String, DataSourcePoolProperties> actual = DataSourceSegmentsConverter.convert(TypedSPILoader.getService(DatabaseType.class, "MySQL"), createDataSourceSegments());
+        Map<String, DataSourcePoolProperties> actual = DataSourceSegmentsConverter.convert(TypedSPILoader.getService(DatabaseType.class, "FIXTURE"), createDataSourceSegments());
         assertThat(actual.size(), is(2));
         assertTrue(actual.keySet().containsAll(Arrays.asList("ds0", "ds1")));
         assertThat(actual.values().iterator().next().getAllLocalProperties().get("username"), is("root0"));
@@ -53,7 +53,7 @@ class DataSourceSegmentsConverterTest {
         Collection<DataSourceSegment> result = new LinkedList<>();
         Properties customPoolProps = PropertiesBuilder.build(new Property("maxPoolSize", "30"), new Property("min_pool_size", "10"));
         result.add(new HostnameAndPortBasedDataSourceSegment("ds0", "127.0.0.1", "3306", "demo_ds_0", "root0", "root0", customPoolProps));
-        result.add(new URLBasedDataSourceSegment("ds1", "jdbc:mysql://127.0.0.1:3306/demo_ds_1?useSSL=false", "root1", "root1", customPoolProps));
+        result.add(new URLBasedDataSourceSegment("ds1", "jdbc:mock://127.0.0.1:3306/demo_ds_1?useSSL=false", "root1", "root1", customPoolProps));
         return result;
     }
 }

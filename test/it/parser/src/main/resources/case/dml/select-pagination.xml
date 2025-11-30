@@ -2046,4 +2046,65 @@
             <row-count value="3" start-index="37" stop-index="37" />
         </limit>
     </select>
+
+    <select sql-case-id="select_pagination_with_first">
+        <limit start-index="7" stop-index="13">
+            <row-count value="1" start-index="13" stop-index="13"/>
+        </limit>
+        <projections start-index="15" stop-index="17">
+            <expression-projection text="1" alias="a" start-index="15" stop-index="17"/>
+        </projections>
+        <from start-index="19" stop-index="30">
+            <simple-table name="t_order" start-index="24" stop-index="30"/>
+        </from>
+    </select>
+
+    <select sql-case-id="select_pagination_with_first_skip">
+        <limit start-index="7" stop-index="20">
+            <row-count value="1" start-index="13" stop-index="13" />
+            <offset value="1" start-index="20" stop-index="20" />
+        </limit>
+        <projections start-index="22" stop-index="24">
+            <expression-projection text="1" alias="a" start-index="22" stop-index="24" />
+        </projections>
+        <from start-index="26" stop-index="37">
+            <simple-table name="t_order" start-index="31" stop-index="37"/>
+        </from>
+    </select>
+
+    <select sql-case-id="select_pagination_with_skip">
+        <limit start-index="7" stop-index="12">
+            <offset value="1" start-index="12" stop-index="12" />
+        </limit>
+        <projections start-index="14" stop-index="16">
+            <expression-projection text="1" alias="a" start-index="14" stop-index="16" />
+        </projections>
+        <from start-index="18" stop-index="29">
+            <simple-table name="t_order" start-index="23" stop-index="29"/>
+        </from>
+    </select>
+
+<!--        <select sql-case-id="select_pagination_with_first_and_expr_value">-->
+<!--            <limit start-index="7" stop-index="17">-->
+<!--                <row-count value="1" start-index="13" stop-index="17"/>-->
+<!--            </limit>-->
+<!--            <projections start-index="19" stop-index="21">-->
+<!--                <expression-projection text="1" alias="a" start-index="15" stop-index="17"/>-->
+<!--            </projections>-->
+<!--            <from start-index="23" stop-index="34">-->
+<!--                <simple-table name="t_order" start-index="28" stop-index="34"/>-->
+<!--            </from>-->
+<!--        </select>-->
+
+<!--        <select sql-case-id="select_pagination_with_skip_and_expr_value">-->
+<!--            <limit start-index="7" stop-index="16">-->
+<!--                <offset value="(2+2)" start-index="12" stop-index="16" />-->
+<!--            </limit>-->
+<!--            <projections start-index="18" stop-index="20">-->
+<!--                <expression-projection text="1" alias="a" start-index="18" stop-index="20" />-->
+<!--            </projections>-->
+<!--            <from start-index="22" stop-index="33">-->
+<!--                <simple-table name="t_order" start-index="27" stop-index="33"/>-->
+<!--            </from>-->
+<!--        </select>-->
 </sql-parser-test-cases>

@@ -35,9 +35,9 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.isA;
 import static org.mockito.Mockito.mock;
 
 class IncrementalTaskTest {
@@ -46,7 +46,7 @@ class IncrementalTaskTest {
     
     @BeforeAll
     static void beforeClass() {
-        PipelineContextUtils.mockModeConfigAndContextManager();
+        PipelineContextUtils.initPipelineContextManager();
     }
     
     @BeforeEach
@@ -66,6 +66,6 @@ class IncrementalTaskTest {
     void assertStart() throws ExecutionException, InterruptedException, TimeoutException {
         CompletableFuture.allOf(incrementalTask.start().toArray(new CompletableFuture[0])).get(10L, TimeUnit.SECONDS);
         assertThat(incrementalTask.getTaskId(), is("ds_0"));
-        assertThat(incrementalTask.getTaskProgress().getPosition(), instanceOf(IngestPlaceholderPosition.class));
+        assertThat(incrementalTask.getTaskProgress().getPosition(), isA(IngestPlaceholderPosition.class));
     }
 }

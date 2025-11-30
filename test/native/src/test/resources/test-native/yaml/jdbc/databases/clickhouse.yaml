@@ -18,22 +18,16 @@
 dataSources:
   ds_0:
     dataSourceClassName: com.zaxxer.hikari.HikariDataSource
-    driverClassName: com.clickhouse.jdbc.ClickHouseDriver
-    jdbcUrl: $${fixture.test-native.yaml.database.clickhouse.ds0.jdbc-url::}
-    username: default
-    password:
+    driverClassName: org.testcontainers.jdbc.ContainerDatabaseDriver
+    jdbcUrl: jdbc:tc:clickhouse:25.6.5.41:///demo_ds_0?TC_INITSCRIPT=test-native/sql/clickhouse-init.sql
   ds_1:
     dataSourceClassName: com.zaxxer.hikari.HikariDataSource
-    driverClassName: com.clickhouse.jdbc.ClickHouseDriver
-    jdbcUrl: $${fixture.test-native.yaml.database.clickhouse.ds1.jdbc-url::}
-    username: default
-    password:
+    driverClassName: org.testcontainers.jdbc.ContainerDatabaseDriver
+    jdbcUrl: jdbc:tc:clickhouse:25.6.5.41:///demo_ds_1?TC_INITSCRIPT=test-native/sql/clickhouse-init.sql
   ds_2:
     dataSourceClassName: com.zaxxer.hikari.HikariDataSource
-    driverClassName: com.clickhouse.jdbc.ClickHouseDriver
-    jdbcUrl: $${fixture.test-native.yaml.database.clickhouse.ds2.jdbc-url::}
-    username: default
-    password:
+    driverClassName: org.testcontainers.jdbc.ContainerDatabaseDriver
+    jdbcUrl: jdbc:tc:clickhouse:25.6.5.41:///demo_ds_2?TC_INITSCRIPT=test-native/sql/clickhouse-init.sql
 
 rules:
   - !SHARDING

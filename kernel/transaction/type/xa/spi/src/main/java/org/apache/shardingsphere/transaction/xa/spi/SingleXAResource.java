@@ -33,7 +33,15 @@ public final class SingleXAResource implements XAResource {
     
     private final String resourceName;
     
+    private final String uniqueName;
+    
     private final XAResource delegate;
+    
+    public SingleXAResource(final String resourceName, final XAResource delegate) {
+        this.resourceName = resourceName;
+        uniqueName = "";
+        this.delegate = delegate;
+    }
     
     @Override
     public void commit(final Xid xid, final boolean onePhase) throws XAException {
@@ -70,7 +78,7 @@ public final class SingleXAResource implements XAResource {
     @Override
     public boolean isSameRM(final XAResource xaResource) {
         SingleXAResource singleXAResource = (SingleXAResource) xaResource;
-        return resourceName.equals(singleXAResource.resourceName);
+        return resourceName.equals(singleXAResource.resourceName) && uniqueName.equals(singleXAResource.uniqueName);
     }
     
     @Override

@@ -46,17 +46,16 @@ public final class ProcessOperationLockRegistry {
      * Wait until release ready.
      *
      * @param processId process ID
+     * @param latchCount count fot latch
      * @param releaseStrategy process operation lock release strategy
      * @return release ready or not
      */
-    public boolean waitUntilReleaseReady(final String processId, final ProcessOperationLockReleaseStrategy releaseStrategy) {
-        ProcessOperationLock lock = new ProcessOperationLock();
+    public boolean waitUntilReleaseReady(final String processId, final int latchCount, final ProcessOperationLockReleaseStrategy releaseStrategy) {
+        ProcessOperationLock lock = new ProcessOperationLock(latchCount);
         locks.put(processId, lock);
-        lock.lock();
         try {
             return lock.awaitDefaultTime(releaseStrategy);
         } finally {
-            lock.unlock();
             locks.remove(processId);
         }
     }

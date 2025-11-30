@@ -17,7 +17,7 @@
   -->
 
 <e2e-test-cases>
-    <test-case sql="SELECT 1 FROM dual" db-types="MySQL,H2" smoke="true" scenario-types="db,dbtbl_with_readwrite_splitting,dbtbl_with_readwrite_splitting_and_encrypt,empty_rules,encrypt,encrypt_and_readwrite_splitting,encrypt_shadow,mask,mask_encrypt,mask_encrypt_sharding,mask_sharding,distsql_rdl,readwrite_splitting,readwrite_splitting_and_shadow,shadow,sharding_and_encrypt,sharding_and_shadow,sharding_encrypt_shadow,tbl" >
+    <test-case sql="SELECT 1 FROM dual" db-types="MySQL" smoke="true" scenario-types="db,dbtbl_with_readwrite_splitting,dbtbl_with_readwrite_splitting_and_encrypt,empty_rules,encrypt,encrypt_and_readwrite_splitting,encrypt_shadow,mask,mask_encrypt,mask_encrypt_sharding,mask_sharding,distsql_rdl,readwrite_splitting,readwrite_splitting_and_shadow,shadow,sharding_and_encrypt,sharding_and_shadow,sharding_encrypt_shadow,tbl" >
         <assertion />
     </test-case>
 
@@ -30,7 +30,7 @@
         <assertion parameters="12:int, 1000:int" />
     </test-case>
 
-    <test-case sql="SELECT t_order.order_id,t_order.user_id,status FROM t_order t_order WHERE t_order.user_id = ? AND order_id = ?" db-types="MySQL,H2" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
+    <test-case sql="SELECT t_order.order_id,t_order.user_id,status FROM t_order t_order WHERE t_order.user_id = ? AND order_id = ?" db-types="MySQL" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
         <assertion parameters="10:int, 1000:int" expected-data-source-name="read_dataset" />
         <assertion parameters="12:int, 1000:int" expected-data-source-name="read_dataset" />
     </test-case>
@@ -168,13 +168,23 @@
                scenario-comments="Test single table's LIKE operator percentage wildcard in simple select statement when use sharding feature.|Test encrypt table's LIKE operator percentage wildcard in simple select statement when use encrypt feature.">
         <assertion expected-data-source-name="read_dataset" />
     </test-case>
+    
+    <test-case sql="SELECT * FROM t_merchant WHERE business_code NOT LIKE '%18'" db-types="MySQL,PostgreSQL,openGauss" scenario-types="db,encrypt"
+               scenario-comments="Test single table's LIKE operator percentage wildcard in simple select statement when use sharding feature.|Test encrypt table's LIKE operator percentage wildcard in simple select statement when use encrypt feature.">
+        <assertion expected-data-source-name="read_dataset" />
+    </test-case>
 
     <test-case sql="SELECT * FROM t_merchant WHERE business_code LIKE '_1000018'" db-types="MySQL,PostgreSQL,openGauss" scenario-types="db,encrypt"
                scenario-comments="Test single table's LIKE operator underscore wildcard in simple select statement when use sharding feature.|Test encrypt table's LIKE operator underscore wildcard in simple select statement when use encrypt feature.">
         <assertion expected-data-source-name="read_dataset" />
     </test-case>
-    
-    <test-case sql="select * from shardingsphere.cluster_information;" db-types="MySQL,PostgreSQL,openGauss" scenario-types="db">
-        <assertion expected-data-file="select_cluster_information.xml" />
+
+    <test-case sql="SELECT * FROM t_merchant WHERE business_code NOT LIKE '_1000018'" db-types="MySQL,PostgreSQL,openGauss" scenario-types="db,encrypt"
+               scenario-comments="Test single table's LIKE operator underscore wildcard in simple select statement when use sharding feature.|Test encrypt table's LIKE operator underscore wildcard in simple select statement when use encrypt feature.">
+        <assertion expected-data-source-name="read_dataset" />
+    </test-case>
+
+    <test-case sql="SELECT user_name, telephone FROM t_user" db-types="Hive" scenario-types="mask">
+        <assertion expected-data-source-name="expected_dataset" />
     </test-case>
 </e2e-test-cases>

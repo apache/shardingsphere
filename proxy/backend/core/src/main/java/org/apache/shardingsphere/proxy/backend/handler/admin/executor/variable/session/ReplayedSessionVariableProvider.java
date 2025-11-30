@@ -17,11 +17,11 @@
 
 package org.apache.shardingsphere.proxy.backend.handler.admin.executor.variable.session;
 
-import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPI;
+import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPI;
 import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
 
 /**
- * Provide session variable need to be replayed on session connected.
+ * Replayed session variable provider.
  */
 @SingletonSPI
 public interface ReplayedSessionVariableProvider extends DatabaseTypedSPI {

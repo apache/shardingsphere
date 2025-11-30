@@ -22,6 +22,5 @@ import Symbol, RULStatement;
 execute
     : (previewSQL 
     | parseSQL
-    | formatSQL
     ) SEMI_? EOF
     ;

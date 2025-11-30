@@ -103,12 +103,12 @@ Truffle's backward compatibility matrix with the JDK is located at https://mediu
     <dependency>
         <groupId>org.graalvm.polyglot</groupId>
         <artifactId>polyglot</artifactId>
-        <version>24.1.0</version>
+        <version>24.1.2</version>
     </dependency>
     <dependency>
         <groupId>org.graalvm.polyglot</groupId>
         <artifactId>java</artifactId>
-        <version>24.1.0</version>
+        <version>24.1.2</version>
         <type>pom</type>
     </dependency>
 </dependencies>

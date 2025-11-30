@@ -19,17 +19,17 @@ package org.apache.shardingsphere.infra.metadata.database.schema.util;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.DialectDatabaseMetaData;
-import org.apache.shardingsphere.infra.database.core.metadata.database.system.SystemDatabase;
-import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
-import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
-import org.apache.shardingsphere.infra.database.opengauss.type.OpenGaussDatabaseType;
+import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.schema.DialectSchemaOption;
+import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.table.DialectDriverQuerySystemCatalogOption;
+import org.apache.shardingsphere.database.connector.core.metadata.database.system.SystemDatabase;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ExpressionProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ProjectionSegment;
 
 import java.util.Collection;
-import java.util.HashSet;
+import java.util.Optional;
 
 /**
  * System schema utility.
@@ -37,25 +37,17 @@ import java.util.HashSet;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class SystemSchemaUtils {
     
-    private static final Collection<String> SYSTEM_CATALOG_QUERY_EXPRESSIONS = new HashSet<>(3, 1F);
-    
-    static {
-        SYSTEM_CATALOG_QUERY_EXPRESSIONS.add("version()");
-        SYSTEM_CATALOG_QUERY_EXPRESSIONS.add("intervaltonum(gs_password_deadline())");
-        SYSTEM_CATALOG_QUERY_EXPRESSIONS.add("gs_password_notifytime()");
-    }
-    
     /**
-     * Judge whether SQL statement contains system schema or not.
+     * Judge whether SQL statement contains system schema.
      *
      * @param databaseType database type
      * @param schemaNames schema names
      * @param database database
-     * @return whether SQL statement contains system schema or not
+     * @return contains system schema or not
      */
     public static boolean containsSystemSchema(final DatabaseType databaseType, final Collection<String> schemaNames, final ShardingSphereDatabase database) {
-        DialectDatabaseMetaData dialectDatabaseMetaData = new DatabaseTypeRegistry(databaseType).getDialectDatabaseMetaData();
-        if (database.isComplete() && !dialectDatabaseMetaData.getSchemaOption().getDefaultSchema().isPresent()) {
+        DialectSchemaOption schemaOption = new DatabaseTypeRegistry(databaseType).getDialectDatabaseMetaData().getSchemaOption();
+        if (database.isComplete() && !schemaOption.getDefaultSchema().isPresent()) {
             return false;
         }
         SystemDatabase systemDatabase = new SystemDatabase(databaseType);
@@ -64,35 +56,36 @@ public final class SystemSchemaUtils {
                 return true;
             }
         }
-        return !dialectDatabaseMetaData.getSchemaOption().getDefaultSchema().isPresent() && systemDatabase.getSystemSchemas().contains(database.getName());
+        return !schemaOption.getDefaultSchema().isPresent() && systemDatabase.getSystemSchemas().contains(database.getName());
     }
     
     /**
-     * Judge whether query is openGauss system catalog query or not.
+     * Judge whether schema is system schema.
+     *
+     * @param database database
+     * @return is system schema or not
+     */
+    public static boolean isSystemSchema(final ShardingSphereDatabase database) {
+        DialectSchemaOption schemaOption = new DatabaseTypeRegistry(database.getProtocolType()).getDialectDatabaseMetaData().getSchemaOption();
+        return (!database.isComplete() || schemaOption.getDefaultSchema().isPresent()) && new SystemDatabase(database.getProtocolType()).getSystemSchemas().contains(database.getName());
+    }
+    
+    /**
+     * Judge whether query system catalog from driver or not.
      *
      * @param databaseType database type
      * @param projections projections
-     * @return whether query is openGauss system catalog query or not
+     * @return whether query or not
      */
-    public static boolean isOpenGaussSystemCatalogQuery(final DatabaseType databaseType, final Collection<ProjectionSegment> projections) {
-        if (!(databaseType instanceof OpenGaussDatabaseType)) {
+    public static boolean isDriverQuerySystemCatalog(final DatabaseType databaseType, final Collection<ProjectionSegment> projections) {
+        Optional<DialectDriverQuerySystemCatalogOption> driverQuerySystemCatalogOption = new DatabaseTypeRegistry(databaseType).getDialectDatabaseMetaData().getDriverQuerySystemCatalogOption();
+        if (1 != projections.size()) {
             return false;
         }
-        return 1 == projections.size() && projections.iterator().next() instanceof ExpressionProjectionSegment
-                && SYSTEM_CATALOG_QUERY_EXPRESSIONS.contains(((ExpressionProjectionSegment) projections.iterator().next()).getText().toLowerCase());
-    }
-    
-    /**
-     * Judge schema is system schema or not.
-     *
-     * @param database database
-     * @return whether schema is system schema or not
-     */
-    public static boolean isSystemSchema(final ShardingSphereDatabase database) {
-        DialectDatabaseMetaData dialectDatabaseMetaData = new DatabaseTypeRegistry(database.getProtocolType()).getDialectDatabaseMetaData();
-        if (database.isComplete() && !dialectDatabaseMetaData.getSchemaOption().getDefaultSchema().isPresent()) {
+        ProjectionSegment firstProjection = projections.iterator().next();
+        if (!(firstProjection instanceof ExpressionProjectionSegment)) {
             return false;
         }
-        return new SystemDatabase(database.getProtocolType()).getSystemSchemas().contains(database.getName());
+        return driverQuerySystemCatalogOption.map(optional -> optional.isSystemCatalogQueryExpressions(((ExpressionProjectionSegment) firstProjection).getText())).orElse(false);
     }
 }

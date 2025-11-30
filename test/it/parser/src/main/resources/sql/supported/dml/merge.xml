@@ -35,4 +35,10 @@
                                                                 remark      = ?,
                                                                 status      = ?;"  db-types="Oracle" />
     <sql-case id="merge_into_select" value="MERGE INTO (SELECT * FROM bonuses WHERE department_id = 80) D USING (SELECT employee_id, salary, department_id FROM employees WHERE department_id = 80) S ON (D.employee_id = S.employee_id) WHEN MATCHED THEN UPDATE SET D.bonus = D.bonus + S.salary*.01 DELETE WHERE (S.salary > 8000)" db-types="Oracle" />
+    <sql-case id="merge_output_with_aaterisk" value="MERGE INTO people_target pt USING people_source ps ON (pt.person_id = ps.person_id) WHEN MATCHED THEN UPDATE SET first_name = ps.first_name, pt.last_name = ps.last_name, pt.title = ps.title OUTPUT deleted.*, $action, inserted.*" db-types="SQLServer" />
+    <sql-case id="merge_update" value="MERGE INTO employees AS T USING employee_updates AS S ON T.id = S.id WHEN MATCHED THEN UPDATE SET T.salary = S.new_salary;" db-types="Hive" />
+    <sql-case id="merge_delete" value="MERGE INTO orders AS t USING invalid_orders AS s ON t.order_id = s.order_id WHEN MATCHED THEN DELETE;" db-types="Hive" />
+    <sql-case id="merge_insert" value="MERGE INTO employees AS T USING employee_updates AS S ON T.id = S.id WHEN NOT MATCHED THEN INSERT VALUES (S.id,S.new_salary);" db-types="Hive" />
+    <sql-case id="merge_delete_source_expression" value="MERGE INTO orders AS t USING (SELECT order_id FROM invalid_orders) AS s ON t.order_id = s.order_id WHEN MATCHED THEN DELETE;" db-types="Hive" />
+    <sql-case id="merge_conditional" value="MERGE INTO employees AS T USING employee_updates AS S ON T.id = S.id WHEN MATCHED AND S.is_active = true THEN UPDATE SET T.salary = S.new_salary WHEN MATCHED AND S.is_active = false THEN DELETE WHEN NOT MATCHED AND S.new_salary &lt; 5000 THEN INSERT VALUES (S.id);" db-types="Hive" />
 </sql-cases>

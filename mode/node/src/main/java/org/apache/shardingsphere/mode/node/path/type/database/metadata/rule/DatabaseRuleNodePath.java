@@ -22,6 +22,7 @@ import org.apache.shardingsphere.mode.node.path.NodePath;
 import org.apache.shardingsphere.mode.node.path.NodePathEntity;
 import org.apache.shardingsphere.mode.node.path.engine.searcher.NodePathPattern;
 import org.apache.shardingsphere.mode.node.path.engine.searcher.NodePathSearchCriteria;
+import org.apache.shardingsphere.mode.node.path.engine.searcher.NodePathSearcher;
 import org.apache.shardingsphere.mode.node.path.type.database.metadata.DatabaseMetaDataNodePath;
 
 /**
@@ -63,5 +64,45 @@ public final class DatabaseRuleNodePath implements NodePath {
      */
     public static NodePathSearchCriteria createRuleItemNameSearchCriteria(final String databaseName, final String ruleType, final String ruleItemType) {
         return new NodePathSearchCriteria(new DatabaseRuleNodePath(databaseName, ruleType, new DatabaseRuleItem(ruleItemType, NodePathPattern.QUALIFIED_IDENTIFIER)), true, 1);
+    }
+    
+    /**
+     * Check if the path is a rule type path.
+     *
+     * @param databaseName database name
+     * @param path path
+     * @return true if the path is a rule type path, otherwise false
+     */
+    public static boolean isRuleTypePath(final String databaseName, final String path) {
+        return NodePathSearcher.find(path, new NodePathSearchCriteria(new DatabaseRuleNodePath(databaseName, NodePathPattern.IDENTIFIER, null), false, 1))
+                .isPresent();
+    }
+    
+    /**
+     * Check if the path is a named rule item path.
+     *
+     * @param databaseName database name
+     * @param ruleType rule type
+     * @param ruleItemType rule item type
+     * @param path path
+     * @return true if the path is a rule item path, otherwise false
+     */
+    public static boolean isNamedRuleItemPath(final String databaseName, final String ruleType, final String ruleItemType, final String path) {
+        return NodePathSearcher.find(path, new NodePathSearchCriteria(new DatabaseRuleNodePath(databaseName, ruleType,
+                new DatabaseRuleItem(ruleItemType, NodePathPattern.QUALIFIED_IDENTIFIER)), false, 1)).isPresent();
+    }
+    
+    /**
+     * Check if the path is a unique rule item path.
+     *
+     * @param databaseName database name
+     * @param ruleType rule type
+     * @param ruleItemType rule item type
+     * @param path path
+     * @return true if the path is a unique rule item path, otherwise false
+     */
+    public static boolean isUniqueRuleItemPath(final String databaseName, final String ruleType, final String ruleItemType, final String path) {
+        return NodePathSearcher.isMatchedPath(path, new NodePathSearchCriteria(new DatabaseRuleNodePath(databaseName, ruleType,
+                new DatabaseRuleItem(ruleItemType, null)), false, 0));
     }
 }

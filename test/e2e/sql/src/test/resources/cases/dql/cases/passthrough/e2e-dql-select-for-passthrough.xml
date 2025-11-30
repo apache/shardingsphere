@@ -17,7 +17,7 @@
   -->
 
 <e2e-test-cases>
-    <test-case sql="SELECT 1 FROM dual" db-types="MySQL,H2" smoke="true" scenario-types="passthrough" >
+    <test-case sql="SELECT 1 FROM dual" db-types="MySQL" smoke="true" scenario-types="passthrough" >
         <assertion />
     </test-case>
 

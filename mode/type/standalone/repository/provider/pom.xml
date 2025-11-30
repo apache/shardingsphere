@@ -29,5 +29,6 @@
     
     <modules>
         <module>jdbc</module>
+        <module>memory</module>
     </modules>
 </project>

@@ -19,35 +19,32 @@ package org.apache.shardingsphere.driver.api.yaml;
 
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.driver.jdbc.core.datasource.ShardingSphereDataSource;
-import org.apache.shardingsphere.test.fixture.jdbc.MockedDataSource;
+import org.apache.shardingsphere.infra.util.file.SystemResourceFileUtils;
+import org.apache.shardingsphere.test.infra.fixture.jdbc.MockedDataSource;
 import org.junit.jupiter.api.Test;
 import org.mockito.internal.configuration.plugins.Plugins;
 
 import javax.sql.DataSource;
-import java.io.File;
 import java.io.IOException;
-import java.net.URISyntaxException;
-import java.net.URL;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 class YamlShardingSphereDataSourceFactoryTest {
     
+    private static final String YAML_FILE = "config/factory/database-for-factory-test.yaml";
+    
     @Test
     void assertCreateDataSourceWithFile() throws Exception {
-        assertDataSource(YamlShardingSphereDataSourceFactory.createDataSource(new File(getYamlFileUrl().toURI())));
+        assertDataSource(YamlShardingSphereDataSourceFactory.createDataSource(SystemResourceFileUtils.getPath(YAML_FILE).toFile()));
     }
     
     @Test
-    void assertCreateDataSourceWithBytes() throws SQLException, IOException, URISyntaxException {
-        assertDataSource(YamlShardingSphereDataSourceFactory.createDataSource(readFile(getYamlFileUrl()).getBytes()));
+    void assertCreateDataSourceWithBytes() throws SQLException, IOException {
+        assertDataSource(YamlShardingSphereDataSourceFactory.createDataSource(SystemResourceFileUtils.readFile(YAML_FILE).getBytes()));
     }
     
     @Test
@@ -55,12 +52,12 @@ class YamlShardingSphereDataSourceFactoryTest {
         Map<String, DataSource> dataSourceMap = new HashMap<>(2, 1F);
         dataSourceMap.put("ds_0", new MockedDataSource());
         dataSourceMap.put("ds_1", new MockedDataSource());
-        assertDataSource(YamlShardingSphereDataSourceFactory.createDataSource(dataSourceMap, new File(getYamlFileUrl().toURI())));
+        assertDataSource(YamlShardingSphereDataSourceFactory.createDataSource(dataSourceMap, SystemResourceFileUtils.getPath(YAML_FILE).toFile()));
     }
     
     @Test
     void assertCreateDataSourceWithFileForExternalSingleDataSource() throws Exception {
-        assertDataSource(YamlShardingSphereDataSourceFactory.createDataSource(new MockedDataSource(), new File(getYamlFileUrl().toURI())));
+        assertDataSource(YamlShardingSphereDataSourceFactory.createDataSource(new MockedDataSource(), SystemResourceFileUtils.getPath(YAML_FILE).toFile()));
     }
     
     @Test
@@ -68,20 +65,12 @@ class YamlShardingSphereDataSourceFactoryTest {
         Map<String, DataSource> dataSourceMap = new HashMap<>(2, 1F);
         dataSourceMap.put("ds_0", new MockedDataSource());
         dataSourceMap.put("ds_1", new MockedDataSource());
-        assertDataSource(YamlShardingSphereDataSourceFactory.createDataSource(dataSourceMap, readFile(getYamlFileUrl()).getBytes()));
+        assertDataSource(YamlShardingSphereDataSourceFactory.createDataSource(dataSourceMap, SystemResourceFileUtils.readFile(YAML_FILE).getBytes()));
     }
     
     @Test
     void assertCreateDataSourceWithBytesForExternalSingleDataSource() throws Exception {
-        assertDataSource(YamlShardingSphereDataSourceFactory.createDataSource(new MockedDataSource(), readFile(getYamlFileUrl()).getBytes()));
-    }
-    
-    private URL getYamlFileUrl() {
-        return Objects.requireNonNull(YamlShardingSphereDataSourceFactoryTest.class.getResource("/config/factory/database-for-factory-test.yaml"));
-    }
-    
-    private String readFile(final URL url) throws IOException, URISyntaxException {
-        return String.join(System.lineSeparator(), Files.readAllLines(Paths.get(url.toURI())));
+        assertDataSource(YamlShardingSphereDataSourceFactory.createDataSource(new MockedDataSource(), SystemResourceFileUtils.readFile(YAML_FILE).getBytes()));
     }
     
     @SneakyThrows(ReflectiveOperationException.class)

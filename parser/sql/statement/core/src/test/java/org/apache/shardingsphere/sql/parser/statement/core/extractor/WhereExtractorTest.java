@@ -28,7 +28,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SubqueryTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableNameSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.SelectStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 import org.junit.jupiter.api.Test;
 
@@ -81,12 +81,7 @@ class WhereExtractorTest {
     
     @Test
     void assertGetWhereSegmentsFromSubQueryJoin() {
-        JoinTableSegment joinTableSegment = new JoinTableSegment();
-        joinTableSegment.setLeft(new SimpleTableSegment(new TableNameSegment(37, 39, new IdentifierValue("t_order"))));
-        joinTableSegment.setRight(new SimpleTableSegment(new TableNameSegment(54, 56, new IdentifierValue("t_order_item"))));
-        joinTableSegment.setJoinType("INNER");
-        joinTableSegment.setCondition(new BinaryOperationExpression(63, 83, new ColumnSegment(63, 71, new IdentifierValue("order_id")),
-                new ColumnSegment(75, 83, new IdentifierValue("order_id")), "=", "oi.order_id = o.order_id"));
+        JoinTableSegment joinTableSegment = createJoinTableSegment();
         SelectStatement subQuerySelectStatement = mock(SelectStatement.class);
         when(subQuerySelectStatement.getFrom()).thenReturn(Optional.of(joinTableSegment));
         SelectStatement selectStatement = mock(SelectStatement.class);
@@ -94,5 +89,15 @@ class WhereExtractorTest {
         Collection<WhereSegment> subqueryWhereSegments = WhereExtractor.extractSubqueryWhereSegments(selectStatement);
         WhereSegment actual = subqueryWhereSegments.iterator().next();
         assertThat(actual.getExpr(), is(joinTableSegment.getCondition()));
+    }
+    
+    private JoinTableSegment createJoinTableSegment() {
+        JoinTableSegment result = new JoinTableSegment();
+        result.setLeft(new SimpleTableSegment(new TableNameSegment(37, 39, new IdentifierValue("t_order"))));
+        result.setRight(new SimpleTableSegment(new TableNameSegment(54, 56, new IdentifierValue("t_order_item"))));
+        result.setJoinType("INNER");
+        result.setCondition(new BinaryOperationExpression(63, 83, new ColumnSegment(63, 71, new IdentifierValue("order_id")),
+                new ColumnSegment(75, 83, new IdentifierValue("order_id")), "=", "oi.order_id = o.order_id"));
+        return result;
     }
 }

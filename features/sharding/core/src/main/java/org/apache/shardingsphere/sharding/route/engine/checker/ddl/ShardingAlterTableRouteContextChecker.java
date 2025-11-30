@@ -17,9 +17,9 @@
 
 package org.apache.shardingsphere.sharding.route.engine.checker.ddl;
 
-import org.apache.shardingsphere.infra.binder.context.statement.ddl.AlterTableStatementContext;
+import org.apache.shardingsphere.infra.binder.context.statement.type.CommonSQLStatementContext;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
-import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
+import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.session.query.QueryContext;
@@ -27,6 +27,7 @@ import org.apache.shardingsphere.sharding.checker.sql.util.ShardingSupportedChec
 import org.apache.shardingsphere.sharding.exception.connection.ShardingDDLRouteException;
 import org.apache.shardingsphere.sharding.route.engine.checker.ShardingRouteContextChecker;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.table.AlterTableStatement;
 
 /**
  * Sharding alter table route context checker.
@@ -35,8 +36,8 @@ public final class ShardingAlterTableRouteContextChecker implements ShardingRout
     
     @Override
     public void check(final ShardingRule shardingRule, final QueryContext queryContext, final ShardingSphereDatabase database, final ConfigurationProperties props, final RouteContext routeContext) {
-        AlterTableStatementContext alterTableStatementContext = (AlterTableStatementContext) queryContext.getSqlStatementContext();
-        String primaryTable = alterTableStatementContext.getSqlStatement().getTable().getTableName().getIdentifier().getValue();
+        CommonSQLStatementContext alterTableStatementContext = (CommonSQLStatementContext) queryContext.getSqlStatementContext();
+        String primaryTable = ((AlterTableStatement) alterTableStatementContext.getSqlStatement()).getTable().getTableName().getIdentifier().getValue();
         ShardingSpherePreconditions.checkState(!ShardingSupportedCheckUtils.isRouteUnitDataNodeDifferentSize(shardingRule, routeContext, primaryTable),
                 () -> new ShardingDDLRouteException("ALTER", "TABLE", alterTableStatementContext.getTablesContext().getTableNames()));
     }

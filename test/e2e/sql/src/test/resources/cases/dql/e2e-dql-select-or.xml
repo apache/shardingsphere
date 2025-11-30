@@ -26,7 +26,7 @@
     </test-case>
     
     <!-- TODO FIXED ME PostgreSQL default order by collate -->
-    <test-case sql="SELECT * FROM t_order WHERE order_id = ? OR status = ? ORDER BY order_id" db-types="H2,MySQL" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
+    <test-case sql="SELECT * FROM t_order WHERE order_id = ? OR status = ? ORDER BY order_id" db-types="MySQL" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
         <assertion parameters="1000:int, init:String" expected-data-source-name="read_dataset" />
     </test-case>
     

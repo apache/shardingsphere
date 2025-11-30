@@ -18,14 +18,14 @@
 package org.apache.shardingsphere.distsql.handler.executor.rql.resource;
 
 import org.apache.shardingsphere.distsql.handler.fixture.DistSQLHandlerFixtureRule;
-import org.apache.shardingsphere.distsql.statement.rql.rule.database.ShowRulesUsedStorageUnitStatement;
+import org.apache.shardingsphere.distsql.statement.type.rql.rule.database.ShowRulesUsedStorageUnitStatement;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.mode.manager.ContextManager;
-import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.DatabaseSegment;
-import org.apache.shardingsphere.test.fixture.jdbc.MockedDataSource;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.FromDatabaseSegment;
+import org.apache.shardingsphere.test.infra.fixture.jdbc.MockedDataSource;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collection;
@@ -45,7 +45,7 @@ class ShowRulesUsedStorageUnitExecutorTest {
     @Test
     void assertGetRowData() {
         executor.setDatabase(mockDatabase());
-        ShowRulesUsedStorageUnitStatement sqlStatement = new ShowRulesUsedStorageUnitStatement("foo_ds", mock(DatabaseSegment.class));
+        ShowRulesUsedStorageUnitStatement sqlStatement = new ShowRulesUsedStorageUnitStatement("foo_ds", mock(FromDatabaseSegment.class));
         Collection<LocalDataQueryResultRow> rowData = executor.getRows(sqlStatement, mock(ContextManager.class));
         assertThat(rowData.size(), is(1));
         Iterator<LocalDataQueryResultRow> actual = rowData.iterator();
@@ -64,7 +64,7 @@ class ShowRulesUsedStorageUnitExecutorTest {
     @Test
     void assertGetEmptyRowData() {
         executor.setDatabase(mockEmptyDatabase());
-        ShowRulesUsedStorageUnitStatement sqlStatement = new ShowRulesUsedStorageUnitStatement("empty_ds", mock(DatabaseSegment.class));
+        ShowRulesUsedStorageUnitStatement sqlStatement = new ShowRulesUsedStorageUnitStatement("empty_ds", mock(FromDatabaseSegment.class));
         assertTrue(executor.getRows(sqlStatement, mock(ContextManager.class)).isEmpty());
     }
     

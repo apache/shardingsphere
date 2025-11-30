@@ -17,18 +17,24 @@
   -->
 
 <configuration>
-    <statusListener class="ch.qos.logback.core.status.NopStatusListener" />
     <appender name="console" class="ch.qos.logback.core.ConsoleAppender">
         <encoder>
             <pattern>[%-5level] %d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %logger{36} - %msg%n</pattern>
         </encoder>
     </appender>
-    <logger name="org.apache.shardingsphere" level="warn" additivity="true">
+    
+    <logger name="org.apache.shardingsphere" level="info" additivity="false">
         <appender-ref ref="console" />
     </logger>
-    <logger name="com.zaxxer.hikari" level="warn" />
+    
+    <logger name="com.zaxxer.hikari" level="error" />
+    
+    <logger name="com.atomikos" level="error" />
+    
+    <logger name="io.netty" level="error" />
+    
     <root>
         <level value="info" />
         <appender-ref ref="console" />
     </root>
-</configuration> 
+</configuration>

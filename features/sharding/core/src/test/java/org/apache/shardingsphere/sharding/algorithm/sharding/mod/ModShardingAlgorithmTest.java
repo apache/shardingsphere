@@ -21,12 +21,12 @@ import com.google.common.collect.Range;
 import org.apache.shardingsphere.infra.algorithm.core.exception.AlgorithmInitializationException;
 import org.apache.shardingsphere.infra.datanode.DataNodeInfo;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
+import org.apache.shardingsphere.infra.util.props.PropertiesBuilder;
+import org.apache.shardingsphere.infra.util.props.PropertiesBuilder.Property;
 import org.apache.shardingsphere.sharding.api.sharding.standard.PreciseShardingValue;
 import org.apache.shardingsphere.sharding.api.sharding.standard.RangeShardingValue;
 import org.apache.shardingsphere.sharding.exception.data.ShardingValueOffsetException;
 import org.apache.shardingsphere.sharding.spi.ShardingAlgorithm;
-import org.apache.shardingsphere.test.util.PropertiesBuilder;
-import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
@@ -114,6 +114,14 @@ class ModShardingAlgorithmTest {
         Properties props = createZeroPaddingProperties();
         props.setProperty("stop-offset", "-1");
         assertThrows(AlgorithmInitializationException.class, () -> TypedSPILoader.getService(ShardingAlgorithm.class, "MOD", props));
+    }
+    
+    @Test
+    void assertRangeDoShardingWithLargeRange() {
+        ModShardingAlgorithm algorithm = (ModShardingAlgorithm) TypedSPILoader.getService(ShardingAlgorithm.class, "MOD", createZeroPaddingProperties());
+        Collection<String> actual = algorithm.doSharding(createAvailableTargetNames(),
+                new RangeShardingValue<>("t_order", "order_id", DATA_NODE_INFO, Range.closed(1164582715995979777L, 1164583049303058023L)));
+        assertThat(actual.size(), is(16));
     }
     
     private Properties createZeroPaddingProperties() {

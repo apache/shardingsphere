@@ -188,8 +188,8 @@ SQL 错误码以标准的 SQL State，Vendor Code 和详细错误信息提供，
 | 20051       | HY000     | Routed target '%s' does not exist, available targets are '%s'.                                                                      |
 | 20052       | 44000     | Inline sharding algorithms expression '%s' and sharding column '%s' do not match.                                                   |
 | 20053       | 44000     | Complex inline algorithm need %d sharding columns, but only found %d.                                                               |
-| 20054       | 44000     | No sharding database route info.                                                                                                    |
-| 20055       | 44000     | Some routed data sources do not belong to configured data sources. routed data sources '%s', configured data sources '%s'.          |
+| 20054       | 44000     | No sharding database route info, actual data source names: `%s`, sharding condition values: `%s`.                                   |
+| 20055       | 44000     | Some routed data sources do not belong to configured data sources. routed data sources '%s', configured data sources '%s', sharding condition values '%s'.          |
 | 20056       | 44000     | Please check your sharding conditions '%s' to avoid same record in table '%s' routing to multiple data nodes.                       |
 | 20057       | 44000     | Can not find routing table factor, data source '%s', actual table '%s'.                                                             |
 | 20060       | HY000     | Invalid %s strategy '%s', strategy does not match data nodes.                                                                       |
@@ -253,12 +253,14 @@ SQL 错误码以标准的 SQL State，Vendor Code 和详细错误信息提供，
 
 ## 其他异常
 
-| Vendor Code | SQL State | 错误信息                            |
-|-------------|-----------|---------------------------------|
-| 30000       | HY000     | Unknown exception: %s           |
-| 30001       | 0A000     | Unsupported SQL operation: %s   |
-| 30002       | HY000     | Database protocol exception: %s |
-| 30003       | 0A000     | Unsupported command: %s         |
-| 30004       | HY000     | Server exception: %s            |
-| 30010       | HY000     | Can not find plugin class '%s'. |
-| 30020       | HY000     | File access failed, file is: %s |
+| Vendor Code | SQL State | 错误信息                                                 |
+|-------------|-----------|------------------------------------------------------|
+| 30000       | HY000     | Unknown exception: %s                                |
+| 30001       | 0A000     | Unsupported SQL operation: %s                        |
+| 30002       | HY000     | Database protocol exception: %s                      |
+| 30003       | 0A000     | Unsupported command: %s                              |
+| 30004       | HY000     | Server exception: %s                                 |
+| 30005       | HY000     | Underlying SQL state: %s, underlying error code: %s. |
+| 30010       | HY000     | Can not find plugin class '%s'.                      |
+| 30020       | HY000     | File access failed, file is: %s                      |
+| 30030       | HY000     | Unexpected tableless route engine.                   |

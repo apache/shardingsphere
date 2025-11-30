@@ -25,8 +25,8 @@ import org.junit.jupiter.api.Test;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.isA;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -35,7 +35,7 @@ class UniqueKeyInventoryDataRecordPositionCreatorTest {
     
     @Test
     void assertCreate() throws SQLException {
-        assertThat(new UniqueKeyInventoryDataRecordPositionCreator().create(mockInventoryDumperContext(), mock(ResultSet.class)), instanceOf(UnsupportedKeyIngestPosition.class));
+        assertThat(new UniqueKeyInventoryDataRecordPositionCreator().create(mockInventoryDumperContext(), mock(ResultSet.class)), isA(UnsupportedKeyIngestPosition.class));
     }
     
     @SuppressWarnings("unchecked")

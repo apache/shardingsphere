@@ -55,11 +55,11 @@ import java.util.concurrent.atomic.AtomicReference;
 @Slf4j
 public final class ConsistencyCheckTasksRunner implements PipelineTasksRunner {
     
-    private final PipelineJobType jobType = new ConsistencyCheckJobType();
+    private final ConsistencyCheckJobType jobType = new ConsistencyCheckJobType();
     
     private final PipelineJobManager jobManager = new PipelineJobManager(jobType);
     
-    private final PipelineJobItemManager<TransmissionJobItemProgress> jobItemManager = new PipelineJobItemManager<>(jobType.getYamlJobItemProgressSwapper());
+    private final PipelineJobItemManager<TransmissionJobItemProgress> jobItemManager = new PipelineJobItemManager<>(jobType.getOption().getYamlJobItemProgressSwapper());
     
     private final PipelineProcessConfigurationPersistService processConfigPersistService = new PipelineProcessConfigurationPersistService();
     
@@ -90,7 +90,7 @@ public final class ConsistencyCheckTasksRunner implements PipelineTasksRunner {
             return;
         }
         new PipelineJobItemManager<>(TypedSPILoader.getService(PipelineJobType.class, PipelineJobIdUtils.parseJobType(jobItemContext.getJobId()).getType())
-                .getYamlJobItemProgressSwapper()).persistProgress(jobItemContext);
+                .getOption().getYamlJobItemProgressSwapper()).persistProgress(jobItemContext);
         CompletableFuture<?> future = jobItemContext.getProcessContext().getConsistencyCheckExecuteEngine().submit(checkExecutor);
         PipelineExecuteEngine.trigger(Collections.singletonList(future), new CheckExecuteCallback());
     }
@@ -101,13 +101,14 @@ public final class ConsistencyCheckTasksRunner implements PipelineTasksRunner {
         checkExecutor.stop();
     }
     
-    private final class CheckPipelineLifecycleRunnable extends AbstractPipelineLifecycleRunnable {
+    private class CheckPipelineLifecycleRunnable extends AbstractPipelineLifecycleRunnable {
         
+        @SuppressWarnings("unchecked")
         @Override
         protected void runBlocking() {
             jobItemManager.persistProgress(jobItemContext);
-            PipelineJobType jobType = PipelineJobIdUtils.parseJobType(parentJobId);
-            PipelineJobConfiguration parentJobConfig = new PipelineJobConfigurationManager(jobType).getJobConfiguration(parentJobId);
+            PipelineJobType<PipelineJobConfiguration> jobType = PipelineJobIdUtils.parseJobType(parentJobId);
+            PipelineJobConfiguration parentJobConfig = new PipelineJobConfigurationManager(jobType.getOption()).getJobConfiguration(parentJobId);
             try {
                 PipelineProcessConfiguration processConfig = PipelineProcessConfigurationUtils.fillInDefaultValue(
                         processConfigPersistService.load(PipelineJobIdUtils.parseContextKey(parentJobConfig.getJobId()), jobType.getType()));
@@ -135,7 +136,7 @@ public final class ConsistencyCheckTasksRunner implements PipelineTasksRunner {
         }
     }
     
-    private final class CheckExecuteCallback implements ExecuteCallback {
+    private class CheckExecuteCallback implements ExecuteCallback {
         
         @Override
         public void onSuccess() {
@@ -146,7 +147,7 @@ public final class ConsistencyCheckTasksRunner implements PipelineTasksRunner {
             log.info("onSuccess, check job id: {}, parent job id: {}", checkJobId, parentJobId);
             Map<String, TableDataConsistencyCheckResult> checkJobResult = PipelineAPIFactory.getPipelineGovernanceFacade(
                     PipelineJobIdUtils.parseContextKey(parentJobId)).getJobFacade().getCheck().getCheckJobResult(parentJobId, checkJobId);
-            if (checkJobResult.values().stream().allMatch(TableDataConsistencyCheckResult::isMatched)) {
+            if (!checkJobResult.isEmpty() && checkJobResult.values().stream().allMatch(TableDataConsistencyCheckResult::isSuccessful)) {
                 jobItemContext.setStatus(JobStatus.FINISHED);
             } else {
                 jobItemContext.setStatus(JobStatus.CONSISTENCY_CHECK_FAILURE);

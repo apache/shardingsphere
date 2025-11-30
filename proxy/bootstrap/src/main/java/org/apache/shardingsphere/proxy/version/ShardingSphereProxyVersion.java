@@ -21,9 +21,9 @@ import com.google.common.base.Strings;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.db.protocol.constant.CommonConstants;
-import org.apache.shardingsphere.db.protocol.constant.DatabaseProtocolServerInfo;
-import org.apache.shardingsphere.infra.autogen.version.ShardingSphereVersion;
+import org.apache.shardingsphere.database.protocol.constant.CommonConstants;
+import org.apache.shardingsphere.database.protocol.constant.DatabaseProtocolServerInfo;
+import org.apache.shardingsphere.infra.version.ShardingSphereVersion;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.proxy.database.DatabaseServerInfo;
@@ -54,11 +54,11 @@ public final class ShardingSphereProxyVersion {
     
     private static String getProxyVersion() {
         String result = ShardingSphereVersion.VERSION;
-        if (!ShardingSphereVersion.IS_SNAPSHOT || Strings.isNullOrEmpty(ShardingSphereVersion.BUILD_GIT_COMMIT_ID_ABBREV)) {
+        if (!ShardingSphereVersion.IS_SNAPSHOT || Strings.isNullOrEmpty(ShardingSphereVersion.BUILD_COMMIT_ID_ABBREV)) {
             return result;
         }
-        result += ShardingSphereVersion.BUILD_GIT_DIRTY ? "-dirty" : "";
-        result += "-" + ShardingSphereVersion.BUILD_GIT_COMMIT_ID_ABBREV;
+        result += ShardingSphereVersion.BUILD_DIRTY ? "-dirty" : "";
+        result += "-" + ShardingSphereVersion.BUILD_COMMIT_ID_ABBREV;
         return result;
     }
     

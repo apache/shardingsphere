@@ -18,20 +18,16 @@
 package org.apache.shardingsphere.infra.metadata.database.schema.manager;
 
 import com.cedarsoftware.util.CaseInsensitiveMap;
-import com.cedarsoftware.util.CaseInsensitiveSet;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Strings;
 import org.apache.shardingsphere.infra.util.directory.ClasspathResourceDirectoryReader;
 
 import java.io.InputStream;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -41,9 +37,7 @@ import java.util.stream.Stream;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class SystemSchemaManager {
     
-    private static final Map<String, Map<String, Collection<String>>> DATABASE_TYPE_SCHEMA_TABLE_MAP;
-    
-    private static final Map<String, Map<String, Collection<String>>> DATABASE_TYPE_SCHEMA_RESOURCE_MAP;
+    private static final Map<String, DialectSystemSchemaManager> DATABASE_TYPE_AND_SYSTEM_SCHEMA_MANAGER_MAP;
     
     private static final String COMMON = "common";
     
@@ -52,64 +46,56 @@ public final class SystemSchemaManager {
         try (Stream<String> resourceNameStream = ClasspathResourceDirectoryReader.read("schema")) {
             resourceNames = resourceNameStream.filter(each -> each.endsWith(".yaml")).collect(Collectors.toList());
         }
-        DATABASE_TYPE_SCHEMA_TABLE_MAP = resourceNames.stream().map(resourceName -> resourceName.split("/")).filter(each -> each.length == 4)
-                .collect(Collectors.groupingBy(path -> path[1], CaseInsensitiveMap::new, Collectors.groupingBy(path -> path[2], CaseInsensitiveMap::new,
-                        Collectors.mapping(path -> StringUtils.removeEnd(path[3], ".yaml"), Collectors.toCollection(CaseInsensitiveSet::new)))));
-        DATABASE_TYPE_SCHEMA_RESOURCE_MAP = resourceNames.stream().map(resourceName -> resourceName.split("/")).filter(each -> each.length == 4)
-                .collect(Collectors.groupingBy(path -> path[1], CaseInsensitiveMap::new, Collectors.groupingBy(path -> path[2], CaseInsensitiveMap::new,
-                        Collectors.mapping(path -> String.join("/", path), Collectors.toCollection(CaseInsensitiveSet::new)))));
+        DATABASE_TYPE_AND_SYSTEM_SCHEMA_MANAGER_MAP = new CaseInsensitiveMap<>();
+        for (String each : resourceNames) {
+            String[] pathParts = each.split("/");
+            if (4 == pathParts.length) {
+                String databaseType = pathParts[1];
+                String schemaName = pathParts[2];
+                String tableName = Strings.CS.removeEnd(pathParts[3], ".yaml");
+                String resourcePath = String.join("/", pathParts);
+                DialectSystemSchemaManager dialectSystemSchemaManager = DATABASE_TYPE_AND_SYSTEM_SCHEMA_MANAGER_MAP.computeIfAbsent(databaseType, key -> new DialectSystemSchemaManager());
+                dialectSystemSchemaManager.putTable(schemaName, tableName);
+                dialectSystemSchemaManager.putResource(schemaName, resourcePath);
+            }
+        }
     }
     
     /**
-     * Judge whether current table is system table or not.
+     * Judge whether the current table is system table.
      *
      * @param schema schema
      * @param tableName table name
-     * @return whether current table is system table or not
+     * @return is system table or not
      */
     public static boolean isSystemTable(final String schema, final String tableName) {
-        for (Entry<String, Map<String, Collection<String>>> entry : DATABASE_TYPE_SCHEMA_TABLE_MAP.entrySet()) {
-            if (Optional.ofNullable(entry.getValue().get(schema)).map(tables -> tables.contains(tableName)).orElse(false)) {
-                return true;
-            }
-        }
-        return false;
+        return DATABASE_TYPE_AND_SYSTEM_SCHEMA_MANAGER_MAP.entrySet().stream().anyMatch(entry -> entry.getValue().getTables(schema).contains(tableName));
     }
     
     /**
-     * Judge whether current table is system table or not.
+     * Judge whether the current table is system table.
      *
      * @param databaseType database type
      * @param schema schema
      * @param tableName table name
-     * @return whether current table is system table or not
+     * @return is system table or not
      */
     public static boolean isSystemTable(final String databaseType, final String schema, final String tableName) {
-        Map<String, Collection<String>> schemaTableMap = DATABASE_TYPE_SCHEMA_TABLE_MAP.getOrDefault(databaseType, Collections.emptyMap());
-        Map<String, Collection<String>> commonTableMap = DATABASE_TYPE_SCHEMA_TABLE_MAP.getOrDefault(COMMON, Collections.emptyMap());
-        if (null == schema) {
-            return schemaTableMap.values().stream().anyMatch(each -> each.contains(tableName)) || commonTableMap.values().stream().anyMatch(each -> each.contains(tableName));
-        }
-        return schemaTableMap.getOrDefault(schema, Collections.emptyList()).contains(tableName) || commonTableMap.getOrDefault(schema, Collections.emptyList()).contains(tableName);
+        return DATABASE_TYPE_AND_SYSTEM_SCHEMA_MANAGER_MAP.containsKey(databaseType) && DATABASE_TYPE_AND_SYSTEM_SCHEMA_MANAGER_MAP.get(databaseType).isSystemTable(schema, tableName)
+                || DATABASE_TYPE_AND_SYSTEM_SCHEMA_MANAGER_MAP.containsKey(COMMON) && DATABASE_TYPE_AND_SYSTEM_SCHEMA_MANAGER_MAP.get(COMMON).isSystemTable(schema, tableName);
     }
     
     /**
-     * Judge whether current table is system table or not.
+     * Judge whether the current table is system table.
      *
      * @param databaseType database type
      * @param schema schema
      * @param tableNames table names
-     * @return whether current table is system table or not
+     * @return is system table or not
      */
     public static boolean isSystemTable(final String databaseType, final String schema, final Collection<String> tableNames) {
-        Collection<String> databaseTypeTables = Optional.ofNullable(DATABASE_TYPE_SCHEMA_TABLE_MAP.get(databaseType)).map(schemas -> schemas.get(schema)).orElse(Collections.emptyList());
-        Collection<String> commonTables = Optional.ofNullable(DATABASE_TYPE_SCHEMA_TABLE_MAP.get(COMMON)).map(schemas -> schemas.get(schema)).orElse(Collections.emptyList());
-        for (String each : tableNames) {
-            if (!databaseTypeTables.contains(each) && !commonTables.contains(each)) {
-                return false;
-            }
-        }
-        return true;
+        return DATABASE_TYPE_AND_SYSTEM_SCHEMA_MANAGER_MAP.containsKey(databaseType) && DATABASE_TYPE_AND_SYSTEM_SCHEMA_MANAGER_MAP.get(databaseType).isSystemTable(schema, tableNames)
+                || DATABASE_TYPE_AND_SYSTEM_SCHEMA_MANAGER_MAP.containsKey(COMMON) && DATABASE_TYPE_AND_SYSTEM_SCHEMA_MANAGER_MAP.get(COMMON).isSystemTable(schema, tableNames);
     }
     
     /**
@@ -121,8 +107,8 @@ public final class SystemSchemaManager {
      */
     public static Collection<String> getTables(final String databaseType, final String schema) {
         Collection<String> result = new LinkedList<>();
-        Optional.ofNullable(DATABASE_TYPE_SCHEMA_TABLE_MAP.get(databaseType)).map(schemas -> schemas.get(schema)).ifPresent(result::addAll);
-        Optional.ofNullable(DATABASE_TYPE_SCHEMA_TABLE_MAP.get(COMMON)).map(schemas -> schemas.get(schema)).ifPresent(result::addAll);
+        result.addAll(DATABASE_TYPE_AND_SYSTEM_SCHEMA_MANAGER_MAP.get(databaseType).getTables(schema));
+        result.addAll(DATABASE_TYPE_AND_SYSTEM_SCHEMA_MANAGER_MAP.get(COMMON).getTables(schema));
         return result;
     }
     
@@ -131,23 +117,12 @@ public final class SystemSchemaManager {
      *
      * @param databaseType database type
      * @param schema schema
-     * @return inputStream collection
+     * @return input streams
      */
     public static Collection<InputStream> getAllInputStreams(final String databaseType, final String schema) {
         Collection<InputStream> result = new LinkedList<>();
-        result.addAll(getInputStreams(databaseType, schema));
-        result.addAll(getInputStreams(COMMON, schema));
-        return result;
-    }
-    
-    private static Collection<InputStream> getInputStreams(final String databaseType, final String schema) {
-        if (!DATABASE_TYPE_SCHEMA_RESOURCE_MAP.containsKey(databaseType) || !DATABASE_TYPE_SCHEMA_RESOURCE_MAP.get(databaseType).containsKey(schema)) {
-            return Collections.emptyList();
-        }
-        Collection<InputStream> result = new LinkedList<>();
-        for (String each : DATABASE_TYPE_SCHEMA_RESOURCE_MAP.get(databaseType).get(schema)) {
-            result.add(SystemSchemaManager.class.getClassLoader().getResourceAsStream(each));
-        }
+        result.addAll(DATABASE_TYPE_AND_SYSTEM_SCHEMA_MANAGER_MAP.get(databaseType).getAllInputStreams(schema));
+        result.addAll(DATABASE_TYPE_AND_SYSTEM_SCHEMA_MANAGER_MAP.get(COMMON).getAllInputStreams(schema));
         return result;
     }
 }

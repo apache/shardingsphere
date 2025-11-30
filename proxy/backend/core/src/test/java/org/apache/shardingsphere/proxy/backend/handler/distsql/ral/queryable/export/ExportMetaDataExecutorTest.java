@@ -20,7 +20,8 @@ package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.queryable.ex
 import org.apache.commons.codec.binary.Base64;
 import org.apache.shardingsphere.authority.rule.AuthorityRule;
 import org.apache.shardingsphere.authority.rule.builder.DefaultAuthorityRuleConfigurationBuilder;
-import org.apache.shardingsphere.distsql.statement.ral.queryable.export.ExportMetaDataStatement;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
+import org.apache.shardingsphere.distsql.statement.type.ral.queryable.export.ExportMetaDataStatement;
 import org.apache.shardingsphere.globalclock.rule.GlobalClockRule;
 import org.apache.shardingsphere.globalclock.rule.builder.DefaultGlobalClockRuleConfigurationBuilder;
 import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
@@ -28,7 +29,6 @@ import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.config.props.temporary.TemporaryConfigurationProperties;
 import org.apache.shardingsphere.infra.config.props.temporary.TemporaryConfigurationPropertyKey;
-import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.datasource.pool.props.creator.DataSourcePoolPropertiesCreator;
 import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePoolProperties;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstance;
@@ -45,6 +45,8 @@ import org.apache.shardingsphere.infra.metadata.statistics.builder.ShardingSpher
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.infra.util.eventbus.EventBusContext;
 import org.apache.shardingsphere.infra.util.json.JsonUtils;
+import org.apache.shardingsphere.infra.util.props.PropertiesBuilder;
+import org.apache.shardingsphere.infra.util.props.PropertiesBuilder.Property;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlRuleConfiguration;
 import org.apache.shardingsphere.mode.manager.ContextManager;
@@ -55,9 +57,7 @@ import org.apache.shardingsphere.proxy.backend.config.yaml.YamlProxyDatabaseConf
 import org.apache.shardingsphere.proxy.backend.config.yaml.YamlProxyServerConfiguration;
 import org.apache.shardingsphere.proxy.backend.distsql.export.ExportedClusterInfo;
 import org.apache.shardingsphere.proxy.backend.distsql.export.ExportedMetaData;
-import org.apache.shardingsphere.test.fixture.jdbc.MockedDataSource;
-import org.apache.shardingsphere.test.util.PropertiesBuilder;
-import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
+import org.apache.shardingsphere.test.infra.fixture.jdbc.MockedDataSource;
 import org.junit.jupiter.api.Test;
 
 import javax.sql.DataSource;
@@ -73,7 +73,7 @@ import java.util.stream.Collectors;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertInstanceOf;
+import static org.hamcrest.Matchers.isA;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -83,15 +83,17 @@ import static org.mockito.Mockito.when;
 
 class ExportMetaDataExecutorTest {
     
-    private static final String EXPECTED_EMPTY_METADATA_VALUE = "eyJtZXRhX2RhdGEiOnsiZGF0YWJhc2VzIjp7ImVtcHR5X21ldGFkYXRhIjoiZGF0YWJhc2VOYW1lOiBlbXB0eV9tZXRhZGF0YVxuI"
-            + "n0sInByb3BzIjoiIiwicnVsZXMiOiJydWxlczpcbi0gIUdMT0JBTF9DTE9DS1xuICBlbmFibGVkOiBmYWxzZVxuICBwcm92aWRlcjogbG9jYWxcbiAgdHlwZTogVFNPXG4ifX0=";
+    private static final String EXPECTED_EMPTY_METADATA_VALUE = "{\"meta_data\":{\"databases\":{\"empty_metadata\":\"databaseName: empty_metadata\\n\"},\"props\":\"\",\"rules\":\"rules:\\n"
+            + "- !GLOBAL_CLOCK\\n  enabled: false\\n  provider: local\\n  type: TSO\\n\"}}";
     
-    private static final String EXPECTED_NOT_EMPTY_METADATA_VALUE = "eyJtZXRhX2RhdGEiOnsiZGF0YWJhc2VzIjp7Im5vcm1hbF9kYiI6ImRhdGFiYXNlTmFtZTogbm9ybWFsX2RiXG5kYXRhU291cmNlczpcbiAgZHNfMDpcbiA"
-            + "gICBwYXNzd29yZDogXG4gICAgdXJsOiBqZGJjOmgyOm1lbTpkZW1vX2RzXzA7REJfQ0xPU0VfREVMQVk9LTE7REFUQUJBU0VfVE9fVVBQRVI9ZmFsc2U7TU9ERT1NeVNRTFxuICAgIHVzZXJuYW1lOiByb290XG4gICAgbWluUG9"
-            + "vbFNpemU6IDFcbiAgICBtYXhQb29sU2l6ZTogNTBcbiAgZHNfMTpcbiAgICBwYXNzd29yZDogXG4gICAgdXJsOiBqZGJjOmgyOm1lbTpkZW1vX2RzXzE7REJfQ0xPU0VfREVMQVk9LTE7REFUQUJBU0VfVE9fVVBQRVI9ZmFsc2"
-            + "U7TU9ERT1NeVNRTFxuICAgIHVzZXJuYW1lOiByb290XG4gICAgbWluUG9vbFNpemU6IDFcbiAgICBtYXhQb29sU2l6ZTogNTBcbiJ9LCJwcm9wcyI6InByb3BzOlxuICBzcWwtc2hvdzogdHJ1ZVxuIiwicnVsZXMiOiJydWxlczpcbi0g"
-            + "IUFVVEhPUklUWVxuICBwcml2aWxlZ2U6XG4gICAgdHlwZTogQUxMX1BFUk1JVFRFRFxuICB1c2VyczpcbiAgLSBhZG1pbjogdHJ1ZVxuICAgIGF1dGhlbnRpY2F0aW9uTWV0aG9kTmFtZTogJydcbiAgIC"
-            + "BwYXNzd29yZDogcm9vdFxuICAgIHVzZXI6IHJvb3RAJVxuLSAhR0xPQkFMX0NMT0NLXG4gIGVuYWJsZWQ6IGZhbHNlXG4gIHByb3ZpZGVyOiBsb2NhbFxuICB0eXBlOiBUU09cbiJ9fQ==";
+    private static final String EXPECTED_NOT_EMPTY_METADATA_VALUE = "{\"meta_data\":{\"databases\":{\"normal_db\":\"databaseName: normal_db\\ndataSources:\\n"
+            + "  ds_0:\\n    password: \\n    url: jdbc:h2:mem:demo_ds_0;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL\\n    username: root\\n    minPoolSize: 1\\n    maxPoolSize: 50\\n"
+            + "  ds_1:\\n    password: \\n    url: jdbc:h2:mem:demo_ds_1;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL\\n    username: root\\n    minPoolSize: 1\\n    maxPoolSize: 50\\n\"},"
+            + "\"props\":\"props:\\n  sql-show: true\\n\",\"rules\":\"rules:\\n"
+            + "- !AUTHORITY\\n  privilege:\\n    type: ALL_PERMITTED\\n  users:\\n  - admin: true\\n    authenticationMethodName: ''\\n    password: root\\n    user: root@%\\n"
+            + "- !GLOBAL_CLOCK\\n  enabled: false\\n  provider: local\\n  type: TSO\\n\"}}";
+    
+    private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "FIXTURE");
     
     @Test
     void assertExecuteWithEmptyMetaData() {
@@ -100,7 +102,7 @@ class ExportMetaDataExecutorTest {
         Collection<LocalDataQueryResultRow> actual = new ExportMetaDataExecutor().getRows(sqlStatement, contextManager);
         assertThat(actual.size(), is(1));
         LocalDataQueryResultRow row = actual.iterator().next();
-        assertMetaData(row.getCell(3), EXPECTED_EMPTY_METADATA_VALUE);
+        assertMetaData(row.getCell(3), Base64.encodeBase64String(EXPECTED_EMPTY_METADATA_VALUE.getBytes()));
     }
     
     private ContextManager mockEmptyContextManager() {
@@ -116,7 +118,7 @@ class ExportMetaDataExecutorTest {
     
     private ShardingSphereDatabase mockEmptyShardingSphereDatabase() {
         ShardingSphereDatabase result = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
-        when(result.getProtocolType()).thenReturn(TypedSPILoader.getService(DatabaseType.class, "FIXTURE"));
+        when(result.getProtocolType()).thenReturn(databaseType);
         when(result.getName()).thenReturn("empty_metadata");
         when(result.getResourceMetaData().getAllInstanceDataSourceNames()).thenReturn(Collections.singleton("empty_metadata"));
         when(result.getResourceMetaData().getStorageUnits()).thenReturn(Collections.emptyMap());
@@ -130,11 +132,11 @@ class ExportMetaDataExecutorTest {
         Collection<LocalDataQueryResultRow> actual = new ExportMetaDataExecutor().getRows(new ExportMetaDataStatement(null), contextManager);
         assertThat(actual.size(), is(1));
         LocalDataQueryResultRow row = actual.iterator().next();
-        assertMetaData(row.getCell(3), EXPECTED_NOT_EMPTY_METADATA_VALUE);
+        assertMetaData(row.getCell(3), Base64.encodeBase64String(EXPECTED_NOT_EMPTY_METADATA_VALUE.getBytes()));
     }
     
     private ContextManager mockContextManager() {
-        ShardingSphereDatabase database = mockShardingSphereDatabase();
+        ShardingSphereDatabase database = mockDatabase();
         ShardingSphereMetaData metaData = new ShardingSphereMetaData(Collections.singleton(database),
                 new ResourceMetaData(Collections.emptyMap()),
                 new RuleMetaData(Arrays.asList(new AuthorityRule(new DefaultAuthorityRuleConfigurationBuilder().build()),
@@ -150,10 +152,10 @@ class ExportMetaDataExecutorTest {
         return result;
     }
     
-    private ShardingSphereDatabase mockShardingSphereDatabase() {
+    private ShardingSphereDatabase mockDatabase() {
         Map<String, StorageUnit> storageUnits = createStorageUnits();
         ShardingSphereDatabase result = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
-        when(result.getProtocolType()).thenReturn(TypedSPILoader.getService(DatabaseType.class, "FIXTURE"));
+        when(result.getProtocolType()).thenReturn(databaseType);
         when(result.getName()).thenReturn("normal_db");
         when(result.getResourceMetaData().getAllInstanceDataSourceNames()).thenReturn(storageUnits.keySet());
         when(result.getResourceMetaData().getStorageUnits()).thenReturn(storageUnits);
@@ -192,7 +194,7 @@ class ExportMetaDataExecutorTest {
     
     private void assertMetaData(final Object actual, final String expected) {
         assertNotNull(actual);
-        assertInstanceOf(String.class, actual);
+        assertThat(actual, isA(String.class));
         assertMetaData(convertToExportedClusterInfo((String) actual), convertToExportedClusterInfo(expected));
     }
     
@@ -233,17 +235,17 @@ class ExportMetaDataExecutorTest {
             return;
         }
         assertThat(actual.size(), is(expected.size()));
-        ConfigurationProperties actualConfigProperties = new ConfigurationProperties(actual);
-        ConfigurationProperties expectedConfigProperties = new ConfigurationProperties(expected);
-        TemporaryConfigurationProperties actualTemporaryConfigProperties = new TemporaryConfigurationProperties(actual);
-        TemporaryConfigurationProperties expectedTemporaryConfigProperties = new TemporaryConfigurationProperties(expected);
+        ConfigurationProperties actualConfigProps = new ConfigurationProperties(actual);
+        ConfigurationProperties expectedConfigProps = new ConfigurationProperties(expected);
+        TemporaryConfigurationProperties actualTemporaryConfigProps = new TemporaryConfigurationProperties(actual);
+        TemporaryConfigurationProperties expectedTemporaryConfigProps = new TemporaryConfigurationProperties(expected);
         for (Entry<Object, Object> entry : expected.entrySet()) {
             Object actualValue = findConfigurationPropertyKey(String.valueOf(entry.getKey()))
-                    .map(actualConfigProperties::getValue)
-                    .orElseGet(() -> findTemporaryConfigurationPropertyKey(String.valueOf(entry.getKey())).map(actualTemporaryConfigProperties::getValue).orElse(null));
+                    .map(actualConfigProps::getValue)
+                    .orElseGet(() -> findTemporaryConfigurationPropertyKey(String.valueOf(entry.getKey())).map(actualTemporaryConfigProps::getValue).orElse(null));
             Object expectedValue = findConfigurationPropertyKey(String.valueOf(entry.getKey()))
-                    .map(expectedConfigProperties::getValue)
-                    .orElseGet(() -> findTemporaryConfigurationPropertyKey(String.valueOf(entry.getKey())).map(expectedTemporaryConfigProperties::getValue).orElse(null));
+                    .map(expectedConfigProps::getValue)
+                    .orElseGet(() -> findTemporaryConfigurationPropertyKey(String.valueOf(entry.getKey())).map(expectedTemporaryConfigProps::getValue).orElse(null));
             assertThat(actualValue, is(expectedValue));
         }
     }

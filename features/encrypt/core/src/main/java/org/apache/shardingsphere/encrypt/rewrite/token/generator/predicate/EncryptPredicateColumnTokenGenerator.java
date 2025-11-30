@@ -20,21 +20,21 @@ package org.apache.shardingsphere.encrypt.rewrite.token.generator.predicate;
 import com.google.common.base.Preconditions;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
+import org.apache.shardingsphere.database.connector.core.metadata.database.enums.QuoteCharacter;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.encrypt.enums.EncryptDerivedColumnSuffix;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.encrypt.rule.column.EncryptColumn;
 import org.apache.shardingsphere.encrypt.rule.column.item.LikeQueryColumnItem;
 import org.apache.shardingsphere.encrypt.rule.table.EncryptTable;
 import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
+import org.apache.shardingsphere.infra.binder.context.available.WhereContextAvailable;
 import org.apache.shardingsphere.infra.binder.context.extractor.SQLStatementContextExtractor;
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.Projection;
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.impl.ColumnProjection;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.binder.context.statement.dml.SelectStatementContext;
-import org.apache.shardingsphere.infra.binder.context.type.WhereAvailable;
-import org.apache.shardingsphere.infra.database.core.metadata.database.enums.QuoteCharacter;
-import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
-import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
+import org.apache.shardingsphere.infra.binder.context.statement.type.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.rewrite.sql.token.common.generator.CollectionSQLTokenGenerator;
 import org.apache.shardingsphere.infra.rewrite.sql.token.common.pojo.SQLToken;
 import org.apache.shardingsphere.infra.rewrite.sql.token.common.pojo.generic.SubstitutableColumnNameToken;
@@ -44,8 +44,8 @@ import org.apache.shardingsphere.sql.parser.statement.core.extractor.ExpressionE
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.BinaryOperationExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExpressionSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.predicate.AndPredicate;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.predicate.WhereSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 
 import java.util.Collection;
@@ -65,43 +65,45 @@ public final class EncryptPredicateColumnTokenGenerator implements CollectionSQL
     
     @Override
     public boolean isGenerateSQLToken(final SQLStatementContext sqlStatementContext) {
-        return sqlStatementContext instanceof WhereAvailable;
+        return sqlStatementContext instanceof WhereContextAvailable;
     }
     
     @Override
     public Collection<SQLToken> generateSQLTokens(final SQLStatementContext sqlStatementContext) {
         Collection<SelectStatementContext> allSubqueryContexts = SQLStatementContextExtractor.getAllSubqueryContexts(sqlStatementContext);
-        Collection<WhereSegment> whereSegments = SQLStatementContextExtractor.getWhereSegments((WhereAvailable) sqlStatementContext, allSubqueryContexts);
-        Collection<AndPredicate> andPredicates = getAndPredicates(whereSegments);
-        return generateSQLTokens(andPredicates, sqlStatementContext);
+        Collection<WhereSegment> whereSegments = SQLStatementContextExtractor.getWhereSegments((WhereContextAvailable) sqlStatementContext, allSubqueryContexts);
+        Collection<ExpressionSegment> expressions = getAllExpressions(whereSegments);
+        return generateSQLTokens(expressions, sqlStatementContext.getSqlStatement());
     }
     
-    private Collection<SQLToken> generateSQLTokens(final Collection<AndPredicate> andPredicates, final SQLStatementContext sqlStatementContext) {
+    private Collection<SQLToken> generateSQLTokens(final Collection<ExpressionSegment> expressions, final SQLStatement sqlStatement) {
         Collection<SQLToken> result = new LinkedList<>();
-        for (AndPredicate each : andPredicates) {
-            for (ExpressionSegment expression : each.getPredicates()) {
-                result.addAll(generateSQLTokens(sqlStatementContext, expression));
-            }
+        for (ExpressionSegment each : expressions) {
+            result.addAll(generateSQLTokens(sqlStatement, each));
         }
         return result;
     }
     
-    private Collection<SQLToken> generateSQLTokens(final SQLStatementContext sqlStatementContext, final ExpressionSegment expression) {
+    private Collection<SQLToken> generateSQLTokens(final SQLStatement sqlStatement, final ExpressionSegment expression) {
         Collection<SQLToken> result = new LinkedList<>();
         for (ColumnSegment each : ColumnExtractor.extract(expression)) {
             Optional<EncryptTable> encryptTable = rule.findEncryptTable(each.getColumnBoundInfo().getOriginalTable().getValue());
             if (encryptTable.isPresent() && encryptTable.get().isEncryptColumn(each.getColumnBoundInfo().getOriginalColumn().getValue())) {
                 EncryptColumn encryptColumn = encryptTable.get().getEncryptColumn(each.getColumnBoundInfo().getOriginalColumn().getValue());
-                result.addAll(buildSubstitutableColumnNameTokens(encryptColumn, each, expression, sqlStatementContext.getDatabaseType()));
+                result.addAll(buildSubstitutableColumnNameTokens(encryptColumn, each, expression, sqlStatement.getDatabaseType()));
             }
         }
         return result;
     }
     
-    private Collection<AndPredicate> getAndPredicates(final Collection<WhereSegment> whereSegments) {
-        Collection<AndPredicate> result = new LinkedList<>();
+    private Collection<ExpressionSegment> getAllExpressions(final Collection<WhereSegment> whereSegments) {
+        if (1 == whereSegments.size()) {
+            return ExpressionExtractor.extractAllExpressions(whereSegments.iterator().next().getExpr());
+        }
+        Collection<ExpressionSegment> result = new LinkedList<>();
         for (WhereSegment each : whereSegments) {
-            result.addAll(ExpressionExtractor.extractAndPredicates(each.getExpr()));
+            Collection<ExpressionSegment> expressions = ExpressionExtractor.extractAllExpressions(each.getExpr());
+            result.addAll(expressions);
         }
         return result;
     }
@@ -123,7 +125,8 @@ public final class EncryptPredicateColumnTokenGenerator implements CollectionSQL
     }
     
     private boolean isIncludeLike(final ExpressionSegment expression) {
-        return expression instanceof BinaryOperationExpression && "LIKE".equalsIgnoreCase(((BinaryOperationExpression) expression).getOperator());
+        return expression instanceof BinaryOperationExpression && ("LIKE".equalsIgnoreCase(((BinaryOperationExpression) expression).getOperator())
+                || "NOT LIKE".equalsIgnoreCase(((BinaryOperationExpression) expression).getOperator()));
     }
     
     private Collection<Projection> createColumnProjections(final String actualColumnName, final ColumnSegment columnSegment, final EncryptDerivedColumnSuffix derivedColumnSuffix,

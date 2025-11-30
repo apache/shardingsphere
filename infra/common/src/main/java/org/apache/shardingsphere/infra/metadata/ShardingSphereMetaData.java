@@ -17,29 +17,23 @@
 
 package org.apache.shardingsphere.infra.metadata;
 
-import com.google.common.collect.Maps;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.SneakyThrows;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.props.temporary.TemporaryConfigurationProperties;
-import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
-import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.datasource.pool.destroyer.DataSourcePoolDestroyer;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabaseFactory;
 import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
-import org.apache.shardingsphere.infra.metadata.database.schema.builder.GenericSchemaBuilder;
-import org.apache.shardingsphere.infra.metadata.database.schema.builder.GenericSchemaBuilderMaterial;
-import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.identifier.ShardingSphereIdentifier;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.attribute.datasource.StaticDataSourceRuleAttribute;
 import org.apache.shardingsphere.infra.rule.scope.GlobalRule;
 import org.apache.shardingsphere.infra.rule.scope.GlobalRule.GlobalRuleChangedType;
 
-import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
@@ -117,19 +111,8 @@ public final class ShardingSphereMetaData implements AutoCloseable {
      */
     public void addDatabase(final String databaseName, final DatabaseType protocolType, final ConfigurationProperties props) {
         ShardingSphereDatabase database = ShardingSphereDatabaseFactory.create(databaseName, protocolType, props);
-        Map<String, ShardingSphereSchema> schemas = buildDefaultSchema(databaseName, protocolType, props);
-        schemas.entrySet().stream().filter(entry -> !database.containsSchema(entry.getKey())).forEach(entry -> database.addSchema(entry.getValue()));
         databases.put(new ShardingSphereIdentifier(database.getName()), database);
         globalRuleMetaData.getRules().forEach(each -> ((GlobalRule) each).refresh(databases.values(), GlobalRuleChangedType.DATABASE_CHANGED));
-    }
-    
-    private Map<String, ShardingSphereSchema> buildDefaultSchema(final String databaseName, final DatabaseType protocolType, final ConfigurationProperties props) {
-        try {
-            return new ConcurrentHashMap<>(GenericSchemaBuilder.build(protocolType,
-                    new GenericSchemaBuilderMaterial(Maps.newHashMap(), Collections.emptyList(), props, new DatabaseTypeRegistry(protocolType).getDefaultSchemaName(databaseName))));
-        } catch (final SQLException ignored) {
-        }
-        return Maps.newHashMap();
     }
     
     /**

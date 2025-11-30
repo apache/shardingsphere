@@ -17,21 +17,23 @@
 
 package org.apache.shardingsphere.sharding.merge.ddl.fetch;
 
+import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.binder.context.segment.select.orderby.OrderByItem;
-import org.apache.shardingsphere.infra.binder.context.statement.ddl.FetchStatementContext;
-import org.apache.shardingsphere.infra.binder.context.statement.dml.SelectStatementContext;
-import org.apache.shardingsphere.infra.session.connection.ConnectionContext;
-import org.apache.shardingsphere.infra.session.connection.cursor.FetchGroup;
-import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.binder.context.statement.type.ddl.CursorHeldSQLStatementContext;
+import org.apache.shardingsphere.infra.binder.context.statement.type.dml.SelectStatementContext;
+import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.driver.jdbc.type.memory.JDBCMemoryQueryResult;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.driver.jdbc.type.stream.JDBCStreamQueryResult;
 import org.apache.shardingsphere.infra.merge.result.impl.stream.StreamMergedResult;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
+import org.apache.shardingsphere.infra.session.connection.ConnectionContext;
+import org.apache.shardingsphere.infra.session.connection.cursor.FetchGroup;
 import org.apache.shardingsphere.sharding.exception.connection.CursorNameNotFoundException;
 import org.apache.shardingsphere.sharding.merge.dql.orderby.OrderByValue;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.DirectionType;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.cursor.DirectionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.FetchStatement;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -57,13 +59,15 @@ public final class FetchStreamMergedResult extends StreamMergedResult {
     
     private boolean isExecutedAllDirection;
     
-    public FetchStreamMergedResult(final List<QueryResult> queryResults, final FetchStatementContext fetchStatementContext,
+    public FetchStreamMergedResult(final List<QueryResult> queryResults, final CursorHeldSQLStatementContext sqlStatementContext,
                                    final ShardingSphereSchema schema, final ConnectionContext connectionContext) throws SQLException {
         orderByValuesQueue = new PriorityQueue<>(queryResults.size());
-        directionType = fetchStatementContext.getSqlStatement().getDirection().map(DirectionSegment::getDirectionType).orElse(DirectionType.NEXT);
-        fetchCount = fetchStatementContext.getSqlStatement().getDirection().flatMap(DirectionSegment::getCount).orElse(1L);
-        SelectStatementContext selectStatementContext = fetchStatementContext.getCursorStatementContext().getSelectStatementContext();
-        String cursorName = fetchStatementContext.getCursorName().map(optional -> optional.getIdentifier().getValue().toLowerCase()).orElseThrow(CursorNameNotFoundException::new);
+        FetchStatement fetchStatement = (FetchStatement) sqlStatementContext.getSqlStatement();
+        directionType = fetchStatement.getDirection().map(DirectionSegment::getDirectionType).orElse(DirectionType.NEXT);
+        fetchCount = fetchStatement.getDirection().flatMap(DirectionSegment::getCount).orElse(1L);
+        SelectStatementContext selectStatementContext = sqlStatementContext.getCursorStatementContext().getSelectStatementContext();
+        ShardingSpherePreconditions.checkNotNull(fetchStatement.getCursorName(), CursorNameNotFoundException::new);
+        String cursorName = fetchStatement.getCursorName().getIdentifier().getValue().toLowerCase();
         List<FetchOrderByValueGroup> fetchOrderByValueGroups = getFetchOrderByValueGroups(queryResults, selectStatementContext, schema, cursorName, connectionContext);
         addOrderedResultSetsToQueue(fetchOrderByValueGroups, queryResults);
         setMinResultSetRowCount(cursorName, connectionContext);
@@ -114,7 +118,7 @@ public final class FetchStreamMergedResult extends StreamMergedResult {
         Collection<OrderByItem> items = selectStatementContext.getOrderByContext().getItems();
         int index = 0;
         for (QueryResult each : queryResults) {
-            QueryResult queryResult = decorate(each, selectStatementContext.getDatabaseType());
+            QueryResult queryResult = decorate(each, selectStatementContext.getSqlStatement().getDatabaseType());
             OrderByValue orderByValue = new OrderByValue(queryResult, items, selectStatementContext, schema);
             if (orderByValue.next()) {
                 result.get(index).getOrderByValues().add(orderByValue);

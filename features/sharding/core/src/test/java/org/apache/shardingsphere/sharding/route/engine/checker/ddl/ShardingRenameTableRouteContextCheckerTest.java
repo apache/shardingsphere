@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.sharding.route.engine.checker.ddl;
 
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.binder.context.statement.ddl.RenameTableStatementContext;
+import org.apache.shardingsphere.infra.binder.context.statement.type.CommonSQLStatementContext;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
@@ -31,8 +31,10 @@ import org.apache.shardingsphere.sharding.rule.ShardingTable;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.table.RenameTableDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableNameSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.SQLStatementAttributes;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.type.TableSQLStatementAttribute;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.table.RenameTableStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
-import org.apache.shardingsphere.sql.parser.statement.mysql.ddl.MySQLRenameTableStatement;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
@@ -61,8 +63,8 @@ class ShardingRenameTableRouteContextCheckerTest {
         routeContext.getRouteUnits().add(mock(RouteUnit.class));
         ShardingTable shardingTable = mock(ShardingTable.class);
         when(shardingTable.getActualDataNodes()).thenReturn(Arrays.asList(mock(DataNode.class), mock(DataNode.class)));
-        when(shardingRule.getShardingTable("t_order")).thenReturn(shardingTable);
-        when(shardingRule.isShardingTable("t_order")).thenReturn(true);
+        when(shardingRule.getShardingTable("foo_tbl")).thenReturn(shardingTable);
+        when(shardingRule.isShardingTable("foo_tbl")).thenReturn(true);
         SQLStatementContext sqlStatementContext = createRenameTableStatementContext();
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class);
         ConfigurationProperties props = mock(ConfigurationProperties.class);
@@ -76,8 +78,8 @@ class ShardingRenameTableRouteContextCheckerTest {
         routeContext.getRouteUnits().add(mock(RouteUnit.class));
         ShardingTable shardingTable = mock(ShardingTable.class);
         when(shardingTable.getActualDataNodes()).thenReturn(Collections.singletonList(mock(DataNode.class)));
-        when(shardingRule.getShardingTable("t_order")).thenReturn(shardingTable);
-        when(shardingRule.isShardingTable("t_order")).thenReturn(true);
+        when(shardingRule.getShardingTable("foo_tbl")).thenReturn(shardingTable);
+        when(shardingRule.isShardingTable("foo_tbl")).thenReturn(true);
         SQLStatementContext sqlStatementContext = createRenameTableStatementContext();
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class);
         ConfigurationProperties props = mock(ConfigurationProperties.class);
@@ -86,11 +88,14 @@ class ShardingRenameTableRouteContextCheckerTest {
     }
     
     private SQLStatementContext createRenameTableStatementContext() {
-        MySQLRenameTableStatement sqlStatement = new MySQLRenameTableStatement();
+        RenameTableStatement sqlStatement = mock(RenameTableStatement.class);
         RenameTableDefinitionSegment renameTableDefinitionSegment = new RenameTableDefinitionSegment(0, 0);
-        renameTableDefinitionSegment.setTable(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order"))));
-        renameTableDefinitionSegment.setRenameTable(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_user_order"))));
-        sqlStatement.getRenameTables().add(renameTableDefinitionSegment);
-        return new RenameTableStatementContext(sqlStatement);
+        SimpleTableSegment table = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("foo_tbl")));
+        renameTableDefinitionSegment.setTable(table);
+        SimpleTableSegment renameTable = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("bar_tbl")));
+        renameTableDefinitionSegment.setRenameTable(renameTable);
+        when(sqlStatement.getRenameTables()).thenReturn(Collections.singleton(renameTableDefinitionSegment));
+        when(sqlStatement.getAttributes()).thenReturn(new SQLStatementAttributes(new TableSQLStatementAttribute(Arrays.asList(table, renameTable))));
+        return new CommonSQLStatementContext(sqlStatement);
     }
 }

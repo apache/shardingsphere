@@ -25,9 +25,9 @@ import org.apache.shardingsphere.data.pipeline.core.ingest.position.type.pk.type
 import org.apache.shardingsphere.data.pipeline.core.util.IntervalToRangeIterator;
 
 import java.math.BigInteger;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
+import java.util.List;
 
 /**
  * Inventory position calculator.
@@ -43,11 +43,11 @@ public final class InventoryPositionCalculator {
      * @param shardingSize sharding size
      * @return position collection
      */
-    public static Collection<IngestPosition> getPositionByIntegerUniqueKeyRange(final long tableRecordsCount, final Range<Long> uniqueKeyValuesRange, final long shardingSize) {
+    public static List<IngestPosition> getPositionByIntegerUniqueKeyRange(final long tableRecordsCount, final Range<Long> uniqueKeyValuesRange, final long shardingSize) {
         if (0 == tableRecordsCount) {
             return Collections.singletonList(new IntegerPrimaryKeyIngestPosition(0, 0));
         }
-        Collection<IngestPosition> result = new LinkedList<>();
+        List<IngestPosition> result = new LinkedList<>();
         long splitCount = tableRecordsCount / shardingSize + (tableRecordsCount % shardingSize > 0 ? 1 : 0);
         long interval = BigInteger.valueOf(uniqueKeyValuesRange.getMaximum()).subtract(BigInteger.valueOf(uniqueKeyValuesRange.getMinimum())).divide(BigInteger.valueOf(splitCount)).longValue();
         IntervalToRangeIterator rangeIterator = new IntervalToRangeIterator(uniqueKeyValuesRange.getMinimum(), uniqueKeyValuesRange.getMaximum(), interval);

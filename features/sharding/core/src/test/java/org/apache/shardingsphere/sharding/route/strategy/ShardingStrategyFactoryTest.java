@@ -29,8 +29,8 @@ import org.apache.shardingsphere.sharding.route.strategy.type.none.NoneShardingS
 import org.apache.shardingsphere.sharding.route.strategy.type.standard.StandardShardingStrategy;
 import org.junit.jupiter.api.Test;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.isA;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -41,7 +41,7 @@ class ShardingStrategyFactoryTest {
     void assertNewInstanceForStandardShardingStrategy() {
         StandardShardingStrategyConfiguration standardShardingStrategyConfig = mock(StandardShardingStrategyConfiguration.class);
         when(standardShardingStrategyConfig.getShardingColumn()).thenReturn("standard_sharding_column");
-        assertThat(ShardingStrategyFactory.newInstance(standardShardingStrategyConfig, mock(CoreStandardShardingAlgorithmFixture.class), null), instanceOf(StandardShardingStrategy.class));
+        assertThat(ShardingStrategyFactory.newInstance(standardShardingStrategyConfig, mock(CoreStandardShardingAlgorithmFixture.class), null), isA(StandardShardingStrategy.class));
     }
     
     @Test
@@ -54,16 +54,16 @@ class ShardingStrategyFactoryTest {
     void assertNewInstanceForComplexShardingStrategy() {
         ComplexShardingStrategyConfiguration complexShardingStrategyConfig = mock(ComplexShardingStrategyConfiguration.class);
         when(complexShardingStrategyConfig.getShardingColumns()).thenReturn("complex_sharding_column");
-        assertThat(ShardingStrategyFactory.newInstance(complexShardingStrategyConfig, mock(CoreComplexKeysShardingAlgorithmFixture.class), null), instanceOf(ComplexShardingStrategy.class));
+        assertThat(ShardingStrategyFactory.newInstance(complexShardingStrategyConfig, mock(CoreComplexKeysShardingAlgorithmFixture.class), null), isA(ComplexShardingStrategy.class));
     }
     
     @Test
     void assertNewInstanceForHintShardingStrategy() {
-        assertThat(ShardingStrategyFactory.newInstance(mock(HintShardingStrategyConfiguration.class), mock(CoreHintShardingAlgorithmFixture.class), null), instanceOf(HintShardingStrategy.class));
+        assertThat(ShardingStrategyFactory.newInstance(mock(HintShardingStrategyConfiguration.class), mock(CoreHintShardingAlgorithmFixture.class), null), isA(HintShardingStrategy.class));
     }
     
     @Test
     void assertNewInstanceForNoneShardingStrategy() {
-        assertThat(ShardingStrategyFactory.newInstance(null, null, null), instanceOf(NoneShardingStrategy.class));
+        assertThat(ShardingStrategyFactory.newInstance(null, null, null), isA(NoneShardingStrategy.class));
     }
 }

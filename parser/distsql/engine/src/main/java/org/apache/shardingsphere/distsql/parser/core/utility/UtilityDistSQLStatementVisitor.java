@@ -18,12 +18,10 @@
 package org.apache.shardingsphere.distsql.parser.core.utility;
 
 import org.apache.shardingsphere.distsql.parser.autogen.UtilityDistSQLStatementBaseVisitor;
-import org.apache.shardingsphere.distsql.parser.autogen.UtilityDistSQLStatementParser.FormatSQLContext;
 import org.apache.shardingsphere.distsql.parser.autogen.UtilityDistSQLStatementParser.ParseSQLContext;
 import org.apache.shardingsphere.distsql.parser.autogen.UtilityDistSQLStatementParser.PreviewSQLContext;
-import org.apache.shardingsphere.distsql.statement.rul.sql.FormatStatement;
-import org.apache.shardingsphere.distsql.statement.rul.sql.ParseStatement;
-import org.apache.shardingsphere.distsql.statement.rul.sql.PreviewStatement;
+import org.apache.shardingsphere.distsql.statement.type.rul.sql.ParseStatement;
+import org.apache.shardingsphere.distsql.statement.type.rul.sql.PreviewStatement;
 import org.apache.shardingsphere.sql.parser.api.ASTNode;
 import org.apache.shardingsphere.sql.parser.api.visitor.SQLVisitor;
 
@@ -40,10 +38,5 @@ public final class UtilityDistSQLStatementVisitor extends UtilityDistSQLStatemen
     @Override
     public ASTNode visitParseSQL(final ParseSQLContext ctx) {
         return new ParseStatement(ctx.sql().getText().trim());
-    }
-    
-    @Override
-    public ASTNode visitFormatSQL(final FormatSQLContext ctx) {
-        return new FormatStatement(ctx.sql().getText().trim());
     }
 }

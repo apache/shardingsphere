@@ -38,7 +38,7 @@ public abstract class RuleItemConfigurationChangedHandler implements DatabaseLea
     
     @Override
     public final void handle(final String databaseName, final DataChangedEvent event) {
-        Optional<DatabaseRuleNodePath> databaseRuleNodePath = ruleItemChangedNodePathBuilder.build(databaseName, event.getKey());
+        Optional<DatabaseRuleNodePath> databaseRuleNodePath = ruleItemChangedNodePathBuilder.build(databaseName, event.getKey(), event.getType());
         if (!databaseRuleNodePath.isPresent()) {
             return;
         }

@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.mode.repository.cluster.exception;
 
-import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.XOpenSQLState;
+import org.apache.shardingsphere.infra.exception.external.sql.sqlstate.XOpenSQLState;
 import org.apache.shardingsphere.mode.exception.MetaDataPersistException;
 
 /**

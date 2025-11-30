@@ -23,11 +23,8 @@ import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.CuratorFrameworkFactory;
 import org.apache.curator.retry.ExponentialBackoffRetry;
 import org.apache.curator.test.InstanceSpec;
-import org.apache.shardingsphere.driver.jdbc.core.connection.ShardingSphereConnection;
-import org.apache.shardingsphere.infra.database.core.DefaultDatabase;
-import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnit;
-import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.test.natived.commons.TestShardingService;
+import org.apache.shardingsphere.test.natived.commons.util.ResourceUtils;
 import org.awaitility.Awaitility;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.AutoClose;
@@ -47,7 +44,6 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.time.Duration;
 import java.util.List;
-import java.util.Properties;
 import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -64,7 +60,7 @@ class ZookeeperServiceDiscoveryTest {
     
     @Container
     @AutoClose
-    private final GenericContainer<?> zookeeperContainer = new GenericContainer<>("zookeeper:3.9.3-jre-17")
+    private final GenericContainer<?> zookeeperContainer = new GenericContainer<>("zookeeper:3.9.4-jre-17")
             .withNetwork(network)
             .withNetworkAliases("foo")
             .withExposedPorts(2181);
@@ -77,6 +73,8 @@ class ZookeeperServiceDiscoveryTest {
     
     private String jdbcUrlPrefix;
     
+    private TestShardingService testShardingService;
+    
     @BeforeEach
     void beforeEach() {
         assertThat(System.getProperty(systemPropKeyPrefix + "ds0.jdbc-url"), is(nullValue()));
@@ -86,13 +84,7 @@ class ZookeeperServiceDiscoveryTest {
     
     @AfterEach
     void afterEach() throws SQLException {
-        try (Connection connection = logicDataSource.getConnection()) {
-            ContextManager contextManager = connection.unwrap(ShardingSphereConnection.class).getContextManager();
-            for (StorageUnit each : contextManager.getStorageUnits(DefaultDatabase.LOGIC_NAME).values()) {
-                each.getDataSource().unwrap(HikariDataSource.class).close();
-            }
-            contextManager.close();
-        }
+        ResourceUtils.closeJdbcDataSource(logicDataSource);
         System.clearProperty(systemPropKeyPrefix + "ds0.jdbc-url");
         System.clearProperty(systemPropKeyPrefix + "ds1.jdbc-url");
         System.clearProperty(systemPropKeyPrefix + "ds2.jdbc-url");
@@ -107,7 +99,6 @@ class ZookeeperServiceDiscoveryTest {
      */
     @Test
     void assertShardingInLocalTransactions() throws SQLException {
-        TestShardingService testShardingService;
         int randomPortFirst = InstanceSpec.getRandomPort();
         try (
                 GenericContainer<?> hs2Container = new FixedHostPortGenericContainer<>("apache/hive:4.0.1")
@@ -123,6 +114,7 @@ class ZookeeperServiceDiscoveryTest {
             jdbcUrlPrefix = "jdbc:hive2://" + zookeeperContainer.getHost() + ":" + zookeeperContainer.getMappedPort(2181) + "/";
             logicDataSource = createDataSource(hs2Container.getMappedPort(randomPortFirst));
             testShardingService = new TestShardingService(logicDataSource);
+            initEnvironment();
             testShardingService.processSuccessInHive();
         }
         int randomPortSecond = InstanceSpec.getRandomPort();
@@ -139,12 +131,14 @@ class ZookeeperServiceDiscoveryTest {
             hs2Container.start();
             extracted(hs2Container.getMappedPort(randomPortSecond));
             testShardingService.processSuccessInHive();
+            testShardingService.cleanEnvironment();
         }
     }
     
-    private Connection openConnection() throws SQLException {
-        Properties props = new Properties();
-        return DriverManager.getConnection(jdbcUrlPrefix + jdbcUrlSuffix, props);
+    private void initEnvironment() throws SQLException {
+        testShardingService.getOrderRepository().truncateTable();
+        testShardingService.getOrderItemRepository().truncateTable();
+        testShardingService.getAddressRepository().truncateTable();
     }
     
     private DataSource createDataSource(final Integer hiveServer2Port) throws SQLException {
@@ -171,11 +165,11 @@ class ZookeeperServiceDiscoveryTest {
             }
         });
         Awaitility.await().atMost(Duration.ofMinutes(1L)).ignoreExceptions().until(() -> {
-            openConnection().close();
+            DriverManager.getConnection(jdbcUrlPrefix + jdbcUrlSuffix).close();
             return true;
         });
         try (
-                Connection connection = openConnection();
+                Connection connection = DriverManager.getConnection(jdbcUrlPrefix + jdbcUrlSuffix);
                 Statement statement = connection.createStatement()) {
             statement.execute("CREATE DATABASE demo_ds_0");
             statement.execute("CREATE DATABASE demo_ds_1");
@@ -185,8 +179,7 @@ class ZookeeperServiceDiscoveryTest {
     }
     
     /**
-     * TODO `shardingsphere-parser-sql-hive` module does not support `set`, `create table`,
-     *  `truncate table` and `drop table` statements yet,
+     * TODO `shardingsphere-parser-sql-engine-hive` module does not support `set`, `create table` statements yet,
      *  we always need to execute the following Hive Session-level SQL in the current {@link javax.sql.DataSource}.
      * Hive does not support `AUTO_INCREMENT`,
      * refer to <a href="https://issues.apache.org/jira/browse/HIVE-6905">HIVE-6905</a>.
@@ -198,30 +191,12 @@ class ZookeeperServiceDiscoveryTest {
         try (
                 Connection connection = DriverManager.getConnection(jdbcUrlPrefix + databaseName + jdbcUrlSuffix);
                 Statement statement = connection.createStatement()) {
-            statement.execute("CREATE TABLE IF NOT EXISTS t_order (\n"
-                    + "    order_id   BIGINT NOT NULL,\n"
-                    + "    order_type INT,\n"
-                    + "    user_id    INT    NOT NULL,\n"
-                    + "    address_id BIGINT NOT NULL,\n"
-                    + "    status     string,\n"
-                    + "    PRIMARY KEY (order_id) disable novalidate\n"
-                    + ") STORED BY ICEBERG STORED AS ORC TBLPROPERTIES ('format-version' = '2')");
-            statement.execute("CREATE TABLE IF NOT EXISTS t_order_item (\n"
-                    + "    order_item_id BIGINT NOT NULL,\n"
-                    + "    order_id      BIGINT NOT NULL,\n"
-                    + "    user_id       INT    NOT NULL,\n"
-                    + "    phone         string,\n"
-                    + "    status        string,\n"
-                    + "    PRIMARY KEY (order_item_id) disable novalidate\n"
-                    + ") STORED BY ICEBERG STORED AS ORC TBLPROPERTIES ('format-version' = '2')");
-            statement.execute("CREATE TABLE IF NOT EXISTS t_address (\n"
-                    + "    address_id   BIGINT       NOT NULL,\n"
-                    + "    address_name string NOT NULL,\n"
-                    + "    PRIMARY KEY (address_id) disable novalidate\n"
-                    + ") STORED BY ICEBERG STORED AS ORC TBLPROPERTIES ('format-version' = '2')");
-            statement.execute("TRUNCATE TABLE t_order");
-            statement.execute("TRUNCATE TABLE t_order_item");
-            statement.execute("TRUNCATE TABLE t_address");
+            statement.execute("CREATE TABLE IF NOT EXISTS t_order (order_id BIGINT NOT NULL,order_type INT,user_id INT NOT NULL,address_id BIGINT NOT NULL,status string,"
+                    + "PRIMARY KEY (order_id) disable novalidate) STORED BY ICEBERG STORED AS ORC TBLPROPERTIES ('format-version' = '2')");
+            statement.execute("CREATE TABLE IF NOT EXISTS t_order_item (order_item_id BIGINT NOT NULL,order_id BIGINT NOT NULL,user_id INT NOT NULL,phone string,status string,"
+                    + "PRIMARY KEY (order_item_id) disable novalidate) STORED BY ICEBERG STORED AS ORC TBLPROPERTIES ('format-version' = '2')");
+            statement.execute("CREATE TABLE IF NOT EXISTS t_address (address_id BIGINT NOT NULL,address_name string NOT NULL,"
+                    + "PRIMARY KEY (address_id) disable novalidate) STORED BY ICEBERG STORED AS ORC TBLPROPERTIES ('format-version' = '2')");
         } catch (final SQLException exception) {
             throw new RuntimeException(exception);
         }

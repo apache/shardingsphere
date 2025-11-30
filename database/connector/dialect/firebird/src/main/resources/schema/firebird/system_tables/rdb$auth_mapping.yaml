@@ -1,0 +1,90 @@
+#
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements.  See the NOTICE file distributed with
+# this work for additional information regarding copyright ownership.
+# The ASF licenses this file to You under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with
+# the License.  You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+name: RDB$AUTH_MAPPING
+columns:
+  RDB$MAP_NAME:
+    caseSensitive: false
+    dataType: 1
+    generated: false
+    name: RDB$MAP_NAME
+    primaryKey: false
+    visible: true
+  RDB$MAP_USING:
+    caseSensitive: false
+    dataType: 1
+    generated: false
+    name: RDB$MAP_USING
+    primaryKey: false
+    visible: true
+  RDB$MAP_PLUGIN:
+    caseSensitive: false
+    dataType: 1
+    generated: false
+    name: RDB$MAP_PLUGIN
+    primaryKey: false
+    visible: true
+  RDB$MAP_DB:
+    caseSensitive: false
+    dataType: 1
+    generated: false
+    name: RDB$MAP_DB
+    primaryKey: false
+    visible: true
+  RDB$MAP_FROM_TYPE:
+    caseSensitive: false
+    dataType: 1
+    generated: false
+    name: RDB$MAP_FROM_TYPE
+    primaryKey: false
+    visible: true
+  RDB$MAP_FROM:
+    caseSensitive: false
+    dataType: 1
+    generated: false
+    name: RDB$MAP_FROM
+    primaryKey: false
+    visible: true
+  RDB$MAP_TO_TYPE:
+    caseSensitive: false
+    dataType: 5
+    generated: false
+    name: RDB$MAP_TO_TYPE
+    primaryKey: false
+    visible: true
+  RDB$MAP_TO:
+    caseSensitive: false
+    dataType: 1
+    generated: false
+    name: RDB$MAP_TO
+    primaryKey: false
+    visible: true
+  RDB$SYSTEM_FLAG:
+    caseSensitive: false
+    dataType: 5
+    generated: false
+    name: RDB$SYSTEM_FLAG
+    primaryKey: false
+    visible: true
+  RDB$DESCRIPTION:
+    caseSensitive: false
+    dataType: 2004
+    generated: false
+    name: RDB$DESCRIPTION
+    primaryKey: false
+    visible: true
+

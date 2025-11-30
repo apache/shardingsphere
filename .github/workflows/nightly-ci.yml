@@ -29,7 +29,7 @@ jobs:
   global-environment:
     name: Import Global Environment
     uses: ./.github/workflows/required-reusable.yml
-
+  
   ci:
     if: ${{ needs.global-environment.outputs.GLOBAL_JOB_ENABLED == 'true' }}
     name: CI - JDK ${{ matrix.java-version }} on ${{ matrix.os }}
@@ -41,7 +41,7 @@ jobs:
       fail-fast: false
       matrix:
         os: [ ubuntu-latest, macos-latest, windows-latest ]
-        java-version: [ 11, 17, 21, 23 ]
+        java-version: [ 11, 17, 21, '25-ea' ]
     steps:
       - name: Support Long Paths in Windows
         if: matrix.os == 'windows-latest'
@@ -99,9 +99,9 @@ jobs:
           java-version: 8
       - name: Run Tests with JDK 8
         run: ./mvnw test -B -ntp -fae -T1C
-
+  
   ci-native-test:
-    if: github.repository == 'apache/shardingsphere'
+    if: ${{ needs.global-environment.outputs.GLOBAL_JOB_ENABLED == 'true' }}
     name: NativeTest CI - GraalVM CE on ${{ matrix.os }}
     needs: global-environment
     runs-on: ${{ matrix.os }}
@@ -110,15 +110,37 @@ jobs:
       max-parallel: 20
       fail-fast: false
       matrix:
-        os: [ ubuntu-latest ]
+        os: [ ubuntu-latest, windows-2025 ]
     steps:
       - uses: actions/checkout@v4
+      - name: Setup Rancher Desktop without GUI on Windows Server
+        if: matrix.os == 'windows-2025'
+        run: |
+          iwr -Uri "https://raw.githubusercontent.com/microsoft/Windows-Containers/refs/heads/Main/helpful_tools/Install-DockerCE/uninstall-docker-ce.ps1" -OutFile uninstall-docker-ce.ps1
+          .\uninstall-docker-ce.ps1 -Force
+          ri .\uninstall-docker-ce.ps1
+          winget install --id jazzdelightsme.WingetPathUpdater --source winget
+          winget install --id SUSE.RancherDesktop --source winget --skip-dependencies
+          rdctl start --application.start-in-background --container-engine.name=moby --kubernetes.enabled=false
+          ./test/native/src/test/resources/test-native/ps1/wait-for-rancher-desktop-backend.ps1
+          "PATH=$env:PATH" >> $env:GITHUB_ENV
       - uses: graalvm/setup-graalvm@v1
         with:
-          java-version: '22.0.2'
+          java-version: '24.0.2'
           distribution: 'graalvm-community'
           github-token: ${{ secrets.GITHUB_TOKEN }}
-          cache: 'maven'
           native-image-job-reports: 'true'
+      - uses: actions/cache@v4
+        with:
+          path: ~/.m2/repository
+          key: ${{ needs.global-environment.outputs.GLOBAL_CACHE_PREFIX }}-maven-third-party-cache-${{ github.sha }}
+          restore-keys: |
+            ${{ needs.global-environment.outputs.GLOBAL_CACHE_PREFIX }}-maven-third-party-cache-
+            ${{ needs.global-environment.outputs.GLOBAL_CACHE_PREFIX }}-maven-third-party-
+      # TODO Remove this workaround after. The graalvm native image built with windows server is missing some GRMs for testcontainers
+      - name: Run test with GraalVM CE
+        if: matrix.os == 'windows-2025'
+        run: ./mvnw -PgenerateMetadata -e -T 1C clean verify
       - name: Run nativeTest with GraalVM CE
-        run: ./mvnw -PnativeTestInShardingSphere -e clean test
+        if: matrix.os == 'ubuntu-latest'
+        run: ./mvnw -PnativeTestInShardingSphere -e "-DjvmArgs=-XX:MaxRAMPercentage=85.0" clean verify

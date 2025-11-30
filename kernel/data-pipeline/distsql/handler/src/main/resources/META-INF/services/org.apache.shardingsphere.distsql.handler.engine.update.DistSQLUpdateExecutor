@@ -16,15 +16,3 @@
 #
 
 org.apache.shardingsphere.data.pipeline.distsql.handler.transmission.update.AlterTransmissionRuleExecutor
-org.apache.shardingsphere.data.pipeline.distsql.handler.migration.update.MigrateTableExecutor
-org.apache.shardingsphere.data.pipeline.distsql.handler.migration.update.StartMigrationExecutor
-org.apache.shardingsphere.data.pipeline.distsql.handler.migration.update.StopMigrationExecutor
-org.apache.shardingsphere.data.pipeline.distsql.handler.migration.update.CommitMigrationExecutor
-org.apache.shardingsphere.data.pipeline.distsql.handler.migration.update.RollbackMigrationExecutor
-org.apache.shardingsphere.data.pipeline.distsql.handler.migration.update.RegisterMigrationSourceStorageUnitExecutor
-org.apache.shardingsphere.data.pipeline.distsql.handler.migration.update.UnregisterMigrationSourceStorageUnitExecutor
-org.apache.shardingsphere.data.pipeline.distsql.handler.migration.update.CheckMigrationJobExecutor
-org.apache.shardingsphere.data.pipeline.distsql.handler.migration.update.StartMigrationCheckExecutor
-org.apache.shardingsphere.data.pipeline.distsql.handler.migration.update.StopMigrationCheckExecutor
-org.apache.shardingsphere.data.pipeline.distsql.handler.migration.update.DropMigrationCheckExecutor
-org.apache.shardingsphere.data.pipeline.distsql.handler.cdc.update.DropStreamingExecutor

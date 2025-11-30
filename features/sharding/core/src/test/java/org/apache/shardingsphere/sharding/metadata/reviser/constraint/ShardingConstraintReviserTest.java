@@ -17,14 +17,14 @@
 
 package org.apache.shardingsphere.sharding.metadata.reviser.constraint;
 
-import org.apache.shardingsphere.infra.database.core.metadata.data.model.ConstraintMetaData;
+import org.apache.shardingsphere.database.connector.core.metadata.data.model.ConstraintMetaData;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstanceContext;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sharding.rule.ShardingTable;
-import org.apache.shardingsphere.test.fixture.jdbc.MockedDataSource;
+import org.apache.shardingsphere.test.infra.fixture.jdbc.MockedDataSource;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -49,7 +49,7 @@ class ShardingConstraintReviserTest {
     void setUp() {
         shardingRule = createShardingRule();
         ShardingTable shardingTable = mock(ShardingTable.class);
-        when(shardingTable.getActualDataNodes()).thenReturn(Arrays.asList(new DataNode("schema_name", "table_name_0"), new DataNode("schema_name", "table_name_1")));
+        when(shardingTable.getActualDataNodes()).thenReturn(Arrays.asList(new DataNode("schema_name", (String) null, "table_name_0"), new DataNode("schema_name", (String) null, "table_name_1")));
         reviser = new ShardingConstraintReviser(shardingTable);
     }
     

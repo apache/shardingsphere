@@ -176,6 +176,14 @@ Oracle 和 SQLServer 由于分页查询较为复杂，目前有部分分页查�
 
 目前不支持使用 `WITH xxx AS (SELECT …)` 的方式进行分页。由于 Hibernate 自动生成的 SQLServer 分页语句使用了 `WITH` 语句，因此目前并不支持基于 Hibernate 的 SQLServer 分页。 目前也不支持使用两个 TOP + 子查询的方式实现分页。
 
+### 聚合查询
+
+查询中同时包含多个聚合函数时，不支持带 DISTINCT 的聚合函数和不带 DISTINCT 的聚合函数混合使用。
+
 ### LOAD DATA / LOAD XML
 
 不支持 MySQL `LOAD DATA` 和 `LOAD XML` 语句加载数据到分片表。
+
+### 分号分隔多语句
+
+不支持使用 `;` 分隔的多条 SQL 同时执行。

@@ -20,9 +20,9 @@ package org.apache.shardingsphere.single.datanode;
 import com.cedarsoftware.util.CaseInsensitiveMap;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.database.connector.core.metadata.data.loader.type.SchemaMetaDataLoader;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.DatabaseTypeEngine;
-import org.apache.shardingsphere.infra.database.core.metadata.data.loader.type.SchemaMetaDataLoader;
-import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.single.constant.SingleTableConstants;
@@ -101,9 +101,7 @@ public final class SingleTableDataNodeLoader {
         for (Entry<String, Collection<String>> entry : schemaTableNames.entrySet()) {
             for (String each : entry.getValue()) {
                 Collection<DataNode> dataNodes = result.getOrDefault(each, new LinkedList<>());
-                DataNode dataNode = new DataNode(dataSourceName, each);
-                dataNode.setSchemaName(entry.getKey());
-                dataNodes.add(dataNode);
+                dataNodes.add(new DataNode(dataSourceName, entry.getKey(), each));
                 result.putIfAbsent(each, dataNodes);
             }
         }
@@ -126,27 +124,27 @@ public final class SingleTableDataNodeLoader {
                                                               final Map<String, Map<String, Collection<String>>> configuredTableMap) {
         for (DataNode each : dataNodes) {
             if (featureRequiredSingleTables.contains(each.getTableName())) {
-                return getSingleDataNodeCollection(each);
+                return getSingleDataNodes(each);
             }
             Map<String, Collection<String>> configuredTablesForDataSource = configuredTableMap.get(each.getDataSourceName());
             if (null == configuredTablesForDataSource || configuredTablesForDataSource.isEmpty()) {
                 continue;
             }
             if (configuredTablesForDataSource.containsKey(SingleTableConstants.ASTERISK)) {
-                return getSingleDataNodeCollection(each);
+                return getSingleDataNodes(each);
             }
             Collection<String> configuredTablesForSchema = configuredTablesForDataSource.get(each.getSchemaName());
             if (null == configuredTablesForSchema || configuredTablesForSchema.isEmpty()) {
                 continue;
             }
             if (configuredTablesForSchema.contains(SingleTableConstants.ASTERISK) || configuredTablesForSchema.contains(each.getTableName().toLowerCase())) {
-                return getSingleDataNodeCollection(each);
+                return getSingleDataNodes(each);
             }
         }
         return Collections.emptyList();
     }
     
-    private static Collection<DataNode> getSingleDataNodeCollection(final DataNode dataNode) {
+    private static Collection<DataNode> getSingleDataNodes(final DataNode dataNode) {
         Collection<DataNode> result = new LinkedList<>();
         result.add(dataNode);
         return result;
@@ -182,7 +180,7 @@ public final class SingleTableDataNodeLoader {
     public static Map<String, Collection<String>> loadSchemaTableNames(final String databaseName, final DatabaseType storageType,
                                                                        final DataSource dataSource, final String dataSourceName, final Collection<String> excludedTables) {
         try {
-            return SchemaMetaDataLoader.loadSchemaTableNames(databaseName, storageType, dataSource, excludedTables);
+            return new SchemaMetaDataLoader(storageType).loadSchemaTableNames(databaseName, dataSource, excludedTables);
         } catch (final SQLException ex) {
             throw new SingleTablesLoadingException(databaseName, dataSourceName, ex);
         }

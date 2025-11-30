@@ -20,7 +20,9 @@ package org.apache.shardingsphere.encrypt.checker.sql.with;
 import org.apache.shardingsphere.encrypt.exception.syntax.UnsupportedEncryptSQLException;
 import org.apache.shardingsphere.encrypt.rewrite.token.generator.fixture.EncryptGeneratorFixtureBuilder;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.binder.context.statement.dml.SelectStatementContext;
+import org.apache.shardingsphere.infra.binder.context.statement.type.dml.SelectStatementContext;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.SQLStatementAttributes;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.type.WithSQLStatementAttribute;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
@@ -38,13 +40,17 @@ class EncryptWithClauseSupportedCheckerTest {
     @Test
     void assertIsCheck() {
         SelectStatementContext sqlStatementContext = mock(SelectStatementContext.class, RETURNS_DEEP_STUBS);
-        when(sqlStatementContext.getWith().isPresent()).thenReturn(true);
+        WithSQLStatementAttribute withAttribute = mock(WithSQLStatementAttribute.class);
+        when(withAttribute.containsWith()).thenReturn(true);
+        when(sqlStatementContext.getSqlStatement().getAttributes()).thenReturn(new SQLStatementAttributes(withAttribute));
         assertTrue(new EncryptWithClauseSupportedChecker().isCheck(sqlStatementContext));
     }
     
     @Test
-    void assertIsCheckWithoutWithAvailable() {
-        assertFalse(new EncryptWithClauseSupportedChecker().isCheck(mock(SQLStatementContext.class)));
+    void assertIsCheckWithoutWith() {
+        SelectStatementContext sqlStatementContext = mock(SelectStatementContext.class, RETURNS_DEEP_STUBS);
+        when(sqlStatementContext.getSqlStatement().getAttributes()).thenReturn(new SQLStatementAttributes());
+        assertFalse(new EncryptWithClauseSupportedChecker().isCheck(sqlStatementContext));
     }
     
     @Test

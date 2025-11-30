@@ -10,7 +10,7 @@ ShardingSphere 对 ClickHouse JDBC Driver 的支持位于可选模块中。
 
 ## 前提条件
 
-要在 ShardingSphere 的配置文件为数据节点使用类似 `jdbc:ch://localhost:8123/demo_ds_0` 的 `jdbcUrl`，
+要在 ShardingSphere 的配置文件为数据节点使用类似 `jdbc:ch://localhost:8123/demo_ds_0` 的 `standardJdbcUrl`，
 可能的 Maven 依赖关系如下，
 
 ```xml
@@ -22,7 +22,7 @@ ShardingSphere 对 ClickHouse JDBC Driver 的支持位于可选模块中。
     </dependency>
     <dependency>
         <groupId>org.apache.shardingsphere</groupId>
-        <artifactId>shardingsphere-parser-sql-clickhouse</artifactId>
+        <artifactId>shardingsphere-jdbc-dialect-clickhouse</artifactId>
         <version>${shardingsphere.version}</version>
     </dependency>
     <dependency>
@@ -43,7 +43,9 @@ ShardingSphere 对 ClickHouse JDBC Driver 的支持位于可选模块中。
 ```yaml
 services:
   clickhouse-server:
-    image: clickhouse/clickhouse-server:24.11.1.2557
+    image: clickhouse/clickhouse-server:25.6.5.41
+    environment:
+      CLICKHOUSE_SKIP_USER_SETUP: "1"
     ports:
       - "8123:8123"
 ```
@@ -59,7 +61,7 @@ sudo snap install dbeaver-ce
 snap run dbeaver-ce
 ```
 
-在 DBeaver Community 内，使用 `jdbc:ch://localhost:8123/default` 的 `jdbcUrl`，`default` 的`username` 连接至 ClickHouse，
+在 DBeaver Community 内，使用 `jdbc:ch://localhost:8123/default` 的 `standardJdbcUrl`，`default` 的`username` 连接至 ClickHouse，
 `password` 留空。
 执行如下 SQL，
 
@@ -71,7 +73,7 @@ CREATE DATABASE demo_ds_2;
 ```
 
 分别使用 `jdbc:ch://localhost:8123/demo_ds_0` ，
-`jdbc:ch://localhost:8123/demo_ds_1` 和 `jdbc:ch://localhost:8123/demo_ds_2` 的 `jdbcUrl` 连接至 ClickHouse 来执行如下 SQL，
+`jdbc:ch://localhost:8123/demo_ds_1` 和 `jdbc:ch://localhost:8123/demo_ds_2` 的 `standardJdbcUrl` 连接至 ClickHouse 来执行如下 SQL，
 
 ```sql
 -- noinspection SqlNoDataSourceInspectionForFile
@@ -97,26 +99,26 @@ dataSources:
     ds_0:
         dataSourceClassName: com.zaxxer.hikari.HikariDataSource
         driverClassName: com.clickhouse.jdbc.ClickHouseDriver
-        jdbcUrl: jdbc:ch://localhost:8123/demo_ds_0
+        standardJdbcUrl: jdbc:ch://localhost:8123/demo_ds_0
         username: default
         password:
     ds_1:
         dataSourceClassName: com.zaxxer.hikari.HikariDataSource
         driverClassName: com.clickhouse.jdbc.ClickHouseDriver
-        jdbcUrl: jdbc:ch://localhost:8123/demo_ds_1
+        standardJdbcUrl: jdbc:ch://localhost:8123/demo_ds_1
         username: default
         password:
     ds_2:
         dataSourceClassName: com.zaxxer.hikari.HikariDataSource
         driverClassName: com.clickhouse.jdbc.ClickHouseDriver
-        jdbcUrl: jdbc:ch://localhost:8123/demo_ds_2
+        standardJdbcUrl: jdbc:ch://localhost:8123/demo_ds_2
         username: default
         password:
 rules:
 - !SHARDING
     tables:
       t_order:
-        actualDataNodes:
+        actualDataNodes: <LITERAL>ds_0.t_order, ds_1.t_order, ds_2.t_order
         keyGenerateStrategy:
           column: order_id
           keyGeneratorName: snowflake
@@ -154,7 +156,7 @@ public class ExampleUtils {
              Statement statement = connection.createStatement()) {
             statement.execute("INSERT INTO t_order (user_id, order_type, address_id, status) VALUES (1, 1, 1, 'INSERT_TEST')");
             statement.executeQuery("SELECT * FROM t_order");
-            statement.execute("alter table t_order delete where order_id=1");
+            statement.execute("alter table t_order delete where user_id=1");
         }
     }
 }
@@ -225,3 +227,9 @@ ClickHouse 不支持 ShardingSphere 集成级别的本地事务，XA 事务或 S
 嵌入式 ClickHouse `chDB` 尚未发布 Java 客户端，
 ShardingSphere 不针对 SNAPSHOT 版本的 https://github.com/chdb-io/chdb-java 做集成测试。
 参考 https://github.com/chdb-io/chdb/issues/243 。
+
+### ClickHouse JDBC Driver V2 限制
+
+ClickHouse JDBC Driver V2 自 https://github.com/ClickHouse/clickhouse-java/pull/2368 所在的 `0.8.6` 里程碑开始，
+使用 `org.antlr:antlr4-maven-plugin:4.13.2`。这与 ShardingSphere 使用的 `org.antlr:antlr4-runtime:4.10.1` 产生冲突。
+ShardingSphere 仅使用 `com.clickhouse:clickhouse-jdbc:0.6.3:http` 测试 ClickHouse 集成。

@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.mode.metadata.manager;
 
+import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
-import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereColumn;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
@@ -49,7 +49,7 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -89,7 +89,7 @@ class DatabaseMetaDataManagerTest {
     void assertAddExistedDatabase() {
         when(metaDataContexts.getMetaData().containsDatabase("foo_db")).thenReturn(true);
         databaseMetaDataManager.addDatabase("foo_db");
-        verify(metaDataContexts.getMetaData(), times(0)).addDatabase(eq("foo_db"), any(DatabaseType.class), any(ConfigurationProperties.class));
+        verify(metaDataContexts.getMetaData(), never()).addDatabase(eq("foo_db"), any(DatabaseType.class), any(ConfigurationProperties.class));
     }
     
     @Test
@@ -103,7 +103,7 @@ class DatabaseMetaDataManagerTest {
     @Test
     void assertDropNotExistedDatabase() {
         databaseMetaDataManager.dropDatabase("not_existed_db");
-        verify(metaDataContexts.getMetaData(), times(0)).dropDatabase("not_existed_db");
+        verify(metaDataContexts.getMetaData(), never()).dropDatabase("not_existed_db");
     }
     
     @Test
@@ -116,13 +116,13 @@ class DatabaseMetaDataManagerTest {
     void assertAddExistedSchema() {
         when(metaDataContexts.getMetaData().getDatabase("foo_db").containsSchema("foo_schema")).thenReturn(true);
         databaseMetaDataManager.addSchema("foo_db", "foo_schema");
-        verify(metaDataContexts.getMetaData().getDatabase("foo_db"), times(0)).addSchema(any(ShardingSphereSchema.class));
+        verify(metaDataContexts.getMetaData().getDatabase("foo_db"), never()).addSchema(any(ShardingSphereSchema.class));
     }
     
     @Test
     void assertDropNotExistedSchema() {
         databaseMetaDataManager.dropSchema("foo_db", "bar_schema");
-        verify(metaDataContexts.getMetaData().getDatabase("foo_db"), times(0)).dropSchema(anyString());
+        verify(metaDataContexts.getMetaData().getDatabase("foo_db"), never()).dropSchema(anyString());
     }
     
     @Test
@@ -137,7 +137,7 @@ class DatabaseMetaDataManagerTest {
         when(metaDataContexts.getMetaData().getDatabase("foo_db").getAllSchemas()).thenReturn(Collections.singleton(toBeAlteredSchema));
         when(metaDataContexts.getMetaData().getDatabase("foo_db").getSchema("foo_schema")).thenReturn(toBeAlteredSchema);
         databaseMetaDataManager.alterTable("foo_db", "bar_schema", mock());
-        verify(metaDataContexts.getMetaData().getDatabase("foo_db"), times(0)).getSchema(any());
+        verify(metaDataContexts.getMetaData().getDatabase("foo_db"), never()).getSchema(any());
     }
     
     @Test
@@ -158,11 +158,11 @@ class DatabaseMetaDataManagerTest {
         ShardingSphereSchema toBeAlteredSchema = createToBeAlteredSchema();
         when(metaDataContexts.getMetaData().getDatabase("foo_db").getAllSchemas()).thenReturn(Collections.singleton(toBeAlteredSchema));
         when(metaDataContexts.getMetaData().getDatabase("foo_db").getSchema("foo_schema")).thenReturn(toBeAlteredSchema);
-        ShardingSphereView toBeChangedView = new ShardingSphereView("foo_view", "select `foo_view`.`foo_view`.`id` AS `id` from `foo_view`.`foo_view`");
+        ShardingSphereView toBeChangedView = new ShardingSphereView("foo_view", "SELECT `foo_view`.`foo_view`.`id` AS `id` FROM `foo_view`.`foo_view`");
         databaseMetaDataManager.alterView("foo_db", "foo_schema", toBeChangedView);
         ShardingSphereView view = metaDataContexts.getMetaData().getDatabase("foo_db").getSchema("foo_schema").getView("foo_view");
         assertThat(view.getName(), is("foo_view"));
-        assertThat(view.getViewDefinition(), is("select `foo_view`.`foo_view`.`id` AS `id` from `foo_view`.`foo_view`"));
+        assertThat(view.getViewDefinition(), is("SELECT `foo_view`.`foo_view`.`id` AS `id` FROM `foo_view`.`foo_view`"));
     }
     
     @Test

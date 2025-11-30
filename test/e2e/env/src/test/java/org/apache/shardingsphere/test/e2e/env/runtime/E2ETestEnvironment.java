@@ -17,13 +17,13 @@
 
 package org.apache.shardingsphere.test.e2e.env.runtime;
 
-import com.google.common.base.Splitter;
 import lombok.Getter;
-import org.apache.shardingsphere.test.e2e.env.runtime.cluster.ClusterEnvironment;
-import org.apache.shardingsphere.test.e2e.env.runtime.scenario.path.ScenarioCommonPath;
+import org.apache.shardingsphere.test.e2e.env.runtime.type.ArtifactEnvironment;
+import org.apache.shardingsphere.test.e2e.env.runtime.type.DockerEnvironment;
+import org.apache.shardingsphere.test.e2e.env.runtime.type.NativeDatabaseEnvironment;
+import org.apache.shardingsphere.test.e2e.env.runtime.type.RunEnvironment;
+import org.apache.shardingsphere.test.e2e.env.runtime.type.scenario.path.ScenarioCommonPath;
 
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.Collection;
 import java.util.Properties;
 import java.util.TimeZone;
@@ -36,46 +36,35 @@ public final class E2ETestEnvironment {
     
     private static final E2ETestEnvironment INSTANCE = new E2ETestEnvironment();
     
-    private final Collection<String> runModes;
-    
-    private final boolean runAdditionalTestCases;
-    
     private final Collection<String> scenarios;
     
-    private final ClusterEnvironment clusterEnvironment;
+    private final RunEnvironment runEnvironment;
     
-    private final boolean smoke;
+    private final ArtifactEnvironment artifactEnvironment;
+    
+    private final DockerEnvironment dockerEnvironment;
+    
+    private final NativeDatabaseEnvironment nativeDatabaseEnvironment;
     
     private E2ETestEnvironment() {
-        Properties props = loadProperties();
-        runModes = Splitter.on(",").trimResults().splitToList(props.getProperty("it.run.modes"));
-        runAdditionalTestCases = Boolean.parseBoolean(props.getProperty("it.run.additional.cases"));
-        TimeZone.setDefault(TimeZone.getTimeZone(props.getProperty("it.timezone", "UTC")));
-        scenarios = getScenarios(props);
-        smoke = Boolean.parseBoolean(props.getProperty("it.run.smoke"));
-        clusterEnvironment = new ClusterEnvironment(props);
+        Properties props = EnvironmentPropertiesLoader.loadProperties();
+        TimeZone.setDefault(TimeZone.getTimeZone(props.getProperty("e2e.timezone", "UTC")));
+        scenarios = EnvironmentPropertiesLoader.getListValue(props, "e2e.scenarios");
+        scenarios.forEach(each -> new ScenarioCommonPath(each).checkFolderExisted());
+        runEnvironment = new RunEnvironment(props);
+        artifactEnvironment = new ArtifactEnvironment(props);
+        dockerEnvironment = new DockerEnvironment(props);
+        nativeDatabaseEnvironment = new NativeDatabaseEnvironment(props);
     }
     
-    @SuppressWarnings("AccessOfSystemProperties")
-    private Properties loadProperties() {
-        Properties result = new Properties();
-        try (InputStream inputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream("env/it-env.properties")) {
-            result.load(inputStream);
-        } catch (final IOException ex) {
-            throw new RuntimeException(ex);
-        }
-        for (String each : System.getProperties().stringPropertyNames()) {
-            result.setProperty(each, System.getProperty(each));
-        }
-        return result;
-    }
-    
-    private Collection<String> getScenarios(final Properties props) {
-        Collection<String> result = Splitter.on(",").trimResults().splitToList(props.getProperty("it.scenarios"));
-        for (String each : result) {
-            new ScenarioCommonPath(each).checkFolderExist();
-        }
-        return result;
+    /**
+     * Judge whether valid E2E test environment.
+     *
+     * @return valid or invalid E2E test environment
+     */
+    public boolean isValid() {
+        return !scenarios.isEmpty() && null != runEnvironment.getType()
+                && !artifactEnvironment.getModes().isEmpty() && !artifactEnvironment.getAdapters().isEmpty() && !artifactEnvironment.getDatabaseTypes().isEmpty();
     }
     
     /**
