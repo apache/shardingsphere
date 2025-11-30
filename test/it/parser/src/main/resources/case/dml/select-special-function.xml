@@ -5049,7 +5049,7 @@
 
     <select sql-case-id="select_not_in">
         <projections start-index="7" stop-index="33">
-            <expression-projection start-index="7" stop-index="33" text="3,4) NOT IN ((1,2), (3,4)">
+            <expression-projection start-index="7" stop-index="33" text="(3,4) NOT IN ((1,2), (3,4))">
                 <expr>
                     <in-expression start-index="7" stop-index="33">
                         <left>
