@@ -116,7 +116,8 @@ public final class CommonTableExpressionSegmentBinder {
             ColumnSegment boundColumnSegment = copy(each);
             ProjectionSegment projectionSegment = projectionSegments.get(index);
             if (projectionSegment instanceof ColumnProjectionSegment) {
-                boundColumnSegment.setColumnBoundInfo(ColumnSegmentBinder.createColumnSegmentBoundInfo(each, ((ColumnProjectionSegment) projectionSegment).getColumn(), TableSourceType.TEMPORARY_TABLE));
+                boundColumnSegment.setColumnBoundInfo(
+                        ColumnSegmentBinder.createColumnSegmentBoundInfo(each, ((ColumnProjectionSegment) projectionSegment).getColumn(), TableSourceType.TEMPORARY_TABLE));
             }
             result.add(boundColumnSegment);
             index++;
