@@ -57,8 +57,6 @@ public final class CreateTableStatementBinder implements SQLStatementBinder<Crea
         result.setSelectStatement(boundSelectStatement);
         result.getColumnDefinitions().addAll(boundColumnDefinitions);
         result.getConstraintDefinitions().addAll(sqlStatement.getConstraintDefinitions());
-        // Remove duplicate addParameterMarkers call to avoid adding parameters twice
-        // result.addParameterMarkers(sqlStatement.getParameterMarkers());
         result.setIfNotExists(sqlStatement.isIfNotExists());
         result.getColumns().addAll(sqlStatement.getColumns());
         sqlStatement.getLikeTable().ifPresent(result::setLikeTable);

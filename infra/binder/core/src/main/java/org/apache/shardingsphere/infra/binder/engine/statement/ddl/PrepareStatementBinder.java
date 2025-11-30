@@ -51,8 +51,6 @@ public final class PrepareStatementBinder implements SQLStatementBinder<PrepareS
         result.setInsert(boundInsert);
         result.setUpdate(boundUpdate);
         result.setDelete(boundDelete);
-        // Remove duplicate addParameterMarkers call to avoid adding parameters twice
-        // result.addParameterMarkers(sqlStatement.getParameterMarkers());
         SQLStatementCopyUtils.copyAttributes(sqlStatement, result);
         return result;
     }
