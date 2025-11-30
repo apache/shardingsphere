@@ -7698,7 +7698,7 @@
             <column-projection name="empid" start-index="75" stop-index="81" literal-start-index="75" literal-stop-index="81">`
                 <owner name="a" start-index="75" stop-index="75" literal-start-index="75" literal-stop-index="75" />
             </column-projection>
-            <expression-projection text="a.enddate - term + term2 + 1) / (last_day(term) - term + 1" alias="cnt" start-index="8" stop-index="72" literal-start-index="8" literal-stop-index="72">
+            <expression-projection text="(a.enddate - term + term2 + 1) / (last_day(term) - term + 1)" alias="cnt" start-index="8" stop-index="72" literal-start-index="8" literal-stop-index="72">
                 <literalText>a.enddate - term + term2 + 1) / (last_day(term) - term + 1</literalText>
                 <expr>
                     <binary-operation-expression start-index="8" stop-index="67" literal-start-index="8" literal-stop-index="67">

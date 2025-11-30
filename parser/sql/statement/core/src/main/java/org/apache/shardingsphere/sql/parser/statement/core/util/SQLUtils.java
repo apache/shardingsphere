@@ -175,18 +175,40 @@ public final class SQLUtils {
      */
     public static String getExpressionWithoutOutsideParentheses(final String value) {
         int parenthesesOffset = getParenthesesOffset(value);
-        return 0 == parenthesesOffset ? value : value.substring(parenthesesOffset, value.length() - parenthesesOffset);
+        if (0 == parenthesesOffset) {
+            return value;
+        }
+        String result = value.substring(parenthesesOffset, value.length() - parenthesesOffset);
+        return isValidParenthesis(result) ? result : value;
     }
     
     private static int getParenthesesOffset(final String value) {
-        int result = 0;
+        int left = 0;
         if (Strings.isNullOrEmpty(value)) {
-            return result;
+            return left;
         }
-        while (Paren.PARENTHESES.getLeftParen() == value.charAt(result)) {
-            result++;
+        
+        int right = value.length() - 1;
+        while (Paren.PARENTHESES.getLeftParen() == value.charAt(left) && Paren.PARENTHESES.getRightParen() == value.charAt(right)) {
+            left++;
+            right--;
         }
-        return result;
+        return left;
+    }
+    
+    private static boolean isValidParenthesis(final String text) {
+        int count = 0;
+        for (char each : text.toCharArray()) {
+            if (Paren.PARENTHESES.getLeftParen() == each) {
+                count++;
+            } else if (Paren.PARENTHESES.getRightParen() == each) {
+                if (count == 0) {
+                    return false;
+                }
+                count--;
+            }
+        }
+        return count == 0;
     }
     
     /**
