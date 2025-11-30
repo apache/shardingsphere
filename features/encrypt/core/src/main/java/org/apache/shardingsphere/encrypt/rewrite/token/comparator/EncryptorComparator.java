@@ -30,7 +30,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.bound
 public final class EncryptorComparator {
     
     /**
-     * Compare whether same encryptor.
+     * Compare whether is same encryptor.
      *
      * @param encryptRule encrypt rule
      * @param leftColumnInfo left column info
@@ -44,7 +44,7 @@ public final class EncryptorComparator {
     }
     
     /**
-     * Compare whether same encryptor.
+     * Compare whether is same encryptor.
      *
      * @param encryptor1 encryptor 1 to be compared
      * @param encryptor2 encryptor 2 to be compared

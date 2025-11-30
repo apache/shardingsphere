@@ -71,7 +71,7 @@ public final class InsertSelectColumnsEncryptorChecker {
     }
     
     /**
-     * Compare whether same encryptor.
+     * Compare whether is same encryptor.
      *
      * @param insertColumns insert columns
      * @param projections projections
