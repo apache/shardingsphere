@@ -30,7 +30,7 @@ import java.util.Map;
 import java.util.Optional;
 
 /**
- * Storage container craete option for MySQL.
+ * Storage container create option for MySQL.
  */
 public final class MySQLStorageContainerCreateOption implements StorageContainerCreateOption {
     
