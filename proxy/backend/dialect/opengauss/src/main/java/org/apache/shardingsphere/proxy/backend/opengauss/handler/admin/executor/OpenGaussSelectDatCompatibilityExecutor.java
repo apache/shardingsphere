@@ -32,7 +32,7 @@ import java.sql.Types;
 import java.util.Collections;
 
 /**
- * OpenGauss select datcompatibility executor.
+ * OpenGauss select dat compatibility executor.
  */
 public final class OpenGaussSelectDatCompatibilityExecutor implements DatabaseAdminQueryExecutor {
     
