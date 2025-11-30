@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.encrypt.distsql.statement;
 
 import lombok.Getter;
-import org.apache.shardingsphere.distsql.statement.rdl.rule.database.type.CreateRuleStatement;
+import org.apache.shardingsphere.distsql.statement.type.rdl.rule.database.type.CreateRuleStatement;
 import org.apache.shardingsphere.encrypt.distsql.segment.EncryptRuleSegment;
 
 import java.util.Collection;

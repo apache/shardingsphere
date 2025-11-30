@@ -22,7 +22,7 @@ import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereStatist
 import org.apache.shardingsphere.infra.metadata.statistics.builder.ShardingSphereStatisticsFactory;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistFacade;
 
-import javax.annotation.concurrent.ThreadSafe;
+import com.google.errorprone.annotations.ThreadSafe;
 import java.util.concurrent.atomic.AtomicReference;
 
 /**
@@ -64,8 +64,8 @@ public final class MetaDataContexts {
      * @param newMetaDataContexts new meta data contexts
      */
     public void update(final MetaDataContexts newMetaDataContexts) {
-        this.metaData.set(newMetaDataContexts.getMetaData());
-        this.statistics.set(newMetaDataContexts.getStatistics());
+        metaData.set(newMetaDataContexts.getMetaData());
+        statistics.set(newMetaDataContexts.getStatistics());
     }
     
     /**
@@ -76,6 +76,6 @@ public final class MetaDataContexts {
      */
     public void update(final ShardingSphereMetaData metaData, final MetaDataPersistFacade metaDataPersistFacade) {
         this.metaData.set(metaData);
-        this.statistics.set(ShardingSphereStatisticsFactory.create(metaData, metaDataPersistFacade.getStatisticsService().load(metaData)));
+        statistics.set(ShardingSphereStatisticsFactory.create(metaData, metaDataPersistFacade.getStatisticsService().load(metaData)));
     }
 }

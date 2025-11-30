@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.infra.metadata.statistics.builder;
 
-import org.apache.shardingsphere.infra.autogen.version.ShardingSphereVersion;
+import org.apache.shardingsphere.infra.version.ShardingSphereVersion;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.statistics.DatabaseStatistics;
 import org.apache.shardingsphere.infra.metadata.statistics.RowStatistics;
@@ -35,8 +35,6 @@ public final class ShardingSphereDefaultStatisticsBuilder {
     
     private static final String CLUSTER_INFORMATION = "cluster_information";
     
-    private static final String SHARDING_TABLE_STATISTICS = "sharding_table_statistics";
-    
     /**
      * Build default database statistics.
      *
@@ -48,7 +46,6 @@ public final class ShardingSphereDefaultStatisticsBuilder {
         if (database.containsSchema(SHARDINGSPHERE)) {
             SchemaStatistics schemaStatistics = new SchemaStatistics();
             buildClusterInformationTable(schemaStatistics);
-            buildShardingTableStatisticsTable(schemaStatistics);
             result.putSchemaStatistics(SHARDINGSPHERE, schemaStatistics);
         }
         return result;
@@ -58,9 +55,5 @@ public final class ShardingSphereDefaultStatisticsBuilder {
         TableStatistics tableStatistics = new TableStatistics(CLUSTER_INFORMATION);
         tableStatistics.getRows().add(new RowStatistics(Collections.singletonList(ShardingSphereVersion.VERSION)));
         schemaStatistics.putTableStatistics(CLUSTER_INFORMATION, tableStatistics);
-    }
-    
-    private void buildShardingTableStatisticsTable(final SchemaStatistics schemaStatistics) {
-        schemaStatistics.putTableStatistics(SHARDING_TABLE_STATISTICS, new TableStatistics(SHARDING_TABLE_STATISTICS));
     }
 }

@@ -17,16 +17,15 @@
 
 package org.apache.shardingsphere.mode.metadata.refresher.pushdown.type.view;
 
+import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
-import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.mode.metadata.refresher.pushdown.PushDownMetaDataRefresher;
 import org.apache.shardingsphere.mode.persist.service.MetaDataManagerPersistService;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DropViewStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.view.DropViewStatement;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.LinkedList;
 
 /**
@@ -35,7 +34,7 @@ import java.util.LinkedList;
 public final class DropViewPushDownMetaDataRefresher implements PushDownMetaDataRefresher<DropViewStatement> {
     
     @Override
-    public void refresh(final MetaDataManagerPersistService metaDataManagerPersistService, final ShardingSphereDatabase database, final Collection<String> logicDataSourceNames,
+    public void refresh(final MetaDataManagerPersistService metaDataManagerPersistService, final ShardingSphereDatabase database, final String logicDataSourceName,
                         final String schemaName, final DatabaseType databaseType, final DropViewStatement sqlStatement, final ConfigurationProperties props) {
         Collection<String> droppedTables = new LinkedList<>();
         Collection<String> droppedViews = new LinkedList<>();
@@ -44,7 +43,8 @@ public final class DropViewPushDownMetaDataRefresher implements PushDownMetaData
             droppedTables.add(viewName);
             droppedViews.add(viewName);
         }
-        metaDataManagerPersistService.alterSchema(database, schemaName, Collections.emptyList(), Collections.emptyList(), droppedTables, droppedViews);
+        metaDataManagerPersistService.dropTables(database, schemaName, droppedTables);
+        metaDataManagerPersistService.dropViews(database, schemaName, droppedViews);
     }
     
     @Override

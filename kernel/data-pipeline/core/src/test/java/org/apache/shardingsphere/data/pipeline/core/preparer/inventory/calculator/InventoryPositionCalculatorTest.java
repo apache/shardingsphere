@@ -24,18 +24,18 @@ import org.junit.jupiter.api.Test;
 
 import java.util.List;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.isA;
 
 class InventoryPositionCalculatorTest {
     
     @Test
     void assertGetPositionByIntegerUniqueKeyRange() {
-        List<IngestPosition> actualPositions = (List<IngestPosition>) InventoryPositionCalculator.getPositionByIntegerUniqueKeyRange(200L, Range.between(1L, 600L), 100L);
+        List<IngestPosition> actualPositions = InventoryPositionCalculator.getPositionByIntegerUniqueKeyRange(200L, Range.of(1L, 600L), 100L);
         assertThat(actualPositions.size(), is(2));
         for (IngestPosition each : actualPositions) {
-            assertThat(each, instanceOf(IntegerPrimaryKeyIngestPosition.class));
+            assertThat(each, isA(IntegerPrimaryKeyIngestPosition.class));
         }
         assertPosition(new IntegerPrimaryKeyIngestPosition(1L, 300L), (IntegerPrimaryKeyIngestPosition) actualPositions.get(0));
         assertPosition(new IntegerPrimaryKeyIngestPosition(301L, 600L), (IntegerPrimaryKeyIngestPosition) actualPositions.get(1));
@@ -48,17 +48,17 @@ class InventoryPositionCalculatorTest {
     
     @Test
     void assertGetPositionByIntegerUniqueKeyRangeWithZeroTotalRecordsCount() {
-        List<IngestPosition> actualPositions = (List<IngestPosition>) InventoryPositionCalculator.getPositionByIntegerUniqueKeyRange(0L, Range.between(0L, 0L), 1L);
+        List<IngestPosition> actualPositions = InventoryPositionCalculator.getPositionByIntegerUniqueKeyRange(0L, Range.of(0L, 0L), 1L);
         assertThat(actualPositions.size(), is(1));
-        assertThat(actualPositions.get(0), instanceOf(IntegerPrimaryKeyIngestPosition.class));
+        assertThat(actualPositions.get(0), isA(IntegerPrimaryKeyIngestPosition.class));
         assertPosition(new IntegerPrimaryKeyIngestPosition(0L, 0L), (IntegerPrimaryKeyIngestPosition) actualPositions.get(0));
     }
     
     @Test
     void assertGetPositionByIntegerUniqueKeyRangeWithTheSameMinMax() {
-        List<IngestPosition> actualPositions = (List<IngestPosition>) InventoryPositionCalculator.getPositionByIntegerUniqueKeyRange(200L, Range.between(5L, 5L), 100L);
+        List<IngestPosition> actualPositions = InventoryPositionCalculator.getPositionByIntegerUniqueKeyRange(200L, Range.of(5L, 5L), 100L);
         assertThat(actualPositions.size(), is(1));
-        assertThat(actualPositions.get(0), instanceOf(IntegerPrimaryKeyIngestPosition.class));
+        assertThat(actualPositions.get(0), isA(IntegerPrimaryKeyIngestPosition.class));
         assertPosition(new IntegerPrimaryKeyIngestPosition(5L, 5L), (IntegerPrimaryKeyIngestPosition) actualPositions.get(0));
     }
     
@@ -68,11 +68,10 @@ class InventoryPositionCalculatorTest {
         long shardingSize = tableRecordsCount / 2L;
         long minimum = Long.MIN_VALUE + 1L;
         long maximum = Long.MAX_VALUE;
-        List<IngestPosition> actualPositions = (List<IngestPosition>) InventoryPositionCalculator.getPositionByIntegerUniqueKeyRange(
-                tableRecordsCount, Range.between(minimum, maximum), shardingSize);
+        List<IngestPosition> actualPositions = InventoryPositionCalculator.getPositionByIntegerUniqueKeyRange(tableRecordsCount, Range.of(minimum, maximum), shardingSize);
         assertThat(actualPositions.size(), is(2));
         for (IngestPosition each : actualPositions) {
-            assertThat(each, instanceOf(IntegerPrimaryKeyIngestPosition.class));
+            assertThat(each, isA(IntegerPrimaryKeyIngestPosition.class));
         }
         assertPosition(new IntegerPrimaryKeyIngestPosition(minimum, 0L), (IntegerPrimaryKeyIngestPosition) actualPositions.get(0));
         assertPosition(new IntegerPrimaryKeyIngestPosition(1L, maximum), (IntegerPrimaryKeyIngestPosition) actualPositions.get(1));

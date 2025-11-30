@@ -26,6 +26,12 @@
     <artifactId>shardingsphere-transaction-base-seata-at</artifactId>
     <name>${project.artifactId}</name>
     
+    <properties>
+        <seata.version>2.5.0</seata.version>
+        <commons-lang.version>2.6</commons-lang.version>
+        <httpcore5.version>5.3.4</httpcore5.version>
+    </properties>
+    
     <dependencyManagement>
         <dependencies>
             <dependency>
@@ -40,9 +46,14 @@
                 </exclusions>
             </dependency>
             <dependency>
-                <groupId>org.antlr</groupId>
-                <artifactId>antlr4-runtime</artifactId>
-                <version>${antlr4.version}</version>
+                <groupId>commons-lang</groupId>
+                <artifactId>commons-lang</artifactId>
+                <version>${commons-lang.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.httpcomponents.core5</groupId>
+                <artifactId>httpcore5</artifactId>
+                <version>${httpcore5.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
@@ -55,9 +66,23 @@
         </dependency>
         
         <dependency>
+            <groupId>org.apache.shardingsphere</groupId>
+            <artifactId>shardingsphere-database-connector-mysql</artifactId>
+            <version>${project.version}</version>
+            <scope>test</scope>
+        </dependency>
+        
+        <dependency>
             <groupId>org.apache.seata</groupId>
             <artifactId>seata-all</artifactId>
-            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>commons-lang</groupId>
+            <artifactId>commons-lang</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.httpcomponents.core5</groupId>
+            <artifactId>httpcore5</artifactId>
         </dependency>
     </dependencies>
 </project>

@@ -127,7 +127,7 @@
         <select>
             <!-- FIXME support VALUES (1) projection parse -->
             <projections start-index="-1" stop-index="-1" />
-            <combine combine-type="UNION_ALL" start-index="58" stop-index="107">
+            <combine combine-type="UNION_ALL" start-index="47" stop-index="107">
                 <left>
                     <projections start-index="-1" stop-index="-1" />
                 </left>
@@ -2163,6 +2163,209 @@
                     </binary-operation-expression>
                 </expr>
             </where>
+        </select>
+    </create-view>
+
+    <create-view sql-case-id="create_view_hive" view-definition="CREATE VIEW onion_referrers(url COMMENT 'URL of Referring page') COMMENT 'Referrers to The Onion website' AS SELECT DISTINCT referrer_url FROM page_view WHERE page_url='http://www.theonion.com'">
+        <view name="onion_referrers" start-index="12" stop-index="26">
+            <column name="url" comment="URL of Referring page" start-index="29" stop-index="31" />
+        </view>
+        <view-comment value="Referrers to The Onion website" start-index="34" stop-index="70" />
+        <select>
+            <distinct start-index="84" stop-index="92" />
+            <projections start-index="125" stop-index="136" distinct-row="true">
+                <column-projection name="referrer_url" start-index="125" stop-index="136" />
+            </projections>
+            <from>
+                <simple-table name="page_view" start-index="143" stop-index="151" />
+            </from>
+            <where start-index="153" stop-index="192">
+                <expr>
+                    <binary-operation-expression start-index="159" stop-index="192">
+                        <left>
+                            <column name="page_url" start-index="159" stop-index="166" />
+                        </left>
+                        <right>
+                            <literal-expression value="http://www.theonion.com" start-index="168" stop-index="192" />
+                        </right>
+                        <operator>=</operator>
+                    </binary-operation-expression>
+                </expr>
+            </where>
+        </select>
+    </create-view>
+
+    <create-view sql-case-id="create_view_basic" view-definition="CREATE VIEW sales_summary AS SELECT order_id, total FROM sales">
+        <view name="sales_summary" start-index="12" stop-index="24" />
+        <select>
+            <projections start-index="36" stop-index="50">
+                <column-projection name="order_id" start-index="36" stop-index="43" />
+                <column-projection name="total" start-index="46" stop-index="50" />
+            </projections>
+            <from>
+                <simple-table name="sales" start-index="57" stop-index="61" />
+            </from>
+        </select>
+    </create-view>
+
+    <create-view sql-case-id="create_view_with_if_not_exists" view-definition="CREATE VIEW IF NOT EXISTS sales_summary AS SELECT order_id, total FROM sales">
+        <view name="sales_summary" start-index="26" stop-index="38" />
+        <select>
+            <projections start-index="50" stop-index="64">
+                <column-projection name="order_id" start-index="50" stop-index="57" />
+                <column-projection name="total" start-index="60" stop-index="64" />
+            </projections>
+            <from>
+                <simple-table name="sales" start-index="71" stop-index="75" />
+            </from>
+        </select>
+    </create-view>
+
+    <create-view sql-case-id="create_view_with_column_def" view-definition="CREATE VIEW sales_summary (order_id COMMENT 'ID', total COMMENT 'total') AS SELECT order_id, total FROM sales">
+        <view name="sales_summary" start-index="12" stop-index="24">
+            <column name="order_id" comment="ID" start-index="25" stop-index="33" />
+            <column name="total" comment="total" start-index="44" stop-index="49" />
+        </view>
+        <select>
+            <projections start-index="83" stop-index="97">
+                <column-projection name="order_id" start-index="83" stop-index="90" />
+                <column-projection name="total" start-index="93" stop-index="97" />
+            </projections>
+            <from>
+                <simple-table name="sales" start-index="104" stop-index="108" />
+            </from>
+        </select>
+    </create-view>
+
+    <create-view sql-case-id="create_view_with_comment" view-definition="CREATE VIEW sales_summary COMMENT 'view' AS SELECT order_id, total FROM sales">
+        <view name="sales_summary" start-index="12" stop-index="24" />
+        <view-comment value="view" start-index="25" stop-index="33" />
+        <select>
+            <projections start-index="51" stop-index="65">
+                <column-projection name="order_id" start-index="51" stop-index="58" />
+                <column-projection name="total" start-index="61" stop-index="65" />
+            </projections>
+            <from>
+                <simple-table name="sales" start-index="72" stop-index="76" />
+            </from>
+        </select>
+    </create-view>
+
+    <create-view sql-case-id="create_view_with_tblproperties" view-definition="CREATE VIEW sales_summary TBLPROPERTIES ('creator' = 'data_team', 'version' = '1.0') AS SELECT order_id, total FROM sales">
+        <view name="sales_summary" start-index="12" stop-index="24" />
+        <tblproperties start-index="26" stop-index="91">
+            <property key="creator" value="data_team" start-index="40" stop-index="60" />
+            <property key="version" value="1.0" start-index="63" stop-index="83" />
+        </tblproperties>
+        <select>
+            <projections start-index="95" stop-index="109">
+                <column-projection name="order_id" start-index="95" stop-index="102" />
+                <column-projection name="total" start-index="105" stop-index="109" />
+            </projections>
+            <from>
+                <simple-table name="sales" start-index="116" stop-index="120" />
+            </from>
+        </select>
+    </create-view>
+
+    <create-view sql-case-id="create_view_with_order_by" view-definition="CREATE VIEW top_sales AS SELECT order_id, total FROM sales ORDER BY total DESC">
+        <view name="top_sales" start-index="12" stop-index="20" />
+        <select>
+            <projections start-index="32" stop-index="46">
+                <column-projection name="order_id" start-index="32" stop-index="39" />
+                <column-projection name="total" start-index="42" stop-index="46" />
+            </projections>
+            <from>
+                <simple-table name="sales" start-index="53" stop-index="57" />
+            </from>
+            <order-by start-index="65" stop-index="84">
+                <column-item name="total" order-direction="DESC" start-index="68" stop-index="72" />
+            </order-by>
+        </select>
+    </create-view>
+
+    <create-view sql-case-id="create_view_with_limit" view-definition="CREATE VIEW recent_orders AS SELECT order_id, order_date FROM sales LIMIT 100">
+        <view name="recent_orders" start-index="12" stop-index="24" />
+        <select>
+            <projections start-index="36" stop-index="55">
+                <column-projection name="order_id" start-index="36" stop-index="43" />
+                <column-projection name="order_date" start-index="46" stop-index="55" />
+            </projections>
+            <from>
+                <simple-table name="sales" start-index="62" stop-index="66" />
+            </from>
+            <limit start-index="68" stop-index="76">
+                <row-count value="100" start-index="74" stop-index="76" />
+            </limit>
+        </select>
+    </create-view>
+
+    <create-view sql-case-id="create_view_with_db_name" view-definition="CREATE VIEW db1.sales_summary AS SELECT order_id, total FROM db2.sales">
+        <view name="sales_summary" start-index="12" stop-index="28">
+            <owner name="db1" start-index="12" stop-index="14" />
+        </view>
+        <select>
+            <projections start-index="40" stop-index="54">
+                <column-projection name="order_id" start-index="40" stop-index="47" />
+                <column-projection name="total" start-index="50" stop-index="54" />
+            </projections>
+            <from>
+                <simple-table name="sales" start-index="61" stop-index="69">
+                    <owner name="db2" start-index="61" stop-index="63" />
+                </simple-table>
+            </from>
+        </select>
+    </create-view>
+
+    <create-view sql-case-id="create_view_with_cte" view-definition="CREATE VIEW user_orders AS WITH user_cte AS (SELECT id, name FROM users) SELECT u.name, o.order_id FROM user_cte u JOIN orders o ON u.id = o.user_id">
+        <view name="user_orders" start-index="12" stop-index="22" />
+        <cte start-index="38" stop-index="76">
+            <cte-item name="user_cte" start-index="43" stop-index="51">
+                <select>
+                    <projections start-index="63" stop-index="70">
+                        <column-projection name="id" start-index="63" stop-index="65" />
+                        <column-projection name="name" start-index="68" stop-index="70" />
+                    </projections>
+                    <from>
+                        <simple-table name="users" start-index="77" stop-index="82" />
+                    </from>
+                </select>
+            </cte-item>
+        </cte>
+        <select>
+            <projections start-index="80" stop-index="97">
+                <column-projection name="name" start-index="80" stop-index="85">
+                    <owner name="u" start-index="80" stop-index="80" />
+                </column-projection>
+                <column-projection name="order_id" start-index="88" stop-index="97">
+                    <owner name="o" start-index="88" stop-index="88" />
+                </column-projection>
+            </projections>
+            <from>
+                <join-table join-type="INNER">
+                    <left>
+                        <simple-table name="user_cte" alias="u" start-index="104" stop-index="113" />
+                    </left>
+                    <right>
+                        <simple-table name="orders" alias="o" start-index="120" stop-index="127" />
+                    </right>
+                    <on-condition>
+                        <binary-operation-expression start-index="132" stop-index="147">
+                            <left>
+                                <column name="id" start-index="132" stop-index="135">
+                                    <owner name="u" start-index="132" stop-index="132" />
+                                </column>
+                            </left>
+                            <operator>=</operator>
+                            <right>
+                                <column name="user_id" start-index="139" stop-index="147">
+                                    <owner name="o" start-index="139" stop-index="139" />
+                                </column>
+                            </right>
+                        </binary-operation-expression>
+                    </on-condition>
+                </join-table>
+            </from>
         </select>
     </create-view>
 </sql-parser-test-cases>

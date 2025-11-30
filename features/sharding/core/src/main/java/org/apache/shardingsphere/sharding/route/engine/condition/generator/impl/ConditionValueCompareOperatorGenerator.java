@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.sharding.route.engine.condition.generator.impl;
 
 import com.google.common.collect.Range;
-import org.apache.shardingsphere.sharding.route.engine.condition.Column;
+import org.apache.shardingsphere.infra.metadata.database.schema.HashColumn;
 import org.apache.shardingsphere.sharding.route.engine.condition.ExpressionConditionUtils;
 import org.apache.shardingsphere.sharding.route.engine.condition.generator.ConditionValue;
 import org.apache.shardingsphere.sharding.route.engine.condition.generator.ConditionValueGenerator;
@@ -58,7 +58,8 @@ public final class ConditionValueCompareOperatorGenerator implements ConditionVa
     private static final Collection<String> OPERATORS = new HashSet<>(Arrays.asList(EQUAL, GREATER_THAN, LESS_THAN, AT_LEAST, AT_MOST, IS));
     
     @Override
-    public Optional<ShardingConditionValue> generate(final BinaryOperationExpression predicate, final Column column, final List<Object> params, final TimestampServiceRule timestampServiceRule) {
+    public Optional<ShardingConditionValue> generate(final BinaryOperationExpression predicate, final HashColumn column, final List<Object> params,
+                                                     final TimestampServiceRule timestampServiceRule) {
         String operator = predicate.getOperator().toUpperCase();
         if (!isSupportedOperator(operator)) {
             return Optional.empty();
@@ -78,7 +79,7 @@ public final class ConditionValueCompareOperatorGenerator implements ConditionVa
         return Optional.empty();
     }
     
-    private Optional<ShardingConditionValue> generate(final Comparable<?> comparable, final Column column, final String operator, final int parameterMarkerIndex) {
+    private Optional<ShardingConditionValue> generate(final Comparable<?> comparable, final HashColumn column, final String operator, final int parameterMarkerIndex) {
         String columnName = column.getName();
         String tableName = column.getTableName();
         List<Integer> parameterMarkerIndexes = parameterMarkerIndex > -1 ? Collections.singletonList(parameterMarkerIndex) : Collections.emptyList();

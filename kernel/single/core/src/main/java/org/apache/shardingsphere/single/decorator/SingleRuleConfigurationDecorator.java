@@ -17,12 +17,12 @@
 
 package org.apache.shardingsphere.single.decorator;
 
+import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.config.rule.decorator.RuleConfigurationDecorator;
 import org.apache.shardingsphere.infra.database.DatabaseTypeEngine;
-import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
-import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.datanode.DataNode;
-import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
+import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.metadata.database.resource.PhysicalDataSourceAggregator;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.single.config.SingleRuleConfiguration;
@@ -67,7 +67,7 @@ public final class SingleRuleConfigurationDecorator implements RuleConfiguration
         DatabaseType databaseType = dataSources.isEmpty() ? DatabaseTypeEngine.getDefaultStorageType() : DatabaseTypeEngine.getStorageType(dataSources.values().iterator().next());
         Collection<String> excludedTables = SingleTableLoadUtils.getExcludedTables(builtRules);
         Map<String, Collection<DataNode>> actualDataNodes = SingleTableDataNodeLoader.load(databaseName, aggregatedDataSources, excludedTables);
-        boolean isSchemaSupportedDatabaseType = new DatabaseTypeRegistry(databaseType).getDialectDatabaseMetaData().getDefaultSchema().isPresent();
+        boolean isSchemaSupportedDatabaseType = new DatabaseTypeRegistry(databaseType).getDialectDatabaseMetaData().getSchemaOption().getDefaultSchema().isPresent();
         if (splitTables.contains(SingleTableConstants.ALL_TABLES) || splitTables.contains(SingleTableConstants.ALL_SCHEMA_TABLES)) {
             return loadAllTables(isSchemaSupportedDatabaseType, actualDataNodes);
         }

@@ -17,10 +17,10 @@
 
 package org.apache.shardingsphere.mode.metadata.factory.init.type;
 
-import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.config.database.DatabaseConfiguration;
 import org.apache.shardingsphere.infra.config.database.impl.DataSourceGeneratedDatabaseConfiguration;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
+import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.datasource.pool.config.DataSourceConfiguration;
 import org.apache.shardingsphere.infra.datasource.pool.destroyer.DataSourcePoolDestroyer;
@@ -33,22 +33,34 @@ import org.apache.shardingsphere.mode.manager.builder.ContextManagerBuilderParam
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.mode.metadata.factory.init.MetaDataContextsInitFactory;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistFacade;
+import org.apache.shardingsphere.mode.metadata.persist.config.global.PropertiesPersistService;
+import org.apache.shardingsphere.mode.metadata.persist.version.VersionPersistService;
+import org.apache.shardingsphere.mode.spi.repository.PersistRepository;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
  * Register center meta data contexts init factory.
  */
-@RequiredArgsConstructor
 public final class RegisterCenterMetaDataContextsInitFactory extends MetaDataContextsInitFactory {
     
     private final MetaDataPersistFacade persistFacade;
     
     private final ComputeNodeInstanceContext instanceContext;
+    
+    private final boolean persistSchemasEnabled;
+    
+    public RegisterCenterMetaDataContextsInitFactory(final PersistRepository repository, final ComputeNodeInstanceContext instanceContext) {
+        persistSchemasEnabled = new ConfigurationProperties(new PropertiesPersistService(repository, new VersionPersistService(repository)).load())
+                .getValue(ConfigurationPropertyKey.PERSIST_SCHEMAS_TO_REPOSITORY_ENABLED);
+        persistFacade = new MetaDataPersistFacade(repository, persistSchemasEnabled);
+        this.instanceContext = instanceContext;
+    }
     
     @Override
     public MetaDataContexts create(final ContextManagerBuilderParameter param) throws SQLException {
@@ -57,7 +69,21 @@ public final class RegisterCenterMetaDataContextsInitFactory extends MetaDataCon
         // TODO load global data sources from persist service
         Map<String, DataSource> globalDataSources = param.getGlobalDataSources();
         ConfigurationProperties props = new ConfigurationProperties(persistFacade.getPropsService().load());
-        Collection<ShardingSphereDatabase> databases = ShardingSphereDatabasesFactory.create(effectiveDatabaseConfigs, loadSchemas(effectiveDatabaseConfigs.keySet()), props, instanceContext);
+        Map<String, Collection<ShardingSphereSchema>> schemas = loadSchemas(effectiveDatabaseConfigs.keySet());
+        Collection<ShardingSphereDatabase> databases;
+        if (persistSchemasEnabled) {
+            // TODO merge schemas with local
+            databases = ShardingSphereDatabasesFactory.create(effectiveDatabaseConfigs, schemas, props, instanceContext);
+        } else {
+            databases = ShardingSphereDatabasesFactory.create(effectiveDatabaseConfigs, props, instanceContext);
+            databases.stream().filter(database -> schemas.containsKey(database.getName()))
+                    .forEach(database -> schemas.get(database.getName()).stream()
+                            .filter(schema -> database.containsSchema(schema.getName()))
+                            .forEach(schema -> {
+                                ShardingSphereSchema targetSchema = database.getSchema(schema.getName());
+                                schema.getAllViews().forEach(targetSchema::putView);
+                            }));
+        }
         return create(globalRuleConfigs, globalDataSources, databases, props, persistFacade);
     }
     
@@ -85,6 +111,13 @@ public final class RegisterCenterMetaDataContextsInitFactory extends MetaDataCon
     }
     
     private Map<String, Collection<ShardingSphereSchema>> loadSchemas(final Collection<String> databaseNames) {
-        return databaseNames.stream().collect(Collectors.toMap(each -> each, each -> persistFacade.getDatabaseMetaDataFacade().getSchema().load(each)));
+        Map<String, Collection<ShardingSphereSchema>> result = new HashMap<>(databaseNames.size());
+        for (String dbName : databaseNames) {
+            Collection<ShardingSphereSchema> schemas = persistFacade.getDatabaseMetaDataFacade().getSchema().load(dbName);
+            if (null != schemas) {
+                result.put(dbName, schemas);
+            }
+        }
+        return result;
     }
 }

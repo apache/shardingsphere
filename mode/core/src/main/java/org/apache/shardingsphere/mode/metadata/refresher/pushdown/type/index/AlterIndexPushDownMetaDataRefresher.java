@@ -17,9 +17,9 @@
 
 package org.apache.shardingsphere.mode.metadata.refresher.pushdown.type.index;
 
+import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
-import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
-import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
+import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.exception.kernel.metadata.IndexNotFoundException;
 import org.apache.shardingsphere.infra.exception.kernel.metadata.SchemaNotFoundException;
 import org.apache.shardingsphere.infra.exception.kernel.metadata.TableNotFoundException;
@@ -30,9 +30,8 @@ import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSp
 import org.apache.shardingsphere.mode.metadata.refresher.pushdown.PushDownMetaDataRefresher;
 import org.apache.shardingsphere.mode.persist.service.MetaDataManagerPersistService;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.index.IndexSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.AlterIndexStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.index.AlterIndexStatement;
 
-import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.Optional;
@@ -43,7 +42,7 @@ import java.util.Optional;
 public final class AlterIndexPushDownMetaDataRefresher implements PushDownMetaDataRefresher<AlterIndexStatement> {
     
     @Override
-    public void refresh(final MetaDataManagerPersistService metaDataManagerPersistService, final ShardingSphereDatabase database, final Collection<String> logicDataSourceNames,
+    public void refresh(final MetaDataManagerPersistService metaDataManagerPersistService, final ShardingSphereDatabase database, final String logicDataSourceName,
                         final String schemaName, final DatabaseType databaseType, final AlterIndexStatement sqlStatement, final ConfigurationProperties props) {
         Optional<IndexSegment> renameIndex = sqlStatement.getRenameIndex();
         if (!sqlStatement.getIndex().isPresent() || !renameIndex.isPresent()) {
@@ -61,7 +60,7 @@ public final class AlterIndexPushDownMetaDataRefresher implements PushDownMetaDa
         newTable.removeIndex(indexName);
         String renameIndexName = renameIndex.get().getIndexName().getIdentifier().getValue();
         newTable.putIndex(new ShardingSphereIndex(renameIndexName, new LinkedList<>(), false));
-        metaDataManagerPersistService.alterSchema(database, actualSchemaName, Collections.singleton(newTable), Collections.emptyList(), Collections.emptyList(), Collections.emptyList());
+        metaDataManagerPersistService.alterTables(database, actualSchemaName, Collections.singleton(newTable));
     }
     
     private Optional<String> findLogicTableName(final ShardingSphereSchema schema, final String indexName) {

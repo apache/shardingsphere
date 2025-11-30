@@ -67,7 +67,7 @@ class SPIMatchedCheckIT {
     }
     
     private Map<Path, Collection<String>> listAndParseSPIs(final URI servicesURI) throws IOException {
-        if (servicesURI.getScheme().equals("jar")) {
+        if ("jar".equals(servicesURI.getScheme())) {
             try (FileSystem fileSystem = FileSystems.newFileSystem(servicesURI, Collections.emptyMap())) {
                 return parseSPIImplNames(listSPIDefinePaths(fileSystem.getPath(SERVICES_PATH)));
             }

@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Licensed to the Apache Software Foundation (ASF) under one or more
+  ~ contributor license agreements.  See the NOTICE file distributed with
+  ~ this work for additional information regarding copyright ownership.
+  ~ The ASF licenses this file to You under the Apache License, Version 2.0
+  ~ (the "License"); you may not use this file except in compliance with
+  ~ the License.  You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<sql-parser-test-cases>
+    <describe sql-case-id="desc_table">
+        <simple-table name="tableName" start-index="5" stop-index="13" />
+    </describe>
+    
+    <describe sql-case-id="desc_table_with_col_name">
+        <simple-table name="tableName" start-index="5" stop-index="13" />
+        <column-wild name="colName" start-index="15" stop-index="21" />
+    </describe>
+    
+    <describe sql-case-id="desc_table_with_placeholder">
+        <simple-table name="tableName" start-index="5" stop-index="13" />
+        <column-wild name="___" start-index="15" stop-index="17" />
+    </describe>
+    
+    <describe sql-case-id="desc_table_with_wild">
+        <simple-table name="tableName" start-index="5" stop-index="13" />
+        <column-wild name="u%" start-delimiter="`" end-delimiter="`" start-index="15" stop-index="18" />
+    </describe>
+    
+    <describe sql-case-id="describe_table">
+        <simple-table name="tableName" start-index="9" stop-index="17" />
+    </describe>
+    
+    <describe sql-case-id="describe_table_with_col_name">
+        <simple-table name="tableName" start-index="9" stop-index="17" />
+        <column-wild name="colName" start-index="19" stop-index="25" />
+    </describe>
+    
+    <describe sql-case-id="describe_table_with_placeholder">
+        <simple-table name="tableName" start-index="5" stop-index="13" />
+        <column-wild name="___" start-index="15" stop-index="17" />
+    </describe>
+    
+    <describe sql-case-id="describe_table_with_wild">
+        <simple-table name="tableName" start-index="5" stop-index="13" />
+        <column-wild name="u%" start-delimiter="`" end-delimiter="`" start-index="15" stop-index="18" />
+    </describe>
+
+    <describe sql-case-id="describe_database_basic" />
+    <describe sql-case-id="describe_database_extended" />
+    <describe sql-case-id="describe_schema_basic" />
+    <describe sql-case-id="describe_schema_extended" />
+    <describe sql-case-id="describe_connector_basic" />
+    <describe sql-case-id="describe_connector_extended" />
+
+    <describe sql-case-id="describe_basic_table">
+        <simple-table name="user_table" start-index="9" stop-index="18" />
+    </describe>
+
+    <describe sql-case-id="describe_db_table">
+        <simple-table name="user_table" start-index="9" stop-index="27" >
+            <owner start-index="9" stop-index="16" name="sales_db" />
+        </simple-table>
+    </describe>
+
+    <describe sql-case-id="describe_extended_table">
+        <simple-table name="user_table" start-index="18" stop-index="27" />
+    </describe>
+
+    <describe sql-case-id="describe_formatted_table">
+        <simple-table name="user_table" start-index="19" stop-index="28" />
+    </describe>
+
+    <describe sql-case-id="describe_table_partition">
+        <simple-table name="user_table" start-index="9" stop-index="18" />
+    </describe>
+
+    <describe sql-case-id="describe_struct_field">
+        <simple-table name="profile_table" start-index="9" stop-index="21" />
+        <column-wild name="user_info" start-index="23" stop-index="31" />
+    </describe>
+
+    <describe sql-case-id="describe_array_element">
+        <simple-table name="order_table" start-index="9" stop-index="19" />
+        <column-wild name="user_info" start-index="21" stop-index="29" />
+    </describe>
+
+    <describe sql-case-id="describe_map_key">
+        <simple-table name="product_table" start-index="9" stop-index="21" />
+        <column-wild name="attributes" start-index="23" stop-index="32" />
+    </describe>
+
+    <describe sql-case-id="describe_map_value">
+        <simple-table name="event_log" start-index="9" stop-index="17" />
+        <column-wild name="params" start-index="19" stop-index="24" />
+    </describe>
+
+    <describe sql-case-id="describe_nested_struct_in_array">
+        <simple-table name="posts" start-index="9" stop-index="13" />
+        <column-wild name="comments" start-index="15" stop-index="22" />
+    </describe>
+
+    <describe sql-case-id="describe_with_partition_and_complex">
+        <simple-table name="actions" start-index="9" stop-index="24" >
+            <owner start-index="9" stop-index="16" name="sales_db" />
+        </simple-table>
+        <column-wild name="products" start-index="54" stop-index="61" />
+    </describe>
+</sql-parser-test-cases>

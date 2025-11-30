@@ -17,11 +17,11 @@
 
 package org.apache.shardingsphere.mask.algorithm.hash;
 
-import org.apache.shardingsphere.mask.algorithm.parameterized.execute.MaskAlgorithmExecuteArgumentsProvider;
+import org.apache.shardingsphere.infra.util.props.PropertiesBuilder;
+import org.apache.shardingsphere.infra.util.props.PropertiesBuilder.Property;
 import org.apache.shardingsphere.mask.algorithm.parameterized.MaskAlgorithmAssertions;
+import org.apache.shardingsphere.mask.algorithm.parameterized.execute.MaskAlgorithmExecuteArgumentsProvider;
 import org.apache.shardingsphere.mask.algorithm.parameterized.execute.MaskAlgorithmExecuteCaseAssert;
-import org.apache.shardingsphere.test.util.PropertiesBuilder;
-import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ArgumentsSource;
 
@@ -44,7 +44,7 @@ class MD5MaskAlgorithmTest {
         MaskAlgorithmAssertions.assertMask(type, props, plainValue, maskedValue);
     }
     
-    private static class AlgorithmMaskExecuteArgumentsProvider extends MaskAlgorithmExecuteArgumentsProvider {
+    private static final class AlgorithmMaskExecuteArgumentsProvider extends MaskAlgorithmExecuteArgumentsProvider {
         
         AlgorithmMaskExecuteArgumentsProvider() {
             super("MD5", new Properties());
@@ -58,7 +58,7 @@ class MD5MaskAlgorithmTest {
         }
     }
     
-    private static class AlgorithmMaskExecuteWithSaltArgumentsProvider extends MaskAlgorithmExecuteArgumentsProvider {
+    private static final class AlgorithmMaskExecuteWithSaltArgumentsProvider extends MaskAlgorithmExecuteArgumentsProvider {
         
         AlgorithmMaskExecuteWithSaltArgumentsProvider() {
             super("MD5", PropertiesBuilder.build(new Property("salt", "202cb962ac5907")));

@@ -25,8 +25,8 @@ import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.global.GlobalDataChangedEventHandler;
 import org.apache.shardingsphere.mode.node.path.engine.generator.NodePathGenerator;
-import org.apache.shardingsphere.test.mock.AutoMockExtension;
-import org.apache.shardingsphere.test.mock.StaticMockSettings;
+import org.apache.shardingsphere.test.infra.framework.extension.mock.AutoMockExtension;
+import org.apache.shardingsphere.test.infra.framework.extension.mock.StaticMockSettings;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -38,7 +38,7 @@ import org.mockito.quality.Strictness;
 import java.util.Collections;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -56,19 +56,19 @@ class ShowProcessListHandlerTest {
     void setUp() {
         when(contextManager.getComputeNodeInstanceContext().getInstance().getMetaData().getId()).thenReturn("foo_instance_id");
         handler = ShardingSphereServiceLoader.getServiceInstances(GlobalDataChangedEventHandler.class).stream()
-                .filter(each -> NodePathGenerator.toPath(each.getSubscribedNodePath()).equals("/nodes/compute_nodes/show_process_list_trigger")).findFirst().orElse(null);
+                .filter(each -> "/nodes/compute_nodes/show_process_list_trigger".equals(NodePathGenerator.toPath(each.getSubscribedNodePath()))).findFirst().orElse(null);
     }
     
     @Test
     void assertHandleWithInvalidShowProcessListTriggerEventKey() {
         handler.handle(contextManager, new DataChangedEvent("/nodes/compute_nodes/show_process_list_trigger/foo_instance_id", "", Type.DELETED));
-        verify(ProcessOperationLockRegistry.getInstance(), times(0)).notify(any());
+        verify(ProcessOperationLockRegistry.getInstance(), never()).notify(any());
     }
     
     @Test
     void assertHandleReportLocalProcessesWithNotCurrentInstance() {
         handler.handle(contextManager, new DataChangedEvent("/nodes/compute_nodes/show_process_list_trigger/bar_instance_id:foo_task_id", "", Type.ADDED));
-        verify(contextManager.getPersistServiceFacade().getRepository(), times(0)).delete(any());
+        verify(contextManager.getPersistServiceFacade().getRepository(), never()).delete(any());
     }
     
     @Test

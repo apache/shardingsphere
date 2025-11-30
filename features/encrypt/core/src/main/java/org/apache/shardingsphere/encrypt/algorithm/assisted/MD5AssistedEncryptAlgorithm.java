@@ -22,8 +22,10 @@ import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
 import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithmMetaData;
 import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.algorithm.core.context.AlgorithmSQLContext;
-import org.apache.shardingsphere.infra.algorithm.messagedigest.core.MessageDigestAlgorithm;
+import org.apache.shardingsphere.infra.algorithm.messagedigest.spi.MessageDigestAlgorithm;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
+import org.apache.shardingsphere.infra.util.props.PropertiesBuilder;
+import org.apache.shardingsphere.infra.util.props.PropertiesBuilder.Property;
 
 import java.util.Properties;
 
@@ -59,9 +61,7 @@ public final class MD5AssistedEncryptAlgorithm implements EncryptAlgorithm {
     
     @Override
     public AlgorithmConfiguration toConfiguration() {
-        Properties properties = new Properties();
-        properties.setProperty(SALT_KEY, props.getProperty(SALT_KEY, ""));
-        return new AlgorithmConfiguration(getType(), properties);
+        return new AlgorithmConfiguration(getType(), PropertiesBuilder.build(new Property(SALT_KEY, props.getProperty(SALT_KEY, ""))));
     }
     
     @Override

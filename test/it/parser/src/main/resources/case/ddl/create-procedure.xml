@@ -33,35 +33,114 @@
     <create-procedure sql-case-id="create_procedure_with_update_statement_oracle">
         <procedure-name name="update_order" />
         <sql-statements>
-            <sql-statement start-index="95" stop-index="154" statement-class-simple-name="OracleUpdateStatement" />
+            <sql-statement start-index="95" stop-index="154" statement-class-simple-name="UpdateStatement" />
         </sql-statements>
     </create-procedure>
     <create-procedure sql-case-id="create_procedure_with_prepare_commit" />
     <create-procedure sql-case-id="create_procedure_with_cursor_definition">
         <procedure-name name="my_proc" />
         <sql-statements>
-            <sql-statement start-index="69" stop-index="94" statement-class-simple-name="OracleSelectStatement" />
-            <sql-statement start-index="143" stop-index="175" statement-class-simple-name="OracleInsertStatement" />
+            <sql-statement start-index="69" stop-index="94" statement-class-simple-name="SelectStatement" />
+            <sql-statement start-index="143" stop-index="175" statement-class-simple-name="InsertStatement" />
         </sql-statements>
     </create-procedure>
     <create-procedure sql-case-id="create_procedure_with_collection_type_definition">
         <procedure-name name="my_proc" />
         <sql-statements>
-            <sql-statement start-index="100" stop-index="132" statement-class-simple-name="OracleInsertStatement" />
+            <sql-statement start-index="100" stop-index="132" statement-class-simple-name="InsertStatement" />
         </sql-statements>
     </create-procedure>
     <create-procedure sql-case-id="create_plsql_block" />
     <create-procedure sql-case-id="create_procedure_with_insert_into_values">
         <procedure-name name="T522_PROC" />
         <sql-statements>
-            <sql-statement start-index="41" stop-index="85" statement-class-simple-name="FirebirdInsertStatement" />
+            <sql-statement start-index="41" stop-index="85" statement-class-simple-name="InsertStatement" />
         </sql-statements>
     </create-procedure>
     <create-procedure sql-case-id="create_procedure_with_declare_and_cursor_for_in_select_and_open">
         <procedure-name name="F865_PROC" />
         <sql-statements>
-            <sql-statement start-index="53" stop-index="146" statement-class-simple-name="FirebirdDeclareCursorStatement" />
-            <sql-statement start-index="152" stop-index="169" statement-class-simple-name="FirebirdOpenCursorStatement" />
+            <sql-statement start-index="53" stop-index="146" statement-class-simple-name="DeclareCursorStatement" />
+            <sql-statement start-index="152" stop-index="169" statement-class-simple-name="OpenCursorStatement" />
+        </sql-statements>
+    </create-procedure>
+    <create-procedure sql-case-id="create_procedure_with_handler_and_table_creation">
+        <procedure-name name="peter1" />
+        <sql-statements>
+            <sql-statement start-index="65" stop-index="158" statement-class-simple-name="HandlerStatement" />
+            <sql-statement start-index="160" stop-index="202" statement-class-simple-name="CreateTableStatement" />
+            <sql-statement start-index="204" stop-index="218" statement-class-simple-name="CallStatement" />
+        </sql-statements>
+    </create-procedure>
+    <create-procedure sql-case-id="create_procedure_with_decimal_variable">
+        <procedure-name name="bug15231_4" />
+        <sql-statements>
+            <sql-statement start-index="60" stop-index="73" statement-class-simple-name="SetStatement" />
+            <sql-statement start-index="75" stop-index="88" statement-class-simple-name="ShowWarningsStatement" />
+        </sql-statements>
+    </create-procedure>
+    <create-procedure sql-case-id="create_procedure_with_transaction_read_only_and_isolation">
+        <procedure-name name="p1" />
+        <sql-statements>
+            <sql-statement start-index="22" stop-index="84" statement-class-simple-name="SetStatement" />
+        </sql-statements>
+    </create-procedure>
+    <create-procedure sql-case-id="create_procedure_with_transaction_read_only" >
+        <sql-statements>
+            <sql-statement start-index="22" stop-index="54" statement-class-simple-name="SetStatement" />
+        </sql-statements>
+    </create-procedure>
+    <create-procedure sql-case-id="create_procedure_if_not_exists" />
+    <create-procedure sql-case-id="create_procedure_with_transaction">
+        <procedure-name name="proc1" />
+        <sql-statements>
+            <sql-statement start-index="30" stop-index="50" statement-class-simple-name="StartTransactionStatement" />
+            <sql-statement start-index="52" stop-index="83" statement-class-simple-name="CreateTableStatement" />
+            <sql-statement start-index="85" stop-index="93" statement-class-simple-name="RollbackStatement" />
+            <sql-statement start-index="95" stop-index="115" statement-class-simple-name="StartTransactionStatement" />
+            <sql-statement start-index="117" stop-index="148" statement-class-simple-name="CreateTableStatement" />
+            <sql-statement start-index="150" stop-index="158" statement-class-simple-name="CommitStatement" />
+        </sql-statements>
+    </create-procedure>
+    <create-procedure sql-case-id="create_procedure_with_charset_parameters_and_insert">
+        <procedure-name name="bug18293" />
+        <sql-statements>
+            <sql-statement start-index="125" stop-index="172" statement-class-simple-name="InsertStatement" />
+        </sql-statements>
+    </create-procedure>
+    <create-procedure sql-case-id="create_procedure_with_create_table_and_show_create_table_schema">
+        <procedure-name name="p2" />
+        <sql-statements>
+            <sql-statement start-index="47" stop-index="90" statement-class-simple-name="CreateTableStatement" />
+            <sql-statement start-index="92" stop-index="116" statement-class-simple-name="ShowCreateTableStatement" />
+        </sql-statements>
+    </create-procedure>
+    <create-procedure sql-case-id="create_procedure_with_show_create_table_in_default_schema">
+        <procedure-name name="p1" />
+        <sql-statements>
+            <sql-statement start-index="33" stop-index="76" statement-class-simple-name="CreateTableStatement" />
+            <sql-statement start-index="78" stop-index="102" statement-class-simple-name="ShowCreateTableStatement" />
+        </sql-statements>
+    </create-procedure>
+    <create-procedure sql-case-id="create_procedure_with_custom_collation_and_insert">
+        <procedure-name name="p" />
+        <sql-statements>
+            <sql-statement start-index="28" stop-index="87" statement-class-simple-name="DeclareStatement" />
+            <sql-statement start-index="90" stop-index="125" statement-class-simple-name="MySQLSetStatement" />
+            <sql-statement start-index="128" stop-index="181" statement-class-simple-name="MySQLCreateTableStatement" />
+            <sql-statement start-index="184" stop-index="208" statement-class-simple-name="MySQLInsertStatement" />
+        </sql-statements>
+    </create-procedure>
+    <create-procedure sql-case-id="create_procedure_with_alter_event">
+        <procedure-name name="p1" />
+        <sql-statements>
+            <sql-statement start-index="28" stop-index="54" statement-class-simple-name="MySQLAlterEventStatement" />
+        </sql-statements>
+    </create-procedure>
+    <create-procedure sql-case-id="create_procedure_with_drop_event">
+        <procedure-name name="p1" />
+        <sql-statements>
+            <sql-statement start-index="28" stop-index="40" statement-class-simple-name="MySQLDropEventStatement" />
         </sql-statements>
     </create-procedure>
 </sql-parser-test-cases>

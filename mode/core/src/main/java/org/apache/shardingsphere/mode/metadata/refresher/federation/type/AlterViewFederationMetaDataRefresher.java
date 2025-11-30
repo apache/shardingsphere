@@ -17,16 +17,16 @@
 
 package org.apache.shardingsphere.mode.metadata.refresher.federation.type;
 
+import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereView;
 import org.apache.shardingsphere.mode.metadata.refresher.federation.FederationMetaDataRefresher;
 import org.apache.shardingsphere.mode.metadata.refresher.util.TableRefreshUtils;
 import org.apache.shardingsphere.mode.persist.service.MetaDataManagerPersistService;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.AlterViewStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.view.AlterViewStatement;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.LinkedList;
 import java.util.Optional;
 
@@ -36,8 +36,9 @@ import java.util.Optional;
 public final class AlterViewFederationMetaDataRefresher implements FederationMetaDataRefresher<AlterViewStatement> {
     
     @Override
-    public void refresh(final MetaDataManagerPersistService metaDataManagerPersistService, final ShardingSphereDatabase database, final String schemaName, final AlterViewStatement sqlStatement) {
-        String viewName = TableRefreshUtils.getTableName(sqlStatement.getView().getTableName().getIdentifier(), sqlStatement.getDatabaseType());
+    public void refresh(final MetaDataManagerPersistService metaDataManagerPersistService,
+                        final DatabaseType databaseType, final ShardingSphereDatabase database, final String schemaName, final AlterViewStatement sqlStatement) {
+        String viewName = TableRefreshUtils.getTableName(sqlStatement.getView().getTableName().getIdentifier(), databaseType);
         Optional<SimpleTableSegment> renameView = sqlStatement.getRenameView();
         Collection<ShardingSphereView> alteredViews = new LinkedList<>();
         Collection<String> droppedViews = new LinkedList<>();
@@ -48,7 +49,8 @@ public final class AlterViewFederationMetaDataRefresher implements FederationMet
             droppedViews.add(viewName);
         }
         sqlStatement.getViewDefinition().ifPresent(optional -> alteredViews.add(new ShardingSphereView(viewName, optional)));
-        metaDataManagerPersistService.alterSchema(database, schemaName, Collections.emptyList(), alteredViews, Collections.emptyList(), droppedViews);
+        metaDataManagerPersistService.alterViews(database, schemaName, alteredViews);
+        metaDataManagerPersistService.dropViews(database, schemaName, droppedViews);
     }
     
     @Override

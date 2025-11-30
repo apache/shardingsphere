@@ -45,7 +45,7 @@ public final class JobItemIncrementalTasksProgress {
     /**
      * Get incremental latest active time milliseconds.
      *
-     * @return latest active time, <code>0</code> means there is no activity
+     * @return latest active time, ${@code 0} means there is no activity
      */
     public long getIncrementalLatestActiveTimeMillis() {
         return null == incrementalTaskProgress ? 0L : incrementalTaskProgress.getIncrementalTaskDelay().getLatestActiveTimeMillis();

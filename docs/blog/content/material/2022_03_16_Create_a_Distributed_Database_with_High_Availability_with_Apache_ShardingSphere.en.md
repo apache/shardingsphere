@@ -147,9 +147,9 @@ Query OK, 1 row affected (0.10 sec)
 View the ShardingSphere-Proxy log and see if the route node is the primary database `ds_0`.
 
 ```
-[INFO ] 2022-02-28 15:28:21.495 [ShardingSphere-Command-2] ShardingSphere-SQL - Logic SQL: INSERT INTO t_user(id, mobile, idcard) value (10000, '13718687777', '141121xxxxx')
-[INFO ] 2022-02-28 15:28:21.495 [ShardingSphere-Command-2] ShardingSphere-SQL - SQLStatement: MySQLInsertStatement(setAssignment=Optional.empty, onDuplicateKeyColumns=Optional.empty)
-[INFO ] 2022-02-28 15:28:21.495 [ShardingSphere-Command-2] ShardingSphere-SQL - Actual SQL: ds_0 ::: INSERT INTO t_user(id, mobile, idcard) value (10000, '13718687777', '141121xxxxx')
+[INFO ] 2022-02-28 15:28:21.495 [ShardingSphere-Command-2] org.apache.shardingsphere.sql - Logic SQL: INSERT INTO t_user(id, mobile, idcard) value (10000, '13718687777', '141121xxxxx')
+[INFO ] 2022-02-28 15:28:21.495 [ShardingSphere-Command-2] org.apache.shardingsphere.sql - SQLStatement: MySQLInsertStatement(setAssignment=Optional.empty, onDuplicateKeyColumns=Optional.empty)
+[INFO ] 2022-02-28 15:28:21.495 [ShardingSphere-Command-2] org.apache.shardingsphere.sql - Actual SQL: ds_0 ::: INSERT INTO t_user(id, mobile, idcard) value (10000, '13718687777', '141121xxxxx')
 ```
 
 Let’s test `SELECT` (repeat it twice):
@@ -160,12 +160,12 @@ mysql> SELECT id, mobile, idcard FROM t_user WHERE id = 10000;
 View the ShardingSphere-Proxy log and see if the route node is `ds_1` or `ds_2`.
 
 ```
-[INFO ] 2022-02-28 15:34:07.912 [ShardingSphere-Command-4] ShardingSphere-SQL - Logic SQL: SELECT id, mobile, idcard FROM t_user WHERE id = 10000
-[INFO ] 2022-02-28 15:34:07.913 [ShardingSphere-Command-4] ShardingSphere-SQL - SQLStatement: MySQLSelectStatement(table=Optional.empty, limit=Optional.empty, lock=Optional.empty, window=Optional.empty)
-[INFO ] 2022-02-28 15:34:07.913 [ShardingSphere-Command-4] ShardingSphere-SQL - Actual SQL: ds_1 ::: SELECT id, mobile, idcard FROM t_user WHERE id = 10000
-[INFO ] 2022-02-28 15:34:21.501 [ShardingSphere-Command-4] ShardingSphere-SQL - Logic SQL: SELECT id, mobile, idcard FROM t_user WHERE id = 10000
-[INFO ] 2022-02-28 15:34:21.502 [ShardingSphere-Command-4] ShardingSphere-SQL - SQLStatement: MySQLSelectStatement(table=Optional.empty, limit=Optional.empty, lock=Optional.empty, window=Optional.empty)
-[INFO ] 2022-02-28 15:34:21.502 [ShardingSphere-Command-4] ShardingSphere-SQL - Actual SQL: ds_2 ::: SELECT id, mobile, idcard FROM t_user WHERE id = 10000
+[INFO ] 2022-02-28 15:34:07.912 [ShardingSphere-Command-4] org.apache.shardingsphere.sql - Logic SQL: SELECT id, mobile, idcard FROM t_user WHERE id = 10000
+[INFO ] 2022-02-28 15:34:07.913 [ShardingSphere-Command-4] org.apache.shardingsphere.sql - SQLStatement: MySQLSelectStatement(table=Optional.empty, limit=Optional.empty, lock=Optional.empty, window=Optional.empty)
+[INFO ] 2022-02-28 15:34:07.913 [ShardingSphere-Command-4] org.apache.shardingsphere.sql - Actual SQL: ds_1 ::: SELECT id, mobile, idcard FROM t_user WHERE id = 10000
+[INFO ] 2022-02-28 15:34:21.501 [ShardingSphere-Command-4] org.apache.shardingsphere.sql - Logic SQL: SELECT id, mobile, idcard FROM t_user WHERE id = 10000
+[INFO ] 2022-02-28 15:34:21.502 [ShardingSphere-Command-4] org.apache.shardingsphere.sql - SQLStatement: MySQLSelectStatement(table=Optional.empty, limit=Optional.empty, lock=Optional.empty, window=Optional.empty)
+[INFO ] 2022-02-28 15:34:21.502 [ShardingSphere-Command-4] org.apache.shardingsphere.sql - Actual SQL: ds_2 ::: SELECT id, mobile, idcard FROM t_user WHERE id = 10000
 ```
 
 > **Switch to the primary database**
@@ -204,9 +204,9 @@ Query OK, 1 row affected (0.04 sec)
 View the ShardingSphere-Proxy log and see if the route node is the primary database `ds_1`.
 
 ```
-[INFO ] 2022-02-28 15:40:26.784 [ShardingSphere-Command-6] ShardingSphere-SQL - Logic SQL: INSERT INTO t_user(id, mobile, idcard) value (10001, '13521207777', '110xxxxx')
-[INFO ] 2022-02-28 15:40:26.784 [ShardingSphere-Command-6] ShardingSphere-SQL - SQLStatement: MySQLInsertStatement(setAssignment=Optional.empty, onDuplicateKeyColumns=Optional.empty)
-[INFO ] 2022-02-28 15:40:26.784 [ShardingSphere-Command-6] ShardingSphere-SQL - Actual SQL: ds_1 ::: INSERT INTO t_user(id, mobile, idcard) value (10001, '13521207777', '110xxxxx')
+[INFO ] 2022-02-28 15:40:26.784 [ShardingSphere-Command-6] org.apache.shardingsphere.sql - Logic SQL: INSERT INTO t_user(id, mobile, idcard) value (10001, '13521207777', '110xxxxx')
+[INFO ] 2022-02-28 15:40:26.784 [ShardingSphere-Command-6] org.apache.shardingsphere.sql - SQLStatement: MySQLInsertStatement(setAssignment=Optional.empty, onDuplicateKeyColumns=Optional.empty)
+[INFO ] 2022-02-28 15:40:26.784 [ShardingSphere-Command-6] org.apache.shardingsphere.sql - Actual SQL: ds_1 ::: INSERT INTO t_user(id, mobile, idcard) value (10001, '13521207777', '110xxxxx')
 ```
 
 Lastly, let’s test `SELECT(repeat it twice):
@@ -218,12 +218,12 @@ mysql> SELECT id, mobile, idcard FROM t_user WHERE id = 10001;
 View the ShardingSphere-Proxy log and see if the route node is `ds_2`.
 
 ```
-[INFO ] 2022-02-28 15:42:00.651 [ShardingSphere-Command-7] ShardingSphere-SQL - Logic SQL: SELECT id, mobile, idcard FROM t_user WHERE id = 10001
-[INFO ] 2022-02-28 15:42:00.651 [ShardingSphere-Command-7] ShardingSphere-SQL - SQLStatement: MySQLSelectStatement(table=Optional.empty, limit=Optional.empty, lock=Optional.empty, window=Optional.empty)
-[INFO ] 2022-02-28 15:42:00.651 [ShardingSphere-Command-7] ShardingSphere-SQL - Actual SQL: ds_2 ::: SELECT id, mobile, idcard FROM t_user WHERE id = 10001
-[INFO ] 2022-02-28 15:42:02.148 [ShardingSphere-Command-7] ShardingSphere-SQL - Logic SQL: SELECT id, mobile, idcard FROM t_user WHERE id = 10001
-[INFO ] 2022-02-28 15:42:02.149 [ShardingSphere-Command-7] ShardingSphere-SQL - SQLStatement: MySQLSelectStatement(table=Optional.empty, limit=Optional.empty, lock=Optional.empty, window=Optional.empty)
-[INFO ] 2022-02-28 15:42:02.149 [ShardingSphere-Command-7] ShardingSphere-SQL - Actual SQL: ds_2 ::: SELECT id, mobile, idcard FROM t_user WHERE id = 10001
+[INFO ] 2022-02-28 15:42:00.651 [ShardingSphere-Command-7] org.apache.shardingsphere.sql - Logic SQL: SELECT id, mobile, idcard FROM t_user WHERE id = 10001
+[INFO ] 2022-02-28 15:42:00.651 [ShardingSphere-Command-7] org.apache.shardingsphere.sql - SQLStatement: MySQLSelectStatement(table=Optional.empty, limit=Optional.empty, lock=Optional.empty, window=Optional.empty)
+[INFO ] 2022-02-28 15:42:00.651 [ShardingSphere-Command-7] org.apache.shardingsphere.sql - Actual SQL: ds_2 ::: SELECT id, mobile, idcard FROM t_user WHERE id = 10001
+[INFO ] 2022-02-28 15:42:02.148 [ShardingSphere-Command-7] org.apache.shardingsphere.sql - Logic SQL: SELECT id, mobile, idcard FROM t_user WHERE id = 10001
+[INFO ] 2022-02-28 15:42:02.149 [ShardingSphere-Command-7] org.apache.shardingsphere.sql - SQLStatement: MySQLSelectStatement(table=Optional.empty, limit=Optional.empty, lock=Optional.empty, window=Optional.empty)
+[INFO ] 2022-02-28 15:42:02.149 [ShardingSphere-Command-7] org.apache.shardingsphere.sql - Actual SQL: ds_2 ::: SELECT id, mobile, idcard FROM t_user WHERE id = 10001
 ```
 
 

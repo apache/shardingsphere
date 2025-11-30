@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.builder;
 
-import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.ConnectionMode;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutionUnit;
@@ -35,8 +35,8 @@ import java.sql.Statement;
 public final class StatementExecutionUnitBuilder implements JDBCExecutionUnitBuilder {
     
     @Override
-    public JDBCExecutionUnit build(final ExecutionUnit executionUnit, final ExecutorJDBCStatementManager statementManager,
-                                   final Connection connection, final ConnectionMode connectionMode, final StatementOption option, final DatabaseType databaseType) throws SQLException {
+    public JDBCExecutionUnit build(final ExecutionUnit executionUnit, final ExecutorJDBCStatementManager statementManager, final Connection connection,
+                                   final int connectionOffset, final ConnectionMode connectionMode, final StatementOption option, final DatabaseType databaseType) throws SQLException {
         return new JDBCExecutionUnit(executionUnit, connectionMode, createStatement(statementManager, connection, connectionMode, option, databaseType));
     }
     
@@ -46,7 +46,7 @@ public final class StatementExecutionUnitBuilder implements JDBCExecutionUnitBui
     }
     
     @Override
-    public String getType() {
+    public JDBCDriverType getType() {
         return JDBCDriverType.STATEMENT;
     }
 }

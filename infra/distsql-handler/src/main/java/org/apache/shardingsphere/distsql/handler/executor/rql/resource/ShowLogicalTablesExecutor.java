@@ -18,11 +18,11 @@
 package org.apache.shardingsphere.distsql.handler.executor.rql.resource;
 
 import lombok.Setter;
+import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.DialectDatabaseMetaData;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.distsql.handler.aware.DistSQLExecutorDatabaseAware;
 import org.apache.shardingsphere.distsql.handler.engine.query.DistSQLQueryExecutor;
-import org.apache.shardingsphere.distsql.statement.rql.resource.ShowLogicalTablesStatement;
-import org.apache.shardingsphere.infra.database.core.metadata.database.DialectDatabaseMetaData;
-import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
+import org.apache.shardingsphere.distsql.statement.type.rql.resource.ShowLogicalTablesStatement;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
@@ -55,7 +55,7 @@ public final class ShowLogicalTablesExecutor implements DistSQLQueryExecutor<Sho
     @Override
     public Collection<LocalDataQueryResultRow> getRows(final ShowLogicalTablesStatement sqlStatement, final ContextManager contextManager) {
         DialectDatabaseMetaData dialectDatabaseMetaData = new DatabaseTypeRegistry(database.getProtocolType()).getDialectDatabaseMetaData();
-        String schemaName = dialectDatabaseMetaData.getDefaultSchema().orElse(database.getName());
+        String schemaName = dialectDatabaseMetaData.getSchemaOption().getDefaultSchema().orElse(database.getName());
         if (null == database.getSchema(schemaName)) {
             return Collections.emptyList();
         }

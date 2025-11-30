@@ -19,8 +19,10 @@ package org.apache.shardingsphere.data.pipeline.mysql.ingest.incremental.binlog.
 
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.data.pipeline.core.metadata.model.PipelineColumnMetaData;
-import org.apache.shardingsphere.data.pipeline.core.util.PipelineJdbcUtils;
-import org.apache.shardingsphere.db.protocol.mysql.packet.binlog.row.column.value.string.MySQLBinaryString;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeRegistry;
+import org.apache.shardingsphere.database.protocol.mysql.packet.binlog.row.column.value.string.MySQLBinaryString;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 
 import java.io.Serializable;
 import java.nio.charset.Charset;
@@ -39,6 +41,8 @@ public final class MySQLBinlogBinaryStringHandler {
      * @return handled value
      */
     public static Serializable handle(final PipelineColumnMetaData columnMetaData, final MySQLBinaryString value) {
-        return PipelineJdbcUtils.isBinaryColumn(columnMetaData.getDataType()) ? value.getBytes() : new String(value.getBytes(), Charset.defaultCharset());
+        return new DatabaseTypeRegistry(TypedSPILoader.getService(DatabaseType.class, "MySQL")).getDialectDatabaseMetaData().getDataTypeOption().isBinaryDataType(columnMetaData.getDataType())
+                ? value.getBytes()
+                : new String(value.getBytes(), Charset.defaultCharset());
     }
 }

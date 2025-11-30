@@ -40,7 +40,7 @@ git remote -v
 
 ```shell
 cd shardingsphere
-./mvnw clean install -DskipITs -DskipTests -Prelease
+./mvnw clean install -DskipITs -DskipTests -P-dev,release,all
 ```
 
 当你以后从 ShardingSphere 拉取最新代码并新建分支，可能会遇到类似的解析器编译错误，可以重新运行这个命令来解决问题。

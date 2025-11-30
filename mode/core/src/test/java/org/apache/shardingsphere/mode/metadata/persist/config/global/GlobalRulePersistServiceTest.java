@@ -20,7 +20,7 @@ package org.apache.shardingsphere.mode.metadata.persist.config.global;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.mode.metadata.persist.version.VersionPersistService;
 import org.apache.shardingsphere.mode.spi.repository.PersistRepository;
-import org.apache.shardingsphere.test.fixture.infra.rule.global.MockedGlobalRuleConfiguration;
+import org.apache.shardingsphere.test.infra.fixture.rule.global.MockedGlobalRuleConfiguration;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -34,7 +34,7 @@ import java.util.List;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -79,7 +79,7 @@ class GlobalRulePersistServiceTest {
         when(repository.getChildrenKeys("/rules/global_fixture/versions")).thenReturn(Collections.singletonList("10"));
         globalRulePersistService.persist(Collections.singleton(new MockedGlobalRuleConfiguration("foo_value")));
         verify(repository).persist("/rules/global_fixture/versions/11", "name: foo_value" + System.lineSeparator());
-        verify(repository, times(0)).persist("/rules/global_fixture/active_version", "0");
+        verify(repository, never()).persist("/rules/global_fixture/active_version", "0");
     }
     
     @Test

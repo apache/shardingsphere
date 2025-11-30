@@ -37,8 +37,11 @@ import org.apache.shardingsphere.sharding.cache.route.cache.ShardingRouteCacheKe
 import org.apache.shardingsphere.sharding.cache.route.cache.ShardingRouteCacheValue;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Answers;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -57,19 +60,21 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
+@MockitoSettings(strictness = Strictness.LENIENT)
 class CachedShardingSQLRouterTest {
     
     @Mock
     private ShardingCache shardingCache;
     
-    @Mock
+    @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private SQLStatementContext sqlStatementContext;
     
     @Test
     void assertCreateRouteContextWithSQLExceedMaxAllowedLength() {
         when(shardingCache.getConfiguration()).thenReturn(new ShardingCacheConfiguration(1, null));
+        when(sqlStatementContext.getTablesContext().getDatabaseNames()).thenReturn(Collections.emptyList());
         QueryContext queryContext =
-                new QueryContext(sqlStatementContext, "select 1", Collections.emptyList(), new HintValueContext(), mockConnectionContext(), mock(ShardingSphereMetaData.class));
+                new QueryContext(sqlStatementContext, "SELECT 1", Collections.emptyList(), new HintValueContext(), mockConnectionContext(), mock(ShardingSphereMetaData.class));
         Optional<RouteContext> actual = new CachedShardingSQLRouter().loadRouteContext(null, queryContext, mock(RuleMetaData.class), null, shardingCache, Collections.emptyList(), null);
         assertFalse(actual.isPresent());
     }
@@ -83,7 +88,7 @@ class CachedShardingSQLRouterTest {
     @Test
     void assertCreateRouteContextWithNotCacheableQuery() {
         QueryContext queryContext =
-                new QueryContext(sqlStatementContext, "insert into t values (?), (?)", Collections.emptyList(), new HintValueContext(), mockConnectionContext(), mock(ShardingSphereMetaData.class));
+                new QueryContext(sqlStatementContext, "INSERT INTO t VALUES (?), (?)", Collections.emptyList(), new HintValueContext(), mockConnectionContext(), mock(ShardingSphereMetaData.class));
         when(shardingCache.getConfiguration()).thenReturn(new ShardingCacheConfiguration(100, null));
         when(shardingCache.getRouteCacheableChecker()).thenReturn(mock(ShardingRouteCacheableChecker.class));
         when(shardingCache.getRouteCacheableChecker().check(null, queryContext)).thenReturn(new ShardingRouteCacheableCheckResult(false, Collections.emptyList()));
@@ -94,7 +99,7 @@ class CachedShardingSQLRouterTest {
     @Test
     void assertCreateRouteContextWithUnmatchedActualParameterSize() {
         QueryContext queryContext =
-                new QueryContext(sqlStatementContext, "insert into t values (?, ?)", Collections.singletonList(0), new HintValueContext(), mockConnectionContext(), mock(ShardingSphereMetaData.class));
+                new QueryContext(sqlStatementContext, "INSERT INTO t VALUES (?, ?)", Collections.singletonList(0), new HintValueContext(), mockConnectionContext(), mock(ShardingSphereMetaData.class));
         when(shardingCache.getConfiguration()).thenReturn(new ShardingCacheConfiguration(100, null));
         when(shardingCache.getRouteCacheableChecker()).thenReturn(mock(ShardingRouteCacheableChecker.class));
         when(shardingCache.getRouteCacheableChecker().check(null, queryContext)).thenReturn(new ShardingRouteCacheableCheckResult(true, Collections.singletonList(1)));
@@ -105,14 +110,14 @@ class CachedShardingSQLRouterTest {
     @Test
     void assertCreateRouteContextWithCacheableQueryButCacheMissed() {
         QueryContext queryContext =
-                new QueryContext(sqlStatementContext, "insert into t values (?, ?)", Arrays.asList(0, 1), new HintValueContext(), mockConnectionContext(), mock(ShardingSphereMetaData.class));
+                new QueryContext(sqlStatementContext, "INSERT INTO t VALUES (?, ?)", Arrays.asList(0, 1), new HintValueContext(), mockConnectionContext(), mock(ShardingSphereMetaData.class));
         when(shardingCache.getConfiguration()).thenReturn(new ShardingCacheConfiguration(100, null));
         when(shardingCache.getRouteCacheableChecker()).thenReturn(mock(ShardingRouteCacheableChecker.class));
         when(shardingCache.getRouteCacheableChecker().check(null, queryContext)).thenReturn(new ShardingRouteCacheableCheckResult(true, Collections.singletonList(1)));
         when(shardingCache.getRouteCache()).thenReturn(mock(ShardingRouteCache.class));
         RouteContext expected = new RouteContext();
         expected.getRouteUnits().add(new RouteUnit(new RouteMapper("ds_0", "ds_0"), Collections.singletonList(new RouteMapper("t", "t"))));
-        expected.getOriginalDataNodes().add(Collections.singletonList(new DataNode("ds_0", "t")));
+        expected.getOriginalDataNodes().add(Collections.singletonList(new DataNode("ds_0", (String) null, "t")));
         when(shardingCache.getRouteCache().get(any(ShardingRouteCacheKey.class))).thenReturn(Optional.empty());
         OriginSQLRouter router = (unused, globalRuleMetaData, database, rule, tableNames, props) -> expected;
         Collection<String> tableNames = Collections.singletonList("t");
@@ -125,14 +130,14 @@ class CachedShardingSQLRouterTest {
     @Test
     void assertCreateRouteContextWithCacheHit() {
         QueryContext queryContext =
-                new QueryContext(sqlStatementContext, "insert into t values (?, ?)", Arrays.asList(0, 1), new HintValueContext(), mockConnectionContext(), mock(ShardingSphereMetaData.class));
+                new QueryContext(sqlStatementContext, "INSERT INTO t VALUES (?, ?)", Arrays.asList(0, 1), new HintValueContext(), mockConnectionContext(), mock(ShardingSphereMetaData.class));
         when(shardingCache.getConfiguration()).thenReturn(new ShardingCacheConfiguration(100, null));
         when(shardingCache.getRouteCacheableChecker()).thenReturn(mock(ShardingRouteCacheableChecker.class));
         when(shardingCache.getRouteCacheableChecker().check(null, queryContext)).thenReturn(new ShardingRouteCacheableCheckResult(true, Collections.singletonList(1)));
         when(shardingCache.getRouteCache()).thenReturn(mock(ShardingRouteCache.class));
         RouteContext expected = new RouteContext();
         expected.getRouteUnits().add(new RouteUnit(new RouteMapper("ds_0", "ds_0"), Collections.singletonList(new RouteMapper("t", "t"))));
-        expected.getOriginalDataNodes().add(Collections.singletonList(new DataNode("ds_0", "t")));
+        expected.getOriginalDataNodes().add(Collections.singletonList(new DataNode("ds_0", (String) null, "t")));
         when(shardingCache.getRouteCache().get(any(ShardingRouteCacheKey.class))).thenReturn(Optional.of(new ShardingRouteCacheValue(expected)));
         Optional<RouteContext> actual = new CachedShardingSQLRouter().loadRouteContext(null, queryContext, mock(RuleMetaData.class), null, shardingCache, Collections.singletonList("t"), null);
         assertTrue(actual.isPresent());
@@ -145,14 +150,14 @@ class CachedShardingSQLRouterTest {
     @Test
     void assertCreateRouteContextWithQueryRoutedToMultiDataNodes() {
         QueryContext queryContext =
-                new QueryContext(sqlStatementContext, "select * from t", Collections.emptyList(), new HintValueContext(), mockConnectionContext(), mock(ShardingSphereMetaData.class));
+                new QueryContext(sqlStatementContext, "SELECT * FROM t", Collections.emptyList(), new HintValueContext(), mockConnectionContext(), mock(ShardingSphereMetaData.class));
         when(shardingCache.getConfiguration()).thenReturn(new ShardingCacheConfiguration(100, null));
         when(shardingCache.getRouteCacheableChecker()).thenReturn(mock(ShardingRouteCacheableChecker.class));
         when(shardingCache.getRouteCacheableChecker().check(null, queryContext)).thenReturn(new ShardingRouteCacheableCheckResult(true, Collections.emptyList()));
         when(shardingCache.getRouteCache()).thenReturn(mock(ShardingRouteCache.class));
         RouteContext expected = new RouteContext();
         expected.getRouteUnits().add(new RouteUnit(new RouteMapper("ds_0", "ds_0"), Arrays.asList(new RouteMapper("t", "t_0"), new RouteMapper("t", "t_1"))));
-        expected.getOriginalDataNodes().add(Collections.singletonList(new DataNode("ds_0", "t_0")));
+        expected.getOriginalDataNodes().add(Collections.singletonList(new DataNode("ds_0", (String) null, "t_0")));
         OriginSQLRouter router = (unused, globalRuleMetaData, database, rule, tableNames, props) -> expected;
         RuleMetaData globalRuleMetaData = mock(RuleMetaData.class);
         Collection<String> tableNames = Collections.singletonList("t");

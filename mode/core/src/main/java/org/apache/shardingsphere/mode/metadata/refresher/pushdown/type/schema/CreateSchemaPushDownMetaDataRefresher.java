@@ -17,15 +17,14 @@
 
 package org.apache.shardingsphere.mode.metadata.refresher.pushdown.type.schema;
 
+import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
-import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.mode.metadata.refresher.pushdown.PushDownMetaDataRefresher;
 import org.apache.shardingsphere.mode.persist.service.MetaDataManagerPersistService;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.CreateSchemaStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.schema.CreateSchemaStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 
-import java.util.Collection;
 import java.util.Optional;
 
 /**
@@ -34,7 +33,7 @@ import java.util.Optional;
 public final class CreateSchemaPushDownMetaDataRefresher implements PushDownMetaDataRefresher<CreateSchemaStatement> {
     
     @Override
-    public void refresh(final MetaDataManagerPersistService metaDataManagerPersistService, final ShardingSphereDatabase database, final Collection<String> logicDataSourceNames,
+    public void refresh(final MetaDataManagerPersistService metaDataManagerPersistService, final ShardingSphereDatabase database, final String logicDataSourceName,
                         final String schemaName, final DatabaseType databaseType, final CreateSchemaStatement sqlStatement, final ConfigurationProperties props) {
         getSchemaName(sqlStatement).ifPresent(optional -> metaDataManagerPersistService.createSchema(database, optional.getValue().toLowerCase()));
     }

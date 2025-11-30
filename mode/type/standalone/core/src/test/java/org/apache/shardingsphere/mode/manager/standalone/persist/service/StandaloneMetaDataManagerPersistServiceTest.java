@@ -18,10 +18,10 @@
 package org.apache.shardingsphere.mode.manager.standalone.persist.service;
 
 import lombok.SneakyThrows;
+import org.apache.shardingsphere.database.connector.core.metadata.database.enums.TableType;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
-import org.apache.shardingsphere.infra.database.core.metadata.database.enums.TableType;
-import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
@@ -49,13 +49,12 @@ import java.sql.SQLException;
 import java.util.Collections;
 import java.util.Properties;
 
-import static org.apache.shardingsphere.test.matcher.ShardingSphereArgumentVerifyMatchers.deepEq;
+import static org.apache.shardingsphere.test.infra.framework.matcher.ShardingSphereArgumentVerifyMatchers.deepEq;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyCollection;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -82,7 +81,7 @@ class StandaloneMetaDataManagerPersistServiceTest {
         metaDataManagerPersistService.createDatabase("foo_db");
         verify(metaDataContextManager.getDatabaseMetaDataManager()).addDatabase("foo_db");
         verify(metaDataPersistFacade.getDatabaseMetaDataFacade().getDatabase()).add("foo_db");
-        verify(metaDataPersistFacade.getDatabaseMetaDataFacade()).persistReloadDatabaseByAlter(eq("foo_db"), any(ShardingSphereDatabase.class), any(ShardingSphereDatabase.class));
+        verify(metaDataPersistFacade.getDatabaseMetaDataFacade()).persistCreatedDatabaseSchemas(any(ShardingSphereDatabase.class));
     }
     
     @Test
@@ -99,15 +98,6 @@ class StandaloneMetaDataManagerPersistServiceTest {
     }
     
     @Test
-    void assertAlterSchema() {
-        DatabaseMetaDataPersistFacade databaseMetaDataFacade = mock(DatabaseMetaDataPersistFacade.class, RETURNS_DEEP_STUBS);
-        when(metaDataPersistFacade.getDatabaseMetaDataFacade()).thenReturn(databaseMetaDataFacade);
-        metaDataManagerPersistService.alterSchema(new ShardingSphereDatabase("foo_db", mock(), mock(), mock(), Collections.emptyList()),
-                "foo_schema", Collections.emptyList(), Collections.emptyList(), Collections.emptyList(), Collections.emptyList());
-        verify(databaseMetaDataFacade).alterSchema(any(), eq("foo_schema"), anyCollection(), anyCollection(), anyCollection(), anyCollection());
-    }
-    
-    @Test
     void assertRenameSchemaNameWithEmptyAlteredSchema() {
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         when(database.getName()).thenReturn("foo_db");
@@ -116,7 +106,7 @@ class StandaloneMetaDataManagerPersistServiceTest {
         DatabaseMetaDataPersistFacade databaseMetaDataFacade = mock(DatabaseMetaDataPersistFacade.class, RETURNS_DEEP_STUBS);
         when(metaDataPersistFacade.getDatabaseMetaDataFacade()).thenReturn(databaseMetaDataFacade);
         metaDataManagerPersistService.renameSchema(new ShardingSphereDatabase("foo_db", mock(), mock(), mock(), Collections.emptyList()), "foo_schema", "bar_schema");
-        verify(databaseMetaDataFacade.getSchema(), times(0)).add("foo_db", "bar_schema");
+        verify(databaseMetaDataFacade.getSchema(), never()).add("foo_db", "bar_schema");
         verify(databaseMetaDataFacade).renameSchema(any(), any(), eq("foo_schema"), eq("bar_schema"));
     }
     
@@ -159,7 +149,7 @@ class StandaloneMetaDataManagerPersistServiceTest {
     @Test
     void assertAlterNullRuleConfiguration() {
         metaDataManagerPersistService.alterRuleConfiguration(new ShardingSphereDatabase("foo_db", mock(), mock(), mock(), Collections.emptyList()), null);
-        verify(metaDataPersistFacade, times(0)).getVersionService();
+        verify(metaDataPersistFacade, never()).getVersionService();
     }
     
     @Test
@@ -182,7 +172,7 @@ class StandaloneMetaDataManagerPersistServiceTest {
     @Test
     void assertRemoveNullRuleConfigurationItem() {
         metaDataManagerPersistService.removeRuleConfigurationItem(new ShardingSphereDatabase("foo_db", mock(), mock(), mock(), Collections.emptyList()), null);
-        verify(metaDataPersistFacade, times(0)).getVersionService();
+        verify(metaDataPersistFacade, never()).getVersionService();
     }
     
     @Test

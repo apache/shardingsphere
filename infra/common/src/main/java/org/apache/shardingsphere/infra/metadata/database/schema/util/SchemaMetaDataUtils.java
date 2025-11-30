@@ -20,14 +20,14 @@ package org.apache.shardingsphere.infra.metadata.database.schema.util;
 import com.google.common.collect.Lists;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.database.connector.core.GlobalDataSourceRegistry;
+import org.apache.shardingsphere.database.connector.core.metadata.data.loader.MetaDataLoaderMaterial;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
-import org.apache.shardingsphere.infra.database.core.GlobalDataSourceRegistry;
-import org.apache.shardingsphere.infra.database.core.metadata.data.loader.MetaDataLoaderMaterial;
-import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
-import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.datanode.DataNodes;
-import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
+import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.exception.kernel.metadata.datanode.UnsupportedActualDataNodeStructureException;
 import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnit;
 import org.apache.shardingsphere.infra.metadata.database.schema.builder.GenericSchemaBuilderMaterial;
@@ -73,7 +73,7 @@ public final class SchemaMetaDataUtils {
         int loadTableMetadataBatchSize = material.getProps().getValue(ConfigurationPropertyKey.LOAD_TABLE_METADATA_BATCH_SIZE);
         for (Entry<String, Collection<String>> entry : dataSourceTableGroups.entrySet()) {
             DatabaseType storageType = material.getStorageUnits().get(entry.getKey()).getStorageType();
-            String defaultSchemaName = getDefaultSchemaNameByStorageType(storageType, material.getDefaultSchemaName());
+            String defaultSchemaName = new DatabaseTypeRegistry(storageType).getDefaultSchemaName(material.getDefaultSchemaName());
             result.addAll(buildMaterials(material, entry.getKey(), entry.getValue(), storageType, defaultSchemaName, loadTableMetadataBatchSize));
         }
         return result;
@@ -89,16 +89,12 @@ public final class SchemaMetaDataUtils {
         return result;
     }
     
-    private static String getDefaultSchemaNameByStorageType(final DatabaseType storageType, final String databaseName) {
-        return new DatabaseTypeRegistry(storageType).getDefaultSchemaName(databaseName);
-    }
-    
     private static DataSource getDataSource(final GenericSchemaBuilderMaterial material, final String dataSourceName) {
         return material.getStorageUnits().get(dataSourceName.contains(".") ? dataSourceName.split("\\.")[0] : dataSourceName).getDataSource();
     }
     
-    private static void checkDataSourceTypeIncludeInstanceAndSetDatabaseTableMap(final Collection<DatabaseType> notSupportThreeTierStructureStorageTypes, final DataNodes dataNodes,
-                                                                                 final String tableName) {
+    private static void checkDataSourceTypeIncludeInstanceAndSetDatabaseTableMap(final Collection<DatabaseType> notSupportThreeTierStructureStorageTypes,
+                                                                                 final DataNodes dataNodes, final String tableName) {
         for (DataNode dataNode : dataNodes.getDataNodes(tableName)) {
             ShardingSpherePreconditions.checkState(notSupportThreeTierStructureStorageTypes.isEmpty() || !dataNode.getDataSourceName().contains("."),
                     () -> new UnsupportedActualDataNodeStructureException(
@@ -111,8 +107,8 @@ public final class SchemaMetaDataUtils {
     }
     
     private static Collection<DatabaseType> getUnsupportedThreeTierStorageStructureDatabaseTypes(final Collection<StorageUnit> storageUnits) {
-        return storageUnits.stream()
-                .map(StorageUnit::getStorageType).filter(each -> !new DatabaseTypeRegistry(each).getDialectDatabaseMetaData().isSupportThreeTierStorageStructure()).collect(Collectors.toList());
+        return storageUnits.stream().map(StorageUnit::getStorageType)
+                .filter(each -> !new DatabaseTypeRegistry(each).getDialectDatabaseMetaData().getConnectionOption().isSupportThreeTierStorageStructure()).collect(Collectors.toList());
     }
     
     private static void addOneActualTableDataNode(final GenericSchemaBuilderMaterial material,
@@ -128,10 +124,7 @@ public final class SchemaMetaDataUtils {
     
     private static boolean isSameDataSourceNameSchemaName(final GenericSchemaBuilderMaterial material, final DataNode dataNode) {
         String dataSourceName = dataNode.getDataSourceName().contains(".") ? dataNode.getDataSourceName().split("\\.")[0] : dataNode.getDataSourceName();
-        if (!material.getStorageUnits().containsKey(dataSourceName)) {
-            return false;
-        }
-        return null == dataNode.getSchemaName() || dataNode.getSchemaName().equalsIgnoreCase(material.getDefaultSchemaName());
+        return material.getStorageUnits().containsKey(dataSourceName) && (null == dataNode.getSchemaName() || dataNode.getSchemaName().equalsIgnoreCase(material.getDefaultSchemaName()));
     }
     
     private static void addAllActualTableDataNode(final GenericSchemaBuilderMaterial material,

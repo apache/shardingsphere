@@ -10,7 +10,7 @@ ShardingSphere's support for ClickHouse JDBC Driver is in the optional module.
 
 ## Prerequisites
 
-To use a `jdbcUrl` like `jdbc:ch://localhost:8123/demo_ds_0` for the data node in the ShardingSphere configuration file,
+To use a `standardJdbcUrl` like `jdbc:ch://localhost:8123/demo_ds_0` for the data node in the ShardingSphere configuration file,
 the possible Maven dependencies are as follows,
 
 ```xml
@@ -22,7 +22,7 @@ the possible Maven dependencies are as follows,
     </dependency>
     <dependency>
         <groupId>org.apache.shardingsphere</groupId>
-        <artifactId>shardingsphere-parser-sql-clickhouse</artifactId>
+        <artifactId>shardingsphere-jdbc-dialect-clickhouse</artifactId>
         <version>${shardingsphere.version}</version>
     </dependency>
     <dependency>
@@ -43,14 +43,16 @@ Write a Docker Compose file to start ClickHouse.
 ```yaml
 services:
   clickhouse-server:
-    image: clickhouse/clickhouse-server:24.11.1.2557
+    image: clickhouse/clickhouse-server:25.6.5.41
+    environment:
+      CLICKHOUSE_SKIP_USER_SETUP: "1"
     ports:
       - "8123:8123"
 ```
 
 ### Create business tables
 
-Use a third-party tool to create a business database and business table in ClickHouse.
+Use a third-party tool to create some business databases and business tables in ClickHouse.
 Taking DBeaver Community as an example, if you use Ubuntu 22.04.4, you can quickly install it through Snapcraft.
 
 ```shell
@@ -59,7 +61,7 @@ sudo snap install dbeaver-ce
 snap run dbeaver-ce
 ```
 
-In DBeaver Community, use `jdbcUrl` of `jdbc:ch://localhost:8123/default`, `username` of `default` to connect to ClickHouse, 
+In DBeaver Community, use `standardJdbcUrl` of `jdbc:ch://localhost:8123/default`, `username` of `default` to connect to ClickHouse, 
 and leave `password` blank.
 Execute the following SQL,
 
@@ -70,7 +72,7 @@ CREATE DATABASE demo_ds_1;
 CREATE DATABASE demo_ds_2;
 ```
 
-Use `jdbcUrl` of `jdbc:ch://localhost:8123/demo_ds_0`, 
+Use `standardJdbcUrl` of `jdbc:ch://localhost:8123/demo_ds_0`, 
 `jdbc:ch://localhost:8123/demo_ds_1` and `jdbc:ch://localhost:8123/demo_ds_2`
 to connect to ClickHouse and execute the following SQL.
 
@@ -99,26 +101,26 @@ dataSources:
     ds_0:
         dataSourceClassName: com.zaxxer.hikari.HikariDataSource
         driverClassName: com.clickhouse.jdbc.ClickHouseDriver
-        jdbcUrl: jdbc:ch://localhost:8123/demo_ds_0
+        standardJdbcUrl: jdbc:ch://localhost:8123/demo_ds_0
         username: default
         password:
     ds_1:
         dataSourceClassName: com.zaxxer.hikari.HikariDataSource
         driverClassName: com.clickhouse.jdbc.ClickHouseDriver
-        jdbcUrl: jdbc:ch://localhost:8123/demo_ds_1
+        standardJdbcUrl: jdbc:ch://localhost:8123/demo_ds_1
         username: default
         password:
     ds_2:
         dataSourceClassName: com.zaxxer.hikari.HikariDataSource
         driverClassName: com.clickhouse.jdbc.ClickHouseDriver
-        jdbcUrl: jdbc:ch://localhost:8123/demo_ds_2
+        standardJdbcUrl: jdbc:ch://localhost:8123/demo_ds_2
         username: default
         password:
 rules:
 - !SHARDING
     tables:
       t_order:
-        actualDataNodes:
+        actualDataNodes: <LITERAL>ds_0.t_order, ds_1.t_order, ds_2.t_order
         keyGenerateStrategy:
           column: order_id
           keyGeneratorName: snowflake
@@ -156,7 +158,7 @@ public class ExampleUtils {
              Statement statement = connection.createStatement()) {
             statement.execute("INSERT INTO t_order (user_id, order_type, address_id, status) VALUES (1, 1, 1, 'INSERT_TEST')");
             statement.executeQuery("SELECT * FROM t_order");
-            statement.execute("alter table t_order delete where order_id=1");
+            statement.execute("alter table t_order delete where user_id=1");
         }
     }
 }
@@ -231,3 +233,10 @@ See https://github.com/ClickHouse/clickhouse-java/issues/2023 .
 The embedded ClickHouse `chDB` Java client has not been released yet.
 ShardingSphere does not do integration testing for the SNAPSHOT version of https://github.com/chdb-io/chdb-java .
 Refer to https://github.com/chdb-io/chdb/issues/243 .
+
+### Limitations of ClickHouse JDBC Driver V2
+
+Starting from the `0.8.6` milestone at https://github.com/ClickHouse/clickhouse-java/pull/2368 , 
+ClickHouse JDBC Driver V2 uses `org.antlr:antlr4-maven-plugin:4.13.2`. 
+This conflicts with `org.antlr:antlr4-runtime:4.10.1` used by ShardingSphere.
+ShardingSphere only uses `com.clickhouse:clickhouse-jdbc:0.6.3:http` to test ClickHouse integration.

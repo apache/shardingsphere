@@ -17,9 +17,8 @@
 
 package org.apache.shardingsphere.sharding.route.engine.checker.ddl;
 
-import org.apache.shardingsphere.infra.binder.context.statement.ddl.RenameTableStatementContext;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
-import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
+import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.session.query.QueryContext;
@@ -28,7 +27,7 @@ import org.apache.shardingsphere.sharding.exception.connection.ShardingDDLRouteE
 import org.apache.shardingsphere.sharding.route.engine.checker.ShardingRouteContextChecker;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.table.RenameTableDefinitionSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.RenameTableStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.table.RenameTableStatement;
 
 /**
  * Sharding rename table route context checker.
@@ -41,7 +40,7 @@ public final class ShardingRenameTableRouteContextChecker implements ShardingRou
         for (RenameTableDefinitionSegment each : renameTableStatement.getRenameTables()) {
             String primaryTable = each.getTable().getTableName().getIdentifier().getValue();
             ShardingSpherePreconditions.checkState(!ShardingSupportedCheckUtils.isRouteUnitDataNodeDifferentSize(shardingRule, routeContext, primaryTable),
-                    () -> new ShardingDDLRouteException("RENAME", "TABLE", ((RenameTableStatementContext) queryContext.getSqlStatementContext()).getTablesContext().getTableNames()));
+                    () -> new ShardingDDLRouteException("RENAME", "TABLE", queryContext.getSqlStatementContext().getTablesContext().getTableNames()));
         }
     }
 }

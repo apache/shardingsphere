@@ -19,55 +19,23 @@ package org.apache.shardingsphere.data.pipeline.cdc;
 
 import org.apache.shardingsphere.data.pipeline.cdc.config.CDCJobConfiguration;
 import org.apache.shardingsphere.data.pipeline.cdc.config.yaml.swapper.YamlCDCJobConfigurationSwapper;
-import org.apache.shardingsphere.data.pipeline.core.job.id.PipelineJobIdUtils;
-import org.apache.shardingsphere.data.pipeline.core.job.progress.yaml.swapper.YamlTransmissionJobItemProgressSwapper;
-import org.apache.shardingsphere.data.pipeline.core.job.service.PipelineJobConfigurationManager;
+import org.apache.shardingsphere.data.pipeline.core.job.type.PipelineJobOption;
 import org.apache.shardingsphere.data.pipeline.core.job.type.PipelineJobType;
-import org.apache.shardingsphere.data.pipeline.core.pojo.PipelineJobInfo;
-import org.apache.shardingsphere.data.pipeline.core.pojo.PipelineJobMetaData;
+import org.apache.shardingsphere.data.pipeline.core.pojo.PipelineJobTarget;
 
 /**
  * CDC job type.
  */
-public final class CDCJobType implements PipelineJobType {
+public final class CDCJobType implements PipelineJobType<CDCJobConfiguration> {
     
     @Override
-    public String getCode() {
-        return "03";
+    public PipelineJobOption getOption() {
+        return new PipelineJobOption("03", CDCJob.class, true, new YamlCDCJobConfigurationSwapper(), false, null, null, true);
     }
     
     @Override
-    public boolean isTransmissionJob() {
-        return true;
-    }
-    
-    @SuppressWarnings("unchecked")
-    @Override
-    public YamlCDCJobConfigurationSwapper getYamlJobConfigurationSwapper() {
-        return new YamlCDCJobConfigurationSwapper();
-    }
-    
-    @SuppressWarnings("unchecked")
-    @Override
-    public YamlTransmissionJobItemProgressSwapper getYamlJobItemProgressSwapper() {
-        return new YamlTransmissionJobItemProgressSwapper();
-    }
-    
-    @Override
-    public Class<CDCJob> getJobClass() {
-        return CDCJob.class;
-    }
-    
-    @Override
-    public boolean isForceNoShardingWhenConvertToJobConfigurationPOJO() {
-        return true;
-    }
-    
-    @Override
-    public PipelineJobInfo getJobInfo(final String jobId) {
-        PipelineJobMetaData jobMetaData = new PipelineJobMetaData(PipelineJobIdUtils.getElasticJobConfigurationPOJO(jobId));
-        CDCJobConfiguration jobConfig = new PipelineJobConfigurationManager(new CDCJobType()).getJobConfiguration(jobId);
-        return new PipelineJobInfo(jobMetaData, jobConfig.getDatabaseName(), String.join(", ", jobConfig.getSchemaTableNames()));
+    public PipelineJobTarget getJobTarget(final CDCJobConfiguration jobConfig) {
+        return new PipelineJobTarget(jobConfig.getDatabaseName(), String.join(", ", jobConfig.getSchemaTableNames()));
     }
     
     @Override

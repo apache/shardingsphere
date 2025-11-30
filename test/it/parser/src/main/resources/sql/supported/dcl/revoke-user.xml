@@ -127,4 +127,8 @@
     <sql-case id="revoke_execute_on_xml_schema_collection" value="REVOKE EXECUTE ON XML SCHEMA COLLECTION::schema1.xmlschemacollection1 FROM user1" db-types="SQLServer" />
     <sql-case id="revoke_usage_on_column_encryption_key" value="REVOKE USAGE ON COLUMN_ENCRYPTION_KEY MyCEK1 FROM user1" db-types="openGauss" />
     <sql-case id="revoke_usage_on_client_master_key" value="REVOKE USAGE ON CLIENT_MASTER_KEY MyCMK1 FROM user1" db-types="openGauss" />
+    <sql-case id="revoke_alter_execute_on_procedure_from_role" value="REVOKE IF EXISTS ALTER ROUTINE, EXECUTE ON PROCEDURE rngp_db.rngp_proc FROM rngp_role" db-types="MySQL" />
+    <sql-case id="revoke_grant_option_on_procedure_from_user" value="REVOKE IF EXISTS GRANT OPTION ON PROCEDURE rngp_db.rngp_proc FROM rngp_user" db-types="MySQL" />
+    <sql-case id="revoke_alter_execute_on_procedure_from_user" value="REVOKE IF EXISTS ALTER ROUTINE, EXECUTE ON PROCEDURE rngp_db.rngp_proc FROM rngp_user" db-types="MySQL" />
+    <sql-case id="revoke_grant_option_on_procedure_from_role" value="REVOKE IF EXISTS GRANT OPTION ON PROCEDURE rngp_db.rngp_proc FROM rngp_role" db-types="MySQL" />
 </sql-cases>

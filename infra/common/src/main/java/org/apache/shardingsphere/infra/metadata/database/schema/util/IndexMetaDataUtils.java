@@ -20,14 +20,13 @@ package org.apache.shardingsphere.infra.metadata.database.schema.util;
 import com.google.common.base.Strings;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
-import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.QualifiedTable;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.index.IndexSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -40,8 +39,6 @@ import java.util.Optional;
 public final class IndexMetaDataUtils {
     
     private static final String UNDERLINE = "_";
-    
-    private static final String GENERATED_LOGIC_INDEX_NAME_SUFFIX = "idx";
     
     /**
      * Get logic index name.
@@ -67,20 +64,6 @@ public final class IndexMetaDataUtils {
     }
     
     /**
-     * Get generated logic index name.
-     *
-     * @param columns column segments 
-     * @return generated logic index name
-     */
-    public static String getGeneratedLogicIndexName(final Collection<ColumnSegment> columns) {
-        StringBuilder builder = new StringBuilder();
-        for (ColumnSegment each : columns) {
-            builder.append(each.getIdentifier().getValue()).append(UNDERLINE);
-        }
-        return builder.append(GENERATED_LOGIC_INDEX_NAME_SUFFIX).toString();
-    }
-    
-    /**
      * Get table names.
      *
      * @param database database
@@ -93,18 +76,13 @@ public final class IndexMetaDataUtils {
         String schemaName = new DatabaseTypeRegistry(protocolType).getDefaultSchemaName(database.getName());
         for (IndexSegment each : indexes) {
             String actualSchemaName = each.getOwner().map(optional -> optional.getIdentifier().getValue()).orElse(schemaName);
-            findLogicTableNameFromMetaData(database.getSchema(actualSchemaName),
-                    each.getIndexName().getIdentifier().getValue()).ifPresent(optional -> result.add(new QualifiedTable(actualSchemaName, optional)));
+            findLogicTableNameFromMetaData(database.getSchema(actualSchemaName), each.getIndexName().getIdentifier().getValue())
+                    .ifPresent(optional -> result.add(new QualifiedTable(actualSchemaName, optional)));
         }
         return result;
     }
     
     private static Optional<String> findLogicTableNameFromMetaData(final ShardingSphereSchema schema, final String logicIndexName) {
-        for (ShardingSphereTable each : schema.getAllTables()) {
-            if (each.containsIndex(logicIndexName)) {
-                return Optional.of(each.getName());
-            }
-        }
-        return Optional.empty();
+        return schema.getAllTables().stream().filter(table -> table.containsIndex(logicIndexName)).findFirst().map(ShardingSphereTable::getName);
     }
 }

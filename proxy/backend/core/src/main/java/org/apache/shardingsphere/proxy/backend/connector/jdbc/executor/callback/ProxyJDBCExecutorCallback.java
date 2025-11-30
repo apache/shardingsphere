@@ -17,8 +17,9 @@
 
 package org.apache.shardingsphere.proxy.backend.connector.jdbc.executor.callback;
 
+import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoader;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
-import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.ConnectionMode;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutorCallback;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.ExecuteResult;
@@ -28,8 +29,8 @@ import org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.dr
 import org.apache.shardingsphere.infra.executor.sql.execute.result.update.UpdateResult;
 import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
-import org.apache.shardingsphere.proxy.backend.connector.DatabaseConnector;
-import org.apache.shardingsphere.proxy.backend.connector.sane.SaneQueryResultEngine;
+import org.apache.shardingsphere.proxy.backend.connector.DatabaseProxyConnector;
+import org.apache.shardingsphere.proxy.backend.connector.sane.DialectSaneQueryResultEngine;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
 
@@ -45,7 +46,7 @@ import java.util.Optional;
  */
 public abstract class ProxyJDBCExecutorCallback extends JDBCExecutorCallback<ExecuteResult> {
     
-    private final DatabaseConnector databaseConnector;
+    private final DatabaseProxyConnector databaseProxyConnector;
     
     private final boolean isReturnGeneratedKeys;
     
@@ -54,10 +55,10 @@ public abstract class ProxyJDBCExecutorCallback extends JDBCExecutorCallback<Exe
     private boolean hasMetaData;
     
     protected ProxyJDBCExecutorCallback(final DatabaseType protocolType, final ResourceMetaData resourceMetaData, final SQLStatement sqlStatement,
-                                        final DatabaseConnector databaseConnector,
+                                        final DatabaseProxyConnector databaseProxyConnector,
                                         final boolean isReturnGeneratedKeys, final boolean isExceptionThrown, final boolean fetchMetaData) {
         super(protocolType, resourceMetaData, sqlStatement, isExceptionThrown);
-        this.databaseConnector = databaseConnector;
+        this.databaseProxyConnector = databaseProxyConnector;
         this.isReturnGeneratedKeys = isReturnGeneratedKeys;
         this.fetchMetaData = fetchMetaData;
     }
@@ -65,10 +66,10 @@ public abstract class ProxyJDBCExecutorCallback extends JDBCExecutorCallback<Exe
     @Override
     public ExecuteResult executeSQL(final String sql, final Statement statement, final ConnectionMode connectionMode, final DatabaseType storageType) throws SQLException {
         hasMetaData = fetchMetaData && !hasMetaData;
-        databaseConnector.add(statement);
+        databaseProxyConnector.add(statement);
         if (execute(sql, statement, isReturnGeneratedKeys)) {
             ResultSet resultSet = statement.getResultSet();
-            databaseConnector.add(resultSet);
+            databaseProxyConnector.add(resultSet);
             return createQueryResult(resultSet, connectionMode, storageType);
         }
         return new UpdateResult(Math.max(statement.getUpdateCount(), 0), isReturnGeneratedKeys ? getGeneratedKey(statement) : 0L);
@@ -102,7 +103,7 @@ public abstract class ProxyJDBCExecutorCallback extends JDBCExecutorCallback<Exe
     
     @Override
     protected final Optional<ExecuteResult> getSaneResult(final SQLStatement sqlStatement, final SQLException ex) {
-        return new SaneQueryResultEngine(getProtocolTypeType()).getSaneQueryResult(sqlStatement, ex);
+        return DatabaseTypedSPILoader.findService(DialectSaneQueryResultEngine.class, getProtocolTypeType()).flatMap(optional -> optional.getSaneQueryResult(sqlStatement, ex));
     }
     
     private DatabaseType getProtocolTypeType() {

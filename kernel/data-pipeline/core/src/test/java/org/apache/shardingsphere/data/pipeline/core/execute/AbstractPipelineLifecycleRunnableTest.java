@@ -72,7 +72,7 @@ class AbstractPipelineLifecycleRunnableTest {
         assertThat(executor.runBlockingCount.get(), is(0));
     }
     
-    private static class FixturePipelineLifecycleRunnable extends AbstractPipelineLifecycleRunnable {
+    private static final class FixturePipelineLifecycleRunnable extends AbstractPipelineLifecycleRunnable {
         
         private final AtomicInteger runBlockingCount = new AtomicInteger();
         

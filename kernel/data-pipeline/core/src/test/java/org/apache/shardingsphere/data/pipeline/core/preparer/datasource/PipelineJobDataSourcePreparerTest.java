@@ -23,7 +23,7 @@ import org.apache.shardingsphere.data.pipeline.core.preparer.datasource.param.Cr
 import org.apache.shardingsphere.data.pipeline.core.preparer.datasource.param.PrepareTargetSchemasParameter;
 import org.apache.shardingsphere.data.pipeline.core.preparer.datasource.param.PrepareTargetTablesParameter;
 import org.apache.shardingsphere.driver.jdbc.core.connection.ShardingSphereConnection;
-import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.parser.SQLParserEngine;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
@@ -57,9 +57,7 @@ class PipelineJobDataSourcePreparerTest {
         ShardingSphereConnection connection = mock(ShardingSphereConnection.class, RETURNS_DEEP_STUBS);
         when(pipelineDataSourceManager.getDataSource(any()).getConnection()).thenReturn(connection);
         when(connection.getContextManager().getMetaDataContexts().getMetaData()).thenReturn(mock(ShardingSphereMetaData.class));
-        PrepareTargetTablesParameter parameter = new PrepareTargetTablesParameter(
-                Collections.singleton(createTableConfig), pipelineDataSourceManager,
-                mock(SQLParserEngine.class), "foo_db");
+        PrepareTargetTablesParameter parameter = new PrepareTargetTablesParameter(Collections.singleton(createTableConfig), pipelineDataSourceManager, mock(SQLParserEngine.class), "foo_db");
         assertDoesNotThrow(() -> new PipelineJobDataSourcePreparer(databaseType).prepareTargetTables(parameter));
     }
 }

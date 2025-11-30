@@ -25,7 +25,7 @@ import java.util.TreeMap;
 import java.util.stream.Collectors;
 
 /**
- * Properties utilities.
+ * Properties utility class.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class PropertiesUtils {

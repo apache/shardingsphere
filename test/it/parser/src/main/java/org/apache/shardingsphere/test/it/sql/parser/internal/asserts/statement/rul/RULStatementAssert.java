@@ -19,16 +19,13 @@ package org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.distsql.statement.rul.RULStatement;
-import org.apache.shardingsphere.distsql.statement.rul.sql.FormatStatement;
-import org.apache.shardingsphere.distsql.statement.rul.sql.ParseStatement;
-import org.apache.shardingsphere.distsql.statement.rul.sql.PreviewStatement;
+import org.apache.shardingsphere.distsql.statement.type.rul.RULStatement;
+import org.apache.shardingsphere.distsql.statement.type.rul.sql.ParseStatement;
+import org.apache.shardingsphere.distsql.statement.type.rul.sql.PreviewStatement;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAssertContext;
-import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.rul.type.FormatSQLStatementAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.rul.type.ParseStatementAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.rul.type.PreviewStatementAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.SQLParserTestCase;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.rul.FormatSQLStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.rul.ParseStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.rul.PreviewStatementTestCase;
 
@@ -50,8 +47,6 @@ public final class RULStatementAssert {
             PreviewStatementAssert.assertIs(assertContext, (PreviewStatement) actual, (PreviewStatementTestCase) expected);
         } else if (actual instanceof ParseStatement) {
             ParseStatementAssert.assertIs(assertContext, (ParseStatement) actual, (ParseStatementTestCase) expected);
-        } else if (actual instanceof FormatStatement) {
-            FormatSQLStatementAssert.assertIs(assertContext, (FormatStatement) actual, (FormatSQLStatementTestCase) expected);
         }
     }
 }

@@ -17,15 +17,15 @@
 
 package org.apache.shardingsphere.single.distsql.statement.rql;
 
-import org.apache.shardingsphere.distsql.statement.rql.resource.ShowTablesStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.DatabaseSegment;
+import org.apache.shardingsphere.distsql.statement.type.rql.resource.ShowTablesStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.FromDatabaseSegment;
 
 /**
  * Show single tables statement.
  */
 public final class ShowSingleTablesStatement extends ShowTablesStatement {
     
-    public ShowSingleTablesStatement(final DatabaseSegment database, final String likePattern) {
-        super(database, likePattern);
+    public ShowSingleTablesStatement(final FromDatabaseSegment fromDatabase, final String likePattern) {
+        super(fromDatabase, likePattern);
     }
 }

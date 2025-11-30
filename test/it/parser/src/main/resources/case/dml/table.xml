@@ -49,7 +49,7 @@
         <from>
             <simple-table name="T1" start-index="0" stop-index="7" />
         </from>
-        <combine combine-type="UNION" start-index="9" stop-index="22">
+        <combine combine-type="UNION" start-index="0" stop-index="22">
             <left>
                 <projections start-index="0" stop-index="0">
                     <shorthand-projection start-index="0" stop-index="0" />

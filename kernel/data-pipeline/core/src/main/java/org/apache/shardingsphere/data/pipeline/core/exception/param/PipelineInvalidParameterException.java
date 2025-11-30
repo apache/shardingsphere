@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.data.pipeline.core.exception.param;
 
-import org.apache.shardingsphere.infra.exception.core.external.sql.type.kernel.category.PipelineSQLException;
-import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.XOpenSQLState;
+import org.apache.shardingsphere.infra.exception.external.sql.sqlstate.XOpenSQLState;
+import org.apache.shardingsphere.infra.exception.external.sql.type.kernel.category.PipelineSQLException;
 
 /**
  * Pipeline invalid parameter exception.
@@ -28,6 +28,6 @@ public final class PipelineInvalidParameterException extends PipelineSQLExceptio
     private static final long serialVersionUID = -2162309404414015630L;
     
     public PipelineInvalidParameterException(final String message) {
-        super(XOpenSQLState.INVALID_PARAMETER_VALUE, 0, String.format("There is invalid parameter value '%s'.", message));
+        super(XOpenSQLState.INVALID_PARAMETER_VALUE, 0, String.format("There is invalid parameter value. %s", message));
     }
 }

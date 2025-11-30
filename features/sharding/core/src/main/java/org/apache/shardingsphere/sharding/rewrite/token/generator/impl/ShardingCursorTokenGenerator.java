@@ -20,13 +20,15 @@ package org.apache.shardingsphere.sharding.rewrite.token.generator.impl;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.binder.context.type.CursorAvailable;
 import org.apache.shardingsphere.infra.rewrite.sql.token.common.generator.OptionalSQLTokenGenerator;
 import org.apache.shardingsphere.infra.rewrite.sql.token.common.pojo.SQLToken;
 import org.apache.shardingsphere.sharding.exception.connection.CursorNameNotFoundException;
 import org.apache.shardingsphere.sharding.rewrite.token.pojo.CursorToken;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.cursor.CursorNameSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.type.CursorSQLStatementAttribute;
+
+import java.util.Optional;
 
 /**
  * Sharding cursor token generator.
@@ -39,12 +41,14 @@ public final class ShardingCursorTokenGenerator implements OptionalSQLTokenGener
     
     @Override
     public boolean isGenerateSQLToken(final SQLStatementContext sqlStatementContext) {
-        return sqlStatementContext instanceof CursorAvailable && ((CursorAvailable) sqlStatementContext).getCursorName().isPresent();
+        Optional<CursorSQLStatementAttribute> cursorSQLStatementAttribute = sqlStatementContext.getSqlStatement().getAttributes().findAttribute(CursorSQLStatementAttribute.class);
+        return cursorSQLStatementAttribute.isPresent() && cursorSQLStatementAttribute.get().getCursorName().isPresent();
     }
     
     @Override
     public SQLToken generateSQLToken(final SQLStatementContext sqlStatementContext) {
-        CursorNameSegment cursorNameSegment = ((CursorAvailable) sqlStatementContext).getCursorName().orElseThrow(CursorNameNotFoundException::new);
+        CursorSQLStatementAttribute cursorSQLStatementAttribute = sqlStatementContext.getSqlStatement().getAttributes().getAttribute(CursorSQLStatementAttribute.class);
+        CursorNameSegment cursorNameSegment = cursorSQLStatementAttribute.getCursorName().orElseThrow(CursorNameNotFoundException::new);
         return new CursorToken(cursorNameSegment.getStartIndex(), cursorNameSegment.getStopIndex(), cursorNameSegment.getIdentifier(), sqlStatementContext, rule);
     }
 }

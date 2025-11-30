@@ -19,10 +19,10 @@ package org.apache.shardingsphere.sharding.route.engine.type.standard.assertion;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.engine.SQLBindEngine;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
-import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
@@ -31,7 +31,7 @@ import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereColumn;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
-import org.apache.shardingsphere.infra.parser.sql.SQLStatementParserEngine;
+import org.apache.shardingsphere.infra.parser.SQLParserEngine;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.engine.SQLRouteEngine;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
@@ -39,10 +39,12 @@ import org.apache.shardingsphere.infra.rule.attribute.table.TableMapperRuleAttri
 import org.apache.shardingsphere.infra.session.connection.ConnectionContext;
 import org.apache.shardingsphere.infra.session.query.QueryContext;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
+import org.apache.shardingsphere.parser.config.SQLParserRuleConfiguration;
+import org.apache.shardingsphere.parser.rule.SQLParserRule;
 import org.apache.shardingsphere.sharding.route.engine.fixture.ShardingRouteEngineFixtureBuilder;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.single.rule.SingleRule;
-import org.apache.shardingsphere.sql.parser.api.CacheOption;
+import org.apache.shardingsphere.sql.parser.engine.api.CacheOption;
 import org.apache.shardingsphere.timeservice.core.rule.TimestampServiceRule;
 
 import java.sql.Types;
@@ -76,8 +78,8 @@ public final class ShardingRouteAssert {
         ShardingRule shardingRule = ShardingRouteEngineFixtureBuilder.createAllShardingRule();
         SingleRule singleRule = ShardingRouteEngineFixtureBuilder.createSingleRule(Collections.singleton(shardingRule));
         TimestampServiceRule timestampServiceRule = ShardingRouteEngineFixtureBuilder.createTimeServiceRule();
-        SQLStatementParserEngine sqlStatementParserEngine = new SQLStatementParserEngine(databaseType,
-                new CacheOption(2000, 65535L), new CacheOption(128, 1024L));
+        SQLParserRule sqlParserRule = new SQLParserRule(new SQLParserRuleConfiguration(new CacheOption(2000, 65535L), new CacheOption(128, 1024L)));
+        SQLParserEngine sqlParserEngine = sqlParserRule.getSQLParserEngine(databaseType);
         ShardingSphereRule broadcastRule = mock(ShardingSphereRule.class, RETURNS_DEEP_STUBS);
         TableMapperRuleAttribute ruleAttribute = mock(TableMapperRuleAttribute.class);
         when(ruleAttribute.getDistributedTableNames()).thenReturn(Collections.singleton("t_product"));
@@ -85,7 +87,7 @@ public final class ShardingRouteAssert {
         RuleMetaData ruleMetaData = new RuleMetaData(Arrays.asList(shardingRule, broadcastRule, singleRule, timestampServiceRule));
         ShardingSphereDatabase database = new ShardingSphereDatabase("foo_db", databaseType, mock(ResourceMetaData.class, RETURNS_DEEP_STUBS), ruleMetaData, buildSchemas());
         ShardingSphereMetaData metaData = new ShardingSphereMetaData(Collections.singleton(database), mock(), mock(), mock());
-        SQLStatementContext sqlStatementContext = new SQLBindEngine(metaData, "foo_db", new HintValueContext()).bind(sqlStatementParserEngine.parse(sql, false), params);
+        SQLStatementContext sqlStatementContext = new SQLBindEngine(metaData, "foo_db", new HintValueContext()).bind(sqlParserEngine.parse(sql, false));
         ConnectionContext connectionContext = new ConnectionContext(Collections::emptySet);
         connectionContext.setCurrentDatabaseName("foo_db");
         QueryContext queryContext = new QueryContext(sqlStatementContext, sql, params, new HintValueContext(), connectionContext, metaData);

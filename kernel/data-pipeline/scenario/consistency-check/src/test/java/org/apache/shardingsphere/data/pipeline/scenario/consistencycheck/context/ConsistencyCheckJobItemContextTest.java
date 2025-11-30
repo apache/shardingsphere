@@ -17,55 +17,67 @@
 
 package org.apache.shardingsphere.data.pipeline.scenario.consistencycheck.context;
 
-import com.google.common.collect.ImmutableMap;
+import org.apache.shardingsphere.data.pipeline.core.consistencycheck.position.TableCheckRangePosition;
+import org.apache.shardingsphere.data.pipeline.core.ingest.position.type.pk.PrimaryKeyIngestPosition;
+import org.apache.shardingsphere.data.pipeline.core.ingest.position.type.pk.type.IntegerPrimaryKeyIngestPosition;
 import org.apache.shardingsphere.data.pipeline.core.job.JobStatus;
 import org.apache.shardingsphere.data.pipeline.core.job.progress.ConsistencyCheckJobItemProgress;
-import org.apache.shardingsphere.data.pipeline.core.consistencycheck.ConsistencyCheckJobItemProgressContext;
 import org.apache.shardingsphere.data.pipeline.scenario.consistencycheck.config.ConsistencyCheckJobConfiguration;
-import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.junit.jupiter.api.Test;
 
-import java.util.Collections;
-import java.util.Map;
-
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.is;
-import static org.junit.jupiter.api.Assertions.assertNotSame;
 
 class ConsistencyCheckJobItemContextTest {
+    
+    private static final String DATA_NODE = "ds_0.t_order";
     
     private static final String TABLE = "t_order";
     
     private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "H2");
     
     @Test
-    void assertConstructWithoutTableCheckPositions() {
-        Map<String, Object> sourceTableCheckPositions = Collections.emptyMap();
-        Map<String, Object> targetTableCheckPositions = Collections.emptyMap();
-        ConsistencyCheckJobItemProgress jobItemProgress = new ConsistencyCheckJobItemProgress(TABLE, null, 0L, 10L, null, null, sourceTableCheckPositions, targetTableCheckPositions, "H2");
+    void assertConstructWithEmptyValues() {
+        ConsistencyCheckJobItemProgress jobItemProgress = new ConsistencyCheckJobItemProgress(TABLE, null, 0L, 10L, null, null, "H2");
         ConsistencyCheckJobItemContext actual = new ConsistencyCheckJobItemContext(new ConsistencyCheckJobConfiguration("", "", "DATA_MATCH", null, databaseType),
                 0, JobStatus.RUNNING, jobItemProgress);
-        verifyProgressContext(actual.getProgressContext(), 0, sourceTableCheckPositions, targetTableCheckPositions);
+        assertThat(actual.getProgressContext().getTableCheckRangePositions().size(), is(0));
     }
     
     @Test
-    void assertConstructWithTableCheckPositions() {
-        Map<String, Object> sourceTableCheckPositions = ImmutableMap.of(TABLE, 6);
-        Map<String, Object> targetTableCheckPositions = ImmutableMap.of(TABLE, 5);
-        ConsistencyCheckJobItemProgress jobItemProgress = new ConsistencyCheckJobItemProgress(TABLE, null, 0L, 10L, null, null, sourceTableCheckPositions, targetTableCheckPositions, "H2");
+    void assertConstructWithNonEmptyValues() {
+        ConsistencyCheckJobItemProgress jobItemProgress = new ConsistencyCheckJobItemProgress(TABLE, null, 0L, 10L, null, null, "H2");
+        jobItemProgress.getTableCheckRangePositions().add(new TableCheckRangePosition(0, DATA_NODE, TABLE, new IntegerPrimaryKeyIngestPosition(1, 100),
+                new IntegerPrimaryKeyIngestPosition(1, 101), null, 11, 11, false, null));
+        jobItemProgress.getTableCheckRangePositions().add(new TableCheckRangePosition(1, DATA_NODE, TABLE, new IntegerPrimaryKeyIngestPosition(101, 200),
+                new IntegerPrimaryKeyIngestPosition(101, 203), null, 132, 132, false, null));
         ConsistencyCheckJobItemContext actual = new ConsistencyCheckJobItemContext(new ConsistencyCheckJobConfiguration("", "", "DATA_MATCH", null, databaseType),
                 0, JobStatus.RUNNING, jobItemProgress);
-        verifyProgressContext(actual.getProgressContext(), 1, sourceTableCheckPositions, targetTableCheckPositions);
-        assertThat(actual.getProgressContext().getSourceTableCheckPositions().get(TABLE), is(6));
-        assertThat(actual.getProgressContext().getTargetTableCheckPositions().get(TABLE), is(5));
+        assertThat(actual.getProgressContext().getTableCheckRangePositions().size(), is(2));
+        assertTableCheckRangePosition(actual.getProgressContext().getTableCheckRangePositions().get(0),
+                new TableCheckRangePosition(0, DATA_NODE, TABLE, new IntegerPrimaryKeyIngestPosition(1, 100), new IntegerPrimaryKeyIngestPosition(1, 101), null, 11, 11, false, null));
+        assertTableCheckRangePosition(actual.getProgressContext().getTableCheckRangePositions().get(1),
+                new TableCheckRangePosition(1, DATA_NODE, TABLE, new IntegerPrimaryKeyIngestPosition(101, 200), new IntegerPrimaryKeyIngestPosition(101, 203), null, 132, 132, false, null));
     }
     
-    private void verifyProgressContext(final ConsistencyCheckJobItemProgressContext progressContext, final int expectedSize,
-                                       final Map<String, Object> sourceTableCheckPositions, final Map<String, Object> targetTableCheckPositions) {
-        assertThat(progressContext.getSourceTableCheckPositions().size(), is(expectedSize));
-        assertThat(progressContext.getTargetTableCheckPositions().size(), is(expectedSize));
-        assertNotSame(progressContext.getSourceTableCheckPositions(), sourceTableCheckPositions);
-        assertNotSame(progressContext.getTargetTableCheckPositions(), targetTableCheckPositions);
+    private void assertTableCheckRangePosition(final TableCheckRangePosition actual, final TableCheckRangePosition expected) {
+        assertRange(actual.getSourceRange(), expected.getSourceRange());
+        assertRange(actual.getTargetRange(), expected.getTargetRange());
+        assertThat(actual.getSplittingItem(), is(expected.getSplittingItem()));
+        assertThat(actual.getSourceDataNode(), is(expected.getSourceDataNode()));
+        assertThat(actual.getLogicTableName(), is(expected.getLogicTableName()));
+        assertThat(actual.getSourcePosition(), is(expected.getSourcePosition()));
+        assertThat(actual.getTargetPosition(), is(expected.getTargetPosition()));
+        assertThat(actual.isFinished(), is(expected.isFinished()));
+    }
+    
+    private void assertRange(final PrimaryKeyIngestPosition<?> actual, final PrimaryKeyIngestPosition<?> expected) {
+        assertThat(actual.getClass(), is(expected.getClass()));
+        assertThat(actual, instanceOf(IntegerPrimaryKeyIngestPosition.class));
+        assertThat(((IntegerPrimaryKeyIngestPosition) actual).getBeginValue(), is(((IntegerPrimaryKeyIngestPosition) expected).getBeginValue()));
+        assertThat(((IntegerPrimaryKeyIngestPosition) actual).getEndValue(), is(((IntegerPrimaryKeyIngestPosition) expected).getEndValue()));
     }
 }

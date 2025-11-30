@@ -60,10 +60,19 @@ public final class DatabaseRuleConfigurationManager {
         ShardingSphereDatabase database = metaDataContexts.getMetaData().getDatabase(databaseName);
         Collection<ShardingSphereRule> rules = new LinkedList<>(database.getRuleMetaData().getRules());
         Optional<ShardingSphereRule> toBeChangedRule = rules.stream().filter(each -> each.getConfiguration().getClass().equals(ruleConfig.getClass())).findFirst();
-        if (toBeChangedRule.isPresent() && toBeChangedRule.get() instanceof PartialRuleUpdateSupported && ((PartialRuleUpdateSupported) toBeChangedRule.get()).partialUpdate(ruleConfig)) {
+        if (toBeChangedRule.isPresent() && toBeChangedRule.get() instanceof PartialRuleUpdateSupported) {
+            boolean needRefreshSchemas = ((PartialRuleUpdateSupported) toBeChangedRule.get()).partialUpdate(ruleConfig);
             ((PartialRuleUpdateSupported) toBeChangedRule.get()).updateConfiguration(ruleConfig);
-            return;
+            if (needRefreshSchemas) {
+                refreshMetadata(databaseName, ruleConfig, reBuildRules, database, rules);
+            }
+        } else {
+            refreshMetadata(databaseName, ruleConfig, reBuildRules, database, rules);
         }
+    }
+    
+    private void refreshMetadata(final String databaseName, final RuleConfiguration ruleConfig, final boolean reBuildRules, final ShardingSphereDatabase database,
+                                 final Collection<ShardingSphereRule> rules) throws SQLException {
         Collection<ShardingSphereRule> toBeRemovedRules = rules.stream().filter(each -> each.getConfiguration().getClass().isAssignableFrom(ruleConfig.getClass())).collect(Collectors.toList());
         rules.removeAll(toBeRemovedRules);
         if (reBuildRules) {

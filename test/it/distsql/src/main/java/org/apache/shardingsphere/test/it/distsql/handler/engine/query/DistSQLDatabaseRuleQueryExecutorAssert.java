@@ -33,7 +33,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 
-import static org.apache.shardingsphere.test.matcher.ShardingSphereAssertionMatchers.deepEqual;
+import static org.apache.shardingsphere.test.infra.framework.matcher.ShardingSphereAssertionMatchers.deepEqual;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
@@ -43,16 +43,16 @@ import static org.mockito.Mockito.when;
  * DistSQL database rule query executor assert.
  */
 @RequiredArgsConstructor
-public class DistSQLDatabaseRuleQueryExecutorAssert {
+public final class DistSQLDatabaseRuleQueryExecutorAssert {
     
     private final DatabaseRule mockedRule;
     
     /**
      * Assert query result rows.
      *
-     * @param ruleConfig   rule configuration
+     * @param ruleConfig rule configuration
      * @param sqlStatement SQL statement
-     * @param expected     expected query result rows
+     * @param expected expected query result rows
      * @throws SQLException SQL exception
      */
     public void assertQueryResultRows(final DatabaseRuleConfiguration ruleConfig, final DistSQLStatement sqlStatement, final Collection<LocalDataQueryResultRow> expected) throws SQLException {

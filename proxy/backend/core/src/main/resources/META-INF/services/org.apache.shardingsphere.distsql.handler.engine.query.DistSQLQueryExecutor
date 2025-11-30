@@ -25,6 +25,5 @@ org.apache.shardingsphere.proxy.backend.handler.distsql.ral.queryable.yaml.Conve
 org.apache.shardingsphere.proxy.backend.handler.distsql.ral.queryable.variable.ShowDistVariableExecutor
 org.apache.shardingsphere.proxy.backend.handler.distsql.ral.queryable.variable.ShowDistVariablesExecutor
 org.apache.shardingsphere.proxy.backend.handler.distsql.ral.queryable.export.ShowTableMetaDataExecutor
-org.apache.shardingsphere.proxy.backend.handler.distsql.rul.FormatSQLExecutor
 org.apache.shardingsphere.proxy.backend.handler.distsql.rul.ParseDistSQLExecutor
 org.apache.shardingsphere.proxy.backend.handler.distsql.rul.PreviewExecutor

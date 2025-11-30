@@ -145,4 +145,21 @@
     <alter-index sql-case-id="alter_index_alter_column" />
     <alter-index sql-case-id="alter_index_with_schema" />
     <alter-index sql-case-id="alter_index_set_tablespace" />
+
+    <alter-index sql-case-id="alter_index_rebuild_basic">
+        <index name="idx_product_id" start-index="12" stop-index="25" />
+        <table name="orders" start-index="30" stop-index="35" />
+    </alter-index>
+
+    <alter-index sql-case-id="alter_index_rebuild_with_partition">
+        <index name="idx_sales_region" start-index="12" stop-index="27" />
+        <table name="sales" start-index="32" stop-index="36" />
+    </alter-index>
+
+    <alter-index sql-case-id="alter_index_rebuild_with_db">
+        <index name="idx_product_id" start-index="12" stop-index="25" />
+        <table name="orders" start-index="30" stop-index="38">
+            <owner name="db" start-index="30" stop-index="31" />
+        </table>
+    </alter-index>
 </sql-parser-test-cases>

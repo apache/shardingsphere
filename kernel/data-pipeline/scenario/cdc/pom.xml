@@ -31,5 +31,6 @@
         <module>protocol</module>
         <module>core</module>
         <module>client</module>
+        <module>distsql</module>
     </modules>
 </project>

@@ -17,12 +17,12 @@
 
 package org.apache.shardingsphere.encrypt.rewrite.token.pojo;
 
+import com.google.common.base.Joiner;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.database.core.metadata.database.enums.QuoteCharacter;
+import org.apache.shardingsphere.database.connector.core.metadata.database.enums.QuoteCharacter;
 
 import java.util.Collection;
 import java.util.LinkedList;
-import java.util.stream.Collectors;
 
 /**
  * Literal assignment token for encrypt.
@@ -47,7 +47,7 @@ public final class EncryptLiteralAssignmentToken extends EncryptAssignmentToken 
     
     @Override
     public String toString() {
-        return assignments.stream().map(LiteralAssignment::toString).collect(Collectors.joining(", "));
+        return Joiner.on(", ").join(assignments);
     }
     
     @RequiredArgsConstructor

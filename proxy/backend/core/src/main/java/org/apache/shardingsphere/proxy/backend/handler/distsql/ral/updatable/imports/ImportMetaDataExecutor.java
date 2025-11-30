@@ -20,7 +20,7 @@ package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.updatable.im
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.io.FileUtils;
 import org.apache.shardingsphere.distsql.handler.engine.update.DistSQLUpdateExecutor;
-import org.apache.shardingsphere.distsql.statement.ral.updatable.ImportMetaDataStatement;
+import org.apache.shardingsphere.distsql.statement.type.ral.updatable.ImportMetaDataStatement;
 import org.apache.shardingsphere.infra.exception.generic.FileIOException;
 import org.apache.shardingsphere.infra.util.json.JsonUtils;
 import org.apache.shardingsphere.mode.manager.ContextManager;
@@ -31,7 +31,6 @@ import org.apache.shardingsphere.proxy.backend.util.MetaDataImportExecutor;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
-import java.sql.SQLException;
 
 /**
  * Import meta data executor.
@@ -39,7 +38,7 @@ import java.sql.SQLException;
 public final class ImportMetaDataExecutor implements DistSQLUpdateExecutor<ImportMetaDataStatement> {
     
     @Override
-    public void executeUpdate(final ImportMetaDataStatement sqlStatement, final ContextManager contextManager) throws SQLException {
+    public void executeUpdate(final ImportMetaDataStatement sqlStatement, final ContextManager contextManager) {
         String jsonMetaDataConfig = sqlStatement.getFilePath().isPresent() ? getMetaDataFromFile(sqlStatement) : getMetaDataFromConsole(sqlStatement);
         ExportedClusterInfo exportedClusterInfo = JsonUtils.fromJsonString(jsonMetaDataConfig, ExportedClusterInfo.class);
         ExportedMetaData exportedMetaData = exportedClusterInfo.getMetaData();

@@ -20,67 +20,75 @@ package org.apache.shardingsphere.infra.config.database.impl;
 import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePoolProperties;
 import org.apache.shardingsphere.infra.fixture.FixtureRuleConfiguration;
 import org.apache.shardingsphere.infra.metadata.database.resource.node.StorageNode;
-import org.apache.shardingsphere.test.fixture.jdbc.MockedDataSource;
+import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnit;
+import org.apache.shardingsphere.test.infra.fixture.jdbc.MockedDataSource;
 import org.junit.jupiter.api.Test;
 
 import javax.sql.DataSource;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.isA;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class DataSourceProvidedDatabaseConfigurationTest {
     
     @Test
-    void assertGetDataSources() {
-        DataSourceProvidedDatabaseConfiguration databaseConfig = createDataSourceProvidedDatabaseConfiguration();
-        DataSource dataSource = databaseConfig.getStorageUnits().get("foo_ds").getDataSource();
-        assertTrue(dataSource instanceof MockedDataSource);
+    void assertNewWithDataSources() {
+        DataSourceProvidedDatabaseConfiguration actual = new DataSourceProvidedDatabaseConfiguration(
+                Collections.singletonMap("foo_ds", new MockedDataSource()), Collections.singleton(new FixtureRuleConfiguration("foo_rule")));
+        assertRuleConfigurations(actual);
+        assertStorageUnits(actual.getStorageUnits().get("foo_ds"));
+        assertDataSources((MockedDataSource) actual.getDataSources().get(new StorageNode("foo_ds")));
+    }
+    
+    private void assertRuleConfigurations(final DataSourceProvidedDatabaseConfiguration actual) {
+        FixtureRuleConfiguration ruleConfig = (FixtureRuleConfiguration) actual.getRuleConfigurations().iterator().next();
+        assertThat(ruleConfig.getName(), is("foo_rule"));
     }
     
     @Test
-    void assertGetStorageNodes() {
-        DataSourceProvidedDatabaseConfiguration databaseConfig = createDataSourceProvidedDatabaseConfiguration();
-        MockedDataSource dataSource = (MockedDataSource) databaseConfig.getDataSources().get(new StorageNode("foo_ds"));
-        assertThat(dataSource.getUrl(), is("jdbc:mock://127.0.0.1/foo_ds"));
-        assertThat(dataSource.getUsername(), is("root"));
-        assertThat(dataSource.getPassword(), is("root"));
+    void assertNewWithStorageNodeDataSources() {
+        Map<String, DataSourcePoolProperties> dataSourcePoolPropsMap = Collections.singletonMap("foo_ds", new DataSourcePoolProperties("foo_ds", createConnectionProps()));
+        DataSourceProvidedDatabaseConfiguration actual = new DataSourceProvidedDatabaseConfiguration(
+                Collections.singletonMap(new StorageNode("foo_ds"), new MockedDataSource()), Collections.singleton(new FixtureRuleConfiguration("foo_rule")), dataSourcePoolPropsMap);
+        assertRuleConfigurations(actual);
+        assertStorageUnits(actual.getStorageUnits().get("foo_ds"));
+        assertDataSources((MockedDataSource) actual.getDataSources().get(new StorageNode("foo_ds")));
     }
     
-    @Test
-    void assertGetStorageUnits() {
-        DataSourceProvidedDatabaseConfiguration databaseConfig = createDataSourceProvidedDatabaseConfiguration();
-        DataSource dataSource = databaseConfig.getStorageUnits().get("foo_ds").getDataSource();
-        assertTrue(dataSource instanceof MockedDataSource);
+    private Map<String, Object> createConnectionProps() {
+        Map<String, Object> result = new HashMap<>(3, 1F);
+        result.put("url", "jdbc:mock://127.0.0.1/foo_ds");
+        result.put("username", "root");
+        result.put("password", "root");
+        return result;
     }
     
-    @Test
-    void assertGetRuleConfigurations() {
-        DataSourceProvidedDatabaseConfiguration databaseConfig = createDataSourceProvidedDatabaseConfiguration();
-        FixtureRuleConfiguration ruleConfig = (FixtureRuleConfiguration) databaseConfig.getRuleConfigurations().iterator().next();
-        assertThat(ruleConfig.getName(), is("test_rule"));
+    private void assertStorageUnits(final StorageUnit actual) {
+        DataSource dataSource = actual.getDataSource();
+        assertThat(dataSource, isA(MockedDataSource.class));
+        assertPoolProperties(actual.getDataSourcePoolProperties().getPoolPropertySynonyms().getStandardProperties());
+        assertConnectionProperties(actual.getDataSourcePoolProperties().getConnectionPropertySynonyms().getStandardProperties());
     }
     
-    @Test
-    void assertGetDataSourcePoolProperties() {
-        DataSourceProvidedDatabaseConfiguration databaseConfig = createDataSourceProvidedDatabaseConfiguration();
-        DataSourcePoolProperties props = databaseConfig.getStorageUnits().get("foo_ds").getDataSourcePoolProperties();
-        Map<String, Object> poolStandardProps = props.getPoolPropertySynonyms().getStandardProperties();
-        assertTrue(poolStandardProps.isEmpty());
-        Map<String, Object> connStandardProps = props.getConnectionPropertySynonyms().getStandardProperties();
-        assertThat(connStandardProps.size(), is(3));
-        assertThat(connStandardProps.get("url"), is("jdbc:mock://127.0.0.1/foo_ds"));
-        assertThat(connStandardProps.get("username"), is("root"));
-        assertThat(connStandardProps.get("password"), is("root"));
+    private void assertPoolProperties(final Map<String, Object> actual) {
+        assertTrue(actual.isEmpty());
     }
     
-    private DataSourceProvidedDatabaseConfiguration createDataSourceProvidedDatabaseConfiguration() {
-        return new DataSourceProvidedDatabaseConfiguration(createDataSources(), Collections.singletonList(new FixtureRuleConfiguration("test_rule")));
+    private void assertConnectionProperties(final Map<String, Object> actual) {
+        assertThat(actual.size(), is(3));
+        assertThat(actual.get("url"), is("jdbc:mock://127.0.0.1/foo_ds"));
+        assertThat(actual.get("username"), is("root"));
+        assertThat(actual.get("password"), is("root"));
     }
     
-    private Map<String, DataSource> createDataSources() {
-        return Collections.singletonMap("foo_ds", new MockedDataSource());
+    private void assertDataSources(final MockedDataSource actual) {
+        assertThat(actual.getUrl(), is("jdbc:mock://127.0.0.1/foo_ds"));
+        assertThat(actual.getUsername(), is("root"));
+        assertThat(actual.getPassword(), is("root"));
     }
 }

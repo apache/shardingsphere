@@ -47,19 +47,19 @@ class EncryptInsertDefaultColumnsTokenGeneratorTest {
     void assertGenerateSQLTokenFromGenerateNewSQLToken() {
         generator.setPreviousSQLTokens(Collections.emptyList());
         assertThat(generator.generateSQLToken(EncryptGeneratorFixtureBuilder.createInsertStatementContext(Collections.emptyList())).toString(),
-                is("(`id`, `name`, `status`, `pwd_cipher`, `pwd_assist`, `pwd_like`)"));
+                is("(id, name, status, pwd_cipher, pwd_assist, pwd_like)"));
     }
     
     @Test
     void assertGenerateSQLTokenFromPreviousSQLTokens() {
         generator.setPreviousSQLTokens(EncryptGeneratorFixtureBuilder.getPreviousSQLTokens());
         assertThat(generator.generateSQLToken(EncryptGeneratorFixtureBuilder.createInsertStatementContext(Collections.emptyList())).toString(),
-                is("(`id`, `name`, `status`, `pwd_cipher`, `pwd_assist`, `pwd_like`)"));
+                is("(id, name, status, pwd_cipher, pwd_assist, pwd_like)"));
     }
     
     @Test
     void assertGenerateSQLTokensWhenInsertColumnsUseDifferentEncryptorWithSelectProjection() {
         generator.setPreviousSQLTokens(EncryptGeneratorFixtureBuilder.getPreviousSQLTokens());
-        assertThrows(UnsupportedSQLOperationException.class, () -> generator.generateSQLToken(EncryptGeneratorFixtureBuilder.createInsertSelectStatementContext(Collections.emptyList(), false)));
+        assertThrows(UnsupportedSQLOperationException.class, () -> generator.generateSQLToken(EncryptGeneratorFixtureBuilder.createInsertSelectStatementContext(false)));
     }
 }

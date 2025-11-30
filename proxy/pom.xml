@@ -31,5 +31,6 @@
         <module>frontend</module>
         <module>backend</module>
         <module>bootstrap</module>
+        <module>dialect</module>
     </modules>
 </project>

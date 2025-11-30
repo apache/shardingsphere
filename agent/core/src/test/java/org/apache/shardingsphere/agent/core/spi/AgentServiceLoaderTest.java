@@ -22,9 +22,9 @@ import org.apache.shardingsphere.fixture.agent.AgentServiceSPIFixture;
 import org.apache.shardingsphere.fixture.agent.impl.AgentServiceSPIFixtureImpl;
 import org.junit.jupiter.api.Test;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.isA;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -50,7 +50,7 @@ class AgentServiceLoaderTest {
         AgentServiceLoader<AgentServiceSPIFixture> actual = AgentServiceLoader.getServiceLoader(AgentServiceSPIFixture.class);
         assertThat(actual.getServices().size(), is(1));
         AgentServiceSPIFixture actualInstance = actual.getServices().iterator().next();
-        assertThat(actualInstance, instanceOf(AgentServiceSPIFixtureImpl.class));
+        assertThat(actualInstance, isA(AgentServiceSPIFixtureImpl.class));
         assertThat(actualInstance, is(AgentServiceLoader.getServiceLoader(AgentServiceSPIFixture.class).getServices().iterator().next()));
     }
 }

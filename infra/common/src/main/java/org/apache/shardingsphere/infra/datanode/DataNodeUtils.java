@@ -61,20 +61,20 @@ public final class DataNodeUtils {
         }
         Collection<DataNode> result = new LinkedList<>();
         for (String each : dataSources.get(dataNode.getDataSourceName())) {
-            result.add(new DataNode(each, dataNode.getTableName()));
+            result.add(new DataNode(each, (String) null, dataNode.getTableName()));
         }
         return result;
     }
     
     /**
-     * Get format data nodes.
+     * Get formatted data nodes.
      *
      * @param amount amount
      * @param logicTable logic table
      * @param dataSources data source names
-     * @return data node list
+     * @return formatted data node list
      */
-    public static List<String> getFormatDataNodes(final int amount, final String logicTable, final Collection<String> dataSources) {
+    public static List<String> getFormattedDataNodes(final int amount, final String logicTable, final Collection<String> dataSources) {
         List<String> result = new LinkedList<>();
         Iterator<String> iterator = dataSources.iterator();
         for (int i = 0; i < amount; i++) {

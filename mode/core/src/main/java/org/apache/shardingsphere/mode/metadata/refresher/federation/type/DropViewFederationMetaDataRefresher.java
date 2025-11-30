@@ -17,13 +17,13 @@
 
 package org.apache.shardingsphere.mode.metadata.refresher.federation.type;
 
+import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.mode.metadata.refresher.federation.FederationMetaDataRefresher;
 import org.apache.shardingsphere.mode.persist.service.MetaDataManagerPersistService;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DropViewStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.view.DropViewStatement;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.stream.Collectors;
 
 /**
@@ -32,9 +32,10 @@ import java.util.stream.Collectors;
 public final class DropViewFederationMetaDataRefresher implements FederationMetaDataRefresher<DropViewStatement> {
     
     @Override
-    public void refresh(final MetaDataManagerPersistService metaDataManagerPersistService, final ShardingSphereDatabase database, final String schemaName, final DropViewStatement sqlStatement) {
+    public void refresh(final MetaDataManagerPersistService metaDataManagerPersistService,
+                        final DatabaseType databaseType, final ShardingSphereDatabase database, final String schemaName, final DropViewStatement sqlStatement) {
         Collection<String> droppedViews = sqlStatement.getViews().stream().map(each -> each.getTableName().getIdentifier().getValue()).collect(Collectors.toList());
-        metaDataManagerPersistService.alterSchema(database, schemaName, Collections.emptyList(), Collections.emptyList(), Collections.emptyList(), droppedViews);
+        metaDataManagerPersistService.dropViews(database, schemaName, droppedViews);
     }
     
     @Override

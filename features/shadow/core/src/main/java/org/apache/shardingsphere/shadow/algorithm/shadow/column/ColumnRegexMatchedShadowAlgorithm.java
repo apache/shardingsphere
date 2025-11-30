@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.shadow.algorithm.shadow.column;
 
 import org.apache.shardingsphere.infra.algorithm.core.exception.AlgorithmInitializationException;
-import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
+import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 
 import java.util.Properties;
 import java.util.regex.Pattern;

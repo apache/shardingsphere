@@ -20,13 +20,11 @@ package org.apache.shardingsphere.mode.metadata.persist.metadata.service;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereView;
-import org.apache.shardingsphere.mode.metadata.persist.version.VersionPersistService;
 import org.apache.shardingsphere.mode.spi.repository.PersistRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.internal.configuration.plugins.Plugins;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Collection;
@@ -34,10 +32,8 @@ import java.util.Collections;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.mockito.ArgumentMatchers.anyCollection;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -50,16 +46,14 @@ class SchemaMetaDataPersistServiceTest {
     private PersistRepository repository;
     
     @Mock
-    private TableMetaDataPersistService tableMetaDataPersistService;
+    private TableMetaDataPersistEnabledService tableMetaDataPersistService;
     
     @Mock
     private ViewMetaDataPersistService viewMetaDataPersistService;
     
     @BeforeEach
-    void setUp() throws ReflectiveOperationException {
-        persistService = new SchemaMetaDataPersistService(repository, mock(VersionPersistService.class));
-        Plugins.getMemberAccessor().set(SchemaMetaDataPersistService.class.getDeclaredField("tableMetaDataPersistService"), persistService, tableMetaDataPersistService);
-        Plugins.getMemberAccessor().set(SchemaMetaDataPersistService.class.getDeclaredField("viewMetaDataPersistService"), persistService, viewMetaDataPersistService);
+    void setUp() {
+        persistService = new SchemaMetaDataPersistService(repository, tableMetaDataPersistService, viewMetaDataPersistService);
     }
     
     @Test
@@ -86,7 +80,7 @@ class SchemaMetaDataPersistServiceTest {
         ShardingSphereTable table = mock(ShardingSphereTable.class);
         when(table.getName()).thenReturn("foo_tbl");
         persistService.alterByRefresh("foo_db", new ShardingSphereSchema("foo_schema", Collections.singleton(table), Collections.emptyList()));
-        verify(repository, times(0)).persist("/metadata/foo_db/schemas/foo_schema/tables", "");
+        verify(repository, never()).persist("/metadata/foo_db/schemas/foo_schema/tables", "");
         verify(tableMetaDataPersistService).persist("foo_db", "foo_schema", Collections.singletonList(table));
     }
     
@@ -95,7 +89,7 @@ class SchemaMetaDataPersistServiceTest {
         ShardingSphereView view = mock(ShardingSphereView.class);
         when(view.getName()).thenReturn("foo_view");
         persistService.alterByRefresh("foo_db", new ShardingSphereSchema("foo_schema", Collections.emptyList(), Collections.singleton(view)));
-        verify(repository, times(0)).persist("/metadata/foo_db/schemas/foo_schema/tables", "");
+        verify(repository, never()).persist("/metadata/foo_db/schemas/foo_schema/tables", "");
         verify(tableMetaDataPersistService).persist("foo_db", "foo_schema", Collections.emptyList());
     }
     
@@ -112,36 +106,5 @@ class SchemaMetaDataPersistServiceTest {
         assertThat(actual.size(), is(1));
         assertThat(actual.iterator().next().getTable("foo_tbl"), is(table));
         assertThat(actual.iterator().next().getView("foo_view"), is(view));
-    }
-    
-    @Test
-    void assertAlterSchemaByAlterConfigurationByRefresh() {
-        persistService.alterByRuleAltered("foo_db", new ShardingSphereSchema("foo_schema"));
-        verify(repository).persist("/metadata/foo_db/schemas/foo_schema/tables", "");
-        verify(tableMetaDataPersistService).persist(eq("foo_db"), eq("foo_schema"), anyCollection());
-    }
-    
-    @Test
-    void assertAlterSchemaByAlterConfigurationWithNotEmptyTablesByRefresh() {
-        ShardingSphereTable table = mock(ShardingSphereTable.class);
-        when(table.getName()).thenReturn("foo_tbl");
-        persistService.alterByRuleAltered("foo_db", new ShardingSphereSchema("foo_schema", Collections.singletonList(table), Collections.emptyList()));
-        verify(repository, times(0)).persist("/metadata/foo_db/schemas/foo_schema/tables", "");
-        verify(tableMetaDataPersistService).persist(eq("foo_db"), eq("foo_schema"), anyCollection());
-    }
-    
-    @Test
-    void assertAlterSchemaByAlterConfigurationWithNotEmptyViewsByRefresh() {
-        ShardingSphereView view = mock(ShardingSphereView.class);
-        when(view.getName()).thenReturn("foo_view");
-        persistService.alterByRuleAltered("foo_db", new ShardingSphereSchema("foo_schema", Collections.emptyList(), Collections.singleton(view)));
-        verify(repository, times(0)).persist("/metadata/foo_db/schemas/foo_schema/tables", "");
-        verify(tableMetaDataPersistService).persist(eq("foo_db"), eq("foo_schema"), anyCollection());
-    }
-    
-    @Test
-    void assertAlterByRefreshByDropConfiguration() {
-        persistService.alterByRuleDropped("foo_db", new ShardingSphereSchema("foo_schema"));
-        verify(tableMetaDataPersistService).persist(eq("foo_db"), eq("foo_schema"), anyCollection());
     }
 }

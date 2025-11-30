@@ -21,7 +21,6 @@ import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.statistics.collector.DialectDatabaseStatisticsCollector;
 import org.apache.shardingsphere.infra.metadata.statistics.collector.postgresql.PostgreSQLStatisticsCollector;
 
-import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Optional;
@@ -31,17 +30,16 @@ import java.util.Optional;
  */
 public final class OpenGaussStatisticsCollector implements DialectDatabaseStatisticsCollector {
     
-    private final PostgreSQLStatisticsCollector delegated = new PostgreSQLStatisticsCollector();
+    private final PostgreSQLStatisticsCollector delegate = new PostgreSQLStatisticsCollector();
     
     @Override
-    public Optional<Collection<Map<String, Object>>> collectRowColumnValues(final String databaseName, final String schemaName, final String tableName,
-                                                                            final ShardingSphereMetaData metaData) throws SQLException {
-        return delegated.collectRowColumnValues(databaseName, schemaName, tableName, metaData);
+    public Optional<Collection<Map<String, Object>>> collectRowColumnValues(final String databaseName, final String schemaName, final String tableName, final ShardingSphereMetaData metaData) {
+        return delegate.collectRowColumnValues(databaseName, schemaName, tableName, metaData);
     }
     
     @Override
     public boolean isStatisticsTables(final Map<String, Collection<String>> schemaTables) {
-        return delegated.isStatisticsTables(schemaTables);
+        return delegate.isStatisticsTables(schemaTables);
     }
     
     @Override

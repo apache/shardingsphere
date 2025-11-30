@@ -21,22 +21,23 @@ import org.apache.shardingsphere.agent.api.advice.TargetAdviceMethod;
 import org.apache.shardingsphere.agent.plugin.metrics.core.collector.MetricsCollectorRegistry;
 import org.apache.shardingsphere.agent.plugin.metrics.core.config.MetricCollectorType;
 import org.apache.shardingsphere.agent.plugin.metrics.core.config.MetricConfiguration;
-import org.apache.shardingsphere.agent.plugin.metrics.core.fixture.collector.MetricsCollectorFixture;
 import org.apache.shardingsphere.agent.plugin.metrics.core.fixture.TargetAdviceObjectFixture;
-import org.apache.shardingsphere.distsql.statement.rdl.resource.unit.type.RegisterStorageUnitStatement;
-import org.apache.shardingsphere.distsql.statement.rql.resource.ShowStorageUnitsStatement;
-import org.apache.shardingsphere.distsql.statement.rul.sql.FormatStatement;
-import org.apache.shardingsphere.data.pipeline.migration.distsql.statement.queryable.ShowMigrationListStatement;
+import org.apache.shardingsphere.agent.plugin.metrics.core.fixture.collector.MetricsCollectorFixture;
+import org.apache.shardingsphere.data.pipeline.scenario.migration.distsql.statement.queryable.ShowMigrationListStatement;
+import org.apache.shardingsphere.distsql.statement.type.rdl.resource.unit.type.RegisterStorageUnitStatement;
+import org.apache.shardingsphere.distsql.statement.type.rql.resource.ShowStorageUnitsStatement;
+import org.apache.shardingsphere.distsql.statement.type.rul.sql.ParseStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.FromDatabaseSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.DatabaseSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
-import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLShowDatabasesStatement;
-import org.apache.shardingsphere.sql.parser.statement.mysql.dcl.MySQLCreateUserStatement;
-import org.apache.shardingsphere.sql.parser.statement.mysql.ddl.MySQLCreateDatabaseStatement;
-import org.apache.shardingsphere.sql.parser.statement.mysql.dml.MySQLDeleteStatement;
-import org.apache.shardingsphere.sql.parser.statement.mysql.dml.MySQLInsertStatement;
-import org.apache.shardingsphere.sql.parser.statement.mysql.dml.MySQLSelectStatement;
-import org.apache.shardingsphere.sql.parser.statement.mysql.dml.MySQLUpdateStatement;
-import org.apache.shardingsphere.sql.parser.statement.mysql.tcl.MySQLCommitStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dcl.user.CreateUserStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.database.CreateDatabaseStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.DeleteStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.InsertStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.SelectStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.UpdateStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.tcl.CommitStatement;
+import org.apache.shardingsphere.sql.parser.statement.mysql.dal.show.database.MySQLShowDatabasesStatement;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 
@@ -57,47 +58,47 @@ class SQLParseCountAdviceTest {
     
     @Test
     void assertParseInsertSQL() {
-        assertParse(new MySQLInsertStatement(), "INSERT=1");
+        assertParse(mock(InsertStatement.class), "INSERT=1");
     }
     
     @Test
     void assertParseUpdateSQL() {
-        assertParse(new MySQLUpdateStatement(), "UPDATE=1");
+        assertParse(mock(UpdateStatement.class), "UPDATE=1");
     }
     
     @Test
     void assertParseDeleteSQL() {
-        assertParse(new MySQLDeleteStatement(), "DELETE=1");
+        assertParse(mock(DeleteStatement.class), "DELETE=1");
     }
     
     @Test
     void assertParseSelectSQL() {
-        assertParse(new MySQLSelectStatement(), "SELECT=1");
+        assertParse(mock(SelectStatement.class), "SELECT=1");
     }
     
     @Test
     void assertParseDDL() {
-        assertParse(new MySQLCreateDatabaseStatement(), "DDL=1");
+        assertParse(mock(CreateDatabaseStatement.class), "DDL=1");
     }
     
     @Test
     void assertParseDCL() {
-        assertParse(new MySQLCreateUserStatement(), "DCL=1");
+        assertParse(mock(CreateUserStatement.class), "DCL=1");
     }
     
     @Test
     void assertParseDAL() {
-        assertParse(new MySQLShowDatabasesStatement(), "DAL=1");
+        assertParse(mock(MySQLShowDatabasesStatement.class), "DAL=1");
     }
     
     @Test
     void assertParseTCL() {
-        assertParse(new MySQLCommitStatement(), "TCL=1");
+        assertParse(mock(CommitStatement.class), "TCL=1");
     }
     
     @Test
     void assertParseRQL() {
-        assertParse(new ShowStorageUnitsStatement(new DatabaseSegment(0, 0, null), null), "RQL=1");
+        assertParse(new ShowStorageUnitsStatement(new FromDatabaseSegment(0, new DatabaseSegment(0, 0, null)), null), "RQL=1");
     }
     
     @Test
@@ -112,7 +113,7 @@ class SQLParseCountAdviceTest {
     
     @Test
     void assertParseRUL() {
-        assertParse(new FormatStatement("SELECT * FROM tbl"), "RUL=1");
+        assertParse(new ParseStatement("SELECT * FROM tbl"), "RUL=1");
     }
     
     private void assertParse(final SQLStatement sqlStatement, final String expected) {

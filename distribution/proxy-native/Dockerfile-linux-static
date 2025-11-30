@@ -1,0 +1,29 @@
+#
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements.  See the NOTICE file distributed with
+# this work for additional information regarding copyright ownership.
+# The ASF licenses this file to You under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with
+# the License.  You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+FROM ghcr.io/graalvm/native-image-community:24.0.2-muslib AS nativebuild
+ENV NATIVE_IMAGE_OPTIONS="--static,--libc=musl"
+WORKDIR /build
+COPY ./ .
+RUN --mount=type=cache,target=/root/.m2 ./mvnw -am -pl distribution/proxy-native -T1C -DskipTests "-Prelease.native" clean package
+
+FROM scratch
+LABEL org.opencontainers.image.authors="ShardingSphere dev@shardingsphere.apache.org"
+ENV LOCAL_PATH=/opt/shardingsphere-proxy
+ARG PROJECT_VERSION
+COPY --from=nativebuild /build/distribution/proxy-native/target/apache-shardingsphere-${PROJECT_VERSION}-shardingsphere-proxy-bin ${LOCAL_PATH}
+ENTRYPOINT ["${LOCAL_PATH}/bin/shardingsphere-proxy-native", "3307", "${LOCAL_PATH}/conf", "0.0.0.0"]

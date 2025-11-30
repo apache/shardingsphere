@@ -17,7 +17,8 @@
 
 package org.apache.shardingsphere.sqlfederation.resultset.converter;
 
-import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPI;
+import org.apache.calcite.sql.type.SqlTypeName;
+import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPI;
 import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
 
 /**
@@ -39,10 +40,10 @@ public interface SQLFederationColumnTypeConverter extends DatabaseTypedSPI {
     /**
      * Convert column type.
      *
-     * @param columnType column type
+     * @param sqlTypeName column type
      * @return converted column type
      */
-    default int convertColumnType(int columnType) {
-        return columnType;
+    default int convertColumnType(SqlTypeName sqlTypeName) {
+        return sqlTypeName.getJdbcOrdinal();
     }
 }

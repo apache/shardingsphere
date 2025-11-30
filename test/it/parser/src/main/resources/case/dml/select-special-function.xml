@@ -36,6 +36,25 @@
             </expression-projection>
         </projections>
     </select>
+    <select sql-case-id="select_group_concat_with_order_by_for_opengauss">
+        <from>
+            <simple-table name="t_order" start-index="49" stop-index="55" />
+        </from>
+        <projections start-index="7" stop-index="42">
+            <aggregation-projection type="GROUP_CONCAT" expression="GROUP_CONCAT(status ORDER BY status)" start-index="7" stop-index="42">
+                <expr>
+                    <function function-name="GROUP_CONCAT" start-index="7" stop-index="42" text="GROUP_CONCAT(status ORDER BY status)">
+                        <parameter>
+                            <column name="status" start-index="20" stop-index="25" />
+                        </parameter>
+                        <parameter>
+                            <column name="status" start-index="36" stop-index="41" />
+                        </parameter>
+                    </function>
+                </expr>
+            </aggregation-projection>
+        </projections>
+    </select>
     <select sql-case-id="select_window_function">
         <from>
             <simple-table name="t_order" start-index="42" stop-index="48" />
@@ -155,6 +174,9 @@
                         <parameter>
                             <literal-expression value="2020-10-01" start-index="15" stop-index="26" />
                         </parameter>
+                        <parameter start-index="29" stop-index="32">
+                            <data-type value="DATE" start-index="29" stop-index="32"/>
+                        </parameter>
                     </function>
                 </expr>
             </expression-projection>
@@ -177,15 +199,18 @@
         </projections>
     </select>
     <select sql-case-id="select_substring">
-        <projections start-index="7" stop-index="35">
-            <expression-projection text="SUBSTRING('foobarbar' from 4)" start-index="7" stop-index="35">
+        <projections start-index="7" stop-index="42">
+            <expression-projection text="SUBSTRING('foobarbar' from -4 for 2)" start-index="7" stop-index="42">
                 <expr>
-                    <function function-name="SUBSTRING" start-index="7" stop-index="35" text="SUBSTRING('foobarbar' from 4)" >
+                    <function function-name="SUBSTRING" start-index="7" stop-index="42" text="SUBSTRING('foobarbar' from -4 for 2)" >
                         <parameter>
                             <literal-expression value="foobarbar" start-index="17" stop-index="27" />
                         </parameter>
                         <parameter>
-                            <literal-expression value="4" start-index="34" stop-index="34" />
+                            <literal-expression value="-4" start-index="34" stop-index="35" />
+                        </parameter>
+                        <parameter>
+                            <literal-expression value="2" start-index="41" stop-index="41" />
                         </parameter>
                     </function>
                 </expr>
@@ -654,6 +679,31 @@
     </select>
 
     <select sql-case-id="select_pivot">
+        <projections start-index="7" stop-index="18">
+            <shorthand-projection start-index="7" stop-index="18">
+                <owner name="pivotAlias" start-index="7" stop-index="16"/>
+                <actual-projections start-index="0" stop-index="0"/>
+            </shorthand-projection>
+        </projections>
+        <from start-index="25" stop-index="104">
+            <subquery-table start-index="25" stop-index="45">
+                <subquery>
+                    <select>
+                        <from start-index="40" stop-index="44">
+                            <simple-table name="sales" start-index="40" stop-index="44"/>
+                        </from>
+                        <projections start-index="33" stop-index="33">
+                            <shorthand-projection start-index="33" stop-index="33">
+                                <actual-projections start-index="0" stop-index="0"/>
+                            </shorthand-projection>
+                        </projections>
+                    </select>
+                </subquery>
+            </subquery-table>
+        </from>
+    </select>
+
+    <select sql-case-id="select_unpivot">
         <projections start-index="7" stop-index="7">
             <shorthand-projection start-index="7" stop-index="7"/>
         </projections>
@@ -796,7 +846,7 @@
             </function-table>
         </from>
     </select>
-    
+
     <select sql-case-id="select_json_object_simple_key_value">
         <projections start-index="7" stop-index="43">
             <expression-projection start-index="7" stop-index="43" text="JSON_OBJECT('name':'value', 'type':1)">
@@ -827,7 +877,7 @@
             </expression-projection>
         </projections>
     </select>
-    
+
     <select sql-case-id="select_nest_json_object">
         <projections start-index="7" stop-index="78">
             <expression-projection text="JSON_OBJECT('name':'value', 'type':JSON_OBJECT('type_id':1, 'name':'a'))" start-index="7" stop-index="78">
@@ -879,7 +929,7 @@
             </expression-projection>
         </projections>
     </select>
-    
+
     <select sql-case-id="select_json_object_with_json_array">
         <projections start-index="7" stop-index="58">
             <expression-projection text="JSON_OBJECT('name':'value', 'type':JSON_ARRAY(1, 2))" start-index="7" stop-index="58">
@@ -1183,7 +1233,7 @@
             </expression-projection>
         </projections>
     </select>
-    
+
     <select sql-case-id="select_json_object_absent_not_null">
         <projections start-index="7" stop-index="61">
             <expression-projection text="JSON_OBJECT('name':'value', 'type':NULL ABSENT ON NULL)" start-index="7" stop-index="61">
@@ -1217,7 +1267,7 @@
             </expression-projection>
         </projections>
     </select>
-    
+
     <select sql-case-id="select_json_object_with_subquery">
         <projections start-index="7" stop-index="84">
             <expression-projection text="JSON_OBJECT('user_name':USER_NAME(), @id_key:@id_value, 'sid':(SELECT @@SPID))" start-index="7" stop-index="84">
@@ -1264,7 +1314,7 @@
             </expression-projection>
         </projections>
     </select>
-    
+
     <select sql-case-id="select_dm_exec_sessions_with_json_object_function">
         <projections start-index="7"  stop-index="109">
             <column-projection name="session_id" start-index="7" stop-index="18">
@@ -1334,7 +1384,7 @@
             </expr>
         </where>
     </select>
-    
+
     <select sql-case-id="select_first_last_value_function">
         <projections start-index="7" stop-index="493">
             <column-projection name="BusinessEntityID" start-index="7" stop-index="22" />
@@ -1442,7 +1492,7 @@
             <column-item name="Quarter" order-direction="ASC" start-index="638" stop-index="644" />
         </order-by>
     </select>
-    
+
     <select sql-case-id="select_approx_percentile_cont_function">
         <projections start-index="7" stop-index="148">
             <column-projection start-index="7" stop-index="12" name="DeptId" />
@@ -1478,7 +1528,7 @@
             <column-item name="DeptId" order-direction="ASC" start-index="176" stop-index="181" />
         </group-by>
     </select>
-    
+
     <select sql-case-id="select_wm_concat_function_with_schema">
         <projections start-index="7" stop-index="49">
             <expression-projection start-index="7" stop-index="49" text="TO_CHAR(WMSYS.WM_CONCAT(DISTINCT o.status))">
@@ -1589,7 +1639,7 @@
             </expression-projection>
         </projections>
     </select>
-  
+
     <select sql-case-id="select_bin">
         <projections start-index="7" stop-index="13">
             <expression-projection start-index="7" stop-index="13" text="BIN(12)">
@@ -1603,7 +1653,7 @@
             </expression-projection>
         </projections>
     </select>
-  
+
     <select sql-case-id="select_bin_uuid">
         <projections start-index="7" stop-index="70">
             <expression-projection start-index="7" stop-index="70" text="BIN_TO_UUID(UUID_TO_BIN('6ccd780c-baba-1026-9564-5b8c656024db'))">
@@ -1621,7 +1671,7 @@
             </expression-projection>
         </projections>
     </select>
-  
+
     <select sql-case-id="select_bit_length">
         <projections start-index="7" stop-index="19">
             <expression-projection start-index="7" stop-index="19" text="BIT_LENGTH(1)">
@@ -1635,7 +1685,7 @@
             </expression-projection>
         </projections>
     </select>
-  
+
      <select sql-case-id="select_bit_count">
         <projections start-index="7" stop-index="18">
             <expression-projection start-index="7" stop-index="18" text="BIT_COUNT(1)">
@@ -1649,7 +1699,7 @@
             </expression-projection>
         </projections>
     </select>
-  
+
     <select sql-case-id="select_ceil">
         <projections start-index="7" stop-index="15">
             <expression-projection start-index="7" stop-index="15" text="CEIL(1.1)">
@@ -1677,7 +1727,7 @@
             </expression-projection>
         </projections>
     </select>
-  
+
     <select sql-case-id="select_with_uuid_function">
         <projections start-index="7" stop-index="12">
             <expression-projection text="UUID()" start-index="7" stop-index="12">
@@ -1766,7 +1816,7 @@
             </expression-projection>
         </projections>
     </select>
-  
+
     <select sql-case-id="select_with_variance_function">
         <from>
             <simple-table name="sales_view" start-index="29" stop-index="40" alias="s" />
@@ -2267,6 +2317,9 @@
                             <literal-expression value="abc" start-index="15" stop-index="19" />
                             <using-character-set text="USING utf8mb4" start-index="20" stop-index="34" />
                         </parameter>
+                        <parameter start-index="27" stop-index="33">
+                            <literal-expression value="utf8mb4" start-index="27" stop-index="33"/>
+                        </parameter>
                     </function>
                 </expr>
             </expression-projection>
@@ -2428,15 +2481,13 @@
                             <literal-expression value="2018-05-01" start-index="16" stop-index="27" />
                         </parameter>
                         <parameter>
-                            <function function-name="INTERVAL" text="INTERVAL" start-index="29" stop-index="36" >
-                                <parameter>
+                            <interval-expression value="interval" text="interval" start-index="29" stop-index="36" >
+                                <value start-index="38" stop-index="38">
                                     <parameter-marker-expression parameter-index="0" start-index="38" stop-index="38" />
-                                    <literal-expression value="1" start-index="38" stop-index="38" />
-                                </parameter>
-                                <parameter>
-                                    <literal-expression value="DAY" start-index="40" stop-index="42" />
-                                </parameter>
-                            </function>
+                                    <literal-expression value="1" start-index="38" stop-index="38"/>
+                                </value>
+                                <interval-unit>DAY</interval-unit>
+                            </interval-expression>
                         </parameter>
                     </function>
                 </expr>
@@ -2470,15 +2521,13 @@
                             <literal-expression value="2018-05-01" start-index="16" stop-index="27" />
                         </parameter>
                         <parameter>
-                            <function function-name="INTERVAL" text="INTERVAL" start-index="29" stop-index="36" >
-                                <parameter>
+                            <interval-expression value="interval" text="interval" start-index="29" stop-index="36" >
+                                <value start-index="38" stop-index="38">
                                     <parameter-marker-expression parameter-index="0" start-index="38" stop-index="38" />
-                                    <literal-expression value="1" start-index="38" stop-index="38" />
-                                </parameter>
-                                <parameter>
-                                    <literal-expression value="DAY" start-index="40" stop-index="42" />
-                                </parameter>
-                            </function>
+                                    <literal-expression value="1" start-index="38" stop-index="38"/>
+                                </value>
+                                <interval-unit>DAY</interval-unit>
+                            </interval-expression>
                         </parameter>
                     </function>
                 </expr>
@@ -4866,7 +4915,7 @@
             </expression-projection>
         </projections>
     </select>
-  
+
     <select sql-case-id="select_lower_function">
         <projections start-index="7" stop-index="28">
             <expression-projection start-index="7" stop-index="28" text="LOWER('QUADRATICALLY')">
@@ -4880,7 +4929,7 @@
             </expression-projection>
         </projections>
     </select>
-  
+
     <select sql-case-id="select_length">
         <projections start-index="7" stop-index="20">
             <expression-projection start-index="7" stop-index="20" text="LENGTH('TEXT')">
@@ -4894,7 +4943,7 @@
             </expression-projection>
         </projections>
     </select>
-  
+
     <select sql-case-id="select_locate">
         <projections start-index="7" stop-index="31">
             <expression-projection start-index="7" stop-index="31" text="LOCATE('bar','foobarbar')">
@@ -5000,7 +5049,7 @@
 
     <select sql-case-id="select_not_in">
         <projections start-index="7" stop-index="33">
-            <expression-projection start-index="7" stop-index="33" text="3,4) NOT IN ((1,2), (3,4)">
+            <expression-projection start-index="7" stop-index="33" text="(3,4) NOT IN ((1,2), (3,4))">
                 <expr>
                     <in-expression start-index="7" stop-index="33">
                         <left>
@@ -5228,5 +5277,31 @@
                 </expr>
             </expression-projection>
         </projections>
+    </select>
+
+    <select sql-case-id="select_with_json_object_function">
+        <projections start-index="7" stop-index="67">
+            <expression-projection text="JSON_OBJECT('name' VALUE 'John', 'age' VALUE 30)" alias="json_data" start-index="7" stop-index="67">
+                <expr start-index="7" stop-index="54">
+                    <function function-name="JSON_OBJECT" text="JSON_OBJECT('name' VALUE 'John', 'age' VALUE 30)" start-index="7" stop-index="54">
+                        <parameter start-index="19" stop-index="24">
+                            <literal-expression value="name" start-index="19" stop-index="24"/>
+                        </parameter>
+                        <parameter start-index="32" stop-index="37">
+                            <literal-expression value="John" start-index="32" stop-index="37"/>
+                        </parameter>
+                        <parameter start-index="40" stop-index="44">
+                            <literal-expression value="age" start-index="40" stop-index="44"/>
+                        </parameter>
+                        <parameter start-index="52" stop-index="53">
+                            <literal-expression value="30" start-index="52" stop-index="53"/>
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+        <from start-index="74" stop-index="77">
+            <simple-table name="DUAL" start-index="74" stop-index="77"/>
+        </from>
     </select>
 </sql-parser-test-cases>

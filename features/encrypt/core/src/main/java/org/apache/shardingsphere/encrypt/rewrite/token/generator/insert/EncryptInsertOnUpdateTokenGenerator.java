@@ -20,6 +20,8 @@ package org.apache.shardingsphere.encrypt.rewrite.token.generator.insert;
 import com.google.common.base.Preconditions;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
+import org.apache.shardingsphere.database.connector.core.metadata.database.enums.QuoteCharacter;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.encrypt.exception.syntax.UnsupportedEncryptSQLException;
 import org.apache.shardingsphere.encrypt.rewrite.token.pojo.EncryptAssignmentToken;
 import org.apache.shardingsphere.encrypt.rewrite.token.pojo.EncryptFunctionAssignmentToken;
@@ -32,9 +34,8 @@ import org.apache.shardingsphere.encrypt.rule.column.item.LikeQueryColumnItem;
 import org.apache.shardingsphere.encrypt.rule.table.EncryptTable;
 import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.binder.context.statement.dml.InsertStatementContext;
-import org.apache.shardingsphere.infra.database.core.metadata.database.enums.QuoteCharacter;
-import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
+import org.apache.shardingsphere.infra.binder.context.statement.type.dml.InsertStatementContext;
+import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.rewrite.sql.token.common.generator.CollectionSQLTokenGenerator;
 import org.apache.shardingsphere.infra.rewrite.sql.token.common.pojo.SQLToken;
@@ -44,7 +45,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.Expr
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.FunctionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simple.LiteralExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.InsertStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.InsertStatement;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -77,17 +78,18 @@ public final class EncryptInsertOnUpdateTokenGenerator implements CollectionSQLT
             return Collections.emptyList();
         }
         String schemaName = insertStatementContext.getTablesContext().getSchemaName()
-                .orElseGet(() -> new DatabaseTypeRegistry(insertStatementContext.getDatabaseType()).getDefaultSchemaName(database.getName()));
+                .orElseGet(() -> new DatabaseTypeRegistry(insertStatementContext.getSqlStatement().getDatabaseType()).getDefaultSchemaName(database.getName()));
         String tableName = insertStatement.getTable().map(optional -> optional.getTableName().getIdentifier().getValue()).orElse("");
         EncryptTable encryptTable = rule.getEncryptTable(tableName);
-        QuoteCharacter quoteCharacter = new DatabaseTypeRegistry(insertStatementContext.getDatabaseType()).getDialectDatabaseMetaData().getQuoteCharacter();
+        QuoteCharacter quoteCharacter = new DatabaseTypeRegistry(insertStatementContext.getSqlStatement().getDatabaseType()).getDialectDatabaseMetaData().getQuoteCharacter();
         Collection<SQLToken> result = new LinkedList<>();
         for (ColumnAssignmentSegment each : onDuplicateKeyColumnsSegments) {
             boolean leftColumnIsEncrypt = encryptTable.isEncryptColumn(each.getColumns().get(0).getIdentifier().getValue());
             if (each.getValue() instanceof FunctionSegment && "VALUES".equalsIgnoreCase(((FunctionSegment) each.getValue()).getFunctionName())) {
-                Optional<ExpressionSegment> rightColumnSegment = ((FunctionSegment) each.getValue()).getParameters().stream().findFirst();
-                Preconditions.checkState(rightColumnSegment.isPresent());
-                boolean rightColumnIsEncrypt = encryptTable.isEncryptColumn(((ColumnSegment) rightColumnSegment.get()).getIdentifier().getValue());
+                FunctionSegment functionSegment = (FunctionSegment) each.getValue();
+                ExpressionSegment rightColumnSegment = functionSegment.getParameters().isEmpty() ? null : functionSegment.getParameters().iterator().next();
+                ShardingSpherePreconditions.checkNotNull(rightColumnSegment, () -> new IllegalArgumentException("right column segment can not be null"));
+                boolean rightColumnIsEncrypt = encryptTable.isEncryptColumn(((ColumnSegment) rightColumnSegment).getIdentifier().getValue());
                 if (!leftColumnIsEncrypt && !rightColumnIsEncrypt) {
                     continue;
                 }
@@ -138,9 +140,9 @@ public final class EncryptInsertOnUpdateTokenGenerator implements CollectionSQLT
                                                           final QuoteCharacter quoteCharacter) {
         ColumnSegment columnSegment = assignmentSegment.getColumns().get(0);
         String column = columnSegment.getIdentifier().getValue();
-        Optional<ExpressionSegment> valueColumnSegment = functionSegment.getParameters().stream().findFirst();
-        Preconditions.checkState(valueColumnSegment.isPresent());
-        String valueColumn = ((ColumnSegment) valueColumnSegment.get()).getIdentifier().getValue();
+        ExpressionSegment valueColumnSegment = functionSegment.getParameters().isEmpty() ? null : functionSegment.getParameters().iterator().next();
+        ShardingSpherePreconditions.checkNotNull(valueColumnSegment, () -> new IllegalArgumentException("value column segment can not be null"));
+        String valueColumn = ((ColumnSegment) valueColumnSegment).getIdentifier().getValue();
         EncryptFunctionAssignmentToken result =
                 new EncryptFunctionAssignmentToken(columnSegment.getStartIndex(), assignmentSegment.getStopIndex(), quoteCharacter);
         boolean isEncryptColumn = encryptTable.isEncryptColumn(column);
@@ -168,9 +170,7 @@ public final class EncryptInsertOnUpdateTokenGenerator implements CollectionSQLT
         } else if (likeQueryColumn.isPresent() != valueLikeQueryColumn.isPresent()) {
             throw new UnsupportedEncryptSQLException(String.format("%s=VALUES(%s)", column, valueColumn));
         }
-        if (result.isAssignmentsEmpty()) {
-            throw new UnsupportedEncryptSQLException(String.format("%s=VALUES(%s)", column, valueColumn));
-        }
+        ShardingSpherePreconditions.checkState(!result.isAssignmentsEmpty(), () -> new UnsupportedEncryptSQLException(String.format("%s=VALUES(%s)", column, valueColumn)));
         return result;
     }
     

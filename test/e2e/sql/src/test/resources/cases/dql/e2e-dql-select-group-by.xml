@@ -17,15 +17,15 @@
   -->
 
 <e2e-test-cases>
-    <test-case sql="SELECT user_id FROM t_order GROUP BY user_id ORDER BY user_id LIMIT ?" db-types="H2,MySQL,PostgreSQL" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
+    <test-case sql="SELECT user_id FROM t_order GROUP BY user_id ORDER BY user_id LIMIT ?" db-types="MySQL,PostgreSQL" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
         <assertion parameters="1:int" expected-data-source-name="read_dataset" />
     </test-case>
     
-    <test-case sql="SELECT user_id, SUM(order_id) AS orders_sum FROM t_order GROUP BY user_id ORDER BY SUM(order_id) LIMIT ?" db-types="H2,MySQL,PostgreSQL" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
+    <test-case sql="SELECT user_id, SUM(order_id) AS orders_sum FROM t_order GROUP BY user_id ORDER BY SUM(order_id) LIMIT ?" db-types="MySQL,PostgreSQL" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
         <assertion parameters="1:int" expected-data-source-name="read_dataset" />
     </test-case>
     
-    <test-case sql="SELECT o.user_id uid FROM t_order o GROUP BY o.user_id ORDER BY o.user_id" db-types="H2,MySQL,PostgreSQL" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
+    <test-case sql="SELECT o.user_id uid FROM t_order o GROUP BY o.user_id ORDER BY o.user_id" db-types="MySQL,PostgreSQL" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
         <assertion expected-data-source-name="read_dataset" />
     </test-case>
     
@@ -81,5 +81,9 @@
     <test-case sql="SELECT MAX(DISTINCT order_id) AS max_id FROM t_order WHERE 1 = 2" db-types="MySQL,PostgreSQL,openGauss" scenario-types="db,tbl"
                scenario-comments="Test MAX DISTINCT returns NULL when no data matches">
         <assertion expected-data-source-name="read_dataset" />
+    </test-case>
+
+    <test-case sql="SELECT user_id, COUNT(*) AS user_count FROM t_user GROUP BY user_id ORDER BY user_id" db-types="Hive" scenario-types="mask">
+        <assertion expected-data-source-name="expected_dataset" />
     </test-case>
 </e2e-test-cases>

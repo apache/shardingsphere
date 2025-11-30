@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.data.pipeline.core.exception.job;
 
 import com.google.common.base.Preconditions;
-import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.SQLState;
-import org.apache.shardingsphere.infra.exception.core.external.sql.type.kernel.category.PipelineSQLException;
+import org.apache.shardingsphere.infra.exception.external.sql.sqlstate.SQLState;
+import org.apache.shardingsphere.infra.exception.external.sql.type.kernel.category.PipelineSQLException;
 
 /**
  * Pipeline job exception.

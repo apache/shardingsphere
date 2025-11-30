@@ -56,8 +56,8 @@ rules:
     snowflake:
       type: SNOWFLAKE
       props:
-        # TODO This is to avoid `SQL Algorithm 'Object.SNOWFLAKE' execute failed, reason is: Clock is moving backwards, last time is 1741619224673 milliseconds, current time is 1741619222930 milliseconds..`, this requires investigating what is happening inside HiveServer2
-        max-tolerate-time-difference-milliseconds: 1744
+        # TODO This is to avoid `SQL Algorithm 'Object.SNOWFLAKE' execute failed, reason is: Clock is moving backwards, last time is 1741696248036 milliseconds, current time is 1741696246171 milliseconds..`, this requires investigating what is happening inside HiveServer2
+        max-tolerate-time-difference-milliseconds: 1866
   auditors:
     sharding_key_required_auditor:
       type: DML_SHARDING_CONDITIONS

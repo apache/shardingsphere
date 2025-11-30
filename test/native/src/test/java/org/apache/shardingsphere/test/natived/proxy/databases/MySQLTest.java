@@ -21,7 +21,7 @@ import com.mysql.cj.jdbc.exceptions.CommunicationsException;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import org.apache.shardingsphere.test.natived.commons.TestShardingService;
-import org.apache.shardingsphere.test.natived.commons.proxy.ProxyTestingServer;
+import org.apache.shardingsphere.test.natived.commons.util.ProxyTestingServer;
 import org.awaitility.Awaitility;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -38,6 +38,7 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.time.Duration;
+import java.util.Collections;
 import java.util.Properties;
 
 @SuppressWarnings({"SqlNoDataSourceInspection", "SameParameterValue", "resource"})
@@ -46,7 +47,7 @@ import java.util.Properties;
 class MySQLTest {
     
     @Container
-    private final GenericContainer<?> mysqlContainer = new GenericContainer<>("mysql:9.1.0-oraclelinux9")
+    private final GenericContainer<?> mysqlContainer = new GenericContainer<>("mysql:9.4.0-oraclelinux9")
             .withEnv("MYSQL_ROOT_PASSWORD", "yourStrongPassword123!")
             .withExposedPorts(3306);
     
@@ -78,7 +79,7 @@ class MySQLTest {
     
     @AfterEach
     void afterEach() {
-        proxyTestingServer.close();
+        proxyTestingServer.close(Collections.singletonList("sharding_db"));
     }
     
     /**
@@ -95,39 +96,14 @@ class MySQLTest {
                 Statement statement = connection.createStatement()) {
             statement.execute("CREATE DATABASE sharding_db");
             statement.execute("USE sharding_db");
-            statement.execute("REGISTER STORAGE UNIT ds_0 (\n"
-                    + "  URL='jdbc:mysql://127.0.0.1:" + mysqlContainer.getMappedPort(3306) + "/demo_ds_0',\n"
-                    + "  USER='root',\n"
-                    + "  PASSWORD='yourStrongPassword123!'\n"
-                    + "),ds_1 (\n"
-                    + "  URL='jdbc:mysql://127.0.0.1:" + mysqlContainer.getMappedPort(3306) + "/demo_ds_1',\n"
-                    + "  USER='root',\n"
-                    + "  PASSWORD='yourStrongPassword123!'\n"
-                    + "),ds_2 (\n"
-                    + "  URL='jdbc:mysql://127.0.0.1:" + mysqlContainer.getMappedPort(3306) + "/demo_ds_2',\n"
-                    + "  USER='root',\n"
-                    + "  PASSWORD='yourStrongPassword123!'\n"
-                    + ")");
-            statement.execute("CREATE DEFAULT SHARDING DATABASE STRATEGY (\n"
-                    + "  TYPE='standard', \n"
-                    + "  SHARDING_COLUMN=user_id, \n"
-                    + "  SHARDING_ALGORITHM(\n"
-                    + "    TYPE(\n"
-                    + "      NAME=CLASS_BASED, \n"
-                    + "      PROPERTIES(\n"
-                    + "        'strategy'='STANDARD',\n"
-                    + "        'algorithmClassName'='org.apache.shardingsphere.test.natived.commons.algorithm.ClassBasedInlineShardingAlgorithmFixture'\n"
-                    + "      )\n"
-                    + "    )\n"
-                    + "  )\n"
-                    + ")");
-            statement.execute("CREATE SHARDING TABLE RULE t_order (\n"
-                    + "  DATANODES('<LITERAL>ds_0.t_order, ds_1.t_order, ds_2.t_order'),\n"
-                    + "  KEY_GENERATE_STRATEGY(COLUMN=order_id,TYPE(NAME='SNOWFLAKE'))\n"
-                    + "), t_order_item (\n"
-                    + "  DATANODES('<LITERAL>ds_0.t_order_item, ds_1.t_order_item, ds_2.t_order_item'),\n"
-                    + "  KEY_GENERATE_STRATEGY(COLUMN=order_item_id,TYPE(NAME='SNOWFLAKE'))\n"
-                    + ")");
+            statement.execute("REGISTER STORAGE UNIT ds_0 (URL='jdbc:mysql://127.0.0.1:" + mysqlContainer.getMappedPort(3306) + "/demo_ds_0',USER='root',PASSWORD='yourStrongPassword123!'),"
+                    + "ds_1 (URL='jdbc:mysql://127.0.0.1:" + mysqlContainer.getMappedPort(3306) + "/demo_ds_1',USER='root',PASSWORD='yourStrongPassword123!'),"
+                    + "ds_2 (URL='jdbc:mysql://127.0.0.1:" + mysqlContainer.getMappedPort(3306) + "/demo_ds_2',USER='root',PASSWORD='yourStrongPassword123!')");
+            statement.execute("CREATE DEFAULT SHARDING DATABASE STRATEGY (TYPE='standard', SHARDING_COLUMN=user_id,SHARDING_ALGORITHM(TYPE(NAME=CLASS_BASED,"
+                    + "PROPERTIES('strategy'='STANDARD','algorithmClassName'='org.apache.shardingsphere.test.natived.commons.algorithm.ClassBasedInlineShardingAlgorithmFixture'))))");
+            statement.execute("CREATE SHARDING TABLE RULE t_order (DATANODES('<LITERAL>ds_0.t_order, ds_1.t_order, ds_2.t_order'),"
+                    + "KEY_GENERATE_STRATEGY(COLUMN=order_id,TYPE(NAME='SNOWFLAKE'))), t_order_item (DATANODES('<LITERAL>ds_0.t_order_item, ds_1.t_order_item, ds_2.t_order_item'),"
+                    + "KEY_GENERATE_STRATEGY(COLUMN=order_item_id,TYPE(NAME='SNOWFLAKE')))");
             statement.execute("CREATE BROADCAST TABLE RULE t_address");
         }
         HikariConfig config = new HikariConfig();

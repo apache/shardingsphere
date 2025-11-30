@@ -32,7 +32,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
 class ComputeNodeInstanceContextTest {
@@ -52,7 +52,7 @@ class ComputeNodeInstanceContextTest {
         ComputeNodeInstanceContext instanceContext = new ComputeNodeInstanceContext(new ComputeNodeInstance(instanceMetaData), mock(ModeConfiguration.class), new EventBusContext());
         instanceContext.init(mock(WorkerIdGenerator.class));
         instanceContext.updateStatus("id", "INVALID");
-        verify(instanceMetaData, times(0)).getId();
+        verify(instanceMetaData, never()).getId();
     }
     
     @Test

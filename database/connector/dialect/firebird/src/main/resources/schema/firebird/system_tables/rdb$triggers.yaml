@@ -1,0 +1,124 @@
+#
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements.  See the NOTICE file distributed with
+# this work for additional information regarding copyright ownership.
+# The ASF licenses this file to You under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with
+# the License.  You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+name: RDB$TRIGGERS
+columns:
+  RDB$TRIGGER_NAME:
+    caseSensitive: false
+    dataType: 1
+    generated: false
+    name: RDB$TRIGGER_NAME
+    primaryKey: false
+    visible: true
+  RDB$RELATION_NAME:
+    caseSensitive: false
+    dataType: 1
+    generated: false
+    name: RDB$RELATION_NAME
+    primaryKey: false
+    visible: true
+  RDB$TRIGGER_SEQUENCE:
+    caseSensitive: false
+    dataType: 5
+    generated: false
+    name: RDB$TRIGGER_SEQUENCE
+    primaryKey: false
+    visible: true
+  RDB$TRIGGER_TYPE:
+    caseSensitive: false
+    dataType: -5
+    generated: false
+    name: RDB$TRIGGER_TYPE
+    primaryKey: false
+    visible: true
+  RDB$TRIGGER_SOURCE:
+    caseSensitive: false
+    dataType: 2004
+    generated: false
+    name: RDB$TRIGGER_SOURCE
+    primaryKey: false
+    visible: true
+  RDB$TRIGGER_BLR:
+    caseSensitive: false
+    dataType: 2004
+    generated: false
+    name: RDB$TRIGGER_BLR
+    primaryKey: false
+    visible: true
+  RDB$DESCRIPTION:
+    caseSensitive: false
+    dataType: 2004
+    generated: false
+    name: RDB$DESCRIPTION
+    primaryKey: false
+    visible: true
+  RDB$TRIGGER_INACTIVE:
+    caseSensitive: false
+    dataType: 5
+    generated: false
+    name: RDB$TRIGGER_INACTIVE
+    primaryKey: false
+    visible: true
+  RDB$SYSTEM_FLAG:
+    caseSensitive: false
+    dataType: 5
+    generated: false
+    name: RDB$SYSTEM_FLAG
+    primaryKey: false
+    visible: true
+  RDB$FLAGS:
+    caseSensitive: false
+    dataType: 5
+    generated: false
+    name: RDB$FLAGS
+    primaryKey: false
+    visible: true
+  RDB$VALID_BLR:
+    caseSensitive: false
+    dataType: 5
+    generated: false
+    name: RDB$VALID_BLR
+    primaryKey: false
+    visible: true
+  RDB$DEBUG_INFO:
+    caseSensitive: false
+    dataType: 2004
+    generated: false
+    name: RDB$DEBUG_INFO
+    primaryKey: false
+    visible: true
+  RDB$ENGINE_NAME:
+    caseSensitive: false
+    dataType: 1
+    generated: false
+    name: RDB$ENGINE_NAME
+    primaryKey: false
+    visible: true
+  RDB$ENTRYPOINT:
+    caseSensitive: false
+    dataType: 1
+    generated: false
+    name: RDB$ENTRYPOINT
+    primaryKey: false
+    visible: true
+  RDB$SQL_SECURITY:
+    caseSensitive: false
+    dataType: 16
+    generated: false
+    name: RDB$SQL_SECURITY
+    primaryKey: false
+    visible: true

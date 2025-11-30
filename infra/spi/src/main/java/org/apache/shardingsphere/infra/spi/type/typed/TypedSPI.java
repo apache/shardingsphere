@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.infra.spi.type.typed;
 
+import org.apache.shardingsphere.infra.spi.ShardingSphereSPI;
+
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Properties;
@@ -24,7 +26,7 @@ import java.util.Properties;
 /**
  * Typed SPI.
  */
-public interface TypedSPI {
+public interface TypedSPI extends ShardingSphereSPI {
     
     /**
      * Initialize SPI.

@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.sharding.route.engine.checker.ddl;
 
-import org.apache.shardingsphere.infra.binder.context.statement.ddl.CreateTableStatementContext;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
@@ -26,6 +25,7 @@ import org.apache.shardingsphere.sharding.checker.sql.util.ShardingSupportedChec
 import org.apache.shardingsphere.sharding.exception.connection.ShardingDDLRouteException;
 import org.apache.shardingsphere.sharding.route.engine.checker.ShardingRouteContextChecker;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.table.CreateTableStatement;
 
 /**
  * Sharding create table route context checker.
@@ -34,10 +34,10 @@ public final class ShardingCreateTableRouteContextChecker implements ShardingRou
     
     @Override
     public void check(final ShardingRule shardingRule, final QueryContext queryContext, final ShardingSphereDatabase database, final ConfigurationProperties props, final RouteContext routeContext) {
-        CreateTableStatementContext createTableStatementContext = (CreateTableStatementContext) queryContext.getSqlStatementContext();
-        String primaryTable = (createTableStatementContext.getSqlStatement()).getTable().getTableName().getIdentifier().getValue();
+        CreateTableStatement createTableStatement = (CreateTableStatement) queryContext.getSqlStatementContext().getSqlStatement();
+        String primaryTable = createTableStatement.getTable().getTableName().getIdentifier().getValue();
         if (ShardingSupportedCheckUtils.isRouteUnitDataNodeDifferentSize(shardingRule, routeContext, primaryTable)) {
-            throw new ShardingDDLRouteException("CREATE", "TABLE", createTableStatementContext.getTablesContext().getTableNames());
+            throw new ShardingDDLRouteException("CREATE", "TABLE", queryContext.getSqlStatementContext().getTablesContext().getTableNames());
         }
     }
 }

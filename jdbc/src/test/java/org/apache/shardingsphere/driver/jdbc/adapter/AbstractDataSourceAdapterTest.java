@@ -21,7 +21,7 @@ import org.apache.shardingsphere.driver.jdbc.core.datasource.ShardingSphereDataS
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
-import org.apache.shardingsphere.test.fixture.jdbc.MockedDataSource;
+import org.apache.shardingsphere.test.infra.fixture.jdbc.MockedDataSource;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -32,9 +32,9 @@ import java.util.Collections;
 import java.util.Properties;
 import java.util.logging.Logger;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.isA;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
 class AbstractDataSourceAdapterTest {
@@ -55,7 +55,7 @@ class AbstractDataSourceAdapterTest {
     
     @Test
     void assertSetLogWriter() {
-        assertThat(shardingSphereDataSource.getLogWriter(), instanceOf(PrintWriter.class));
+        assertThat(shardingSphereDataSource.getLogWriter(), isA(PrintWriter.class));
         shardingSphereDataSource.setLogWriter(null);
         assertNull(shardingSphereDataSource.getLogWriter());
     }

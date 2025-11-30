@@ -17,12 +17,15 @@
 
 package org.apache.shardingsphere.sharding.metadata.reviser.schema;
 
-import org.apache.shardingsphere.infra.database.core.metadata.data.model.ColumnMetaData;
-import org.apache.shardingsphere.infra.database.core.metadata.data.model.TableMetaData;
-import org.apache.shardingsphere.infra.exception.kernel.metadata.RuleAndStorageMetaDataMismatchedException;
+import org.apache.shardingsphere.database.connector.core.exception.RuleAndStorageMetaDataMismatchedException;
+import org.apache.shardingsphere.database.connector.core.metadata.data.model.ColumnMetaData;
+import org.apache.shardingsphere.database.connector.core.metadata.data.model.ConstraintMetaData;
+import org.apache.shardingsphere.database.connector.core.metadata.data.model.IndexMetaData;
+import org.apache.shardingsphere.database.connector.core.metadata.data.model.TableMetaData;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.junit.jupiter.api.Test;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 
@@ -44,11 +47,30 @@ class ShardingSchemaTableAggregationReviserTest {
     
     @Test
     void assertAggregateSuccessWithCheckTableMetaDataEnabled() {
-        TableMetaData tableMetaData = new TableMetaData("foo_tbl", null, null, null);
+        TableMetaData tableMetaData1 = createTableMetadata();
+        TableMetaData tableMetaData2 = createTableMetadata();
         ShardingSchemaTableAggregationReviser reviser = new ShardingSchemaTableAggregationReviser(true);
-        reviser.add(tableMetaData);
+        reviser.add(tableMetaData1);
+        reviser.add(tableMetaData2);
         Collection<TableMetaData> actual = reviser.aggregate(mock(ShardingRule.class));
-        assertThat(actual, is(Collections.singletonList(tableMetaData)));
+        assertThat(actual, is(Collections.singletonList(tableMetaData1)));
+    }
+    
+    private TableMetaData createTableMetadata() {
+        return new TableMetaData("foo_tbl", Arrays.asList(createColumnMetaData("id"), createColumnMetaData("name")), Arrays.asList(createIndexMetaData("id"), createIndexMetaData("name")),
+                Arrays.asList(createConstraintMetaData("id"), createConstraintMetaData("name")));
+    }
+    
+    private ColumnMetaData createColumnMetaData(final String columnName) {
+        return new ColumnMetaData(columnName, 1, true, false, true, true, true, true);
+    }
+    
+    private static IndexMetaData createIndexMetaData(final String columnName) {
+        return new IndexMetaData("idx_" + columnName, Collections.singletonList(columnName));
+    }
+    
+    private static ConstraintMetaData createConstraintMetaData(final String name) {
+        return new ConstraintMetaData("constraint_" + name, "foo_tbl");
     }
     
     @Test

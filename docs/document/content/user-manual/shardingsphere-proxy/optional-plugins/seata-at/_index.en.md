@@ -19,7 +19,7 @@ but there are some differences,
 If users have such needs, they should consider submitting a PR for ShardingSphere
 5. The assumptions made by ShardingSphere JDBC on Seata's TCC mode are invalid on ShardingSphere Proxy
 
-The following discussion takes ShardingSphere Proxy using Seata Client 2.2.0 as an example.
+The following discussion takes ShardingSphere Proxy using Seata Client 2.5.0 as an example.
 
 ## Operation steps
 
@@ -33,30 +33,38 @@ The following discussion takes ShardingSphere Proxy using Seata Client 2.2.0 as 
 
 ### Confirm the JAR and dependency list of Seata Client
 
-For Ubuntu 22.04.4 with `SDKMAN!` installed, 
-you can confirm all `compile` scope dependencies of Seata Client with the following command:
+
+`OpenJDK` and `Maven` can be installed via `sdkman/sdkman-cli` or `version-fox/vfox`.
+For `Ubuntu 24.04.3` or `Windows 11 Home 24H2` with `OpenJDK 23` and `Maven 3.9.11` installed, user can confirm all `compile` scope dependencies of Seata Client with the following command,
+
+1. If using Bash,
 
 ```shell
-sdk install java 23-open
-sdk use java 23-open
-sdk install maven 3.9.9
-sdk use maven 3.9.9
-mvn dependency:get -Dartifact=org.apache.seata:seata-all:2.2.0
-mvn -f ~/.m2/repository/org/apache/seata/seata-all/2.2.0/seata-all-2.2.0.pom dependency:tree | grep -v ':provided' | grep -v ':runtime'
+mvn dependency:get "-Dartifact=org.apache.seata:seata-all:2.5.0"
+mvn -f "${HOME}/.m2/repository/org/apache/seata/seata-all/2.5.0/seata-all-2.5.0.pom" dependency:tree | grep -v ':provided' | grep -v ':runtime'
+```
+
+2. If using PowerShell 7,
+
+```shell
+mvn dependency:get "-Dartifact=org.apache.seata:seata-all:2.5.0"
+mvn -f "${HOME}/.m2/repository/org/apache/seata/seata-all/2.5.0/seata-all-2.5.0.pom" dependency:tree | Where-Object { $_ -notmatch ':provided' -and $_ -notmatch ':runtime' }
 ```
 
 Compared with the `pom.xml` of `org.apache.shardingsphere:shardingsphere-proxy-distribution`, 
 it is not difficult to find the differences listed as follows:
 
 ```
+org.apache.seata:seata-all:jar:2.5.0
 org.springframework:spring-context:jar:5.3.39
 org.springframework:spring-expression:jar:5.3.39
 org.springframework:spring-core:jar:5.3.39
 org.springframework:spring-jcl:jar:5.3.39
 org.springframework:spring-beans:jar:5.3.39
 org.springframework:spring-aop:jar:5.3.39
-org.springframework:spring-webmvc:jar:5.3.26
-org.springframework:spring-web:jar:5.3.26
+org.springframework:spring-webmvc:jar:5.3.39
+org.springframework:spring-web:jar:5.3.39
+org.springframework:spring-tx:jar:5.3.39
 io.netty:netty-all:jar:4.1.101.Final
 io.netty:netty-codec-dns:jar:4.1.101.Final
 io.netty:netty-codec-haproxy:jar:4.1.101.Final
@@ -99,15 +107,15 @@ Write the Docker Compose file to start Seata Server and Postgres Server.
 ```yaml
 services:
    postgres:
-      image: postgres:17.2-bookworm
+      image: postgres:17.5-bookworm
       environment:
          POSTGRES_PASSWORD: example
       volumes:
          - ./docker-entrypoint-initdb.d:/docker-entrypoint-initdb.d
    apache-seata-server:
-      image: apache/seata-server:2.2.0
+      image: apache/seata-server:2.5.0
       healthcheck:
-         test: [ "CMD", "sh", "-c", "curl -s apache-seata-server:7091/health | grep -q '^ok$'" ]
+         test: [ "CMD", "sh", "-c", "curl -s apache-seata-server:8091/health | grep -q '\"ok\"'" ]
    shardingsphere-proxy-custom:
       image: example/shardingsphere-proxy-custom:latest
       pull_policy: build
@@ -115,16 +123,17 @@ services:
          context: .
          dockerfile_inline: |
             FROM apache/shardingsphere-proxy:latest
-            RUN wget https://repo1.maven.org/maven2/org/apache/shardingsphere/shardingsphere-transaction-base-seata-at/5.5.1/shardingsphere-transaction-base-seata-at-5.5.1.jar --directory-prefix=/opt/shardingsphere-proxy/ext-lib
-            RUN wget https://repo1.maven.org/maven2/org/apache/seata/seata-all/2.2.0/seata-all-2.2.0.jar --directory-prefix=/opt/shardingsphere-proxy/ext-lib
+            RUN wget https://repo1.maven.org/maven2/org/apache/shardingsphere/shardingsphere-transaction-base-seata-at/5.5.2/shardingsphere-transaction-base-seata-at-5.5.2.jar --directory-prefix=/opt/shardingsphere-proxy/ext-lib
+            RUN wget https://repo1.maven.org/maven2/org/apache/seata/seata-all/2.5.0/seata-all-2.5.0.jar --directory-prefix=/opt/shardingsphere-proxy/ext-lib
             RUN wget https://repo1.maven.org/maven2/org/springframework/spring-context/5.3.39/spring-context-5.3.39.jar --directory-prefix=/opt/shardingsphere-proxy/ext-lib
             RUN wget https://repo1.maven.org/maven2/org/springframework/spring-expression/5.3.39/spring-expression-5.3.39.jar --directory-prefix=/opt/shardingsphere-proxy/ext-lib
             RUN wget https://repo1.maven.org/maven2/org/springframework/spring-core/5.3.39/spring-core-5.3.39.jar --directory-prefix=/opt/shardingsphere-proxy/ext-lib
             RUN wget https://repo1.maven.org/maven2/org/springframework/spring-jcl/5.3.39/spring-jcl-5.3.39.jar --directory-prefix=/opt/shardingsphere-proxy/ext-lib
             RUN wget https://repo1.maven.org/maven2/org/springframework/spring-beans/5.3.39/spring-beans-5.3.39.jar --directory-prefix=/opt/shardingsphere-proxy/ext-lib
             RUN wget https://repo1.maven.org/maven2/org/springframework/spring-aop/5.3.39/spring-aop-5.3.39.jar --directory-prefix=/opt/shardingsphere-proxy/ext-lib
-            RUN wget https://repo1.maven.org/maven2/org/springframework/spring-webmvc/5.3.26/spring-webmvc-5.3.26.jar --directory-prefix=/opt/shardingsphere-proxy/ext-lib
-            RUN wget https://repo1.maven.org/maven2/org/springframework/spring-web/5.3.26/spring-web-5.3.26.jar --directory-prefix=/opt/shardingsphere-proxy/ext-lib
+            RUN wget https://repo1.maven.org/maven2/org/springframework/spring-webmvc/5.3.39/spring-webmvc-5.3.39.jar --directory-prefix=/opt/shardingsphere-proxy/ext-lib
+            RUN wget https://repo1.maven.org/maven2/org/springframework/spring-web/5.3.39/spring-web-5.3.39.jar --directory-prefix=/opt/shardingsphere-proxy/ext-lib
+            RUN wget https://repo1.maven.org/maven2/org/springframework/spring-tx/5.3.39/spring-tx-5.3.39.jar --directory-prefix=/opt/shardingsphere-proxy/ext-lib
             RUN wget https://repo1.maven.org/maven2/io/netty/netty-all/4.1.101.Final/netty-all-4.1.101.Final.jar --directory-prefix=/opt/shardingsphere-proxy/ext-lib
             RUN wget https://repo1.maven.org/maven2/io/netty/netty-codec-dns/4.1.101.Final/netty-codec-dns-4.1.101.Final.jar --directory-prefix=/opt/shardingsphere-proxy/ext-lib
             RUN wget https://repo1.maven.org/maven2/io/netty/netty-codec-haproxy/4.1.101.Final/netty-codec-haproxy-4.1.101.Final.jar --directory-prefix=/opt/shardingsphere-proxy/ext-lib
@@ -280,7 +289,7 @@ sudo snap install dbeaver-ce
 snap run dbeaver-ce
 ```
 
-In DBeaver Community, use the `jdbcUrl` of `jdbc:postgresql://127.0.0.1:3308/postgres` to connect to ShardingSphere Proxy, 
+In DBeaver Community, use the `standardJdbcUrl` of `jdbc:postgresql://127.0.0.1:3308/postgres` to connect to ShardingSphere Proxy, 
 and the username and password are both `root`. 
 The required JDBC Driver corresponds to the `proxy-frontend-database-protocol-type` set by ShardingSphere Proxy.
 Execute the following SQL,
@@ -290,7 +299,7 @@ Execute the following SQL,
 CREATE DATABASE sharding_db;
 ```
 
-In DBeaver Community, use the `jdbcUrl` of `jdbc:postgresql://127.0.0.1:3308/sharding_db` to connect to ShardingSphere Proxy, 
+In DBeaver Community, use the `standardJdbcUrl` of `jdbc:postgresql://127.0.0.1:3308/sharding_db` to connect to ShardingSphere Proxy, 
 and the username and password are both `root`. Execute the following SQL,
 
 ```sql
@@ -337,7 +346,7 @@ The required JDBC Driver corresponds to the `proxy-frontend-database-protocol-ty
 <dependency>
     <groupId>org.postgresql</groupId>
     <artifactId>postgresql</artifactId>
-    <version>42.7.4</version>
+    <version>42.7.8</version>
 </dependency>
 ```
 
@@ -362,39 +371,8 @@ public class ExampleUtils {
              Statement statement = connection.createStatement()) {
             statement.execute("INSERT INTO t_order (user_id, order_type, address_id, status) VALUES (1, 1, 1, 'INSERT_TEST')");
             statement.executeQuery("SELECT * FROM t_order");
-            statement.execute("DELETE FROM t_order WHERE order_id=1");
+            statement.execute("DELETE FROM t_order WHERE user_id=1");
         }
     }
 }
-```
-
-## Usage restrictions
-
-### ShardingSphere Proxy Native for GraalVM Native Image
-
-For ShardingSphere Proxy Native in GraalVM Native Image,
-Users always need to modify the ShardingSphere source code to add the Seata Client and Seata integrated Maven modules and compile them into GraalVM Native Image.
-ShardingSphere Proxy Native in GraalVM Native Image cannot recognize the additional JAR files.
-
-```xml
-<project>
-    <dependencies>
-      <dependency>
-         <groupId>org.apache.shardingsphere</groupId>
-         <artifactId>shardingsphere-transaction-base-seata-at</artifactId>
-         <version>${shardingsphere.version}</version>
-      </dependency>
-      <dependency>
-         <groupId>org.apache.seata</groupId>
-         <artifactId>seata-all</artifactId>
-         <version>2.2.0</version>
-         <exclusions>
-            <exclusion>
-               <groupId>org.antlr</groupId>
-               <artifactId>antlr4-runtime</artifactId>
-            </exclusion>
-         </exclusions>
-      </dependency>
-    </dependencies>
-</project>
 ```

@@ -22,7 +22,7 @@ import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.DerivedColumn;
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.impl.AggregationDistinctProjection;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.binder.context.statement.dml.SelectStatementContext;
+import org.apache.shardingsphere.infra.binder.context.statement.type.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.rewrite.sql.token.common.generator.CollectionSQLTokenGenerator;
 import org.apache.shardingsphere.infra.rewrite.sql.token.common.pojo.SQLToken;
 import org.apache.shardingsphere.sharding.rewrite.token.generator.IgnoreForSingleRoute;
@@ -35,7 +35,7 @@ import java.util.LinkedList;
  * Sharding aggregation distinct token generator.
  */
 @HighFrequencyInvocation
-public final class ShardingAggregationDistinctTokenGenerator implements CollectionSQLTokenGenerator<SQLStatementContext>, IgnoreForSingleRoute {
+public final class ShardingAggregationDistinctTokenGenerator implements CollectionSQLTokenGenerator<SelectStatementContext>, IgnoreForSingleRoute {
     
     @Override
     public boolean isGenerateSQLToken(final SQLStatementContext sqlStatementContext) {
@@ -43,9 +43,9 @@ public final class ShardingAggregationDistinctTokenGenerator implements Collecti
     }
     
     @Override
-    public Collection<SQLToken> generateSQLTokens(final SQLStatementContext sqlStatementContext) {
+    public Collection<SQLToken> generateSQLTokens(final SelectStatementContext sqlStatementContext) {
         Collection<SQLToken> result = new LinkedList<>();
-        for (AggregationDistinctProjection each : ((SelectStatementContext) sqlStatementContext).getProjectionsContext().getAggregationDistinctProjections()) {
+        for (AggregationDistinctProjection each : sqlStatementContext.getProjectionsContext().getAggregationDistinctProjections()) {
             result.add(generateSQLToken(each));
         }
         return result;

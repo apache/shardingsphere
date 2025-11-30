@@ -19,9 +19,8 @@ package org.apache.shardingsphere.encrypt.enums;
 
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.database.core.metadata.database.DialectDatabaseMetaData;
-import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
-import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeRegistry;
 
 /**
  * Encrypt derived column suffix.
@@ -43,7 +42,6 @@ public enum EncryptDerivedColumnSuffix {
      * @return derived column name
      */
     public String getDerivedColumnName(final String columnName, final DatabaseType databaseType) {
-        DialectDatabaseMetaData dialectDatabaseMetaData = new DatabaseTypeRegistry(databaseType).getDialectDatabaseMetaData();
-        return String.format("%s%s", columnName, dialectDatabaseMetaData.formatTableNamePattern(suffix));
+        return String.format("%s%s", columnName, new DatabaseTypeRegistry(databaseType).formatIdentifierPattern(suffix));
     }
 }

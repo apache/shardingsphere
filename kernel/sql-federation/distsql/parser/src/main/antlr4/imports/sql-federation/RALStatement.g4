@@ -28,7 +28,7 @@ alterSQLFederationRule
     ;
 
 sqlFederationRuleDefinition
-    : LP_ sqlFederationEnabled? allQueryUseSQLFederation? (COMMA_? executionPlanCache)? RP_
+    : LP_ sqlFederationEnabled? (COMMA_? allQueryUseSQLFederation)? (COMMA_? executionPlanCache)? RP_
     ;
 
 sqlFederationEnabled

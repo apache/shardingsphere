@@ -18,7 +18,8 @@
 package org.apache.shardingsphere.infra.yaml.config.swapper.resource;
 
 import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePoolProperties;
-import org.apache.shardingsphere.test.fixture.jdbc.MockedDataSource;
+import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRootConfiguration;
+import org.apache.shardingsphere.test.infra.fixture.jdbc.MockedDataSource;
 import org.junit.jupiter.api.Test;
 
 import javax.sql.DataSource;
@@ -28,6 +29,7 @@ import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
 class YamlDataSourceConfigurationSwapperTest {
     
@@ -55,7 +57,7 @@ class YamlDataSourceConfigurationSwapperTest {
         yamlConfig.put("username", "root");
         DataSourcePoolProperties actual = swapper.swapToDataSourcePoolProperties(yamlConfig);
         assertThat(actual.getAllLocalProperties().size(), is(3));
-        assertThat(actual.getAllLocalProperties().get("dataSourceClassName").toString(), is("org.apache.shardingsphere.test.fixture.jdbc.MockedDataSource"));
+        assertThat(actual.getAllLocalProperties().get("dataSourceClassName").toString(), is("org.apache.shardingsphere.test.infra.fixture.jdbc.MockedDataSource"));
         assertThat(actual.getAllLocalProperties().get("url").toString(), is("xx:xxx"));
         assertThat(actual.getAllLocalProperties().get("username").toString(), is("root"));
     }
@@ -88,6 +90,57 @@ class YamlDataSourceConfigurationSwapperTest {
         result.put("url", String.format("jdbc:mock://127.0.0.1/%s", name));
         result.put("username", "root");
         result.put("password", "root");
+        return result;
+    }
+    
+    @Test
+    void assertGetDataSourcePoolPropertiesMap() {
+        Map<String, Map<String, Object>> dataSources = new LinkedHashMap<>(2, 1F);
+        dataSources.put("ds_1", createPropertyMap("ds_1"));
+        dataSources.put("ds_2", createPropertyMap("ds_2"));
+        YamlRootConfiguration yamlRootConfig = new YamlRootConfiguration();
+        yamlRootConfig.setDataSources(dataSources);
+        Map<String, DataSourcePoolProperties> actual = swapper.getDataSourcePoolPropertiesMap(yamlRootConfig);
+        assertThat(actual.size(), is(2));
+        assertThat(actual.get("ds_1").getPoolClassName(), is(MockedDataSource.class.getName()));
+        assertThat(actual.get("ds_2").getPoolClassName(), is(MockedDataSource.class.getName()));
+    }
+    
+    @Test
+    void assertSwapToDataSourcePoolPropertiesWithHikariDataSource() {
+        Map<String, Object> yamlConfig = new HashMap<>(4, 1F);
+        yamlConfig.put("dataSourceClassName", "com.zaxxer.hikari.HikariDataSource");
+        yamlConfig.put("url", "jdbc:h2:mem:test");
+        yamlConfig.put("username", "sa");
+        yamlConfig.put("password", "");
+        DataSourcePoolProperties actual = swapper.swapToDataSourcePoolProperties(yamlConfig);
+        assertThat(actual.getPoolClassName(), is("com.zaxxer.hikari.HikariDataSource"));
+        assertThat(actual.getAllLocalProperties().containsKey("dataSourceClassName"), is(false));
+        assertThat(actual.getAllLocalProperties().get("url").toString(), is("jdbc:h2:mem:test"));
+        assertThat(actual.getAllLocalProperties().get("username").toString(), is("sa"));
+    }
+    
+    @Test
+    void assertSwapToDataSourcePoolPropertiesWithCustomPoolProps() {
+        DataSourcePoolProperties actual = swapper.swapToDataSourcePoolProperties(createYamlConfiguration());
+        assertThat(actual.getPoolClassName(), is(MockedDataSource.class.getName()));
+        assertThat(actual.getAllLocalProperties().get("url").toString(), is("jdbc:test:memory:"));
+        assertThat(actual.getAllLocalProperties().get("username").toString(), is("test"));
+        assertThat(actual.getAllLocalProperties().get("customKey1").toString(), is("customValue1"));
+        assertThat(actual.getAllLocalProperties().get("customKey2").toString(), is("customValue2"));
+        assertFalse(actual.getAllLocalProperties().containsKey("customPoolProps"));
+    }
+    
+    private Map<String, Object> createYamlConfiguration() {
+        Map<String, Object> result = new HashMap<>(5, 1F);
+        result.put("dataSourceClassName", MockedDataSource.class.getName());
+        result.put("url", "jdbc:test:memory:");
+        result.put("username", "test");
+        result.put("password", "test");
+        Map<String, Object> customProps = new HashMap<>(2, 1F);
+        customProps.put("customKey1", "customValue1");
+        customProps.put("customKey2", "customValue2");
+        result.put("customPoolProps", customProps);
         return result;
     }
 }

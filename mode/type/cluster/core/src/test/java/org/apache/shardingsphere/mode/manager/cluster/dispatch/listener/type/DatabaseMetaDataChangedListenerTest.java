@@ -28,7 +28,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
@@ -47,18 +47,24 @@ class DatabaseMetaDataChangedListenerTest {
     @Test
     void assertOnChangeWithoutDatabase() {
         listener.onChange(new DataChangedEvent("/metadata", "value", Type.IGNORED));
-        verify(contextManager.getComputeNodeInstanceContext().getEventBusContext(), times(0)).post(any());
+        verify(contextManager.getComputeNodeInstanceContext().getEventBusContext(), never()).post(any());
     }
     
     @Test
     void assertOnChangeWithMetaDataChanged() {
         listener.onChange(new DataChangedEvent("/metadata/foo_db/schemas/foo_schema", "value", Type.ADDED));
-        verify(contextManager.getComputeNodeInstanceContext().getEventBusContext(), times(0)).post(any());
+        verify(contextManager.getComputeNodeInstanceContext().getEventBusContext(), never()).post(any());
     }
     
     @Test
     void assertOnChangeWithRuleConfigurationChanged() {
         listener.onChange(new DataChangedEvent("/metadata/foo_db/schemas/foo_schema/rule/", "value", Type.ADDED));
-        verify(contextManager.getComputeNodeInstanceContext().getEventBusContext(), times(0)).post(any());
+        verify(contextManager.getComputeNodeInstanceContext().getEventBusContext(), never()).post(any());
+    }
+    
+    @Test
+    void assertOnChangeWithRuleConfigurationDropped() {
+        listener.onChange(new DataChangedEvent("/metadata/foo_db/rules/foo_rule", "value", Type.DELETED));
+        verify(contextManager.getComputeNodeInstanceContext().getEventBusContext(), never()).post(any());
     }
 }

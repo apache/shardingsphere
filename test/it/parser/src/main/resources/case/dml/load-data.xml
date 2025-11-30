@@ -40,4 +40,46 @@
     <load-data sql-case-id="load_data_into_table_with_at_02">
         <table name="t1" start-index="39" stop-index="40"/>
     </load-data>
+    <load-data sql-case-id="load_data_hive_hdfs_to_table">
+        <table name="t_order" start-index="50" stop-index="56" />
+    </load-data>
+    <load-data sql-case-id="load_data_hive_local_to_table">
+        <table name="t_order" start-index="56" stop-index="62" />
+    </load-data>
+    <load-data sql-case-id="load_data_hive_hdfs_overwrite_table">
+        <table name="t_order" start-index="60" stop-index="66" />
+    </load-data>
+    <load-data sql-case-id="load_data_hive_local_overwrite_table">
+        <table name="t_order" start-index="66" stop-index="72" />
+    </load-data>
+    <load-data sql-case-id="load_data_hive_hdfs_to_partition">
+        <table name="log_table" start-index="47" stop-index="55" />
+    </load-data>
+    <load-data sql-case-id="load_data_hive_local_to_partition">
+        <table name="log_table" start-index="60" stop-index="68" />
+    </load-data>
+    <load-data sql-case-id="load_data_hive_hdfs_overwrite_partition">
+        <table name="stats" start-index="60" stop-index="64" />
+    </load-data>
+    <load-data sql-case-id="load_data_hive_local_overwrite_partition">
+        <table name="stats" start-index="73" stop-index="77" />
+    </load-data>
+    <load-data sql-case-id="load_data_hive_hdfs_with_inputformat_serde">
+        <table name="orc_table" start-index="163" stop-index="171" />
+    </load-data>
+    <load-data sql-case-id="load_data_hive_local_with_inputformat_serde">
+        <table name="parquet_table" start-index="205" stop-index="217" />
+    </load-data>
+    <load-data sql-case-id="load_data_hive_hdfs_partition_with_inputformat_serde">
+        <table name="orc_partitioned_table" start-index="175" stop-index="195" />
+    </load-data>
+    <load-data sql-case-id="load_data_hive_local_partition_with_inputformat_serde">
+        <table name="parquet_partitioned_table" start-index="217" stop-index="241" />
+    </load-data>
+    <load-data sql-case-id="load_data_hive_hdfs_overwrite_partition_with_inputformat_serde">
+        <table name="orc_partitioned_table" start-index="186" stop-index="206" />
+    </load-data>
+    <load-data sql-case-id="load_data_hive_local_overwrite_partition_with_inputformat_serde">
+        <table name="parquet_partitioned_table" start-index="225" stop-index="249" />
+    </load-data>
 </sql-parser-test-cases>

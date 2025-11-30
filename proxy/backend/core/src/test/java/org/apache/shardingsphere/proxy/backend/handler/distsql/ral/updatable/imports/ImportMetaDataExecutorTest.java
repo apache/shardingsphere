@@ -17,18 +17,19 @@
 
 package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.updatable.imports;
 
+import org.apache.commons.codec.binary.Base64;
 import org.apache.shardingsphere.authority.rule.AuthorityRule;
 import org.apache.shardingsphere.authority.rule.builder.DefaultAuthorityRuleConfigurationBuilder;
-import org.apache.shardingsphere.distsql.statement.ral.updatable.ImportMetaDataStatement;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
+import org.apache.shardingsphere.database.exception.core.exception.syntax.database.DatabaseCreateExistsException;
+import org.apache.shardingsphere.distsql.statement.type.ral.updatable.ImportMetaDataStatement;
 import org.apache.shardingsphere.globalclock.rule.GlobalClockRule;
 import org.apache.shardingsphere.globalclock.rule.builder.DefaultGlobalClockRuleConfigurationBuilder;
 import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
-import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.datasource.pool.props.creator.DataSourcePoolPropertiesCreator;
 import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePoolProperties;
-import org.apache.shardingsphere.infra.exception.dialect.exception.syntax.database.DatabaseCreateExistsException;
 import org.apache.shardingsphere.infra.exception.kernel.metadata.resource.storageunit.EmptyStorageUnitException;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstance;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstanceContext;
@@ -42,17 +43,16 @@ import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereStatist
 import org.apache.shardingsphere.infra.metadata.statistics.builder.ShardingSphereStatisticsFactory;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.infra.util.eventbus.EventBusContext;
+import org.apache.shardingsphere.infra.util.props.PropertiesBuilder;
+import org.apache.shardingsphere.infra.util.props.PropertiesBuilder.Property;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.standalone.workerid.StandaloneWorkerIdGenerator;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
-import org.apache.shardingsphere.test.fixture.jdbc.MockedDataSource;
-import org.apache.shardingsphere.test.util.PropertiesBuilder;
-import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
+import org.apache.shardingsphere.test.infra.fixture.jdbc.MockedDataSource;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import javax.sql.DataSource;
-import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
@@ -70,12 +70,14 @@ import static org.mockito.Mockito.when;
 
 class ImportMetaDataExecutorTest {
     
-    private static final String METADATA_VALUE = "eyJtZXRhX2RhdGEiOnsiZGF0YWJhc2VzIjp7Im5vcm1hbF9kYiI6ImRhdGFiYXNlTmFtZTogbm9ybWFsX2RiXG5kYXRhU291cmNlczpcbiAgZHNfMDpcbiA"
-            + "gICBwYXNzd29yZDogXG4gICAgdXJsOiBqZGJjOmgyOm1lbTpkZW1vX2RzXzA7REJfQ0xPU0VfREVMQVk9LTE7REFUQUJBU0VfVE9fVVBQRVI9ZmFsc2U7TU9ERT1NeVNRTFxuICAgIHVzZXJuYW1lOiByb290XG4gICAgbWluUG9"
-            + "vbFNpemU6IDFcbiAgICBtYXhQb29sU2l6ZTogNTBcbiAgZHNfMTpcbiAgICBwYXNzd29yZDogXG4gICAgdXJsOiBqZGJjOmgyOm1lbTpkZW1vX2RzXzE7REJfQ0xPU0VfREVMQVk9LTE7REFUQUJBU0VfVE9fVVBQRVI9ZmFsc2"
-            + "U7TU9ERT1NeVNRTFxuICAgIHVzZXJuYW1lOiByb290XG4gICAgbWluUG9vbFNpemU6IDFcbiAgICBtYXhQb29sU2l6ZTogNTBcbiJ9LCJwcm9wcyI6InByb3BzOlxuICBzcWwtc2hvdzogdHJ1ZVxuIiwicnVsZXMiOiJydWxlczpcbi0g"
-            + "IUFVVEhPUklUWVxuICBwcml2aWxlZ2U6XG4gICAgdHlwZTogQUxMX1BFUk1JVFRFRFxuICB1c2VyczpcbiAgLSBhZG1pbjogdHJ1ZVxuICAgIGF1dGhlbnRpY2F0aW9uTWV0aG9kTmFtZTogJydcbiAgIC"
-            + "BwYXNzd29yZDogcm9vdFxuICAgIHVzZXI6IHJvb3RAJVxuLSAhR0xPQkFMX0NMT0NLXG4gIGVuYWJsZWQ6IGZhbHNlXG4gIHByb3ZpZGVyOiBsb2NhbFxuICB0eXBlOiBUU09cbiJ9fQ==";
+    private static final String METADATA_VALUE = "{\"meta_data\":{\"databases\":{\"normal_db\":\"databaseName: normal_db\\n"
+            + "dataSources:\\n"
+            + "  ds_0:\\n    password: \\n    url: jdbc:h2:mem:demo_ds_0;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL\\n    username: root\\n    minPoolSize: 1\\n    maxPoolSize: 50\\n"
+            + "  ds_1:\\n    password: \\n    url: jdbc:h2:mem:demo_ds_1;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL\\n    username: root\\n    minPoolSize: 1\\n    maxPoolSize: 50\\n\"},"
+            + "\"props\":\"props:\\n  sql-show: true\\n\","
+            + "\"rules\":\"rules:\\n"
+            + "- !AUTHORITY\\n  privilege:\\n    type: ALL_PERMITTED\\n  users:\\n  - admin: true\\n    authenticationMethodName: ''\\n    password: root\\n    user: root@%\\n"
+            + "- !GLOBAL_CLOCK\\n  enabled: false\\n  provider: local\\n  type: TSO\\n\"}}";
     
     private static final String EMPTY_DATABASE_NAME = "empty_metadata";
     
@@ -95,10 +97,10 @@ class ImportMetaDataExecutorTest {
     }
     
     @Test
-    void assertImportMetaDataFromJsonValue() throws SQLException {
+    void assertImportMetaDataFromJsonValue() {
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         ImportMetaDataExecutor executor = new ImportMetaDataExecutor();
-        executor.executeUpdate(new ImportMetaDataStatement(METADATA_VALUE, null), contextManager);
+        executor.executeUpdate(new ImportMetaDataStatement(Base64.encodeBase64String(METADATA_VALUE.getBytes()), null), contextManager);
         assertNotNull(contextManager.getDatabase("normal_db"));
     }
     
@@ -111,7 +113,7 @@ class ImportMetaDataExecutorTest {
     }
     
     private ContextManager mockContextManager() {
-        ShardingSphereDatabase database = mockShardingSphereDatabase();
+        ShardingSphereDatabase database = mockDatabase();
         ShardingSphereMetaData metaData = new ShardingSphereMetaData(Collections.singleton(database),
                 new ResourceMetaData(Collections.emptyMap()),
                 new RuleMetaData(Arrays.asList(new AuthorityRule(new DefaultAuthorityRuleConfigurationBuilder().build()),
@@ -127,7 +129,7 @@ class ImportMetaDataExecutorTest {
         return result;
     }
     
-    private ShardingSphereDatabase mockShardingSphereDatabase() {
+    private ShardingSphereDatabase mockDatabase() {
         Map<String, StorageUnit> storageUnits = createStorageUnits();
         ShardingSphereDatabase result = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         when(result.getProtocolType()).thenReturn(TypedSPILoader.getService(DatabaseType.class, "FIXTURE"));
@@ -140,7 +142,7 @@ class ImportMetaDataExecutorTest {
     
     private Map<String, StorageUnit> createStorageUnits() {
         Map<String, DataSourcePoolProperties> propsMap = createDataSourceMap().entrySet().stream()
-                .collect(Collectors.toMap(Entry::getKey, entry -> DataSourcePoolPropertiesCreator.create(entry.getValue()), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
+                .collect(Collectors.toMap(Entry::getKey, entry -> DataSourcePoolPropertiesCreator.create(entry.getValue())));
         Map<String, StorageUnit> result = new LinkedHashMap<>(propsMap.size(), 1F);
         for (Entry<String, DataSourcePoolProperties> entry : propsMap.entrySet()) {
             StorageUnit storageUnit = mock(StorageUnit.class, RETURNS_DEEP_STUBS);
@@ -152,18 +154,8 @@ class ImportMetaDataExecutorTest {
     
     private Map<String, DataSource> createDataSourceMap() {
         Map<String, DataSource> result = new LinkedHashMap<>(2, 1F);
-        result.put("ds_0", createDataSource("demo_ds_0"));
-        result.put("ds_1", createDataSource("demo_ds_1"));
-        return result;
-    }
-    
-    private DataSource createDataSource(final String name) {
-        MockedDataSource result = new MockedDataSource();
-        result.setUrl(String.format("jdbc:h2:mem:%s;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL", name));
-        result.setUsername("root");
-        result.setPassword("");
-        result.setMaxPoolSize(50);
-        result.setMinPoolSize(1);
+        result.put("ds_0", new MockedDataSource());
+        result.put("ds_1", new MockedDataSource());
         return result;
     }
 }

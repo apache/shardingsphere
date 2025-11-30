@@ -1,0 +1,99 @@
+{
+  "reflection": [
+    {
+      "condition": {
+        "typeReached": "com.github.benmanes.caffeine.cache.PDW"
+      },
+      "type": "com.github.benmanes.caffeine.cache.PDW",
+      "fields": [
+        {
+          "name": "writeTime"
+        }
+      ]
+    },
+    {
+      "condition": {
+        "typeReached": "com.github.benmanes.caffeine.cache.BoundedLocalCache$BoundedLocalLoadingCache"
+      },
+      "type": "com.github.benmanes.caffeine.cache.SIMS",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": [
+            "com.github.benmanes.caffeine.cache.Caffeine",
+            "com.github.benmanes.caffeine.cache.CacheLoader",
+            "boolean"
+          ]
+        }
+      ]
+    },
+    {
+      "condition": {
+        "typeReached": "com.github.benmanes.caffeine.cache.BoundedLocalCache$BoundedLocalManualCache"
+      },
+      "type": "com.github.benmanes.caffeine.cache.SIMSW",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": [
+            "com.github.benmanes.caffeine.cache.Caffeine",
+            "com.github.benmanes.caffeine.cache.CacheLoader",
+            "boolean"
+          ]
+        }
+      ]
+    },
+    {
+      "condition": {
+        "typeReached": "com.github.benmanes.caffeine.cache.NodeFactory"
+      },
+      "type": "com.github.benmanes.caffeine.cache.PDMS",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "condition": {
+        "typeReached": "com.github.benmanes.caffeine.cache.SSMSA"
+      },
+      "type": "com.github.benmanes.caffeine.cache.PSAMS",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "condition": {
+        "typeReached": "com.github.benmanes.caffeine.cache.BoundedLocalCache$BoundedLocalManualCache"
+      },
+      "type": "com.github.benmanes.caffeine.cache.SSMSA",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": [
+            "com.github.benmanes.caffeine.cache.Caffeine",
+            "com.github.benmanes.caffeine.cache.CacheLoader",
+            "boolean"
+          ]
+        }
+      ]
+    },
+    {
+      "condition": {
+        "typeReached": "com.github.benmanes.caffeine.cache.NodeFactory"
+      },
+      "type": "com.github.benmanes.caffeine.cache.PDWMS",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    }
+  ]
+}

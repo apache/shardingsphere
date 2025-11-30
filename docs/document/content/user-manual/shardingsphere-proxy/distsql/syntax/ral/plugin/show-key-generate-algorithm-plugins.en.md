@@ -5,7 +5,7 @@ weight = 7
 
 ### Description
 
-The `"SHOW KEY GENERATE ALGORITHM PLUGINS"` syntax is used to query all the implementations of the interface `org.apache.shardingsphere.keygen.core.algorithm.KeyGenerateAlgorithm`.
+The `"SHOW KEY GENERATE ALGORITHM PLUGINS"` syntax is used to query all the implementations of the interface `org.apache.shardingsphere.infra.algorithm.keygen.spi.KeyGenerateAlgorithm`.
 
 ### Syntax
 
@@ -31,7 +31,7 @@ showKeyGenerateAlgorithmPlugins ::=
 
 ### Example
 
-- Query all the implementations for `org.apache.shardingsphere.keygen.core.algorithm.KeyGenerateAlgorithm` interface
+- Query all the implementations for `org.apache.shardingsphere.infra.algorithm.keygen.spi.KeyGenerateAlgorithm` interface
 
 ```sql
 SHOW KEY GENERATE ALGORITHM PLUGINS

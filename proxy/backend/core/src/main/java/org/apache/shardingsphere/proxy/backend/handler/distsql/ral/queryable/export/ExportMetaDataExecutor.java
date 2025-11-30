@@ -19,7 +19,7 @@ package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.queryable.ex
 
 import org.apache.commons.codec.binary.Base64;
 import org.apache.shardingsphere.distsql.handler.engine.query.DistSQLQueryExecutor;
-import org.apache.shardingsphere.distsql.statement.ral.queryable.export.ExportMetaDataStatement;
+import org.apache.shardingsphere.distsql.statement.type.ral.queryable.export.ExportMetaDataStatement;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.proxy.backend.util.ClusterExportMetaDataGenerator;

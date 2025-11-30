@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.sharding.auditor;
 
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.binder.context.type.TableAvailable;
 import org.apache.shardingsphere.infra.executor.audit.SQLAuditor;
 import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
@@ -48,9 +47,10 @@ import java.util.Optional;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -58,7 +58,7 @@ import static org.mockito.Mockito.when;
 @MockitoSettings(strictness = Strictness.LENIENT)
 class ShardingSQLAuditorTest {
     
-    @Mock(extraInterfaces = TableAvailable.class, answer = Answers.RETURNS_DEEP_STUBS)
+    @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private SQLStatementContext sqlStatementContext;
     
     @Mock
@@ -68,7 +68,7 @@ class ShardingSQLAuditorTest {
     private RuleMetaData globalRuleMetaData;
     
     @Mock
-    private ShardingSphereDatabase database = mock(ShardingSphereDatabase.class);
+    private ShardingSphereDatabase database;
     
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private ShardingRule rule;
@@ -81,8 +81,8 @@ class ShardingSQLAuditorTest {
     @BeforeEach
     void setUp() {
         when(hintValueContext.getDisableAuditNames()).thenReturn(Collections.singleton("foo_auditor"));
-        when(((TableAvailable) sqlStatementContext).getTablesContext().getTableNames()).thenReturn(Collections.singletonList("foo_tbl"));
-        when(((TableAvailable) sqlStatementContext).getTablesContext().getDatabaseName()).thenReturn(Optional.empty());
+        when(sqlStatementContext.getTablesContext().getTableNames()).thenReturn(Collections.singletonList("foo_tbl"));
+        when(sqlStatementContext.getTablesContext().getDatabaseName()).thenReturn(Optional.empty());
         ShardingTable shardingTable = mock(ShardingTable.class);
         when(rule.findShardingTable("foo_tbl")).thenReturn(Optional.of(shardingTable));
         when(rule.getAuditStrategyConfiguration(shardingTable)).thenReturn(auditStrategy);
@@ -92,24 +92,32 @@ class ShardingSQLAuditorTest {
     
     @Test
     void assertAuditSuccessWithNotTableAvailable() {
-        QueryContext queryContext = mock(QueryContext.class);
-        sqlAuditor.audit(queryContext, globalRuleMetaData, database, rule);
-        verify(queryContext, times(0)).getHintValueContext();
+        SQLStatementContext sqlStatementContext = mock(SQLStatementContext.class, RETURNS_DEEP_STUBS);
+        when(sqlStatementContext.getTablesContext().getDatabaseNames()).thenReturn(Collections.emptyList());
+        QueryContext queryContext = mock(QueryContext.class, RETURNS_DEEP_STUBS);
+        when(queryContext.getSqlStatementContext()).thenReturn(sqlStatementContext);
+        when(queryContext.getMetaData().getGlobalRuleMetaData()).thenReturn(globalRuleMetaData);
+        sqlAuditor.audit(queryContext, database, rule);
+        verify(queryContext, never()).getHintValueContext();
     }
     
     @Test
     void assertAuditSuccessWithDisableAuditNames() {
         when(auditStrategy.isAllowHintDisable()).thenReturn(true);
-        QueryContext queryContext = new QueryContext(sqlStatementContext, "", Collections.emptyList(), hintValueContext, mock(ConnectionContext.class), mock(ShardingSphereMetaData.class));
-        sqlAuditor.audit(queryContext, globalRuleMetaData, database, rule);
-        verify(rule.getAuditors().get("foo_auditor"), times(0)).check(sqlStatementContext, Collections.emptyList(), globalRuleMetaData, database);
+        ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class);
+        when(metaData.getGlobalRuleMetaData()).thenReturn(globalRuleMetaData);
+        QueryContext queryContext = new QueryContext(sqlStatementContext, "", Collections.emptyList(), hintValueContext, mock(ConnectionContext.class), metaData);
+        sqlAuditor.audit(queryContext, database, rule);
+        verify(rule.getAuditors().get("foo_auditor"), never()).check(sqlStatementContext, Collections.emptyList(), globalRuleMetaData, database);
     }
     
     @Test
     void assertAuditSuccessWithoutDisableAuditNames() {
         when(hintValueContext.getDisableAuditNames()).thenReturn(Collections.singleton("bar_auditor"));
-        QueryContext queryContext = new QueryContext(sqlStatementContext, "", Collections.emptyList(), hintValueContext, mock(ConnectionContext.class), mock(ShardingSphereMetaData.class));
-        sqlAuditor.audit(queryContext, globalRuleMetaData, database, rule);
+        ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class);
+        when(metaData.getGlobalRuleMetaData()).thenReturn(globalRuleMetaData);
+        QueryContext queryContext = new QueryContext(sqlStatementContext, "", Collections.emptyList(), hintValueContext, mock(ConnectionContext.class), metaData);
+        sqlAuditor.audit(queryContext, database, rule);
         verify(rule.getAuditors().get("foo_auditor")).check(sqlStatementContext, Collections.emptyList(), globalRuleMetaData, database);
     }
     
@@ -117,8 +125,10 @@ class ShardingSQLAuditorTest {
     void assertAuditFailed() {
         ShardingAuditAlgorithm auditAlgorithm = rule.getAuditors().get("foo_auditor");
         doThrow(new DMLWithoutShardingKeyException()).when(auditAlgorithm).check(sqlStatementContext, Collections.emptyList(), globalRuleMetaData, database);
-        QueryContext queryContext = new QueryContext(sqlStatementContext, "", Collections.emptyList(), hintValueContext, mock(ConnectionContext.class), mock(ShardingSphereMetaData.class));
-        DMLWithoutShardingKeyException ex = assertThrows(DMLWithoutShardingKeyException.class, () -> sqlAuditor.audit(queryContext, globalRuleMetaData, database, rule));
+        ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class);
+        when(metaData.getGlobalRuleMetaData()).thenReturn(globalRuleMetaData);
+        QueryContext queryContext = new QueryContext(sqlStatementContext, "", Collections.emptyList(), hintValueContext, mock(ConnectionContext.class), metaData);
+        DMLWithoutShardingKeyException ex = assertThrows(DMLWithoutShardingKeyException.class, () -> sqlAuditor.audit(queryContext, database, rule));
         assertThat(ex.getMessage(), is("Not allow DML operation without sharding conditions."));
     }
 }

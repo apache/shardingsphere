@@ -69,7 +69,7 @@ public final class InventoryTaskSplitter {
             AtomicReference<IngestPosition> position = new AtomicReference<>(each.getCommonContext().getPosition());
             PipelineChannel channel = InventoryChannelCreator.create(processContext.getProcessConfiguration().getStreamChannel(), importerConfig.getBatchSize(), position);
             InventoryDataRecordPositionCreator positionCreator = each.hasUniqueKey() ? new UniqueKeyInventoryDataRecordPositionCreator() : new PlaceholderInventoryDataRecordPositionCreator();
-            Dumper dumper = new InventoryDumper(each, channel, sourceDataSource, jobItemContext.getSourceMetaDataLoader(), positionCreator);
+            Dumper dumper = new InventoryDumper(each, channel, sourceDataSource, positionCreator);
             Importer importer = new SingleChannelConsumerImporter(channel, importerConfig.getBatchSize(), 3000L, jobItemContext.getSink(), jobItemContext);
             result.add(new InventoryTask(PipelineTaskUtils.generateInventoryTaskId(each),
                     processContext.getInventoryDumperExecuteEngine(), processContext.getInventoryImporterExecuteEngine(), dumper, importer, position));

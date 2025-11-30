@@ -20,7 +20,7 @@ package org.apache.shardingsphere.encrypt.checker.sql.predicate;
 import org.apache.shardingsphere.encrypt.exception.metadata.MissingMatchedEncryptQueryAlgorithmException;
 import org.apache.shardingsphere.encrypt.rewrite.token.generator.fixture.EncryptGeneratorFixtureBuilder;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.binder.context.statement.dml.SelectStatementContext;
+import org.apache.shardingsphere.infra.binder.context.statement.type.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.exception.generic.UnsupportedSQLOperationException;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.TableSourceType;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
@@ -44,7 +44,7 @@ import static org.mockito.Mockito.when;
 class EncryptPredicateColumnSupportedCheckerTest {
     
     @Test
-    void assertIsCheckWithNotWhereAvailable() {
+    void assertIsCheckWithNotWhereContextAvailable() {
         assertFalse(new EncryptPredicateColumnSupportedChecker().isCheck(mock(SQLStatementContext.class)));
     }
     

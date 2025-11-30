@@ -26,7 +26,7 @@ dataSources:
   write_ds:
     url: jdbc:postgresql://postgresql.default.host:5432/write_ds
     username: test_user
-    password: Test@123
+    password: Test@9876
     connectionTimeoutMilliseconds: 30000
     idleTimeoutMilliseconds: 60000
     maxLifetimeMilliseconds: 1800000
@@ -35,7 +35,7 @@ dataSources:
   read_ds_0:
     url: jdbc:postgresql://postgresql.default.host:5432/read_ds_0
     username: test_user
-    password: Test@123
+    password: Test@9876
     connectionTimeoutMilliseconds: 30000
     idleTimeoutMilliseconds: 60000
     maxLifetimeMilliseconds: 1800000
@@ -44,7 +44,7 @@ dataSources:
   read_ds_1:
     url: jdbc:postgresql://postgresql.default.host:5432/read_ds_1
     username: test_user
-    password: Test@123
+    password: Test@9876
     connectionTimeoutMilliseconds: 30000
     idleTimeoutMilliseconds: 60000
     maxLifetimeMilliseconds: 1800000

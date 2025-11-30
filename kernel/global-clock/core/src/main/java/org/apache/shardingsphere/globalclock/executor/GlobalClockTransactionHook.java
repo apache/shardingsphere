@@ -18,11 +18,11 @@
 package org.apache.shardingsphere.globalclock.executor;
 
 import com.google.common.base.Preconditions;
+import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoader;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.globalclock.provider.GlobalClockProvider;
 import org.apache.shardingsphere.globalclock.rule.GlobalClockRule;
 import org.apache.shardingsphere.globalclock.rule.constant.GlobalClockOrder;
-import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPILoader;
-import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.session.connection.transaction.TransactionConnectionContext;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.TransactionIsolationLevel;
 import org.apache.shardingsphere.transaction.spi.TransactionHook;
@@ -97,8 +97,8 @@ public final class GlobalClockTransactionHook implements TransactionHook<GlobalC
     }
     
     @Override
-    public boolean isNeedLockWhenCommit() {
-        return true;
+    public boolean isNeedLockWhenCommit(final GlobalClockRule rule) {
+        return rule.getConfiguration().isEnabled();
     }
     
     @Override

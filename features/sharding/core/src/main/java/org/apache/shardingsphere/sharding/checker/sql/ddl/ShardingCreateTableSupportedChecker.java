@@ -18,29 +18,29 @@
 package org.apache.shardingsphere.sharding.checker.sql.ddl;
 
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.binder.context.statement.ddl.CreateTableStatementContext;
+import org.apache.shardingsphere.infra.binder.context.statement.type.CommonSQLStatementContext;
 import org.apache.shardingsphere.infra.checker.SupportedSQLChecker;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.sharding.checker.sql.common.ShardingSupportedCommonChecker;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.CreateTableStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.table.CreateTableStatement;
 
 import java.util.Collections;
 
 /**
  * Create table supported checker for sharding.
  */
-public final class ShardingCreateTableSupportedChecker implements SupportedSQLChecker<CreateTableStatementContext, ShardingRule> {
+public final class ShardingCreateTableSupportedChecker implements SupportedSQLChecker<CommonSQLStatementContext, ShardingRule> {
     
     @Override
     public boolean isCheck(final SQLStatementContext sqlStatementContext) {
-        return sqlStatementContext instanceof CreateTableStatementContext;
+        return sqlStatementContext.getSqlStatement() instanceof CreateTableStatement;
     }
     
     @Override
-    public void check(final ShardingRule rule, final ShardingSphereDatabase database, final ShardingSphereSchema currentSchema, final CreateTableStatementContext sqlStatementContext) {
-        CreateTableStatement createTableStatement = sqlStatementContext.getSqlStatement();
+    public void check(final ShardingRule rule, final ShardingSphereDatabase database, final ShardingSphereSchema currentSchema, final CommonSQLStatementContext sqlStatementContext) {
+        CreateTableStatement createTableStatement = (CreateTableStatement) sqlStatementContext.getSqlStatement();
         if (!createTableStatement.isIfNotExists()) {
             ShardingSphereSchema schema = sqlStatementContext.getTablesContext().getSchemaName().map(database::getSchema).orElse(currentSchema);
             ShardingSupportedCommonChecker.checkTableNotExist(schema, Collections.singleton(createTableStatement.getTable()));

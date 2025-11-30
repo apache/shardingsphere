@@ -21,14 +21,13 @@ import org.apache.shardingsphere.infra.instance.ComputeNodeInstanceContext;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepositoryConfiguration;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEventListener;
-import org.apache.shardingsphere.mode.repository.cluster.lock.holder.DistributedLockHolder;
-import org.apache.shardingsphere.mode.repository.cluster.lock.impl.props.DefaultLockTypedProperties;
+import org.apache.shardingsphere.mode.repository.cluster.lock.DistributedLock;
 
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
+import java.util.Optional;
 
 public final class ProxyPersistRepositoryFixture implements ClusterPersistRepository {
     
@@ -73,8 +72,8 @@ public final class ProxyPersistRepositoryFixture implements ClusterPersistReposi
     }
     
     @Override
-    public DistributedLockHolder getDistributedLockHolder() {
-        return new DistributedLockHolder("default", this, new DefaultLockTypedProperties(new Properties()));
+    public Optional<DistributedLock> getDistributedLock(final String lockKey) {
+        return Optional.empty();
     }
     
     @Override

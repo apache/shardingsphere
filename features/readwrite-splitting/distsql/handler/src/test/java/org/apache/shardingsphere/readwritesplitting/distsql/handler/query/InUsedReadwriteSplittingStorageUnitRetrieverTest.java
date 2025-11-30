@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.readwritesplitting.distsql.handler.query;
 
 import org.apache.shardingsphere.distsql.handler.executor.rql.resource.InUsedStorageUnitRetriever;
-import org.apache.shardingsphere.distsql.statement.rql.rule.database.ShowRulesUsedStorageUnitStatement;
+import org.apache.shardingsphere.distsql.statement.type.rql.rule.database.ShowRulesUsedStorageUnitStatement;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.readwritesplitting.config.rule.ReadwriteSplittingDataSourceGroupRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.rule.ReadwriteSplittingRule;
@@ -28,7 +28,6 @@ import java.util.Collections;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -39,21 +38,15 @@ class InUsedReadwriteSplittingStorageUnitRetrieverTest {
     private final InUsedStorageUnitRetriever<ReadwriteSplittingRule> retriever = TypedSPILoader.getService(InUsedStorageUnitRetriever.class, ReadwriteSplittingRule.class);
     
     @Test
-    void assertGetInUsedResourcesWithoutStorageUnit() {
-        ShowRulesUsedStorageUnitStatement sqlStatement = new ShowRulesUsedStorageUnitStatement(null, null);
-        assertTrue(retriever.getInUsedResources(sqlStatement, mock(ReadwriteSplittingRule.class)).isEmpty());
-    }
-    
-    @Test
     void assertGetInUsedResourcesWithWriteDataSource() {
         ShowRulesUsedStorageUnitStatement sqlStatement = new ShowRulesUsedStorageUnitStatement("foo_unit_write", null);
-        assertThat(retriever.getInUsedResources(sqlStatement, mockRule()), is(Collections.singletonList("foo_ds")));
+        assertThat(retriever.getInUsedResources(sqlStatement, mockRule()), is(Collections.singleton("foo_ds")));
     }
     
     @Test
     void assertGetInUsedResourcesWithReadDataSource() {
         ShowRulesUsedStorageUnitStatement sqlStatement = new ShowRulesUsedStorageUnitStatement("foo_unit_read", null);
-        assertThat(retriever.getInUsedResources(sqlStatement, mockRule()), is(Collections.singletonList("foo_ds")));
+        assertThat(retriever.getInUsedResources(sqlStatement, mockRule()), is(Collections.singleton("foo_ds")));
     }
     
     private ReadwriteSplittingRule mockRule() {

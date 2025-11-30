@@ -53,6 +53,20 @@ public final class TypedPropertyValue {
                 throw new TypedPropertyValueException(key, value);
             }
         }
+        if (float.class == key.getType() || Float.class == key.getType()) {
+            try {
+                return Float.valueOf(value);
+            } catch (final NumberFormatException ignored) {
+                throw new TypedPropertyValueException(key, value);
+            }
+        }
+        if (double.class == key.getType() || Double.class == key.getType()) {
+            try {
+                return Double.valueOf(value);
+            } catch (final NumberFormatException ignored) {
+                throw new TypedPropertyValueException(key, value);
+            }
+        }
         if (Enum.class.isAssignableFrom(key.getType())) {
             return getEnumValue(key, value);
         }

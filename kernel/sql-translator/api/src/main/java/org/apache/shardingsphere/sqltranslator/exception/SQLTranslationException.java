@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.sqltranslator.exception;
 
-import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.SQLState;
-import org.apache.shardingsphere.infra.exception.core.external.sql.type.feature.FeatureSQLException;
+import org.apache.shardingsphere.infra.exception.external.sql.sqlstate.SQLState;
+import org.apache.shardingsphere.infra.exception.external.sql.type.feature.FeatureSQLException;
 
 /**
  * SQL translation exception.

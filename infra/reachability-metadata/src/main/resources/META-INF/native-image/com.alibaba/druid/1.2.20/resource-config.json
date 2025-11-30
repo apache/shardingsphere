@@ -1,8 +1,0 @@
-{
-  "resources":{
-  "includes":[{
-    "condition":{"typeReachable":"com.alibaba.druid.util.JdbcUtils"},
-    "pattern":"\\QMETA-INF/druid-driver.properties\\E"
-  }]},
-  "bundles":[]
-}

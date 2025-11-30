@@ -24,8 +24,8 @@ import org.apache.shardingsphere.data.pipeline.core.job.progress.config.yaml.con
 import org.apache.shardingsphere.data.pipeline.core.job.progress.config.yaml.config.YamlPipelineWriteConfiguration;
 import org.apache.shardingsphere.data.pipeline.core.job.progress.config.yaml.swapper.YamlPipelineProcessConfigurationSwapper;
 import org.apache.shardingsphere.infra.algorithm.core.yaml.YamlAlgorithmConfiguration;
-
-import java.util.Properties;
+import org.apache.shardingsphere.infra.util.props.PropertiesBuilder;
+import org.apache.shardingsphere.infra.util.props.PropertiesBuilder.Property;
 
 /**
  * Pipeline process configuration utility class.
@@ -57,9 +57,7 @@ public final class PipelineProcessConfigurationUtils {
         if (null == yamlConfig.getStreamChannel()) {
             YamlAlgorithmConfiguration yamlAlgorithmConfig = new YamlAlgorithmConfiguration();
             yamlAlgorithmConfig.setType("MEMORY");
-            Properties props = new Properties();
-            props.setProperty("block-queue-size", "2000");
-            yamlAlgorithmConfig.setProps(props);
+            yamlAlgorithmConfig.setProps(PropertiesBuilder.build(new Property("block-queue-size", "2000")));
             yamlConfig.setStreamChannel(yamlAlgorithmConfig);
         }
     }

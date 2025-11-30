@@ -22,19 +22,18 @@ import org.apache.shardingsphere.encrypt.exception.metadata.MissingMatchedEncryp
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.encrypt.rule.table.EncryptTable;
 import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
+import org.apache.shardingsphere.infra.binder.context.available.WhereContextAvailable;
 import org.apache.shardingsphere.infra.binder.context.extractor.SQLStatementContextExtractor;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.binder.context.statement.dml.SelectStatementContext;
-import org.apache.shardingsphere.infra.binder.context.type.WhereAvailable;
+import org.apache.shardingsphere.infra.binder.context.statement.type.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.checker.SupportedSQLChecker;
-import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
+import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.sql.parser.statement.core.extractor.ExpressionExtractor;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.BinaryOperationExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExpressionSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.predicate.AndPredicate;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.predicate.WhereSegment;
 
 import java.util.Collection;
@@ -48,18 +47,18 @@ public final class EncryptPredicateColumnSupportedChecker implements SupportedSQ
     
     @Override
     public boolean isCheck(final SQLStatementContext sqlStatementContext) {
-        return sqlStatementContext instanceof WhereAvailable && !((WhereAvailable) sqlStatementContext).getWhereSegments().isEmpty();
+        return sqlStatementContext instanceof WhereContextAvailable && !((WhereContextAvailable) sqlStatementContext).getWhereSegments().isEmpty();
     }
     
     @Override
     public void check(final EncryptRule rule, final ShardingSphereDatabase database, final ShardingSphereSchema currentSchema, final SQLStatementContext sqlStatementContext) {
         Collection<SelectStatementContext> allSubqueryContexts = SQLStatementContextExtractor.getAllSubqueryContexts(sqlStatementContext);
-        Collection<BinaryOperationExpression> joinConditions = SQLStatementContextExtractor.getJoinConditions((WhereAvailable) sqlStatementContext, allSubqueryContexts);
+        Collection<BinaryOperationExpression> joinConditions = SQLStatementContextExtractor.getJoinConditions((WhereContextAvailable) sqlStatementContext, allSubqueryContexts);
         JoinConditionsEncryptorChecker.checkIsSame(joinConditions, rule, "join condition");
-        check(rule, (WhereAvailable) sqlStatementContext);
+        check(rule, (WhereContextAvailable) sqlStatementContext);
     }
     
-    private void check(final EncryptRule rule, final WhereAvailable sqlStatementContext) {
+    private void check(final EncryptRule rule, final WhereContextAvailable sqlStatementContext) {
         for (ColumnSegment each : sqlStatementContext.getColumnSegments()) {
             Optional<EncryptTable> encryptTable = rule.findEncryptTable(each.getColumnBoundInfo().getOriginalTable().getValue());
             String columnName = each.getIdentifier().getValue();
@@ -73,20 +72,19 @@ public final class EncryptPredicateColumnSupportedChecker implements SupportedSQ
     
     private boolean includesLike(final Collection<WhereSegment> whereSegments, final ColumnSegment targetColumnSegment) {
         for (WhereSegment each : whereSegments) {
-            Collection<AndPredicate> andPredicates = ExpressionExtractor.extractAndPredicates(each.getExpr());
-            for (AndPredicate andPredicate : andPredicates) {
-                if (isLikeColumnSegment(andPredicate, targetColumnSegment)) {
-                    return true;
-                }
+            Collection<ExpressionSegment> expressions = ExpressionExtractor.extractAllExpressions(each.getExpr());
+            if (isLikeColumnSegment(expressions, targetColumnSegment)) {
+                return true;
             }
         }
         return false;
     }
     
-    private boolean isLikeColumnSegment(final AndPredicate andPredicate, final ColumnSegment targetColumnSegment) {
-        for (ExpressionSegment each : andPredicate.getPredicates()) {
+    private boolean isLikeColumnSegment(final Collection<ExpressionSegment> expressions, final ColumnSegment targetColumnSegment) {
+        for (ExpressionSegment each : expressions) {
             if (each instanceof BinaryOperationExpression
-                    && "LIKE".equalsIgnoreCase(((BinaryOperationExpression) each).getOperator()) && isSameColumnSegment(((BinaryOperationExpression) each).getLeft(), targetColumnSegment)) {
+                    && ("LIKE".equalsIgnoreCase(((BinaryOperationExpression) each).getOperator()) || "NOT LIKE".equalsIgnoreCase(((BinaryOperationExpression) each).getOperator()))
+                    && isSameColumnSegment(((BinaryOperationExpression) each).getLeft(), targetColumnSegment)) {
                 return true;
             }
         }

@@ -17,26 +17,23 @@
 
 package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.queryable.variable;
 
+import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.distsql.handler.engine.DistSQLConnectionContext;
-import org.apache.shardingsphere.distsql.statement.ral.queryable.show.ShowDistVariablesStatement;
+import org.apache.shardingsphere.distsql.statement.type.ral.queryable.show.ShowDistVariablesStatement;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.props.temporary.TemporaryConfigurationProperties;
-import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.DatabaseConnectionManager;
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.ExecutorStatementManager;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
-import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.session.query.QueryContext;
-import org.apache.shardingsphere.logging.rule.LoggingRule;
-import org.apache.shardingsphere.logging.rule.builder.DefaultLoggingRuleConfigurationBuilder;
+import org.apache.shardingsphere.infra.util.props.PropertiesBuilder;
+import org.apache.shardingsphere.infra.util.props.PropertiesBuilder.Property;
 import org.apache.shardingsphere.mode.manager.ContextManager;
-import org.apache.shardingsphere.test.util.PropertiesBuilder;
-import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Iterator;
+import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -50,33 +47,48 @@ class ShowDistVariablesExecutorTest {
     
     @Test
     void assertExecute() {
-        when(contextManager.getMetaDataContexts().getMetaData().getProps()).thenReturn(new ConfigurationProperties(PropertiesBuilder.build(new Property("system-log-level", "INFO"))));
-        when(contextManager.getMetaDataContexts().getMetaData().getTemporaryProps())
-                .thenReturn(new TemporaryConfigurationProperties(PropertiesBuilder.build(new Property("proxy-meta-data-collector-enabled", Boolean.FALSE.toString()))));
+        when(contextManager.getMetaDataContexts().getMetaData().getProps()).thenReturn(new ConfigurationProperties(PropertiesBuilder.build(new Property("agent-plugins-enabled", "false"))));
         ShowDistVariablesExecutor executor = new ShowDistVariablesExecutor();
         executor.setConnectionContext(new DistSQLConnectionContext(mock(QueryContext.class), 1,
                 mock(DatabaseType.class), mock(DatabaseConnectionManager.class), mock(ExecutorStatementManager.class)));
         Collection<LocalDataQueryResultRow> actual = executor.getRows(mock(ShowDistVariablesStatement.class), contextManager);
-        assertThat(actual.size(), is(22));
+        assertThat(actual.size(), is(21));
         LocalDataQueryResultRow row = actual.iterator().next();
         assertThat(row.getCell(1), is("agent_plugins_enabled"));
-        assertThat(row.getCell(2), is("true"));
+        assertThat(row.getCell(2), is("false"));
     }
     
     @Test
     void assertExecuteWithLike() {
-        when(contextManager.getMetaDataContexts().getMetaData().getProps()).thenReturn(new ConfigurationProperties(PropertiesBuilder.build(new Property("system-log-level", "INFO"))));
-        when(contextManager.getMetaDataContexts().getMetaData().getTemporaryProps())
-                .thenReturn(new TemporaryConfigurationProperties(PropertiesBuilder.build(new Property("proxy-meta-data-collector-enabled", Boolean.FALSE.toString()))));
-        when(contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData())
-                .thenReturn(new RuleMetaData(Collections.singleton(new LoggingRule(new DefaultLoggingRuleConfigurationBuilder().build()))));
         ShowDistVariablesExecutor executor = new ShowDistVariablesExecutor();
         executor.setConnectionContext(new DistSQLConnectionContext(mock(QueryContext.class), 1,
                 mock(DatabaseType.class), mock(DatabaseConnectionManager.class), mock(ExecutorStatementManager.class)));
-        Collection<LocalDataQueryResultRow> actual = executor.getRows(new ShowDistVariablesStatement("sql_%"), contextManager);
+        Collection<LocalDataQueryResultRow> actual = executor.getRows(new ShowDistVariablesStatement(false, "sql_%"), contextManager);
         assertThat(actual.size(), is(2));
         Iterator<LocalDataQueryResultRow> iterator = actual.iterator();
         assertThat(iterator.next().getCell(1), is("sql_show"));
         assertThat(iterator.next().getCell(1), is("sql_simple"));
+    }
+    
+    @Test
+    void assertExecuteTemporary() {
+        when(contextManager.getMetaDataContexts().getMetaData().getTemporaryProps()).thenReturn(new TemporaryConfigurationProperties(new Properties()));
+        ShowDistVariablesExecutor executor = new ShowDistVariablesExecutor();
+        ShowDistVariablesStatement sqlStatement = new ShowDistVariablesStatement(true, null);
+        Collection<LocalDataQueryResultRow> actual = executor.getRows(sqlStatement, contextManager);
+        assertThat(actual.size(), is(3));
+        LocalDataQueryResultRow row = actual.iterator().next();
+        assertThat(row.getCell(1), is("proxy_meta_data_collector_cron"));
+        assertThat(row.getCell(2), is("0 0/1 * * * ?"));
+    }
+    
+    @Test
+    void assertExecuteTemporaryWithLike() {
+        ShowDistVariablesExecutor executor = new ShowDistVariablesExecutor();
+        Collection<LocalDataQueryResultRow> actual = executor.getRows(new ShowDistVariablesStatement(true, "proxy_%"), contextManager);
+        assertThat(actual.size(), is(2));
+        Iterator<LocalDataQueryResultRow> iterator = actual.iterator();
+        assertThat(iterator.next().getCell(1), is("proxy_meta_data_collector_cron"));
+        assertThat(iterator.next().getCell(1), is("proxy_meta_data_collector_enabled"));
     }
 }

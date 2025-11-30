@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.shadow.distsql.handler.query;
 
 import org.apache.shardingsphere.distsql.handler.executor.rql.resource.InUsedStorageUnitRetriever;
-import org.apache.shardingsphere.distsql.statement.rql.rule.database.ShowRulesUsedStorageUnitStatement;
+import org.apache.shardingsphere.distsql.statement.type.rql.rule.database.ShowRulesUsedStorageUnitStatement;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.shadow.config.datasource.ShadowDataSourceConfiguration;
 import org.apache.shardingsphere.shadow.rule.ShadowRule;
@@ -28,7 +28,6 @@ import java.util.Collections;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -37,12 +36,6 @@ class InUsedShadowStorageUnitRetrieverTest {
     
     @SuppressWarnings("unchecked")
     private final InUsedStorageUnitRetriever<ShadowRule> retriever = TypedSPILoader.getService(InUsedStorageUnitRetriever.class, ShadowRule.class);
-    
-    @Test
-    void assertGetInUsedResourcesWithoutStorageUnit() {
-        ShowRulesUsedStorageUnitStatement sqlStatement = new ShowRulesUsedStorageUnitStatement(null, null);
-        assertTrue(retriever.getInUsedResources(sqlStatement, mock(ShadowRule.class)).isEmpty());
-    }
     
     @Test
     void assertGetInUsedResourcesWithShadowDataSource() {

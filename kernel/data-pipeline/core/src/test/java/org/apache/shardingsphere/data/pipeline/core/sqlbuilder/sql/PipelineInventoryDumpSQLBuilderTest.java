@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.data.pipeline.core.sqlbuilder.sql;
 
-import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.junit.jupiter.api.Test;
 
@@ -32,42 +32,10 @@ class PipelineInventoryDumpSQLBuilderTest {
     private final PipelineInventoryDumpSQLBuilder sqlBuilder = new PipelineInventoryDumpSQLBuilder(TypedSPILoader.getService(DatabaseType.class, "FIXTURE"));
     
     @Test
-    void assertBuildDivisibleSQL() {
-        String actual = sqlBuilder.buildDivisibleSQL(new BuildDivisibleSQLParameter(null, "t_order", Arrays.asList("order_id", "user_id", "status"), "order_id", true, true));
-        assertThat(actual, is("SELECT order_id,user_id,status FROM t_order WHERE order_id>=? AND order_id<=? ORDER BY order_id ASC"));
-        actual = sqlBuilder.buildDivisibleSQL(new BuildDivisibleSQLParameter(null, "t_order", Arrays.asList("order_id", "user_id", "status"), "order_id", false, true));
-        assertThat(actual, is("SELECT order_id,user_id,status FROM t_order WHERE order_id>? AND order_id<=? ORDER BY order_id ASC"));
-    }
-    
-    @Test
-    void assertBuildUnlimitedDivisibleSQL() {
-        String actual = sqlBuilder.buildDivisibleSQL(new BuildDivisibleSQLParameter(null, "t_order", Arrays.asList("order_id", "user_id", "status"), "order_id", true, false));
-        assertThat(actual, is("SELECT order_id,user_id,status FROM t_order WHERE order_id>=? ORDER BY order_id ASC"));
-        actual = sqlBuilder.buildDivisibleSQL(new BuildDivisibleSQLParameter(null, "t_order", Arrays.asList("order_id", "user_id", "status"), "order_id", false, false));
-        assertThat(actual, is("SELECT order_id,user_id,status FROM t_order WHERE order_id>? ORDER BY order_id ASC"));
-    }
-    
-    @Test
-    void assertBuildIndivisibleSQL() {
-        String actual = sqlBuilder.buildIndivisibleSQL(null, "t_order", Arrays.asList("order_id", "user_id", "status"), "order_id");
-        assertThat(actual, is("SELECT order_id,user_id,status FROM t_order ORDER BY order_id ASC"));
-    }
-    
-    @Test
-    void assertBuildPointQuerySQL() {
-        String actual = sqlBuilder.buildPointQuerySQL(null, "t_order", Arrays.asList("order_id", "user_id", "status"), "order_id");
-        assertThat(actual, is("SELECT order_id,user_id,status FROM t_order WHERE order_id=?"));
-    }
-    
-    @Test
     void assertBuildFetchAllSQL() {
         String actual = sqlBuilder.buildFetchAllSQL(null, "t_order", Arrays.asList("order_id", "user_id", "status"));
         assertThat(actual, is("SELECT order_id,user_id,status FROM t_order"));
         actual = sqlBuilder.buildFetchAllSQL(null, "t_order", Collections.singletonList("*"));
         assertThat(actual, is("SELECT * FROM t_order"));
-        actual = sqlBuilder.buildFetchAllSQL(null, "t_order", Arrays.asList("order_id", "user_id", "status"), "order_id");
-        assertThat(actual, is("SELECT order_id,user_id,status FROM t_order ORDER BY order_id ASC"));
-        actual = sqlBuilder.buildFetchAllSQL(null, "t_order", Collections.singletonList("*"), "order_id");
-        assertThat(actual, is("SELECT * FROM t_order ORDER BY order_id ASC"));
     }
 }

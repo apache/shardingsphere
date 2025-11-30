@@ -18,9 +18,10 @@
 package org.apache.shardingsphere.driver.jdbc.core.driver;
 
 import lombok.Getter;
+import org.apache.shardingsphere.driver.api.ShardingSphereDataSourceFactory;
 import org.apache.shardingsphere.driver.api.yaml.YamlShardingSphereDataSourceFactory;
+import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
 import org.apache.shardingsphere.infra.url.core.ShardingSphereURL;
-import org.apache.shardingsphere.infra.url.core.ShardingSphereURLLoadEngine;
 
 import javax.sql.DataSource;
 import java.io.IOException;
@@ -54,7 +55,10 @@ public final class DriverDataSourceCache {
     private <T extends Throwable> DataSource createDataSource(final ShardingSphereURL url) throws T {
         try {
             ShardingSphereURLLoadEngine urlLoadEngine = new ShardingSphereURLLoadEngine(url);
-            return YamlShardingSphereDataSourceFactory.createDataSource(urlLoadEngine.loadContent());
+            Object loadedContent = urlLoadEngine.loadContent();
+            return loadedContent instanceof ModeConfiguration
+                    ? ShardingSphereDataSourceFactory.createDataSource((ModeConfiguration) loadedContent)
+                    : YamlShardingSphereDataSourceFactory.createDataSource((byte[]) loadedContent);
         } catch (final IOException ex) {
             throw (T) new SQLException(ex);
         } catch (final SQLException ex) {

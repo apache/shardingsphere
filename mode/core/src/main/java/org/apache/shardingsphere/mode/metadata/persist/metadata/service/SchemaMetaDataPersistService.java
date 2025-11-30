@@ -17,12 +17,13 @@
 
 package org.apache.shardingsphere.mode.metadata.persist.metadata.service;
 
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.metadata.database.schema.manager.GenericSchemaManager;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
-import org.apache.shardingsphere.mode.metadata.persist.version.VersionPersistService;
 import org.apache.shardingsphere.mode.node.path.engine.generator.NodePathGenerator;
 import org.apache.shardingsphere.mode.node.path.type.database.metadata.schema.SchemaMetaDataNodePath;
 import org.apache.shardingsphere.mode.node.path.type.database.metadata.schema.TableMetaDataNodePath;
+import org.apache.shardingsphere.mode.persist.service.TableMetaDataPersistService;
 import org.apache.shardingsphere.mode.spi.repository.PersistRepository;
 
 import java.util.Collection;
@@ -32,6 +33,7 @@ import java.util.stream.Collectors;
 /**
  * Schema meta data persist service.
  */
+@RequiredArgsConstructor
 public final class SchemaMetaDataPersistService {
     
     private final PersistRepository repository;
@@ -39,12 +41,6 @@ public final class SchemaMetaDataPersistService {
     private final TableMetaDataPersistService tableMetaDataPersistService;
     
     private final ViewMetaDataPersistService viewMetaDataPersistService;
-    
-    public SchemaMetaDataPersistService(final PersistRepository repository, final VersionPersistService versionPersistService) {
-        this.repository = repository;
-        tableMetaDataPersistService = new TableMetaDataPersistService(repository, versionPersistService);
-        viewMetaDataPersistService = new ViewMetaDataPersistService(repository, versionPersistService);
-    }
     
     /**
      * Add schema.
@@ -80,30 +76,6 @@ public final class SchemaMetaDataPersistService {
         ShardingSphereSchema currentSchema = new ShardingSphereSchema(schemaName, tableMetaDataPersistService.load(databaseName, schemaName), Collections.emptyList());
         tableMetaDataPersistService.persist(databaseName, schemaName, GenericSchemaManager.getToBeAddedTables(schema, currentSchema));
         GenericSchemaManager.getToBeDroppedTables(schema, currentSchema).forEach(each -> tableMetaDataPersistService.drop(databaseName, schemaName, each.getName()));
-    }
-    
-    /**
-     * Alter schema by rule altered.
-     *
-     * @param databaseName database name
-     * @param schema to be altered schema
-     */
-    public void alterByRuleAltered(final String databaseName, final ShardingSphereSchema schema) {
-        String schemaName = schema.getName().toLowerCase();
-        if (schema.isEmpty()) {
-            add(databaseName, schemaName);
-        }
-        tableMetaDataPersistService.persist(databaseName, schemaName, schema.getAllTables());
-    }
-    
-    /**
-     * Alter schema by rule dropped.
-     *
-     * @param databaseName database name
-     * @param schema to be altered schema
-     */
-    public void alterByRuleDropped(final String databaseName, final ShardingSphereSchema schema) {
-        tableMetaDataPersistService.persist(databaseName, schema.getName(), schema.getAllTables());
     }
     
     /**

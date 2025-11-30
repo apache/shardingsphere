@@ -19,13 +19,13 @@ package org.apache.shardingsphere.single.distsql.handler.update;
 
 import com.google.common.base.Splitter;
 import lombok.Setter;
-import org.apache.shardingsphere.distsql.handler.engine.update.rdl.rule.spi.database.DatabaseRuleAlterExecutor;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeRegistry;
+import org.apache.shardingsphere.database.exception.core.exception.syntax.table.NoSuchTableException;
+import org.apache.shardingsphere.distsql.handler.engine.update.rdl.rule.spi.database.type.DatabaseRuleAlterExecutor;
 import org.apache.shardingsphere.distsql.handler.required.DistSQLExecutorCurrentRuleRequired;
-import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
-import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.datanode.DataNode;
-import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
-import org.apache.shardingsphere.infra.exception.dialect.exception.syntax.table.NoSuchTableException;
+import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.exception.kernel.metadata.rule.MissingRequiredRuleException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
@@ -83,8 +83,7 @@ public final class UnloadSingleTableExecutor implements DatabaseRuleAlterExecuto
         ShardingSpherePreconditions.checkContains(singleTables, tableName, () -> new SingleTableNotFoundException(tableName));
     }
     
-    private void checkTableRuleExist(final String databaseName, final DatabaseType databaseType,
-                                     final Collection<DataNode> dataNodes, final String tableName) {
+    private void checkTableRuleExist(final String databaseName, final DatabaseType databaseType, final Collection<DataNode> dataNodes, final String tableName) {
         ShardingSpherePreconditions.checkNotEmpty(dataNodes, () -> new MissingRequiredRuleException("Single", databaseName, tableName));
         DataNode dataNode = dataNodes.iterator().next();
         ShardingSpherePreconditions.checkContains(rule.getConfiguration().getTables(), dataNode.format(databaseType), () -> new MissingRequiredRuleException("Single", databaseName, tableName));

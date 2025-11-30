@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.infra.executor.sql.prepare.driver;
 
-import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.ConnectionMode;
 
@@ -49,11 +49,12 @@ public interface ExecutorStatementManager<C, R, O extends StorageResourceOption>
      *
      * @param executionUnit execution unit
      * @param connection connection
+     * @param connectionOffset connection offset
      * @param connectionMode connection mode
      * @param option storage resource option
      * @param databaseType database type
      * @return storage resource
      * @throws SQLException SQL exception
      */
-    R createStorageResource(ExecutionUnit executionUnit, C connection, ConnectionMode connectionMode, O option, DatabaseType databaseType) throws SQLException;
+    R createStorageResource(ExecutionUnit executionUnit, C connection, int connectionOffset, ConnectionMode connectionMode, O option, DatabaseType databaseType) throws SQLException;
 }

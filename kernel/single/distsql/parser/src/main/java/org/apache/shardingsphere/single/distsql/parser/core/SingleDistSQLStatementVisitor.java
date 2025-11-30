@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.single.distsql.parser.core;
 
-import org.antlr.v4.runtime.tree.ParseTree;
+import org.antlr.v4.runtime.tree.TerminalNode;
 import org.apache.shardingsphere.distsql.parser.autogen.SingleDistSQLStatementBaseVisitor;
 import org.apache.shardingsphere.distsql.parser.autogen.SingleDistSQLStatementParser.AllSchamesAndTablesFromStorageUnitContext;
 import org.apache.shardingsphere.distsql.parser.autogen.SingleDistSQLStatementParser.AllTablesContext;
@@ -35,7 +35,7 @@ import org.apache.shardingsphere.distsql.parser.autogen.SingleDistSQLStatementPa
 import org.apache.shardingsphere.distsql.parser.autogen.SingleDistSQLStatementParser.TableFromStorageUnitContext;
 import org.apache.shardingsphere.distsql.parser.autogen.SingleDistSQLStatementParser.TableIdentifierContext;
 import org.apache.shardingsphere.distsql.parser.autogen.SingleDistSQLStatementParser.UnloadSingleTableContext;
-import org.apache.shardingsphere.distsql.statement.rql.rule.database.CountRuleStatement;
+import org.apache.shardingsphere.distsql.statement.type.rql.rule.database.CountRuleStatement;
 import org.apache.shardingsphere.single.distsql.segment.SingleTableSegment;
 import org.apache.shardingsphere.single.distsql.statement.rdl.LoadSingleTableStatement;
 import org.apache.shardingsphere.single.distsql.statement.rdl.SetDefaultSingleTableStorageUnitStatement;
@@ -45,7 +45,9 @@ import org.apache.shardingsphere.single.distsql.statement.rql.ShowSingleTablesSt
 import org.apache.shardingsphere.single.distsql.statement.rql.ShowUnloadedSingleTablesStatement;
 import org.apache.shardingsphere.sql.parser.api.ASTNode;
 import org.apache.shardingsphere.sql.parser.api.visitor.SQLVisitor;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.FromDatabaseSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.DatabaseSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.util.IdentifierValueUtils;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 
 import java.util.Collection;
@@ -59,23 +61,24 @@ public final class SingleDistSQLStatementVisitor extends SingleDistSQLStatementB
     
     @Override
     public ASTNode visitCountSingleTable(final CountSingleTableContext ctx) {
-        return new CountRuleStatement(null == ctx.databaseName() ? null : (DatabaseSegment) visit(ctx.databaseName()), "SINGLE");
+        return new CountRuleStatement(null == ctx.databaseName() ? null : new FromDatabaseSegment(ctx.FROM().getSymbol().getStartIndex(), (DatabaseSegment) visit(ctx.databaseName())), "SINGLE");
     }
     
     @Override
     public ASTNode visitSetDefaultSingleTableStorageUnit(final SetDefaultSingleTableStorageUnitContext ctx) {
-        return new SetDefaultSingleTableStorageUnitStatement(null == ctx.storageUnitName() ? null : getIdentifierValue(ctx.storageUnitName()));
+        return new SetDefaultSingleTableStorageUnitStatement(null == ctx.storageUnitName() ? null : IdentifierValueUtils.getValue(ctx.storageUnitName()));
     }
     
     @Override
     public ASTNode visitShowDefaultSingleTableStorageUnit(final ShowDefaultSingleTableStorageUnitContext ctx) {
-        return new ShowDefaultSingleTableStorageUnitStatement(null == ctx.databaseName() ? null : (DatabaseSegment) visit(ctx.databaseName()));
+        return new ShowDefaultSingleTableStorageUnitStatement(
+                null == ctx.databaseName() ? null : new FromDatabaseSegment(ctx.FROM().getSymbol().getStartIndex(), (DatabaseSegment) visit(ctx.databaseName())));
     }
     
     @Override
     public ASTNode visitShowSingleTables(final ShowSingleTablesContext ctx) {
-        return new ShowSingleTablesStatement(null == ctx.databaseName() ? null : (DatabaseSegment) visit(ctx.databaseName()),
-                null == ctx.showLike() ? null : getIdentifierValue(ctx.showLike().likePattern()));
+        FromDatabaseSegment fromDatabase = null == ctx.databaseName() ? null : new FromDatabaseSegment(ctx.FROM().getSymbol().getStartIndex(), (DatabaseSegment) visit(ctx.databaseName()));
+        return new ShowSingleTablesStatement(fromDatabase, null == ctx.showLike() ? null : IdentifierValueUtils.getValue(ctx.showLike().likePattern()));
     }
     
     @Override
@@ -89,51 +92,48 @@ public final class SingleDistSQLStatementVisitor extends SingleDistSQLStatementB
         if (null != ctx.ALL() || null != ctx.ASTERISK_()) {
             return new UnloadSingleTableStatement(true, Collections.emptyList());
         }
-        return new UnloadSingleTableStatement(false, ctx.tableNames().tableName().stream().map(this::getIdentifierValue).collect(Collectors.toSet()));
+        return new UnloadSingleTableStatement(false, ctx.tableNames().tableName().stream().map(IdentifierValueUtils::getValue).collect(Collectors.toSet()));
     }
     
     private SingleTableSegment getSingleTableSegment(final TableIdentifierContext ctx) {
         if (ctx instanceof AllTablesFromStorageUnitContext) {
-            return new SingleTableSegment(getIdentifierValue(((AllTablesFromStorageUnitContext) ctx).storageUnitName()), "*");
+            return new SingleTableSegment(IdentifierValueUtils.getValue(((AllTablesFromStorageUnitContext) ctx).storageUnitName()), "*");
         }
         if (ctx instanceof AllTablesFromSchemaContext) {
             AllTablesFromSchemaContext tableContext = (AllTablesFromSchemaContext) ctx;
-            return new SingleTableSegment(getIdentifierValue(tableContext.storageUnitName()), getIdentifierValue(tableContext.schemaName()), "*");
+            return new SingleTableSegment(IdentifierValueUtils.getValue(tableContext.storageUnitName()), IdentifierValueUtils.getValue(tableContext.schemaName()), "*");
         }
         if (ctx instanceof TableFromStorageUnitContext) {
             TableFromStorageUnitContext tableContext = (TableFromStorageUnitContext) ctx;
-            return new SingleTableSegment(getIdentifierValue(tableContext.storageUnitName()), getIdentifierValue(tableContext.tableName()));
+            return new SingleTableSegment(IdentifierValueUtils.getValue(tableContext.storageUnitName()), IdentifierValueUtils.getValue(tableContext.tableName()));
         }
         if (ctx instanceof TableFromSchemaContext) {
             TableFromSchemaContext tableContext = (TableFromSchemaContext) ctx;
-            return new SingleTableSegment(getIdentifierValue(tableContext.storageUnitName()), getIdentifierValue(tableContext.schemaName()), getIdentifierValue(tableContext.tableName()));
+            return new SingleTableSegment(
+                    IdentifierValueUtils.getValue(tableContext.storageUnitName()), IdentifierValueUtils.getValue(tableContext.schemaName()), IdentifierValueUtils.getValue(tableContext.tableName()));
         }
         if (ctx instanceof AllTablesContext) {
             return new SingleTableSegment("*", "*");
         }
         if (ctx instanceof AllSchamesAndTablesFromStorageUnitContext) {
-            return new SingleTableSegment(getIdentifierValue(((AllSchamesAndTablesFromStorageUnitContext) ctx).storageUnitName()), "*", "*");
+            return new SingleTableSegment(IdentifierValueUtils.getValue(((AllSchamesAndTablesFromStorageUnitContext) ctx).storageUnitName()), "*", "*");
         }
         return new SingleTableSegment("*", "*", "*");
     }
     
     @Override
     public ASTNode visitShowUnloadedSingleTables(final ShowUnloadedSingleTablesContext ctx) {
-        return null == ctx.fromClause() ? new ShowUnloadedSingleTablesStatement(null, null, null) : visitShowUnloadedSingleTablesWithFromClause(ctx.fromClause());
+        return null == ctx.fromClause() ? new ShowUnloadedSingleTablesStatement(null, null, null) : visitShowUnloadedSingleTablesWithFromClause(ctx.FROM(), ctx.fromClause());
     }
     
-    private ASTNode visitShowUnloadedSingleTablesWithFromClause(final FromClauseContext ctx) {
-        return new ShowUnloadedSingleTablesStatement(null == ctx.databaseName() ? null : (DatabaseSegment) visit(ctx.databaseName()),
-                null == ctx.storageUnitName() ? null : getIdentifierValue(ctx.storageUnitName()),
-                null == ctx.schemaName() ? null : getIdentifierValue(ctx.schemaName()));
+    private ASTNode visitShowUnloadedSingleTablesWithFromClause(final TerminalNode fromCtx, final FromClauseContext ctx) {
+        FromDatabaseSegment fromDatabase = null == ctx.databaseName() ? null : new FromDatabaseSegment(fromCtx.getSymbol().getStartIndex(), (DatabaseSegment) visit(ctx.databaseName()));
+        return new ShowUnloadedSingleTablesStatement(fromDatabase,
+                null == ctx.storageUnitName() ? null : IdentifierValueUtils.getValue(ctx.storageUnitName()), null == ctx.schemaName() ? null : IdentifierValueUtils.getValue(ctx.schemaName()));
     }
     
     @Override
     public ASTNode visitDatabaseName(final DatabaseNameContext ctx) {
         return new DatabaseSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), new IdentifierValue(ctx.getText()));
-    }
-    
-    private String getIdentifierValue(final ParseTree context) {
-        return null == context ? null : new IdentifierValue(context.getText()).getValue();
     }
 }

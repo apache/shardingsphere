@@ -30,9 +30,9 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ServiceLoader;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.isA;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -62,7 +62,7 @@ class ShardingSphereDriverTest {
         try (
                 Connection connection = DriverManager.getConnection("jdbc:shardingsphere:classpath:config/driver/foo-driver-fixture.yaml");
                 Statement statement = connection.createStatement()) {
-            assertThat(connection, instanceOf(ShardingSphereConnection.class));
+            assertThat(connection, isA(ShardingSphereConnection.class));
             statement.execute("DROP TABLE IF EXISTS t_order");
             statement.execute("CREATE TABLE t_order (order_id INT PRIMARY KEY, user_id INT)");
             statement.execute("INSERT INTO t_order (order_id, user_id) VALUES (1, 101), (2, 102)");
@@ -78,7 +78,7 @@ class ShardingSphereDriverTest {
         try (
                 Connection connection = DriverManager.getConnection("jdbc:shardingsphere:classpath:config/driver/foo-driver-fixture.yaml");
                 Statement statement = connection.createStatement()) {
-            assertThat(connection, instanceOf(ShardingSphereConnection.class));
+            assertThat(connection, isA(ShardingSphereConnection.class));
             statement.execute("DROP TABLE IF EXISTS t_order");
             statement.execute("CREATE TABLE t_order (order_id VARBINARY(64) PRIMARY KEY, user_id INT)");
             PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO t_order (order_id, user_id) VALUES (?, ?)");
@@ -98,7 +98,7 @@ class ShardingSphereDriverTest {
         try (
                 Connection connection = DriverManager.getConnection("jdbc:shardingsphere:classpath:config/driver/foo-driver-fixture.yaml");
                 Statement statement = connection.createStatement()) {
-            assertThat(connection, instanceOf(ShardingSphereConnection.class));
+            assertThat(connection, isA(ShardingSphereConnection.class));
             statement.execute("DROP TABLE IF EXISTS t_order");
             statement.execute("CREATE TABLE t_order (order_id INT PRIMARY KEY, user_id INT)");
             statement.execute("INSERT INTO t_order (order_id, user_id) VALUES (1, 101), (2, 102)");

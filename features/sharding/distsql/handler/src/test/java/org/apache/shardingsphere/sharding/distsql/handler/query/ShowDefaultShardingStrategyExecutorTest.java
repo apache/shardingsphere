@@ -18,71 +18,27 @@
 package org.apache.shardingsphere.sharding.distsql.handler.query;
 
 import org.apache.shardingsphere.distsql.statement.DistSQLStatement;
-import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration;
-import org.apache.shardingsphere.infra.config.rule.scope.DatabaseRuleConfiguration;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
-import org.apache.shardingsphere.sharding.api.config.strategy.sharding.HintShardingStrategyConfiguration;
-import org.apache.shardingsphere.sharding.api.config.strategy.sharding.NoneShardingStrategyConfiguration;
-import org.apache.shardingsphere.sharding.api.config.strategy.sharding.StandardShardingStrategyConfiguration;
-import org.apache.shardingsphere.sharding.distsql.statement.ShowDefaultShardingStrategyStatement;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
-import org.apache.shardingsphere.test.it.distsql.handler.engine.query.DistSQLDatabaseRuleQueryExecutorTest;
-import org.apache.shardingsphere.test.util.PropertiesBuilder;
-import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
-import org.junit.jupiter.api.extension.ExtensionContext;
+import org.apache.shardingsphere.test.it.distsql.handler.engine.query.DistSQLDatabaseRuleQueryExecutorAssert;
+import org.apache.shardingsphere.test.it.distsql.handler.engine.query.DistSQLRuleQueryExecutorSettings;
+import org.apache.shardingsphere.test.it.distsql.handler.engine.query.DistSQLRuleQueryExecutorTestCaseArgumentsProvider;
 import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.Arguments;
-import org.junit.jupiter.params.provider.ArgumentsProvider;
 import org.junit.jupiter.params.provider.ArgumentsSource;
 
 import java.sql.SQLException;
-import java.util.Arrays;
 import java.util.Collection;
-import java.util.stream.Stream;
 
 import static org.mockito.Mockito.mock;
 
-class ShowDefaultShardingStrategyExecutorTest extends DistSQLDatabaseRuleQueryExecutorTest {
+@DistSQLRuleQueryExecutorSettings("cases/show-default-sharding-strategy.xml")
+class ShowDefaultShardingStrategyExecutorTest {
     
-    ShowDefaultShardingStrategyExecutorTest() {
-        super(mock(ShardingRule.class));
-    }
-    
-    @ParameterizedTest(name = "{0}")
-    @ArgumentsSource(TestCaseArgumentsProvider.class)
-    void assertExecuteQuery(final String name, final DatabaseRuleConfiguration ruleConfig, final DistSQLStatement sqlStatement,
-                            final Collection<LocalDataQueryResultRow> expected) throws SQLException {
-        assertQueryResultRows(ruleConfig, sqlStatement, expected);
-    }
-    
-    private static class TestCaseArgumentsProvider implements ArgumentsProvider {
-        
-        @Override
-        public Stream<? extends Arguments> provideArguments(final ExtensionContext extensionContext) {
-            return Stream.of(Arguments.arguments("withNullShardingStrategy", new ShardingRuleConfiguration(), new ShowDefaultShardingStrategyStatement(null),
-                    Arrays.asList(new LocalDataQueryResultRow("TABLE", "", "", "", "", ""), new LocalDataQueryResultRow("DATABASE", "", "", "", "", ""))),
-                    Arguments.arguments("withNoneShardingStrategyType", createRuleConfigurationWithNoneShardingStrategyType(), new ShowDefaultShardingStrategyStatement(null),
-                            Arrays.asList(new LocalDataQueryResultRow("TABLE", "NONE", "", "", "", ""), new LocalDataQueryResultRow("DATABASE", "NONE", "", "", "", ""))),
-                    Arguments.arguments("withShardingStrategyType", createRuleConfigurationWithShardingStrategyType(), new ShowDefaultShardingStrategyStatement(null),
-                            Arrays.asList(
-                                    new LocalDataQueryResultRow("TABLE", "STANDARD", "use_id", "database_inline", "INLINE", "{\"algorithm-expression\":\"ds_${user_id % 2}\"}"),
-                                    new LocalDataQueryResultRow("DATABASE", "HINT", "", "database_inline", "INLINE", "{\"algorithm-expression\":\"ds_${user_id % 2}\"}"))));
-        }
-        
-        private ShardingRuleConfiguration createRuleConfigurationWithNoneShardingStrategyType() {
-            ShardingRuleConfiguration result = new ShardingRuleConfiguration();
-            result.setDefaultTableShardingStrategy(new NoneShardingStrategyConfiguration());
-            result.setDefaultDatabaseShardingStrategy(new NoneShardingStrategyConfiguration());
-            return result;
-        }
-        
-        private ShardingRuleConfiguration createRuleConfigurationWithShardingStrategyType() {
-            ShardingRuleConfiguration result = new ShardingRuleConfiguration();
-            result.getShardingAlgorithms().put("database_inline", new AlgorithmConfiguration("INLINE", PropertiesBuilder.build(new Property("algorithm-expression", "ds_${user_id % 2}"))));
-            result.setDefaultTableShardingStrategy(new StandardShardingStrategyConfiguration("use_id", "database_inline"));
-            result.setDefaultDatabaseShardingStrategy(new HintShardingStrategyConfiguration("database_inline"));
-            return result;
-        }
+    @ParameterizedTest(name = "DistSQL -> {0}")
+    @ArgumentsSource(DistSQLRuleQueryExecutorTestCaseArgumentsProvider.class)
+    void assertExecuteQuery(@SuppressWarnings("unused") final String distSQL, final DistSQLStatement sqlStatement,
+                            final ShardingRuleConfiguration currentRuleConfig, final Collection<LocalDataQueryResultRow> expected) throws SQLException {
+        new DistSQLDatabaseRuleQueryExecutorAssert(mock(ShardingRule.class)).assertQueryResultRows(currentRuleConfig, sqlStatement, expected);
     }
 }

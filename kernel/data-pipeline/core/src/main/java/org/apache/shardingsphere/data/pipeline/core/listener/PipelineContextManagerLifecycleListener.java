@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.data.pipeline.core.listener;
 
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.data.pipeline.core.context.PipelineContext;
 import org.apache.shardingsphere.data.pipeline.core.context.PipelineContextKey;
 import org.apache.shardingsphere.data.pipeline.core.context.PipelineContextManager;
 import org.apache.shardingsphere.data.pipeline.core.exception.job.PipelineJobNotFoundException;
@@ -32,7 +31,7 @@ import org.apache.shardingsphere.elasticjob.infra.pojo.JobConfigurationPOJO;
 import org.apache.shardingsphere.elasticjob.infra.spi.ElasticJobServiceLoader;
 import org.apache.shardingsphere.elasticjob.lite.lifecycle.api.JobConfigurationAPI;
 import org.apache.shardingsphere.elasticjob.lite.lifecycle.domain.JobBriefInfo;
-import org.apache.shardingsphere.infra.database.core.DefaultDatabase;
+import org.apache.shardingsphere.database.connector.core.DefaultDatabase;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.listener.ContextManagerLifecycleListener;
 import org.apache.shardingsphere.mode.manager.listener.ContextManagerLifecycleListenerModeRequired;
@@ -54,7 +53,7 @@ public final class PipelineContextManagerLifecycleListener implements ContextMan
             return;
         }
         PipelineContextKey contextKey = new PipelineContextKey(preSelectedDatabaseName, contextManager.getComputeNodeInstanceContext().getInstance().getMetaData().getType());
-        PipelineContextManager.putContext(contextKey, new PipelineContext(contextManager.getComputeNodeInstanceContext().getModeConfiguration(), contextManager));
+        PipelineContextManager.putContext(contextKey, contextManager);
         PipelineMetaDataNodeWatcher.getInstance(contextKey);
         ElasticJobServiceLoader.registerTypedService(ElasticJobListener.class);
         try {
@@ -72,14 +71,14 @@ public final class PipelineContextManagerLifecycleListener implements ContextMan
                 .stream().filter(each -> !each.getJobName().startsWith("_")).collect(Collectors.toList());
         log.info("All job names: {}", allJobsBriefInfo.stream().map(JobBriefInfo::getJobName).collect(Collectors.joining(",")));
         for (JobBriefInfo each : allJobsBriefInfo) {
-            PipelineJobType jobType;
+            PipelineJobType<?> jobType;
             try {
                 jobType = PipelineJobIdUtils.parseJobType(each.getJobName());
             } catch (final IllegalArgumentException ex) {
                 log.warn("Parse job type failed, job name: {}, error: {}", each.getJobName(), ex.getMessage());
                 continue;
             }
-            if ("CONSISTENCY_CHECK".equals(jobType.getCode())) {
+            if ("CONSISTENCY_CHECK".equals(jobType.getType())) {
                 continue;
             }
             JobConfigurationPOJO jobConfig;

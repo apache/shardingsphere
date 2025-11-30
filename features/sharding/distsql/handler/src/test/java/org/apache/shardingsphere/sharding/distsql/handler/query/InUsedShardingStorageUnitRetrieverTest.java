@@ -18,11 +18,10 @@
 package org.apache.shardingsphere.sharding.distsql.handler.query;
 
 import org.apache.shardingsphere.distsql.handler.executor.rql.resource.InUsedStorageUnitRetriever;
-import org.apache.shardingsphere.distsql.statement.rql.rule.database.ShowRulesUsedStorageUnitStatement;
+import org.apache.shardingsphere.distsql.statement.type.rql.rule.database.ShowRulesUsedStorageUnitStatement;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
-import org.apache.shardingsphere.sharding.api.config.rule.ShardingAutoTableRuleConfiguration;
-import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
+import org.apache.shardingsphere.sharding.rule.ShardingTable;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
@@ -30,7 +29,6 @@ import java.util.Collections;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -41,14 +39,16 @@ class InUsedShardingStorageUnitRetrieverTest {
     
     @Test
     void assertGetInUsedResources() {
-        ShowRulesUsedStorageUnitStatement sqlStatement = new ShowRulesUsedStorageUnitStatement("prod_ds", null);
-        assertThat(retriever.getInUsedResources(sqlStatement, mockRule()), is(Arrays.asList("foo_auto_tbl", "foo_tbl")));
+        ShowRulesUsedStorageUnitStatement sqlStatement = new ShowRulesUsedStorageUnitStatement("foo_ds", null);
+        assertThat(retriever.getInUsedResources(sqlStatement, mockRule()), is(Collections.singleton("foo_tbl")));
     }
     
     private ShardingRule mockRule() {
-        ShardingRule result = mock(ShardingRule.class, RETURNS_DEEP_STUBS);
-        when(result.getConfiguration().getAutoTables()).thenReturn(Collections.singleton(new ShardingAutoTableRuleConfiguration("foo_auto_tbl", "")));
-        when(result.getConfiguration().getTables()).thenReturn(Collections.singleton(new ShardingTableRuleConfiguration("foo_tbl", "")));
+        ShardingRule result = mock(ShardingRule.class);
+        ShardingTable fooTbl = mock(ShardingTable.class);
+        when(fooTbl.getLogicTable()).thenReturn("foo_tbl");
+        when(fooTbl.getActualDataSourceNames()).thenReturn(Arrays.asList("foo_ds", "bar_ds"));
+        when(result.getShardingTables()).thenReturn(Collections.singletonMap("foo_tbl", fooTbl));
         return result;
     }
 }

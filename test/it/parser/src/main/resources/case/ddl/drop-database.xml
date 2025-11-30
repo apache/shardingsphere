@@ -21,4 +21,16 @@
     <drop-database sql-case-id="drop_database" />
     <drop-database sql-case-id="drop_database_without_database_name" />
     <drop-database sql-case-id="drop_database_including_backups_noprompt" />
+    <drop-database sql-case-id="drop_database_simple" />
+    <drop-database sql-case-id="drop_database_if_exists" />
+    <drop-database sql-case-id="drop_schema_simple" />
+    <drop-database sql-case-id="drop_schema_if_exists" />
+    <drop-database sql-case-id="drop_database_restrict" />
+    <drop-database sql-case-id="drop_schema_restrict" />
+    <drop-database sql-case-id="drop_database_cascade" />
+    <drop-database sql-case-id="drop_schema_cascade" />
+    <drop-database sql-case-id="drop_database_if_exists_restrict" />
+    <drop-database sql-case-id="drop_database_if_exists_cascade" />
+    <drop-database sql-case-id="drop_schema_if_exists_restrict" />
+    <drop-database sql-case-id="drop_schema_if_exists_cascade" />
 </sql-parser-test-cases>

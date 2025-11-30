@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.sharding.metadata.reviser.index;
 
-import org.apache.shardingsphere.infra.database.core.metadata.data.model.IndexMetaData;
+import org.apache.shardingsphere.database.connector.core.metadata.data.model.IndexMetaData;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sharding.rule.ShardingTable;
@@ -50,7 +50,7 @@ class ShardingIndexReviserTest {
     
     private static ShardingTable mockShardingTable() {
         ShardingTable result = mock(ShardingTable.class);
-        when(result.getActualDataNodes()).thenReturn(Arrays.asList(new DataNode("foo_schema", "tbl_0"), new DataNode("foo_schema", "tbl_1")));
+        when(result.getActualDataNodes()).thenReturn(Arrays.asList(new DataNode("foo_schema", (String) null, "tbl_0"), new DataNode("foo_schema", (String) null, "tbl_1")));
         return result;
     }
 }

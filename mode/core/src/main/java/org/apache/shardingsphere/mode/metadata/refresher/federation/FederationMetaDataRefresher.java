@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.mode.metadata.refresher.federation;
 
+import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPI;
@@ -35,11 +36,12 @@ public interface FederationMetaDataRefresher<T extends SQLStatement> extends Typ
      * Refresh schema.
      *
      * @param metaDataManagerPersistService meta data manager persist service
+     * @param databaseType databaseType
      * @param database database
      * @param schemaName schema name
      * @param sqlStatement SQL statement
      */
-    void refresh(MetaDataManagerPersistService metaDataManagerPersistService, ShardingSphereDatabase database, String schemaName, T sqlStatement);
+    void refresh(MetaDataManagerPersistService metaDataManagerPersistService, DatabaseType databaseType, ShardingSphereDatabase database, String schemaName, T sqlStatement);
     
     @Override
     Class<T> getType();

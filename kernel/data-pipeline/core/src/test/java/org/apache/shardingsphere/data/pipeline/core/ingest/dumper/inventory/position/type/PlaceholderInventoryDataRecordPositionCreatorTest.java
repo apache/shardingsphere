@@ -23,14 +23,14 @@ import org.junit.jupiter.api.Test;
 
 import java.sql.ResultSet;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.isA;
 import static org.mockito.Mockito.mock;
 
 class PlaceholderInventoryDataRecordPositionCreatorTest {
     
     @Test
     void assertCreate() {
-        assertThat(new PlaceholderInventoryDataRecordPositionCreator().create(mock(InventoryDumperContext.class), mock(ResultSet.class)), instanceOf(IngestPlaceholderPosition.class));
+        assertThat(new PlaceholderInventoryDataRecordPositionCreator().create(mock(InventoryDumperContext.class), mock(ResultSet.class)), isA(IngestPlaceholderPosition.class));
     }
 }

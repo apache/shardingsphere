@@ -18,13 +18,11 @@
 package org.apache.shardingsphere.proxy.backend.handler.admin.executor.variable.charset;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.db.protocol.constant.CommonConstants;
-import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPILoader;
-import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoader;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
+import org.apache.shardingsphere.database.protocol.constant.CommonConstants;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 
-import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Optional;
 
 /**
@@ -41,29 +39,12 @@ public final class CharsetSetExecutor {
      * Set charset.
      *
      * @param variableName variable name
-     * @param assignValue assign value
+     * @param toBeAssignedValue to be assigned value
      */
-    public void set(final String variableName, final String assignValue) {
+    public void set(final String variableName, final String toBeAssignedValue) {
         Optional<CharsetVariableProvider> charsetVariableProvider = DatabaseTypedSPILoader.findService(CharsetVariableProvider.class, databaseType);
-        if (charsetVariableProvider.isPresent() && charsetVariableProvider.get().isCharsetVariable(variableName)) {
-            connectionSession.getAttributeMap().attr(CommonConstants.CHARSET_ATTRIBUTE_KEY).set(charsetVariableProvider.get().parseCharset(assignValue));
-        }
-    }
-    
-    /**
-     * Set charset.
-     *
-     * @param variables variables
-     */
-    public void set(final Map<String, String> variables) {
-        Optional<CharsetVariableProvider> charsetVariableProvider = DatabaseTypedSPILoader.findService(CharsetVariableProvider.class, databaseType);
-        if (!charsetVariableProvider.isPresent()) {
-            return;
-        }
-        for (Entry<String, String> entry : variables.entrySet()) {
-            if (charsetVariableProvider.get().isCharsetVariable(entry.getKey())) {
-                connectionSession.getAttributeMap().attr(CommonConstants.CHARSET_ATTRIBUTE_KEY).set(charsetVariableProvider.get().parseCharset(entry.getValue()));
-            }
+        if (charsetVariableProvider.isPresent() && charsetVariableProvider.get().getCharsetVariables().stream().anyMatch(each -> each.equalsIgnoreCase(variableName))) {
+            connectionSession.getAttributeMap().attr(CommonConstants.CHARSET_ATTRIBUTE_KEY).set(charsetVariableProvider.get().parseCharset(toBeAssignedValue));
         }
     }
 }

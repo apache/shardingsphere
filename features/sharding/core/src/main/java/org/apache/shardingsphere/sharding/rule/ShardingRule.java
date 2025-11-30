@@ -24,12 +24,12 @@ import com.google.common.base.Strings;
 import lombok.Getter;
 import org.apache.shardingsphere.infra.algorithm.core.context.AlgorithmSQLContext;
 import org.apache.shardingsphere.infra.algorithm.core.exception.AlgorithmInitializationException;
-import org.apache.shardingsphere.infra.algorithm.keygen.core.KeyGenerateAlgorithm;
+import org.apache.shardingsphere.infra.algorithm.keygen.spi.KeyGenerateAlgorithm;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.binder.context.statement.dml.SelectStatementContext;
+import org.apache.shardingsphere.infra.binder.context.statement.type.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.datanode.DataNode;
-import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
-import org.apache.shardingsphere.infra.expr.core.InlineExpressionParserFactory;
+import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
+import org.apache.shardingsphere.infra.expr.entry.InlineExpressionParserFactory;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstanceContext;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstanceContextAware;
 import org.apache.shardingsphere.infra.metadata.database.resource.PhysicalDataSourceAggregator;
@@ -74,7 +74,6 @@ import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -407,9 +406,18 @@ public final class ShardingRule implements DatabaseRule {
      * @return whether all tables are in same data source or not
      */
     public boolean isAllTablesInSameDataSource(final Collection<String> logicTableNames) {
-        Collection<String> dataSourceNames = logicTableNames.stream().map(shardingTables::get)
-                .filter(Objects::nonNull).flatMap(each -> each.getActualDataSourceNames().stream()).collect(Collectors.toSet());
-        return 1 == dataSourceNames.size();
+        Collection<String> dataSourceNames = new HashSet<>();
+        for (String each : logicTableNames) {
+            ShardingTable shardingTable = shardingTables.get(each);
+            if (null == shardingTable) {
+                continue;
+            }
+            dataSourceNames.addAll(shardingTable.getActualDataSourceNames());
+            if (dataSourceNames.size() > 1) {
+                return false;
+            }
+        }
+        return true;
     }
     
     /**

@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.broadcast.distsql.parser.core;
 
-import org.antlr.v4.runtime.tree.ParseTree;
 import org.apache.shardingsphere.broadcast.distsql.statement.CreateBroadcastTableRuleStatement;
 import org.apache.shardingsphere.broadcast.distsql.statement.DropBroadcastTableRuleStatement;
 import org.apache.shardingsphere.broadcast.distsql.statement.ShowBroadcastTableRulesStatement;
@@ -27,10 +26,12 @@ import org.apache.shardingsphere.distsql.parser.autogen.BroadcastDistSQLStatemen
 import org.apache.shardingsphere.distsql.parser.autogen.BroadcastDistSQLStatementParser.DatabaseNameContext;
 import org.apache.shardingsphere.distsql.parser.autogen.BroadcastDistSQLStatementParser.DropBroadcastTableRuleContext;
 import org.apache.shardingsphere.distsql.parser.autogen.BroadcastDistSQLStatementParser.ShowBroadcastTableRulesContext;
-import org.apache.shardingsphere.distsql.statement.rql.rule.database.CountRuleStatement;
+import org.apache.shardingsphere.distsql.statement.type.rql.rule.database.CountRuleStatement;
 import org.apache.shardingsphere.sql.parser.api.ASTNode;
 import org.apache.shardingsphere.sql.parser.api.visitor.SQLVisitor;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.FromDatabaseSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.DatabaseSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.util.IdentifierValueUtils;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 
 import java.util.Collection;
@@ -43,31 +44,27 @@ public final class BroadcastDistSQLStatementVisitor extends BroadcastDistSQLStat
     
     @Override
     public ASTNode visitCreateBroadcastTableRule(final CreateBroadcastTableRuleContext ctx) {
-        return new CreateBroadcastTableRuleStatement(null != ctx.ifNotExists(), ctx.tableName().stream().map(this::getIdentifierValue).collect(Collectors.toList()));
+        return new CreateBroadcastTableRuleStatement(null != ctx.ifNotExists(), ctx.tableName().stream().map(IdentifierValueUtils::getValue).collect(Collectors.toList()));
     }
     
     @Override
     public ASTNode visitDropBroadcastTableRule(final DropBroadcastTableRuleContext ctx) {
-        Collection<String> tableNames = ctx.tableName().stream().map(this::getIdentifierValue).collect(Collectors.toList());
+        Collection<String> tableNames = ctx.tableName().stream().map(IdentifierValueUtils::getValue).collect(Collectors.toList());
         return new DropBroadcastTableRuleStatement(null != ctx.ifExists(), tableNames);
     }
     
     @Override
     public ASTNode visitShowBroadcastTableRules(final ShowBroadcastTableRulesContext ctx) {
-        return new ShowBroadcastTableRulesStatement(null == ctx.databaseName() ? null : (DatabaseSegment) visit(ctx.databaseName()));
+        return new ShowBroadcastTableRulesStatement(null == ctx.databaseName() ? null : new FromDatabaseSegment(ctx.FROM().getSymbol().getStartIndex(), (DatabaseSegment) visit(ctx.databaseName())));
     }
     
     @Override
     public ASTNode visitCountBroadcastRule(final CountBroadcastRuleContext ctx) {
-        return new CountRuleStatement(null == ctx.databaseName() ? null : (DatabaseSegment) visit(ctx.databaseName()), "BROADCAST");
+        return new CountRuleStatement(null == ctx.databaseName() ? null : new FromDatabaseSegment(ctx.FROM().getSymbol().getStartIndex(), (DatabaseSegment) visit(ctx.databaseName())), "BROADCAST");
     }
     
     @Override
     public ASTNode visitDatabaseName(final DatabaseNameContext ctx) {
         return new DatabaseSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), new IdentifierValue(ctx.getText()));
-    }
-    
-    private String getIdentifierValue(final ParseTree context) {
-        return null == context ? null : new IdentifierValue(context.getText()).getValue();
     }
 }

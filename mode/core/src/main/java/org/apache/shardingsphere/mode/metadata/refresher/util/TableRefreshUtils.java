@@ -20,10 +20,10 @@ package org.apache.shardingsphere.mode.metadata.refresher.util;
 import com.google.common.base.Joiner;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.database.connector.core.metadata.database.enums.QuoteCharacter;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
-import org.apache.shardingsphere.infra.database.core.metadata.database.enums.QuoteCharacter;
-import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
-import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
@@ -39,7 +39,7 @@ import java.util.LinkedList;
 import java.util.Optional;
 
 /**
- * Table refresh utils.
+ * Table refresh utility class.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class TableRefreshUtils {
@@ -53,7 +53,7 @@ public final class TableRefreshUtils {
      */
     public static String getTableName(final IdentifierValue tableIdentifierValue, final DatabaseType databaseType) {
         return QuoteCharacter.NONE == tableIdentifierValue.getQuoteCharacter()
-                ? new DatabaseTypeRegistry(databaseType).getDialectDatabaseMetaData().formatTableNamePattern(tableIdentifierValue.getValue())
+                ? new DatabaseTypeRegistry(databaseType).formatIdentifierPattern(tableIdentifierValue.getValue())
                 : tableIdentifierValue.getValue();
     }
     

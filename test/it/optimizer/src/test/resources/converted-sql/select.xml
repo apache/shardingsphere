@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Licensed to the Apache Software Foundation (ASF) under one or more
+  ~ contributor license agreements.  See the NOTICE file distributed with
+  ~ this work for additional information regarding copyright ownership.
+  ~ The ASF licenses this file to You under the Apache License, Version 2.0
+  ~ (the "License"); you may not use this file except in compliance with
+  ~ the License.  You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<sql-node-converter-test-cases>
+    <test-cases sql-case-id="select_string_constant_type_cast" expected-sql="SELECT CAST('1' AS INTEGER), CAST('2' AS DECIMAL)" db-types="openGauss,PostgreSQL" />
+    <test-cases sql-case-id="select_with_database_name_and_schema_name_in_table" expected-sql="SELECT &quot;order_id&quot; FROM &quot;sharding_db&quot;.&quot;public&quot;.&quot;t_order&quot; WHERE &quot;user_id&quot; = ? AND &quot;order_id&quot; = ?" db-types="PostgreSQL,openGauss" sql-case-types="PLACEHOLDER" parameters="1, 1" />
+    <test-cases sql-case-id="select_with_database_name_and_schema_name_in_table" expected-sql="SELECT &quot;order_id&quot; FROM &quot;sharding_db&quot;.&quot;public&quot;.&quot;t_order&quot; WHERE &quot;user_id&quot; = 1 AND &quot;order_id&quot; = 1" db-types="PostgreSQL,openGauss" sql-case-types="LITERAL" parameters="1, 1" />
+    <test-cases sql-case-id="select_with_spatial_function" expected-sql="SELECT * FROM `t_order` WHERE `ST_DISTANCE_SPHERE`(`POINT`(1.13358772E2, 2.31273723E1), `POINT`(`user_id`, `order_id`)) &lt;&gt; 0" db-types="MySQL" />
+    <test-cases sql-case-id="select_with_function_name" expected-sql="SELECT CURRENT_TIMESTAMP" db-types="MySQL" />
+    <test-cases sql-case-id="select_with_date_format_function" expected-sql="SELECT * FROM `t_order` WHERE `DATE_FORMAT`(CURRENT_DATE, '%Y-%m-%d') = '2019-12-18'" db-types="MySQL" />
+    <test-cases sql-case-id="select_with_schema_name_in_shorthand_projection" expected-sql="SELECT `sharding_db`.`t_order`.* FROM `t_order` WHERE `user_id` = ? AND `order_id` = ?" db-types="MySQL" sql-case-types="PLACEHOLDER" parameters="1, 1" />
+    <test-cases sql-case-id="select_with_schema_name_in_shorthand_projection" expected-sql="SELECT `sharding_db`.`t_order`.* FROM `t_order` WHERE `user_id` = 1 AND `order_id` = 1" db-types="MySQL" sql-case-types="LITERAL" parameters="1, 1" />
+    <test-cases sql-case-id="select_with_schema_name_in_column_projection" expected-sql="SELECT `sharding_db`.`t_order`.`order_id` FROM `t_order` WHERE `user_id` = ? AND `order_id` = ?" db-types="MySQL" sql-case-types="PLACEHOLDER" parameters="1, 1" />
+    <test-cases sql-case-id="select_with_schema_name_in_column_projection" expected-sql="SELECT `sharding_db`.`t_order`.`order_id` FROM `t_order` WHERE `user_id` = 1 AND `order_id` = 1" db-types="MySQL" sql-case-types="LITERAL" parameters="1, 1" />
+    <test-cases sql-case-id="select_with_match_against" expected-sql="SELECT * FROM `t_order_item` WHERE MATCH (`t_order_item`.`description`) AGAINST (? IN NATURAL LANGUAGE MODE) AND `user_id` = ?" db-types="MySQL" sql-case-types="PLACEHOLDER" parameters="'hello', 10" />
+    <test-cases sql-case-id="select_with_match_against" expected-sql="SELECT * FROM `t_order_item` WHERE MATCH (`t_order_item`.`description`) AGAINST ('hello' IN NATURAL LANGUAGE MODE) AND `user_id` = 10" db-types="MySQL" sql-case-types="LITERAL" parameters="'hello', 10" />
+    <test-cases sql-case-id="select_with_dollar_parameter_for_postgresql" expected-sql="SELECT &quot;order_id&quot; FROM &quot;t_order&quot; WHERE &quot;user_id&quot; = ? AND &quot;order_id&quot; = ? OR &quot;user_id&quot; = ?" db-types="PostgreSQL, openGauss" sql-case-types="PLACEHOLDER" parameters="1, 12" />
+    <test-cases sql-case-id="select_with_assignment_operator" expected-sql="SELECT `rn` := 1, `now_code` := '' FROM `t_order`" db-types="MySQL" />
+    <test-cases sql-case-id="select_with_assignment_operator_and_keyword" expected-sql="SELECT `KEY` := '', `num` := 123 FROM `t_order`" db-types="MySQL" />
+    <test-cases sql-case-id="select_with_json_value_return_type" expected-sql="SELECT * FROM `t_order` WHERE JSON_VALUE(`items`, '''$.name''' 'RETURNING' VARCHAR(100)) = 'jack'" db-types="MySQL" />
+    <test-cases sql-case-id="select_projection_with_parameter" expected-sql="SELECT 1 &quot;id&quot;, ?, &quot;SYSDATE&quot; &quot;create_time&quot;, &quot;TRUNC&quot;(&quot;SYSDATE&quot;) &quot;create_date&quot;" db-types="Oracle" sql-case-types="PLACEHOLDER" parameters="'OK'" />
+    <test-cases sql-case-id="select_projection_with_parameter" expected-sql="SELECT 1 &quot;id&quot;, 'OK' &quot;status&quot;, &quot;SYSDATE&quot; &quot;create_time&quot;, &quot;TRUNC&quot;(&quot;SYSDATE&quot;) &quot;create_date&quot;" db-types="Oracle" sql-case-types="LITERAL" parameters="'OK'" />
+    <test-cases sql-case-id="select_with_not_operator_number" expected-sql="SELECT NOT 0, NOT 1, NOT 2" db-types="MySQL" />
+    <test-cases sql-case-id="select_with_not_operator_boolean" expected-sql="SELECT NOT TRUE, NOT FALSE" db-types="MySQL" />
+</sql-node-converter-test-cases>

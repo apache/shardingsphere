@@ -21,41 +21,38 @@ import org.apache.shardingsphere.encrypt.exception.syntax.UnsupportedEncryptSQLE
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.encrypt.rule.table.EncryptTable;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.binder.context.type.TableAvailable;
+import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
-import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
+import org.apache.shardingsphere.infra.merge.result.impl.decorator.DecoratorMergedResult;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.type.ColumnInResultSetSQLStatementAttribute;
 
-import java.io.InputStream;
-import java.io.Reader;
 import java.sql.SQLException;
-import java.sql.SQLFeatureNotSupportedException;
-import java.util.Calendar;
 import java.util.Optional;
 
 /**
  * Encrypt show columns merged result.
  */
-public final class EncryptShowColumnsMergedResult implements MergedResult {
-    
-    private static final int COLUMN_FIELD_INDEX = 1;
-    
-    private final String tableName;
-    
-    private final MergedResult mergedResult;
+public final class EncryptShowColumnsMergedResult extends DecoratorMergedResult {
     
     private final EncryptRule rule;
     
+    private final String tableName;
+    
+    private final int columnNameResultSetIndex;
+    
     public EncryptShowColumnsMergedResult(final MergedResult mergedResult, final SQLStatementContext sqlStatementContext, final EncryptRule rule) {
-        ShardingSpherePreconditions.checkState(sqlStatementContext instanceof TableAvailable && 1 == ((TableAvailable) sqlStatementContext).getTablesContext().getSimpleTables().size(),
+        super(mergedResult);
+        ShardingSpherePreconditions.checkState(1 == sqlStatementContext.getTablesContext().getSimpleTables().size(),
                 () -> new UnsupportedEncryptSQLException("SHOW COLUMNS FOR MULTI TABLES"));
-        tableName = ((TableAvailable) sqlStatementContext).getTablesContext().getSimpleTables().iterator().next().getTableName().getIdentifier().getValue();
-        this.mergedResult = mergedResult;
         this.rule = rule;
+        tableName = sqlStatementContext.getTablesContext().getSimpleTables().iterator().next().getTableName().getIdentifier().getValue();
+        ColumnInResultSetSQLStatementAttribute attribute = sqlStatementContext.getSqlStatement().getAttributes().getAttribute(ColumnInResultSetSQLStatementAttribute.class);
+        columnNameResultSetIndex = attribute.getNameResultSetIndex();
     }
     
     @Override
     public boolean next() throws SQLException {
-        boolean hasNext = mergedResult.next();
+        boolean hasNext = getMergedResult().next();
         Optional<EncryptTable> encryptTable = rule.findEncryptTable(tableName);
         if (hasNext && !encryptTable.isPresent()) {
             return true;
@@ -63,52 +60,30 @@ public final class EncryptShowColumnsMergedResult implements MergedResult {
         if (!hasNext) {
             return false;
         }
-        String columnName = mergedResult.getValue(COLUMN_FIELD_INDEX, String.class).toString();
-        while (isDerivedColumn(encryptTable.get(), columnName)) {
-            hasNext = mergedResult.next();
-            if (!hasNext) {
+        return next(encryptTable.get());
+    }
+    
+    private boolean next(final EncryptTable encryptTable) throws SQLException {
+        while (encryptTable.isDerivedColumn(getMergedResult().getValue(columnNameResultSetIndex, String.class).toString())) {
+            boolean isFinished = !getMergedResult().next();
+            if (isFinished) {
                 return false;
             }
-            columnName = mergedResult.getValue(COLUMN_FIELD_INDEX, String.class).toString();
         }
         return true;
     }
     
-    private boolean isDerivedColumn(final EncryptTable encryptTable, final String columnName) {
-        return encryptTable.isAssistedQueryColumn(columnName) || encryptTable.isLikeQueryColumn(columnName);
-    }
-    
     @Override
     public Object getValue(final int columnIndex, final Class<?> type) throws SQLException {
-        if (COLUMN_FIELD_INDEX == columnIndex) {
-            String columnName = mergedResult.getValue(COLUMN_FIELD_INDEX, type).toString();
-            Optional<EncryptTable> encryptTable = rule.findEncryptTable(tableName);
-            if (!encryptTable.isPresent()) {
-                return columnName;
-            }
-            Optional<String> logicColumn = encryptTable.get().isCipherColumn(columnName) ? Optional.of(encryptTable.get().getLogicColumnByCipherColumn(columnName)) : Optional.empty();
-            return logicColumn.orElse(columnName);
+        if (columnNameResultSetIndex == columnIndex) {
+            return getColumnNameValue(type);
         }
-        return mergedResult.getValue(columnIndex, type);
+        return getMergedResult().getValue(columnIndex, type);
     }
     
-    @Override
-    public Object getCalendarValue(final int columnIndex, final Class<?> type, final Calendar calendar) throws SQLException {
-        throw new SQLFeatureNotSupportedException("");
-    }
-    
-    @Override
-    public InputStream getInputStream(final int columnIndex, final String type) throws SQLException {
-        throw new SQLFeatureNotSupportedException("");
-    }
-    
-    @Override
-    public Reader getCharacterStream(final int columnIndex) throws SQLException {
-        throw new SQLFeatureNotSupportedException("");
-    }
-    
-    @Override
-    public boolean wasNull() throws SQLException {
-        return mergedResult.wasNull();
+    private String getColumnNameValue(final Class<?> type) throws SQLException {
+        String columnName = getMergedResult().getValue(columnNameResultSetIndex, type).toString();
+        Optional<EncryptTable> encryptTable = rule.findEncryptTable(tableName);
+        return encryptTable.isPresent() && encryptTable.get().isCipherColumn(columnName) ? encryptTable.get().getLogicColumnByCipherColumn(columnName) : columnName;
     }
 }

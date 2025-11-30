@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.mode.metadata.changed;
 
+import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
 import org.apache.shardingsphere.mode.node.path.engine.searcher.NodePathSearcher;
 import org.apache.shardingsphere.mode.node.path.type.database.metadata.rule.DatabaseRuleItem;
 import org.apache.shardingsphere.mode.node.path.type.database.metadata.rule.DatabaseRuleNodePath;
@@ -36,12 +37,16 @@ public final class RuleItemChangedNodePathBuilder {
      *
      * @param databaseName database name
      * @param path path
+     * @param eventType event type
      * @return built database rule node path
      */
-    public Optional<DatabaseRuleNodePath> build(final String databaseName, final String path) {
+    public Optional<DatabaseRuleNodePath> build(final String databaseName, final String path, final Type eventType) {
         Optional<String> ruleType = NodePathSearcher.find(path, DatabaseRuleNodePath.createRuleTypeSearchCriteria(databaseName));
         if (!ruleType.isPresent()) {
             return Optional.empty();
+        }
+        if (Type.DELETED == eventType && DatabaseRuleNodePath.isRuleTypePath(databaseName, path)) {
+            return Optional.of(new DatabaseRuleNodePath(databaseName, ruleType.get(), null));
         }
         DatabaseRuleNode databaseRuleNode = DatabaseRuleNodeGenerator.generate(ruleType.get());
         for (String each : databaseRuleNode.getNamedItems()) {
@@ -50,12 +55,18 @@ public final class RuleItemChangedNodePathBuilder {
                 continue;
             }
             DatabaseRuleNodePath databaseRuleNodePath = new DatabaseRuleNodePath(databaseName, databaseRuleNode.getRuleType(), new DatabaseRuleItem(each, itemName.get()));
+            if (Type.DELETED == eventType) {
+                return DatabaseRuleNodePath.isNamedRuleItemPath(databaseName, databaseRuleNode.getRuleType(), each, path) ? Optional.of(databaseRuleNodePath) : Optional.empty();
+            }
             if (new VersionNodePath(databaseRuleNodePath).isActiveVersionPath(path)) {
                 return Optional.of(databaseRuleNodePath);
             }
         }
         for (String each : databaseRuleNode.getUniqueItems()) {
             DatabaseRuleNodePath databaseRuleNodePath = new DatabaseRuleNodePath(databaseName, databaseRuleNode.getRuleType(), new DatabaseRuleItem(each));
+            if (Type.DELETED == eventType) {
+                return DatabaseRuleNodePath.isUniqueRuleItemPath(databaseName, databaseRuleNode.getRuleType(), each, path) ? Optional.of(databaseRuleNodePath) : Optional.empty();
+            }
             if (new VersionNodePath(databaseRuleNodePath).isActiveVersionPath(path)) {
                 return Optional.of(databaseRuleNodePath);
             }

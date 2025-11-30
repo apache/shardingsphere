@@ -17,10 +17,13 @@
 
 package org.apache.shardingsphere.infra.metadata.database.resource;
 
-import org.apache.shardingsphere.test.fixture.jdbc.MockedDataSource;
+import org.apache.shardingsphere.test.infra.fixture.jdbc.MockedDataSource;
 import org.junit.jupiter.api.Test;
 
+import javax.sql.DataSource;
 import java.util.Collections;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -30,17 +33,20 @@ class ResourceMetaDataTest {
     
     @Test
     void assertGetAllInstanceDataSourceNames() {
-        assertThat(new ResourceMetaData(Collections.singletonMap("foo", new MockedDataSource())).getAllInstanceDataSourceNames(), is(Collections.singletonList("foo")));
+        Map<String, DataSource> dataSources = new LinkedHashMap<>(2, 1F);
+        dataSources.put("foo_ds", new MockedDataSource());
+        dataSources.put("bar_ds", new MockedDataSource());
+        assertThat(new ResourceMetaData(dataSources).getAllInstanceDataSourceNames().size(), is(1));
     }
     
     @Test
     void assertGetNotExistedDataSources() {
-        assertTrue(new ResourceMetaData(Collections.singletonMap("foo", new MockedDataSource())).getNotExistedDataSources(Collections.singleton("foo")).isEmpty());
+        assertTrue(new ResourceMetaData(Collections.singletonMap("foo_ds", new MockedDataSource())).getNotExistedDataSources(Collections.singleton("foo_ds")).isEmpty());
     }
     
     @Test
     void assertGetDataSourceMap() {
-        assertThat(new ResourceMetaData(Collections.singletonMap("foo", new MockedDataSource())).getDataSourceMap().size(), is(1));
-        assertTrue(new ResourceMetaData(Collections.singletonMap("foo", new MockedDataSource())).getDataSourceMap().containsKey("foo"));
+        assertThat(new ResourceMetaData(Collections.singletonMap("foo_ds", new MockedDataSource())).getDataSourceMap().size(), is(1));
+        assertTrue(new ResourceMetaData(Collections.singletonMap("foo_ds", new MockedDataSource())).getDataSourceMap().containsKey("foo_ds"));
     }
 }

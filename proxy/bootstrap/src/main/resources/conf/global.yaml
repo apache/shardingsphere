@@ -55,14 +55,6 @@
 #    initialCapacity: 128
 #    maximumSize: 1024
 #
-#logging:
-#  loggers:
-#  - loggerName: ShardingSphere-SQL
-#    additivity: true
-#    level: INFO
-#    props:
-#      enable: false
-#
 #sqlFederation:
 #  sqlFederationEnabled: false
 #  executionPlanCache:
@@ -70,11 +62,10 @@
 #    maximumSize: 65535
 #
 #props:
-#  system-log-level: INFO
 #  max-connections-size-per-query: 1
 #  kernel-executor-size: 16  # Infinite by default.
 #  proxy-frontend-flush-threshold: 128  # The default value is 128.
-#  # sql-show is the same as props in logger ShardingSphere-SQL, and its priority is lower than logging rule
+#  # sql-show is the same as props in logger org.apache.shardingsphere.sql, and its priority is lower than logging rule
 #  sql-show: false
 #  check-table-metadata-enabled: false
 #    # Proxy backend query fetch size. A larger value may increase the memory usage of ShardingSphere Proxy.

@@ -60,14 +60,6 @@ sh %SHARDINGSPHERE_PROXY_HOME%/bin/start.sh
 sh %SHARDINGSPHERE_PROXY_HOME%/bin/start.sh ${proxy_port} ${proxy_conf_directory}
 ```
 
-* 强制启动
-
-```bash
-sh %SHARDINGSPHERE_PROXY_HOME%/bin/start.sh -f
-```
-
-使用 `-f` 参数强制启动 Proxy，该参数会忽略启动期间异常的数据源，强行启动 Proxy，用户可以在 Proxy 启动完成后，通过 DistSQL 移除异常数据源。
-
 5. 使用 ShardingSphere-Proxy
 
 执行 MySQL / PostgreSQL / openGauss 的客户端命令直接操作 ShardingSphere-Proxy 即可。

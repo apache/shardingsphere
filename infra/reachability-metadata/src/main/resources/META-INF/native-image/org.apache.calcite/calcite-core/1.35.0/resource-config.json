@@ -1,8 +1,0 @@
-{
-  "resources":{
-  "includes":[{
-    "condition":{"typeReachable":"org.apache.calcite.avatica.remote.Driver"},
-    "pattern":"\\Qorg-apache-calcite-jdbc.properties\\E"
-  }]},
-  "bundles":[]
-}

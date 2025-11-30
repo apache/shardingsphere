@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.sharding.route.engine.condition.generator.impl;
 
 import com.google.common.collect.Range;
-import org.apache.shardingsphere.sharding.route.engine.condition.Column;
+import org.apache.shardingsphere.infra.metadata.database.schema.HashColumn;
 import org.apache.shardingsphere.sharding.route.engine.condition.value.ListShardingConditionValue;
 import org.apache.shardingsphere.sharding.route.engine.condition.value.RangeShardingConditionValue;
 import org.apache.shardingsphere.sharding.route.engine.condition.value.ShardingConditionValue;
@@ -35,9 +35,9 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.Optional;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.isA;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
@@ -46,7 +46,7 @@ class ConditionValueCompareOperatorGeneratorTest {
     
     private final ConditionValueCompareOperatorGenerator generator = new ConditionValueCompareOperatorGenerator();
     
-    private final Column column = new Column("id", "tbl");
+    private final HashColumn column = new HashColumn("id", "tbl");
     
     @SuppressWarnings("unchecked")
     @Test
@@ -146,7 +146,7 @@ class ConditionValueCompareOperatorGeneratorTest {
         BinaryOperationExpression predicate = new BinaryOperationExpression(0, 0, left, right, "=", "id = ?");
         Optional<ShardingConditionValue> actual = generator.generate(predicate, column, Collections.singletonList(1), mock(TimestampServiceRule.class));
         assertTrue(actual.isPresent());
-        assertThat(actual.get(), instanceOf(ListShardingConditionValue.class));
+        assertThat(actual.get(), isA(ListShardingConditionValue.class));
         ListShardingConditionValue<Integer> conditionValue = (ListShardingConditionValue<Integer>) actual.get();
         assertThat(conditionValue.getTableName(), is("tbl"));
         assertThat(conditionValue.getColumnName(), is("id"));

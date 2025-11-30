@@ -19,5 +19,4 @@
 <sql-parser-test-cases>
     <preview-sql sql-case-id="preview-sql" sql="SELECT * FROM t_order;" />
     <parse-sql sql-case-id="parse-sql" sql="SELECT * FROM t_order;" />
-    <format-sql sql-case-id="format-sql" sql="SELECT * FROM t_order WHERE order_id=1;" />
 </sql-parser-test-cases>

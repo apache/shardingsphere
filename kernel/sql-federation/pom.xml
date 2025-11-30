@@ -31,7 +31,7 @@
         <module>api</module>
         <module>core</module>
         <module>distsql</module>
-        <module>optimizer</module>
+        <module>compiler</module>
         <module>executor</module>
     </modules>
 </project>

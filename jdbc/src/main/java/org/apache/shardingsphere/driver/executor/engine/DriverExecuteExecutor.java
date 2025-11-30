@@ -26,7 +26,6 @@ import org.apache.shardingsphere.driver.executor.engine.pushdown.jdbc.DriverJDBC
 import org.apache.shardingsphere.driver.executor.engine.pushdown.raw.DriverRawPushDownExecuteExecutor;
 import org.apache.shardingsphere.driver.executor.engine.transaction.DriverTransactionSQLStatementExecutor;
 import org.apache.shardingsphere.driver.jdbc.core.connection.ShardingSphereConnection;
-import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.connection.kernel.KernelProcessor;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionContext;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutionUnit;
@@ -38,9 +37,9 @@ import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.rule.attribute.raw.RawExecutionRuleAttribute;
 import org.apache.shardingsphere.infra.session.query.QueryContext;
 import org.apache.shardingsphere.mode.metadata.refresher.federation.FederationMetaDataRefreshEngine;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.tcl.TCLStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.tcl.TCLStatement;
+import org.apache.shardingsphere.sqlfederation.context.SQLFederationContext;
 import org.apache.shardingsphere.sqlfederation.engine.SQLFederationEngine;
-import org.apache.shardingsphere.sqlfederation.executor.context.SQLFederationContext;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -101,10 +100,9 @@ public final class DriverExecuteExecutor {
                     new ExecuteQueryCallbackFactory(prepareEngine.getType()).newInstance(database, queryContext), new SQLFederationContext(false, queryContext, metaData, connection.getProcessId()));
             return null != resultSet;
         }
-        FederationMetaDataRefreshEngine federationMetaDataRefreshEngine = new FederationMetaDataRefreshEngine(
-                connection.getContextManager().getPersistServiceFacade().getModeFacade().getMetaDataManagerService(), database);
-        if (sqlFederationEngine.isSqlFederationEnabled() && federationMetaDataRefreshEngine.isNeedRefresh(queryContext.getSqlStatementContext())) {
-            federationMetaDataRefreshEngine.refresh(queryContext.getSqlStatementContext());
+        FederationMetaDataRefreshEngine federationMetaDataRefreshEngine = new FederationMetaDataRefreshEngine(queryContext.getSqlStatementContext());
+        if (sqlFederationEngine.isSqlFederationEnabled() && federationMetaDataRefreshEngine.isNeedRefresh()) {
+            federationMetaDataRefreshEngine.refresh(connection.getContextManager().getPersistServiceFacade().getModeFacade().getMetaDataManagerService(), database);
             return true;
         }
         if (transactionExecutor.decide(queryContext)) {
@@ -129,22 +127,22 @@ public final class DriverExecuteExecutor {
      * Get result set.
      *
      * @param database database
-     * @param sqlStatementContext SQL statement context
+     * @param queryContext query context
      * @param statement statement
      * @param statements statements
      * @return result set
      * @throws SQLException SQL exception
      */
-    public Optional<ResultSet> getResultSet(final ShardingSphereDatabase database, final SQLStatementContext sqlStatementContext,
+    public Optional<ResultSet> getResultSet(final ShardingSphereDatabase database, final QueryContext queryContext,
                                             final Statement statement, final List<? extends Statement> statements) throws SQLException {
         if (null == executeType) {
             return Optional.empty();
         }
         switch (executeType) {
             case FEDERATION:
-                return Optional.of(sqlFederationEngine.getResultSet());
+                return Optional.ofNullable(sqlFederationEngine.getResultSet());
             case JDBC_PUSH_DOWN:
-                return jdbcPushDownExecutor.getResultSet(database, sqlStatementContext, statement, statements);
+                return jdbcPushDownExecutor.getResultSet(database, queryContext, statement, statements);
             default:
                 return Optional.empty();
         }

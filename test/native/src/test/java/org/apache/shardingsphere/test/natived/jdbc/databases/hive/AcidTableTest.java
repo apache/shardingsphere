@@ -19,11 +19,8 @@ package org.apache.shardingsphere.test.natived.jdbc.databases.hive;
 
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
-import org.apache.shardingsphere.driver.jdbc.core.connection.ShardingSphereConnection;
-import org.apache.shardingsphere.infra.database.core.DefaultDatabase;
-import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnit;
-import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.test.natived.commons.TestShardingService;
+import org.apache.shardingsphere.test.natived.commons.util.ResourceUtils;
 import org.awaitility.Awaitility;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -34,13 +31,12 @@ import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
 import javax.sql.DataSource;
-import java.nio.file.Paths;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.time.Duration;
-import java.util.Properties;
+import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -55,16 +51,18 @@ class AcidTableTest {
     @Container
     private final GenericContainer<?> container = new GenericContainer<>("apache/hive:4.0.1")
             .withEnv("SERVICE_NAME", "hiveserver2")
+            .withEnv("SERVICE_OPTS", "-Dhive.support.concurrency=true" + " "
+                    + "-Dhive.exec.dynamic.partition.mode=nonstrict" + " "
+                    + "-Dhive.txn.manager=org.apache.hadoop.hive.ql.lockmgr.DbTxnManager")
             .withExposedPorts(10000);
     
     private final String systemPropKeyPrefix = "fixture.test-native.yaml.database.hive.acid.";
     
-    // Due to https://issues.apache.org/jira/browse/HIVE-28317 , the `initFile` parameter of HiveServer2 JDBC Driver must be an absolute path.
-    private final String absolutePath = Paths.get("src/test/resources/test-native/sql/test-native-databases-hive-acid.sql").toAbsolutePath().toString();
-    
     private DataSource logicDataSource;
     
     private String jdbcUrlPrefix;
+    
+    private TestShardingService testShardingService;
     
     @BeforeEach
     void beforeEach() {
@@ -75,13 +73,7 @@ class AcidTableTest {
     
     @AfterEach
     void afterEach() throws SQLException {
-        try (Connection connection = logicDataSource.getConnection()) {
-            ContextManager contextManager = connection.unwrap(ShardingSphereConnection.class).getContextManager();
-            for (StorageUnit each : contextManager.getStorageUnits(DefaultDatabase.LOGIC_NAME).values()) {
-                each.getDataSource().unwrap(HikariDataSource.class).close();
-            }
-            contextManager.close();
-        }
+        ResourceUtils.closeJdbcDataSource(logicDataSource);
         System.clearProperty(systemPropKeyPrefix + "ds0.jdbc-url");
         System.clearProperty(systemPropKeyPrefix + "ds1.jdbc-url");
         System.clearProperty(systemPropKeyPrefix + "ds2.jdbc-url");
@@ -91,33 +83,61 @@ class AcidTableTest {
     void assertShardingInLocalTransactions() throws SQLException {
         jdbcUrlPrefix = "jdbc:hive2://localhost:" + container.getMappedPort(10000) + "/";
         logicDataSource = createDataSource();
-        TestShardingService testShardingService = new TestShardingService(logicDataSource);
+        testShardingService = new TestShardingService(logicDataSource);
+        initEnvironment();
         testShardingService.processSuccessInHive();
+        testShardingService.cleanEnvironment();
     }
     
-    private Connection openConnection() throws SQLException {
-        Properties props = new Properties();
-        return DriverManager.getConnection(jdbcUrlPrefix, props);
+    private void initEnvironment() throws SQLException {
+        testShardingService.getOrderRepository().createAcidTableInHiveServer2();
+        testShardingService.getOrderItemRepository().createAcidTableInHiveServer2();
+        testShardingService.getAddressRepository().createAcidTableInHiveServer2();
+        testShardingService.getOrderRepository().truncateTable();
+        testShardingService.getOrderItemRepository().truncateTable();
+        testShardingService.getAddressRepository().truncateTable();
     }
     
     private DataSource createDataSource() throws SQLException {
         Awaitility.await().atMost(Duration.ofMinutes(1L)).ignoreExceptions().until(() -> {
-            openConnection().close();
+            DriverManager.getConnection(jdbcUrlPrefix).close();
             return true;
         });
         try (
-                Connection connection = openConnection();
+                Connection connection = DriverManager.getConnection(jdbcUrlPrefix);
                 Statement statement = connection.createStatement()) {
-            statement.executeUpdate("CREATE DATABASE demo_ds_0");
-            statement.executeUpdate("CREATE DATABASE demo_ds_1");
-            statement.executeUpdate("CREATE DATABASE demo_ds_2");
+            statement.execute("CREATE DATABASE demo_ds_0");
+            statement.execute("CREATE DATABASE demo_ds_1");
+            statement.execute("CREATE DATABASE demo_ds_2");
         }
+        Stream.of("demo_ds_0", "demo_ds_1", "demo_ds_2").parallel().forEach(this::initTable);
         HikariConfig config = new HikariConfig();
         config.setDriverClassName("org.apache.shardingsphere.driver.ShardingSphereDriver");
         config.setJdbcUrl("jdbc:shardingsphere:classpath:test-native/yaml/jdbc/databases/hive/acid.yaml?placeholder-type=system_props");
-        System.setProperty(systemPropKeyPrefix + "ds0.jdbc-url", jdbcUrlPrefix + "demo_ds_0" + ";initFile=" + absolutePath);
-        System.setProperty(systemPropKeyPrefix + "ds1.jdbc-url", jdbcUrlPrefix + "demo_ds_1" + ";initFile=" + absolutePath);
-        System.setProperty(systemPropKeyPrefix + "ds2.jdbc-url", jdbcUrlPrefix + "demo_ds_2" + ";initFile=" + absolutePath);
+        System.setProperty(systemPropKeyPrefix + "ds0.jdbc-url", jdbcUrlPrefix + "demo_ds_0");
+        System.setProperty(systemPropKeyPrefix + "ds1.jdbc-url", jdbcUrlPrefix + "demo_ds_1");
+        System.setProperty(systemPropKeyPrefix + "ds2.jdbc-url", jdbcUrlPrefix + "demo_ds_2");
         return new HikariDataSource(config);
+    }
+    
+    /**
+     * TODO `shardingsphere-parser-sql-engine-hive` module does not support `set` statements yet,
+     *  we always need to execute the following Hive Session-level SQL in the current {@link javax.sql.DataSource}.
+     * Hive does not support `AUTO_INCREMENT`,
+     * refer to <a href="https://issues.apache.org/jira/browse/HIVE-6905">HIVE-6905</a>.
+     *
+     * @param databaseName database name
+     * @throws RuntimeException SQL exception
+     */
+    private void initTable(final String databaseName) {
+        try (
+                Connection connection = DriverManager.getConnection(jdbcUrlPrefix + databaseName);
+                Statement statement = connection.createStatement()) {
+            statement.execute("set metastore.compactor.initiator.on=true");
+            statement.execute("set metastore.compactor.cleaner.on=true");
+            statement.execute("set metastore.compactor.worker.threads=1");
+        } catch (final SQLException exception) {
+            throw new RuntimeException(exception);
+        }
     }
 }

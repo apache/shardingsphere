@@ -17,11 +17,11 @@
 
 package org.apache.shardingsphere.distsql.handler.executor.rdl.resource;
 
+import org.apache.shardingsphere.database.connector.core.jdbcurl.parser.ConnectionProperties;
 import org.apache.shardingsphere.distsql.handler.validate.DistSQLDataSourcePoolPropertiesValidator;
 import org.apache.shardingsphere.distsql.segment.HostnameAndPortBasedDataSourceSegment;
 import org.apache.shardingsphere.distsql.segment.URLBasedDataSourceSegment;
-import org.apache.shardingsphere.distsql.statement.rdl.resource.unit.type.AlterStorageUnitStatement;
-import org.apache.shardingsphere.infra.database.core.connector.ConnectionProperties;
+import org.apache.shardingsphere.distsql.statement.type.rdl.resource.unit.type.AlterStorageUnitStatement;
 import org.apache.shardingsphere.infra.exception.kernel.metadata.resource.storageunit.AlterStorageUnitConnectionInfoException;
 import org.apache.shardingsphere.infra.exception.kernel.metadata.resource.storageunit.DuplicateStorageUnitException;
 import org.apache.shardingsphere.infra.exception.kernel.metadata.resource.storageunit.MissingRequiredStorageUnitsException;
@@ -103,14 +103,14 @@ class AlterStorageUnitExecutorTest {
     }
     
     private AlterStorageUnitStatement createAlterStorageUnitStatement(final String resourceName) {
-        return new AlterStorageUnitStatement(Collections.singleton(new URLBasedDataSourceSegment(resourceName, "jdbc:mysql://127.0.0.1:3306/ds_0", "root", "", new Properties())),
+        return new AlterStorageUnitStatement(Collections.singleton(new URLBasedDataSourceSegment(resourceName, "jdbc:mock://127.0.0.1:3306/ds_0", "root", "", new Properties())),
                 Collections.emptySet());
     }
     
     private AlterStorageUnitStatement createAlterStorageUnitStatementWithDuplicateStorageUnitNames() {
         return new AlterStorageUnitStatement(Arrays.asList(
                 new HostnameAndPortBasedDataSourceSegment("ds_0", "127.0.0.1", "3306", "ds_0", "root", "", new Properties()),
-                new URLBasedDataSourceSegment("ds_0", "jdbc:mysql://127.0.0.1:3306/ds_1", "root", "", new Properties())), Collections.emptySet());
+                new URLBasedDataSourceSegment("ds_0", "jdbc:mock://127.0.0.1:3306/ds_1", "root", "", new Properties())), Collections.emptySet());
     }
     
     private ConnectionProperties mockConnectionProperties(final String catalog) {

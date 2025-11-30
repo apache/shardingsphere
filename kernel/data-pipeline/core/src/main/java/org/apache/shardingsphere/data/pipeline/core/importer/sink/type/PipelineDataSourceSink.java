@@ -44,7 +44,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
@@ -201,7 +200,7 @@ public final class PipelineDataSourceSink implements PipelineSink {
     }
     
     private void executeUpdate(final Connection connection, final DataRecord dataRecord) throws SQLException {
-        Set<String> shardingColumns = importerConfig.getShardingColumns(dataRecord.getTableName());
+        Collection<String> shardingColumns = importerConfig.getShardingColumns(dataRecord.getTableName());
         List<Column> conditionColumns = RecordUtils.extractConditionColumns(dataRecord, shardingColumns);
         List<Column> setColumns = dataRecord.getColumns().stream().filter(Column::isUpdated).collect(Collectors.toList());
         String sql = importSQLBuilder.buildUpdateSQL(importerConfig.findSchemaName(dataRecord.getTableName()).orElse(null), dataRecord, conditionColumns);
@@ -247,7 +246,7 @@ public final class PipelineDataSourceSink implements PipelineSink {
         }
     }
     
-    private void executeBatchDelete(final Connection connection, final Collection<DataRecord> dataRecords, final Set<String> shardingColumns) throws SQLException {
+    private void executeBatchDelete(final Connection connection, final Collection<DataRecord> dataRecords, final Collection<String> shardingColumns) throws SQLException {
         DataRecord dataRecord = dataRecords.iterator().next();
         String deleteSQL = importSQLBuilder.buildDeleteSQL(importerConfig.findSchemaName(dataRecord.getTableName()).orElse(null), dataRecord,
                 RecordUtils.extractConditionColumns(dataRecord, shardingColumns));
