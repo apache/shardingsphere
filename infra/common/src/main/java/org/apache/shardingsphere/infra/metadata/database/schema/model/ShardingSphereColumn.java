@@ -38,8 +38,6 @@ public final class ShardingSphereColumn {
     
     private final boolean generated;
     
-    private final String typeName;
-    
     private final boolean caseSensitive;
     
     private final boolean visible;
@@ -49,7 +47,7 @@ public final class ShardingSphereColumn {
     private final boolean nullable;
     
     public ShardingSphereColumn(final ColumnMetaData columnMetaData) {
-        this(columnMetaData.getName(), columnMetaData.getDataType(), columnMetaData.isPrimaryKey(), columnMetaData.isGenerated(), columnMetaData.getTypeName(),
+        this(columnMetaData.getName(), columnMetaData.getDataType(), columnMetaData.isPrimaryKey(), columnMetaData.isGenerated(),
                 columnMetaData.isCaseSensitive(), columnMetaData.isVisible(), columnMetaData.isUnsigned(), columnMetaData.isNullable());
     }
 }

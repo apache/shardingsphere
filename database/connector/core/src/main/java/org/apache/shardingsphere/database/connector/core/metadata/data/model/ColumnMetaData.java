@@ -37,8 +37,6 @@ public final class ColumnMetaData {
     
     private final boolean generated;
     
-    private final String typeName;
-    
     private final boolean caseSensitive;
     
     private final boolean visible;

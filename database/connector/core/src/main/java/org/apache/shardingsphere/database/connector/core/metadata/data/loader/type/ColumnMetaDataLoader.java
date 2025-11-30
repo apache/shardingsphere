@@ -52,8 +52,6 @@ public final class ColumnMetaDataLoader {
     
     private static final String IS_NULLABLE = "IS_NULLABLE";
     
-    private static final String TYPE_NAME = "TYPE_NAME";
-    
     /**
      * Load column meta data list.
      *
@@ -68,7 +66,6 @@ public final class ColumnMetaDataLoader {
         Collection<String> primaryKeys = loadPrimaryKeys(connection, tableNamePattern);
         List<String> columnNames = new ArrayList<>();
         List<Integer> columnTypes = new ArrayList<>();
-        List<String> columnTypeNames = new ArrayList<>();
         List<Boolean> primaryKeyFlags = new ArrayList<>();
         List<Boolean> caseSensitiveFlags = new ArrayList<>();
         List<Boolean> nullableFlags = new ArrayList<>();
@@ -78,7 +75,6 @@ public final class ColumnMetaDataLoader {
                 if (Objects.equals(tableNamePattern, tableName)) {
                     String columnName = resultSet.getString(COLUMN_NAME);
                     columnTypes.add(resultSet.getInt(DATA_TYPE));
-                    columnTypeNames.add(resultSet.getString(TYPE_NAME));
                     primaryKeyFlags.add(primaryKeys.contains(columnName));
                     nullableFlags.add("YES".equals(resultSet.getString(IS_NULLABLE)));
                     columnNames.add(columnName);
@@ -91,10 +87,8 @@ public final class ColumnMetaDataLoader {
                 ResultSet resultSet = statement.executeQuery(emptyResultSQL)) {
             for (int i = 0; i < columnNames.size(); i++) {
                 boolean generated = resultSet.getMetaData().isAutoIncrement(i + 1);
-                
                 caseSensitiveFlags.add(resultSet.getMetaData().isCaseSensitive(resultSet.findColumn(columnNames.get(i))));
-                result.add(new ColumnMetaData(columnNames.get(i), columnTypes.get(i), primaryKeyFlags.get(i), generated, columnTypeNames.get(i), caseSensitiveFlags.get(i), true, false,
-                        nullableFlags.get(i)));
+                result.add(new ColumnMetaData(columnNames.get(i), columnTypes.get(i), primaryKeyFlags.get(i), generated, caseSensitiveFlags.get(i), true, false, nullableFlags.get(i)));
             }
         } catch (final SQLException ex) {
             log.error("Error occurred while loading column meta data, SQL: {}", emptyResultSQL, ex);
