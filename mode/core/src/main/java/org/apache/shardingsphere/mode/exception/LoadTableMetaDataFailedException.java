@@ -28,6 +28,8 @@ import java.util.Collection;
  */
 public final class LoadTableMetaDataFailedException extends MetaDataSQLException {
     
+    private static final long serialVersionUID = -1815882437319677159L;
+    
     public LoadTableMetaDataFailedException(final String databaseName, final SQLException cause) {
         super(XOpenSQLState.GENERAL_ERROR, 12, cause, "Load table meta data failed for database '%s'.", databaseName);
     }
