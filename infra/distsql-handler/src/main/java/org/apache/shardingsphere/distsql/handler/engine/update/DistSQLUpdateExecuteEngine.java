@@ -68,7 +68,7 @@ public final class DistSQLUpdateExecuteEngine {
     }
     
     @SuppressWarnings("rawtypes")
-    private void executeRuleDefinitionUpdate() throws SQLException {
+    private void executeRuleDefinitionUpdate() {
         if (sqlStatement instanceof GlobalRuleDefinitionStatement) {
             GlobalRuleDefinitionExecutor globalExecutor = GlobalRuleDefinitionExecutorFactory.newInstance(sqlStatement, contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData());
             new GlobalRuleDefinitionExecuteEngine((GlobalRuleDefinitionStatement) sqlStatement, contextManager, globalExecutor).executeUpdate();

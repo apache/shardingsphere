@@ -1274,7 +1274,7 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
     private LimitSegment getLimitSegment(final OrderByClauseContext ctx) {
         LimitSegment result = null;
         PaginationValueSegment offset = null;
-        PaginationValueSegment rowcount = null;
+        PaginationValueSegment rowCount = null;
         if (null != ctx.OFFSET()) {
             ASTNode astNode = visit(ctx.expr(0));
             if (astNode instanceof LiteralExpressionSegment && ((LiteralExpressionSegment) astNode).getLiterals() instanceof Number) {
@@ -1287,14 +1287,14 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
         if (null != ctx.FETCH()) {
             ASTNode astNode = visit(ctx.expr(1));
             if (astNode instanceof LiteralExpressionSegment && ((LiteralExpressionSegment) astNode).getLiterals() instanceof Number) {
-                rowcount = new NumberLiteralLimitValueSegment(ctx.expr(1).start.getStartIndex(), ctx.expr(1).stop.getStopIndex(),
+                rowCount = new NumberLiteralLimitValueSegment(ctx.expr(1).start.getStartIndex(), ctx.expr(1).stop.getStopIndex(),
                         ((Number) ((LiteralExpressionSegment) astNode).getLiterals()).longValue());
             } else if (astNode instanceof ParameterMarkerExpressionSegment) {
-                rowcount = new ParameterMarkerLimitValueSegment(ctx.expr(1).start.getStartIndex(), ctx.expr(1).stop.getStopIndex(), parameterMarkerSegments.size() - 1);
+                rowCount = new ParameterMarkerLimitValueSegment(ctx.expr(1).start.getStartIndex(), ctx.expr(1).stop.getStopIndex(), parameterMarkerSegments.size() - 1);
             }
         }
         if (null != offset) {
-            result = new LimitSegment(ctx.OFFSET().getSymbol().getStartIndex(), ctx.stop.getStopIndex(), offset, rowcount);
+            result = new LimitSegment(ctx.OFFSET().getSymbol().getStartIndex(), ctx.stop.getStopIndex(), offset, rowCount);
         }
         return result;
     }

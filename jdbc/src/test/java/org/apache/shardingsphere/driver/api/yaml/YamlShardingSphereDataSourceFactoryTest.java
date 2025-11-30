@@ -38,7 +38,7 @@ class YamlShardingSphereDataSourceFactoryTest {
     private static final String YAML_FILE = "config/factory/database-for-factory-test.yaml";
     
     @Test
-    void assertCreateDataSourceWithFile() throws Exception {
+    void assertCreateDataSourceWithFile() throws SQLException, IOException {
         assertDataSource(YamlShardingSphereDataSourceFactory.createDataSource(SystemResourceFileUtils.getPath(YAML_FILE).toFile()));
     }
     
@@ -48,7 +48,7 @@ class YamlShardingSphereDataSourceFactoryTest {
     }
     
     @Test
-    void assertCreateDataSourceWithFileForExternalDataSources() throws Exception {
+    void assertCreateDataSourceWithFileForExternalDataSources() throws SQLException, IOException {
         Map<String, DataSource> dataSourceMap = new HashMap<>(2, 1F);
         dataSourceMap.put("ds_0", new MockedDataSource());
         dataSourceMap.put("ds_1", new MockedDataSource());
@@ -56,12 +56,12 @@ class YamlShardingSphereDataSourceFactoryTest {
     }
     
     @Test
-    void assertCreateDataSourceWithFileForExternalSingleDataSource() throws Exception {
+    void assertCreateDataSourceWithFileForExternalSingleDataSource() throws SQLException, IOException {
         assertDataSource(YamlShardingSphereDataSourceFactory.createDataSource(new MockedDataSource(), SystemResourceFileUtils.getPath(YAML_FILE).toFile()));
     }
     
     @Test
-    void assertCreateDataSourceWithBytesForExternalDataSources() throws Exception {
+    void assertCreateDataSourceWithBytesForExternalDataSources() throws SQLException, IOException {
         Map<String, DataSource> dataSourceMap = new HashMap<>(2, 1F);
         dataSourceMap.put("ds_0", new MockedDataSource());
         dataSourceMap.put("ds_1", new MockedDataSource());
@@ -69,7 +69,7 @@ class YamlShardingSphereDataSourceFactoryTest {
     }
     
     @Test
-    void assertCreateDataSourceWithBytesForExternalSingleDataSource() throws Exception {
+    void assertCreateDataSourceWithBytesForExternalSingleDataSource() throws SQLException, IOException {
         assertDataSource(YamlShardingSphereDataSourceFactory.createDataSource(new MockedDataSource(), SystemResourceFileUtils.readFile(YAML_FILE).getBytes()));
     }
     
