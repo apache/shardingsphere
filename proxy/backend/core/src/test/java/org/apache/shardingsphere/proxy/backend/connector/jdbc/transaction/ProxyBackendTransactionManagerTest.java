@@ -48,6 +48,7 @@ import java.util.Collections;
 
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -110,9 +111,9 @@ class ProxyBackendTransactionManagerTest {
     void assertBeginForDistributedTransaction() {
         ContextManager contextManager = mockContextManager(TransactionType.XA);
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
-        newTransactionManager(TransactionType.XA, true);
+        newTransactionManager(TransactionType.XA, false);
         transactionManager.begin();
-        verify(transactionStatus, times(0)).setInTransaction(true);
+        verify(transactionStatus, times(1)).setInTransaction(true);
         verify(databaseConnectionManager, times(1)).closeConnections(false);
         verify(distributedTransactionManager).begin();
     }
@@ -143,9 +144,9 @@ class ProxyBackendTransactionManagerTest {
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
         newTransactionManager(TransactionType.LOCAL, false);
         transactionManager.commit();
-        verify(transactionStatus, times(0)).setInTransaction(false);
-        verify(localTransactionManager, times(0)).commit();
-        verify(distributedTransactionManager, times(0)).commit(false);
+        verify(transactionStatus, never()).setInTransaction(false);
+        verify(localTransactionManager, never()).commit();
+        verify(distributedTransactionManager, never()).commit(false);
     }
     
     @Test
@@ -174,9 +175,9 @@ class ProxyBackendTransactionManagerTest {
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
         newTransactionManager(TransactionType.LOCAL, false);
         transactionManager.rollback();
-        verify(transactionStatus, times(0)).setInTransaction(false);
-        verify(localTransactionManager, times(0)).rollback();
-        verify(distributedTransactionManager, times(0)).rollback();
+        verify(transactionStatus, never()).setInTransaction(false);
+        verify(localTransactionManager, never()).rollback();
+        verify(distributedTransactionManager, never()).rollback();
     }
     
     private void newTransactionManager(final TransactionType transactionType, final boolean inTransaction) {

@@ -3673,6 +3673,34 @@
         <tblproperties properties="" start-index="0" stop-index="0" />
     </create-table>
 
+    <create-table sql-case-id="create_iceberg_table">
+        <table name="user_log" temporary="false" external="true" if-not-exists="false" start-index="22" stop-index="29" />
+        <column-definition type="STRING" start-index="32" stop-index="47" >
+            <column name="user_name" />
+        </column-definition>
+        <stored-by handler="ICEBERG" start-index="61" stop-index="68" />
+    </create-table>
+    
+    <create-table sql-case-id="create_iceberg_table_partition">
+        <table name="user_log" temporary="false" external="false" if-not-exists="false" start-index="13" stop-index="20" />
+        <column-definition type="STRING" start-index="23" stop-index="38" >
+            <column name="user_name" />
+        </column-definition>
+        <partition column="year" type="int" start-index="57" stop-index="66"  >
+            <column name="year" />
+        </partition>
+        <stored-by handler="ICEBERG" start-index="81" stop-index="88" />
+    </create-table>
+    
+    <create-table sql-case-id="create_iceberg_table_orc">
+        <table name="user_log" temporary="false" external="false" if-not-exists="false" start-index="13" stop-index="20" />
+        <column-definition type="STRING" start-index="23" stop-index="38" >
+            <column name="user_name" />
+        </column-definition>
+        <storage-handler name="ICEBERG" start-index="54" stop-index="61" />
+        <storage-format type="ORC" start-index="73" stop-index="76" />
+    </create-table>
+
     <create-table sql-case-id="create_table_with_blob">
         <table name="t_blob" start-index="13" stop-index="18" />
         <column-definition type="INT" start-index="21" stop-index="26">

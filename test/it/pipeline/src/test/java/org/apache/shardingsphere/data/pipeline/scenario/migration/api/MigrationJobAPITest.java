@@ -94,7 +94,7 @@ import static org.mockito.Mockito.when;
 @StaticMockSettings(PipelineDistributedBarrier.class)
 class MigrationJobAPITest {
     
-    private static PipelineJobType jobType;
+    private static PipelineJobType<MigrationJobConfiguration> jobType;
     
     private static MigrationJobAPI jobAPI;
     

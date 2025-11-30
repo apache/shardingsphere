@@ -106,8 +106,8 @@ class RouteSQLRewriteEngineTest {
         RouteSQLRewriteResult actual = new RouteSQLRewriteEngine(
                 new SQLTranslatorRule(new DefaultSQLTranslatorRuleConfigurationBuilder().build()), database, mock(RuleMetaData.class)).rewrite(sqlRewriteContext, routeContext, queryContext);
         assertThat(actual.getSqlRewriteUnits().size(), is(1));
-        assertThat(actual.getSqlRewriteUnits().get(firstRouteUnit).getSql(), is("SELECT ? UNION ALL SELECT ?"));
-        assertThat(actual.getSqlRewriteUnits().get(firstRouteUnit).getParameters(), is(Arrays.asList(1, 1)));
+        assertThat(actual.getSqlRewriteUnits().values().iterator().next().getSql(), is("SELECT ? UNION ALL SELECT ?"));
+        assertThat(actual.getSqlRewriteUnits().values().iterator().next().getParameters(), is(Arrays.asList(1, 1)));
     }
     
     @Test

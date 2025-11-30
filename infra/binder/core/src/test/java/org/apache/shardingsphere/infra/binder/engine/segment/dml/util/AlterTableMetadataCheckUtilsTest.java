@@ -201,12 +201,10 @@ class AlterTableMetadataCheckUtilsTest {
     }
     
     private Collection<RenameColumnSegment> createRenameColumnSegments(final String oldColumnName, final String newColumnName) {
-        Collection<RenameColumnSegment> result = new ArrayList<>();
         RenameColumnSegment segment = mock(RenameColumnSegment.class);
         when(segment.getColumnName()).thenReturn(new ColumnSegment(0, 0, new IdentifierValue(newColumnName)));
         when(segment.getOldColumnName()).thenReturn(new ColumnSegment(0, 0, new IdentifierValue(oldColumnName)));
-        result.add(segment);
-        return result;
+        return Collections.singleton(segment);
     }
     
     private Collection<DropColumnDefinitionSegment> createDropColumnDefinitions(final String columnName) {

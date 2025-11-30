@@ -34,7 +34,7 @@ import java.sql.SQLException;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -100,7 +100,7 @@ class MySQLDatabasePrivilegeCheckerTest {
     void assertUnCheckXAPrivilegeInMySQL5() throws SQLException {
         when(dataSource.getConnection().getMetaData().getDatabaseMajorVersion()).thenReturn(5);
         new MySQLDatabasePrivilegeChecker().check(dataSource, PrivilegeCheckType.XA);
-        verify(preparedStatement, times(0)).executeQuery();
+        verify(preparedStatement, never()).executeQuery();
     }
     
     @Test

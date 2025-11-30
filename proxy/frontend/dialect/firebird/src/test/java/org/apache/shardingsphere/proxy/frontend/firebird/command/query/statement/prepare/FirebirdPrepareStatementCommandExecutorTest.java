@@ -52,7 +52,6 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 
-import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Properties;
@@ -85,19 +84,22 @@ class FirebirdPrepareStatementCommandExecutorTest {
         when(packet.getStatementId()).thenReturn(1);
         when(packet.nextItem()).thenReturn(true, false);
         when(packet.getCurrentItem()).thenReturn(FirebirdSQLInfoPacketType.STMT_TYPE);
+        when(ProxyContext.getInstance().getContextManager().getMetaDataContexts()).thenReturn(createMetaDataContexts());
+    }
+    
+    private MetaDataContexts createMetaDataContexts() {
         SQLParserRule parserRule = new SQLParserRule(new SQLParserRuleConfiguration(new CacheOption(128, 1024L), new CacheOption(128, 1024L)));
         RuleMetaData globalRuleMetaData = new RuleMetaData(Collections.singleton(parserRule));
         ShardingSphereSchema schema = new ShardingSphereSchema("foo_db", Collections.emptyList(), Collections.emptyList());
-        ShardingSphereDatabase database =
-                new ShardingSphereDatabase("foo_db", databaseType, new ResourceMetaData(Collections.emptyMap()), new RuleMetaData(Collections.emptyList()), Collections.singleton(schema));
-        ShardingSphereMetaData metaData =
-                new ShardingSphereMetaData(Collections.singleton(database), new ResourceMetaData(Collections.emptyMap()), globalRuleMetaData, new ConfigurationProperties(new Properties()));
-        MetaDataContexts metaDataContexts = new MetaDataContexts(metaData, new ShardingSphereStatistics());
-        when(ProxyContext.getInstance().getContextManager().getMetaDataContexts()).thenReturn(metaDataContexts);
+        ShardingSphereDatabase database = new ShardingSphereDatabase(
+                "foo_db", databaseType, new ResourceMetaData(Collections.emptyMap()), new RuleMetaData(Collections.emptyList()), Collections.singleton(schema));
+        ShardingSphereMetaData metaData = new ShardingSphereMetaData(
+                Collections.singleton(database), new ResourceMetaData(Collections.emptyMap()), globalRuleMetaData, new ConfigurationProperties(new Properties()));
+        return new MetaDataContexts(metaData, new ShardingSphereStatistics());
     }
     
     @Test
-    void assertExecute() throws SQLException {
+    void assertExecute() {
         FirebirdPrepareStatementCommandExecutor executor = new FirebirdPrepareStatementCommandExecutor(packet, connectionSession);
         Collection<DatabasePacket> actual = executor.execute();
         FirebirdGenericResponsePacket responsePacket = (FirebirdGenericResponsePacket) actual.iterator().next();

@@ -79,18 +79,21 @@ class EncryptGroupByItemTokenGeneratorTest {
     private SelectStatementContext buildSelectStatementContext() {
         SimpleTableSegment simpleTableSegment = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_encrypt")));
         simpleTableSegment.setAlias(new AliasSegment(0, 0, new IdentifierValue("a")));
-        ColumnSegment columnSegment = new ColumnSegment(0, 0, new IdentifierValue("certificate_number"));
-        TableSegmentBoundInfo tableSegmentBoundInfo = new TableSegmentBoundInfo(new IdentifierValue("foo_db"), new IdentifierValue("foo_db"));
-        columnSegment
-                .setColumnBoundInfo(new ColumnSegmentBoundInfo(tableSegmentBoundInfo, new IdentifierValue("t_encrypt"), new IdentifierValue("certificate_number"), TableSourceType.TEMPORARY_TABLE));
-        columnSegment.setOwner(new OwnerSegment(0, 0, new IdentifierValue("a")));
         SelectStatementContext result = mock(SelectStatementContext.class, RETURNS_DEEP_STUBS);
         when(result.getSqlStatement().getDatabaseType()).thenReturn(databaseType);
-        ColumnOrderByItemSegment columnOrderByItemSegment = new ColumnOrderByItemSegment(columnSegment, OrderDirection.ASC, NullsOrderType.FIRST);
+        ColumnOrderByItemSegment columnOrderByItemSegment = new ColumnOrderByItemSegment(getColumnSegment(), OrderDirection.ASC, NullsOrderType.FIRST);
         OrderByItem orderByItem = new OrderByItem(columnOrderByItemSegment);
         when(result.getGroupByContext().getItems()).thenReturn(Collections.singleton(orderByItem));
         when(result.getSubqueryContexts().values()).thenReturn(Collections.emptyList());
         when(result.getTablesContext()).thenReturn(new TablesContext(Collections.singleton(simpleTableSegment)));
+        return result;
+    }
+    
+    private ColumnSegment getColumnSegment() {
+        ColumnSegment result = new ColumnSegment(0, 0, new IdentifierValue("certificate_number"));
+        TableSegmentBoundInfo tableSegmentBoundInfo = new TableSegmentBoundInfo(new IdentifierValue("foo_db"), new IdentifierValue("foo_db"));
+        result.setColumnBoundInfo(new ColumnSegmentBoundInfo(tableSegmentBoundInfo, new IdentifierValue("t_encrypt"), new IdentifierValue("certificate_number"), TableSourceType.TEMPORARY_TABLE));
+        result.setOwner(new OwnerSegment(0, 0, new IdentifierValue("a")));
         return result;
     }
 }

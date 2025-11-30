@@ -54,7 +54,7 @@ public final class TransmissionTasksRunner implements PipelineTasksRunner {
     
     private final Collection<PipelineTask> incrementalTasks;
     
-    private final PipelineJobType jobType;
+    private final PipelineJobType<?> jobType;
     
     private final PipelineJobItemManager<TransmissionJobItemProgress> jobItemManager;
     
@@ -128,7 +128,7 @@ public final class TransmissionTasksRunner implements PipelineTasksRunner {
         incrementalTasks.forEach(PipelineTask::stop);
     }
     
-    private final class InventoryTaskExecuteCallback implements ExecuteCallback {
+    private class InventoryTaskExecuteCallback implements ExecuteCallback {
         
         @Override
         public void onSuccess() {

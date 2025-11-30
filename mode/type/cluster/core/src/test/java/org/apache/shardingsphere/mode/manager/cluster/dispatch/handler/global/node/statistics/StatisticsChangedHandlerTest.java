@@ -34,7 +34,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.refEq;
-import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
@@ -104,24 +104,24 @@ class StatisticsChangedHandlerTest {
     @Test
     void assertHandleWithMissedDatabaseNameEventKey() {
         handler.handle(contextManager, new DataChangedEvent("/statistics/databases", "=", Type.ADDED));
-        verify(contextManager.getMetaDataContextManager().getStatisticsManager(), times(0)).addDatabaseStatistics(any());
+        verify(contextManager.getMetaDataContextManager().getStatisticsManager(), never()).addDatabaseStatistics(any());
     }
     
     @Test
     void assertHandleWithMissedSchemaNameEventKey() {
         handler.handle(contextManager, new DataChangedEvent("/statistics/databases/foo_db/schemas", "=", Type.ADDED));
-        verify(contextManager.getMetaDataContextManager().getStatisticsManager(), times(0)).addSchemaStatistics(any(), any());
+        verify(contextManager.getMetaDataContextManager().getStatisticsManager(), never()).addSchemaStatistics(any(), any());
     }
     
     @Test
     void assertHandleWithMissedTableNameEventKey() {
         handler.handle(contextManager, new DataChangedEvent("/statistics/databases/foo_db/schemas/foo_schema/tables", "", Type.ADDED));
-        verify(contextManager.getMetaDataContextManager().getStatisticsManager(), times(0)).addTableStatistics(any(), any(), any());
+        verify(contextManager.getMetaDataContextManager().getStatisticsManager(), never()).addTableStatistics(any(), any(), any());
     }
     
     @Test
     void assertHandleWithMissedRowEventKey() {
         handler.handle(contextManager, new DataChangedEvent("/statistics/databases/foo_db/schemas/foo_schema/tables/foo_tbl/", "", Type.ADDED));
-        verify(contextManager.getMetaDataContextManager().getStatisticsManager(), times(0)).alterRowStatistics(any(), any(), any(), any());
+        verify(contextManager.getMetaDataContextManager().getStatisticsManager(), never()).alterRowStatistics(any(), any(), any(), any());
     }
 }

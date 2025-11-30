@@ -15,18 +15,31 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.e2e.operation.transaction.framework.container.compose;
+package org.apache.shardingsphere.agent.plugin.metrics.core.util;
+
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
- * Transaction native composed container.
+ * Histogram bucket utils.
  */
-public final class TransactionNativeContainerComposer extends TransactionBaseContainerComposer {
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class HistogramBucketUtils {
     
-    public TransactionNativeContainerComposer() {
-        super("");
-    }
-    
-    @Override
-    public void start() {
+    /**
+     * Get buckets map.
+     *
+     * @return buckets map
+     */
+    public static Map<String, Object> getBucketsMap() {
+        Map<String, Object> result = new HashMap<>(4, 1F);
+        result.put("type", "exp");
+        result.put("start", 1);
+        result.put("factor", 2);
+        result.put("count", 13);
+        return result;
     }
 }

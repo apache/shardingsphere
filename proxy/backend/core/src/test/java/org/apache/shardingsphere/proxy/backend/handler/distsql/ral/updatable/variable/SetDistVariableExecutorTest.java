@@ -37,8 +37,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.sql.SQLException;
-
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
@@ -51,7 +49,7 @@ class SetDistVariableExecutorTest {
     private final SetDistVariableExecutor executor = new SetDistVariableExecutor();
     
     @Test
-    void assertExecuteWithConfigurationKey() throws SQLException {
+    void assertExecuteWithConfigurationKey() {
         SetDistVariableStatement statement = new SetDistVariableStatement("proxy_frontend_flush_threshold", "1024");
         ContextManager contextManager = mockContextManager();
         executor.executeUpdate(statement, contextManager);
@@ -59,7 +57,7 @@ class SetDistVariableExecutorTest {
     }
     
     @Test
-    void assertExecuteWithTemporaryConfigurationKey() throws SQLException {
+    void assertExecuteWithTemporaryConfigurationKey() {
         SetDistVariableStatement statement = new SetDistVariableStatement("proxy_meta_data_collector_enabled", "false");
         ContextManager contextManager = mockContextManager();
         executor.executeUpdate(statement, contextManager);
@@ -67,7 +65,7 @@ class SetDistVariableExecutorTest {
     }
     
     @Test
-    void assertExecuteWithTypedSPI() throws SQLException {
+    void assertExecuteWithTypedSPI() {
         SetDistVariableStatement statement = new SetDistVariableStatement("proxy_frontend_database_protocol_type", "Fixture");
         ContextManager contextManager = mockContextManager();
         executor.executeUpdate(statement, contextManager);

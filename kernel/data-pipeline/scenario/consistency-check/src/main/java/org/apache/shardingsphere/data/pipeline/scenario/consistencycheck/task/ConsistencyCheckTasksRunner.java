@@ -55,7 +55,7 @@ import java.util.concurrent.atomic.AtomicReference;
 @Slf4j
 public final class ConsistencyCheckTasksRunner implements PipelineTasksRunner {
     
-    private final PipelineJobType jobType = new ConsistencyCheckJobType();
+    private final ConsistencyCheckJobType jobType = new ConsistencyCheckJobType();
     
     private final PipelineJobManager jobManager = new PipelineJobManager(jobType);
     
@@ -101,12 +101,13 @@ public final class ConsistencyCheckTasksRunner implements PipelineTasksRunner {
         checkExecutor.stop();
     }
     
-    private final class CheckPipelineLifecycleRunnable extends AbstractPipelineLifecycleRunnable {
+    private class CheckPipelineLifecycleRunnable extends AbstractPipelineLifecycleRunnable {
         
+        @SuppressWarnings("unchecked")
         @Override
         protected void runBlocking() {
             jobItemManager.persistProgress(jobItemContext);
-            PipelineJobType jobType = PipelineJobIdUtils.parseJobType(parentJobId);
+            PipelineJobType<PipelineJobConfiguration> jobType = PipelineJobIdUtils.parseJobType(parentJobId);
             PipelineJobConfiguration parentJobConfig = new PipelineJobConfigurationManager(jobType.getOption()).getJobConfiguration(parentJobId);
             try {
                 PipelineProcessConfiguration processConfig = PipelineProcessConfigurationUtils.fillInDefaultValue(
@@ -135,7 +136,7 @@ public final class ConsistencyCheckTasksRunner implements PipelineTasksRunner {
         }
     }
     
-    private final class CheckExecuteCallback implements ExecuteCallback {
+    private class CheckExecuteCallback implements ExecuteCallback {
         
         @Override
         public void onSuccess() {

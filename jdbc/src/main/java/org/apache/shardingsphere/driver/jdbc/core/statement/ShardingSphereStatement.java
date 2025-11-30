@@ -284,7 +284,7 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
     }
     
     @Override
-    public void addBatch(final String sql) throws SQLException {
+    public void addBatch(final String sql) {
         batchStatementExecutor.addBatch(sql);
     }
     

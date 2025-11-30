@@ -70,7 +70,7 @@ public abstract class BaseDQLE2EIT implements SQLE2EIT {
     @Setter
     private SQLE2EEnvironmentEngine environmentEngine;
     
-    protected final void init(final AssertionTestParameter testParam, final SQLE2EITContext context) throws SQLException, IOException, JAXBException {
+    protected final void init(final AssertionTestParameter testParam, final SQLE2EITContext context) throws IOException, JAXBException {
         fillDataOnlyOnce(testParam);
         expectedDataSource = null == context.getAssertion().getExpectedDataSourceName() || 1 == getEnvironmentEngine().getExpectedDataSourceMap().size()
                 ? getFirstExpectedDataSource(getEnvironmentEngine().getExpectedDataSourceMap().values())
@@ -188,11 +188,11 @@ public abstract class BaseDQLE2EIT implements SQLE2EIT {
                     assertThat(((Timestamp) actualValue).toLocalDateTime(), is(expectedValue));
                 } else if (Types.TIMESTAMP == actualMetaData.getColumnType(i + 1) || Types.TIMESTAMP == expectedMetaData.getColumnType(i + 1)) {
                     Object convertedActualValue = Types.TIMESTAMP == actualMetaData.getColumnType(i + 1)
-                            ? actualResultSet.getTimestamp(i + 1).toLocalDateTime().format(DateTimeFormatterFactory.getDatetimeFormatter())
+                            ? formatTimestamp(actualResultSet.getTimestamp(i + 1))
                             : actualValue;
                     Object convertedExpectedValue = Types.TIMESTAMP == expectedMetaData.getColumnType(i + 1)
-                            ? expectedResultSet.getTimestamp(i + 1).toLocalDateTime().format(DateTimeFormatterFactory.getDatetimeFormatter())
-                            : actualValue;
+                            ? formatTimestamp(expectedResultSet.getTimestamp(i + 1))
+                            : expectedValue;
                     assertThat(String.valueOf(convertedActualValue), is(String.valueOf(convertedExpectedValue)));
                 } else if (expectedValue instanceof Clob) {
                     assertThat(String.valueOf(actualValue), is(((Clob) expectedValue).getSubString(1, (int) ((Clob) expectedValue).length())));
@@ -214,6 +214,10 @@ public abstract class BaseDQLE2EIT implements SQLE2EIT {
             }
             columnIndex++;
         }
+    }
+    
+    private String formatTimestamp(final Timestamp timestamp) {
+        return null == timestamp ? null : timestamp.toLocalDateTime().format(DateTimeFormatterFactory.getDatetimeFormatter());
     }
     
     private void assertObjectValue(final ResultSet actual, final int columnIndex, final String columnLabel, final String expected) throws SQLException {

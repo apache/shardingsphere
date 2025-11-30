@@ -156,7 +156,6 @@ public final class SQLFederationPlannerBuilder {
         result.add(CoreRules.PROJECT_CORRELATE_TRANSPOSE);
         result.add(CoreRules.PROJECT_SET_OP_TRANSPOSE);
         result.add(CoreRules.PROJECT_REDUCE_EXPRESSIONS);
-        result.add(CoreRules.FILTER_PROJECT_TRANSPOSE);
         result.add(ProjectRemoveRule.Config.DEFAULT.toRule());
         return result;
     }
@@ -177,6 +176,7 @@ public final class SQLFederationPlannerBuilder {
         result.add(CoreRules.FILTER_SET_OP_TRANSPOSE);
         result.add(CoreRules.FILTER_REDUCE_EXPRESSIONS);
         result.add(CoreRules.FILTER_MERGE);
+        result.add(CoreRules.FILTER_PROJECT_TRANSPOSE);
         result.add(CoreRules.JOIN_PUSH_TRANSITIVE_PREDICATES);
         return result;
     }

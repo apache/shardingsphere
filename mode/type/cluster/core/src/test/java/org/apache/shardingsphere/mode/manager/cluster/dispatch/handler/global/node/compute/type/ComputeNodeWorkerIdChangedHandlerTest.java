@@ -30,7 +30,7 @@ import org.mockito.Answers;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
@@ -50,7 +50,7 @@ class ComputeNodeWorkerIdChangedHandlerTest {
     @Test
     void assertHandleWithEmptyInstanceId() {
         handler.handle(contextManager, new DataChangedEvent("/nodes/compute_nodes/worker_id", "", Type.ADDED));
-        verify(contextManager, times(0)).getComputeNodeInstanceContext();
+        verify(contextManager, never()).getComputeNodeInstanceContext();
     }
     
     @Test

@@ -24,7 +24,6 @@ import org.apache.shardingsphere.infra.metadata.statistics.collector.DialectData
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 
-import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Optional;
@@ -46,11 +45,9 @@ public final class ShardingSphereStatisticsCollector implements DialectDatabaseS
     }
     
     @Override
-    public Optional<Collection<Map<String, Object>>> collectRowColumnValues(final String databaseName, final String schemaName, final String tableName,
-                                                                            final ShardingSphereMetaData metaData) throws SQLException {
-        Optional<ShardingSphereTableStatisticsCollector> tableStatisticsCollector = TypedSPILoader.findService(
-                ShardingSphereTableStatisticsCollector.class, String.format("%s.%s", schemaName, tableName));
-        return tableStatisticsCollector.isPresent() ? Optional.of(tableStatisticsCollector.get().collect(databaseName, schemaName, tableName, metaData)) : Optional.empty();
+    public Optional<Collection<Map<String, Object>>> collectRowColumnValues(final String databaseName, final String schemaName, final String tableName, final ShardingSphereMetaData metaData) {
+        return TypedSPILoader.findService(ShardingSphereTableStatisticsCollector.class, String.format("%s.%s", schemaName, tableName))
+                .map(optional -> optional.collect(databaseName, schemaName, tableName, metaData));
     }
     
     @Override

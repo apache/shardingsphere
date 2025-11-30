@@ -38,7 +38,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 
-import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.Collections;
 
@@ -48,7 +47,7 @@ import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -103,21 +102,21 @@ class DropDatabaseProxyBackendHandlerTest {
     }
     
     @Test
-    void assertExecuteDropWithoutCurrentDatabase() throws SQLException {
+    void assertExecuteDropWithoutCurrentDatabase() {
         when(sqlStatement.getDatabaseName()).thenReturn("foo_db");
         ResponseHeader responseHeader = handler.execute();
-        verify(connectionSession, times(0)).setCurrentDatabaseName(null);
         assertThat(responseHeader, isA(UpdateResponseHeader.class));
+        verify(connectionSession, never()).setCurrentDatabaseName(null);
     }
     
     @Test
-    void assertExecuteDropCurrentDatabaseWithMySQL() throws SQLException {
+    void assertExecuteDropCurrentDatabaseWithMySQL() {
         when(connectionSession.getUsedDatabaseName()).thenReturn("foo_db");
         when(connectionSession.getProtocolType()).thenReturn(TypedSPILoader.getService(DatabaseType.class, "MySQL"));
         when(sqlStatement.getDatabaseName()).thenReturn("foo_db");
         ResponseHeader responseHeader = handler.execute();
-        verify(connectionSession).setCurrentDatabaseName(null);
         assertThat(responseHeader, isA(UpdateResponseHeader.class));
+        verify(connectionSession).setCurrentDatabaseName(null);
     }
     
     @Test
@@ -129,11 +128,11 @@ class DropDatabaseProxyBackendHandlerTest {
     }
     
     @Test
-    void assertExecuteDropOtherDatabase() throws SQLException {
+    void assertExecuteDropOtherDatabase() {
         when(connectionSession.getUsedDatabaseName()).thenReturn("foo_db");
         when(sqlStatement.getDatabaseName()).thenReturn("bar_db");
         ResponseHeader responseHeader = handler.execute();
-        verify(connectionSession, times(0)).setCurrentDatabaseName(null);
         assertThat(responseHeader, isA(UpdateResponseHeader.class));
+        verify(connectionSession, never()).setCurrentDatabaseName(null);
     }
 }

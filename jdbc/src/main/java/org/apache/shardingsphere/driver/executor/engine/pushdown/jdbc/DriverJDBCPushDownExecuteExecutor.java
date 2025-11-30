@@ -95,7 +95,7 @@ public final class DriverJDBCPushDownExecuteExecutor {
     @SuppressWarnings({"rawtypes", "unchecked"})
     private boolean doExecute(final ShardingSphereDatabase database, final ExecutionContext executionContext, final DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine,
                               final StatementExecuteCallback executeCallback, final StatementAddCallback addCallback, final StatementReplayCallback replayCallback) throws SQLException {
-        ExecutionGroupContext<JDBCExecutionUnit> executionGroupContext = prepareEngine.prepare(database.getName(), executionContext.getRouteContext(), executionContext.getExecutionUnits(),
+        ExecutionGroupContext<JDBCExecutionUnit> executionGroupContext = prepareEngine.prepare(database.getName(), executionContext, executionContext.getExecutionUnits(),
                 new ExecutionGroupReportContext(connection.getProcessId(), database.getName(), connection.getDatabaseConnectionManager().getConnectionContext().getGrantee()));
         for (ExecutionGroup<JDBCExecutionUnit> each : executionGroupContext.getInputGroups()) {
             addCallback.add(getStatements(each), JDBCDriverType.PREPARED_STATEMENT == prepareEngine.getType() ? getParameterSets(each) : Collections.emptyList());
@@ -109,8 +109,11 @@ public final class DriverJDBCPushDownExecuteExecutor {
             if (isNeedImplicitCommit(executionContext.getSqlStatementContext().getSqlStatement())) {
                 connection.commit();
             }
-            new PushDownMetaDataRefreshEngine(connection.getContextManager().getPersistServiceFacade().getModeFacade().getMetaDataManagerService(), database, metaData.getProps())
-                    .refresh(executionContext.getSqlStatementContext(), executionContext.getRouteContext().getRouteUnits());
+            PushDownMetaDataRefreshEngine pushDownMetaDataRefreshEngine = new PushDownMetaDataRefreshEngine(executionContext.getSqlStatementContext());
+            if (pushDownMetaDataRefreshEngine.isNeedRefresh()) {
+                pushDownMetaDataRefreshEngine.refresh(connection.getContextManager().getPersistServiceFacade().getModeFacade().getMetaDataManagerService(),
+                        database, metaData.getProps(), executionContext.getRouteContext().getRouteUnits());
+            }
             return null != results && !results.isEmpty() && null != results.get(0) && results.get(0);
         } finally {
             processEngine.completeSQLExecution(executionGroupContext.getReportContext().getProcessId());

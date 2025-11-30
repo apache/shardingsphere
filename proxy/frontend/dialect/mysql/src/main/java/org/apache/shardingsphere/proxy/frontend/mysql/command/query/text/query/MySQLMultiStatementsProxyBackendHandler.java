@@ -120,7 +120,7 @@ public final class MySQLMultiStatementsProxyBackendHandler implements ProxyBacke
     private ResponseHeader executeMultiStatements(final DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine) throws SQLException {
         Collection<ExecutionContext> executionContexts = createExecutionContexts();
         ExecutionGroupContext<JDBCExecutionUnit> executionGroupContext =
-                prepareEngine.prepare(connectionSession.getUsedDatabaseName(), executionContexts.iterator().next().getRouteContext(), createExecutionUnits(),
+                prepareEngine.prepare(connectionSession.getUsedDatabaseName(), executionContexts.iterator().next(), createExecutionUnits(),
                         new ExecutionGroupReportContext(connectionSession.getProcessId(), connectionSession.getUsedDatabaseName(), connectionSession.getConnectionContext().getGrantee()));
         batchExecutor.init(executionGroupContext);
         executeAddBatch(executionGroupContext);

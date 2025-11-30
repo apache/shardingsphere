@@ -18,7 +18,7 @@
 
 <test-cases>
     <test-case sql="SELECT t_order_federate.order_id, t_order_federate.user_id, t_user_info.user_id FROM t_order_federate JOIN t_user_info ON t_order_federate.user_id = t_user_info.user_id WHERE t_user_info.user_id = 13">
-        <assertion expected-result="EnumerableCalc(expr#0..6=[{inputs}], expr#7=[13], expr#8=[=($t4, $t7)], proj#0..1=[{exprs}], user_id0=[$t4], $condition=[$t8])   EnumerableHashJoin(condition=[=($3, $6)], joinType=[inner])     EnumerableCalc(expr#0..2=[{inputs}], expr#3=[CAST($t1):VARCHAR CHARACTER SET &quot;UTF-8&quot;], proj#0..3=[{exprs}])       EnumerableScan(table=[[federate_jdbc, t_order_federate]], sql=[SELECT * FROM `federate_jdbc`.`t_order_federate`], dynamicParameters=[null])     EnumerableCalc(expr#0..1=[{inputs}], expr#2=[CAST($t0):VARCHAR CHARACTER SET &quot;UTF-8&quot;], proj#0..2=[{exprs}])       EnumerableScan(table=[[federate_jdbc, t_user_info]], sql=[SELECT * FROM `federate_jdbc`.`t_user_info`], dynamicParameters=[null]) "/>
+        <assertion expected-result="EnumerableCalc(expr#0..6=[{inputs}], proj#0..1=[{exprs}], user_id0=[$t4])   EnumerableHashJoin(condition=[=($3, $6)], joinType=[inner])     EnumerableCalc(expr#0..2=[{inputs}], expr#3=[CAST($t1):VARCHAR CHARACTER SET &quot;UTF-8&quot;], proj#0..3=[{exprs}])       EnumerableScan(table=[[federate_jdbc, t_order_federate]], sql=[SELECT * FROM `federate_jdbc`.`t_order_federate`], dynamicParameters=[null])     EnumerableCalc(expr#0..1=[{inputs}], expr#2=[CAST($t0):VARCHAR CHARACTER SET &quot;UTF-8&quot;], proj#0..2=[{exprs}])       EnumerableScan(table=[[federate_jdbc, t_user_info]], sql=[SELECT * FROM `federate_jdbc`.`t_user_info` WHERE `user_id` = 13], dynamicParameters=[null]) "/>
     </test-case>
     
     <test-case sql="SELECT user_id, information FROM t_user_info WHERE user_id = 12">
@@ -382,7 +382,7 @@
     </test-case>
 
     <test-case sql="SELECT * FROM (SELECT o.* FROM t_order o WHERE o.user_id IN (10, 11, 12)) AS t, t_order_item i WHERE t.order_id = i.order_id AND t.order_id > 10 ORDER BY item_id">
-        <assertion expected-result="EnumerableSort(sort0=[$6], dir0=[ASC])   EnumerableHashJoin(condition=[=($0, $7)], joinType=[inner])     EnumerableScan(table=[[federate_jdbc, t_order]], sql=[SELECT * FROM (SELECT * FROM `federate_jdbc`.`t_order` WHERE CAST(`user_id` AS SIGNED) IN (10, 11, 12)) AS `t` WHERE `order_id` > 10], dynamicParameters=[null])     EnumerableScan(table=[[federate_jdbc, t_order_item]], sql=[SELECT * FROM `federate_jdbc`.`t_order_item` WHERE `order_id` > 10], dynamicParameters=[null]) "/>
+        <assertion expected-result="EnumerableSort(sort0=[$6], dir0=[ASC])   EnumerableHashJoin(condition=[=($0, $7)], joinType=[inner])     EnumerableScan(table=[[federate_jdbc, t_order]], sql=[SELECT * FROM `federate_jdbc`.`t_order` WHERE CAST(`user_id` AS SIGNED) IN (10, 11, 12) AND `order_id` > 10], dynamicParameters=[null])     EnumerableScan(table=[[federate_jdbc, t_order_item]], sql=[SELECT * FROM `federate_jdbc`.`t_order_item` WHERE `order_id` > 10], dynamicParameters=[null]) "/>
     </test-case>
 
     <test-case sql="SELECT * FROM t_order o WHERE o.order_id IN (SELECT i.order_id FROM t_order_item i INNER JOIN t_product p ON i.product_id = p.product_id WHERE p.product_id = 10) ORDER BY order_id">

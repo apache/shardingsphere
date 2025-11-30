@@ -60,11 +60,7 @@ class ShardingTableTest {
     
     @Test
     void assertCreateFullShardingTable() {
-        ShardingTableRuleConfiguration shardingTableRuleConfig = new ShardingTableRuleConfiguration("LOGIC_TABLE", "ds${0..1}.table_${0..2}");
-        shardingTableRuleConfig.setDatabaseShardingStrategy(new NoneShardingStrategyConfiguration());
-        shardingTableRuleConfig.setTableShardingStrategy(new NoneShardingStrategyConfiguration());
-        shardingTableRuleConfig.setKeyGenerateStrategy(new KeyGenerateStrategyConfiguration("col_1", "increment"));
-        ShardingTable actual = new ShardingTable(shardingTableRuleConfig, Arrays.asList("ds0", "ds1"), null);
+        ShardingTable actual = createShardingTable();
         assertThat(actual.getLogicTable(), is("LOGIC_TABLE"));
         assertThat(actual.getActualDataNodes().size(), is(6));
         assertTrue(actual.getActualDataNodes().contains(new DataNode("ds0", (String) null, "table_0")));
@@ -76,6 +72,14 @@ class ShardingTableTest {
         assertTrue(actual.getGenerateKeyColumn().isPresent());
         assertThat(actual.getGenerateKeyColumn().get(), is("col_1"));
         assertThat(actual.getKeyGeneratorName(), is("increment"));
+    }
+    
+    private ShardingTable createShardingTable() {
+        ShardingTableRuleConfiguration shardingTableRuleConfig = new ShardingTableRuleConfiguration("LOGIC_TABLE", "ds${0..1}.table_${0..2}");
+        shardingTableRuleConfig.setDatabaseShardingStrategy(new NoneShardingStrategyConfiguration());
+        shardingTableRuleConfig.setTableShardingStrategy(new NoneShardingStrategyConfiguration());
+        shardingTableRuleConfig.setKeyGenerateStrategy(new KeyGenerateStrategyConfiguration("col_1", "increment"));
+        return new ShardingTable(shardingTableRuleConfig, Arrays.asList("ds0", "ds1"), null);
     }
     
     @Test

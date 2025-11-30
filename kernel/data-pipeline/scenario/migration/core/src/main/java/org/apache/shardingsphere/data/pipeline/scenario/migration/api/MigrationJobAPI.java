@@ -97,7 +97,7 @@ public final class MigrationJobAPI implements TransmissionJobAPI {
     private final PipelineDataSourcePersistService dataSourcePersistService;
     
     public MigrationJobAPI() {
-        PipelineJobType jobType = new MigrationJobType();
+        MigrationJobType jobType = new MigrationJobType();
         jobManager = new PipelineJobManager(jobType);
         jobConfigManager = new PipelineJobConfigurationManager(jobType.getOption());
         dataSourcePersistService = new PipelineDataSourcePersistService();
