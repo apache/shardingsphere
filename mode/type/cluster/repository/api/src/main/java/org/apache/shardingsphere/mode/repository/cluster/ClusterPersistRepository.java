@@ -57,7 +57,7 @@ public interface ClusterPersistRepository extends PersistRepository {
     /**
      * Get distributed lock.
      *
-     * @param lockKey kock key
+     * @param lockKey lock key
      * @return distributed lock
      */
     Optional<DistributedLock> getDistributedLock(String lockKey);
