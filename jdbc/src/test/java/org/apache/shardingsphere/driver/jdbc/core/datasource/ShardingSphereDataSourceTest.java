@@ -97,7 +97,7 @@ class ShardingSphereDataSourceTest {
         when(connection.getMetaData().getURL()).thenReturn("jdbc:mock://127.0.0.1/foo_ds");
         try (
                 ShardingSphereDataSource actual = createShardingSphereDataSource(new MockedDataSource(connection));
-                ShardingSphereConnection actualConnection = ((ShardingSphereConnection) actual.getConnection("", ""))) {
+                ShardingSphereConnection actualConnection = (ShardingSphereConnection) actual.getConnection("", "")) {
             assertThat(actualConnection.getDatabaseConnectionManager().getConnections("foo_db", "ds", 0, 1, ConnectionMode.MEMORY_STRICTLY).get(0), is(connection));
         }
     }
