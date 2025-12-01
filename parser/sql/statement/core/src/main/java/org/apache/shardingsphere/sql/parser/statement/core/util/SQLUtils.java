@@ -57,6 +57,14 @@ public final class SQLUtils {
     
     private static final String EXCLUDED_CHARACTERS = "[]'\"";
     
+    private static final BigInteger INTEGER_MIN = BigInteger.valueOf(Integer.MIN_VALUE);
+    
+    private static final BigInteger INTEGER_MAX = BigInteger.valueOf(Integer.MAX_VALUE);
+    
+    private static final BigInteger LONG_MIN = BigInteger.valueOf(Long.MIN_VALUE);
+    
+    private static final BigInteger LONG_MAX = BigInteger.valueOf(Long.MAX_VALUE);
+    
     /**
      * Get exactly number value and type.
      *
@@ -66,21 +74,26 @@ public final class SQLUtils {
      */
     public static Number getExactlyNumber(final String value, final int radix) {
         try {
-            return getBigInteger(value, radix);
+            return getExactlyNumber(new BigInteger(value, radix));
         } catch (final NumberFormatException ex) {
             return new BigDecimal(value);
         }
     }
     
-    private static Number getBigInteger(final String value, final int radix) {
-        BigInteger result = new BigInteger(value, radix);
-        if (result.compareTo(new BigInteger(String.valueOf(Integer.MIN_VALUE))) >= 0 && result.compareTo(new BigInteger(String.valueOf(Integer.MAX_VALUE))) <= 0) {
-            return result.intValue();
+    /**
+     * Get exactly number.
+     *
+     * @param value to be converted value
+     * @return converted value
+     */
+    public static Number getExactlyNumber(final BigInteger value) {
+        if (value.compareTo(INTEGER_MIN) >= 0 && value.compareTo(INTEGER_MAX) <= 0) {
+            return value.intValue();
         }
-        if (result.compareTo(new BigInteger(String.valueOf(Long.MIN_VALUE))) >= 0 && result.compareTo(new BigInteger(String.valueOf(Long.MAX_VALUE))) <= 0) {
-            return result.longValue();
+        if (value.compareTo(LONG_MIN) >= 0 && value.compareTo(LONG_MAX) <= 0) {
+            return value.longValue();
         }
-        return result;
+        return value;
     }
     
     /**
@@ -246,10 +259,10 @@ public final class SQLUtils {
     /**
      * Create literal expression.
      *
-     * @param astNode    AST node
+     * @param astNode AST node
      * @param startIndex start index
-     * @param stopIndex  stop index
-     * @param text       text
+     * @param stopIndex stop index
+     * @param text text
      * @return literal expression segment
      */
     public static ExpressionSegment createLiteralExpression(final ASTNode astNode, final int startIndex, final int stopIndex, final String text) {
