@@ -71,6 +71,10 @@ public final class PostgreSQLDataRowPacket extends PostgreSQLIdentifierPacket {
             payload.writeBytes((byte[]) each);
         } else if (each instanceof SQLXML) {
             writeSQLXMLData(payload, each);
+        } else if (each instanceof Boolean) {
+            byte[] columnData = ((Boolean) each ? "t" : "f").getBytes(payload.getCharset());
+            payload.writeInt4(columnData.length);
+            payload.writeBytes(columnData) ;
         } else {
             byte[] columnData = each.toString().getBytes(payload.getCharset());
             payload.writeInt4(columnData.length);
