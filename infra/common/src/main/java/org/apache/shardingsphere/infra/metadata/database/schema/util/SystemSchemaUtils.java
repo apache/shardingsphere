@@ -78,7 +78,6 @@ public final class SystemSchemaUtils {
      * @return whether query or not
      */
     public static boolean isDriverQuerySystemCatalog(final DatabaseType databaseType, final Collection<ProjectionSegment> projections) {
-        Optional<DialectDriverQuerySystemCatalogOption> driverQuerySystemCatalogOption = new DatabaseTypeRegistry(databaseType).getDialectDatabaseMetaData().getDriverQuerySystemCatalogOption();
         if (1 != projections.size()) {
             return false;
         }
@@ -86,6 +85,7 @@ public final class SystemSchemaUtils {
         if (!(firstProjection instanceof ExpressionProjectionSegment)) {
             return false;
         }
+        Optional<DialectDriverQuerySystemCatalogOption> driverQuerySystemCatalogOption = new DatabaseTypeRegistry(databaseType).getDialectDatabaseMetaData().getDriverQuerySystemCatalogOption();
         return driverQuerySystemCatalogOption.map(optional -> optional.isSystemCatalogQueryExpressions(((ExpressionProjectionSegment) firstProjection).getText())).orElse(false);
     }
 }
