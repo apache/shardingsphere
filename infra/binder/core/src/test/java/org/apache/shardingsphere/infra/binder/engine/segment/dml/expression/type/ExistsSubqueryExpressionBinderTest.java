@@ -33,7 +33,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -49,7 +48,7 @@ class ExistsSubqueryExpressionBinderTest {
         SubquerySegment boundSubquerySegment = new SubquerySegment(0, 5, mock(SelectStatement.class), "SELECT 1");
         SQLStatementBinderContext binderContext = mock(SQLStatementBinderContext.class);
         Multimap<CaseInsensitiveString, TableSegmentBinderContext> tableBinderContexts = LinkedHashMultimap.create();
-        when(SubquerySegmentBinder.bind(eq(subquerySegment), eq(binderContext), eq(tableBinderContexts))).thenReturn(boundSubquerySegment);
+        when(SubquerySegmentBinder.bind(subquerySegment, binderContext, tableBinderContexts)).thenReturn(boundSubquerySegment);
         ExistsSubqueryExpression actual = ExistsSubqueryExpressionBinder.bind(segment, binderContext, tableBinderContexts);
         assertThat(actual.getStartIndex(), is(1));
         assertThat(actual.getStopIndex(), is(10));
