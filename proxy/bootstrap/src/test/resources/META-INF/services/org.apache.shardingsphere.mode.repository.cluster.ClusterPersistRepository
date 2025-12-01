@@ -15,4 +15,4 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.proxy.fixture.ClusterPersistRepositoryFixture
+org.apache.shardingsphere.proxy.fixture.ProxyPersistRepositoryFixture

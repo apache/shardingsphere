@@ -18,12 +18,15 @@
 package org.apache.shardingsphere.encrypt.algorithm.standard;
 
 import lombok.Getter;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
 import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithmMetaData;
 import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.algorithm.core.context.AlgorithmSQLContext;
-import org.apache.shardingsphere.infra.algorithm.cryptographic.core.CryptographicAlgorithm;
+import org.apache.shardingsphere.infra.algorithm.cryptographic.spi.CryptographicAlgorithm;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
+import org.apache.shardingsphere.infra.util.props.PropertiesBuilder;
+import org.apache.shardingsphere.infra.util.props.PropertiesBuilder.Property;
 
 import java.util.Properties;
 
@@ -31,6 +34,10 @@ import java.util.Properties;
  * AES encrypt algorithm.
  */
 public final class AESEncryptAlgorithm implements EncryptAlgorithm {
+    
+    private static final String AES_KEY = "aes-key-value";
+    
+    private static final String DIGEST_ALGORITHM_NAME = "digest-algorithm-name";
     
     @Getter
     private final EncryptAlgorithmMetaData metaData = new EncryptAlgorithmMetaData(true, true, false);
@@ -58,7 +65,8 @@ public final class AESEncryptAlgorithm implements EncryptAlgorithm {
     
     @Override
     public AlgorithmConfiguration toConfiguration() {
-        return new AlgorithmConfiguration(getType(), props);
+        return new AlgorithmConfiguration(getType(),
+                PropertiesBuilder.build(new Property(AES_KEY, props.getProperty(AES_KEY)), new Property(DIGEST_ALGORITHM_NAME, StringUtils.upperCase(props.getProperty(DIGEST_ALGORITHM_NAME)))));
     }
     
     @Override

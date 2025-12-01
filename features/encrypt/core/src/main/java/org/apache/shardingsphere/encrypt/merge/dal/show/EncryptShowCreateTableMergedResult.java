@@ -21,62 +21,54 @@ import org.apache.shardingsphere.encrypt.exception.syntax.UnsupportedEncryptSQLE
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.encrypt.rule.table.EncryptTable;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.binder.context.type.TableAvailable;
-import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
+import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
+import org.apache.shardingsphere.infra.merge.result.impl.decorator.DecoratorMergedResult;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.parser.SQLParserEngine;
 import org.apache.shardingsphere.parser.rule.SQLParserRule;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.column.ColumnDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.CreateTableStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.type.TableInResultSetSQLStatementAttribute;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.table.CreateTableStatement;
 
-import java.io.InputStream;
-import java.io.Reader;
 import java.sql.SQLException;
-import java.sql.SQLFeatureNotSupportedException;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.List;
 import java.util.Optional;
 
 /**
  * Encrypt show create table merged result.
  */
-public final class EncryptShowCreateTableMergedResult implements MergedResult {
+public final class EncryptShowCreateTableMergedResult extends DecoratorMergedResult {
     
     private static final String COMMA = ", ";
     
-    private static final int CREATE_TABLE_DEFINITION_INDEX = 2;
-    
-    private final MergedResult mergedResult;
+    private final EncryptRule rule;
     
     private final String tableName;
     
-    private final EncryptRule rule;
+    private final int tableNameResultSetIndex;
     
     private final SQLParserEngine sqlParserEngine;
     
     public EncryptShowCreateTableMergedResult(final RuleMetaData globalRuleMetaData, final MergedResult mergedResult, final SQLStatementContext sqlStatementContext, final EncryptRule rule) {
-        ShardingSpherePreconditions.checkState(sqlStatementContext instanceof TableAvailable && 1 == ((TableAvailable) sqlStatementContext).getTablesContext().getSimpleTables().size(),
+        super(mergedResult);
+        ShardingSpherePreconditions.checkState(1 == sqlStatementContext.getTablesContext().getSimpleTables().size(),
                 () -> new UnsupportedEncryptSQLException("SHOW CREATE TABLE FOR MULTI TABLES"));
-        this.mergedResult = mergedResult;
-        tableName = ((TableAvailable) sqlStatementContext).getTablesContext().getSimpleTables().iterator().next().getTableName().getIdentifier().getValue();
         this.rule = rule;
-        sqlParserEngine = globalRuleMetaData.getSingleRule(SQLParserRule.class).getSQLParserEngine(sqlStatementContext.getDatabaseType());
-    }
-    
-    @Override
-    public boolean next() throws SQLException {
-        return mergedResult.next();
+        tableName = sqlStatementContext.getTablesContext().getSimpleTables().iterator().next().getTableName().getIdentifier().getValue();
+        TableInResultSetSQLStatementAttribute attribute = sqlStatementContext.getSqlStatement().getAttributes().getAttribute(TableInResultSetSQLStatementAttribute.class);
+        tableNameResultSetIndex = attribute.getNameResultSetIndex();
+        sqlParserEngine = globalRuleMetaData.getSingleRule(SQLParserRule.class).getSQLParserEngine(sqlStatementContext.getSqlStatement().getDatabaseType());
     }
     
     @Override
     public Object getValue(final int columnIndex, final Class<?> type) throws SQLException {
-        if (CREATE_TABLE_DEFINITION_INDEX != columnIndex) {
-            return mergedResult.getValue(columnIndex, type);
+        if (tableNameResultSetIndex != columnIndex) {
+            return getMergedResult().getValue(columnIndex, type);
         }
-        String createTableSQL = mergedResult.getValue(CREATE_TABLE_DEFINITION_INDEX, type).toString();
+        String createTableSQL = getMergedResult().getValue(tableNameResultSetIndex, type).toString();
         Optional<EncryptTable> encryptTable = rule.findEncryptTable(tableName);
         if (!encryptTable.isPresent() || !createTableSQL.contains("(")) {
             return createTableSQL;
@@ -100,33 +92,9 @@ public final class EncryptShowCreateTableMergedResult implements MergedResult {
             return Optional.of(createTableSQL.substring(columnDefinition.getStartIndex(), columnSegment.getStartIndex())
                     + columnSegment.getIdentifier().getQuoteCharacter().wrap(logicColumn) + createTableSQL.substring(columnSegment.getStopIndex() + 1, columnDefinition.getStopIndex() + 1));
         }
-        if (isDerivedColumn(encryptTable, columnName)) {
+        if (encryptTable.isDerivedColumn(columnName)) {
             return Optional.empty();
         }
         return Optional.of(createTableSQL.substring(columnDefinition.getStartIndex(), columnDefinition.getStopIndex() + 1));
-    }
-    
-    private boolean isDerivedColumn(final EncryptTable encryptTable, final String columnName) {
-        return encryptTable.isAssistedQueryColumn(columnName) || encryptTable.isLikeQueryColumn(columnName);
-    }
-    
-    @Override
-    public Object getCalendarValue(final int columnIndex, final Class<?> type, final Calendar calendar) throws SQLException {
-        throw new SQLFeatureNotSupportedException("");
-    }
-    
-    @Override
-    public InputStream getInputStream(final int columnIndex, final String type) throws SQLException {
-        throw new SQLFeatureNotSupportedException("");
-    }
-    
-    @Override
-    public Reader getCharacterStream(final int columnIndex) throws SQLException {
-        throw new SQLFeatureNotSupportedException("");
-    }
-    
-    @Override
-    public boolean wasNull() throws SQLException {
-        return mergedResult.wasNull();
     }
 }

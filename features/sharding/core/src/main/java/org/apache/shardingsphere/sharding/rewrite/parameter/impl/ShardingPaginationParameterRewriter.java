@@ -20,8 +20,9 @@ package org.apache.shardingsphere.sharding.rewrite.parameter.impl;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.binder.context.segment.select.pagination.PaginationContext;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.binder.context.statement.dml.SelectStatementContext;
+import org.apache.shardingsphere.infra.binder.context.statement.type.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.rewrite.parameter.builder.ParameterBuilder;
+import org.apache.shardingsphere.infra.rewrite.parameter.builder.impl.GroupedParameterBuilder;
 import org.apache.shardingsphere.infra.rewrite.parameter.builder.impl.StandardParameterBuilder;
 import org.apache.shardingsphere.infra.rewrite.parameter.rewriter.ParameterRewriter;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
@@ -44,15 +45,41 @@ public final class ShardingPaginationParameterRewriter implements ParameterRewri
     @Override
     public void rewrite(final ParameterBuilder paramBuilder, final SQLStatementContext sqlStatementContext, final List<Object> params) {
         PaginationContext pagination = ((SelectStatementContext) sqlStatementContext).getPaginationContext();
-        pagination.getOffsetParameterIndex().ifPresent(optional -> rewriteOffset(pagination, optional, (StandardParameterBuilder) paramBuilder));
-        pagination.getRowCountParameterIndex().ifPresent(optional -> rewriteRowCount(pagination, optional, (StandardParameterBuilder) paramBuilder, sqlStatementContext));
+        pagination.getOffsetParameterIndex().ifPresent(optional -> rewriteOffset(pagination, optional, paramBuilder));
+        pagination.getRowCountParameterIndex().ifPresent(optional -> rewriteRowCount(pagination, optional, paramBuilder, sqlStatementContext));
     }
     
-    private void rewriteOffset(final PaginationContext pagination, final int offsetParamIndex, final StandardParameterBuilder paramBuilder) {
-        paramBuilder.addReplacedParameters(offsetParamIndex, pagination.getRevisedOffset());
+    private void rewriteOffset(final PaginationContext pagination, final int offsetParamIndex, final ParameterBuilder paramBuilder) {
+        if (paramBuilder instanceof StandardParameterBuilder) {
+            ((StandardParameterBuilder) paramBuilder).addReplacedParameters(offsetParamIndex, pagination.getRevisedOffset());
+            return;
+        }
+        rewriteOffset(pagination, offsetParamIndex, (GroupedParameterBuilder) paramBuilder);
     }
     
-    private void rewriteRowCount(final PaginationContext pagination, final int rowCountParamIndex, final StandardParameterBuilder paramBuilder, final SQLStatementContext sqlStatementContext) {
-        paramBuilder.addReplacedParameters(rowCountParamIndex, pagination.getRevisedRowCount((SelectStatementContext) sqlStatementContext));
+    private void rewriteOffset(final PaginationContext pagination, final int offsetParamIndex, final GroupedParameterBuilder paramBuilder) {
+        if (paramBuilder.isContainsGroupedParams()) {
+            paramBuilder.getAfterGenericParameterBuilder().addReplacedParameters(offsetParamIndex - paramBuilder.getAfterGenericParameterOffset(), pagination.getRevisedOffset());
+        } else {
+            paramBuilder.getBeforeGenericParameterBuilder().addReplacedParameters(offsetParamIndex, pagination.getRevisedOffset());
+        }
+    }
+    
+    private void rewriteRowCount(final PaginationContext pagination, final int rowCountParamIndex, final ParameterBuilder paramBuilder, final SQLStatementContext sqlStatementContext) {
+        if (paramBuilder instanceof StandardParameterBuilder) {
+            ((StandardParameterBuilder) paramBuilder).addReplacedParameters(rowCountParamIndex, pagination.getRevisedRowCount((SelectStatementContext) sqlStatementContext));
+            return;
+        }
+        rewriteRowCount(pagination, rowCountParamIndex, (GroupedParameterBuilder) paramBuilder, (SelectStatementContext) sqlStatementContext);
+    }
+    
+    private static void rewriteRowCount(final PaginationContext pagination, final int rowCountParamIndex, final GroupedParameterBuilder paramBuilder,
+                                        final SelectStatementContext sqlStatementContext) {
+        if (paramBuilder.isContainsGroupedParams()) {
+            paramBuilder.getAfterGenericParameterBuilder().addReplacedParameters(rowCountParamIndex - paramBuilder.getAfterGenericParameterOffset(),
+                    pagination.getRevisedRowCount(sqlStatementContext));
+        } else {
+            paramBuilder.getBeforeGenericParameterBuilder().addReplacedParameters(rowCountParamIndex, pagination.getRevisedRowCount(sqlStatementContext));
+        }
     }
 }

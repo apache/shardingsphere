@@ -19,11 +19,12 @@ package org.apache.shardingsphere.data.pipeline.scenario.migration.check.consist
 
 import org.apache.shardingsphere.data.pipeline.api.PipelineDataSourceConfiguration;
 import org.apache.shardingsphere.data.pipeline.core.consistencycheck.ConsistencyCheckJobItemProgressContext;
+import org.apache.shardingsphere.data.pipeline.core.consistencycheck.result.TableDataConsistencyCheckIgnoredType;
 import org.apache.shardingsphere.data.pipeline.core.consistencycheck.result.TableDataConsistencyCheckResult;
 import org.apache.shardingsphere.data.pipeline.core.context.PipelineContextManager;
 import org.apache.shardingsphere.data.pipeline.core.context.TransmissionProcessContext;
-import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceManager;
 import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSource;
+import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceManager;
 import org.apache.shardingsphere.data.pipeline.core.job.api.PipelineAPIFactory;
 import org.apache.shardingsphere.data.pipeline.core.registrycenter.repository.PipelineGovernanceFacade;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.config.MigrationJobConfiguration;
@@ -31,7 +32,6 @@ import org.apache.shardingsphere.data.pipeline.scenario.migration.config.yaml.sw
 import org.apache.shardingsphere.data.pipeline.scenario.migration.context.MigrationJobItemContext;
 import org.apache.shardingsphere.elasticjob.infra.pojo.JobConfigurationPOJO;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
-import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 import org.apache.shardingsphere.test.it.data.pipeline.core.util.JobConfigurationBuilder;
 import org.apache.shardingsphere.test.it.data.pipeline.core.util.PipelineContextUtils;
@@ -43,18 +43,38 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Map;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class MigrationDataConsistencyCheckerTest {
     
     @BeforeAll
     static void beforeClass() {
-        PipelineContextUtils.mockModeConfigAndContextManager();
+        PipelineContextUtils.initPipelineContextManager();
     }
     
     @Test
-    void assertCountAndDataCheck() throws SQLException {
-        MigrationJobConfiguration jobConfig = createJobConfiguration();
+    void assertFixtureCheck() throws SQLException {
+        MigrationJobConfiguration jobConfig = createJobConfiguration(true);
+        Map<String, TableDataConsistencyCheckResult> checkResultMap = check(jobConfig, "FIXTURE");
+        TableDataConsistencyCheckResult actual = checkResultMap.get("t_order");
+        assertTrue(actual.isMatched());
+        assertFalse(actual.isIgnored());
+    }
+    
+    @Test
+    void assertDataMatchCheck() throws SQLException {
+        MigrationJobConfiguration jobConfig = createJobConfiguration(false);
+        Map<String, TableDataConsistencyCheckResult> checkResultMap = check(jobConfig, "DATA_MATCH");
+        TableDataConsistencyCheckResult actual = checkResultMap.get("t_order");
+        assertFalse(actual.isMatched());
+        assertTrue(actual.isIgnored());
+        assertThat(actual.getIgnoredType(), is(TableDataConsistencyCheckIgnoredType.NO_UNIQUE_KEY));
+    }
+    
+    private Map<String, TableDataConsistencyCheckResult> check(final MigrationJobConfiguration jobConfig, final String algorithmType) {
         JobConfigurationPOJO jobConfigurationPOJO = new JobConfigurationPOJO();
         jobConfigurationPOJO.setJobParameter(YamlEngine.marshal(new YamlMigrationJobConfigurationSwapper().swapToYamlConfiguration(jobConfig)));
         jobConfigurationPOJO.setJobName(jobConfig.getJobId());
@@ -62,37 +82,33 @@ class MigrationDataConsistencyCheckerTest {
         PipelineGovernanceFacade governanceFacade = PipelineAPIFactory.getPipelineGovernanceFacade(PipelineContextUtils.getContextKey());
         getClusterPersistRepository().persist(String.format("/pipeline/jobs/%s/config", jobConfig.getJobId()), YamlEngine.marshal(jobConfigurationPOJO));
         governanceFacade.getJobItemFacade().getProcess().persist(jobConfig.getJobId(), 0, "");
-        Map<String, TableDataConsistencyCheckResult> actual = new MigrationDataConsistencyChecker(jobConfig, new TransmissionProcessContext(jobConfig.getJobId(), null),
-                createConsistencyCheckJobItemProgressContext(jobConfig.getJobId())).check("FIXTURE", null);
-        String checkKey = "t_order";
-        assertTrue(actual.get(checkKey).isMatched());
-        assertTrue(actual.get(checkKey).isMatched());
+        return new MigrationDataConsistencyChecker(jobConfig, new TransmissionProcessContext(jobConfig.getJobId(), null),
+                createConsistencyCheckJobItemProgressContext(jobConfig.getJobId())).check(algorithmType, null);
     }
     
     private ClusterPersistRepository getClusterPersistRepository() {
-        ContextManager contextManager = PipelineContextManager.getContext(PipelineContextUtils.getContextKey()).getContextManager();
-        return (ClusterPersistRepository) contextManager.getPersistServiceFacade().getRepository();
+        return (ClusterPersistRepository) PipelineContextManager.getContext(PipelineContextUtils.getContextKey()).getPersistServiceFacade().getRepository();
     }
     
     private ConsistencyCheckJobItemProgressContext createConsistencyCheckJobItemProgressContext(final String jobId) {
         return new ConsistencyCheckJobItemProgressContext(jobId, 0, "H2");
     }
     
-    private MigrationJobConfiguration createJobConfiguration() throws SQLException {
+    private MigrationJobConfiguration createJobConfiguration(final boolean orderHasUniqueKey) throws SQLException {
         MigrationJobItemContext jobItemContext = PipelineContextUtils.mockMigrationJobItemContext(JobConfigurationBuilder.createJobConfiguration());
-        initTableData(jobItemContext.getTaskConfig().getDumperContext().getCommonContext().getDataSourceConfig());
-        initTableData(jobItemContext.getTaskConfig().getImporterConfig().getDataSourceConfig());
+        initTableData(jobItemContext.getTaskConfig().getDumperContext().getCommonContext().getDataSourceConfig(), orderHasUniqueKey);
+        initTableData(jobItemContext.getTaskConfig().getImporterConfig().getDataSourceConfig(), orderHasUniqueKey);
         return jobItemContext.getJobConfig();
     }
     
-    private void initTableData(final PipelineDataSourceConfiguration dataSourceConfig) throws SQLException {
+    private void initTableData(final PipelineDataSourceConfiguration dataSourceConfig, final boolean orderHasUniqueKey) throws SQLException {
         try (
                 PipelineDataSourceManager dataSourceManager = new PipelineDataSourceManager();
                 PipelineDataSource dataSource = dataSourceManager.getDataSource(dataSourceConfig);
                 Connection connection = dataSource.getConnection();
                 Statement statement = connection.createStatement()) {
             statement.execute("DROP TABLE IF EXISTS t_order");
-            statement.execute("CREATE TABLE t_order (order_id INT PRIMARY KEY, user_id INT(11))");
+            statement.execute(String.format("CREATE TABLE t_order (order_id INT %s, user_id INT(11))", orderHasUniqueKey ? "PRIMARY KEY" : ""));
             statement.execute("INSERT INTO t_order (order_id, user_id) VALUES (1, 1), (999, 10)");
         }
     }

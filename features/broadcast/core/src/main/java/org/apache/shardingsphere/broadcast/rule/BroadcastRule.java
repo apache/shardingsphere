@@ -23,6 +23,7 @@ import org.apache.shardingsphere.broadcast.config.BroadcastRuleConfiguration;
 import org.apache.shardingsphere.broadcast.constant.BroadcastOrder;
 import org.apache.shardingsphere.broadcast.rule.attribute.BroadcastDataNodeRuleAttribute;
 import org.apache.shardingsphere.broadcast.rule.attribute.BroadcastTableNamesRuleAttribute;
+import org.apache.shardingsphere.broadcast.rule.attribute.BroadcastUnregisterStorageUnitRuleAttribute;
 import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 import org.apache.shardingsphere.infra.metadata.database.resource.PhysicalDataSourceAggregator;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
@@ -49,14 +50,14 @@ public final class BroadcastRule implements DatabaseRule {
     
     private final RuleAttributes attributes;
     
-    public BroadcastRule(final BroadcastRuleConfiguration config, final Map<String, DataSource> dataSources, final Collection<ShardingSphereRule> builtRules) {
-        configuration = config;
+    public BroadcastRule(final BroadcastRuleConfiguration ruleConfig, final Map<String, DataSource> dataSources, final Collection<ShardingSphereRule> builtRules) {
+        configuration = ruleConfig;
         Map<String, DataSource> aggregatedDataSources = new RuleMetaData(builtRules).findAttribute(AggregatedDataSourceRuleAttribute.class)
                 .map(AggregatedDataSourceRuleAttribute::getAggregatedDataSources).orElseGet(() -> PhysicalDataSourceAggregator.getAggregatedDataSources(dataSources, builtRules));
         dataSourceNames = new CaseInsensitiveSet<>(aggregatedDataSources.keySet());
-        tables = new CaseInsensitiveSet<>(config.getTables());
+        tables = new CaseInsensitiveSet<>(ruleConfig.getTables());
         attributes = new RuleAttributes(new BroadcastDataNodeRuleAttribute(dataSourceNames, tables),
-                new BroadcastTableNamesRuleAttribute(tables), new AggregatedDataSourceRuleAttribute(aggregatedDataSources));
+                new BroadcastTableNamesRuleAttribute(tables), new AggregatedDataSourceRuleAttribute(aggregatedDataSources), new BroadcastUnregisterStorageUnitRuleAttribute());
     }
     
     /**

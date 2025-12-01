@@ -17,141 +17,119 @@
   -->
 
 <e2e-test-cases>
-    <test-case sql="SELECT * FROM t_order_item WHERE item_id &lt;&gt; ? ORDER BY item_id" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
+    <test-case sql="SELECT * FROM t_order_item WHERE item_id &lt;&gt; ? ORDER BY item_id" db-types="MySQL,PostgreSQL,openGauss" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
         <assertion parameters="100001:int" expected-data-source-name="read_dataset" />
     </test-case>
     
-    <test-case sql="SELECT * FROM t_order_item WHERE item_id != ? ORDER BY item_id" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
+    <test-case sql="SELECT * FROM t_order_item WHERE item_id != ? ORDER BY item_id" db-types="MySQL,PostgreSQL,openGauss" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
         <assertion parameters="100001:int" expected-data-source-name="read_dataset" />
     </test-case>
     
-    <test-case sql="SELECT * FROM t_order_item WHERE item_id IS NOT NULL AND item_id NOT IN (?, ?) ORDER BY item_id" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
+    <test-case sql="SELECT * FROM t_order_item WHERE item_id IS NOT NULL AND item_id NOT IN (?, ?) ORDER BY item_id" db-types="MySQL,PostgreSQL,openGauss" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
         <assertion parameters="100000:int, 100001:int" expected-data-source-name="read_dataset" />
     </test-case>
     
-    <test-case sql="SELECT * FROM t_order_item WHERE item_id IS NOT NULL AND item_id NOT BETWEEN ? AND ? ORDER BY item_id" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
+    <test-case sql="SELECT * FROM t_order_item WHERE item_id IS NOT NULL AND item_id NOT BETWEEN ? AND ? ORDER BY item_id" db-types="MySQL,PostgreSQL,openGauss" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
         <assertion parameters="100000:int, 100001:int" expected-data-source-name="read_dataset" />
     </test-case>
     
-    <test-case sql="SELECT * FROM t_order WHERE order_id IN (?, ?) AND order_id IN (?, ?) ORDER BY order_id" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
+    <test-case sql="SELECT * FROM t_order WHERE order_id IN (?, ?) AND order_id IN (?, ?) ORDER BY order_id" db-types="MySQL,PostgreSQL,openGauss" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
         <assertion parameters="1000:int, 1001:int, 1001:int, 1100:int" expected-data-source-name="read_dataset" />
     </test-case>
     
-    <test-case sql="SELECT * FROM t_order WHERE user_id IN (?, ?, ?) AND order_id IN (?, ?) ORDER BY user_id, order_id" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
+    <test-case sql="SELECT * FROM t_order WHERE user_id IN (?, ?, ?) AND order_id IN (?, ?) ORDER BY user_id, order_id" db-types="MySQL,PostgreSQL,openGauss" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
         <assertion parameters="10:int, 12:int, 15:int, 1000:int, 1101:int" expected-data-source-name="read_dataset" />
         <assertion parameters="10:int, 12:int, 15:int, 1309:int, 1408:int" expected-data-source-name="read_dataset" />
     </test-case>
     
-    <test-case sql="SELECT * FROM t_order WHERE user_id BETWEEN ? AND ? AND order_id BETWEEN ? AND ? ORDER BY user_id, order_id" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
+    <test-case sql="SELECT * FROM t_order WHERE user_id BETWEEN ? AND ? AND order_id BETWEEN ? AND ? ORDER BY user_id, order_id" db-types="MySQL,PostgreSQL,openGauss" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
         <assertion parameters="10:int, 12:int, 1009:int, 1108:int" expected-data-source-name="read_dataset" />
         <assertion parameters="10:int, 12:int, 1309:int, 1408:int" expected-data-source-name="read_dataset" />
     </test-case>
     
-    <test-case sql="SELECT * FROM t_order WHERE user_id &gt;= ? AND user_id &lt;= ? AND order_id &gt;= ? AND order_id &lt;= ? ORDER BY user_id, order_id" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
+    <test-case sql="SELECT * FROM t_order WHERE user_id &gt;= ? AND user_id &lt;= ? AND order_id &gt;= ? AND order_id &lt;= ? ORDER BY user_id, order_id" db-types="MySQL,PostgreSQL,openGauss" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
         <assertion parameters="10:int, 12:int, 1009:int, 1108:int" expected-data-source-name="read_dataset" />
         <assertion parameters="10:int, 12:int, 1309:int, 1408:int" expected-data-source-name="read_dataset" />
     </test-case>
     
-    <test-case sql="SELECT * FROM t_order o ORDER BY o.order_id, 2 DESC" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
+    <test-case sql="SELECT * FROM t_order o ORDER BY o.order_id, 2 DESC" db-types="MySQL,PostgreSQL,openGauss" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
         <assertion expected-data-source-name="read_dataset" />
     </test-case>
     
-    <test-case sql="SELECT o.order_id as gen_order_id_ FROM t_order o ORDER BY o.order_id" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
+    <test-case sql="SELECT o.order_id as gen_order_id_ FROM t_order o ORDER BY o.order_id" db-types="MySQL,PostgreSQL,openGauss" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
         <assertion expected-data-source-name="read_dataset" />
     </test-case>
     
-    <!-- // TODO add null data -->
-    <test-case sql="SELECT o.order_id as gen_order_id_ FROM t_order o ORDER BY o.order_id NULLS FIRST" db-types="Oracle" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
+    <test-case sql="SELECT *, order_id, o.* FROM t_order o ORDER BY o.order_id" db-types="MySQL,PostgreSQL,openGauss" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
         <assertion expected-data-source-name="read_dataset" />
     </test-case>
     
-    <!-- // TODO add null data -->
-    <test-case sql="SELECT o.order_id as gen_order_id_ FROM t_order o ORDER BY o.order_id ASC NULLS LAST" db-types="Oracle" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
+    <test-case sql="SELECT o.* FROM t_order o ORDER BY o.order_id" db-types="MySQL" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
+        <assertion expected-data-source-name="read_dataset" />
+    </test-case>
+
+    <test-case sql="SELECT * FROM t_order o ORDER BY order_id" db-types="MySQL" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
         <assertion expected-data-source-name="read_dataset" />
     </test-case>
     
-    <test-case sql="SELECT *, order_id, o.* FROM t_order o ORDER BY o.order_id" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
-        <assertion expected-data-source-name="read_dataset" />
-    </test-case>
-    
-    <test-case sql="SELECT o.* FROM t_order o ORDER BY o.order_id" db-types="H2,MySQL" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
-        <assertion expected-data-source-name="read_dataset" />
-    </test-case>
-    
-    <test-case sql="SELECT o.* FROM t_order o ORDER BY o.order_id" db-types="H2,MySQL" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
-        <assertion expected-data-source-name="read_dataset" />
-    </test-case>
-    
-    <test-case sql="SELECT * FROM t_order o ORDER BY order_id" db-types="H2,MySQL" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
-        <assertion expected-data-source-name="read_dataset" />
-    </test-case>
-    
-    <test-case sql="SELECT t_order.* FROM t_order ORDER BY t_order.order_id" db-types="H2,MySQL" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
+    <test-case sql="SELECT t_order.* FROM t_order ORDER BY t_order.order_id" db-types="MySQL" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
         <assertion expected-data-source-name="read_dataset" />
     </test-case>
     
     <!--TODO need to add later-->
-    <!--<test-case sql="SELECT * FROM t_order o ORDER BY ?" db-types="H2,MySQL" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">-->
+    <!--<test-case sql="SELECT * FROM t_order o ORDER BY ?" db-types="MySQL" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">-->
     <!--<assertion parameters="order_id:String" expected-data-source-name="read_dataset" />-->
     <!--</test-case>-->
-    
-    <test-case sql="SELECT * FROM t_order ORDER BY order_id" db-types="H2,MySQL" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
+
+    <test-case sql="SELECT * FROM t_order ORDER BY order_id" db-types="MySQL" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
         <assertion expected-data-source-name="read_dataset" />
     </test-case>
-    
-    <test-case sql="SELECT * FROM t_order WHERE ROWNUM &lt;= ? ORDER BY order_id" db-types="Oracle" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
-        <assertion parameters="20:int" expected-data-source-name="read_dataset" />
-    </test-case>
-    
-    <test-case sql="SELECT * FROM t_order ORDER BY order_id OFFSET 0 ROW FETCH NEXT ? ROWS ONLY" db-types="SQLServer" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
-        <assertion parameters="20:int" expected-data-source-name="read_dataset" />
-    </test-case>
-    
+
     <test-case sql="SELECT * FROM &quot;t_order_item&quot; WHERE &quot;item_id&quot; != ? ORDER BY &quot;item_id&quot;" db-types="PostgreSQL" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
         <assertion parameters="100001:int" expected-data-source-name="read_dataset" />
     </test-case>
     
     <!-- TODO Replace with standard table structure -->
-    <!--<test-case sql="select t_user_encrypt_federate_sharding.user_id, t_user_encrypt_federate_sharding.pwd, t_user_info.information from t_user_encrypt_federate_sharding, t_user_info where t_user_encrypt_federate_sharding.user_id = t_user_info.user_id order by t_user_encrypt_federate_sharding.user_id" scenario-types="dbtbl_with_readwrite_splitting_and_encrypt,sharding_and_encrypt,encrypt_and_readwrite_splitting">
+    <!--<test-case sql="select t_user_encrypt_federate_sharding.user_id, t_user_encrypt_federate_sharding.pwd, t_user_info.information from t_user_encrypt_federate_sharding, t_user_info where t_user_encrypt_federate_sharding.user_id = t_user_info.user_id order by t_user_encrypt_federate_sharding.user_id" db-types="MySQL,PostgreSQL,openGauss" scenario-types="dbtbl_with_readwrite_splitting_and_encrypt,sharding_and_encrypt,encrypt_and_readwrite_splitting">
         <assertion expected-data-source-name="read_dataset" />
     </test-case>-->
     
     <!-- TODO Replace with standard table structure -->
-    <!--<test-case sql="select t_order_federate.* from t_order_federate, t_order_item_federate_sharding where t_order_federate.order_id = t_order_item_federate_sharding.item_id ORDER BY t_order_item_federate_sharding.user_id" scenario-types="db,dbtbl_with_readwrite_splitting,dbtbl_with_readwrite_splitting_and_encrypt,sharding_and_encrypt,encrypt_and_readwrite_splitting">
+    <!--<test-case sql="select t_order_federate.* from t_order_federate, t_order_item_federate_sharding where t_order_federate.order_id = t_order_item_federate_sharding.item_id ORDER BY t_order_item_federate_sharding.user_id" db-types="MySQL,PostgreSQL,openGauss" scenario-types="db,dbtbl_with_readwrite_splitting,dbtbl_with_readwrite_splitting_and_encrypt,sharding_and_encrypt,encrypt_and_readwrite_splitting">
         <assertion expected-data-source-name="read_dataset" />
     </test-case>-->
     
-    <test-case sql="SELECT o.item_id, o.order_id, o.creation_date, s.id FROM t_order_item o INNER JOIN t_single_table s ON o.order_id = s.id ORDER BY o.item_id " scenario-types="db,tbl" />
-    
-    <test-case sql="SELECT * FROM t_order ORDER BY merchant_id ASC, order_id ASC" db-types="MySQL,PostgreSQL,openGauss,Oracle,SQLServer" scenario-types="db">
+    <test-case sql="SELECT o.item_id, o.order_id, o.creation_date, s.id FROM t_order_item o INNER JOIN t_single_table s ON o.order_id = s.id ORDER BY o.item_id " db-types="MySQL,PostgreSQL,openGauss" scenario-types="db,tbl" />
+
+    <test-case sql="SELECT * FROM t_order ORDER BY merchant_id ASC, order_id ASC" db-types="MySQL,PostgreSQL,openGauss" scenario-types="db">
         <assertion expected-data-source-name="read_dataset" />
     </test-case>
     
-    <test-case sql="SELECT * FROM t_order ORDER BY merchant_id DESC, order_id DESC" db-types="MySQL,PostgreSQL,openGauss,Oracle,SQLServer" scenario-types="db">
+    <test-case sql="SELECT * FROM t_order ORDER BY merchant_id DESC, order_id DESC" db-types="MySQL,PostgreSQL,openGauss" scenario-types="db">
         <assertion expected-data-source-name="read_dataset" />
     </test-case>
     
-    <test-case sql="SELECT * FROM t_order ORDER BY merchant_id ASC, order_id ASC NULLS FIRST" db-types="PostgreSQL,openGauss,Oracle" scenario-types="db">
+    <test-case sql="SELECT * FROM t_order ORDER BY merchant_id ASC, order_id ASC NULLS FIRST" db-types="PostgreSQL,openGauss" scenario-types="db">
         <assertion expected-data-source-name="read_dataset" />
     </test-case>
     
-    <test-case sql="SELECT * FROM t_order ORDER BY merchant_id ASC, order_id ASC NULLS LAST" db-types="PostgreSQL,openGauss,Oracle" scenario-types="db">
+    <test-case sql="SELECT * FROM t_order ORDER BY merchant_id ASC, order_id ASC NULLS LAST" db-types="PostgreSQL,openGauss" scenario-types="db">
         <assertion expected-data-source-name="read_dataset" />
     </test-case>
     
-    <test-case sql="SELECT * FROM t_order ORDER BY merchant_id DESC, order_id DESC NULLS FIRST" db-types="PostgreSQL,openGauss,Oracle" scenario-types="db">
+    <test-case sql="SELECT * FROM t_order ORDER BY merchant_id DESC, order_id DESC NULLS FIRST" db-types="PostgreSQL,openGauss" scenario-types="db">
         <assertion expected-data-source-name="read_dataset" />
     </test-case>
     
-    <test-case sql="SELECT * FROM t_order ORDER BY merchant_id DESC, order_id DESC NULLS LAST" db-types="PostgreSQL,openGauss,Oracle" scenario-types="db">
+    <test-case sql="SELECT * FROM t_order ORDER BY merchant_id DESC, order_id DESC NULLS LAST" db-types="PostgreSQL,openGauss" scenario-types="db">
         <assertion expected-data-source-name="read_dataset" />
     </test-case>
     
-    <test-case sql="SELECT merchant_id, COUNT(1) AS count FROM t_order GROUP BY merchant_id ORDER BY merchant_id ASC" db-types="MySQL,PostgreSQL,openGauss,Oracle,SQLServer" scenario-types="db">
+    <test-case sql="SELECT merchant_id, COUNT(1) AS count FROM t_order GROUP BY merchant_id ORDER BY merchant_id ASC" db-types="MySQL,PostgreSQL,openGauss" scenario-types="db">
         <assertion expected-data-source-name="read_dataset" />
     </test-case>
     
-    <test-case sql="SELECT merchant_id, COUNT(1) AS count FROM t_order GROUP BY merchant_id ORDER BY merchant_id DESC" db-types="MySQL,PostgreSQL,openGauss,Oracle,SQLServer" scenario-types="db">
+    <test-case sql="SELECT merchant_id, COUNT(1) AS count FROM t_order GROUP BY merchant_id ORDER BY merchant_id DESC" db-types="MySQL,PostgreSQL,openGauss" scenario-types="db">
         <assertion expected-data-source-name="read_dataset" />
     </test-case>
     
@@ -163,27 +141,23 @@
         <assertion expected-data-source-name="read_dataset" />
     </test-case>
     
-    <test-case sql="SELECT merchant_id, COUNT(1) AS count FROM t_order GROUP BY merchant_id ORDER BY merchant_id ASC NULLS FIRST" db-types="PostgreSQL,openGauss,Oracle" scenario-types="db">
+    <test-case sql="SELECT merchant_id, COUNT(1) AS count FROM t_order GROUP BY merchant_id ORDER BY merchant_id ASC NULLS FIRST" db-types="PostgreSQL,openGauss" scenario-types="db">
         <assertion expected-data-source-name="read_dataset" />
     </test-case>
     
-    <test-case sql="SELECT merchant_id, COUNT(1) AS count FROM t_order GROUP BY merchant_id ORDER BY merchant_id ASC NULLS LAST" db-types="PostgreSQL,openGauss,Oracle" scenario-types="db">
+    <test-case sql="SELECT merchant_id, COUNT(1) AS count FROM t_order GROUP BY merchant_id ORDER BY merchant_id ASC NULLS LAST" db-types="PostgreSQL,openGauss" scenario-types="db">
         <assertion expected-data-source-name="read_dataset" />
     </test-case>
     
-    <test-case sql="SELECT merchant_id, COUNT(1) AS count FROM t_order GROUP BY merchant_id ORDER BY merchant_id DESC NULLS FIRST" db-types="PostgreSQL,openGauss,Oracle" scenario-types="db">
+    <test-case sql="SELECT merchant_id, COUNT(1) AS count FROM t_order GROUP BY merchant_id ORDER BY merchant_id DESC NULLS FIRST" db-types="PostgreSQL,openGauss" scenario-types="db">
         <assertion expected-data-source-name="read_dataset" />
     </test-case>
     
-    <test-case sql="SELECT merchant_id, COUNT(1) AS count FROM t_order GROUP BY merchant_id ORDER BY merchant_id DESC NULLS LAST" db-types="PostgreSQL,openGauss,Oracle" scenario-types="db">
+    <test-case sql="SELECT merchant_id, COUNT(1) AS count FROM t_order GROUP BY merchant_id ORDER BY merchant_id DESC NULLS LAST" db-types="PostgreSQL,openGauss" scenario-types="db">
         <assertion expected-data-source-name="read_dataset" />
     </test-case>
     
-    <test-case sql="SELECT * FROM t_user ORDER BY user_id" db-types="MySQL,PostgreSQL,openGauss" scenario-types="mask,mask_encrypt,mask_sharding,mask_encrypt_sharding">
+    <test-case sql="SELECT * FROM t_user ORDER BY user_id" db-types="MySQL,PostgreSQL,openGauss,Hive" scenario-types="mask,mask_encrypt,mask_sharding,mask_encrypt_sharding">
         <assertion expected-data-source-name="expected_dataset" />
-    </test-case>
-    
-    <test-case sql="select * from shardingsphere.sharding_table_statistics order by id;" db-types="MySQL,PostgreSQL,openGauss" scenario-types="db" delay-assertion-seconds="40">
-        <assertion expected-data-file="select_sharding_table_statistics.xml" />
     </test-case>
 </e2e-test-cases>

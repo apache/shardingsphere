@@ -18,9 +18,9 @@
 package org.apache.shardingsphere.data.pipeline.mysql.datasource;
 
 import org.apache.shardingsphere.data.pipeline.core.checker.DialectPipelineDatabaseVariableChecker;
-import org.apache.shardingsphere.infra.database.core.exception.CheckDatabaseEnvironmentFailedException;
-import org.apache.shardingsphere.infra.database.core.exception.UnexpectedVariableValueException;
-import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.database.connector.core.exception.CheckDatabaseEnvironmentFailedException;
+import org.apache.shardingsphere.database.connector.core.exception.UnexpectedVariableValueException;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

@@ -21,8 +21,7 @@ import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.mode.spi.rule.RuleItemConfigurationChangedProcessor;
-import org.apache.shardingsphere.mode.spi.rule.item.alter.AlterNamedRuleItem;
-import org.apache.shardingsphere.mode.spi.rule.item.drop.DropRuleItem;
+import org.apache.shardingsphere.mode.spi.rule.RuleChangedItemType;
 import org.apache.shardingsphere.shadow.config.ShadowRuleConfiguration;
 import org.apache.shardingsphere.shadow.rule.ShadowRule;
 import org.junit.jupiter.api.Test;
@@ -39,12 +38,11 @@ class DefaultShadowAlgorithmNameChangedProcessorTest {
     
     @SuppressWarnings("unchecked")
     private final RuleItemConfigurationChangedProcessor<ShadowRuleConfiguration, String> processor = TypedSPILoader.getService(
-            RuleItemConfigurationChangedProcessor.class, "shadow.default_shadow_algorithm_name");
+            RuleItemConfigurationChangedProcessor.class, new RuleChangedItemType("shadow", "default_shadow_algorithm_name"));
     
     @Test
     void assertSwapRuleItemConfiguration() {
-        AlterNamedRuleItem alterNamedRuleItem = mock(AlterNamedRuleItem.class);
-        String actual = processor.swapRuleItemConfiguration(alterNamedRuleItem, "foo_algo");
+        String actual = processor.swapRuleItemConfiguration("foo", "foo_algo");
         assertThat(actual, is("foo_algo"));
     }
     
@@ -64,19 +62,17 @@ class DefaultShadowAlgorithmNameChangedProcessorTest {
     
     @Test
     void assertChangeRuleItemConfiguration() {
-        AlterNamedRuleItem alterNamedRuleItem = mock(AlterNamedRuleItem.class);
         ShadowRuleConfiguration currentRuleConfig = createCurrentRuleConfiguration();
         String toBeChangedItemConfig = "bar_algo";
-        processor.changeRuleItemConfiguration(alterNamedRuleItem, currentRuleConfig, toBeChangedItemConfig);
+        processor.changeRuleItemConfiguration(null, currentRuleConfig, toBeChangedItemConfig);
         assertThat(currentRuleConfig.getDefaultShadowAlgorithmName(), is("bar_algo"));
     }
     
     @Test
     void assertDropRuleItemConfiguration() {
-        DropRuleItem dropRuleItem = mock(DropRuleItem.class);
         ShadowRuleConfiguration currentRuleConfig = createCurrentRuleConfiguration();
         currentRuleConfig.setDefaultShadowAlgorithmName("foo_algo");
-        processor.dropRuleItemConfiguration(dropRuleItem, currentRuleConfig);
+        processor.dropRuleItemConfiguration(null, currentRuleConfig);
         assertNull(currentRuleConfig.getDefaultShadowAlgorithmName());
     }
     

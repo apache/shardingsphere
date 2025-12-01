@@ -28,7 +28,7 @@ showDistVariable
     ;
 
 showDistVariables
-    : SHOW DIST VARIABLES showLike?
+    : SHOW TEMP? DIST VARIABLES showLike?
     ;
 
 alterComputeNode
@@ -56,7 +56,7 @@ refreshTableMetadata
     ;
 
 showTableMetadata
-    : SHOW TABLE METADATA tableName (COMMA_ tableName*)? (FROM databaseName)?
+    : SHOW TABLE METADATA tableName (COMMA_ tableName)* (FROM databaseName)?
     ;
 
 showComputeNodeInfo

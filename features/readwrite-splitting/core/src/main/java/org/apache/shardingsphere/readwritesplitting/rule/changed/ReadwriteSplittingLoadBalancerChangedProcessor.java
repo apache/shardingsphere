@@ -19,8 +19,8 @@ package org.apache.shardingsphere.readwritesplitting.rule.changed;
 
 import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.algorithm.core.processor.AlgorithmChangedProcessor;
+import org.apache.shardingsphere.mode.spi.rule.RuleChangedItemType;
 import org.apache.shardingsphere.readwritesplitting.config.ReadwriteSplittingRuleConfiguration;
-import org.apache.shardingsphere.readwritesplitting.metadata.nodepath.ReadwriteSplittingRuleNodePathProvider;
 import org.apache.shardingsphere.readwritesplitting.rule.ReadwriteSplittingRule;
 
 import java.util.LinkedHashMap;
@@ -47,7 +47,7 @@ public final class ReadwriteSplittingLoadBalancerChangedProcessor extends Algori
     }
     
     @Override
-    public String getType() {
-        return ReadwriteSplittingRuleNodePathProvider.RULE_TYPE + "." + ReadwriteSplittingRuleNodePathProvider.LOAD_BALANCERS;
+    public RuleChangedItemType getType() {
+        return new RuleChangedItemType("readwrite_splitting", "load_balancers");
     }
 }

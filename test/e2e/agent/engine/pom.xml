@@ -21,7 +21,7 @@
     <parent>
         <groupId>org.apache.shardingsphere</groupId>
         <artifactId>shardingsphere-test-e2e-agent</artifactId>
-        <version>5.5.2-SNAPSHOT</version>
+        <version>5.5.3-SNAPSHOT</version>
     </parent>
     <artifactId>shardingsphere-test-e2e-agent-engine</artifactId>
     <name>${project.artifactId}</name>
@@ -49,25 +49,8 @@
         
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-infra-util</artifactId>
+            <artifactId>shardingsphere-infra-spi</artifactId>
             <version>${project.version}</version>
-        </dependency>
-        
-        <dependency>
-            <groupId>com.squareup.okhttp3</groupId>
-            <artifactId>okhttp</artifactId>
-            <version>${okhttp.version}</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.jetbrains.kotlin</groupId>
-                    <artifactId>kotlin-stdlib-jdk8</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-        <dependency>
-            <groupId>org.jetbrains.kotlin</groupId>
-            <artifactId>kotlin-stdlib-jdk8</artifactId>
-            <version>${kotlin-stdlib.version}</version>
         </dependency>
     </dependencies>
     
@@ -88,7 +71,7 @@
     
     <profiles>
         <profile>
-            <id>it.env.proxy</id>
+            <id>e2e.env.proxy</id>
             <build>
                 <plugins>
                     <plugin>
@@ -147,7 +130,7 @@
         </profile>
         
         <profile>
-            <id>it.env.jdbc</id>
+            <id>e2e.env.jdbc</id>
             <build>
                 <plugins>
                     <plugin>

@@ -25,6 +25,7 @@ import org.apache.shardingsphere.encrypt.rewrite.parameter.rewriter.EncryptInser
 import org.apache.shardingsphere.encrypt.rewrite.parameter.rewriter.EncryptInsertValueParameterRewriter;
 import org.apache.shardingsphere.encrypt.rewrite.parameter.rewriter.EncryptPredicateParameterRewriter;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
+import org.apache.shardingsphere.infra.rewrite.context.SQLRewriteContext;
 import org.apache.shardingsphere.infra.rewrite.parameter.rewriter.ParameterRewriter;
 import org.apache.shardingsphere.infra.rewrite.parameter.rewriter.ParameterRewritersRegistry;
 
@@ -39,12 +40,13 @@ public final class EncryptParameterRewritersRegistry implements ParameterRewrite
     
     private final EncryptRule rule;
     
-    private final String databaseName;
+    private final SQLRewriteContext sqlRewriteContext;
     
     private final Collection<EncryptCondition> encryptConditions;
     
     @Override
     public Collection<ParameterRewriter> getParameterRewriters() {
+        String databaseName = sqlRewriteContext.getDatabase().getName();
         return Arrays.asList(
                 new EncryptAssignmentParameterRewriter(rule, databaseName),
                 new EncryptPredicateParameterRewriter(rule, databaseName, encryptConditions),

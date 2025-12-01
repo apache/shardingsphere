@@ -22,7 +22,7 @@ import com.google.common.primitives.Longs;
 import com.google.common.primitives.Shorts;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
+import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.exception.kernel.data.UnsupportedDataTypeConversionException;
 
 import java.math.BigDecimal;
@@ -196,6 +196,8 @@ public final class ResultSetUtils {
                 return new Time(value.getTime());
             case "java.sql.Timestamp":
                 return new Timestamp(value.getTime());
+            case "java.time.LocalDate":
+                return new java.sql.Date(value.getTime()).toLocalDate();
             case "java.lang.String":
                 return value.toString();
             default:

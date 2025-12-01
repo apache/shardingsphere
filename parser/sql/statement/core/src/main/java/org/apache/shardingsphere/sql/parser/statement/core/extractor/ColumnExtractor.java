@@ -23,6 +23,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.Co
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.BetweenExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.BinaryOperationExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExpressionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.FunctionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.InExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.RowExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.complex.CommonTableExpressionSegment;
@@ -39,14 +40,13 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.order.Ord
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.order.item.ColumnOrderByItemSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.order.item.ExpressionOrderByItemSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.order.item.OrderByItemSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.predicate.AndPredicate;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.predicate.HavingSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.predicate.WhereSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.CollectionTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.JoinTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SubqueryTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.SelectStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.SelectStatement;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -66,35 +66,92 @@ public final class ColumnExtractor {
     public static Collection<ColumnSegment> extract(final ExpressionSegment expression) {
         Collection<ColumnSegment> result = new LinkedList<>();
         if (expression instanceof BinaryOperationExpression) {
-            if (((BinaryOperationExpression) expression).getLeft() instanceof ColumnSegment) {
-                result.add((ColumnSegment) ((BinaryOperationExpression) expression).getLeft());
-            }
-            if (((BinaryOperationExpression) expression).getRight() instanceof ColumnSegment) {
-                result.add((ColumnSegment) ((BinaryOperationExpression) expression).getRight());
-            }
-            if (((BinaryOperationExpression) expression).getLeft() instanceof OuterJoinExpression) {
-                result.add(((OuterJoinExpression) ((BinaryOperationExpression) expression).getLeft()).getColumnName());
-            }
-            if (((BinaryOperationExpression) expression).getRight() instanceof OuterJoinExpression) {
-                result.add(((OuterJoinExpression) ((BinaryOperationExpression) expression).getRight()).getColumnName());
-            }
+            extractColumnsInBinaryOperationExpression((BinaryOperationExpression) expression, result);
         }
-        if (expression instanceof InExpression && ((InExpression) expression).getLeft() instanceof ColumnSegment) {
-            result.add((ColumnSegment) ((InExpression) expression).getLeft());
+        if (expression instanceof InExpression) {
+            extractColumnsInInExpression((InExpression) expression, result);
         }
-        if (expression instanceof InExpression && ((InExpression) expression).getLeft() instanceof RowExpression) {
-            extractColumnInRowExpression((InExpression) expression, result);
+        if (expression instanceof BetweenExpression) {
+            extractColumnsInBetweenExpression((BetweenExpression) expression, result);
         }
-        if (expression instanceof BetweenExpression && ((BetweenExpression) expression).getLeft() instanceof ColumnSegment) {
-            result.add((ColumnSegment) ((BetweenExpression) expression).getLeft());
+        if (expression instanceof AggregationProjectionSegment) {
+            extractColumnsInAggregationProjectionSegment((AggregationProjectionSegment) expression, result);
+        }
+        if (expression instanceof FunctionSegment) {
+            extractColumnsInFunctionSegment((FunctionSegment) expression, result);
         }
         return result;
     }
     
-    private static void extractColumnInRowExpression(final InExpression expression, final Collection<ColumnSegment> result) {
-        for (ExpressionSegment each : ((RowExpression) expression.getLeft()).getItems()) {
+    private static void extractColumnsInInExpression(final InExpression expression, final Collection<ColumnSegment> result) {
+        if (expression.getLeft() instanceof ColumnSegment) {
+            result.add((ColumnSegment) expression.getLeft());
+        }
+        if (expression.getLeft() instanceof RowExpression) {
+            extractColumnsInRowExpression((RowExpression) expression.getLeft(), result);
+        }
+        if (expression.getLeft() instanceof FunctionSegment) {
+            extractColumnsInFunctionSegment((FunctionSegment) expression.getLeft(), result);
+        }
+        result.addAll(extract(expression.getRight()));
+    }
+    
+    private static void extractColumnsInBinaryOperationExpression(final BinaryOperationExpression expression, final Collection<ColumnSegment> result) {
+        if (expression.getLeft() instanceof ColumnSegment) {
+            result.add((ColumnSegment) expression.getLeft());
+        }
+        if (expression.getRight() instanceof ColumnSegment) {
+            result.add((ColumnSegment) expression.getRight());
+        }
+        if (expression.getLeft() instanceof OuterJoinExpression) {
+            result.add(((OuterJoinExpression) expression.getLeft()).getColumnName());
+        }
+        if (expression.getRight() instanceof OuterJoinExpression) {
+            result.add(((OuterJoinExpression) expression.getRight()).getColumnName());
+        }
+        result.addAll(extract(expression.getLeft()));
+        result.addAll(extract(expression.getRight()));
+    }
+    
+    private static void extractColumnsInBetweenExpression(final BetweenExpression expression, final Collection<ColumnSegment> result) {
+        if (expression.getLeft() instanceof ColumnSegment) {
+            result.add((ColumnSegment) expression.getLeft());
+        }
+        if (expression.getBetweenExpr() instanceof ColumnSegment) {
+            result.add((ColumnSegment) expression.getBetweenExpr());
+        }
+        if (expression.getAndExpr() instanceof ColumnSegment) {
+            result.add((ColumnSegment) expression.getAndExpr());
+        }
+        result.addAll(extract(expression.getLeft()));
+        result.addAll(extract(expression.getBetweenExpr()));
+        result.addAll(extract(expression.getAndExpr()));
+    }
+    
+    private static void extractColumnsInRowExpression(final RowExpression expression, final Collection<ColumnSegment> result) {
+        for (ExpressionSegment each : expression.getItems()) {
             if (each instanceof ColumnSegment) {
                 result.add((ColumnSegment) each);
+            }
+        }
+    }
+    
+    private static void extractColumnsInAggregationProjectionSegment(final AggregationProjectionSegment expression, final Collection<ColumnSegment> result) {
+        for (ExpressionSegment each : expression.getParameters()) {
+            if (each instanceof ColumnSegment) {
+                result.add((ColumnSegment) each);
+            } else {
+                result.addAll(extract(each));
+            }
+        }
+    }
+    
+    private static void extractColumnsInFunctionSegment(final FunctionSegment expression, final Collection<ColumnSegment> result) {
+        for (ExpressionSegment each : expression.getParameters()) {
+            if (each instanceof ColumnSegment) {
+                result.add((ColumnSegment) each);
+            } else {
+                result.addAll(extract(each));
             }
         }
     }
@@ -102,21 +159,17 @@ public final class ColumnExtractor {
     /**
      * Extract column segments.
      *
-     * @param columnSegments column segments
      * @param whereSegments where segments
+     * @return column segments
      */
-    public static void extractColumnSegments(final Collection<ColumnSegment> columnSegments, final Collection<WhereSegment> whereSegments) {
+    public static Collection<ColumnSegment> extractColumnSegments(final Collection<WhereSegment> whereSegments) {
+        Collection<ColumnSegment> result = new LinkedList<>();
         for (WhereSegment each : whereSegments) {
-            for (AndPredicate andPredicate : ExpressionExtractor.extractAndPredicates(each.getExpr())) {
-                extractColumnSegments(columnSegments, andPredicate);
+            for (ExpressionSegment expression : ExpressionExtractor.extractAllExpressions(each.getExpr())) {
+                result.addAll(extract(expression));
             }
         }
-    }
-    
-    private static void extractColumnSegments(final Collection<ColumnSegment> columnSegments, final AndPredicate andPredicate) {
-        for (ExpressionSegment each : andPredicate.getPredicates()) {
-            columnSegments.addAll(extract(each));
-        }
+        return result;
     }
     
     /**

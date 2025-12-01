@@ -14,19 +14,20 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
+
 FROM alpine AS prepare
 
 ARG APP_NAME
-ENV LOCAL_PATH /opt/shardingsphere-proxy
+ENV LOCAL_PATH=/opt/shardingsphere-proxy
 
 ADD target/${APP_NAME}.tar.gz /opt
 RUN mv /opt/${APP_NAME} ${LOCAL_PATH} && mkdir -p ${LOCAL_PATH}/ext-lib
 
-FROM eclipse-temurin:21-jdk
-MAINTAINER ShardingSphere "dev@shardingsphere.apache.org"
+FROM eclipse-temurin:25-jdk
+LABEL org.opencontainers.image.authors="ShardingSphere dev@shardingsphere.apache.org"
 
-ENV LOCAL_PATH /opt/shardingsphere-proxy
-ENV IS_DOCKER true
+ENV LOCAL_PATH=/opt/shardingsphere-proxy
+ENV IS_DOCKER=true
 
 COPY --from=prepare ${LOCAL_PATH} ${LOCAL_PATH}
 ENTRYPOINT ${LOCAL_PATH}/bin/start.sh ${PORT}

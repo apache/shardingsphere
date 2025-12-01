@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.driver.jdbc.core.savepoint;
 
 import lombok.Getter;
-import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
+import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 
 import java.sql.SQLException;
 import java.sql.SQLFeatureNotSupportedException;

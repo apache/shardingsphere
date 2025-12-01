@@ -20,7 +20,6 @@ package org.apache.shardingsphere.sharding.route.engine.checker.util;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.binder.context.type.TableAvailable;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.context.RouteMapper;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
@@ -104,7 +103,7 @@ public final class ShardingRouteContextCheckUtils {
     public static Optional<ShardingConditions> createShardingConditions(final SQLStatementContext sqlStatementContext, final ShardingRule shardingRule,
                                                                         final Collection<ColumnAssignmentSegment> assignments, final List<Object> params) {
         Collection<ShardingConditionValue> values = new LinkedList<>();
-        String tableName = ((TableAvailable) sqlStatementContext).getTablesContext().getTableNames().iterator().next();
+        String tableName = sqlStatementContext.getTablesContext().getTableNames().iterator().next();
         for (ColumnAssignmentSegment each : assignments) {
             String shardingColumn = each.getColumns().get(0).getIdentifier().getValue();
             if (shardingRule.findShardingColumn(shardingColumn, tableName).isPresent()) {

@@ -17,7 +17,7 @@
   -->
 
 <e2e-test-cases>
-    <test-case sql="INSERT INTO t_order (order_id, user_id, status, merchant_id, remark, creation_date) VALUES (?, ?, ?, 1, 'test', '2017-08-08')" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
+    <test-case sql="INSERT INTO t_order (order_id, user_id, status, merchant_id, remark, creation_date) VALUES (?, ?, ?, 1, 'test', '2017-08-08')" db-types="MySQL,PostgreSQL,openGauss" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
         <assertion parameters="1:int, 1:int, insert:String" expected-data-file="insert_for_order_1.xml" />
         <assertion parameters="2:int, 2:int, insert:String" expected-data-file="insert_for_order_2.xml" />
         <assertion parameters="3:int, 3:int, insert:String" expected-data-file="insert_for_order_3.xml" />
@@ -42,11 +42,11 @@
         <assertion parameters="2:int, 2:int, insert:String" expected-data-file="insert_for_order_2.xml" />
     </test-case>
     
-    <test-case sql="INSERT INTO t_order_item (item_id, order_id, user_id, product_id, quantity, creation_date) VALUES (?, ?, ?, 1, 1, now())" db-types="MySQL,SQLServer,PostgreSQL,Oracle" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
+    <test-case sql="INSERT INTO t_order_item (item_id, order_id, user_id, product_id, quantity, creation_date) VALUES (?, ?, ?, 1, 1, now())" db-types="MySQL,PostgreSQL" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
         <assertion parameters="1:int, 1:int, 1:int" expected-data-file="insert_with_now_function.xml" />
     </test-case>
     
-    <test-case sql="INSERT INTO t_order (order_id, user_id, status, merchant_id, remark, creation_date) VALUES (1, 1, 'insert', 1, 'test', '2017-08-08'), (2, 2, 'insert2', 2, 'test', '2017-08-08')" db-types="MySQL,SQLServer,PostgreSQL,Oracle" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
+    <test-case sql="INSERT INTO t_order (order_id, user_id, status, merchant_id, remark, creation_date) VALUES (1, 1, 'insert', 1, 'test', '2017-08-08'), (2, 2, 'insert2', 2, 'test', '2017-08-08')" db-types="MySQL,PostgreSQL" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
         <assertion expected-data-file="insert_multiple_values_for_order_1_2.xml" />
     </test-case>
     
@@ -55,83 +55,83 @@
     </test-case>
     
     <!-- TODO fixme -->
-    <!--<test-case sql="INSERT INTO t_order (t_order.order_id, t_order.user_id, t_order.status) VALUES (?, ?, ?)" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">-->
+    <!--<test-case sql="INSERT INTO t_order (t_order.order_id, t_order.user_id, t_order.status) VALUES (?, ?, ?)" db-types="MySQL,PostgreSQL,openGauss" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">-->
     <!--<assertion parameters="1:int, 1:int, insert:String" expected-data-file="insert_for_order_1.xml" />-->
     <!--<assertion parameters="2:int, 2:int, insert:String" expected-data-file="insert_for_order_2.xml" />-->
     <!--</test-case>-->
     
-    <test-case sql="INSERT INTO t_order VALUES (?, ?, ?, 1, 'test', '2017-08-08')" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
+    <test-case sql="INSERT INTO t_order VALUES (?, ?, ?, 1, 'test', '2017-08-08')" db-types="MySQL,PostgreSQL,openGauss" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
         <assertion parameters="1:int, 1:int, insert:String" expected-data-file="insert_for_order_1.xml" />
         <assertion parameters="2:int, 2:int, insert:String" expected-data-file="insert_for_order_2.xml" />
     </test-case>
     
-    <test-case sql="INSERT INTO t_order SET order_id = ?, user_id = ?, status = ?, merchant_id = 1, remark = 'test', creation_date = '2017-08-08'" db-types="MySQL,SQLServer,Oracle" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
+    <test-case sql="INSERT INTO t_order SET order_id = ?, user_id = ?, status = ?, merchant_id = 1, remark = 'test', creation_date = '2017-08-08'" db-types="MySQL" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
         <assertion parameters="1:int, 1:int, insert:String" expected-data-file="insert_for_order_1.xml" />
         <assertion parameters="2:int, 2:int, insert:String" expected-data-file="insert_for_order_2.xml" />
     </test-case>
     
     <!-- TODO fixme -->
-    <!--<test-case sql="INSERT INTO t_order SET t_order.order_id = ?, t_order.user_id = ?, t_order.status = ?" db-types="MySQL,SQLServer,PostgreSQL,Oracle" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">-->
+    <!--<test-case sql="INSERT INTO t_order SET t_order.order_id = ?, t_order.user_id = ?, t_order.status = ?" db-types="MySQL,PostgreSQL" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">-->
     <!--<assertion parameters="1:int, 1:int, insert:String" expected-data-file="insert_for_order_1.xml" />-->
     <!--<assertion parameters="2:int, 2:int, insert:String" expected-data-file="insert_for_order_2.xml" />-->
     <!--</test-case>-->
     
-    <test-case sql="INSERT INTO t_order SET order_id = ?, user_id = ?, status = 'insert', merchant_id = 1, remark = 'test', creation_date = '2017-08-08'" db-types="MySQL,SQLServer,Oracle" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
+    <test-case sql="INSERT INTO t_order SET order_id = ?, user_id = ?, status = 'insert', merchant_id = 1, remark = 'test', creation_date = '2017-08-08'" db-types="MySQL" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
         <assertion parameters="1:int, 1:int" expected-data-file="insert_for_order_1.xml" />
         <assertion parameters="2:int, 2:int" expected-data-file="insert_for_order_2.xml" />
     </test-case>
     
-    <test-case sql="INSERT INTO t_order_item(item_id, order_id, user_id, product_id, quantity, creation_date) values (?, ?, ?, '1', '1', '2017-08-08')" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
+    <test-case sql="INSERT INTO t_order_item(item_id, order_id, user_id, product_id, quantity, creation_date) values (?, ?, ?, '1', '1', '2017-08-08')" db-types="MySQL,PostgreSQL,openGauss" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
         <assertion parameters="1:int, 1:int, 1:int" expected-data-file="insert_with_generate_key_column.xml" />
     </test-case>
     
-    <test-case sql="INSERT INTO t_order_item values(?, ?, ?, 1, 1, '2017-08-08')" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
+    <test-case sql="INSERT INTO t_order_item values(?, ?, ?, 1, 1, '2017-08-08')" db-types="MySQL,PostgreSQL,openGauss" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
         <assertion parameters="1:int, 1:int, 1:int" expected-data-file="insert_with_generate_key_column.xml" />
     </test-case>
     
-    <test-case sql="INSERT INTO t_order_item SET item_id = ?, order_id = ?, user_id = ?, product_id = 1, quantity = 1, creation_date='2017-08-08'" db-types="MySQL,SQLServer,Oracle" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
+    <test-case sql="INSERT INTO t_order_item SET item_id = ?, order_id = ?, user_id = ?, product_id = 1, quantity = 1, creation_date='2017-08-08'" db-types="MySQL" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
         <assertion parameters="1:int, 1:int, 1:int" expected-data-file="insert_with_generate_key_column.xml" />
     </test-case>
     
-    <test-case sql="INSERT INTO t_order_item VALUES (?, ?, 1, 1, '2017-08-08')" scenario-types="db,tbl,dbtbl_with_readwrite_splitting">
+    <test-case sql="INSERT INTO t_order_item VALUES (?, ?, 1, 1, '2017-08-08')" db-types="MySQL,PostgreSQL,openGauss" scenario-types="db,tbl,dbtbl_with_readwrite_splitting">
         <assertion parameters="1:int, 1:int" expected-data-file="insert_without_generate_key_column.xml" expected-generated-key-data-file="insert_without_generate_key_column_generated_key_data.xml" />
     </test-case>
 
-    <test-case sql="INSERT INTO t_order_item (order_id, user_id, product_id, quantity, creation_date) VALUES (?, ?, 1, 1, '2017-08-08')" scenario-types="db,tbl,dbtbl_with_readwrite_splitting">
+    <test-case sql="INSERT INTO t_order_item (order_id, user_id, product_id, quantity, creation_date) VALUES (?, ?, 1, 1, '2017-08-08')" db-types="MySQL,PostgreSQL,openGauss" scenario-types="db,tbl,dbtbl_with_readwrite_splitting">
         <assertion parameters="1:int, 1:int" expected-data-file="insert_without_generate_key_column.xml" expected-generated-key-data-file="insert_without_generate_key_column_generated_key_data.xml" />
     </test-case>
     
-    <test-case sql="INSERT INTO t_order_item SET order_id = ?, user_id = ?, product_id = 1, quantity = 1, creation_date='2017-08-08'" db-types="MySQL,SQLServer,Oracle" scenario-types="db,tbl,dbtbl_with_readwrite_splitting">
+    <test-case sql="INSERT INTO t_order_item SET order_id = ?, user_id = ?, product_id = 1, quantity = 1, creation_date='2017-08-08'" db-types="MySQL" scenario-types="db,tbl,dbtbl_with_readwrite_splitting">
         <assertion parameters="1:int, 1:int" expected-data-file="insert_without_generate_key_column.xml" expected-generated-key-data-file="insert_without_generate_key_column_generated_key_data.xml" />
     </test-case>
     
-    <test-case sql="INSERT INTO t_order (order_id, user_id, status, merchant_id, remark, creation_date) VALUES (?, ?, ?, 1, 'test', '2017-08-08'), (?, ?, ?, 2, 'test', '2017-08-08')" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
+    <test-case sql="INSERT INTO t_order (order_id, user_id, status, merchant_id, remark, creation_date) VALUES (?, ?, ?, 1, 'test', '2017-08-08'), (?, ?, ?, 2, 'test', '2017-08-08')" db-types="MySQL,PostgreSQL,openGauss" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
         <assertion parameters="1:int, 1:int, insert:String, 2:int, 2:int, insert:String" expected-data-file="batch_insert_for_order.xml" />
     </test-case>
     
-    <test-case sql="INSERT INTO t_order (order_id, user_id, status, merchant_id, remark, creation_date) VALUES (?, 1, 'insert', 1, 'test', '2017-08-08'), (?, ?, ?, 2, 'test', '2017-08-08')" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
+    <test-case sql="INSERT INTO t_order (order_id, user_id, status, merchant_id, remark, creation_date) VALUES (?, 1, 'insert', 1, 'test', '2017-08-08'), (?, ?, ?, 2, 'test', '2017-08-08')" db-types="MySQL,PostgreSQL,openGauss" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
         <assertion parameters="1:int, 2:int, 2:int, insert:String" expected-data-file="batch_insert_for_order.xml" />
     </test-case>
     
-    <!--<test-case sql="INSERT INTO t_order (order_id, user_id, status) VALUES (?, ?, SUBSTR(?, 1)), (?, ?, SUBSTR(?, 1))" db-types="H2,MySQL" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">-->
+    <!--<test-case sql="INSERT INTO t_order (order_id, user_id, status) VALUES (?, ?, SUBSTR(?, 1)), (?, ?, SUBSTR(?, 1))" db-types="MySQL" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">-->
     <!--<assertion parameters="1:int, 1:int, insert:String, 2:int, 2:int, insert:String" expected-data-file="pro_insert_order_value.xml" />-->
     <!--</test-case>-->
     
-    <test-case sql="INSERT INTO t_order_item(item_id, order_id, user_id, product_id, quantity, creation_date) values (?, ?, ?, 1, 1, '2017-08-08'), (?, ?, ?, 2, 2, '2017-08-08')" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
+    <test-case sql="INSERT INTO t_order_item(item_id, order_id, user_id, product_id, quantity, creation_date) values (?, ?, ?, 1, 1, '2017-08-08'), (?, ?, ?, 2, 2, '2017-08-08')" db-types="MySQL,PostgreSQL,openGauss" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
         <assertion parameters="1:int, 1:int, 1:int, 2:int, 2:int, 2:int" expected-data-file="batch_insert_with_generate_key_column.xml" />
     </test-case>
     
-    <test-case sql="INSERT INTO t_order_item (order_id, user_id, product_id, quantity, creation_date) VALUES (?, ?, 1, 1, '2017-08-08'), (?, ?, 2, 2, '2017-08-08')" scenario-types="db,tbl,dbtbl_with_readwrite_splitting">
+    <test-case sql="INSERT INTO t_order_item (order_id, user_id, product_id, quantity, creation_date) VALUES (?, ?, 1, 1, '2017-08-08'), (?, ?, 2, 2, '2017-08-08')" db-types="MySQL,PostgreSQL,openGauss" scenario-types="db,tbl,dbtbl_with_readwrite_splitting">
         <assertion parameters="1:int, 1:int, 2:int, 2:int" expected-data-file="batch_insert_without_generate_key_column.xml" expected-generated-key-data-file="batch_insert_without_generate_key_column_generated_key_data.xml" />
     </test-case>
     
     <!-- TODO Replace with standard table structure -->
-    <!--<test-case sql="INSERT INTO t_broadcast_table(id, status) values (?, 'insert'),(?, 'insert')" scenario-types="db,tbl,dbtbl_with_readwrite_splitting">
+    <!--<test-case sql="INSERT INTO t_broadcast_table(id, status) values (?, 'insert'),(?, 'insert')" db-types="MySQL,PostgreSQL,openGauss" scenario-types="db,tbl,dbtbl_with_readwrite_splitting">
         <assertion parameters="2:int, 3:int" expected-data-file="batch_insert_into_broadcast_table.xml" />
     </test-case>-->
     
     <!--fixme! issue #9769-->
-    <!--    <test-case sql="INSERT INTO t_single_table(single_id, id, status) values (?, ?, 'insert'),(?, ?, 'insert')" db-types="MySQL,SQLServer,PostgreSQL,Oracle" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting,encrypt,dbtbl_with_readwrite_splitting_and_encrypt">-->
+    <!--    <test-case sql="INSERT INTO t_single_table(single_id, id, status) values (?, ?, 'insert'),(?, ?, 'insert')" db-types="MySQL,PostgreSQL" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting,encrypt,dbtbl_with_readwrite_splitting_and_encrypt">-->
     <!--        <assertion parameters="5:int, 5000:int, 6:int, 6000:int" expected-data-file="batch_insert_into_single_table.xml" />-->
     <!--    </test-case>-->
 
@@ -145,7 +145,7 @@
         <assertion parameters="5000:int, 6000:int" expected-data-file="batch_insert_without_auto_generate_key_column.xml" expected-generated-key-data-file="batch_insert_without_auto_generate_key_column_generated_key_data.xml" />
     </test-case>-->
 
-    <test-case sql="INSERT INTO t_user (user_id, user_name, password, email, telephone, creation_date) VALUES (?, ?, '123456', 'tomas@gmail.com', '12341234123', '2018-08-08'), (?, ?, '23456', 'mike@qq.com', '23452345456', '2019-08-08')" scenario-types="encrypt" db-types="MySQL,PostgreSQL,openGauss">
+    <test-case sql="INSERT INTO t_user (user_id, user_name, password, email, telephone, creation_date) VALUES (?, ?, '123456', 'tomas@gmail.com', '12341234123', '2018-08-08'), (?, ?, '23456', 'mike@qq.com', '23452345456', '2019-08-08')" db-types="MySQL,PostgreSQL,openGauss" scenario-types="encrypt">
         <assertion parameters="40:int, tomas:String, 41:int, mike:String" expected-data-file="batch_insert_into_user_table.xml" />
     </test-case>
     
@@ -253,5 +253,9 @@
         <assertion parameters="1:int, 1:int" expected-data-file="insert_single_with_generate_key_column.xml" >
             <destroy-sql sql="DELETE FROM t_single WHERE id = 1" />
         </assertion>
+    </test-case>
+
+    <test-case sql="INSERT INTO t_user (user_id, user_name, password, email, telephone, creation_date) VALUES (?, ?, '123456', 'tomas@gmail.com', '12341234123', '2018-08-08'), (?, ?, '23456', 'mike@qq.com', '23452345456', '2019-08-08')" db-types="Hive" scenario-types="encrypt" skip-batch="true">
+        <assertion parameters="40:int, tomas:String, 41:int, mike:String" expected-data-file="batch_insert_into_user_table_for_hive.xml" />
     </test-case>
 </e2e-test-cases>

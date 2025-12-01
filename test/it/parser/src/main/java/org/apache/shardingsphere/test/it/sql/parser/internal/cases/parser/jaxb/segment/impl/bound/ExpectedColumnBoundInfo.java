@@ -45,4 +45,7 @@ public final class ExpectedColumnBoundInfo extends AbstractExpectedSQLSegment {
     
     @XmlElement(name = "original-column")
     private ExpectedOriginalColumn originalColumn;
+    
+    @XmlElement(name = "table-source-type")
+    private ExpectedTableSourceType tableSourceType;
 }

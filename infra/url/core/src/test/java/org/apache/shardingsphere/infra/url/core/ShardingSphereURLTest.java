@@ -22,6 +22,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.ArgumentsProvider;
 import org.junit.jupiter.params.provider.ArgumentsSource;
+import org.junit.jupiter.params.support.ParameterDeclarations;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -42,20 +43,27 @@ class ShardingSphereURLTest {
         assertThat(actual.getQueryProps(), is(expectedProps));
     }
     
-    private static class TestCaseArgumentsProvider implements ArgumentsProvider {
+    private static final class TestCaseArgumentsProvider implements ArgumentsProvider {
         
         @Override
-        public Stream<? extends Arguments> provideArguments(final ExtensionContext extensionContext) {
+        public Stream<? extends Arguments> provideArguments(final ParameterDeclarations parameters, final ExtensionContext context) {
             Map<String, String> multiParams = new HashMap<>(2, 1F);
             multiParams.put("databaseName", "sharding_db");
             multiParams.put("placeholder-type", "none");
+            Map<String, String> regCenterParams = new HashMap<>(2, 1F);
+            regCenterParams.put("namespace", "foo_namespace");
+            regCenterParams.put("maxRetries", "3");
             return Stream.of(Arguments.of("absolutepath:/Users/shardingsphere/config.yaml", "absolutepath:", "/Users/shardingsphere/config.yaml", Collections.emptyMap()),
                     Arguments.of("absolutepath:/Users/shardingsphere/config.yaml?", "absolutepath:", "/Users/shardingsphere/config.yaml", Collections.emptyMap()),
                     Arguments.of("absolutepath:/Users/shardingsphere/config.yaml?databaseName", "absolutepath:", "/Users/shardingsphere/config.yaml", Collections.emptyMap()),
                     Arguments.of("absolutepath:C:\\Users\\shardingsphere\\config.yaml", "absolutepath:", "C:\\Users\\shardingsphere\\config.yaml", Collections.emptyMap()),
                     Arguments.of("absolutepath:/Users/configDirName?databaseName=sharding_db", "absolutepath:", "/Users/configDirName", Collections.singletonMap("databaseName", "sharding_db")),
                     Arguments.of("absolutepath:/Users/configDirName/?databaseName=sharding_db", "absolutepath:", "/Users/configDirName/", Collections.singletonMap("databaseName", "sharding_db")),
-                    Arguments.of("classpath:config/shardingsphere/config.yml?databaseName=sharding_db&placeholder-type=none", "classpath:", "config/shardingsphere/config.yml", multiParams));
+                    Arguments.of("classpath:config/shardingsphere/config.yml?databaseName=sharding_db&placeholder-type=none", "classpath:", "config/shardingsphere/config.yml", multiParams),
+                    Arguments.of("zookeeper:127.0.0.1:2181,127.0.0.1:2182,127.0.0.1:2183?namespace=foo_namespace&maxRetries=3", "zookeeper:", "127.0.0.1:2181,127.0.0.1:2182,127.0.0.1:2183",
+                            regCenterParams),
+                    Arguments.of("etcd:127.0.0.1:2379,127.0.0.2:2379,127.0.0.3:2379?namespace=foo_namespace&maxRetries=3", "etcd:", "127.0.0.1:2379,127.0.0.2:2379,127.0.0.3:2379",
+                            regCenterParams));
         }
     }
 }

@@ -19,60 +19,44 @@ package org.apache.shardingsphere.mode.persist;
 
 import lombok.Getter;
 import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
-import org.apache.shardingsphere.infra.instance.ComputeNodeInstance;
+import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
-import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
-import org.apache.shardingsphere.mode.metadata.MetaDataContextManager;
-import org.apache.shardingsphere.mode.persist.service.divided.MetaDataManagerPersistService;
-import org.apache.shardingsphere.mode.persist.service.divided.PersistServiceBuilder;
-import org.apache.shardingsphere.mode.persist.service.divided.ProcessPersistService;
-import org.apache.shardingsphere.mode.persist.service.unified.ComputeNodePersistService;
-import org.apache.shardingsphere.mode.persist.service.unified.ListenerAssistedPersistService;
-import org.apache.shardingsphere.mode.persist.service.unified.QualifiedDataSourceStatePersistService;
-import org.apache.shardingsphere.mode.persist.service.unified.StatePersistService;
+import org.apache.shardingsphere.mode.metadata.manager.MetaDataContextManager;
+import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistFacade;
+import org.apache.shardingsphere.mode.node.QualifiedDataSourceStatePersistService;
+import org.apache.shardingsphere.mode.persist.mode.ModePersistServiceFacade;
+import org.apache.shardingsphere.mode.persist.mode.ModePersistServiceFacadeBuilder;
 import org.apache.shardingsphere.mode.spi.repository.PersistRepository;
+import org.apache.shardingsphere.mode.state.StatePersistService;
 
 /**
  * Persist service facade.
  */
 @Getter
-public final class PersistServiceFacade {
+public final class PersistServiceFacade implements AutoCloseable {
     
     private final PersistRepository repository;
     
-    private final MetaDataPersistService metaDataPersistService;
+    private final MetaDataPersistFacade metaDataFacade;
     
-    private final ComputeNodePersistService computeNodePersistService;
+    private final StatePersistService stateService;
     
-    private final StatePersistService statePersistService;
+    private final QualifiedDataSourceStatePersistService qualifiedDataSourceStateService;
     
-    private final MetaDataManagerPersistService metaDataManagerPersistService;
-    
-    private final ProcessPersistService processPersistService;
-    
-    private final ListenerAssistedPersistService listenerAssistedPersistService;
-    
-    private final QualifiedDataSourceStatePersistService qualifiedDataSourceStatePersistService;
+    private final ModePersistServiceFacade modeFacade;
     
     public PersistServiceFacade(final PersistRepository repository, final ModeConfiguration modeConfig, final MetaDataContextManager metaDataContextManager) {
         this.repository = repository;
-        metaDataPersistService = new MetaDataPersistService(repository);
-        computeNodePersistService = new ComputeNodePersistService(repository);
-        statePersistService = new StatePersistService(repository);
-        qualifiedDataSourceStatePersistService = new QualifiedDataSourceStatePersistService(repository);
-        PersistServiceBuilder persistServiceBuilder = TypedSPILoader.getService(PersistServiceBuilder.class, modeConfig.getType());
-        metaDataManagerPersistService = persistServiceBuilder.buildMetaDataManagerPersistService(repository, metaDataContextManager);
-        processPersistService = persistServiceBuilder.buildProcessPersistService(repository);
-        listenerAssistedPersistService = new ListenerAssistedPersistService(repository);
+        metaDataFacade = new MetaDataPersistFacade(repository, metaDataContextManager.getMetaDataContexts().getMetaData()
+                .getProps().getValue(ConfigurationPropertyKey.PERSIST_SCHEMAS_TO_REPOSITORY_ENABLED));
+        stateService = new StatePersistService(repository);
+        qualifiedDataSourceStateService = new QualifiedDataSourceStatePersistService(repository);
+        modeFacade = TypedSPILoader.getService(ModePersistServiceFacadeBuilder.class, modeConfig.getType()).build(metaDataContextManager, repository);
     }
     
-    /**
-     * Close persist service facade.
-     *
-     * @param computeNodeInstance compute node instance
-     */
-    public void close(final ComputeNodeInstance computeNodeInstance) {
-        computeNodePersistService.offline(computeNodeInstance);
+    @Override
+    public void close() {
+        modeFacade.close();
         repository.close();
     }
 }

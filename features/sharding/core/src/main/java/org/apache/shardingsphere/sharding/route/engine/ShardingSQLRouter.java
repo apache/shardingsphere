@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.sharding.route.engine;
 
 import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
-import org.apache.shardingsphere.infra.binder.context.type.CursorAvailable;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
@@ -34,7 +33,8 @@ import org.apache.shardingsphere.sharding.route.engine.condition.engine.Sharding
 import org.apache.shardingsphere.sharding.route.engine.type.ShardingRouteEngineFactory;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.DMLStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.type.CursorSQLStatementAttribute;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.DMLStatement;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -79,7 +79,8 @@ public final class ShardingSQLRouter implements EntranceSQLRouter<ShardingRule> 
     private ShardingConditions createShardingConditions(final QueryContext queryContext,
                                                         final RuleMetaData globalRuleMetaData, final ShardingSphereDatabase database, final ShardingRule rule) {
         List<ShardingCondition> shardingConditions;
-        if (queryContext.getSqlStatementContext().getSqlStatement() instanceof DMLStatement || queryContext.getSqlStatementContext() instanceof CursorAvailable) {
+        if (queryContext.getSqlStatementContext().getSqlStatement() instanceof DMLStatement
+                || queryContext.getSqlStatementContext().getSqlStatement().getAttributes().findAttribute(CursorSQLStatementAttribute.class).isPresent()) {
             shardingConditions = new ShardingConditionEngine(globalRuleMetaData, database, rule).createShardingConditions(queryContext.getSqlStatementContext(), queryContext.getParameters());
         } else {
             shardingConditions = Collections.emptyList();

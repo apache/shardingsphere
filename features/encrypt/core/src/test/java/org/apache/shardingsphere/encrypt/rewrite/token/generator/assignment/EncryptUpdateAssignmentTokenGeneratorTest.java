@@ -19,8 +19,13 @@ package org.apache.shardingsphere.encrypt.rewrite.token.generator.assignment;
 
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.encrypt.rule.table.EncryptTable;
-import org.apache.shardingsphere.infra.binder.context.statement.dml.UpdateStatementContext;
+import org.apache.shardingsphere.infra.binder.context.statement.type.dml.UpdateStatementContext;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.assignment.ColumnAssignmentSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.bound.TableSegmentBoundInfo;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableNameSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -45,8 +50,11 @@ class EncryptUpdateAssignmentTokenGeneratorTest {
     
     @BeforeEach
     void setup() {
-        tokenGenerator = new EncryptUpdateAssignmentTokenGenerator(mockEncryptRule());
-        when(updateStatementContext.getTablesContext().getSimpleTables().iterator().next().getTableName().getIdentifier().getValue()).thenReturn("table");
+        EncryptRule encryptRule = mockEncryptRule();
+        tokenGenerator = new EncryptUpdateAssignmentTokenGenerator(encryptRule, mock(ShardingSphereDatabase.class));
+        TableNameSegment tableNameSegment = new TableNameSegment(0, 0, new IdentifierValue("table"));
+        tableNameSegment.setTableBoundInfo(new TableSegmentBoundInfo(new IdentifierValue("foo_db"), new IdentifierValue("foo_db")));
+        when(updateStatementContext.getTablesContext().getSimpleTables()).thenReturn(Collections.singleton(new SimpleTableSegment(tableNameSegment)));
         ColumnAssignmentSegment assignmentSegment = mock(ColumnAssignmentSegment.class);
         when(updateStatementContext.getSqlStatement().getSetAssignment().getAssignments()).thenReturn(Collections.singleton(assignmentSegment));
     }

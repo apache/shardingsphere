@@ -19,24 +19,25 @@ package org.apache.shardingsphere.agent.plugin.logging.file.advice;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.agent.api.advice.TargetAdviceMethod;
-import org.apache.shardingsphere.agent.plugin.core.advice.AbstractStaticMethodAdvice;
+import org.apache.shardingsphere.agent.api.advice.TargetAdviceObject;
+import org.apache.shardingsphere.agent.plugin.core.advice.AbstractInstanceMethodAdvice;
 import org.apache.shardingsphere.agent.plugin.core.recorder.MethodTimeRecorder;
 
 /**
  * Meta data contexts factory advice.
  */
 @Slf4j
-public final class MetaDataContextsFactoryAdvice extends AbstractStaticMethodAdvice {
+public final class MetaDataContextsFactoryAdvice extends AbstractInstanceMethodAdvice {
     
     private final MethodTimeRecorder methodTimeRecorder = new MethodTimeRecorder(MetaDataContextsFactoryAdvice.class);
     
     @Override
-    public void beforeMethod(final Class<?> clazz, final TargetAdviceMethod method, final Object[] args, final String pluginType) {
+    public void beforeMethod(final TargetAdviceObject target, final TargetAdviceMethod method, final Object[] args, final String pluginType) {
         methodTimeRecorder.recordNow(method);
     }
     
     @Override
-    public void afterMethod(final Class<?> clazz, final TargetAdviceMethod method, final Object[] args, final Object result, final String pluginType) {
+    public void afterMethod(final TargetAdviceObject target, final TargetAdviceMethod method, final Object[] args, final Object result, final String pluginType) {
         log.info("Build meta data contexts finished, cost {} milliseconds.", methodTimeRecorder.getElapsedTimeAndClean(method));
     }
 }

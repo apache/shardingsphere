@@ -17,7 +17,7 @@
   -->
 
 <e2e-test-cases>
-    <test-case sql="DELETE FROM t_order WHERE order_id = ? AND user_id = ? AND status= ?" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
+    <test-case sql="DELETE FROM t_order WHERE order_id = ? AND user_id = ? AND status= ?" db-types="MySQL,PostgreSQL,openGauss" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
         <assertion parameters="1000:int, 10:int, init:String" expected-data-file="delete_with_sharding_value.xml" />
     </test-case>
 
@@ -28,33 +28,25 @@
         <assertion parameters="2900:int, 29:int, init:String" expected-data-file="delete_with_sharding_value_batch_4.xml" />
     </test-case>
     
-    <test-case sql="DELETE FROM t_order WHERE status= ?" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
+    <test-case sql="DELETE FROM t_order WHERE status= ?" db-types="MySQL,PostgreSQL,openGauss" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
         <assertion parameters="init:String" expected-data-file="delete_without_sharding_value.xml" />
     </test-case>
     
-    <test-case sql="DELETE FROM t_user WHERE user_id = ?" db-types="H2,MySQL,PostgreSQL,openGauss,SQLServer,Oracle" scenario-types="encrypt">
+    <test-case sql="DELETE FROM t_user WHERE user_id = ?" db-types="MySQL,PostgreSQL,openGauss" scenario-types="encrypt">
         <assertion parameters="10:int" expected-data-file="delete_user_table.xml" />
     </test-case>
     
-    <test-case sql="DELETE FROM t_user WHERE password = ?" db-types="H2,MySQL,PostgreSQL,openGauss,SQLServer,Oracle" scenario-types="encrypt">
+    <test-case sql="DELETE FROM t_user WHERE password = ?" db-types="MySQL,PostgreSQL,openGauss" scenario-types="encrypt">
         <assertion parameters="111111:String" expected-data-file="delete_user_table.xml" />
     </test-case>
     
     <!--fixme! issue #9769-->
-    <!--    <test-case sql="DELETE FROM t_single_table WHERE single_id = 1" db-types="MySQL,SQLServer,PostgreSQL,Oracle" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting,encrypt,dbtbl_with_readwrite_splitting_and_encrypt">-->
+    <!--    <test-case sql="DELETE FROM t_single_table WHERE single_id = 1" db-types="MySQL,PostgreSQL" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting,encrypt,dbtbl_with_readwrite_splitting_and_encrypt">-->
     <!--        <assertion expected-data-file="delete_single_table_by_id.xml" />-->
     <!--    </test-case>-->
     
-    <test-case sql="DELETE /*+ index(status) */ ONLY t_order WHERE status=1 RETURN * LOG ERRORS INTO TABLE_LOG" db-types="Oracle" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
-        <assertion expected-data-file="delete_with_special_comments_return_without_sharding_value.xml" />
-    </test-case>
-    
-    <test-case sql="DELETE /*+ index(status) */ ONLY (t_order) WHERE status=1 RETURNING *" db-types="Oracle" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
-        <assertion expected-data-file="delete_with_special_comments_returning_without_sharding_value.xml" />
-    </test-case>
-    
     <!-- Can't support delete multiple tables-->
-    <!--<test-case sql="DELETE o FROM t_order AS o WHERE status=?" db-types="MySQL,SQLServer,PostgreSQL,Oracle" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">-->
+    <!--<test-case sql="DELETE o FROM t_order AS o WHERE status=?" db-types="MySQL,PostgreSQL" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">-->
     <!--<assertion parameters="init:String" expected-data-file="delete_with_alias.xml" />-->
     <!--</test-case>-->
     
@@ -76,5 +68,9 @@
     
     <test-case sql="DELETE FROM t_order WHERE order_id = 1000 AND user_id = 10;DELETE FROM t_order WHERE order_id = 1001 AND user_id = 11;DELETE FROM t_order WHERE user_id &lt; 29;" db-types="MySQL" scenario-types="db" sql-case-types="LITERAL" adapters="proxy">
         <assertion expected-data-file="delete_with_multiple.xml" />
+    </test-case>
+
+    <test-case sql="DELETE FROM t_user WHERE user_id = ?" db-types="Hive" scenario-types="encrypt" skip-batch="true">
+        <assertion parameters="10:int" expected-data-file="delete_user_table_for_hive.xml" />
     </test-case>
 </e2e-test-cases>

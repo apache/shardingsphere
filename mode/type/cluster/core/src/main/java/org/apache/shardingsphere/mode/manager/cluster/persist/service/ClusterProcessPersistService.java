@@ -24,9 +24,13 @@ import org.apache.shardingsphere.infra.executor.sql.process.yaml.YamlProcessList
 import org.apache.shardingsphere.infra.executor.sql.process.yaml.swapper.YamlProcessListSwapper;
 import org.apache.shardingsphere.infra.instance.metadata.InstanceType;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
-import org.apache.shardingsphere.mode.node.path.metadata.ComputeNodePath;
-import org.apache.shardingsphere.mode.node.path.metadata.ProcessNodePath;
-import org.apache.shardingsphere.mode.persist.service.divided.ProcessPersistService;
+import org.apache.shardingsphere.mode.node.path.engine.generator.NodePathGenerator;
+import org.apache.shardingsphere.mode.node.path.type.global.execution.ProcessNodePath;
+import org.apache.shardingsphere.mode.node.path.type.global.node.compute.process.InstanceProcessNodeValue;
+import org.apache.shardingsphere.mode.node.path.type.global.node.compute.process.KillProcessTriggerNodePath;
+import org.apache.shardingsphere.mode.node.path.type.global.node.compute.process.ShowProcessListTriggerNodePath;
+import org.apache.shardingsphere.mode.node.path.type.global.node.compute.status.OnlineNodePath;
+import org.apache.shardingsphere.mode.persist.service.ProcessPersistService;
 import org.apache.shardingsphere.mode.spi.repository.PersistRepository;
 
 import java.util.Collection;
@@ -50,10 +54,10 @@ public final class ClusterProcessPersistService implements ProcessPersistService
         boolean isCompleted = false;
         try {
             triggerPaths.forEach(each -> repository.persist(each, ""));
-            isCompleted = ProcessOperationLockRegistry.getInstance().waitUntilReleaseReady(taskId, () -> isReady(triggerPaths));
+            isCompleted = ProcessOperationLockRegistry.getInstance().waitUntilReleaseReady(taskId, triggerPaths.size(), () -> isReady(triggerPaths));
             return getShowProcessListData(taskId);
         } finally {
-            repository.delete(ProcessNodePath.getRootPath(taskId));
+            repository.delete(NodePathGenerator.toPath(new ProcessNodePath(taskId, null)));
             if (!isCompleted) {
                 triggerPaths.forEach(repository::delete);
             }
@@ -62,14 +66,15 @@ public final class ClusterProcessPersistService implements ProcessPersistService
     
     private Collection<String> getShowProcessListTriggerPaths(final String taskId) {
         return Stream.of(InstanceType.values())
-                .flatMap(each -> repository.getChildrenKeys(ComputeNodePath.getOnlinePath(each)).stream().map(instanceId -> ComputeNodePath.getShowProcessListTriggerPath(instanceId, taskId)))
+                .flatMap(each -> repository.getChildrenKeys(NodePathGenerator.toPath(new OnlineNodePath(each, null))).stream()
+                        .map(instanceId -> NodePathGenerator.toPath(new ShowProcessListTriggerNodePath(new InstanceProcessNodeValue(instanceId, taskId)))))
                 .collect(Collectors.toList());
     }
     
     private Collection<Process> getShowProcessListData(final String taskId) {
         YamlProcessList yamlProcessList = new YamlProcessList();
-        for (String each : repository.getChildrenKeys(ProcessNodePath.getRootPath(taskId)).stream()
-                .map(each -> repository.query(ProcessNodePath.getInstanceProcessList(taskId, each))).collect(Collectors.toList())) {
+        for (String each : repository.getChildrenKeys(NodePathGenerator.toPath(new ProcessNodePath(taskId, null))).stream()
+                .map(each -> repository.query(NodePathGenerator.toPath(new ProcessNodePath(taskId, each)))).collect(Collectors.toList())) {
             yamlProcessList.getProcesses().addAll(YamlEngine.unmarshal(each, YamlProcessList.class).getProcesses());
         }
         return new YamlProcessListSwapper().swapToObject(yamlProcessList);
@@ -81,7 +86,7 @@ public final class ClusterProcessPersistService implements ProcessPersistService
         boolean isCompleted = false;
         try {
             triggerPaths.forEach(each -> repository.persist(each, ""));
-            isCompleted = ProcessOperationLockRegistry.getInstance().waitUntilReleaseReady(processId, () -> isReady(triggerPaths));
+            isCompleted = ProcessOperationLockRegistry.getInstance().waitUntilReleaseReady(processId, triggerPaths.size(), () -> isReady(triggerPaths));
         } finally {
             if (!isCompleted) {
                 triggerPaths.forEach(repository::delete);
@@ -91,7 +96,8 @@ public final class ClusterProcessPersistService implements ProcessPersistService
     
     private Collection<String> getKillProcessTriggerPaths(final String processId) {
         return Stream.of(InstanceType.values())
-                .flatMap(each -> repository.getChildrenKeys(ComputeNodePath.getOnlinePath(each)).stream().map(onlinePath -> ComputeNodePath.getKillProcessTriggerPath(onlinePath, processId)))
+                .flatMap(each -> repository.getChildrenKeys(NodePathGenerator.toPath(new OnlineNodePath(each, null))).stream()
+                        .map(onlinePath -> NodePathGenerator.toPath(new KillProcessTriggerNodePath(new InstanceProcessNodeValue(onlinePath, processId)))))
                 .collect(Collectors.toList());
     }
     

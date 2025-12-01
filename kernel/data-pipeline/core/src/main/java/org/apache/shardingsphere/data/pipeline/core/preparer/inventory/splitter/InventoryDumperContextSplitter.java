@@ -35,7 +35,8 @@ import org.apache.shardingsphere.data.pipeline.core.preparer.inventory.calculato
 import org.apache.shardingsphere.data.pipeline.core.preparer.inventory.calculator.InventoryRecordsCountCalculator;
 import org.apache.shardingsphere.data.pipeline.core.ratelimit.JobRateLimitAlgorithm;
 import org.apache.shardingsphere.data.pipeline.core.sqlbuilder.sql.PipelinePrepareSQLBuilder;
-import org.apache.shardingsphere.data.pipeline.core.util.PipelineJdbcUtils;
+import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.datatype.DialectDataTypeOption;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.metadata.identifier.ShardingSphereIdentifier;
 
 import java.sql.Connection;
@@ -70,10 +71,10 @@ public final class InventoryDumperContextSplitter {
     
     private Collection<InventoryDumperContext> splitByTable() {
         return dumperContext.getCommonContext().getTableNameMapper().getTableNameMap().entrySet()
-                .stream().map(entry -> createTableSpLitDumperContext(entry.getKey(), entry.getValue())).collect(Collectors.toList());
+                .stream().map(entry -> createTableSplitDumperContext(entry.getKey(), entry.getValue())).collect(Collectors.toList());
     }
     
-    private InventoryDumperContext createTableSpLitDumperContext(final ShardingSphereIdentifier actualTableName, final ShardingSphereIdentifier logicTableName) {
+    private InventoryDumperContext createTableSplitDumperContext(final ShardingSphereIdentifier actualTableName, final ShardingSphereIdentifier logicTableName) {
         InventoryDumperContext result = new InventoryDumperContext(dumperContext.getCommonContext());
         result.setActualTableName(actualTableName.toString());
         result.setLogicTableName(logicTableName.toString());
@@ -93,7 +94,7 @@ public final class InventoryDumperContextSplitter {
         JobRateLimitAlgorithm rateLimitAlgorithm = jobProcessContext.getReadRateLimitAlgorithm();
         int i = 0;
         for (IngestPosition each : getInventoryPositions(dumperContext, jobItemContext)) {
-            result.add(createPrimaryKeySplitDumperContext(dumperContext, each, i++, batchSize, rateLimitAlgorithm, jobItemContext));
+            result.add(createPrimaryKeySplitDumperContext(dumperContext, each, i++, batchSize, rateLimitAlgorithm));
         }
         return result;
     }
@@ -117,15 +118,16 @@ public final class InventoryDumperContextSplitter {
         if (!dumperContext.hasUniqueKey()) {
             return Collections.singleton(new UnsupportedKeyIngestPosition());
         }
+        DialectDataTypeOption dataTypeOption = new DatabaseTypeRegistry(sourceDataSource.getDatabaseType()).getDialectDatabaseMetaData().getDataTypeOption();
         List<PipelineColumnMetaData> uniqueKeyColumns = dumperContext.getUniqueKeyColumns();
+        int firstColumnDataType = uniqueKeyColumns.get(0).getDataType();
+        if (dataTypeOption.isIntegerDataType(firstColumnDataType)) {
+            Range<Long> uniqueKeyValuesRange = getUniqueKeyValuesRange(jobItemContext, dumperContext);
+            int shardingSize = jobItemContext.getJobProcessContext().getProcessConfiguration().getRead().getShardingSize();
+            return InventoryPositionCalculator.getPositionByIntegerUniqueKeyRange(tableRecordsCount, uniqueKeyValuesRange, shardingSize);
+        }
         if (1 == uniqueKeyColumns.size()) {
-            int firstColumnDataType = uniqueKeyColumns.get(0).getDataType();
-            if (PipelineJdbcUtils.isIntegerColumn(firstColumnDataType)) {
-                Range<Long> uniqueKeyValuesRange = getUniqueKeyValuesRange(jobItemContext, dumperContext);
-                int shardingSize = jobItemContext.getJobProcessContext().getProcessConfiguration().getRead().getShardingSize();
-                return InventoryPositionCalculator.getPositionByIntegerUniqueKeyRange(tableRecordsCount, uniqueKeyValuesRange, shardingSize);
-            }
-            if (PipelineJdbcUtils.isStringColumn(firstColumnDataType)) {
+            if (dataTypeOption.isStringDataType(firstColumnDataType)) {
                 return Collections.singleton(new StringPrimaryKeyIngestPosition(null, null));
             }
         }
@@ -149,8 +151,7 @@ public final class InventoryDumperContextSplitter {
     }
     
     private InventoryDumperContext createPrimaryKeySplitDumperContext(final InventoryDumperContext dumperContext, final IngestPosition position,
-                                                                      final int shardingItem, final int batchSize, final JobRateLimitAlgorithm rateLimitAlgorithm,
-                                                                      final TransmissionJobItemContext jobItemContext) {
+                                                                      final int shardingItem, final int batchSize, final JobRateLimitAlgorithm rateLimitAlgorithm) {
         InventoryDumperContext result = new InventoryDumperContext(dumperContext.getCommonContext());
         result.getCommonContext().setPosition(position);
         result.setShardingItem(shardingItem);
@@ -160,11 +161,6 @@ public final class InventoryDumperContextSplitter {
         result.setInsertColumnNames(dumperContext.getInsertColumnNames());
         result.setBatchSize(batchSize);
         result.setRateLimitAlgorithm(rateLimitAlgorithm);
-        result.setFirstDump(isFirstDump(jobItemContext));
         return result;
-    }
-    
-    private boolean isFirstDump(final TransmissionJobItemContext jobItemContext) {
-        return null == jobItemContext.getInitProgress() && jobItemContext.getProcessedRecordsCount() == 0;
     }
 }

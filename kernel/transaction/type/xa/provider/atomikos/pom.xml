@@ -21,10 +21,14 @@
     <parent>
         <groupId>org.apache.shardingsphere</groupId>
         <artifactId>shardingsphere-transaction-xa-provider</artifactId>
-        <version>5.5.2-SNAPSHOT</version>
+        <version>5.5.3-SNAPSHOT</version>
     </parent>
     <artifactId>shardingsphere-transaction-xa-atomikos</artifactId>
     <name>${project.artifactId}</name>
+    
+    <properties>
+        <atomikos.version>6.0.0</atomikos.version>
+    </properties>
     
     <dependencyManagement>
         <dependencies>

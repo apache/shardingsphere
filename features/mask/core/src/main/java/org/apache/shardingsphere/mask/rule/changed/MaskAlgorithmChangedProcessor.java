@@ -18,10 +18,10 @@
 package org.apache.shardingsphere.mask.rule.changed;
 
 import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration;
-import org.apache.shardingsphere.mask.config.MaskRuleConfiguration;
-import org.apache.shardingsphere.mask.metadata.nodepath.MaskRuleNodePathProvider;
-import org.apache.shardingsphere.mask.rule.MaskRule;
 import org.apache.shardingsphere.infra.algorithm.core.processor.AlgorithmChangedProcessor;
+import org.apache.shardingsphere.mask.config.MaskRuleConfiguration;
+import org.apache.shardingsphere.mask.rule.MaskRule;
+import org.apache.shardingsphere.mode.spi.rule.RuleChangedItemType;
 
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
@@ -47,7 +47,7 @@ public final class MaskAlgorithmChangedProcessor extends AlgorithmChangedProcess
     }
     
     @Override
-    public String getType() {
-        return MaskRuleNodePathProvider.RULE_TYPE + "." + MaskRuleNodePathProvider.MASK_ALGORITHMS;
+    public RuleChangedItemType getType() {
+        return new RuleChangedItemType("mask", "mask_algorithms");
     }
 }

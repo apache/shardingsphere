@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.sharding.route.engine.condition.generator;
 
-import org.apache.shardingsphere.sharding.route.engine.condition.Column;
+import org.apache.shardingsphere.infra.metadata.database.schema.HashColumn;
 import org.apache.shardingsphere.sharding.route.engine.condition.generator.impl.ConditionValueBetweenOperatorGenerator;
 import org.apache.shardingsphere.sharding.route.engine.condition.generator.impl.ConditionValueCompareOperatorGenerator;
 import org.apache.shardingsphere.sharding.route.engine.condition.generator.impl.ConditionValueInOperatorGenerator;
@@ -45,7 +45,7 @@ import static org.mockito.Mockito.mock;
 
 class ConditionValueGeneratorFactoryTest {
     
-    private final Column column = new Column("id", "tbl");
+    private final HashColumn column = new HashColumn("id", "tbl");
     
     @Test
     void assertGenerateBinaryOperationExpression() {

@@ -17,10 +17,11 @@
 
 package org.apache.shardingsphere.sharding.route.strategy.type.hint;
 
+import com.cedarsoftware.util.CaseInsensitiveSet;
 import lombok.Getter;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.datanode.DataNodeInfo;
-import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
+import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.sharding.api.sharding.hint.HintShardingAlgorithm;
 import org.apache.shardingsphere.sharding.api.sharding.hint.HintShardingValue;
 import org.apache.shardingsphere.sharding.exception.metadata.MissingRequiredShardingConfigurationException;
@@ -29,7 +30,6 @@ import org.apache.shardingsphere.sharding.route.engine.condition.value.ShardingC
 import org.apache.shardingsphere.sharding.route.strategy.ShardingStrategy;
 
 import java.util.Collection;
-import java.util.TreeSet;
 
 /**
  * Hint sharding strategy.
@@ -43,7 +43,7 @@ public final class HintShardingStrategy implements ShardingStrategy {
     
     public HintShardingStrategy(final HintShardingAlgorithm<?> shardingAlgorithm) {
         ShardingSpherePreconditions.checkNotNull(shardingAlgorithm, () -> new MissingRequiredShardingConfigurationException("Hint sharding algorithm"));
-        shardingColumns = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
+        shardingColumns = new CaseInsensitiveSet<>();
         this.shardingAlgorithm = shardingAlgorithm;
     }
     
@@ -54,8 +54,6 @@ public final class HintShardingStrategy implements ShardingStrategy {
         ListShardingConditionValue<?> shardingValue = (ListShardingConditionValue) shardingConditionValues.iterator().next();
         Collection<String> shardingResult = shardingAlgorithm.doSharding(availableTargetNames,
                 new HintShardingValue(shardingValue.getTableName(), shardingValue.getColumnName(), shardingValue.getValues()));
-        Collection<String> result = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
-        result.addAll(shardingResult);
-        return result;
+        return new CaseInsensitiveSet<>(shardingResult);
     }
 }

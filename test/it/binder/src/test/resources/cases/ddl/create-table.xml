@@ -31,6 +31,7 @@
                     <original-schema name="foo_db_1" />
                     <original-table name="t_order_tmp" />
                     <original-column name="order_id" />
+                    <table-source-type name="PHYSICAL_TABLE"/>
                 </column-bound>
             </column>
         </column-definition>
@@ -41,6 +42,7 @@
                     <original-schema name="foo_db_1" />
                     <original-table name="t_order_tmp" />
                     <original-column name="user_id" />
+                    <table-source-type name="PHYSICAL_TABLE"/>
                 </column-bound>
             </column>
         </column-definition>
@@ -51,6 +53,7 @@
                     <original-schema name="foo_db_1" />
                     <original-table name="t_order_tmp" />
                     <original-column name="status" />
+                    <table-source-type name="PHYSICAL_TABLE"/>
                 </column-bound>
             </column>
         </column-definition>
@@ -61,6 +64,7 @@
                     <original-schema name="foo_db_1" />
                     <original-table name="t_order_tmp" />
                     <original-column name="merchant_id" />
+                    <table-source-type name="PHYSICAL_TABLE"/>
                 </column-bound>
             </column>
         </column-definition>
@@ -71,6 +75,7 @@
                     <original-schema name="foo_db_1" />
                     <original-table name="t_order_tmp" />
                     <original-column name="remark" />
+                    <table-source-type name="PHYSICAL_TABLE"/>
                 </column-bound>
             </column>
         </column-definition>
@@ -81,6 +86,7 @@
                     <original-schema name="foo_db_1" />
                     <original-table name="t_order_tmp" />
                     <original-column name="creation_date" />
+                    <table-source-type name="PHYSICAL_TABLE"/>
                 </column-bound>
             </column>
         </column-definition>
@@ -100,6 +106,7 @@
                     <original-schema name="foo_db_1" />
                     <original-table name="t_order" />
                     <original-column name="order_id" start-delimiter="`" end-delimiter="`" />
+                    <table-source-type name="PHYSICAL_TABLE"/>
                 </column-bound>
             </column>
         </column-definition>
@@ -110,6 +117,7 @@
                     <original-schema name="foo_db_1" />
                     <original-table name="t_order" />
                     <original-column name="user_id" start-delimiter="`" end-delimiter="`" />
+                    <table-source-type name="PHYSICAL_TABLE"/>
                 </column-bound>
             </column>
         </column-definition>
@@ -120,6 +128,7 @@
                     <original-schema name="foo_db_1" />
                     <original-table name="t_order" />
                     <original-column name="status" start-delimiter="`" end-delimiter="`" />
+                    <table-source-type name="PHYSICAL_TABLE"/>
                 </column-bound>
             </column>
         </column-definition>
@@ -130,6 +139,7 @@
                     <original-schema name="foo_db_1" />
                     <original-table name="t_order" />
                     <original-column name="merchant_id" start-delimiter="`" end-delimiter="`" />
+                    <table-source-type name="PHYSICAL_TABLE"/>
                 </column-bound>
             </column>
         </column-definition>
@@ -140,6 +150,7 @@
                     <original-schema name="foo_db_1" />
                     <original-table name="t_order" />
                     <original-column name="remark" start-delimiter="`" end-delimiter="`" />
+                    <table-source-type name="PHYSICAL_TABLE"/>
                 </column-bound>
             </column>
         </column-definition>
@@ -150,6 +161,7 @@
                     <original-schema name="foo_db_1" />
                     <original-table name="t_order" />
                     <original-column name="creation_date" start-delimiter="`" end-delimiter="`" />
+                    <table-source-type name="PHYSICAL_TABLE"/>
                 </column-bound>
             </column>
         </column-definition>
@@ -170,6 +182,7 @@
                     <original-schema name="foo_db_1" />
                     <original-table name="t_order" />
                     <original-column name="order_id" start-delimiter="`" end-delimiter="`" />
+                    <table-source-type name="PHYSICAL_TABLE"/>
                 </column-bound>
             </column>
         </column-definition>
@@ -180,6 +193,7 @@
                     <original-schema name="foo_db_1" />
                     <original-table name="t_order" />
                     <original-column name="user_id" start-delimiter="`" end-delimiter="`" />
+                    <table-source-type name="PHYSICAL_TABLE"/>
                 </column-bound>
             </column>
         </column-definition>
@@ -190,6 +204,7 @@
                     <original-schema name="foo_db_1" />
                     <original-table name="t_order" />
                     <original-column name="status" start-delimiter="`" end-delimiter="`" />
+                    <table-source-type name="PHYSICAL_TABLE"/>
                 </column-bound>
             </column>
         </column-definition>
@@ -200,6 +215,7 @@
                     <original-schema name="foo_db_1" />
                     <original-table name="t_order" />
                     <original-column name="merchant_id" start-delimiter="`" end-delimiter="`" />
+                    <table-source-type name="PHYSICAL_TABLE"/>
                 </column-bound>
             </column>
         </column-definition>
@@ -210,6 +226,7 @@
                     <original-schema name="foo_db_1" />
                     <original-table name="t_order" />
                     <original-column name="remark" start-delimiter="`" end-delimiter="`" />
+                    <table-source-type name="PHYSICAL_TABLE"/>
                 </column-bound>
             </column>
         </column-definition>
@@ -220,6 +237,7 @@
                     <original-schema name="foo_db_1" />
                     <original-table name="t_order" />
                     <original-column name="creation_date" start-delimiter="`" end-delimiter="`" />
+                    <table-source-type name="PHYSICAL_TABLE"/>
                 </column-bound>
             </column>
         </column-definition>

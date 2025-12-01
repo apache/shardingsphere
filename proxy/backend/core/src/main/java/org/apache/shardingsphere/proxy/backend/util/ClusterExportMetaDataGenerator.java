@@ -49,7 +49,7 @@ public final class ClusterExportMetaDataGenerator {
     private final ContextManager contextManager;
     
     /**
-     * Generate Json format.
+     * Generate JSON format.
      *
      * @return export data
      */
@@ -77,17 +77,7 @@ public final class ClusterExportMetaDataGenerator {
     }
     
     private String generatePropsData(final Properties props) {
-        if (props.isEmpty()) {
-            return "";
-        }
-        StringBuilder result = new StringBuilder();
-        result.append("props:").append(System.lineSeparator());
-        for (Entry<Object, Object> entry : props.entrySet()) {
-            if (null != entry.getValue() && !"".equals(entry.getValue().toString())) {
-                result.append("  ").append(entry.getKey()).append(": ").append(entry.getValue()).append(System.lineSeparator());
-            }
-        }
-        return result.toString();
+        return props.isEmpty() ? "" : YamlEngine.marshal(Collections.singletonMap("props", props));
     }
     
     @SuppressWarnings({"rawtypes", "unchecked"})

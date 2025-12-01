@@ -18,12 +18,17 @@
 package org.apache.shardingsphere.infra.executor.sql.prepare.driver;
 
 import lombok.Getter;
-import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
+import org.apache.shardingsphere.database.exception.core.exception.syntax.database.UnknownDatabaseException;
+import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
+import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroup;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.ConnectionMode;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.DriverExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.prepare.AbstractExecutionPrepareEngine;
+import org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.JDBCDriverType;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnit;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
@@ -41,13 +46,14 @@ import java.util.concurrent.ConcurrentHashMap;
  * @param <T> type of driver execution unit
  * @param <C> type of resource connection
  */
+@HighFrequencyInvocation
 public final class DriverExecutionPrepareEngine<T extends DriverExecutionUnit<?>, C> extends AbstractExecutionPrepareEngine<T> {
     
     @SuppressWarnings("rawtypes")
-    private static final Map<String, SQLExecutionUnitBuilder> TYPE_TO_BUILDER_MAP = new ConcurrentHashMap<>(8, 1F);
+    private static final Map<JDBCDriverType, SQLExecutionUnitBuilder> TYPE_TO_BUILDER_MAP = new ConcurrentHashMap<>(8, 1F);
     
     @Getter
-    private final String type;
+    private final JDBCDriverType type;
     
     private final DatabaseConnectionManager<C> databaseConnectionManager;
     
@@ -58,28 +64,25 @@ public final class DriverExecutionPrepareEngine<T extends DriverExecutionUnit<?>
     @SuppressWarnings("rawtypes")
     private final SQLExecutionUnitBuilder sqlExecutionUnitBuilder;
     
-    private final Map<String, StorageUnit> storageUnits;
+    private final ShardingSphereMetaData metaData;
     
-    public DriverExecutionPrepareEngine(final String type, final int maxConnectionsSizePerQuery, final DatabaseConnectionManager<C> databaseConnectionManager,
+    public DriverExecutionPrepareEngine(final JDBCDriverType type, final int maxConnectionsSizePerQuery, final DatabaseConnectionManager<C> databaseConnectionManager,
                                         final ExecutorStatementManager<C, ?, ?> statementManager, final StorageResourceOption option, final Collection<ShardingSphereRule> rules,
-                                        final Map<String, StorageUnit> storageUnits) {
+                                        final ShardingSphereMetaData metaData) {
         super(maxConnectionsSizePerQuery, rules);
         this.type = type;
         this.databaseConnectionManager = databaseConnectionManager;
         this.statementManager = statementManager;
         this.option = option;
-        sqlExecutionUnitBuilder = getCachedSqlExecutionUnitBuilder(type);
-        this.storageUnits = storageUnits;
+        sqlExecutionUnitBuilder = getCachedSQLExecutionUnitBuilder(type);
+        this.metaData = metaData;
     }
     
-    /**
+    /*
      * Refer to <a href="https://bugs.openjdk.java.net/browse/JDK-8161372">JDK-8161372</a>.
-     *
-     * @param type type
-     * @return sql execution unit builder
      */
     @SuppressWarnings("rawtypes")
-    private SQLExecutionUnitBuilder getCachedSqlExecutionUnitBuilder(final String type) {
+    private SQLExecutionUnitBuilder getCachedSQLExecutionUnitBuilder(final JDBCDriverType type) {
         SQLExecutionUnitBuilder result;
         if (null == (result = TYPE_TO_BUILDER_MAP.get(type))) {
             result = TYPE_TO_BUILDER_MAP.computeIfAbsent(type, key -> TypedSPILoader.getService(SQLExecutionUnitBuilder.class, key));
@@ -94,18 +97,20 @@ public final class DriverExecutionPrepareEngine<T extends DriverExecutionUnit<?>
         List<C> connections = databaseConnectionManager.getConnections(databaseName, dataSourceName, connectionOffset, executionUnitGroups.size(), connectionMode);
         int count = 0;
         for (List<ExecutionUnit> each : executionUnitGroups) {
-            result.add(createExecutionGroup(dataSourceName, each, connections.get(count++), connectionMode));
+            result.add(createExecutionGroup(databaseName, dataSourceName, each, connections.get(count++), connectionOffset, connectionMode));
         }
         return result;
     }
     
     @SuppressWarnings("unchecked")
-    private ExecutionGroup<T> createExecutionGroup(final String dataSourceName, final List<ExecutionUnit> executionUnits, final C connection, final ConnectionMode connectionMode) throws SQLException {
+    private ExecutionGroup<T> createExecutionGroup(final String databaseName, final String dataSourceName, final List<ExecutionUnit> executionUnits, final C connection, final int connectionOffset,
+                                                   final ConnectionMode connectionMode) throws SQLException {
         List<T> inputs = new LinkedList<>();
-        // TODO use metadata to replace storageUnits to support multiple logic databases
+        ShardingSpherePreconditions.checkState(metaData.containsDatabase(databaseName), () -> new UnknownDatabaseException(databaseName));
+        Map<String, StorageUnit> storageUnits = metaData.getDatabase(databaseName).getResourceMetaData().getStorageUnits();
         DatabaseType databaseType = storageUnits.containsKey(dataSourceName) ? storageUnits.get(dataSourceName).getStorageType() : storageUnits.values().iterator().next().getStorageType();
         for (ExecutionUnit each : executionUnits) {
-            inputs.add((T) sqlExecutionUnitBuilder.build(each, statementManager, connection, connectionMode, option, databaseType));
+            inputs.add((T) sqlExecutionUnitBuilder.build(each, statementManager, connection, connectionOffset, connectionMode, option, databaseType));
         }
         return new ExecutionGroup<>(inputs);
     }

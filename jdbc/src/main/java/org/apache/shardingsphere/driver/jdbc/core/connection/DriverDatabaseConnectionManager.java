@@ -33,7 +33,6 @@ import org.apache.shardingsphere.infra.session.connection.transaction.Transactio
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.transaction.savepoint.ConnectionSavepointManager;
 import org.apache.shardingsphere.transaction.ConnectionTransaction;
-import org.apache.shardingsphere.transaction.api.TransactionType;
 import org.apache.shardingsphere.transaction.rule.TransactionRule;
 
 import javax.sql.DataSource;
@@ -101,10 +100,26 @@ public final class DriverDatabaseConnectionManager implements DatabaseConnection
     public void setAutoCommit(final boolean autoCommit) throws SQLException {
         methodInvocationRecorder.record("setAutoCommit", connection -> connection.setAutoCommit(autoCommit));
         forceExecuteTemplate.execute(getCachedConnections(), connection -> connection.setAutoCommit(autoCommit));
+        if (autoCommit) {
+            clearCachedConnections();
+        }
     }
     
     private Collection<Connection> getCachedConnections() {
         return cachedConnections.values();
+    }
+    
+    /**
+     * Clear cached connections.
+     *
+     * @throws SQLException SQL exception
+     */
+    public void clearCachedConnections() throws SQLException {
+        try {
+            forceExecuteTemplate.execute(cachedConnections.values(), Connection::close);
+        } finally {
+            cachedConnections.clear();
+        }
     }
     
     /**
@@ -114,11 +129,19 @@ public final class DriverDatabaseConnectionManager implements DatabaseConnection
      */
     public void begin() throws SQLException {
         ConnectionTransaction connectionTransaction = getConnectionTransaction();
-        if (TransactionType.isDistributedTransaction(connectionTransaction.getTransactionType())) {
+        connectionContext.getTransactionContext().beginTransaction(connectionTransaction.getTransactionType().name(), connectionTransaction.getDistributedTransactionManager());
+        if (!connectionTransaction.isLocalTransaction()) {
             close();
+        }
+        doBegin(connectionTransaction);
+    }
+    
+    private void doBegin(final ConnectionTransaction connectionTransaction) throws SQLException {
+        if (connectionTransaction.isLocalTransaction()) {
+            setAutoCommit(false);
+        } else {
             connectionTransaction.begin();
         }
-        connectionContext.getTransactionContext().beginTransaction(String.valueOf(connectionTransaction.getTransactionType()), connectionTransaction.getDistributedTransactionManager());
     }
     
     /**
@@ -128,6 +151,9 @@ public final class DriverDatabaseConnectionManager implements DatabaseConnection
      */
     public void commit() throws SQLException {
         ConnectionTransaction connectionTransaction = getConnectionTransaction();
+        if (!connectionContext.getTransactionContext().isInTransaction() && !connectionTransaction.isInDistributedTransaction()) {
+            return;
+        }
         try {
             if (connectionTransaction.isLocalTransaction() && connectionContext.getTransactionContext().isExceptionOccur()) {
                 forceExecuteTemplate.execute(getCachedConnections(), Connection::rollback);
@@ -137,11 +163,7 @@ public final class DriverDatabaseConnectionManager implements DatabaseConnection
                 connectionTransaction.commit();
             }
         } finally {
-            methodInvocationRecorder.remove("setSavepoint");
-            for (Connection each : getCachedConnections()) {
-                ConnectionSavepointManager.getInstance().transactionFinished(each);
-            }
-            connectionContext.close();
+            clear();
         }
     }
     
@@ -152,6 +174,9 @@ public final class DriverDatabaseConnectionManager implements DatabaseConnection
      */
     public void rollback() throws SQLException {
         ConnectionTransaction connectionTransaction = getConnectionTransaction();
+        if (!connectionContext.getTransactionContext().isInTransaction() && !connectionTransaction.isInDistributedTransaction()) {
+            return;
+        }
         try {
             if (connectionTransaction.isLocalTransaction()) {
                 forceExecuteTemplate.execute(getCachedConnections(), Connection::rollback);
@@ -159,11 +184,7 @@ public final class DriverDatabaseConnectionManager implements DatabaseConnection
                 connectionTransaction.rollback();
             }
         } finally {
-            methodInvocationRecorder.remove("setSavepoint");
-            for (Connection each : getCachedConnections()) {
-                ConnectionSavepointManager.getInstance().transactionFinished(each);
-            }
-            connectionContext.close();
+            clear();
         }
     }
     
@@ -177,6 +198,14 @@ public final class DriverDatabaseConnectionManager implements DatabaseConnection
         for (Connection each : getCachedConnections()) {
             ConnectionSavepointManager.getInstance().rollbackToSavepoint(each, savepoint.getSavepointName());
         }
+    }
+    
+    private void clear() {
+        methodInvocationRecorder.remove("setSavepoint");
+        for (Connection each : getCachedConnections()) {
+            ConnectionSavepointManager.getInstance().transactionFinished(each);
+        }
+        connectionContext.close();
     }
     
     /**
@@ -340,7 +369,12 @@ public final class DriverDatabaseConnectionManager implements DatabaseConnection
                                                final ConnectionMode connectionMode) throws SQLException {
         if (1 == connectionSize) {
             Connection connection = createConnection(databaseName, dataSourceName, dataSource, connectionContext.getTransactionContext());
-            methodInvocationRecorder.replay(connection);
+            try {
+                methodInvocationRecorder.replay(connection);
+            } catch (final SQLException ex) {
+                connection.close();
+                throw ex;
+            }
             return Collections.singletonList(connection);
         }
         if (ConnectionMode.CONNECTION_STRICTLY == connectionMode) {
@@ -377,10 +411,6 @@ public final class DriverDatabaseConnectionManager implements DatabaseConnection
     
     @Override
     public void close() throws SQLException {
-        try {
-            forceExecuteTemplate.execute(cachedConnections.values(), Connection::close);
-        } finally {
-            cachedConnections.clear();
-        }
+        clearCachedConnections();
     }
 }

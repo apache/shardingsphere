@@ -17,7 +17,8 @@
 
 package org.apache.shardingsphere.infra.algorithm.loadbalancer.random;
 
-import org.apache.shardingsphere.infra.algorithm.loadbalancer.core.LoadBalanceAlgorithm;
+import org.apache.shardingsphere.infra.algorithm.loadbalancer.spi.LoadBalanceAlgorithm;
+import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
@@ -27,6 +28,7 @@ import java.util.concurrent.ThreadLocalRandom;
  */
 public final class RandomLoadBalanceAlgorithm implements LoadBalanceAlgorithm {
     
+    @HighFrequencyInvocation
     @Override
     public String getTargetName(final String groupName, final List<String> availableTargetNames) {
         return availableTargetNames.get(ThreadLocalRandom.current().nextInt(availableTargetNames.size()));

@@ -230,4 +230,8 @@
     <revoke sql-case-id="revoke_execute_on_xml_schema_collection" />
     <revoke sql-case-id="revoke_usage_on_column_encryption_key" />
     <revoke sql-case-id="revoke_usage_on_client_master_key" />
+    <revoke sql-case-id="revoke_alter_execute_on_procedure_from_role" />
+    <revoke sql-case-id="revoke_grant_option_on_procedure_from_user" />
+    <revoke sql-case-id="revoke_alter_execute_on_procedure_from_user" />
+    <revoke sql-case-id="revoke_grant_option_on_procedure_from_role" />
 </sql-parser-test-cases>

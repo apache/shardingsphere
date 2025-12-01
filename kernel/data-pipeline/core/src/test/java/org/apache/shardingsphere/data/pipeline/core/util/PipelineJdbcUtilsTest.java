@@ -21,51 +21,20 @@ import org.junit.jupiter.api.Test;
 
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.sql.Types;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 class PipelineJdbcUtilsTest {
     
     @Test
-    void assertIsIntegerColumn() {
-        assertTrue(PipelineJdbcUtils.isIntegerColumn(Types.INTEGER));
-        assertTrue(PipelineJdbcUtils.isIntegerColumn(Types.BIGINT));
-        assertTrue(PipelineJdbcUtils.isIntegerColumn(Types.SMALLINT));
-        assertTrue(PipelineJdbcUtils.isIntegerColumn(Types.TINYINT));
-        assertFalse(PipelineJdbcUtils.isIntegerColumn(Types.VARCHAR));
-    }
-    
-    @Test
-    void assertIsStringColumn() {
-        assertTrue(PipelineJdbcUtils.isStringColumn(Types.CHAR));
-        assertTrue(PipelineJdbcUtils.isStringColumn(Types.VARCHAR));
-        assertTrue(PipelineJdbcUtils.isStringColumn(Types.LONGVARCHAR));
-        assertTrue(PipelineJdbcUtils.isStringColumn(Types.NCHAR));
-        assertTrue(PipelineJdbcUtils.isStringColumn(Types.NVARCHAR));
-        assertTrue(PipelineJdbcUtils.isStringColumn(Types.LONGNVARCHAR));
-        assertFalse(PipelineJdbcUtils.isStringColumn(Types.INTEGER));
-    }
-    
-    @Test
-    void assertIsBinaryColumn() {
-        assertTrue(PipelineJdbcUtils.isBinaryColumn(Types.BINARY));
-        assertTrue(PipelineJdbcUtils.isBinaryColumn(Types.VARBINARY));
-        assertTrue(PipelineJdbcUtils.isBinaryColumn(Types.LONGVARBINARY));
-        assertFalse(PipelineJdbcUtils.isBinaryColumn(Types.VARCHAR));
-    }
-    
-    @Test
     void assertCancelStatementWhenIsClosed() throws SQLException {
         Statement statement = mock(Statement.class);
         when(statement.isClosed()).thenReturn(true);
         PipelineJdbcUtils.cancelStatement(statement);
-        verify(statement, times(0)).cancel();
+        verify(statement, never()).cancel();
     }
     
     @Test
@@ -80,6 +49,6 @@ class PipelineJdbcUtilsTest {
         Statement statement = mock(Statement.class);
         when(statement.isClosed()).thenThrow(SQLException.class);
         PipelineJdbcUtils.cancelStatement(statement);
-        verify(statement, times(0)).cancel();
+        verify(statement, never()).cancel();
     }
 }

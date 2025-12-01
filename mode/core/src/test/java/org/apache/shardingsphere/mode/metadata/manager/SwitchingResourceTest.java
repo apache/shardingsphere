@@ -18,7 +18,8 @@
 package org.apache.shardingsphere.mode.metadata.manager;
 
 import org.apache.shardingsphere.infra.metadata.database.resource.node.StorageNode;
-import org.apache.shardingsphere.test.fixture.jdbc.MockedDataSource;
+import org.apache.shardingsphere.mode.metadata.manager.resource.SwitchingResource;
+import org.apache.shardingsphere.test.infra.fixture.jdbc.MockedDataSource;
 import org.awaitility.Awaitility;
 import org.junit.jupiter.api.Test;
 

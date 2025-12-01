@@ -19,15 +19,14 @@ package org.apache.shardingsphere.sharding.route.engine.type.standard;
 
 import com.cedarsoftware.util.CaseInsensitiveSet;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.binder.context.type.TableAvailable;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.datanode.DataNode;
+import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.hint.HintManager;
 import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.context.RouteMapper;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
-import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.HintShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.ShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.exception.algorithm.MismatchedShardingDataSourceRouteInfoException;
@@ -112,7 +111,7 @@ public final class ShardingStandardRouteEngine implements ShardingRouteEngine {
     }
     
     private boolean isRoutingBySQLHint() {
-        Collection<String> tableNames = ((TableAvailable) sqlStatementContext).getTablesContext().getTableNames();
+        Collection<String> tableNames = sqlStatementContext.getTablesContext().getTableNames();
         for (String each : tableNames) {
             if (hintValueContext.containsHintShardingValue(each)) {
                 return true;
@@ -202,7 +201,7 @@ public final class ShardingStandardRouteEngine implements ShardingRouteEngine {
     
     private List<ShardingConditionValue> getDatabaseShardingValuesFromSQLHint() {
         Collection<Comparable<?>> shardingValues = new LinkedList<>();
-        Collection<String> tableNames = ((TableAvailable) sqlStatementContext).getTablesContext().getTableNames();
+        Collection<String> tableNames = sqlStatementContext.getTablesContext().getTableNames();
         for (String each : tableNames) {
             if (each.equals(logicTableName) && hintValueContext.containsHintShardingDatabaseValue(each)) {
                 shardingValues.addAll(hintValueContext.getHintShardingDatabaseValue(each));
@@ -220,7 +219,7 @@ public final class ShardingStandardRouteEngine implements ShardingRouteEngine {
     
     private List<ShardingConditionValue> getTableShardingValuesFromSQLHint() {
         Collection<Comparable<?>> shardingValues = new LinkedList<>();
-        Collection<String> tableNames = ((TableAvailable) sqlStatementContext).getTablesContext().getTableNames();
+        Collection<String> tableNames = sqlStatementContext.getTablesContext().getTableNames();
         for (String each : tableNames) {
             if (each.equals(logicTableName) && hintValueContext.containsHintShardingTableValue(each)) {
                 shardingValues.addAll(hintValueContext.getHintShardingTableValue(each));
@@ -261,9 +260,9 @@ public final class ShardingStandardRouteEngine implements ShardingRouteEngine {
             return shardingTable.getActualDataSourceNames();
         }
         Collection<String> result = databaseShardingStrategy.doSharding(shardingTable.getActualDataSourceNames(), databaseShardingValues, shardingTable.getDataSourceDataNode(), props);
-        ShardingSpherePreconditions.checkNotEmpty(result, NoShardingDatabaseRouteInfoException::new);
+        ShardingSpherePreconditions.checkNotEmpty(result, () -> new NoShardingDatabaseRouteInfoException(shardingTable.getActualDataSourceNames(), databaseShardingValues));
         ShardingSpherePreconditions.checkState(shardingTable.getActualDataSourceNames().containsAll(result),
-                () -> new MismatchedShardingDataSourceRouteInfoException(result, shardingTable.getActualDataSourceNames()));
+                () -> new MismatchedShardingDataSourceRouteInfoException(result, shardingTable.getActualDataSourceNames(), databaseShardingValues));
         return result;
     }
     
@@ -275,7 +274,7 @@ public final class ShardingStandardRouteEngine implements ShardingRouteEngine {
                 : tableShardingStrategy.doSharding(availableTargetTables, tableShardingValues, shardingTable.getTableDataNode(), props);
         Collection<DataNode> result = new LinkedList<>();
         for (String each : routedTables) {
-            result.add(new DataNode(routedDataSource, each));
+            result.add(new DataNode(routedDataSource, (String) null, each));
         }
         return result;
     }

@@ -17,5 +17,7 @@
   -->
 
 <sql-cases>
+    <!-- TODO should assert index for all databases (only Oracle can support parse index right now)
     <sql-case id="create_index_with_schema" value="CREATE INDEX idx_user_id ON public.t_order USING btree (user_id ASC NULLS LAST) TABLESPACE pg_default" db-types="PostgreSQL,openGauss" />
+    -->
 </sql-cases>

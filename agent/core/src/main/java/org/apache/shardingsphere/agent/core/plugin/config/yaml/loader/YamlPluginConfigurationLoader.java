@@ -38,7 +38,7 @@ public final class YamlPluginConfigurationLoader {
     /**
      * Load plugin configurations.
      *
-     * @param yamlFile yaml file
+     * @param yamlFile YAML file
      * @return plugin configurations
      * @throws IOException IO exception
      */

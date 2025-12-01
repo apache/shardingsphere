@@ -17,11 +17,12 @@
 
 package org.apache.shardingsphere.transaction.xa.jta.datasource;
 
-import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
-import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPILoader;
+import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.transaction.DialectTransactionOption;
+import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoader;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.util.reflection.ReflectionUtils;
 import org.apache.shardingsphere.transaction.xa.jta.connection.XAConnectionWrapper;
-import org.apache.shardingsphere.transaction.xa.jta.datasource.properties.XADataSourceDefinition;
 import org.apache.shardingsphere.transaction.xa.jta.datasource.swapper.DataSourceSwapper;
 import org.apache.shardingsphere.transaction.xa.spi.SingleXAResource;
 import org.apache.shardingsphere.transaction.xa.spi.XATransactionManagerProvider;
@@ -36,10 +37,13 @@ import javax.transaction.Transaction;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * XA transaction data source.
@@ -48,7 +52,9 @@ public final class XATransactionDataSource implements AutoCloseable {
     
     private static final Set<String> CONTAINER_DATASOURCE_NAMES = new HashSet<>(Arrays.asList("AtomikosDataSourceBean", "BasicManagedDataSource"));
     
-    private final ThreadLocal<Map<Transaction, Connection>> enlistedTransactions = ThreadLocal.withInitial(HashMap::new);
+    private final ThreadLocal<Map<Transaction, Collection<Connection>>> enlistedTransactions = ThreadLocal.withInitial(HashMap::new);
+    
+    private final ThreadLocal<AtomicInteger> uniqueName = ThreadLocal.withInitial(AtomicInteger::new);
     
     private final String resourceName;
     
@@ -64,7 +70,8 @@ public final class XATransactionDataSource implements AutoCloseable {
         this.resourceName = resourceName;
         this.dataSource = dataSource;
         if (!CONTAINER_DATASOURCE_NAMES.contains(dataSource.getClass().getSimpleName())) {
-            xaDataSource = new DataSourceSwapper(DatabaseTypedSPILoader.getService(XADataSourceDefinition.class, databaseType)).swap(dataSource);
+            DialectTransactionOption transactionOption = new DatabaseTypeRegistry(databaseType).getDialectDatabaseMetaData().getTransactionOption();
+            xaDataSource = new DataSourceSwapper(databaseType, transactionOption.getXaDriverClassNames()).swap(dataSource);
             xaConnectionWrapper = DatabaseTypedSPILoader.getService(XAConnectionWrapper.class, databaseType);
             this.xaTransactionManagerProvider = xaTransactionManagerProvider;
             xaTransactionManagerProvider.registerRecoveryResource(resourceName, xaDataSource);
@@ -84,25 +91,33 @@ public final class XATransactionDataSource implements AutoCloseable {
             return dataSource.getConnection();
         }
         Transaction transaction = xaTransactionManagerProvider.getTransactionManager().getTransaction();
-        if (!enlistedTransactions.get().containsKey(transaction)) {
-            Connection connection = dataSource.getConnection();
-            XAConnection xaConnection = xaConnectionWrapper.wrap(xaDataSource, connection);
-            transaction.enlistResource(new SingleXAResource(resourceName, xaConnection.getXAResource()));
-            transaction.registerSynchronization(new Synchronization() {
-                
-                @Override
-                public void beforeCompletion() {
-                    enlistedTransactions.get().remove(transaction);
-                }
-                
-                @Override
-                public void afterCompletion(final int status) {
-                    enlistedTransactions.get().clear();
-                }
-            });
-            enlistedTransactions.get().put(transaction, connection);
-        }
-        return enlistedTransactions.get().get(transaction);
+        Connection connection = dataSource.getConnection();
+        enlistResource(connection, transaction);
+        return connection;
+    }
+    
+    private void enlistResource(final Connection connection, final Transaction transaction) throws SQLException, RollbackException, SystemException {
+        XAConnection xaConnection = xaConnectionWrapper.wrap(xaDataSource, connection);
+        transaction.enlistResource(new SingleXAResource(resourceName, String.valueOf(uniqueName.get().getAndIncrement()), xaConnection.getXAResource()));
+        registerSynchronization(transaction);
+        enlistedTransactions.get().computeIfAbsent(transaction, key -> new LinkedList<>());
+        enlistedTransactions.get().get(transaction).add(connection);
+    }
+    
+    private void registerSynchronization(final Transaction transaction) throws RollbackException, SystemException {
+        transaction.registerSynchronization(new Synchronization() {
+            
+            @Override
+            public void beforeCompletion() {
+                enlistedTransactions.get().remove(transaction);
+                uniqueName.remove();
+            }
+            
+            @Override
+            public void afterCompletion(final int status) {
+                enlistedTransactions.get().clear();
+            }
+        });
     }
     
     @Override

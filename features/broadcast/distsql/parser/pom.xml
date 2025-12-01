@@ -21,17 +21,12 @@
     <parent>
         <groupId>org.apache.shardingsphere</groupId>
         <artifactId>shardingsphere-broadcast-distsql</artifactId>
-        <version>5.5.2-SNAPSHOT</version>
+        <version>5.5.3-SNAPSHOT</version>
     </parent>
     <artifactId>shardingsphere-broadcast-distsql-parser</artifactId>
     <name>${project.artifactId}</name>
     
     <dependencies>
-        <dependency>
-            <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-parser-sql-spi</artifactId>
-            <version>${project.version}</version>
-        </dependency>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
             <artifactId>shardingsphere-parser-distsql-engine</artifactId>
@@ -41,13 +36,6 @@
             <groupId>org.apache.shardingsphere</groupId>
             <artifactId>shardingsphere-broadcast-distsql-statement</artifactId>
             <version>${project.version}</version>
-        </dependency>
-        
-        <dependency>
-            <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-test-util</artifactId>
-            <version>${project.version}</version>
-            <scope>test</scope>
         </dependency>
     </dependencies>
     
@@ -83,7 +71,6 @@
                                     <goal>antlr4</goal>
                                 </goals>
                                 <configuration>
-                                    <sourceDirectory>src/main/antlr4/broadcast/</sourceDirectory>
                                     <libDirectory>src/main/antlr4/imports/broadcast</libDirectory>
                                     <listener>false</listener>
                                     <visitor>true</visitor>

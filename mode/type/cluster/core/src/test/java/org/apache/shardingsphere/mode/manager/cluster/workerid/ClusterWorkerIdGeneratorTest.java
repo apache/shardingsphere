@@ -20,11 +20,10 @@ package org.apache.shardingsphere.mode.manager.cluster.workerid;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.instance.workerid.WorkerIdAssignedException;
 import org.apache.shardingsphere.infra.instance.workerid.WorkerIdGenerator;
-import org.apache.shardingsphere.mode.manager.cluster.persist.service.ReservationPersistService;
-import org.apache.shardingsphere.mode.persist.service.unified.ComputeNodePersistService;
+import org.apache.shardingsphere.infra.util.props.PropertiesBuilder;
+import org.apache.shardingsphere.infra.util.props.PropertiesBuilder.Property;
+import org.apache.shardingsphere.mode.manager.cluster.persist.service.ClusterComputeNodePersistService;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
-import org.apache.shardingsphere.test.util.PropertiesBuilder;
-import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -49,7 +48,7 @@ class ClusterWorkerIdGeneratorTest {
     private ClusterWorkerIdGenerator workerIdGenerator;
     
     @Mock
-    private ComputeNodePersistService computeNodePersistService;
+    private ClusterComputeNodePersistService computeNodePersistService;
     
     @Mock
     private ReservationPersistService reservationPersistService;

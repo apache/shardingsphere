@@ -48,6 +48,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.match
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Deque;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
@@ -106,6 +107,34 @@ public final class ExpressionExtractor {
     }
     
     /**
+     * Extract all expressions.
+     *
+     * @param expression to be extracted expression segment
+     * @return all expressions
+     */
+    public static Collection<ExpressionSegment> extractAllExpressions(final ExpressionSegment expression) {
+        Collection<ExpressionSegment> result = new LinkedList<>();
+        Deque<ExpressionSegment> stack = new LinkedList<>();
+        stack.push(expression);
+        while (!stack.isEmpty()) {
+            ExpressionSegment expressionSegment = stack.pop();
+            if (expressionSegment instanceof BinaryOperationExpression) {
+                BinaryOperationExpression binaryExpression = (BinaryOperationExpression) expressionSegment;
+                Optional<LogicalOperator> logicalOperator = LogicalOperator.valueFrom(binaryExpression.getOperator());
+                if (logicalOperator.isPresent() && (LogicalOperator.OR == logicalOperator.get() || LogicalOperator.AND == logicalOperator.get())) {
+                    stack.push(binaryExpression.getRight());
+                    stack.push(binaryExpression.getLeft());
+                } else {
+                    result.add(expressionSegment);
+                }
+            } else {
+                result.add(expressionSegment);
+            }
+        }
+        return result;
+    }
+    
+    /**
      * Get parameter marker expressions.
      *
      * @param expressions expressions
@@ -136,6 +165,24 @@ public final class ExpressionExtractor {
             if (each instanceof InExpression) {
                 extractParameterMarkerExpressions(segments, ((InExpression) each).getExpressionList());
             }
+            if (each instanceof CaseWhenExpression) {
+                extractParameterMarkerInCaseWhenExpression(segments, (CaseWhenExpression) each);
+            }
+        }
+    }
+    
+    private static void extractParameterMarkerInCaseWhenExpression(final List<ParameterMarkerExpressionSegment> segments, final CaseWhenExpression expression) {
+        if (null != expression.getCaseExpr()) {
+            extractParameterMarkerExpressions(segments, Collections.singletonList(expression.getCaseExpr()));
+        }
+        if (null != expression.getWhenExprs()) {
+            extractParameterMarkerExpressions(segments, expression.getWhenExprs());
+        }
+        if (null != expression.getThenExprs()) {
+            extractParameterMarkerExpressions(segments, expression.getThenExprs());
+        }
+        if (null != expression.getElseExpr()) {
+            extractParameterMarkerExpressions(segments, Collections.singletonList(expression.getElseExpr()));
         }
     }
     
@@ -147,10 +194,22 @@ public final class ExpressionExtractor {
      */
     public static void extractJoinConditions(final Collection<BinaryOperationExpression> joinConditions, final Collection<WhereSegment> whereSegments) {
         for (WhereSegment each : whereSegments) {
-            if (each.getExpr() instanceof BinaryOperationExpression && ((BinaryOperationExpression) each.getExpr()).getLeft() instanceof ColumnSegment
-                    && ((BinaryOperationExpression) each.getExpr()).getRight() instanceof ColumnSegment) {
-                joinConditions.add((BinaryOperationExpression) each.getExpr());
+            if (each.getExpr() instanceof BinaryOperationExpression) {
+                extractJoinConditions(joinConditions, (BinaryOperationExpression) each.getExpr());
             }
+        }
+    }
+    
+    private static void extractJoinConditions(final Collection<BinaryOperationExpression> joinConditions, final BinaryOperationExpression binaryOperationExpression) {
+        if (binaryOperationExpression.getLeft() instanceof ColumnSegment
+                && binaryOperationExpression.getRight() instanceof ColumnSegment) {
+            joinConditions.add(binaryOperationExpression);
+        }
+        if (binaryOperationExpression.getLeft() instanceof BinaryOperationExpression) {
+            extractJoinConditions(joinConditions, (BinaryOperationExpression) binaryOperationExpression.getLeft());
+        }
+        if (binaryOperationExpression.getRight() instanceof BinaryOperationExpression) {
+            extractJoinConditions(joinConditions, (BinaryOperationExpression) binaryOperationExpression.getRight());
         }
     }
     

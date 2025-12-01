@@ -21,9 +21,8 @@ import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
+import org.apache.shardingsphere.mode.spi.rule.RuleChangedItemType;
 import org.apache.shardingsphere.mode.spi.rule.RuleItemConfigurationChangedProcessor;
-import org.apache.shardingsphere.mode.spi.rule.item.alter.AlterNamedRuleItem;
-import org.apache.shardingsphere.mode.spi.rule.item.drop.DropNamedRuleItem;
 import org.apache.shardingsphere.readwritesplitting.config.ReadwriteSplittingRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.config.rule.ReadwriteSplittingDataSourceGroupRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.rule.ReadwriteSplittingRule;
@@ -35,7 +34,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedList;
 
-import static org.apache.shardingsphere.test.matcher.ShardingSphereAssertionMatchers.deepEqual;
+import static org.apache.shardingsphere.test.infra.framework.matcher.ShardingSphereAssertionMatchers.deepEqual;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -46,21 +45,17 @@ class ReadwriteSplittingDataSourceChangedProcessorTest {
     
     @SuppressWarnings("unchecked")
     private final RuleItemConfigurationChangedProcessor<ReadwriteSplittingRuleConfiguration, ReadwriteSplittingDataSourceGroupRuleConfiguration> processor = TypedSPILoader.getService(
-            RuleItemConfigurationChangedProcessor.class, "readwrite_splitting.data_source_groups");
+            RuleItemConfigurationChangedProcessor.class, new RuleChangedItemType("readwrite_splitting", "data_source_groups"));
     
     @Test
     void assertSwapRuleItemConfigurationWithoutTransactionalReadQueryStrategy() {
-        AlterNamedRuleItem alterNamedRuleItem = mock(AlterNamedRuleItem.class);
-        when(alterNamedRuleItem.getItemName()).thenReturn("foo");
-        ReadwriteSplittingDataSourceGroupRuleConfiguration actual = processor.swapRuleItemConfiguration(alterNamedRuleItem, createYAMLContent(null));
+        ReadwriteSplittingDataSourceGroupRuleConfiguration actual = processor.swapRuleItemConfiguration("foo", createYAMLContent(null));
         assertThat(actual, deepEqual(new ReadwriteSplittingDataSourceGroupRuleConfiguration("foo", "write_ds", Collections.singletonList("read_ds"), "foo_balancer")));
     }
     
     @Test
     void assertSwapRuleItemConfigurationWithTransactionalReadQueryStrategy() {
-        AlterNamedRuleItem alterNamedRuleItem = mock(AlterNamedRuleItem.class);
-        when(alterNamedRuleItem.getItemName()).thenReturn("foo");
-        ReadwriteSplittingDataSourceGroupRuleConfiguration actual = processor.swapRuleItemConfiguration(alterNamedRuleItem, createYAMLContent(TransactionalReadQueryStrategy.PRIMARY));
+        ReadwriteSplittingDataSourceGroupRuleConfiguration actual = processor.swapRuleItemConfiguration("foo", createYAMLContent(TransactionalReadQueryStrategy.PRIMARY));
         assertThat(actual, deepEqual(new ReadwriteSplittingDataSourceGroupRuleConfiguration(
                 "foo", "write_ds", Collections.singletonList("read_ds"), TransactionalReadQueryStrategy.PRIMARY, "foo_balancer")));
     }
@@ -90,21 +85,17 @@ class ReadwriteSplittingDataSourceChangedProcessorTest {
     
     @Test
     void assertChangeRuleItemConfiguration() {
-        AlterNamedRuleItem alterNamedRuleItem = mock(AlterNamedRuleItem.class);
-        when(alterNamedRuleItem.getItemName()).thenReturn("foo");
         ReadwriteSplittingRuleConfiguration currentRuleConfig = createCurrentRuleConfiguration();
         ReadwriteSplittingDataSourceGroupRuleConfiguration toBeChangedItemConfig = new ReadwriteSplittingDataSourceGroupRuleConfiguration(
                 "foo", "write_ds", Collections.singletonList("read_ds"), TransactionalReadQueryStrategy.FIXED, "foo_balancer");
-        processor.changeRuleItemConfiguration(alterNamedRuleItem, currentRuleConfig, toBeChangedItemConfig);
+        processor.changeRuleItemConfiguration("foo", currentRuleConfig, toBeChangedItemConfig);
         assertThat(new ArrayList<>(currentRuleConfig.getDataSourceGroups()).get(0).getTransactionalReadQueryStrategy(), is(TransactionalReadQueryStrategy.FIXED));
     }
     
     @Test
     void assertDropRuleItemConfiguration() {
-        DropNamedRuleItem dropNamedRuleItem = mock(DropNamedRuleItem.class);
-        when(dropNamedRuleItem.getItemName()).thenReturn("foo");
         ReadwriteSplittingRuleConfiguration currentRuleConfig = createCurrentRuleConfiguration();
-        processor.dropRuleItemConfiguration(dropNamedRuleItem, currentRuleConfig);
+        processor.dropRuleItemConfiguration("foo", currentRuleConfig);
         assertTrue(currentRuleConfig.getDataSourceGroups().isEmpty());
     }
     

@@ -21,26 +21,23 @@ import com.arjuna.ats.arjuna.common.CoreEnvironmentBeanException;
 import com.arjuna.ats.arjuna.common.arjPropertyManager;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
-import org.apache.shardingsphere.driver.jdbc.core.connection.ShardingSphereConnection;
 import org.apache.shardingsphere.test.natived.commons.TestShardingService;
-import org.junit.jupiter.api.AfterAll;
+import org.apache.shardingsphere.test.natived.commons.util.ResourceUtils;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 
 import javax.sql.DataSource;
-import java.sql.Connection;
 import java.sql.SQLException;
 
 class NarayanaTest {
     
-    private static DataSource logicDataSource;
+    private DataSource logicDataSource;
     
     private TestShardingService testShardingService;
     
-    @AfterAll
-    static void afterAll() throws SQLException {
-        try (Connection connection = logicDataSource.getConnection()) {
-            connection.unwrap(ShardingSphereConnection.class).getContextManager().close();
-        }
+    @AfterEach
+    void afterEach() throws SQLException {
+        ResourceUtils.closeJdbcDataSource(logicDataSource);
     }
     
     @Test

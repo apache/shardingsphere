@@ -21,14 +21,16 @@
     <parent>
         <groupId>org.apache.shardingsphere</groupId>
         <artifactId>shardingsphere-infra</artifactId>
-        <version>5.5.2-SNAPSHOT</version>
+        <version>5.5.3-SNAPSHOT</version>
     </parent>
     <artifactId>shardingsphere-infra-exception</artifactId>
-    <packaging>pom</packaging>
     <name>${project.artifactId}</name>
     
-    <modules>
-        <module>core</module>
-        <module>dialect</module>
-    </modules>
+    <dependencies>
+        <dependency>
+            <groupId>org.apache.shardingsphere</groupId>
+            <artifactId>shardingsphere-infra-annotation</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+    </dependencies>
 </project>

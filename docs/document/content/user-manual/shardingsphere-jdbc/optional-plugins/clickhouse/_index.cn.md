@@ -10,7 +10,7 @@ ShardingSphere 对 ClickHouse JDBC Driver 的支持位于可选模块中。
 
 ## 前提条件
 
-要在 ShardingSphere 的配置文件为数据节点使用类似 `jdbc:ch://localhost:8123/demo_ds_0` 的 `jdbcUrl`，
+要在 ShardingSphere 的配置文件为数据节点使用类似 `jdbc:ch://localhost:8123/demo_ds_0` 的 `standardJdbcUrl`，
 可能的 Maven 依赖关系如下，
 
 ```xml
@@ -22,7 +22,7 @@ ShardingSphere 对 ClickHouse JDBC Driver 的支持位于可选模块中。
     </dependency>
     <dependency>
         <groupId>org.apache.shardingsphere</groupId>
-        <artifactId>shardingsphere-parser-sql-clickhouse</artifactId>
+        <artifactId>shardingsphere-jdbc-dialect-clickhouse</artifactId>
         <version>${shardingsphere.version}</version>
     </dependency>
     <dependency>
@@ -43,7 +43,9 @@ ShardingSphere 对 ClickHouse JDBC Driver 的支持位于可选模块中。
 ```yaml
 services:
   clickhouse-server:
-    image: clickhouse/clickhouse-server:24.11.1.2557
+    image: clickhouse/clickhouse-server:25.6.5.41
+    environment:
+      CLICKHOUSE_SKIP_USER_SETUP: "1"
     ports:
       - "8123:8123"
 ```
@@ -59,7 +61,7 @@ sudo snap install dbeaver-ce
 snap run dbeaver-ce
 ```
 
-在 DBeaver Community 内，使用 `jdbc:ch://localhost:8123/default` 的 `jdbcUrl`，`default` 的`username` 连接至 ClickHouse，
+在 DBeaver Community 内，使用 `jdbc:ch://localhost:8123/default` 的 `standardJdbcUrl`，`default` 的`username` 连接至 ClickHouse，
 `password` 留空。
 执行如下 SQL，
 
@@ -71,7 +73,7 @@ CREATE DATABASE demo_ds_2;
 ```
 
 分别使用 `jdbc:ch://localhost:8123/demo_ds_0` ，
-`jdbc:ch://localhost:8123/demo_ds_1` 和 `jdbc:ch://localhost:8123/demo_ds_2` 的 `jdbcUrl` 连接至 ClickHouse 来执行如下 SQL，
+`jdbc:ch://localhost:8123/demo_ds_1` 和 `jdbc:ch://localhost:8123/demo_ds_2` 的 `standardJdbcUrl` 连接至 ClickHouse 来执行如下 SQL，
 
 ```sql
 -- noinspection SqlNoDataSourceInspectionForFile
@@ -97,26 +99,26 @@ dataSources:
     ds_0:
         dataSourceClassName: com.zaxxer.hikari.HikariDataSource
         driverClassName: com.clickhouse.jdbc.ClickHouseDriver
-        jdbcUrl: jdbc:ch://localhost:8123/demo_ds_0
+        standardJdbcUrl: jdbc:ch://localhost:8123/demo_ds_0
         username: default
         password:
     ds_1:
         dataSourceClassName: com.zaxxer.hikari.HikariDataSource
         driverClassName: com.clickhouse.jdbc.ClickHouseDriver
-        jdbcUrl: jdbc:ch://localhost:8123/demo_ds_1
+        standardJdbcUrl: jdbc:ch://localhost:8123/demo_ds_1
         username: default
         password:
     ds_2:
         dataSourceClassName: com.zaxxer.hikari.HikariDataSource
         driverClassName: com.clickhouse.jdbc.ClickHouseDriver
-        jdbcUrl: jdbc:ch://localhost:8123/demo_ds_2
+        standardJdbcUrl: jdbc:ch://localhost:8123/demo_ds_2
         username: default
         password:
 rules:
 - !SHARDING
     tables:
       t_order:
-        actualDataNodes:
+        actualDataNodes: <LITERAL>ds_0.t_order, ds_1.t_order, ds_2.t_order
         keyGenerateStrategy:
           column: order_id
           keyGeneratorName: snowflake
@@ -154,7 +156,7 @@ public class ExampleUtils {
              Statement statement = connection.createStatement()) {
             statement.execute("INSERT INTO t_order (user_id, order_type, address_id, status) VALUES (1, 1, 1, 'INSERT_TEST')");
             statement.executeQuery("SELECT * FROM t_order");
-            statement.execute("alter table t_order delete where order_id=1");
+            statement.execute("alter table t_order delete where user_id=1");
         }
     }
 }
@@ -213,185 +215,21 @@ public class ExampleTest {
 
 ### 事务限制
 
-ClickHouse 不支持 ShardingSphere 集成级别的 XA 事务，
-因为 https://github.com/ClickHouse/clickhouse-java 未实现 `javax.sql.XADataSource` 的相关 Java 接口。
-
-ClickHouse 不支持 ShardingSphere 集成级别的 Seata AT 模式事务，
-因为 https://github.com/apache/incubator-seata 未实现 ClickHouse 的 SQL 方言解析。
-
-ClickHouse 支持 ShardingSphere 集成级别的本地事务，但需要对 ClickHouse 进行额外配置， 
+ClickHouse 不支持 ShardingSphere 集成级别的本地事务，XA 事务或 Seata 的 AT 模式事务，
 更多讨论位于 https://github.com/ClickHouse/clickhouse-docs/issues/2300 。
 
-引入讨论，编写 Docker Compose 文件来启动 ClickHouse 和 ClickHouse Keeper。
-
-```yaml
-services:
-  clickhouse-keeper-01:
-    image: clickhouse/clickhouse-keeper:24.11.1.2557
-    volumes:
-      - ./keeper_config.xml:/etc/clickhouse-keeper/keeper_config.xml
-  clickhouse-server:
-    image: clickhouse/clickhouse-server:24.11.1.2557
-    depends_on:
-      - clickhouse-keeper-01
-    ports:
-      - "8123:8123"
-    volumes:
-      - ./transactions.xml:/etc/clickhouse-server/config.d/transactions.xml
-```
-
-`./keeper_config.xml` 的内容如下，
-
-```xml
-<clickhouse replace="true">
-    <listen_host>0.0.0.0</listen_host>
-    <keeper_server>
-        <tcp_port>9181</tcp_port>
-        <server_id>1</server_id>
-        <snapshot_storage_path>/var/lib/clickhouse/coordination/snapshots</snapshot_storage_path>
-        <raft_configuration>
-            <server>
-                <id>1</id>
-                <hostname>clickhouse-keeper-01</hostname>
-                <port>9234</port>
-            </server>
-        </raft_configuration>
-    </keeper_server>
-</clickhouse>
-```
-
-`./transactions.xml` 的内容如下，
-
-```xml
-<clickhouse>
-    <allow_experimental_transactions>1</allow_experimental_transactions>
-    <zookeeper>
-        <node index="1">
-            <host>clickhouse-keeper-01</host>
-            <port>9181</port>
-        </node>
-    </zookeeper>
-</clickhouse>
-```
-
-在 DBeaver Community 内，使用 `jdbc:ch://localhost:8123/default` 的 `jdbcUrl`，`default` 的`username` 连接至 ClickHouse，
-`password` 留空。
-执行如下 SQL，
-
-```sql
--- noinspection SqlNoDataSourceInspectionForFile
-CREATE DATABASE demo_ds_0;
-CREATE DATABASE demo_ds_1;
-CREATE DATABASE demo_ds_2;
-```
-
-分别使用 `jdbc:ch://localhost:8123/demo_ds_0` ，
-`jdbc:ch://localhost:8123/demo_ds_1` 和 `jdbc:ch://localhost:8123/demo_ds_2` 的 `jdbcUrl` 连接至 ClickHouse 来执行如下 SQL，
-
-```sql
--- noinspection SqlNoDataSourceInspectionForFile
-create table IF NOT EXISTS t_order (
-    order_id   Int64 NOT NULL,
-    order_type Int32,
-    user_id    Int32 NOT NULL,
-    address_id Int64 NOT NULL,
-    status     VARCHAR(50)
-) engine = MergeTree
-    primary key (order_id)
-    order by (order_id);
-
-TRUNCATE TABLE t_order;
-```
-
-在业务项目引入`前提条件`涉及的依赖后，在业务项目的 classpath 上编写 ShardingSphere 数据源的配置文件`demo.yaml`，
-
-```yaml
-dataSources:
-    ds_0:
-        dataSourceClassName: com.zaxxer.hikari.HikariDataSource
-        driverClassName: com.clickhouse.jdbc.ClickHouseDriver
-        jdbcUrl: jdbc:ch://localhost:8123/demo_ds_0?transactionSupport=true
-        username: default
-        password:
-    ds_1:
-        dataSourceClassName: com.zaxxer.hikari.HikariDataSource
-        driverClassName: com.clickhouse.jdbc.ClickHouseDriver
-        jdbcUrl: jdbc:ch://localhost:8123/demo_ds_1?transactionSupport=true
-        username: default
-        password:
-    ds_2:
-        dataSourceClassName: com.zaxxer.hikari.HikariDataSource
-        driverClassName: com.clickhouse.jdbc.ClickHouseDriver
-        jdbcUrl: jdbc:ch://localhost:8123/demo_ds_2?transactionSupport=true
-        username: default
-        password:
-rules:
-- !SHARDING
-    tables:
-      t_order:
-        actualDataNodes:
-        keyGenerateStrategy:
-          column: order_id
-          keyGeneratorName: snowflake
-    defaultDatabaseStrategy:
-      standard:
-        shardingColumn: user_id
-        shardingAlgorithmName: inline
-    shardingAlgorithms:
-      inline:
-        type: INLINE
-        props:
-          algorithm-expression: ds_${user_id % 2}
-    keyGenerators:
-      snowflake:
-        type: SNOWFLAKE
-```
-
-创建 ShardingSphere 的数据源后可正常使用本地事务，
-
-```java
-import com.zaxxer.hikari.HikariConfig;
-import com.zaxxer.hikari.HikariDataSource;
-import java.sql.Connection;
-import java.sql.SQLException;
-@SuppressWarnings({"SqlNoDataSourceInspection", "AssertWithSideEffects"})
-public class ExampleUtils {
-    void test() throws SQLException {
-        HikariConfig config = new HikariConfig();
-        config.setJdbcUrl("jdbc:shardingsphere:classpath:demo.yaml");
-        config.setDriverClassName("org.apache.shardingsphere.driver.ShardingSphereDriver");
-        try (HikariDataSource dataSource = new HikariDataSource(config); Connection connection = dataSource.getConnection()) {
-            try {
-                connection.setAutoCommit(false);
-                connection.createStatement().executeUpdate("INSERT INTO t_order (user_id, order_type, address_id, status) VALUES (2024, 0, 2024, 'INSERT_TEST')");
-                connection.createStatement().executeUpdate("INSERT INTO t_order_does_not_exist (test_id_does_not_exist) VALUES (2024)");
-                connection.commit();
-            } catch (final SQLException ignored) {
-                connection.rollback();
-            } finally {
-                connection.setAutoCommit(true);
-            }
-            try (Connection conn = dataSource.getConnection()) {
-                assert !conn.createStatement().executeQuery("SELECT * FROM t_order WHERE user_id = 2024").next();
-            }
-        }
-    }
-}
-```
-
-一旦在 ShardingSphere 的配置文件为 ClickHouse JDBC Driver 的 jdbcUrl 设置 `transactionSupport=true`，
-用户在执行 `alter table` 语句前应确保没有尚未完成执行的 `insert` 语句，以避免如下 Error 的发生，
-
-```shell
-java.sql.BatchUpdateException: Code: 341. DB::Exception: Exception happened during execution of mutation 'mutation_6.txt' with part 'all_1_1_0' reason: 'Serialization error: part all_1_1_0 is locked by transaction 5672402456378293316'. This error maybe retryable or not. In case of unretryable error, mutation can be killed with KILL MUTATION query. (UNFINISHED) (version 24.10.2.80 (official build))
-	at com.clickhouse.jdbc.SqlExceptionUtils.batchUpdateError(SqlExceptionUtils.java:107)
-	at com.clickhouse.jdbc.internal.SqlBasedPreparedStatement.executeAny(SqlBasedPreparedStatement.java:223)
-	at com.clickhouse.jdbc.internal.SqlBasedPreparedStatement.executeLargeUpdate(SqlBasedPreparedStatement.java:302)
-	at com.clickhouse.jdbc.internal.AbstractPreparedStatement.executeUpdate(AbstractPreparedStatement.java:135)
-```
+这与 https://clickhouse.com/docs/en/guides/developer/transactional 为 ClickHouse 提供的 `Transactions, Commit, and Rollback` 功能无关，
+仅与 `com.clickhouse.jdbc.ConnectionImpl` 未实现 `java.sql.Connection#rollback()` 有关。
+参考 https://github.com/ClickHouse/clickhouse-java/issues/2023 。
 
 ### 嵌入式 ClickHouse 限制
 
 嵌入式 ClickHouse `chDB` 尚未发布 Java 客户端，
 ShardingSphere 不针对 SNAPSHOT 版本的 https://github.com/chdb-io/chdb-java 做集成测试。
 参考 https://github.com/chdb-io/chdb/issues/243 。
+
+### ClickHouse JDBC Driver V2 限制
+
+ClickHouse JDBC Driver V2 自 https://github.com/ClickHouse/clickhouse-java/pull/2368 所在的 `0.8.6` 里程碑开始，
+使用 `org.antlr:antlr4-maven-plugin:4.13.2`。这与 ShardingSphere 使用的 `org.antlr:antlr4-runtime:4.10.1` 产生冲突。
+ShardingSphere 仅使用 `com.clickhouse:clickhouse-jdbc:0.6.3:http` 测试 ClickHouse 集成。

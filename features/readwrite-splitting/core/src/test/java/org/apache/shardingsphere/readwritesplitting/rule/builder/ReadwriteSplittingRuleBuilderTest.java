@@ -17,23 +17,24 @@
 
 package org.apache.shardingsphere.readwritesplitting.rule.builder;
 
-import org.apache.shardingsphere.infra.instance.ComputeNodeInstanceContext;
-import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.rule.builder.database.DatabaseRuleBuilder;
 import org.apache.shardingsphere.infra.spi.type.ordered.OrderedSPILoader;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.readwritesplitting.config.ReadwriteSplittingRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.config.rule.ReadwriteSplittingDataSourceGroupRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.rule.ReadwriteSplittingRule;
-import org.apache.shardingsphere.test.fixture.database.MockedDatabaseType;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.isA;
 import static org.mockito.Mockito.mock;
 
 class ReadwriteSplittingRuleBuilderTest {
+    
+    private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "FIXTURE");
     
     @SuppressWarnings({"rawtypes", "unchecked"})
     @Test
@@ -41,7 +42,6 @@ class ReadwriteSplittingRuleBuilderTest {
         ReadwriteSplittingRuleConfiguration ruleConfig = new ReadwriteSplittingRuleConfiguration(Collections.singleton(
                 new ReadwriteSplittingDataSourceGroupRuleConfiguration("name", "writeDataSourceName", Collections.singletonList("readDataSourceName"), "loadBalancerName")), Collections.emptyMap());
         DatabaseRuleBuilder builder = OrderedSPILoader.getServices(DatabaseRuleBuilder.class, Collections.singleton(ruleConfig)).get(ruleConfig);
-        assertThat(builder.build(ruleConfig, "",
-                new MockedDatabaseType(), mock(ResourceMetaData.class), Collections.emptyList(), mock(ComputeNodeInstanceContext.class)), instanceOf(ReadwriteSplittingRule.class));
+        assertThat(builder.build(ruleConfig, "", databaseType, mock(), Collections.emptyList(), mock()), isA(ReadwriteSplittingRule.class));
     }
 }

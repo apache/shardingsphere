@@ -31,7 +31,7 @@ class ShardingRouteCacheTest {
     @Test
     void assertPutAndGet() {
         ShardingRouteCache cache = new ShardingRouteCache(new ShardingCacheOptionsConfiguration(true, 1, 1));
-        ShardingRouteCacheKey key = new ShardingRouteCacheKey("select name from t where id = ?", Collections.singletonList(1));
+        ShardingRouteCacheKey key = new ShardingRouteCacheKey("SELECT name FROM t WHERE id = ?", Collections.singletonList(1));
         assertFalse(cache.get(key).isPresent());
         cache.put(key, new ShardingRouteCacheValue(new RouteContext()));
         assertTrue(cache.get(key).isPresent());

@@ -19,11 +19,9 @@ package org.apache.shardingsphere.single.rule.changed;
 
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
-import org.apache.shardingsphere.mode.spi.rule.item.alter.AlterRuleItem;
-import org.apache.shardingsphere.mode.spi.rule.item.drop.DropRuleItem;
+import org.apache.shardingsphere.mode.spi.rule.RuleChangedItemType;
 import org.apache.shardingsphere.mode.spi.rule.RuleItemConfigurationChangedProcessor;
 import org.apache.shardingsphere.single.config.SingleRuleConfiguration;
-import org.apache.shardingsphere.single.metadata.nodepath.SingleRuleNodePathProvider;
 import org.apache.shardingsphere.single.rule.SingleRule;
 
 import java.util.LinkedHashSet;
@@ -35,28 +33,28 @@ public final class SingleTableChangedProcessor implements RuleItemConfigurationC
     
     @SuppressWarnings("unchecked")
     @Override
-    public SingleRuleConfiguration swapRuleItemConfiguration(final AlterRuleItem alterRuleItem, final String yamlContent) {
+    public SingleRuleConfiguration swapRuleItemConfiguration(final String itemName, final String yamlContent) {
         return new SingleRuleConfiguration(YamlEngine.unmarshal(yamlContent, LinkedHashSet.class), null);
     }
     
     @Override
     public SingleRuleConfiguration findRuleConfiguration(final ShardingSphereDatabase database) {
-        return database.getRuleMetaData().findSingleRule(SingleRule.class).map(SingleRule::getConfiguration).orElseGet(SingleRuleConfiguration::new);
+        return database.getRuleMetaData().getSingleRule(SingleRule.class).getConfiguration();
     }
     
     @Override
-    public void changeRuleItemConfiguration(final AlterRuleItem alterRuleItem, final SingleRuleConfiguration currentRuleConfig, final SingleRuleConfiguration toBeChangedItemConfig) {
+    public void changeRuleItemConfiguration(final String itemName, final SingleRuleConfiguration currentRuleConfig, final SingleRuleConfiguration toBeChangedItemConfig) {
         currentRuleConfig.getTables().clear();
         currentRuleConfig.getTables().addAll(toBeChangedItemConfig.getTables());
     }
     
     @Override
-    public void dropRuleItemConfiguration(final DropRuleItem dropRuleItem, final SingleRuleConfiguration currentRuleConfig) {
+    public void dropRuleItemConfiguration(final String itemName, final SingleRuleConfiguration currentRuleConfig) {
         currentRuleConfig.getTables().clear();
     }
     
     @Override
-    public String getType() {
-        return SingleRuleNodePathProvider.RULE_TYPE + "." + SingleRuleNodePathProvider.TABLES;
+    public RuleChangedItemType getType() {
+        return new RuleChangedItemType("single", "tables");
     }
 }

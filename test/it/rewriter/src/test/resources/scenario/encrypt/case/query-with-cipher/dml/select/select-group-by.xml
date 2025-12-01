@@ -19,22 +19,22 @@
 <rewrite-assertions yaml-rule="scenario/encrypt/config/query-with-cipher.yaml">
     <rewrite-assertion id="select_with_groupby_assisted_for_parameters" db-types="MySQL">
         <input sql="SELECT account_id, password, amount AS a, status AS s FROM t_account WHERE account_id = ? AND password = ? AND password like ? AND amount = ? AND status = ? group by password desc" parameters="1, aaa, aaa, 1000, OK" />
-        <output sql="SELECT account_id, cipher_password AS password, cipher_amount AS a, status AS s FROM t_account WHERE account_id = ? AND assisted_query_password = ? AND like_query_password like ? AND cipher_amount = ? AND status = ? group by assisted_query_password desc" parameters="1, assisted_query_aaa, like_query_aaa, encrypt_1000, OK" />
+        <output sql="SELECT account_id, `cipher_password` AS password, `cipher_amount` AS a, status AS s FROM t_account WHERE account_id = ? AND `assisted_query_password` = ? AND `like_query_password` like ? AND `cipher_amount` = ? AND status = ? group by `assisted_query_password` desc" parameters="1, assisted_query_aaa, like_query_aaa, encrypt_1000, OK" />
     </rewrite-assertion>
 
     <rewrite-assertion id="select_with_groupby_assisted_for_literals" db-types="MySQL">
         <input sql="SELECT account_id, password, amount AS a, status AS s FROM t_account WHERE account_id = 1 AND password = 'aaa' AND password like 'aaa' AND amount = 1000 AND status = 'OK' group by password desc" />
-        <output sql="SELECT account_id, cipher_password AS password, cipher_amount AS a, status AS s FROM t_account WHERE account_id = 1 AND assisted_query_password = 'assisted_query_aaa' AND like_query_password like 'like_query_aaa' AND cipher_amount = 'encrypt_1000' AND status = 'OK' group by assisted_query_password desc" />
+        <output sql="SELECT account_id, `cipher_password` AS password, `cipher_amount` AS a, status AS s FROM t_account WHERE account_id = 1 AND `assisted_query_password` = 'assisted_query_aaa' AND `like_query_password` like 'like_query_aaa' AND `cipher_amount` = 'encrypt_1000' AND status = 'OK' group by `assisted_query_password` desc" />
     </rewrite-assertion>
 
     <rewrite-assertion id="select_with_groupby_cipher_for_parameters" db-types="MySQL">
         <input sql="SELECT account_id, password, amount AS a, status AS s FROM t_account WHERE account_id = ? AND password = ? AND password like ? AND amount = ? AND status = ? group by amount desc" parameters="1, aaa, aaa, 1000, OK" />
-        <output sql="SELECT account_id, cipher_password AS password, cipher_amount AS a, status AS s FROM t_account WHERE account_id = ? AND assisted_query_password = ? AND like_query_password like ? AND cipher_amount = ? AND status = ? group by cipher_amount desc" parameters="1, assisted_query_aaa, like_query_aaa, encrypt_1000, OK" />
+        <output sql="SELECT account_id, `cipher_password` AS password, `cipher_amount` AS a, status AS s FROM t_account WHERE account_id = ? AND `assisted_query_password` = ? AND `like_query_password` like ? AND `cipher_amount` = ? AND status = ? group by `cipher_amount` desc" parameters="1, assisted_query_aaa, like_query_aaa, encrypt_1000, OK" />
     </rewrite-assertion>
     
     <rewrite-assertion id="select_with_groupby_cipher_for_literals" db-types="MySQL">
         <input sql="SELECT account_id, password, amount AS a, status AS s FROM t_account WHERE account_id = 1 AND password = 'aaa' AND password like 'aaa' AND amount = 1000 AND status = 'OK' group by amount desc" />
-        <output sql="SELECT account_id, cipher_password AS password, cipher_amount AS a, status AS s FROM t_account WHERE account_id = 1 AND assisted_query_password = 'assisted_query_aaa' AND like_query_password like 'like_query_aaa' AND cipher_amount = 'encrypt_1000' AND status = 'OK' group by cipher_amount desc" />
+        <output sql="SELECT account_id, `cipher_password` AS password, `cipher_amount` AS a, status AS s FROM t_account WHERE account_id = 1 AND `assisted_query_password` = 'assisted_query_aaa' AND `like_query_password` like 'like_query_aaa' AND `cipher_amount` = 'encrypt_1000' AND status = 'OK' group by `cipher_amount` desc" />
     </rewrite-assertion>
 
     <rewrite-assertion id="select_with_groupby_quote" db-types="MySQL">

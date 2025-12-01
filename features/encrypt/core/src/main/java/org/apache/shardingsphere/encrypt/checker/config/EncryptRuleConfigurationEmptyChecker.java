@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.encrypt.checker.config;
 
 import org.apache.shardingsphere.encrypt.config.EncryptRuleConfiguration;
-import org.apache.shardingsphere.infra.config.rule.scope.DatabaseRuleConfigurationEmptyChecker;
+import org.apache.shardingsphere.infra.config.rule.checker.DatabaseRuleConfigurationEmptyChecker;
 
 /**
  * Encrypt rule configuration empty checker.

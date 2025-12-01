@@ -21,7 +21,9 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.spi.type.ordered.cache.OrderedServicesCache;
 import org.apache.shardingsphere.mode.event.DataChangedEvent;
 import org.apache.shardingsphere.mode.manager.ContextManager;
-import org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.DataChangedEventHandler;
+import org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.global.GlobalDataChangedEventHandler;
+import org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.global.config.GlobalConfigurationChangedHandler;
+import org.apache.shardingsphere.mode.metadata.manager.ActiveVersionChecker;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEventListener;
 
 /**
@@ -32,11 +34,14 @@ public final class GlobalMetaDataChangedListener implements DataChangedEventList
     
     private final ContextManager contextManager;
     
-    private final DataChangedEventHandler handler;
+    private final GlobalDataChangedEventHandler handler;
     
     @Override
     public void onChange(final DataChangedEvent event) {
         if (handler.getSubscribedTypes().contains(event.getType())) {
+            if (handler instanceof GlobalConfigurationChangedHandler && !new ActiveVersionChecker(contextManager.getPersistServiceFacade().getRepository()).checkSame(event)) {
+                return;
+            }
             OrderedServicesCache.clearCache();
             handler.handle(contextManager, event);
         }

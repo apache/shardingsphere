@@ -20,10 +20,10 @@ package org.apache.shardingsphere.mode.metadata.refresher.util;
 import com.google.common.base.Joiner;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.database.connector.core.metadata.database.enums.QuoteCharacter;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
-import org.apache.shardingsphere.infra.database.core.metadata.database.enums.QuoteCharacter;
-import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
-import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
@@ -32,7 +32,6 @@ import org.apache.shardingsphere.infra.rule.attribute.datanode.MutableDataNodeRu
 import org.apache.shardingsphere.infra.rule.attribute.table.TableMapperRuleAttribute;
 import org.apache.shardingsphere.single.config.SingleRuleConfiguration;
 import org.apache.shardingsphere.single.constant.SingleTableConstants;
-import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 
 import java.util.Collection;
@@ -40,7 +39,7 @@ import java.util.LinkedList;
 import java.util.Optional;
 
 /**
- * Table refresh utils.
+ * Table refresh utility class.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class TableRefreshUtils {
@@ -48,41 +47,37 @@ public final class TableRefreshUtils {
     /**
      * Get table name.
      *
+     * @param tableIdentifierValue table identifier value
      * @param databaseType database type
-     * @param identifierValue identifier value
      * @return table name
      */
-    public static String getTableName(final DatabaseType databaseType, final IdentifierValue identifierValue) {
-        return QuoteCharacter.NONE == identifierValue.getQuoteCharacter() ? new DatabaseTypeRegistry(databaseType).getDialectDatabaseMetaData().formatTableNamePattern(identifierValue.getValue())
-                : identifierValue.getValue();
+    public static String getTableName(final IdentifierValue tableIdentifierValue, final DatabaseType databaseType) {
+        return QuoteCharacter.NONE == tableIdentifierValue.getQuoteCharacter()
+                ? new DatabaseTypeRegistry(databaseType).formatIdentifierPattern(tableIdentifierValue.getValue())
+                : tableIdentifierValue.getValue();
     }
     
     /**
-     * Judge whether single table.
+     * Judge whether to need refresh.
      *
      * @param tableName table name
      * @param database database
-     * @return whether single table
+     * @return need to refresh or not
      */
     public static boolean isSingleTable(final String tableName, final ShardingSphereDatabase database) {
         return database.getRuleMetaData().getAttributes(TableMapperRuleAttribute.class).stream().noneMatch(each -> each.getDistributedTableNames().contains(tableName));
     }
     
     /**
-     * Judge whether the rule need to be refreshed.
+     * Judge whether to need refresh.
      *
      * @param ruleMetaData rule meta data
      * @param schemaName schema name
-     * @param tableSegments table segments
-     * @return whether the rule need to be refreshed
+     * @param tableNames table names
+     * @return need to refresh or not
      */
-    public static boolean isRuleRefreshRequired(final RuleMetaData ruleMetaData, final String schemaName, final Collection<SimpleTableSegment> tableSegments) {
-        for (SimpleTableSegment each : tableSegments) {
-            if (isRuleRefreshRequired(ruleMetaData, schemaName, each.getTableName().getIdentifier().getValue())) {
-                return true;
-            }
-        }
-        return false;
+    public static boolean isNeedRefresh(final RuleMetaData ruleMetaData, final String schemaName, final Collection<String> tableNames) {
+        return tableNames.stream().anyMatch(each -> isNeedRefresh(ruleMetaData, schemaName, each));
     }
     
     /**
@@ -93,7 +88,7 @@ public final class TableRefreshUtils {
      * @param tableName table name
      * @return whether the rule need to be refreshed
      */
-    public static boolean isRuleRefreshRequired(final RuleMetaData ruleMetaData, final String schemaName, final String tableName) {
+    public static boolean isNeedRefresh(final RuleMetaData ruleMetaData, final String schemaName, final String tableName) {
         Collection<ShardingSphereRule> rules = new LinkedList<>();
         for (ShardingSphereRule each : ruleMetaData.getRules()) {
             each.getAttributes().findAttribute(MutableDataNodeRuleAttribute.class).ifPresent(optional -> rules.add(each));

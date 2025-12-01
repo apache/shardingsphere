@@ -27,10 +27,10 @@ import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.incremental.In
 import org.apache.shardingsphere.data.pipeline.core.ingest.position.DialectIncrementalPositionManager;
 import org.apache.shardingsphere.data.pipeline.core.ingest.position.IngestPosition;
 import org.apache.shardingsphere.data.pipeline.core.job.progress.JobItemIncrementalTasksProgress;
-import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRootConfiguration;
-import org.apache.shardingsphere.test.fixture.jdbc.MockedDataSource;
+import org.apache.shardingsphere.test.infra.fixture.jdbc.MockedDataSource;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -49,7 +49,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -113,7 +113,7 @@ class IncrementalTaskPositionManagerTest {
     @Test
     void assertDestroyPositionWithShardingSpherePipelineDataSourceConfiguration() throws SQLException {
         YamlRootConfiguration rootConfig = new YamlRootConfiguration();
-        Map<String, Object> dataSourceProps = new HashMap<>();
+        Map<String, Object> dataSourceProps = new HashMap<>(2, 1F);
         dataSourceProps.put("dataSourceClassName", MockedDataSource.class.getName());
         dataSourceProps.put("url", "jdbc:mock://127.0.0.1/foo_ds");
         rootConfig.getDataSources().put("foo_ds", dataSourceProps);
@@ -124,7 +124,7 @@ class IncrementalTaskPositionManagerTest {
     
     @Test
     void assertDestroyPositionWithStandardPipelineDataSourceConfiguration() throws SQLException {
-        Map<String, Object> dataSourceProps = new HashMap<>();
+        Map<String, Object> dataSourceProps = new HashMap<>(2, 1F);
         dataSourceProps.put("dataSourceClassName", MockedDataSource.class.getName());
         dataSourceProps.put("url", "jdbc:mock://127.0.0.1/foo_ds");
         StandardPipelineDataSourceConfiguration pipelineDataSourceConfig = new StandardPipelineDataSourceConfiguration(dataSourceProps);
@@ -135,6 +135,6 @@ class IncrementalTaskPositionManagerTest {
     @Test
     void assertDestroyPositionWithUnknownPipelineDataSourceConfiguration() throws SQLException {
         incrementalTaskPositionManager.destroyPosition("foo_job", mock(PipelineDataSourceConfiguration.class));
-        verify(dialectPositionManager, times(0)).destroy(any(), eq("foo_job"));
+        verify(dialectPositionManager, never()).destroy(any(), eq("foo_job"));
     }
 }

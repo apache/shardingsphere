@@ -19,18 +19,11 @@
 <e2e-test-cases>
     <test-case sql="ALTER ROLE ALL RESET client_min_messages" db-types="PostgreSQL" />
     <test-case sql="ALTER ROLE ALL SET client_min_messages = DEBUG" db-types="PostgreSQL" />
-    <test-case sql="ALTER ROLE role_dev_bak DROP MEMBER member1" db-types="SQLServer" />
-    <test-case sql="ALTER ROLE role_dev IDENTIFIED EXTERNALLY" db-types="Oracle" />
-    <test-case sql="ALTER ROLE role_dev IDENTIFIED GLOBALLY" db-types="Oracle" />
-    <test-case sql="ALTER ROLE role_dev NOT IDENTIFIED" db-types="Oracle" />
-    <test-case sql="ALTER ROLE role_dev_bak WITH NAME = role_dev" db-types="SQLServer" />
     <test-case sql="ALTER ROLE default_role RESET ALL" db-types="PostgreSQL" />
     <test-case sql="ALTER ROLE default_role RESET client_min_messages" db-types="PostgreSQL" />
     <test-case sql="ALTER ROLE default_role SET client_min_messages = DEBUG" db-types="PostgreSQL" />
     <test-case sql="ALTER ROLE default_role SET client_min_messages FROM CURRENT" db-types="PostgreSQL" />
-    <test-case sql="ALTER ROLE role_dev NOT IDENTIFIED CONTAINER = ALL" db-types="Oracle" />
     <test-case sql="ALTER ROLE default_role WITH SUPERUSER" db-types="PostgreSQL" />
     <test-case sql="ALTER ROLE default_role WITH CREATEDB CREATEROLE" db-types="PostgreSQL" />
-    <test-case sql="ALTER ROLE role_dev IDENTIFIED BY password" db-types="Oracle" />
     <test-case sql="ALTER ROLE default_role WITH ENCRYPTED PASSWORD 'password'" db-types="PostgreSQL" />
 </e2e-test-cases>

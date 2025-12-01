@@ -21,7 +21,7 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
-import org.apache.shardingsphere.infra.database.core.metadata.database.enums.QuoteCharacter;
+import org.apache.shardingsphere.database.connector.core.metadata.database.enums.QuoteCharacter;
 import org.apache.shardingsphere.sql.parser.statement.core.util.SQLUtils;
 import org.apache.shardingsphere.sql.parser.statement.core.value.ValueASTNode;
 
@@ -39,11 +39,12 @@ public final class IdentifierValue implements ValueASTNode<String> {
     private final QuoteCharacter quoteCharacter;
     
     public IdentifierValue(final String text) {
-        this(SQLUtils.getExactlyValue(text), QuoteCharacter.getQuoteCharacter(text));
-    }
-    
-    public IdentifierValue(final String text, final String reservedCharacters) {
-        this(SQLUtils.getExactlyValue(text, reservedCharacters), QuoteCharacter.getQuoteCharacter(text));
+        quoteCharacter = QuoteCharacter.getQuoteCharacter(text);
+        if (QuoteCharacter.BACK_QUOTE == quoteCharacter) {
+            value = SQLUtils.getRealContentInBackticks(text);
+        } else {
+            value = null == text ? null : quoteCharacter.unwrap(text);
+        }
     }
     
     /**

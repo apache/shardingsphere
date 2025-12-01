@@ -23,6 +23,7 @@ import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.junit.jupiter.api.Test;
 
 import java.sql.SQLException;
+import java.util.Collections;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
@@ -35,6 +36,6 @@ class TransparentResultDecoratorTest {
         MergedResult mergedResult = mock(MergedResult.class);
         when(mergedResult.next()).thenReturn(true);
         TransparentResultDecorator decorator = new TransparentResultDecorator();
-        assertTrue(decorator.decorate(mergedResult, mock(SQLStatementContext.class), mock(ShardingSphereRule.class)).next());
+        assertTrue(decorator.decorate(mergedResult, mock(SQLStatementContext.class), Collections.emptyList(), mock(ShardingSphereRule.class)).next());
     }
 }

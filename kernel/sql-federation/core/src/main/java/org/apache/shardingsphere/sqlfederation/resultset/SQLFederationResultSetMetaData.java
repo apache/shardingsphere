@@ -18,17 +18,17 @@
 package org.apache.shardingsphere.sqlfederation.resultset;
 
 import org.apache.calcite.avatica.SqlType;
-import org.apache.calcite.jdbc.JavaTypeFactoryImpl;
 import org.apache.calcite.rel.type.RelDataType;
 import org.apache.calcite.rel.type.RelDataTypeFactory;
 import org.apache.calcite.rel.type.RelDataTypeFactoryImpl.JavaType;
 import org.apache.calcite.schema.Schema;
 import org.apache.calcite.schema.Table;
 import org.apache.calcite.sql.type.SqlTypeName;
+import org.apache.shardingsphere.database.connector.core.DefaultDatabase;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.Projection;
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.impl.ColumnProjection;
-import org.apache.shardingsphere.infra.binder.context.statement.dml.SelectStatementContext;
-import org.apache.shardingsphere.infra.database.core.DefaultDatabase;
+import org.apache.shardingsphere.sqlfederation.compiler.sql.type.SQLFederationDataTypeFactory;
 import org.apache.shardingsphere.sqlfederation.resultset.converter.SQLFederationColumnTypeConverter;
 
 import java.math.BigInteger;
@@ -44,9 +44,11 @@ public final class SQLFederationResultSetMetaData extends WrapperAdapter impleme
     
     private final Schema sqlFederationSchema;
     
-    private final RelDataTypeFactory relDataTypeFactory;
+    private final RelDataTypeFactory typeFactory;
     
-    private final SelectStatementContext selectStatementContext;
+    private final List<Projection> expandProjections;
+    
+    private final DatabaseType databaseType;
     
     private final RelDataType resultColumnType;
     
@@ -54,11 +56,12 @@ public final class SQLFederationResultSetMetaData extends WrapperAdapter impleme
     
     private final SQLFederationColumnTypeConverter columnTypeConverter;
     
-    public SQLFederationResultSetMetaData(final Schema sqlFederationSchema, final SelectStatementContext selectStatementContext, final RelDataType resultColumnType,
+    public SQLFederationResultSetMetaData(final Schema sqlFederationSchema, final List<Projection> expandProjections, final DatabaseType databaseType, final RelDataType resultColumnType,
                                           final Map<Integer, String> indexAndColumnLabels, final SQLFederationColumnTypeConverter columnTypeConverter) {
         this.sqlFederationSchema = sqlFederationSchema;
-        relDataTypeFactory = new JavaTypeFactoryImpl();
-        this.selectStatementContext = selectStatementContext;
+        typeFactory = SQLFederationDataTypeFactory.getInstance();
+        this.expandProjections = expandProjections;
+        this.databaseType = databaseType;
         this.resultColumnType = resultColumnType;
         this.indexAndColumnLabels = indexAndColumnLabels;
         this.columnTypeConverter = columnTypeConverter;
@@ -66,7 +69,7 @@ public final class SQLFederationResultSetMetaData extends WrapperAdapter impleme
     
     @Override
     public int getColumnCount() {
-        return resultColumnType.getFieldCount();
+        return indexAndColumnLabels.size();
     }
     
     @Override
@@ -76,7 +79,7 @@ public final class SQLFederationResultSetMetaData extends WrapperAdapter impleme
     
     @Override
     public boolean isCaseSensitive(final int column) {
-        return true;
+        return false;
     }
     
     @Override
@@ -91,8 +94,8 @@ public final class SQLFederationResultSetMetaData extends WrapperAdapter impleme
     
     @Override
     public int isNullable(final int column) {
-        Optional<Table> table = findTableName(column).flatMap(optional -> Optional.ofNullable(sqlFederationSchema.getTable(optional)));
-        return !table.isPresent() || table.get().getRowType(relDataTypeFactory).isNullable() ? ResultSetMetaData.columnNullable : ResultSetMetaData.columnNoNulls;
+        Optional<Table> table = findTableName(column).flatMap(optional -> Optional.ofNullable(sqlFederationSchema.tables().get(optional)));
+        return !table.isPresent() || table.get().getRowType(typeFactory).isNullable() ? columnNullable : columnNoNulls;
     }
     
     @Override
@@ -102,7 +105,8 @@ public final class SQLFederationResultSetMetaData extends WrapperAdapter impleme
     
     @Override
     public int getColumnDisplaySize(final int column) {
-        return findTableName(column).flatMap(optional -> Optional.ofNullable(sqlFederationSchema.getTable(optional))).map(optional -> optional.getRowType(relDataTypeFactory).getPrecision()).orElse(0);
+        return findTableName(column).flatMap(optional -> Optional.ofNullable(sqlFederationSchema.tables().get(optional))).map(optional -> optional.getRowType(typeFactory).getPrecision())
+                .orElse(0);
     }
     
     @Override
@@ -115,7 +119,6 @@ public final class SQLFederationResultSetMetaData extends WrapperAdapter impleme
     
     @Override
     public String getColumnName(final int column) {
-        List<Projection> expandProjections = selectStatementContext.getProjectionsContext().getExpandProjections();
         if (expandProjections.size() < column) {
             return resultColumnType.getFieldList().get(column - 1).getName();
         }
@@ -129,14 +132,14 @@ public final class SQLFederationResultSetMetaData extends WrapperAdapter impleme
     
     @Override
     public int getPrecision(final int column) {
-        Optional<Table> table = findTableName(column).flatMap(optional -> Optional.ofNullable(sqlFederationSchema.getTable(optional)));
-        return !table.isPresent() || RelDataType.PRECISION_NOT_SPECIFIED == table.get().getRowType(relDataTypeFactory).getPrecision() ? 0 : table.get().getRowType(relDataTypeFactory).getPrecision();
+        Optional<Table> table = findTableName(column).flatMap(optional -> Optional.ofNullable(sqlFederationSchema.tables().get(optional)));
+        return !table.isPresent() || RelDataType.PRECISION_NOT_SPECIFIED == table.get().getRowType(typeFactory).getPrecision() ? 0 : table.get().getRowType(typeFactory).getPrecision();
     }
     
     @Override
     public int getScale(final int column) {
-        Optional<Table> table = findTableName(column).flatMap(optional -> Optional.ofNullable(sqlFederationSchema.getTable(optional)));
-        return !table.isPresent() || RelDataType.SCALE_NOT_SPECIFIED == table.get().getRowType(relDataTypeFactory).getScale() ? 0 : table.get().getRowType(relDataTypeFactory).getScale();
+        Optional<Table> table = findTableName(column).flatMap(optional -> Optional.ofNullable(sqlFederationSchema.tables().get(optional)));
+        return !table.isPresent() || RelDataType.SCALE_NOT_SPECIFIED == table.get().getRowType(typeFactory).getScale() ? 0 : table.get().getRowType(typeFactory).getScale();
     }
     
     @Override
@@ -156,14 +159,13 @@ public final class SQLFederationResultSetMetaData extends WrapperAdapter impleme
         if (relDataType instanceof JavaType && BigInteger.class.isAssignableFrom(((JavaType) relDataType).getJavaClass())) {
             return SqlType.BIGINT.id;
         }
-        int jdbcType = relDataType.getSqlTypeName().getJdbcOrdinal();
-        return columnTypeConverter.convertColumnType(jdbcType);
+        return columnTypeConverter.convertColumnType(relDataType.getSqlTypeName());
     }
     
     @Override
     public String getColumnTypeName(final int column) {
         SqlTypeName originalSqlTypeName = resultColumnType.getFieldList().get(column - 1).getType().getSqlTypeName();
-        SqlTypeName convertSqlTypeName = SqlTypeName.getNameForJdbcType(columnTypeConverter.convertColumnType(originalSqlTypeName.getJdbcOrdinal()));
+        SqlTypeName convertSqlTypeName = SqlTypeName.getNameForJdbcType(columnTypeConverter.convertColumnType(originalSqlTypeName));
         return null == convertSqlTypeName ? originalSqlTypeName.getName() : convertSqlTypeName.getName();
     }
     
@@ -188,9 +190,8 @@ public final class SQLFederationResultSetMetaData extends WrapperAdapter impleme
     }
     
     private Optional<String> findTableName(final int column) {
-        List<Projection> expandProjections = selectStatementContext.getProjectionsContext().getExpandProjections();
         Projection projection =
-                expandProjections.size() < column ? new ColumnProjection(null, resultColumnType.getFieldList().get(column - 1).getName(), null, selectStatementContext.getDatabaseType())
+                expandProjections.size() < column ? new ColumnProjection(null, resultColumnType.getFieldList().get(column - 1).getName(), null, databaseType)
                         : expandProjections.get(column - 1);
         if (projection instanceof ColumnProjection) {
             return Optional.ofNullable(((ColumnProjection) projection).getOriginalTable().getValue());

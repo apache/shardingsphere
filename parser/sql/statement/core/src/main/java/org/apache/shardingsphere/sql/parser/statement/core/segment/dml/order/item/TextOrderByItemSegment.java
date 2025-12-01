@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.sql.parser.statement.core.segment.dml.order.item;
 
-import org.apache.shardingsphere.infra.database.core.metadata.database.enums.NullsOrderType;
+import org.apache.shardingsphere.database.connector.core.metadata.database.enums.NullsOrderType;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.OrderDirection;
 
 /**

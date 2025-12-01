@@ -19,15 +19,14 @@ package org.apache.shardingsphere.encrypt.rewrite.token.generator.assignment;
 
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
-import org.apache.shardingsphere.infra.rewrite.sql.token.common.generator.aware.DatabaseAware;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.binder.context.statement.dml.InsertStatementContext;
-import org.apache.shardingsphere.infra.binder.context.type.TableAvailable;
+import org.apache.shardingsphere.infra.binder.context.statement.type.dml.InsertStatementContext;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.rewrite.sql.token.common.generator.CollectionSQLTokenGenerator;
 import org.apache.shardingsphere.infra.rewrite.sql.token.common.pojo.SQLToken;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 
 import java.util.Collection;
 
@@ -37,22 +36,31 @@ import java.util.Collection;
 @HighFrequencyInvocation
 @RequiredArgsConstructor
 @Setter
-public final class EncryptInsertAssignmentTokenGenerator implements CollectionSQLTokenGenerator<InsertStatementContext>, DatabaseAware {
+public final class EncryptInsertAssignmentTokenGenerator implements CollectionSQLTokenGenerator<InsertStatementContext> {
     
     private final EncryptRule rule;
     
-    private ShardingSphereDatabase database;
+    private final ShardingSphereDatabase database;
     
     @Override
     public boolean isGenerateSQLToken(final SQLStatementContext sqlStatementContext) {
         return sqlStatementContext instanceof InsertStatementContext && (((InsertStatementContext) sqlStatementContext).getSqlStatement()).getSetAssignment().isPresent()
-                && rule.findEncryptTable(((TableAvailable) sqlStatementContext).getTablesContext().getSimpleTables().iterator().next().getTableName().getIdentifier().getValue()).isPresent();
+                && containsEncryptTable(sqlStatementContext.getTablesContext().getSimpleTables());
+    }
+    
+    private boolean containsEncryptTable(final Collection<SimpleTableSegment> simpleTableSegments) {
+        for (SimpleTableSegment each : simpleTableSegments) {
+            if (rule.findEncryptTable(each.getTableName().getIdentifier().getValue()).isPresent()) {
+                return true;
+            }
+        }
+        return false;
     }
     
     @SuppressWarnings("OptionalGetWithoutIsPresent")
     @Override
     public Collection<SQLToken> generateSQLTokens(final InsertStatementContext sqlStatementContext) {
-        return new EncryptAssignmentTokenGenerator(rule, database.getName(), sqlStatementContext.getDatabaseType()).generateSQLTokens(
+        return new EncryptAssignmentTokenGenerator(rule, database.getName(), sqlStatementContext.getSqlStatement().getDatabaseType()).generateSQLTokens(
                 sqlStatementContext.getTablesContext(), sqlStatementContext.getSqlStatement().getSetAssignment().get());
     }
 }

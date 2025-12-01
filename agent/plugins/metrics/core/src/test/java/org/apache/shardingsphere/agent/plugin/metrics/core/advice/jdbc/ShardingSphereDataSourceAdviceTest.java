@@ -23,8 +23,8 @@ import org.apache.shardingsphere.agent.plugin.core.holder.ShardingSphereDataSour
 import org.apache.shardingsphere.agent.plugin.core.util.AgentReflectionUtils;
 import org.apache.shardingsphere.agent.plugin.metrics.core.fixture.TargetAdviceObjectFixture;
 import org.apache.shardingsphere.mode.manager.ContextManager;
-import org.apache.shardingsphere.test.mock.AutoMockExtension;
-import org.apache.shardingsphere.test.mock.StaticMockSettings;
+import org.apache.shardingsphere.test.infra.framework.extension.mock.AutoMockExtension;
+import org.apache.shardingsphere.test.infra.framework.extension.mock.StaticMockSettings;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -33,6 +33,7 @@ import java.util.UUID;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -62,12 +63,12 @@ class ShardingSphereDataSourceAdviceTest {
         when(method.getName()).thenReturn("close");
         ShardingSphereDataSourceAdvice advice = new ShardingSphereDataSourceAdvice();
         advice.beforeMethod(fixture, method, new Object[]{}, "FIXTURE");
-        assertThat(ShardingSphereDataSourceContextHolder.getShardingSphereDataSourceContexts().size(), is(0));
+        assertTrue(ShardingSphereDataSourceContextHolder.getShardingSphereDataSourceContexts().isEmpty());
     }
     
     @Test
     void assertAfterMethod() {
-        assertThat(ShardingSphereDataSourceContextHolder.getShardingSphereDataSourceContexts().size(), is(0));
+        assertTrue(ShardingSphereDataSourceContextHolder.getShardingSphereDataSourceContexts().isEmpty());
         when(AgentReflectionUtils.getFieldValue(fixture, "databaseName")).thenReturn(databaseName);
         TargetAdviceMethod method = mock(TargetAdviceMethod.class);
         when(method.getName()).thenReturn("createContextManager");

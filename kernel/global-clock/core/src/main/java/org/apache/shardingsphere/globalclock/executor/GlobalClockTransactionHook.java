@@ -18,15 +18,12 @@
 package org.apache.shardingsphere.globalclock.executor;
 
 import com.google.common.base.Preconditions;
+import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoader;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.globalclock.provider.GlobalClockProvider;
 import org.apache.shardingsphere.globalclock.rule.GlobalClockRule;
 import org.apache.shardingsphere.globalclock.rule.constant.GlobalClockOrder;
-import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPILoader;
-import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
-import org.apache.shardingsphere.infra.lock.LockContext;
-import org.apache.shardingsphere.infra.lock.LockDefinition;
 import org.apache.shardingsphere.infra.session.connection.transaction.TransactionConnectionContext;
-import org.apache.shardingsphere.mode.lock.global.GlobalLockDefinition;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.TransactionIsolationLevel;
 import org.apache.shardingsphere.transaction.spi.TransactionHook;
 
@@ -40,15 +37,13 @@ import java.util.Optional;
  */
 public final class GlobalClockTransactionHook implements TransactionHook<GlobalClockRule> {
     
-    private final LockDefinition lockDefinition = new GlobalLockDefinition(new GlobalClockLock());
-    
     @Override
     public void beforeBegin(final GlobalClockRule rule, final DatabaseType databaseType, final TransactionConnectionContext transactionContext) {
     }
     
     @Override
     public void afterBegin(final GlobalClockRule rule, final DatabaseType databaseType, final TransactionConnectionContext transactionContext) {
-        rule.getGlobalClockProvider().ifPresent(optional -> transactionContext.setBeginMills(optional.getCurrentTimestamp()));
+        rule.getGlobalClockProvider().ifPresent(optional -> transactionContext.setBeginMillis(optional.getCurrentTimestamp()));
     }
     
     @Override
@@ -59,7 +54,7 @@ public final class GlobalClockTransactionHook implements TransactionHook<GlobalC
         }
         Optional<GlobalClockTransactionExecutor> globalClockTransactionExecutor = DatabaseTypedSPILoader.findService(GlobalClockTransactionExecutor.class, databaseType);
         if (globalClockTransactionExecutor.isPresent()) {
-            globalClockTransactionExecutor.get().sendSnapshotTimestamp(connections, transactionContext.getBeginMills());
+            globalClockTransactionExecutor.get().sendSnapshotTimestamp(connections, transactionContext.getBeginMillis());
         }
     }
     
@@ -79,34 +74,31 @@ public final class GlobalClockTransactionHook implements TransactionHook<GlobalC
     }
     
     @Override
-    public void beforeCommit(final GlobalClockRule rule, final DatabaseType databaseType, final Collection<Connection> connections, final TransactionConnectionContext transactionContext,
-                             final LockContext lockContext) throws SQLException {
+    public void beforeCommit(final GlobalClockRule rule, final DatabaseType databaseType, final Collection<Connection> connections,
+                             final TransactionConnectionContext transactionContext) throws SQLException {
         if (!rule.getConfiguration().isEnabled()) {
             return;
         }
-        if (lockContext.tryLock(lockDefinition, 200L)) {
-            Optional<GlobalClockTransactionExecutor> globalClockTransactionExecutor = DatabaseTypedSPILoader.findService(GlobalClockTransactionExecutor.class, databaseType);
-            if (!globalClockTransactionExecutor.isPresent()) {
-                return;
-            }
-            Optional<GlobalClockProvider> globalClockProvider = rule.getGlobalClockProvider();
-            Preconditions.checkState(globalClockProvider.isPresent());
-            globalClockTransactionExecutor.get().sendCommitTimestamp(connections, globalClockProvider.get().getCurrentTimestamp());
-        }
+        Optional<GlobalClockTransactionExecutor> globalClockTransactionExecutor = DatabaseTypedSPILoader.findService(GlobalClockTransactionExecutor.class, databaseType);
+        Preconditions.checkArgument(globalClockTransactionExecutor.isPresent());
+        Optional<GlobalClockProvider> globalClockProvider = rule.getGlobalClockProvider();
+        Preconditions.checkState(globalClockProvider.isPresent());
+        globalClockTransactionExecutor.get().sendCommitTimestamp(connections, globalClockProvider.get().getCurrentTimestamp());
     }
     
     @Override
-    public void afterCommit(final GlobalClockRule rule, final DatabaseType databaseType, final Collection<Connection> connections, final TransactionConnectionContext transactionContext,
-                            final LockContext lockContext) {
-        Optional<GlobalClockProvider> globalClockProvider = rule.getGlobalClockProvider();
-        if (!globalClockProvider.isPresent()) {
+    public void afterCommit(final GlobalClockRule rule, final DatabaseType databaseType, final Collection<Connection> connections, final TransactionConnectionContext transactionContext) {
+        if (!rule.getConfiguration().isEnabled()) {
             return;
         }
-        try {
-            globalClockProvider.get().getNextTimestamp();
-        } finally {
-            lockContext.unlock(lockDefinition);
-        }
+        Optional<GlobalClockProvider> globalClockProvider = rule.getGlobalClockProvider();
+        Preconditions.checkState(globalClockProvider.isPresent());
+        globalClockProvider.get().getNextTimestamp();
+    }
+    
+    @Override
+    public boolean isNeedLockWhenCommit(final GlobalClockRule rule) {
+        return rule.getConfiguration().isEnabled();
     }
     
     @Override

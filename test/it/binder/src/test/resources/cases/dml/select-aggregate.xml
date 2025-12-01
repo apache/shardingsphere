@@ -1,0 +1,217 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Licensed to the Apache Software Foundation (ASF) under one or more
+  ~ contributor license agreements.  See the NOTICE file distributed with
+  ~ this work for additional information regarding copyright ownership.
+  ~ The ASF licenses this file to You under the Apache License, Version 2.0
+  ~ (the "License"); you may not use this file except in compliance with
+  ~ the License.  You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<sql-parser-test-cases>
+    <select sql-case-id="select_with_aggregate_function_and_having">
+        <projections start-index="7" stop-index="131">
+            <aggregation-projection type="MAX" expression="MAX(p.price)" alias="max_price" start-index="7" stop-index="18">
+                <paramters>
+                    <column name="price" start-index="11" stop-index="17">
+                        <owner name="p" start-index="11" stop-index="11" />
+                        <column-bound>
+                            <original-database name="foo_db_2" />
+                            <original-schema name="foo_db_2" />
+                            <original-table name="t_product" />
+                            <original-column name="price" start-delimiter="`" end-delimiter="`" />
+                            <table-source-type name="PHYSICAL_TABLE"/>
+                        </column-bound>
+                    </column>
+                </paramters>
+            </aggregation-projection>
+            <aggregation-projection type="MIN" expression="MIN(p.price)" alias="min_price" start-index="34" stop-index="45">
+                <paramters>
+                    <column name="price" start-index="38" stop-index="44">
+                        <owner name="p" start-index="11" stop-index="11" />
+                        <column-bound>
+                            <original-database name="foo_db_2" />
+                            <original-schema name="foo_db_2" />
+                            <original-table name="t_product" />
+                            <original-column name="price" start-delimiter="`" end-delimiter="`" />
+                            <table-source-type name="PHYSICAL_TABLE"/>
+                        </column-bound>
+                    </column>
+                </paramters>
+            </aggregation-projection>
+            <aggregation-projection type="SUM" expression="SUM(p.price)" alias="sum_price" start-index="61" stop-index="72">
+                <paramters>
+                    <column name="price" start-index="65" stop-index="71">
+                        <owner name="p" start-index="65" stop-index="65" />
+                        <column-bound>
+                            <original-database name="foo_db_2" />
+                            <original-schema name="foo_db_2" />
+                            <original-table name="t_product" />
+                            <original-column name="price" start-delimiter="`" end-delimiter="`" />
+                            <table-source-type name="PHYSICAL_TABLE"/>
+                        </column-bound>
+                    </column>
+                </paramters>
+            </aggregation-projection>
+            <aggregation-projection type="AVG" expression="AVG(p.price)" alias="avg_price" start-index="88" stop-index="99">
+                <paramters>
+                    <column name="price" start-index="92" stop-index="98">
+                        <owner name="p" start-index="92" stop-index="92" />
+                        <column-bound>
+                            <original-database name="foo_db_2" />
+                            <original-schema name="foo_db_2" />
+                            <original-table name="t_product" />
+                            <original-column name="price" start-delimiter="`" end-delimiter="`" />
+                            <table-source-type name="PHYSICAL_TABLE"/>
+                        </column-bound>
+                    </column>
+                </paramters>
+            </aggregation-projection>
+            <aggregation-projection type="COUNT" expression="COUNT(1)" alias="count" start-index="115" stop-index="122">
+                <paramters>
+                    <literal-expression value="1" start-index="121" stop-index="121" />
+                </paramters>
+            </aggregation-projection>
+        </projections>
+        <from>
+            <join-table join-type="INNER">
+                <left>
+                    <join-table join-type="INNER">
+                        <left>
+                            <simple-table name="t_order" alias="o" start-index="138" stop-index="146">
+                                <table-bound>
+                                    <original-database name="foo_db_1" />
+                                    <original-schema name="foo_db_1" />
+                                </table-bound>
+                            </simple-table>
+                        </left>
+                        <right>
+                            <simple-table name="t_order_item" alias="i" start-index="159" stop-index="172">
+                                <table-bound>
+                                    <original-database name="foo_db_1" />
+                                    <original-schema name="foo_db_1" />
+                                </table-bound>
+                            </simple-table>
+                        </right>
+                        <on-condition>
+                            <binary-operation-expression start-index="177" stop-index="199">
+                                <left>
+                                    <column name="order_id" start-index="177" stop-index="186">
+                                        <owner name="o" start-index="177" stop-index="177" />
+                                        <column-bound>
+                                            <original-database name="foo_db_1" />
+                                            <original-schema name="foo_db_1" />
+                                            <original-table name="t_order" />
+                                            <original-column name="order_id" start-delimiter="`" end-delimiter="`" />
+                                            <table-source-type name="PHYSICAL_TABLE"/>
+                                        </column-bound>
+                                    </column>
+                                </left>
+                                <operator>=</operator>
+                                <right>
+                                    <column name="order_id" start-index="190" stop-index="199">
+                                        <owner name="i" start-index="190" stop-index="190" />
+                                        <column-bound>
+                                            <original-database name="foo_db_1" />
+                                            <original-schema name="foo_db_1" />
+                                            <original-table name="t_order_item" />
+                                            <original-column name="order_id" start-delimiter="`" end-delimiter="`" />
+                                            <table-source-type name="PHYSICAL_TABLE"/>
+                                        </column-bound>
+                                    </column>
+                                </right>
+                            </binary-operation-expression>
+                        </on-condition>
+                    </join-table>
+                </left>
+                <right>
+                    <simple-table name="t_product" alias="p" start-index="212" stop-index="231">
+                        <owner name="foo_db_2" start-index="212" stop-index="219" />
+                        <table-bound>
+                            <original-database name="foo_db_2" />
+                            <original-schema name="foo_db_2" />
+                        </table-bound>
+                    </simple-table>
+                </right>
+                <on-condition>
+                    <binary-operation-expression start-index="236" stop-index="262">
+                        <left>
+                            <column name="product_id" start-index="236" stop-index="247">
+                                <owner name="i" start-index="236" stop-index="236" />
+                                <column-bound>
+                                    <original-database name="foo_db_1" />
+                                    <original-schema name="foo_db_1" />
+                                    <original-table name="t_order_item" />
+                                    <original-column name="product_id" start-delimiter="`" end-delimiter="`" />
+                                    <table-source-type name="PHYSICAL_TABLE"/>
+                                </column-bound>
+                            </column>
+                        </left>
+                        <operator>=</operator>
+                        <right>
+                            <column name="product_id" start-index="251" stop-index="262">
+                                <owner name="p" start-index="251" stop-index="251" />
+                                <column-bound>
+                                    <original-database name="foo_db_2" />
+                                    <original-schema name="foo_db_2" />
+                                    <original-table name="t_product" />
+                                    <original-column name="product_id" start-delimiter="`" end-delimiter="`" />
+                                    <table-source-type name="PHYSICAL_TABLE"/>
+                                </column-bound>
+                            </column>
+                        </right>
+                    </binary-operation-expression>
+                </on-condition>
+            </join-table>
+        </from>
+        <group-by>
+            <column-item name="order_id" start-index="273" stop-index="282">
+                <owner name="o" start-index="273" stop-index="273" />
+                <column-bound>
+                    <original-database name="foo_db_1" />
+                    <original-schema name="foo_db_1" />
+                    <original-table name="t_order" />
+                    <original-column name="order_id" start-delimiter="`" end-delimiter="`" />
+                    <table-source-type name="PHYSICAL_TABLE"/>
+                </column-bound>
+            </column-item>
+        </group-by>
+        <having start-index="284" stop-index="308">
+            <expr>
+                <binary-operation-expression start-index="291" stop-index="308">
+                    <left>
+                        <aggregation-projection type="SUM" expression="SUM(p.price)" start-index="291" stop-index="302">
+                            <paramters>
+                                <column name="price" start-index="295" stop-index="301">
+                                    <owner name="p" start-index="295" stop-index="295" />
+                                    <column-bound>
+                                        <original-database name="foo_db_2" />
+                                        <original-schema name="foo_db_2" />
+                                        <original-table name="t_product" />
+                                        <original-column name="price" start-delimiter="`" end-delimiter="`" />
+                                        <table-source-type name="PHYSICAL_TABLE"/>
+                                    </column-bound>
+                                </column>
+                            </paramters>
+                        </aggregation-projection>
+                    </left>
+                    <operator>&gt;</operator>
+                    <right>
+                        <literal-expression start-index="306" stop-index="308" value="100"/>
+                    </right>
+                </binary-operation-expression>
+            </expr>
+        </having>
+        <order-by>
+            <column-item name="max_price" start-index="319" stop-index="327" />
+        </order-by>
+    </select>
+</sql-parser-test-cases>

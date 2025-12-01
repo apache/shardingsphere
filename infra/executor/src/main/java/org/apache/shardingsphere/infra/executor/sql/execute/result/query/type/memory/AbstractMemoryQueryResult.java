@@ -31,7 +31,6 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.ObjectOutputStream;
 import java.io.Reader;
-import java.sql.SQLException;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Iterator;
@@ -79,7 +78,7 @@ public abstract class AbstractMemoryQueryResult implements QueryResult {
     }
     
     @Override
-    public final Object getCalendarValue(final int columnIndex, final Class<?> type, final Calendar calendar) {
+    public final Object getCalendarValue(final int columnIndex, final Class<?> type, @SuppressWarnings("UseOfObsoleteDateTimeApi") final Calendar calendar) {
         Object result = currentRow.getValue().get(columnIndex - 1);
         wasNull = null == result;
         return result;
@@ -103,7 +102,7 @@ public abstract class AbstractMemoryQueryResult implements QueryResult {
     }
     
     @Override
-    public Reader getCharacterStream(final int columnIndex) throws SQLException {
+    public Reader getCharacterStream(final int columnIndex) {
         // TODO Support connection property character encoding
         return new BufferedReader(new InputStreamReader(getInputStream(columnIndex)));
     }

@@ -15,13 +15,13 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.proxy.backend.handler.distsql.ral.updatable.LabelComputeNodeExecutor
-org.apache.shardingsphere.proxy.backend.handler.distsql.ral.updatable.UnlabelComputeNodeExecutor
-org.apache.shardingsphere.proxy.backend.handler.distsql.ral.updatable.SetComputeNodeStateExecutor
-org.apache.shardingsphere.proxy.backend.handler.distsql.ral.updatable.ImportDatabaseConfigurationExecutor
-org.apache.shardingsphere.proxy.backend.handler.distsql.ral.updatable.ImportMetaDataExecutor
-org.apache.shardingsphere.proxy.backend.handler.distsql.ral.updatable.SetDistVariableExecutor
-org.apache.shardingsphere.proxy.backend.handler.distsql.ral.updatable.RefreshDatabaseMetaDataExecutor
-org.apache.shardingsphere.proxy.backend.handler.distsql.ral.updatable.LockClusterExecutor
-org.apache.shardingsphere.proxy.backend.handler.distsql.ral.updatable.UnlockClusterExecutor
-org.apache.shardingsphere.proxy.backend.handler.distsql.ral.updatable.RefreshTableMetaDataExecutor
+org.apache.shardingsphere.proxy.backend.handler.distsql.ral.updatable.label.LabelComputeNodeExecutor
+org.apache.shardingsphere.proxy.backend.handler.distsql.ral.updatable.label.UnlabelComputeNodeExecutor
+org.apache.shardingsphere.proxy.backend.handler.distsql.ral.updatable.computenode.SetComputeNodeStateExecutor
+org.apache.shardingsphere.proxy.backend.handler.distsql.ral.updatable.imports.ImportDatabaseConfigurationExecutor
+org.apache.shardingsphere.proxy.backend.handler.distsql.ral.updatable.imports.ImportMetaDataExecutor
+org.apache.shardingsphere.proxy.backend.handler.distsql.ral.updatable.variable.SetDistVariableExecutor
+org.apache.shardingsphere.proxy.backend.handler.distsql.ral.updatable.refresh.RefreshDatabaseMetaDataExecutor
+org.apache.shardingsphere.proxy.backend.handler.distsql.ral.updatable.lock.LockClusterExecutor
+org.apache.shardingsphere.proxy.backend.handler.distsql.ral.updatable.lock.UnlockClusterExecutor
+org.apache.shardingsphere.proxy.backend.handler.distsql.ral.updatable.refresh.RefreshTableMetaDataExecutor

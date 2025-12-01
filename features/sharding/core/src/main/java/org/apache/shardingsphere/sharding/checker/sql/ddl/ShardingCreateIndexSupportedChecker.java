@@ -18,38 +18,40 @@
 package org.apache.shardingsphere.sharding.checker.sql.ddl;
 
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.binder.context.statement.ddl.CreateIndexStatementContext;
+import org.apache.shardingsphere.infra.binder.context.statement.type.CommonSQLStatementContext;
 import org.apache.shardingsphere.infra.checker.SupportedSQLChecker;
-import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
+import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
+import org.apache.shardingsphere.infra.exception.kernel.metadata.DuplicateIndexException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.sharding.checker.sql.common.ShardingSupportedCommonChecker;
-import org.apache.shardingsphere.infra.exception.kernel.metadata.DuplicateIndexException;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.CreateIndexStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.type.IndexSQLStatementAttribute;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.index.CreateIndexStatement;
 
 import java.util.Collections;
 
 /**
  * Create index supported checker for sharding.
  */
-public final class ShardingCreateIndexSupportedChecker implements SupportedSQLChecker<CreateIndexStatementContext, ShardingRule> {
+public final class ShardingCreateIndexSupportedChecker implements SupportedSQLChecker<CommonSQLStatementContext, ShardingRule> {
     
     @Override
     public boolean isCheck(final SQLStatementContext sqlStatementContext) {
-        return sqlStatementContext instanceof CreateIndexStatementContext;
+        return sqlStatementContext.getSqlStatement() instanceof CreateIndexStatement;
     }
     
     @Override
-    public void check(final ShardingRule rule, final ShardingSphereDatabase database, final ShardingSphereSchema currentSchema, final CreateIndexStatementContext sqlStatementContext) {
-        CreateIndexStatement createIndexStatement = sqlStatementContext.getSqlStatement();
+    public void check(final ShardingRule rule, final ShardingSphereDatabase database, final ShardingSphereSchema currentSchema, final CommonSQLStatementContext sqlStatementContext) {
+        CreateIndexStatement createIndexStatement = (CreateIndexStatement) sqlStatementContext.getSqlStatement();
         if (createIndexStatement.isIfNotExists()) {
             return;
         }
         ShardingSphereSchema schema = sqlStatementContext.getTablesContext().getSchemaName().map(database::getSchema).orElse(currentSchema);
         ShardingSupportedCommonChecker.checkTableExist(schema, Collections.singleton(createIndexStatement.getTable()));
         String tableName = createIndexStatement.getTable().getTableName().getIdentifier().getValue();
-        String indexName = sqlStatementContext.getIndexes().stream().map(each -> each.getIndexName().getIdentifier().getValue()).findFirst().orElse(null);
+        String indexName = createIndexStatement.getAttributes().getAttribute(IndexSQLStatementAttribute.class).getIndexes()
+                .stream().map(each -> each.getIndexName().getIdentifier().getValue()).findFirst().orElse(null);
         ShardingSpherePreconditions.checkState(!schema.containsIndex(tableName, indexName), () -> new DuplicateIndexException(indexName));
     }
 }

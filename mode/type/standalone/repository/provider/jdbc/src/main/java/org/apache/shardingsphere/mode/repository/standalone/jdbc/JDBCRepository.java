@@ -60,7 +60,7 @@ public final class JDBCRepository implements StandalonePersistRepository {
     public void init(final Properties props) {
         JDBCRepositoryProperties jdbcRepositoryProps = new JDBCRepositoryProperties(props);
         repositorySQL = JDBCRepositorySQLLoader.load(jdbcRepositoryProps.getValue(JDBCRepositoryPropertyKey.PROVIDER));
-        dataSource = new HikariDataSource(createHikariConfig(props, jdbcRepositoryProps));
+        dataSource = new HikariDataSource(createHikariConfiguration(props, jdbcRepositoryProps));
         try (
                 Connection connection = dataSource.getConnection();
                 Statement statement = connection.createStatement()) {
@@ -76,7 +76,7 @@ public final class JDBCRepository implements StandalonePersistRepository {
         }
     }
     
-    private HikariConfig createHikariConfig(final Properties props, final JDBCRepositoryProperties jdbcRepositoryProps) {
+    private HikariConfig createHikariConfiguration(final Properties props, final JDBCRepositoryProperties jdbcRepositoryProps) {
         HikariConfig result = new HikariConfig(copyProperties(props));
         result.setDriverClassName(repositorySQL.getDriverClassName());
         result.setJdbcUrl(jdbcRepositoryProps.getValue(JDBCRepositoryPropertyKey.JDBC_URL));
@@ -231,10 +231,5 @@ public final class JDBCRepository implements StandalonePersistRepository {
     @Override
     public String getType() {
         return "JDBC";
-    }
-    
-    @Override
-    public boolean isDefault() {
-        return true;
     }
 }

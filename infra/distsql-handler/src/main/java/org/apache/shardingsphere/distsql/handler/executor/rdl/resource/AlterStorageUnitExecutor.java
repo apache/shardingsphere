@@ -18,7 +18,11 @@
 package org.apache.shardingsphere.distsql.handler.executor.rdl.resource;
 
 import lombok.Setter;
-import lombok.extern.slf4j.Slf4j;
+import org.apache.shardingsphere.database.connector.core.checker.PrivilegeCheckType;
+import org.apache.shardingsphere.database.connector.core.jdbcurl.parser.ConnectionProperties;
+import org.apache.shardingsphere.database.connector.core.jdbcurl.parser.ConnectionPropertiesParser;
+import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoader;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeFactory;
 import org.apache.shardingsphere.distsql.handler.aware.DistSQLExecutorDatabaseAware;
 import org.apache.shardingsphere.distsql.handler.engine.update.DistSQLUpdateExecutor;
 import org.apache.shardingsphere.distsql.handler.validate.DistSQLDataSourcePoolPropertiesValidator;
@@ -26,14 +30,10 @@ import org.apache.shardingsphere.distsql.segment.DataSourceSegment;
 import org.apache.shardingsphere.distsql.segment.HostnameAndPortBasedDataSourceSegment;
 import org.apache.shardingsphere.distsql.segment.URLBasedDataSourceSegment;
 import org.apache.shardingsphere.distsql.segment.converter.DataSourceSegmentsConverter;
-import org.apache.shardingsphere.distsql.statement.rdl.resource.unit.type.AlterStorageUnitStatement;
-import org.apache.shardingsphere.infra.database.core.checker.PrivilegeCheckType;
-import org.apache.shardingsphere.infra.database.core.connector.ConnectionProperties;
-import org.apache.shardingsphere.infra.database.core.connector.url.JdbcUrl;
-import org.apache.shardingsphere.infra.database.core.connector.url.StandardJdbcUrlParser;
+import org.apache.shardingsphere.distsql.statement.type.rdl.resource.unit.type.AlterStorageUnitStatement;
 import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePoolProperties;
-import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
-import org.apache.shardingsphere.infra.exception.core.external.ShardingSphereExternalException;
+import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
+import org.apache.shardingsphere.infra.exception.external.ShardingSphereExternalException;
 import org.apache.shardingsphere.infra.exception.kernel.metadata.resource.storageunit.AlterStorageUnitConnectionInfoException;
 import org.apache.shardingsphere.infra.exception.kernel.metadata.resource.storageunit.DuplicateStorageUnitException;
 import org.apache.shardingsphere.infra.exception.kernel.metadata.resource.storageunit.MissingRequiredStorageUnitsException;
@@ -42,7 +42,6 @@ import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnit;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 
-import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -53,7 +52,6 @@ import java.util.stream.Collectors;
  * Alter storage unit executor.
  */
 @Setter
-@Slf4j
 public final class AlterStorageUnitExecutor implements DistSQLUpdateExecutor<AlterStorageUnitStatement>, DistSQLExecutorDatabaseAware {
     
     private final DistSQLDataSourcePoolPropertiesValidator validateHandler = new DistSQLDataSourcePoolPropertiesValidator();
@@ -66,8 +64,8 @@ public final class AlterStorageUnitExecutor implements DistSQLUpdateExecutor<Alt
         Map<String, DataSourcePoolProperties> propsMap = DataSourceSegmentsConverter.convert(database.getProtocolType(), sqlStatement.getStorageUnits());
         validateHandler.validate(propsMap, getExpectedPrivileges(sqlStatement));
         try {
-            contextManager.getPersistServiceFacade().getMetaDataManagerPersistService().alterStorageUnits(database.getName(), propsMap);
-        } catch (final SQLException | ShardingSphereExternalException ex) {
+            contextManager.getPersistServiceFacade().getModeFacade().getMetaDataManagerService().alterStorageUnits(database, propsMap);
+        } catch (final ShardingSphereExternalException ex) {
             throw new StorageUnitsOperateException("alter", propsMap.keySet(), ex);
         }
     }
@@ -104,10 +102,11 @@ public final class AlterStorageUnitExecutor implements DistSQLUpdateExecutor<Alt
             port = ((HostnameAndPortBasedDataSourceSegment) segment).getPort();
             database = ((HostnameAndPortBasedDataSourceSegment) segment).getDatabase();
         } else if (segment instanceof URLBasedDataSourceSegment) {
-            JdbcUrl segmentJdbcUrl = new StandardJdbcUrlParser().parse(((URLBasedDataSourceSegment) segment).getUrl());
-            hostName = segmentJdbcUrl.getHostname();
-            port = String.valueOf(segmentJdbcUrl.getPort());
-            database = segmentJdbcUrl.getDatabase();
+            String url = ((URLBasedDataSourceSegment) segment).getUrl();
+            ConnectionProperties connectionProps = DatabaseTypedSPILoader.getService(ConnectionPropertiesParser.class, DatabaseTypeFactory.get(url)).parse(url, segment.getUser(), null);
+            hostName = connectionProps.getHostname();
+            port = String.valueOf(connectionProps.getPort());
+            database = connectionProps.getCatalog();
         }
         ConnectionProperties connectionProps = storageUnit.getConnectionProperties();
         return Objects.equals(hostName, connectionProps.getHostname()) && Objects.equals(port, String.valueOf(connectionProps.getPort())) && Objects.equals(database, connectionProps.getCatalog());

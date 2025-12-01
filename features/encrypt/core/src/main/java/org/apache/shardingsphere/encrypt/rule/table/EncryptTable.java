@@ -29,7 +29,7 @@ import org.apache.shardingsphere.encrypt.rule.column.item.CipherColumnItem;
 import org.apache.shardingsphere.encrypt.rule.column.item.LikeQueryColumnItem;
 import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
 import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
-import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
+import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 
 import java.util.Map;
 import java.util.Map.Entry;
@@ -177,5 +177,15 @@ public final class EncryptTable {
     @HighFrequencyInvocation
     public Optional<EncryptAlgorithm> findQueryEncryptor(final String columnName) {
         return isEncryptColumn(columnName) ? Optional.of(getEncryptColumn(columnName).getQueryEncryptor()) : Optional.empty();
+    }
+    
+    /**
+     * Whether derived column.
+     *
+     * @param columnName column name
+     * @return is derived column or not
+     */
+    public boolean isDerivedColumn(final String columnName) {
+        return isAssistedQueryColumn(columnName) || isLikeQueryColumn(columnName);
     }
 }

@@ -20,7 +20,7 @@ package org.apache.shardingsphere.transaction.xa;
 import com.atomikos.jdbc.AtomikosDataSourceBean;
 import com.zaxxer.hikari.HikariDataSource;
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.transaction.api.TransactionType;
 import org.apache.shardingsphere.transaction.xa.fixture.DataSourceUtils;
@@ -37,9 +37,9 @@ import java.sql.SQLException;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.isA;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -84,9 +84,9 @@ class XAShardingSphereTransactionManagerTest {
         Connection actual1 = xaTransactionManager.getConnection("sharding_db", "ds_0");
         Connection actual2 = xaTransactionManager.getConnection("sharding_db", "ds_1");
         Connection actual3 = xaTransactionManager.getConnection("sharding_db", "ds_2");
-        assertThat(actual1, instanceOf(Connection.class));
-        assertThat(actual2, instanceOf(Connection.class));
-        assertThat(actual3, instanceOf(Connection.class));
+        assertThat(actual1, isA(Connection.class));
+        assertThat(actual2, isA(Connection.class));
+        assertThat(actual3, isA(Connection.class));
         xaTransactionManager.commit(false);
     }
     

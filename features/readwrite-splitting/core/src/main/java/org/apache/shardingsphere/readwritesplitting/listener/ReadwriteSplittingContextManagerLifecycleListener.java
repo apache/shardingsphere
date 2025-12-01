@@ -23,27 +23,19 @@ import org.apache.shardingsphere.infra.rule.attribute.datasource.StaticDataSourc
 import org.apache.shardingsphere.infra.state.datasource.qualified.QualifiedDataSourceState;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.listener.ContextManagerLifecycleListener;
+import org.apache.shardingsphere.mode.manager.listener.ContextManagerLifecycleListenerModeRequired;
 
 import java.util.Map;
 
 /**
  * Readwrite splitting context manager lifecycle listener.
  */
+@ContextManagerLifecycleListenerModeRequired("Cluster")
 public class ReadwriteSplittingContextManagerLifecycleListener implements ContextManagerLifecycleListener {
     
     @Override
     public void onInitialized(final ContextManager contextManager) {
-        if (contextManager.getComputeNodeInstanceContext().getModeConfiguration().isCluster()) {
-            updateQualifiedDataSourceState(contextManager);
-        }
-    }
-    
-    @Override
-    public void onDestroyed(final ContextManager contextManager) {
-    }
-    
-    private void updateQualifiedDataSourceState(final ContextManager contextManager) {
-        Map<String, QualifiedDataSourceState> qualifiedDataSourceStateMap = contextManager.getPersistServiceFacade().getQualifiedDataSourceStatePersistService().load();
+        Map<String, QualifiedDataSourceState> qualifiedDataSourceStateMap = contextManager.getPersistServiceFacade().getQualifiedDataSourceStateService().load();
         qualifiedDataSourceStateMap.forEach((key, value) -> updateQualifiedDataSourceState(contextManager.getMetaDataContexts().getMetaData(), new QualifiedDataSource(key), value));
     }
     
@@ -53,5 +45,9 @@ public class ReadwriteSplittingContextManagerLifecycleListener implements Contex
                 each.getRuleMetaData().getAttributes(StaticDataSourceRuleAttribute.class).forEach(attribute -> attribute.updateStatus(qualifiedDataSource, state.getState()));
             }
         });
+    }
+    
+    @Override
+    public void onDestroyed(final ContextManager contextManager) {
     }
 }

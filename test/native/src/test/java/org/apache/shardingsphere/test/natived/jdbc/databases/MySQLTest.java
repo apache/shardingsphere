@@ -20,11 +20,11 @@ package org.apache.shardingsphere.test.natived.jdbc.databases;
 import com.mysql.cj.jdbc.exceptions.CommunicationsException;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
-import org.apache.shardingsphere.driver.jdbc.core.connection.ShardingSphereConnection;
 import org.apache.shardingsphere.test.natived.commons.TestShardingService;
+import org.apache.shardingsphere.test.natived.commons.util.ResourceUtils;
 import org.awaitility.Awaitility;
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.EnabledInNativeImage;
 import org.testcontainers.containers.GenericContainer;
@@ -51,42 +51,40 @@ import static org.hamcrest.Matchers.nullValue;
 @Testcontainers
 class MySQLTest {
     
-    private static final String SYSTEM_PROP_KEY_PREFIX = "fixture.test-native.yaml.database.mysql.";
+    private final String systemPropKeyPrefix = "fixture.test-native.yaml.database.mysql.";
     
-    private static final String PASSWORD = "example";
+    private final String password = "example";
     
     @SuppressWarnings("resource")
     @Container
-    private static final GenericContainer<?> CONTAINER = new GenericContainer<>("mysql:9.1.0-oraclelinux9")
-            .withEnv("MYSQL_ROOT_PASSWORD", PASSWORD)
+    private final GenericContainer<?> container = new GenericContainer<>("mysql:9.4.0-oraclelinux9")
+            .withEnv("MYSQL_ROOT_PASSWORD", password)
             .withExposedPorts(3306);
     
-    private static DataSource logicDataSource;
+    private DataSource logicDataSource;
     
     private String jdbcUrlPrefix;
     
     private TestShardingService testShardingService;
     
-    @BeforeAll
-    static void beforeAll() {
-        assertThat(System.getProperty(SYSTEM_PROP_KEY_PREFIX + "ds0.jdbc-url"), is(nullValue()));
-        assertThat(System.getProperty(SYSTEM_PROP_KEY_PREFIX + "ds1.jdbc-url"), is(nullValue()));
-        assertThat(System.getProperty(SYSTEM_PROP_KEY_PREFIX + "ds2.jdbc-url"), is(nullValue()));
+    @BeforeEach
+    void beforeEach() {
+        assertThat(System.getProperty(systemPropKeyPrefix + "ds0.jdbc-url"), is(nullValue()));
+        assertThat(System.getProperty(systemPropKeyPrefix + "ds1.jdbc-url"), is(nullValue()));
+        assertThat(System.getProperty(systemPropKeyPrefix + "ds2.jdbc-url"), is(nullValue()));
     }
     
-    @AfterAll
-    static void afterAll() throws SQLException {
-        try (Connection connection = logicDataSource.getConnection()) {
-            connection.unwrap(ShardingSphereConnection.class).getContextManager().close();
-        }
-        System.clearProperty(SYSTEM_PROP_KEY_PREFIX + "ds0.jdbc-url");
-        System.clearProperty(SYSTEM_PROP_KEY_PREFIX + "ds1.jdbc-url");
-        System.clearProperty(SYSTEM_PROP_KEY_PREFIX + "ds2.jdbc-url");
+    @AfterEach
+    void afterEach() throws SQLException {
+        ResourceUtils.closeJdbcDataSource(logicDataSource);
+        System.clearProperty(systemPropKeyPrefix + "ds0.jdbc-url");
+        System.clearProperty(systemPropKeyPrefix + "ds1.jdbc-url");
+        System.clearProperty(systemPropKeyPrefix + "ds2.jdbc-url");
     }
     
     @Test
     void assertShardingInLocalTransactions() throws SQLException {
-        jdbcUrlPrefix = "jdbc:mysql://localhost:" + CONTAINER.getMappedPort(3306) + "/";
+        jdbcUrlPrefix = "jdbc:mysql://localhost:" + container.getMappedPort(3306) + "/";
         logicDataSource = createDataSource();
         testShardingService = new TestShardingService(logicDataSource);
         initEnvironment();
@@ -106,7 +104,7 @@ class MySQLTest {
     private Connection openConnection() throws SQLException {
         Properties props = new Properties();
         props.setProperty("user", "root");
-        props.setProperty("password", PASSWORD);
+        props.setProperty("password", password);
         return DriverManager.getConnection(jdbcUrlPrefix, props);
     }
     
@@ -126,9 +124,9 @@ class MySQLTest {
         HikariConfig config = new HikariConfig();
         config.setDriverClassName("org.apache.shardingsphere.driver.ShardingSphereDriver");
         config.setJdbcUrl("jdbc:shardingsphere:classpath:test-native/yaml/jdbc/databases/mysql.yaml?placeholder-type=system_props");
-        System.setProperty(SYSTEM_PROP_KEY_PREFIX + "ds0.jdbc-url", jdbcUrlPrefix + "demo_ds_0");
-        System.setProperty(SYSTEM_PROP_KEY_PREFIX + "ds1.jdbc-url", jdbcUrlPrefix + "demo_ds_1");
-        System.setProperty(SYSTEM_PROP_KEY_PREFIX + "ds2.jdbc-url", jdbcUrlPrefix + "demo_ds_2");
+        System.setProperty(systemPropKeyPrefix + "ds0.jdbc-url", jdbcUrlPrefix + "demo_ds_0");
+        System.setProperty(systemPropKeyPrefix + "ds1.jdbc-url", jdbcUrlPrefix + "demo_ds_1");
+        System.setProperty(systemPropKeyPrefix + "ds2.jdbc-url", jdbcUrlPrefix + "demo_ds_2");
         return new HikariDataSource(config);
     }
 }

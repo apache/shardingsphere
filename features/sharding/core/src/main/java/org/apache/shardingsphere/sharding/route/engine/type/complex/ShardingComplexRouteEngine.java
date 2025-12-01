@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.sharding.route.engine.type.complex;
 
+import com.cedarsoftware.util.CaseInsensitiveSet;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
@@ -32,7 +33,6 @@ import org.apache.shardingsphere.sharding.rule.ShardingTable;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.Optional;
-import java.util.TreeSet;
 
 /**
  * Sharding complex route engine.
@@ -52,7 +52,7 @@ public final class ShardingComplexRouteEngine implements ShardingRouteEngine {
     
     @Override
     public RouteContext route(final ShardingRule shardingRule) {
-        Collection<String> bindingTableNames = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
+        Collection<String> bindingTableNames = new CaseInsensitiveSet<>();
         Collection<RouteContext> routeContexts = new LinkedList<>();
         for (String each : logicTables) {
             Optional<ShardingTable> shardingTable = shardingRule.findShardingTable(each);

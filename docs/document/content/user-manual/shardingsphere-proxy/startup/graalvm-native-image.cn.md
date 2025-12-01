@@ -5,205 +5,373 @@ weight = 2
 
 ## 背景信息
 
-本节主要介绍如何通过 `GraalVM` 的 `native-image` 命令行工具构建 ShardingSphere Proxy 的 `GraalVM Native Image`，
-以及包含此 `GraalVM Native Image` 的 `Docker Image`。
+本节主要介绍如何通过 `GraalVM CE` 的 `native-image` 命令行工具构建 ShardingSphere Proxy 的 `GraalVM Native Image`，
+以及包含此 `GraalVM Native Image` 的 `Docker Image`。ShardingSphere Proxy 的 `GraalVM Native Image` 在本文即指代 ShardingSphere Proxy Native。
 
-ShardingSphere Proxy 的 `GraalVM Native Image` 在本文即指代 ShardingSphere Proxy Native。
-
-GraalVM Native Image 的背景信息可参考 https://www.graalvm.org 。
-
-## 注意事项
-
-本节涉及的所有 Docker Image 均不通过 https://downloads.apache.org ，https://repository.apache.org 等 ASF 官方渠道进行分发。
+本节内容涉及的所有 Docker Image 均不通过 https://downloads.apache.org ，https://repository.apache.org 等 ASF 官方渠道进行分发。
 Docker Image 仅在 `GitHub Packages`，`Docker Hub` 等下游渠道提供以方便使用。
 
-Proxy 的 Native Image 产物在 https://github.com/apache/shardingsphere/pkgs/container/shardingsphere-proxy-native 存在每夜构建。
-假设存在包含 `global.yaml` 的 `conf` 文件夹为 `./custom/conf`，你可通过如下的 `docker-compose.yml` 文件进行测试。
-
-```yaml
-services:
-  apache-shardingsphere-proxy-native:
-    image: ghcr.io/apache/shardingsphere-proxy-native:latest
-    volumes:
-      - ./custom/conf:/opt/shardingsphere-proxy-native/conf
-    ports:
-      - "3307:3307"
-```
-
 ShardingSphere Proxy Native 可执行 DistSQL，这意味着实际上不需要任何定义逻辑数据库的 YAML 文件。
+默认情况下，ShardingSphere Proxy Native 中仅包含，
 
-默认情况下，ShardingSphere Proxy Native 的 GraalVM Native Image 中仅包含，
+1. 与 ShardingSphere Proxy 默认配置一致的，一系列 JAR 的编译后产物
+2. ShardingSphere 维护的自有及部分第三方依赖的 GraalVM Reachability Metadata
 
-1. ShardingSphere 维护的自有及部分第三方依赖的 GraalVM Reachability Metadata
-2. H2database, OpenGauss 和 PostgreSQL 的 JDBC Driver
-3. HikariCP 的数据库连接池
-4. Logback 的日志框架
-
-如果用户需要在 ShardingSphere Proxy Native 中使用第三方 JAR，则需要修改 `distribution/proxy-native/pom.xml` 的内容，以构建以下的任意输出，
-
-1. 自定义的 GraalVM Native Image
-2. 包含自定义的 GraalVM Native Image 的自定义 Docker Image
-
-本节假定处于以下的系统环境之一，
+本节内容假定处于以下的系统环境之一，
 
 1. Linux（amd64，aarch64）
 2. MacOS（amd64，aarch64/M1）
 3. Windows（amd64）
 
-若处于 Linux（riscv64）等 Graal compiler 不支持的系统环境，
-请根据 https://medium.com/graalvm/graalvm-native-image-meets-risc-v-899be38eddd9 的内容启用 LLVM backend 来使用 LLVM compiler。
+本节内容依然受到 ShardingSphere JDBC 一侧的 [GraalVM Native Image](/cn/user-manual/shardingsphere-jdbc/graalvm-native-image) 的已记录内容的限制。
 
-用户必须对需要运行 GraalVM Native Image 的每个目标操作系统和目标体系结构，来独立构建不同的 GraalVM Native Image。
-用户可以考虑通过 Docker Image 来部分绕开此限制。
+如果用户需要在 ShardingSphere Proxy Native 中使用第三方 JAR，或者使用 UPX 压缩编译后的 GraalVM Native Image，
+则需要修改 Maven 模块 `org.apache.shardingsphere:shardingsphere-proxy-native-distribution` 的源码。
+参考下文的`从源码构建`一节。
 
-本节依然受到 ShardingSphere JDBC 一侧的 [GraalVM Native Image](/cn/user-manual/shardingsphere-jdbc/graalvm-native-image) 的已记录内容的限制。
+若不需要修改 ShardingSphere Proxy Native 的默认配置，开发者可从`通过夜间构建的 Docker Image 使用`一节开始处理。
 
-## 前提条件
+## 通过夜间构建的 Docker Image 使用
 
-1. 根据 https://www.graalvm.org/downloads/ 要求安装和配置 JDK 22 对应的 `GraalVM Community Edition` 或 `GraalVM Community Edition` 的下游发行版。
-若使用 `SDKMAN!`，
+包含 ShardingSphere Proxy Native 的 Docker Image 在 https://github.com/apache/shardingsphere/pkgs/container/shardingsphere-proxy-native 存在每夜构建。
+ShardingSphere Proxy Native 的默认端口为 `3307`，配置文件从 `/opt/shardingsphere-proxy/conf` 加载。
 
-```shell
-sdk install java 22.0.2-graalce
-sdk use java 22.0.2-graalce
+夜间构建的 Docker Image 存在多种形态的 GraalVM Native Image 的变体 Docker Image Tag。
+
+### 动态链接的 GraalVM Native Image
+
+假设存在包含 `global.yaml` 的 `conf` 文件夹为 `./custom/conf`，
+开发者可通过如下的 Docker Compose 文件对 `动态链接的 GraalVM Native Image` 形态的 ShardingSphere Proxy Native 进行测试。
+
+```yaml
+services:
+  apache-shardingsphere-proxy-native:
+    image: ghcr.io/apache/shardingsphere-proxy-native:a2661a750be0301cb221ba8f549504f04cc8a5af
+    volumes:
+      - ./custom/conf:/opt/shardingsphere-proxy/conf
+    ports:
+      - "3307:3307"
 ```
 
-2. 根据 https://www.graalvm.org/jdk23/reference-manual/native-image/#prerequisites 的要求安装本地工具链。
+作为补充，`ghcr.io/apache/shardingsphere-proxy-native:latest`的 Docker Image Tag 将指向 `动态链接的 GraalVM Native Image`。 
 
-3. 如果需要构建 Docker Image， 确保 `Docker Engine` 已安装。
+### 大部分静态链接的 GraalVM Native Image
 
-## 操作步骤
+此节内容仅限于支持运行 `linux/amd64` OS/Arch Containers 的 Container Runtime 使用。
 
-1. 获取 Apache ShardingSphere Git Source
+假设存在包含 `global.yaml` 的 `conf` 文件夹为 `./custom/conf`，
+开发者可通过如下的 Docker Compose 文件对 `大部分静态链接的 GraalVM Native Image` 形态的 ShardingSphere Proxy Native 进行测试。
+只需为特定的，`动态链接的 GraalVM Native Image` 对应的 Docker Image Tag 加上 `-mostly` 后缀。
 
-在[下载页面](https://shardingsphere.apache.org/document/current/en/downloads/)或 https://github.com/apache/shardingsphere/tree/master 获取。
-
-2. 在命令行构建产物, 分两种情形。
-
-情形一：不需要使用存在自定义 SPI 实现的 JAR 或第三方依赖的 JAR 。在 Git Source 同级目录下执行如下命令, 直接完成 Native Image 的构建。
-
-```bash
-cd ./shardingsphere/
-./mvnw -am -pl distribution/proxy-native -T1C -Prelease.native -DskipTests clean package
+```yaml
+services:
+  apache-shardingsphere-proxy-native:
+    image: ghcr.io/apache/shardingsphere-proxy-native:a2661a750be0301cb221ba8f549504f04cc8a5af-mostly
+    volumes:
+      - ./custom/conf:/opt/shardingsphere-proxy/conf
+    ports:
+      - "3307:3307"
 ```
 
-情形二：需要使用存在自定义 SPI 实现的 JAR 或第三方依赖的 JAR。在 `distribution/proxy-native/pom.xml` 的 `dependencies` 加入如下选项之一，
+### 完全静态链接的 GraalVM Native Image
 
-(1) 存在 SPI 实现的 JAR
-(2) 第三方依赖的 JAR
+此节内容仅限于支持运行 `linux/amd64` OS/Arch Containers 的 Container Runtime 使用。
 
-示例如下，这些 JAR 应预先置入本地 Maven 仓库或 Maven Central 等远程 Maven 仓库。
+假设存在包含 `global.yaml` 的 `conf` 文件夹为 `./custom/conf`，
+开发者可通过如下的 Docker Compose 文件对 `完全静态链接的 GraalVM Native Image` 形态的 ShardingSphere Proxy Native 进行测试。
+只需为特定的，`动态链接的 GraalVM Native Image` 对应的 Docker Image Tag 加上 `-static` 后缀。
+
+```yaml
+services:
+  apache-shardingsphere-proxy-native:
+    image: ghcr.io/apache/shardingsphere-proxy-native:a2661a750be0301cb221ba8f549504f04cc8a5af-static
+    volumes:
+      - ./custom/conf:/opt/shardingsphere-proxy/conf
+    ports:
+      - "3307:3307"
+```
+
+## 从源码构建
+
+若从源码构建，开发者有2种选择，
+
+1. 在不安装本地工具链的情况下，构建包含 ShardingSphere Proxy Native 产物的 `Linux Container`
+2. 在安装本地工具链的情况下，构建包含 ShardingSphere Proxy Native 产物。对于 Windows，可通过此途径创建`.exe`形态的 GraalVM Native Image
+
+### 使用存在自定义 SPI 实现的 JAR 或第三方依赖的 JAR
+
+开发者可能需要使用存在自定义 SPI 实现的 JAR 或第三方依赖的 JAR。可在从源码构建前，修改 `distribution/proxy-native/pom.xml` 文件的 `dependencies` 部分。
+一个添加 MySQL JDBC Driver 依赖的示例如下，相关 JAR 应预先置入本地 Maven 仓库或 Maven Central 等远程 Maven 仓库。
 
 ```xml
 <dependencies>
     <dependency>
         <groupId>com.mysql</groupId>
         <artifactId>mysql-connector-j</artifactId>
-        <version>9.0.0</version>
+        <version>9.3.0</version>
     </dependency>
 </dependencies>
 ```
 
-随后通过命令行构建 GraalVM Native Image。
+### 构建 Linux Container
 
-```bash
-cd ./shardingsphere/
-./mvnw -am -pl distribution/proxy-native -T1C -Prelease.native -DskipTests clean package
-```
+#### 前提条件
 
-3. 通过命令行启动 Native Image, 需要带上 4 个参数，
-   第 1 个参数为 ShardingSphere Proxy Native 使用的端口，
-   第 2 个参数为用户编写的包含 `global.yaml` 配置文件的文件夹，
-   第 3 个参数为要侦听的主机，如果为 `0.0.0.0` 则允许任意数据库客户端均可访问 ShardingSphere Proxy Native
-   第 4 个参数为 Force Start，如果为 `true` 则保证 ShardingSphere Proxy Native 无论能否连接都能正常启动。
+贡献者必须在设备安装，
 
-已完成构建的 GraalVM Native Image 的二进制文件仅可设置命令行参数。这意味着，
+1. OpenJDK 11 或更高版本
+2. 可运行 Linux Containers 的 Docker Engine
 
-(1) 用户仅可在构建 GraalVM Native Image 的过程中设置 JVM 参数
-(2) 用户无法针对已完成构建的 GraalVM Native Image 的二进制文件设置 JVM 参数
+下文分别讨论在 Ubuntu 与 Windows 下可能的所需操作。
 
-假设已存在文件夹`/customAbsolutePath/conf`，示例为，
+##### Ubuntu
 
-```bash
-cd ./shardingsphere/
-cd ./distribution/proxy-native/target/apache-shardingsphere-5.5.2-SNAPSHOT-shardingsphere-proxy-native-bin/
-./proxy-native "3307" "/customAbsolutePath/conf" "0.0.0.0" "false"
-```
-
-4. 如果需要构建 Docker Image, 在添加存在 SPI 实现的依赖或第三方依赖后, 在命令行执行如下命令，
+假设贡献者处于新的 Ubuntu 22.04.5 LTS 实例下，且已配置 git。
+可在 bash 通过如下命令利用 `SDKMAN!` 安装 OpenJDK 21。
 
 ```shell
-cd ./shardingsphere/
-./mvnw -am -pl distribution/proxy-native -T1C -Prelease.native,docker.native -DskipTests clean package
+sudo apt install unzip zip -y
+curl -s "https://get.sdkman.io" | bash
+source "$HOME/.sdkman/bin/sdkman-init.sh"
+sdk install java 21.0.7-ms
+sdk use java 21.0.7-ms
 ```
 
-假设存在包含 `global.yaml` 的 `conf` 文件夹为 `./custom/conf`，可通过如下的 `docker-compose.yml` 文件启动包含 GraalVM Native Image 的 Docker Image。
+可在 bash 通过如下命令安装 Rootful 模式的 Docker Engine。本文不讨论更改 `/etc/docker/daemon.json` 的默认 logging driver。
+
+```shell
+sudo apt update && sudo apt upgrade -y
+sudo apt-get remove docker.io docker-doc docker-compose docker-compose-v2 podman-docker containerd runc
+cd /tmp/
+sudo apt-get install ca-certificates curl
+sudo install -m 0755 -d /etc/apt/keyrings
+sudo curl -fsSL https://download.docker.com/linux/ubuntu/gpg -o /etc/apt/keyrings/docker.asc
+sudo chmod a+r /etc/apt/keyrings/docker.asc
+
+echo \
+  "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/ubuntu \
+  $(. /etc/os-release && echo "$VERSION_CODENAME") stable" | \
+  sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+
+sudo apt-get update
+sudo apt-get install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin -y
+sudo groupadd docker
+sudo usermod -aG docker $USER
+newgrp docker
+```
+
+##### Windows
+
+假设贡献者处于新的 Windows 11 Home 24H2 实例下，且已安装和配置 `git-for-windows/git` 和 `PowerShell/PowerShell`。
+
+可在 Powershell 7 通过如下命令利用 `version-fox/vfox` 安装 OpenJDK 21。
+
+```shell
+winget install version-fox.vfox
+if (-not (Test-Path -Path $PROFILE)) { New-Item -Type File -Path $PROFILE -Force }; Add-Content -Path $PROFILE -Value 'Invoke-Expression "$(vfox activate pwsh)"'
+# 此时需要打开新的 Powershell 7 终端
+vfox add java
+vfox install java@21.0.7-ms
+vfox use --global java@21.0.7-ms
+```
+
+当 Windows 弹出窗口，要求允许类似 `C:\users\lingh\.version-fox\cache\java\v-21.0.7-ms\java-21.0.7-ms\bin\java.exe` 路径的应用通过 Windows 防火墙时，
+应当批准。 
+背景参考 https://support.microsoft.com/en-us/windows/risks-of-allowing-apps-through-windows-firewall-654559af-3f54-3dcf-349f-71ccd90bcc5c 。
+
+可在 Powershell 7 通过如下命令启用 WSL2 并设置 `Ubuntu WSL` 为默认 Linux 发行版。
+
+```shell
+wsl --install
+```
+
+完成 WSL2 的启用后，在 https://rancherdesktop.io/ 下载和安装 `rancher-sandbox/rancher-desktop`，并设置使用 `dockerd(moby)` 的 `Container Engine`。
+本文不讨论更改 Linux 发行版 `rancher-desktop` 的 `/etc/docker/daemon.json` 的默认 logging driver。
+
+#### 构建包含动态链接的 GraalVM Native Image 的 Docker Image
+
+可执行如下命令构建。
+
+```shell
+git clone git@github.com:apache/shardingsphere.git
+cd ./shardingsphere/
+./mvnw -am -pl distribution/proxy-native -T1C "-Pdocker.build.native.linux" "-DskipTests" clean package
+```
+
+一个可能的 Docker Compose 示例为，
 
 ```yaml
 services:
   apache-shardingsphere-proxy-native:
-    image: apache/shardingsphere-proxy-native:latest
+    image: apache/shardingsphere-proxy-native:5.5.3-SNAPSHOT
     volumes:
-      - ./custom/conf:/opt/shardingsphere-proxy-native/conf
+      - ./custom/conf:/opt/shardingsphere-proxy/conf
     ports:
       - "3307:3307"
 ```
 
-如果用户不对 Git Source 做任何更改，
-上文提及的命令将使用 https://yum.oracle.com/oracle-linux-downloads.html 中的 `container-registry.oracle.com/os/oraclelinux:9-slim` 作为 Base Docker Image。
-但如果用户希望使用 `scratch`，`alpine:3`，`gcr.io/distroless/base-debian12`，
-`gcr.io/distroless/java-base-debian12` 或 `gcr.io/distroless/static-debian12` 等更小体积的 Docker Image 作为 Base Docker Image，
-用户可能需要根据 https://www.graalvm.org/jdk23/reference-manual/native-image/guides/build-static-executables/ 的要求，
-做为 `pom.xml`的 `Maven Profile` 添加 `--static`，`--libc=musl` 或 `--static-nolibc` 的 `buildArgs` 等操作。
+#### 构建包含大部分静态链接的 GraalVM Native Image 的 Docker Image
 
-构建静态链接的 GraalVM Native Image 需要更多系统依赖，且目前不支持为 Linux（aarch64）等环境构建静态链接的 GraalVM Native Image。
-完全静态链接的 GraalVM Native Image 采用的是 musl libc。
-大多数 Linux 系统内置的 musl 已过时，比如 Ubuntu 22.04.5 LTS 使用的 [musl (1.2.2-4) unstable](https://packages.ubuntu.com/jammy/musl)。
-用户总是需要从源代码构建和安装新版本的 musl。
+可执行如下命令构建。
 
-另请注意，某些第三方 Maven 依赖将需要在 `Dockerfile` 安装更多系统库，
-因此请确保根据使用情况调整 `distribution/proxy-native` 下的 `pom.xml` 和 `Dockerfile` 的内容。
+```shell
+git clone git@github.com:apache/shardingsphere.git
+cd ./shardingsphere/
+./mvnw -am -pl distribution/proxy-native -T1C "-Pdocker.build.native.linux" "-Dproxy.native.dockerfile=Dockerfile-linux-mostly" "-Dproxy.native.image.tag=5.5.3-SNAPSHOT-mostly" "-DskipTests" clean package
+```
 
-## 可观察性
+一个可能的 Docker Compose 示例为，
 
-针对 GraalVM Native Image 形态的 ShardingSphere Proxy，其提供的可观察性的能力与[可观察性](/cn/user-manual/shardingsphere-proxy/observability)并不一致。
+```yaml
+services:
+  apache-shardingsphere-proxy-native:
+    image: apache/shardingsphere-proxy-native:5.5.3-SNAPSHOT-mostly
+    volumes:
+      - ./custom/conf:/opt/shardingsphere-proxy/conf
+    ports:
+      - "3307:3307"
+```
 
-用户可以使用 https://www.graalvm.org/jdk23/tools/ 提供的一系列命令行工具或可视化工具观察 GraalVM Native Image 的内部行为，
+#### 构建包含完全静态链接的 GraalVM Native Image 的 Docker Image
+
+可执行如下命令构建。
+
+```shell
+git clone git@github.com:apache/shardingsphere.git
+cd ./shardingsphere/
+./mvnw -am -pl distribution/proxy-native -T1C "-Pdocker.build.native.linux" "-Dproxy.native.dockerfile=Dockerfile-linux-static" "-Dproxy.native.image.tag=5.5.3-SNAPSHOT-static" "-DskipTests" clean package
+```
+
+一个可能的 Docker Compose 示例为，
+
+```yaml
+services:
+  apache-shardingsphere-proxy-native:
+    image: apache/shardingsphere-proxy-native:5.5.3-SNAPSHOT-static
+    volumes:
+      - ./custom/conf:/opt/shardingsphere-proxy/conf
+    ports:
+      - "3307:3307"
+```
+
+### 仅构建产物
+
+#### 前提条件
+
+贡献者必须在设备安装，
+
+1. GraalVM CE 24.0.2，或与 GraalVM CE 24.0.2 兼容的 GraalVM 下游发行版。以 [GraalVM Native Image](/cn/user-manual/shardingsphere-jdbc/graalvm-native-image) 为准。
+2. 编译 GraalVM Native Image 所需要的本地工具链。以 https://www.graalvm.org/latest/reference-manual/native-image/#prerequisites 为准。
+
+在 Ubuntu 与 Windows 下可能的所需操作与[开发和测试](/cn/user-manual/shardingsphere-jdbc/graalvm-native-image/development)一致。
+但不需要安装 Container Runtime。
+
+##### 静态编译所需的本地工具链
+
+开发者如需构建 `大部分静态链接的 GraalVM Native Image` 或 `完全静态链接的 GraalVM Native Image`，
+则需要按 https://www.graalvm.org/latest/reference-manual/native-image/guides/build-static-executables/ 要求，从源代码构建 musl。
+
+#### 构建动态链接的 GraalVM Native Image
+
+可执行如下命令构建。
+
+```shell
+git clone git@github.com:apache/shardingsphere.git
+cd ./shardingsphere/
+./mvnw -am -pl distribution/proxy-native -T1C -DskipTests "-Prelease.native" clean package
+```
+
+#### 构建大部分静态链接的 GraalVM Native Image
+
+可执行如下命令构建。
+
+```shell
+git clone git@github.com:apache/shardingsphere.git
+cd ./shardingsphere/
+./mvnw -am -pl distribution/proxy-native -T1C -DskipTests "-Prelease.native" "-DbuildArgs=-H:+UnlockExperimentalVMOptions,-H:+AddAllCharsets,-H:+IncludeAllLocales,--static-nolibc" clean package
+```
+
+#### 构建完全静态链接的 GraalVM Native Image
+
+可执行如下命令构建。
+
+```shell
+git clone git@github.com:apache/shardingsphere.git
+cd ./shardingsphere/
+./mvnw -am -pl distribution/proxy-native -T1C -DskipTests "-Prelease.native" "-DbuildArgs=-H:+UnlockExperimentalVMOptions,-H:+AddAllCharsets,-H:+IncludeAllLocales,--static,--libc=musl" clean package
+```
+
+#### 使用 GraalVM Native Image
+
+无论 GraalVM Native Image 属于什么变体，通过命令行启动 Native Image, 都需要带上 3 个参数，
+
+1. 第 1 个参数为 ShardingSphere Proxy Native 使用的端口，
+2. 第 2 个参数为用户编写的包含 `global.yaml` 配置文件的文件夹，
+3. 第 3 个参数为要侦听的主机，如果为 `0.0.0.0` 则允许任意数据库客户端均可访问 ShardingSphere Proxy Native。
+
+已完成构建的 GraalVM Native Image 的二进制文件仅可设置命令行参数。这意味着，
+
+1. 用户仅可在构建 GraalVM Native Image 的过程中设置 JVM 参数
+2. 用户无法针对已完成构建的 GraalVM Native Image 的二进制文件设置 JVM 参数
+
+Ubuntu 下假设已存在包含 `global.yaml` 的 `conf` 文件夹为 `/tmp/conf`，可能的示例为，
+
+```bash
+cd ./shardingsphere/
+cd ./distribution/proxy-native/target/apache-shardingsphere-5.5.3-SNAPSHOT-shardingsphere-proxy-bin/bin
+./proxy-native "3307" "/tmp/conf" "0.0.0.0"
+```
+
+Windows 下假设已存在包含 `global.yaml` 的 `conf` 文件夹为 `C:\Users\shard\Downloads\conf`，可能的示例为，
+
+```bash
+cd ./shardingsphere/
+cd ./distribution/proxy-native/target/apache-shardingsphere-5.5.3-SNAPSHOT-shardingsphere-proxy-bin/bin
+./proxy-native.exe "3307" "C:\Users\shard\Downloads\conf" "0.0.0.0"
+```
+
+## 使用限制
+
+### GraalVM Native Image 变体选择
+
+一般情况下开发者仅需使用`动态链接的 GraalVM Native Image`。
+
+当开发者仅使用可运行 `linux/amd64` OS/Arch Containers 的 Container Runtime，并希望获得更小体积的 Docker Image 时，
+可考虑使用 `大部分静态链接的 GraalVM Native Image` 或 `完全静态链接的 GraalVM Native Image`。
+背景参考 https://www.graalvm.org/latest/reference-manual/native-image/guides/build-static-executables/ 和 https://github.com/oracle/graal/issues/2589 。
+大部分静态链接的可执行文件，是 `golang/go` 推广的，针对静态链接 musl libc 实现的另一种替代方案。
+
+### 可观察性
+
+针对 ShardingSphere Proxy Native，其提供的可观察性的能力与[可观察性](/cn/user-manual/shardingsphere-proxy/observability)并不一致。
+
+用户可以使用 https://www.graalvm.org/latest/reference-manual/tools/ 提供的一系列命令行工具或可视化工具观察 GraalVM Native Image 的内部行为，
 并根据其要求在 Linux 下使用 VSCode 完成 Debug 工作。如果用户正在使用 IntelliJ IDEA 并且希望调试生成的 GraalVM Native Image，
 用户可以关注 https://blog.jetbrains.com/idea/2022/06/intellij-idea-2022-2-eap-5/#Experimental_GraalVM_Native_Debugger_for_Java 及其后继。
-
 如果用户使用的不是 Linux，则无法对 GraalVM Native Image 进行 Debug，请关注尚未关闭的 https://github.com/oracle/graal/issues/5648 。
 
 对于使用 `ShardingSphere Agent` 等 Java Agent 的情形， GraalVM 的 `native-image` 组件尚未完全支持在构建 Native Image 时使用 javaagent，
 用户需要关注尚未关闭的 https://github.com/oracle/graal/issues/8177 。
-
 若用户期望在 ShardingSphere Proxy Native 下使用这类 Java Agent，则需要关注 https://github.com/oracle/graal/pull/8077 涉及的变动。
 
-## Seata AT 模式集成
+### `linux/riscv64` OS/Arch 限制
 
-对于 GraalVM Native Image 形态的 ShardingSphere Proxy Native，
-用户始终需要修改 ShardingSphere 源代码以添加 Seata Client 和 Seata 集成的 Maven 模块，并编译为 GraalVM Native Image。
-GraalVM Native Image 形态的 ShardingSphere Proxy Native 无法识别额外添加的 JAR 文件。
+当前，ShardingSphere Proxy Native 未提供在 `linux/riscv64` OS/Arch 上的可用性。如果开发者使用 `linux/riscv64` 设备，
+应参考 https://medium.com/graalvm/graalvm-native-image-meets-risc-v-899be38eddd9 的处理修改 Proxy Native 的构建配置。
 
-```xml
-<project>
-    <dependencies>
-      <dependency>
-         <groupId>org.apache.shardingsphere</groupId>
-         <artifactId>shardingsphere-transaction-base-seata-at</artifactId>
-         <version>${shardingsphere.version}</version>
-      </dependency>
-      <dependency>
-         <groupId>org.apache.seata</groupId>
-         <artifactId>seata-all</artifactId>
-         <version>2.2.0</version>
-         <exclusions>
-            <exclusion>
-               <groupId>org.antlr</groupId>
-               <artifactId>antlr4-runtime</artifactId>
-            </exclusion>
-         </exclusions>
-      </dependency>
-    </dependencies>
-</project>
-```
+自 https://github.com/oracle/graal/issues/6855 开始，`LLVM backend` 需要从 GraalVM 的源码构建才可使用。
+参考 https://github.com/oracle/graal/blob/master/substratevm/src/com.oracle.svm.core.graal.llvm/src/com/oracle/svm/core/graal/llvm/LLVMBackend.md 。
+
+### Windows Containers 限制
+
+ShardingSphere Proxy Native 可通过包含 `Microsoft.VisualStudio.2022.Community` 的本地工具链，在 Windows 上开箱即用地构建 GraalVM Native Image。
+
+当前受 https://github.com/graalvm/container/issues/106 影响，
+ShardingSphere 暂时不为通过 Windows 编译的 `动态链接的 GraalVM Native Image` 提供构建 Docker Image 所需的构建配置。
+
+### Wasm 模块限制
+
+尽管 `Oracle GraalVM Early Access Builds For JDK 26 EA 3` 已支持构建 `Wasm 模块`形态的 GraalVM Native Image，
+但 ShardingSphere 尚未准备好在 OpenJDK 26 下测试 CI。
+
+当前，ShardingSphere Proxy Native 未提供编译为 `Wasm 模块` 所需的构建配置。

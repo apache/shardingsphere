@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.data.pipeline.cdc.exception;
 
-import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.XOpenSQLState;
+import org.apache.shardingsphere.infra.exception.external.sql.sqlstate.XOpenSQLState;
 
 /**
  * Empty CDC login request body exception.

@@ -21,14 +21,14 @@ import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.globalclock.config.GlobalClockRuleConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlGlobalRuleConfiguration;
-import org.apache.shardingsphere.mode.node.tuple.annotation.RepositoryTupleEntity;
+import org.apache.shardingsphere.mode.node.rule.tuple.annotation.RuleNodeTupleEntity;
 
 import java.util.Properties;
 
 /**
  * Global clock rule configuration for YAML.
  */
-@RepositoryTupleEntity(value = "global_clock", leaf = true)
+@RuleNodeTupleEntity(value = "global_clock", leaf = true)
 @Getter
 @Setter
 public final class YamlGlobalClockRuleConfiguration implements YamlGlobalRuleConfiguration {

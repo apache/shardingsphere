@@ -19,12 +19,12 @@
 <rewrite-assertions yaml-rule="scenario/encrypt/config/query-with-cipher.yaml">
     <rewrite-assertion id="update_for_parameters" db-types="MySQL">
         <input sql="UPDATE t_account SET account_id = ?, certificate_number = ?, password = ?, amount = ?, status = ? WHERE account_id = ? AND certificate_number = ? AND password = ? AND password like ? AND amount = ? AND status = ?" parameters="1, 111X, aaa, 1000, OK, 1, 111X, aaa, aaa, 1000, OK" />
-        <output sql="UPDATE t_account SET account_id = ?, cipher_certificate_number = ?, assisted_query_certificate_number = ?, like_query_certificate_number = ?, cipher_password = ?, assisted_query_password = ?, like_query_password = ?, cipher_amount = ?, status = ? WHERE account_id = ? AND assisted_query_certificate_number = ? AND assisted_query_password = ? AND like_query_password like ? AND cipher_amount = ? AND status = ?" parameters="1, encrypt_111X, assisted_query_111X, like_query_111X, encrypt_aaa, assisted_query_aaa, like_query_aaa, encrypt_1000, OK, 1, assisted_query_111X, assisted_query_aaa, like_query_aaa, encrypt_1000, OK" />
+        <output sql="UPDATE t_account SET account_id = ?, `cipher_certificate_number` = ?, `assisted_query_certificate_number` = ?, `like_query_certificate_number` = ?, `cipher_password` = ?, `assisted_query_password` = ?, `like_query_password` = ?, `cipher_amount` = ?, status = ? WHERE account_id = ? AND `assisted_query_certificate_number` = ? AND `assisted_query_password` = ? AND `like_query_password` like ? AND `cipher_amount` = ? AND status = ?" parameters="1, encrypt_111X, assisted_query_111X, like_query_111X, encrypt_aaa, assisted_query_aaa, like_query_aaa, encrypt_1000, OK, 1, assisted_query_111X, assisted_query_aaa, like_query_aaa, encrypt_1000, OK" />
     </rewrite-assertion>
     
     <rewrite-assertion id="update_for_literals" db-types="MySQL">
         <input sql="UPDATE t_account SET account_id = 1, certificate_number = '111X', password = 'aaa', amount = 1000, status = 'OK' WHERE account_id = 1 AND certificate_number = '111X' AND password = 'aaa' AND password like 'aaa' AND amount = 1000 AND status = 'OK'" />
-        <output sql="UPDATE t_account SET account_id = 1, cipher_certificate_number = 'encrypt_111X', assisted_query_certificate_number = 'assisted_query_111X', like_query_certificate_number = 'like_query_111X', cipher_password = 'encrypt_aaa', assisted_query_password = 'assisted_query_aaa', like_query_password = 'like_query_aaa', cipher_amount = 'encrypt_1000', status = 'OK' WHERE account_id = 1 AND assisted_query_certificate_number = 'assisted_query_111X' AND assisted_query_password = 'assisted_query_aaa' AND like_query_password like 'like_query_aaa' AND cipher_amount = 'encrypt_1000' AND status = 'OK'" />
+        <output sql="UPDATE t_account SET account_id = 1, `cipher_certificate_number` = 'encrypt_111X', `assisted_query_certificate_number` = 'assisted_query_111X', `like_query_certificate_number` = 'like_query_111X', `cipher_password` = 'encrypt_aaa', `assisted_query_password` = 'assisted_query_aaa', `like_query_password` = 'like_query_aaa', `cipher_amount` = 'encrypt_1000', status = 'OK' WHERE account_id = 1 AND `assisted_query_certificate_number` = 'assisted_query_111X' AND `assisted_query_password` = 'assisted_query_aaa' AND `like_query_password` like 'like_query_aaa' AND `cipher_amount` = 'encrypt_1000' AND status = 'OK'" />
     </rewrite-assertion>
     
     <!--    TODO FIX ME!-->
@@ -34,8 +34,8 @@
     <!--    </rewrite-assertion>-->
     
     <rewrite-assertion id="update_plain_for_literals" db-types="MySQL">
-        <input sql="UPDATE t_account_bak SET account_id = 1, certificate_number = '111X', password = 'aaa', amount = 1000, status = 'OK' WHERE account_id = 1 AND certificate_number = '111X' AND password = 'aaa' AND password like 'aaa' AND amount = 1000 AND status = 'OK'" />
-        <output sql="UPDATE t_account_bak SET account_id = 1, cipher_certificate_number = 'encrypt_111X', assisted_query_certificate_number = 'assisted_query_111X', like_query_certificate_number = 'like_query_111X', cipher_password = 'encrypt_aaa', assisted_query_password = 'assisted_query_aaa', like_query_password = 'like_query_aaa', cipher_amount = 'encrypt_1000', status = 'OK' WHERE account_id = 1 AND assisted_query_certificate_number = 'assisted_query_111X' AND assisted_query_password = 'assisted_query_aaa' AND like_query_password like 'like_query_aaa' AND cipher_amount = 'encrypt_1000' AND status = 'OK'" />
+        <input sql="UPDATE t_account_bak SET account_id = 1, password = 'aaa', amount = 1000, status = 'OK' WHERE account_id = 1 AND password = 'aaa' AND amount = 1000 AND status = 'OK'" />
+        <output sql="UPDATE t_account_bak SET account_id = 1, `cipher_password` = 'encrypt_aaa', `assisted_query_password` = 'assisted_query_aaa', `like_query_password` = 'like_query_aaa', `cipher_amount` = 'encrypt_1000', status = 'OK' WHERE account_id = 1 AND `assisted_query_password` = 'assisted_query_aaa' AND `cipher_amount` = 'encrypt_1000' AND status = 'OK'" />
     </rewrite-assertion>
     
     <!--    TODO FIX ME!-->
@@ -44,10 +44,6 @@
     <!--        <output sql="UPDATE t_account_bak SET account_id = ?, cipher_password = ?, assisted_query_password = ?, plain_password = ?, cipher_amount = ?, plain_amount = ?, status = ? WHERE account_id = ? AND assisted_query_password = ? AND cipher_amount = ? AND status = ?" parameters="1, encrypt_aaa, assisted_query_aaa, aaa, encrypt_1000, 1000, OK, 1, assisted_query_aaa, 1000, OK" />-->
     <!--    </rewrite-assertion>-->
     
-    <rewrite-assertion id="update_plain_for_literals" db-types="MySQL">
-        <input sql="UPDATE t_account_bak SET account_id = 1, password = 'aaa', amount = 1000, status = 'OK' WHERE account_id = 1 AND password = 'aaa' AND amount = 1000 AND status = 'OK'" />
-        <output sql="UPDATE t_account_bak SET account_id = 1, cipher_password = 'encrypt_aaa', assisted_query_password = 'assisted_query_aaa', like_query_password = 'like_query_aaa', cipher_amount = 'encrypt_1000', status = 'OK' WHERE account_id = 1 AND assisted_query_password = 'assisted_query_aaa' AND cipher_amount = 'encrypt_1000' AND status = 'OK'" />
-    </rewrite-assertion>
     
     <rewrite-assertion id="update_blank_to_clear_plain_with_skip_sql_rewrite_sql_hint" db-types="MySQL">
         <input sql="/* SHARDINGSPHERE_HINT: SKIP_SQL_REWRITE=true */ UPDATE t_account_bak SET certificate_number = '', status = 'OK'" />
@@ -56,42 +52,42 @@
     
     <rewrite-assertion id="update_blank_to_clear_plain_without_skip_sql_rewrite_sql_hint" db-types="MySQL">
         <input sql="/* SHARDINGSPHERE_HINT: SKIP_SQL_REWRITE=false */ UPDATE t_account_bak SET certificate_number = '', status = 'OK'" />
-        <output sql="UPDATE t_account_bak SET cipher_certificate_number = 'encrypt_', assisted_query_certificate_number = 'assisted_query_', like_query_certificate_number = 'like_query_', status = 'OK'" />
+        <output sql="UPDATE t_account_bak SET `cipher_certificate_number` = 'encrypt_', `assisted_query_certificate_number` = 'assisted_query_', `like_query_certificate_number` = 'like_query_', status = 'OK'" />
     </rewrite-assertion>
     
     <rewrite-assertion id="update_null_to_clear_plain" db-types="MySQL">
         <input sql="UPDATE t_account_bak SET certificate_number = NULL" />
-        <output sql="UPDATE t_account_bak SET cipher_certificate_number = NULL, assisted_query_certificate_number = NULL, like_query_certificate_number = NULL" />
+        <output sql="UPDATE t_account_bak SET `cipher_certificate_number` = NULL, `assisted_query_certificate_number` = NULL, `like_query_certificate_number` = NULL" />
     </rewrite-assertion>
 
     <rewrite-assertion id="update_null_to_clear_plain_with_multi" db-types="MySQL">
         <input sql="UPDATE t_account_bak SET certificate_number = NULL, certificate_number = ''" />
-        <output sql="UPDATE t_account_bak SET cipher_certificate_number = NULL, assisted_query_certificate_number = NULL, like_query_certificate_number = NULL, cipher_certificate_number = 'encrypt_', assisted_query_certificate_number = 'assisted_query_', like_query_certificate_number = 'like_query_'" />
+        <output sql="UPDATE t_account_bak SET `cipher_certificate_number` = NULL, `assisted_query_certificate_number` = NULL, `like_query_certificate_number` = NULL, `cipher_certificate_number` = 'encrypt_', `assisted_query_certificate_number` = 'assisted_query_', `like_query_certificate_number` = 'like_query_'" />
     </rewrite-assertion>
 
-    <rewrite-assertion id="update_null_to_clear_plain_where_is_null" db-types="MySQL,PostgreSQL,openGauss">
+    <rewrite-assertion id="update_null_to_clear_plain_where_is_null" db-types="MySQL">
         <input sql="UPDATE t_account_bak SET certificate_number = NULL WHERE certificate_number IS NULL" />
-        <output sql="UPDATE t_account_bak SET cipher_certificate_number = NULL, assisted_query_certificate_number = NULL, like_query_certificate_number = NULL WHERE assisted_query_certificate_number IS NULL" />
+        <output sql="UPDATE t_account_bak SET `cipher_certificate_number` = NULL, `assisted_query_certificate_number` = NULL, `like_query_certificate_number` = NULL WHERE `assisted_query_certificate_number` IS NULL" />
     </rewrite-assertion>
 
-    <rewrite-assertion id="update_null_to_clear_plain_where_isnull" db-types="PostgreSQL,openGauss">
+    <rewrite-assertion id="update_null_to_clear_plain_where_is_null" db-types="PostgreSQL,openGauss">
         <input sql="UPDATE t_account_bak SET certificate_number = NULL WHERE certificate_number IS NULL" />
-        <output sql="UPDATE t_account_bak SET cipher_certificate_number = NULL, assisted_query_certificate_number = NULL, like_query_certificate_number = NULL WHERE assisted_query_certificate_number IS NULL" />
+        <output sql="UPDATE t_account_bak SET &quot;cipher_certificate_number&quot; = NULL, &quot;assisted_query_certificate_number&quot; = NULL, &quot;like_query_certificate_number&quot; = NULL WHERE &quot;assisted_query_certificate_number&quot; IS NULL" />
     </rewrite-assertion>
 
     <rewrite-assertion id="update_null_to_clear_plain_where_is_null_with_multi" db-types="MySQL">
         <input sql="UPDATE t_account_bak SET certificate_number = NULL WHERE certificate_number IS NULL AND status = 'OK' AND certificate_number = '111X' AND certificate_number like '111X'" />
-        <output sql="UPDATE t_account_bak SET cipher_certificate_number = NULL, assisted_query_certificate_number = NULL, like_query_certificate_number = NULL WHERE assisted_query_certificate_number IS NULL AND status = 'OK' AND assisted_query_certificate_number = 'assisted_query_111X' AND like_query_certificate_number like 'like_query_111X'" />
+        <output sql="UPDATE t_account_bak SET `cipher_certificate_number` = NULL, `assisted_query_certificate_number` = NULL, `like_query_certificate_number` = NULL WHERE `assisted_query_certificate_number` IS NULL AND status = 'OK' AND `assisted_query_certificate_number` = 'assisted_query_111X' AND `like_query_certificate_number` like 'like_query_111X'" />
     </rewrite-assertion>
 
     <rewrite-assertion id="update_null_to_clear_plain_where_is_not_null" db-types="MySQL">
         <input sql="UPDATE t_account_bak SET certificate_number = NULL WHERE certificate_number IS NOT NULL" />
-        <output sql="UPDATE t_account_bak SET cipher_certificate_number = NULL, assisted_query_certificate_number = NULL, like_query_certificate_number = NULL WHERE assisted_query_certificate_number IS NOT NULL" />
+        <output sql="UPDATE t_account_bak SET `cipher_certificate_number` = NULL, `assisted_query_certificate_number` = NULL, `like_query_certificate_number` = NULL WHERE `assisted_query_certificate_number` IS NOT NULL" />
     </rewrite-assertion>
 
     <rewrite-assertion id="update_null_to_clear_plain_where_is_not_null_with_multi" db-types="MySQL">
         <input sql="UPDATE t_account_bak SET certificate_number = NULL WHERE certificate_number IS NOT NULL AND status = 'OK' AND certificate_number = '111X' AND certificate_number like '111X'" />
-        <output sql="UPDATE t_account_bak SET cipher_certificate_number = NULL, assisted_query_certificate_number = NULL, like_query_certificate_number = NULL WHERE assisted_query_certificate_number IS NOT NULL AND status = 'OK' AND assisted_query_certificate_number = 'assisted_query_111X' AND like_query_certificate_number like 'like_query_111X'" />
+        <output sql="UPDATE t_account_bak SET `cipher_certificate_number` = NULL, `assisted_query_certificate_number` = NULL, `like_query_certificate_number` = NULL WHERE `assisted_query_certificate_number` IS NOT NULL AND status = 'OK' AND `assisted_query_certificate_number` = 'assisted_query_111X' AND `like_query_certificate_number` like 'like_query_111X'" />
     </rewrite-assertion>
 
     <rewrite-assertion id="update_account_bak_for_parameters_and_quote" db-types="MySQL">

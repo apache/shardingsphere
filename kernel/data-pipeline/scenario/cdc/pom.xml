@@ -21,7 +21,7 @@
     <parent>
         <groupId>org.apache.shardingsphere</groupId>
         <artifactId>shardingsphere-data-pipeline-scenario</artifactId>
-        <version>5.5.2-SNAPSHOT</version>
+        <version>5.5.3-SNAPSHOT</version>
     </parent>
     <artifactId>shardingsphere-data-pipeline-cdc</artifactId>
     <packaging>pom</packaging>
@@ -31,5 +31,6 @@
         <module>protocol</module>
         <module>core</module>
         <module>client</module>
+        <module>distsql</module>
     </modules>
 </project>

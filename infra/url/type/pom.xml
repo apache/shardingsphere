@@ -21,7 +21,7 @@
     <parent>
         <groupId>org.apache.shardingsphere</groupId>
         <artifactId>shardingsphere-infra-url</artifactId>
-        <version>5.5.2-SNAPSHOT</version>
+        <version>5.5.3-SNAPSHOT</version>
     </parent>
     <artifactId>shardingsphere-infra-url-type</artifactId>
     <packaging>pom</packaging>
@@ -30,5 +30,7 @@
     <modules>
         <module>classpath</module>
         <module>absolutepath</module>
+        <module>zookeeper</module>
+        <module>etcd</module>
     </modules>
 </project>

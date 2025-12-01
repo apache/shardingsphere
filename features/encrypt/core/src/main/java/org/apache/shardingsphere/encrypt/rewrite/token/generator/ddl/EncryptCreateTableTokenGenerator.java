@@ -24,12 +24,13 @@ import org.apache.shardingsphere.encrypt.rule.column.EncryptColumn;
 import org.apache.shardingsphere.encrypt.rule.column.item.CipherColumnItem;
 import org.apache.shardingsphere.encrypt.rule.table.EncryptTable;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.binder.context.statement.ddl.CreateTableStatementContext;
+import org.apache.shardingsphere.infra.binder.context.statement.type.CommonSQLStatementContext;
 import org.apache.shardingsphere.infra.rewrite.sql.token.common.generator.CollectionSQLTokenGenerator;
 import org.apache.shardingsphere.infra.rewrite.sql.token.common.pojo.SQLToken;
 import org.apache.shardingsphere.infra.rewrite.sql.token.common.pojo.generic.ColumnDefinitionToken;
 import org.apache.shardingsphere.infra.rewrite.sql.token.common.pojo.generic.SubstituteColumnDefinitionToken;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.column.ColumnDefinitionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.table.CreateTableStatement;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -41,21 +42,22 @@ import java.util.Optional;
  * Create table token generator for encrypt.
  */
 @RequiredArgsConstructor
-public final class EncryptCreateTableTokenGenerator implements CollectionSQLTokenGenerator<CreateTableStatementContext> {
+public final class EncryptCreateTableTokenGenerator implements CollectionSQLTokenGenerator<CommonSQLStatementContext> {
     
     private final EncryptRule rule;
     
     @Override
     public boolean isGenerateSQLToken(final SQLStatementContext sqlStatementContext) {
-        return sqlStatementContext instanceof CreateTableStatementContext && !(((CreateTableStatementContext) sqlStatementContext).getSqlStatement()).getColumnDefinitions().isEmpty();
+        return sqlStatementContext.getSqlStatement() instanceof CreateTableStatement && !((CreateTableStatement) sqlStatementContext.getSqlStatement()).getColumnDefinitions().isEmpty();
     }
     
     @Override
-    public Collection<SQLToken> generateSQLTokens(final CreateTableStatementContext sqlStatementContext) {
+    public Collection<SQLToken> generateSQLTokens(final CommonSQLStatementContext sqlStatementContext) {
         Collection<SQLToken> result = new LinkedList<>();
-        String tableName = sqlStatementContext.getSqlStatement().getTable().getTableName().getIdentifier().getValue();
+        CreateTableStatement sqlStatement = (CreateTableStatement) sqlStatementContext.getSqlStatement();
+        String tableName = sqlStatement.getTable().getTableName().getIdentifier().getValue();
         EncryptTable encryptTable = rule.getEncryptTable(tableName);
-        List<ColumnDefinitionSegment> columns = new ArrayList<>(sqlStatementContext.getSqlStatement().getColumnDefinitions());
+        List<ColumnDefinitionSegment> columns = new ArrayList<>(sqlStatement.getColumnDefinitions());
         for (int index = 0; index < columns.size(); index++) {
             ColumnDefinitionSegment each = columns.get(index);
             String columnName = each.getColumnName().getIdentifier().getValue();

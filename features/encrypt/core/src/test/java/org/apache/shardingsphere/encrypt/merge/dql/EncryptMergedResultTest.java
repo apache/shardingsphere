@@ -24,14 +24,12 @@ import org.apache.shardingsphere.encrypt.rule.column.item.CipherColumnItem;
 import org.apache.shardingsphere.encrypt.rule.table.EncryptTable;
 import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
 import org.apache.shardingsphere.infra.algorithm.core.context.AlgorithmSQLContext;
-import org.apache.shardingsphere.infra.binder.context.segment.select.projection.impl.ColumnProjection;
-import org.apache.shardingsphere.infra.binder.context.statement.dml.SelectStatementContext;
-import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.binder.context.statement.type.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
-import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
+import org.apache.shardingsphere.sql.parser.statement.core.enums.TableSourceType;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.bound.ColumnSegmentBoundInfo;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.bound.TableSegmentBoundInfo;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
@@ -51,20 +49,19 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.Optional;
 
-import static org.apache.shardingsphere.test.matcher.ShardingSphereArgumentVerifyMatchers.deepEq;
+import static org.apache.shardingsphere.test.infra.framework.matcher.ShardingSphereArgumentVerifyMatchers.deepEq;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
 class EncryptMergedResultTest {
-    
-    private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "FIXTURE");
     
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private SelectStatementContext selectStatementContext;
@@ -79,16 +76,16 @@ class EncryptMergedResultTest {
     
     @Test
     void assertGetValueWithoutColumnProjection() throws SQLException {
-        when(selectStatementContext.findColumnProjection(1)).thenReturn(Optional.empty());
+        when(selectStatementContext.findColumnBoundInfo(1)).thenReturn(Optional.empty());
         when(mergedResult.getValue(1, String.class)).thenReturn("foo_value");
-        assertThat(new EncryptMergedResult(mock(), mock(), selectStatementContext, mergedResult).getValue(1, String.class), is("foo_value"));
+        ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
+        assertThat(new EncryptMergedResult(database, mock(), selectStatementContext, mergedResult).getValue(1, String.class), is("foo_value"));
     }
     
     @Test
     void assertGetValueWithoutEncryptTable() throws SQLException {
-        ColumnProjection columnProjection = new ColumnProjection(new IdentifierValue("bar_tbl"), new IdentifierValue("foo_col"), new IdentifierValue("foo_alias"), databaseType,
-                null, null, new ColumnSegmentBoundInfo(new IdentifierValue("foo_col")));
-        when(selectStatementContext.findColumnProjection(1)).thenReturn(Optional.of(columnProjection));
+        ColumnSegmentBoundInfo columnSegmentBoundInfo = new ColumnSegmentBoundInfo(new IdentifierValue("foo_col"));
+        when(selectStatementContext.findColumnBoundInfo(1)).thenReturn(Optional.of(columnSegmentBoundInfo));
         EncryptRule rule = mockRule(mock(EncryptAlgorithm.class));
         ShardingSphereDatabase database = new ShardingSphereDatabase("foo_db", mock(), mock(), new RuleMetaData(Collections.singleton(rule)), Collections.emptyList());
         when(mergedResult.getValue(1, String.class)).thenReturn("foo_value");
@@ -97,9 +94,8 @@ class EncryptMergedResultTest {
     
     @Test
     void assertGetValueWithoutEncryptColumn() throws SQLException {
-        ColumnProjection columnProjection = new ColumnProjection(new IdentifierValue("foo_tbl"), new IdentifierValue("bar_col"), new IdentifierValue("bar_alias"), databaseType,
-                null, null, new ColumnSegmentBoundInfo(new IdentifierValue("bar_col")));
-        when(selectStatementContext.findColumnProjection(1)).thenReturn(Optional.of(columnProjection));
+        ColumnSegmentBoundInfo columnSegmentBoundInfo = new ColumnSegmentBoundInfo(new IdentifierValue("bar_col"));
+        when(selectStatementContext.findColumnBoundInfo(1)).thenReturn(Optional.of(columnSegmentBoundInfo));
         EncryptRule rule = mockRule(mock(EncryptAlgorithm.class));
         ShardingSphereDatabase database = new ShardingSphereDatabase("foo_db", mock(), mock(), new RuleMetaData(Collections.singleton(rule)), Collections.emptyList());
         when(mergedResult.getValue(1, String.class)).thenReturn("foo_value");
@@ -108,10 +104,10 @@ class EncryptMergedResultTest {
     
     @Test
     void assertGetValueWithEncryptColumn() throws SQLException {
-        ColumnProjection columnProjection =
-                new ColumnProjection(new IdentifierValue("foo_tbl"), new IdentifierValue("foo_col"), new IdentifierValue("foo_alias"), databaseType, null, null, new ColumnSegmentBoundInfo(
-                        new TableSegmentBoundInfo(new IdentifierValue("foo_db"), new IdentifierValue("foo_schema")), new IdentifierValue("foo_tbl"), new IdentifierValue("foo_col")));
-        when(selectStatementContext.findColumnProjection(1)).thenReturn(Optional.of(columnProjection));
+        ColumnSegmentBoundInfo columnSegmentBoundInfo = new ColumnSegmentBoundInfo(
+                new TableSegmentBoundInfo(new IdentifierValue("foo_db"), new IdentifierValue("foo_schema")), new IdentifierValue("foo_tbl"), new IdentifierValue("foo_col"),
+                TableSourceType.PHYSICAL_TABLE);
+        when(selectStatementContext.findColumnBoundInfo(1)).thenReturn(Optional.of(columnSegmentBoundInfo));
         when(selectStatementContext.getTablesContext().getSchemaName()).thenReturn(Optional.of("foo_schema"));
         EncryptAlgorithm encryptAlgorithm = mock(EncryptAlgorithm.class);
         when(encryptAlgorithm.decrypt(eq("foo_value"), deepEq(new AlgorithmSQLContext("foo_db", "foo_schema", "foo_tbl", "foo_col")))).thenReturn("foo_decrypted_value");
@@ -124,10 +120,10 @@ class EncryptMergedResultTest {
     
     @Test
     void assertGetValueFailed() throws SQLException {
-        ColumnProjection columnProjection =
-                new ColumnProjection(new IdentifierValue("foo_tbl"), new IdentifierValue("foo_col"), new IdentifierValue("foo_alias"), databaseType, null, null, new ColumnSegmentBoundInfo(
-                        new TableSegmentBoundInfo(new IdentifierValue("foo_db"), new IdentifierValue("foo_schema")), new IdentifierValue("foo_tbl"), new IdentifierValue("foo_col")));
-        when(selectStatementContext.findColumnProjection(1)).thenReturn(Optional.of(columnProjection));
+        ColumnSegmentBoundInfo columnSegmentBoundInfo = new ColumnSegmentBoundInfo(
+                new TableSegmentBoundInfo(new IdentifierValue("foo_db"), new IdentifierValue("foo_schema")), new IdentifierValue("foo_tbl"), new IdentifierValue("foo_col"),
+                TableSourceType.PHYSICAL_TABLE);
+        when(selectStatementContext.findColumnBoundInfo(1)).thenReturn(Optional.of(columnSegmentBoundInfo));
         when(selectStatementContext.getTablesContext().getSchemaName()).thenReturn(Optional.of("foo_schema"));
         EncryptAlgorithm encryptAlgorithm = mock(EncryptAlgorithm.class);
         when(encryptAlgorithm.decrypt(eq("foo_value"), deepEq(new AlgorithmSQLContext("foo_db", "foo_schema", "foo_tbl", "foo_col")))).thenThrow(new RuntimeException("Test failed"));
@@ -149,6 +145,7 @@ class EncryptMergedResultTest {
         return result;
     }
     
+    @SuppressWarnings("UseOfObsoleteDateTimeApi")
     @Test
     void assertGetCalendarValue() throws SQLException {
         Calendar calendar = Calendar.getInstance();

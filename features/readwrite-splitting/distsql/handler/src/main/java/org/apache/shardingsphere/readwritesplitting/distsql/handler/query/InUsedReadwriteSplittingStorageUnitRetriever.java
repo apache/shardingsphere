@@ -19,13 +19,12 @@ package org.apache.shardingsphere.readwritesplitting.distsql.handler.query;
 
 import com.cedarsoftware.util.CaseInsensitiveSet;
 import org.apache.shardingsphere.distsql.handler.executor.rql.resource.InUsedStorageUnitRetriever;
-import org.apache.shardingsphere.distsql.statement.rql.rule.database.ShowRulesUsedStorageUnitStatement;
+import org.apache.shardingsphere.distsql.statement.type.rql.rule.database.ShowRulesUsedStorageUnitStatement;
 import org.apache.shardingsphere.readwritesplitting.config.rule.ReadwriteSplittingDataSourceGroupRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.rule.ReadwriteSplittingRule;
 
 import java.util.Collection;
-import java.util.Collections;
-import java.util.LinkedList;
+import java.util.HashSet;
 
 /**
  * In used readwrite-splitting storage unit retriever.
@@ -34,15 +33,12 @@ public final class InUsedReadwriteSplittingStorageUnitRetriever implements InUse
     
     @Override
     public Collection<String> getInUsedResources(final ShowRulesUsedStorageUnitStatement sqlStatement, final ReadwriteSplittingRule rule) {
-        if (!sqlStatement.getStorageUnitName().isPresent()) {
-            return Collections.emptyList();
-        }
-        Collection<String> result = new LinkedList<>();
+        Collection<String> result = new HashSet<>(1, 1F);
         for (ReadwriteSplittingDataSourceGroupRuleConfiguration each : rule.getConfiguration().getDataSourceGroups()) {
-            if (each.getWriteDataSourceName().equalsIgnoreCase(sqlStatement.getStorageUnitName().get())) {
+            if (each.getWriteDataSourceName().equalsIgnoreCase(sqlStatement.getStorageUnitName())) {
                 result.add(each.getName());
             }
-            if (new CaseInsensitiveSet<>(each.getReadDataSourceNames()).contains(sqlStatement.getStorageUnitName().get())) {
+            if (new CaseInsensitiveSet<>(each.getReadDataSourceNames()).contains(sqlStatement.getStorageUnitName())) {
                 result.add(each.getName());
             }
         }

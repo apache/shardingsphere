@@ -18,16 +18,16 @@
 package org.apache.shardingsphere.driver.jdbc.core.datasource.metadata;
 
 import org.apache.groovy.util.Maps;
+import org.apache.shardingsphere.database.connector.core.jdbcurl.parser.ConnectionProperties;
 import org.apache.shardingsphere.driver.jdbc.core.connection.ShardingSphereConnection;
 import org.apache.shardingsphere.driver.jdbc.core.resultset.DatabaseMetaDataResultSet;
-import org.apache.shardingsphere.infra.database.core.connector.ConnectionProperties;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstanceContext;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
-import org.apache.shardingsphere.test.fixture.jdbc.MockedDataSource;
+import org.apache.shardingsphere.test.infra.fixture.jdbc.MockedDataSource;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -46,10 +46,9 @@ import java.sql.SQLException;
 import java.sql.Types;
 import java.util.Collections;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.hamcrest.Matchers.isA;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -776,68 +775,70 @@ class ShardingSphereDatabaseMetaDataTest {
     }
     
     @Test
-    void assertOwnInsertsAreVisible() {
-        assertTrue(shardingSphereDatabaseMetaData.ownInsertsAreVisible(ResultSet.TYPE_FORWARD_ONLY));
+    void assertOwnInsertsAreVisible() throws SQLException {
+        assertThat(shardingSphereDatabaseMetaData.ownInsertsAreVisible(ResultSet.TYPE_FORWARD_ONLY), is(databaseMetaData.ownInsertsAreVisible(ResultSet.TYPE_FORWARD_ONLY)));
     }
     
     @Test
-    void assertOwnUpdatesAreVisible() {
-        assertTrue(shardingSphereDatabaseMetaData.ownUpdatesAreVisible(ResultSet.TYPE_FORWARD_ONLY));
+    void assertOwnUpdatesAreVisible() throws SQLException {
+        assertThat(shardingSphereDatabaseMetaData.ownUpdatesAreVisible(ResultSet.TYPE_FORWARD_ONLY), is(databaseMetaData.ownUpdatesAreVisible(ResultSet.TYPE_FORWARD_ONLY)));
     }
     
     @Test
-    void assertOwnDeletesAreVisible() {
-        assertTrue(shardingSphereDatabaseMetaData.ownDeletesAreVisible(ResultSet.TYPE_FORWARD_ONLY));
+    void assertOwnDeletesAreVisible() throws SQLException {
+        assertThat(shardingSphereDatabaseMetaData.ownDeletesAreVisible(ResultSet.TYPE_FORWARD_ONLY), is(databaseMetaData.ownDeletesAreVisible(ResultSet.TYPE_FORWARD_ONLY)));
     }
     
     @Test
-    void assertOthersInsertsAreVisible() {
-        assertTrue(shardingSphereDatabaseMetaData.othersInsertsAreVisible(ResultSet.TYPE_FORWARD_ONLY));
+    void assertOthersInsertsAreVisible() throws SQLException {
+        assertThat(shardingSphereDatabaseMetaData.othersInsertsAreVisible(ResultSet.TYPE_FORWARD_ONLY), is(databaseMetaData.othersInsertsAreVisible(ResultSet.TYPE_FORWARD_ONLY)));
     }
     
     @Test
-    void assertOthersUpdatesAreVisible() {
-        assertTrue(shardingSphereDatabaseMetaData.othersUpdatesAreVisible(ResultSet.TYPE_FORWARD_ONLY));
+    void assertOthersUpdatesAreVisible() throws SQLException {
+        assertThat(shardingSphereDatabaseMetaData.othersUpdatesAreVisible(ResultSet.TYPE_FORWARD_ONLY), is(databaseMetaData.othersUpdatesAreVisible(ResultSet.TYPE_FORWARD_ONLY)));
     }
     
     @Test
-    void assertOthersDeletesAreVisible() {
-        assertTrue(shardingSphereDatabaseMetaData.othersDeletesAreVisible(ResultSet.TYPE_FORWARD_ONLY));
+    void assertOthersDeletesAreVisible() throws SQLException {
+        assertThat(shardingSphereDatabaseMetaData.othersDeletesAreVisible(ResultSet.TYPE_FORWARD_ONLY), is(databaseMetaData.othersDeletesAreVisible(ResultSet.TYPE_FORWARD_ONLY)));
     }
     
     @Test
-    void assertInsertsAreDetected() {
-        assertTrue(shardingSphereDatabaseMetaData.insertsAreDetected(ResultSet.TYPE_FORWARD_ONLY));
+    void assertInsertsAreDetected() throws SQLException {
+        assertThat(shardingSphereDatabaseMetaData.insertsAreDetected(ResultSet.TYPE_FORWARD_ONLY), is(databaseMetaData.insertsAreDetected(ResultSet.TYPE_FORWARD_ONLY)));
     }
     
     @Test
-    void assertUpdatesAreDetected() {
-        assertTrue(shardingSphereDatabaseMetaData.updatesAreDetected(ResultSet.TYPE_FORWARD_ONLY));
+    void assertUpdatesAreDetected() throws SQLException {
+        assertThat(shardingSphereDatabaseMetaData.updatesAreDetected(ResultSet.TYPE_FORWARD_ONLY), is(databaseMetaData.updatesAreDetected(ResultSet.TYPE_FORWARD_ONLY)));
     }
     
     @Test
-    void assertDeletesAreDetected() {
-        assertTrue(shardingSphereDatabaseMetaData.deletesAreDetected(ResultSet.TYPE_FORWARD_ONLY));
+    void assertDeletesAreDetected() throws SQLException {
+        assertThat(shardingSphereDatabaseMetaData.deletesAreDetected(ResultSet.TYPE_FORWARD_ONLY), is(databaseMetaData.deletesAreDetected(ResultSet.TYPE_FORWARD_ONLY)));
     }
     
     @Test
-    void assertSupportsResultSetType() {
-        assertTrue(shardingSphereDatabaseMetaData.supportsResultSetType(ResultSet.TYPE_FORWARD_ONLY));
+    void assertSupportsResultSetType() throws SQLException {
+        assertThat(shardingSphereDatabaseMetaData.supportsResultSetType(ResultSet.TYPE_FORWARD_ONLY), is(databaseMetaData.supportsResultSetType(ResultSet.TYPE_FORWARD_ONLY)));
     }
     
     @Test
-    void assertSupportsResultSetConcurrency() {
-        assertTrue(shardingSphereDatabaseMetaData.supportsResultSetConcurrency(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY));
+    void assertSupportsResultSetConcurrency() throws SQLException {
+        assertThat(shardingSphereDatabaseMetaData.supportsResultSetConcurrency(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY),
+                is(databaseMetaData.supportsResultSetConcurrency(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY)));
     }
     
     @Test
-    void assertSupportsResultSetHoldability() {
-        assertTrue(shardingSphereDatabaseMetaData.supportsResultSetHoldability(ResultSet.HOLD_CURSORS_OVER_COMMIT));
+    void assertSupportsResultSetHoldability() throws SQLException {
+        assertThat(shardingSphereDatabaseMetaData.supportsResultSetHoldability(ResultSet.HOLD_CURSORS_OVER_COMMIT),
+                is(databaseMetaData.supportsResultSetHoldability(ResultSet.HOLD_CURSORS_OVER_COMMIT)));
     }
     
     @Test
-    void assertSupportsTransactionIsolationLevel() {
-        assertTrue(shardingSphereDatabaseMetaData.supportsTransactionIsolationLevel(Connection.TRANSACTION_NONE));
+    void assertSupportsTransactionIsolationLevel() throws SQLException {
+        assertThat(shardingSphereDatabaseMetaData.supportsTransactionIsolationLevel(Connection.TRANSACTION_NONE), is(databaseMetaData.supportsTransactionIsolationLevel(Connection.TRANSACTION_NONE)));
     }
     
     @Test
@@ -848,156 +849,156 @@ class ShardingSphereDatabaseMetaDataTest {
     @Test
     void assertGetSuperTypes() throws SQLException {
         when(databaseMetaData.getSuperTypes("test", null, null)).thenReturn(resultSet);
-        assertThat(shardingSphereDatabaseMetaData.getSuperTypes("test", null, null), instanceOf(DatabaseMetaDataResultSet.class));
+        assertThat(shardingSphereDatabaseMetaData.getSuperTypes("test", null, null), isA(DatabaseMetaDataResultSet.class));
     }
     
     @Test
     void assertGetSuperTables() throws SQLException {
         when(databaseMetaData.getSuperTables("test", null, null)).thenReturn(resultSet);
-        assertThat(shardingSphereDatabaseMetaData.getSuperTables("test", null, null), instanceOf(DatabaseMetaDataResultSet.class));
+        assertThat(shardingSphereDatabaseMetaData.getSuperTables("test", null, null), isA(DatabaseMetaDataResultSet.class));
     }
     
     @Test
     void assertGetAttributes() throws SQLException {
         when(databaseMetaData.getAttributes("test", null, null, null)).thenReturn(resultSet);
-        assertThat(shardingSphereDatabaseMetaData.getAttributes("test", null, null, null), instanceOf(DatabaseMetaDataResultSet.class));
+        assertThat(shardingSphereDatabaseMetaData.getAttributes("test", null, null, null), isA(DatabaseMetaDataResultSet.class));
     }
     
     @Test
     void assertGetProcedures() throws SQLException {
         when(databaseMetaData.getProcedures("test", null, null)).thenReturn(resultSet);
-        assertThat(shardingSphereDatabaseMetaData.getProcedures("test", null, null), instanceOf(DatabaseMetaDataResultSet.class));
+        assertThat(shardingSphereDatabaseMetaData.getProcedures("test", null, null), isA(DatabaseMetaDataResultSet.class));
     }
     
     @Test
     void assertGetProcedureColumns() throws SQLException {
         when(databaseMetaData.getProcedureColumns("test", null, null, null)).thenReturn(resultSet);
-        assertThat(shardingSphereDatabaseMetaData.getProcedureColumns("test", null, null, null), instanceOf(DatabaseMetaDataResultSet.class));
+        assertThat(shardingSphereDatabaseMetaData.getProcedureColumns("test", null, null, null), isA(DatabaseMetaDataResultSet.class));
     }
     
     @Test
     void assertGetTables() throws SQLException {
         when(databaseMetaData.getTables("test", null, "%" + TABLE_NAME + "%", null)).thenReturn(resultSet);
-        assertThat(shardingSphereDatabaseMetaData.getTables("test", null, TABLE_NAME, null), instanceOf(DatabaseMetaDataResultSet.class));
+        assertThat(shardingSphereDatabaseMetaData.getTables("test", null, TABLE_NAME, null), isA(DatabaseMetaDataResultSet.class));
     }
     
     @Test
     void assertGetSchemas() throws SQLException {
         when(databaseMetaData.getSchemas()).thenReturn(resultSet);
-        assertThat(shardingSphereDatabaseMetaData.getSchemas(), instanceOf(DatabaseMetaDataResultSet.class));
+        assertThat(shardingSphereDatabaseMetaData.getSchemas(), isA(DatabaseMetaDataResultSet.class));
     }
     
     @Test
     void assertGetSchemasForCatalogAndSchemaPattern() throws SQLException {
         when(databaseMetaData.getSchemas("test", null)).thenReturn(resultSet);
-        assertThat(shardingSphereDatabaseMetaData.getSchemas("test", null), instanceOf(DatabaseMetaDataResultSet.class));
+        assertThat(shardingSphereDatabaseMetaData.getSchemas("test", null), isA(DatabaseMetaDataResultSet.class));
     }
     
     @Test
     void assertGetCatalogs() throws SQLException {
         when(databaseMetaData.getCatalogs()).thenReturn(resultSet);
-        assertThat(shardingSphereDatabaseMetaData.getCatalogs(), instanceOf(DatabaseMetaDataResultSet.class));
+        assertThat(shardingSphereDatabaseMetaData.getCatalogs(), isA(DatabaseMetaDataResultSet.class));
     }
     
     @Test
     void assertGetTableTypes() throws SQLException {
         when(databaseMetaData.getTableTypes()).thenReturn(resultSet);
-        assertThat(shardingSphereDatabaseMetaData.getTableTypes(), instanceOf(DatabaseMetaDataResultSet.class));
+        assertThat(shardingSphereDatabaseMetaData.getTableTypes(), isA(DatabaseMetaDataResultSet.class));
     }
     
     @Test
     void assertGetColumns() throws SQLException {
         when(databaseMetaData.getColumns("test", null, null, null)).thenReturn(resultSet);
-        assertThat(shardingSphereDatabaseMetaData.getColumns("test", null, null, null), instanceOf(DatabaseMetaDataResultSet.class));
+        assertThat(shardingSphereDatabaseMetaData.getColumns("test", null, null, null), isA(DatabaseMetaDataResultSet.class));
     }
     
     @Test
     void assertGetColumnPrivileges() throws SQLException {
         when(databaseMetaData.getColumnPrivileges("test", null, null, null)).thenReturn(resultSet);
-        assertThat(shardingSphereDatabaseMetaData.getColumnPrivileges("test", null, null, null), instanceOf(DatabaseMetaDataResultSet.class));
+        assertThat(shardingSphereDatabaseMetaData.getColumnPrivileges("test", null, null, null), isA(DatabaseMetaDataResultSet.class));
     }
     
     @Test
     void assertGetTablePrivileges() throws SQLException {
         when(databaseMetaData.getTablePrivileges("test", null, null)).thenReturn(resultSet);
-        assertThat(shardingSphereDatabaseMetaData.getTablePrivileges("test", null, null), instanceOf(DatabaseMetaDataResultSet.class));
+        assertThat(shardingSphereDatabaseMetaData.getTablePrivileges("test", null, null), isA(DatabaseMetaDataResultSet.class));
     }
     
     @Test
     void assertGetBestRowIdentifier() throws SQLException {
         when(databaseMetaData.getBestRowIdentifier("test", null, null, 1, true)).thenReturn(resultSet);
-        assertThat(shardingSphereDatabaseMetaData.getBestRowIdentifier("test", null, null, 1, true), instanceOf(DatabaseMetaDataResultSet.class));
+        assertThat(shardingSphereDatabaseMetaData.getBestRowIdentifier("test", null, null, 1, true), isA(DatabaseMetaDataResultSet.class));
     }
     
     @Test
     void assertGetVersionColumns() throws SQLException {
         when(databaseMetaData.getVersionColumns("test", null, null)).thenReturn(resultSet);
-        assertThat(shardingSphereDatabaseMetaData.getVersionColumns("test", null, null), instanceOf(DatabaseMetaDataResultSet.class));
+        assertThat(shardingSphereDatabaseMetaData.getVersionColumns("test", null, null), isA(DatabaseMetaDataResultSet.class));
     }
     
     @Test
     void assertGetPrimaryKeys() throws SQLException {
         when(databaseMetaData.getPrimaryKeys("test", null, null)).thenReturn(resultSet);
-        assertThat(shardingSphereDatabaseMetaData.getPrimaryKeys("test", null, null), instanceOf(DatabaseMetaDataResultSet.class));
+        assertThat(shardingSphereDatabaseMetaData.getPrimaryKeys("test", null, null), isA(DatabaseMetaDataResultSet.class));
     }
     
     @Test
     void assertGetImportedKeys() throws SQLException {
         when(databaseMetaData.getImportedKeys("test", null, null)).thenReturn(resultSet);
-        assertThat(shardingSphereDatabaseMetaData.getImportedKeys("test", null, null), instanceOf(DatabaseMetaDataResultSet.class));
+        assertThat(shardingSphereDatabaseMetaData.getImportedKeys("test", null, null), isA(DatabaseMetaDataResultSet.class));
     }
     
     @Test
     void assertGetExportedKeys() throws SQLException {
         when(databaseMetaData.getExportedKeys("test", null, null)).thenReturn(resultSet);
-        assertThat(shardingSphereDatabaseMetaData.getExportedKeys("test", null, null), instanceOf(DatabaseMetaDataResultSet.class));
+        assertThat(shardingSphereDatabaseMetaData.getExportedKeys("test", null, null), isA(DatabaseMetaDataResultSet.class));
     }
     
     @Test
     void assertGetCrossReference() throws SQLException {
         when(databaseMetaData.getCrossReference("test", null, null, null, null, null)).thenReturn(resultSet);
-        assertThat(shardingSphereDatabaseMetaData.getCrossReference("test", null, null, null, null, null), instanceOf(DatabaseMetaDataResultSet.class));
+        assertThat(shardingSphereDatabaseMetaData.getCrossReference("test", null, null, null, null, null), isA(DatabaseMetaDataResultSet.class));
     }
     
     @Test
     void assertGetTypeInfo() throws SQLException {
         when(databaseMetaData.getTypeInfo()).thenReturn(resultSet);
-        assertThat(shardingSphereDatabaseMetaData.getTypeInfo(), instanceOf(DatabaseMetaDataResultSet.class));
+        assertThat(shardingSphereDatabaseMetaData.getTypeInfo(), isA(DatabaseMetaDataResultSet.class));
     }
     
     @Test
     void assertGetIndexInfo() throws SQLException {
         when(databaseMetaData.getIndexInfo("test", null, TABLE_NAME, true, true)).thenReturn(resultSet);
-        assertThat(shardingSphereDatabaseMetaData.getIndexInfo("test", null, TABLE_NAME, true, true), instanceOf(DatabaseMetaDataResultSet.class));
+        assertThat(shardingSphereDatabaseMetaData.getIndexInfo("test", null, TABLE_NAME, true, true), isA(DatabaseMetaDataResultSet.class));
     }
     
     @Test
     void assertGetUDTs() throws SQLException {
         when(databaseMetaData.getUDTs("test", null, null, null)).thenReturn(resultSet);
-        assertThat(shardingSphereDatabaseMetaData.getUDTs("test", null, null, null), instanceOf(DatabaseMetaDataResultSet.class));
+        assertThat(shardingSphereDatabaseMetaData.getUDTs("test", null, null, null), isA(DatabaseMetaDataResultSet.class));
     }
     
     @Test
     void assertGetClientInfoProperties() throws SQLException {
         when(databaseMetaData.getClientInfoProperties()).thenReturn(resultSet);
-        assertThat(shardingSphereDatabaseMetaData.getClientInfoProperties(), instanceOf(DatabaseMetaDataResultSet.class));
+        assertThat(shardingSphereDatabaseMetaData.getClientInfoProperties(), isA(DatabaseMetaDataResultSet.class));
     }
     
     @Test
     void assertGetFunctions() throws SQLException {
         when(databaseMetaData.getFunctions("test", null, null)).thenReturn(resultSet);
-        assertThat(shardingSphereDatabaseMetaData.getFunctions("test", null, null), instanceOf(DatabaseMetaDataResultSet.class));
+        assertThat(shardingSphereDatabaseMetaData.getFunctions("test", null, null), isA(DatabaseMetaDataResultSet.class));
     }
     
     @Test
     void assertGetFunctionColumns() throws SQLException {
         when(databaseMetaData.getFunctionColumns("test", null, null, null)).thenReturn(resultSet);
-        assertThat(shardingSphereDatabaseMetaData.getFunctionColumns("test", null, null, null), instanceOf(DatabaseMetaDataResultSet.class));
+        assertThat(shardingSphereDatabaseMetaData.getFunctionColumns("test", null, null, null), isA(DatabaseMetaDataResultSet.class));
     }
     
     @Test
     void assertGetPseudoColumns() throws SQLException {
         when(databaseMetaData.getPseudoColumns("test", null, null, null)).thenReturn(resultSet);
-        assertThat(shardingSphereDatabaseMetaData.getPseudoColumns("test", null, null, null), instanceOf(DatabaseMetaDataResultSet.class));
+        assertThat(shardingSphereDatabaseMetaData.getPseudoColumns("test", null, null, null), isA(DatabaseMetaDataResultSet.class));
     }
 }

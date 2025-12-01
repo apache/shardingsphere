@@ -19,4 +19,5 @@
 <sql-cases>
     <sql-case id="insert_with_columns" value="INSERT INTO t_order (order_id, user_id, status, merchant_id, remark, creation_date) VALUES (1, 1, 'OK', 1, 'TEST', '2024-12-25')" db-types="MySQL"/>
     <sql-case id="insert_without_columns" value="INSERT INTO t_order VALUES (1, 1, 'OK', 1, 'TEST', '2024-12-25')" db-types="MySQL"/>
+    <sql-case id="insert_with_assignments" value="INSERT INTO t_order set order_id=1, status='OK'" db-types="MySQL"/>
 </sql-cases>

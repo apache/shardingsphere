@@ -20,18 +20,18 @@ package org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.authority.distsql.statement.ShowAuthorityRuleStatement;
-import org.apache.shardingsphere.distsql.statement.rql.RQLStatement;
-import org.apache.shardingsphere.distsql.statement.rql.resource.ShowStorageUnitsStatement;
-import org.apache.shardingsphere.distsql.statement.rql.resource.ShowTablesStatement;
-import org.apache.shardingsphere.distsql.statement.rql.rule.database.ShowDatabaseRulesStatement;
+import org.apache.shardingsphere.distsql.statement.type.rql.RQLStatement;
+import org.apache.shardingsphere.distsql.statement.type.rql.resource.ShowStorageUnitsStatement;
+import org.apache.shardingsphere.distsql.statement.type.rql.resource.ShowTablesStatement;
+import org.apache.shardingsphere.distsql.statement.type.rql.rule.database.ShowDatabaseRulesStatement;
 import org.apache.shardingsphere.parser.distsql.statement.queryable.ShowSQLParserRuleStatement;
 import org.apache.shardingsphere.readwritesplitting.distsql.statement.ShowStatusFromReadwriteSplittingRulesStatement;
 import org.apache.shardingsphere.sqltranslator.distsql.statement.queryable.ShowSQLTranslatorRuleStatement;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.ExistingAssert;
-import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.rql.impl.ShowRulesStatementAssert;
-import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.rql.impl.ShowStorageUnitsStatementAssert;
-import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.rql.impl.ShowTablesStatementAssert;
+import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.rql.type.ShowRulesStatementAssert;
+import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.rql.type.ShowStorageUnitsStatementAssert;
+import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.rql.type.ShowTablesStatementAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.SQLParserTestCase;
 import org.apache.shardingsphere.transaction.distsql.statement.queryable.ShowTransactionRuleStatement;
 

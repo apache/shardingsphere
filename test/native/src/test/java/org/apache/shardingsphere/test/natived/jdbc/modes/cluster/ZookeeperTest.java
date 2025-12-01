@@ -23,11 +23,11 @@ import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.CuratorFrameworkFactory;
 import org.apache.curator.retry.ExponentialBackoffRetry;
 import org.apache.curator.test.TestingServer;
-import org.apache.shardingsphere.driver.jdbc.core.connection.ShardingSphereConnection;
 import org.apache.shardingsphere.test.natived.commons.TestShardingService;
+import org.apache.shardingsphere.test.natived.commons.util.ResourceUtils;
 import org.awaitility.Awaitility;
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.EnabledInNativeImage;
 
@@ -41,26 +41,25 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.nullValue;
 
+@SuppressWarnings("SqlNoDataSourceInspection")
 @EnabledInNativeImage
 class ZookeeperTest {
     
-    private static final String SYSTEM_PROP_KEY_PREFIX = "fixture.test-native.yaml.mode.cluster.zookeeper.";
+    private final String systemPropKeyPrefix = "fixture.test-native.yaml.mode.cluster.zookeeper.";
     
-    private static DataSource logicDataSource;
+    private DataSource logicDataSource;
     
     private TestShardingService testShardingService;
     
-    @BeforeAll
-    static void beforeAll() {
-        assertThat(System.getProperty(SYSTEM_PROP_KEY_PREFIX + "server-lists"), is(nullValue()));
+    @BeforeEach
+    void beforeEach() {
+        assertThat(System.getProperty(systemPropKeyPrefix + "server-lists"), is(nullValue()));
     }
     
-    @AfterAll
-    static void afterAll() throws SQLException {
-        try (Connection connection = logicDataSource.getConnection()) {
-            connection.unwrap(ShardingSphereConnection.class).getContextManager().close();
-        }
-        System.clearProperty(SYSTEM_PROP_KEY_PREFIX + "server-lists");
+    @AfterEach
+    void afterEach() throws SQLException {
+        ResourceUtils.closeJdbcDataSource(logicDataSource);
+        System.clearProperty(systemPropKeyPrefix + "server-lists");
     }
     
     @Test
@@ -87,7 +86,14 @@ class ZookeeperTest {
         testShardingService.getOrderRepository().createTableIfNotExistsInMySQL();
         testShardingService.getOrderItemRepository().createTableIfNotExistsInMySQL();
         testShardingService.getAddressRepository().createTableIfNotExistsInMySQL();
-        Awaitility.await().pollDelay(Duration.ofSeconds(5L)).until(() -> true);
+        Awaitility.await().atMost(Duration.ofMinutes(2L)).ignoreExceptions().until(() -> {
+            try (Connection connection = logicDataSource.getConnection()) {
+                connection.createStatement().execute("SELECT * FROM t_order");
+                connection.createStatement().execute("SELECT * FROM t_order_item");
+                connection.createStatement().execute("SELECT * FROM t_address");
+            }
+            return true;
+        });
         testShardingService.getOrderRepository().truncateTable();
         testShardingService.getOrderItemRepository().truncateTable();
         testShardingService.getAddressRepository().truncateTable();
@@ -103,7 +109,7 @@ class ZookeeperTest {
         HikariConfig config = new HikariConfig();
         config.setDriverClassName("org.apache.shardingsphere.driver.ShardingSphereDriver");
         config.setJdbcUrl("jdbc:shardingsphere:classpath:test-native/yaml/jdbc/modes/cluster/zookeeper.yaml?placeholder-type=system_props");
-        System.setProperty(SYSTEM_PROP_KEY_PREFIX + "server-lists", connectString);
+        System.setProperty(systemPropKeyPrefix + "server-lists", connectString);
         return new HikariDataSource(config);
     }
 }

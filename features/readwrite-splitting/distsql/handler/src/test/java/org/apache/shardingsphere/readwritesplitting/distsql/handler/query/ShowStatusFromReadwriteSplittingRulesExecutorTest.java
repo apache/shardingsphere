@@ -20,15 +20,12 @@ package org.apache.shardingsphere.readwritesplitting.distsql.handler.query;
 import org.apache.shardingsphere.distsql.statement.DistSQLStatement;
 import org.apache.shardingsphere.infra.config.rule.scope.DatabaseRuleConfiguration;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
-import org.apache.shardingsphere.readwritesplitting.config.ReadwriteSplittingRuleConfiguration;
-import org.apache.shardingsphere.readwritesplitting.distsql.statement.ShowStatusFromReadwriteSplittingRulesStatement;
 import org.apache.shardingsphere.readwritesplitting.rule.ReadwriteSplittingDataSourceGroupRule;
 import org.apache.shardingsphere.readwritesplitting.rule.ReadwriteSplittingRule;
-import org.apache.shardingsphere.test.it.distsql.handler.engine.query.DistSQLDatabaseRuleQueryExecutorTest;
-import org.junit.jupiter.api.extension.ExtensionContext;
+import org.apache.shardingsphere.test.it.distsql.handler.engine.query.DistSQLDatabaseRuleQueryExecutorAssert;
+import org.apache.shardingsphere.test.it.distsql.handler.engine.query.DistSQLRuleQueryExecutorSettings;
+import org.apache.shardingsphere.test.it.distsql.handler.engine.query.DistSQLRuleQueryExecutorTestCaseArgumentsProvider;
 import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.Arguments;
-import org.junit.jupiter.params.provider.ArgumentsProvider;
 import org.junit.jupiter.params.provider.ArgumentsSource;
 
 import java.sql.SQLException;
@@ -36,21 +33,24 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
-import java.util.stream.Stream;
 
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-class ShowStatusFromReadwriteSplittingRulesExecutorTest extends DistSQLDatabaseRuleQueryExecutorTest {
+@DistSQLRuleQueryExecutorSettings("cases/show-status-from-readwrite-splitting-rules.xml")
+class ShowStatusFromReadwriteSplittingRulesExecutorTest {
     
-    ShowStatusFromReadwriteSplittingRulesExecutorTest() {
-        super(mockRule());
+    @ParameterizedTest(name = "DistSQL -> {0}")
+    @ArgumentsSource(DistSQLRuleQueryExecutorTestCaseArgumentsProvider.class)
+    void assertExecuteQuery(@SuppressWarnings("unused") final String distSQL, final DistSQLStatement sqlStatement,
+                            final DatabaseRuleConfiguration currentRuleConfig, final Collection<LocalDataQueryResultRow> expected) throws SQLException {
+        new DistSQLDatabaseRuleQueryExecutorAssert(mockRule()).assertQueryResultRows(currentRuleConfig, sqlStatement, expected);
     }
     
     private static ReadwriteSplittingRule mockRule() {
         ReadwriteSplittingRule result = mock(ReadwriteSplittingRule.class);
-        Map<String, ReadwriteSplittingDataSourceGroupRule> dataSourceGroupRules = Collections.singletonMap("group_0", mockDataSourceGroupRule());
+        Map<String, ReadwriteSplittingDataSourceGroupRule> dataSourceGroupRules = Collections.singletonMap("readwrite_ds", mockDataSourceGroupRule());
         when(result.getDataSourceRuleGroups()).thenReturn(dataSourceGroupRules);
         return result;
     }
@@ -61,23 +61,5 @@ class ShowStatusFromReadwriteSplittingRulesExecutorTest extends DistSQLDatabaseR
         when(result.getReadwriteSplittingGroup().getReadDataSources()).thenReturn(Arrays.asList("read_ds_0", "read_ds_1"));
         when(result.getDisabledDataSourceNames()).thenReturn(Collections.singleton("read_ds_1"));
         return result;
-    }
-    
-    @ParameterizedTest(name = "{0}")
-    @ArgumentsSource(TestCaseArgumentsProvider.class)
-    void assertExecuteQuery(final String name, final DatabaseRuleConfiguration ruleConfig, final DistSQLStatement sqlStatement,
-                            final Collection<LocalDataQueryResultRow> expected) throws SQLException {
-        assertQueryResultRows(ruleConfig, sqlStatement, expected);
-    }
-    
-    private static class TestCaseArgumentsProvider implements ArgumentsProvider {
-        
-        @Override
-        public Stream<? extends Arguments> provideArguments(final ExtensionContext extensionContext) {
-            return Stream.of(Arguments.arguments("withoutRuleName", mock(ReadwriteSplittingRuleConfiguration.class), new ShowStatusFromReadwriteSplittingRulesStatement(null, null),
-                    Arrays.asList(new LocalDataQueryResultRow("read_ds_0", "ENABLED"), new LocalDataQueryResultRow("read_ds_1", "DISABLED"))),
-                    Arguments.arguments("withRuleName", mock(ReadwriteSplittingRuleConfiguration.class), new ShowStatusFromReadwriteSplittingRulesStatement(null, "bar_rule"),
-                            Collections.emptyList()));
-        }
     }
 }

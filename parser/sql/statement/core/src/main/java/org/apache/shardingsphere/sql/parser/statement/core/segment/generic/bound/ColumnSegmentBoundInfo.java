@@ -18,29 +18,32 @@
 package org.apache.shardingsphere.sql.parser.statement.core.segment.generic.bound;
 
 import lombok.Getter;
+import org.apache.shardingsphere.sql.parser.statement.core.enums.TableSourceType;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 
 /**
  * Column segment bound info.
  */
+@Getter
 public final class ColumnSegmentBoundInfo {
     
     private final TableSegmentBoundInfo tableBoundInfo;
     
-    @Getter
     private final IdentifierValue originalTable;
     
-    @Getter
     private final IdentifierValue originalColumn;
     
+    private final TableSourceType tableSourceType;
+    
     public ColumnSegmentBoundInfo(final IdentifierValue originalColumn) {
-        this(null, null, originalColumn);
+        this(null, null, originalColumn, TableSourceType.PHYSICAL_TABLE);
     }
     
-    public ColumnSegmentBoundInfo(final TableSegmentBoundInfo tableBoundInfo, final IdentifierValue originalTable, final IdentifierValue originalColumn) {
+    public ColumnSegmentBoundInfo(final TableSegmentBoundInfo tableBoundInfo, final IdentifierValue originalTable, final IdentifierValue originalColumn, final TableSourceType tableSourceType) {
         this.tableBoundInfo = null == tableBoundInfo ? new TableSegmentBoundInfo(null, null) : tableBoundInfo;
         this.originalTable = null == originalTable ? new IdentifierValue("") : originalTable;
         this.originalColumn = null == originalColumn ? new IdentifierValue("") : originalColumn;
+        this.tableSourceType = tableSourceType;
     }
     
     /**
@@ -59,5 +62,23 @@ public final class ColumnSegmentBoundInfo {
      */
     public IdentifierValue getOriginalSchema() {
         return tableBoundInfo.getOriginalSchema();
+    }
+    
+    @Override
+    public String toString() {
+        StringBuilder result = new StringBuilder();
+        if (null != getOriginalDatabase()) {
+            result.append(getOriginalDatabase().getValue()).append(".");
+        }
+        if (null != getOriginalSchema()) {
+            result.append(getOriginalSchema().getValue()).append(".");
+        }
+        if (null != originalTable) {
+            result.append(originalTable.getValue()).append(".");
+        }
+        if (null != originalColumn) {
+            result.append(originalColumn.getValue());
+        }
+        return result.toString();
     }
 }

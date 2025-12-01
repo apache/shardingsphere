@@ -21,5 +21,7 @@
     <sql-case id="select_with_group_by_order_by" value="SELECT order_id, COUNT(1) count FROM t_order o GROUP BY order_id HAVING count > 1 ORDER BY order_id" db-types="MySQL"/>
     <sql-case id="select_with_with_clause" value="WITH t_order_tmp AS (SELECT * FROM t_order o) SELECT * FROM t_order_tmp" db-types="MySQL"/>
     <sql-case id="select_with_clause_with_multiple_cte_definitions" value="WITH cte1(status, user_id) AS (SELECT status, user_id FROM t_order a), cte2(user_id, item_id) AS (SELECT user_id, item_id FROM t_order_item b) SELECT status, user_id, item_id FROM cte1 INNER JOIN cte2 ON cte1.user_id = cte2.user_id" db-types="MySQL" />
+    <sql-case id="select_with_with_clause_with_column_definition" value="WITH t_order_tmp (col1, col2, col3, col4, col5, col6) AS (SELECT * FROM t_order o) SELECT col1 FROM t_order_tmp" db-types="MySQL"/>
     <sql-case id="select_with_current_select_projection_reference" value="SELECT order_id AS orderId, (SELECT orderId) AS tempOrderId FROM t_order" db-types="MySQL"/>
+    <sql-case id="select_with_outer_join_operator" value="SELECT o.order_id FROM t_order o, t_order_item i WHERE o.order_id = i.order_id(+)" db-types="Oracle"/>
 </sql-cases>

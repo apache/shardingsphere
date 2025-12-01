@@ -34,11 +34,11 @@
         <assertion expected-data-source-name="read_dataset" />
     </test-case>-->
     
-    <test-case sql="SELECT * FROM t_order o INNER JOIN t_order_item i ON o.order_id = i.order_id ORDER BY o.order_id ASC NULLS FIRST, i.item_id DESC" db-types="PostgreSQL,openGauss,Oracle" scenario-types="db_tbl_sql_federation">
+    <test-case sql="SELECT * FROM t_order o INNER JOIN t_order_item i ON o.order_id = i.order_id ORDER BY o.order_id ASC NULLS FIRST, i.item_id DESC" db-types="PostgreSQL,openGauss" scenario-types="db_tbl_sql_federation">
         <assertion expected-data-source-name="read_dataset" />
     </test-case>
     
-    <test-case sql="SELECT * FROM t_order o INNER JOIN t_order_item i ON o.order_id = i.order_id ORDER BY o.order_id ASC NULLS LAST, i.item_id DESC" db-types="PostgreSQL,openGauss,Oracle" scenario-types="db_tbl_sql_federation">
+    <test-case sql="SELECT * FROM t_order o INNER JOIN t_order_item i ON o.order_id = i.order_id ORDER BY o.order_id ASC NULLS LAST, i.item_id DESC" db-types="PostgreSQL,openGauss" scenario-types="db_tbl_sql_federation">
         <assertion expected-data-source-name="read_dataset" />
     </test-case>
 </e2e-test-cases>

@@ -19,13 +19,12 @@
 <rewrite-assertions yaml-rule="scenario/encrypt/config/query-with-cipher.yaml">
     <rewrite-assertion id="insert_select_account_bak_for_parameters" db-types="MySQL">
         <input sql="INSERT INTO t_account_detail (account_id, certificate_number, password, amount, status) SELECT 40, certificate_number, password, amount, status FROM t_account WHERE certificate_number = ?" parameters="cert1" />
-        <output sql="INSERT INTO t_account_detail (account_id, cipher_certificate_number, assisted_query_certificate_number, like_query_certificate_number, cipher_password, assisted_query_password, like_query_password, cipher_amount, status) SELECT 40, cipher_certificate_number, assisted_query_certificate_number, like_query_certificate_number, cipher_password, assisted_query_password, like_query_password, cipher_amount, status FROM t_account WHERE assisted_query_certificate_number = ?" 
-                parameters="assisted_query_cert1" />
+        <output sql="INSERT INTO t_account_detail (account_id, `cipher_certificate_number`, `assisted_query_certificate_number`, `like_query_certificate_number`, `cipher_password`, `assisted_query_password`, `like_query_password`, `cipher_amount`, status) SELECT 40, cipher_certificate_number, assisted_query_certificate_number, like_query_certificate_number, cipher_password, assisted_query_password, like_query_password, cipher_amount, status FROM t_account WHERE `assisted_query_certificate_number` = ?" parameters="assisted_query_cert1" />
     </rewrite-assertion>
     
     <rewrite-assertion id="insert_select_account_bak_for_literal" db-types="MySQL">
         <input sql="INSERT INTO t_account_detail (account_id, certificate_number, password, amount, status) SELECT 40, certificate_number, password, amount, status FROM t_account WHERE certificate_number = 'cert1'" />
-        <output sql="INSERT INTO t_account_detail (account_id, cipher_certificate_number, assisted_query_certificate_number, like_query_certificate_number, cipher_password, assisted_query_password, like_query_password, cipher_amount, status) SELECT 40, cipher_certificate_number, assisted_query_certificate_number, like_query_certificate_number, cipher_password, assisted_query_password, like_query_password, cipher_amount, status FROM t_account WHERE assisted_query_certificate_number = 'assisted_query_cert1'" />
+        <output sql="INSERT INTO t_account_detail (account_id, `cipher_certificate_number`, `assisted_query_certificate_number`, `like_query_certificate_number`, `cipher_password`, `assisted_query_password`, `like_query_password`, `cipher_amount`, status) SELECT 40, cipher_certificate_number, assisted_query_certificate_number, like_query_certificate_number, cipher_password, assisted_query_password, like_query_password, cipher_amount, status FROM t_account WHERE `assisted_query_certificate_number` = 'assisted_query_cert1'" />
     </rewrite-assertion>
 
     <rewrite-assertion id="insert_select_account_bak_for_literal_and_quote" db-types="MySQL">

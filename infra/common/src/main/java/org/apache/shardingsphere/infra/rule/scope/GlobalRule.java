@@ -33,11 +33,11 @@ public interface GlobalRule extends ShardingSphereRule {
      * @param databases changed databases
      * @param changedType changed type
      */
-    default void refresh(final Collection<ShardingSphereDatabase> databases, GlobalRuleChangedType changedType) {
+    default void refresh(final Collection<ShardingSphereDatabase> databases, final GlobalRuleChangedType changedType) {
     }
     
     /**
-     * Global rule changed type enum.
+     * Global rule changed type.
      */
     enum GlobalRuleChangedType {
         

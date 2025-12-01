@@ -20,10 +20,11 @@ package org.apache.shardingsphere.test.natived.jdbc.transactions.base;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import org.apache.hc.core5.http.HttpStatus;
-import org.apache.shardingsphere.driver.jdbc.core.connection.ShardingSphereConnection;
 import org.apache.shardingsphere.test.natived.commons.TestShardingService;
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.BeforeAll;
+import org.apache.shardingsphere.test.natived.commons.util.ResourceUtils;
+import org.awaitility.Awaitility;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.EnabledInNativeImage;
 import org.testcontainers.containers.GenericContainer;
@@ -33,8 +34,8 @@ import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
 import javax.sql.DataSource;
-import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.concurrent.TimeUnit;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -46,36 +47,35 @@ class SeataTest {
     
     @SuppressWarnings("resource")
     @Container
-    private static final GenericContainer<?> CONTAINER = new GenericContainer<>("apache/seata-server:2.2.0")
-            .withExposedPorts(7091, 8091)
-            .waitingFor(Wait.forHttp("/health")
-                    .forPort(7091)
-                    .forStatusCode(HttpStatus.SC_OK)
-                    .forResponsePredicate("ok"::equals));
+    private final GenericContainer<?> container = new GenericContainer<>("apache/seata-server:2.5.0")
+            .withExposedPorts(8091)
+            .waitingFor(Wait.forHttp("/health").forPort(8091).forStatusCode(HttpStatus.SC_OK).forResponsePredicate("\"ok\""::equals));
     
-    private static final String SERVICE_DEFAULT_GROUP_LIST_KEY = "service.default.grouplist";
+    private final String serviceDefaultGroupListKey = "service.default.grouplist";
     
-    private static DataSource logicDataSource;
+    private DataSource logicDataSource;
     
     private TestShardingService testShardingService;
     
-    @BeforeAll
-    static void beforeAll() {
-        assertThat(System.getProperty(SERVICE_DEFAULT_GROUP_LIST_KEY), is(nullValue()));
+    @BeforeEach
+    void beforeEach() {
+        assertThat(System.getProperty(serviceDefaultGroupListKey), is(nullValue()));
     }
     
-    @AfterAll
-    static void afterAll() throws SQLException {
-        try (Connection connection = logicDataSource.getConnection()) {
-            connection.unwrap(ShardingSphereConnection.class).getContextManager().close();
-        }
+    /**
+     * TODO Apparently there is a real connection leak on Seata Client 2.5.0.
+     */
+    @AfterEach
+    void afterEach() throws SQLException {
+        Awaitility.await().pollDelay(5L, TimeUnit.SECONDS).until(() -> true);
+        System.clearProperty(serviceDefaultGroupListKey);
+        ResourceUtils.closeJdbcDataSource(logicDataSource);
         ContainerDatabaseDriver.killContainers();
-        System.clearProperty(SERVICE_DEFAULT_GROUP_LIST_KEY);
     }
     
     @Test
     void assertShardingInSeataTransactions() throws SQLException {
-        logicDataSource = createDataSource(CONTAINER.getMappedPort(8091));
+        logicDataSource = createDataSource(container);
         testShardingService = new TestShardingService(logicDataSource);
         initEnvironment();
         testShardingService.processSuccess();
@@ -91,8 +91,8 @@ class SeataTest {
         testShardingService.getAddressRepository().truncateTable();
     }
     
-    private DataSource createDataSource(final int hostPort) {
-        System.setProperty(SERVICE_DEFAULT_GROUP_LIST_KEY, "127.0.0.1:" + hostPort);
+    private DataSource createDataSource(final GenericContainer<?> container) {
+        System.setProperty(serviceDefaultGroupListKey, container.getHost() + ":" + container.getMappedPort(8091));
         HikariConfig config = new HikariConfig();
         config.setDriverClassName("org.apache.shardingsphere.driver.ShardingSphereDriver");
         config.setJdbcUrl("jdbc:shardingsphere:classpath:test-native/yaml/jdbc/transactions/base/seata.yaml");

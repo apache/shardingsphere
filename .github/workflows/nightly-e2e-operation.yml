@@ -47,25 +47,24 @@ jobs:
         java-version: [ 11, 21 ]
         operation: [ transaction, pipeline, showprocesslist ]
         image: [
-          { type: "it.docker.mysql.version", version: "mysql:5.7" },
-          { type: "it.docker.mysql.version", version: "mysql:8.0" },
-          { type: "it.docker.mariadb.version", version: "mariadb:11" },
-          { type: "it.docker.postgresql.version", version: "postgres:11-alpine" },
-          { type: "it.docker.postgresql.version", version: "postgres:12-alpine" },
-          { type: "it.docker.postgresql.version", version: "postgres:13-alpine" },
-          { type: "it.docker.postgresql.version", version: "postgres:14-alpine" },
-          { type: "it.docker.opengauss.version", version: "enmotech/opengauss:2.1.0" },
-          { type: "it.docker.opengauss.version", version: "enmotech/opengauss:3.0.0" }
+          { type: "e2e.docker.database.mysql.images", version: "mysql:5.7" },
+          { type: "e2e.docker.database.mysql.images", version: "mysql:8.0" },
+          { type: "e2e.docker.database.mariadb.images", version: "mariadb:11" },
+          { type: "e2e.docker.database.postgresql.images", version: "postgres:11-alpine" },
+          { type: "e2e.docker.database.postgresql.images", version: "postgres:12-alpine" },
+          { type: "e2e.docker.database.postgresql.images", version: "postgres:13-alpine" },
+          { type: "e2e.docker.database.postgresql.images", version: "postgres:14-alpine" },
+          { type: "e2e.docker.database.opengauss.images", version: "opengauss/opengauss:3.1.0" }
         ]
         exclude:
           - operation: transaction
-            image: { type: "it.docker.mariadb.version", version: "mariadb:11" }
+            image: { type: "e2e.docker.database.mariadb.images", version: "mariadb:11" }
           - operation: showprocesslist
-            image: { type: "it.docker.mariadb.version", version: "mariadb:11" }
+            image: { type: "e2e.docker.database.mariadb.images", version: "mariadb:11" }
           - operation: showprocesslist
-            image: { type: "it.docker.postgresql.version", version: "postgres:10-alpine,postgres:11-alpine,postgres:12-alpine,postgres:13-alpine,postgres:14-alpine" }
+            image: { type: "e2e.docker.database.postgresql.images", version: "postgres:10-alpine,postgres:11-alpine,postgres:12-alpine,postgres:13-alpine,postgres:14-alpine" }
           - operation: showprocesslist
-            image: { type: "it.docker.opengauss.version", version: "enmotech/opengauss:2.1.0,enmotech/opengauss:3.0.0" }
+            image: { type: "e2e.docker.database.opengauss.images", version: "opengauss/opengauss:3.1.0" }
     steps:
       - uses: actions/checkout@v4
       - name: Retrieve Maven Caches
@@ -82,6 +81,6 @@ jobs:
           distribution: 'temurin'
           java-version: ${{ matrix.java-version }}
       - name: Build ${{ matrix.operation }} E2E Image
-        run: ./mvnw -B clean install -am -pl test/e2e/operation/${{ matrix.operation }} -Pit.env.docker -DskipTests
+        run: ./mvnw -B clean install -am -pl test/e2e/operation/${{ matrix.operation }} -Pe2e.env.docker -DskipTests
       - name: Run ${{ matrix.operation }} on ${{ matrix.image.version }}
-        run: ./mvnw -nsu -B install -f test/e2e/operation/${{ matrix.operation }}/pom.xml -D${{ matrix.operation }}.it.env.type=docker -D${{ matrix.operation }}.${{ matrix.image.type }}=${{ matrix.image.version }}
+        run: ./mvnw -nsu -B install -f test/e2e/operation/${{ matrix.operation }}/pom.xml -De2e.run.type=docker -D${{ matrix.image.type }}=${{ matrix.image.version }}

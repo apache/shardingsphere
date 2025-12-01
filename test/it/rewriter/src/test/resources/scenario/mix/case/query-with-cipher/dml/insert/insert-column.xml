@@ -19,62 +19,62 @@
 <rewrite-assertions yaml-rule="scenario/mix/config/query-with-cipher.yaml">
     <rewrite-assertion id="insert_values_with_columns_with_id_for_parameters" db-types="MySQL">
         <input sql="INSERT INTO t_account(account_id, password, amount, status) VALUES (?, ?, ?, ?), (2, 'bbb', 2000, 'OK'), (?, ?, ?, ?), (4, 'ddd', 4000, 'OK')" parameters="1, aaa, 1000, OK, 3, ccc, 3000, OK" />
-        <output sql="INSERT INTO t_account_1(account_id, cipher_password, assisted_query_password, cipher_amount, status) VALUES (?, ?, ?, ?, ?), (?, ?, ?, ?, ?)" parameters="1, encrypt_aaa, assisted_query_aaa, encrypt_1000, OK, 3, encrypt_ccc, assisted_query_ccc, encrypt_3000, OK" />
-        <output sql="INSERT INTO t_account_0(account_id, cipher_password, assisted_query_password, cipher_amount, status) VALUES (2, 'encrypt_bbb', 'assisted_query_bbb', 'encrypt_2000', 'OK'), (4, 'encrypt_ddd', 'assisted_query_ddd', 'encrypt_4000', 'OK')" />
+        <output sql="INSERT INTO t_account_1(account_id, `cipher_password`, `assisted_query_password`, `cipher_amount`, status) VALUES (?, ?, ?, ?, ?), (?, ?, ?, ?, ?)" parameters="1, encrypt_aaa, assisted_query_aaa, encrypt_1000, OK, 3, encrypt_ccc, assisted_query_ccc, encrypt_3000, OK" />
+        <output sql="INSERT INTO t_account_0(account_id, `cipher_password`, `assisted_query_password`, `cipher_amount`, status) VALUES (2, 'encrypt_bbb', 'assisted_query_bbb', 'encrypt_2000', 'OK'), (4, 'encrypt_ddd', 'assisted_query_ddd', 'encrypt_4000', 'OK')" />
     </rewrite-assertion>
     
     <rewrite-assertion id="insert_values_with_columns_with_id_for_literals" db-types="MySQL">
         <input sql="INSERT INTO t_account(account_id, password, amount, status) VALUES (1, 'aaa', 1000, 'OK'), (2, 'bbb', 2000, 'OK'), (3, 'ccc', 3000, 'OK'), (4, 'ddd', 4000, 'OK')" />
-        <output sql="INSERT INTO t_account_1(account_id, cipher_password, assisted_query_password, cipher_amount, status) VALUES (1, 'encrypt_aaa', 'assisted_query_aaa', 'encrypt_1000', 'OK'), (3, 'encrypt_ccc', 'assisted_query_ccc', 'encrypt_3000', 'OK')" />
-        <output sql="INSERT INTO t_account_0(account_id, cipher_password, assisted_query_password, cipher_amount, status) VALUES (2, 'encrypt_bbb', 'assisted_query_bbb', 'encrypt_2000', 'OK'), (4, 'encrypt_ddd', 'assisted_query_ddd', 'encrypt_4000', 'OK')" />
+        <output sql="INSERT INTO t_account_1(account_id, `cipher_password`, `assisted_query_password`, `cipher_amount`, status) VALUES (1, 'encrypt_aaa', 'assisted_query_aaa', 'encrypt_1000', 'OK'), (3, 'encrypt_ccc', 'assisted_query_ccc', 'encrypt_3000', 'OK')" />
+        <output sql="INSERT INTO t_account_0(account_id, `cipher_password`, `assisted_query_password`, `cipher_amount`, status) VALUES (2, 'encrypt_bbb', 'assisted_query_bbb', 'encrypt_2000', 'OK'), (4, 'encrypt_ddd', 'assisted_query_ddd', 'encrypt_4000', 'OK')" />
     </rewrite-assertion>
     
     <rewrite-assertion id="insert_values_with_columns_without_id_for_parameters" db-types="MySQL">
         <input sql="INSERT INTO t_account(password, amount, status) VALUES (?, ?, ?), ('bbb', 2000, 'OK'), (?, ?, ?), ('ddd', 4000, 'OK')" parameters="aaa, 1000, OK, ccc, 3000, OK" />
-        <output sql="INSERT INTO t_account_1(cipher_password, assisted_query_password, cipher_amount, status, account_id) VALUES (?, ?, ?, ?, ?), ('encrypt_bbb', 'assisted_query_bbb', 'encrypt_2000', 'OK', 1), (?, ?, ?, ?, ?), ('encrypt_ddd', 'assisted_query_ddd', 'encrypt_4000', 'OK', 1)" parameters="encrypt_aaa, assisted_query_aaa, encrypt_1000, OK, 1, encrypt_ccc, assisted_query_ccc, encrypt_3000, OK, 1" />
+        <output sql="INSERT INTO t_account_1(`cipher_password`, `assisted_query_password`, `cipher_amount`, status, account_id) VALUES (?, ?, ?, ?, ?), ('encrypt_bbb', 'assisted_query_bbb', 'encrypt_2000', 'OK', 1), (?, ?, ?, ?, ?), ('encrypt_ddd', 'assisted_query_ddd', 'encrypt_4000', 'OK', 1)" parameters="encrypt_aaa, assisted_query_aaa, encrypt_1000, OK, 1, encrypt_ccc, assisted_query_ccc, encrypt_3000, OK, 1" />
     </rewrite-assertion>
     
     <rewrite-assertion id="insert_values_with_columns_without_id_for_literals" db-types="MySQL">
         <input sql="INSERT INTO t_account(password, amount, status) VALUES ('aaa', 1000, 'OK'), ('bbb', 2000, 'OK'), ('ccc', 3000, 'OK'), ('ddd', 4000, 'OK')" />
-        <output sql="INSERT INTO t_account_1(cipher_password, assisted_query_password, cipher_amount, status, account_id) VALUES ('encrypt_aaa', 'assisted_query_aaa', 'encrypt_1000', 'OK', 1), ('encrypt_bbb', 'assisted_query_bbb', 'encrypt_2000', 'OK', 1), ('encrypt_ccc', 'assisted_query_ccc', 'encrypt_3000', 'OK', 1), ('encrypt_ddd', 'assisted_query_ddd', 'encrypt_4000', 'OK', 1)" />
+        <output sql="INSERT INTO t_account_1(`cipher_password`, `assisted_query_password`, `cipher_amount`, status, account_id) VALUES ('encrypt_aaa', 'assisted_query_aaa', 'encrypt_1000', 'OK', 1), ('encrypt_bbb', 'assisted_query_bbb', 'encrypt_2000', 'OK', 1), ('encrypt_ccc', 'assisted_query_ccc', 'encrypt_3000', 'OK', 1), ('encrypt_ddd', 'assisted_query_ddd', 'encrypt_4000', 'OK', 1)" />
     </rewrite-assertion>
 
     <rewrite-assertion id="insert_values_with_columns_without_id_for_literals_on_duplicated" db-types="MySQL">
         <input sql="INSERT INTO t_account(password, amount, status) VALUES ('aaa', 1000, 'OK') ON DUPLICATE KEY UPDATE t_account.status='OK'" />
-        <output sql="INSERT INTO t_account_1(cipher_password, assisted_query_password, cipher_amount, status, account_id) VALUES ('encrypt_aaa', 'assisted_query_aaa', 'encrypt_1000', 'OK', 1) ON DUPLICATE KEY UPDATE t_account_1.status='OK'" />
+        <output sql="INSERT INTO t_account_1(`cipher_password`, `assisted_query_password`, `cipher_amount`, status, account_id) VALUES ('encrypt_aaa', 'assisted_query_aaa', 'encrypt_1000', 'OK', 1) ON DUPLICATE KEY UPDATE t_account_1.status='OK'" />
     </rewrite-assertion>
     
     <rewrite-assertion id="insert_values_with_columns_with_plain_with_id_for_parameters" db-types="MySQL">
         <input sql="INSERT INTO t_account_bak(account_id, password, amount, status) VALUES (?, ?, ?, ?), (2, 'bbb', 2000, 'OK'), (?, ?, ?, ?), (4, 'ddd', 4000, 'OK')" parameters="1, aaa, 1000, OK, 3, ccc, 3000, OK" />
-        <output sql="INSERT INTO t_account_bak_1(account_id, cipher_password, assisted_query_password, cipher_amount, status) VALUES (?, ?, ?, ?, ?), (?, ?, ?, ?, ?)" parameters="1, encrypt_aaa, assisted_query_aaa, encrypt_1000, OK, 3, encrypt_ccc, assisted_query_ccc, encrypt_3000, OK" />
-        <output sql="INSERT INTO t_account_bak_0(account_id, cipher_password, assisted_query_password, cipher_amount, status) VALUES (2, 'encrypt_bbb', 'assisted_query_bbb', 'encrypt_2000', 'OK'), (4, 'encrypt_ddd', 'assisted_query_ddd', 'encrypt_4000', 'OK')" />
+        <output sql="INSERT INTO t_account_bak_1(account_id, `cipher_password`, `assisted_query_password`, `cipher_amount`, status) VALUES (?, ?, ?, ?, ?), (?, ?, ?, ?, ?)" parameters="1, encrypt_aaa, assisted_query_aaa, encrypt_1000, OK, 3, encrypt_ccc, assisted_query_ccc, encrypt_3000, OK" />
+        <output sql="INSERT INTO t_account_bak_0(account_id, `cipher_password`, `assisted_query_password`, `cipher_amount`, status) VALUES (2, 'encrypt_bbb', 'assisted_query_bbb', 'encrypt_2000', 'OK'), (4, 'encrypt_ddd', 'assisted_query_ddd', 'encrypt_4000', 'OK')" />
     </rewrite-assertion>
     
     <rewrite-assertion id="insert_values_with_columns_with_plain_with_id_for_literals" db-types="MySQL">
         <input sql="INSERT INTO t_account_bak(account_id, password, amount, status) VALUES (1, 'aaa', 1000, 'OK'), (2, 'bbb', 2000, 'OK'), (3, 'ccc', 3000, 'OK'), (4, 'ddd', 4000, 'OK')" />
-        <output sql="INSERT INTO t_account_bak_1(account_id, cipher_password, assisted_query_password, cipher_amount, status) VALUES (1, 'encrypt_aaa', 'assisted_query_aaa', 'encrypt_1000', 'OK'), (3, 'encrypt_ccc', 'assisted_query_ccc', 'encrypt_3000', 'OK')" />
-        <output sql="INSERT INTO t_account_bak_0(account_id, cipher_password, assisted_query_password, cipher_amount, status) VALUES (2, 'encrypt_bbb', 'assisted_query_bbb', 'encrypt_2000', 'OK'), (4, 'encrypt_ddd', 'assisted_query_ddd', 'encrypt_4000', 'OK')" />
+        <output sql="INSERT INTO t_account_bak_1(account_id, `cipher_password`, `assisted_query_password`, `cipher_amount`, status) VALUES (1, 'encrypt_aaa', 'assisted_query_aaa', 'encrypt_1000', 'OK'), (3, 'encrypt_ccc', 'assisted_query_ccc', 'encrypt_3000', 'OK')" />
+        <output sql="INSERT INTO t_account_bak_0(account_id, `cipher_password`, `assisted_query_password`, `cipher_amount`, status) VALUES (2, 'encrypt_bbb', 'assisted_query_bbb', 'encrypt_2000', 'OK'), (4, 'encrypt_ddd', 'assisted_query_ddd', 'encrypt_4000', 'OK')" />
     </rewrite-assertion>
     
     <rewrite-assertion id="insert_values_with_columns_with_plain_without_id_for_parameters" db-types="MySQL">
         <input sql="INSERT INTO t_account_bak(password, amount, status) VALUES (?, ?, ?), ('bbb', 2000, 'OK'), (?, ?, ?), ('ddd', 4000, 'OK')" parameters="aaa, 1000, OK, ccc, 3000, OK" />
-        <output sql="INSERT INTO t_account_bak_1(cipher_password, assisted_query_password, cipher_amount, status, account_id) VALUES (?, ?, ?, ?, ?), ('encrypt_bbb', 'assisted_query_bbb', 'encrypt_2000', 'OK', 1), (?, ?, ?, ?, ?), ('encrypt_ddd', 'assisted_query_ddd', 'encrypt_4000', 'OK', 1)" parameters="encrypt_aaa, assisted_query_aaa, encrypt_1000, OK, 1, encrypt_ccc, assisted_query_ccc, encrypt_3000, OK, 1" />
+        <output sql="INSERT INTO t_account_bak_1(`cipher_password`, `assisted_query_password`, `cipher_amount`, status, account_id) VALUES (?, ?, ?, ?, ?), ('encrypt_bbb', 'assisted_query_bbb', 'encrypt_2000', 'OK', 1), (?, ?, ?, ?, ?), ('encrypt_ddd', 'assisted_query_ddd', 'encrypt_4000', 'OK', 1)" parameters="encrypt_aaa, assisted_query_aaa, encrypt_1000, OK, 1, encrypt_ccc, assisted_query_ccc, encrypt_3000, OK, 1" />
     </rewrite-assertion>
     
     <rewrite-assertion id="insert_values_with_columns_with_plain_without_id_for_literals" db-types="MySQL">
         <input sql="INSERT INTO t_account_bak(password, amount, status) VALUES ('aaa', 1000, 'OK'), ('bbb', 2000, 'OK'), ('ccc', 3000, 'OK'), ('ddd', 4000, 'OK')" />
-        <output sql="INSERT INTO t_account_bak_1(cipher_password, assisted_query_password, cipher_amount, status, account_id) VALUES ('encrypt_aaa', 'assisted_query_aaa', 'encrypt_1000', 'OK', 1), ('encrypt_bbb', 'assisted_query_bbb', 'encrypt_2000', 'OK', 1), ('encrypt_ccc', 'assisted_query_ccc', 'encrypt_3000', 'OK', 1), ('encrypt_ddd', 'assisted_query_ddd', 'encrypt_4000', 'OK', 1)" />
+        <output sql="INSERT INTO t_account_bak_1(`cipher_password`, `assisted_query_password`, `cipher_amount`, status, account_id) VALUES ('encrypt_aaa', 'assisted_query_aaa', 'encrypt_1000', 'OK', 1), ('encrypt_bbb', 'assisted_query_bbb', 'encrypt_2000', 'OK', 1), ('encrypt_ccc', 'assisted_query_ccc', 'encrypt_3000', 'OK', 1), ('encrypt_ddd', 'assisted_query_ddd', 'encrypt_4000', 'OK', 1)" />
     </rewrite-assertion>
     
     <rewrite-assertion id="insert_values_with_columns_with_plain_without_id_for_emojis" db-types="MySQL">
         <input sql="INSERT INTO t_account_bak(password, amount, status) VALUES ('aaa', 1000, 'test🍎😀'), ('bbb', 2000, 'test🍎😀'), ('ccc', 3000, 'test🍎😀'), ('ddd', 4000, 'test🍎😀')" />
-        <output sql="INSERT INTO t_account_bak_1(cipher_password, assisted_query_password, cipher_amount, status, account_id) VALUES ('encrypt_aaa', 'assisted_query_aaa', 'encrypt_1000', 'test🍎😀', 1), ('encrypt_bbb', 'assisted_query_bbb', 'encrypt_2000', 'test🍎😀', 1), ('encrypt_ccc', 'assisted_query_ccc', 'encrypt_3000', 'test🍎😀', 1), ('encrypt_ddd', 'assisted_query_ddd', 'encrypt_4000', 'test🍎😀', 1)" />
+        <output sql="INSERT INTO t_account_bak_1(`cipher_password`, `assisted_query_password`, `cipher_amount`, status, account_id) VALUES ('encrypt_aaa', 'assisted_query_aaa', 'encrypt_1000', 'test🍎😀', 1), ('encrypt_bbb', 'assisted_query_bbb', 'encrypt_2000', 'test🍎😀', 1), ('encrypt_ccc', 'assisted_query_ccc', 'encrypt_3000', 'test🍎😀', 1), ('encrypt_ddd', 'assisted_query_ddd', 'encrypt_4000', 'test🍎😀', 1)" />
     </rewrite-assertion>
     
     <rewrite-assertion id="insert_values_without_columns_with_id_for_parameters" db-types="MySQL">
         <input sql="INSERT INTO t_account(account_id, password, amount) VALUES (?, ?, ?), (2, 'bbb', 2000), (?, ?, ?), (4, 'ddd', 4000)" parameters="1, aaa, 1000, 3, ccc, 3000" />
-        <output sql="INSERT INTO t_account_1(account_id, cipher_password, assisted_query_password, cipher_amount) VALUES (?, ?, ?, ?), (?, ?, ?, ?)" parameters="1, encrypt_aaa, assisted_query_aaa, encrypt_1000, 3, encrypt_ccc, assisted_query_ccc, encrypt_3000" />
-        <output sql="INSERT INTO t_account_0(account_id, cipher_password, assisted_query_password, cipher_amount) VALUES (2, 'encrypt_bbb', 'assisted_query_bbb', 'encrypt_2000'), (4, 'encrypt_ddd', 'assisted_query_ddd', 'encrypt_4000')" />
+        <output sql="INSERT INTO t_account_1(account_id, `cipher_password`, `assisted_query_password`, `cipher_amount`) VALUES (?, ?, ?, ?), (?, ?, ?, ?)" parameters="1, encrypt_aaa, assisted_query_aaa, encrypt_1000, 3, encrypt_ccc, assisted_query_ccc, encrypt_3000" />
+        <output sql="INSERT INTO t_account_0(account_id, `cipher_password`, `assisted_query_password`, `cipher_amount`) VALUES (2, 'encrypt_bbb', 'assisted_query_bbb', 'encrypt_2000'), (4, 'encrypt_ddd', 'assisted_query_ddd', 'encrypt_4000')" />
     </rewrite-assertion>
     
     <rewrite-assertion id="insert_values_without_columns_with_id_for_literals" db-types="MySQL">

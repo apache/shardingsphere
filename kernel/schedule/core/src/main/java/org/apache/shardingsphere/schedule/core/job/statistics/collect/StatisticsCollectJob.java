@@ -18,23 +18,30 @@
 package org.apache.shardingsphere.schedule.core.job.statistics.collect;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.elasticjob.api.ShardingContext;
 import org.apache.shardingsphere.elasticjob.simple.job.SimpleJob;
 import org.apache.shardingsphere.mode.manager.ContextManager;
-import org.apache.shardingsphere.mode.metadata.refresher.ShardingSphereStatisticsRefreshEngine;
+import org.apache.shardingsphere.mode.manager.cluster.statistics.StatisticsRefreshEngine;
 
 /**
  * Statistics collect job.
  */
 @RequiredArgsConstructor
+@Slf4j
 public final class StatisticsCollectJob implements SimpleJob {
     
     private final ContextManager contextManager;
     
     @Override
     public void execute(final ShardingContext shardingContext) {
-        if (contextManager.getComputeNodeInstanceContext().getModeConfiguration().isCluster()) {
-            new ShardingSphereStatisticsRefreshEngine(contextManager).refresh();
+        log.debug("Running statistics collect job");
+        try {
+            if (contextManager.getComputeNodeInstanceContext().getModeConfiguration().isCluster()) {
+                new StatisticsRefreshEngine(contextManager).refresh();
+            }
+        } finally {
+            log.debug("Finished statistics collect job");
         }
     }
 }

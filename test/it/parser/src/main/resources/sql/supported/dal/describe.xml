@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Licensed to the Apache Software Foundation (ASF) under one or more
+  ~ contributor license agreements.  See the NOTICE file distributed with
+  ~ this work for additional information regarding copyright ownership.
+  ~ The ASF licenses this file to You under the Apache License, Version 2.0
+  ~ (the "License"); you may not use this file except in compliance with
+  ~ the License.  You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<sql-cases>
+    <sql-case id="desc_table" value="DESC tableName" db-types="MySQL" />
+    <sql-case id="desc_table_with_col_name" value="DESC tableName colName" db-types="MySQL" />
+    <sql-case id="desc_table_with_placeholder" value="DESC tableName ___" db-types="MySQL" />
+    <sql-case id="desc_table_with_wild" value="DESC tableName `u%`" db-types="MySQL" />
+    <sql-case id="describe_table" value="DESCRIBE tableName" db-types="MySQL" />
+    <sql-case id="describe_table_with_col_name" value="DESCRIBE tableName colName" db-types="MySQL" />
+    <sql-case id="describe_table_with_placeholder" value="DESC tableName ___" db-types="MySQL" />
+    <sql-case id="describe_table_with_wild" value="DESC tableName `u%`" db-types="MySQL" />
+    <sql-case id="describe_database_basic" value="DESCRIBE DATABASE sales_db;" db-types="Hive" />
+    <sql-case id="describe_database_extended" value="DESCRIBE DATABASE EXTENDED sales_db;" db-types="Hive" />
+    <sql-case id="describe_schema_basic" value="DESCRIBE SCHEMA user_info;" db-types="Hive" />
+    <sql-case id="describe_schema_extended" value="DESCRIBE SCHEMA EXTENDED product_db;" db-types="Hive" />
+    <sql-case id="describe_connector_basic" value="DESCRIBE CONNECTOR mysql_connector;" db-types="Hive" />
+    <sql-case id="describe_connector_extended" value="DESCRIBE CONNECTOR EXTENDED hive_connector;" db-types="Hive" />
+    <sql-case id="describe_basic_table" value="DESCRIBE user_table;" db-types="Hive" />
+    <sql-case id="describe_db_table" value="DESCRIBE sales_db.user_table;" db-types="Hive" />
+    <sql-case id="describe_extended_table" value="DESCRIBE EXTENDED user_table;" db-types="Hive" />
+    <sql-case id="describe_formatted_table" value="DESCRIBE FORMATTED user_table;" db-types="Hive" />
+    <sql-case id="describe_table_partition" value="DESCRIBE user_table PARTITION (region='Asia');" db-types="Hive" />
+    <sql-case id="describe_struct_field" value="DESCRIBE profile_table user_info.name;" db-types="Hive" />
+    <sql-case id="describe_array_element" value="DESCRIBE order_table user_info.'$elem$';" db-types="Hive" />
+    <sql-case id="describe_map_key" value="DESCRIBE product_table attributes.'$key$';" db-types="Hive" />
+    <sql-case id="describe_map_value" value="DESCRIBE event_log params.'$value$';" db-types="Hive" />
+    <sql-case id="describe_nested_struct_in_array" value="DESCRIBE posts comments.'$elem$'.author;" db-types="Hive" />
+    <sql-case id="describe_with_partition_and_complex" value="DESCRIBE sales_db.actions PARTITION (dt='2025-08-17') products.'$elem$'.details.price;" db-types="Hive" />
+</sql-cases>

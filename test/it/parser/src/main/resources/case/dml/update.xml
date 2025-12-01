@@ -577,14 +577,14 @@
             <assignment start-index="19" stop-index="37" literal-stop-index="37">
                 <column name="order_id" start-index="19" stop-index="26" />
                 <assignment-value>
-                    <common-expression text="order_id" literal-text="order_id" start-index="30" stop-index="37" literal-start-index="30" literal-stop-index="37" />
+                    <column name="order_id" start-index="30" stop-index="37" literal-start-index="30" literal-stop-index="37" />
                 </assignment-value>
             </assignment>
             <assignment start-index="40" stop-index="54" literal-stop-index="54">
                 <column name="status" start-index="40" stop-index="45" />
                 <assignment-value>
                     <literal-expression value="init" start-index="49" stop-index="54" />
-                    <common-expression text="init" start-index="49" stop-index="54" literal-start-index="49" literal-stop-index="54" />
+                    <column name="init" start-index="49" stop-index="54" literal-start-index="49" literal-stop-index="54" />
                 </assignment-value>
             </assignment>
         </set>
@@ -2395,5 +2395,121 @@
                 <column-projection name="status" start-index="84" stop-index="89" />
             </projections>
         </returning>
+    </update>
+
+    <update sql-case-id="update_with_option_label_hint">
+        <table start-index="7" stop-index="16">
+            <simple-table name="DimProduct" start-index="7" stop-index="16" />
+        </table>
+        <set start-index="18" stop-index="46">
+            <assignment start-index="22" stop-index="46">
+                <column name="ProductSubcategoryKey" start-index="22" stop-index="42" />
+                <assignment-value>
+                    <literal-expression value="2" start-index="46" stop-index="46" />
+                </assignment-value>
+            </assignment>
+        </set>
+        <where start-index="48" stop-index="69">
+            <expr>
+                <binary-operation-expression start-index="54" stop-index="69">
+                    <left>
+                        <column name="ProductKey" start-index="54" stop-index="63" />
+                    </left>
+                    <operator>=</operator>
+                    <right>
+                        <literal-expression value="313" start-index="67" stop-index="69" />
+                    </right>
+                </binary-operation-expression>
+            </expr>
+        </where>
+        <option-hint start-index="71" stop-index="96" text="OPTION (LABEL = N'label1')" />
+    </update>
+
+    <update sql-case-id="update_with_where">
+        <table start-index="7" stop-index="15">
+            <simple-table name="employees" start-index="7" stop-index="15" />
+        </table>
+        <set start-index="17" stop-index="33">
+            <assignment start-index="21" stop-index="35">
+                <column name="salary" start-index="21" stop-index="26" />
+                <assignment-value>
+                    <literal-expression value="5000" start-index="30" stop-index="33" />
+                </assignment-value>
+            </assignment>
+        </set>
+        <where start-index="35" stop-index="57">
+            <expr>
+                <binary-operation-expression start-index="41" stop-index="57">
+                    <left>
+                        <column name="department" start-index="41" stop-index="50" />
+                    </left>
+                    <operator>=</operator>
+                    <right>
+                        <literal-expression value="HR" start-index="54" stop-index="57" />
+                    </right>
+                </binary-operation-expression>
+            </expr>
+        </where>
+    </update>
+
+    <update sql-case-id="update_multiple_cols">
+        <table start-index="7" stop-index="15">
+            <simple-table name="customers" start-index="7" stop-index="15" />
+        </table>
+        <set start-index="17" stop-index="64">
+            <assignment start-index="21" stop-index="35">
+                <column name="email" start-index="21" stop-index="25" />
+                <assignment-value>
+                    <literal-expression value="new@example.com" start-index="29" stop-index="45" />
+                </assignment-value>
+            </assignment>
+            <assignment start-index="48" stop-index="64">
+                <column name="status" start-index="48" stop-index="53" />
+                <assignment-value>
+                    <literal-expression value="active" start-index="57" stop-index="64" />
+                </assignment-value>
+            </assignment>
+        </set>
+        <where start-index="66" stop-index="89">
+            <expr>
+                <binary-operation-expression start-index="72" stop-index="89">
+                    <left>
+                        <column name="customer_id" start-index="72" stop-index="82" />
+                    </left>
+                    <operator>=</operator>
+                    <right>
+                        <literal-expression value="1001" start-index="86" stop-index="89" />
+                    </right>
+                </binary-operation-expression>
+            </expr>
+        </where>
+    </update>
+
+    <update sql-case-id="update_basic">
+        <table start-index="7" stop-index="14">
+            <simple-table name="products" start-index="7" stop-index="14" />
+        </table>
+        <set start-index="16" stop-index="28">
+            <assignment start-index="20" stop-index="28">
+                <column name="stock" start-index="20" stop-index="24" />
+                <assignment-value>
+                    <literal-expression value="0" start-index="28" stop-index="28" />
+                </assignment-value>
+            </assignment>
+        </set>
+    </update>
+
+    <update sql-case-id="update_with_null">
+        <table start-index="7" stop-index="18">
+            <simple-table name="user_profiles" start-index="7" stop-index="19" />
+        </table>
+        <set start-index="21" stop-index="41">
+            <assignment start-index="24" stop-index="42">
+                <column name="last_login" start-index="25" stop-index="34" />
+                <assignment-value>
+                    <literal-expression value="null" start-index="38" stop-index="41" />
+                </assignment-value>
+            </assignment>
+        </set>
     </update>
 </sql-parser-test-cases>

@@ -68,10 +68,10 @@ public final class DistributedPipelineJobExecutor {
             log.info("Job is stopping, ignore.");
             return;
         }
-        PipelineJobType jobType = PipelineJobIdUtils.parseJobType(jobId);
+        PipelineJobType<?> jobType = PipelineJobIdUtils.parseJobType(jobId);
         PipelineContextKey contextKey = PipelineJobIdUtils.parseContextKey(jobId);
-        PipelineJobConfiguration jobConfig = jobType.getYamlJobConfigurationSwapper().swapToObject(shardingContext.getJobParameter());
-        PipelineJobItemManager<PipelineJobItemProgress> jobItemManager = new PipelineJobItemManager<>(jobType.getYamlJobItemProgressSwapper());
+        PipelineJobConfiguration jobConfig = jobType.getOption().getYamlJobConfigurationSwapper().swapToObject(shardingContext.getJobParameter());
+        PipelineJobItemManager<PipelineJobItemProgress> jobItemManager = new PipelineJobItemManager<>(jobType.getOption().getYamlJobItemProgressSwapper());
         PipelineJobItemProgress jobItemProgress = jobItemManager.getProgress(shardingContext.getJobName(), shardingItem).orElse(null);
         TransmissionProcessContext jobProcessContext = createTransmissionProcessContext(jobId, jobType, contextKey);
         PipelineGovernanceFacade governanceFacade = PipelineAPIFactory.getPipelineGovernanceFacade(contextKey);
@@ -111,8 +111,8 @@ public final class DistributedPipelineJobExecutor {
         return true;
     }
     
-    private TransmissionProcessContext createTransmissionProcessContext(final String jobId, final PipelineJobType jobType, final PipelineContextKey contextKey) {
-        if (!jobType.isTransmissionJob()) {
+    private TransmissionProcessContext createTransmissionProcessContext(final String jobId, final PipelineJobType<?> jobType, final PipelineContextKey contextKey) {
+        if (!jobType.getOption().isTransmissionJob()) {
             return null;
         }
         PipelineProcessConfiguration processConfig = PipelineProcessConfigurationUtils.fillInDefaultValue(new PipelineProcessConfigurationPersistService().load(contextKey, jobType.getType()));

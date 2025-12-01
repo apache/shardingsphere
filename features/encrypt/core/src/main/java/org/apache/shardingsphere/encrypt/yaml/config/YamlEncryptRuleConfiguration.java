@@ -23,9 +23,9 @@ import org.apache.shardingsphere.encrypt.config.EncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.yaml.config.rule.YamlEncryptTableRuleConfiguration;
 import org.apache.shardingsphere.infra.algorithm.core.yaml.YamlAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlRuleConfiguration;
-import org.apache.shardingsphere.mode.node.tuple.annotation.RepositoryTupleEntity;
-import org.apache.shardingsphere.mode.node.tuple.annotation.RepositoryTupleField;
-import org.apache.shardingsphere.mode.node.tuple.annotation.RepositoryTupleField.Type;
+import org.apache.shardingsphere.mode.node.rule.tuple.annotation.RuleNodeTupleEntity;
+import org.apache.shardingsphere.mode.node.rule.tuple.annotation.RuleNodeTupleField;
+import org.apache.shardingsphere.mode.node.rule.tuple.annotation.RuleNodeTupleField.Type;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -33,15 +33,15 @@ import java.util.Map;
 /**
  * Encrypt rule configuration for YAML.
  */
-@RepositoryTupleEntity("encrypt")
+@RuleNodeTupleEntity("encrypt")
 @Getter
 @Setter
 public final class YamlEncryptRuleConfiguration implements YamlRuleConfiguration {
     
-    @RepositoryTupleField(type = Type.TABLE)
+    @RuleNodeTupleField(type = Type.TABLE)
     private Map<String, YamlEncryptTableRuleConfiguration> tables = new LinkedHashMap<>();
     
-    @RepositoryTupleField(type = Type.ALGORITHM)
+    @RuleNodeTupleField(type = Type.ALGORITHM)
     private Map<String, YamlAlgorithmConfiguration> encryptors = new LinkedHashMap<>();
     
     @Override

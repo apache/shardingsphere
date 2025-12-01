@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.infra.checker;
 
-import groovy.lang.Singleton;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
+import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
 import org.apache.shardingsphere.infra.spi.type.ordered.OrderedSPI;
 
 import java.util.Collection;
@@ -28,7 +28,7 @@ import java.util.Collection;
  * 
  * @param <T> type of rule
  */
-@Singleton
+@SingletonSPI
 public interface SupportedSQLCheckersBuilder<T extends ShardingSphereRule> extends OrderedSPI<T> {
     
     /**

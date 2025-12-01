@@ -90,7 +90,9 @@ Apache ShardingSphere 内置的标准分片算法实现类包括：
 
 此算法主动忽视了 `datetime-pattern` 的时区信息。
 这意味着当 `datetime-lower`, `datetime-upper` 和传入的分片键含有时区信息时，不会因为时区不一致而发生时区转换。
-当传入的分片键为 `java.time.Instant` 时存在特例处理，其会携带上系统的时区信息后转化为 `datetime-pattern` 的字符串格式，再进行下一步分片。
+
+当传入的分片键为 `java.time.Instant` 或 `java.util.Date` 时存在特例处理，
+其会携带上系统的时区信息后转化为 `datetime-pattern` 的字符串格式，再进行下一步分片。
 
 类型：INTERVAL
 

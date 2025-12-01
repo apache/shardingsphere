@@ -34,7 +34,7 @@ public final class TransactionConnectionContext implements AutoCloseable {
     private volatile boolean inTransaction;
     
     @Setter
-    private volatile long beginMills;
+    private volatile long beginMillis;
     
     @Setter
     private volatile boolean exceptionOccur;
@@ -61,8 +61,8 @@ public final class TransactionConnectionContext implements AutoCloseable {
      *
      * @return in distributed transaction or not
      */
-    public boolean isInDistributedTransaction() {
-        return inTransaction && ("XA".equals(transactionType) || "BASE".equals(transactionType));
+    public boolean isDistributedTransactionStarted() {
+        return isTransactionStarted() && ("XA".equals(transactionType) || "BASE".equals(transactionType));
     }
     
     /**
@@ -92,11 +92,20 @@ public final class TransactionConnectionContext implements AutoCloseable {
         return null == transactionManager ? Optional.empty() : Optional.ofNullable(transactionManager.get());
     }
     
+    /**
+     * Judge transaction is started or not.
+     *
+     * @return whether transaction is started or not
+     */
+    public boolean isTransactionStarted() {
+        return inTransaction;
+    }
+    
     @Override
     public void close() {
         transactionType = null;
         inTransaction = false;
-        beginMills = 0L;
+        beginMillis = 0L;
         exceptionOccur = false;
         readWriteSplitReplicaRoute = null;
         transactionManager = null;

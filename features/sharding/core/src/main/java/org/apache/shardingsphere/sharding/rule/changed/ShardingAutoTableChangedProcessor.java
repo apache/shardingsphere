@@ -19,14 +19,10 @@ package org.apache.shardingsphere.sharding.rule.changed;
 
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
-import org.apache.shardingsphere.mode.spi.rule.item.alter.AlterNamedRuleItem;
-import org.apache.shardingsphere.mode.spi.rule.item.alter.AlterRuleItem;
-import org.apache.shardingsphere.mode.spi.rule.item.drop.DropNamedRuleItem;
-import org.apache.shardingsphere.mode.spi.rule.item.drop.DropRuleItem;
 import org.apache.shardingsphere.mode.spi.rule.RuleItemConfigurationChangedProcessor;
+import org.apache.shardingsphere.mode.spi.rule.RuleChangedItemType;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingAutoTableRuleConfiguration;
-import org.apache.shardingsphere.sharding.metadata.nodepath.ShardingRuleNodePathProvider;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sharding.yaml.config.rule.YamlShardingAutoTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.yaml.swapper.rule.YamlShardingAutoTableRuleConfigurationSwapper;
@@ -37,7 +33,7 @@ import org.apache.shardingsphere.sharding.yaml.swapper.rule.YamlShardingAutoTabl
 public final class ShardingAutoTableChangedProcessor implements RuleItemConfigurationChangedProcessor<ShardingRuleConfiguration, ShardingAutoTableRuleConfiguration> {
     
     @Override
-    public ShardingAutoTableRuleConfiguration swapRuleItemConfiguration(final AlterRuleItem alterRuleItem, final String yamlContent) {
+    public ShardingAutoTableRuleConfiguration swapRuleItemConfiguration(final String itemName, final String yamlContent) {
         return new YamlShardingAutoTableRuleConfigurationSwapper().swapToObject(YamlEngine.unmarshal(yamlContent, YamlShardingAutoTableRuleConfiguration.class));
     }
     
@@ -47,18 +43,18 @@ public final class ShardingAutoTableChangedProcessor implements RuleItemConfigur
     }
     
     @Override
-    public void changeRuleItemConfiguration(final AlterRuleItem alterRuleItem, final ShardingRuleConfiguration currentRuleConfig, final ShardingAutoTableRuleConfiguration toBeChangedItemConfig) {
-        currentRuleConfig.getAutoTables().removeIf(each -> each.getLogicTable().equals(((AlterNamedRuleItem) alterRuleItem).getItemName()));
+    public void changeRuleItemConfiguration(final String itemName, final ShardingRuleConfiguration currentRuleConfig, final ShardingAutoTableRuleConfiguration toBeChangedItemConfig) {
+        currentRuleConfig.getAutoTables().removeIf(each -> each.getLogicTable().equals(itemName));
         currentRuleConfig.getAutoTables().add(toBeChangedItemConfig);
     }
     
     @Override
-    public void dropRuleItemConfiguration(final DropRuleItem dropRuleItem, final ShardingRuleConfiguration currentRuleConfig) {
-        currentRuleConfig.getAutoTables().removeIf(each -> each.getLogicTable().equals(((DropNamedRuleItem) dropRuleItem).getItemName()));
+    public void dropRuleItemConfiguration(final String itemName, final ShardingRuleConfiguration currentRuleConfig) {
+        currentRuleConfig.getAutoTables().removeIf(each -> each.getLogicTable().equals(itemName));
     }
     
     @Override
-    public String getType() {
-        return ShardingRuleNodePathProvider.RULE_TYPE + "." + ShardingRuleNodePathProvider.AUTO_TABLES;
+    public RuleChangedItemType getType() {
+        return new RuleChangedItemType("sharding", "auto_tables");
     }
 }

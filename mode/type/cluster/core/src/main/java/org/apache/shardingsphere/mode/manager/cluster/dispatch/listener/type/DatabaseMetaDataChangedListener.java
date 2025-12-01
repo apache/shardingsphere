@@ -17,41 +17,86 @@
 
 package org.apache.shardingsphere.mode.manager.cluster.dispatch.listener.type;
 
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.exception.core.external.sql.type.wrapper.SQLWrapperException;
 import org.apache.shardingsphere.infra.spi.type.ordered.cache.OrderedServicesCache;
-import org.apache.shardingsphere.mode.node.path.metadata.DatabaseMetaDataNodePath;
 import org.apache.shardingsphere.mode.event.DataChangedEvent;
 import org.apache.shardingsphere.mode.manager.ContextManager;
-import org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.database.metadata.MetaDataChangedHandler;
-import org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.database.rule.RuleConfigurationChangedHandler;
+import org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.database.DatabaseChangedHandler;
+import org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.database.DatabaseLeafValueChangedHandler;
+import org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.database.DatabaseNodeValueChangedHandler;
+import org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.database.datasource.StorageNodeChangedHandler;
+import org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.database.datasource.StorageUnitChangedHandler;
+import org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.database.metadata.SchemaChangedHandler;
+import org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.database.metadata.TableChangedHandler;
+import org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.database.metadata.ViewChangedHandler;
+import org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.database.rule.type.NamedRuleItemConfigurationChangedHandler;
+import org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.database.rule.type.RuleTypeConfigurationChangedHandler;
+import org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.database.rule.type.UniqueRuleItemConfigurationChangedHandler;
+import org.apache.shardingsphere.mode.metadata.manager.ActiveVersionChecker;
+import org.apache.shardingsphere.mode.node.path.engine.searcher.NodePathSearchCriteria;
+import org.apache.shardingsphere.mode.node.path.engine.searcher.NodePathSearcher;
+import org.apache.shardingsphere.mode.node.path.type.database.metadata.DatabaseMetaDataNodePath;
+import org.apache.shardingsphere.mode.node.path.version.VersionNodePath;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEventListener;
 
-import java.sql.SQLException;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.Optional;
 
 /**
  * Database meta data changed listener.
  */
-@RequiredArgsConstructor
 public final class DatabaseMetaDataChangedListener implements DataChangedEventListener {
     
     private final ContextManager contextManager;
     
+    private final Collection<DatabaseChangedHandler> handlers;
+    
+    public DatabaseMetaDataChangedListener(final ContextManager contextManager) {
+        this.contextManager = contextManager;
+        handlers = Arrays.asList(
+                new SchemaChangedHandler(contextManager),
+                new TableChangedHandler(contextManager),
+                new ViewChangedHandler(contextManager),
+                new StorageUnitChangedHandler(contextManager),
+                new StorageNodeChangedHandler(contextManager),
+                new NamedRuleItemConfigurationChangedHandler(contextManager),
+                new UniqueRuleItemConfigurationChangedHandler(contextManager),
+                new RuleTypeConfigurationChangedHandler(contextManager));
+    }
+    
     @Override
     public void onChange(final DataChangedEvent event) {
-        Optional<String> databaseName = DatabaseMetaDataNodePath.findDatabaseName(event.getKey(), true);
+        Optional<String> databaseName = NodePathSearcher.find(event.getKey(), DatabaseMetaDataNodePath.createDatabaseSearchCriteria());
         if (!databaseName.isPresent()) {
             return;
         }
         OrderedServicesCache.clearCache();
-        if (new MetaDataChangedHandler(contextManager).handle(databaseName.get(), event)) {
+        for (DatabaseChangedHandler each : handlers) {
+            if (!isSubscribed(each, databaseName.get(), event)) {
+                continue;
+            }
+            if ((DataChangedEvent.Type.ADDED == event.getType() || DataChangedEvent.Type.UPDATED == event.getType())
+                    && !new ActiveVersionChecker(contextManager.getPersistServiceFacade().getRepository()).checkSame(event)) {
+                return;
+            }
+            each.handle(databaseName.get(), event);
             return;
         }
-        try {
-            new RuleConfigurationChangedHandler(contextManager).handle(databaseName.get(), event);
-        } catch (final SQLException ex) {
-            throw new SQLWrapperException(ex);
+    }
+    
+    private boolean isSubscribed(final DatabaseChangedHandler handler, final String databaseName, final DataChangedEvent event) {
+        if (handler instanceof DatabaseLeafValueChangedHandler) {
+            if (DataChangedEvent.Type.ADDED == event.getType() || DataChangedEvent.Type.UPDATED == event.getType()) {
+                return new VersionNodePath(handler.getSubscribedNodePath(databaseName)).isActiveVersionPath(event.getKey());
+            } else {
+                return NodePathSearcher.isMatchedPath(event.getKey(), new NodePathSearchCriteria(handler.getSubscribedNodePath(databaseName), false, 1))
+                        && !new VersionNodePath(handler.getSubscribedNodePath(databaseName)).isActiveVersionPath(event.getKey())
+                        && !new VersionNodePath(handler.getSubscribedNodePath(databaseName)).isVersionsPath(event.getKey());
+            }
         }
+        if (handler instanceof DatabaseNodeValueChangedHandler) {
+            return NodePathSearcher.isMatchedPath(event.getKey(), new NodePathSearchCriteria(handler.getSubscribedNodePath(databaseName), false, 1));
+        }
+        return false;
     }
 }

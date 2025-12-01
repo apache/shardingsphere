@@ -19,7 +19,7 @@ package org.apache.shardingsphere.data.pipeline.mysql.ingest.incremental.client;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.db.protocol.mysql.packet.binlog.row.MySQLBinlogTableMapEventPacket;
+import org.apache.shardingsphere.database.protocol.mysql.packet.binlog.row.MySQLBinlogTableMapEventPacket;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;

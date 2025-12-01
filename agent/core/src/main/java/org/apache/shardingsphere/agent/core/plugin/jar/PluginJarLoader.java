@@ -67,7 +67,7 @@ public final class PluginJarLoader {
             @Override
             public FileVisitResult visitFile(final Path path, final BasicFileAttributes attributes) {
                 File currentFile = path.toFile();
-                if (currentFile.isFile() && currentFile.getName().endsWith(".jar")) {
+                if (currentFile.isFile() && !currentFile.isHidden() && currentFile.getName().endsWith(".jar")) {
                     result.add(currentFile);
                 }
                 return FileVisitResult.CONTINUE;

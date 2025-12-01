@@ -60,7 +60,8 @@ public final class GenericSchemaManager {
      * @return to be added tables
      */
     public static Collection<ShardingSphereTable> getToBeAddedTables(final ShardingSphereSchema reloadSchema, final ShardingSphereSchema currentSchema) {
-        return reloadSchema.getAllTables().stream().filter(each -> !each.equals(currentSchema.getTable(each.getName()))).collect(Collectors.toList());
+        return reloadSchema.getAllTables().stream().filter(each -> !currentSchema.containsTable(each.getName())
+                || !each.toString().equals(currentSchema.getTable(each.getName()).toString())).collect(Collectors.toList());
     }
     
     /**

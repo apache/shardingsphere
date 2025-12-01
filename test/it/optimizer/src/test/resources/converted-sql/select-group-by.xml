@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Licensed to the Apache Software Foundation (ASF) under one or more
+  ~ contributor license agreements.  See the NOTICE file distributed with
+  ~ this work for additional information regarding copyright ownership.
+  ~ The ASF licenses this file to You under the Apache License, Version 2.0
+  ~ (the "License"); you may not use this file except in compliance with
+  ~ the License.  You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<sql-node-converter-test-cases>
+    <test-cases sql-case-id="select_group_by_with_having_and_window" expected-sql="SELECT COUNT(`order_id`) AS `orders_count`, `user_id` FROM `t_order` GROUP BY `user_id` HAVING `orders_count` > 0 WINDOW `w` AS (PARTITION BY `user_id`)" db-types="MySQL" />
+    <test-cases sql-case-id="select_group_by_with_having_and_window" expected-sql="SELECT COUNT(&quot;order_id&quot;) AS &quot;orders_count&quot;, &quot;user_id&quot; FROM &quot;t_order&quot; GROUP BY &quot;user_id&quot; HAVING &quot;orders_count&quot; &gt; 0 WINDOW &quot;w&quot; AS (PARTITION BY &quot;user_id&quot;)" db-types="PostgreSQL,openGauss" />
+    <test-cases sql-case-id="select_with_case_when_then_in_group_by_item_and_order_by_item" expected-sql="SELECT `order_id` FROM `t_order` GROUP BY CASE WHEN `order_id` > 0 AND `order_id` &lt;= 10 THEN '(0,10]' WHEN `order_id` > 10 THEN '(10,+∞)' ELSE '' END ORDER BY CASE WHEN `order_id` > 0 AND `order_id` &lt;= 10 THEN '(0,10]' WHEN `order_id` > 10 THEN '(10,+∞)' ELSE '' END" db-types="MySQL" />
+    <test-cases sql-case-id="select_with_case_when_then_in_group_by_item_and_order_by_item" expected-sql="SELECT &quot;order_id&quot; FROM &quot;t_order&quot; GROUP BY CASE WHEN &quot;order_id&quot; > 0 AND &quot;order_id&quot; &lt;= 10 THEN '(0,10]' WHEN &quot;order_id&quot; > 10 THEN '(10,+∞)' ELSE '' END ORDER BY CASE WHEN &quot;order_id&quot; > 0 AND &quot;order_id&quot; &lt;= 10 THEN '(0,10]' WHEN &quot;order_id&quot; > 10 THEN '(10,+∞)' ELSE '' END" db-types="PostgreSQL,openGauss" />
+</sql-node-converter-test-cases>

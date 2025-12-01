@@ -17,44 +17,51 @@
   -->
 
 <e2e-test-cases>
-    <test-case sql="TRUNCATE TABLE t_order_details" db-types="H2,MySQL,SQLServer,Oracle" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
+    <test-case sql="TRUNCATE TABLE t_order_details" db-types="MySQL" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
         <assertion expected-data-file="unchanged_table.xml">
             <initial-sql sql="CREATE TABLE t_order_details(id int, description varchar(10))" affected-table="t_order_details" />
             <destroy-sql sql="DROP TABLE t_order_details" />
         </assertion>
     </test-case>
-    
+
     <test-case sql="TRUNCATE t_order_details" db-types="PostgreSQL" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
         <assertion expected-data-file="unchanged_table.xml">
             <initial-sql sql="CREATE TABLE t_order_details(id int, description varchar(10))" affected-table="t_order_details" />
             <destroy-sql sql="DROP TABLE t_order_details" />
         </assertion>
     </test-case>
-    
-    <test-case sql="TRUNCATE TABLE t_broadcast_table_for_ddl" db-types="H2,MySQL,SQLServer,Oracle" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
+
+    <test-case sql="TRUNCATE TABLE t_broadcast_table_for_ddl" db-types="MySQL" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
         <assertion expected-data-file="unchanged_broadcast_table.xml">
             <initial-sql sql="CREATE TABLE t_broadcast_table_for_ddl(id int, description varchar(10))" affected-table="t_broadcast_table_for_ddl" />
             <destroy-sql sql="DROP TABLE t_broadcast_table_for_ddl" />
         </assertion>
     </test-case>
-    
+
     <test-case sql="TRUNCATE t_broadcast_table_for_ddl"  db-types="PostgreSQL" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
         <assertion expected-data-file="unchanged_broadcast_table.xml">
             <initial-sql sql="CREATE TABLE t_broadcast_table_for_ddl(id int, description varchar(10))" affected-table="t_broadcast_table_for_ddl" />
             <destroy-sql sql="DROP TABLE t_broadcast_table_for_ddl" />
         </assertion>
     </test-case>
-    
+
     <test-case sql="TRUNCATE TABLE t_user_details" db-types="MySQL" scenario-types="encrypt,dbtbl_with_readwrite_splitting_and_encrypt,sharding_and_encrypt,encrypt_and_readwrite_splitting">
         <assertion expected-data-file="unchanged_table.xml">
             <initial-sql sql="CREATE TABLE t_user_details (user_id INT NOT NULL, address_id INT NOT NULL, number_cipher VARCHAR(45) NULL, description varchar(10))" affected-table="t_user_details" />
             <destroy-sql sql="DROP TABLE t_user_details" />
         </assertion>
     </test-case>
-    
+
     <test-case sql="TRUNCATE t_user_details" db-types="PostgreSQL" scenario-types="encrypt,dbtbl_with_readwrite_splitting_and_encrypt,sharding_and_encrypt,encrypt_and_readwrite_splitting">
         <assertion expected-data-file="unchanged_table.xml">
             <initial-sql sql="CREATE TABLE t_user_details (user_id INT NOT NULL, address_id INT NOT NULL, number_cipher VARCHAR(45) NULL, description varchar(10))" affected-table="t_user_details" />
+            <destroy-sql sql="DROP TABLE t_user_details" />
+        </assertion>
+    </test-case>
+
+    <test-case sql="TRUNCATE TABLE t_user_details PARTITION (dt='2024-01-01', country='US')" db-types="Hive" scenario-types="encrypt">
+        <assertion expected-data-file="create_hive_table.xml">
+            <initial-sql sql="CREATE TABLE t_user_details (user_id INT NOT NULL, address_id INT NOT NULL, number_cipher STRING, description STRING) PARTITIONED BY (dt STRING, country STRING) STORED AS ORC TBLPROPERTIES ('orc.compress'='SNAPPY'); ALTER TABLE t_user_details ADD PARTITION (dt='2024-01-01', country='US')" affected-table="t_user_details" />
             <destroy-sql sql="DROP TABLE t_user_details" />
         </assertion>
     </test-case>

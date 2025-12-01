@@ -17,12 +17,13 @@
 
 package org.apache.shardingsphere.sharding.route.strategy.type.complex;
 
+import com.cedarsoftware.util.CaseInsensitiveSet;
 import com.google.common.base.Splitter;
 import com.google.common.collect.Range;
 import lombok.Getter;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.datanode.DataNodeInfo;
-import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
+import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.sharding.api.sharding.complex.ComplexKeysShardingAlgorithm;
 import org.apache.shardingsphere.sharding.api.sharding.complex.ComplexKeysShardingValue;
 import org.apache.shardingsphere.sharding.exception.metadata.MissingRequiredShardingConfigurationException;
@@ -34,7 +35,6 @@ import org.apache.shardingsphere.sharding.route.strategy.ShardingStrategy;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.TreeSet;
 
 /**
  * Complex sharding strategy.
@@ -49,7 +49,7 @@ public final class ComplexShardingStrategy implements ShardingStrategy {
     public ComplexShardingStrategy(final String shardingColumns, final ComplexKeysShardingAlgorithm<?> shardingAlgorithm) {
         ShardingSpherePreconditions.checkNotNull(shardingColumns, () -> new MissingRequiredShardingConfigurationException("Complex sharding columns"));
         ShardingSpherePreconditions.checkNotNull(shardingAlgorithm, () -> new MissingRequiredShardingConfigurationException("Complex sharding algorithm"));
-        this.shardingColumns = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
+        this.shardingColumns = new CaseInsensitiveSet<>();
         this.shardingColumns.addAll(Splitter.on(",").trimResults().splitToList(shardingColumns));
         this.shardingAlgorithm = shardingAlgorithm;
     }
@@ -70,8 +70,6 @@ public final class ComplexShardingStrategy implements ShardingStrategy {
             logicTableName = each.getTableName();
         }
         Collection<String> shardingResult = shardingAlgorithm.doSharding(availableTargetNames, new ComplexKeysShardingValue(logicTableName, columnShardingValues, columnRangeValues));
-        Collection<String> result = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
-        result.addAll(shardingResult);
-        return result;
+        return new CaseInsensitiveSet<>(shardingResult);
     }
 }

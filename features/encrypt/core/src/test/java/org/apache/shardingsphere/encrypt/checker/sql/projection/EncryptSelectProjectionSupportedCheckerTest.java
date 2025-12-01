@@ -20,10 +20,11 @@ package org.apache.shardingsphere.encrypt.checker.sql.projection;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.impl.ColumnProjection;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.binder.context.statement.dml.SelectStatementContext;
-import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.binder.context.statement.type.dml.SelectStatementContext;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.exception.generic.UnsupportedSQLOperationException;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
+import org.apache.shardingsphere.sql.parser.statement.core.enums.TableSourceType;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.combine.CombineSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ShorthandProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.bound.ColumnSegmentBoundInfo;
@@ -70,7 +71,7 @@ class EncryptSelectProjectionSupportedCheckerTest {
     void assertCheckWhenShorthandExpandContainsSubqueryTable() {
         SelectStatementContext sqlStatementContext = mock(SelectStatementContext.class, RETURNS_DEEP_STUBS);
         when(sqlStatementContext.containsTableSubquery()).thenReturn(true);
-        when(sqlStatementContext.getSqlStatement().getProjections().getProjections()).thenReturn(Collections.singleton(new ShorthandProjectionSegment(0, 0)));
+        when(sqlStatementContext.getSqlStatement().getProjections().getProjections()).thenReturn(Collections.singletonList(new ShorthandProjectionSegment(0, 0)));
         assertThrows(UnsupportedSQLOperationException.class, () -> new EncryptSelectProjectionSupportedChecker().check(mock(EncryptRule.class, RETURNS_DEEP_STUBS), null, null, sqlStatementContext));
     }
     
@@ -93,15 +94,19 @@ class EncryptSelectProjectionSupportedCheckerTest {
         when(combineSegment.getRight().getStartIndex()).thenReturn(1);
         when(result.getSqlStatement().getCombine()).thenReturn(Optional.of(combineSegment));
         ColumnProjection leftColumn1 = new ColumnProjection(new IdentifierValue("f"), new IdentifierValue("foo_col_1"), null, databaseType, null, null,
-                new ColumnSegmentBoundInfo(new TableSegmentBoundInfo(new IdentifierValue(""), new IdentifierValue("")), new IdentifierValue("foo_tbl"), new IdentifierValue("foo_col_1")));
+                new ColumnSegmentBoundInfo(new TableSegmentBoundInfo(new IdentifierValue(""), new IdentifierValue("")), new IdentifierValue("foo_tbl"), new IdentifierValue("foo_col_1"),
+                        TableSourceType.PHYSICAL_TABLE));
         ColumnProjection leftColumn2 = new ColumnProjection(new IdentifierValue("f"), new IdentifierValue("foo_col_2"), null, databaseType, null, null,
-                new ColumnSegmentBoundInfo(new TableSegmentBoundInfo(new IdentifierValue(""), new IdentifierValue("")), new IdentifierValue("foo_tbl"), new IdentifierValue("foo_col_2")));
+                new ColumnSegmentBoundInfo(new TableSegmentBoundInfo(new IdentifierValue(""), new IdentifierValue("")), new IdentifierValue("foo_tbl"), new IdentifierValue("foo_col_2"),
+                        TableSourceType.PHYSICAL_TABLE));
         SelectStatementContext leftSelectStatementContext = mock(SelectStatementContext.class, RETURNS_DEEP_STUBS);
         when(leftSelectStatementContext.getProjectionsContext().getExpandProjections()).thenReturn(Arrays.asList(leftColumn1, leftColumn2));
         ColumnProjection rightColumn1 = new ColumnProjection(new IdentifierValue("b"), new IdentifierValue("bar_col_1"), null, databaseType, null, null,
-                new ColumnSegmentBoundInfo(new TableSegmentBoundInfo(new IdentifierValue(""), new IdentifierValue("")), new IdentifierValue("bar_tbl"), new IdentifierValue("bar_col_1")));
+                new ColumnSegmentBoundInfo(new TableSegmentBoundInfo(new IdentifierValue(""), new IdentifierValue("")), new IdentifierValue("bar_tbl"), new IdentifierValue("bar_col_1"),
+                        TableSourceType.PHYSICAL_TABLE));
         ColumnProjection rightColumn2 = new ColumnProjection(new IdentifierValue("b"), new IdentifierValue("bar_col_2"), null, databaseType, null, null,
-                new ColumnSegmentBoundInfo(new TableSegmentBoundInfo(new IdentifierValue(""), new IdentifierValue("")), new IdentifierValue("bar_tbl"), new IdentifierValue("bar_col_2")));
+                new ColumnSegmentBoundInfo(new TableSegmentBoundInfo(new IdentifierValue(""), new IdentifierValue("")), new IdentifierValue("bar_tbl"), new IdentifierValue("bar_col_2"),
+                        TableSourceType.PHYSICAL_TABLE));
         SelectStatementContext rightSelectStatementContext = mock(SelectStatementContext.class, RETURNS_DEEP_STUBS);
         when(rightSelectStatementContext.getProjectionsContext().getExpandProjections()).thenReturn(Arrays.asList(rightColumn1, rightColumn2));
         Map<Integer, SelectStatementContext> subqueryContexts = new LinkedHashMap<>(2, 1F);

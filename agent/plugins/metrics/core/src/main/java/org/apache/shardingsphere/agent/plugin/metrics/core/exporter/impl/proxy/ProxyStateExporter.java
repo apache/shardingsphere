@@ -41,13 +41,10 @@ public final class ProxyStateExporter implements MetricsExporter {
         if (null == ProxyContext.getInstance().getContextManager()) {
             return Optional.empty();
         }
-        Optional<InstanceStateContext> stateContext = ProxyContext.getInstance().getInstanceStateContext();
-        if (!stateContext.isPresent()) {
-            return Optional.empty();
-        }
+        InstanceStateContext stateContext = ProxyContext.getInstance().getContextManager().getComputeNodeInstanceContext().getInstance().getState();
         GaugeMetricFamilyMetricsCollector result = MetricsCollectorRegistry.get(config, pluginType);
         result.cleanMetrics();
-        result.addMetric(Collections.emptyList(), stateContext.get().getCurrentState().ordinal());
+        result.addMetric(Collections.emptyList(), stateContext.getCurrentState().ordinal());
         return Optional.of(result);
     }
 }

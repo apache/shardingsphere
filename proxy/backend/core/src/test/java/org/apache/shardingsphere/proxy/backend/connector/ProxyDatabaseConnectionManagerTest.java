@@ -19,32 +19,33 @@ package org.apache.shardingsphere.proxy.backend.connector;
 
 import com.google.common.collect.Multimap;
 import lombok.SneakyThrows;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
-import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.ConnectionMode;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstanceContext;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnit;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
+import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereStatistics;
+import org.apache.shardingsphere.infra.metadata.statistics.builder.ShardingSphereStatisticsFactory;
+import org.apache.shardingsphere.infra.session.connection.transaction.TransactionConnectionContext;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
-import org.apache.shardingsphere.mode.metadata.ShardingSphereStatisticsFactory;
-import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
-import org.apache.shardingsphere.mode.spi.repository.PersistRepository;
 import org.apache.shardingsphere.proxy.backend.connector.jdbc.connection.ConnectionPostProcessor;
 import org.apache.shardingsphere.proxy.backend.connector.jdbc.datasource.JDBCBackendDataSource;
 import org.apache.shardingsphere.proxy.backend.connector.jdbc.statement.JDBCBackendStatement;
-import org.apache.shardingsphere.proxy.backend.connector.jdbc.transaction.BackendTransactionManager;
+import org.apache.shardingsphere.proxy.backend.connector.jdbc.transaction.ProxyBackendTransactionManager;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.exception.BackendConnectionException;
 import org.apache.shardingsphere.proxy.backend.handler.ProxyBackendHandler;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.backend.session.RequiredSessionVariableRecorder;
 import org.apache.shardingsphere.proxy.backend.session.transaction.TransactionStatus;
-import org.apache.shardingsphere.test.mock.AutoMockExtension;
-import org.apache.shardingsphere.test.mock.StaticMockSettings;
+import org.apache.shardingsphere.test.infra.framework.extension.mock.AutoMockExtension;
+import org.apache.shardingsphere.test.infra.framework.extension.mock.StaticMockSettings;
 import org.apache.shardingsphere.transaction.api.TransactionType;
 import org.apache.shardingsphere.transaction.rule.TransactionRule;
 import org.junit.jupiter.api.AfterEach;
@@ -95,6 +96,8 @@ class ProxyDatabaseConnectionManagerTest {
     
     private static final String SCHEMA_PATTERN = "schema_%s";
     
+    private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "FIXTURE");
+    
     @Mock
     private JDBCBackendDataSource backendDataSource;
     
@@ -108,6 +111,7 @@ class ProxyDatabaseConnectionManagerTest {
         ContextManager contextManager = mockContextManager();
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
         when(ProxyContext.getInstance().getBackendDataSource()).thenReturn(backendDataSource);
+        when(connectionSession.getConnectionContext().getTransactionContext()).thenReturn(new TransactionConnectionContext());
         when(connectionSession.getTransactionStatus()).thenReturn(new TransactionStatus());
         when(connectionSession.getUsedDatabaseName()).thenReturn(String.format(SCHEMA_PATTERN, 0));
         databaseConnectionManager = new ProxyDatabaseConnectionManager(connectionSession);
@@ -119,16 +123,21 @@ class ProxyDatabaseConnectionManagerTest {
     
     private ContextManager mockContextManager() {
         ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class, RETURNS_DEEP_STUBS);
-        when(metaData.getDatabase("foo_db")).thenReturn(mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS));
-        when(metaData.getAllDatabases().iterator().next().getProtocolType()).thenReturn(TypedSPILoader.getService(DatabaseType.class, "FIXTURE"));
+        ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
+        StorageUnit storageUnit = mock(StorageUnit.class);
+        when(storageUnit.getStorageType()).thenReturn(databaseType);
+        when(database.getResourceMetaData().getStorageUnits()).thenReturn(Collections.singletonMap("foo_ds", storageUnit));
+        when(database.getProtocolType()).thenReturn(databaseType);
+        when(metaData.getDatabase("foo_db")).thenReturn(database);
+        when(metaData.getAllDatabases()).thenReturn(Collections.singleton(database));
         when(metaData.getProps().<Integer>getValue(ConfigurationPropertyKey.KERNEL_EXECUTOR_SIZE)).thenReturn(0);
+        when(metaData.getProps().<Boolean>getValue(ConfigurationPropertyKey.PERSIST_SCHEMAS_TO_REPOSITORY_ENABLED)).thenReturn(true);
         TransactionRule transactionRule = mock(TransactionRule.class);
         when(transactionRule.getDefaultType()).thenReturn(TransactionType.LOCAL);
         when(metaData.getGlobalRuleMetaData()).thenReturn(new RuleMetaData(Collections.singletonList(transactionRule)));
         ComputeNodeInstanceContext computeNodeInstanceContext = mock(ComputeNodeInstanceContext.class);
         when(computeNodeInstanceContext.getModeConfiguration()).thenReturn(mock(ModeConfiguration.class));
-        return new ContextManager(
-                new MetaDataContexts(metaData, ShardingSphereStatisticsFactory.create(mock(MetaDataPersistService.class), metaData)), computeNodeInstanceContext, mock(PersistRepository.class));
+        return new ContextManager(new MetaDataContexts(metaData, ShardingSphereStatisticsFactory.create(metaData, new ShardingSphereStatistics())), computeNodeInstanceContext, mock(), mock());
     }
     
     @AfterEach
@@ -172,6 +181,7 @@ class ProxyDatabaseConnectionManagerTest {
     @Test
     void assertGetConnectionWithConnectionPostProcessors() throws SQLException {
         connectionSession.getTransactionStatus().setInTransaction(true);
+        connectionSession.getConnectionContext().getTransactionContext().beginTransaction(TransactionType.LOCAL.name(), null);
         when(backendDataSource.getConnections(anyString(), anyString(), eq(2), any())).thenReturn(MockConnectionUtils.mockNewConnections(2));
         setConnectionPostProcessors();
         List<Connection> actualConnections = databaseConnectionManager.getConnections("foo_db", "ds1", 0, 2, ConnectionMode.MEMORY_STRICTLY);
@@ -233,6 +243,7 @@ class ProxyDatabaseConnectionManagerTest {
         assertTrue(databaseConnectionManager.closeConnections(false).contains(sqlException));
     }
     
+    @SuppressWarnings("JDBCResourceOpenedButNotSafelyClosed")
     @Test
     void assertCreateStorageResourceCorrectlyWhenConnectionModeMemoryStrictly() throws SQLException {
         Connection connection = mock(Connection.class);
@@ -256,6 +267,7 @@ class ProxyDatabaseConnectionManagerTest {
         verify(actualConnection.createStatement()).execute("SET key=value");
     }
     
+    @SuppressWarnings("JDBCResourceOpenedButNotSafelyClosed")
     @Test
     void assertGetConnectionsAndFailedToReplaySessionVariables() throws SQLException {
         connectionSession.getRequiredSessionVariableRecorder().setVariable("key", "value");
@@ -310,35 +322,35 @@ class ProxyDatabaseConnectionManagerTest {
     void assertHandleAutoCommit() {
         when(connectionSession.isAutoCommit()).thenReturn(false);
         connectionSession.getTransactionStatus().setInTransaction(false);
-        try (MockedConstruction<BackendTransactionManager> mockedConstruction = mockConstruction(BackendTransactionManager.class)) {
+        try (MockedConstruction<ProxyBackendTransactionManager> mockedConstruction = mockConstruction(ProxyBackendTransactionManager.class)) {
             databaseConnectionManager.handleAutoCommit();
             verify(mockedConstruction.constructed().get(0)).begin();
         }
     }
     
     @Test
-    void assertAddDatabaseConnector() {
-        ProxyBackendHandler expectedEngine = mock(DatabaseConnector.class);
+    void assertAddDatabaseProxyConnector() {
+        ProxyBackendHandler expectedEngine = mock(DatabaseProxyConnector.class);
         databaseConnectionManager.add(expectedEngine);
-        Collection<ProxyBackendHandler> actual = getBackendHandlers();
+        Collection<ProxyBackendHandler> actual = getProxyBackendHandlers();
         assertThat(actual.size(), is(1));
         assertThat(actual.iterator().next(), is(expectedEngine));
     }
     
     @Test
-    void assertMarkDatabaseConnectorInUse() {
-        ProxyBackendHandler expectedEngine = mock(DatabaseConnector.class);
+    void assertMarkDatabaseProxyConnectorInUse() {
+        ProxyBackendHandler expectedEngine = mock(DatabaseProxyConnector.class);
         databaseConnectionManager.add(expectedEngine);
         databaseConnectionManager.markResourceInUse(expectedEngine);
-        Collection<ProxyBackendHandler> actual = getInUseBackendHandlers();
+        Collection<ProxyBackendHandler> actual = getInUseProxyBackendHandlers();
         assertThat(actual.size(), is(1));
         assertThat(actual.iterator().next(), is(expectedEngine));
     }
     
     @Test
-    void assertUnmarkInUseDatabaseConnector() {
-        ProxyBackendHandler engine = mock(DatabaseConnector.class);
-        Collection<ProxyBackendHandler> actual = getInUseBackendHandlers();
+    void assertUnmarkInUseDatabaseProxyConnector() {
+        ProxyBackendHandler engine = mock(DatabaseProxyConnector.class);
+        Collection<ProxyBackendHandler> actual = getInUseProxyBackendHandlers();
         actual.add(engine);
         databaseConnectionManager.unmarkResourceInUse(engine);
         assertTrue(actual.isEmpty());
@@ -346,38 +358,38 @@ class ProxyDatabaseConnectionManagerTest {
     
     @Test
     void assertCloseHandlers() throws SQLException {
-        ProxyBackendHandler engine = mock(DatabaseConnector.class);
-        ProxyBackendHandler inUseEngine = mock(DatabaseConnector.class);
+        ProxyBackendHandler engine = mock(DatabaseProxyConnector.class);
+        ProxyBackendHandler inUseEngine = mock(DatabaseProxyConnector.class);
         SQLException expectedException = mock(SQLException.class);
         doThrow(expectedException).when(engine).close();
-        Collection<ProxyBackendHandler> databaseConnectors = getBackendHandlers();
-        Collection<ProxyBackendHandler> inUseDatabaseConnectors = getInUseBackendHandlers();
-        databaseConnectors.add(engine);
-        databaseConnectors.add(inUseEngine);
-        inUseDatabaseConnectors.add(inUseEngine);
+        Collection<ProxyBackendHandler> backendHandlers = getProxyBackendHandlers();
+        Collection<ProxyBackendHandler> inUseProxyBackendHandlers = getInUseProxyBackendHandlers();
+        backendHandlers.add(engine);
+        backendHandlers.add(inUseEngine);
+        inUseProxyBackendHandlers.add(inUseEngine);
         Collection<SQLException> actual = databaseConnectionManager.closeHandlers(false);
         assertThat(actual.size(), is(1));
         assertThat(actual.iterator().next(), is(expectedException));
-        assertThat(inUseDatabaseConnectors.size(), is(1));
-        assertThat(databaseConnectors.size(), is(1));
+        assertThat(inUseProxyBackendHandlers.size(), is(1));
+        assertThat(backendHandlers.size(), is(1));
         verify(engine).close();
         databaseConnectionManager.closeHandlers(true);
         verify(inUseEngine).close();
-        assertTrue(databaseConnectors.isEmpty());
-        assertTrue(inUseDatabaseConnectors.isEmpty());
+        assertTrue(backendHandlers.isEmpty());
+        assertTrue(inUseProxyBackendHandlers.isEmpty());
     }
     
     @Test
     void assertCloseExecutionResourcesNotInTransaction() throws BackendConnectionException, SQLException {
         ProxyBackendHandler notInUseHandler = mock(ProxyBackendHandler.class);
         ProxyBackendHandler inUseHandler = mock(ProxyBackendHandler.class);
-        getBackendHandlers().addAll(Arrays.asList(notInUseHandler, inUseHandler));
-        getInUseBackendHandlers().add(inUseHandler);
+        getProxyBackendHandlers().addAll(Arrays.asList(notInUseHandler, inUseHandler));
+        getInUseProxyBackendHandlers().add(inUseHandler);
         Connection cachedConnection = prepareCachedConnections();
         databaseConnectionManager.closeExecutionResources();
         verify(cachedConnection).close();
-        assertTrue(getBackendHandlers().isEmpty());
-        assertTrue(getInUseBackendHandlers().isEmpty());
+        assertTrue(getProxyBackendHandlers().isEmpty());
+        assertTrue(getInUseProxyBackendHandlers().isEmpty());
         verify(notInUseHandler).close();
         verify(inUseHandler).close();
     }
@@ -387,25 +399,25 @@ class ProxyDatabaseConnectionManagerTest {
         connectionSession.getTransactionStatus().setInTransaction(true);
         ProxyBackendHandler notInUseHandler = mock(ProxyBackendHandler.class);
         ProxyBackendHandler inUseHandler = mock(ProxyBackendHandler.class);
-        getBackendHandlers().addAll(Arrays.asList(notInUseHandler, inUseHandler));
-        getInUseBackendHandlers().add(inUseHandler);
+        getProxyBackendHandlers().addAll(Arrays.asList(notInUseHandler, inUseHandler));
+        getInUseProxyBackendHandlers().add(inUseHandler);
         Connection cachedConnection = prepareCachedConnections();
         databaseConnectionManager.closeExecutionResources();
         verifyNoInteractions(inUseHandler, cachedConnection);
-        assertThat(getBackendHandlers(), is(Collections.singleton(inUseHandler)));
-        assertThat(getInUseBackendHandlers(), is(Collections.singleton(inUseHandler)));
+        assertThat(getProxyBackendHandlers(), is(Collections.singleton(inUseHandler)));
+        assertThat(getInUseProxyBackendHandlers(), is(Collections.singleton(inUseHandler)));
     }
     
     @SuppressWarnings("unchecked")
     @SneakyThrows(ReflectiveOperationException.class)
-    private Collection<ProxyBackendHandler> getBackendHandlers() {
-        return (Collection<ProxyBackendHandler>) Plugins.getMemberAccessor().get(ProxyDatabaseConnectionManager.class.getDeclaredField("backendHandlers"), databaseConnectionManager);
+    private Collection<ProxyBackendHandler> getProxyBackendHandlers() {
+        return (Collection<ProxyBackendHandler>) Plugins.getMemberAccessor().get(ProxyDatabaseConnectionManager.class.getDeclaredField("proxyBackendHandlers"), databaseConnectionManager);
     }
     
     @SuppressWarnings("unchecked")
     @SneakyThrows(ReflectiveOperationException.class)
-    private Collection<ProxyBackendHandler> getInUseBackendHandlers() {
-        return (Collection<ProxyBackendHandler>) Plugins.getMemberAccessor().get(ProxyDatabaseConnectionManager.class.getDeclaredField("inUseBackendHandlers"), databaseConnectionManager);
+    private Collection<ProxyBackendHandler> getInUseProxyBackendHandlers() {
+        return (Collection<ProxyBackendHandler>) Plugins.getMemberAccessor().get(ProxyDatabaseConnectionManager.class.getDeclaredField("inUseProxyBackendHandlers"), databaseConnectionManager);
     }
     
     @Test

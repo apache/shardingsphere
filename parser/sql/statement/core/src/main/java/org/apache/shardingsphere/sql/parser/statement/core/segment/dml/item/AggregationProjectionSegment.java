@@ -55,7 +55,7 @@ public class AggregationProjectionSegment implements ProjectionSegment, AliasAva
         this.stopIndex = stopIndex;
         this.type = type;
         this.expression = expression;
-        this.separator = null;
+        separator = null;
     }
     
     public AggregationProjectionSegment(final int startIndex, final int stopIndex, final AggregationType type, final String expression, final String separator) {

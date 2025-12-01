@@ -34,6 +34,7 @@
                 <original-schema name="public" />
                 <original-table name="t_order" />
                 <original-column name="user_id" start-delimiter="&quot;" end-delimiter="&quot;" />
+                <table-source-type name="PHYSICAL_TABLE"/>
             </column-bound>
         </column>
     </create-index>

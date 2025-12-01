@@ -24,7 +24,7 @@
         <from>
             <simple-table name="t1" start-index="15" stop-index="16" />
         </from>
-        <combine combine-type="EXCEPT" start-index="19" stop-index="43">
+        <combine combine-type="EXCEPT" start-index="0" stop-index="43">
             <left>
                 <projections start-index="8" stop-index="8">
                     <shorthand-projection start-index="8" stop-index="8" />
@@ -51,7 +51,7 @@
         <from>
             <simple-table name="table1" start-index="14" stop-index="19" />
         </from>
-        <combine combine-type="UNION" start-index="21" stop-index="46">
+        <combine combine-type="UNION" start-index="0" stop-index="46">
             <left>
                 <projections start-index="7" stop-index="7">
                     <shorthand-projection start-index="7" stop-index="7" />
@@ -78,7 +78,7 @@
         <from>
             <simple-table name="table1" start-index="14" stop-index="19" />
         </from>
-        <combine combine-type="UNION_ALL" start-index="21" stop-index="50">
+        <combine combine-type="UNION_ALL" start-index="0" stop-index="50">
             <left>
                 <projections start-index="7" stop-index="7">
                     <shorthand-projection start-index="7" stop-index="7" />
@@ -105,7 +105,7 @@
         <from>
             <simple-table name="table1" start-index="14" stop-index="19" />
         </from>
-        <combine combine-type="UNION_ALL" start-index="21" stop-index="50">
+        <combine combine-type="UNION_ALL" start-index="0" stop-index="50">
             <left>
                 <projections start-index="7" stop-index="7">
                     <shorthand-projection start-index="7" stop-index="7" />
@@ -135,7 +135,7 @@
         <from>
             <simple-table name="table1" start-index="14" stop-index="19" />
         </from>
-        <combine combine-type="UNION_ALL" start-index="21" stop-index="50">
+        <combine combine-type="UNION_ALL" start-index="0" stop-index="50">
             <left>
                 <projections start-index="7" stop-index="7">
                     <shorthand-projection start-index="7" stop-index="7" />
@@ -169,7 +169,7 @@
         <from>
             <simple-table name="table1" start-index="14" stop-index="19" />
         </from>
-        <combine combine-type="INTERSECT" start-index="52" stop-index="81">
+        <combine combine-type="INTERSECT" start-index="0" stop-index="81">
             <left>
                 <projections start-index="7" stop-index="7">
                     <shorthand-projection start-index="7" stop-index="7" />
@@ -177,7 +177,7 @@
                 <from>
                     <simple-table name="table1" start-index="14" stop-index="19" />
                 </from>
-                <combine combine-type="INTERSECT" start-index="21" stop-index="50">
+                <combine combine-type="INTERSECT" start-index="0" stop-index="50">
                     <left>
                         <projections start-index="7" stop-index="7">
                             <shorthand-projection start-index="7" stop-index="7" />
@@ -214,7 +214,7 @@
         <from>
             <simple-table name="table1" start-index="14" stop-index="19" />
         </from>
-        <combine combine-type="INTERSECT" start-index="52" stop-index="81">
+        <combine combine-type="INTERSECT" start-index="0" stop-index="81">
             <left>
                 <projections start-index="7" stop-index="7">
                     <shorthand-projection start-index="7" stop-index="7" />
@@ -222,7 +222,7 @@
                 <from>
                     <simple-table name="table1" start-index="14" stop-index="19" />
                 </from>
-                <combine combine-type="INTERSECT" start-index="21" stop-index="50">
+                <combine combine-type="INTERSECT" start-index="0" stop-index="50">
                     <left>
                         <projections start-index="7" stop-index="7">
                             <shorthand-projection start-index="7" stop-index="7" />
@@ -262,7 +262,7 @@
         <from>
             <simple-table name="table1" start-index="14" stop-index="19" />
         </from>
-        <combine combine-type="INTERSECT" start-index="52" stop-index="81">
+        <combine combine-type="INTERSECT" start-index="0" stop-index="81">
             <left>
                 <projections start-index="7" stop-index="7">
                     <shorthand-projection start-index="7" stop-index="7" />
@@ -270,7 +270,7 @@
                 <from>
                     <simple-table name="table1" start-index="14" stop-index="19" />
                 </from>
-                <combine combine-type="INTERSECT" start-index="21" stop-index="50">
+                <combine combine-type="INTERSECT" start-index="0" stop-index="50">
                     <left>
                         <projections start-index="7" stop-index="7">
                             <shorthand-projection start-index="7" stop-index="7" />
@@ -314,7 +314,7 @@
         <from>
             <simple-table name="table1" start-index="14" stop-index="19" />
         </from>
-        <combine combine-type="EXCEPT_ALL" start-index="53" stop-index="83">
+        <combine combine-type="EXCEPT_ALL" start-index="0" stop-index="83">
             <left>
                 <projections start-index="7" stop-index="7">
                     <shorthand-projection start-index="7" stop-index="7" />
@@ -322,7 +322,7 @@
                 <from>
                     <simple-table name="table1" start-index="14" stop-index="19" />
                 </from>
-                <combine combine-type="EXCEPT_ALL" start-index="21" stop-index="51">
+                <combine combine-type="EXCEPT_ALL" start-index="0" stop-index="51">
                     <left>
                         <projections start-index="7" stop-index="7">
                             <shorthand-projection start-index="7" stop-index="7" />
@@ -359,7 +359,7 @@
         <from>
             <simple-table name="table1" start-index="14" stop-index="19" />
         </from>
-        <combine combine-type="EXCEPT_ALL" start-index="53" stop-index="83">
+        <combine combine-type="EXCEPT_ALL" start-index="0" stop-index="83">
             <left>
                 <projections start-index="7" stop-index="7">
                     <shorthand-projection start-index="7" stop-index="7" />
@@ -367,7 +367,7 @@
                 <from>
                     <simple-table name="table1" start-index="14" stop-index="19" />
                 </from>
-                <combine combine-type="EXCEPT_ALL" start-index="21" stop-index="51">
+                <combine combine-type="EXCEPT_ALL" start-index="0" stop-index="51">
                     <left>
                         <projections start-index="7" stop-index="7">
                             <shorthand-projection start-index="7" stop-index="7" />
@@ -407,7 +407,7 @@
         <from>
             <simple-table name="table1" start-index="14" stop-index="19" />
         </from>
-        <combine combine-type="EXCEPT_ALL" start-index="53" stop-index="83">
+        <combine combine-type="EXCEPT_ALL" start-index="0" stop-index="83">
             <left>
                 <projections start-index="7" stop-index="7">
                     <shorthand-projection start-index="7" stop-index="7" />
@@ -415,7 +415,7 @@
                 <from>
                     <simple-table name="table1" start-index="14" stop-index="19" />
                 </from>
-                <combine combine-type="EXCEPT_ALL" start-index="21" stop-index="51">
+                <combine combine-type="EXCEPT_ALL" start-index="0" stop-index="51">
                     <left>
                         <projections start-index="7" stop-index="7">
                             <shorthand-projection start-index="7" stop-index="7" />
@@ -459,7 +459,7 @@
         <from>
             <simple-table name="table1" start-index="14" stop-index="19" />
         </from>
-        <combine combine-type="MINUS" start-index="21" stop-index="46">
+        <combine combine-type="MINUS" start-index="0" stop-index="46">
             <left>
                 <projections start-index="7" stop-index="7">
                     <shorthand-projection start-index="7" stop-index="7" />
@@ -486,7 +486,7 @@
         <from>
             <simple-table name="table1" start-index="14" stop-index="19" />
         </from>
-        <combine combine-type="MINUS" start-index="21" stop-index="46">
+        <combine combine-type="MINUS" start-index="0" stop-index="46">
             <left>
                 <projections start-index="7" stop-index="7">
                     <shorthand-projection start-index="7" stop-index="7" />
@@ -516,7 +516,7 @@
         <from>
             <simple-table name="table1" start-index="14" stop-index="19" />
         </from>
-        <combine combine-type="MINUS" start-index="21" stop-index="46">
+        <combine combine-type="MINUS" start-index="0" stop-index="46">
             <left>
                 <projections start-index="7" stop-index="7">
                     <shorthand-projection start-index="7" stop-index="7" />
@@ -550,7 +550,7 @@
         <from>
             <simple-table name="table1" start-index="14" stop-index="19" />
         </from>
-        <combine combine-type="UNION" start-index="21" stop-index="75">
+        <combine combine-type="UNION" start-index="0" stop-index="75">
             <left>
                 <projections start-index="7" stop-index="7">
                     <shorthand-projection start-index="7" stop-index="7" />
@@ -566,7 +566,7 @@
                 <from>
                     <simple-table name="table2" start-index="42" stop-index="47" />
                 </from>
-                <combine combine-type="UNION" start-index="49" stop-index="74">
+                <combine combine-type="UNION" start-index="28" stop-index="74">
                     <left>
                         <projections start-index="35" stop-index="35">
                             <shorthand-projection start-index="35" stop-index="35" />
@@ -595,7 +595,7 @@
         <from>
             <simple-table name="table1" start-index="14" stop-index="19" />
         </from>
-        <combine combine-type="UNION" start-index="21" stop-index="77">
+        <combine combine-type="UNION" start-index="0" stop-index="77">
             <left>
                 <projections start-index="7" stop-index="7">
                     <shorthand-projection start-index="7" stop-index="7" />
@@ -611,7 +611,7 @@
                 <from>
                     <simple-table name="table2" start-index="41" stop-index="46" />
                 </from>
-                <combine combine-type="INTERSECT" start-index="48" stop-index="77">
+                <combine combine-type="INTERSECT" start-index="27" stop-index="77">
                     <left>
                         <projections start-index="34" stop-index="34">
                             <shorthand-projection start-index="34" stop-index="34" />
@@ -640,7 +640,7 @@
         <from>
             <simple-table name="table1" start-index="14" stop-index="19" />
         </from>
-        <combine combine-type="EXCEPT" start-index="48" stop-index="74">
+        <combine combine-type="EXCEPT" start-index="0" stop-index="74">
             <left>
                 <projections start-index="7" stop-index="7">
                     <shorthand-projection start-index="7" stop-index="7" />
@@ -648,7 +648,7 @@
                 <from>
                     <simple-table name="table1" start-index="14" stop-index="19" />
                 </from>
-                <combine combine-type="UNION" start-index="21" stop-index="46">
+                <combine combine-type="UNION" start-index="0" stop-index="46">
                     <left>
                         <projections start-index="7" stop-index="7">
                             <shorthand-projection start-index="7" stop-index="7" />
@@ -685,7 +685,7 @@
         <from>
             <simple-table name="table1" start-index="14" stop-index="19" />
         </from>
-        <combine combine-type="EXCEPT" start-index="79" stop-index="105">
+        <combine combine-type="EXCEPT" start-index="0" stop-index="105">
             <left>
                 <projections start-index="7" stop-index="7">
                     <shorthand-projection start-index="7" stop-index="7" />
@@ -693,7 +693,7 @@
                 <from>
                     <simple-table name="table1" start-index="14" stop-index="19" />
                 </from>
-                <combine combine-type="UNION" start-index="21" stop-index="77">
+                <combine combine-type="UNION" start-index="0" stop-index="77">
                     <left>
                         <projections start-index="7" stop-index="7">
                             <shorthand-projection start-index="7" stop-index="7" />
@@ -709,7 +709,7 @@
                         <from>
                             <simple-table name="table2" start-index="41" stop-index="46" />
                         </from>
-                        <combine combine-type="INTERSECT" start-index="48" stop-index="77">
+                        <combine combine-type="INTERSECT" start-index="27" stop-index="77">
                             <left>
                                 <projections start-index="34" stop-index="34">
                                     <shorthand-projection start-index="34" stop-index="34" />
@@ -748,7 +748,7 @@
         <from>
             <simple-table name="table1" start-index="14" stop-index="19" />
         </from>
-        <combine combine-type="UNION" start-index="49" stop-index="74">
+        <combine combine-type="UNION" start-index="0" stop-index="74">
             <left>
                 <projections start-index="7" stop-index="7">
                     <shorthand-projection start-index="7" stop-index="7" />
@@ -756,7 +756,7 @@
                 <from>
                     <simple-table name="table1" start-index="14" stop-index="19" />
                 </from>
-                <combine combine-type="EXCEPT" start-index="21" stop-index="47">
+                <combine combine-type="EXCEPT" start-index="0" stop-index="47">
                     <left>
                         <projections start-index="7" stop-index="7">
                             <shorthand-projection start-index="7" stop-index="7" />
@@ -793,7 +793,7 @@
         <from>
             <simple-table name="table1" start-index="14" stop-index="19" />
         </from>
-        <combine combine-type="EXCEPT" start-index="21" stop-index="78">
+        <combine combine-type="EXCEPT" start-index="0" stop-index="78">
             <left>
                 <projections start-index="7" stop-index="7">
                     <shorthand-projection start-index="7" stop-index="7" />
@@ -809,7 +809,7 @@
                 <from>
                     <simple-table name="table2" start-index="42" stop-index="47" />
                 </from>
-                <combine combine-type="INTERSECT" start-index="49" stop-index="78">
+                <combine combine-type="INTERSECT" start-index="28" stop-index="78">
                     <left>
                         <projections start-index="35" stop-index="35">
                             <shorthand-projection start-index="35" stop-index="35" />
@@ -838,7 +838,7 @@
         <from>
             <simple-table name="table1" start-index="14" stop-index="19" />
         </from>
-        <combine combine-type="UNION" start-index="80" stop-index="105">
+        <combine combine-type="UNION" start-index="0" stop-index="105">
             <left>
                 <projections start-index="7" stop-index="7">
                     <shorthand-projection start-index="7" stop-index="7" />
@@ -846,7 +846,7 @@
                 <from>
                     <simple-table name="table1" start-index="14" stop-index="19" />
                 </from>
-                <combine combine-type="EXCEPT" start-index="21" stop-index="78">
+                <combine combine-type="EXCEPT" start-index="0" stop-index="78">
                     <left>
                         <projections start-index="7" stop-index="7">
                             <shorthand-projection start-index="7" stop-index="7" />
@@ -862,7 +862,7 @@
                         <from>
                             <simple-table name="table2" start-index="42" stop-index="47" />
                         </from>
-                        <combine combine-type="INTERSECT" start-index="49" stop-index="78">
+                        <combine combine-type="INTERSECT" start-index="28" stop-index="78">
                             <left>
                                 <projections start-index="35" stop-index="35">
                                     <shorthand-projection start-index="35" stop-index="35" />

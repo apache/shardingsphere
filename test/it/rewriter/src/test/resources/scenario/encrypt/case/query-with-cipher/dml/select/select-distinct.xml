@@ -19,18 +19,18 @@
 <rewrite-assertions yaml-rule="scenario/encrypt/config/query-with-cipher.yaml">
     <rewrite-assertion id="select_distinct_cipher_field_without_order_by_cipher" db-types="MySQL">
         <input sql="SELECT distinct amount FROM t_account" />
-        <output sql="SELECT distinct cipher_amount AS amount FROM t_account" />
+        <output sql="SELECT distinct `cipher_amount` AS amount FROM t_account" />
     </rewrite-assertion>
     <rewrite-assertion id="select_distinct_cipher_field_with_parentheses" db-types="MySQL">
         <input sql="SELECT distinct (amount) FROM t_account" />
-        <output sql="SELECT distinct (cipher_amount) AS amount FROM t_account" />
+        <output sql="SELECT distinct (`cipher_amount`) AS amount FROM t_account" />
     </rewrite-assertion>
     <rewrite-assertion id="select_distinct_cipher_field_with_parentheses_with_alias" db-types="MySQL">
         <input sql="SELECT distinct (amount) as a FROM t_account" />
-        <output sql="SELECT distinct (cipher_amount) AS a FROM t_account" />
+        <output sql="SELECT distinct (`cipher_amount`) AS a FROM t_account" />
     </rewrite-assertion>
     <rewrite-assertion id="select_distinct_cipher_field_with_parentheses_with_owner" db-types="MySQL">
         <input sql="SELECT distinct (a.amount) from t_account a" />
-        <output sql="SELECT distinct (a.cipher_amount) AS amount from t_account a" />
+        <output sql="SELECT distinct (a.`cipher_amount`) AS amount from t_account a" />
     </rewrite-assertion>
 </rewrite-assertions>

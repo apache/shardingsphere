@@ -1,0 +1,110 @@
+{
+  "reflection": [
+    {
+      "condition": {
+        "typeReached": "com.alibaba.druid.mock.MockDriver"
+      },
+      "type": "com.alibaba.druid.mock.MockDriver"
+    },
+    {
+      "condition": {
+        "typeReached": "com.alibaba.druid.mock.MockDriver"
+      },
+      "type": "com.alibaba.druid.mock.MockDriverMBean"
+    },
+    {
+      "condition": {
+        "typeReached": "com.alibaba.druid.proxy.DruidDriver"
+      },
+      "type": "com.alibaba.druid.proxy.DruidDriver"
+    },
+    {
+      "condition": {
+        "typeReached": "com.alibaba.druid.proxy.DruidDriver"
+      },
+      "type": "com.alibaba.druid.proxy.DruidDriverMBean"
+    },
+    {
+      "condition": {
+        "typeReached": "com.alibaba.druid.support.logging.LogFactory"
+      },
+      "type": "com.alibaba.druid.support.logging.JakartaCommonsLoggingImpl",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": [
+            "java.lang.String"
+          ]
+        }
+      ]
+    },
+    {
+      "condition": {
+        "typeReached": "com.alibaba.druid.support.logging.Resources"
+      },
+      "type": "com.alibaba.druid.support.logging.JakartaCommonsLoggingImpl"
+    },
+    {
+      "condition": {
+        "typeReached": "com.alibaba.druid.support.logging.LogFactory"
+      },
+      "type": "com.alibaba.druid.support.logging.Jdk14LoggingImpl",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": [
+            "java.lang.String"
+          ]
+        }
+      ]
+    },
+    {
+      "condition": {
+        "typeReached": "com.alibaba.druid.support.logging.Resources"
+      },
+      "type": "com.alibaba.druid.support.logging.Jdk14LoggingImpl"
+    },
+    {
+      "condition": {
+        "typeReached": "com.alibaba.druid.support.logging.LogFactory"
+      },
+      "type": "com.alibaba.druid.support.logging.NoLoggingImpl",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": [
+            "java.lang.String"
+          ]
+        }
+      ]
+    },
+    {
+      "condition": {
+        "typeReached": "com.alibaba.druid.support.logging.LogFactory"
+      },
+      "type": "com.alibaba.druid.support.logging.SLF4JImpl",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": [
+            "java.lang.String"
+          ]
+        }
+      ]
+    },
+    {
+      "condition": {
+        "typeReached": "com.alibaba.druid.support.logging.Resources"
+      },
+      "type": "com.alibaba.druid.support.logging.SLF4JImpl"
+    }
+  ],
+  "resources": [
+    {
+      "condition": {
+        "typeReached": "com.alibaba.druid.util.JdbcUtils"
+      },
+      "glob": "META-INF/druid-driver.properties"
+    }
+  ]
+}

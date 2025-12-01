@@ -21,16 +21,16 @@
     <parent>
         <groupId>org.apache.shardingsphere</groupId>
         <artifactId>shardingsphere</artifactId>
-        <version>5.5.2-SNAPSHOT</version>
+        <version>5.5.3-SNAPSHOT</version>
     </parent>
     <artifactId>shardingsphere-infra</artifactId>
     <packaging>pom</packaging>
     <name>${project.artifactId}</name>
     
     <modules>
+        <module>annotation</module>
         <module>spi</module>
         <module>exception</module>
-        <module>database</module>
         <module>data-source-pool</module>
         <module>common</module>
         <module>context</module>

@@ -17,9 +17,10 @@
 
 package org.apache.shardingsphere.infra.rule.builder.global;
 
+import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
-import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabaseFactory;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.builder.fixture.FixtureGlobalRule;
 import org.apache.shardingsphere.infra.rule.builder.fixture.FixtureGlobalRuleConfiguration;
@@ -32,7 +33,7 @@ import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.instanceOf;
+import static org.hamcrest.Matchers.isA;
 import static org.mockito.Mockito.mock;
 
 class GlobalRulesBuilderTest {
@@ -41,7 +42,7 @@ class GlobalRulesBuilderTest {
     void assertBuildRules() {
         Collection<ShardingSphereRule> rules = GlobalRulesBuilder.buildRules(Collections.singletonList(new FixtureGlobalRuleConfiguration()), Collections.singleton(buildDatabase()), mock());
         assertThat(rules.size(), is(1));
-        assertThat(rules.iterator().next(), instanceOf(FixtureGlobalRule.class));
+        assertThat(rules.iterator().next(), isA(FixtureGlobalRule.class));
     }
     
     @Test
@@ -51,6 +52,6 @@ class GlobalRulesBuilderTest {
     }
     
     private ShardingSphereDatabase buildDatabase() {
-        return ShardingSphereDatabase.create("foo_db", TypedSPILoader.getService(DatabaseType.class, "FIXTURE"), new ConfigurationProperties(new Properties()));
+        return ShardingSphereDatabaseFactory.create("foo_db", TypedSPILoader.getService(DatabaseType.class, "FIXTURE"), new ConfigurationProperties(new Properties()));
     }
 }

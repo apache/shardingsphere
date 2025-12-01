@@ -37,14 +37,14 @@
         <assertion parameters="10:int, 1000:int" expected-data-source-name="read_dataset" />
     </test-case>
     
-    <test-case sql="SELECT length.item_id password FROM t_order_item length where length.item_id = ?" db-types="MySQL,H2,SQLServer,Oracle" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
+    <test-case sql="SELECT length.item_id password FROM t_order_item length where length.item_id = ?" db-types="MySQL" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
         <assertion expected-data-source-name="read_dataset" parameters="100001:int" />
     </test-case>
     
     <test-case sql="SELECT USER(), DATABASE()" db-types="MySQL" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
     </test-case>
     
-    <test-case sql="SELECT COUNT(*) FROM t_order" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
+    <test-case sql="SELECT COUNT(*) FROM t_order" db-types="MySQL,PostgreSQL,openGauss" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
         <assertion expected-data-source-name="read_dataset" />
     </test-case>
     

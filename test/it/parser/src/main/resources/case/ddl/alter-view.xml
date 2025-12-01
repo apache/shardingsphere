@@ -85,4 +85,44 @@
         <view name="time_view" start-index="11" stop-index="19" />
         <constraint-definition constraint-name="time_view_pk" start-index="0" stop-index="55" />
     </alter-view>
+    
+    <alter-view sql-case-id="alter_view_set_properties_basic">
+        <view name="sales_summary" start-index="11" stop-index="23" />
+    </alter-view>
+    
+    <alter-view sql-case-id="alter_view_as_select_basic" view-definition="SELECT order_id, amount FROM new_sales">
+        <view name="sales_summary" start-index="11" stop-index="23" />
+        <select>
+            <projections start-index="35" stop-index="50">
+                <column-projection name="order_id" start-index="35" stop-index="42" />
+                <column-projection name="amount" start-index="45" stop-index="50" />
+            </projections>
+            <from>
+                <simple-table name="new_sales" start-index="57" stop-index="65" />
+            </from>
+        </select>
+    </alter-view>
+    
+    <alter-view sql-case-id="alter_view_set_properties_with_db">
+        <view name="sales_summary" start-index="11" stop-index="27">
+            <owner name="db1" start-index="11" stop-index="13" />
+        </view>
+    </alter-view>
+    
+    <alter-view sql-case-id="alter_view_as_select_with_db" view-definition="SELECT id, total FROM db2.orders">
+        <view name="sales_summary" start-index="11" stop-index="27">
+            <owner name="db1" start-index="11" stop-index="13" />
+        </view>
+        <select>
+            <projections start-index="39" stop-index="47">
+                <column-projection name="id" start-index="39" stop-index="40" />
+                <column-projection name="total" start-index="43" stop-index="47" />
+            </projections>
+            <from>
+                <simple-table name="orders" start-index="54" stop-index="63">
+                    <owner name="db2" start-index="54" stop-index="56" />
+                </simple-table>
+            </from>
+        </select>
+    </alter-view>
 </sql-parser-test-cases>

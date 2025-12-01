@@ -34,11 +34,12 @@ import org.apache.seata.core.rpc.netty.TmNettyRemotingClient;
 import org.apache.seata.rm.datasource.ConnectionProxy;
 import org.apache.seata.rm.datasource.DataSourceProxy;
 import org.apache.seata.tm.api.GlobalTransactionContext;
-import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.transaction.api.TransactionType;
 import org.apache.shardingsphere.transaction.base.seata.at.fixture.MockSeataServer;
 import org.apache.shardingsphere.transaction.base.seata.at.fixture.MockedMysqlDataSource;
+import org.awaitility.Awaitility;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
@@ -52,12 +53,14 @@ import java.sql.SQLException;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Queue;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.isA;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
@@ -68,6 +71,8 @@ class SeataATShardingSphereTransactionManagerTest {
     
     private static final String DATA_SOURCE_UNIQUE_NAME = "sharding_db.ds_0";
     
+    private static ExecutorService executorService;
+    
     private final SeataATShardingSphereTransactionManager seataTransactionManager = new SeataATShardingSphereTransactionManager();
     
     private final Queue<Object> requestQueue = MOCK_SEATA_SERVER.getMessageHandler().getRequestQueue();
@@ -76,7 +81,8 @@ class SeataATShardingSphereTransactionManagerTest {
     
     @BeforeAll
     static void before() {
-        Executors.newSingleThreadExecutor().submit(MOCK_SEATA_SERVER::start);
+        executorService = Executors.newSingleThreadExecutor();
+        executorService.submit(MOCK_SEATA_SERVER::start);
         while (true) {
             if (MOCK_SEATA_SERVER.getInitialized().get()) {
                 return;
@@ -87,6 +93,8 @@ class SeataATShardingSphereTransactionManagerTest {
     @AfterAll
     static void after() {
         MOCK_SEATA_SERVER.shutdown();
+        executorService.shutdown();
+        Awaitility.await().atMost(1L, TimeUnit.MINUTES).until(() -> executorService.isTerminated());
     }
     
     @BeforeEach
@@ -110,14 +118,14 @@ class SeataATShardingSphereTransactionManagerTest {
     void assertInit() {
         Map<String, DataSource> actual = getDataSourceMap();
         assertThat(actual.size(), is(1));
-        assertThat(actual.get(DATA_SOURCE_UNIQUE_NAME), instanceOf(DataSourceProxy.class));
+        assertThat(actual.get(DATA_SOURCE_UNIQUE_NAME), isA(DataSourceProxy.class));
         assertThat(seataTransactionManager.getTransactionType(), is(TransactionType.BASE));
     }
     
     @Test
     void assertGetConnection() throws SQLException {
         Connection actual = seataTransactionManager.getConnection("sharding_db", "ds_0");
-        assertThat(actual, instanceOf(ConnectionProxy.class));
+        assertThat(actual, isA(ConnectionProxy.class));
     }
     
     @Test
@@ -173,15 +181,15 @@ class SeataATShardingSphereTransactionManagerTest {
             Object requestPackage = requestQueue.poll();
             Object responsePackage = responseQueue.poll();
             if (requestPackage instanceof RegisterTMRequest) {
-                assertThat(responsePackage, instanceOf(RegisterTMResponse.class));
+                assertThat(responsePackage, isA(RegisterTMResponse.class));
             } else if (requestPackage instanceof RegisterRMRequest) {
-                assertThat(responsePackage, instanceOf(RegisterRMResponse.class));
+                assertThat(responsePackage, isA(RegisterRMResponse.class));
             } else if (requestPackage instanceof GlobalBeginRequest) {
-                assertThat(responsePackage, instanceOf(GlobalBeginResponse.class));
+                assertThat(responsePackage, isA(GlobalBeginResponse.class));
             } else if (requestPackage instanceof GlobalCommitRequest) {
-                assertThat(responsePackage, instanceOf(GlobalCommitResponse.class));
+                assertThat(responsePackage, isA(GlobalCommitResponse.class));
             } else if (requestPackage instanceof GlobalRollbackRequest) {
-                assertThat(responsePackage, instanceOf(GlobalRollbackResponse.class));
+                assertThat(responsePackage, isA(GlobalRollbackResponse.class));
             } else {
                 fail("Request package type error");
             }

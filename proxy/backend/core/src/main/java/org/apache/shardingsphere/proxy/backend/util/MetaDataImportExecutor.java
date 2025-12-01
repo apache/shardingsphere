@@ -26,9 +26,11 @@ import org.apache.shardingsphere.proxy.backend.config.yaml.YamlProxyDatabaseConf
 import org.apache.shardingsphere.proxy.backend.config.yaml.YamlProxyServerConfiguration;
 import org.apache.shardingsphere.proxy.backend.distsql.export.ExportedMetaData;
 
-import java.sql.SQLException;
 import java.util.Collection;
-import java.util.LinkedList;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.stream.Collectors;
 
 /**
  * Metadata import executor.
@@ -44,23 +46,22 @@ public final class MetaDataImportExecutor {
     
     public MetaDataImportExecutor(final ContextManager contextManager) {
         this.contextManager = contextManager;
-        this.databaseConfigImportExecutor = new YamlDatabaseConfigurationImportExecutor(contextManager);
+        databaseConfigImportExecutor = new YamlDatabaseConfigurationImportExecutor(contextManager);
     }
     
     /**
      * Import cluster configurations.
      *
      * @param exportedMetaData exported metadata
-     * @throws SQLException SQL exception
      */
-    public void importClusterConfigurations(final ExportedMetaData exportedMetaData) throws SQLException {
-        Collection<YamlProxyDatabaseConfiguration> databaseConfigs = getYamlProxyDatabaseConfigurations(exportedMetaData);
-        importServerConfiguration(exportedMetaData);
-        importDatabaseConfigurations(databaseConfigs);
+    public void importClusterConfigurations(final ExportedMetaData exportedMetaData) {
+        Map<String, YamlProxyDatabaseConfiguration> databaseConfigs = getYamlProxyDatabaseConfigurations(exportedMetaData);
+        YamlProxyServerConfiguration yamlServerConfig = getYamlServerConfig(exportedMetaData);
+        importServerConfiguration(yamlServerConfig);
+        importDatabaseConfigurations(databaseConfigs.values());
     }
     
-    private void importServerConfiguration(final ExportedMetaData exportedMetaData) throws SQLException {
-        YamlProxyServerConfiguration yamlServerConfig = YamlEngine.unmarshal(exportedMetaData.getRules() + System.lineSeparator() + exportedMetaData.getProps(), YamlProxyServerConfiguration.class);
+    private void importServerConfiguration(final YamlProxyServerConfiguration yamlServerConfig) {
         if (null == yamlServerConfig) {
             return;
         }
@@ -68,32 +69,32 @@ public final class MetaDataImportExecutor {
         importProps(yamlServerConfig);
     }
     
-    private void importGlobalRules(final YamlProxyServerConfiguration yamlServerConfig) throws SQLException {
+    private void importGlobalRules(final YamlProxyServerConfiguration yamlServerConfig) {
         Collection<RuleConfiguration> rules = ruleConfigSwapperEngine.swapToRuleConfigurations(yamlServerConfig.getRules());
         for (RuleConfiguration each : rules) {
-            contextManager.getPersistServiceFacade().getMetaDataManagerPersistService().alterGlobalRuleConfiguration(each);
+            contextManager.getPersistServiceFacade().getModeFacade().getMetaDataManagerService().alterGlobalRuleConfiguration(each);
         }
     }
     
-    private void importProps(final YamlProxyServerConfiguration yamlServerConfig) throws SQLException {
-        contextManager.getPersistServiceFacade().getMetaDataManagerPersistService().alterProperties(yamlServerConfig.getProps());
+    private void importProps(final YamlProxyServerConfiguration yamlServerConfig) {
+        contextManager.getPersistServiceFacade().getModeFacade().getMetaDataManagerService().alterProperties(yamlServerConfig.getProps());
     }
     
-    private Collection<YamlProxyDatabaseConfiguration> getYamlProxyDatabaseConfigurations(final ExportedMetaData exportedMetaData) {
-        Collection<YamlProxyDatabaseConfiguration> result = new LinkedList<>();
-        for (String each : exportedMetaData.getDatabases().values()) {
-            result.add(YamlEngine.unmarshal(each, YamlProxyDatabaseConfiguration.class));
-        }
-        return result;
+    private Map<String, YamlProxyDatabaseConfiguration> getYamlProxyDatabaseConfigurations(final ExportedMetaData exportedMetaData) {
+        return exportedMetaData.getDatabases().entrySet().stream().collect(
+                Collectors.toMap(Entry::getKey, entry -> YamlEngine.unmarshal(entry.getValue(), YamlProxyDatabaseConfiguration.class), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
+    }
+    
+    private YamlProxyServerConfiguration getYamlServerConfig(final ExportedMetaData exportedMetaData) {
+        return YamlEngine.unmarshal(exportedMetaData.getRules() + System.lineSeparator() + exportedMetaData.getProps(), YamlProxyServerConfiguration.class);
     }
     
     /**
      * Import database configurations.
      *
      * @param databaseConfigs YAML proxy database configuration
-     * @throws SQLException SQL exception
      */
-    public void importDatabaseConfigurations(final Collection<YamlProxyDatabaseConfiguration> databaseConfigs) throws SQLException {
+    public void importDatabaseConfigurations(final Collection<YamlProxyDatabaseConfiguration> databaseConfigs) {
         for (YamlProxyDatabaseConfiguration each : databaseConfigs) {
             databaseConfigImportExecutor.importDatabaseConfiguration(each);
         }

@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.transaction;
 
-import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
-import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.transaction.api.TransactionType;
 import org.apache.shardingsphere.transaction.exception.TransactionManagerNotFoundException;
@@ -49,9 +49,10 @@ public final class ShardingSphereTransactionManagerEngine {
      * @param providerType transaction manager provider type
      */
     public void init(final Map<String, DatabaseType> databaseTypes, final Map<String, DataSource> dataSourceMap, final String providerType) {
-        if (TransactionType.LOCAL != transactionType) {
-            distributedTransactionManager.init(databaseTypes, dataSourceMap, providerType);
+        if (TransactionType.LOCAL == transactionType) {
+            return;
         }
+        distributedTransactionManager.init(databaseTypes, dataSourceMap, providerType);
     }
     
     /**
@@ -71,8 +72,9 @@ public final class ShardingSphereTransactionManagerEngine {
      * Close transaction manager.
      */
     public void close() {
-        if (TransactionType.LOCAL != transactionType) {
-            distributedTransactionManager.close();
+        if (TransactionType.LOCAL == transactionType) {
+            return;
         }
+        distributedTransactionManager.close();
     }
 }

@@ -30,8 +30,8 @@ import org.apache.seata.tm.TMClient;
 import org.apache.seata.tm.api.GlobalTransaction;
 import org.apache.seata.tm.api.GlobalTransactionContext;
 import org.apache.seata.tm.api.GlobalTransactionRole;
-import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
-import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.transaction.api.TransactionType;
 import org.apache.shardingsphere.transaction.base.seata.at.exception.SeataATApplicationIDNotFoundException;
 import org.apache.shardingsphere.transaction.base.seata.at.exception.SeataATDisabledException;
@@ -155,8 +155,8 @@ public final class SeataATShardingSphereTransactionManager implements ShardingSp
     public void close() {
         dataSourceMap.clear();
         SeataTransactionHolder.clear();
-        RmNettyRemotingClient.getInstance().destroy();
         TmNettyRemotingClient.getInstance().destroy();
+        RmNettyRemotingClient.getInstance().destroy();
         ConfigurationFactory.reload();
     }
     

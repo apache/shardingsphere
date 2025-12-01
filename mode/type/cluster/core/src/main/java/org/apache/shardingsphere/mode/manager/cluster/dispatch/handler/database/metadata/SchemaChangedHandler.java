@@ -17,42 +17,57 @@
 
 package org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.database.metadata;
 
+import org.apache.shardingsphere.mode.event.DataChangedEvent;
 import org.apache.shardingsphere.mode.manager.ContextManager;
-import org.apache.shardingsphere.mode.metadata.refresher.ShardingSphereStatisticsRefreshEngine;
+import org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.database.DatabaseNodeValueChangedHandler;
+import org.apache.shardingsphere.mode.manager.cluster.statistics.StatisticsRefreshEngine;
+import org.apache.shardingsphere.mode.node.path.NodePath;
+import org.apache.shardingsphere.mode.node.path.engine.searcher.NodePathPattern;
+import org.apache.shardingsphere.mode.node.path.engine.searcher.NodePathSearcher;
+import org.apache.shardingsphere.mode.node.path.type.database.metadata.schema.SchemaMetaDataNodePath;
 
 /**
  * Schema changed handler.
  */
-public final class SchemaChangedHandler {
+public final class SchemaChangedHandler implements DatabaseNodeValueChangedHandler {
     
     private final ContextManager contextManager;
     
-    private final ShardingSphereStatisticsRefreshEngine statisticsRefreshEngine;
+    private final StatisticsRefreshEngine statisticsRefreshEngine;
     
     public SchemaChangedHandler(final ContextManager contextManager) {
         this.contextManager = contextManager;
-        statisticsRefreshEngine = new ShardingSphereStatisticsRefreshEngine(contextManager);
+        statisticsRefreshEngine = new StatisticsRefreshEngine(contextManager);
     }
     
-    /**
-     * Handle schema created.
-     *
-     * @param databaseName database name
-     * @param schemaName schema name
-     */
-    public void handleCreated(final String databaseName, final String schemaName) {
-        contextManager.getMetaDataContextManager().getSchemaMetaDataManager().addSchema(databaseName, schemaName);
+    @Override
+    public NodePath getSubscribedNodePath(final String databaseName) {
+        return new SchemaMetaDataNodePath(databaseName, NodePathPattern.IDENTIFIER);
+    }
+    
+    @Override
+    public void handle(final String databaseName, final DataChangedEvent event) {
+        String schemaName = NodePathSearcher.get(event.getKey(), SchemaMetaDataNodePath.createSchemaSearchCriteria(databaseName, false));
+        switch (event.getType()) {
+            case ADDED:
+            case UPDATED:
+                handleCreated(databaseName, schemaName);
+                break;
+            case DELETED:
+                handleDropped(databaseName, schemaName);
+                break;
+            default:
+                break;
+        }
+    }
+    
+    private void handleCreated(final String databaseName, final String schemaName) {
+        contextManager.getMetaDataContextManager().getDatabaseMetaDataManager().addSchema(databaseName, schemaName);
         statisticsRefreshEngine.asyncRefresh();
     }
     
-    /**
-     * Handle schema dropped.
-     *
-     * @param databaseName database name
-     * @param schemaName schema name
-     */
-    public void handleDropped(final String databaseName, final String schemaName) {
-        contextManager.getMetaDataContextManager().getSchemaMetaDataManager().dropSchema(databaseName, schemaName);
+    private void handleDropped(final String databaseName, final String schemaName) {
+        contextManager.getMetaDataContextManager().getDatabaseMetaDataManager().dropSchema(databaseName, schemaName);
         statisticsRefreshEngine.asyncRefresh();
     }
 }

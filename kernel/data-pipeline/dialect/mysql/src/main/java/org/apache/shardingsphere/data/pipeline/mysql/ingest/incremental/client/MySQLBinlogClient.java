@@ -40,18 +40,18 @@ import org.apache.shardingsphere.data.pipeline.mysql.ingest.incremental.client.n
 import org.apache.shardingsphere.data.pipeline.mysql.ingest.incremental.client.netty.MySQLCommandPacketDecoder;
 import org.apache.shardingsphere.data.pipeline.mysql.ingest.incremental.client.netty.MySQLNegotiateHandler;
 import org.apache.shardingsphere.data.pipeline.mysql.ingest.incremental.client.netty.MySQLNegotiatePackageDecoder;
-import org.apache.shardingsphere.db.protocol.codec.PacketCodec;
-import org.apache.shardingsphere.db.protocol.mysql.codec.MySQLPacketCodecEngine;
-import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLConstants;
-import org.apache.shardingsphere.db.protocol.mysql.netty.MySQLSequenceIdInboundHandler;
-import org.apache.shardingsphere.db.protocol.mysql.packet.command.binlog.MySQLComBinlogDumpCommandPacket;
-import org.apache.shardingsphere.db.protocol.mysql.packet.command.binlog.MySQLComRegisterSlaveCommandPacket;
-import org.apache.shardingsphere.db.protocol.mysql.packet.command.query.text.query.MySQLComQueryPacket;
-import org.apache.shardingsphere.db.protocol.mysql.packet.generic.MySQLErrPacket;
-import org.apache.shardingsphere.db.protocol.mysql.packet.generic.MySQLOKPacket;
-import org.apache.shardingsphere.db.protocol.netty.ChannelAttrInitializer;
+import org.apache.shardingsphere.database.protocol.codec.PacketCodec;
+import org.apache.shardingsphere.database.protocol.mysql.codec.MySQLPacketCodecEngine;
+import org.apache.shardingsphere.database.protocol.mysql.constant.MySQLConstants;
+import org.apache.shardingsphere.database.protocol.mysql.netty.MySQLSequenceIdInboundHandler;
+import org.apache.shardingsphere.database.protocol.mysql.packet.command.binlog.MySQLComBinlogDumpCommandPacket;
+import org.apache.shardingsphere.database.protocol.mysql.packet.command.binlog.MySQLComRegisterSlaveCommandPacket;
+import org.apache.shardingsphere.database.protocol.mysql.packet.command.query.text.query.MySQLComQueryPacket;
+import org.apache.shardingsphere.database.protocol.mysql.packet.generic.MySQLErrPacket;
+import org.apache.shardingsphere.database.protocol.mysql.packet.generic.MySQLOKPacket;
 import org.apache.shardingsphere.infra.exception.generic.UnsupportedSQLOperationException;
 import org.apache.shardingsphere.infra.util.json.JsonUtils;
+import org.apache.shardingsphere.proxy.frontend.netty.ChannelAttrInitializer;
 
 import java.net.InetSocketAddress;
 import java.util.Collections;
@@ -176,6 +176,7 @@ public final class MySQLBinlogClient {
      */
     public synchronized void subscribe(final String binlogFileName, final long binlogPosition) {
         initDumpConnectSession();
+        configureHeartbeat();
         registerSlave();
         dumpBinlog(binlogFileName, binlogPosition, queryChecksumLength());
         log.info("subscribe binlog file: {}, position: {}", binlogFileName, binlogPosition);
@@ -185,6 +186,10 @@ public final class MySQLBinlogClient {
         if (serverVersion.greaterThanOrEqualTo(5, 6, 0)) {
             execute("SET @MASTER_BINLOG_CHECKSUM= @@GLOBAL.BINLOG_CHECKSUM");
         }
+    }
+    
+    private void configureHeartbeat() {
+        execute("SET @master_heartbeat_period=" + TimeUnit.SECONDS.toNanos(15L));
     }
     
     private void registerSlave() {
@@ -285,7 +290,7 @@ public final class MySQLBinlogClient {
         return Optional.of(future);
     }
     
-    private final class MySQLCommandResponseHandler extends ChannelInboundHandlerAdapter {
+    private class MySQLCommandResponseHandler extends ChannelInboundHandlerAdapter {
         
         @Override
         public void channelRead(final ChannelHandlerContext ctx, final Object msg) {
@@ -303,7 +308,7 @@ public final class MySQLBinlogClient {
         }
     }
     
-    private final class MySQLBinlogEventHandler extends ChannelInboundHandlerAdapter {
+    private class MySQLBinlogEventHandler extends ChannelInboundHandlerAdapter {
         
         private final AtomicReference<MySQLBaseBinlogEvent> lastBinlogEvent;
         
@@ -367,7 +372,7 @@ public final class MySQLBinlogClient {
                 } catch (final RuntimeException ex) {
                     // CHECKSTYLE:ON
                     log.error("Reconnect failed, reconnect times: {}, lastBinlogEvent: {}", reconnectTimes, JsonUtils.toJsonString(lastBinlogEvent.get()), ex);
-                    this.wait(1000L << reconnectTimes);
+                    wait(1000L << reconnectTimes);
                 }
             }
         }

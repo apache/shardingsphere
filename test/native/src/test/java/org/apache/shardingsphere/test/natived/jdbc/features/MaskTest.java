@@ -19,32 +19,31 @@ package org.apache.shardingsphere.test.natived.jdbc.features;
 
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
-import org.apache.shardingsphere.driver.jdbc.core.connection.ShardingSphereConnection;
 import org.apache.shardingsphere.test.natived.commons.entity.Address;
 import org.apache.shardingsphere.test.natived.commons.entity.Order;
 import org.apache.shardingsphere.test.natived.commons.entity.OrderItem;
 import org.apache.shardingsphere.test.natived.commons.repository.AddressRepository;
 import org.apache.shardingsphere.test.natived.commons.repository.OrderItemRepository;
 import org.apache.shardingsphere.test.natived.commons.repository.OrderRepository;
-import org.junit.jupiter.api.AfterAll;
+import org.apache.shardingsphere.test.natived.commons.util.ResourceUtils;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 
 import javax.sql.DataSource;
-import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.LongStream;
 
-import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class MaskTest {
     
-    private static DataSource logicDataSource;
+    private DataSource logicDataSource;
     
     private OrderRepository orderRepository;
     
@@ -52,11 +51,9 @@ class MaskTest {
     
     private AddressRepository addressRepository;
     
-    @AfterAll
-    static void afterAll() throws SQLException {
-        try (Connection connection = logicDataSource.getConnection()) {
-            connection.unwrap(ShardingSphereConnection.class).getContextManager().close();
-        }
+    @AfterEach
+    void afterEach() throws SQLException {
+        ResourceUtils.closeJdbcDataSource(logicDataSource);
     }
     
     @Test
@@ -84,16 +81,13 @@ class MaskTest {
     
     private void processSuccess() throws SQLException {
         final Collection<Long> orderIds = insertData();
-        assertThat(orderRepository.selectAll(),
-                equalTo(IntStream.range(1, 11).mapToObj(each -> new Order(each, each % 2, each, each, "INSERT_TEST")).collect(Collectors.toList())));
-        assertThat(orderItemRepository.selectAll(),
-                equalTo(IntStream.range(1, 11).mapToObj(each -> new OrderItem(each, each, each, "138****0001", "INSERT_TEST")).collect(Collectors.toList())));
-        assertThat(addressRepository.selectAll(),
-                equalTo(LongStream.range(1L, 11L).mapToObj(each -> new Address(each, "address_test_" + each)).collect(Collectors.toList())));
+        assertThat(orderRepository.selectAll(), is(IntStream.range(1, 11).mapToObj(each -> new Order(each, each % 2, each, each, "INSERT_TEST")).collect(Collectors.toList())));
+        assertThat(orderItemRepository.selectAll(), is(IntStream.range(1, 11).mapToObj(each -> new OrderItem(each, each, each, "138****0001", "INSERT_TEST")).collect(Collectors.toList())));
+        assertThat(addressRepository.selectAll(), is(LongStream.range(1L, 11L).mapToObj(each -> new Address(each, "address_test_" + each)).collect(Collectors.toList())));
         deleteData(orderIds);
-        assertThat(orderRepository.selectAll(), equalTo(Collections.emptyList()));
-        assertThat(orderItemRepository.selectAll(), equalTo(Collections.emptyList()));
-        assertThat(addressRepository.selectAll(), equalTo(Collections.emptyList()));
+        assertTrue(orderRepository.selectAll().isEmpty());
+        assertTrue(orderItemRepository.selectAll().isEmpty());
+        assertTrue(addressRepository.selectAll().isEmpty());
     }
     
     private Collection<Long> insertData() throws SQLException {

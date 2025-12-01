@@ -17,10 +17,7 @@
   -->
 
 <e2e-test-cases>
-    <test-case sql="GRANT select, update, insert, delete on t_order to default_user" db-types="Oracle,SQLServer" />
-    <test-case sql="GRANT select, update, insert, delete on t_order to default_user with GRANT option" db-types="Oracle,SQLServer" />
-    <test-case sql="GRANT role2 to role3" db-types="Oracle,PostgreSQL,SQLServer" />
-    <test-case sql="GRANT ADVISOR, ALTER DATABASE to user_dev with admin option" db-types="Oracle" />
+    <test-case sql="GRANT role2 to role3" db-types="PostgreSQL" />
     <test-case sql="GRANT ALL ON sharding_db.* TO 'user_dev'@'localhost'" db-types="MySQL" />
     <test-case sql="GRANT ALL ON t_order TO 'user_dev'@'localhost'" db-types="MySQL" />
     <test-case sql="GRANT ALL ON sharding_db.t_order TO 'user_dev'@'localhost'" db-types="MySQL" />

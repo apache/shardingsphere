@@ -21,7 +21,7 @@
     <parent>
         <groupId>org.apache.shardingsphere</groupId>
         <artifactId>shardingsphere-cluster-mode</artifactId>
-        <version>5.5.2-SNAPSHOT</version>
+        <version>5.5.3-SNAPSHOT</version>
     </parent>
     <artifactId>shardingsphere-cluster-mode-repository</artifactId>
     <packaging>pom</packaging>
@@ -29,6 +29,7 @@
     
     <modules>
         <module>api</module>
+        <module>core</module>
         <module>provider</module>
     </modules>
 </project>

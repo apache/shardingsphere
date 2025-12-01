@@ -20,12 +20,12 @@ package org.apache.shardingsphere.data.pipeline.core.checker;
 import org.apache.shardingsphere.data.pipeline.core.exception.job.PrepareJobWithTargetTableNotEmptyException;
 import org.apache.shardingsphere.data.pipeline.core.importer.ImporterConfiguration;
 import org.apache.shardingsphere.data.pipeline.core.sqlbuilder.sql.PipelinePrepareSQLBuilder;
-import org.apache.shardingsphere.infra.database.core.checker.DialectDatabasePrivilegeChecker;
-import org.apache.shardingsphere.infra.database.core.checker.PrivilegeCheckType;
-import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPILoader;
-import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
-import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
-import org.apache.shardingsphere.infra.exception.core.external.sql.type.wrapper.SQLWrapperException;
+import org.apache.shardingsphere.database.connector.core.checker.DialectDatabasePrivilegeChecker;
+import org.apache.shardingsphere.database.connector.core.checker.PrivilegeCheckType;
+import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoader;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
+import org.apache.shardingsphere.infra.exception.external.sql.type.wrapper.SQLWrapperException;
 import org.apache.shardingsphere.infra.metadata.database.schema.QualifiedTable;
 
 import javax.sql.DataSource;
@@ -90,7 +90,7 @@ public final class PipelineDataSourceCheckEngine {
     private void checkEmptyTable(final Collection<DataSource> dataSources, final ImporterConfiguration importerConfig) {
         try {
             for (DataSource each : dataSources) {
-                for (QualifiedTable qualifiedTable : importerConfig.getQualifiedTables()) {
+                for (QualifiedTable qualifiedTable : importerConfig.getTableAndSchemaNameMapper().getQualifiedTables()) {
                     ShardingSpherePreconditions.checkState(checkEmptyTable(each, qualifiedTable), () -> new PrepareJobWithTargetTableNotEmptyException(qualifiedTable.getTableName()));
                 }
             }

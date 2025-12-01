@@ -19,11 +19,8 @@ package org.apache.shardingsphere.distsql.handler.engine.update.rdl.rule.engine.
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.distsql.handler.engine.update.rdl.rule.spi.global.GlobalRuleDefinitionExecutor;
-import org.apache.shardingsphere.distsql.statement.rdl.rule.global.GlobalRuleDefinitionStatement;
-import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
+import org.apache.shardingsphere.distsql.statement.type.rdl.rule.global.GlobalRuleDefinitionStatement;
 import org.apache.shardingsphere.mode.manager.ContextManager;
-
-import java.sql.SQLException;
 
 /**
  * Global rule definition execute engine.
@@ -40,14 +37,10 @@ public final class GlobalRuleDefinitionExecuteEngine {
     
     /**
      * Execute update.
-     *
-     * @throws SQLException SQL exception
      */
     @SuppressWarnings("unchecked")
-    public void executeUpdate() throws SQLException {
-        ShardingSphereRule rule = contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getSingleRule(executor.getRuleClass());
-        executor.setRule(rule);
+    public void executeUpdate() {
         executor.checkBeforeUpdate(sqlStatement);
-        contextManager.getPersistServiceFacade().getMetaDataManagerPersistService().alterGlobalRuleConfiguration(executor.buildToBeAlteredRuleConfiguration(sqlStatement));
+        contextManager.getPersistServiceFacade().getModeFacade().getMetaDataManagerService().alterGlobalRuleConfiguration(executor.buildToBeAlteredRuleConfiguration(sqlStatement));
     }
 }

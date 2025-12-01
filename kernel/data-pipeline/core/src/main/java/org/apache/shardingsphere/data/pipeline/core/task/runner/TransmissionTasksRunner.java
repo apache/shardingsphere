@@ -33,7 +33,7 @@ import org.apache.shardingsphere.data.pipeline.core.job.progress.persist.Pipelin
 import org.apache.shardingsphere.data.pipeline.core.job.service.PipelineJobItemManager;
 import org.apache.shardingsphere.data.pipeline.core.job.type.PipelineJobType;
 import org.apache.shardingsphere.data.pipeline.core.task.PipelineTask;
-import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
+import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 
 import java.util.Collection;
@@ -54,7 +54,7 @@ public final class TransmissionTasksRunner implements PipelineTasksRunner {
     
     private final Collection<PipelineTask> incrementalTasks;
     
-    private final PipelineJobType jobType;
+    private final PipelineJobType<?> jobType;
     
     private final PipelineJobItemManager<TransmissionJobItemProgress> jobItemManager;
     
@@ -63,7 +63,7 @@ public final class TransmissionTasksRunner implements PipelineTasksRunner {
         inventoryTasks = jobItemContext.getInventoryTasks();
         incrementalTasks = jobItemContext.getIncrementalTasks();
         jobType = TypedSPILoader.getService(PipelineJobType.class, PipelineJobIdUtils.parseJobType(jobItemContext.getJobId()).getType());
-        jobItemManager = new PipelineJobItemManager<>(jobType.getYamlJobItemProgressSwapper());
+        jobItemManager = new PipelineJobItemManager<>(jobType.getOption().getYamlJobItemProgressSwapper());
     }
     
     @Override
@@ -79,7 +79,7 @@ public final class TransmissionTasksRunner implements PipelineTasksRunner {
     }
     
     private synchronized void executeInventoryTasks() {
-        updateJobItemStatus(JobStatus.EXECUTE_INVENTORY_TASK);
+        updateLocalAndRemoteJobItemStatusForInventory();
         Collection<CompletableFuture<?>> futures = new LinkedList<>();
         for (PipelineTask each : inventoryTasks) {
             if (each.getTaskProgress().getPosition() instanceof IngestFinishedPosition) {
@@ -88,6 +88,11 @@ public final class TransmissionTasksRunner implements PipelineTasksRunner {
             futures.addAll(each.start());
         }
         PipelineExecuteEngine.trigger(futures, new InventoryTaskExecuteCallback());
+    }
+    
+    private void updateLocalAndRemoteJobItemStatusForInventory() {
+        jobItemContext.setStatus(JobStatus.EXECUTE_INVENTORY_TASK);
+        jobItemManager.updateStatus(jobItemContext.getJobId(), jobItemContext.getShardingItem(), JobStatus.EXECUTE_INVENTORY_TASK);
     }
     
     private synchronized void executeIncrementalTasks() {
@@ -100,7 +105,6 @@ public final class TransmissionTasksRunner implements PipelineTasksRunner {
             log.info("Incremental tasks had already run, ignore.");
             return;
         }
-        updateJobItemStatus(JobStatus.EXECUTE_INCREMENTAL_TASK);
         Collection<CompletableFuture<?>> futures = new LinkedList<>();
         for (PipelineTask each : incrementalTasks) {
             if (each.getTaskProgress().getPosition() instanceof IngestFinishedPosition) {
@@ -108,12 +112,13 @@ public final class TransmissionTasksRunner implements PipelineTasksRunner {
             }
             futures.addAll(each.start());
         }
+        updateLocalAndRemoteJobItemProgressForIncremental();
         PipelineExecuteEngine.trigger(futures, new IncrementalExecuteCallback());
     }
     
-    private void updateJobItemStatus(final JobStatus jobStatus) {
-        jobItemContext.setStatus(jobStatus);
-        jobItemManager.updateStatus(jobItemContext.getJobId(), jobItemContext.getShardingItem(), jobStatus);
+    private void updateLocalAndRemoteJobItemProgressForIncremental() {
+        jobItemContext.setStatus(JobStatus.EXECUTE_INCREMENTAL_TASK);
+        jobItemManager.updateProgress(jobItemContext);
     }
     
     @Override
@@ -123,7 +128,7 @@ public final class TransmissionTasksRunner implements PipelineTasksRunner {
         incrementalTasks.forEach(PipelineTask::stop);
     }
     
-    private final class InventoryTaskExecuteCallback implements ExecuteCallback {
+    private class InventoryTaskExecuteCallback implements ExecuteCallback {
         
         @Override
         public void onSuccess() {

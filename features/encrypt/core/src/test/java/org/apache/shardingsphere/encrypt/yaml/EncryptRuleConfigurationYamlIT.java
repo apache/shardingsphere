@@ -25,10 +25,10 @@ import org.apache.shardingsphere.encrypt.yaml.config.YamlEncryptRuleConfiguratio
 import org.apache.shardingsphere.encrypt.yaml.config.rule.YamlEncryptTableRuleConfiguration;
 import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.algorithm.core.yaml.YamlAlgorithmConfiguration;
+import org.apache.shardingsphere.infra.util.props.PropertiesBuilder;
+import org.apache.shardingsphere.infra.util.props.PropertiesBuilder.Property;
 import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlRuleConfiguration;
 import org.apache.shardingsphere.test.it.yaml.YamlRuleConfigurationIT;
-import org.apache.shardingsphere.test.util.PropertiesBuilder;
-import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -45,15 +45,22 @@ class EncryptRuleConfigurationYamlIT extends YamlRuleConfigurationIT {
     }
     
     private static EncryptRuleConfiguration getExpectedRuleConfiguration() {
+        return new EncryptRuleConfiguration(getEncryptTableRuleConfigurations(), createAlgorithmConfigurationMap());
+    }
+    
+    private static Collection<EncryptTableRuleConfiguration> getEncryptTableRuleConfigurations() {
         EncryptColumnRuleConfiguration encryptColumnRuleConfig = new EncryptColumnRuleConfiguration("username",
                 new EncryptColumnItemRuleConfiguration("username_cipher", "aes_encryptor"));
         encryptColumnRuleConfig.setAssistedQuery(new EncryptColumnItemRuleConfiguration("assisted_query_username", "assisted_encryptor"));
         EncryptTableRuleConfiguration tableRuleConfig = new EncryptTableRuleConfiguration("t_user", Collections.singletonList(encryptColumnRuleConfig));
-        Collection<EncryptTableRuleConfiguration> tables = Collections.singletonList(tableRuleConfig);
-        Map<String, AlgorithmConfiguration> encryptors = new LinkedHashMap<>(2, 1F);
-        encryptors.put("aes_encryptor", new AlgorithmConfiguration("AES", PropertiesBuilder.build(new Property("aes-key-value", "123456abc"), new Property("digest-algorithm-name", "SHA-1"))));
-        encryptors.put("assisted_encryptor", new AlgorithmConfiguration("AES", PropertiesBuilder.build(new Property("aes-key-value", "123456abc"), new Property("digest-algorithm-name", "SHA-1"))));
-        return new EncryptRuleConfiguration(tables, encryptors);
+        return Collections.singletonList(tableRuleConfig);
+    }
+    
+    private static Map<String, AlgorithmConfiguration> createAlgorithmConfigurationMap() {
+        Map<String, AlgorithmConfiguration> result = new LinkedHashMap<>(2, 1F);
+        result.put("aes_encryptor", new AlgorithmConfiguration("AES", PropertiesBuilder.build(new Property("aes-key-value", "123456abc"), new Property("digest-algorithm-name", "SHA-1"))));
+        result.put("assisted_encryptor", new AlgorithmConfiguration("AES", PropertiesBuilder.build(new Property("aes-key-value", "123456abc"), new Property("digest-algorithm-name", "SHA-1"))));
+        return result;
     }
     
     @Override

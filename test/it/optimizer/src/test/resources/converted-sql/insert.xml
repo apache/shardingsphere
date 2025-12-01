@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Licensed to the Apache Software Foundation (ASF) under one or more
+  ~ contributor license agreements.  See the NOTICE file distributed with
+  ~ this work for additional information regarding copyright ownership.
+  ~ The ASF licenses this file to You under the Apache License, Version 2.0
+  ~ (the "License"); you may not use this file except in compliance with
+  ~ the License.  You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<sql-node-converter-test-cases>
+    <test-cases sql-case-id="insert_into_values" expected-sql="INSERT INTO `test_nested` VALUES (1)" db-types="MySQL" sql-case-types="LITERAL" />
+    <test-cases sql-case-id="insert_with_all_placeholders" expected-sql="INSERT INTO `t_order` (`order_id`, `user_id`, `status`) VALUES (?, ?, ?)" db-types="MySQL" sql-case-types="PLACEHOLDER" />
+    <test-cases sql-case-id="insert_with_now_function" expected-sql="INSERT INTO `t_order_item` (`item_id`, `order_id`, `user_id`, `status`, `creation_date`) VALUES (?, ?, ?, 'insert', `now`())" db-types="MySQL" sql-case-types="PLACEHOLDER" />
+    <test-cases sql-case-id="insert_without_parameters" expected-sql="INSERT INTO `t_order` (`order_id`, `user_id`, `status`) VALUES (1, 1, 'insert')" db-types="MySQL" sql-case-types="LITERAL" />
+    <test-cases sql-case-id="insert_with_special_characters" expected-sql="INSERT INTO `t_order` (`order_id`, `user_id`, `status`) VALUES (1, 1, 'insert')" db-types="MySQL" sql-case-types="LITERAL" />
+    <test-cases sql-case-id="insert_with_special_syntax" expected-sql="INSERT INTO &quot;t_order&quot; (&quot;order_id&quot;, &quot;user_id&quot;, &quot;status&quot;) VALUES (1, 1, 'insert')" db-types="PostgreSQL,openGauss" sql-case-types="LITERAL" />
+    <test-cases sql-case-id="insert_with_all_placeholders_for_table_identifier" expected-sql="INSERT INTO &quot;t_order&quot; (&quot;t_order&quot;.&quot;order_id&quot;, &quot;t_order&quot;.&quot;user_id&quot;, &quot;t_order&quot;.&quot;status&quot;) VALUES (?, ?, ?)" db-types="PostgreSQL,openGauss,Oracle" sql-case-types="PLACEHOLDER" />
+    <test-cases sql-case-id="insert_with_all_placeholders_for_table_identifier" expected-sql="INSERT INTO `t_order` (`t_order`.`order_id`, `t_order`.`user_id`, `t_order`.`status`) VALUES (?, ?, ?)" db-types="MySQL" sql-case-types="PLACEHOLDER" />
+    <test-cases sql-case-id="insert_without_columns_with_all_placeholders" expected-sql="INSERT INTO `t_order` VALUES (?, ?, ?)" db-types="MySQL" sql-case-types="PLACEHOLDER" />
+    <test-cases sql-case-id="insert_without_columns_with_all_placeholders" expected-sql="INSERT INTO &quot;t_order&quot; VALUES (?, ?, ?)" db-types="PostgreSQL,openGauss,Oracle" sql-case-types="PLACEHOLDER" />
+    <test-cases sql-case-id="insert_with_partial_placeholders" expected-sql="INSERT INTO `t_order` (`order_id`, `user_id`, `status`) VALUES (?, ?, 'insert')" db-types="MySQL" sql-case-types="PLACEHOLDER" />
+    <test-cases sql-case-id="insert_with_partial_placeholders" expected-sql="INSERT INTO &quot;t_order&quot; (&quot;order_id&quot;, &quot;user_id&quot;, &quot;status&quot;) VALUES (?, ?, 'insert')" db-types="PostgreSQL,Oracle" sql-case-types="PLACEHOLDER" />
+    <test-cases sql-case-id="insert_with_generate_key_column" expected-sql="INSERT INTO &quot;t_order_item&quot; (&quot;item_id&quot;, &quot;order_id&quot;, &quot;user_id&quot;, &quot;status&quot;, &quot;creation_date&quot;) VALUES (?, ?, ?, 'insert', '2017-08-08')" db-types="openGauss" sql-case-types="PLACEHOLDER" />
+    <test-cases sql-case-id="insert_without_generate_key_column" expected-sql="INSERT INTO `t_order_item` (`order_id`, `user_id`, `status`, `creation_date`) VALUES (?, ?, 'insert', '2017-08-08')" db-types="MySQL" sql-case-types="PLACEHOLDER" />
+    <test-cases sql-case-id="insert_without_generate_key_column" expected-sql="INSERT INTO &quot;t_order_item&quot; (&quot;order_id&quot;, &quot;user_id&quot;, &quot;status&quot;, &quot;creation_date&quot;) VALUES (?, ?, 'insert', '2017-08-08')" db-types="PostgreSQL,openGauss,Oracle" sql-case-types="PLACEHOLDER" />
+    <test-cases sql-case-id="insert_without_columns_and_with_generate_key_column" expected-sql="INSERT INTO `t_order_item` VALUES (?, ?, ?, 'insert', '2017-08-08')" db-types="MySQL" sql-case-types="PLACEHOLDER" />
+    <test-cases sql-case-id="insert_without_columns_and_with_generate_key_column" expected-sql="INSERT INTO &quot;t_order_item&quot; VALUES (?, ?, ?, 'insert', '2017-08-08')" db-types="PostgreSQL,openGauss,Oracle" sql-case-types="PLACEHOLDER" />
+    <test-cases sql-case-id="insert_without_columns_and_without_generate_key_column" expected-sql="INSERT INTO `t_order_item` VALUES (?, ?, 'insert', '2017-08-08')" db-types="MySQL" sql-case-types="PLACEHOLDER" />
+    <test-cases sql-case-id="insert_without_columns_and_without_generate_key_column" expected-sql="INSERT INTO &quot;t_order_item&quot; VALUES (?, ?, 'insert', '2017-08-08')" db-types="PostgreSQL,openGauss,Oracle" sql-case-types="PLACEHOLDER" />
+    <test-cases sql-case-id="insert_with_batch" expected-sql="INSERT INTO `t_order` (`order_id`, `user_id`, `status`) VALUES (?, ?, ?, ?, ?, ?)" db-types="MySQL" sql-case-types="PLACEHOLDER" />
+    <test-cases sql-case-id="insert_with_batch" expected-sql="INSERT INTO &quot;t_order&quot; (&quot;order_id&quot;, &quot;user_id&quot;, &quot;status&quot;) VALUES (?, ?, ?, ?, ?, ?)" db-types="PostgreSQL,openGauss" sql-case-types="PLACEHOLDER" />
+    <test-cases sql-case-id="insert_with_batch_and_irregular_parameters" expected-sql="INSERT INTO &quot;t_order&quot; (&quot;order_id&quot;, &quot;user_id&quot;, &quot;status&quot;) VALUES (?, 1, 'insert', ?, ?, ?)" db-types="PostgreSQL,openGauss" sql-case-types="PLACEHOLDER" />
+    <test-cases sql-case-id="insert_with_batch_and_irregular_parameters" expected-sql="INSERT INTO `t_order` (`order_id`, `user_id`, `status`) VALUES (?, 1, 'insert', ?, ?, ?)" db-types="MySQL" sql-case-types="PLACEHOLDER" />
+    <test-cases sql-case-id="insert_with_batch_and_composite_expression" expected-sql="INSERT INTO `t_order` (`order_id`, `user_id`, `status`) VALUES (?, ?, `SUBSTR`(?, 1), ?, ?, `SUBSTR`(?, 1))" db-types="H2,MySQL" sql-case-types="PLACEHOLDER" />
+    <test-cases sql-case-id="insert_with_batch_and_with_generate_key_column" expected-sql="INSERT INTO `t_order_item` (`item_id`, `order_id`, `user_id`, `status`, `creation_date`) VALUES (?, ?, ?, 'insert', '2017-08-08', ?, ?, ?, 'insert', '2017-08-08')" db-types="MySQL" sql-case-types="PLACEHOLDER" />
+    <test-cases sql-case-id="insert_with_batch_and_with_generate_key_column" expected-sql="INSERT INTO [t_order_item] ([item_id], [order_id], [user_id], [status], [creation_date]) VALUES (?, ?, ?, 'insert', '2017-08-08', ?, ?, ?, 'insert', '2017-08-08')" db-types="SQLServer" sql-case-types="PLACEHOLDER" />
+    <test-cases sql-case-id="insert_with_batch_and_with_generate_key_column" expected-sql="INSERT INTO &quot;t_order_item&quot; (&quot;item_id&quot;, &quot;order_id&quot;, &quot;user_id&quot;, &quot;status&quot;, &quot;creation_date&quot;) VALUES (?, ?, ?, 'insert', '2017-08-08', ?, ?, ?, 'insert', '2017-08-08')" db-types="PostgreSQL,openGauss" sql-case-types="PLACEHOLDER" />
+    <test-cases sql-case-id="insert_with_batch_and_without_generate_key_column" expected-sql="INSERT INTO `t_order_item` (`order_id`, `user_id`, `status`, `creation_date`) VALUES (?, ?, 'insert', '2017-08-08', ?, ?, 'insert', '2017-08-08')" db-types="MySQL" sql-case-types="PLACEHOLDER" />
+    <test-cases sql-case-id="insert_with_batch_and_without_generate_key_column" expected-sql="INSERT INTO &quot;t_order_item&quot; (&quot;order_id&quot;, &quot;user_id&quot;, &quot;status&quot;, &quot;creation_date&quot;) VALUES (?, ?, 'insert', '2017-08-08', ?, ?, 'insert', '2017-08-08')" db-types="PostgreSQL,openGauss" sql-case-types="PLACEHOLDER" />
+    <test-cases sql-case-id="insert_with_batch_and_without_generate_key_column" expected-sql="INSERT INTO [t_order_item] ([order_id], [user_id], [status], [creation_date]) VALUES (?, ?, 'insert', '2017-08-08', ?, ?, 'insert', '2017-08-08')" db-types="SQLServer" sql-case-types="PLACEHOLDER" />
+    <test-cases sql-case-id="insert_with_multiple_values" expected-sql="INSERT INTO `t_order` (`order_id`, `user_id`, `status`) VALUES (1, 1, 'insert'), (2, 2, 'insert2')" db-types="MySQL" sql-case-types="LITERAL" />
+    <test-cases sql-case-id="insert_with_one_auto_increment_column" expected-sql="INSERT INTO `t_auto_increment_table` VALUES ()" db-types="MySQL" sql-case-types="LITERAL" />
+    <test-cases sql-case-id="insert_with_double_value" expected-sql="INSERT INTO `t_double_test` (`col1`) VALUES (1.22E0)" db-types="MySQL" sql-case-types="LITERAL" />
+    <test-cases sql-case-id="insert_with_null_value" expected-sql="INSERT INTO `t_null_value_test` (`col1`) VALUES (NULL)" db-types="MySQL" sql-case-types="LITERAL" />
+    <test-cases sql-case-id="insert_with_function" expected-sql="INSERT INTO `t_order` (`present_date`, `order_id`, `user_id`) VALUES (`curdate`(), ?, ?)" db-types="MySQL" sql-case-types="PLACEHOLDER" />
+    <test-cases sql-case-id="insert_with_unix_timestamp_function" expected-sql="INSERT INTO `t_order` (`status`, `order_id`, `user_id`) VALUES (`unix_timestamp`(?), ?, ?)" db-types="MySQL" sql-case-types="PLACEHOLDER" />
+    <test-cases sql-case-id="insert_with_str_to_date" expected-sql="INSERT INTO `t_order` (`present_date`, `order_id`, `user_id`) VALUES (`str_to_date`(?, '%Y-%m-%d'), ?, ?)" db-types="MySQL" sql-case-types="PLACEHOLDER" />
+    <test-cases sql-case-id="insert_with_str_date_add" expected-sql="INSERT INTO `t_order` (`present_date`, `order_id`, `user_id`) VALUES (`date_add`(`now`(), INTERVAL ? SECOND), ?, ?)" db-types="MySQL" sql-case-types="PLACEHOLDER" />
+    <test-cases sql-case-id="insert_select_with_all_columns" expected-sql="INSERT INTO &quot;t_order&quot; (&quot;order_id&quot;, &quot;user_id&quot;, &quot;status&quot;) SELECT &quot;order_id&quot;, &quot;user_id&quot;, &quot;status&quot; FROM &quot;t_order&quot; WHERE &quot;order_id&quot; = ?" db-types="PostgreSQL,openGauss" sql-case-types="PLACEHOLDER" />
+    <test-cases sql-case-id="insert_select_with_all_columns" expected-sql="INSERT INTO `t_order` (`order_id`, `user_id`, `status`) SELECT `order_id`, `user_id`, `status` FROM `t_order` WHERE `order_id` = ?" db-types="MySQL" sql-case-types="PLACEHOLDER" />
+    <test-cases sql-case-id="insert_select_without_columns" expected-sql="INSERT INTO `t_order` SELECT `order_id`, `user_id`, `status` FROM `t_order` WHERE `order_id` = ?" db-types="MySQL" sql-case-types="PLACEHOLDER" />
+    <test-cases sql-case-id="insert_select_without_columns" expected-sql="INSERT INTO &quot;t_order&quot; SELECT &quot;order_id&quot;, &quot;user_id&quot;, &quot;status&quot; FROM &quot;t_order&quot; WHERE &quot;order_id&quot; = ?" db-types="PostgreSQL,openGauss" sql-case-types="PLACEHOLDER" />
+    <test-cases sql-case-id="insert_select_with_generate_key_column" expected-sql="INSERT INTO `t_order_item` (`item_id`, `order_id`, `user_id`, `status`, `creation_date`) SELECT `item_id`, `order_id`, `user_id`, 'insert', '2017-08-08' FROM `t_order_item` WHERE `item_id` = ?" db-types="MySQL" sql-case-types="PLACEHOLDER" />
+    <test-cases sql-case-id="insert_select_without_generate_key_column" expected-sql="INSERT INTO `t_order_item` (`order_id`, `user_id`, `status`, `creation_date`) SELECT `order_id`, `user_id`, 'insert', '2017-08-08' FROM `t_order_item` WHERE `order_id` = ?" db-types="MySQL" sql-case-types="PLACEHOLDER" />
+    <test-cases sql-case-id="insert_with_emoji_value" expected-sql="INSERT INTO `t_emoji_test` (`col1`) VALUES ('test😀')" db-types="MySQL" sql-case-types="LITERAL" />
+    <test-cases sql-case-id="insert_without_into_keyword" expected-sql="INSERT INTO `t_order` (`order_id`, `user_id`, `status`) VALUES (?, ?, ?)" db-types="MySQL" sql-case-types="PLACEHOLDER" />
+    <test-cases sql-case-id="insert_with_uuid_column" expected-sql="INSERT INTO &quot;t_order&quot; (&quot;id&quot;, &quot;uuid&quot;) VALUES (?, ?)" db-types="PostgreSQL,openGauss" sql-case-types="PLACEHOLDER" />
+    <test-cases sql-case-id="insert_without_columns" expected-sql="INSERT INTO &quot;departments&quot; VALUES (280, 'Recreation', 121, 1700)" db-types="Oracle" sql-case-types="LITERAL" />
+    <test-cases sql-case-id="insert_with_select_subquery" expected-sql="INSERT INTO &quot;bonuses&quot; SELECT &quot;employee_id&quot;, &quot;salary&quot; * 1.1E0 FROM &quot;employees&quot; WHERE &quot;commission_pct&quot; > 2.5E-1" db-types="Oracle" sql-case-types="LITERAL" />
+    <test-cases sql-case-id="insert_with_rank_column" expected-sql="INSERT INTO &quot;sales&quot; (&quot;rank&quot;) VALUES (1)" db-types="Oracle" sql-case-types="LITERAL" />
+    <test-cases sql-case-id="insert_with_schema" expected-sql="INSERT INTO `db1`.`t_order` VALUES (1, 2, 3)" db-types="MySQL" sql-case-types="LITERAL" />
+    <test-cases sql-case-id="insert_with_schema" expected-sql="INSERT INTO &quot;db1&quot;.&quot;t_order&quot; VALUES (1, 2, 3)" db-types="PostgreSQL,openGauss,Oracle" sql-case-types="LITERAL" />
+    <test-cases sql-case-id="insert_with_negative_value" expected-sql="INSERT INTO `t_order` (`order_id`, `user_id`, `status`) VALUES (?, ?, ?)" db-types="MySQL" sql-case-types="PLACEHOLDER" />
+    <test-cases sql-case-id="insert_with_negative_value" expected-sql="INSERT INTO &quot;t_order&quot; (&quot;order_id&quot;, &quot;user_id&quot;, &quot;status&quot;) VALUES (?, ?, ?)" db-types="PostgreSQL,openGauss,Oracle" sql-case-types="PLACEHOLDER" />
+    <!-- FIXME -->
+    <!--<test-cases sql-case-id="insert_datetime_literals" expected-sql="INSERT INTO &quot;date_tab&quot; VALUES ('1999-12-01 10:00:00', '1999-12-01 10:00:00', '1999-12-01 10:00:00')" db-types="Oracle" sql-case-types="LITERAL" />-->
+    <test-cases sql-case-id="insert_with_content_keyword" expected-sql="INSERT INTO &quot;SYS_MQ_MSG&quot; (&quot;ID&quot;, &quot;CONTENT&quot;) VALUES (1, 'test')" db-types="Oracle" sql-case-types="LITERAL" />
+    <test-cases sql-case-id="insert_with_connect_by_and_prior" expected-sql="INSERT INTO &quot;t&quot; (&quot;c1&quot;, &quot;c2&quot;, &quot;c3&quot;, &quot;c4&quot;, &quot;c5&quot;) SELECT &quot;c1&quot;, &quot;c2&quot;, &quot;regexp_substr&quot;(&quot;c3&quot;, '[^,]+', 1, &quot;l&quot;) &quot;c3&quot;, &quot;c4&quot;, &quot;c5&quot; FROM &quot;t&quot; WHERE &quot;id&quot; = 1" db-types="Oracle" sql-case-types="LITERAL" />
+    <test-cases sql-case-id="insert_with_national_character_set" expected-sql="INSERT INTO &quot;customers&quot; VALUES (1000, &quot;TO_NCHAR&quot;('John Smith'), '500 Oracle Parkway', &quot;sysdate&quot;)" db-types="Oracle" sql-case-types="LITERAL" />
+</sql-node-converter-test-cases>

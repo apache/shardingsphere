@@ -25,12 +25,16 @@
         <assertion expected-data-source-name="read_dataset" />
     </test-case>
     
-    <test-case sql="SELECT o.order_id + 1 * 2 as exp FROM t_order AS o ORDER BY o.order_id" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
+    <test-case sql="SELECT o.order_id + 1 * 2 as exp FROM t_order AS o ORDER BY o.order_id" db-types="MySQL,PostgreSQL,openGauss" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
         <assertion expected-data-source-name="read_dataset" />
     </test-case>
     
     <test-case sql="select t.*,o.item_id as item_id,(case when t.status = 'init' then '已启用' when t.status = 'failed' then '已停用' end) as stateName
-    from t_order t left join t_order_item as o on o.order_id =t.order_id where t.order_id=1000 limit 1" db-types="MySQL,H2" scenario-types="tbl,readwrite_splitting">
+    from t_order t left join t_order_item as o on o.order_id =t.order_id where t.order_id=1000 limit 1" db-types="MySQL" scenario-types="tbl,readwrite_splitting">
+        <assertion expected-data-source-name="read_dataset" />
+    </test-case>
+    
+    <test-case sql="select case when (select 1 from t_order t where exists (select 1 from t_order t where t.user_id = i.item_id)) = '1' then '已启用' else '已停用' end as status from t_order_item i" db-types="MySQL" scenario-types="encrypt">
         <assertion expected-data-source-name="read_dataset" />
     </test-case>
     
@@ -39,49 +43,49 @@
     <!--</test-case>-->
     
     <!-- // TODO -->
-    <!--    <test-case sql="SELECT DISTINCT item_id FROM t_order_item" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">-->
+    <!--    <test-case sql="SELECT DISTINCT item_id FROM t_order_item" db-types="MySQL,PostgreSQL,openGauss" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">-->
     <!--        <assertion expected-data-source-name="read_dataset" />-->
     <!--    </test-case>-->
     
-    <!--    <test-case sql="SELECT DISTINCT order_id, user_id, status FROM t_order" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">-->
+    <!--    <test-case sql="SELECT DISTINCT order_id, user_id, status FROM t_order" db-types="MySQL,PostgreSQL,openGauss" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">-->
     <!--        <assertion expected-data-source-name="read_dataset" />-->
     <!--    </test-case>-->
     
     <!-- // TODO -->
-    <!--<test-case sql="SELECT DISTINCT t_order.order_id FROM t_order order by t_order.order_id" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">-->
+    <!--<test-case sql="SELECT DISTINCT t_order.order_id FROM t_order order by t_order.order_id" db-types="MySQL,PostgreSQL,openGauss" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">-->
     <!--<assertion expected-data-source-name="read_dataset" />-->
     <!--</test-case>-->
     
-    <!--<test-case sql="SELECT DISTINCT t_order.*, t_order_item.order_id FROM t_order, t_order_item WHERE t_order.order_id = t_order_item.order_id" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">-->
+    <!--<test-case sql="SELECT DISTINCT t_order.*, t_order_item.order_id FROM t_order, t_order_item WHERE t_order.order_id = t_order_item.order_id" db-types="MySQL,PostgreSQL,openGauss" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">-->
     <!--<assertion expected-data-source-name="read_dataset" />-->
     <!--</test-case>-->
     
-    <test-case sql="SELECT DISTINCT item_id FROM t_order_item ORDER BY item_id" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
+    <test-case sql="SELECT DISTINCT item_id FROM t_order_item ORDER BY item_id" db-types="MySQL,PostgreSQL,openGauss" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
         <assertion expected-data-source-name="read_dataset" />
     </test-case>
     
-    <test-case sql="SELECT DISTINCT t_order.order_id FROM t_order ORDER BY order_id" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
+    <test-case sql="SELECT DISTINCT t_order.order_id FROM t_order ORDER BY order_id" db-types="MySQL,PostgreSQL,openGauss" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
         <assertion expected-data-source-name="read_dataset" />
     </test-case>
     
-    <test-case sql="SELECT DISTINCT order_id, user_id, status FROM t_order ORDER BY order_id" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
+    <test-case sql="SELECT DISTINCT order_id, user_id, status FROM t_order ORDER BY order_id" db-types="MySQL,PostgreSQL,openGauss" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
         <assertion expected-data-source-name="read_dataset" />
     </test-case>
     
-    <test-case sql="SELECT DISTINCT * FROM t_order WHERE order_id > 1100 ORDER BY order_id" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
+    <test-case sql="SELECT DISTINCT * FROM t_order WHERE order_id > 1100 ORDER BY order_id" db-types="MySQL,PostgreSQL,openGauss" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
         <assertion expected-data-source-name="read_dataset" />
     </test-case>
     
-    <test-case sql="SELECT DISTINCT t_order.*, t_order_item.order_id FROM t_order, t_order_item WHERE t_order.order_id = t_order_item.order_id ORDER BY t_order.order_id" scenario-types="dbtbl_with_readwrite_splitting,readwrite_splitting">
+    <test-case sql="SELECT DISTINCT t_order.*, t_order_item.order_id FROM t_order, t_order_item WHERE t_order.order_id = t_order_item.order_id ORDER BY t_order.order_id" db-types="MySQL,PostgreSQL,openGauss" scenario-types="dbtbl_with_readwrite_splitting,readwrite_splitting">
         <assertion expected-data-source-name="read_dataset" />
     </test-case>
 
     <!-- TODO fix this bug in #24540 -->
-    <!--<test-case sql="SELECT SUM(DISTINCT order_id) s FROM t_order WHERE order_id &lt; 1100" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
+    <!--<test-case sql="SELECT SUM(DISTINCT order_id) s FROM t_order WHERE order_id &lt; 1100" db-types="MySQL,PostgreSQL,openGauss" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
         <assertion expected-data-source-name="read_dataset" />
     </test-case>-->
     
-    <test-case sql="SELECT COUNT(DISTINCT order_id) c FROM t_order WHERE order_id &lt; 1100" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
+    <test-case sql="SELECT COUNT(DISTINCT order_id) c FROM t_order WHERE order_id &lt; 1100" db-types="MySQL,PostgreSQL,openGauss" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
         <assertion expected-data-source-name="read_dataset" />
     </test-case>
     
@@ -90,7 +94,7 @@
     <!--        <assertion expected-data-source-name="read_dataset" />-->
     <!--    </test-case>-->
     
-    <test-case sql="SELECT DISTINCT(item_id) FROM t_order_item ORDER BY item_id" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
+    <test-case sql="SELECT DISTINCT(item_id) FROM t_order_item ORDER BY item_id" db-types="MySQL,PostgreSQL,openGauss" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
         <assertion expected-data-source-name="read_dataset" />
     </test-case>
     
@@ -98,7 +102,7 @@
         <assertion expected-data-source-name="read_dataset" />
     </test-case>
     
-    <test-case sql="SELECT COUNT(DISTINCT user_id + order_id) c FROM t_order WHERE order_id &lt; 1100" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
+    <test-case sql="SELECT COUNT(DISTINCT user_id + order_id) c FROM t_order WHERE order_id &lt; 1100" db-types="MySQL,PostgreSQL,openGauss" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
         <assertion expected-data-source-name="read_dataset" />
     </test-case>
     

@@ -12,7 +12,7 @@ weight = 7
 ```shell
 git clone --depth 1 https://github.com/apache/shardingsphere.git
 cd shardingsphere
-mvn clean install -DskipITs -DskipTests -Prelease
+mvn clean install -DskipITs -DskipTests -P-dev,release,all
 ```
 Agent 制品 `distribution/agent/target/apache-shardingsphere-${latest.release.version}-shardingsphere-agent-bin.tar.gz`
 
@@ -119,7 +119,7 @@ ShardingSphere Agent 存在可用的 `Dockerfile` 用于方便分发。可执行
 ```shell
 git clone git@github.com:apache/shardingsphere.git
 cd ./shardingsphere/
-./mvnw -am -pl distribution/agent -Prelease,docker -T1C -DskipTests clean package
+./mvnw -am -pl distribution/agent -P-dev,release,all,docker -T1C -DskipTests clean package
 ```
 
 此后若在自定义 `Dockerfile` 中添加以下语句，这会将 ShardingSphere Agent 的目录复制到 `/shardingsphere-agent/` 。

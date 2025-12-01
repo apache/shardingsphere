@@ -18,11 +18,9 @@
 package org.apache.shardingsphere.shadow.rule.changed;
 
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.mode.spi.rule.item.alter.AlterRuleItem;
-import org.apache.shardingsphere.mode.spi.rule.item.drop.DropRuleItem;
 import org.apache.shardingsphere.mode.spi.rule.RuleItemConfigurationChangedProcessor;
+import org.apache.shardingsphere.mode.spi.rule.RuleChangedItemType;
 import org.apache.shardingsphere.shadow.config.ShadowRuleConfiguration;
-import org.apache.shardingsphere.shadow.metadata.nodepath.ShadowRuleNodePathProvider;
 import org.apache.shardingsphere.shadow.rule.ShadowRule;
 
 /**
@@ -31,7 +29,7 @@ import org.apache.shardingsphere.shadow.rule.ShadowRule;
 public final class DefaultShadowAlgorithmNameChangedProcessor implements RuleItemConfigurationChangedProcessor<ShadowRuleConfiguration, String> {
     
     @Override
-    public String swapRuleItemConfiguration(final AlterRuleItem alterRuleItem, final String yamlContent) {
+    public String swapRuleItemConfiguration(final String itemName, final String yamlContent) {
         return yamlContent;
     }
     
@@ -41,17 +39,17 @@ public final class DefaultShadowAlgorithmNameChangedProcessor implements RuleIte
     }
     
     @Override
-    public void changeRuleItemConfiguration(final AlterRuleItem alterRuleItem, final ShadowRuleConfiguration currentRuleConfig, final String toBeChangedItemConfig) {
+    public void changeRuleItemConfiguration(final String itemName, final ShadowRuleConfiguration currentRuleConfig, final String toBeChangedItemConfig) {
         currentRuleConfig.setDefaultShadowAlgorithmName(toBeChangedItemConfig);
     }
     
     @Override
-    public void dropRuleItemConfiguration(final DropRuleItem dropRuleItem, final ShadowRuleConfiguration currentRuleConfig) {
+    public void dropRuleItemConfiguration(final String itemName, final ShadowRuleConfiguration currentRuleConfig) {
         currentRuleConfig.setDefaultShadowAlgorithmName(null);
     }
     
     @Override
-    public String getType() {
-        return ShadowRuleNodePathProvider.RULE_TYPE + "." + ShadowRuleNodePathProvider.DEFAULT_SHADOW_ALGORITHM_NAME;
+    public RuleChangedItemType getType() {
+        return new RuleChangedItemType("shadow", "default_shadow_algorithm_name");
     }
 }

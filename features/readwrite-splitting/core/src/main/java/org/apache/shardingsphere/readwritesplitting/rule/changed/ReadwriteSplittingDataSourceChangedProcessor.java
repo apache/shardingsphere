@@ -20,14 +20,10 @@ package org.apache.shardingsphere.readwritesplitting.rule.changed;
 import com.google.common.base.Strings;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
-import org.apache.shardingsphere.mode.spi.rule.item.alter.AlterNamedRuleItem;
-import org.apache.shardingsphere.mode.spi.rule.item.alter.AlterRuleItem;
-import org.apache.shardingsphere.mode.spi.rule.item.drop.DropNamedRuleItem;
-import org.apache.shardingsphere.mode.spi.rule.item.drop.DropRuleItem;
+import org.apache.shardingsphere.mode.spi.rule.RuleChangedItemType;
 import org.apache.shardingsphere.mode.spi.rule.RuleItemConfigurationChangedProcessor;
 import org.apache.shardingsphere.readwritesplitting.config.ReadwriteSplittingRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.config.rule.ReadwriteSplittingDataSourceGroupRuleConfiguration;
-import org.apache.shardingsphere.readwritesplitting.metadata.nodepath.ReadwriteSplittingRuleNodePathProvider;
 import org.apache.shardingsphere.readwritesplitting.rule.ReadwriteSplittingRule;
 import org.apache.shardingsphere.readwritesplitting.transaction.TransactionalReadQueryStrategy;
 import org.apache.shardingsphere.readwritesplitting.yaml.config.rule.YamlReadwriteSplittingDataSourceGroupRuleConfiguration;
@@ -43,15 +39,15 @@ public final class ReadwriteSplittingDataSourceChangedProcessor
             RuleItemConfigurationChangedProcessor<ReadwriteSplittingRuleConfiguration, ReadwriteSplittingDataSourceGroupRuleConfiguration> {
     
     @Override
-    public ReadwriteSplittingDataSourceGroupRuleConfiguration swapRuleItemConfiguration(final AlterRuleItem alterRuleItem, final String yamlContent) {
+    public ReadwriteSplittingDataSourceGroupRuleConfiguration swapRuleItemConfiguration(final String itemName, final String yamlContent) {
         YamlReadwriteSplittingDataSourceGroupRuleConfiguration yamlDataSourceGroupRuleConfig = YamlEngine.unmarshal(yamlContent, YamlReadwriteSplittingDataSourceGroupRuleConfiguration.class);
-        return new ReadwriteSplittingDataSourceGroupRuleConfiguration(((AlterNamedRuleItem) alterRuleItem).getItemName(), yamlDataSourceGroupRuleConfig.getWriteDataSourceName(),
+        return new ReadwriteSplittingDataSourceGroupRuleConfiguration(itemName, yamlDataSourceGroupRuleConfig.getWriteDataSourceName(),
                 yamlDataSourceGroupRuleConfig.getReadDataSourceNames(), getTransactionalReadQueryStrategy(yamlDataSourceGroupRuleConfig), yamlDataSourceGroupRuleConfig.getLoadBalancerName());
     }
     
     private TransactionalReadQueryStrategy getTransactionalReadQueryStrategy(final YamlReadwriteSplittingDataSourceGroupRuleConfiguration yamlDataSourceGroupRuleConfig) {
         return Strings.isNullOrEmpty(yamlDataSourceGroupRuleConfig.getTransactionalReadQueryStrategy())
-                ? TransactionalReadQueryStrategy.DYNAMIC
+                ? TransactionalReadQueryStrategy.PRIMARY
                 : TransactionalReadQueryStrategy.valueOf(yamlDataSourceGroupRuleConfig.getTransactionalReadQueryStrategy());
     }
     
@@ -62,7 +58,7 @@ public final class ReadwriteSplittingDataSourceChangedProcessor
     }
     
     @Override
-    public void changeRuleItemConfiguration(final AlterRuleItem alterRuleItem, final ReadwriteSplittingRuleConfiguration currentRuleConfig,
+    public void changeRuleItemConfiguration(final String itemName, final ReadwriteSplittingRuleConfiguration currentRuleConfig,
                                             final ReadwriteSplittingDataSourceGroupRuleConfiguration toBeChangedItemConfig) {
         // TODO refactor DistSQL to only persist config
         currentRuleConfig.getDataSourceGroups().removeIf(each -> each.getName().equals(toBeChangedItemConfig.getName()));
@@ -70,12 +66,12 @@ public final class ReadwriteSplittingDataSourceChangedProcessor
     }
     
     @Override
-    public void dropRuleItemConfiguration(final DropRuleItem dropRuleItem, final ReadwriteSplittingRuleConfiguration currentRuleConfig) {
-        currentRuleConfig.getDataSourceGroups().removeIf(each -> each.getName().equals(((DropNamedRuleItem) dropRuleItem).getItemName()));
+    public void dropRuleItemConfiguration(final String itemName, final ReadwriteSplittingRuleConfiguration currentRuleConfig) {
+        currentRuleConfig.getDataSourceGroups().removeIf(each -> each.getName().equals(itemName));
     }
     
     @Override
-    public String getType() {
-        return ReadwriteSplittingRuleNodePathProvider.RULE_TYPE + "." + ReadwriteSplittingRuleNodePathProvider.DATA_SOURCE_GROUPS;
+    public RuleChangedItemType getType() {
+        return new RuleChangedItemType("readwrite_splitting", "data_source_groups");
     }
 }

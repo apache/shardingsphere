@@ -21,7 +21,7 @@
     <parent>
         <groupId>org.apache.shardingsphere</groupId>
         <artifactId>shardingsphere-kernel</artifactId>
-        <version>5.5.2-SNAPSHOT</version>
+        <version>5.5.3-SNAPSHOT</version>
     </parent>
     <artifactId>shardingsphere-sql-federation</artifactId>
     <packaging>pom</packaging>
@@ -31,7 +31,7 @@
         <module>api</module>
         <module>core</module>
         <module>distsql</module>
-        <module>optimizer</module>
+        <module>compiler</module>
         <module>executor</module>
     </modules>
 </project>

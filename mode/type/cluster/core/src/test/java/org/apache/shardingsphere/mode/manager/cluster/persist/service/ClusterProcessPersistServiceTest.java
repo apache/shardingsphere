@@ -22,12 +22,10 @@ import org.apache.shardingsphere.infra.executor.sql.process.ProcessRegistry;
 import org.apache.shardingsphere.infra.executor.sql.process.lock.ProcessOperationLockRegistry;
 import org.apache.shardingsphere.infra.executor.sql.process.yaml.YamlProcess;
 import org.apache.shardingsphere.infra.executor.sql.process.yaml.YamlProcessList;
-import org.apache.shardingsphere.infra.instance.metadata.InstanceType;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
-import org.apache.shardingsphere.mode.node.path.metadata.ComputeNodePath;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
-import org.apache.shardingsphere.test.mock.AutoMockExtension;
-import org.apache.shardingsphere.test.mock.StaticMockSettings;
+import org.apache.shardingsphere.test.infra.framework.extension.mock.AutoMockExtension;
+import org.apache.shardingsphere.test.infra.framework.extension.mock.StaticMockSettings;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -39,9 +37,10 @@ import java.util.Collections;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.contains;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -61,9 +60,9 @@ class ClusterProcessPersistServiceTest {
     
     @Test
     void assertGetCompletedProcessList() {
-        when(ProcessOperationLockRegistry.getInstance().waitUntilReleaseReady(any(), any())).thenReturn(true);
+        when(ProcessOperationLockRegistry.getInstance().waitUntilReleaseReady(any(), anyInt(), any())).thenReturn(true);
         assertGetProcessList();
-        verify(repository, times(0)).delete(contains("/nodes/compute_nodes/show_process_list_trigger/abc:"));
+        verify(repository, never()).delete(contains("/nodes/compute_nodes/show_process_list_trigger/abc:"));
     }
     
     @Test
@@ -73,8 +72,8 @@ class ClusterProcessPersistServiceTest {
     }
     
     private void assertGetProcessList() {
-        when(repository.getChildrenKeys(ComputeNodePath.getOnlinePath(InstanceType.JDBC))).thenReturn(Collections.emptyList());
-        when(repository.getChildrenKeys(ComputeNodePath.getOnlinePath(InstanceType.PROXY))).thenReturn(Collections.singletonList("abc"));
+        when(repository.getChildrenKeys("/nodes/compute_nodes/online/jdbc")).thenReturn(Collections.emptyList());
+        when(repository.getChildrenKeys("/nodes/compute_nodes/online/proxy")).thenReturn(Collections.singletonList("abc"));
         when(repository.getChildrenKeys(contains("/execution_nodes/"))).thenReturn(Collections.singletonList("abc"));
         when(repository.query(contains("/execution_nodes/"))).thenReturn(YamlEngine.marshal(createYamlProcessList()));
         Collection<Process> actual = processPersistService.getProcessList();
@@ -95,9 +94,9 @@ class ClusterProcessPersistServiceTest {
     
     @Test
     void assertKillCompletedProcess() {
-        when(ProcessOperationLockRegistry.getInstance().waitUntilReleaseReady(any(), any())).thenReturn(true);
+        when(ProcessOperationLockRegistry.getInstance().waitUntilReleaseReady(any(), anyInt(), any())).thenReturn(true);
         assertKillProcess();
-        verify(repository, times(0)).delete("/nodes/compute_nodes/kill_process_trigger/abc:foo_process_id");
+        verify(repository, never()).delete("/nodes/compute_nodes/kill_process_trigger/abc:foo_process_id");
     }
     
     @Test
@@ -107,8 +106,8 @@ class ClusterProcessPersistServiceTest {
     }
     
     private void assertKillProcess() {
-        when(repository.getChildrenKeys(ComputeNodePath.getOnlinePath(InstanceType.JDBC))).thenReturn(Collections.emptyList());
-        when(repository.getChildrenKeys(ComputeNodePath.getOnlinePath(InstanceType.PROXY))).thenReturn(Collections.singletonList("abc"));
+        when(repository.getChildrenKeys("/nodes/compute_nodes/online/jdbc")).thenReturn(Collections.emptyList());
+        when(repository.getChildrenKeys("/nodes/compute_nodes/online/proxy")).thenReturn(Collections.singletonList("abc"));
         processPersistService.killProcess("foo_process_id");
         verify(repository).persist("/nodes/compute_nodes/kill_process_trigger/abc:foo_process_id", "");
     }

@@ -19,7 +19,7 @@ package org.apache.shardingsphere.sharding.route.engine.condition.generator;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.sharding.route.engine.condition.Column;
+import org.apache.shardingsphere.infra.metadata.database.schema.HashColumn;
 import org.apache.shardingsphere.sharding.route.engine.condition.generator.impl.ConditionValueBetweenOperatorGenerator;
 import org.apache.shardingsphere.sharding.route.engine.condition.generator.impl.ConditionValueCompareOperatorGenerator;
 import org.apache.shardingsphere.sharding.route.engine.condition.generator.impl.ConditionValueInOperatorGenerator;
@@ -54,7 +54,8 @@ public final class ConditionValueGeneratorFactory {
      * @param timestampServiceRule time service rule
      * @return route value
      */
-    public static Optional<ShardingConditionValue> generate(final ExpressionSegment predicate, final Column column, final List<Object> params, final TimestampServiceRule timestampServiceRule) {
+    public static Optional<ShardingConditionValue> generate(final ExpressionSegment predicate, final HashColumn column, final List<Object> params,
+                                                            final TimestampServiceRule timestampServiceRule) {
         if (predicate instanceof BinaryOperationExpression) {
             return COMPARE_OPERATOR_GENERATOR.generate((BinaryOperationExpression) predicate, column, params, timestampServiceRule);
         }

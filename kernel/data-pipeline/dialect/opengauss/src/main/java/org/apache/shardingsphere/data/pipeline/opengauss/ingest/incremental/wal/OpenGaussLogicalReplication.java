@@ -20,9 +20,10 @@ package org.apache.shardingsphere.data.pipeline.opengauss.ingest.incremental.wal
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.api.type.StandardPipelineDataSourceConfiguration;
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.incremental.wal.decode.BaseLogSequenceNumber;
-import org.apache.shardingsphere.infra.database.core.connector.url.JdbcUrl;
-import org.apache.shardingsphere.infra.database.core.connector.url.StandardJdbcUrlParser;
-import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.database.connector.core.jdbcurl.parser.ConnectionProperties;
+import org.apache.shardingsphere.database.connector.core.jdbcurl.parser.ConnectionPropertiesParser;
+import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoader;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.opengauss.PGProperty;
 import org.opengauss.jdbc.PgConnection;
@@ -42,6 +43,8 @@ import java.util.Properties;
 public final class OpenGaussLogicalReplication {
     
     private static final String HA_PORT_ERROR_MESSAGE_KEY = "HA port";
+    
+    private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "openGauss");
     
     /**
      * Create connection.
@@ -73,12 +76,11 @@ public final class OpenGaussLogicalReplication {
     }
     
     private Connection tryConnectingToHAPort(final String jdbcUrl, final Properties props) throws SQLException {
-        JdbcUrl parseResult = new StandardJdbcUrlParser().parse(jdbcUrl);
-        PGProperty.PG_HOST.set(props, parseResult.getHostname());
-        PGProperty.PG_DBNAME.set(props, parseResult.getDatabase());
-        int haPort = parseResult.getPort() + 1;
-        PGProperty.PG_PORT.set(props, haPort);
-        return DriverManager.getConnection(TypedSPILoader.getService(DatabaseType.class, "openGauss").getJdbcUrlPrefixes().iterator().next(), props);
+        ConnectionProperties connectionProps = DatabaseTypedSPILoader.getService(ConnectionPropertiesParser.class, databaseType).parse(jdbcUrl, null, null);
+        PGProperty.PG_HOST.set(props, connectionProps.getHostname());
+        PGProperty.PG_DBNAME.set(props, connectionProps.getCatalog());
+        PGProperty.PG_PORT.set(props, connectionProps.getPort() + 1);
+        return DriverManager.getConnection(databaseType.getJdbcUrlPrefixes().iterator().next(), props);
     }
     
     /**
@@ -91,8 +93,7 @@ public final class OpenGaussLogicalReplication {
      * @return replication stream
      * @throws SQLException SQL exception
      */
-    public PGReplicationStream createReplicationStream(final PgConnection connection, final BaseLogSequenceNumber startPosition, final String slotName,
-                                                       final int majorVersion) throws SQLException {
+    public PGReplicationStream createReplicationStream(final PgConnection connection, final BaseLogSequenceNumber startPosition, final String slotName, final int majorVersion) throws SQLException {
         ChainedLogicalStreamBuilder logicalStreamBuilder = connection.getReplicationAPI()
                 .replicationStream()
                 .logical()
@@ -103,10 +104,6 @@ public final class OpenGaussLogicalReplication {
         if (majorVersion < 3) {
             return logicalStreamBuilder.start();
         }
-        return logicalStreamBuilder
-                .withSlotOption("parallel-decode-num", 10)
-                .withSlotOption("decode-style", "j")
-                .withSlotOption("sending-batch", 0)
-                .start();
+        return logicalStreamBuilder.withSlotOption("parallel-decode-num", 10).withSlotOption("decode-style", "j").withSlotOption("sending-batch", 0).start();
     }
 }

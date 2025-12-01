@@ -18,6 +18,8 @@
 package org.apache.shardingsphere.driver.jdbc.core.connection;
 
 import lombok.Getter;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.driver.exception.ConnectionClosedException;
 import org.apache.shardingsphere.driver.jdbc.adapter.AbstractConnectionAdapter;
 import org.apache.shardingsphere.driver.jdbc.adapter.executor.ForceExecuteTemplate;
@@ -26,9 +28,7 @@ import org.apache.shardingsphere.driver.jdbc.core.statement.ShardingSpherePrepar
 import org.apache.shardingsphere.driver.jdbc.core.statement.ShardingSphereStatement;
 import org.apache.shardingsphere.driver.jdbc.core.statement.StatementManager;
 import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
-import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
-import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
-import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
+import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.executor.sql.process.ProcessEngine;
 import org.apache.shardingsphere.infra.session.connection.transaction.TransactionConnectionContext;
 import org.apache.shardingsphere.mode.manager.ContextManager;
@@ -43,7 +43,7 @@ import java.sql.Savepoint;
 import java.sql.Statement;
 import java.util.Collection;
 import java.util.Optional;
-import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.Executor;
 
 /**
@@ -66,7 +66,7 @@ public final class ShardingSphereConnection extends AbstractConnectionAdapter {
     private final DriverDatabaseConnectionManager databaseConnectionManager;
     
     @Getter
-    private final Collection<StatementManager> statementManagers = new CopyOnWriteArrayList<>();
+    private final Collection<StatementManager> statementManagers = new ConcurrentLinkedQueue<>();
     
     @Getter
     private final String processId;
@@ -238,7 +238,7 @@ public final class ShardingSphereConnection extends AbstractConnectionAdapter {
     
     private boolean isSchemaSupportedDatabaseType() {
         DatabaseType databaseType = contextManager.getMetaDataContexts().getMetaData().getDatabase(currentDatabaseName).getProtocolType();
-        return new DatabaseTypeRegistry(databaseType).getDialectDatabaseMetaData().getDefaultSchema().isPresent();
+        return new DatabaseTypeRegistry(databaseType).getDialectDatabaseMetaData().getSchemaOption().getDefaultSchema().isPresent();
     }
     
     @SuppressWarnings("MagicConstant")

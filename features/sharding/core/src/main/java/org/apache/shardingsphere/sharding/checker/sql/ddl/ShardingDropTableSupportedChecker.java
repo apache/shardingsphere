@@ -18,29 +18,28 @@
 package org.apache.shardingsphere.sharding.checker.sql.ddl;
 
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.binder.context.statement.ddl.DropTableStatementContext;
 import org.apache.shardingsphere.infra.checker.SupportedSQLChecker;
-import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
+import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.sharding.checker.sql.common.ShardingSupportedCommonChecker;
 import org.apache.shardingsphere.sharding.exception.syntax.UnsupportedShardingOperationException;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DropTableStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.table.DropTableStatement;
 
 /**
  * Drop table supported checker for sharding.
  */
-public final class ShardingDropTableSupportedChecker implements SupportedSQLChecker<DropTableStatementContext, ShardingRule> {
+public final class ShardingDropTableSupportedChecker implements SupportedSQLChecker<SQLStatementContext, ShardingRule> {
     
     @Override
     public boolean isCheck(final SQLStatementContext sqlStatementContext) {
-        return sqlStatementContext instanceof DropTableStatementContext;
+        return sqlStatementContext.getSqlStatement() instanceof DropTableStatement;
     }
     
     @Override
-    public void check(final ShardingRule rule, final ShardingSphereDatabase database, final ShardingSphereSchema currentSchema, final DropTableStatementContext sqlStatementContext) {
-        DropTableStatement dropTableStatement = sqlStatementContext.getSqlStatement();
+    public void check(final ShardingRule rule, final ShardingSphereDatabase database, final ShardingSphereSchema currentSchema, final SQLStatementContext sqlStatementContext) {
+        DropTableStatement dropTableStatement = (DropTableStatement) sqlStatementContext.getSqlStatement();
         if (!dropTableStatement.isIfExists()) {
             ShardingSphereSchema schema = sqlStatementContext.getTablesContext().getSchemaName().map(database::getSchema).orElse(currentSchema);
             ShardingSupportedCommonChecker.checkTableExist(schema, sqlStatementContext.getTablesContext().getSimpleTables());

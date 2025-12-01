@@ -17,14 +17,16 @@
   -->
 
 <sql-cases>
-    <sql-case id="select_group_concat_with_order_by" value="SELECT GROUP_CONCAT(status ORDER BY status) FROM t_order" db-types="MySQL,Doris,openGauss" />
+    <sql-case id="select_group_concat_with_order_by" value="SELECT GROUP_CONCAT(status ORDER BY status) FROM t_order" db-types="MySQL,Doris" />
+    <sql-case id="select_group_concat_with_order_by_for_opengauss" value="SELECT GROUP_CONCAT(status ORDER BY status) FROM t_order" db-types="openGauss" />
     <sql-case id="select_window_function" value="SELECT order_id, ROW_NUMBER() OVER() FROM t_order" db-types="MySQL" />
     <sql-case id="select_cast_function" value="SELECT CAST('1' AS UNSIGNED)" db-types="MySQL" />
+    <sql-case id="select_cast_as_year" value="SELECT CAST(-1.1 AS YEAR)" db-types="MySQL" />
     <sql-case id="select_cast" value="SELECT CAST(c AT TIME ZONE 'UTC' AS DATETIME)" db-types="MySQL" />
     <sql-case id="select_cast_multiset" value="select CAST(MULTISET(SELECT cust_address FROM customers c WHERE c.customer_id = cd.customer_id) as cust_address_tab_typ) from customer;" db-types="Oracle" />
     <sql-case id="select_convert_function" value="SELECT CONVERT('2020-10-01', DATE)" db-types="MySQL" />
     <sql-case id="select_position" value="SELECT POSITION('bar' IN 'foobarbar')" db-types="MySQL" />
-    <sql-case id="select_substring" value="SELECT SUBSTRING('foobarbar' from 4)" db-types="MySQL" />
+    <sql-case id="select_substring" value="SELECT SUBSTRING('foobarbar' from -4 for 2)" db-types="MySQL" />
     <sql-case id="select_substr" value="SELECT SUBSTR('foobarbar' from 4)" db-types="MySQL" />
     <sql-case id="select_extract" value="SELECT EXTRACT(YEAR FROM '2019-07-02')" db-types="MySQL" />
     <sql-case id="select_extract_from_column" value="SELECT EXTRACT(YEAR FROM o.creation_date) FROM t_order o" db-types="MySQL,Presto" />
@@ -46,7 +48,8 @@
     <sql-case id="select_mod_function" value="SELECT MOD(order_id, 1) from t_order" db-types="PostgreSQL,openGauss" />
     <sql-case id="select_sys_xml_agg" value="SELECT SYS_XMLAGG(SYS_XMLGEN(last_name)) XMLAGG FROM employees WHERE last_name LIKE 'R%' ORDER BY xmlagg;" db-types="Oracle" />
     <sql-case id="select_set_function" value="SELECT customer_id, SET(cust_address_ntab) address FROM customers_demo ORDER BY customer_id;" db-types="Oracle" />
-    <sql-case id="select_pivot" value="SELECT * FROM (SELECT * FROM sales) PIVOT (SUM(amount) FOR month IN ('Jan', 'Feb'))" db-types="Oracle"/>
+    <sql-case id="select_pivot" value="SELECT pivotAlias.* FROM (SELECT * FROM sales) PIVOT (SUM(amount) FOR month IN ('Jan', 'Feb')) pivotAlias" db-types="Oracle"/>
+    <sql-case id="select_unpivot" value="SELECT * FROM (SELECT * FROM sales) UNPIVOT ((cert_type, cert_number) FOR cert_source IN ((primary_cert_type, primary_cert_no), (alt_cert_type1, alt_cert_no1), (alt_cert_type2, alt_cert_no2)))" db-types="Oracle"/>
     <sql-case id="select_string_split_function" value="SELECT value as tag, COUNT(*) AS [number_of_articles] FROM Product CROSS APPLY STRING_SPLIT(Tags, ',') GROUP BY value HAVING COUNT(*) > 2 ORDER BY COUNT(*) DESC"  db-types="SQLServer"/>
     <sql-case id="select_from_open_json_function" value="SELECT * FROM OPENJSON(@array) WITH (  month VARCHAR(3), temp int, month_id tinyint '$.sql:identity()') as months" db-types="SQLServer"/>
     <sql-case id="select_from_open_json_function_with_path" value="SELECT [key], value FROM OPENJSON(@json,'$.path.to.&quot;sub-object&quot;')" db-types="SQLServer"/>
@@ -238,6 +241,7 @@
     <sql-case id="select_json_storage_free" value="SELECT JSON_STORAGE_FREE(json_col) FROM t" db-types="MySQL" />
     <sql-case id="select_json_storage_size" value="SELECT JSON_STORAGE_SIZE(json_col) FROM t" db-types="MySQL" />
     <sql-case id="select_json_table" value="SELECT * FROM JSON_TABLE('[{&quot;name&quot;: 2}]','$[*]' COLUMNS( name INT PATH '$.name' error on empty)) as t" db-types="MySQL" />
+    <sql-case id="select_json_table_with_path" value="SELECT * FROM JSON_TABLE('[]', '$[*]' COLUMNS (p NCHAR PATH '$.a')) AS t" db-types="MySQL" />
     <sql-case id="select_json_type" value="SELECT JSON_TYPE('[1,2,3]')" db-types="MySQL" />
     <sql-case id="select_json_unquote" value="SELECT JSON_UNQUOTE('&quot;abc&quot;')" db-types="MySQL" />
     <sql-case id="select_json_valid" value="SELECT JSON_VALID('{&quot;a&quot;: 1}')" db-types="MySQL" />
@@ -276,8 +280,29 @@
     <sql-case id="select_instr" value="SELECT INSTR('foobar','bar')" db-types="Doris" />
     <sql-case id="select_strright" value="SELECT STRRIGHT('foobarbar',4)" db-types="Doris" />
     <sql-case id="select_extract_url_parameter" value="SELECT EXTRACT_URL_PARAMETER('http://foo.com/?bar=baz','bar')" db-types="Doris" />
+    <sql-case id="select_last_insert_id" value="SELECT LAST_INSERT_ID()" db-types="MySQL" />
+    <sql-case id="select_last_value" value="SELECT LAST_VALUE(AGE) OVER (PARTITION BY AGE ORDER BY AGE) from TEST" db-types="MySQL" />
     <sql-case id="select_lcase_function" value="SELECT LCASE('QUADRATICALLY')" db-types="MySQL" />
     <sql-case id="select_lower_function" value="SELECT LOWER('QUADRATICALLY')" db-types="MySQL" />
     <sql-case id="select_length" value="SELECT LENGTH('TEXT')" db-types="MySQL" />
     <sql-case id="select_locate" value="SELECT LOCATE('bar','foobarbar')" db-types="MySQL" />
+    <sql-case id="select_localtime" value="SELECT LOCALTIME()" db-types="MySQL" />
+    <sql-case id="select_localtimestamp" value="SELECT LOCALTIMESTAMP()" db-types="MySQL" />
+    <sql-case id="select_lpad" value="SELECT LPAD('hi',4,'??')" db-types="MySQL" />
+    <sql-case id="select_prediction_cost" value="SELECT cust_id FROM mining_data_apply_v WHERE country_name = 'Italy' ORDER BY PREDICTION_COST(DT_SH_Clas_sample, 1 COST MODEL USING *)" db-types="Oracle" />
+    <sql-case id="select_name_const" value="SELECT NAME_CONST('myname',14)" db-types="MySQL" />
+    <sql-case id="select_not_in" value="SELECT (3,4) NOT IN ((1,2), (3,4))" db-types="MySQL" />
+    <sql-case id="select_not_like" value="SELECT 'hello world' NOT LIKE '%test%'" db-types="MySQL" />
+    <sql-case id="select_now" value="SELECT NOW()" db-types="MySQL" />
+    <sql-case id="select_nth_value" value="SELECT NTH_VALUE(salary, 3) OVER (ORDER BY salary) AS third_highest_salary FROM employees" db-types="MySQL" />
+    <sql-case id="select_nullif" value="SELECT NULLIF(1,1)" db-types="MySQL" />
+    <sql-case id="select_oct" value="SELECT OCT(12)" db-types="MySQL" />
+    <sql-case id="select_octet_length" value="SELECT OCTET_LENGTH('text')" db-types="MySQL" />
+    <sql-case id="select_ord" value="SELECT ORD('2')" db-types="MySQL" />
+    <sql-case id="select_period_add" value="SELECT PERIOD_ADD(200801,2)" db-types="MySQL" />
+    <sql-case id="select_period_diff" value="SELECT PERIOD_DIFF(200802,200703)" db-types="MySQL" />
+    <sql-case id="select_percent_rank" value="SELECT PERCENT_RANK() OVER (ORDER BY salary) FROM employees;" db-types="MySQL" />
+    <sql-case id="select_pi" value="SELECT PI()" db-types="MySQL" />
+    <sql-case id="select_regexp" value="SELECT 'a' REGEXP '^[a-d]'" db-types="MySQL" />
+    <sql-case id="select_with_json_object_function" value="SELECT JSON_OBJECT('name' VALUE 'John', 'age' VALUE 30) AS json_data FROM DUAL" db-types="Oracle" />
 </sql-cases>

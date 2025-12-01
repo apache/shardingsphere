@@ -20,17 +20,8 @@ package org.apache.shardingsphere.proxy.backend.context;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.infra.database.DatabaseTypeEngine;
-import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
-import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnit;
-import org.apache.shardingsphere.infra.state.instance.InstanceStateContext;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.proxy.backend.connector.jdbc.datasource.JDBCBackendDataSource;
-
-import java.util.Collection;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
 /**
  * Proxy context.
@@ -61,44 +52,5 @@ public final class ProxyContext {
      */
     public static ProxyContext getInstance() {
         return INSTANCE;
-    }
-    
-    /**
-     * Check database exists.
-     *
-     * @param name database name
-     * @return database exists or not
-     */
-    public boolean databaseExists(final String name) {
-        return contextManager.getMetaDataContexts().getMetaData().containsDatabase(name);
-    }
-    
-    /**
-     * Get all database names.
-     *
-     * @return all database names
-     */
-    public Collection<String> getAllDatabaseNames() {
-        return contextManager.getMetaDataContexts().getMetaData().getAllDatabases().stream().map(ShardingSphereDatabase::getName).collect(Collectors.toList());
-    }
-    
-    /**
-     * Get instance state context.
-     *
-     * @return instance state context
-     */
-    public Optional<InstanceStateContext> getInstanceStateContext() {
-        return null == contextManager.getComputeNodeInstanceContext() ? Optional.empty() : Optional.ofNullable(contextManager.getComputeNodeInstanceContext().getInstance().getState());
-    }
-    
-    /**
-     * Get database type.
-     *
-     * @return database type
-     */
-    public DatabaseType getDatabaseType() {
-        Collection<ShardingSphereDatabase> databases = contextManager.getMetaDataContexts().getMetaData().getAllDatabases();
-        return databases.stream().flatMap(each -> each.getResourceMetaData().getStorageUnits().values().stream()).findFirst().map(StorageUnit::getStorageType)
-                .orElseGet(DatabaseTypeEngine::getDefaultStorageType);
     }
 }

@@ -154,5 +154,44 @@
     <sql-case id="insert_with_aes_encrypt" value="INSERT INTO t_order_item(item_id,encrypt) VALUES (1,AES_ENCRYPT('text','key_str'))" db-types="MySQL" />
     <sql-case id="insert_on_duplicate_key_update_with_values" value="INSERT INTO table (a,b,c) VALUES (1,2,3),(4,5,6) ON DUPLICATE KEY UPDATE c=VALUES(a)+VALUES(b);" db-types="MySQL" />
     <sql-case id="insert_returning_expressions" value="INSERT INTO t2 (id) VALUES (2),(3) RETURNING id,t&amp;t" db-types="MySQL,Firebird" />
-
+    <sql-case id="insert_with_geom_collection_function" value="INSERT INTO t1 VALUES (GEOMCOLLECTION(POINT(0, 0)))" db-types="MySQL" />
+    <sql-case id="insert_select_with_brackets" value="insert into t_order (order_id) (select order_id from t_order_item)" db-types="MySQL" />
+    <sql-case id="insert_into_four_level_naming" value="INSERT INTO MyLinkServer.AdventureWorks2022.HumanResources.Department (Name, GroupName) VALUES (N'Public Relations', N'Executive General and Administration');" db-types="SQLServer"/>
+    <sql-case id="insert_with_opendatasource_function" value="INSERT INTO OPENDATASOURCE('SQLNCLI', 'Data Source= &lt;server_name&gt;; Integrated Security=SSPI').AdventureWorks2022.HumanResources.Department (Name, GroupName) VALUES (N'Standards and Methods', 'Quality Assurance')" db-types="SQLServer"/>
+    <sql-case id="insert_overwrite_basic" value="INSERT OVERWRITE TABLE sales select * FROM raw_sales;" db-types="Hive" />
+    <sql-case id="insert_into_basic" value="INSERT INTO TABLE sales select * FROM raw_sales;" db-types="Hive" />
+    <sql-case id="insert_overwrite_partition" value="INSERT OVERWRITE TABLE sales PARTITION (region='Asia') select id, amount FROM raw_sales WHERE region='Asia';" db-types="Hive" />
+    <sql-case id="insert_into_partition" value="INSERT INTO TABLE sales PARTITION (region='Europe') select id, amount FROM raw_sales WHERE region='Europe';" db-types="Hive" />
+    <sql-case id="insert_overwrite_if_not_exists" value="INSERT OVERWRITE TABLE sales PARTITION (region='Africa') IF NOT EXISTS SELECT id, amount FROM raw_sales WHERE region='Africa';" db-types="Hive" />
+    <sql-case id="from_one_insert_overwrite_basic" value="FROM raw_data INSERT OVERWRITE TABLE tal0 SELECT *;" db-types="Hive" />
+    <sql-case id="from_two_insert_overwrite_and_one_into_basic" value="FROM customer_info INSERT OVERWRITE TABLE customer_backup SELECT id, name, phone WHERE is_valid=1 INSERT OVERWRITE TABLE vip_customer SELECT id, name, email WHERE member_level='VIP' INSERT INTO TABLE new_customer SELECT id, register_time WHERE register_time > '2024-06-01';" db-types="Hive" />
+    <sql-case id="from_one_insert_overwrite_with_partition_without_if" value="FROM user_activities INSERT OVERWRITE TABLE user_stats PARTITION (country='CN', province='Beijing') SELECT user_id, login_count;" db-types="Hive" />
+    <sql-case id="from_one_insert_overwrite_partition_if_not_exists" value="FROM product_logs INSERT OVERWRITE TABLE product_archive PARTITION (category='books') IF NOT EXISTS SELECT product_id, stock_num;" db-types="Hive" />
+    <sql-case id="from_two_insert_overwrite_partition" value="FROM customer_orders INSERT OVERWRITE TABLE order_summary PARTITION (region='North') IF NOT EXISTS SELECT order_id WHERE region='North' INSERT OVERWRITE TABLE order_archive PARTITION (status='completed') SELECT shipping_address WHERE order_status='completed';" db-types="Hive" />
+    <sql-case id="from_two_insert_overwrite_and_one_into_with_partition" value="FROM sales INSERT OVERWRITE TABLE sales_partition PARTITION (region='West', quarter='Q3') IF NOT EXISTS SELECT transaction_id, amount_date INSERT OVERWRITE TABLE sales_archive PARTITION (status='refunded') SELECT transaction_id, transaction_date, reason WHERE is_refunded=1 INSERT INTO TABLE sales_analytics PARTITION (analysis_type='daily') SELECT transaction_date, amount;" db-types="Hive" />
+    <sql-case id="from_one_insert_into_basic" value="FROM raw_data INSERT INTO TABLE customer SELECT id, name, email;" db-types="Hive" />
+    <sql-case id="from_two_insert_into_and_one_overwrite_basic" value="FROM user_data INSERT INTO TABLE active_users SELECT id, name, email WHERE status='active' INSERT INTO TABLE new_users SELECT id, register_date WHERE register_date > '2024-01-01' INSERT OVERWRITE TABLE all_users SELECT id, name, status;" db-types="Hive" />
+    <sql-case id="from_one_insert_into_with_partition" value="FROM user_logs INSERT INTO TABLE visit_stats PARTITION (dt='2024-08-15') SELECT user_id WHERE visit_date='2024-08-15';" db-types="Hive" />
+    <sql-case id="from_two_insert_into_with_partition" value="FROM customer_orders INSERT INTO TABLE orders PARTITION (dt='2025-08-15') SELECT order_id WHERE visit_date='2025-08-15' INSERT INTO TABLE order_2023 PARTITION (dt='2023-08-15') SELECT order_id WHERE visit_date='2023-08-15';" db-types="Hive" />
+    <sql-case id="from_two_insert_into_and_one_overwrite_with_partition" value="FROM sales INSERT INTO TABLE monthly_sales PARTITION (month='202408') SELECT product_id, sales_count INSERT INTO TABLE top_products PARTITION (category='electronics') SELECT product_id, total_sales INSERT OVERWRITE TABLE sales_archive PARTITION (quarter='2024Q3') IF NOT EXISTS SELECT product_id WHERE sale_date BETWEEN '2024-07-01' AND '2024-09-30';" db-types="Hive" />
+    <sql-case id="dynamic_partition_overwrite_basic" value="INSERT OVERWRITE TABLE sales PARTITION (region, year) select id FROM raw_sales;" db-types="Hive" />
+    <sql-case id="dynamic_partition_overwrite_mixed" value="INSERT OVERWRITE TABLE user_logs PARTITION (country='CN', province) select user_id FROM all_logs where country='CN';" db-types="Hive" />
+    <sql-case id="dynamic_partition_overwrite_filtered" value="INSERT OVERWRITE TABLE order_stats PARTITION (month='August', status='active') select order_id FROM order_details where amount > 100;" db-types="Hive" />
+    <sql-case id="dynamic_partition_into_basic" value="INSERT INTO TABLE sales PARTITION (region, year) select id FROM raw_sales;" db-types="Hive" />
+    <sql-case id="dynamic_partition_into_mixed" value="INSERT INTO TABLE user_logs PARTITION (country='CN', province) select user_id FROM all_logs where country='CN';" db-types="Hive" />
+    <sql-case id="dynamic_partition_into_filtered" value="INSERT INTO TABLE order_stats PARTITION (month='August', status='active') select order_id FROM order_details where amount > 100;" db-types="Hive" />
+    <sql-case id="insert_overwrite_directory_basic" value="INSERT OVERWRITE DIRECTORY '/user/hive/output' SELECT id, name FROM employee;" db-types="Hive" />
+    <sql-case id="insert_overwrite_local_directory" value="INSERT OVERWRITE LOCAL DIRECTORY '/tmp/local_output' SELECT order_id FROM sales;" db-types="Hive" />
+    <sql-case id="insert_overwrite_directory_with_row_format" value="INSERT OVERWRITE DIRECTORY '/data/export' ROW FORMAT DELIMITED FIELDS TERMINATED BY ',' SELECT product_id, category FROM products;" db-types="Hive" />
+    <sql-case id="insert_overwrite_directory_with_file_format" value="INSERT OVERWRITE DIRECTORY '/archive/logs' STORED AS PARQUET SELECT log_date, message FROM system_logs;" db-types="Hive" />
+    <sql-case id="insert_overwrite_local_with_row_format_and_file_format" value="INSERT OVERWRITE LOCAL DIRECTORY '/tmp/report' ROW FORMAT DELIMITED FIELDS TERMINATED BY ',' STORED AS TEXTFILE SELECT login_time FROM user_activity;" db-types="Hive" />
+    <sql-case id="single_insert_overwrite_directory" value="FROM employee INSERT OVERWRITE DIRECTORY '/user/output/emp_data' SELECT id;" db-types="Hive" />
+    <sql-case id="two_insert_overwrite_directory" value="FROM employee INSERT OVERWRITE DIRECTORY '/user/output/emp_data' SELECT id INSERT OVERWRITE DIRECTORY '/user/output/emp_data' SELECT name;" db-types="Hive" />
+    <sql-case id="two_insert_overwrite_directory_with_local" value="FROM employee INSERT OVERWRITE LOCAL DIRECTORY '/user/output/emp_data' SELECT id INSERT OVERWRITE LOCAL DIRECTORY '/user/output/emp_data' SELECT name;" db-types="Hive" />
+    <sql-case id="three_insert_overwrite_directory" value="FROM employee INSERT OVERWRITE DIRECTORY '/user/output/emp_data' SELECT id INSERT OVERWRITE DIRECTORY '/user/output/emp_data' SELECT name INSERT OVERWRITE DIRECTORY '/user/output/emp_data' SELECT user;" db-types="Hive" />
+    <sql-case id="insert_into_hive_basic" value="INSERT INTO TABLE students VALUES (1, 'Alice', 20);" db-types="Hive" />
+    <sql-case id="insert_into_two_value" value="INSERT INTO TABLE students VALUES (1, 'Alice'), (2, 'Bob');" db-types="Hive" />
+    <sql-case id="insert_into_with_partition" value="INSERT INTO TABLE sales PARTITION (region='Asia') VALUES (1001, 'Laptop', 5999);" db-types="Hive" />
+    <sql-case id="insert_into_without_val1" value="INSERT INTO TABLE sales PARTITION (region) VALUES (1001, 'Laptop', 5999);" db-types="Hive" />
+    <sql-case id="insert_into_with_null" value="INSERT INTO TABLE user_info VALUES (301, NULL, 'New York'), (302, 'Charlie', NULL);" db-types="Hive" />
 </sql-cases>

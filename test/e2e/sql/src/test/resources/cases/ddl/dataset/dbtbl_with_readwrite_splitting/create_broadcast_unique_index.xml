@@ -19,6 +19,6 @@
     <metadata table-name="t_broadcast_table_for_ddl" data-nodes="write_ds_${0..9}.t_broadcast_table_for_ddl,read_ds_${0..9}.t_broadcast_table_for_ddl">
         <column name="id" type="integer" />
         <column name="description" type="varchar" />
-        <index name="t_broadcast_table_for_ddl_index_t_broadcast_table_for_ddl" column="id" unique="true" />
+        <index name="t_broadcast_table_for_ddl_idx_t_broadcast_table_for_ddl" column="id" unique="true" />
     </metadata>
 </dataset>

@@ -17,9 +17,11 @@
 
 package org.apache.shardingsphere.data.pipeline.core.task;
 
+import org.apache.shardingsphere.data.pipeline.core.constant.PipelineSQLOperationType;
 import org.apache.shardingsphere.data.pipeline.core.ingest.position.IngestPosition;
 import org.apache.shardingsphere.data.pipeline.core.ingest.position.type.finished.IngestFinishedPosition;
 import org.apache.shardingsphere.data.pipeline.core.ingest.position.type.placeholder.IngestPlaceholderPosition;
+import org.apache.shardingsphere.data.pipeline.core.ingest.record.DataRecord;
 import org.apache.shardingsphere.data.pipeline.core.ingest.record.FinishedRecord;
 import org.apache.shardingsphere.data.pipeline.core.ingest.record.PlaceholderRecord;
 import org.apache.shardingsphere.data.pipeline.core.task.progress.IncrementalTaskProgress;
@@ -50,17 +52,28 @@ class IncrementalTaskAckCallbackTest {
         callback.onAck(Collections.singletonList(new PlaceholderRecord(new IngestPlaceholderPosition())));
         assertNull(taskProgress.getPosition());
         assertThat(taskProgress.getIncrementalTaskDelay().getLastEventTimestamps(), is(0L));
-        assertThat(System.currentTimeMillis() - taskProgress.getIncrementalTaskDelay().getLatestActiveTimeMillis(), lessThan(10000L));
+        assertThat(taskProgress.getIncrementalTaskDelay().getLatestActiveTimeMillis(), is(0L));
     }
     
     @Test
-    void assertOnAckWithNotIngestPlaceholderPosition() {
-        IngestFinishedPosition position = new IngestFinishedPosition();
+    void assertOnAckWithFinishedRecord() {
+        IngestPosition position = new IngestFinishedPosition();
         FinishedRecord finishedRecord = new FinishedRecord(position);
         finishedRecord.setCommitTime(1L);
         callback.onAck(Collections.singletonList(finishedRecord));
         assertThat(taskProgress.getPosition(), is(position));
         assertThat(taskProgress.getIncrementalTaskDelay().getLastEventTimestamps(), is(1L));
+        assertThat(taskProgress.getIncrementalTaskDelay().getLatestActiveTimeMillis(), is(0L));
+    }
+    
+    @Test
+    void assertOnAckWithDataRecord() {
+        IngestPosition position = new IngestFinishedPosition();
+        DataRecord dataRecord = new DataRecord(PipelineSQLOperationType.DELETE, "t_order", position, 3);
+        dataRecord.setCommitTime(2L);
+        callback.onAck(Collections.singletonList(dataRecord));
+        assertThat(taskProgress.getPosition(), is(position));
+        assertThat(taskProgress.getIncrementalTaskDelay().getLastEventTimestamps(), is(2L));
         assertThat(System.currentTimeMillis() - taskProgress.getIncrementalTaskDelay().getLatestActiveTimeMillis(), lessThan(10000L));
     }
 }

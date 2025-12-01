@@ -18,11 +18,10 @@
 package org.apache.shardingsphere.shadow.route.retriever.dml;
 
 import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
-import org.apache.shardingsphere.infra.binder.context.statement.dml.DeleteStatementContext;
-import org.apache.shardingsphere.infra.binder.context.statement.dml.InsertStatementContext;
-import org.apache.shardingsphere.infra.binder.context.statement.dml.SelectStatementContext;
-import org.apache.shardingsphere.infra.binder.context.statement.dml.UpdateStatementContext;
-import org.apache.shardingsphere.infra.binder.context.type.TableAvailable;
+import org.apache.shardingsphere.infra.binder.context.statement.type.dml.DeleteStatementContext;
+import org.apache.shardingsphere.infra.binder.context.statement.type.dml.InsertStatementContext;
+import org.apache.shardingsphere.infra.binder.context.statement.type.dml.SelectStatementContext;
+import org.apache.shardingsphere.infra.binder.context.statement.type.dml.UpdateStatementContext;
 import org.apache.shardingsphere.infra.session.query.QueryContext;
 import org.apache.shardingsphere.shadow.route.retriever.ShadowDataSourceMappingsRetriever;
 import org.apache.shardingsphere.shadow.route.retriever.dml.table.column.ShadowColumnDataSourceMappingsRetriever;
@@ -50,7 +49,7 @@ public final class ShadowDMLStatementDataSourceMappingsRetriever implements Shad
     private final ShadowColumnDataSourceMappingsRetriever shadowColumnDataSourceMappingsRetriever;
     
     public ShadowDMLStatementDataSourceMappingsRetriever(final QueryContext queryContext, final ShadowOperationType operationType) {
-        tableNames = ((TableAvailable) queryContext.getSqlStatementContext()).getTablesContext().getTableNames();
+        tableNames = queryContext.getSqlStatementContext().getTablesContext().getTableNames();
         tableHintDataSourceMappingsRetriever = new ShadowTableHintDataSourceMappingsRetriever(operationType, queryContext.getHintValueContext().isShadow());
         shadowColumnDataSourceMappingsRetriever = createShadowDataSourceMappingsRetriever(queryContext);
     }

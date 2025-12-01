@@ -120,6 +120,15 @@
         </projections>
     </select>
 
+    <select sql-case-id="select_max_with_all">
+        <projections start-index="7" stop-index="37">
+            <aggregation-projection type="MAX" expression="MAX(ALL user_id)" alias="max_user_id" start-index="7" stop-index="22" />
+        </projections>
+        <from>
+            <simple-table name="t_order" start-index="44" stop-index="50" />
+        </from>
+    </select>
+
     <select sql-case-id="select_min">
         <from>
             <simple-table name="t_order" start-index="40" stop-index="46" />

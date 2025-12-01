@@ -25,7 +25,7 @@
         <assertion parameters="1000:int,1001:int" expected-data-source-name="read_dataset" />
     </test-case>
     
-    <test-case sql="SELECT t_order_item.* FROM t_order JOIN t_order_item ON t_order.order_id = t_order_item.order_id WHERE t_order.order_id = ?" scenario-types="tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
+    <test-case sql="SELECT t_order_item.* FROM t_order JOIN t_order_item ON t_order.order_id = t_order_item.order_id WHERE t_order.order_id = ?" db-types="MySQL,PostgreSQL,openGauss" scenario-types="tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
         <assertion parameters="1000:int" expected-data-source-name="read_dataset" />
     </test-case>
     
@@ -33,28 +33,28 @@
         <assertion parameters="1000:int" expected-data-source-name="read_dataset" />
     </test-case>
     
-    <test-case sql="SELECT i.* FROM t_order o JOIN t_order_item i ON o.user_id = i.user_id AND o.order_id = i.order_id WHERE (o.order_id = ? OR o.order_id = ?) AND o.user_id = ?" scenario-types="dbtbl_with_readwrite_splitting,readwrite_splitting">
+    <test-case sql="SELECT i.* FROM t_order o JOIN t_order_item i ON o.user_id = i.user_id AND o.order_id = i.order_id WHERE (o.order_id = ? OR o.order_id = ?) AND o.user_id = ?" db-types="MySQL,PostgreSQL,openGauss" scenario-types="dbtbl_with_readwrite_splitting,readwrite_splitting">
         <assertion parameters="1000:int, 1100:int, 11:int" expected-data-source-name="read_dataset" />
     </test-case>
     
     <!-- TODO Replace with standard table structure -->
-    <!--<test-case sql="SELECT i.* FROM t_order o JOIN t_order_item i ON o.user_id = i.user_id AND o.order_id = i.order_id JOIN t_broadcast_table c ON o.status = c.status WHERE (o.order_id = ? OR o.order_id = ?) AND o.user_id = ? AND o.status = ?" scenario-types="db,tbl,dbtbl_with_readwrite_splitting">
+    <!--<test-case sql="SELECT i.* FROM t_order o JOIN t_order_item i ON o.user_id = i.user_id AND o.order_id = i.order_id JOIN t_broadcast_table c ON o.status = c.status WHERE (o.order_id = ? OR o.order_id = ?) AND o.user_id = ? AND o.status = ?" db-types="MySQL,PostgreSQL,openGauss" scenario-types="db,tbl,dbtbl_with_readwrite_splitting">
         <assertion parameters="1000:int, 1100:int, 11:int, init:String" expected-data-source-name="read_dataset" />
     </test-case>-->
     
-    <test-case sql="SELECT i.* FROM t_order o JOIN t_order_item i ON o.user_id = i.user_id AND o.order_id = i.order_id ORDER BY i.item_id" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
+    <test-case sql="SELECT i.* FROM t_order o JOIN t_order_item i ON o.user_id = i.user_id AND o.order_id = i.order_id ORDER BY i.item_id" db-types="MySQL,PostgreSQL,openGauss" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
         <assertion expected-data-source-name="read_dataset" />
     </test-case>
     
-    <test-case sql="SELECT i.*, o.* FROM t_order o JOIN t_order_item i ON o.user_id = i.user_id AND o.order_id = i.order_id ORDER BY item_id" db-types="H2,MySQL" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
+    <test-case sql="SELECT i.*, o.* FROM t_order o JOIN t_order_item i ON o.user_id = i.user_id AND o.order_id = i.order_id ORDER BY item_id" db-types="MySQL" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
         <assertion expected-data-source-name="read_dataset" />
     </test-case>
     
-    <test-case sql="SELECT i.* FROM t_order o JOIN t_order_item i ON o.user_id = i.user_id AND o.order_id = i.order_id WHERE o.user_id IN (?, ?) AND o.order_id BETWEEN ? AND ? ORDER BY i.item_id" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
+    <test-case sql="SELECT i.* FROM t_order o JOIN t_order_item i ON o.user_id = i.user_id AND o.order_id = i.order_id WHERE o.user_id IN (?, ?) AND o.order_id BETWEEN ? AND ? ORDER BY i.item_id" db-types="MySQL,PostgreSQL,openGauss" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
         <assertion parameters="10:int, 11:int, 1000:int, 1909:int" expected-data-source-name="read_dataset" />
     </test-case>
     
-    <test-case sql="SELECT i.* FROM t_order o JOIN t_order_item i ON o.user_id = i.user_id AND o.order_id = i.order_id WHERE o.user_id IN (?, ?) AND o.order_id BETWEEN ? AND ? ORDER BY i.item_id DESC LIMIT ?" db-types="MySQL,H2,PostgreSQL" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
+    <test-case sql="SELECT i.* FROM t_order o JOIN t_order_item i ON o.user_id = i.user_id AND o.order_id = i.order_id WHERE o.user_id IN (?, ?) AND o.order_id BETWEEN ? AND ? ORDER BY i.item_id DESC LIMIT ?" db-types="MySQL,PostgreSQL" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
         <assertion parameters="10:int, 19:int, 1000:int, 1909:int, 2:int" expected-data-source-name="read_dataset" />
     </test-case>
     
@@ -74,12 +74,12 @@
         <assertion parameters="10:int, 19:int, 1000:int, 1909:int, 2:int, 2:int" expected-data-source-name="read_dataset" />
     </test-case>
     
-    <test-case sql="SELECT i.user_id FROM t_order o JOIN t_order_item i ON o.user_id = i.user_id AND o.order_id = i.order_id WHERE o.user_id IN (?, ?) AND o.order_id BETWEEN ? AND ? GROUP BY i.item_id ORDER BY i.item_id DESC LIMIT ?, ?" db-types="MySQL,H2" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
+    <test-case sql="SELECT i.user_id FROM t_order o JOIN t_order_item i ON o.user_id = i.user_id AND o.order_id = i.order_id WHERE o.user_id IN (?, ?) AND o.order_id BETWEEN ? AND ? GROUP BY i.item_id ORDER BY i.item_id DESC LIMIT ?, ?" db-types="MySQL" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
         <assertion parameters="10:int, 19:int, 1000:int, 1909:int, 1:int, 10:int" expected-data-source-name="read_dataset" />
     </test-case>
     
     <!-- TODO Replace with standard table structure -->
-    <!--<test-case sql="SELECT i.* FROM t_order o JOIN t_order_item i ON o.user_id = i.user_id AND o.order_id = i.order_id JOIN t_broadcast_table c ON o.status = c.status WHERE o.user_id IN (?, ?) AND o.order_id BETWEEN ? AND ? AND o.status = ? ORDER BY i.item_id" scenario-types="db,tbl,dbtbl_with_readwrite_splitting">
+    <!--<test-case sql="SELECT i.* FROM t_order o JOIN t_order_item i ON o.user_id = i.user_id AND o.order_id = i.order_id JOIN t_broadcast_table c ON o.status = c.status WHERE o.user_id IN (?, ?) AND o.order_id BETWEEN ? AND ? AND o.status = ? ORDER BY i.item_id" db-types="MySQL,PostgreSQL,openGauss" scenario-types="db,tbl,dbtbl_with_readwrite_splitting">
         <assertion parameters="10:int, 11:int, 1001:int, 1100:int, init:String" expected-data-source-name="read_dataset" />
         <assertion parameters="10:int, 11:int, 1009:int, 1108:int, none:String" expected-data-source-name="read_dataset" />
     </test-case>-->
@@ -89,31 +89,31 @@
     </test-case>
 
     <!-- Test single, broadcast and sharding join begin -->
-    <test-case sql="SELECT * FROM t_product p INNER JOIN t_product_category c ON p.category_id = c.category_id WHERE p.product_id = ?" scenario-types="db,dbtbl_with_readwrite_splitting">
+    <test-case sql="SELECT * FROM t_product p INNER JOIN t_product_category c ON p.category_id = c.category_id WHERE p.product_id = ?" db-types="MySQL,PostgreSQL,openGauss" scenario-types="db,dbtbl_with_readwrite_splitting">
         <assertion parameters="1:int" expected-data-source-name="read_dataset" />
     </test-case>
 
-    <test-case sql="SELECT * FROM t_product_category c INNER JOIN t_order_item i ON c.category_id = i.product_id WHERE i.product_id = ?" scenario-types="db,dbtbl_with_readwrite_splitting">
+    <test-case sql="SELECT * FROM t_product_category c INNER JOIN t_order_item i ON c.category_id = i.product_id WHERE i.product_id = ?" db-types="MySQL,PostgreSQL,openGauss" scenario-types="db,dbtbl_with_readwrite_splitting">
         <assertion parameters="1:int" expected-data-source-name="read_dataset" />
     </test-case>
     <!-- Test single, broadcast and sharding join end -->
     
     <!-- TODO add encrypt,encrypt_and_readwrite_splitting,dbtbl_with_readwrite_splitting_and_encrypt scenario when use standard table -->
-    <test-case sql="SELECT * FROM t_product p INNER JOIN t_product_detail d ON p.product_id = d.product_id" db-types="MySQL,Oracle,SQLServer" scenario-types="sharding_and_encrypt">
+    <test-case sql="SELECT * FROM t_product p INNER JOIN t_product_detail d ON p.product_id = d.product_id" db-types="MySQL" scenario-types="sharding_and_encrypt">
         <assertion expected-data-source-name="read_dataset" />
     </test-case>
     
     <!-- TODO Replace with standard table structure -->
-    <!--<test-case sql="SELECT * FROM t_single_table s INNER JOIN t_order o ON s.id = o.order_id" db-types="MySQL,Oracle,SQLServer" scenario-types="db,tbl,dbtbl_with_readwrite_splitting">
+    <!--<test-case sql="SELECT * FROM t_single_table s INNER JOIN t_order o ON s.id = o.order_id" db-types="MySQL" scenario-types="db,tbl,dbtbl_with_readwrite_splitting">
         <assertion expected-data-source-name="read_dataset" />
     </test-case>-->
     
-    <test-case sql="SELECT i.* FROM t_order o INNER JOIN t_order_item i ON o.order_id = i.order_id WHERE o.order_id = ?" db-types="MySQL,H2,PostgreSQL" scenario-types="tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
+    <test-case sql="SELECT i.* FROM t_order o INNER JOIN t_order_item i ON o.order_id = i.order_id WHERE o.order_id = ?" db-types="MySQL,PostgreSQL" scenario-types="tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
         <assertion parameters="1000:int" expected-data-source-name="read_dataset" />
     </test-case>
     
     <!-- TODO add dbtbl_with_readwrite_splitting_and_encrypt,sharding_and_encrypt,encrypt_and_readwrite_splitting,encrypt scenario when use standard t_user table in issue#21286 -->
-    <!--<test-case sql="SELECT * FROM t_user u INNER JOIN t_user_item m ON u.user_id = m.user_id WHERE u.user_id IN (10, 11)" scenario-types="encrypt">
+    <!--<test-case sql="SELECT * FROM t_user u INNER JOIN t_user_item m ON u.user_id = m.user_id WHERE u.user_id IN (10, 11)" db-types="MySQL,PostgreSQL,openGauss" scenario-types="encrypt">
         <assertion expected-data-source-name="read_dataset" />
     </test-case>-->
     
@@ -129,7 +129,7 @@
         <assertion expected-data-source-name="expected_dataset" />
     </test-case>
     
-    <test-case sql="SELECT * FROM t_order o LEFT JOIN t_order_item m ON o.order_id = m.order_id AND o.user_id = m.user_id order by o.order_id, m.item_id" db-types="MySQL,H2" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
+    <test-case sql="SELECT * FROM t_order o LEFT JOIN t_order_item m ON o.order_id = m.order_id AND o.user_id = m.user_id order by o.order_id, m.item_id" db-types="MySQL" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
         <assertion expected-data-source-name="read_dataset" />
     </test-case>
 </e2e-test-cases>

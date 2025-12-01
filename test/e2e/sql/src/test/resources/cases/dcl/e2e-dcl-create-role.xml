@@ -17,18 +17,11 @@
   -->
 
 <e2e-test-cases>
-    <test-case sql="CREATE ROLE role_dev" db-types="MySQL,Oracle,PostgreSQL,SQLServer" />
-    <test-case sql="CREATE ROLE role_dev_new identified by dev_passwd" db-types="Oracle" />
+    <test-case sql="CREATE ROLE role_dev" db-types="MySQL,PostgreSQL" />
     <test-case sql="CREATE ROLE role_dev_new PASSWORD 'passwd_dev'" db-types="PostgreSQL" />
-    <test-case sql="CREATE ROLE role_dev IDENTIFIED EXTERNALLY" db-types="Oracle" />
-    <test-case sql="CREATE ROLE role_dev IDENTIFIED GLOBALLY" db-types="Oracle" />
-    <test-case sql="CREATE ROLE role_dev NOT IDENTIFIED" db-types="Oracle" />
-    <test-case sql="CREATE ROLE role_dev AUTHORIZATION authorization" db-types="SQLServer" />
     <test-case sql="CREATE ROLE IF NOT EXISTS role_dev" db-types="MySQL" />
     <test-case sql="CREATE ROLE role_dev WITH ROLE role2, role3" db-types="PostgreSQL" />
-    <test-case sql="CREATE ROLE role_dev CONTAINER = ALL" db-types="Oracle" />
     <test-case sql="CREATE ROLE role_dev WITH SUPERUSER" db-types="PostgreSQL" />
     <test-case sql="CREATE ROLE role_dev WITH CREATEDB CREATEROLE" db-types="PostgreSQL" />
-    <test-case sql="CREATE ROLE role_dev IDENTIFIED BY password" db-types="Oracle" />
     <test-case sql="CREATE ROLE role_dev WITH ROLE role2" db-types="PostgreSQL" />
 </e2e-test-cases>

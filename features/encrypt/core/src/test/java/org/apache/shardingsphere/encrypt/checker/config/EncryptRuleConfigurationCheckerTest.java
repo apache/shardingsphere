@@ -25,7 +25,7 @@ import org.apache.shardingsphere.encrypt.exception.metadata.MissingRequiredEncry
 import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.algorithm.core.exception.MissingRequiredAlgorithmException;
 import org.apache.shardingsphere.infra.algorithm.core.exception.UnregisteredAlgorithmException;
-import org.apache.shardingsphere.infra.config.rule.checker.RuleConfigurationChecker;
+import org.apache.shardingsphere.infra.config.rule.checker.DatabaseRuleConfigurationChecker;
 import org.apache.shardingsphere.infra.spi.type.ordered.OrderedSPILoader;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -42,11 +42,11 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 class EncryptRuleConfigurationCheckerTest {
     
     @SuppressWarnings("rawtypes")
-    private RuleConfigurationChecker checker;
+    private DatabaseRuleConfigurationChecker checker;
     
     @BeforeEach
     void setUp() {
-        checker = OrderedSPILoader.getServicesByClass(RuleConfigurationChecker.class, Collections.singleton(EncryptRuleConfiguration.class)).get(EncryptRuleConfiguration.class);
+        checker = OrderedSPILoader.getServicesByClass(DatabaseRuleConfigurationChecker.class, Collections.singleton(EncryptRuleConfiguration.class)).get(EncryptRuleConfiguration.class);
     }
     
     @SuppressWarnings("unchecked")

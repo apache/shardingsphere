@@ -19,19 +19,19 @@ package org.apache.shardingsphere.readwritesplitting.checker;
 
 import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.algorithm.core.exception.AlgorithmInitializationException;
-import org.apache.shardingsphere.infra.config.rule.checker.RuleConfigurationChecker;
+import org.apache.shardingsphere.infra.config.rule.checker.DatabaseRuleConfigurationChecker;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.attribute.RuleAttributes;
 import org.apache.shardingsphere.infra.rule.attribute.datasource.DataSourceMapperRuleAttribute;
 import org.apache.shardingsphere.infra.spi.type.ordered.OrderedSPILoader;
+import org.apache.shardingsphere.infra.util.props.PropertiesBuilder;
+import org.apache.shardingsphere.infra.util.props.PropertiesBuilder.Property;
 import org.apache.shardingsphere.readwritesplitting.config.ReadwriteSplittingRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.config.rule.ReadwriteSplittingDataSourceGroupRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.exception.actual.DuplicateReadwriteSplittingActualDataSourceException;
 import org.apache.shardingsphere.readwritesplitting.exception.actual.MissingRequiredReadwriteSplittingActualDataSourceException;
 import org.apache.shardingsphere.readwritesplitting.exception.actual.ReadwriteSplittingActualDataSourceNotFoundException;
-import org.apache.shardingsphere.test.fixture.jdbc.MockedDataSource;
-import org.apache.shardingsphere.test.util.PropertiesBuilder;
-import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
+import org.apache.shardingsphere.test.infra.fixture.jdbc.MockedDataSource;
 import org.junit.jupiter.api.Test;
 
 import javax.sql.DataSource;
@@ -57,7 +57,7 @@ class ReadwriteSplittingRuleConfigurationCheckerTest {
     @Test
     void assertInvalidCheck() {
         ReadwriteSplittingRuleConfiguration ruleConfig = createInvalidRuleConfiguration();
-        RuleConfigurationChecker checker = OrderedSPILoader.getServicesByClass(RuleConfigurationChecker.class, Collections.singleton(ruleConfig.getClass())).get(ruleConfig.getClass());
+        DatabaseRuleConfigurationChecker checker = OrderedSPILoader.getServicesByClass(DatabaseRuleConfigurationChecker.class, Collections.singleton(ruleConfig.getClass())).get(ruleConfig.getClass());
         assertThrows(MissingRequiredReadwriteSplittingActualDataSourceException.class, () -> checker.check("test", ruleConfig, Collections.emptyMap(), Collections.emptyList()));
     }
     
@@ -75,7 +75,7 @@ class ReadwriteSplittingRuleConfigurationCheckerTest {
         List<ReadwriteSplittingDataSourceGroupRuleConfiguration> configs = Arrays.asList(createDataSourceGroupRuleConfiguration(
                 "write_ds_0", Arrays.asList("read_ds_0", "read_ds_1")), createDataSourceGroupRuleConfiguration("write_ds_2", Arrays.asList("read_ds_0", "read_ds_1")));
         when(ruleConfig.getDataSourceGroups()).thenReturn(configs);
-        RuleConfigurationChecker checker = OrderedSPILoader.getServicesByClass(RuleConfigurationChecker.class, Collections.singleton(ruleConfig.getClass())).get(ruleConfig.getClass());
+        DatabaseRuleConfigurationChecker checker = OrderedSPILoader.getServicesByClass(DatabaseRuleConfigurationChecker.class, Collections.singleton(ruleConfig.getClass())).get(ruleConfig.getClass());
         assertThrows(ReadwriteSplittingActualDataSourceNotFoundException.class, () -> checker.check("test", ruleConfig, mockDataSources(), Collections.emptyList()));
     }
     
@@ -85,7 +85,7 @@ class ReadwriteSplittingRuleConfigurationCheckerTest {
         List<ReadwriteSplittingDataSourceGroupRuleConfiguration> configs = Arrays.asList(createDataSourceGroupRuleConfiguration(
                 "write_ds_0", Arrays.asList("read_ds_0", "read_ds_0")), createDataSourceGroupRuleConfiguration("write_ds_1", Arrays.asList("read_ds_0", "read_ds_0")));
         when(ruleConfig.getDataSourceGroups()).thenReturn(configs);
-        RuleConfigurationChecker checker = OrderedSPILoader.getServicesByClass(RuleConfigurationChecker.class, Collections.singleton(ruleConfig.getClass())).get(ruleConfig.getClass());
+        DatabaseRuleConfigurationChecker checker = OrderedSPILoader.getServicesByClass(DatabaseRuleConfigurationChecker.class, Collections.singleton(ruleConfig.getClass())).get(ruleConfig.getClass());
         assertThrows(DuplicateReadwriteSplittingActualDataSourceException.class, () -> checker.check("test", ruleConfig, mockDataSources(), Collections.emptyList()));
     }
     
@@ -96,14 +96,14 @@ class ReadwriteSplittingRuleConfigurationCheckerTest {
         when(ruleConfig.getDataSourceGroups()).thenReturn(configs);
         AlgorithmConfiguration algorithm = new AlgorithmConfiguration("WEIGHT", PropertiesBuilder.build(new Property("read_ds_2", "1"), new Property("read_ds_1", "2")));
         when(ruleConfig.getLoadBalancers()).thenReturn(Collections.singletonMap("weight_ds", algorithm));
-        RuleConfigurationChecker checker = OrderedSPILoader.getServicesByClass(RuleConfigurationChecker.class, Collections.singleton(ruleConfig.getClass())).get(ruleConfig.getClass());
+        DatabaseRuleConfigurationChecker checker = OrderedSPILoader.getServicesByClass(DatabaseRuleConfigurationChecker.class, Collections.singleton(ruleConfig.getClass())).get(ruleConfig.getClass());
         assertThrows(AlgorithmInitializationException.class, () -> checker.check("test", ruleConfig, mockDataSources(), Collections.emptyList()));
     }
     
     @Test
     void assertCheckWhenConfigOtherRulesDatasource() {
         ReadwriteSplittingRuleConfiguration ruleConfig = createContainsOtherRulesDatasourceConfiguration();
-        RuleConfigurationChecker checker = OrderedSPILoader.getServicesByClass(RuleConfigurationChecker.class, Collections.singleton(ruleConfig.getClass())).get(ruleConfig.getClass());
+        DatabaseRuleConfigurationChecker checker = OrderedSPILoader.getServicesByClass(DatabaseRuleConfigurationChecker.class, Collections.singleton(ruleConfig.getClass())).get(ruleConfig.getClass());
         ShardingSphereRule rule = mock(ShardingSphereRule.class);
         DataSourceMapperRuleAttribute ruleAttribute = mock(DataSourceMapperRuleAttribute.class, RETURNS_DEEP_STUBS);
         when(ruleAttribute.getDataSourceMapper().containsKey("otherDatasourceName")).thenReturn(true);
@@ -144,7 +144,7 @@ class ReadwriteSplittingRuleConfigurationCheckerTest {
         ReadwriteSplittingDataSourceGroupRuleConfiguration dataSourceGroupConfig = new ReadwriteSplittingDataSourceGroupRuleConfiguration(
                 "foo_group", "write_ds", Arrays.asList("read_ds0", "read_ds1"), "foo_algo");
         ReadwriteSplittingRuleConfiguration ruleConfig = new ReadwriteSplittingRuleConfiguration(Collections.singleton(dataSourceGroupConfig), Collections.emptyMap());
-        RuleConfigurationChecker checker = OrderedSPILoader.getServicesByClass(RuleConfigurationChecker.class, Collections.singleton(ruleConfig.getClass())).get(ruleConfig.getClass());
+        DatabaseRuleConfigurationChecker checker = OrderedSPILoader.getServicesByClass(DatabaseRuleConfigurationChecker.class, Collections.singleton(ruleConfig.getClass())).get(ruleConfig.getClass());
         assertThat(checker.getRequiredDataSourceNames(ruleConfig), is(new LinkedHashSet<>(Arrays.asList("write_ds", "read_ds0", "read_ds1"))));
     }
     
@@ -153,7 +153,7 @@ class ReadwriteSplittingRuleConfigurationCheckerTest {
         ReadwriteSplittingDataSourceGroupRuleConfiguration dataSourceGroupConfig = new ReadwriteSplittingDataSourceGroupRuleConfiguration(
                 "foo_group", null, Collections.emptyList(), "foo_algo");
         ReadwriteSplittingRuleConfiguration ruleConfig = new ReadwriteSplittingRuleConfiguration(Collections.singleton(dataSourceGroupConfig), Collections.emptyMap());
-        RuleConfigurationChecker checker = OrderedSPILoader.getServicesByClass(RuleConfigurationChecker.class, Collections.singleton(ruleConfig.getClass())).get(ruleConfig.getClass());
+        DatabaseRuleConfigurationChecker checker = OrderedSPILoader.getServicesByClass(DatabaseRuleConfigurationChecker.class, Collections.singleton(ruleConfig.getClass())).get(ruleConfig.getClass());
         assertTrue(checker.getRequiredDataSourceNames(ruleConfig).isEmpty());
     }
 }

@@ -92,6 +92,6 @@ public final class DriverRawPushDownExecuteQueryExecutor {
     private ExecutionGroupContext<RawSQLExecutionUnit> createRawExecutionGroupContext(final ShardingSphereDatabase database, final ExecutionContext executionContext) throws SQLException {
         int maxConnectionsSizePerQuery = props.<Integer>getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY);
         return new RawExecutionPrepareEngine(maxConnectionsSizePerQuery, database.getRuleMetaData().getRules()).prepare(database.getName(),
-                executionContext.getRouteContext(), executionContext.getExecutionUnits(), new ExecutionGroupReportContext(processId, database.getName(), connectionContext.getGrantee()));
+                executionContext, executionContext.getExecutionUnits(), new ExecutionGroupReportContext(processId, database.getName(), connectionContext.getGrantee()));
     }
 }

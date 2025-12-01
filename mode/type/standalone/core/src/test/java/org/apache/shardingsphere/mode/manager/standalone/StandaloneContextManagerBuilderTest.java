@@ -18,14 +18,13 @@
 package org.apache.shardingsphere.mode.manager.standalone;
 
 import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
-import org.apache.shardingsphere.infra.config.mode.PersistRepositoryConfiguration;
 import org.apache.shardingsphere.infra.instance.metadata.InstanceMetaData;
 import org.apache.shardingsphere.infra.instance.metadata.jdbc.JDBCInstanceMetaData;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.infra.util.eventbus.EventBusContext;
 import org.apache.shardingsphere.mode.manager.ContextManager;
-import org.apache.shardingsphere.mode.manager.ContextManagerBuilder;
-import org.apache.shardingsphere.mode.manager.ContextManagerBuilderParameter;
+import org.apache.shardingsphere.mode.manager.builder.ContextManagerBuilder;
+import org.apache.shardingsphere.mode.manager.builder.ContextManagerBuilderParameter;
 import org.apache.shardingsphere.mode.repository.standalone.StandalonePersistRepositoryConfiguration;
 import org.junit.jupiter.api.Test;
 
@@ -36,7 +35,6 @@ import java.util.Properties;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 class StandaloneContextManagerBuilderTest {
     
@@ -59,8 +57,6 @@ class StandaloneContextManagerBuilderTest {
     }
     
     private static ModeConfiguration createModeConfiguration() {
-        PersistRepositoryConfiguration repositoryConfig = mock(StandalonePersistRepositoryConfiguration.class);
-        when(repositoryConfig.getType()).thenReturn("FIXTURE");
-        return new ModeConfiguration("STANDALONE", repositoryConfig);
+        return new ModeConfiguration("STANDALONE", new StandalonePersistRepositoryConfiguration("FIXTURE", new Properties()));
     }
 }

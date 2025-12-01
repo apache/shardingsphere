@@ -21,12 +21,12 @@ import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import org.apache.http.HttpStatus;
 import org.apache.shardingsphere.test.natived.commons.TestShardingService;
-import org.apache.shardingsphere.test.natived.commons.proxy.ProxyTestingServer;
+import org.apache.shardingsphere.test.natived.commons.util.ProxyTestingServer;
 import org.awaitility.Awaitility;
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.condition.EnabledInNativeImage;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.containers.wait.strategy.Wait;
@@ -41,40 +41,42 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.time.Duration;
+import java.util.Collections;
 import java.util.Properties;
+import java.util.concurrent.TimeUnit;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.nullValue;
 
 @SuppressWarnings({"SqlNoDataSourceInspection", "resource"})
-@EnabledInNativeImage
+@Disabled("See https://github.com/apache/incubator-seata/issues/7523 .")
 @Testcontainers
 class SeataTest {
     
     @Container
-    private static final GenericContainer<?> CONTAINER = new GenericContainer<>("apache/seata-server:2.2.0")
-            .withExposedPorts(7091, 8091)
-            .waitingFor(Wait.forHttp("/health").forPort(7091).forStatusCode(HttpStatus.SC_OK).forResponsePredicate("ok"::equals));
+    private final GenericContainer<?> container = new GenericContainer<>("apache/seata-server:2.5.0")
+            .withExposedPorts(8091)
+            .waitingFor(Wait.forHttp("/health").forPort(8091).forStatusCode(HttpStatus.SC_OK).forResponsePredicate("\"ok\""::equals));
     
     @Container
-    private static final PostgreSQLContainer<?> POSTGRES_CONTAINER = new PostgreSQLContainer<>("postgres:17.2-bookworm")
+    private final PostgreSQLContainer<?> postgresContainer = new PostgreSQLContainer<>("postgres:17.5-bookworm")
             .withCopyFileToContainer(
                     MountableFile.forHostPath(Paths.get("src/test/resources/test-native/sh/postgres.sh").toAbsolutePath()),
                     "/docker-entrypoint-initdb.d/postgres.sh");
     
-    private static final String SERVICE_DEFAULT_GROUP_LIST_KEY = "service.default.grouplist";
+    private final String serviceDefaultGroupListKey = "service.default.grouplist";
     
-    private static ProxyTestingServer proxyTestingServer;
+    private ProxyTestingServer proxyTestingServer;
     
     private TestShardingService testShardingService;
     
-    @BeforeAll
-    static void beforeAll() {
-        assertThat(System.getProperty(SERVICE_DEFAULT_GROUP_LIST_KEY), is(nullValue()));
-        System.setProperty(SERVICE_DEFAULT_GROUP_LIST_KEY, "127.0.0.1:" + CONTAINER.getMappedPort(8091));
+    @BeforeEach
+    void beforeEach() {
+        assertThat(System.getProperty(serviceDefaultGroupListKey), is(nullValue()));
+        System.setProperty(serviceDefaultGroupListKey, "127.0.0.1:" + container.getMappedPort(8091));
         Awaitility.await().atMost(Duration.ofSeconds(30L)).ignoreExceptions().until(() -> {
-            openConnection("test", "test", "jdbc:postgresql://127.0.0.1:" + POSTGRES_CONTAINER.getMappedPort(5432) + "/")
+            openConnection("test", "test", "jdbc:postgresql://127.0.0.1:" + postgresContainer.getMappedPort(5432) + "/")
                     .close();
             return true;
         });
@@ -86,10 +88,14 @@ class SeataTest {
         });
     }
     
-    @AfterAll
-    static void afterAll() {
-        proxyTestingServer.close();
-        System.clearProperty(SERVICE_DEFAULT_GROUP_LIST_KEY);
+    /**
+     * TODO Apparently there is a real connection leak on Seata Client 2.5.0.
+     */
+    @AfterEach
+    void afterEach() {
+        Awaitility.await().pollDelay(5L, TimeUnit.SECONDS).until(() -> true);
+        System.clearProperty(serviceDefaultGroupListKey);
+        proxyTestingServer.close(Collections.singletonList("sharding_db"));
     }
     
     /**
@@ -109,39 +115,14 @@ class SeataTest {
         try (
                 Connection connection = openConnection("root", "root", "jdbc:postgresql://127.0.0.1:" + proxyTestingServer.getProxyPort() + "/sharding_db");
                 Statement statement = connection.createStatement()) {
-            statement.execute("REGISTER STORAGE UNIT ds_0 (\n"
-                    + "  URL=\"jdbc:postgresql://127.0.0.1:" + POSTGRES_CONTAINER.getMappedPort(5432) + "/demo_ds_0\",\n"
-                    + "  USER=\"test\",\n"
-                    + "  PASSWORD=\"test\"\n"
-                    + "),ds_1 (\n"
-                    + "  URL=\"jdbc:postgresql://127.0.0.1:" + POSTGRES_CONTAINER.getMappedPort(5432) + "/demo_ds_1\",\n"
-                    + "  USER=\"test\",\n"
-                    + "  PASSWORD=\"test\"\n"
-                    + "),ds_2 (\n"
-                    + "  URL=\"jdbc:postgresql://127.0.0.1:" + POSTGRES_CONTAINER.getMappedPort(5432) + "/demo_ds_2\",\n"
-                    + "  USER=\"test\",\n"
-                    + "  PASSWORD=\"test\"\n"
-                    + ")");
-            statement.execute("CREATE DEFAULT SHARDING DATABASE STRATEGY (\n"
-                    + "  TYPE=\"standard\", \n"
-                    + "  SHARDING_COLUMN=user_id, \n"
-                    + "  SHARDING_ALGORITHM(\n"
-                    + "    TYPE(\n"
-                    + "      NAME=CLASS_BASED, \n"
-                    + "      PROPERTIES(\n"
-                    + "        \"strategy\"=\"STANDARD\",\n"
-                    + "        \"algorithmClassName\"=\"org.apache.shardingsphere.test.natived.commons.algorithm.ClassBasedInlineShardingAlgorithmFixture\"\n"
-                    + "      )\n"
-                    + "    )\n"
-                    + "  )\n"
-                    + ")");
-            statement.execute("CREATE SHARDING TABLE RULE t_order (\n"
-                    + "  DATANODES(\"<LITERAL>ds_0.t_order, ds_1.t_order, ds_2.t_order\"),\n"
-                    + "  KEY_GENERATE_STRATEGY(COLUMN=order_id,TYPE(NAME=\"SNOWFLAKE\"))\n"
-                    + "), t_order_item (\n"
-                    + "  DATANODES(\"<LITERAL>ds_0.t_order_item, ds_1.t_order_item, ds_2.t_order_item\"),\n"
-                    + "  KEY_GENERATE_STRATEGY(COLUMN=order_item_id,TYPE(NAME=\"SNOWFLAKE\"))\n"
-                    + ")");
+            statement.execute("REGISTER STORAGE UNIT ds_0 (URL='jdbc:postgresql://127.0.0.1:" + postgresContainer.getMappedPort(5432) + "/demo_ds_0',USER='test',PASSWORD='test'),"
+                    + "ds_1 (URL='jdbc:postgresql://127.0.0.1:" + postgresContainer.getMappedPort(5432) + "/demo_ds_1',USER='test',PASSWORD='test'),"
+                    + "ds_2 (URL='jdbc:postgresql://127.0.0.1:" + postgresContainer.getMappedPort(5432) + "/demo_ds_2',USER='test',PASSWORD='test')");
+            statement.execute("CREATE DEFAULT SHARDING DATABASE STRATEGY (TYPE='standard', SHARDING_COLUMN=user_id, SHARDING_ALGORITHM(TYPE(NAME=CLASS_BASED,"
+                    + "PROPERTIES('strategy'='STANDARD','algorithmClassName'='org.apache.shardingsphere.test.natived.commons.algorithm.ClassBasedInlineShardingAlgorithmFixture'))))");
+            statement.execute("CREATE SHARDING TABLE RULE t_order (DATANODES('<LITERAL>ds_0.t_order, ds_1.t_order, ds_2.t_order'),"
+                    + "KEY_GENERATE_STRATEGY(COLUMN=order_id,TYPE(NAME='SNOWFLAKE'))), t_order_item (DATANODES('<LITERAL>ds_0.t_order_item, ds_1.t_order_item, ds_2.t_order_item'),"
+                    + "KEY_GENERATE_STRATEGY(COLUMN=order_item_id,TYPE(NAME='SNOWFLAKE')))");
             statement.execute("CREATE BROADCAST TABLE RULE t_address");
         }
         HikariConfig config = new HikariConfig();
@@ -165,7 +146,7 @@ class SeataTest {
         testShardingService.getAddressRepository().truncateTable();
     }
     
-    private static Connection openConnection(final String username, final String password, final String jdbcUrl) throws SQLException {
+    private Connection openConnection(final String username, final String password, final String jdbcUrl) throws SQLException {
         Properties props = new Properties();
         props.setProperty("user", username);
         props.setProperty("password", password);

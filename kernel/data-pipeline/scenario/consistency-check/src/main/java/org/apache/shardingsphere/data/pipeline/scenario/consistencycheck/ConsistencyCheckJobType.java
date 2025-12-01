@@ -17,50 +17,24 @@
 
 package org.apache.shardingsphere.data.pipeline.scenario.consistencycheck;
 
-import org.apache.shardingsphere.data.pipeline.core.job.progress.yaml.swapper.YamlConsistencyCheckJobItemProgressSwapper;
+import org.apache.shardingsphere.data.pipeline.core.job.config.PipelineJobConfiguration;
+import org.apache.shardingsphere.data.pipeline.core.job.type.PipelineJobOption;
 import org.apache.shardingsphere.data.pipeline.core.job.type.PipelineJobType;
-import org.apache.shardingsphere.data.pipeline.core.pojo.PipelineJobInfo;
+import org.apache.shardingsphere.data.pipeline.core.pojo.PipelineJobTarget;
 import org.apache.shardingsphere.data.pipeline.scenario.consistencycheck.config.yaml.swapper.YamlConsistencyCheckJobConfigurationSwapper;
 
 /**
  * Consistency check job type.
  */
-public final class ConsistencyCheckJobType implements PipelineJobType {
+public final class ConsistencyCheckJobType implements PipelineJobType<PipelineJobConfiguration> {
     
     @Override
-    public String getCode() {
-        return "02";
+    public PipelineJobOption getOption() {
+        return new PipelineJobOption("02", ConsistencyCheckJob.class, false, new YamlConsistencyCheckJobConfigurationSwapper(), true, null, null, false);
     }
     
     @Override
-    public boolean isTransmissionJob() {
-        return false;
-    }
-    
-    @SuppressWarnings("unchecked")
-    @Override
-    public YamlConsistencyCheckJobConfigurationSwapper getYamlJobConfigurationSwapper() {
-        return new YamlConsistencyCheckJobConfigurationSwapper();
-    }
-    
-    @SuppressWarnings("unchecked")
-    @Override
-    public YamlConsistencyCheckJobItemProgressSwapper getYamlJobItemProgressSwapper() {
-        return new YamlConsistencyCheckJobItemProgressSwapper();
-    }
-    
-    @Override
-    public Class<ConsistencyCheckJob> getJobClass() {
-        return ConsistencyCheckJob.class;
-    }
-    
-    @Override
-    public boolean isIgnoreToStartDisabledJobWhenJobItemProgressIsFinished() {
-        return true;
-    }
-    
-    @Override
-    public PipelineJobInfo getJobInfo(final String jobId) {
+    public PipelineJobTarget getJobTarget(final PipelineJobConfiguration jobConfig) {
         return null;
     }
     

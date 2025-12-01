@@ -20,12 +20,8 @@ mode:
   repository:
     type: ZooKeeper
     props:
-      namespace: it_db_opengauss
+      namespace: e2e_db_opengauss
       server-lists: zk.host:2181
-      retryIntervalMilliseconds: 500
-      timeToLiveSeconds: 60
-      maxRetries: 3
-      operationTimeoutMilliseconds: 500
 
 authority:
   users:
@@ -43,11 +39,11 @@ sqlFederation:
 
 props:
   max-connections-size-per-query: 1
-  kernel-executor-size: 16  # Infinite by default.
-  proxy-frontend-flush-threshold: 128  # The default value is 128.
+  kernel-executor-size: 16
+  proxy-frontend-flush-threshold: 128
   sql-show: true
   check-table-metadata-enabled: false
   proxy-backend-query-fetch-size: -1
-  proxy-frontend-max-connections: 0 # Less than or equal to 0 means no limitation.
+  proxy-frontend-max-connections: 0
   proxy-frontend-database-protocol-type: openGauss
   proxy-frontend-ssl-enabled: true

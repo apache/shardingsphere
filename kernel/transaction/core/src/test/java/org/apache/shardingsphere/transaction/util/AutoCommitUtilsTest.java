@@ -17,12 +17,13 @@
 
 package org.apache.shardingsphere.transaction.util;
 
-import org.apache.shardingsphere.distsql.statement.rdl.resource.unit.type.RegisterStorageUnitStatement;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.SelectStatement;
-import org.apache.shardingsphere.sql.parser.statement.mysql.ddl.MySQLCreateTableStatement;
-import org.apache.shardingsphere.sql.parser.statement.mysql.dml.MySQLInsertStatement;
-import org.apache.shardingsphere.sql.parser.statement.mysql.dml.MySQLSelectStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.EmptyStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.table.CreateTableStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.InsertStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.SelectStatement;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -31,24 +32,33 @@ import static org.mockito.Mockito.mock;
 
 class AutoCommitUtilsTest {
     
+    private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "FIXTURE");
+    
     @Test
-    void assertNeedOpenTransactionForSelectStatement() {
-        SelectStatement selectStatement = new MySQLSelectStatement();
-        assertFalse(AutoCommitUtils.needOpenTransaction(selectStatement));
+    void assertIsNeedStartTransactionWithDDL() {
+        assertTrue(AutoCommitUtils.isNeedStartTransaction(new CreateTableStatement(databaseType)));
+    }
+    
+    @Test
+    void assertIsNeedStartTransactionWithDML() {
+        assertTrue(AutoCommitUtils.isNeedStartTransaction(new InsertStatement(databaseType)));
+    }
+    
+    @Test
+    void assertIsNeedStartTransactionWithSelectWithoutFromClause() {
+        SelectStatement selectStatement = new SelectStatement(databaseType);
+        assertFalse(AutoCommitUtils.isNeedStartTransaction(selectStatement));
+    }
+    
+    @Test
+    void assertIsNeedStartTransactionWithSelectWithFromClause() {
+        SelectStatement selectStatement = new SelectStatement(databaseType);
         selectStatement.setFrom(mock(SimpleTableSegment.class));
-        assertTrue(AutoCommitUtils.needOpenTransaction(selectStatement));
+        assertTrue(AutoCommitUtils.isNeedStartTransaction(selectStatement));
     }
     
     @Test
-    void assertNeedOpenTransactionForDDLOrDMLStatement() {
-        MySQLCreateTableStatement sqlStatement = new MySQLCreateTableStatement();
-        sqlStatement.setIfNotExists(true);
-        assertTrue(AutoCommitUtils.needOpenTransaction(sqlStatement));
-        assertTrue(AutoCommitUtils.needOpenTransaction(new MySQLInsertStatement()));
-    }
-    
-    @Test
-    void assertNeedOpenTransactionForOtherStatement() {
-        assertFalse(AutoCommitUtils.needOpenTransaction(mock(RegisterStorageUnitStatement.class)));
+    void assertIsNotNeedStartTransaction() {
+        assertFalse(AutoCommitUtils.isNeedStartTransaction(new EmptyStatement(databaseType)));
     }
 }

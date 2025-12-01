@@ -18,7 +18,7 @@
 
 <e2e-test-cases>
     <!-- TODO Replace with standard table structure -->
-    <!--<test-case sql="SELECT o.*, i.* FROM t_order_federate o, t_order_item_federate i WHERE o.order_id = ? AND i.item_id = ? LIMIT ?" scenario-types="db,dbtbl_with_readwrite_splitting,dbtbl_with_readwrite_splitting_and_encrypt,sharding_and_encrypt,encrypt_and_readwrite_splitting">
+    <!--<test-case sql="SELECT o.*, i.* FROM t_order_federate o, t_order_item_federate i WHERE o.order_id = ? AND i.item_id = ? LIMIT ?" db-types="MySQL,PostgreSQL,openGauss" scenario-types="db,dbtbl_with_readwrite_splitting,dbtbl_with_readwrite_splitting_and_encrypt,sharding_and_encrypt,encrypt_and_readwrite_splitting">
         <assertion parameters="1000:int, 100000:int, 3:int" expected-data-source-name="read_dataset" />
     </test-case>-->
     

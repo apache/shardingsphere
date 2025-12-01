@@ -18,9 +18,9 @@
 package org.apache.shardingsphere.globalclock.yaml;
 
 import org.apache.shardingsphere.globalclock.config.GlobalClockRuleConfiguration;
+import org.apache.shardingsphere.infra.util.props.PropertiesBuilder;
+import org.apache.shardingsphere.infra.util.props.PropertiesBuilder.Property;
 import org.apache.shardingsphere.test.it.yaml.YamlRuleConfigurationIT;
-import org.apache.shardingsphere.test.util.PropertiesBuilder;
-import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
 
 class GlobalClockRuleConfigurationYamlIT extends YamlRuleConfigurationIT {
     

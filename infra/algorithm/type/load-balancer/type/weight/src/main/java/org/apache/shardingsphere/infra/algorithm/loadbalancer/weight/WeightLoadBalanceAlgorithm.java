@@ -19,8 +19,9 @@ package org.apache.shardingsphere.infra.algorithm.loadbalancer.weight;
 
 import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.infra.algorithm.core.exception.AlgorithmInitializationException;
-import org.apache.shardingsphere.infra.algorithm.loadbalancer.core.LoadBalanceAlgorithm;
-import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
+import org.apache.shardingsphere.infra.algorithm.loadbalancer.spi.LoadBalanceAlgorithm;
+import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
+import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -63,6 +64,7 @@ public final class WeightLoadBalanceAlgorithm implements LoadBalanceAlgorithm {
                 () -> new AlgorithmInitializationException(this, "Target `%s` is required in database `%s`.", each, databaseName)));
     }
     
+    @HighFrequencyInvocation
     @Override
     public String getTargetName(final String groupName, final List<String> availableTargetNames) {
         double[] weight = weightMap.containsKey(groupName) && weightMap.get(groupName).length == availableTargetNames.size() ? weightMap.get(groupName) : initWeight(availableTargetNames);
@@ -70,6 +72,7 @@ public final class WeightLoadBalanceAlgorithm implements LoadBalanceAlgorithm {
         return getAvailableTargetName(availableTargetNames, weight);
     }
     
+    @HighFrequencyInvocation
     private String getAvailableTargetName(final List<String> availableTargetNames, final double[] weight) {
         double randomWeight = ThreadLocalRandom.current().nextDouble(0D, 1D);
         int index = Arrays.binarySearch(weight, randomWeight);
@@ -80,6 +83,7 @@ public final class WeightLoadBalanceAlgorithm implements LoadBalanceAlgorithm {
         return availableTargetNames.get(index);
     }
     
+    @HighFrequencyInvocation
     private double[] initWeight(final List<String> availableTargetNames) {
         double[] result = getWeights(availableTargetNames);
         Preconditions.checkState(!(0 != result.length && Math.abs(result[result.length - 1] - 1.0D) >= ACCURACY_THRESHOLD),
@@ -87,6 +91,7 @@ public final class WeightLoadBalanceAlgorithm implements LoadBalanceAlgorithm {
         return result;
     }
     
+    @HighFrequencyInvocation
     private double[] getWeights(final List<String> availableTargetNames) {
         double[] exactWeights = new double[availableTargetNames.size()];
         int index = 0;
@@ -105,6 +110,7 @@ public final class WeightLoadBalanceAlgorithm implements LoadBalanceAlgorithm {
         return calculateWeight(exactWeights);
     }
     
+    @HighFrequencyInvocation
     private double[] calculateWeight(final double[] exactWeights) {
         double[] result = new double[exactWeights.length];
         double randomRange = 0D;
@@ -115,6 +121,7 @@ public final class WeightLoadBalanceAlgorithm implements LoadBalanceAlgorithm {
         return result;
     }
     
+    @HighFrequencyInvocation
     private double getWeightValue(final String readDataSourceName) {
         double result = weightConfigMap.get(readDataSourceName);
         if (Double.isInfinite(result)) {

@@ -17,10 +17,11 @@
 
 package org.apache.shardingsphere.sharding.route.strategy.type.standard;
 
+import com.cedarsoftware.util.CaseInsensitiveSet;
 import lombok.Getter;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.datanode.DataNodeInfo;
-import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
+import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.sharding.api.sharding.standard.PreciseShardingValue;
 import org.apache.shardingsphere.sharding.api.sharding.standard.RangeShardingValue;
 import org.apache.shardingsphere.sharding.api.sharding.standard.StandardShardingAlgorithm;
@@ -33,7 +34,6 @@ import org.apache.shardingsphere.sharding.route.strategy.ShardingStrategy;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
-import java.util.TreeSet;
 
 /**
  * Standard sharding strategy.
@@ -48,7 +48,7 @@ public final class StandardShardingStrategy implements ShardingStrategy {
     public StandardShardingStrategy(final String shardingColumn, final StandardShardingAlgorithm<?> shardingAlgorithm) {
         ShardingSpherePreconditions.checkNotNull(shardingColumn, () -> new MissingRequiredShardingConfigurationException("Standard sharding column"));
         ShardingSpherePreconditions.checkNotNull(shardingAlgorithm, () -> new MissingRequiredShardingConfigurationException("Standard sharding algorithm"));
-        Collection<String> shardingColumns = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
+        Collection<String> shardingColumns = new CaseInsensitiveSet<>();
         shardingColumns.add(shardingColumn);
         this.shardingColumns = Collections.unmodifiableCollection(shardingColumns);
         this.shardingAlgorithm = shardingAlgorithm;
@@ -62,9 +62,7 @@ public final class StandardShardingStrategy implements ShardingStrategy {
         Collection<String> shardingResult = shardingConditionValue instanceof ListShardingConditionValue
                 ? doSharding(availableTargetNames, (ListShardingConditionValue) shardingConditionValue, dataNodeInfo)
                 : doSharding(availableTargetNames, (RangeShardingConditionValue) shardingConditionValue, dataNodeInfo);
-        Collection<String> result = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
-        result.addAll(shardingResult);
-        return result;
+        return new CaseInsensitiveSet<>(shardingResult);
     }
     
     @SuppressWarnings({"unchecked", "rawtypes"})

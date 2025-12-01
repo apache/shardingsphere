@@ -37,14 +37,14 @@ public final class RetryStreamingExceptionHandler implements ExceptionHandler {
     
     private final int maxRetryTimes;
     
-    private final int retryIntervalMills;
+    private final int retryIntervalMillis;
     
     private final AtomicInteger retryTimes = new AtomicInteger(0);
     
-    public RetryStreamingExceptionHandler(final CDCClient cdcClient, final int maxRetryTimes, final int retryIntervalMills) {
+    public RetryStreamingExceptionHandler(final CDCClient cdcClient, final int maxRetryTimes, final int retryIntervalMillis) {
         this.cdcClient = cdcClient;
         this.maxRetryTimes = maxRetryTimes;
-        this.retryIntervalMills = retryIntervalMills;
+        this.retryIntervalMillis = retryIntervalMillis;
     }
     
     @Override
@@ -62,7 +62,7 @@ public final class RetryStreamingExceptionHandler implements ExceptionHandler {
             connectionContext.getStreamingIds().forEach(each -> CompletableFuture.runAsync(() -> cdcClient.stopStreaming(each)));
             return;
         }
-        TimeUnit.MILLISECONDS.sleep(retryIntervalMills);
+        TimeUnit.MILLISECONDS.sleep(retryIntervalMillis);
         log.info("Retry to restart streaming, retry times: {}", retryTimes.get());
         connectionContext.getStreamingIds().forEach(each -> CompletableFuture.runAsync(() -> cdcClient.restartStreaming(each)));
     }

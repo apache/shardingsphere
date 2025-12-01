@@ -151,19 +151,18 @@ public final class PipelineDistributedBarrier {
     
     @RequiredArgsConstructor
     @Getter
-    private static class InnerCountDownLatchHolder {
+    private static final class InnerCountDownLatchHolder {
         
         private final int totalCount;
         
         private final CountDownLatch countDownLatch;
     }
     
-    @RequiredArgsConstructor
-    private final class PersistRepositoryLazyInitializer extends LazyInitializer<ClusterPersistRepository> {
+    private class PersistRepositoryLazyInitializer extends LazyInitializer<ClusterPersistRepository> {
         
         @Override
         protected ClusterPersistRepository initialize() {
-            return (ClusterPersistRepository) PipelineContextManager.getContext(contextKey).getContextManager().getPersistServiceFacade().getMetaDataPersistService().getRepository();
+            return (ClusterPersistRepository) PipelineContextManager.getContext(contextKey).getPersistServiceFacade().getRepository();
         }
     }
 }

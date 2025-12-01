@@ -18,51 +18,60 @@
 package org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.database.metadata;
 
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereView;
-import org.apache.shardingsphere.mode.node.path.metadata.ViewMetaDataNodePath;
 import org.apache.shardingsphere.mode.event.DataChangedEvent;
 import org.apache.shardingsphere.mode.manager.ContextManager;
-import org.apache.shardingsphere.mode.manager.cluster.dispatch.checker.ActiveVersionChecker;
-import org.apache.shardingsphere.mode.metadata.refresher.ShardingSphereStatisticsRefreshEngine;
+import org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.database.DatabaseLeafValueChangedHandler;
+import org.apache.shardingsphere.mode.manager.cluster.statistics.StatisticsRefreshEngine;
+import org.apache.shardingsphere.mode.node.path.NodePath;
+import org.apache.shardingsphere.mode.node.path.engine.searcher.NodePathPattern;
+import org.apache.shardingsphere.mode.node.path.engine.searcher.NodePathSearcher;
+import org.apache.shardingsphere.mode.node.path.type.database.metadata.schema.SchemaMetaDataNodePath;
+import org.apache.shardingsphere.mode.node.path.type.database.metadata.schema.ViewMetaDataNodePath;
 
 /**
  * View changed handler.
  */
-public final class ViewChangedHandler {
+public final class ViewChangedHandler implements DatabaseLeafValueChangedHandler {
     
     private final ContextManager contextManager;
     
-    private final ShardingSphereStatisticsRefreshEngine statisticsRefreshEngine;
+    private final StatisticsRefreshEngine statisticsRefreshEngine;
     
     public ViewChangedHandler(final ContextManager contextManager) {
         this.contextManager = contextManager;
-        statisticsRefreshEngine = new ShardingSphereStatisticsRefreshEngine(contextManager);
+        statisticsRefreshEngine = new StatisticsRefreshEngine(contextManager);
     }
     
-    /**
-     * Handle view created or altered.
-     *
-     * @param databaseName database name
-     * @param schemaName schema name
-     * @param event data changed event
-     */
-    public void handleCreatedOrAltered(final String databaseName, final String schemaName, final DataChangedEvent event) {
-        String viewName = ViewMetaDataNodePath.getViewNameByActiveVersionPath(event.getKey()).orElseThrow(() -> new IllegalStateException("View name not found."));
-        ActiveVersionChecker.checkActiveVersion(contextManager, event);
-        ShardingSphereView view = contextManager.getPersistServiceFacade().getMetaDataPersistService().getDatabaseMetaDataFacade().getView().load(databaseName, schemaName, viewName);
-        contextManager.getMetaDataContextManager().getSchemaMetaDataManager().alterSchema(databaseName, schemaName, null, view);
+    @Override
+    public NodePath getSubscribedNodePath(final String databaseName) {
+        return new ViewMetaDataNodePath(databaseName, NodePathPattern.IDENTIFIER, NodePathPattern.IDENTIFIER);
+    }
+    
+    @Override
+    public void handle(final String databaseName, final DataChangedEvent event) {
+        String schemaName = NodePathSearcher.get(event.getKey(), SchemaMetaDataNodePath.createSchemaSearchCriteria(databaseName, true));
+        String viewName = NodePathSearcher.get(event.getKey(), ViewMetaDataNodePath.createViewSearchCriteria(databaseName, schemaName));
+        switch (event.getType()) {
+            case ADDED:
+            case UPDATED:
+                handleCreatedOrAltered(databaseName, schemaName, viewName);
+                break;
+            case DELETED:
+                handleDropped(databaseName, schemaName, viewName);
+                break;
+            default:
+                break;
+        }
+    }
+    
+    private void handleCreatedOrAltered(final String databaseName, final String schemaName, final String viewName) {
+        ShardingSphereView view = contextManager.getPersistServiceFacade().getMetaDataFacade().getDatabaseMetaDataFacade().getView().load(databaseName, schemaName, viewName);
+        contextManager.getMetaDataContextManager().getDatabaseMetaDataManager().alterView(databaseName, schemaName, view);
         statisticsRefreshEngine.asyncRefresh();
     }
     
-    /**
-     * Handle view dropped.
-     *
-     * @param databaseName database name
-     * @param schemaName schema name
-     * @param event data changed event
-     */
-    public void handleDropped(final String databaseName, final String schemaName, final DataChangedEvent event) {
-        String viewName = ViewMetaDataNodePath.findViewName(event.getKey()).orElseThrow(() -> new IllegalStateException("View name not found."));
-        contextManager.getMetaDataContextManager().getSchemaMetaDataManager().alterSchema(databaseName, schemaName, null, viewName);
+    private void handleDropped(final String databaseName, final String schemaName, final String viewName) {
+        contextManager.getMetaDataContextManager().getDatabaseMetaDataManager().dropView(databaseName, schemaName, viewName);
         statisticsRefreshEngine.asyncRefresh();
     }
 }

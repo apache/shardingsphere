@@ -17,10 +17,10 @@
 
 package org.apache.shardingsphere.driver.jdbc.unsupported;
 
+import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.driver.jdbc.core.connection.ShardingSphereConnection;
 import org.apache.shardingsphere.driver.jdbc.core.statement.ShardingSpherePreparedStatement;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
-import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.parser.rule.SQLParserRule;
@@ -55,7 +55,7 @@ class UnsupportedOperationPreparedStatementTest {
                 new SQLParserRule(new DefaultSQLParserRuleConfigurationBuilder().build()),
                 new SQLFederationRule(new DefaultSQLFederationRuleConfigurationBuilder().build(), Collections.emptyList()))));
         when(connection.getContextManager().getMetaDataContexts().getMetaData().getDatabase(
-                connection.getCurrentDatabaseName()).getProtocolType()).thenReturn(TypedSPILoader.getService(DatabaseType.class, "MySQL"));
+                connection.getCurrentDatabaseName()).getProtocolType()).thenReturn(TypedSPILoader.getService(DatabaseType.class, "SQL92"));
         when(connection.getContextManager().getMetaDataContexts().getMetaData().getProps()).thenReturn(new ConfigurationProperties(new Properties()));
         shardingSpherePreparedStatement = new ShardingSpherePreparedStatement(connection, "SELECT 1", null);
     }

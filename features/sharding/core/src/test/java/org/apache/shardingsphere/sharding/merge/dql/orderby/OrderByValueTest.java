@@ -18,10 +18,11 @@
 package org.apache.shardingsphere.sharding.merge.dql.orderby;
 
 import org.apache.shardingsphere.infra.binder.context.segment.select.orderby.OrderByItem;
-import org.apache.shardingsphere.infra.binder.context.statement.dml.SelectStatementContext;
+import org.apache.shardingsphere.infra.binder.context.statement.type.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
-import org.apache.shardingsphere.infra.database.core.metadata.database.enums.NullsOrderType;
-import org.apache.shardingsphere.infra.database.core.metadata.database.enums.TableType;
+import org.apache.shardingsphere.database.connector.core.metadata.database.enums.NullsOrderType;
+import org.apache.shardingsphere.database.connector.core.metadata.database.enums.TableType;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
@@ -29,6 +30,7 @@ import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaDa
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.OrderDirection;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ProjectionsSegment;
@@ -36,13 +38,8 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.order.Ord
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.order.item.ColumnOrderByItemSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.order.item.IndexOrderByItemSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.order.item.OrderByItemSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.SelectStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
-import org.apache.shardingsphere.sql.parser.statement.mysql.dml.MySQLSelectStatement;
-import org.apache.shardingsphere.sql.parser.statement.oracle.dml.OracleSelectStatement;
-import org.apache.shardingsphere.sql.parser.statement.postgresql.dml.PostgreSQLSelectStatement;
-import org.apache.shardingsphere.sql.parser.statement.sql92.dml.SQL92SelectStatement;
-import org.apache.shardingsphere.sql.parser.statement.sqlserver.dml.SQLServerSelectStatement;
 import org.junit.jupiter.api.Test;
 import org.mockito.internal.configuration.plugins.Plugins;
 
@@ -60,37 +57,15 @@ import static org.mockito.Mockito.when;
 
 class OrderByValueTest {
     
-    @Test
-    void assertCompareToForAscForMySQL() throws SQLException, NoSuchFieldException, IllegalAccessException {
-        assertCompareToForAsc(new MySQLSelectStatement());
-    }
+    private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "FIXTURE");
     
     @Test
-    void assertCompareToForAscForOracle() throws SQLException, NoSuchFieldException, IllegalAccessException {
-        assertCompareToForAsc(new OracleSelectStatement());
-    }
-    
-    @Test
-    void assertCompareToForAscForPostgreSQL() throws SQLException, NoSuchFieldException, IllegalAccessException {
-        assertCompareToForAsc(new PostgreSQLSelectStatement());
-    }
-    
-    @Test
-    void assertCompareToForAscForSQL92() throws SQLException, NoSuchFieldException, IllegalAccessException {
-        assertCompareToForAsc(new SQL92SelectStatement());
-    }
-    
-    @Test
-    void assertCompareToForAscForSQLServer() throws SQLException, NoSuchFieldException, IllegalAccessException {
-        assertCompareToForAsc(new SQLServerSelectStatement());
-    }
-    
-    private void assertCompareToForAsc(final SelectStatement selectStatement) throws SQLException, NoSuchFieldException, IllegalAccessException {
+    void assertCompareToForAsc() throws SQLException, NoSuchFieldException, IllegalAccessException {
+        SelectStatement selectStatement = new SelectStatement(databaseType);
         ProjectionsSegment projectionsSegment = new ProjectionsSegment(0, 0);
         selectStatement.setProjections(projectionsSegment);
         selectStatement.setOrderBy(createOrderBySegment());
-        SelectStatementContext selectStatementContext = new SelectStatementContext(
-                createShardingSphereMetaData(), Collections.emptyList(), selectStatement, "foo_db", Collections.emptyList());
+        SelectStatementContext selectStatementContext = new SelectStatementContext(selectStatement, createShardingSphereMetaData(), "foo_db", Collections.emptyList());
         ShardingSphereSchema schema = mock(ShardingSphereSchema.class);
         QueryResult queryResult1 = createQueryResult("1", "2");
         OrderByValue orderByValue1 = new OrderByValue(queryResult1, Arrays.asList(
@@ -118,36 +93,12 @@ class OrderByValueTest {
     }
     
     @Test
-    void assertCompareToForDescForMySQL() throws SQLException, NoSuchFieldException, IllegalAccessException {
-        assertCompareToForDesc(new MySQLSelectStatement());
-    }
-    
-    @Test
-    void assertCompareToForDescForOracle() throws SQLException, NoSuchFieldException, IllegalAccessException {
-        assertCompareToForDesc(new OracleSelectStatement());
-    }
-    
-    @Test
-    void assertCompareToForDescForPostgreSQL() throws SQLException, NoSuchFieldException, IllegalAccessException {
-        assertCompareToForDesc(new PostgreSQLSelectStatement());
-    }
-    
-    @Test
-    void assertCompareToForDescForSQL92() throws SQLException, NoSuchFieldException, IllegalAccessException {
-        assertCompareToForDesc(new SQL92SelectStatement());
-    }
-    
-    @Test
-    void assertCompareToForDescForSQLServer() throws SQLException, NoSuchFieldException, IllegalAccessException {
-        assertCompareToForDesc(new SQLServerSelectStatement());
-    }
-    
-    private void assertCompareToForDesc(final SelectStatement selectStatement) throws SQLException, NoSuchFieldException, IllegalAccessException {
+    void assertCompareToForDesc() throws SQLException, NoSuchFieldException, IllegalAccessException {
+        SelectStatement selectStatement = new SelectStatement(databaseType);
         ProjectionsSegment projectionsSegment = new ProjectionsSegment(0, 0);
         selectStatement.setProjections(projectionsSegment);
         selectStatement.setOrderBy(createOrderBySegment());
-        SelectStatementContext selectStatementContext = new SelectStatementContext(createShardingSphereMetaData(),
-                Collections.emptyList(), selectStatement, "foo_db", Collections.emptyList());
+        SelectStatementContext selectStatementContext = new SelectStatementContext(selectStatement, createShardingSphereMetaData(), "foo_db", Collections.emptyList());
         ShardingSphereSchema schema = mock(ShardingSphereSchema.class);
         when(schema.getTable("foo_tbl")).thenReturn(new ShardingSphereTable("foo_tbl", Collections.emptyList(), Collections.emptyList(), Collections.emptyList(), TableType.TABLE));
         QueryResult queryResult1 = createQueryResult("1", "2");
@@ -170,36 +121,12 @@ class OrderByValueTest {
     }
     
     @Test
-    void assertCompareToWhenEqualForMySQL() throws SQLException, NoSuchFieldException, IllegalAccessException {
-        assertCompareToWhenEqual(new MySQLSelectStatement());
-    }
-    
-    @Test
-    void assertCompareToWhenEqualForOracle() throws SQLException, NoSuchFieldException, IllegalAccessException {
-        assertCompareToWhenEqual(new OracleSelectStatement());
-    }
-    
-    @Test
-    void assertCompareToWhenEqualForPostgreSQL() throws SQLException, NoSuchFieldException, IllegalAccessException {
-        assertCompareToWhenEqual(new PostgreSQLSelectStatement());
-    }
-    
-    @Test
-    void assertCompareToWhenEqualForSQL92() throws SQLException, NoSuchFieldException, IllegalAccessException {
-        assertCompareToWhenEqual(new SQL92SelectStatement());
-    }
-    
-    @Test
-    void assertCompareToWhenEqualForSQLServer() throws SQLException, NoSuchFieldException, IllegalAccessException {
-        assertCompareToWhenEqual(new SQLServerSelectStatement());
-    }
-    
-    private void assertCompareToWhenEqual(final SelectStatement selectStatement) throws SQLException, NoSuchFieldException, IllegalAccessException {
+    void assertCompareToWhenEqual() throws SQLException, NoSuchFieldException, IllegalAccessException {
+        SelectStatement selectStatement = new SelectStatement(databaseType);
         ProjectionsSegment projectionsSegment = new ProjectionsSegment(0, 0);
         selectStatement.setProjections(projectionsSegment);
         selectStatement.setOrderBy(createOrderBySegment());
-        SelectStatementContext selectStatementContext = new SelectStatementContext(createShardingSphereMetaData(),
-                Collections.emptyList(), selectStatement, "foo_db", Collections.emptyList());
+        SelectStatementContext selectStatementContext = new SelectStatementContext(selectStatement, createShardingSphereMetaData(), "foo_db", Collections.emptyList());
         ShardingSphereSchema schema = mock(ShardingSphereSchema.class);
         QueryResult queryResult1 = createQueryResult("1", "2");
         OrderByValue orderByValue1 = new OrderByValue(queryResult1, Arrays.asList(

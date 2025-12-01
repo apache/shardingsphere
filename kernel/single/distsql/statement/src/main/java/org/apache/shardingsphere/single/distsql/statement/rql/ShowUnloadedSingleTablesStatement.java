@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.single.distsql.statement.rql;
 
-import org.apache.shardingsphere.distsql.statement.rql.resource.ShowTablesStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.DatabaseSegment;
+import org.apache.shardingsphere.distsql.statement.type.rql.resource.ShowTablesStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.FromDatabaseSegment;
 
 import java.util.Optional;
 
@@ -31,9 +31,9 @@ public final class ShowUnloadedSingleTablesStatement extends ShowTablesStatement
     
     private final String schemaName;
     
-    public ShowUnloadedSingleTablesStatement(final DatabaseSegment database, final String storageUnitName, final String schemaName) {
+    public ShowUnloadedSingleTablesStatement(final FromDatabaseSegment fromDatabase, final String storageUnitName, final String schemaName) {
         // TODO support like later
-        super(database, null);
+        super(fromDatabase, null);
         this.storageUnitName = storageUnitName;
         this.schemaName = schemaName;
     }

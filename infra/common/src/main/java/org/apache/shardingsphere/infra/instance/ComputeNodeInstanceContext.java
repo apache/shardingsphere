@@ -17,16 +17,15 @@
 
 package org.apache.shardingsphere.infra.instance;
 
+import com.google.errorprone.annotations.ThreadSafe;
 import lombok.AccessLevel;
 import lombok.Getter;
 import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
-import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
+import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.instance.workerid.WorkerIdGenerator;
-import org.apache.shardingsphere.infra.lock.LockContext;
 import org.apache.shardingsphere.infra.state.instance.InstanceState;
 import org.apache.shardingsphere.infra.util.eventbus.EventBusContext;
 
-import javax.annotation.concurrent.ThreadSafe;
 import java.util.Collection;
 import java.util.Optional;
 import java.util.Properties;
@@ -48,9 +47,6 @@ public final class ComputeNodeInstanceContext {
     @Getter(AccessLevel.NONE)
     private final AtomicReference<WorkerIdGenerator> workerIdGenerator;
     
-    @Getter(AccessLevel.NONE)
-    private final AtomicReference<LockContext> lockContext;
-    
     private final ClusterInstanceRegistry clusterInstanceRegistry;
     
     public ComputeNodeInstanceContext(final ComputeNodeInstance instance, final ModeConfiguration modeConfiguration, final EventBusContext eventBusContext) {
@@ -58,7 +54,6 @@ public final class ComputeNodeInstanceContext {
         this.modeConfiguration = modeConfiguration;
         this.eventBusContext = eventBusContext;
         workerIdGenerator = new AtomicReference<>();
-        lockContext = new AtomicReference<>();
         clusterInstanceRegistry = new ClusterInstanceRegistry();
     }
     
@@ -66,11 +61,9 @@ public final class ComputeNodeInstanceContext {
      * Initialize compute node instance context.
      *
      * @param workerIdGenerator worker id generator
-     * @param lockContext lock context
      */
-    public void init(final WorkerIdGenerator workerIdGenerator, final LockContext lockContext) {
+    public void init(final WorkerIdGenerator workerIdGenerator) {
         this.workerIdGenerator.set(workerIdGenerator);
-        this.lockContext.set(lockContext);
     }
     
     /**
@@ -141,14 +134,5 @@ public final class ComputeNodeInstanceContext {
         int result = workerIdGenerator.get().generate(props);
         instance.setWorkerId(result);
         return result;
-    }
-    
-    /**
-     * Get lock context.
-     *
-     * @return lock context
-     */
-    public LockContext getLockContext() {
-        return Optional.ofNullable(lockContext.get()).orElseThrow(() -> new IllegalStateException("Lock context is not initialized."));
     }
 }

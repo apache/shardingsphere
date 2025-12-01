@@ -18,14 +18,19 @@
 package org.apache.shardingsphere.broadcast.route.engine.type.unicast;
 
 import org.apache.shardingsphere.broadcast.rule.BroadcastRule;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.binder.context.statement.ddl.AlterViewStatementContext;
-import org.apache.shardingsphere.infra.binder.context.statement.ddl.CreateViewStatementContext;
-import org.apache.shardingsphere.infra.binder.context.statement.ddl.DropViewStatementContext;
-import org.apache.shardingsphere.infra.binder.context.type.CursorAvailable;
+import org.apache.shardingsphere.infra.binder.context.statement.type.CommonSQLStatementContext;
+import org.apache.shardingsphere.infra.binder.context.statement.type.ddl.AlterViewStatementContext;
+import org.apache.shardingsphere.infra.binder.context.statement.type.ddl.CreateViewStatementContext;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.context.RouteMapper;
 import org.apache.shardingsphere.infra.session.connection.ConnectionContext;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.SQLStatementAttributes;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.type.CursorSQLStatementAttribute;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.view.DropViewStatement;
 import org.hamcrest.Matcher;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -41,12 +46,14 @@ import static org.hamcrest.CoreMatchers.anyOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-import static org.mockito.Mockito.withSettings;
 
 @ExtendWith(MockitoExtension.class)
 class BroadcastUnicastRouteEngineTest {
+    
+    private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "FIXTURE");
     
     @Mock
     private BroadcastRule rule;
@@ -61,33 +68,38 @@ class BroadcastUnicastRouteEngineTest {
     
     @Test
     void assertRouteToFirstDataSourceWithCursorStatement() {
-        assertRoute(mock(SQLStatementContext.class, withSettings().extraInterfaces(CursorAvailable.class)), is("ds_0"));
+        SQLStatement sqlStatement = mock(SQLStatement.class);
+        when(sqlStatement.getAttributes()).thenReturn(new SQLStatementAttributes(mock(CursorSQLStatementAttribute.class)));
+        SQLStatementContext sqlStatementContext = mock(SQLStatementContext.class);
+        when(sqlStatementContext.getSqlStatement()).thenReturn(sqlStatement);
+        assertRoute(sqlStatementContext, is("ds_0"));
     }
     
     @Test
     void assertRouteToFirstDataSourceWithCreateViewStatementContext() {
-        assertRoute(mock(CreateViewStatementContext.class), is("ds_0"));
+        assertRoute(mock(CreateViewStatementContext.class, RETURNS_DEEP_STUBS), is("ds_0"));
     }
     
     @Test
     void assertRouteToFirstDataSourceWithAlterViewStatementContext() {
-        assertRoute(mock(AlterViewStatementContext.class), is("ds_0"));
+        assertRoute(mock(AlterViewStatementContext.class, RETURNS_DEEP_STUBS), is("ds_0"));
     }
     
     @Test
     void assertRouteToFirstDataSourceWithDropViewStatementContext() {
-        assertRoute(mock(DropViewStatementContext.class), is("ds_0"));
+        SQLStatementContext sqlStatementContext = new CommonSQLStatementContext(new DropViewStatement(databaseType));
+        assertRoute(sqlStatementContext, is("ds_0"));
     }
     
     @Test
     void assertRouteToRandomDataSourceWithUnusedDataSources() {
-        assertRoute(mock(SQLStatementContext.class), is("ds_0"), is("ds_1"));
+        assertRoute(mock(SQLStatementContext.class, RETURNS_DEEP_STUBS), is("ds_0"), is("ds_1"));
     }
     
     @Test
     void assertRouteToRandomDataSourceWithUsedDataSources() {
         when(connectionContext.getUsedDataSourceNames()).thenReturn(Collections.singletonList("ds_2"));
-        assertRoute(mock(SQLStatementContext.class), is("ds_2"));
+        assertRoute(mock(SQLStatementContext.class, RETURNS_DEEP_STUBS), is("ds_2"));
     }
     
     @SafeVarargs
@@ -110,7 +122,7 @@ class BroadcastUnicastRouteEngineTest {
     
     @Test
     void assertRouteWithEmptyTables() {
-        BroadcastUnicastRouteEngine engine = new BroadcastUnicastRouteEngine(mock(SQLStatementContext.class), Collections.emptyList(), connectionContext);
+        BroadcastUnicastRouteEngine engine = new BroadcastUnicastRouteEngine(mock(SQLStatementContext.class, RETURNS_DEEP_STUBS), Collections.emptyList(), connectionContext);
         RouteContext actual = engine.route(rule);
         assertThat(actual.getRouteUnits().size(), is(1));
         Collection<RouteMapper> actualTableRouteMappers = actual.getRouteUnits().iterator().next().getTableMappers();

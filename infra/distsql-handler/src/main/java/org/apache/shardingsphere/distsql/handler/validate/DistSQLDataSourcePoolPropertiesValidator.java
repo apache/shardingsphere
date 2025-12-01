@@ -17,10 +17,10 @@
 
 package org.apache.shardingsphere.distsql.handler.validate;
 
-import org.apache.shardingsphere.infra.database.core.checker.PrivilegeCheckType;
+import org.apache.shardingsphere.database.connector.core.checker.PrivilegeCheckType;
 import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePoolProperties;
 import org.apache.shardingsphere.infra.datasource.pool.props.validator.DataSourcePoolPropertiesValidator;
-import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
+import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.exception.kernel.metadata.resource.storageunit.StorageUnitsValidateException;
 
 import java.util.Collection;

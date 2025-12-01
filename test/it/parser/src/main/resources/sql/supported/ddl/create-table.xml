@@ -368,4 +368,152 @@
         &quot;compression&quot; = &quot;LZ4&quot;
             );" db-types="Doris"/>
     <sql-case id="create_table_with_column_default_system_user_function" value="CREATE TABLE t (c VARCHAR(288) DEFAULT (SYSTEM_USER()));" db-types="MySQL"/>
+    <sql-case id="create_table_with_storage_and_lob" value="CREATE TABLE TEST (&quot;ID&quot; NUMBER) SEGMENT CREATION IMMEDIATE
+    PCTFREE 10 PCTUSED 40 INITRANS 1 MAXTRANS 255
+    NOCOMPRESS LOGGING
+    STORAGE(INITIAL 65536 NEXT 1048576 MINEXTENTS 1 MAXEXTENTS 2147483645
+            PCTINCREASE 0 FREELISTS 1 FREELIST GROUPS 1
+            BUFFER_POOL DEFAULT FLASH_CACHE DEFAULT CELL_FLASH_CACHE DEFAULT)
+    TABLESPACE &quot;TABLESPACE1&quot;
+    LOB (&quot;LOB1&quot;) STORE AS BASICFILE (
+        TABLESPACE &quot;TABLESPACE1&quot; ENABLE STORAGE IN ROW CHUNK 8192 RETENTION
+     NOCACHE LOGGING
+     STORAGE(INITIAL 65536 NEXT 1048576 MINEXTENTS 1 MAXEXTENTS 2147483645
+     PCTINCREASE 0 FREELISTS 1 FREELIST GROUPS 1
+     BUFFER_POOL DEFAULT FLASH_CACHE DEFAULT CELL_FLASH_CACHE DEFAULT))" db-types="Oracle"/>
+    <sql-case id="create_table_with_tinyint" value="create table test_tinyint (col TINYINT)" db-types="Hive" />
+    <sql-case id="create_table_with_smallint" value="create table test_smallint (col SMALLINT)" db-types="Hive" />
+    <sql-case id="create_table_with_int" value="create table test_int (col INT)" db-types="Hive" />
+    <sql-case id="create_table_with_bigint" value="create table test_bigint (col BIGINT)" db-types="Hive" />
+    <sql-case id="create_table_with_boolean" value="create table test_boolean (col BOOLEAN)" db-types="Hive" />
+    <sql-case id="create_table_with_float" value="create table test_float (col FLOAT)" db-types="Hive" />
+    <sql-case id="create_table_with_double" value="create table test_double (col DOUBLE)" db-types="Hive" />
+    <sql-case id="create_table_with_double_precision" value="create table test_double_precision (col DOUBLE PRECISION)" db-types="Hive" />
+    <sql-case id="create_table_with_string" value="create table test_string (col STRING)" db-types="Hive" />
+    <sql-case id="create_table_with_binary" value="create table test_binary (col BINARY)" db-types="Hive" />
+    <sql-case id="create_table_with_timestamp" value="create table test_timestamp (col TIMESTAMP)" db-types="Hive" />
+    <sql-case id="create_table_with_decimal" value="create table test_decimal (col DECIMAL)" db-types="Hive" />
+    <sql-case id="create_table_with_decimal_precision_scale" value="create table test_decimal_precision_scale (col DECIMAL(10,2))" db-types="Hive" />
+    <sql-case id="create_table_with_date" value="create table test_date (col DATE)" db-types="Hive" />
+    <sql-case id="create_table_with_varchar" value="create table test_varchar (col VARCHAR(50))" db-types="Hive" />
+    <sql-case id="create_table_with_char" value="create table test_char (col CHAR(10))" db-types="Hive" />
+    <sql-case id="create_table_with_array" value="create table test_array (col ARRAY &lt; INT &gt; )" db-types="Hive" />
+    <sql-case id="create_table_with_map" value="create table test_map (col MAP &lt; STRING, INT &gt; )" db-types="Hive" />
+    <sql-case id="create_table_with_struct" value="create table test_struct (col STRUCT &lt; id:INT, name:STRING>)" db-types="Hive" />
+    <sql-case id="create_table_with_uniontype" value="create table test_uniontype (col UNIONTYPE &lt; INT, STRING>)" db-types="Hive" />
+    <sql-case id="create_table_with_primary_key_constraint_rely" value="create table test_primary_key_rely (id INT, name STRING, PRIMARY KEY (id) DISABLE NOVALIDATE RELY)" db-types="Hive" />
+    <sql-case id="create_table_with_primary_key_constraint_norely" value="create table test_primary_key_norely (id INT, name STRING, PRIMARY KEY (id) DISABLE NOVALIDATE NORELY)" db-types="Hive" />
+    <sql-case id="create_table_with_foreign_key_constraint" value="create table test_foreign_key (id INT, ref_id INT, CONSTRAINT fk_ref FOREIGN KEY (ref_id) REFERENCES test_primary_key(id) DISABLE NOVALIDATE)" db-types="Hive" />
+    <sql-case id="create_table_with_unique_constraint_rely" value="create table test_unique_rely (id INT, email STRING, CONSTRAINT uk_email UNIQUE (email) DISABLE NOVALIDATE RELY)" db-types="Hive" />
+    <sql-case id="create_table_with_unique_constraint_norely" value="create table test_unique_norely (id INT, email STRING, CONSTRAINT uk_email UNIQUE (email) DISABLE NOVALIDATE NORELY)" db-types="Hive" />
+    <sql-case id="create_table_with_check_constraint_rely" value="create table test_check_rely (age INT, CONSTRAINT chk_age CHECK (age  &gt;  0) ENABLE NOVALIDATE RELY)" db-types="Hive" />
+    <sql-case id="create_table_with_check_constraint_norely" value="create table test_check_norely (age INT, CONSTRAINT chk_age CHECK (age  &gt;  0) ENABLE NOVALIDATE NORELY)" db-types="Hive" />
+    <sql-case id="create_table_with_col_pk_disable_norely" value="create table test_col_pk1 (id INT PRIMARY KEY DISABLE NOVALIDATE NORELY)" db-types="Hive" />
+    <sql-case id="create_table_with_col_pk_disable_rely" value="create table test_col_pk2 (id INT PRIMARY KEY DISABLE NOVALIDATE RELY)" db-types="Hive" />
+    <sql-case id="create_table_with_col_pk_enable_norely" value="create table test_col_pk3 (id INT PRIMARY KEY ENABLE NOVALIDATE NORELY)" db-types="Hive" />
+    <sql-case id="create_table_with_col_pk_enable_rely" value="create table test_col_pk4 (id INT PRIMARY KEY ENABLE NOVALIDATE RELY)" db-types="Hive" />
+    <sql-case id="create_table_with_col_unique_disable_norely" value="create table test_col_unique1 (email STRING UNIQUE DISABLE NOVALIDATE NORELY)" db-types="Hive" />
+    <sql-case id="create_table_with_col_unique_disable_rely" value="create table test_col_unique2 (email STRING UNIQUE DISABLE NOVALIDATE RELY)" db-types="Hive" />
+    <sql-case id="create_table_with_col_unique_enable_norely" value="create table test_col_unique3 (email STRING UNIQUE ENABLE NOVALIDATE NORELY)" db-types="Hive" />
+    <sql-case id="create_table_with_col_unique_enable_rely" value="create table test_col_unique4 (email STRING UNIQUE ENABLE NOVALIDATE RELY)" db-types="Hive" />
+    <sql-case id="create_table_with_col_not_null_basic" value="create table test_col_not_null (name STRING NOT NULL)" db-types="Hive" />
+    <sql-case id="create_table_with_col_default_literal" value="create table test_col_default1 (status STRING DEFAULT 'active')" db-types="Hive" />
+    <sql-case id="create_table_with_col_default_current_user" value="create table test_col_default2 (creator STRING DEFAULT CURRENT_USER())" db-types="Hive" />
+    <sql-case id="create_table_with_col_default_current_date" value="create table test_col_default3 (create_day DATE DEFAULT CURRENT_DATE())" db-types="Hive" />
+    <sql-case id="create_table_with_col_default_current_timestamp" value="create table test_col_default4 (create_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP())" db-types="Hive" />
+    <sql-case id="create_table_with_col_default_null" value="create table test_col_default5 (remark STRING DEFAULT NULL)" db-types="Hive" />
+    <sql-case id="create_table_with_col_check_disable_norely" value="create table test_col_check1 (age INT CHECK (age  &gt;  0) DISABLE NOVALIDATE NORELY)" db-types="Hive" />
+    <sql-case id="create_table_with_col_check_disable_rely" value="create table test_col_check2 (age INT CHECK (age  &gt;  0 AND age &lt; 150) DISABLE NOVALIDATE RELY)" db-types="Hive" />
+    <sql-case id="create_table_with_col_check_enable_norely" value="create table test_col_check3 (score DOUBLE CHECK (score BETWEEN 0 AND 100) ENABLE NOVALIDATE NORELY)" db-types="Hive" />
+    <sql-case id="create_table_with_col_check_enable_rely" value="create table test_col_check4 (amount DECIMAL CHECK (amount  &gt;  0) ENABLE NOVALIDATE RELY)" db-types="Hive" />
+    <sql-case id="row_format_delimited_fields_terminated" value="create table test_row_delim_fields (id int, name string) row format delimited fields terminated by ','" db-types="Hive" />
+    <sql-case id="row_format_delim_fields_escaped" value="create table test_row_delim_escaped (id int, name string) row format delimited fields terminated by '|' escaped by '&#x27;" db-types="Hive" />
+    <sql-case id="row_format_delim_collection" value="create table test_row_delim_collection (hobbies array &lt; string &gt; ) row format delimited collection items terminated by ';'" db-types="Hive" />
+    <sql-case id="row_format_delim_map_keys" value="create table test_row_delim_map (scores map &lt; string, int &gt; ) row format delimited map keys terminated by ':'" db-types="Hive" />
+    <sql-case id="row_format_delim_lines" value="create table test_row_delim_lines (id int, name string) row format delimited lines terminated by '\n'" db-types="Hive" />
+    <sql-case id="row_format_delim_null" value="create table test_row_delim_null (id int, name string) row format delimited null defined as '\N'" db-types="Hive" />
+    <sql-case id="row_format_serde_basic" value="create table test_row_serde_basic (data string) row format serde 'org.apache.hadoop.hive.serde2.JsonSerDe'" db-types="Hive" />
+    <sql-case id="row_format_serde_with_props" value="create table test_row_serde_props (id int, name string) row format serde 'org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe' with serdeproperties ('field.delim'='\t', 'serialization.format'='\t')" db-types="Hive" />
+    <sql-case id="file_format_sequencefile" value="create table test_file_seq (id int, name string) stored as sequencefile" db-types="Hive" />
+    <sql-case id="file_format_textfile" value="create table test_file_text (id int, name string) stored as textfile" db-types="Hive" />
+    <sql-case id="file_format_rcfile" value="create table test_file_rc (id int, name string) stored as rcfile" db-types="Hive" />
+    <sql-case id="file_format_orc" value="create table test_file_orc (id int, name string) stored as orc" db-types="Hive" />
+    <sql-case id="file_format_parquet" value="create table test_file_parquet (id int, name string) stored as parquet" db-types="Hive" />
+    <sql-case id="file_format_avro" value="create table test_file_avro (id int, name string) stored as avro" db-types="Hive" />
+    <sql-case id="file_format_jsonfile" value="create table test_file_json (id int, name string) stored as jsonfile" db-types="Hive" />
+    <sql-case id="file_format_custom_io" value="create table test_file_custom_io (id int, name string) stored as inputformat 'org.apache.hadoop.mapred.TextInputFormat' outputformat 'org.apache.hadoop.hive.ql.io.HiveIgnoreKeyTextOutputFormat'" db-types="Hive" />
+    <sql-case id="create_table_basic" value="create table test_table (id int, name string)" db-types="Hive" />
+    <sql-case id="create_temporary_basic_table" value="create temporary table test_table (a int, b string)" db-types="Hive" />
+    <sql-case id="create_external_basic_table" value="create external table test_table (x double, y date)" db-types="Hive" />
+    <sql-case id="create_table_if_not_exists_hive" value="create table if not exists test_table (id int)" db-types="Hive" />
+    <sql-case id="create_table_with_db" value="create table db_test.test_table (name string, age int)" db-types="Hive" />
+    <sql-case id="create_table_with_col_comment" value="create table test_col_comment (id int comment 'unique identifier', name string comment 'user name')" db-types="Hive" />
+    <sql-case id="create_table_with_table_comment" value="create table test_table_comment (id int) comment 'test_table'" db-types="Hive" />
+    <sql-case id="create_table_only_partitioned" value="create table test_only_partitioned (name string) partitioned by (dt string)" db-types="Hive" />
+    <sql-case id="create_table_partitioned_with col_comment" value="create table test_partitioned_comment (name string) partitioned by (dt string comment 'user name')" db-types="Hive" />
+    <sql-case id="create_table_only_clustered" value="create table test_only_clustered (user_id int) clustered by (user_id) into 2 buckets" db-types="Hive" />
+    <sql-case id="create_table_clustered_sorted_asc" value="create table test_clustered_sorted (id int, score int) clustered by (id) sorted by (score asc) into 4 buckets" db-types="Hive" />
+    <sql-case id="create_table_clustered_sorted_desc" value="create table test_clustered_sorted (id int, score int) clustered by (id) sorted by (score desc) into 4 buckets" db-types="Hive" />
+    <sql-case id="create_table_only_skewed" value="create table test_only_skewed (key string, value int) skewed by (key) on ('x', 'y')" db-types="Hive" />
+    <sql-case id="create_table_skewed_dirs" value="create table test_skewed_dirs (a string, b int) skewed by (a) on (('p', 1), ('q', 2)) stored as directories" db-types="Hive" />
+    <sql-case id="create_table_stored_by_basic" value="create table test_stored_by_basic (id int, name string) stored by 'org.apache.hadoop.hive.hbase.HBaseStorageHandler'" db-types="Hive" />
+    <sql-case id="create_table_stored_by_with_props" value="create table test_stored_by_props (rowkey string, cf1 map &lt; string, string &gt; ) stored by 'org.apache.hadoop.hive.hbase.HBaseStorageHandler' with serdeproperties ('hbase.table.name'='hbase_test', 'hbase.columns.mapping'=':key,cf1:')" db-types="Hive" />
+    <sql-case id="create_table_with_location" value="create table test_with_location (data string) location '/user/hive/test_location'" db-types="Hive" />
+    <sql-case id="create_table_with_tblproperties" value="create table test_tblproperties (id int) tblproperties ('owner'='admin', 'version'='1.0')" db-types="Hive" />
+    <sql-case id="create_table_ctas_basic" value="create table test_ctas as select id, name from source_table where status = 'active'" db-types="Hive" />
+    <sql-case id="create_table_like_basic" value="create table test_like like source_table" db-types="Hive" />
+    <sql-case id="create_temp_table_like" value="create temporary table test_temp_like like source_table" db-types="Hive" />
+    <sql-case id="create_external_table_like" value="create external table test_ext_like like source_table" db-types="Hive" />
+    <sql-case id="create_table_like_if_not_exists" value="create table if not exists test_like_ine like source_table" db-types="Hive" />
+    <sql-case id="create_db_table_like" value="create table test_db.test_like_db like source_table" db-types="Hive" />
+    <sql-case id="create_table_like_location" value="create table test_like_loc like source_table location '/user/hive/warehouse/test_like_loc'" db-types="Hive" />
+    <sql-case id="combine_all_options" value="CREATE TEMPORARY EXTERNAL TABLE IF NOT EXISTS test_db.test_table
+          (
+            id INT PRIMARY KEY DISABLE NOVALIDATE,
+            name STRING NOT NULL COMMENT 'User name',
+            age INT CHECK (age &gt; 0 AND age &lt; 150) ENABLE NOVALIDATE RELY,
+            email STRING UNIQUE DISABLE NOVALIDATE NORELY,
+            score DOUBLE DEFAULT 0.0,
+            address STRUCT &lt; city:STRING, street:STRING &gt; ,
+            hobbies ARRAY &lt; STRING &gt; ,
+            metadata MAP &lt; STRING, STRING &gt; ,
+            info UNIONTYPE &lt; INT, STRING &gt;
+          )
+          COMMENT 'Test table with all Hive optional clauses'
+          PARTITIONED BY (dt STRING COMMENT 'Partition date', country STRING COMMENT 'Country')
+          CLUSTERED BY (id) SORTED BY (score DESC) INTO 4 BUCKETS
+          SKEWED BY (name) ON (('Alice', 'Bob'), ('Charlie', 'David')) STORED AS DIRECTORIES
+          ROW FORMAT SERDE 'org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe'
+            WITH SERDEPROPERTIES ('field.delim'='\t', 'collection.delim'=',', 'mapkey.delim'=':')
+          STORED AS ORC
+          LOCATION '/user/hive/warehouse/test_db.db/test_table'
+          TBLPROPERTIES (
+            'owner'='admin',
+            'version'='1.0',
+            'orc.compress'='SNAPPY',
+            'transactional'='true'
+          )
+          AS SELECT
+            u.id,
+            u.name,
+            u.age,
+            u.email,
+            u.score,
+            named_struct('city', u.city, 'street', u.street) AS address,
+            split(u.hobbies, ',') AS hobbies,
+            str_to_map(u.metadata, ',', '=') AS metadata,
+            case when u.flag = 1 then create_union(0, u.id) else create_union(1, u.name) end AS info,
+            ds.dt,
+            u.country
+          FROM source_users u
+          JOIN dim_dates ds ON u.date_id = ds.date_id
+          WHERE u.status = 'active';" db-types="Hive" />
+    <sql-case id="create_table_like_all_options" value="CREATE TEMPORARY EXTERNAL TABLE IF NOT EXISTS test_db.target_table LIKE source_db.source_table LOCATION '/user/hive/warehouse/test_db.db/target_table';" db-types="Hive" />
+    <sql-case id="create_iceberg_table" value="CREATE EXTERNAL TABLE user_log (user_name STRING) STORED BY ICEBERG;" db-types="Hive" />
+    <sql-case id="create_iceberg_table_partition" value="CREATE TABLE user_log (user_name STRING) PARTITIONED BY (year int) STORED BY ICEBERG;" db-types="Hive" />
+    <sql-case id="create_iceberg_table_orc" value="CREATE TABLE user_log (user_name STRING) STORED BY ICEBERG STORED AS ORC;" db-types="Hive" />
+    <sql-case id="create_table_with_blob" value="CREATE TABLE t_blob (id INT, payload BLOB)" db-types="Firebird" />
+    <sql-case id="create_table_with_blob_subtype_numeric" value="CREATE TABLE t_blob_subtype_numeric (payload BLOB SUB_TYPE 1)" db-types="Firebird" />
+    <sql-case id="create_table_with_blob_subtype_text" value="CREATE TABLE t_blob_subtype_text (payload BLOB SUB_TYPE TEXT CHARACTER SET UTF8)" db-types="Firebird" />
+    <sql-case id="create_table_with_blob_segment_size" value="CREATE TABLE t_blob_segment (payload BLOB SUB_TYPE 0 SEGMENT SIZE 80)" db-types="Firebird" />
 </sql-cases>

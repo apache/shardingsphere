@@ -17,16 +17,15 @@
 
 package org.apache.shardingsphere.proxy.backend.session;
 
-import org.apache.shardingsphere.infra.database.mysql.type.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.apache.shardingsphere.infra.session.query.QueryContext;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.proxy.backend.connector.ProxyDatabaseConnectionManager;
-import org.apache.shardingsphere.proxy.backend.connector.jdbc.transaction.BackendTransactionManager;
+import org.apache.shardingsphere.proxy.backend.connector.jdbc.transaction.ProxyBackendTransactionManager;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
-import org.apache.shardingsphere.test.mock.AutoMockExtension;
-import org.apache.shardingsphere.test.mock.StaticMockSettings;
+import org.apache.shardingsphere.test.infra.framework.extension.mock.AutoMockExtension;
+import org.apache.shardingsphere.test.infra.framework.extension.mock.StaticMockSettings;
 import org.apache.shardingsphere.transaction.api.TransactionType;
 import org.apache.shardingsphere.transaction.rule.TransactionRule;
 import org.junit.jupiter.api.BeforeEach;
@@ -60,7 +59,7 @@ class ConnectionSessionTest {
     
     @BeforeEach
     void setup() {
-        connectionSession = new ConnectionSession(mock(MySQLDatabaseType.class), null);
+        connectionSession = new ConnectionSession(mock(), null);
         connectionSession.setGrantee(mock(Grantee.class));
         when(databaseConnectionManager.getConnectionSession()).thenReturn(connectionSession);
     }
@@ -76,7 +75,7 @@ class ConnectionSessionTest {
         connectionSession.setCurrentDatabaseName("db");
         ContextManager contextManager = mockContextManager();
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
-        new BackendTransactionManager(databaseConnectionManager).begin();
+        new ProxyBackendTransactionManager(databaseConnectionManager).begin();
         connectionSession.setCurrentDatabaseName("newDB");
         assertThat(connectionSession.getCurrentDatabaseName(), is("newDB"));
     }

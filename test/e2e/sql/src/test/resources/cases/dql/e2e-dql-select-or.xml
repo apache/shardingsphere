@@ -17,29 +17,29 @@
   -->
 
 <e2e-test-cases>
-    <test-case sql="SELECT * FROM t_order WHERE order_id = ? OR order_id = ?" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
+    <test-case sql="SELECT * FROM t_order WHERE order_id = ? OR order_id = ?" db-types="MySQL,PostgreSQL,openGauss" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
         <assertion parameters="1000:int, 1001:int" expected-data-source-name="read_dataset" />
     </test-case>
     
-    <test-case sql="SELECT * FROM t_order WHERE order_id = ? OR user_id = ? ORDER BY order_id" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
+    <test-case sql="SELECT * FROM t_order WHERE order_id = ? OR user_id = ? ORDER BY order_id" db-types="MySQL,PostgreSQL,openGauss" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
         <assertion parameters="1000:int, 11:int" expected-data-source-name="read_dataset" />
     </test-case>
     
     <!-- TODO FIXED ME PostgreSQL default order by collate -->
-    <test-case sql="SELECT * FROM t_order WHERE order_id = ? OR status = ? ORDER BY order_id" db-types="H2,MySQL,Oracle,SQLServer" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
+    <test-case sql="SELECT * FROM t_order WHERE order_id = ? OR status = ? ORDER BY order_id" db-types="MySQL" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
         <assertion parameters="1000:int, init:String" expected-data-source-name="read_dataset" />
     </test-case>
     
-    <test-case sql="SELECT * FROM t_order WHERE (order_id = ? OR status = ?) AND user_id = ?" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
+    <test-case sql="SELECT * FROM t_order WHERE (order_id = ? OR status = ?) AND user_id = ?" db-types="MySQL,PostgreSQL,openGauss" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
         <assertion parameters="1000:int, init:String, 11:int" expected-data-source-name="read_dataset" />
     </test-case>
     
-    <test-case sql="SELECT * FROM t_order WHERE ((status = ? AND (order_id = ? OR (order_id = ?)) AND (user_id = ? OR (user_id = ?)))) ORDER BY order_id" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
+    <test-case sql="SELECT * FROM t_order WHERE ((status = ? AND (order_id = ? OR (order_id = ?)) AND (user_id = ? OR (user_id = ?)))) ORDER BY order_id" db-types="MySQL,PostgreSQL,openGauss" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
         <assertion parameters="init:String, 1000:int, 1100:int, 10:int, 11:int" expected-data-source-name="read_dataset" />
     </test-case>
     
     <!-- TODO add dbtbl_with_readwrite_splitting_and_encrypt,sharding_and_encrypt,encrypt_and_readwrite_splitting scenario when use standard t_user table in issue#21286 -->
-    <test-case sql="SELECT * FROM t_user WHERE password IN ('222222', '333333') OR user_id = 10" scenario-types="encrypt">
+    <test-case sql="SELECT * FROM t_user WHERE password IN ('222222', '333333') OR user_id = 10" db-types="MySQL,PostgreSQL,openGauss" scenario-types="encrypt">
         <assertion expected-data-source-name="read_dataset" />
     </test-case>
 </e2e-test-cases>

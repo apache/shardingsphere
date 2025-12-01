@@ -20,22 +20,23 @@ package org.apache.shardingsphere.schedule.core.job.statistics.collect;
 import org.apache.shardingsphere.infra.instance.metadata.InstanceType;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.listener.ContextManagerLifecycleListener;
+import org.apache.shardingsphere.mode.manager.listener.ContextManagerLifecycleListenerModeRequired;
 
 /**
  * Statistics collect context manager lifecycle listener.
  */
+@ContextManagerLifecycleListenerModeRequired("Cluster")
 public final class StatisticsCollectContextManagerLifecycleListener implements ContextManagerLifecycleListener {
     
     @Override
     public void onInitialized(final ContextManager contextManager) {
-        if (contextManager.getComputeNodeInstanceContext().getModeConfiguration().isCluster()
-                && InstanceType.PROXY == contextManager.getComputeNodeInstanceContext().getInstance().getMetaData().getType()) {
-            new StatisticsCollectJobWorker(contextManager).initialize();
+        if (InstanceType.PROXY == contextManager.getComputeNodeInstanceContext().getInstance().getMetaData().getType()) {
+            new StatisticsCollectJobWorker().initialize(contextManager);
         }
     }
     
     @Override
     public void onDestroyed(final ContextManager contextManager) {
-        new StatisticsCollectJobWorker(contextManager).destroy();
+        new StatisticsCollectJobWorker().destroy();
     }
 }

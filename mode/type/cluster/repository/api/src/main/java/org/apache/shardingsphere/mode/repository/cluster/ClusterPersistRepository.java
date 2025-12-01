@@ -19,8 +19,10 @@ package org.apache.shardingsphere.mode.repository.cluster;
 
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstanceContext;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEventListener;
-import org.apache.shardingsphere.mode.repository.cluster.lock.holder.DistributedLockHolder;
+import org.apache.shardingsphere.mode.repository.cluster.lock.DistributedLock;
 import org.apache.shardingsphere.mode.spi.repository.PersistRepository;
+
+import java.util.Optional;
 
 /**
  * Cluster persist repository.
@@ -36,20 +38,29 @@ public interface ClusterPersistRepository extends PersistRepository {
     void init(ClusterPersistRepositoryConfiguration config, ComputeNodeInstanceContext computeNodeInstanceContext);
     
     /**
+     * Persist ephemeral data.
+     *
+     * @param key key of data
+     * @param value value of data
+     */
+    void persistEphemeral(String key, String value);
+    
+    /**
      * Persist exclusive ephemeral data.
      *
      * @param key key of data
      * @param value value of data
-     * @return persist exclusive node success or not 
+     * @return persist success or not
      */
     boolean persistExclusiveEphemeral(String key, String value);
     
     /**
-     * Get distributed lock holder.
+     * Get distributed lock.
      *
-     * @return distributed lock holder
+     * @param lockKey lock key
+     * @return distributed lock
      */
-    DistributedLockHolder getDistributedLockHolder();
+    Optional<DistributedLock> getDistributedLock(String lockKey);
     
     /**
      * Watch key or path of governance server.

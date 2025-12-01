@@ -21,8 +21,7 @@ import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.mode.spi.rule.RuleItemConfigurationChangedProcessor;
-import org.apache.shardingsphere.mode.spi.rule.item.alter.AlterNamedRuleItem;
-import org.apache.shardingsphere.mode.spi.rule.item.drop.DropRuleItem;
+import org.apache.shardingsphere.mode.spi.rule.RuleChangedItemType;
 import org.apache.shardingsphere.single.config.SingleRuleConfiguration;
 import org.apache.shardingsphere.single.rule.SingleRule;
 import org.junit.jupiter.api.Test;
@@ -40,12 +39,11 @@ class SingleTableChangedProcessorTest {
     
     @SuppressWarnings("unchecked")
     private final RuleItemConfigurationChangedProcessor<SingleRuleConfiguration, SingleRuleConfiguration> processor = TypedSPILoader.getService(
-            RuleItemConfigurationChangedProcessor.class, "single.tables");
+            RuleItemConfigurationChangedProcessor.class, new RuleChangedItemType("single", "tables"));
     
     @Test
     void assertSwapRuleItemConfiguration() {
-        AlterNamedRuleItem alterNamedRuleItem = mock(AlterNamedRuleItem.class);
-        SingleRuleConfiguration actual = processor.swapRuleItemConfiguration(alterNamedRuleItem, "- foo_tbl");
+        SingleRuleConfiguration actual = processor.swapRuleItemConfiguration(null, "- foo_tbl");
         assertThat(actual.getTables(), is(Collections.singleton("foo_tbl")));
     }
     
@@ -65,18 +63,16 @@ class SingleTableChangedProcessorTest {
     
     @Test
     void assertChangeRuleItemConfiguration() {
-        AlterNamedRuleItem alterNamedRuleItem = mock(AlterNamedRuleItem.class);
         SingleRuleConfiguration currentRuleConfig = new SingleRuleConfiguration(new LinkedList<>(Collections.singleton("foo_tbl")), null);
         SingleRuleConfiguration toBeChangedItemConfig = new SingleRuleConfiguration(new LinkedList<>(Collections.singleton("bar_tbl")), null);
-        processor.changeRuleItemConfiguration(alterNamedRuleItem, currentRuleConfig, toBeChangedItemConfig);
+        processor.changeRuleItemConfiguration(null, currentRuleConfig, toBeChangedItemConfig);
         assertThat(currentRuleConfig.getTables(), is(Collections.singletonList("bar_tbl")));
     }
     
     @Test
     void assertDropRuleItemConfiguration() {
-        DropRuleItem dropRuleItem = mock(DropRuleItem.class);
         SingleRuleConfiguration currentRuleConfig = new SingleRuleConfiguration(new LinkedList<>(Collections.singleton("foo_tbl")), null);
-        processor.dropRuleItemConfiguration(dropRuleItem, currentRuleConfig);
+        processor.dropRuleItemConfiguration(null, currentRuleConfig);
         assertTrue(currentRuleConfig.getTables().isEmpty());
     }
 }

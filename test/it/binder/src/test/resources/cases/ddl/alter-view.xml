@@ -32,6 +32,7 @@
                         <original-schema name="foo_db_1" />
                         <original-table name="t_order" />
                         <original-column name="order_id" start-delimiter="`" end-delimiter="`" />
+                        <table-source-type name="PHYSICAL_TABLE"/>
                     </column-bound>
                 </column-projection>
             </projections>

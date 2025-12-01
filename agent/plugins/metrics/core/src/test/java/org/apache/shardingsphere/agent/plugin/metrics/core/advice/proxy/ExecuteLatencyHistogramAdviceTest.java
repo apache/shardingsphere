@@ -33,8 +33,8 @@ import java.util.Collections;
 import java.util.concurrent.TimeUnit;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.greaterThanOrEqualTo;
+import static org.hamcrest.Matchers.is;
 import static org.mockito.Mockito.mock;
 
 class ExecuteLatencyHistogramAdviceTest {
@@ -67,6 +67,6 @@ class ExecuteLatencyHistogramAdviceTest {
         advice.beforeMethod(targetObject, method, args, "FIXTURE");
         Awaitility.await().pollDelay(20L, TimeUnit.MILLISECONDS).until(() -> true);
         advice.afterMethod(targetObject, method, args, null, "FIXTURE");
-        assertThat(Double.parseDouble(MetricsCollectorRegistry.get(config, "FIXTURE").toString()), equalTo(0D));
+        assertThat(Double.parseDouble(MetricsCollectorRegistry.get(config, "FIXTURE").toString()), is(0D));
     }
 }

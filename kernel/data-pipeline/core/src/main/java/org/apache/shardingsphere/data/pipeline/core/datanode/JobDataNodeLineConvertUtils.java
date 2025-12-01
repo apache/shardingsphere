@@ -40,12 +40,12 @@ public final class JobDataNodeLineConvertUtils {
     /**
      * Convert data nodes to lines.
      *
-     * @param actualDataNodes actual data nodes
-     * @return job data node line list.
+     * @param tableAndDataNodesMap table and data nodes map
+     * @return job data node line list
      */
-    public static List<JobDataNodeLine> convertDataNodesToLines(final Map<String, List<DataNode>> actualDataNodes) {
+    public static List<JobDataNodeLine> convertDataNodesToLines(final Map<String, List<DataNode>> tableAndDataNodesMap) {
         List<Pair<String, JobDataNodeLine>> result = new LinkedList<>();
-        for (Entry<String, Map<String, List<DataNode>>> entry : groupDataSourceDataNodesMapByDataSourceName(actualDataNodes).entrySet()) {
+        for (Entry<String, Map<String, List<DataNode>>> entry : groupDataSourceDataNodesMapByDataSourceName(tableAndDataNodesMap).entrySet()) {
             result.add(Pair.of(entry.getKey(), new JobDataNodeLine(getJobDataNodeEntries(entry.getValue()))));
         }
         // Sort by dataSourceName, make sure data node lines have the same ordering

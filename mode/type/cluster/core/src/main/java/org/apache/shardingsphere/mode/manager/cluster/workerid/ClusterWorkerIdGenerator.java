@@ -19,11 +19,10 @@ package org.apache.shardingsphere.mode.manager.cluster.workerid;
 
 import com.google.common.base.Preconditions;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
+import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.instance.workerid.WorkerIdAssignedException;
 import org.apache.shardingsphere.infra.instance.workerid.WorkerIdGenerator;
-import org.apache.shardingsphere.mode.manager.cluster.persist.service.ReservationPersistService;
-import org.apache.shardingsphere.mode.persist.service.unified.ComputeNodePersistService;
+import org.apache.shardingsphere.mode.manager.cluster.persist.service.ClusterComputeNodePersistService;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 
 import java.util.Collection;
@@ -42,7 +41,7 @@ public final class ClusterWorkerIdGenerator implements WorkerIdGenerator {
     
     private final String instanceId;
     
-    private final ComputeNodePersistService computeNodePersistService;
+    private final ClusterComputeNodePersistService computeNodePersistService;
     
     private final ReservationPersistService reservationPersistService;
     
@@ -50,7 +49,7 @@ public final class ClusterWorkerIdGenerator implements WorkerIdGenerator {
     
     public ClusterWorkerIdGenerator(final ClusterPersistRepository repository, final String instanceId) {
         this.instanceId = instanceId;
-        computeNodePersistService = new ComputeNodePersistService(repository);
+        computeNodePersistService = new ClusterComputeNodePersistService(repository);
         reservationPersistService = new ReservationPersistService(repository);
     }
     

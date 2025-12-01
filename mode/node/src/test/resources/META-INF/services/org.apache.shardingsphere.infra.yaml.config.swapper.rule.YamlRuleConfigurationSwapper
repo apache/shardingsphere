@@ -15,4 +15,5 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.mode.node.tuple.fixture.leaf.LeafYamlRuleConfigurationSwapper
+org.apache.shardingsphere.mode.node.rule.tuple.fixture.leaf.YamlLeafRuleConfigurationSwapper
+org.apache.shardingsphere.mode.node.rule.tuple.fixture.node.YamlNodeRuleConfigurationSwapper

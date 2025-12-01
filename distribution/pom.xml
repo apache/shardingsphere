@@ -21,7 +21,7 @@
     <parent>
         <groupId>org.apache.shardingsphere</groupId>
         <artifactId>shardingsphere</artifactId>
-        <version>5.5.2-SNAPSHOT</version>
+        <version>5.5.3-SNAPSHOT</version>
     </parent>
     <artifactId>shardingsphere-distribution</artifactId>
     <packaging>pom</packaging>
@@ -29,6 +29,7 @@
     
     <modules>
         <module>src</module>
+        <module>bom</module>
         <module>agent</module>
         <module>jdbc</module>
         <module>proxy</module>

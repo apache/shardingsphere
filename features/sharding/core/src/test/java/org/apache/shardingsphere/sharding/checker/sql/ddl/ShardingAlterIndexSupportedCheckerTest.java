@@ -17,17 +17,19 @@
 
 package org.apache.shardingsphere.sharding.checker.sql.ddl;
 
-import org.apache.shardingsphere.infra.binder.context.statement.ddl.AlterIndexStatementContext;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.binder.context.statement.type.CommonSQLStatementContext;
+import org.apache.shardingsphere.infra.exception.kernel.metadata.DuplicateIndexException;
+import org.apache.shardingsphere.infra.exception.kernel.metadata.IndexNotFoundException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
-import org.apache.shardingsphere.infra.exception.kernel.metadata.DuplicateIndexException;
-import org.apache.shardingsphere.infra.exception.kernel.metadata.IndexNotFoundException;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.index.IndexNameSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.index.IndexSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.index.AlterIndexStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
-import org.apache.shardingsphere.sql.parser.statement.postgresql.ddl.PostgreSQLAlterIndexStatement;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Answers;
@@ -44,6 +46,8 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 class ShardingAlterIndexSupportedCheckerTest {
     
+    private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "FIXTURE");
+    
     @Mock
     private ShardingRule rule;
     
@@ -52,7 +56,7 @@ class ShardingAlterIndexSupportedCheckerTest {
     
     @Test
     void assertCheckWhenIndexExistRenameIndexNotExistForPostgreSQL() {
-        PostgreSQLAlterIndexStatement sqlStatement = new PostgreSQLAlterIndexStatement();
+        AlterIndexStatement sqlStatement = new AlterIndexStatement(databaseType);
         sqlStatement.setIndex(new IndexSegment(0, 0, new IndexNameSegment(0, 0, new IdentifierValue("t_order_index"))));
         sqlStatement.setRenameIndex(new IndexSegment(0, 0, new IndexNameSegment(0, 0, new IdentifierValue("t_order_index_new"))));
         ShardingSphereTable table = mock(ShardingSphereTable.class);
@@ -60,22 +64,22 @@ class ShardingAlterIndexSupportedCheckerTest {
         when(schema.getAllTables()).thenReturn(Collections.singleton(table));
         when(table.containsIndex("t_order_index")).thenReturn(true);
         when(table.containsIndex("t_order_index_new")).thenReturn(false);
-        assertDoesNotThrow(() -> new ShardingAlterIndexSupportedChecker().check(rule, database, schema, new AlterIndexStatementContext(sqlStatement)));
+        assertDoesNotThrow(() -> new ShardingAlterIndexSupportedChecker().check(rule, database, schema, new CommonSQLStatementContext(sqlStatement)));
     }
     
     @Test
     void assertCheckWhenIndexNotExistRenameIndexNotExistForPostgreSQL() {
-        PostgreSQLAlterIndexStatement sqlStatement = new PostgreSQLAlterIndexStatement();
+        AlterIndexStatement sqlStatement = new AlterIndexStatement(databaseType);
         sqlStatement.setIndex(new IndexSegment(0, 0, new IndexNameSegment(0, 0, new IdentifierValue("t_order_index"))));
         sqlStatement.setRenameIndex(new IndexSegment(0, 0, new IndexNameSegment(0, 0, new IdentifierValue("t_order_index_new"))));
         ShardingSphereTable table = mock(ShardingSphereTable.class);
         when(database.getSchema("public").getTable("t_order")).thenReturn(table);
-        assertThrows(IndexNotFoundException.class, () -> new ShardingAlterIndexSupportedChecker().check(rule, database, mock(), new AlterIndexStatementContext(sqlStatement)));
+        assertThrows(IndexNotFoundException.class, () -> new ShardingAlterIndexSupportedChecker().check(rule, database, mock(), new CommonSQLStatementContext(sqlStatement)));
     }
     
     @Test
     void assertCheckAlterIndexWhenIndexExistRenameIndexExistForPostgreSQL() {
-        PostgreSQLAlterIndexStatement sqlStatement = new PostgreSQLAlterIndexStatement();
+        AlterIndexStatement sqlStatement = new AlterIndexStatement(databaseType);
         sqlStatement.setIndex(new IndexSegment(0, 0, new IndexNameSegment(0, 0, new IdentifierValue("t_order_index"))));
         sqlStatement.setRenameIndex(new IndexSegment(0, 0, new IndexNameSegment(0, 0, new IdentifierValue("t_order_index_new"))));
         ShardingSphereSchema schema = mock(ShardingSphereSchema.class);
@@ -84,6 +88,6 @@ class ShardingAlterIndexSupportedCheckerTest {
         when(table.containsIndex("t_order_index")).thenReturn(true);
         when(table.containsIndex("t_order_index_new")).thenReturn(true);
         assertThrows(DuplicateIndexException.class,
-                () -> new ShardingAlterIndexSupportedChecker().check(rule, database, schema, new AlterIndexStatementContext(sqlStatement)));
+                () -> new ShardingAlterIndexSupportedChecker().check(rule, database, schema, new CommonSQLStatementContext(sqlStatement)));
     }
 }

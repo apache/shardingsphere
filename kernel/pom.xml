@@ -21,7 +21,7 @@
     <parent>
         <groupId>org.apache.shardingsphere</groupId>
         <artifactId>shardingsphere</artifactId>
-        <version>5.5.2-SNAPSHOT</version>
+        <version>5.5.3-SNAPSHOT</version>
     </parent>
     <artifactId>shardingsphere-kernel</artifactId>
     <packaging>pom</packaging>
@@ -38,6 +38,5 @@
         <module>global-clock</module>
         <module>schedule</module>
         <module>data-pipeline</module>
-        <module>logging</module>
     </modules>
 </project>

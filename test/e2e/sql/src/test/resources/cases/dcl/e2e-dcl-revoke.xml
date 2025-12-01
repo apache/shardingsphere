@@ -17,9 +17,8 @@
   -->
 
 <e2e-test-cases>
-    <test-case sql="REVOKE select, update on t_order from default_user" db-types="Oracle,PostgreSQL,SQLServer" />
-    <test-case sql="REVOKE default_role from default_user" db-types="Oracle,PostgreSQL,SQLServer" />
-    <test-case sql="REVOKE ADVISOR, ALTER DATABASE from user_dev" db-types="Oracle" />
+    <test-case sql="REVOKE select, update on t_order from default_user" db-types="PostgreSQL" />
+    <test-case sql="REVOKE default_role from default_user" db-types="PostgreSQL" />
     <test-case sql="REVOKE ALL PRIVILEGES, GRANT OPTION FROM 'user_dev'@'localhost'" db-types="MySQL" />
     <test-case sql="REVOKE select, insert ON * FROM 'user_dev'@'localhost'" db-types="MySQL" />
     <test-case sql="REVOKE select, insert ON t_order FROM 'user_dev'@'localhost'" db-types="MySQL" />
@@ -27,31 +26,17 @@
     <test-case sql="REVOKE ALL PRIVILEGES ON *.* FROM user_dev" db-types="MySQL" />
     <test-case sql="REVOKE ALL PRIVILEGES (order_id) ON TABLE t_order FROM role2" db-types="PostgreSQL" />
     <test-case sql="REVOKE ALL PRIVILEGES (order_id) ON TABLE t_order FROM role2, role3" db-types="PostgreSQL" />
-    <test-case sql="REVOKE ALL PRIVILEGES ON db_0.t_order FROM user_dev" db-types="Oracle" />
     <test-case sql="REVOKE ALL PRIVILEGES ON SCHEMA public FROM default_role" db-types="PostgreSQL" />
     <test-case sql="REVOKE ALL PRIVILEGES ON SCHEMA public FROM default_role, role2" db-types="PostgreSQL" />
     <test-case sql="REVOKE ALL PRIVILEGES ON TABLE t_order FROM default_role, role2" db-types="PostgreSQL" />
-    <test-case sql="REVOKE ALL PRIVILEGES FROM user_dev" db-types="Oracle" />
     <test-case sql="REVOKE CREATE ON SCHEMA public FROM default_role" db-types="PostgreSQL" />
     <test-case sql="REVOKE INSERT, SELECT, UPDATE, DELETE ON *.* FROM user_dev" db-types="MySQL" />
-    <test-case sql="REVOKE INSERT, SELECT, UPDATE, DELETE ON t_order FROM user_dev" db-types="SQLServer" />
     <test-case sql="REVOKE EXECUTE ON ALL FUNCTIONS IN SCHEMA public FROM default_role" db-types="PostgreSQL" />
-    <test-case sql="REVOKE SELECT ON db_0.t_order FROM user_dev" db-types="Oracle" />
-    <test-case sql="REVOKE SELECT (order_id) ON db_0.t_order FROM user_dev" db-types="Oracle" />
-    <test-case sql="REVOKE SELECT ON db_0.t_order FROM user_dev, user2" db-types="Oracle" />
-    <test-case sql="REVOKE INSERT, SELECT, UPDATE, DELETE ON db_0.t_order FROM user_dev" db-types="Oracle" />
-    <test-case sql="REVOKE role_dev FROM FUNCTION db_0.function1" db-types="Oracle" />
     <test-case sql="REVOKE default_role, role2 FROM role3, role4" db-types="PostgreSQL" />
-    <test-case sql="REVOKE role_dev, role2 FROM FUNCTION db_0.function1, FUNCTION db_0.function2" db-types="Oracle" />
     <test-case sql="REVOKE SELECT ON *.* FROM user_dev" db-types="MySQL" />
     <test-case sql="REVOKE SELECT (order_id) ON TABLE t_order FROM default_role" db-types="PostgreSQL" />
     <test-case sql="REVOKE SELECT ON  *.* FROM 'user_dev'@'localhost'" db-types="MySQL" />
     <test-case sql="REVOKE SELECT ON ALL SEQUENCES IN SCHEMA public FROM default_role" db-types="PostgreSQL" />
     <test-case sql="REVOKE SELECT ON ALL TABLES IN SCHEMA public FROM default_role" db-types="PostgreSQL" />
-    <test-case sql="REVOKE SELECT (order_id) ON t_order FROM user_dev, user2" db-types="SQLServer" />
-    <test-case sql="REVOKE CREATE SESSION FROM user_dev" db-types="Oracle" />
-    <test-case sql="REVOKE CREATE SESSION FROM user_dev, user2" db-types="Oracle" />
-    <test-case sql="REVOKE CREATE ANY MATERIALIZED VIEW, ALTER ANY MATERIALIZED VIEW, DROP ANY MATERIALIZED VIEW FROM user_dev" db-types="Oracle" />
     <test-case sql="REVOKE SELECT ON TABLE t_order FROM default_role" db-types="PostgreSQL" />
-    <test-case sql="REVOKE SELECT ON t_order FROM user_dev" db-types="SQLServer" />
 </e2e-test-cases>

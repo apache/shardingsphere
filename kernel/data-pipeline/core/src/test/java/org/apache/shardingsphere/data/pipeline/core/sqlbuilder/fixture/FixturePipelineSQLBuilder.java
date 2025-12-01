@@ -43,7 +43,7 @@ public final class FixturePipelineSQLBuilder implements DialectPipelineSQLBuilde
     
     @Override
     public String wrapWithPageQuery(final String sql) {
-        return sql;
+        return sql + " LIMIT ?";
     }
     
     @Override

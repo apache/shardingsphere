@@ -393,6 +393,37 @@
         </where>
     </delete>
 
+    <delete sql-case-id="delete_using_with_clause">
+        <with start-index="0" stop-index="63">
+            <common-table-expression name = "cte" start-index="5" stop-index="63">
+                <subquery-expression start-index="5" stop-index="63">
+                    <select>
+                        <from>
+                            <simple-table name="t_order" start-index="34" stop-index="40" />
+                        </from>
+                        <projections start-index="20" stop-index="27">
+                            <column-projection name="order_id" start-index="20" stop-index="27" />
+                        </projections>
+                        <where start-index="42" stop-index="62">
+                            <expr>
+                                <binary-operation-expression start-index="48" stop-index="62">
+                                    <left>
+                                        <column name="order_id" start-index="48" stop-index="55"/>
+                                    </left>
+                                    <operator>=</operator>
+                                    <right>
+                                        <literal-expression value="1000" start-index="59" stop-index="62"/>
+                                    </right>
+                                </binary-operation-expression>
+                            </expr>
+                        </where>
+                    </select>
+                </subquery-expression>
+            </common-table-expression>
+        </with>
+        <table name="t_order" start-index="77" stop-index="83"/>
+    </delete>
+
     <delete sql-case-id="delete_without_columns_with_with_clause">
         <with start-index="0" stop-index="50">
             <common-table-expression name="cte" start-index="5" stop-index="50">
@@ -771,5 +802,72 @@
                 </expression-projection>
             </projections>
         </returning>
+    </delete>
+
+    <delete sql-case-id="delete_with_table_hint">
+        <table name="DatabaseLog" start-index="14" stop-index="28">
+            <owner name="dbo" start-index="14" stop-index="16" />
+        </table>
+        <output start-index="46" stop-index="61" />
+        <where start-index="63" stop-index="85">
+            <expr>
+                <binary-operation-expression start-index="69" stop-index="85">
+                    <left>
+                        <column name="DatabaseLogID" start-index="69" stop-index="81" />
+                    </left>
+                    <operator>=</operator>
+                    <right>
+                        <literal-expression value="7" start-index="85" stop-index="85" />
+                    </right>
+                </binary-operation-expression>
+            </expr>
+        </where>
+    </delete>
+
+    <delete sql-case-id="delete_rowset_function">
+        <function-table start-index="12" stop-index="144">
+            <table-function function-name="OPENDATASOURCE" text="OPENDATASOURCE('SQLNCLI', 'Data Source= &lt;server_name&gt;; Integrated Security=SSPI').AdventureWorks2022.HumanResources.Department">
+                <parameter>
+                    <literal-expression value="SQLNCLI" start-index="26" stop-index="34" />
+                </parameter>
+                <parameter>
+                    <literal-expression value="Data Source= &lt;server_name&gt;; Integrated Security=SSPI" start-index="37" stop-index="93" />
+                </parameter>
+            </table-function>
+        </function-table>
+        <where start-index="139" stop-index="161">
+            <expr>
+                <binary-operation-expression start-index="145" stop-index="161">
+                    <left>
+                        <column name="DepartmentID" start-index="145" stop-index="156" />
+                    </left>
+                    <operator>=</operator>
+                    <right>
+                        <literal-expression value="17" start-index="160" stop-index="161" />
+                    </right>
+                </binary-operation-expression>
+            </expr>
+        </where>
+    </delete>
+
+    <delete sql-case-id="delete_hive_basic">
+        <table name="orders" start-index="12" stop-index="17" />
+    </delete>
+
+    <delete sql-case-id="delete_with_where">
+        <table name="orders" start-index="12" stop-index="17" />
+        <where start-index="19" stop-index="39">
+            <expr>
+                <binary-operation-expression start-index="25" stop-index="39">
+                    <left>
+                        <column name="order_id" start-index="25" stop-index="32" />
+                    </left>
+                    <operator>=</operator>
+                    <right>
+                        <literal-expression value="9527" start-index="36" stop-index="39" />
+                    </right>
+                </binary-operation-expression>
+            </expr>
+        </where>
     </delete>
 </sql-parser-test-cases>

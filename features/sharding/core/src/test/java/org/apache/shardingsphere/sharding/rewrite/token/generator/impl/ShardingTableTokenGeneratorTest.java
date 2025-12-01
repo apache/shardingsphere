@@ -17,9 +17,9 @@
 
 package org.apache.shardingsphere.sharding.rewrite.token.generator.impl;
 
-import org.apache.shardingsphere.infra.binder.context.aware.CursorAware;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.binder.context.statement.dml.SelectStatementContext;
+import org.apache.shardingsphere.infra.binder.context.statement.type.ddl.CursorHeldSQLStatementContext;
+import org.apache.shardingsphere.infra.binder.context.statement.type.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.rewrite.sql.token.common.pojo.SQLToken;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.sharding.rewrite.token.pojo.ShardingTableToken;
@@ -35,17 +35,17 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Optional;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.isA;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-import static org.mockito.Mockito.withSettings;
 
 @ExtendWith(MockitoExtension.class)
 class ShardingTableTokenGeneratorTest {
@@ -61,14 +61,16 @@ class ShardingTableTokenGeneratorTest {
     }
     
     @Test
-    void assertIsNotGenerateSQLTokenWithCursorAware() {
-        assertFalse(generator.isGenerateSQLToken(mock(SQLStatementContext.class, withSettings().extraInterfaces(CursorAware.class))));
+    void assertIsNotGenerateSQLTokenWithCursorHeldSQLStatementContext() {
+        assertFalse(generator.isGenerateSQLToken(mock(CursorHeldSQLStatementContext.class)));
     }
     
     @Test
     void assertIsNotGenerateSQLTokenWithNotTableAvailable() {
         generator.setRouteContext(new RouteContext());
-        assertFalse(generator.isGenerateSQLToken(mock(SQLStatementContext.class)));
+        SQLStatementContext sqlStatementContext = mock(SQLStatementContext.class, RETURNS_DEEP_STUBS);
+        when(sqlStatementContext.getTablesContext().getDatabaseNames()).thenReturn(Collections.emptyList());
+        assertFalse(generator.isGenerateSQLToken(sqlStatementContext));
     }
     
     @Test
@@ -86,12 +88,16 @@ class ShardingTableTokenGeneratorTest {
         RouteContext routeContext = mock(RouteContext.class);
         when(routeContext.containsTableSharding()).thenReturn(true);
         generator.setRouteContext(routeContext);
-        assertTrue(generator.isGenerateSQLToken(mock(SQLStatementContext.class)));
+        SQLStatementContext sqlStatementContext = mock(SQLStatementContext.class, RETURNS_DEEP_STUBS);
+        when(sqlStatementContext.getTablesContext().getDatabaseNames()).thenReturn(Collections.emptyList());
+        assertTrue(generator.isGenerateSQLToken(sqlStatementContext));
     }
     
     @Test
     void assertGenerateSQLTokenWithNotTableAvailable() {
-        assertTrue(generator.generateSQLTokens(mock(SQLStatementContext.class)).isEmpty());
+        SQLStatementContext sqlStatementContext = mock(SQLStatementContext.class, RETURNS_DEEP_STUBS);
+        when(sqlStatementContext.getTablesContext().getDatabaseNames()).thenReturn(Collections.emptyList());
+        assertTrue(generator.generateSQLTokens(sqlStatementContext).isEmpty());
     }
     
     @Test
@@ -103,6 +109,6 @@ class ShardingTableTokenGeneratorTest {
                 new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("bar_tbl")))));
         Collection<SQLToken> actual = generator.generateSQLTokens(sqlStatementContext);
         assertThat(actual.size(), is(1));
-        assertThat(actual.iterator().next(), instanceOf(ShardingTableToken.class));
+        assertThat(actual.iterator().next(), isA(ShardingTableToken.class));
     }
 }

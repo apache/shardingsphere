@@ -17,7 +17,7 @@
   -->
 
 <e2e-test-cases>
-    <test-case sql="SELECT 1 FROM dual" db-types="MySQL,SQLServer,Oracle,H2" smoke="true" scenario-types="db,dbtbl_with_readwrite_splitting,dbtbl_with_readwrite_splitting_and_encrypt,empty_rules,encrypt,encrypt_and_readwrite_splitting,encrypt_shadow,mask,mask_encrypt,mask_encrypt_sharding,mask_sharding,distsql_rdl,readwrite_splitting,readwrite_splitting_and_shadow,shadow,sharding_and_encrypt,sharding_and_shadow,sharding_encrypt_shadow,tbl" >
+    <test-case sql="SELECT 1 FROM dual" db-types="MySQL" smoke="true" scenario-types="db,dbtbl_with_readwrite_splitting,dbtbl_with_readwrite_splitting_and_encrypt,empty_rules,encrypt,encrypt_and_readwrite_splitting,encrypt_shadow,mask,mask_encrypt,mask_encrypt_sharding,mask_sharding,distsql_rdl,readwrite_splitting,readwrite_splitting_and_shadow,shadow,sharding_and_encrypt,sharding_and_shadow,sharding_encrypt_shadow,tbl" >
         <assertion />
     </test-case>
 
@@ -25,29 +25,29 @@
         <assertion />
     </test-case>
     
-    <test-case sql="SELECT t_order.* FROM t_order t_order WHERE user_id = ? AND order_id = ?" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
+    <test-case sql="SELECT t_order.* FROM t_order t_order WHERE user_id = ? AND order_id = ?" db-types="MySQL,PostgreSQL,openGauss" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
         <assertion parameters="10:int, 1000:int" expected-data-source-name="read_dataset" />
         <assertion parameters="12:int, 1000:int" />
     </test-case>
-    
-    <test-case sql="SELECT t_order.order_id,t_order.user_id,status FROM t_order t_order WHERE t_order.user_id = ? AND order_id = ?" db-types="MySQL,H2" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
+
+    <test-case sql="SELECT t_order.order_id,t_order.user_id,status FROM t_order t_order WHERE t_order.user_id = ? AND order_id = ?" db-types="MySQL" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
         <assertion parameters="10:int, 1000:int" expected-data-source-name="read_dataset" />
         <assertion parameters="12:int, 1000:int" expected-data-source-name="read_dataset" />
     </test-case>
     
-    <test-case sql="SELECT * FROM t_order WHERE user_id = ? AND order_id = ?" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
+    <test-case sql="SELECT * FROM t_order WHERE user_id = ? AND order_id = ?" db-types="MySQL,PostgreSQL,openGauss" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
         <assertion parameters="10:int, 1000:int" expected-data-source-name="read_dataset" />
         <assertion parameters="12:int, 1000:int" expected-data-source-name="read_dataset" />
     </test-case>
     
-    <test-case sql="SELECT * FROM t_order WHERE order_id = ? AND order_id = ?" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
+    <test-case sql="SELECT * FROM t_order WHERE order_id = ? AND order_id = ?" db-types="MySQL,PostgreSQL,openGauss" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
         <assertion parameters="1000:int, 1001:int" expected-data-source-name="read_dataset" />
     </test-case>
-    
+
     <test-case sql="SELECT * /* this is &#x000D;&#x000A; block comment */ FROM /* this is another &#x000A; block comment */ t_order where status='1'" db-types="MySQL" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
         <assertion expected-data-source-name="read_dataset" />
     </test-case>
-    
+
     <test-case sql="SELECT * -- this is an line comment &#x000D;&#x000A; FROM -- this is another line comment &#x000A; t_order where status='1'" db-types="MySQL" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
         <assertion expected-data-source-name="read_dataset" />
     </test-case>
@@ -63,43 +63,43 @@
     <test-case sql="SELECT status as 'status' FROM t_order" db-types="MySQL" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
         <assertion expected-data-source-name="read_dataset" />
     </test-case>
-    
+
     <test-case sql="SELECT INTERVAL(status,1,5) func_status FROM t_order WHERE user_id = ? AND order_id = ?" db-types="MySQL" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
         <assertion parameters="12:int, 1000:int" expected-data-source-name="read_dataset" />
     </test-case>
     
     <!-- TODO Replace with standard table structure -->
-    <!--<test-case sql="SELECT * FROM t_broadcast_table" scenario-types="db,tbl,dbtbl_with_readwrite_splitting">
+    <!--<test-case sql="SELECT * FROM t_broadcast_table" db-types="MySQL,PostgreSQL,openGauss" scenario-types="db,tbl,dbtbl_with_readwrite_splitting">
         <assertion expected-data-source-name="read_dataset" />
     </test-case>-->
     
     <!-- TODO add dbtbl_with_readwrite_splitting_and_encrypt,sharding_and_encrypt,encrypt_and_readwrite_splitting scenario when use standard t_user table in issue#21286 -->
-    <test-case sql="SELECT * FROM t_user WHERE user_id &lt;= 15 ORDER BY user_id" scenario-types="encrypt">
+    <test-case sql="SELECT * FROM t_user WHERE user_id &lt;= 15 ORDER BY user_id" db-types="MySQL,PostgreSQL,openGauss" scenario-types="encrypt">
         <assertion expected-data-source-name="read_dataset" />
     </test-case>
     
     <!-- TODO add dbtbl_with_readwrite_splitting_and_encrypt,sharding_and_encrypt,encrypt_and_readwrite_splitting scenario when use standard t_user table in issue#21286 -->
-    <test-case sql="SELECT * FROM t_user WHERE password = '111111'" scenario-types="encrypt">
+    <test-case sql="SELECT * FROM t_user WHERE password = '111111'" db-types="MySQL,PostgreSQL,openGauss" scenario-types="encrypt">
         <assertion expected-data-source-name="read_dataset" />
     </test-case>
     
     <!-- TODO add dbtbl_with_readwrite_splitting_and_encrypt,sharding_and_encrypt,encrypt_and_readwrite_splitting scenario when use standard t_user table in issue#21286 -->
-    <test-case sql="SELECT * FROM t_user WHERE password IN ('222222', '333333')" scenario-types="encrypt">
+    <test-case sql="SELECT * FROM t_user WHERE password IN ('222222', '333333')" db-types="MySQL,PostgreSQL,openGauss" scenario-types="encrypt">
         <assertion expected-data-source-name="read_dataset" />
     </test-case>
     
     <!-- TODO add dbtbl_with_readwrite_splitting_and_encrypt,sharding_and_encrypt,encrypt_and_readwrite_splitting scenario when use standard t_user table in issue#21286 -->
-    <test-case sql="SELECT * FROM t_user WHERE password IN ('222222', '333333') AND user_id = 12" scenario-types="encrypt">
+    <test-case sql="SELECT * FROM t_user WHERE password IN ('222222', '333333') AND user_id = 12" db-types="MySQL,PostgreSQL,openGauss" scenario-types="encrypt">
         <assertion expected-data-source-name="read_dataset" />
     </test-case>
     
     <!-- TODO Replace with standard table structure -->
-    <!--<test-case sql="SELECT * FROM t_single_table" db-types="MySQL,Oracle,SQLServer" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,encrypt,dbtbl_with_readwrite_splitting_and_encrypt,sharding_and_encrypt,encrypt_and_readwrite_splitting">
+    <!--<test-case sql="SELECT * FROM t_single_table" db-types="MySQL" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,encrypt,dbtbl_with_readwrite_splitting_and_encrypt,sharding_and_encrypt,encrypt_and_readwrite_splitting">
         <assertion expected-data-source-name="read_dataset" />
     </test-case>-->
     
     <!-- TODO Replace with standard table structure -->
-    <!--<test-case sql="SELECT o.*, i.* FROM t_order_federate o, t_order_item_federate i WHERE o.order_id = ? AND i.item_id = ?" scenario-types="db,dbtbl_with_readwrite_splitting,dbtbl_with_readwrite_splitting_and_encrypt,sharding_and_encrypt,encrypt_and_readwrite_splitting">
+    <!--<test-case sql="SELECT o.*, i.* FROM t_order_federate o, t_order_item_federate i WHERE o.order_id = ? AND i.item_id = ?" db-types="MySQL,PostgreSQL,openGauss" scenario-types="db,dbtbl_with_readwrite_splitting,dbtbl_with_readwrite_splitting_and_encrypt,sharding_and_encrypt,encrypt_and_readwrite_splitting">
         <assertion parameters="1000:int, 100000:int" expected-data-source-name="read_dataset" />
     </test-case>-->
     
@@ -109,32 +109,32 @@
     </test-case>-->
     
     <!-- TODO Replace with standard table structure -->
-    <!--<test-case sql="select t_order_federate.*, t_order_item_federate_sharding.* from t_order_federate,t_order_item_federate_sharding where t_order_federate.order_id = t_order_item_federate_sharding.item_id" scenario-types="dbtbl_with_readwrite_splitting,dbtbl_with_readwrite_splitting_and_encrypt,sharding_and_encrypt,encrypt_and_readwrite_splitting">
+    <!--<test-case sql="select t_order_federate.*, t_order_item_federate_sharding.* from t_order_federate,t_order_item_federate_sharding where t_order_federate.order_id = t_order_item_federate_sharding.item_id" db-types="MySQL,PostgreSQL,openGauss" scenario-types="dbtbl_with_readwrite_splitting,dbtbl_with_readwrite_splitting_and_encrypt,sharding_and_encrypt,encrypt_and_readwrite_splitting">
         <assertion expected-data-source-name="read_dataset" />
     </test-case>-->
     
     <!-- TODO Replace with standard table structure -->
-    <!--<test-case sql="select t_order_federate.*, t_order_item_federate_sharding.* from t_order_federate, t_order_item_federate_sharding where t_order_federate.order_id = t_order_item_federate_sharding.item_id AND t_order_item_federate_sharding.order_id = ?" scenario-types="dbtbl_with_readwrite_splitting,dbtbl_with_readwrite_splitting_and_encrypt,sharding_and_encrypt,encrypt_and_readwrite_splitting">
+    <!--<test-case sql="select t_order_federate.*, t_order_item_federate_sharding.* from t_order_federate, t_order_item_federate_sharding where t_order_federate.order_id = t_order_item_federate_sharding.item_id AND t_order_item_federate_sharding.order_id = ?" db-types="MySQL,PostgreSQL,openGauss" scenario-types="dbtbl_with_readwrite_splitting,dbtbl_with_readwrite_splitting_and_encrypt,sharding_and_encrypt,encrypt_and_readwrite_splitting">
         <assertion parameters="10001:int" expected-data-source-name="read_dataset" />
     </test-case>-->
     
     <!-- TODO Replace with standard table structure -->
-    <!--<test-case sql="select o.order_id_sharding, i.order_id from t_order_federate_sharding o, t_order_item_federate_sharding i where o.order_id_sharding = i.item_id" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,dbtbl_with_readwrite_splitting_and_encrypt,sharding_and_encrypt,encrypt_and_readwrite_splitting">
+    <!--<test-case sql="select o.order_id_sharding, i.order_id from t_order_federate_sharding o, t_order_item_federate_sharding i where o.order_id_sharding = i.item_id" db-types="MySQL,PostgreSQL,openGauss" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,dbtbl_with_readwrite_splitting_and_encrypt,sharding_and_encrypt,encrypt_and_readwrite_splitting">
         <assertion expected-data-source-name="read_dataset" />
     </test-case>-->
     
     <!-- TODO Replace with standard table structure -->
-    <!--<test-case sql="select t_user_encrypt_federate.user_id, t_user_encrypt_federate.pwd, t_user_info.information from t_user_encrypt_federate, t_user_info where t_user_encrypt_federate.user_id = t_user_info.user_id " scenario-types="dbtbl_with_readwrite_splitting_and_encrypt,sharding_and_encrypt,encrypt_and_readwrite_splitting">
+    <!--<test-case sql="select t_user_encrypt_federate.user_id, t_user_encrypt_federate.pwd, t_user_info.information from t_user_encrypt_federate, t_user_info where t_user_encrypt_federate.user_id = t_user_info.user_id " db-types="MySQL,PostgreSQL,openGauss" scenario-types="dbtbl_with_readwrite_splitting_and_encrypt,sharding_and_encrypt,encrypt_and_readwrite_splitting">
         <assertion expected-data-source-name="read_dataset" />
     </test-case>-->
     
     <!-- TODO Replace with standard table structure -->
-    <!--<test-case sql="select t_order_federate.*, t_order_item_federate_sharding.* from t_order_federate, t_order_item_federate_sharding where t_order_federate.order_id = t_order_item_federate_sharding.item_id AND t_order_item_federate_sharding.remarks = 't_order_item_federate_sharding' " scenario-types="db,dbtbl_with_readwrite_splitting,dbtbl_with_readwrite_splitting_and_encrypt,sharding_and_encrypt,encrypt_and_readwrite_splitting">
+    <!--<test-case sql="select t_order_federate.*, t_order_item_federate_sharding.* from t_order_federate, t_order_item_federate_sharding where t_order_federate.order_id = t_order_item_federate_sharding.item_id AND t_order_item_federate_sharding.remarks = 't_order_item_federate_sharding' " db-types="MySQL,PostgreSQL,openGauss" scenario-types="db,dbtbl_with_readwrite_splitting,dbtbl_with_readwrite_splitting_and_encrypt,sharding_and_encrypt,encrypt_and_readwrite_splitting">
         <assertion expected-data-source-name="read_dataset" />
     </test-case>-->
     
     <!-- TODO Replace with standard table structure -->
-    <!--<test-case sql="select o.*, i.* from t_order_federate o, t_order_item_federate_sharding i where o.order_id = i.item_id " scenario-types="db,dbtbl_with_readwrite_splitting,dbtbl_with_readwrite_splitting_and_encrypt,sharding_and_encrypt,encrypt_and_readwrite_splitting">
+    <!--<test-case sql="select o.*, i.* from t_order_federate o, t_order_item_federate_sharding i where o.order_id = i.item_id " db-types="MySQL,PostgreSQL,openGauss" scenario-types="db,dbtbl_with_readwrite_splitting,dbtbl_with_readwrite_splitting_and_encrypt,sharding_and_encrypt,encrypt_and_readwrite_splitting">
         <assertion expected-data-source-name="read_dataset" />
     </test-case>-->
     
@@ -169,18 +169,23 @@
         <assertion expected-data-source-name="read_dataset" />
     </test-case>
     
-    <test-case sql="SELECT * FROM t_merchant WHERE business_code like '%18'" db-types="MySQL,PostgreSQL,openGauss" scenario-types="db,encrypt"
-               scenario-comments="Test single table's lower case like operator percentage wildcard in simple select statement when use sharding feature.|Test encrypt table's lower case like operator percentage wildcard in simple select statement when use encrypt feature.">
+    <test-case sql="SELECT * FROM t_merchant WHERE business_code NOT LIKE '%18'" db-types="MySQL,PostgreSQL,openGauss" scenario-types="db,encrypt"
+               scenario-comments="Test single table's LIKE operator percentage wildcard in simple select statement when use sharding feature.|Test encrypt table's LIKE operator percentage wildcard in simple select statement when use encrypt feature.">
         <assertion expected-data-source-name="read_dataset" />
     </test-case>
-    
+
     <test-case sql="SELECT * FROM t_merchant WHERE business_code LIKE '_1000018'" db-types="MySQL,PostgreSQL,openGauss" scenario-types="db,encrypt"
                scenario-comments="Test single table's LIKE operator underscore wildcard in simple select statement when use sharding feature.|Test encrypt table's LIKE operator underscore wildcard in simple select statement when use encrypt feature.">
         <assertion expected-data-source-name="read_dataset" />
     </test-case>
-    
-    <test-case sql="select * from shardingsphere.cluster_information;" db-types="MySQL,PostgreSQL,openGauss" scenario-types="db">
-        <assertion expected-data-file="select_cluster_information.xml" />
+
+    <test-case sql="SELECT * FROM t_merchant WHERE business_code NOT LIKE '_1000018'" db-types="MySQL,PostgreSQL,openGauss" scenario-types="db,encrypt"
+               scenario-comments="Test single table's LIKE operator underscore wildcard in simple select statement when use sharding feature.|Test encrypt table's LIKE operator underscore wildcard in simple select statement when use encrypt feature.">
+        <assertion expected-data-source-name="read_dataset" />
+    </test-case>
+
+    <test-case sql="SELECT user_name, telephone FROM t_user" db-types="Hive" scenario-types="mask">
+        <assertion expected-data-source-name="expected_dataset" />
     </test-case>
 
     <test-case sql="SELECT order_id FROM t_order LIMIT ?" db-types="MySQL" scenario-types="db_tbl_sql_federation">

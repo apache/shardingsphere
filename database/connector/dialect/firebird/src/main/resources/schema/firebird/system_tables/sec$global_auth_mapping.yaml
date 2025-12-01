@@ -1,0 +1,75 @@
+#
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements.  See the NOTICE file distributed with
+# additional information regarding copyright ownership.
+# The ASF licenses this file to You under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with
+# the License.  You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF
+# ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+name: SEC$GLOBAL_AUTH_MAPPING
+columns:
+  SEC$MAP_NAME:
+    caseSensitive: false
+    dataType: 1
+    generated: false
+    name: SEC$MAP_NAME
+    primaryKey: false
+    visible: true
+  SEC$MAP_USING:
+    caseSensitive: false
+    dataType: 1
+    generated: false
+    name: SEC$MAP_USING
+    primaryKey: false
+    visible: true
+  SEC$MAP_PLUGIN:
+    caseSensitive: false
+    dataType: 1
+    generated: false
+    name: SEC$MAP_PLUGIN
+    primaryKey: false
+    visible: true
+  SEC$MAP_DB:
+    caseSensitive: false
+    dataType: 1
+    generated: false
+    name: SEC$MAP_DB
+    primaryKey: false
+    visible: true
+  SEC$MAP_FROM_TYPE:
+    caseSensitive: false
+    dataType: 1
+    generated: false
+    name: SEC$MAP_FROM_TYPE
+    primaryKey: false
+    visible: true
+  SEC$MAP_FROM:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: SEC$MAP_FROM
+    primaryKey: false
+    visible: true
+  SEC$MAP_TO_TYPE:
+    caseSensitive: false
+    dataType: 5
+    generated: false
+    name: SEC$MAP_TO_TYPE
+    primaryKey: false
+    visible: true
+  SEC$MAP_TO:
+    caseSensitive: false
+    dataType: 1
+    generated: false
+    name: SEC$MAP_TO
+    primaryKey: false
+    visible: true

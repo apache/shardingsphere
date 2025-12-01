@@ -18,15 +18,15 @@
 package org.apache.shardingsphere.sharding.checker.sql.ddl;
 
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.binder.context.statement.ddl.RenameTableStatementContext;
 import org.apache.shardingsphere.infra.checker.SupportedSQLChecker;
-import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
+import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.sharding.exception.syntax.UnsupportedShardingOperationException;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.table.RenameTableDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.table.RenameTableStatement;
 
 import java.util.Collection;
 import java.util.List;
@@ -35,18 +35,18 @@ import java.util.stream.Collectors;
 /**
  * Rename table supported checker for sharding.
  */
-public final class ShardingRenameTableSupportedChecker implements SupportedSQLChecker<RenameTableStatementContext, ShardingRule> {
+public final class ShardingRenameTableSupportedChecker implements SupportedSQLChecker<SQLStatementContext, ShardingRule> {
     
     @Override
     public boolean isCheck(final SQLStatementContext sqlStatementContext) {
-        return sqlStatementContext instanceof RenameTableStatementContext;
+        return sqlStatementContext.getSqlStatement() instanceof RenameTableStatement;
     }
     
     @Override
-    public void check(final ShardingRule rule, final ShardingSphereDatabase database, final ShardingSphereSchema currentSchema, final RenameTableStatementContext sqlStatementContext) {
+    public void check(final ShardingRule rule, final ShardingSphereDatabase database, final ShardingSphereSchema currentSchema, final SQLStatementContext sqlStatementContext) {
         Collection<String> tableNames = sqlStatementContext.getTablesContext().getSimpleTables().stream()
                 .map(each -> each.getTableName().getIdentifier().getValue()).collect(Collectors.toList());
-        List<SimpleTableSegment> renameTables = sqlStatementContext.getSqlStatement()
+        List<SimpleTableSegment> renameTables = ((RenameTableStatement) sqlStatementContext.getSqlStatement())
                 .getRenameTables().stream().map(RenameTableDefinitionSegment::getRenameTable).collect(Collectors.toList());
         ShardingSpherePreconditions.checkState(renameTables.isEmpty() || !rule.containsShardingTable(tableNames),
                 () -> new UnsupportedShardingOperationException("RENAME TABLE", renameTables.get(0).getTableName().getIdentifier().getValue()));

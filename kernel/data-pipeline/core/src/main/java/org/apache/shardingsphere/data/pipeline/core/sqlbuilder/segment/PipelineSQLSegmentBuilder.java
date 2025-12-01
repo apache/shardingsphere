@@ -18,9 +18,9 @@
 package org.apache.shardingsphere.data.pipeline.core.sqlbuilder.segment;
 
 import com.google.common.base.Strings;
-import org.apache.shardingsphere.infra.database.core.metadata.database.DialectDatabaseMetaData;
-import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
-import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
+import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.DialectDatabaseMetaData;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.metadata.database.schema.QualifiedTable;
 
 /**
@@ -28,10 +28,13 @@ import org.apache.shardingsphere.infra.metadata.database.schema.QualifiedTable;
  */
 public final class PipelineSQLSegmentBuilder {
     
+    private final DatabaseTypeRegistry databaseTypeRegistry;
+    
     private final DialectDatabaseMetaData dialectDatabaseMetaData;
     
     public PipelineSQLSegmentBuilder(final DatabaseType databaseType) {
-        dialectDatabaseMetaData = new DatabaseTypeRegistry(databaseType).getDialectDatabaseMetaData();
+        databaseTypeRegistry = new DatabaseTypeRegistry(databaseType);
+        dialectDatabaseMetaData = databaseTypeRegistry.getDialectDatabaseMetaData();
     }
     
     /**
@@ -41,7 +44,7 @@ public final class PipelineSQLSegmentBuilder {
      * @return escaped identifier
      */
     public String getEscapedIdentifier(final String identifier) {
-        return "*".equals(identifier) ? identifier : dialectDatabaseMetaData.getQuoteCharacter().wrap(identifier);
+        return "*".equals(identifier) ? identifier : dialectDatabaseMetaData.getQuoteCharacter().wrap(databaseTypeRegistry.formatIdentifierPattern(identifier));
     }
     
     /**
@@ -53,7 +56,7 @@ public final class PipelineSQLSegmentBuilder {
      */
     public String getQualifiedTableName(final String schemaName, final String tableName) {
         StringBuilder result = new StringBuilder();
-        if (dialectDatabaseMetaData.isSchemaAvailable() && !Strings.isNullOrEmpty(schemaName)) {
+        if (dialectDatabaseMetaData.getSchemaOption().isSchemaAvailable() && !Strings.isNullOrEmpty(schemaName)) {
             result.append(getEscapedIdentifier(schemaName)).append('.');
         }
         result.append(getEscapedIdentifier(tableName));

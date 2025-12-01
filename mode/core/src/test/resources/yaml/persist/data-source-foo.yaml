@@ -18,12 +18,12 @@
 foo_ds:
   password: root
   closed: false
-  driverClassName: com.mysql.cj.jdbc.Driver
-  dataSourceClassName: org.apache.shardingsphere.test.fixture.jdbc.MockedDataSource
+  dataSourceClassName: org.apache.shardingsphere.test.infra.fixture.jdbc.MockedDataSource
+  driverClassName: org.apache.shardingsphere.test.infra.fixture.jdbc.MockedDriver
   connectionInitSqls:
 # No spaces after conversion
   - set names utf8mb4;
   - set names utf8;
-  url: jdbc:mysql://localhost:3306/foo_ds
+  url: jdbc:mock://localhost:3306/foo_ds
   username: root
   

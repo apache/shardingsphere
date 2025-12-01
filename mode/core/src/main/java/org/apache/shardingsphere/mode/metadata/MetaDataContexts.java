@@ -17,19 +17,65 @@
 
 package org.apache.shardingsphere.mode.metadata;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereStatistics;
+import org.apache.shardingsphere.infra.metadata.statistics.builder.ShardingSphereStatisticsFactory;
+import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistFacade;
+
+import com.google.errorprone.annotations.ThreadSafe;
+import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * Meta data contexts.
  */
-@RequiredArgsConstructor
-@Getter
+@ThreadSafe
 public final class MetaDataContexts {
     
-    private final ShardingSphereMetaData metaData;
+    private final AtomicReference<ShardingSphereMetaData> metaData = new AtomicReference<>();
     
-    private final ShardingSphereStatistics statistics;
+    private final AtomicReference<ShardingSphereStatistics> statistics = new AtomicReference<>();
+    
+    public MetaDataContexts(final ShardingSphereMetaData metaData, final ShardingSphereStatistics statistics) {
+        this.metaData.set(metaData);
+        this.statistics.set(statistics);
+    }
+    
+    /**
+     * Get ShardingSphere meta data.
+     *
+     * @return got meta data
+     */
+    public ShardingSphereMetaData getMetaData() {
+        return metaData.get();
+    }
+    
+    /**
+     * Get ShardingSphere statistics.
+     *
+     * @return got statistics
+     */
+    public ShardingSphereStatistics getStatistics() {
+        return statistics.get();
+    }
+    
+    /**
+     * Update meta data contexts.
+     *
+     * @param newMetaDataContexts new meta data contexts
+     */
+    public void update(final MetaDataContexts newMetaDataContexts) {
+        metaData.set(newMetaDataContexts.getMetaData());
+        statistics.set(newMetaDataContexts.getStatistics());
+    }
+    
+    /**
+     * Update meta data contexts.
+     *
+     * @param metaData meta data
+     * @param metaDataPersistFacade meta data persist facade
+     */
+    public void update(final ShardingSphereMetaData metaData, final MetaDataPersistFacade metaDataPersistFacade) {
+        this.metaData.set(metaData);
+        statistics.set(ShardingSphereStatisticsFactory.create(metaData, metaDataPersistFacade.getStatisticsService().load(metaData)));
+    }
 }

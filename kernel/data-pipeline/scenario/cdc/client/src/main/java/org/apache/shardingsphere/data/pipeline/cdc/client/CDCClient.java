@@ -139,7 +139,7 @@ public final class CDCClient implements AutoCloseable {
         ResponseFuture responseFuture = new ResponseFuture(requestId, Type.LOGIN);
         connectionContext.getResponseFutureMap().put(requestId, responseFuture);
         channel.writeAndFlush(data);
-        responseFuture.waitResponseResult(config.getTimeoutMills(), connectionContext);
+        responseFuture.waitResponseResult(config.getTimeoutMillis(), connectionContext);
         log.info("Login success, username: {}", parameter.getUsername());
     }
     
@@ -164,7 +164,7 @@ public final class CDCClient implements AutoCloseable {
         ResponseFuture responseFuture = new ResponseFuture(requestId, Type.STREAM_DATA);
         connectionContext.getResponseFutureMap().put(requestId, responseFuture);
         channel.writeAndFlush(request);
-        String result = responseFuture.waitResponseResult(config.getTimeoutMills(), connectionContext).toString();
+        String result = responseFuture.waitResponseResult(config.getTimeoutMillis(), connectionContext).toString();
         log.info("Start streaming success, streaming id: {}", result);
         return result;
     }
@@ -182,7 +182,7 @@ public final class CDCClient implements AutoCloseable {
         ClientConnectionContext connectionContext = channel.attr(ClientConnectionContext.CONTEXT_KEY).get();
         connectionContext.getResponseFutureMap().put(requestId, responseFuture);
         channel.writeAndFlush(request);
-        responseFuture.waitResponseResult(config.getTimeoutMills(), connectionContext);
+        responseFuture.waitResponseResult(config.getTimeoutMillis(), connectionContext);
         log.info("Restart streaming success, streaming id: {}", streamingId);
     }
     
@@ -199,7 +199,7 @@ public final class CDCClient implements AutoCloseable {
         ClientConnectionContext connectionContext = channel.attr(ClientConnectionContext.CONTEXT_KEY).get();
         connectionContext.getResponseFutureMap().put(requestId, responseFuture);
         channel.writeAndFlush(request);
-        responseFuture.waitResponseResult(config.getTimeoutMills(), connectionContext);
+        responseFuture.waitResponseResult(config.getTimeoutMillis(), connectionContext);
         connectionContext.getStreamingIds().remove(streamingId);
         log.info("Stop streaming success, streaming id: {}", streamingId);
     }
@@ -217,7 +217,7 @@ public final class CDCClient implements AutoCloseable {
         ClientConnectionContext connectionContext = channel.attr(ClientConnectionContext.CONTEXT_KEY).get();
         connectionContext.getResponseFutureMap().put(requestId, responseFuture);
         channel.writeAndFlush(request);
-        responseFuture.waitResponseResult(config.getTimeoutMills(), connectionContext);
+        responseFuture.waitResponseResult(config.getTimeoutMillis(), connectionContext);
         connectionContext.getStreamingIds().remove(streamingId);
         log.info("Drop streaming success, streaming id: {}", streamingId);
     }

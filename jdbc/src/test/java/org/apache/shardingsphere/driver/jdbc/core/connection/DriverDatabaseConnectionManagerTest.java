@@ -22,9 +22,9 @@ import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePo
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.ConnectionMode;
 import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnit;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
-import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.mode.manager.ContextManager;
-import org.apache.shardingsphere.test.fixture.jdbc.MockedDataSource;
+import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistFacade;
+import org.apache.shardingsphere.test.infra.fixture.jdbc.MockedDataSource;
 import org.apache.shardingsphere.transaction.rule.TransactionRule;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -61,8 +61,8 @@ class DriverDatabaseConnectionManagerTest {
         ContextManager result = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         Map<String, StorageUnit> storageUnits = mockStorageUnits();
         when(result.getStorageUnits("foo_db")).thenReturn(storageUnits);
-        MetaDataPersistService persistService = mockMetaDataPersistService();
-        when(result.getPersistServiceFacade().getMetaDataPersistService()).thenReturn(persistService);
+        MetaDataPersistFacade persistFacade = mockMetaDataPersistFacade();
+        when(result.getPersistServiceFacade().getMetaDataFacade()).thenReturn(persistFacade);
         when(result.getMetaDataContexts().getMetaData().getGlobalRuleMetaData()).thenReturn(new RuleMetaData(Collections.singleton(mock(TransactionRule.class, RETURNS_DEEP_STUBS))));
         return result;
     }
@@ -82,8 +82,8 @@ class DriverDatabaseConnectionManagerTest {
         return result;
     }
     
-    private MetaDataPersistService mockMetaDataPersistService() {
-        MetaDataPersistService result = mock(MetaDataPersistService.class, RETURNS_DEEP_STUBS);
+    private MetaDataPersistFacade mockMetaDataPersistFacade() {
+        MetaDataPersistFacade result = mock(MetaDataPersistFacade.class, RETURNS_DEEP_STUBS);
         when(result.getDataSourceUnitService().load("foo_db"))
                 .thenReturn(Collections.singletonMap("foo_db", new DataSourcePoolProperties(HikariDataSource.class.getName(), createProperties())));
         return result;

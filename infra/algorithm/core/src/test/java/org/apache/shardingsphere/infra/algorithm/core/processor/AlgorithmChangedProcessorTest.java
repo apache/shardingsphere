@@ -25,15 +25,14 @@ import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
+import org.apache.shardingsphere.mode.spi.rule.RuleChangedItemType;
 import org.apache.shardingsphere.mode.spi.rule.RuleItemConfigurationChangedProcessor;
-import org.apache.shardingsphere.mode.spi.rule.item.alter.AlterNamedRuleItem;
-import org.apache.shardingsphere.mode.spi.rule.item.drop.DropNamedRuleItem;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
 import java.util.Properties;
 
-import static org.apache.shardingsphere.test.matcher.ShardingSphereAssertionMatchers.deepEqual;
+import static org.apache.shardingsphere.test.infra.framework.matcher.ShardingSphereAssertionMatchers.deepEqual;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -44,12 +43,11 @@ class AlgorithmChangedProcessorTest {
     
     @SuppressWarnings("unchecked")
     private final RuleItemConfigurationChangedProcessor<AlgorithmChangedProcessorFixtureRuleConfiguration, AlgorithmConfiguration> processor = TypedSPILoader.getService(
-            RuleItemConfigurationChangedProcessor.class, "FIXTURE");
+            RuleItemConfigurationChangedProcessor.class, new RuleChangedItemType("fixture", "algorithm"));
     
     @Test
     void assertSwapRuleItemConfiguration() {
-        AlterNamedRuleItem alterNamedRuleItem = mock(AlterNamedRuleItem.class);
-        AlgorithmConfiguration actual = processor.swapRuleItemConfiguration(alterNamedRuleItem, createYAMLContent());
+        AlgorithmConfiguration actual = processor.swapRuleItemConfiguration(null, createYAMLContent());
         assertThat(actual, deepEqual(new AlgorithmConfiguration("foo_algo", new Properties())));
     }
     
@@ -73,12 +71,10 @@ class AlgorithmChangedProcessorTest {
     
     @Test
     void assertChangeRuleItemConfiguration() {
-        AlterNamedRuleItem alterNamedRuleItem = mock(AlterNamedRuleItem.class);
-        when(alterNamedRuleItem.getItemName()).thenReturn("bar_algo");
         AlgorithmChangedProcessorFixtureRuleConfiguration currentRuleConfig = new AlgorithmChangedProcessorFixtureRuleConfiguration();
         currentRuleConfig.getAlgorithmConfigurations().put("foo_algo", new AlgorithmConfiguration("FOO_FIXTURE", new Properties()));
         AlgorithmConfiguration toBeChangedItemConfig = new AlgorithmConfiguration("BAR_FIXTURE", new Properties());
-        processor.changeRuleItemConfiguration(alterNamedRuleItem, currentRuleConfig, toBeChangedItemConfig);
+        processor.changeRuleItemConfiguration("bar_algo", currentRuleConfig, toBeChangedItemConfig);
         assertThat(currentRuleConfig.getAlgorithmConfigurations().size(), is(2));
         assertThat(currentRuleConfig.getAlgorithmConfigurations().get("foo_algo").getType(), is("FOO_FIXTURE"));
         assertThat(currentRuleConfig.getAlgorithmConfigurations().get("bar_algo").getType(), is("BAR_FIXTURE"));
@@ -86,11 +82,9 @@ class AlgorithmChangedProcessorTest {
     
     @Test
     void assertDropRuleItemConfiguration() {
-        DropNamedRuleItem dropNamedRuleItem = mock(DropNamedRuleItem.class);
-        when(dropNamedRuleItem.getItemName()).thenReturn("foo_algo");
         AlgorithmChangedProcessorFixtureRuleConfiguration currentRuleConfig = new AlgorithmChangedProcessorFixtureRuleConfiguration();
         currentRuleConfig.getAlgorithmConfigurations().put("foo_algo", new AlgorithmConfiguration("FOO_FIXTURE", new Properties()));
-        processor.dropRuleItemConfiguration(dropNamedRuleItem, currentRuleConfig);
+        processor.dropRuleItemConfiguration("foo_algo", currentRuleConfig);
         assertTrue(currentRuleConfig.getAlgorithmConfigurations().isEmpty());
     }
 }

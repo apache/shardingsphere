@@ -17,16 +17,15 @@
 
 package org.apache.shardingsphere.globalclock.executor;
 
+import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoader;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.globalclock.provider.GlobalClockProvider;
 import org.apache.shardingsphere.globalclock.rule.GlobalClockRule;
-import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPILoader;
-import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
-import org.apache.shardingsphere.infra.lock.LockContext;
 import org.apache.shardingsphere.infra.session.connection.transaction.TransactionConnectionContext;
 import org.apache.shardingsphere.infra.spi.type.ordered.OrderedSPILoader;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.TransactionIsolationLevel;
-import org.apache.shardingsphere.test.mock.AutoMockExtension;
-import org.apache.shardingsphere.test.mock.StaticMockSettings;
+import org.apache.shardingsphere.test.infra.framework.extension.mock.AutoMockExtension;
+import org.apache.shardingsphere.test.infra.framework.extension.mock.StaticMockSettings;
 import org.apache.shardingsphere.transaction.spi.TransactionHook;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -41,8 +40,7 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -80,7 +78,7 @@ class GlobalClockTransactionHookTest {
     @Test
     void assertAfterBeginWhenGlobalClockProviderAbsent() {
         transactionHook.afterBegin(rule, databaseType, transactionContext);
-        verify(transactionContext, times(0)).setBeginMills(anyLong());
+        verify(transactionContext, never()).setBeginMillis(anyLong());
     }
     
     @Test
@@ -88,13 +86,13 @@ class GlobalClockTransactionHookTest {
         when(rule.getGlobalClockProvider()).thenReturn(Optional.of(globalClockProvider));
         when(globalClockProvider.getCurrentTimestamp()).thenReturn(10L);
         transactionHook.afterBegin(rule, databaseType, transactionContext);
-        verify(transactionContext).setBeginMills(10L);
+        verify(transactionContext).setBeginMillis(10L);
     }
     
     @Test
     void assertAfterCreateConnectionsWhenDisabledGlobalClockRule() throws SQLException {
         transactionHook.afterCreateConnections(rule, databaseType, Collections.emptyList(), transactionContext);
-        verify(globalClockTransactionExecutor, times(0)).sendSnapshotTimestamp(any(), anyLong());
+        verify(globalClockTransactionExecutor, never()).sendSnapshotTimestamp(any(), anyLong());
     }
     
     @Test
@@ -102,7 +100,7 @@ class GlobalClockTransactionHookTest {
         when(DatabaseTypedSPILoader.findService(GlobalClockTransactionExecutor.class, databaseType)).thenReturn(Optional.empty());
         when(rule.getConfiguration().isEnabled()).thenReturn(true);
         transactionHook.afterCreateConnections(rule, databaseType, Collections.emptyList(), transactionContext);
-        verify(globalClockTransactionExecutor, times(0)).sendSnapshotTimestamp(any(), anyLong());
+        verify(globalClockTransactionExecutor, never()).sendSnapshotTimestamp(any(), anyLong());
     }
     
     @Test
@@ -116,14 +114,14 @@ class GlobalClockTransactionHookTest {
     @Test
     void assertBeforeExecuteSQLWhenDisabledGlobalClockRule() throws SQLException {
         transactionHook.beforeExecuteSQL(rule, databaseType, Collections.emptyList(), transactionContext, TransactionIsolationLevel.READ_COMMITTED);
-        verify(rule, times(0)).getGlobalClockProvider();
+        verify(rule, never()).getGlobalClockProvider();
     }
     
     @Test
     void assertBeforeExecuteSQLWhenNotReadCommittedIsolationLevel() throws SQLException {
         when(rule.getConfiguration().isEnabled()).thenReturn(true);
         transactionHook.beforeExecuteSQL(rule, databaseType, Collections.emptyList(), transactionContext, TransactionIsolationLevel.REPEATABLE_READ);
-        verify(rule, times(0)).getGlobalClockProvider();
+        verify(rule, never()).getGlobalClockProvider();
     }
     
     @Test
@@ -132,7 +130,7 @@ class GlobalClockTransactionHookTest {
         when(rule.getGlobalClockProvider()).thenReturn(Optional.of(globalClockProvider));
         transactionHook.beforeExecuteSQL(rule, databaseType, Collections.emptyList(), transactionContext, TransactionIsolationLevel.READ_COMMITTED);
         when(DatabaseTypedSPILoader.findService(GlobalClockTransactionExecutor.class, databaseType)).thenReturn(Optional.empty());
-        verify(globalClockTransactionExecutor, times(0)).sendSnapshotTimestamp(any(), anyLong());
+        verify(globalClockTransactionExecutor, never()).sendSnapshotTimestamp(any(), anyLong());
     }
     
     @Test
@@ -146,52 +144,26 @@ class GlobalClockTransactionHookTest {
     }
     
     @Test
-    void assertBeforeCommitWhenDisabledGlobalClockRule() throws SQLException {
-        LockContext lockContext = mock(LockContext.class);
-        transactionHook.beforeCommit(rule, databaseType, Collections.emptyList(), transactionContext, lockContext);
-        verify(lockContext, times(0)).tryLock(any(), anyLong());
-    }
-    
-    @Test
-    void assertBeforeCommitWhenTryLockFailed() throws SQLException {
-        when(rule.getConfiguration().isEnabled()).thenReturn(true);
-        LockContext lockContext = mock(LockContext.class);
-        transactionHook.beforeCommit(rule, databaseType, Collections.emptyList(), transactionContext, lockContext);
-        verify(globalClockTransactionExecutor, times(0)).sendCommitTimestamp(any(), anyLong());
-    }
-    
-    @Test
-    void assertBeforeCommitWhenGlobalClockTransactionExecutorAbsent() throws SQLException {
-        when(rule.getConfiguration().isEnabled()).thenReturn(true);
-        LockContext lockContext = mock(LockContext.class);
-        when(lockContext.tryLock(any(), anyLong())).thenReturn(true);
-        when(DatabaseTypedSPILoader.findService(GlobalClockTransactionExecutor.class, databaseType)).thenReturn(Optional.empty());
-        transactionHook.beforeCommit(rule, databaseType, Collections.emptyList(), transactionContext, lockContext);
-        verify(globalClockTransactionExecutor, times(0)).sendCommitTimestamp(any(), anyLong());
-    }
-    
-    @Test
     void assertBeforeCommit() throws SQLException {
         when(rule.getConfiguration().isEnabled()).thenReturn(true);
         when(rule.getGlobalClockProvider()).thenReturn(Optional.of(globalClockProvider));
         when(globalClockProvider.getCurrentTimestamp()).thenReturn(10L);
-        LockContext lockContext = mock(LockContext.class);
-        when(lockContext.tryLock(any(), anyLong())).thenReturn(true);
         when(DatabaseTypedSPILoader.findService(GlobalClockTransactionExecutor.class, databaseType)).thenReturn(Optional.of(globalClockTransactionExecutor));
-        transactionHook.beforeCommit(rule, databaseType, Collections.emptyList(), transactionContext, lockContext);
+        transactionHook.beforeCommit(rule, databaseType, Collections.emptyList(), transactionContext);
         verify(globalClockTransactionExecutor).sendCommitTimestamp(Collections.emptyList(), 10L);
     }
     
     @Test
     void assertAfterCommitWhenGlobalClockProviderAbsent() {
-        transactionHook.afterCommit(rule, databaseType, Collections.emptyList(), transactionContext, mock(LockContext.class));
-        verify(globalClockProvider, times(0)).getNextTimestamp();
+        transactionHook.afterCommit(rule, databaseType, Collections.emptyList(), transactionContext);
+        verify(globalClockProvider, never()).getNextTimestamp();
     }
     
     @Test
     void assertAfterCommitWhenGlobalClockProviderPresent() {
+        when(rule.getConfiguration().isEnabled()).thenReturn(true);
         when(rule.getGlobalClockProvider()).thenReturn(Optional.of(globalClockProvider));
-        transactionHook.afterCommit(rule, databaseType, Collections.emptyList(), transactionContext, mock(LockContext.class));
+        transactionHook.afterCommit(rule, databaseType, Collections.emptyList(), transactionContext);
         verify(globalClockProvider).getNextTimestamp();
     }
     

@@ -34,6 +34,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.value.literal.impl.Nu
 import org.apache.shardingsphere.sql.parser.statement.core.value.literal.impl.NumberLiteralValue;
 import org.apache.shardingsphere.sql.parser.statement.core.value.literal.impl.OtherLiteralValue;
 import org.apache.shardingsphere.sql.parser.statement.core.value.literal.impl.StringLiteralValue;
+import org.apache.shardingsphere.sql.parser.statement.core.value.literal.impl.TemporalLiteralValue;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -124,21 +125,34 @@ public final class SQLUtils {
             return null;
         }
         if (value.startsWith(BACKTICK) && value.endsWith(BACKTICK)) {
-            int startIndex = 1;
-            int stopIndex = value.length() - 1;
-            StringBuilder exactlyTableName = new StringBuilder();
-            while (startIndex < stopIndex) {
-                if (value.charAt(startIndex) == '`' && (startIndex + 1 >= stopIndex || value.charAt(startIndex + 1) != '`')) {
-                    return value;
-                } else if (value.charAt(startIndex) == '`' && value.charAt(startIndex + 1) == '`') {
-                    startIndex++;
-                }
-                exactlyTableName.append(value.charAt(startIndex));
-                startIndex++;
-            }
-            return 0 == exactlyTableName.length() ? value : exactlyTableName.toString();
+            return getRealContentInBackticks(value);
         }
         return value;
+    }
+    
+    /**
+     * Get exactly content in backticks.
+     *
+     * @param value SQL expression
+     * @return exactly content in backticks
+     */
+    public static String getRealContentInBackticks(final String value) {
+        if (null == value) {
+            return null;
+        }
+        int startIndex = 1;
+        int stopIndex = value.length() - 1;
+        StringBuilder exactlyTableName = new StringBuilder();
+        while (startIndex < stopIndex) {
+            if (value.charAt(startIndex) == '`' && (startIndex + 1 >= stopIndex || value.charAt(startIndex + 1) != '`')) {
+                return value;
+            } else if (value.charAt(startIndex) == '`' && value.charAt(startIndex + 1) == '`') {
+                startIndex++;
+            }
+            exactlyTableName.append(value.charAt(startIndex));
+            startIndex++;
+        }
+        return 0 == exactlyTableName.length() ? value : exactlyTableName.toString();
     }
     
     /**
@@ -161,18 +175,40 @@ public final class SQLUtils {
      */
     public static String getExpressionWithoutOutsideParentheses(final String value) {
         int parenthesesOffset = getParenthesesOffset(value);
-        return 0 == parenthesesOffset ? value : value.substring(parenthesesOffset, value.length() - parenthesesOffset);
+        if (0 == parenthesesOffset) {
+            return value;
+        }
+        String result = value.substring(parenthesesOffset, value.length() - parenthesesOffset);
+        return isValidParenthesis(result) ? result : value;
     }
     
     private static int getParenthesesOffset(final String value) {
-        int result = 0;
+        int left = 0;
         if (Strings.isNullOrEmpty(value)) {
-            return result;
+            return left;
         }
-        while (Paren.PARENTHESES.getLeftParen() == value.charAt(result)) {
-            result++;
+        
+        int right = value.length() - 1;
+        while (Paren.PARENTHESES.getLeftParen() == value.charAt(left) && Paren.PARENTHESES.getRightParen() == value.charAt(right)) {
+            left++;
+            right--;
         }
-        return result;
+        return left;
+    }
+    
+    private static boolean isValidParenthesis(final String text) {
+        int count = 0;
+        for (char each : text.toCharArray()) {
+            if (Paren.PARENTHESES.getLeftParen() == each) {
+                count++;
+            } else if (Paren.PARENTHESES.getRightParen() == each) {
+                if (count == 0) {
+                    return false;
+                }
+                count--;
+            }
+        }
+        return count == 0;
     }
     
     /**
@@ -228,6 +264,9 @@ public final class SQLUtils {
         }
         if (astNode instanceof NullLiteralValue) {
             return new LiteralExpressionSegment(startIndex, stopIndex, null);
+        }
+        if (astNode instanceof TemporalLiteralValue) {
+            return new LiteralExpressionSegment(startIndex, stopIndex, ((TemporalLiteralValue) astNode).getValue());
         }
         if (astNode instanceof OtherLiteralValue) {
             return new CommonExpressionSegment(startIndex, stopIndex, ((OtherLiteralValue) astNode).getValue());

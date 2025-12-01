@@ -90,4 +90,70 @@
         USER_DATA TABLESPACE usertbs
           DATAFILE '/u01/app/oracle/oradata/pdbseed/usertbs01.dbf'
           SIZE 200M REUSE AUTOEXTEND ON MAXSIZE UNLIMITED" db-types="Oracle" />
+    <sql-case id="create_database_basic" value="CREATE DATABASE lusiadas;" db-types="Hive" />
+    <sql-case id="create_schema_basic" value="CREATE SCHEMA lusiadas;" db-types="Hive" />
+    <sql-case id="create_database_if_not_exists" value="CREATE DATABASE IF NOT EXISTS lusiadas;" db-types="Hive" />
+    <sql-case id="create_schema_if_not_exists" value="CREATE SCHEMA IF NOT EXISTS lusiadas;" db-types="Hive" />
+    <sql-case id="create_remote_database_basic" value="CREATE REMOTE DATABASE lusiadas;" db-types="Hive" />
+    <sql-case id="create_remote_schema_basic" value="CREATE REMOTE SCHEMA lusiadas;" db-types="Hive" />
+    <sql-case id="create_remote_database_if_not_exists" value="CREATE REMOTE DATABASE IF NOT EXISTS lusiadas;" db-types="Hive" />
+    <sql-case id="create_remote_schema_if_not_exists" value="CREATE REMOTE SCHEMA IF NOT EXISTS lusiadas;" db-types="Hive" />
+    <sql-case id="create_database_with_comment" value="CREATE DATABASE lusiadas COMMENT 'Hive test database';" db-types="Hive" />
+    <sql-case id="create_schema_with_comment" value="CREATE SCHEMA lusiadas COMMENT 'Hive test schema';" db-types="Hive" />
+    <sql-case id="create_database_if_not_exists_with_comment" value="CREATE DATABASE IF NOT EXISTS lusiadas COMMENT 'Hive test database';" db-types="Hive" />
+    <sql-case id="create_schema_if_not_exists_with_comment" value="CREATE SCHEMA IF NOT EXISTS lusiadas COMMENT 'Hive test schema';" db-types="Hive" />
+    <sql-case id="create_database_with_location_hive" value="CREATE DATABASE lusiadas LOCATION '/lusiadas.db';" db-types="Hive" />
+    <sql-case id="create_schema_with_location" value="CREATE SCHEMA lusiadas LOCATION '/lusiadas.db';" db-types="Hive" />
+    <sql-case id="create_database_if_not_exists_with_location" value="CREATE DATABASE IF NOT EXISTS lusiadas LOCATION '/lusiadas.db';" db-types="Hive" />
+    <sql-case id="create_schema_if_not_exists_with_location" value="CREATE SCHEMA IF NOT EXISTS lusiadas LOCATION '/lusiadas.db';" db-types="Hive" />
+    <sql-case id="create_database_with_managed_location" value="CREATE DATABASE lusiadas MANAGEDLOCATION '/lusiadas.db';" db-types="Hive" />
+    <sql-case id="create_schema_with_managed_location" value="CREATE SCHEMA lusiadas MANAGEDLOCATION '/lusiadas.db';" db-types="Hive" />
+    <sql-case id="create_database_if_not_exists_with_managed_location" value="CREATE DATABASE IF NOT EXISTS lusiadas MANAGEDLOCATION '/lusiadas.db';" db-types="Hive" />
+    <sql-case id="create_schema_if_not_exists_with_managed_location" value="CREATE SCHEMA IF NOT EXISTS lusiadas MANAGEDLOCATION '/lusiadas.db';" db-types="Hive" />
+    <sql-case id="create_database_with_properties" value="CREATE DATABASE lusiadas WITH DBPROPERTIES ('creator'='Claire', 'create_date'='2025-07-09');" db-types="Hive" />
+    <sql-case id="create_schema_with_properties" value="CREATE SCHEMA lusiadas WITH DBPROPERTIES ('creator'='Claire', 'create_date'='2025-07-09');" db-types="Hive" />
+    <sql-case id="create_database_with_single_property" value="CREATE DATABASE lusiadas WITH DBPROPERTIES ('create_date'='2025-07-09');" db-types="Hive" />
+    <sql-case id="create_schema_with_single_property" value="CREATE SCHEMA lusiadas WITH DBPROPERTIES ('create_date'='2025-07-09');" db-types="Hive" />
+    <sql-case id="create_database_if_not_exists_with_properties" value="CREATE DATABASE IF NOT EXISTS lusiadas WITH DBPROPERTIES ('creator'='Claire', 'create_date'='2025-07-09');" db-types="Hive" />
+    <sql-case id="create_schema_if_not_exists_with_properties" value="CREATE SCHEMA IF NOT EXISTS lusiadas WITH DBPROPERTIES ('creator'='Claire', 'create_date'='2025-07-09');" db-types="Hive" />
+    <sql-case id="create_database_with_comment_location" value="CREATE DATABASE lusiadas COMMENT 'Hive test database' LOCATION '/lusiadas.db/external';" db-types="Hive" />
+    <sql-case id="create_schema_with_comment_location" value="CREATE SCHEMA lusiadas COMMENT 'Hive test schema' LOCATION '/lusiadas.db/external';" db-types="Hive" />
+    <sql-case id="create_database_with_comment_managedlocation" value="CREATE DATABASE lusiadas COMMENT 'Hive test database' MANAGEDLOCATION '/lusiadas.db';" db-types="Hive" />
+    <sql-case id="create_schema_with_comment_managedlocation" value="CREATE SCHEMA lusiadas COMMENT 'Hive test schema' MANAGEDLOCATION '/lusiadas.db';" db-types="Hive" />
+    <sql-case id="create_database_with_comment_properties" value="CREATE DATABASE lusiadas COMMENT 'Hive test database' WITH DBPROPERTIES ('creator'='Claire', 'create_date'='2025-07-09');" db-types="Hive" />
+    <sql-case id="create_schema_with_comment_properties" value="CREATE SCHEMA lusiadas COMMENT 'Hive test schema' WITH DBPROPERTIES ('creator'='Claire', 'create_date'='2025-07-09');" db-types="Hive" />
+    <sql-case id="create_database_with_location_managedlocation" value="CREATE DATABASE lusiadas LOCATION '/lusiadas.db/external' MANAGEDLOCATION '/lusiadas.db/managed';" db-types="Hive" />
+    <sql-case id="create_schema_with_location_managedlocation" value="CREATE SCHEMA lusiadas LOCATION '/lusiadas.db/external' MANAGEDLOCATION '/lusiadas.db/managed';" db-types="Hive" />
+    <sql-case id="create_database_with_location_properties" value="CREATE DATABASE lusiadas LOCATION '/lusiadas.db/external' WITH DBPROPERTIES ('creator'='Claire', 'create_date'='2025-07-09');" db-types="Hive" />
+    <sql-case id="create_schema_with_location_properties" value="CREATE SCHEMA lusiadas LOCATION '/lusiadas.db/external' WITH DBPROPERTIES ('creator'='Claire', 'create_date'='2025-07-09');" db-types="Hive" />
+    <sql-case id="create_database_with_managedlocation_properties" value="CREATE DATABASE lusiadas MANAGEDLOCATION '/lusiadas.db' WITH DBPROPERTIES ('creator'='Claire', 'create_date'='2025-07-09');" db-types="Hive" />
+    <sql-case id="create_schema_with_managedlocation_properties" value="CREATE SCHEMA lusiadas MANAGEDLOCATION '/lusiadas.db' WITH DBPROPERTIES ('creator'='Claire', 'create_date'='2025-07-09');" db-types="Hive" />
+    <sql-case id="create_database_with_location_managedlocation_properties" value="CREATE DATABASE lusiadas LOCATION '/lusiadas.db/external' MANAGEDLOCATION '/lusiadas.db/managed' WITH DBPROPERTIES ('creator'='Claire', 'create_date'='2025-07-09');" db-types="Hive" />
+    <sql-case id="create_schema_with_location_managedlocation_properties" value="CREATE SCHEMA lusiadas LOCATION '/lusiadas.db/external' MANAGEDLOCATION '/lusiadas.db/managed' WITH DBPROPERTIES ('creator'='Claire', 'create_date'='2025-07-09');" db-types="Hive" />
+    <sql-case id="create_database_with_comment_location_managedlocation" value="CREATE DATABASE lusiadas COMMENT 'Hive test database' LOCATION '/lusiadas.db/external' MANAGEDLOCATION '/lusiadas.db/managed';" db-types="Hive" />
+    <sql-case id="create_schema_with_comment_location_managedlocation" value="CREATE SCHEMA lusiadas COMMENT 'Hive test schema' LOCATION '/lusiadas.db/external' MANAGEDLOCATION '/lusiadas.db/managed';" db-types="Hive" />
+    <sql-case id="create_database_with_comment_managedlocation_properties" value="CREATE DATABASE lusiadas COMMENT 'Hive test database' MANAGEDLOCATION '/lusiadas.db' WITH DBPROPERTIES ('creator'='Claire', 'create_date'='2025-07-09');" db-types="Hive" />
+    <sql-case id="create_schema_with_comment_managedlocation_properties" value="CREATE SCHEMA lusiadas COMMENT 'Hive test schema' MANAGEDLOCATION '/lusiadas.db' WITH DBPROPERTIES ('creator'='Claire', 'create_date'='2025-07-09');" db-types="Hive" />
+    <sql-case id="create_database_with_all_options" value="CREATE DATABASE lusiadas COMMENT 'Hive test database' LOCATION '/lusiadas.db/external' MANAGEDLOCATION '/lusiadas.db/managed' WITH DBPROPERTIES ('creator'='Claire', 'create_date'='2025-07-09');" db-types="Hive" />
+    <sql-case id="create_schema_with_all_options" value="CREATE SCHEMA lusiadas COMMENT 'Hive test schema' LOCATION '/lusiadas.db/external' MANAGEDLOCATION '/lusiadas.db/managed' WITH DBPROPERTIES ('creator'='Claire', 'create_date'='2025-07-09');" db-types="Hive" />
+    <sql-case id="create_remote_database_with_comment_managedlocation" value="CREATE REMOTE DATABASE lusiadas COMMENT 'Remote test database' MANAGEDLOCATION '/lusiadas.db';" db-types="Hive" />
+    <sql-case id="create_remote_schema_with_comment_managedlocation" value="CREATE REMOTE SCHEMA lusiadas COMMENT 'Remote test schema' MANAGEDLOCATION '/lusiadas.db';" db-types="Hive" />
+    <sql-case id="create_remote_database_with_location_managedlocation" value="CREATE REMOTE DATABASE lusiadas LOCATION '/lusiadas.db/external' MANAGEDLOCATION '/lusiadas.db/managed';" db-types="Hive" />
+    <sql-case id="create_remote_schema_with_location_managedlocation" value="CREATE REMOTE SCHEMA lusiadas LOCATION '/lusiadas.db/external' MANAGEDLOCATION '/lusiadas.db/managed';" db-types="Hive" />
+    <sql-case id="create_remote_database_with_managedlocation_properties" value="CREATE REMOTE DATABASE lusiadas MANAGEDLOCATION '/lusiadas.db' WITH DBPROPERTIES ('creator'='Claire', 'create_date'='2025-07-09');" db-types="Hive" />
+    <sql-case id="create_remote_schema_with_managedlocation_properties" value="CREATE REMOTE SCHEMA lusiadas MANAGEDLOCATION '/lusiadas.db' WITH DBPROPERTIES ('creator'='Claire', 'create_date'='2025-07-09');" db-types="Hive" />
+    <sql-case id="create_remote_database_with_comment_location" value="CREATE REMOTE DATABASE lusiadas COMMENT 'Remote test database' LOCATION '/lusiadas.db/external';" db-types="Hive" />
+    <sql-case id="create_remote_schema_with_comment_location" value="CREATE REMOTE SCHEMA lusiadas COMMENT 'Remote test schema' LOCATION '/lusiadas.db/external';" db-types="Hive" />
+    <sql-case id="create_remote_database_with_comment_properties" value="CREATE REMOTE DATABASE lusiadas COMMENT 'Remote test database' WITH DBPROPERTIES ('creator'='Claire', 'create_date'='2025-07-09');" db-types="Hive" />
+    <sql-case id="create_remote_schema_with_comment_properties" value="CREATE REMOTE SCHEMA lusiadas COMMENT 'Remote test schema' WITH DBPROPERTIES ('creator'='Claire', 'create_date'='2025-07-09');" db-types="Hive" />
+    <sql-case id="create_remote_database_with_location_properties" value="CREATE REMOTE DATABASE lusiadas LOCATION '/lusiadas.db/external' WITH DBPROPERTIES ('creator'='Claire', 'create_date'='2025-07-09');" db-types="Hive" />
+    <sql-case id="create_remote_schema_with_location_properties" value="CREATE REMOTE SCHEMA lusiadas LOCATION '/lusiadas.db/external' WITH DBPROPERTIES ('creator'='Claire', 'create_date'='2025-07-09');" db-types="Hive" />
+    <sql-case id="create_remote_database_with_comment_location_managedlocation" value="CREATE REMOTE DATABASE lusiadas COMMENT 'Remote test database' LOCATION '/lusiadas.db/external' MANAGEDLOCATION '/lusiadas.db/managed';" db-types="Hive" />
+    <sql-case id="create_remote_schema_with_comment_location_managedlocation" value="CREATE REMOTE SCHEMA lusiadas COMMENT 'Remote test schema' LOCATION '/lusiadas.db/external' MANAGEDLOCATION '/lusiadas.db/managed';" db-types="Hive" />
+    <sql-case id="create_remote_database_with_comment_managedlocation_properties" value="CREATE REMOTE DATABASE lusiadas COMMENT 'Remote test database' MANAGEDLOCATION '/lusiadas.db' WITH DBPROPERTIES ('creator'='Claire', 'create_date'='2025-07-09');" db-types="Hive" />
+    <sql-case id="create_remote_schema_with_comment_managedlocation_properties" value="CREATE REMOTE SCHEMA lusiadas COMMENT 'Remote test schema' MANAGEDLOCATION '/lusiadas.db' WITH DBPROPERTIES ('creator'='Claire', 'create_date'='2025-07-09');" db-types="Hive" />
+    <sql-case id="create_remote_database_with_location_managedlocation_properties" value="CREATE REMOTE DATABASE lusiadas LOCATION '/lusiadas.db/external' MANAGEDLOCATION '/lusiadas.db/managed' WITH DBPROPERTIES ('creator'='Claire', 'create_date'='2025-07-09');" db-types="Hive" />
+    <sql-case id="create_remote_schema_with_location_managedlocation_properties" value="CREATE REMOTE SCHEMA lusiadas LOCATION '/lusiadas.db/external' MANAGEDLOCATION '/lusiadas.db/managed' WITH DBPROPERTIES ('creator'='Claire', 'create_date'='2025-07-09');" db-types="Hive" />
+    <sql-case id="create_remote_database_with_all_options" value="CREATE REMOTE DATABASE lusiadas COMMENT 'Remote test database' LOCATION '/lusiadas.db/external' MANAGEDLOCATION '/lusiadas.db/managed' WITH DBPROPERTIES ('creator'='Claire', 'create_date'='2025-07-09');" db-types="Hive" />
+    <sql-case id="create_remote_schema_with_all_options" value="CREATE REMOTE SCHEMA lusiadas COMMENT 'Remote test schema' LOCATION '/lusiadas.db/external' MANAGEDLOCATION '/lusiadas.db/managed' WITH DBPROPERTIES ('creator'='Claire', 'create_date'='2025-07-09');" db-types="Hive" />
 </sql-cases>
