@@ -79,10 +79,10 @@ public final class SQLUtils {
      * @return converted value
      */
     public static Number getExactlyNumber(final BigInteger value) {
-        if (value.compareTo(new BigInteger(String.valueOf(Integer.MIN_VALUE))) >= 0 && value.compareTo(new BigInteger(String.valueOf(Integer.MAX_VALUE))) <= 0) {
+        if (value.compareTo(BigInteger.valueOf(Integer.MIN_VALUE)) >= 0 && value.compareTo(BigInteger.valueOf(Integer.MAX_VALUE)) <= 0) {
             return value.intValue();
         }
-        if (value.compareTo(new BigInteger(String.valueOf(Long.MIN_VALUE))) >= 0 && value.compareTo(new BigInteger(String.valueOf(Long.MAX_VALUE))) <= 0) {
+        if (value.compareTo(BigInteger.valueOf(Long.MIN_VALUE)) >= 0 && value.compareTo(BigInteger.valueOf(Long.MAX_VALUE)) <= 0) {
             return value.longValue();
         }
         return value;
