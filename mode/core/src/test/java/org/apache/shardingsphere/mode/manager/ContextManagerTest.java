@@ -86,6 +86,7 @@ import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockConstruction;
 import static org.mockito.Mockito.mockStatic;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -215,6 +216,7 @@ class ContextManagerTest {
                 MockedConstruction<MetaDataContextsFactory> ignored = mockConstruction(MetaDataContextsFactory.class,
                         (mock, context) -> when(mock.createChangedDatabase("foo_db", false, switchingResource, Collections.emptyList(), metaDataContexts)).thenThrow(SQLException.class))) {
             contextManager.reloadDatabase(database);
+            verify(metaDataContexts, never()).update(any());
         }
     }
     
@@ -256,6 +258,8 @@ class ContextManagerTest {
         try (MockedStatic<GenericSchemaBuilder> schemaBuilderMock = mockStatic(GenericSchemaBuilder.class)) {
             schemaBuilderMock.when(() -> GenericSchemaBuilder.build(any(DatabaseType.class), any(GenericSchemaBuilderMaterial.class))).thenThrow(SQLException.class);
             contextManager.reloadSchema(database, "foo_schema", "foo_ds");
+            verify(database, never()).dropSchema(any());
+            verify(database, never()).addSchema(any());
         }
     }
     
@@ -289,11 +293,14 @@ class ContextManagerTest {
     
     @Test
     void assertReloadTableWithSQLException() {
-        setPersistServiceFacade(mockPersistServiceFacade());
+        PersistServiceFacade persistServiceFacade = mockPersistServiceFacade();
+        setPersistServiceFacade(persistServiceFacade);
         try (MockedStatic<GenericSchemaBuilder> schemaBuilderMock = mockStatic(GenericSchemaBuilder.class)) {
             schemaBuilderMock.when(() -> GenericSchemaBuilder.build(anySet(), any(DatabaseType.class), any(GenericSchemaBuilderMaterial.class))).thenThrow(SQLException.class);
             contextManager.reloadTable(database, "foo_schema", "foo_tbl");
             contextManager.reloadTable(database, "foo_schema", "foo_ds", "foo_tbl");
+            verify(persistServiceFacade.getMetaDataFacade().getDatabaseMetaDataFacade().getTable(), never()).persist(any(), any(), any());
+            verify(persistServiceFacade.getModeFacade().getMetaDataManagerService(), never()).dropTables(any(), any(), any());
         }
     }
     

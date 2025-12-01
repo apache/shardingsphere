@@ -59,7 +59,7 @@ import static org.mockito.Mockito.when;
 class ShardingSphereDatabaseTest {
     
     @Test
-    void getAllSchemas() {
+    void assertGetAllSchemas() {
         DatabaseType databaseType = mock(DatabaseType.class);
         RuleMetaData ruleMetaData = mock(RuleMetaData.class);
         ShardingSphereDatabase database = new ShardingSphereDatabase("foo_db", databaseType, mock(ResourceMetaData.class), ruleMetaData, Collections.singleton(new ShardingSphereSchema("foo_schema")));

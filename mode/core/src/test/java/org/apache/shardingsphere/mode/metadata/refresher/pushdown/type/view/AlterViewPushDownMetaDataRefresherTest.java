@@ -89,7 +89,7 @@ class AlterViewPushDownMetaDataRefresherTest {
         ShardingSphereView existingView = new ShardingSphereView("foo_view", "SELECT 1");
         ShardingSphereDatabase database = new ShardingSphereDatabase("foo_db", databaseType, new ResourceMetaData(Collections.emptyMap()), new RuleMetaData(Collections.singleton(rule)),
                 Collections.singleton(new ShardingSphereSchema("foo_schema", Collections.emptyList(), Collections.singleton(existingView))));
-        when(TableRefreshUtils.isSingleTable(eq("bar_view"), eq(database))).thenReturn(true);
+        when(TableRefreshUtils.isSingleTable("bar_view", database)).thenReturn(true);
         ShardingSphereTable renamedTable = new ShardingSphereTable("bar_view", Collections.emptyList(), Collections.emptyList(), Collections.emptyList());
         Map<String, ShardingSphereSchema> schemas = Collections.singletonMap("foo_schema", new ShardingSphereSchema("foo_schema", Collections.singleton(renamedTable), Collections.emptyList()));
         when(GenericSchemaBuilder.build(eq(Collections.singletonList("bar_view")), eq(database.getProtocolType()), any())).thenReturn(schemas);
