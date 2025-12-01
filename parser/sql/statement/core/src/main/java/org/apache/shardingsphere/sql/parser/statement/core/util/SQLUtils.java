@@ -57,6 +57,14 @@ public final class SQLUtils {
     
     private static final String EXCLUDED_CHARACTERS = "[]'\"";
     
+    private static final BigInteger INTEGER_MIN = BigInteger.valueOf(Integer.MIN_VALUE);
+    
+    private static final BigInteger INTEGER_MAX = BigInteger.valueOf(Integer.MAX_VALUE);
+    
+    private static final BigInteger LONG_MIN = BigInteger.valueOf(Long.MIN_VALUE);
+    
+    private static final BigInteger LONG_MAX = BigInteger.valueOf(Long.MAX_VALUE);
+    
     /**
      * Get exactly number value and type.
      *
@@ -79,10 +87,10 @@ public final class SQLUtils {
      * @return converted value
      */
     public static Number getExactlyNumber(final BigInteger value) {
-        if (value.compareTo(BigInteger.valueOf(Integer.MIN_VALUE)) >= 0 && value.compareTo(BigInteger.valueOf(Integer.MAX_VALUE)) <= 0) {
+        if (value.compareTo(INTEGER_MIN) >= 0 && value.compareTo(INTEGER_MAX) <= 0) {
             return value.intValue();
         }
-        if (value.compareTo(BigInteger.valueOf(Long.MIN_VALUE)) >= 0 && value.compareTo(BigInteger.valueOf(Long.MAX_VALUE)) <= 0) {
+        if (value.compareTo(LONG_MIN) >= 0 && value.compareTo(LONG_MAX) <= 0) {
             return value.longValue();
         }
         return value;
@@ -251,10 +259,10 @@ public final class SQLUtils {
     /**
      * Create literal expression.
      *
-     * @param astNode    AST node
+     * @param astNode AST node
      * @param startIndex start index
-     * @param stopIndex  stop index
-     * @param text       text
+     * @param stopIndex stop index
+     * @param text text
      * @return literal expression segment
      */
     public static ExpressionSegment createLiteralExpression(final ASTNode astNode, final int startIndex, final int stopIndex, final String text) {
