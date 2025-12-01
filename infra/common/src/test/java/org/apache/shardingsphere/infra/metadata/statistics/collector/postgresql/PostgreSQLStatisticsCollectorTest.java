@@ -24,7 +24,6 @@ import org.apache.shardingsphere.infra.metadata.statistics.collector.DialectData
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.junit.jupiter.api.Test;
 
-import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.Collections;
 
@@ -39,12 +38,12 @@ class PostgreSQLStatisticsCollectorTest {
             DialectDatabaseStatisticsCollector.class, TypedSPILoader.getService(DatabaseType.class, "PostgreSQL"));
     
     @Test
-    void assertCollectRowColumnValuesWithExistingCollector() throws SQLException {
+    void assertCollectRowColumnValuesWithExistingCollector() {
         assertTrue(collector.collectRowColumnValues("foo_db", "pg_catalog", "pg_class", mock(ShardingSphereMetaData.class, RETURNS_DEEP_STUBS)).isPresent());
     }
     
     @Test
-    void assertCollectRowColumnValuesWithNonExistingCollector() throws SQLException {
+    void assertCollectRowColumnValuesWithNonExistingCollector() {
         assertFalse(collector.collectRowColumnValues("foo_db", "unknown_schema", "unknown_table", mock()).isPresent());
     }
     

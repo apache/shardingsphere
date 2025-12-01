@@ -45,6 +45,6 @@ public final class ShardingSchemaTableAggregationReviser implements SchemaTableA
     
     @Override
     public Collection<TableMetaData> aggregate(final ShardingRule rule) {
-        return new SchemaTableMetaDataAggregator().aggregate(checkTableMetaDataEnabled, tableMetaDataMap);
+        return new SchemaTableMetaDataAggregator(checkTableMetaDataEnabled).aggregate(tableMetaDataMap);
     }
 }
