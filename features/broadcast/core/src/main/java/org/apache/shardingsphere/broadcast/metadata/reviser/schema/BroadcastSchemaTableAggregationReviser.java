@@ -47,6 +47,6 @@ public final class BroadcastSchemaTableAggregationReviser implements SchemaTable
     
     @Override
     public Collection<TableMetaData> aggregate(final BroadcastRule rule) {
-        return new SchemaTableMetaDataAggregator().aggregate(checkTableMetaDataEnabled, tableMetaDataMap);
+        return new SchemaTableMetaDataAggregator(checkTableMetaDataEnabled).aggregate(tableMetaDataMap);
     }
 }
