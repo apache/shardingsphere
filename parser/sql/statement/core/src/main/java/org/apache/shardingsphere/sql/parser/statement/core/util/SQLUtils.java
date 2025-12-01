@@ -66,21 +66,26 @@ public final class SQLUtils {
      */
     public static Number getExactlyNumber(final String value, final int radix) {
         try {
-            return getBigInteger(value, radix);
+            return getExactlyNumber(new BigInteger(value, radix));
         } catch (final NumberFormatException ex) {
             return new BigDecimal(value);
         }
     }
     
-    private static Number getBigInteger(final String value, final int radix) {
-        BigInteger result = new BigInteger(value, radix);
-        if (result.compareTo(new BigInteger(String.valueOf(Integer.MIN_VALUE))) >= 0 && result.compareTo(new BigInteger(String.valueOf(Integer.MAX_VALUE))) <= 0) {
-            return result.intValue();
+    /**
+     * Get exactly number.
+     *
+     * @param value to be converted value
+     * @return converted value
+     */
+    public static Number getExactlyNumber(final BigInteger value) {
+        if (value.compareTo(new BigInteger(String.valueOf(Integer.MIN_VALUE))) >= 0 && value.compareTo(new BigInteger(String.valueOf(Integer.MAX_VALUE))) <= 0) {
+            return value.intValue();
         }
-        if (result.compareTo(new BigInteger(String.valueOf(Long.MIN_VALUE))) >= 0 && result.compareTo(new BigInteger(String.valueOf(Long.MAX_VALUE))) <= 0) {
-            return result.longValue();
+        if (value.compareTo(new BigInteger(String.valueOf(Long.MIN_VALUE))) >= 0 && value.compareTo(new BigInteger(String.valueOf(Long.MAX_VALUE))) <= 0) {
+            return value.longValue();
         }
-        return result;
+        return value;
     }
     
     /**
