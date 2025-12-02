@@ -19,6 +19,7 @@ This guide is written **for AI coding agents only**. Follow it literally; improv
 - **Code Quality**:
     - Use clear naming and reasonable abstractions.
     - Delete unused code; when changing functionality, remove legacy compatibility shims.
+    - Keep variable declarations adjacent to first use; if a value must be retained, declare it `final` to satisfy Checkstyle VariableDeclarationUsageDistance.
 - **Complete Implementation**: no MVPs/placeholders/TODOs—deliver fully runnable solutions.
 
 ### Performance Standards
@@ -199,6 +200,7 @@ Always state which topology, registry, and engine versions (e.g., MySQL 5.7 vs 8
 - **Go-to commands:** `./mvnw clean install -B -T1C -Pcheck` (full build), `./mvnw test -pl <module>[-am]` (scoped unit tests), `./mvnw spotless:apply -Pcheck [-pl <module>]` (format), `./mvnw -pl <module> -DskipITs -Dspotless.skip=true -Dtest=ClassName test` (fast verification), and `./mvnw -pl proxy -am -DskipTests package` (proxy packaging/perf smoke).
 - **Coverage verification:** before finishing any task that adds or changes tests, run the coverage check (e.g., `./mvnw test jacoco:check@jacoco-check -Pcoverage-check` or scoped `-pl <module> -am`) and explicitly confirm whether the targeted code reaches 100% when required.
 - **Checkstyle command:** run `./mvnw checkstyle:check -Pcheck` (or with `-pl <module> -am -Pcheck` for scoped runs) unless explicitly instructed otherwise.
+- **Default verification commands:** prefer scoped runs `./mvnw -pl <module> -am -DskipITs -Djacoco.skip=false -Dsurefire.failIfNoSpecifiedTests=false test jacoco:report` for coverage and `./mvnw -pl <module> checkstyle:check -Pcheck` for style; avoid whole-repo builds unless the user requests them.
 - **Testing ground rules:** JUnit 5 + Mockito, `ClassNameTest` naming, Arrange–Act–Assert structure, mocks for databases/time/network, reset static caches between cases, and prefer existing swapper/helpers for complex configs.
 - **Coverage discipline:** run Jacoco (`./mvnw -pl <module> -am -Djacoco.skip=false test jacoco:report`) when coverage is in question; describe any uncovered branches with file/line reasoning.
 - **Branch-focused work:** when asked for “minimal branch coverage” or similar, list every branch upfront, map each to a single test, and document unreachable code explicitly instead of adding redundant cases.
@@ -244,7 +246,7 @@ Always state which topology, registry, and engine versions (e.g., MySQL 5.7 vs 8
 - Mock heavy dependencies (database/cache/registry/network) and prefer mocking over building deep object graphs; avoid `RETURNS_DEEP_STUBS` unless chained interactions demand it.
 - Before changing how mocks are created, scan the repository for similar tests (e.g., other rule decorators or executor tests) and reuse their proven mocking pattern instead of inventing a new structure.
 - When constructors hide collaborators, use `Plugins.getMemberAccessor()` to inject mocks and document why SPI creation is bypassed.
-- If a test already uses `@ExtendWith(AutoMockExtension.class)`, always declare the needed static collaborators via `@StaticMockSettings` instead of hand-written `mockStatic` blocks; justify any exception explicitly in the plan before coding.
+- If a test already uses `@ExtendWith(AutoMockExtension.class)`, always declare the needed static collaborators via `@StaticMockSettings` instead of hand-written `mockStatic` blocks; when a class appears in `@StaticMockSettings`, do not call `mockStatic` on it—directly stub via `when(...)` (cast to `TypedSPI` if needed) to avoid ClassCast/duplicate-mock issues; justify any exception explicitly in the plan before coding.
 - Before adding coverage to a utility with multiple return paths, list every branch (no rule, non-Single config, wildcard blocks, missing data node, positive path, collection overload) and map each to a test; update the plan whenever this checklist changes.
 - Prefer imports over fully-qualified class names inside code and tests; if a class is used, add an import rather than using the full package path inline.
 - Before coding tests, prepare a concise branch-and-data checklist (all branches, inputs, expected outputs) and keep the plan in sync when the checklist changes.
