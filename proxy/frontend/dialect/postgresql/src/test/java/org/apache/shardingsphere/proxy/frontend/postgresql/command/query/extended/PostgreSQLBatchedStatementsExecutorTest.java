@@ -100,7 +100,7 @@ class PostgreSQLBatchedStatementsExecutorTest {
         ContextManager contextManager = mockContextManager();
         ConnectionSession connectionSession = mockConnectionSession();
         PostgreSQLServerPreparedStatement postgresqlPreparedStatement = new PostgreSQLServerPreparedStatement("INSERT INTO t (id, col) VALUES (?, ?)", mockInsertStatementContext(),
-                new HintValueContext(), Arrays.asList(PostgreSQLColumnType.INT4, PostgreSQLColumnType.VARCHAR), Arrays.asList(0, 1));
+                new HintValueContext(), Arrays.asList(PostgreSQLColumnType.INT4, PostgreSQLColumnType.VARCHAR),Arrays.asList("int","varchar"), Arrays.asList(0, 1));
         List<List<Object>> parameterSets = Arrays.asList(Arrays.asList(1, new PostgreSQLTypeUnspecifiedSQLParameter("foo")),
                 Arrays.asList(2, new PostgreSQLTypeUnspecifiedSQLParameter("bar")), Arrays.asList(3, new PostgreSQLTypeUnspecifiedSQLParameter("baz")));
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
@@ -137,8 +137,8 @@ class PostgreSQLBatchedStatementsExecutorTest {
         when(database.getRuleMetaData()).thenReturn(new RuleMetaData(Collections.emptyList()));
         when(database.containsSchema("public")).thenReturn(true);
         when(database.getSchema("public").containsTable("t")).thenReturn(true);
-        when(database.getSchema("public").getTable("t").getAllColumns()).thenReturn(Arrays.asList(new ShardingSphereColumn("id", Types.VARCHAR, false, false, false, true, false, false),
-                new ShardingSphereColumn("col", Types.VARCHAR, false, false, false, true, false, false)));
+        when(database.getSchema("public").getTable("t").getAllColumns()).thenReturn(Arrays.asList(new ShardingSphereColumn("id", Types.VARCHAR, false, false,"varchar", false, true, false, false),
+                new ShardingSphereColumn("col", Types.VARCHAR, false, false,"varchar", false, true, false, false)));
         when(result.getMetaDataContexts().getMetaData().containsDatabase("db")).thenReturn(true);
         when(result.getMetaDataContexts().getMetaData().getDatabase("db")).thenReturn(database);
         RuleMetaData globalRuleMetaData = new RuleMetaData(Collections.singleton(new SQLTranslatorRule(new DefaultSQLTranslatorRuleConfigurationBuilder().build())));
