@@ -449,7 +449,7 @@ public final class FirebirdPrepareStatementCommandExecutor implements CommandExe
     private void processCustomColumn(final String tableName, final String columnName, final IdentifierValue columnAlias, final int dataType,
                                      final Collection<FirebirdReturnColumnPacket> describeColumns, final Collection<FirebirdSQLInfoPacketType> requestedItems, final int columnCount) {
         ShardingSphereTable table = new ShardingSphereTable(tableName, Collections.emptyList(), Collections.emptyList(), Collections.emptyList());
-        ShardingSphereColumn column = new ShardingSphereColumn(columnName, dataType, false, false, true, true, false, false);
+        ShardingSphereColumn column = new ShardingSphereColumn(columnName, dataType, false, false,"", true, true, false, false);
         processColumn(describeColumns, requestedItems, table, column, null, columnAlias, columnCount);
     }
     
