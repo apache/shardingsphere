@@ -20,7 +20,7 @@ package org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.SQLParserTestCase;
 
 /**
- * Show slave hosts statement test case for MySQL.
+ * Show replica hosts statement test case for MySQL.
  */
 public final class MySQLShowSlaveHostsStatementTestCase extends SQLParserTestCase {
 }

@@ -30,7 +30,6 @@ import org.mockito.Mock;
 import org.mockito.internal.configuration.plugins.Plugins;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.sql.SQLException;
 import java.util.Collections;
 
 import static org.mockito.Mockito.mock;
@@ -51,7 +50,7 @@ class OpenGaussStatisticsCollectorTest {
     }
     
     @Test
-    void assertCollectRowColumnValuesWithTables() throws SQLException {
+    void assertCollectRowColumnValuesWithTables() {
         ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class);
         collector.collectRowColumnValues("foo_db", "information_schema", "tables", metaData);
         verify(delegate).collectRowColumnValues("foo_db", "information_schema", "tables", metaData);

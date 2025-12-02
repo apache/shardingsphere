@@ -117,17 +117,17 @@ public final class FirebirdDateTimeUtils {
      * @return this instance with updated date fields
      */
     public FirebirdDateTimeUtils setDate(final int encodedDate) {
-        int sqldate = encodedDate - 1721119 + 2400001;
-        int century = (4 * sqldate - 1) / 146097;
-        sqldate = 4 * sqldate - 1 - 146097 * century;
-        day = sqldate / 4;
-        sqldate = (4 * day + 3) / 1461;
-        day = 4 * day + 3 - 1461 * sqldate;
+        int sqlDate = encodedDate - 1721119 + 2400001;
+        int century = (4 * sqlDate - 1) / 146097;
+        sqlDate = 4 * sqlDate - 1 - 146097 * century;
+        day = sqlDate / 4;
+        sqlDate = (4 * day + 3) / 1461;
+        day = 4 * day + 3 - 1461 * sqlDate;
         day = (day + 5) / 5;
         month = (5 * day - 3) / 153;
         day = 5 * day - 3 - 153 * month;
         day = (day + 5) / 5;
-        year = 100 * century + sqldate;
+        year = 100 * century + sqlDate;
         if (month < 10) {
             month += 3;
         } else {

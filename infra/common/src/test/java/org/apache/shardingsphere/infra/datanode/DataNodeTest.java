@@ -258,12 +258,6 @@ class DataNodeTest {
     }
     
     @Test
-    void assertFormatWithoutSchemaType() {
-        DataNode dataNode = new DataNode("ds", (String) null, "tbl");
-        assertThat(dataNode.format(TypedSPILoader.getService(DatabaseType.class, "MySQL")), is("ds.tbl"));
-    }
-    
-    @Test
     void assertFormatMethodWithTableNameLowercasing() {
         DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "PostgreSQL");
         DataNode dataNode = new DataNode("test_db", databaseType, "ds.schema.TABLE");

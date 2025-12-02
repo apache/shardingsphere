@@ -20,7 +20,7 @@ package org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.SQLParserTestCase;
 
 /**
- * Alter materialized zonemap statement test case for Orcle.
+ * Alter materialized zonemap statement test case for Oracle.
  */
 public final class OracleAlterMaterializedZonemapStatementTestCase extends SQLParserTestCase {
 }

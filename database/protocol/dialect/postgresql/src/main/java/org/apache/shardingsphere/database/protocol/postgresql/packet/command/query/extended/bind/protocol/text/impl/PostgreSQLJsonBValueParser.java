@@ -15,33 +15,28 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.statement.core.value.literal.impl;
+package org.apache.shardingsphere.database.protocol.postgresql.packet.command.query.extended.bind.protocol.text.impl;
 
-import lombok.Getter;
-import org.apache.shardingsphere.sql.parser.statement.core.util.SQLUtils;
-import org.apache.shardingsphere.sql.parser.statement.core.value.literal.LiteralValue;
+import org.apache.shardingsphere.database.protocol.postgresql.packet.command.query.extended.bind.protocol.text.PostgreSQLTextValueParser;
+import org.apache.shardingsphere.infra.exception.external.sql.type.wrapper.SQLWrapperException;
+import org.postgresql.util.PGobject;
 
-import java.math.BigDecimal;
-import java.math.BigInteger;
+import java.sql.SQLException;
 
 /**
- * Number literal value.
+ * Json value parser of PostgreSQL.
  */
-@Getter
-public final class NumberLiteralValue implements LiteralValue<Number> {
+public final class PostgreSQLJsonBValueParser implements PostgreSQLTextValueParser<PGobject> {
     
-    private final Number value;
-    
-    public NumberLiteralValue(final String value) {
-        this.value = getNumber(value);
-    }
-    
-    private Number getNumber(final String value) {
+    @Override
+    public PGobject parse(final String value) {
         try {
-            return SQLUtils.getExactlyNumber(new BigInteger(value));
-        } catch (final NumberFormatException ex) {
-            // TODO make sure with double and float
-            return new BigDecimal(value);
+            PGobject result = new PGobject();
+            result.setType("jsonb");
+            result.setValue(value);
+            return result;
+        } catch (final SQLException ex) {
+            throw new SQLWrapperException(ex);
         }
     }
 }

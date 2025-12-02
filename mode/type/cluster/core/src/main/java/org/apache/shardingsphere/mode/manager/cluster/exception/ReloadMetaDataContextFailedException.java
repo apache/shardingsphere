@@ -25,6 +25,8 @@ import org.apache.shardingsphere.infra.exception.external.sql.type.kernel.catego
  */
 public final class ReloadMetaDataContextFailedException extends ClusterSQLException {
     
+    private static final long serialVersionUID = -2058668714389031484L;
+    
     public ReloadMetaDataContextFailedException() {
         super(XOpenSQLState.GENERAL_ERROR, 11, "Failed to reload meta data context.");
     }

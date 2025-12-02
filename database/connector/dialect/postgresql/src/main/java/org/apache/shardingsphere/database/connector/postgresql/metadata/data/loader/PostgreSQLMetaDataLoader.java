@@ -121,11 +121,11 @@ public final class PostgreSQLMetaDataLoader implements DialectMetaDataLoader {
                 String columnName = resultSet.getString("column_name");
                 String indexName = resultSet.getString("index_name");
                 boolean isUnique = resultSet.getBoolean("is_unique");
-                Collection<IndexMetaData> indexMetaDatas = result.getOrDefault(schemaName, LinkedHashMultimap.create()).get(tableName);
-                if (indexMetaDatas.isEmpty()) {
+                Collection<IndexMetaData> indexMetaDataList = result.getOrDefault(schemaName, LinkedHashMultimap.create()).get(tableName);
+                if (indexMetaDataList.isEmpty()) {
                     continue;
                 }
-                Optional<IndexMetaData> indexMetaData = indexMetaDatas.stream().filter(each -> each.getName().equals(indexName)).findFirst();
+                Optional<IndexMetaData> indexMetaData = indexMetaDataList.stream().filter(each -> each.getName().equals(indexName)).findFirst();
                 if (indexMetaData.isPresent()) {
                     indexMetaData.get().setUnique(isUnique);
                     indexMetaData.get().getColumns().add(columnName);
@@ -217,7 +217,7 @@ public final class PostgreSQLMetaDataLoader implements DialectMetaDataLoader {
         // TODO user defined collation which deterministic is false
         boolean caseSensitive = true;
         boolean isNullable = "YES".equals(resultSet.getString("is_nullable"));
-        return new ColumnMetaData(columnName, DataTypeRegistry.getDataType(getDatabaseType(), dataType).orElse(Types.OTHER), isPrimaryKey, generated, caseSensitive, true, false, isNullable);
+        return new ColumnMetaData(columnName, DataTypeRegistry.getDataType(getDatabaseType(), dataType).orElse(Types.OTHER), isPrimaryKey, generated, dataType, caseSensitive, true, false, isNullable);
     }
     
     private Map<String, Multimap<String, ConstraintMetaData>> loadConstraintMetaDataMap(final Connection connection, final Collection<String> schemaNames) throws SQLException {

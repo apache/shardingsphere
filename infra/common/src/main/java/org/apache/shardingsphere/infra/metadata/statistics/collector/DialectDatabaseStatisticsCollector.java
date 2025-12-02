@@ -38,7 +38,7 @@ public interface DialectDatabaseStatisticsCollector extends DatabaseTypedSPI {
      * @param schemaName schema name
      * @param tableName table name
      * @param metaData shardingsphere meta data
-     * @return row column datas
+     * @return row column data list
      */
     Optional<Collection<Map<String, Object>>> collectRowColumnValues(String databaseName, String schemaName, String tableName, ShardingSphereMetaData metaData);
     

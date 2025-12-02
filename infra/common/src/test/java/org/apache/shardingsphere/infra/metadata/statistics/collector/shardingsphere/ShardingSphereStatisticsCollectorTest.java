@@ -24,7 +24,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.MockedStatic;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
@@ -46,12 +45,12 @@ class ShardingSphereStatisticsCollectorTest {
     private final DialectDatabaseStatisticsCollector collector = new ShardingSphereStatisticsCollector();
     
     @Test
-    void assertCollectRowColumnValuesWithoutAvailableCollector() throws SQLException {
+    void assertCollectRowColumnValuesWithoutAvailableCollector() {
         assertFalse(collector.collectRowColumnValues("foo_db", "foo_schema", "foo_tbl", mock()).isPresent());
     }
     
     @Test
-    void assertCollectRowColumnValuesWithAvailableCollector() throws SQLException {
+    void assertCollectRowColumnValuesWithAvailableCollector() {
         ShardingSphereTableStatisticsCollector tableStatisticsCollector = mock();
         try (MockedStatic<TypedSPILoader> mockedLoader = mockStatic(TypedSPILoader.class)) {
             when(tableStatisticsCollector.collect(anyString(), anyString(), anyString(), any())).thenReturn(Collections.singleton(Collections.singletonMap("foo_db", "foo_schema")));
