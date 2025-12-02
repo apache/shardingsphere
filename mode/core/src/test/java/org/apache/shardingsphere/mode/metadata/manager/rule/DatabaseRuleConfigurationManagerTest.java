@@ -91,9 +91,9 @@ class DatabaseRuleConfigurationManagerTest {
         RuleConfiguration ruleConfig = mock(RuleConfiguration.class, withSettings().extraInterfaces(Serializable.class));
         ShardingSphereRule partialRule = mock(ShardingSphereRule.class, withSettings().extraInterfaces(PartialRuleUpdateSupported.class));
         when(partialRule.getConfiguration()).thenReturn(ruleConfig);
-        ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
+        ShardingSphereDatabase database = mock(ShardingSphereDatabase.class);
         when(database.getRuleMetaData()).thenReturn(new RuleMetaData(Collections.singleton(partialRule)));
-        MetaDataContexts metaDataContexts = mock(MetaDataContexts.class);
+        MetaDataContexts metaDataContexts = mock(MetaDataContexts.class, RETURNS_DEEP_STUBS);
         when(metaDataContexts.getMetaData().getDatabase(DATABASE_NAME)).thenReturn(database);
         new DatabaseRuleConfigurationManager(metaDataContexts, mock(ComputeNodeInstanceContext.class), mock(MetaDataPersistFacade.class)).refresh(DATABASE_NAME, ruleConfig, true);
         verify((PartialRuleUpdateSupported) partialRule).updateConfiguration(ruleConfig);
