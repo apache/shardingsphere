@@ -198,8 +198,8 @@ class ConsistencyCheckTasksRunnerTest {
         Plugins.getMemberAccessor().set(ConsistencyCheckTasksRunner.class.getDeclaredField("jobItemManager"), runner, jobItemManager);
         PipelineProcessConfigurationPersistService processConfigPersistService = mock(PipelineProcessConfigurationPersistService.class);
         Plugins.getMemberAccessor().set(ConsistencyCheckTasksRunner.class.getDeclaredField("processConfigPersistService"), runner, processConfigPersistService);
-        PipelineProcessConfiguration processConfig = new PipelineProcessConfiguration(new PipelineReadConfiguration(1, 1, 1, null),
-                new PipelineWriteConfiguration(1, 1, null), null);
+        PipelineProcessConfiguration processConfig = new PipelineProcessConfiguration(
+                new PipelineReadConfiguration(1, 1, 1, null), new PipelineWriteConfiguration(1, 1, null), null);
         PipelineDataConsistencyChecker checker = mock(PipelineDataConsistencyChecker.class);
         PipelineJobType<PipelineJobConfiguration> parentJobType = mock(PipelineJobType.class);
         when(parentJobType.getType()).thenReturn("CONSISTENCY_CHECK");
@@ -349,6 +349,54 @@ class ConsistencyCheckTasksRunnerTest {
         verify(jobItemManager).persistProgress(jobItemContext);
         verify(jobManager).stop(CHECK_JOB_ID);
     }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    void assertOnSuccessUpdateToFailureWhenResultContainsFailedItem() throws ReflectiveOperationException {
+        ConsistencyCheckJobItemContext jobItemContext = createJobItemContext();
+        ConsistencyCheckTasksRunner runner = new ConsistencyCheckTasksRunner(jobItemContext);
+        PipelineJobManager jobManager = mock(PipelineJobManager.class);
+        Plugins.getMemberAccessor().set(ConsistencyCheckTasksRunner.class.getDeclaredField("jobManager"), runner, jobManager);
+        PipelineJobItemManager<TransmissionJobItemProgress> jobItemManager = mock(PipelineJobItemManager.class);
+        Plugins.getMemberAccessor().set(ConsistencyCheckTasksRunner.class.getDeclaredField("jobItemManager"), runner, jobItemManager);
+        PipelineContextKey checkContextKey = new PipelineContextKey("check_db_fail", InstanceType.JDBC);
+        when(PipelineJobIdUtils.parseContextKey(CHECK_JOB_ID)).thenReturn(checkContextKey);
+        PipelineContextKey parentContextKey = new PipelineContextKey("parent_db", InstanceType.JDBC);
+        when(PipelineJobIdUtils.parseContextKey(PARENT_JOB_ID)).thenReturn(parentContextKey);
+        when(PipelineJobIdUtils.parseJobType(CHECK_JOB_ID)).thenReturn(new ConsistencyCheckJobType());
+        PipelineGovernanceFacade checkGovernanceFacade = mock(PipelineGovernanceFacade.class);
+        when(PipelineAPIFactory.getPipelineGovernanceFacade(checkContextKey)).thenReturn(checkGovernanceFacade);
+        PipelineJobItemFacade jobItemFacade = mock(PipelineJobItemFacade.class);
+        PipelineJobItemProcessGovernanceRepository processRepository = mock(PipelineJobItemProcessGovernanceRepository.class);
+        when(jobItemFacade.getProcess()).thenReturn(processRepository);
+        when(checkGovernanceFacade.getJobItemFacade()).thenReturn(jobItemFacade);
+        PipelineGovernanceFacade governanceFacade = mock(PipelineGovernanceFacade.class);
+        when(PipelineAPIFactory.getPipelineGovernanceFacade(parentContextKey)).thenReturn(governanceFacade);
+        PipelineJobFacade jobFacade = mock(PipelineJobFacade.class);
+        when(governanceFacade.getJobFacade()).thenReturn(jobFacade);
+        PipelineJobCheckGovernanceRepository checkRepository = mock(PipelineJobCheckGovernanceRepository.class);
+        when(jobFacade.getCheck()).thenReturn(checkRepository);
+        Map<String, TableDataConsistencyCheckResult> checkResult = Collections.singletonMap("t_order", new TableDataConsistencyCheckResult(false));
+        when(checkRepository.getCheckJobResult(PARENT_JOB_ID, CHECK_JOB_ID)).thenReturn(checkResult);
+        AtomicReference<ExecuteCallback> callbackRef = new AtomicReference<>();
+        ConsistencyCheckProcessContext processContext = mock(ConsistencyCheckProcessContext.class);
+        PipelineExecuteEngine executeEngine = mock(PipelineExecuteEngine.class);
+        when(processContext.getConsistencyCheckExecuteEngine()).thenReturn(executeEngine);
+        Plugins.getMemberAccessor().set(ConsistencyCheckJobItemContext.class.getDeclaredField("processContext"), jobItemContext, processContext);
+        when(executeEngine.submit(any(PipelineLifecycleRunnable.class))).thenReturn(CompletableFuture.completedFuture(null));
+        try (MockedStatic<PipelineExecuteEngine> triggerMocked = mockStatic(PipelineExecuteEngine.class)) {
+            triggerMocked.when(() -> PipelineExecuteEngine.trigger(anyCollection(), any())).thenAnswer(invocation -> {
+                callbackRef.set(invocation.getArgument(1));
+                return null;
+            });
+            runner.start();
+        }
+        ExecuteCallback callback = callbackRef.get();
+        callback.onSuccess();
+        assertThat(jobItemContext.getStatus(), is(JobStatus.CONSISTENCY_CHECK_FAILURE));
+        verify(jobItemManager).persistProgress(jobItemContext);
+        verify(jobManager).stop(CHECK_JOB_ID);
+    }
     
     @Test
     void assertOnFailureWhenCheckerCanceling() throws ReflectiveOperationException {
@@ -397,6 +445,43 @@ class ConsistencyCheckTasksRunnerTest {
         PipelineJobItemErrorMessageGovernanceRepository errorRepository = mock(PipelineJobItemErrorMessageGovernanceRepository.class);
         PipelineJobItemProcessGovernanceRepository processRepository = mock(PipelineJobItemProcessGovernanceRepository.class);
         when(jobItemFacade.getProcess()).thenReturn(processRepository);
+        when(jobItemFacade.getErrorMessage()).thenReturn(errorRepository);
+        AtomicReference<ExecuteCallback> callbackRef = new AtomicReference<>();
+        ConsistencyCheckProcessContext processContext = mock(ConsistencyCheckProcessContext.class);
+        PipelineExecuteEngine executeEngine = mock(PipelineExecuteEngine.class);
+        when(processContext.getConsistencyCheckExecuteEngine()).thenReturn(executeEngine);
+        Plugins.getMemberAccessor().set(ConsistencyCheckJobItemContext.class.getDeclaredField("processContext"), jobItemContext, processContext);
+        when(executeEngine.submit(any(PipelineLifecycleRunnable.class))).thenReturn(CompletableFuture.completedFuture(null));
+        try (MockedStatic<PipelineExecuteEngine> triggerMocked = mockStatic(PipelineExecuteEngine.class)) {
+            triggerMocked.when(() -> PipelineExecuteEngine.trigger(anyCollection(), any())).thenAnswer(invocation -> {
+                callbackRef.set(invocation.getArgument(1));
+                return null;
+            });
+            runner.start();
+        }
+        ExecuteCallback callback = callbackRef.get();
+        RuntimeException failure = new RuntimeException("failure");
+        callback.onFailure(failure);
+        verify(errorRepository).update(CHECK_JOB_ID, 0, failure);
+        verify(jobManager).stop(CHECK_JOB_ID);
+    }
+    
+    @Test
+    void assertOnFailurePersistErrorWhenCheckerAbsent() throws ReflectiveOperationException {
+        ConsistencyCheckJobItemContext jobItemContext = createJobItemContext();
+        ConsistencyCheckTasksRunner runner = new ConsistencyCheckTasksRunner(jobItemContext);
+        PipelineJobManager jobManager = mock(PipelineJobManager.class);
+        Plugins.getMemberAccessor().set(ConsistencyCheckTasksRunner.class.getDeclaredField("jobManager"), runner, jobManager);
+        PipelineContextKey checkContextKey = new PipelineContextKey("check_db_null_checker", InstanceType.JDBC);
+        when(PipelineJobIdUtils.parseContextKey(CHECK_JOB_ID)).thenReturn(checkContextKey);
+        when(PipelineJobIdUtils.parseJobType(CHECK_JOB_ID)).thenReturn(new ConsistencyCheckJobType());
+        PipelineGovernanceFacade governanceFacade = mock(PipelineGovernanceFacade.class);
+        when(PipelineAPIFactory.getPipelineGovernanceFacade(checkContextKey)).thenReturn(governanceFacade);
+        PipelineJobItemFacade jobItemFacade = mock(PipelineJobItemFacade.class);
+        PipelineJobItemProcessGovernanceRepository processRepository = mock(PipelineJobItemProcessGovernanceRepository.class);
+        when(jobItemFacade.getProcess()).thenReturn(processRepository);
+        when(governanceFacade.getJobItemFacade()).thenReturn(jobItemFacade);
+        PipelineJobItemErrorMessageGovernanceRepository errorRepository = mock(PipelineJobItemErrorMessageGovernanceRepository.class);
         when(jobItemFacade.getErrorMessage()).thenReturn(errorRepository);
         AtomicReference<ExecuteCallback> callbackRef = new AtomicReference<>();
         ConsistencyCheckProcessContext processContext = mock(ConsistencyCheckProcessContext.class);
