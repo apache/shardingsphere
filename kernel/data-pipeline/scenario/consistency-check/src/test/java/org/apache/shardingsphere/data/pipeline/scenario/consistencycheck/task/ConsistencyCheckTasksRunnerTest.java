@@ -349,7 +349,7 @@ class ConsistencyCheckTasksRunnerTest {
         verify(jobItemManager).persistProgress(jobItemContext);
         verify(jobManager).stop(CHECK_JOB_ID);
     }
-
+    
     @SuppressWarnings("unchecked")
     @Test
     void assertOnSuccessUpdateToFailureWhenResultContainsFailedItem() throws ReflectiveOperationException {
