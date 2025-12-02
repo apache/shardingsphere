@@ -15,11 +15,11 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.it.sql.parser.presto;
+package org.apache.shardingsphere.test.it.sql.parser.clickhouse;
 
 import org.apache.shardingsphere.test.it.sql.parser.internal.InternalSQLParserIT;
 import org.apache.shardingsphere.test.it.sql.parser.internal.InternalSQLParserITSettings;
 
-@InternalSQLParserITSettings("Presto")
-class InternalPrestoParserIT extends InternalSQLParserIT {
+@InternalSQLParserITSettings("ClickHouse")
+class InternalClickHouseParserIT extends InternalSQLParserIT {
 }
