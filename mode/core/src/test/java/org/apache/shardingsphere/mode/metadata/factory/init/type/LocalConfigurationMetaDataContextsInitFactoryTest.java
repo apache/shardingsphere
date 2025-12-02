@@ -101,7 +101,7 @@ class LocalConfigurationMetaDataContextsInitFactoryTest {
             MetaDataContexts actual = factory.create(createContextManagerBuilderParameter(databaseConfigs, new Properties()));
             assertThat(actual, is(notNullValue()));
             MetaDataPersistFacade persistFacade = persistFacadeMocked.constructed().get(0);
-            verify(persistFacade).persistGlobalRuleConfiguration(eq(Collections.emptyList()), eq(new Properties()));
+            verify(persistFacade).persistGlobalRuleConfiguration(Collections.emptyList(), new Properties());
             verify(persistFacade).persistConfigurations(eq("foo_db"), eq(databaseConfigs.get("foo_db")),
                     argThat(dataSources -> storageUnits.get("foo_ds").getDataSource().equals(dataSources.get("foo_ds"))), anyCollection());
             verify(persistFacade.getDatabaseMetaDataFacade().getSchema()).add("foo_db", "empty_schema");

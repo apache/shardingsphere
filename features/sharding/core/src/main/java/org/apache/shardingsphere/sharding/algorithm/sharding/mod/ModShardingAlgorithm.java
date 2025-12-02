@@ -114,7 +114,7 @@ public final class ModShardingAlgorithm implements StandardShardingAlgorithm<Com
             return true;
         }
         return getBigInteger(shardingValue.getValueRange().upperEndpoint()).subtract(getBigInteger(shardingValue.getValueRange().lowerEndpoint()))
-                .compareTo(BigInteger.valueOf(shardingCount - 1)) >= 0;
+                .compareTo(BigInteger.valueOf(shardingCount - 1L)) >= 0;
     }
     
     private Collection<String> getAvailableTargetNames(final Collection<String> availableTargetNames, final RangeShardingValue<Comparable<?>> shardingValue) {
