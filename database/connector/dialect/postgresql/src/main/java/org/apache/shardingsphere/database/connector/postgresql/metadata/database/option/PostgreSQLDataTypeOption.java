@@ -96,8 +96,8 @@ public final class PostgreSQLDataTypeOption implements DialectDataTypeOption {
                         "         LEFT JOIN pg_class c ON c.oid = t.typrelid\n" +
                         "WHERE\n" +
                         "    n.nspname = 'public'\n" +
-                        "  AND t.typtype IN ('c', 'e', 'd')   -- 复合类型、枚举、domain\n" +
-                        "  AND (c.relkind IS NULL OR c.relkind = 'c')  -- 过滤掉 table rowtype (r)\n" +
+                        "  AND t.typtype IN ('c', 'e', 'd')  \n" +
+                        "  AND (c.relkind IS NULL OR c.relkind = 'c')  \n" +
                         "ORDER BY udt_name;";
         
         try (
