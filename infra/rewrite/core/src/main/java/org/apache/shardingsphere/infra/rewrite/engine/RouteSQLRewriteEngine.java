@@ -33,6 +33,8 @@ import org.apache.shardingsphere.infra.rewrite.parameter.builder.ParameterBuilde
 import org.apache.shardingsphere.infra.rewrite.parameter.builder.impl.GroupedParameterBuilder;
 import org.apache.shardingsphere.infra.rewrite.parameter.builder.impl.StandardParameterBuilder;
 import org.apache.shardingsphere.infra.rewrite.sql.impl.RouteSQLBuilder;
+import org.apache.shardingsphere.infra.rewrite.sql.token.common.pojo.ParameterFilterable;
+import org.apache.shardingsphere.infra.rewrite.sql.token.common.pojo.SQLToken;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
 import org.apache.shardingsphere.infra.session.query.QueryContext;
@@ -43,12 +45,14 @@ import org.apache.shardingsphere.sqltranslator.rule.SQLTranslatorRule;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
+import java.util.Set;
 import java.util.concurrent.ThreadLocalRandom;
 
 /**
@@ -140,12 +144,15 @@ public final class RouteSQLRewriteEngine {
             return Collections.emptyList();
         }
         ParameterBuilder parameterBuilder = sqlRewriteContext.getParameterBuilder();
+        List<Object> originalParameters;
         if (parameterBuilder instanceof StandardParameterBuilder) {
-            return parameterBuilder.getParameters();
+            originalParameters = parameterBuilder.getParameters();
+        } else {
+            originalParameters = routeContext.getOriginalDataNodes().isEmpty()
+                    ? ((GroupedParameterBuilder) parameterBuilder).getParameters()
+                    : buildRouteParameters((GroupedParameterBuilder) parameterBuilder, routeContext, routeUnit);
         }
-        return routeContext.getOriginalDataNodes().isEmpty()
-                ? ((GroupedParameterBuilder) parameterBuilder).getParameters()
-                : buildRouteParameters((GroupedParameterBuilder) parameterBuilder, routeContext, routeUnit);
+        return filterParametersIfNeeded(sqlRewriteContext, originalParameters, routeUnit);
     }
     
     private List<Object> buildRouteParameters(final GroupedParameterBuilder paramBuilder, final RouteContext routeContext, final RouteUnit routeUnit) {
@@ -185,6 +192,63 @@ public final class RouteSQLRewriteEngine {
             List<Object> translatedParameters = sqlTranslatorContext.isPresent() ? sqlTranslatorContext.get().getParameters() : parameters;
             SQLRewriteUnit sqlRewriteUnit = new SQLRewriteUnit(translatedSQL, translatedParameters);
             result.put(entry.getKey(), sqlRewriteUnit);
+        }
+        return result;
+    }
+    
+    /**
+     * Filter parameters if needed based on ParameterFilterable tokens.
+     *
+     * @param sqlRewriteContext SQL rewrite context
+     * @param originalParameters original parameter list
+     * @param routeUnit route unit
+     * @return filtered parameter list
+     */
+    private List<Object> filterParametersIfNeeded(final SQLRewriteContext sqlRewriteContext, final List<Object> originalParameters, final RouteUnit routeUnit) {
+        List<ParameterFilterable> filterableTokens = findParameterFilterableTokens(sqlRewriteContext.getSqlTokens());
+        if (filterableTokens.isEmpty()) {
+            return originalParameters;
+        }
+        return applyParameterFiltering(originalParameters, filterableTokens, routeUnit);
+    }
+    
+    /**
+     * Find all ParameterFilterable tokens in the token list.
+     *
+     * @param sqlTokens SQL tokens
+     * @return list of ParameterFilterable tokens
+     */
+    private List<ParameterFilterable> findParameterFilterableTokens(final Collection<SQLToken> sqlTokens) {
+        List<ParameterFilterable> result = new LinkedList<>();
+        for (SQLToken each : sqlTokens) {
+            if (each instanceof ParameterFilterable && ((ParameterFilterable) each).isParameterFilterable()) {
+                result.add((ParameterFilterable) each);
+            }
+        }
+        return result;
+    }
+    
+    /**
+     * Apply parameter filtering by removing specified indices.
+     *
+     * @param originalParameters original parameter list
+     * @param filterableTokens list of ParameterFilterable tokens
+     * @param routeUnit route unit
+     * @return filtered parameter list
+     */
+    private List<Object> applyParameterFiltering(final List<Object> originalParameters, final List<ParameterFilterable> filterableTokens, final RouteUnit routeUnit) {
+        Set<Integer> removedIndices = new HashSet<>();
+        for (ParameterFilterable each : filterableTokens) {
+            removedIndices.addAll(each.getRemovedParameterIndices(routeUnit));
+        }
+        if (removedIndices.isEmpty()) {
+            return originalParameters;
+        }
+        List<Object> result = new ArrayList<>(originalParameters.size() - removedIndices.size());
+        for (int i = 0; i < originalParameters.size(); i++) {
+            if (!removedIndices.contains(i)) {
+                result.add(originalParameters.get(i));
+            }
         }
         return result;
     }
