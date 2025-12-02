@@ -95,6 +95,7 @@
 1. Proxy: Fix column length for PostgreSQL string binary protocol value - [35840](https://github.com/apache/shardingsphere/pull/35840)
 1. Proxy: Fix the connection leak caused by rollback failure in Proxy - [35867](https://github.com/apache/shardingsphere/pull/35867)
 1. Proxy: Fix the behavior difference of select built-in function names with spaces -[#36537](https://github.com/apache/shardingsphere/pull/36537)
+1. Proxy: Fix PostgreSQL boolean text output to return `t`/`f` as per protocol - [#37184](https://github.com/apache/shardingsphere/pull/37184)
 1. Mode: Fix issue of drop schema can not work on standalone mode - [#34470](https://github.com/apache/shardingsphere/pull/34470)
 1. Encrypt: Resolve rewrite issue in nested concat function - [#35815](https://github.com/apache/shardingsphere/pull/35815)
 1. Sharding: Fix mod sharding algorithm judgement -[#36386](https://github.com/apache/shardingsphere/pull/36386)
