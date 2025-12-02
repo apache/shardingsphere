@@ -31,10 +31,6 @@ import java.sql.Statement;
 public final class CircuitBreakerStatement extends WrapperAdapter implements Statement {
     
     @Override
-    public void close() {
-    }
-    
-    @Override
     public int getMaxFieldSize() {
         return 0;
     }
@@ -224,5 +220,9 @@ public final class CircuitBreakerStatement extends WrapperAdapter implements Sta
     @Override
     public boolean isCloseOnCompletion() {
         return false;
+    }
+    
+    @Override
+    public void close() {
     }
 }
