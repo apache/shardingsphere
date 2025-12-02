@@ -64,8 +64,8 @@ class SimpleTableSegmentBinderTest {
                 new ShardingSphereColumn("user_id", Types.INTEGER, false, false, "int", false, true, false, false),
                 new ShardingSphereColumn("status", Types.INTEGER, false, false, "int", false, true, false, false)));
         when(schema.getTable("pg_database").getAllColumns()).thenReturn(Arrays.asList(
-                new ShardingSphereColumn("datname", Types.VARCHAR, false, false, "int", false, true, false, false),
-                new ShardingSphereColumn("datdba", Types.VARCHAR, false, false, "int", false, true, false, false)));
+                new ShardingSphereColumn("datname", Types.VARCHAR, false, false, "varchar", false, true, false, false),
+                new ShardingSphereColumn("datdba", Types.VARCHAR, false, false, "varchar", false, true, false, false)));
         ShardingSphereMetaData result = mock(ShardingSphereMetaData.class, RETURNS_DEEP_STUBS);
         when(result.getDatabase("foo_db").getSchema("foo_db")).thenReturn(schema);
         when(result.getDatabase("sharding_db").getSchema("sharding_db")).thenReturn(schema);

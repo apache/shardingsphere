@@ -42,7 +42,7 @@ class MixSQLRewriterIT extends SQLRewriterIT {
                 new ShardingSphereColumn("account_id", Types.INTEGER, true, true, "int", false, true, false, false),
                 new ShardingSphereColumn("password", Types.VARCHAR, false, false, "varchar", false, true, false, false),
                 new ShardingSphereColumn("amount", Types.DECIMAL, false, false, "decimal", false, true, false, false),
-                new ShardingSphereColumn("status", Types.TINYINT, false, false, "int", false, false, false, false)),
+                new ShardingSphereColumn("status", Types.TINYINT, false, false, "tinyint", false, false, false, false)),
                 Collections.singletonList(new ShardingSphereIndex("index_name", Collections.emptyList(), false)), Collections.emptyList()));
         tables.add(new ShardingSphereTable("t_account_bak", Arrays.asList(
                 new ShardingSphereColumn("account_id", Types.INTEGER, true, true, "int", false, true, false, false),

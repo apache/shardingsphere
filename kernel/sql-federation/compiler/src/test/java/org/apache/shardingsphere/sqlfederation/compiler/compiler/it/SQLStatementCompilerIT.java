@@ -110,7 +110,7 @@ class SQLStatementCompilerIT {
     
     private ShardingSphereTable createTOrderTableMetaData() {
         ShardingSphereColumn orderIdColumn = new ShardingSphereColumn("order_id", Types.BIGINT, true, false, "bigint", false, true, false, false);
-        ShardingSphereColumn userIdColumn = new ShardingSphereColumn("user_id", Types.INTEGER, false, false, "varchar", false, true, false, false);
+        ShardingSphereColumn userIdColumn = new ShardingSphereColumn("user_id", Types.INTEGER, false, false, "int", false, true, false, false);
         ShardingSphereColumn statusColumn = new ShardingSphereColumn("status", Types.VARCHAR, false, false, "varchar", false, true, false, false);
         ShardingSphereColumn merchantIdColumn = new ShardingSphereColumn("merchant_id", Types.INTEGER, false, false, "int", false, true, false, false);
         ShardingSphereColumn remarkColumn = new ShardingSphereColumn("remark", Types.VARCHAR, false, false, "varchar", false, true, false, false);
