@@ -80,8 +80,15 @@ public final class DefaultDataTypeOption implements DialectDataTypeOption {
         }
     }
     
+    /**
+     * Load user-defined data types from the database.
+     *
+     * @param connection database connection
+     * @return mapping of UDT type name to JDBC type
+     * @throws SQLException SQL exception
+     */
     @Override
-    public Map<String, Integer> loadUDTTypes(Connection connection) throws SQLException {
+    public Map<String, Integer> loadUDTTypes(final Connection connection) throws SQLException {
         return new HashMap<>();
     }
 }

@@ -29,9 +29,6 @@ import org.apache.shardingsphere.proxy.frontend.postgresql.command.PortalContext
 import org.apache.shardingsphere.proxy.frontend.postgresql.command.query.extended.Portal;
 import org.apache.shardingsphere.proxy.frontend.postgresql.command.query.extended.PostgreSQLServerPreparedStatement;
 import org.postgresql.util.PGobject;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Collections;
@@ -43,7 +40,6 @@ import java.util.List;
 @RequiredArgsConstructor
 public final class PostgreSQLComBindExecutor implements CommandExecutor {
     
-    private static final Logger log = LoggerFactory.getLogger(PostgreSQLComBindExecutor.class);
     private final PortalContext portalContext;
     
     private final PostgreSQLComBindPacket packet;

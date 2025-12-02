@@ -61,7 +61,9 @@ class ShowTableMetaDataExecutorTest {
         assertThat(row.getCell(3), is("COLUMN"));
         assertThat(row.getCell(4), is("order_id"));
         assertThat(row.getCell(5),
-                is("{\"name\":\"order_id\",\"dataType\":0,\"primaryKey\":false,\"generated\":false,\"typeName\":\"other\",\"caseSensitive\":false,\"visible\":true,\"unsigned\":false,\"nullable\":false}"));
+                is("{\"name\":\"order_id\",\"dataType\":0,\"primaryKey\":false,\"generated\":false,"
+                        + "\"typeName\":\"other\",\"caseSensitive\":false,\"visible\":true,\"unsigned\":false,"
+                        + "\"nullable\":false}"));
         row = iterator.next();
         assertThat(row.getCell(1), is("foo_db"));
         assertThat(row.getCell(2), is("t_order"));

@@ -117,7 +117,7 @@ public final class PostgreSQLComParseExecutor implements CommandExecutor {
     
     private List<String> paddingTypeNames(final List<PostgreSQLColumnType> paddedColumnTypes) {
         List<String> result = new ArrayList<>(paddedColumnTypes.size());
-        for (PostgreSQLColumnType ignored : paddedColumnTypes) {
+        for (int i = 0; i < paddedColumnTypes.size(); i++) {
             result.add(null);
         }
         return result;

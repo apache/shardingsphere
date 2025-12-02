@@ -20,8 +20,11 @@ package org.apache.shardingsphere.database.connector.postgresql.metadata.databas
 import com.cedarsoftware.util.CaseInsensitiveMap;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.datatype.DefaultDataTypeOption;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.datatype.DialectDataTypeOption;
-
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Types;
 import java.util.Map;
 import java.util.Optional;
 
@@ -49,7 +52,7 @@ public final class PostgreSQLDataTypeOption implements DialectDataTypeOption {
         result.put("REAL", Types.REAL);
         result.put("BOOL", Types.BOOLEAN);
         result.put("CHARACTER VARYING", Types.VARCHAR);
-        result.put("VARBIT", Types.OTHER); // Keep as OTHER but let column type detection handle it
+        result.put("VARBIT", Types.OTHER);
         result.put("BIT VARYING", Types.OTHER);
         return result;
     }
@@ -82,23 +85,30 @@ public final class PostgreSQLDataTypeOption implements DialectDataTypeOption {
         return delegate.isBinaryDataType(sqlType);
     }
     
+    /**
+     * Load user-defined data types from the database.
+     *
+     * @param connection database connection
+     * @return mapping of UDT type name to JDBC type
+     * @throws SQLException SQL exception
+     */
     @Override
-    public Map<String, Integer> loadUDTTypes(Connection connection) throws SQLException {
+    public Map<String, Integer> loadUDTTypes(final Connection connection) throws SQLException {
         Map<String, Integer> result = new CaseInsensitiveMap<>();
         
         String sql =
-                "SELECT\n" +
-                        "    t.typname AS udt_name,\n" +
-                        "    t.typtype AS udt_kind,\n" +
-                        "    n.nspname AS schema_name\n" +
-                        "FROM pg_type t\n" +
-                        "         JOIN pg_namespace n ON n.oid = t.typnamespace\n" +
-                        "         LEFT JOIN pg_class c ON c.oid = t.typrelid\n" +
-                        "WHERE\n" +
-                        "    n.nspname = 'public'\n" +
-                        "  AND t.typtype IN ('c', 'e', 'd')  \n" +
-                        "  AND (c.relkind IS NULL OR c.relkind = 'c')  \n" +
-                        "ORDER BY udt_name;";
+                "SELECT\n"
+                        + "    t.typname AS udt_name,\n"
+                        + "    t.typtype AS udt_kind,\n"
+                        + "    n.nspname AS schema_name\n"
+                        + "FROM pg_type t\n"
+                        + "         JOIN pg_namespace n ON n.oid = t.typnamespace\n"
+                        + "         LEFT JOIN pg_class c ON c.oid = t.typrelid\n"
+                        + "WHERE\n"
+                        + "    n.nspname = 'public'\n"
+                        + "  AND t.typtype IN ('c', 'e', 'd')\n"
+                        + "  AND (c.relkind IS NULL OR c.relkind = 'c')\n"
+                        + "ORDER BY udt_name;";
         
         try (
                 PreparedStatement ps = connection.prepareStatement(sql);
