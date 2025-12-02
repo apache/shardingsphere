@@ -53,7 +53,9 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Set;
+import java.util.TreeSet;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.stream.Collectors;
 
 /**
  * Route SQL rewrite engine.
@@ -144,15 +146,13 @@ public final class RouteSQLRewriteEngine {
             return Collections.emptyList();
         }
         ParameterBuilder parameterBuilder = sqlRewriteContext.getParameterBuilder();
-        List<Object> originalParameters;
         if (parameterBuilder instanceof StandardParameterBuilder) {
-            originalParameters = parameterBuilder.getParameters();
+            return filterParametersIfNeeded(sqlRewriteContext, parameterBuilder.getParameters(), routeUnit);
         } else {
-            originalParameters = routeContext.getOriginalDataNodes().isEmpty()
+            return routeContext.getOriginalDataNodes().isEmpty()
                     ? ((GroupedParameterBuilder) parameterBuilder).getParameters()
                     : buildRouteParameters((GroupedParameterBuilder) parameterBuilder, routeContext, routeUnit);
         }
-        return filterParametersIfNeeded(sqlRewriteContext, originalParameters, routeUnit);
     }
     
     private List<Object> buildRouteParameters(final GroupedParameterBuilder paramBuilder, final RouteContext routeContext, final RouteUnit routeUnit) {
@@ -204,7 +204,9 @@ public final class RouteSQLRewriteEngine {
      * @param routeUnit route unit
      * @return filtered parameter list
      */
-    private List<Object> filterParametersIfNeeded(final SQLRewriteContext sqlRewriteContext, final List<Object> originalParameters, final RouteUnit routeUnit) {
+    private List<Object> filterParametersIfNeeded(final SQLRewriteContext sqlRewriteContext,
+                                                  final List<Object> originalParameters,
+                                                  final RouteUnit routeUnit) {
         List<ParameterFilterable> filterableTokens = findParameterFilterableTokens(sqlRewriteContext.getSqlTokens());
         if (filterableTokens.isEmpty()) {
             return originalParameters;
@@ -218,14 +220,12 @@ public final class RouteSQLRewriteEngine {
      * @param sqlTokens SQL tokens
      * @return list of ParameterFilterable tokens
      */
-    private List<ParameterFilterable> findParameterFilterableTokens(final Collection<SQLToken> sqlTokens) {
-        List<ParameterFilterable> result = new LinkedList<>();
-        for (SQLToken each : sqlTokens) {
-            if (each instanceof ParameterFilterable && ((ParameterFilterable) each).isParameterFilterable()) {
-                result.add((ParameterFilterable) each);
-            }
-        }
-        return result;
+    private List<ParameterFilterable> findParameterFilterableTokens(final List<SQLToken> sqlTokens) {
+        return sqlTokens.stream()
+                .filter(token -> token instanceof ParameterFilterable)
+                .map(token -> (ParameterFilterable) token)
+                .filter(ParameterFilterable::isParameterFilterable)
+                .collect(Collectors.toList());
     }
     
     /**
@@ -236,18 +236,18 @@ public final class RouteSQLRewriteEngine {
      * @param routeUnit route unit
      * @return filtered parameter list
      */
-    private List<Object> applyParameterFiltering(final List<Object> originalParameters, final List<ParameterFilterable> filterableTokens, final RouteUnit routeUnit) {
-        Set<Integer> removedIndices = new HashSet<>();
-        for (ParameterFilterable each : filterableTokens) {
-            removedIndices.addAll(each.getRemovedParameterIndices(routeUnit));
+    private List<Object> applyParameterFiltering(final List<Object> originalParameters,
+                                                 final List<ParameterFilterable> filterableTokens,
+                                                 final RouteUnit routeUnit) {
+        Set<Integer> allRemovedIndices = new TreeSet<>(Collections.reverseOrder());
+        for (ParameterFilterable filterable : filterableTokens) {
+            Set<Integer> removedIndices = filterable.getRemovedParameterIndices(routeUnit);
+            allRemovedIndices.addAll(removedIndices);
         }
-        if (removedIndices.isEmpty()) {
-            return originalParameters;
-        }
-        List<Object> result = new ArrayList<>(originalParameters.size() - removedIndices.size());
-        for (int i = 0; i < originalParameters.size(); i++) {
-            if (!removedIndices.contains(i)) {
-                result.add(originalParameters.get(i));
+        List<Object> result = new ArrayList<>(originalParameters);
+        for (Integer index : allRemovedIndices) {
+            if (index >= 0 && index < result.size()) {
+                result.remove(index.intValue());
             }
         }
         return result;
