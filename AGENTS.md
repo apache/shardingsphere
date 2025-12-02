@@ -196,7 +196,9 @@ Always state which topology, registry, and engine versions (e.g., MySQL 5.7 vs 8
 - Highlight remaining risks or follow-ups and keep ASCII-only output unless non-ASCII already existed.
 
 ## Tooling & Testing Essentials
-- **Go-to commands:** `./mvnw clean install -B -T1C -Pcheck` (full build), `./mvnw test -pl <module>[-am]` (scoped unit tests), `./mvnw spotless:apply -Pcheck [-pl <module>]` (format), `./mvnw -pl <module> -DskipITs -Dspotless.skip=true -Dtest=ClassName test` (fast verification), `./mvnw test jacoco:check@jacoco-check -Pcoverage-check` (coverage gate), and `./mvnw -pl proxy -am -DskipTests package` (proxy packaging/perf smoke).
+- **Go-to commands:** `./mvnw clean install -B -T1C -Pcheck` (full build), `./mvnw test -pl <module>[-am]` (scoped unit tests), `./mvnw spotless:apply -Pcheck [-pl <module>]` (format), `./mvnw -pl <module> -DskipITs -Dspotless.skip=true -Dtest=ClassName test` (fast verification), and `./mvnw -pl proxy -am -DskipTests package` (proxy packaging/perf smoke).
+- **Coverage verification:** before finishing any task that adds or changes tests, run the coverage check (e.g., `./mvnw test jacoco:check@jacoco-check -Pcoverage-check` or scoped `-pl <module> -am`) and explicitly confirm whether the targeted code reaches 100% when required.
+- **Checkstyle command:** run `./mvnw checkstyle:check -Pcheck` (or with `-pl <module> -am -Pcheck` for scoped runs) unless explicitly instructed otherwise.
 - **Testing ground rules:** JUnit 5 + Mockito, `ClassNameTest` naming, Arrange–Act–Assert structure, mocks for databases/time/network, reset static caches between cases, and prefer existing swapper/helpers for complex configs.
 - **Coverage discipline:** run Jacoco (`./mvnw -pl <module> -am -Djacoco.skip=false test jacoco:report`) when coverage is in question; describe any uncovered branches with file/line reasoning.
 - **Branch-focused work:** when asked for “minimal branch coverage” or similar, list every branch upfront, map each to a single test, and document unreachable code explicitly instead of adding redundant cases.
