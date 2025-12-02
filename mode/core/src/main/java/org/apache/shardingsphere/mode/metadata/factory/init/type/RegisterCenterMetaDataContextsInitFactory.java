@@ -65,7 +65,6 @@ public final class RegisterCenterMetaDataContextsInitFactory extends MetaDataCon
     @Override
     public MetaDataContexts create(final ContextManagerBuilderParameter param) throws SQLException {
         Map<String, DatabaseConfiguration> effectiveDatabaseConfigs = createEffectiveDatabaseConfigurations(getDatabaseNames(param.getDatabaseConfigs()), param.getDatabaseConfigs());
-        Collection<RuleConfiguration> globalRuleConfigs = persistFacade.getGlobalRuleService().load();
         // TODO load global data sources from persist service
         Map<String, DataSource> globalDataSources = param.getGlobalDataSources();
         ConfigurationProperties props = new ConfigurationProperties(persistFacade.getPropsService().load());
@@ -84,7 +83,7 @@ public final class RegisterCenterMetaDataContextsInitFactory extends MetaDataCon
                                 schema.getAllViews().forEach(targetSchema::putView);
                             }));
         }
-        return create(globalRuleConfigs, globalDataSources, databases, props, persistFacade);
+        return create(persistFacade.getGlobalRuleService().load(), globalDataSources, databases, props, persistFacade);
     }
     
     private Collection<String> getDatabaseNames(final Map<String, DatabaseConfiguration> databaseConfigs) {
