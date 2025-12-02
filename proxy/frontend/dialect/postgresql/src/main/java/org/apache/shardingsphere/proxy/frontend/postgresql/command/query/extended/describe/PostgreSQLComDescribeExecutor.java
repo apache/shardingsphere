@@ -199,7 +199,7 @@ public final class PostgreSQLComDescribeExecutor implements CommandExecutor {
         }
         return new PostgreSQLRowDescriptionPacket(result);
     }
-
+    
     private ShardingSphereColumn generateDefaultColumn(final ColumnProjectionSegment segment) {
         return new ShardingSphereColumn(segment.getColumn().getIdentifier().getValue(), Types.VARCHAR, false, false, "varchar", false, true, false, false);
     }

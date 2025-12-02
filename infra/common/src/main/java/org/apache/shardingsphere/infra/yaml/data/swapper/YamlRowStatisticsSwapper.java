@@ -89,4 +89,3 @@ public final class YamlRowStatisticsSwapper implements YamlConfigurationSwapper<
         return data;
     }
 }
-

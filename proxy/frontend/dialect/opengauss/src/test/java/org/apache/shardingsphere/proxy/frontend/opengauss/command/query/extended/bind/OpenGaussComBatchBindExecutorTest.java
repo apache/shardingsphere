@@ -89,7 +89,7 @@ class OpenGaussComBatchBindExecutorTest {
         when(sqlStatementContext.getSqlStatement()).thenReturn(sqlStatement);
         ConnectionSession connectionSession = mockConnectionSession();
         PostgreSQLServerPreparedStatement serverPreparedStatement = new PostgreSQLServerPreparedStatement(
-                sql, sqlStatementContext, new HintValueContext(), Collections.emptyList(),Collections.emptyList(), Collections.emptyList());
+                sql, sqlStatementContext, new HintValueContext(), Collections.emptyList(), Collections.emptyList(), Collections.emptyList());
         connectionSession.getServerPreparedStatementRegistry().addPreparedStatement(statement, serverPreparedStatement);
         ContextManager contextManager = mockContextManager();
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
@@ -154,7 +154,8 @@ class OpenGaussComBatchBindExecutorTest {
         when(result.getRuleMetaData()).thenReturn(new RuleMetaData(Collections.emptyList()));
         when(result.containsSchema("public")).thenReturn(true);
         when(result.getSchema("public").containsTable("bmsql")).thenReturn(true);
-        when(result.getSchema("public").getTable("bmsql").getAllColumns()).thenReturn(Collections.singleton(new ShardingSphereColumn("id", Types.VARCHAR, false, false, false, true, false, false)));
+        when(result.getSchema("public").getTable("bmsql").getAllColumns())
+                .thenReturn(Collections.singleton(new ShardingSphereColumn("id", Types.VARCHAR, false, false, "varchar", false, true, false, false)));
         return result;
     }
 }

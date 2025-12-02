@@ -97,7 +97,7 @@ class MySQLQueryHeaderBuilderTest {
     
     private ShardingSphereDatabase createDatabase() {
         ShardingSphereDatabase result = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
-        ShardingSphereColumn column = new ShardingSphereColumn("order_id", Types.INTEGER, true, false,"int", false, true, false, false);
+        ShardingSphereColumn column = new ShardingSphereColumn("order_id", Types.INTEGER, true, false, "int", false, true, false, false);
         ShardingSphereSchema schema = mock(ShardingSphereSchema.class);
         when(schema.getTable("t_logic_order")).thenReturn(new ShardingSphereTable(
                 "t_logic_order", Collections.singleton(column), Collections.singleton(new ShardingSphereIndex("order_id", Collections.emptyList(), false)), Collections.emptyList()));

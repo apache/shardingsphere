@@ -57,7 +57,7 @@ public final class OpenGaussDataTypeOption implements DialectDataTypeOption {
     public boolean isBinaryDataType(final int sqlType) {
         return delegate.isBinaryDataType(sqlType);
     }
-
+    
     @Override
     public Map<String, Integer> loadUDTTypes(Connection connection) throws SQLException {
         return new HashMap<>();

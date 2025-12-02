@@ -126,25 +126,25 @@ class ShardingRouteCacheableCheckerTest {
     private ShardingSphereDatabase createDatabase(final ShardingRule shardingRule, final TimestampServiceRule timestampServiceRule) {
         ShardingSphereSchema schema = new ShardingSphereSchema(SCHEMA_NAME);
         schema.putTable(new ShardingSphereTable("t_warehouse", Arrays.asList(
-                new ShardingSphereColumn("id", Types.INTEGER, true, false,"int", false, true, false, false),
-                new ShardingSphereColumn("warehouse_name", Types.VARCHAR, false, false,"varchar", false, true, false, false)),
+                new ShardingSphereColumn("id", Types.INTEGER, true, false, "int", false, true, false, false),
+                new ShardingSphereColumn("warehouse_name", Types.VARCHAR, false, false, "varchar", false, true, false, false)),
                 Collections.emptyList(), Collections.emptyList()));
         schema.putTable(new ShardingSphereTable("t_order", Arrays.asList(
-                new ShardingSphereColumn("warehouse_id", Types.INTEGER, false, false,"int", false, true, false, false),
-                new ShardingSphereColumn("order_id", Types.INTEGER, true, false,"int", false, true, false, false)),
+                new ShardingSphereColumn("warehouse_id", Types.INTEGER, false, false, "int", false, true, false, false),
+                new ShardingSphereColumn("order_id", Types.INTEGER, true, false, "int", false, true, false, false)),
                 Collections.emptyList(), Collections.emptyList()));
         schema.putTable(new ShardingSphereTable("t_order_item", Arrays.asList(
-                new ShardingSphereColumn("warehouse_id", Types.INTEGER, false, false,"int", false, true, false, false),
-                new ShardingSphereColumn("order_broadcast_table_id", Types.INTEGER, true, false,"int", false, true, false, false)),
+                new ShardingSphereColumn("warehouse_id", Types.INTEGER, false, false, "int", false, true, false, false),
+                new ShardingSphereColumn("order_broadcast_table_id", Types.INTEGER, true, false, "int", false, true, false, false)),
                 Collections.emptyList(), Collections.emptyList()));
         schema.putTable(new ShardingSphereTable("t_non_sharding_table", Collections.singleton(
-                new ShardingSphereColumn("id", Types.INTEGER, false, false,"int", false, true, false, false)),
+                new ShardingSphereColumn("id", Types.INTEGER, false, false, "int", false, true, false, false)),
                 Collections.emptyList(), Collections.emptyList()));
         schema.putTable(new ShardingSphereTable("t_non_cacheable_database_sharding", Collections.singleton(
-                new ShardingSphereColumn("id", Types.INTEGER, false, false,"int", false, true, false, false)),
+                new ShardingSphereColumn("id", Types.INTEGER, false, false, "int", false, true, false, false)),
                 Collections.emptyList(), Collections.emptyList()));
         schema.putTable(new ShardingSphereTable("t_non_cacheable_table_sharding", Collections.singleton(
-                new ShardingSphereColumn("id", Types.INTEGER, false, false,"int", false, true, false, false)),
+                new ShardingSphereColumn("id", Types.INTEGER, false, false, "int", false, true, false, false)),
                 Collections.emptyList(), Collections.emptyList()));
         return new ShardingSphereDatabase(DATABASE_NAME, databaseType,
                 new ResourceMetaData(Collections.emptyMap()), new RuleMetaData(Arrays.asList(shardingRule, timestampServiceRule)), Collections.singleton(schema));

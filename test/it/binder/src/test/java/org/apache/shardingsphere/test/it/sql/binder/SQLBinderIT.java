@@ -105,69 +105,69 @@ public abstract class SQLBinderIT {
     private Collection<ShardingSphereTable> mockFooDB1Tables() {
         Collection<ShardingSphereTable> result = new LinkedList<>();
         result.add(new ShardingSphereTable("t_order", Arrays.asList(
-                new ShardingSphereColumn("order_id", Types.BIGINT, true, false,"bigint", false, true, false, false),
-                new ShardingSphereColumn("user_id", Types.INTEGER, false, false,"int", false, true, false, false),
-                new ShardingSphereColumn("status", Types.VARCHAR, false, false,"varchar", false, true, false, false),
-                new ShardingSphereColumn("merchant_id", Types.INTEGER, false, false,"int", false, true, false, true),
-                new ShardingSphereColumn("remark", Types.VARCHAR, false, false,"varchar", false, true, false, false),
-                new ShardingSphereColumn("creation_date", Types.DATE, false, false,"date", false, true, false, false)),
+                new ShardingSphereColumn("order_id", Types.BIGINT, true, false, "bigint", false, true, false, false),
+                new ShardingSphereColumn("user_id", Types.INTEGER, false, false, "int", false, true, false, false),
+                new ShardingSphereColumn("status", Types.VARCHAR, false, false, "varchar", false, true, false, false),
+                new ShardingSphereColumn("merchant_id", Types.INTEGER, false, false, "int", false, true, false, true),
+                new ShardingSphereColumn("remark", Types.VARCHAR, false, false, "varchar", false, true, false, false),
+                new ShardingSphereColumn("creation_date", Types.DATE, false, false, "date", false, true, false, false)),
                 Collections.singletonList(new ShardingSphereIndex("idx_user_id", Collections.singletonList("user_id"), false)), Collections.emptyList()));
         result.add(new ShardingSphereTable("t_order_item", Arrays.asList(
-                new ShardingSphereColumn("item_id", Types.BIGINT, true, false,"bigint", false, true, false, false),
-                new ShardingSphereColumn("order_id", Types.BIGINT, false, false,"bigint", false, true, false, false),
-                new ShardingSphereColumn("user_id", Types.INTEGER, false, false,"int", false, true, false, false),
-                new ShardingSphereColumn("product_id", Types.INTEGER, false, false,"int", false, true, false, false),
-                new ShardingSphereColumn("quantity", Types.INTEGER, false, false,"int", false, true, false, false),
-                new ShardingSphereColumn("creation_date", Types.DATE, false, false,"date", false, true, false, false)), Collections.emptyList(), Collections.emptyList()));
+                new ShardingSphereColumn("item_id", Types.BIGINT, true, false, "bigint", false, true, false, false),
+                new ShardingSphereColumn("order_id", Types.BIGINT, false, false, "bigint", false, true, false, false),
+                new ShardingSphereColumn("user_id", Types.INTEGER, false, false, "int", false, true, false, false),
+                new ShardingSphereColumn("product_id", Types.INTEGER, false, false, "int", false, true, false, false),
+                new ShardingSphereColumn("quantity", Types.INTEGER, false, false, "int", false, true, false, false),
+                new ShardingSphereColumn("creation_date", Types.DATE, false, false, "date", false, true, false, false)), Collections.emptyList(), Collections.emptyList()));
         result.add(new ShardingSphereTable("t_user", Arrays.asList(
-                new ShardingSphereColumn("user_id", Types.INTEGER, true, false,"int", false, true, false, false),
-                new ShardingSphereColumn("user_name", Types.VARCHAR, false, false,"varchar", false, true, false, false),
-                new ShardingSphereColumn("password", Types.VARCHAR, false, false,"varchar", false, true, false, false),
-                new ShardingSphereColumn("email", Types.VARCHAR, false, false,"varchar", false, true, false, false),
-                new ShardingSphereColumn("telephone", Types.CHAR, false, false,"char", false, true, false, false),
-                new ShardingSphereColumn("creation_date", Types.DATE, false, false,"date", false, true, false, false)), Collections.emptyList(), Collections.emptyList()));
+                new ShardingSphereColumn("user_id", Types.INTEGER, true, false, "int", false, true, false, false),
+                new ShardingSphereColumn("user_name", Types.VARCHAR, false, false, "varchar", false, true, false, false),
+                new ShardingSphereColumn("password", Types.VARCHAR, false, false, "varchar", false, true, false, false),
+                new ShardingSphereColumn("email", Types.VARCHAR, false, false, "varchar", false, true, false, false),
+                new ShardingSphereColumn("telephone", Types.CHAR, false, false, "char", false, true, false, false),
+                new ShardingSphereColumn("creation_date", Types.DATE, false, false, "date", false, true, false, false)), Collections.emptyList(), Collections.emptyList()));
         result.add(new ShardingSphereTable("t_merchant", Arrays.asList(
-                new ShardingSphereColumn("merchant_id", Types.INTEGER, true, false,"int", false, true, false, false),
-                new ShardingSphereColumn("country_id", Types.SMALLINT, false, false,"smallint", false, true, false, false),
-                new ShardingSphereColumn("merchant_name", Types.VARCHAR, false, false,"varchar", false, true, false, false),
-                new ShardingSphereColumn("business_code", Types.VARCHAR, false, false,"varchar", false, true, false, false),
-                new ShardingSphereColumn("telephone", Types.CHAR, false, false,"char", false, true, false, false),
-                new ShardingSphereColumn("creation_date", Types.DATE, false, false,"date", false, true, false, false)), Collections.emptyList(), Collections.emptyList()));
+                new ShardingSphereColumn("merchant_id", Types.INTEGER, true, false, "int", false, true, false, false),
+                new ShardingSphereColumn("country_id", Types.SMALLINT, false, false, "smallint", false, true, false, false),
+                new ShardingSphereColumn("merchant_name", Types.VARCHAR, false, false, "varchar", false, true, false, false),
+                new ShardingSphereColumn("business_code", Types.VARCHAR, false, false, "varchar", false, true, false, false),
+                new ShardingSphereColumn("telephone", Types.CHAR, false, false, "char", false, true, false, false),
+                new ShardingSphereColumn("creation_date", Types.DATE, false, false, "date", false, true, false, false)), Collections.emptyList(), Collections.emptyList()));
         result.add(new ShardingSphereTable("t_order_view", Arrays.asList(
-                new ShardingSphereColumn("order_id", Types.BIGINT, true, false,"bigint", false, true, false, false),
-                new ShardingSphereColumn("user_id", Types.INTEGER, false, false,"int", false, true, false, false),
-                new ShardingSphereColumn("status", Types.VARCHAR, false, false,"varchar", false, true, false, false),
-                new ShardingSphereColumn("merchant_id", Types.INTEGER, false, false,"int", false, true, false, true),
-                new ShardingSphereColumn("remark", Types.VARCHAR, false, false,"varchar", false, true, false, false),
-                new ShardingSphereColumn("creation_date", Types.DATE, false, false,"date", false, true, false, false)), Collections.emptyList(), Collections.emptyList()));
+                new ShardingSphereColumn("order_id", Types.BIGINT, true, false, "bigint", false, true, false, false),
+                new ShardingSphereColumn("user_id", Types.INTEGER, false, false, "int", false, true, false, false),
+                new ShardingSphereColumn("status", Types.VARCHAR, false, false, "varchar", false, true, false, false),
+                new ShardingSphereColumn("merchant_id", Types.INTEGER, false, false, "int", false, true, false, true),
+                new ShardingSphereColumn("remark", Types.VARCHAR, false, false, "varchar", false, true, false, false),
+                new ShardingSphereColumn("creation_date", Types.DATE, false, false, "date", false, true, false, false)), Collections.emptyList(), Collections.emptyList()));
         return result;
     }
     
     private Collection<ShardingSphereTable> mockFooDB2Tables() {
         Collection<ShardingSphereTable> result = new LinkedList<>();
         result.add(new ShardingSphereTable("t_product", Arrays.asList(
-                new ShardingSphereColumn("product_id", Types.INTEGER, true, false,"int", false, true, false, false),
-                new ShardingSphereColumn("product_name", Types.VARCHAR, false, false,"varchar", false, true, false, false),
-                new ShardingSphereColumn("category_id", Types.INTEGER, false, false,"int", false, true, false, false),
-                new ShardingSphereColumn("price", Types.DECIMAL, false, false,"decimal", false, true, false, true),
-                new ShardingSphereColumn("status", Types.VARCHAR, false, false,"varchar", false, true, false, false),
-                new ShardingSphereColumn("creation_date", Types.DATE, false, false,"date", false, true, false, false)), Collections.emptyList(), Collections.emptyList()));
+                new ShardingSphereColumn("product_id", Types.INTEGER, true, false, "int", false, true, false, false),
+                new ShardingSphereColumn("product_name", Types.VARCHAR, false, false, "varchar", false, true, false, false),
+                new ShardingSphereColumn("category_id", Types.INTEGER, false, false, "int", false, true, false, false),
+                new ShardingSphereColumn("price", Types.DECIMAL, false, false, "decimal", false, true, false, true),
+                new ShardingSphereColumn("status", Types.VARCHAR, false, false, "varchar", false, true, false, false),
+                new ShardingSphereColumn("creation_date", Types.DATE, false, false, "date", false, true, false, false)), Collections.emptyList(), Collections.emptyList()));
         result.add(new ShardingSphereTable("t_product_detail", Arrays.asList(
-                new ShardingSphereColumn("detail_id", Types.INTEGER, true, false,"int", false, true, false, false),
-                new ShardingSphereColumn("product_id", Types.INTEGER, false, false,"int", false, true, false, false),
-                new ShardingSphereColumn("description", Types.VARCHAR, false, false,"varchar", false, true, false, false),
-                new ShardingSphereColumn("creation_date", Types.DATE, false, false,"date", false, true, false, false)), Collections.emptyList(), Collections.emptyList()));
+                new ShardingSphereColumn("detail_id", Types.INTEGER, true, false, "int", false, true, false, false),
+                new ShardingSphereColumn("product_id", Types.INTEGER, false, false, "int", false, true, false, false),
+                new ShardingSphereColumn("description", Types.VARCHAR, false, false, "varchar", false, true, false, false),
+                new ShardingSphereColumn("creation_date", Types.DATE, false, false, "date", false, true, false, false)), Collections.emptyList(), Collections.emptyList()));
         result.add(new ShardingSphereTable("t_product_category", Arrays.asList(
-                new ShardingSphereColumn("category_id", Types.INTEGER, true, false,"int", false, true, false, false),
-                new ShardingSphereColumn("category_name", Types.VARCHAR, false, false,"varchar", false, true, false, false),
-                new ShardingSphereColumn("parent_id", Types.INTEGER, false, false,"int", false, true, false, false),
-                new ShardingSphereColumn("level", Types.TINYINT, false, false,"tinyint", false, true, false, false),
-                new ShardingSphereColumn("creation_date", Types.DATE, false, false,"date", false, true, false, false)), Collections.emptyList(), Collections.emptyList()));
+                new ShardingSphereColumn("category_id", Types.INTEGER, true, false, "int", false, true, false, false),
+                new ShardingSphereColumn("category_name", Types.VARCHAR, false, false, "varchar", false, true, false, false),
+                new ShardingSphereColumn("parent_id", Types.INTEGER, false, false, "int", false, true, false, false),
+                new ShardingSphereColumn("level", Types.TINYINT, false, false, "tinyint", false, true, false, false),
+                new ShardingSphereColumn("creation_date", Types.DATE, false, false, "date", false, true, false, false)), Collections.emptyList(), Collections.emptyList()));
         result.add(new ShardingSphereTable("t_country", Arrays.asList(
-                new ShardingSphereColumn("country_id", Types.SMALLINT, true, false,"smallint", false, true, false, false),
-                new ShardingSphereColumn("country_name", Types.VARCHAR, false, false,"varchar", false, true, false, true),
-                new ShardingSphereColumn("continent_name", Types.VARCHAR, false, false,"varchar", false, true, false, true),
-                new ShardingSphereColumn("creation_date", Types.DATE, false, false,"date", false, true, false, false)), Collections.emptyList(), Collections.emptyList()));
+                new ShardingSphereColumn("country_id", Types.SMALLINT, true, false, "smallint", false, true, false, false),
+                new ShardingSphereColumn("country_name", Types.VARCHAR, false, false, "varchar", false, true, false, true),
+                new ShardingSphereColumn("continent_name", Types.VARCHAR, false, false, "varchar", false, true, false, true),
+                new ShardingSphereColumn("creation_date", Types.DATE, false, false, "date", false, true, false, false)), Collections.emptyList(), Collections.emptyList()));
         return result;
     }
     
