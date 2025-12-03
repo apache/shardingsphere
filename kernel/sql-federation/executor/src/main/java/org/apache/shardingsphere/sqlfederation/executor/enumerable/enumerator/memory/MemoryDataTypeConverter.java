@@ -32,7 +32,7 @@ import java.util.Map;
 import java.util.Optional;
 
 /**
- * Enumerator utilities.
+ * Memory data type converter.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class MemoryDataTypeConverter {
