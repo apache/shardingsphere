@@ -59,7 +59,7 @@ class MemoryDataTypeConverterTest {
     @Test
     void assertConvertToTargetTypeConvertsAndLeavesMissingIndexNull() {
         Map<Integer, Class<?>> columnTypes = Collections.singletonMap(0, Integer.class);
-        Object[] rows = new Object[] {"10", "unused"};
+        Object[] rows = new Object[]{"10", "unused"};
         try (MockedStatic<ResultSetUtils> mockedStatic = mockStatic(ResultSetUtils.class)) {
             mockedStatic.when(() -> ResultSetUtils.convertValue("10", Integer.class)).thenReturn(10);
             Object[] actual = MemoryDataTypeConverter.convertToTargetType(columnTypes, rows);
@@ -72,7 +72,7 @@ class MemoryDataTypeConverterTest {
     @Test
     void assertConvertToTargetTypeReturnsOriginalWhenConversionFails() {
         Map<Integer, Class<?>> columnTypes = Collections.singletonMap(0, Integer.class);
-        Object[] rows = new Object[] {"bad"};
+        Object[] rows = new Object[]{"bad"};
         try (MockedStatic<ResultSetUtils> mockedStatic = mockStatic(ResultSetUtils.class)) {
             mockedStatic.when(() -> ResultSetUtils.convertValue("bad", Integer.class)).thenThrow(new SQLFeatureNotSupportedException("unsupported"));
             Object[] actual = MemoryDataTypeConverter.convertToTargetType(columnTypes, rows);
