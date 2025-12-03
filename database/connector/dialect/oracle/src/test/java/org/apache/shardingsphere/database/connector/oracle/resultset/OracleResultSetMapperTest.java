@@ -23,11 +23,8 @@ import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Answers;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.mockito.junit.jupiter.MockitoSettings;
-import org.mockito.quality.Strictness;
 
 import java.sql.Date;
 import java.sql.ResultSet;
@@ -39,16 +36,11 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-@MockitoSettings(strictness = Strictness.LENIENT)
 class OracleResultSetMapperTest {
-    
-    private static final int ORACLE_TIMESTAMP_WITH_TIME_ZONE = -101;
-    
-    private static final int ORACLE_TIMESTAMP_WITH_LOCAL_TIME_ZONE = -102;
     
     private final DialectResultSetMapper dialectResultSetMapper = DatabaseTypedSPILoader.getService(DialectResultSetMapper.class, TypedSPILoader.getService(DatabaseType.class, "Oracle"));
     
-    @Mock(answer = Answers.RETURNS_DEEP_STUBS)
+    @Mock
     private ResultSet resultSet;
     
     @Test
@@ -67,14 +59,14 @@ class OracleResultSetMapperTest {
     void assertGetDefaultValueWithOracleTimestampWithTimeZone() throws SQLException {
         Timestamp expected = new Timestamp(System.currentTimeMillis());
         when(resultSet.getTimestamp(1)).thenReturn(expected);
-        assertThat(dialectResultSetMapper.getDefaultValue(resultSet, 1, ORACLE_TIMESTAMP_WITH_TIME_ZONE), is(expected));
+        assertThat(dialectResultSetMapper.getDefaultValue(resultSet, 1, -101), is(expected));
     }
     
     @Test
     void assertGetDefaultValueWithOracleTimestampWithLocalTimeZone() throws SQLException {
         Timestamp expected = new Timestamp(System.currentTimeMillis());
         when(resultSet.getTimestamp(1)).thenReturn(expected);
-        assertThat(dialectResultSetMapper.getDefaultValue(resultSet, 1, ORACLE_TIMESTAMP_WITH_LOCAL_TIME_ZONE), is(expected));
+        assertThat(dialectResultSetMapper.getDefaultValue(resultSet, 1, -102), is(expected));
     }
     
     @Test

@@ -51,10 +51,7 @@ public final class OracleResultSetMapper implements DialectResultSetMapper {
     
     @Override
     public Object getDefaultValue(final ResultSet resultSet, final int columnIndex, final int columnType) throws SQLException {
-        if (isOracleTimestampWithTimeZone(columnType)) {
-            return resultSet.getTimestamp(columnIndex);
-        }
-        return resultSet.getObject(columnIndex);
+        return isOracleTimestampWithTimeZone(columnType) ? resultSet.getTimestamp(columnIndex) : resultSet.getObject(columnIndex);
     }
     
     private boolean isOracleTimestampWithTimeZone(final int columnType) {
