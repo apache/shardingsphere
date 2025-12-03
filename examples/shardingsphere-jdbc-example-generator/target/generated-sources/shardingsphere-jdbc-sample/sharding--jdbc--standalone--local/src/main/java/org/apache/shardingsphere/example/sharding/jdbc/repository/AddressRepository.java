@@ -28,27 +28,14 @@ import java.sql.Statement;
 import java.util.LinkedList;
 import java.util.List;
 
-/**
- * address仓库。
- */
 public final class AddressRepository {
-    /**
-     * 数据源
-     */
+    
     private final DataSource dataSource;
-
-    /**
-     * 初始化函数。
-     * @param dataSource
-     */
+    
     public AddressRepository(final DataSource dataSource) {
         this.dataSource = dataSource;
     }
-
-    /**
-     * 建表语句。
-     * @throws SQLException
-     */
+    
     public void createTableIfNotExists() throws SQLException {
         String sql = "CREATE TABLE IF NOT EXISTS t_address (address_id BIGINT NOT NULL, address_name VARCHAR(100) NOT NULL, PRIMARY KEY (address_id))";
         try (Connection connection = dataSource.getConnection();
@@ -56,11 +43,7 @@ public final class AddressRepository {
             statement.executeUpdate(sql);
         }
     }
-
-    /**
-     * 删除语句。
-     * @throws SQLException
-     */
+    
     public void dropTable() throws SQLException {
         String sql = "DROP TABLE IF EXISTS t_address";
         try (Connection connection = dataSource.getConnection();
@@ -68,11 +51,7 @@ public final class AddressRepository {
             statement.executeUpdate(sql);
         }
     }
-
-    /**
-     * 表清除语句。
-     * @throws SQLException
-     */
+    
     public void truncateTable() throws SQLException {
         String sql = "TRUNCATE TABLE t_address";
         try (Connection connection = dataSource.getConnection();
@@ -80,13 +59,7 @@ public final class AddressRepository {
             statement.executeUpdate(sql);
         }
     }
-
-    /**
-     * 表插入语句。
-     * @param address
-     * @return
-     * @throws SQLException
-     */
+    
     public Long insert(final Address address) throws SQLException {
         String sql = "INSERT INTO t_address (address_id, address_name) VALUES (?, ?)";
         try (Connection connection = dataSource.getConnection();
@@ -97,12 +70,7 @@ public final class AddressRepository {
         }
         return address.getAddressId();
     }
-
-    /**
-     * 表删除语句。
-     * @param id
-     * @throws SQLException
-     */
+    
     public void delete(final Long id) throws SQLException {
         String sql = "DELETE FROM t_address WHERE address_id=?";
         try (Connection connection = dataSource.getConnection();
@@ -111,12 +79,7 @@ public final class AddressRepository {
             preparedStatement.executeUpdate();
         }
     }
-
-    /**
-     * 查询表中全部行。
-     * @return
-     * @throws SQLException
-     */
+    
     public List<Address> selectAll() throws SQLException {
         String sql = "SELECT * FROM t_address";
         List<Address> result = new LinkedList<>();

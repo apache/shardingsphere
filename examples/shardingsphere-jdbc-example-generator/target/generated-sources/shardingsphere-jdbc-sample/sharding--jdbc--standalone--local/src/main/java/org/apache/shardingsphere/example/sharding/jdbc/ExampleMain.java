@@ -26,13 +26,9 @@ import java.sql.SQLException;
 public final class ExampleMain {
     
     public static void main(final String[] args) throws SQLException {
-        //创建一个配置对象。
         Configuration config = new Configuration();
-        //创建数据源。
         DataSource dataSource = config.createDataSource();
-        //创建服务实例。
         ExampleService exampleService = new ExampleService(dataSource);
-        //执行测试。
         exampleService.run();
     }
 }

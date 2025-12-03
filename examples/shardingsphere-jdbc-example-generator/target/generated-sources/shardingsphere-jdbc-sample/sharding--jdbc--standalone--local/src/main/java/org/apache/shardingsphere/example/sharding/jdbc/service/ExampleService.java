@@ -40,36 +40,22 @@ public final class ExampleService {
     private final OrderItemRepository orderItemRepository;
     
     private final AddressRepository addressRepository;
-
-    /**
-     * 构造函数， 创建三个仓库的实例对象。
-     * @param dataSource
-     */
+    
     public ExampleService(final DataSource dataSource) {
         orderRepository = new OrderRepository(dataSource);
         orderItemRepository = new OrderItemRepository(dataSource);
         addressRepository = new AddressRepository(dataSource);
     }
-
-    /**
-     * 运行测试程序。
-     * @throws SQLException
-     */
+    
     public void run() throws SQLException {
         try {
-            //环境初始化。
             this.initEnvironment();
-            //执行测试。
             this.processSuccess();
         } finally {
-            //this.cleanEnvironment();
+            this.cleanEnvironment();
         }
     }
-
-    /**
-     * 环境初始化：创建表，清空表。
-     * @throws SQLException
-     */
+    
     private void initEnvironment() throws SQLException {
         orderRepository.createTableIfNotExists();
         orderItemRepository.createTableIfNotExists();
@@ -78,11 +64,7 @@ public final class ExampleService {
         orderItemRepository.truncateTable();
         addressRepository.truncateTable();
     }
-
-    /**
-     * 执行测试。
-     * @throws SQLException
-     */
+    
     private void processSuccess() throws SQLException {
         LOGGER.info("-------------- Process Success Begin ---------------");
         List<Long> orderIds = insertData();
@@ -91,23 +73,16 @@ public final class ExampleService {
         printData();
         LOGGER.info("-------------- Process Success Finish --------------");
     }
-
-    /**
-     * 插入数据。
-     * @return
-     * @throws SQLException
-     */
+    
     private List<Long> insertData() throws SQLException {
         LOGGER.info("---------------------------- Insert Data ----------------------------");
         List<Long> result = new ArrayList<>(10);
         for (int i = 1; i <= 10; i++) {
-            //创建并初始化一个Order对象。
             Order order = new Order();
             order.setUserId(i);
             order.setOrderType(i % 2);
             order.setAddressId(i);
             order.setStatus("INSERT_TEST");
-            //插入创建好的order对象。
             orderRepository.insert(order);
             
             OrderItem orderItem = new OrderItem();
@@ -126,12 +101,7 @@ public final class ExampleService {
         }
         return result;
     }
-
-    /**
-     * 删除数据。
-     * @param orderIds
-     * @throws SQLException
-     */
+    
     private void deleteData(final List<Long> orderIds) throws SQLException {
         LOGGER.info("---------------------------- Delete Data ----------------------------");
         long count = 1;
@@ -141,11 +111,7 @@ public final class ExampleService {
             addressRepository.delete(count++);
         }
     }
-
-    /**
-     * 打印数据。
-     * @throws SQLException
-     */
+    
     private void printData() throws SQLException {
         LOGGER.info("---------------------------- Print Order Data -----------------------");
         for (Object each : this.selectAll()) {
@@ -160,21 +126,12 @@ public final class ExampleService {
             LOGGER.info(each.toString());
         }
     }
-
-    /**
-     * 查询全部信息。
-     * @return
-     * @throws SQLException
-     */
+    
     private List<Order> selectAll() throws SQLException {
         List<Order> result = orderRepository.selectAll();
         return result;
     }
-
-    /**
-     * 清空环境。
-     * @throws SQLException
-     */
+    
     private void cleanEnvironment() throws SQLException {
         orderRepository.dropTable();
         orderItemRepository.dropTable();

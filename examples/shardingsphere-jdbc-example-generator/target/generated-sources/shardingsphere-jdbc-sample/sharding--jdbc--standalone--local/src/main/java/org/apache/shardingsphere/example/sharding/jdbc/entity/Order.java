@@ -19,9 +19,6 @@ package org.apache.shardingsphere.example.sharding.jdbc.entity;
 
 import java.io.Serializable;
 
-/**
- * 订单实例。
- */
 public class Order implements Serializable {
     
     private static final long serialVersionUID = 8306802022239174861L;
