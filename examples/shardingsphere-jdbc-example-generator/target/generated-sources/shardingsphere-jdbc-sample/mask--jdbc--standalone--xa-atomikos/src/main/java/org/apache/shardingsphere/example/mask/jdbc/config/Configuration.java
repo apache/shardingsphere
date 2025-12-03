@@ -1,0 +1,111 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package org.apache.shardingsphere.example.mask.jdbc.config;
+
+import com.zaxxer.hikari.HikariDataSource;
+import org.apache.shardingsphere.driver.api.ShardingSphereDataSourceFactory;
+import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
+import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
+import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
+import org.apache.shardingsphere.mode.repository.standalone.StandalonePersistRepositoryConfiguration;
+import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
+import org.apache.shardingsphere.mask.api.config.MaskRuleConfiguration;
+import org.apache.shardingsphere.mask.api.config.rule.MaskColumnRuleConfiguration;
+import org.apache.shardingsphere.mask.api.config.rule.MaskTableRuleConfiguration;    
+import org.apache.shardingsphere.transaction.config.TransactionRuleConfiguration;
+
+import javax.sql.DataSource;
+import java.sql.SQLException;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
+import java.util.Map;
+import java.util.Properties;
+
+public final class Configuration {
+    
+    private static final String HOST = "localhost";
+    
+    private static final int PORT = 3306;
+    
+    private static final String USER_NAME = "root";
+    
+    private static final String PASSWORD = "123456";
+    
+    public DataSource createDataSource() throws SQLException {
+        return ShardingSphereDataSourceFactory.createDataSource(createModeConfiguration(), createDataSourceMap(), createRuleConfiguration(), createProperties());
+    }
+    
+    private static ModeConfiguration createModeConfiguration() {
+        return new ModeConfiguration("Standalone", new StandalonePersistRepositoryConfiguration("JDBC", new Properties()));
+    }
+    
+    private Map<String, DataSource> createDataSourceMap() {
+        Map<String, DataSource> result = new LinkedHashMap<>();
+        result.put("ds_0", createDataSource("demo_ds_0"));
+        return result;
+    }
+    
+    private DataSource createDataSource(final String dataSourceName) {
+        HikariDataSource result = new HikariDataSource();
+        result.setDriverClassName("com.mysql.cj.jdbc.Driver");
+        result.setJdbcUrl(String.format("jdbc:mysql://%s:%s/%s?serverTimezone=UTC&useSSL=false&useUnicode=true&characterEncoding=UTF-8&allowPublicKeyRetrieval=true", HOST, PORT, dataSourceName));
+        result.setUsername(USER_NAME);
+        result.setPassword(PASSWORD);
+        return result;
+    }
+    
+    private Collection<RuleConfiguration> createRuleConfiguration() {
+        Collection<RuleConfiguration> result = new LinkedList<>();
+        result.add(createTransactionRuleConfiguration());
+        result.add(createMaskRuleConfiguration());
+        return result; 
+    }
+    
+    private RuleConfiguration createMaskRuleConfiguration() {
+        return new MaskRuleConfiguration(createMaskTableRuleConfiguration(), createMaskAlgorithms());
+    } 
+            
+    private Collection<MaskTableRuleConfiguration> createMaskTableRuleConfiguration() {
+        Collection<MaskTableRuleConfiguration> result = new LinkedList<>();
+        result.add(new MaskTableRuleConfiguration("t_order_item", Collections.singletonList(new MaskColumnRuleConfiguration("phone", "keep_first_n_last_m_mask"))));
+        return result;
+    }
+    
+    private Map<String, AlgorithmConfiguration> createMaskAlgorithms() {
+        Map<String, AlgorithmConfiguration> result = new LinkedHashMap<>();
+        Properties props = new Properties();
+        props.put("first-n", 3);
+        props.put("last-m", 4);
+        props.put("replace-char", "*");
+        result.put("keep_first_n_last_m_mask", new AlgorithmConfiguration("KEEP_FIRST_N_LAST_M", props));
+        return result;
+    }
+     
+     private TransactionRuleConfiguration createTransactionRuleConfiguration() {
+        return new TransactionRuleConfiguration("XA", "Atomikos", new Properties());
+     }
+    
+    private Properties createProperties() {
+        Properties result = new Properties();
+        result.setProperty(ConfigurationPropertyKey.SQL_SHOW.getKey(), "true");
+        return result;
+    }
+}
