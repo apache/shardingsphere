@@ -50,13 +50,9 @@ public final class JDBCDataRowEnumerator implements Enumerator<Object> {
         return currentRow;
     }
     
-    @SneakyThrows
+    @SneakyThrows(SQLException.class)
     @Override
     public boolean moveNext() {
-        return moveNext0();
-    }
-    
-    private boolean moveNext0() throws SQLException {
         if (queryResult.next()) {
             setCurrentRow();
             return true;
