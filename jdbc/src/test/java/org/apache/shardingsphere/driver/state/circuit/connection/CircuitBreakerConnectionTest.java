@@ -24,6 +24,8 @@ import org.junit.jupiter.api.Test;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
+import java.sql.SQLFeatureNotSupportedException;
+import java.sql.Savepoint;
 import java.sql.Statement;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -32,6 +34,9 @@ import static org.hamcrest.Matchers.isA;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.mock;
 
 class CircuitBreakerConnectionTest {
     
@@ -51,6 +56,18 @@ class CircuitBreakerConnectionTest {
     @Test
     void assertIsReadOnly() {
         assertFalse(connection.isReadOnly());
+    }
+    
+    @Test
+    void assertSetCatalog() {
+        connection.setCatalog("foo_catalog");
+        assertThat(connection.getCatalog(), is(""));
+    }
+    
+    @Test
+    void assertSetSchema() {
+        connection.setSchema("foo_schema");
+        assertThat(connection.getSchema(), is(""));
     }
     
     @Test
@@ -96,6 +113,26 @@ class CircuitBreakerConnectionTest {
     }
     
     @Test
+    void assertRollbackWithSavepoint() {
+        assertThrows(SQLFeatureNotSupportedException.class, () -> connection.rollback(mock(Savepoint.class)));
+    }
+    
+    @Test
+    void assertSetSavepoint() {
+        assertThrows(SQLFeatureNotSupportedException.class, connection::setSavepoint);
+    }
+    
+    @Test
+    void assertSetSavepointWithName() {
+        assertThrows(SQLFeatureNotSupportedException.class, () -> connection.setSavepoint("savepoint_name"));
+    }
+    
+    @Test
+    void assertReleaseSavepoint() {
+        assertThrows(SQLFeatureNotSupportedException.class, () -> connection.releaseSavepoint(mock(Savepoint.class)));
+    }
+    
+    @Test
     void assertSetHoldability() {
         connection.setHoldability(-1);
         assertThat(connection.getHoldability(), is(0));
@@ -125,12 +162,27 @@ class CircuitBreakerConnectionTest {
     }
     
     @Test
-    void assertClose() {
-        assertDoesNotThrow(connection::close);
+    void assertIsValid() {
+        assertTrue(connection.isValid(1));
+    }
+    
+    @Test
+    void assertCreateClob() {
+        assertNull(connection.createClob());
+    }
+    
+    @Test
+    void assertCreateArrayOf() {
+        assertNull(connection.createArrayOf("", new Object[]{}));
     }
     
     @Test
     void assertIsClosed() {
         assertFalse(connection.isClosed());
+    }
+    
+    @Test
+    void assertClose() {
+        assertDoesNotThrow(connection::close);
     }
 }
