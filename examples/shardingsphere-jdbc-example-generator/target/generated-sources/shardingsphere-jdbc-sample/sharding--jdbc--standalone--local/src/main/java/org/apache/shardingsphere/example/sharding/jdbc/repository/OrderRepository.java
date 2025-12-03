@@ -28,14 +28,27 @@ import java.sql.Statement;
 import java.util.LinkedList;
 import java.util.List;
 
+/**
+ * order仓库。
+ */
 public final class OrderRepository {
-    
+    /**
+     * 数据源。
+     */
     private final DataSource dataSource;
-    
+
+    /**
+     * 构造函数，数据源作为参数。
+     * @param dataSource    数据源
+     */
     public OrderRepository(final DataSource dataSource) {
         this.dataSource = dataSource;
     }
-    
+
+    /**
+     * 创建 t_order 逻辑表。
+     * @throws SQLException
+     */
     public void createTableIfNotExists() throws SQLException {
         String sql = "CREATE TABLE IF NOT EXISTS t_order " +
                         "(order_id BIGINT NOT NULL AUTO_INCREMENT, order_type INT(11), user_id INT NOT NULL, address_id BIGINT NOT NULL, status VARCHAR(50), PRIMARY KEY (order_id))";
@@ -44,7 +57,11 @@ public final class OrderRepository {
             statement.executeUpdate(sql);
         }
     }
-    
+
+    /**
+     * 删除 t_order 逻辑表。
+     * @throws SQLException
+     */
     public void dropTable() throws SQLException {
         // todo fix in shadow
         String sql = "DROP TABLE IF EXISTS t_order";
@@ -53,7 +70,11 @@ public final class OrderRepository {
             statement.executeUpdate(sql);
         }
     }
-    
+
+    /**
+     * 删除 t_order 中的所有数据。
+     * @throws SQLException
+     */
     public void truncateTable() throws SQLException {
         String sql = "TRUNCATE TABLE t_order";
         try (Connection connection = dataSource.getConnection();
@@ -61,7 +82,13 @@ public final class OrderRepository {
             statement.executeUpdate(sql);
         }
     }
-    
+
+    /**
+     * 执行对 t_order 的插入操作。
+     * @param order
+     * @return
+     * @throws SQLException
+     */
     public Long insert(final Order order) throws SQLException {
         String sql = "INSERT INTO t_order (user_id, order_type, address_id, status) VALUES (?, ?, ?, ?)";
         try (Connection connection = dataSource.getConnection();
@@ -79,7 +106,12 @@ public final class OrderRepository {
         }
         return order.getOrderId();
     }
-    
+
+    /**
+     * 执行对 t_order 表的删除操作。
+     * @param orderId
+     * @throws SQLException
+     */
     public void delete(final Long orderId) throws SQLException {
         String sql = "DELETE FROM t_order WHERE order_id=?";
         try (Connection connection = dataSource.getConnection();
@@ -88,11 +120,22 @@ public final class OrderRepository {
             preparedStatement.executeUpdate();
         }
     }
-    
+
+    /**
+     * 查询 t_order 表的全部信息。
+     * @return
+     * @throws SQLException
+     */
     public List<Order> selectAll() throws SQLException {
         return getOrders("SELECT * FROM t_order");
     }
-    
+
+    /**
+     * 对 t_order表执行查询操作，通过参数的sql语句获得 t_order 中的指定行。
+     * @param sql
+     * @return
+     * @throws SQLException
+     */
    private List<Order> getOrders(final String sql) throws SQLException {
         List<Order> result = new LinkedList<>();
         try (Connection connection = dataSource.getConnection();

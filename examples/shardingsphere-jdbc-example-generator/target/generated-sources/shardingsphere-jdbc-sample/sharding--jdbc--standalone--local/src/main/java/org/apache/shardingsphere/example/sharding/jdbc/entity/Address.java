@@ -19,6 +19,9 @@ package org.apache.shardingsphere.example.sharding.jdbc.entity;
 
 import java.io.Serializable;
 
+/**
+ * 地址实例。
+ */
 public class Address implements Serializable {
     
     private static final long serialVersionUID = 4743102234543827855L;

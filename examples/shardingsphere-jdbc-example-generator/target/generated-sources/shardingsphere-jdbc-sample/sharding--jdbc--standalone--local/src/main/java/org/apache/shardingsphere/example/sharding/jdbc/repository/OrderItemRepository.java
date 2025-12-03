@@ -28,14 +28,27 @@ import java.sql.Statement;
 import java.util.LinkedList;
 import java.util.List;
 
+/**
+ * 订单项库。
+ */
 public final class OrderItemRepository {
-    
+    /**
+     * 数据源
+     */
     private final DataSource dataSource;
-    
+
+    /**
+     * 构造函数。
+     * @param dataSource
+     */
     public OrderItemRepository(final DataSource dataSource) {
         this.dataSource = dataSource;
     }
-    
+
+    /**
+     * 建表语句。
+     * @throws SQLException
+     */
     public void createTableIfNotExists() throws SQLException {
         String sql = "CREATE TABLE IF NOT EXISTS t_order_item " +
                         "(order_item_id BIGINT NOT NULL AUTO_INCREMENT, order_id BIGINT NOT NULL, user_id INT NOT NULL, phone VARCHAR(50), status VARCHAR(50), PRIMARY KEY (order_item_id))";
@@ -44,7 +57,11 @@ public final class OrderItemRepository {
             statement.executeUpdate(sql);
         }
     }
-    
+
+    /**
+     * 删除表语句。
+     * @throws SQLException
+     */
     public void dropTable() throws SQLException {
         String sql = "DROP TABLE IF EXISTS t_order_item";
         try (Connection connection = dataSource.getConnection();
@@ -52,7 +69,11 @@ public final class OrderItemRepository {
             statement.executeUpdate(sql);
         }
     }
-    
+
+    /**
+     * 清空表语句。
+     * @throws SQLException
+     */
     public void truncateTable() throws SQLException {
         String sql = "TRUNCATE TABLE t_order_item";
         try (Connection connection = dataSource.getConnection();
@@ -60,7 +81,13 @@ public final class OrderItemRepository {
             statement.executeUpdate(sql);
         }
     }
-    
+
+    /**
+     * 插入表语句。
+     * @param orderItem
+     * @return
+     * @throws SQLException
+     */
     public Long insert(final OrderItem orderItem) throws SQLException {
         String sql = "INSERT INTO t_order_item (order_id, user_id, phone, status) VALUES (?, ?, ?, ?)";
         try (Connection connection = dataSource.getConnection();
@@ -78,7 +105,12 @@ public final class OrderItemRepository {
         }
         return orderItem.getOrderItemId();
     }
-    
+
+    /**
+     * 删除某行。
+     * @param orderItemId
+     * @throws SQLException
+     */
     public void delete(final Long orderItemId) throws SQLException {
         String sql = "DELETE FROM t_order_item WHERE order_id=?";
         try (Connection connection = dataSource.getConnection();
@@ -87,7 +119,12 @@ public final class OrderItemRepository {
             preparedStatement.executeUpdate();
         }
     }
-    
+
+    /**
+     * 查询全部。
+     * @return
+     * @throws SQLException
+     */
     public List<OrderItem> selectAll() throws SQLException {
         String sql = "SELECT i.* FROM t_order o, t_order_item i WHERE o.order_id = i.order_id";
         List<OrderItem> result = new LinkedList<>();
