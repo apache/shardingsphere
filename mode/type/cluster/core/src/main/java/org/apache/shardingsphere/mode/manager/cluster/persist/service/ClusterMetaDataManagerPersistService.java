@@ -117,6 +117,19 @@ public final class ClusterMetaDataManagerPersistService implements MetaDataManag
     }
     
     @Override
+    public void renameTables(final ShardingSphereDatabase database, final String schemaName, final Map<String, String> renameTableMap) {
+        boolean isNeedRefresh = TableRefreshUtils.isNeedRefresh(database.getRuleMetaData(), schemaName, renameTableMap.keySet());
+        // Drop old tables from metadata
+        renameTableMap.keySet().forEach(each -> metaDataPersistFacade.getDatabaseMetaDataFacade().getTable().drop(database.getName(), schemaName, each));
+        // Add new tables to metadata (new tables should be auto-discovered after physical rename)
+        // For single tables, update rule configuration
+        if (isNeedRefresh && renameTableMap.keySet().stream().anyMatch(each -> TableRefreshUtils.isSingleTable(each, database))) {
+            alterSingleRuleConfiguration(database, database.getRuleMetaData());
+        }
+        // Note: For sharding and broadcast tables, rules need to be updated through separate DistSQL commands or manual configuration updates
+    }
+    
+    @Override
     public void alterTables(final ShardingSphereDatabase database, final String schemaName, final Collection<ShardingSphereTable> alteredTables) {
         metaDataPersistFacade.getDatabaseMetaDataFacade().getTable().persist(database.getName(), schemaName, alteredTables);
     }
