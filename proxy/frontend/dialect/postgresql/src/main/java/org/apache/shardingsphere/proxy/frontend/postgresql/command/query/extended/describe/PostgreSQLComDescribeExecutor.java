@@ -147,7 +147,10 @@ public final class PostgreSQLComDescribeExecutor implements CommandExecutor {
                 }
                 String columnName = columnNamesOfInsert.get(i).toString();
                 ShardingSpherePreconditions.checkState(table.containsColumn(columnName), () -> new ColumnNotFoundException(logicTableName, columnName));
-                preparedStatement.getParameterTypes().set(parameterMarkerIndex++, PostgreSQLColumnType.valueOfJDBCType(table.getColumn(columnName).getDataType()));
+                String typeName = table.getColumn(columnName).getTypeName();
+                preparedStatement.getParameterTypes().set(parameterMarkerIndex, PostgreSQLColumnType.valueOfJDBCType(table.getColumn(columnName).getDataType(), typeName));
+                preparedStatement.getParameterTypeNames().set(parameterMarkerIndex, typeName);
+                parameterMarkerIndex++;
             }
         }
     }
@@ -198,7 +201,7 @@ public final class PostgreSQLComDescribeExecutor implements CommandExecutor {
     }
     
     private ShardingSphereColumn generateDefaultColumn(final ColumnProjectionSegment segment) {
-        return new ShardingSphereColumn(segment.getColumn().getIdentifier().getValue(), Types.VARCHAR, false, false, false, true, false, false);
+        return new ShardingSphereColumn(segment.getColumn().getIdentifier().getValue(), Types.VARCHAR, false, false, "varchar", false, true, false, false);
     }
     
     private PostgreSQLColumnDescription convertExpressionToDescription(final ExpressionProjectionSegment expressionProjectionSegment) {
@@ -261,7 +264,9 @@ public final class PostgreSQLComDescribeExecutor implements CommandExecutor {
         ParameterMetaData parameterMetaData = actualPreparedStatement.getParameterMetaData();
         for (int i = 0; i < logicPreparedStatement.getSqlStatementContext().getSqlStatement().getParameterCount(); i++) {
             if (PostgreSQLColumnType.UNSPECIFIED == logicPreparedStatement.getParameterTypes().get(i)) {
+                String columnTypeName = parameterMetaData.getParameterTypeName(i + 1);
                 logicPreparedStatement.getParameterTypes().set(i, PostgreSQLColumnType.valueOfJDBCType(parameterMetaData.getParameterType(i + 1), parameterMetaData.getParameterTypeName(i + 1)));
+                logicPreparedStatement.getParameterTypeNames().set(i, columnTypeName);
             }
         }
     }
