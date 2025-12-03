@@ -1,5 +1,5 @@
 # maven ignore
-target/
+#target/
 *.class
 *.jar
 *.war
@@ -55,4 +55,4 @@ gen/
 # hugo ignore
 public/
 .hugo_build.lock
-*.html-e
+.html-e
