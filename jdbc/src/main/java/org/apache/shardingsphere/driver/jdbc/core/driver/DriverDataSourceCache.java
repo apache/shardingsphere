@@ -36,7 +36,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public final class DriverDataSourceCache {
     
     private final Map<String, DataSource> dataSourceMap = new ConcurrentHashMap<>();
-
+    
     /**
      * Get data source.
      *
@@ -50,14 +50,14 @@ public final class DriverDataSourceCache {
         }
         return dataSourceMap.computeIfAbsent(url, driverUrl -> createDataSource(ShardingSphereURL.parse(driverUrl.substring(urlPrefix.length()))));
     }
-
+    
     @SuppressWarnings("unchecked")
     private <T extends Throwable> DataSource createDataSource(final ShardingSphereURL url) throws T {
         try {
             ShardingSphereURLLoadEngine urlLoadEngine = new ShardingSphereURLLoadEngine(url);
             Object loadedContent = urlLoadEngine.loadContent();
             return loadedContent instanceof ModeConfiguration
-                    ? ShardingSphereDataSourceFactory.createDataSource(url.getQueryProps().getProperty("databaseName"), (ModeConfiguration) loadedContent)
+                    ? ShardingSphereDataSourceFactory.createDataSource((ModeConfiguration) loadedContent)
                     : YamlShardingSphereDataSourceFactory.createDataSource((byte[]) loadedContent);
         } catch (final IOException ex) {
             throw (T) new SQLException(ex);
