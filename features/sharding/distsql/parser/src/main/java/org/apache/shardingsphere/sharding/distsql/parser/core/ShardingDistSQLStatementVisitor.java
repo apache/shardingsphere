@@ -259,6 +259,9 @@ public final class ShardingDistSQLStatementVisitor extends ShardingDistSQLStatem
     
     @Override
     public ASTNode visitShardingAutoTableRule(final ShardingAutoTableRuleContext ctx) {
+        KeyGenerateStrategySegment keyGenerateSegment = null == ctx.keyGenerateDefinition() ? null : (KeyGenerateStrategySegment) visit(ctx.keyGenerateDefinition());
+        AuditStrategySegment auditStrategySegment = null == ctx.auditDefinition() ? null : (AuditStrategySegment) visitAuditDefinition(getIdentifierValue(ctx.tableName()), ctx.auditDefinition());
+        AutoTableRuleSegment result = new AutoTableRuleSegment(getIdentifierValue(ctx.tableName()), getResources(ctx.storageUnits()), keyGenerateSegment, auditStrategySegment);
         AutoTableRuleSegment result = new AutoTableRuleSegment(IdentifierValueUtils.getValue(ctx.tableName()), getResources(ctx.storageUnits()));
         Optional.ofNullable(ctx.keyGenerateDefinition()).ifPresent(optional -> result.setKeyGenerateStrategySegment((KeyGenerateStrategySegment) visit(ctx.keyGenerateDefinition())));
         Optional.ofNullable(ctx.auditDefinition()).ifPresent(optional -> result.setAuditStrategySegment((AuditStrategySegment) visitAuditDefinition(IdentifierValueUtils.getValue(ctx.tableName()),
