@@ -29,7 +29,6 @@ import org.apache.shardingsphere.infra.rewrite.parameter.builder.impl.GroupedPar
 import org.apache.shardingsphere.infra.rewrite.parameter.builder.impl.StandardParameterBuilder;
 import org.apache.shardingsphere.infra.rewrite.parameter.rewriter.ParameterRewriter;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExpressionSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.FunctionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
 
 import java.util.Collection;
@@ -62,19 +61,17 @@ public final class EncryptInsertOnDuplicateKeyUpdateValueParameterRewriter imple
         OnDuplicateUpdateContext onDuplicateKeyUpdateValueContext = insertStatementContext.getOnDuplicateKeyUpdateValueContext();
         String schemaName = insertStatementContext.getTablesContext().getSchemaName()
                 .orElseGet(() -> new DatabaseTypeRegistry(insertStatementContext.getSqlStatement().getDatabaseType()).getDefaultSchemaName(databaseName));
+        int onDuplicateKeyParameterMarkerIndex = 0;
         for (int index = 0; index < onDuplicateKeyUpdateValueContext.getValueExpressions().size(); index++) {
             String logicColumnName = onDuplicateKeyUpdateValueContext.getColumn(index).getIdentifier().getValue();
             if (!rule.findEncryptTable(tableName).map(optional -> optional.isEncryptColumn(logicColumnName)).orElse(false)) {
                 continue;
             }
             ExpressionSegment valueExpression = onDuplicateKeyUpdateValueContext.getValueExpressions().get(index);
-            if (valueExpression instanceof FunctionSegment && "VALUES".equalsIgnoreCase(((FunctionSegment) valueExpression).getFunctionName())) {
-                continue;
-            }
             if (!(valueExpression instanceof ParameterMarkerExpressionSegment)) {
                 continue;
             }
-            int parameterIndex = ((ParameterMarkerExpressionSegment) valueExpression).getParameterMarkerIndex();
+            int parameterIndex = getParameterMarkerIndex(paramBuilder, (ParameterMarkerExpressionSegment) valueExpression, onDuplicateKeyParameterMarkerIndex++);
             Object plainValue = onDuplicateKeyUpdateValueContext.getValue(index);
             EncryptColumn encryptColumn = rule.getEncryptTable(tableName).getEncryptColumn(logicColumnName);
             Object cipherColumnValue = encryptColumn.getCipher().encrypt(databaseName, schemaName, tableName, logicColumnName, plainValue);
@@ -87,6 +84,10 @@ public final class EncryptInsertOnDuplicateKeyUpdateValueParameterRewriter imple
                 standardParamBuilder.getAddedIndexAndParameters().get(parameterIndex).addAll(addedParams);
             }
         }
+    }
+    
+    private int getParameterMarkerIndex(final ParameterBuilder paramBuilder, final ParameterMarkerExpressionSegment paramMarkerExpression, final int index) {
+        return paramBuilder instanceof StandardParameterBuilder ? paramMarkerExpression.getParameterMarkerIndex() : index;
     }
     
     private Collection<Object> buildAddedParams(final String schemaName, final String tableName, final EncryptColumn encryptColumn, final String logicColumnName, final Object plainValue) {
