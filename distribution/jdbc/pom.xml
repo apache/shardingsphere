@@ -26,14 +26,14 @@
     <artifactId>shardingsphere-jdbc-distribution</artifactId>
     <packaging>pom</packaging>
     <name>${project.artifactId}</name>
-    
+
     <dependencies>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
             <artifactId>shardingsphere-jdbc</artifactId>
             <version>${project.version}</version>
         </dependency>
-        
+
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
             <artifactId>shardingsphere-infra-data-source-pool-hikari</artifactId>
@@ -52,8 +52,20 @@
             <version>${project.version}</version>
             <scope>runtime</scope>
         </dependency>
+        <dependency>
+            <groupId>org.apache.shardingsphere</groupId>
+            <artifactId>shardingsphere-infra-url-zookeeper</artifactId>
+            <version>${project.version}</version>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.shardingsphere</groupId>
+            <artifactId>shardingsphere-infra-url-etcd</artifactId>
+            <version>${project.version}</version>
+            <scope>runtime</scope>
+        </dependency>
     </dependencies>
-    
+
     <profiles>
         <profile>
             <id>release</id>
@@ -105,7 +117,7 @@
                 </plugins>
             </build>
         </profile>
-        
+
         <profile>
             <id>default-dep</id>
             <activation>
@@ -196,7 +208,7 @@
                     <version>${project.version}</version>
                     <scope>runtime</scope>
                 </dependency>
-                
+
                 <dependency>
                     <groupId>org.apache.shardingsphere</groupId>
                     <artifactId>shardingsphere-sharding-core</artifactId>
@@ -209,7 +221,7 @@
                     <version>${project.version}</version>
                     <scope>runtime</scope>
                 </dependency>
-                
+
                 <dependency>
                     <groupId>org.apache.shardingsphere</groupId>
                     <artifactId>shardingsphere-broadcast-core</artifactId>
@@ -242,7 +254,7 @@
                 </dependency>
             </dependencies>
         </profile>
-        
+
         <profile>
             <id>all</id>
             <dependencies>
@@ -372,7 +384,7 @@
                     <version>${project.version}</version>
                     <scope>runtime</scope>
                 </dependency>
-                
+
                 <dependency>
                     <groupId>org.apache.shardingsphere</groupId>
                     <artifactId>shardingsphere-cluster-mode-repository-etcd</artifactId>
@@ -385,14 +397,14 @@
                     <version>${project.version}</version>
                     <scope>runtime</scope>
                 </dependency>
-                
+
                 <dependency>
                     <groupId>org.apache.shardingsphere</groupId>
                     <artifactId>shardingsphere-database-time-service</artifactId>
                     <version>${project.version}</version>
                     <scope>runtime</scope>
                 </dependency>
-                
+
                 <dependency>
                     <groupId>org.apache.shardingsphere</groupId>
                     <artifactId>shardingsphere-sharding-core</artifactId>
@@ -405,7 +417,7 @@
                     <version>${project.version}</version>
                     <scope>runtime</scope>
                 </dependency>
-                
+
                 <dependency>
                     <groupId>org.apache.shardingsphere</groupId>
                     <artifactId>shardingsphere-broadcast-core</artifactId>
@@ -436,7 +448,7 @@
                     <version>${project.version}</version>
                     <scope>runtime</scope>
                 </dependency>
-                
+
                 <dependency>
                     <groupId>org.apache.shardingsphere</groupId>
                     <artifactId>shardingsphere-infra-reachability-metadata</artifactId>
@@ -445,7 +457,7 @@
                 </dependency>
             </dependencies>
         </profile>
-        
+
         <profile>
             <id>db-postgresql</id>
             <dependencies>
@@ -567,7 +579,7 @@
                 </dependency>
             </dependencies>
         </profile>
-        
+
         <profile>
             <id>authority-simple</id>
             <dependencies>
@@ -634,7 +646,7 @@
                 </dependency>
             </dependencies>
         </profile>
-        
+
         <profile>
             <id>mode-repo-memory</id>
             <dependencies>
@@ -691,7 +703,7 @@
                 </dependency>
             </dependencies>
         </profile>
-        
+
         <profile>
             <id>feature-database-time-service</id>
             <dependencies>
@@ -731,7 +743,7 @@
                 </dependency>
             </dependencies>
         </profile>
-        
+
         <profile>
             <id>feature-broadcast</id>
             <dependencies>
@@ -787,7 +799,7 @@
                 </dependency>
             </dependencies>
         </profile>
-        
+
         <profile>
             <id>native</id>
             <dependencies>
