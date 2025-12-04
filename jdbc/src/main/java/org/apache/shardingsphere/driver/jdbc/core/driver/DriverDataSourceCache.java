@@ -57,7 +57,7 @@ public final class DriverDataSourceCache {
             ShardingSphereURLLoadEngine urlLoadEngine = new ShardingSphereURLLoadEngine(url);
             Object loadedContent = urlLoadEngine.loadContent();
             return loadedContent instanceof ModeConfiguration
-                    ? ShardingSphereDataSourceFactory.createDataSource(url.getQueryProps().getProperty("databaseName"), (ModeConfiguration) loadedContent)
+                    ? ShardingSphereDataSourceFactory.createDataSource((ModeConfiguration) loadedContent)
                     : YamlShardingSphereDataSourceFactory.createDataSource((byte[]) loadedContent);
         } catch (final IOException ex) {
             throw (T) new SQLException(ex);
