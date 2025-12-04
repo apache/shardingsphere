@@ -26,8 +26,11 @@ import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementCont
 import org.apache.shardingsphere.infra.binder.context.statement.type.dml.InsertStatementContext;
 import org.apache.shardingsphere.infra.rewrite.parameter.builder.ParameterBuilder;
 import org.apache.shardingsphere.infra.rewrite.parameter.builder.impl.GroupedParameterBuilder;
+import org.apache.shardingsphere.infra.rewrite.parameter.builder.impl.StandardParameterBuilder;
 import org.apache.shardingsphere.infra.rewrite.parameter.rewriter.ParameterRewriter;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.FunctionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -53,7 +56,9 @@ public final class EncryptInsertOnDuplicateKeyUpdateValueParameterRewriter imple
     public void rewrite(final ParameterBuilder paramBuilder, final SQLStatementContext sqlStatementContext, final List<Object> params) {
         InsertStatementContext insertStatementContext = (InsertStatementContext) sqlStatementContext;
         String tableName = insertStatementContext.getSqlStatement().getTable().map(optional -> optional.getTableName().getIdentifier().getValue()).orElse("");
-        GroupedParameterBuilder groupedParamBuilder = (GroupedParameterBuilder) paramBuilder;
+        StandardParameterBuilder standardParamBuilder = paramBuilder instanceof StandardParameterBuilder
+                ? (StandardParameterBuilder) paramBuilder
+                : ((GroupedParameterBuilder) paramBuilder).getAfterGenericParameterBuilder();
         OnDuplicateUpdateContext onDuplicateKeyUpdateValueContext = insertStatementContext.getOnDuplicateKeyUpdateValueContext();
         String schemaName = insertStatementContext.getTablesContext().getSchemaName()
                 .orElseGet(() -> new DatabaseTypeRegistry(insertStatementContext.getSqlStatement().getDatabaseType()).getDefaultSchemaName(databaseName));
@@ -62,19 +67,24 @@ public final class EncryptInsertOnDuplicateKeyUpdateValueParameterRewriter imple
             if (!rule.findEncryptTable(tableName).map(optional -> optional.isEncryptColumn(logicColumnName)).orElse(false)) {
                 continue;
             }
-            Object plainValue = onDuplicateKeyUpdateValueContext.getValue(index);
-            if (plainValue instanceof FunctionSegment && "VALUES".equalsIgnoreCase(((FunctionSegment) plainValue).getFunctionName())) {
-                return;
+            ExpressionSegment valueExpression = onDuplicateKeyUpdateValueContext.getValueExpressions().get(index);
+            if (valueExpression instanceof FunctionSegment && "VALUES".equalsIgnoreCase(((FunctionSegment) valueExpression).getFunctionName())) {
+                continue;
             }
+            if (!(valueExpression instanceof ParameterMarkerExpressionSegment)) {
+                continue;
+            }
+            int parameterIndex = ((ParameterMarkerExpressionSegment) valueExpression).getParameterMarkerIndex();
+            Object plainValue = onDuplicateKeyUpdateValueContext.getValue(index);
             EncryptColumn encryptColumn = rule.getEncryptTable(tableName).getEncryptColumn(logicColumnName);
             Object cipherColumnValue = encryptColumn.getCipher().encrypt(databaseName, schemaName, tableName, logicColumnName, plainValue);
-            groupedParamBuilder.getAfterGenericParameterBuilder().addReplacedParameters(index, cipherColumnValue);
+            standardParamBuilder.addReplacedParameters(parameterIndex, cipherColumnValue);
             Collection<Object> addedParams = buildAddedParams(schemaName, tableName, encryptColumn, logicColumnName, plainValue);
             if (!addedParams.isEmpty()) {
-                if (!groupedParamBuilder.getAfterGenericParameterBuilder().getAddedIndexAndParameters().containsKey(index)) {
-                    groupedParamBuilder.getAfterGenericParameterBuilder().getAddedIndexAndParameters().put(index, new LinkedList<>());
+                if (!standardParamBuilder.getAddedIndexAndParameters().containsKey(parameterIndex)) {
+                    standardParamBuilder.getAddedIndexAndParameters().put(parameterIndex, new LinkedList<>());
                 }
-                groupedParamBuilder.getAfterGenericParameterBuilder().getAddedIndexAndParameters().get(index).addAll(addedParams);
+                standardParamBuilder.getAddedIndexAndParameters().get(parameterIndex).addAll(addedParams);
             }
         }
     }
