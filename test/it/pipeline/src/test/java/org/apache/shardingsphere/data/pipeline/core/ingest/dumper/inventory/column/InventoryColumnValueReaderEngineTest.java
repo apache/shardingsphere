@@ -27,6 +27,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 
 import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.sql.Array;
 import java.sql.Blob;
 import java.sql.Clob;
@@ -132,7 +133,7 @@ class InventoryColumnValueReaderEngineTest {
     void assertReadWithUnSingedBigIntValue() throws SQLException {
         when(metaData.getColumnType(1)).thenReturn(Types.BIGINT);
         when(resultSet.getBigDecimal(1)).thenReturn(new BigDecimal("1"));
-        assertThat(engine.read(resultSet, metaData, 1), is(new BigDecimal("1")));
+        assertThat(engine.read(resultSet, metaData, 1), is(new BigInteger("1")));
     }
     
     @Test

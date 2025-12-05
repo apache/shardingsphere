@@ -28,6 +28,6 @@ public final class MySQLBinlogUnsignedIntHandler implements MySQLBinlogUnsignedN
     
     @Override
     public Number handle(final Integer value) {
-        return value < 0 ? INT_MODULO + value : value;
+        return value < 0 ? INT_MODULO + value : value.longValue();
     }
 }

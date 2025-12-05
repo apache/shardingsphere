@@ -24,10 +24,10 @@ import org.apache.shardingsphere.data.pipeline.mysql.ingest.incremental.binlog.d
  */
 public final class MySQLBinlogUnsignedTinyintHandler implements MySQLBinlogUnsignedNumberHandler<Byte> {
     
-    private static final int TINYINT_MODULO = 256;
+    private static final short TINYINT_MODULO = 256;
     
     @Override
     public Number handle(final Byte value) {
-        return value < 0 ? TINYINT_MODULO + value : value;
+        return value < 0 ? (short) (TINYINT_MODULO + value) : value.shortValue();
     }
 }
