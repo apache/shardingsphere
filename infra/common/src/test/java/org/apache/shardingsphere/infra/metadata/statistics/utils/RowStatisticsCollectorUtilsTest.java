@@ -53,16 +53,16 @@ class RowStatisticsCollectorUtilsTest {
     }
     
     private Collection<ShardingSphereColumn> createColumns() {
-        ShardingSphereColumn bigintColumn = new ShardingSphereColumn("bigint_col", Types.BIGINT, false, false, false, false, false, false);
-        ShardingSphereColumn varcharColumn = new ShardingSphereColumn("varchar_col", Types.VARCHAR, false, false, false, false, false, false);
-        ShardingSphereColumn charColumn = new ShardingSphereColumn("char_col", Types.CHAR, false, false, false, false, false, false);
-        ShardingSphereColumn otherColumn = new ShardingSphereColumn("other_col", Types.OTHER, false, false, false, false, false, false);
-        ShardingSphereColumn arrayColumn = new ShardingSphereColumn("array_col", Types.ARRAY, false, false, false, false, false, false);
-        ShardingSphereColumn integerColumn = new ShardingSphereColumn("integer_col", Types.INTEGER, true, false, false, false, false, false);
-        ShardingSphereColumn smallintColumn = new ShardingSphereColumn("smallint_col", Types.SMALLINT, false, false, false, false, false, false);
-        ShardingSphereColumn realColumn = new ShardingSphereColumn("real_col", Types.REAL, false, false, false, false, false, false);
-        ShardingSphereColumn bitColumn = new ShardingSphereColumn("bit_col", Types.BIT, false, false, false, false, false, false);
-        ShardingSphereColumn blobColumn = new ShardingSphereColumn("blob_col", Types.BLOB, false, false, false, false, false, false);
+        ShardingSphereColumn bigintColumn = new ShardingSphereColumn("bigint_col", Types.BIGINT, false, false, "", false, false, false, false);
+        ShardingSphereColumn varcharColumn = new ShardingSphereColumn("varchar_col", Types.VARCHAR, false, false, "", false, false, false, false);
+        ShardingSphereColumn charColumn = new ShardingSphereColumn("char_col", Types.CHAR, false, false, "", false, false, false, false);
+        ShardingSphereColumn otherColumn = new ShardingSphereColumn("other_col", Types.OTHER, false, false, "", false, false, false, false);
+        ShardingSphereColumn arrayColumn = new ShardingSphereColumn("array_col", Types.ARRAY, false, false, "", false, false, false, false);
+        ShardingSphereColumn integerColumn = new ShardingSphereColumn("integer_col", Types.INTEGER, true, false, "", false, false, false, false);
+        ShardingSphereColumn smallintColumn = new ShardingSphereColumn("smallint_col", Types.SMALLINT, false, false, "", false, false, false, false);
+        ShardingSphereColumn realColumn = new ShardingSphereColumn("real_col", Types.REAL, false, false, "", false, false, false, false);
+        ShardingSphereColumn bitColumn = new ShardingSphereColumn("bit_col", Types.BIT, false, false, "", false, false, false, false);
+        ShardingSphereColumn blobColumn = new ShardingSphereColumn("blob_col", Types.BLOB, false, false, "", false, false, false, false);
         return Arrays.asList(bigintColumn, varcharColumn, charColumn, otherColumn, arrayColumn, integerColumn, smallintColumn, realColumn, bitColumn, blobColumn);
     }
     

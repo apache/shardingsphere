@@ -125,7 +125,7 @@ class StatisticsPersistServiceTest {
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         ShardingSphereSchema schema = mock(ShardingSphereSchema.class, RETURNS_DEEP_STUBS);
         ShardingSphereTable table = mock(ShardingSphereTable.class);
-        when(table.getAllColumns()).thenReturn(Collections.singleton(new ShardingSphereColumn("foo_col", Types.VARCHAR, false, false, true, true, false, true)));
+        when(table.getAllColumns()).thenReturn(Collections.singleton(new ShardingSphereColumn("foo_col", Types.VARCHAR, false, false, "varchar", true, true, false, true)));
         when(database.getName()).thenReturn("foo_db");
         when(database.getSchema("foo_schema")).thenReturn(schema);
         when(schema.containsTable("foo_tbl")).thenReturn(true);

@@ -197,14 +197,14 @@ class PostgreSQLComParseExecutorTest {
     }
     
     private ShardingSphereSchema createSchema() {
-        ShardingSphereTable testTable = new ShardingSphereTable("t_test", Arrays.asList(new ShardingSphereColumn("id", Types.BIGINT, true, false, false, false, true, false),
-                new ShardingSphereColumn("name", Types.VARCHAR, false, false, false, false, false, false),
-                new ShardingSphereColumn("age", Types.SMALLINT, false, false, false, false, true, false),
-                new ShardingSphereColumn("enabled", Types.VARCHAR, false, false, false, false, true, false)), Collections.emptyList(), Collections.emptyList());
-        ShardingSphereTable sbTestTable = new ShardingSphereTable("sbtest1", Arrays.asList(new ShardingSphereColumn("id", Types.BIGINT, true, false, false, false, true, false),
-                new ShardingSphereColumn("k", Types.VARCHAR, false, false, false, false, false, false),
-                new ShardingSphereColumn("c", Types.VARCHAR, false, false, false, false, true, false),
-                new ShardingSphereColumn("pad", Types.VARCHAR, false, false, false, false, true, false)), Collections.emptyList(), Collections.emptyList());
+        ShardingSphereTable testTable = new ShardingSphereTable("t_test", Arrays.asList(new ShardingSphereColumn("id", Types.BIGINT, true, false, "bigint", false, false, true, false),
+                new ShardingSphereColumn("name", Types.VARCHAR, false, false, "varchar", false, false, false, false),
+                new ShardingSphereColumn("age", Types.SMALLINT, false, false, "smallint", false, false, true, false),
+                new ShardingSphereColumn("enabled", Types.VARCHAR, false, false, "varchar", false, false, true, false)), Collections.emptyList(), Collections.emptyList());
+        ShardingSphereTable sbTestTable = new ShardingSphereTable("sbtest1", Arrays.asList(new ShardingSphereColumn("id", Types.BIGINT, true, false, "bigint", false, false, true, false),
+                new ShardingSphereColumn("k", Types.VARCHAR, false, false, "varchar", false, false, false, false),
+                new ShardingSphereColumn("c", Types.VARCHAR, false, false, "varchar", false, false, true, false),
+                new ShardingSphereColumn("pad", Types.VARCHAR, false, false, "varchar", false, false, true, false)), Collections.emptyList(), Collections.emptyList());
         return new ShardingSphereSchema("public", Arrays.asList(testTable, sbTestTable), Collections.emptyList());
     }
 }

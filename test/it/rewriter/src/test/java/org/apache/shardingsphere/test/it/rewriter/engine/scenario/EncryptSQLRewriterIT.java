@@ -42,34 +42,34 @@ class EncryptSQLRewriterIT extends SQLRewriterIT {
     protected Collection<ShardingSphereSchema> mockSchemas(final String schemaName) {
         Collection<ShardingSphereTable> tables = new LinkedList<>();
         tables.add(new ShardingSphereTable("t_account", Arrays.asList(
-                new ShardingSphereColumn("account_id", Types.INTEGER, false, false, false, true, false, false),
-                new ShardingSphereColumn("certificate_number", Types.INTEGER, false, false, false, true, false, false),
-                new ShardingSphereColumn("password", Types.VARCHAR, false, false, false, true, false, false),
-                new ShardingSphereColumn("amount", Types.DECIMAL, false, false, false, true, false, false),
-                new ShardingSphereColumn("status", Types.TINYINT, false, false, false, false, false, false)), Collections.emptyList(), Collections.emptyList()));
+                new ShardingSphereColumn("account_id", Types.INTEGER, false, false, "int", false, true, false, false),
+                new ShardingSphereColumn("certificate_number", Types.INTEGER, false, false, "int", false, true, false, false),
+                new ShardingSphereColumn("password", Types.VARCHAR, false, false, "varchar", false, true, false, false),
+                new ShardingSphereColumn("amount", Types.DECIMAL, false, false, "decimal", false, true, false, false),
+                new ShardingSphereColumn("status", Types.TINYINT, false, false, "tinyint", false, false, false, false)), Collections.emptyList(), Collections.emptyList()));
         tables.add(new ShardingSphereTable("t_account_bak", Arrays.asList(
-                new ShardingSphereColumn("account_id", Types.INTEGER, false, false, false, true, false, false),
-                new ShardingSphereColumn("certificate_number", Types.INTEGER, false, false, false, true, false, false),
-                new ShardingSphereColumn("password", Types.VARCHAR, false, false, false, true, false, false),
-                new ShardingSphereColumn("amount", Types.DECIMAL, false, false, false, true, false, false),
-                new ShardingSphereColumn("status", Types.TINYINT, false, false, false, false, false, false)), Collections.emptyList(), Collections.emptyList()));
+                new ShardingSphereColumn("account_id", Types.INTEGER, false, false, "int", false, true, false, false),
+                new ShardingSphereColumn("certificate_number", Types.INTEGER, false, false, "int", false, true, false, false),
+                new ShardingSphereColumn("password", Types.VARCHAR, false, false, "varchar", false, true, false, false),
+                new ShardingSphereColumn("amount", Types.DECIMAL, false, false, "decimal", false, true, false, false),
+                new ShardingSphereColumn("status", Types.TINYINT, false, false, "tinyint", false, false, false, false)), Collections.emptyList(), Collections.emptyList()));
         tables.add(new ShardingSphereTable("t_account_detail", Arrays.asList(
-                new ShardingSphereColumn("account_id", Types.INTEGER, false, false, false, true, false, false),
-                new ShardingSphereColumn("certificate_number", Types.INTEGER, false, false, false, true, false, false),
-                new ShardingSphereColumn("password", Types.VARCHAR, false, false, false, true, false, false),
-                new ShardingSphereColumn("amount", Types.DECIMAL, false, false, false, true, false, false),
-                new ShardingSphereColumn("status", Types.TINYINT, false, false, false, false, false, false)), Collections.emptyList(), Collections.emptyList()));
+                new ShardingSphereColumn("account_id", Types.INTEGER, false, false, "int", false, true, false, false),
+                new ShardingSphereColumn("certificate_number", Types.INTEGER, false, false, "int", false, true, false, false),
+                new ShardingSphereColumn("password", Types.VARCHAR, false, false, "varchar", false, true, false, false),
+                new ShardingSphereColumn("amount", Types.DECIMAL, false, false, "decimal", false, true, false, false),
+                new ShardingSphereColumn("status", Types.TINYINT, false, false, "tinyint", false, false, false, false)), Collections.emptyList(), Collections.emptyList()));
         tables.add(new ShardingSphereTable("t_order", Arrays.asList(
-                new ShardingSphereColumn("ORDER_ID", Types.INTEGER, false, false, false, true, false, false),
-                new ShardingSphereColumn("USER_ID", Types.INTEGER, false, false, false, true, false, false),
-                new ShardingSphereColumn("CONTENT", Types.VARCHAR, false, false, false, true, false, false)), Collections.emptyList(), Collections.emptyList()));
+                new ShardingSphereColumn("ORDER_ID", Types.INTEGER, false, false, "int", false, true, false, false),
+                new ShardingSphereColumn("USER_ID", Types.INTEGER, false, false, "int", false, true, false, false),
+                new ShardingSphereColumn("CONTENT", Types.VARCHAR, false, false, "varchar", false, true, false, false)), Collections.emptyList(), Collections.emptyList()));
         tables.add(new ShardingSphereTable("t_user", Arrays.asList(
-                new ShardingSphereColumn("user_id", Types.INTEGER, false, false, false, true, false, false),
-                new ShardingSphereColumn("user_name", Types.VARCHAR, false, false, false, true, false, false),
-                new ShardingSphereColumn("password", Types.VARCHAR, false, false, false, true, false, false),
-                new ShardingSphereColumn("email", Types.VARCHAR, false, false, false, true, false, false),
-                new ShardingSphereColumn("telephone", Types.VARCHAR, false, false, false, true, false, false),
-                new ShardingSphereColumn("creation_date", Types.DATE, false, false, false, true, false, false)), Collections.emptyList(), Collections.emptyList()));
+                new ShardingSphereColumn("user_id", Types.INTEGER, false, false, "int", false, true, false, false),
+                new ShardingSphereColumn("user_name", Types.VARCHAR, false, false, "varchar", false, true, false, false),
+                new ShardingSphereColumn("password", Types.VARCHAR, false, false, "varchar", false, true, false, false),
+                new ShardingSphereColumn("email", Types.VARCHAR, false, false, "varchar", false, true, false, false),
+                new ShardingSphereColumn("telephone", Types.VARCHAR, false, false, "varchar", false, true, false, false),
+                new ShardingSphereColumn("creation_date", Types.DATE, false, false, "date", false, true, false, false)), Collections.emptyList(), Collections.emptyList()));
         return Collections.singleton(new ShardingSphereSchema(schemaName, tables, Collections.emptyList()));
     }
     
