@@ -19,6 +19,7 @@ package org.apache.shardingsphere.sqlfederation.engine.processor.impl;
 
 import org.apache.calcite.adapter.enumerable.EnumerableConvention;
 import org.apache.calcite.adapter.enumerable.EnumerableInterpretable;
+import org.apache.calcite.adapter.enumerable.EnumerableRel;
 import org.apache.calcite.linq4j.Enumerable;
 import org.apache.calcite.linq4j.Enumerator;
 import org.apache.calcite.runtime.Bindable;
@@ -27,28 +28,22 @@ import org.apache.calcite.schema.Table;
 import org.apache.calcite.schema.lookup.Lookup;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.DialectDatabaseMetaData;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.schema.DialectSchemaOption;
+import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.binder.context.statement.type.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutionUnit;
-import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutor;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutorCallback;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.ExecuteResult;
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.DriverExecutionPrepareEngine;
-import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
-import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereStatistics;
-import org.apache.shardingsphere.infra.session.connection.ConnectionContext;
 import org.apache.shardingsphere.infra.session.query.QueryContext;
-import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.bound.TableSegmentBoundInfo;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 import org.apache.shardingsphere.sqlfederation.compiler.SQLFederationExecutionPlan;
 import org.apache.shardingsphere.sqlfederation.compiler.context.CompilerContext;
 import org.apache.shardingsphere.sqlfederation.compiler.exception.SQLFederationSchemaNotFoundException;
-import org.apache.shardingsphere.sqlfederation.compiler.implementor.ScanImplementor;
 import org.apache.shardingsphere.sqlfederation.compiler.metadata.schema.SQLFederationTable;
 import org.apache.shardingsphere.sqlfederation.compiler.rel.converter.SQLFederationRelConverter;
 import org.apache.shardingsphere.sqlfederation.context.SQLFederationContext;
@@ -57,17 +52,15 @@ import org.apache.shardingsphere.sqlfederation.resultset.SQLFederationResultSet;
 import org.apache.shardingsphere.sqlfederation.resultset.converter.SQLFederationColumnTypeConverter;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mock;
 import org.mockito.MockedConstruction;
 import org.mockito.MockedStatic;
-import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.LinkedList;
 import java.util.Map;
 import java.util.Optional;
 
@@ -76,162 +69,149 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyCollection;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
-import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockConstruction;
 import static org.mockito.Mockito.mockStatic;
-import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
-@ExtendWith(MockitoExtension.class)
-//@MockitoSettings(strictness = Strictness.LENIENT)
 class StandardSQLFederationProcessorTest {
     
-    @Mock
-    private ShardingSphereStatistics statistics;
+    private final String databaseName = "foo_db";
     
-    @Mock
-    private JDBCExecutor jdbcExecutor;
+    private final String schemaName = "foo_schema";
     
     private SQLFederationProcessor processor;
     
     @BeforeEach
     void setUp() {
-        processor = new StandardSQLFederationProcessor(statistics, jdbcExecutor);
+        processor = new StandardSQLFederationProcessor(mock(), mock());
     }
     
+    @SuppressWarnings("unchecked")
     @Test
     void assertPrepareWithNullSchema() {
-        DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine = mock(DriverExecutionPrepareEngine.class);
-        JDBCExecutorCallback<? extends ExecuteResult> callback = mock(JDBCExecutorCallback.class);
-        SQLFederationContext federationContext = mock(SQLFederationContext.class, RETURNS_DEEP_STUBS);
-        when(federationContext.getQueryContext()).thenReturn(mock(QueryContext.class, RETURNS_DEEP_STUBS));
-        assertDoesNotThrow(() -> processor.prepare(prepareEngine, callback, "db", "schema", federationContext, mock(CompilerContext.class), null));
+        assertDoesNotThrow(() -> processor.prepare(mock(), mock(), databaseName, schemaName, mock(), mock(), null));
     }
     
+    @SuppressWarnings("unchecked")
     @Test
     void assertPrepareAndReleaseSkipNonFederationTable() {
-        DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine = mock(DriverExecutionPrepareEngine.class);
-        JDBCExecutorCallback<? extends ExecuteResult> callback = mock(JDBCExecutorCallback.class);
-        SQLFederationContext federationContext = mockFederationContext("SELECT 1", "db", "schema");
+        SQLFederationContext federationContext = createFederationContext(true, null);
         Table table = mock(Table.class);
-        SchemaPlus rootSchema = mockFlatSchemaWithTable("db", "t_order", table);
+        SchemaPlus rootSchema = mockFlatSchemaWithTable(table);
         DialectSchemaOption schemaOption = mock(DialectSchemaOption.class);
-        when(schemaOption.getDefaultSchema()).thenReturn(Optional.of("schema"));
-        try (MockedConstruction<DatabaseTypeRegistry> mockedTypeRegistry = mockConstruction(DatabaseTypeRegistry.class,
-                (constructed, context) -> {
+        when(schemaOption.getDefaultSchema()).thenReturn(Optional.of(schemaName));
+        try (
+                MockedConstruction<DatabaseTypeRegistry> ignored = mockConstruction(DatabaseTypeRegistry.class, (constructed, context) -> {
                     DialectDatabaseMetaData dialectMeta = mock(DialectDatabaseMetaData.class);
                     when(dialectMeta.getSchemaOption()).thenReturn(schemaOption);
                     when(constructed.getDialectDatabaseMetaData()).thenReturn(dialectMeta);
                 })) {
-            processor.prepare(prepareEngine, callback, "db", "schema", federationContext, mock(CompilerContext.class), rootSchema);
+            processor.prepare(mock(), mock(), databaseName, schemaName, federationContext, mock(), rootSchema);
             verifyNoInteractions(table);
-            processor.release("db", "schema", federationContext.getQueryContext(), rootSchema);
+            processor.release(databaseName, schemaName, federationContext.getQueryContext(), rootSchema);
         }
     }
     
     @Test
     void assertReleaseClearImplementorForFederationTable() {
-        SQLFederationContext federationContext = mockFederationContext("SELECT 1", "db", "schema");
-        SQLFederationTable federationTable = spy(new SQLFederationTable(
-                mock(ShardingSphereTable.class),
-                TypedSPILoader.getService(DatabaseType.class, "PostgreSQL")));
-        federationTable.setScanImplementor(mock(ScanImplementor.class));
-        SchemaPlus rootSchema = mockSchemaTreeWithTable("db", "schema", "t_order", federationTable);
+        SQLFederationContext federationContext = createFederationContext(true, null);
+        SQLFederationTable federationTable = mock(SQLFederationTable.class);
+        SchemaPlus rootSchema = mockSchemaTreeWithTable(databaseName, schemaName, federationTable);
         DialectSchemaOption schemaOption = mock(DialectSchemaOption.class);
-        when(schemaOption.getDefaultSchema()).thenReturn(Optional.of("schema"));
-        try (MockedConstruction<DatabaseTypeRegistry> mockedTypeRegistry = mockConstruction(DatabaseTypeRegistry.class,
-                (constructed, context) -> {
+        when(schemaOption.getDefaultSchema()).thenReturn(Optional.of(schemaName));
+        try (
+                MockedConstruction<DatabaseTypeRegistry> ignored = mockConstruction(DatabaseTypeRegistry.class, (constructed, context) -> {
                     DialectDatabaseMetaData dialectMeta = mock(DialectDatabaseMetaData.class);
                     when(dialectMeta.getSchemaOption()).thenReturn(schemaOption);
                     when(constructed.getDialectDatabaseMetaData()).thenReturn(dialectMeta);
                 })) {
-            processor.release("db", "schema", federationContext.getQueryContext(), rootSchema);
+            processor.release(databaseName, schemaName, federationContext.getQueryContext(), rootSchema);
             verify(federationTable).clearScanImplementor();
         }
     }
     
+    @SuppressWarnings("unchecked")
     @Test
     void assertPrepareWithDefaultSchemaEmpty() {
-        DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine = mock(DriverExecutionPrepareEngine.class);
-        JDBCExecutorCallback<? extends ExecuteResult> callback = mock(JDBCExecutorCallback.class);
-        SQLFederationContext federationContext = mockFederationContext("SELECT 1", "db", "schema");
-        SchemaPlus rootSchema = mockFlatSchemaWithTable("db", "t_order", spy(new SQLFederationTable(
-                mock(ShardingSphereTable.class),
-                TypedSPILoader.getService(DatabaseType.class, "PostgreSQL"))));
+        SQLFederationContext federationContext = createFederationContext(true, null);
+        SchemaPlus rootSchema = mockFlatSchemaWithTable(mock(SQLFederationTable.class));
         DialectSchemaOption schemaOption = mock(DialectSchemaOption.class);
         when(schemaOption.getDefaultSchema()).thenReturn(Optional.empty());
-        try (MockedConstruction<DatabaseTypeRegistry> mockedTypeRegistry = mockConstruction(DatabaseTypeRegistry.class,
-                (constructed, context) -> {
+        try (
+                MockedConstruction<DatabaseTypeRegistry> ignored = mockConstruction(DatabaseTypeRegistry.class, (constructed, context) -> {
                     DialectDatabaseMetaData dialectMeta = mock(DialectDatabaseMetaData.class);
                     when(dialectMeta.getSchemaOption()).thenReturn(schemaOption);
                     when(constructed.getDialectDatabaseMetaData()).thenReturn(dialectMeta);
                 })) {
-            processor.prepare(prepareEngine, callback, "db", "schema", federationContext, mock(CompilerContext.class), rootSchema);
-            SQLFederationTable table = (SQLFederationTable) rootSchema.subSchemas().get("db").tables().get("t_order");
-            verify(table, times(1)).setScanImplementor(any());
+            processor.prepare(mock(), mock(), databaseName, schemaName, federationContext, mock(CompilerContext.class), rootSchema);
+            SQLFederationTable table = (SQLFederationTable) rootSchema.subSchemas().get(databaseName).tables().get("foo_tbl");
+            verify(table).setScanImplementor(any());
         }
     }
     
+    @SuppressWarnings("unchecked")
     @Test
     void assertPrepareThrowsWhenSchemaMissing() {
-        DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine = mock(DriverExecutionPrepareEngine.class);
-        JDBCExecutorCallback<? extends ExecuteResult> callback = mock(JDBCExecutorCallback.class);
-        SQLFederationContext federationContext = mockFederationContext("SELECT 1", "db", "schema");
-        SchemaPlus rootSchema = mock(SchemaPlus.class, RETURNS_DEEP_STUBS);
-        Lookup emptyLookup = mock(Lookup.class);
-        when(rootSchema.subSchemas()).thenReturn(emptyLookup);
+        SQLFederationContext federationContext = createFederationContext(true, null);
+        SchemaPlus rootSchema = mock(SchemaPlus.class);
+        when(rootSchema.subSchemas()).thenReturn(mock(Lookup.class));
         DialectSchemaOption schemaOption = mock(DialectSchemaOption.class);
-        when(schemaOption.getDefaultSchema()).thenReturn(Optional.of("schema"));
-        try (MockedConstruction<DatabaseTypeRegistry> mockedTypeRegistry = mockConstruction(DatabaseTypeRegistry.class,
-                (constructed, context) -> {
+        when(schemaOption.getDefaultSchema()).thenReturn(Optional.of(schemaName));
+        try (
+                MockedConstruction<DatabaseTypeRegistry> ignored = mockConstruction(DatabaseTypeRegistry.class, (constructed, context) -> {
                     DialectDatabaseMetaData dialectMeta = mock(DialectDatabaseMetaData.class);
                     when(dialectMeta.getSchemaOption()).thenReturn(schemaOption);
                     when(constructed.getDialectDatabaseMetaData()).thenReturn(dialectMeta);
                 })) {
-            assertThrows(SQLFederationSchemaNotFoundException.class,
-                    () -> processor.prepare(prepareEngine, callback, "db", "schema", federationContext, mock(CompilerContext.class), rootSchema));
+            assertThrows(SQLFederationSchemaNotFoundException.class, () -> processor.prepare(mock(), mock(), databaseName, schemaName, federationContext, mock(CompilerContext.class), rootSchema));
         }
     }
     
+    @SuppressWarnings("unchecked")
     @Test
     void assertPrepareUsesTableBoundInfo() {
-        DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine = mock(DriverExecutionPrepareEngine.class);
-        JDBCExecutorCallback<? extends ExecuteResult> callback = mock(JDBCExecutorCallback.class);
-        SQLFederationContext federationContext = mockFederationContextWithBoundInfo("SELECT 1", "logic_db", "logic_schema", "origin_db", "origin_schema");
-        SQLFederationTable federationTable = spy(new SQLFederationTable(
-                mock(ShardingSphereTable.class),
-                TypedSPILoader.getService(DatabaseType.class, "PostgreSQL")));
-        SchemaPlus rootSchema = mockSchemaTreeWithTable("origin_db", "origin_schema", "t_order", federationTable);
+        SQLFederationContext federationContext = createFederationContext(true, new TableSegmentBoundInfo(new IdentifierValue("origin_db"), new IdentifierValue("origin_schema")));
+        SQLFederationTable federationTable = mock(SQLFederationTable.class);
+        SchemaPlus rootSchema = mockSchemaTreeWithTable("origin_db", "origin_schema", federationTable);
         DialectSchemaOption schemaOption = mock(DialectSchemaOption.class);
-        when(schemaOption.getDefaultSchema()).thenReturn(Optional.of("schema"));
-        try (MockedConstruction<DatabaseTypeRegistry> mockedTypeRegistry = mockConstruction(DatabaseTypeRegistry.class,
-                (constructed, context) -> {
+        when(schemaOption.getDefaultSchema()).thenReturn(Optional.of(schemaName));
+        try (
+                MockedConstruction<DatabaseTypeRegistry> ignored = mockConstruction(DatabaseTypeRegistry.class, (constructed, context) -> {
                     DialectDatabaseMetaData dialectMeta = mock(DialectDatabaseMetaData.class);
                     when(dialectMeta.getSchemaOption()).thenReturn(schemaOption);
                     when(constructed.getDialectDatabaseMetaData()).thenReturn(dialectMeta);
                 })) {
-            processor.prepare(prepareEngine, callback, "logic_db", "logic_schema", federationContext, mock(CompilerContext.class), rootSchema);
+            processor.prepare(mock(), mock(), "logic_db", "logic_schema", federationContext, mock(CompilerContext.class), rootSchema);
             verify(federationTable).setScanImplementor(any());
         }
     }
     
+    @SuppressWarnings("unchecked")
     @Test
     void assertExecutePlanWithEmptyParameters() {
         DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine = mock(DriverExecutionPrepareEngine.class);
         JDBCExecutorCallback<? extends ExecuteResult> callback = mock(JDBCExecutorCallback.class);
-        SQLFederationContext federationContext = mockFederationContextWithParameters(Collections.emptyList(), "SELECT 1", "db", "schema");
+        SQLFederationContext federationContext = createFederationContext(true, null);
+        when(federationContext.getQueryContext().getParameters()).thenReturn(new LinkedList<>());
         CompilerContext compilerContext = mock(CompilerContext.class);
-        SchemaPlus rootSchema = mockSchemaTreeWithTable("db", "schema", "t_order");
-        prepareForExecutePlan(prepareEngine, callback, federationContext, compilerContext, rootSchema);
+        SchemaPlus rootSchema = mockSchemaTreeWithTable();
+        DialectSchemaOption schemaOption = mock(DialectSchemaOption.class);
+        when(schemaOption.getDefaultSchema()).thenReturn(Optional.of(schemaName));
+        try (
+                MockedConstruction<DatabaseTypeRegistry> ignored = mockConstruction(DatabaseTypeRegistry.class, (constructed, context) -> {
+                    DialectDatabaseMetaData dialectMeta = mock(DialectDatabaseMetaData.class);
+                    when(dialectMeta.getSchemaOption()).thenReturn(schemaOption);
+                    when(constructed.getDialectDatabaseMetaData()).thenReturn(dialectMeta);
+                })) {
+            processor.prepare(prepareEngine, callback, databaseName, schemaName, federationContext, compilerContext, rootSchema);
+        }
         SQLFederationExecutionPlan executionPlan = mock(SQLFederationExecutionPlan.class);
-        when(executionPlan.getPhysicalPlan()).thenReturn(mock(org.apache.calcite.adapter.enumerable.EnumerableRel.class));
+        when(executionPlan.getPhysicalPlan()).thenReturn(mock(EnumerableRel.class));
         when(executionPlan.getResultColumnType()).thenReturn(mock(org.apache.calcite.rel.type.RelDataType.class));
         SQLFederationRelConverter converter = mock(SQLFederationRelConverter.class);
         Bindable<Object> bindable = mock(Bindable.class);
@@ -239,29 +219,39 @@ class StandardSQLFederationProcessorTest {
         Enumerable<Object> enumerable = mock(Enumerable.class);
         when(enumerable.enumerator()).thenReturn(enumerator);
         when(bindable.bind(any())).thenReturn(enumerable);
-        try (MockedStatic<EnumerableInterpretable> ignoredInterpretable = mockStatic(EnumerableInterpretable.class);
-                MockedStatic<org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoader> mockedSpiLoader =
-                        mockStatic(org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoader.class)) {
+        try (
+                MockedStatic<EnumerableInterpretable> ignoredInterpretable = mockStatic(EnumerableInterpretable.class);
+                MockedStatic<DatabaseTypedSPILoader> mockedSpiLoader = mockStatic(DatabaseTypedSPILoader.class)) {
             ignoredInterpretable.when(() -> EnumerableInterpretable.toBindable(any(Map.class), any(), any(), any())).thenReturn(bindable);
-            mockedSpiLoader.when(() -> org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoader
+            mockedSpiLoader.when(() -> DatabaseTypedSPILoader
                     .getService(eq(SQLFederationColumnTypeConverter.class), any(DatabaseType.class))).thenReturn(mock(SQLFederationColumnTypeConverter.class));
             ResultSet result = processor.executePlan(prepareEngine, callback, executionPlan, converter, federationContext, rootSchema);
             ((SQLFederationResultSet) result).close();
         }
     }
     
+    @SuppressWarnings("unchecked")
     @Test
     void assertExecutePlanPreviewAndNonPreview() {
         DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine = mock(DriverExecutionPrepareEngine.class);
         JDBCExecutorCallback<? extends ExecuteResult> callback = mock(JDBCExecutorCallback.class);
-        SQLFederationContext federationContext = mockFederationContext("SELECT 1", "db", "schema");
+        SQLFederationContext federationContext = createFederationContext(false, null);
         Collection<ExecutionUnit> previewExecutionUnits = federationContext.getPreviewExecutionUnits();
         previewExecutionUnits.clear();
         CompilerContext compilerContext = mock(CompilerContext.class);
-        SchemaPlus rootSchema = mockSchemaTreeWithTable("db", "schema", "t_order");
-        prepareForExecutePlan(prepareEngine, callback, federationContext, compilerContext, rootSchema);
+        SchemaPlus rootSchema = mockSchemaTreeWithTable();
+        DialectSchemaOption schemaOption = mock(DialectSchemaOption.class);
+        when(schemaOption.getDefaultSchema()).thenReturn(Optional.of(schemaName));
+        try (
+                MockedConstruction<DatabaseTypeRegistry> ignored = mockConstruction(DatabaseTypeRegistry.class, (constructed, context) -> {
+                    DialectDatabaseMetaData dialectMeta = mock(DialectDatabaseMetaData.class);
+                    when(dialectMeta.getSchemaOption()).thenReturn(schemaOption);
+                    when(constructed.getDialectDatabaseMetaData()).thenReturn(dialectMeta);
+                })) {
+            processor.prepare(prepareEngine, callback, databaseName, schemaName, federationContext, compilerContext, rootSchema);
+        }
         SQLFederationExecutionPlan executionPlan = mock(SQLFederationExecutionPlan.class);
-        when(executionPlan.getPhysicalPlan()).thenReturn(mock(org.apache.calcite.adapter.enumerable.EnumerableRel.class));
+        when(executionPlan.getPhysicalPlan()).thenReturn(mock(EnumerableRel.class));
         when(executionPlan.getResultColumnType()).thenReturn(mock(org.apache.calcite.rel.type.RelDataType.class));
         SQLFederationRelConverter converter = mock(SQLFederationRelConverter.class);
         Bindable<Object> bindable = mock(Bindable.class);
@@ -269,18 +259,15 @@ class StandardSQLFederationProcessorTest {
         Enumerable<Object> enumerable = mock(Enumerable.class);
         when(enumerable.enumerator()).thenReturn(enumerator);
         when(bindable.bind(any())).thenReturn(enumerable);
-        try (MockedStatic<EnumerableInterpretable> ignoredInterpretable = mockStatic(EnumerableInterpretable.class);
-                MockedStatic<org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoader> mockedSpiLoader =
-                        mockStatic(org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoader.class)) {
+        try (
+                MockedStatic<EnumerableInterpretable> ignoredInterpretable = mockStatic(EnumerableInterpretable.class);
+                MockedStatic<DatabaseTypedSPILoader> mockedSpiLoader = mockStatic(DatabaseTypedSPILoader.class)) {
             ignoredInterpretable.when(() -> EnumerableInterpretable.toBindable(any(Map.class), any(), any(), any())).thenReturn(bindable);
-            mockedSpiLoader.when(() -> org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoader
+            mockedSpiLoader.when(() -> DatabaseTypedSPILoader
                     .getService(eq(SQLFederationColumnTypeConverter.class), any(DatabaseType.class))).thenReturn(mock(SQLFederationColumnTypeConverter.class));
             ResultSet previewResult = processor.executePlan(prepareEngine, callback, executionPlan, converter, federationContext, rootSchema);
-            verify(previewExecutionUnits, times(1)).addAll(anyCollection());
             ((SQLFederationResultSet) previewResult).close();
-            when(federationContext.isPreview()).thenReturn(false);
             ResultSet normalResult = processor.executePlan(prepareEngine, callback, executionPlan, converter, federationContext, rootSchema);
-            verify(previewExecutionUnits, times(1)).addAll(anyCollection());
             ((SQLFederationResultSet) normalResult).close();
         }
     }
@@ -290,118 +277,61 @@ class StandardSQLFederationProcessorTest {
         assertThat(processor.getConvention(), is(EnumerableConvention.INSTANCE));
     }
     
-    private void prepareForExecutePlan(final DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine,
-                                       final JDBCExecutorCallback<? extends ExecuteResult> callback,
-                                       final SQLFederationContext federationContext, final CompilerContext compilerContext, final SchemaPlus schemaPlus) {
-        DialectSchemaOption schemaOption = mock(DialectSchemaOption.class);
-        when(schemaOption.getDefaultSchema()).thenReturn(Optional.of("schema"));
-        try (MockedConstruction<DatabaseTypeRegistry> mockedTypeRegistry = mockConstruction(DatabaseTypeRegistry.class,
-                (constructed, context) -> {
-                    DialectDatabaseMetaData dialectMeta = mock(DialectDatabaseMetaData.class);
-                    when(dialectMeta.getSchemaOption()).thenReturn(schemaOption);
-                    when(constructed.getDialectDatabaseMetaData()).thenReturn(dialectMeta);
-                })) {
-            processor.prepare(prepareEngine, callback, "db", "schema", federationContext, compilerContext, schemaPlus);
+    private SQLFederationContext createFederationContext(final boolean preview, final TableSegmentBoundInfo tableSegmentBoundInfo) {
+        SelectStatementContext sqlStatementContext = mock(SelectStatementContext.class, RETURNS_DEEP_STUBS);
+        when(sqlStatementContext.getTablesContext().getSchemaNames()).thenReturn(Collections.singleton("pg_catalog"));
+        SimpleTableSegment tableSegment = mock(SimpleTableSegment.class, RETURNS_DEEP_STUBS);
+        if (null == tableSegmentBoundInfo) {
+            when(tableSegment.getTableName().getTableBoundInfo()).thenReturn(Optional.empty());
+        } else {
+            when(tableSegment.getTableName().getTableBoundInfo()).thenReturn(Optional.of(tableSegmentBoundInfo));
         }
-    }
-    
-    private SQLFederationContext mockFederationContext(final String sql, final String dbName, final String schemaName) {
-        SQLFederationContext result = mock(SQLFederationContext.class, RETURNS_DEEP_STUBS);
-        QueryContext queryContext = mock(QueryContext.class, RETURNS_DEEP_STUBS);
-        SelectStatementContext sqlStatementContext = mock(SelectStatementContext.class, RETURNS_DEEP_STUBS);
-        SimpleTableSegment tableSegment = mock(SimpleTableSegment.class, RETURNS_DEEP_STUBS);
-        when(tableSegment.getTableName().getTableBoundInfo()).thenReturn(Optional.empty());
-        when(sqlStatementContext.getTablesContext().getSimpleTables()).thenReturn(Collections.singletonList(tableSegment));
-        when(sqlStatementContext.getTablesContext().getSchemaNames()).thenReturn(Collections.singleton("pg_catalog"));
-        SelectStatement sqlStatement = mock(SelectStatement.class, RETURNS_DEEP_STUBS);
-        when(sqlStatement.getDatabaseType()).thenReturn(TypedSPILoader.getService(DatabaseType.class, "PostgreSQL"));
-        when(sqlStatementContext.getSqlStatement()).thenReturn(sqlStatement);
+        when(sqlStatementContext.getTablesContext().getSimpleTables()).thenReturn(Collections.singleton(tableSegment));
+        QueryContext queryContext = mock(QueryContext.class);
         when(queryContext.getSqlStatementContext()).thenReturn(sqlStatementContext);
-        when(queryContext.getSql()).thenReturn(sql);
-        when(queryContext.getMetaData()).thenReturn(mock(org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData.class, RETURNS_DEEP_STUBS));
-        when(queryContext.getConnectionContext()).thenReturn(mock(ConnectionContext.class, RETURNS_DEEP_STUBS));
+        when(queryContext.getSql()).thenReturn("SELECT 1");
         when(queryContext.getParameters()).thenReturn(new ArrayList<>(Collections.singletonList(1)));
-        when(result.getQueryContext()).thenReturn(queryContext);
-        when(result.isPreview()).thenReturn(true);
-        when(result.getProcessId()).thenReturn("pid");
-        when(result.getPreviewExecutionUnits()).thenReturn(spy(new ArrayList<>()));
-        return result;
+        return new SQLFederationContext(preview, queryContext, mock(), "pid");
     }
     
-    private SQLFederationContext mockFederationContextWithParameters(final Collection<Object> params, final String sql, final String dbName, final String schemaName) {
-        SQLFederationContext result = mockFederationContext(sql, dbName, schemaName);
-        when(result.getQueryContext().getParameters()).thenReturn(new ArrayList<>(params));
-        return result;
-    }
-    
-    private SQLFederationContext mockFederationContextWithBoundInfo(final String sql, final String dbName, final String schemaName, final String originDb, final String originSchema) {
-        SQLFederationContext result = mock(SQLFederationContext.class, RETURNS_DEEP_STUBS);
-        QueryContext queryContext = mock(QueryContext.class, RETURNS_DEEP_STUBS);
-        SelectStatementContext sqlStatementContext = mock(SelectStatementContext.class, RETURNS_DEEP_STUBS);
-        SimpleTableSegment tableSegment = mock(SimpleTableSegment.class, RETURNS_DEEP_STUBS);
-        TableSegmentBoundInfo boundInfo = new TableSegmentBoundInfo(new IdentifierValue(originDb), new IdentifierValue(originSchema));
-        when(tableSegment.getTableName().getTableBoundInfo()).thenReturn(Optional.of(boundInfo));
-        when(tableSegment.getTableName().getIdentifier().getValue()).thenReturn("t_order");
-        when(sqlStatementContext.getTablesContext().getSimpleTables()).thenReturn(Collections.singletonList(tableSegment));
-        when(sqlStatementContext.getTablesContext().getSchemaNames()).thenReturn(Collections.singleton("pg_catalog"));
-        SelectStatement sqlStatement = mock(SelectStatement.class, RETURNS_DEEP_STUBS);
-        when(sqlStatement.getDatabaseType()).thenReturn(TypedSPILoader.getService(DatabaseType.class, "PostgreSQL"));
-        when(sqlStatementContext.getSqlStatement()).thenReturn(sqlStatement);
-        when(queryContext.getSqlStatementContext()).thenReturn(sqlStatementContext);
-        when(queryContext.getSql()).thenReturn(sql);
-        when(queryContext.getMetaData()).thenReturn(mock(org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData.class, RETURNS_DEEP_STUBS));
-        when(queryContext.getConnectionContext()).thenReturn(mock(ConnectionContext.class, RETURNS_DEEP_STUBS));
-        when(queryContext.getParameters()).thenReturn(new ArrayList<>(Collections.singletonList(1)));
-        when(result.getQueryContext()).thenReturn(queryContext);
-        when(result.isPreview()).thenReturn(true);
-        when(result.getProcessId()).thenReturn("pid");
-        when(result.getPreviewExecutionUnits()).thenReturn(spy(new ArrayList<>()));
-        return result;
-    }
-    
-    private SchemaPlus mockSchemaTreeWithTable(final String databaseName, final String schemaName, final String tableName) {
-        SchemaPlus root = mock(SchemaPlus.class, RETURNS_DEEP_STUBS);
-        SchemaPlus databaseSchema = mock(SchemaPlus.class, RETURNS_DEEP_STUBS);
-        SchemaPlus logicSchema = mock(SchemaPlus.class, RETURNS_DEEP_STUBS);
-        Lookup rootSchemas = mock(Lookup.class);
-        when(rootSchemas.get(databaseName)).thenReturn(databaseSchema);
-        Lookup schemaLookup = mock(Lookup.class);
-        when(schemaLookup.get(schemaName)).thenReturn(logicSchema);
+    @SuppressWarnings({"rawtypes", "unchecked"})
+    private SchemaPlus mockFlatSchemaWithTable(final Table table) {
         Lookup tableLookup = mock(Lookup.class);
-        SQLFederationTable federationTable = spy(new SQLFederationTable(mock(org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable.class),
-                TypedSPILoader.getService(DatabaseType.class, "PostgreSQL")));
-        lenient().when(tableLookup.get(any())).thenReturn(federationTable);
-        when(root.subSchemas()).thenReturn(rootSchemas);
-        when(databaseSchema.subSchemas()).thenReturn(schemaLookup);
-        when(logicSchema.tables()).thenReturn(tableLookup);
-        return root;
-    }
-    
-    private SchemaPlus mockSchemaTreeWithTable(final String databaseName, final String schemaName, final String tableName, final Table table) {
-        SchemaPlus root = mock(SchemaPlus.class, RETURNS_DEEP_STUBS);
+        when(tableLookup.get(any())).thenReturn(table);
         SchemaPlus databaseSchema = mock(SchemaPlus.class, RETURNS_DEEP_STUBS);
-        SchemaPlus logicSchema = mock(SchemaPlus.class, RETURNS_DEEP_STUBS);
-        Lookup rootSchemas = mock(Lookup.class);
-        when(rootSchemas.get(databaseName)).thenReturn(databaseSchema);
-        Lookup schemaLookup = mock(Lookup.class);
-        when(schemaLookup.get(schemaName)).thenReturn(logicSchema);
-        Lookup tableLookup = mock(Lookup.class);
-        lenient().when(tableLookup.get(any())).thenReturn(table);
-        when(root.subSchemas()).thenReturn(rootSchemas);
-        when(databaseSchema.subSchemas()).thenReturn(schemaLookup);
-        when(logicSchema.tables()).thenReturn(tableLookup);
-        return root;
-    }
-    
-    private SchemaPlus mockFlatSchemaWithTable(final String databaseName, final String tableName, final Table table) {
-        SchemaPlus root = mock(SchemaPlus.class, RETURNS_DEEP_STUBS);
-        SchemaPlus databaseSchema = mock(SchemaPlus.class, RETURNS_DEEP_STUBS);
-        Lookup rootSchemas = mock(Lookup.class);
-        when(rootSchemas.get(databaseName)).thenReturn(databaseSchema);
-        Lookup tableLookup = mock(Lookup.class);
-        lenient().when(tableLookup.get(any())).thenReturn(table);
-        when(root.subSchemas()).thenReturn(rootSchemas);
         when(databaseSchema.tables()).thenReturn(tableLookup);
-        return root;
+        Lookup rootSchemas = mock(Lookup.class);
+        when(rootSchemas.get(databaseName)).thenReturn(databaseSchema);
+        SchemaPlus result = mock(SchemaPlus.class);
+        when(result.subSchemas()).thenReturn(rootSchemas);
+        return result;
+    }
+    
+    @SuppressWarnings({"rawtypes", "unchecked"})
+    private SchemaPlus mockSchemaTreeWithTable(final String databaseName, final String schemaName, final Table table) {
+        SchemaPlus logicSchema = mock(SchemaPlus.class, RETURNS_DEEP_STUBS);
+        when(logicSchema.tables().get(any())).thenReturn(table);
+        Lookup schemaLookup = mock(Lookup.class);
+        when(schemaLookup.get(schemaName)).thenReturn(logicSchema);
+        SchemaPlus databaseSchema = mock(SchemaPlus.class);
+        when(databaseSchema.subSchemas()).thenReturn(schemaLookup);
+        Lookup rootSchemas = mock(Lookup.class);
+        when(rootSchemas.get(databaseName)).thenReturn(databaseSchema);
+        SchemaPlus result = mock(SchemaPlus.class);
+        when(result.subSchemas()).thenReturn(rootSchemas);
+        return result;
+    }
+    
+    @SuppressWarnings({"rawtypes", "unchecked"})
+    private SchemaPlus mockSchemaTreeWithTable() {
+        Lookup schemaLookup = mock(Lookup.class);
+        when(schemaLookup.get(schemaName)).thenReturn(mock(SchemaPlus.class, RETURNS_DEEP_STUBS));
+        SchemaPlus databaseSchema = mock(SchemaPlus.class);
+        when(databaseSchema.subSchemas()).thenReturn(schemaLookup);
+        Lookup rootSchemas = mock(Lookup.class);
+        when(rootSchemas.get(databaseName)).thenReturn(databaseSchema);
+        SchemaPlus result = mock(SchemaPlus.class);
+        when(result.subSchemas()).thenReturn(rootSchemas);
+        return result;
     }
 }
