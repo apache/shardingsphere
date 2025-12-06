@@ -46,7 +46,7 @@ public interface SQLFederationProcessor {
      * @param currentSchemaName current schema name
      * @param federationContext federation context
      * @param compilerContext compiler context
-     * @param schemaPlus sql federation schema
+     * @param schemaPlus SQL federation schema
      */
     void prepare(DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine, JDBCExecutorCallback<? extends ExecuteResult> queryCallback,
                  String currentDatabaseName, String currentSchemaName, SQLFederationContext federationContext, CompilerContext compilerContext, SchemaPlus schemaPlus);
@@ -57,7 +57,7 @@ public interface SQLFederationProcessor {
      * @param currentDatabaseName current database name
      * @param currentSchemaName current schema name
      * @param queryContext query context
-     * @param schemaPlus sql federation schema
+     * @param schemaPlus SQL federation schema
      */
     void release(String currentDatabaseName, String currentSchemaName, QueryContext queryContext, SchemaPlus schemaPlus);
     
@@ -69,7 +69,7 @@ public interface SQLFederationProcessor {
      * @param executionPlan execution plan
      * @param converter converter
      * @param federationContext federation context
-     * @param schemaPlus sql federation schema
+     * @param schemaPlus SQL federation schema
      * @return resultset
      */
     ResultSet executePlan(DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine, JDBCExecutorCallback<? extends ExecuteResult> queryCallback,

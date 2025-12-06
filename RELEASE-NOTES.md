@@ -262,6 +262,7 @@
 1. Sharding: Fix Sharding column not tracked through aliases
 1. Sharding: Fix alter view exception when config sharding rule and binding table rule
 1. Sharding: Fix is need accumulate logic
+1. Sharding: Fix NOT IN condition routing being treated as IN causing missing shards - [#32076](https://github.com/apache/shardingsphere/pull/32076)
 1. Encrypt: Fix show create table wrong result with encrypt when data type contains float
 1. Encrypt: Add insert select rewrite for encrypt
 1. Encrypt: Fix the issue where updating a non-encrypted table and using a subquery on an encrypted table

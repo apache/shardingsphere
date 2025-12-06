@@ -63,7 +63,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Standard sql federation processor.
+ * Standard SQL federation processor.
  */
 @RequiredArgsConstructor
 public final class StandardSQLFederationProcessor implements SQLFederationProcessor {
