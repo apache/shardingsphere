@@ -62,6 +62,7 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
@@ -86,11 +87,14 @@ public final class EnumerableScanImplementor implements ScanImplementor {
     @Override
     public Enumerable<Object> implement(final ShardingSphereTable table, final ScanImplementorContext scanContext) {
         SQLStatementContext sqlStatementContext = queryContext.getSqlStatementContext();
-        if (containsSystemSchema(sqlStatementContext)) {
-            return createMemoryEnumerable(sqlStatementContext, table);
+        DatabaseType databaseType = sqlStatementContext.getSqlStatement().getDatabaseType();
+        Collection<String> systemSchemas = new SystemDatabase(databaseType).getSystemSchemas();
+        if (sqlStatementContext.getTablesContext().getSchemaNames().stream().anyMatch(systemSchemas::contains)) {
+            return createMemoryEnumerable(sqlStatementContext, databaseType, table);
         }
-        QueryContext scanQueryContext = createQueryContext(queryContext.getMetaData(), scanContext, sqlStatementContext.getSqlStatement().getDatabaseType(), queryContext.isUseCache());
-        ExecutionContext executionContext = new KernelProcessor().generateExecutionContext(scanQueryContext, queryContext.getMetaData().getGlobalRuleMetaData(), queryContext.getMetaData().getProps());
+        QueryContext scanQueryContext = createQueryContext(queryContext.getMetaData(), scanContext, databaseType, queryContext.isUseCache());
+        ExecutionContext executionContext = new KernelProcessor().generateExecutionContext(
+                scanQueryContext, queryContext.getMetaData().getGlobalRuleMetaData(), queryContext.getMetaData().getProps());
         if (executorContext.isPreview()) {
             executorContext.getPreviewExecutionUnits().addAll(executionContext.getExecutionUnits());
             return createEmptyEnumerable();
@@ -98,15 +102,50 @@ public final class EnumerableScanImplementor implements ScanImplementor {
         return createJDBCEnumerable(scanQueryContext, queryContext.getMetaData().getDatabase(executorContext.getCurrentDatabaseName()), executionContext);
     }
     
-    private boolean containsSystemSchema(final SQLStatementContext sqlStatementContext) {
-        Collection<String> usedSchemaNames = sqlStatementContext.getTablesContext().getSchemaNames();
-        Collection<String> systemSchemas = new SystemDatabase(sqlStatementContext.getSqlStatement().getDatabaseType()).getSystemSchemas();
-        for (String each : usedSchemaNames) {
-            if (systemSchemas.contains(each)) {
-                return true;
-            }
+    private Enumerable<Object> createMemoryEnumerable(final SQLStatementContext sqlStatementContext, final DatabaseType databaseType, final ShardingSphereTable table) {
+        Optional<DialectDriverQuerySystemCatalogOption> driverQuerySystemCatalogOption = new DatabaseTypeRegistry(databaseType).getDialectDatabaseMetaData().getDriverQuerySystemCatalogOption();
+        if (driverQuerySystemCatalogOption.isPresent() && driverQuerySystemCatalogOption.get().isSystemTable(table.getName())) {
+            return createMemoryEnumerator(MemoryTableStatisticsBuilder.buildTableStatistics(table, queryContext.getMetaData(), driverQuerySystemCatalogOption.get()), table, databaseType);
         }
-        return false;
+        String databaseName = sqlStatementContext.getTablesContext().getDatabaseName().orElse(executorContext.getCurrentDatabaseName());
+        String schemaName = sqlStatementContext.getTablesContext().getSchemaName().orElse(executorContext.getCurrentSchemaName());
+        Optional<TableStatistics> tableStatistics = Optional.ofNullable(executorContext.getStatistics().getDatabaseStatistics(databaseName))
+                .map(optional -> optional.getSchemaStatistics(schemaName)).map(optional -> optional.getTableStatistics(table.getName()));
+        return tableStatistics.map(optional -> createMemoryEnumerator(optional, table, databaseType)).orElseGet(this::createEmptyEnumerable);
+    }
+    
+    private Enumerable<Object> createMemoryEnumerator(final TableStatistics tableStatistics, final ShardingSphereTable table, final DatabaseType databaseType) {
+        return new AbstractEnumerable<Object>() {
+            
+            @Override
+            public Enumerator<Object> enumerator() {
+                return new MemoryDataRowEnumerator(tableStatistics.getRows(), table.getAllColumns(), databaseType);
+            }
+        };
+    }
+    
+    private QueryContext createQueryContext(final ShardingSphereMetaData metaData, final ScanImplementorContext sqlString, final DatabaseType databaseType, final boolean useCache) {
+        String sql = sqlString.getSql().replace(System.lineSeparator(), " ");
+        SQLStatement sqlStatement = compilerContext.getSqlParserRule().getSQLParserEngine(databaseType).parse(sql, useCache);
+        HintValueContext hintValueContext = new HintValueContext();
+        SQLStatementContext sqlStatementContext = new SQLBindEngine(metaData, executorContext.getCurrentDatabaseName(), hintValueContext).bind(sqlStatement);
+        return new QueryContext(sqlStatementContext, sql, getParameters(sqlString.getParamIndexes()), hintValueContext, queryContext.getConnectionContext(), metaData, useCache);
+    }
+    
+    private List<Object> getParameters(final int[] paramIndexes) {
+        return null == paramIndexes
+                ? Collections.emptyList()
+                : Arrays.stream(paramIndexes).mapToObj(each -> queryContext.getParameters().get(each)).collect(Collectors.toCollection(() -> new ArrayList<>(paramIndexes.length)));
+    }
+    
+    private AbstractEnumerable<Object> createEmptyEnumerable() {
+        return new AbstractEnumerable<Object>() {
+            
+            @Override
+            public Enumerator<Object> enumerator() {
+                return new EmptyDataRowEnumerator();
+            }
+        };
     }
     
     private AbstractEnumerable<Object> createJDBCEnumerable(final QueryContext queryContext, final ShardingSphereDatabase database, final ExecutionContext executionContext) {
@@ -130,44 +169,17 @@ public final class EnumerableScanImplementor implements ScanImplementor {
         };
     }
     
+    private void computeConnectionOffsets(final ExecutionContext context) {
+        for (ExecutionUnit each : context.getExecutionUnits()) {
+            int connectionOffset = executorContext.getConnectionOffsets().containsKey(each.getDataSourceName()) ? executorContext.getConnectionOffsets().get(each.getDataSourceName()) + 1 : 0;
+            executorContext.getConnectionOffsets().put(each.getDataSourceName(), connectionOffset);
+        }
+    }
+    
     private ExecutionGroupContext<JDBCExecutionUnit> prepare(final ShardingSphereDatabase database, final ExecutionContext executionContext) throws SQLException {
         // TODO pass grantee from proxy and jdbc adapter
         return executorContext.getPrepareEngine().prepare(database.getName(), executionContext, executorContext.getConnectionOffsets(), executionContext.getExecutionUnits(),
                 new ExecutionGroupReportContext(executorContext.getProcessId(), database.getName()));
-    }
-    
-    private void computeConnectionOffsets(final ExecutionContext context) {
-        for (ExecutionUnit each : context.getExecutionUnits()) {
-            if (executorContext.getConnectionOffsets().containsKey(each.getDataSourceName())) {
-                int connectionOffset = executorContext.getConnectionOffsets().get(each.getDataSourceName());
-                executorContext.getConnectionOffsets().put(each.getDataSourceName(), ++connectionOffset);
-            } else {
-                executorContext.getConnectionOffsets().put(each.getDataSourceName(), 0);
-            }
-        }
-    }
-    
-    private Enumerable<Object> createMemoryEnumerable(final SQLStatementContext sqlStatementContext, final ShardingSphereTable table) {
-        DatabaseType databaseType = sqlStatementContext.getSqlStatement().getDatabaseType();
-        Optional<DialectDriverQuerySystemCatalogOption> driverQuerySystemCatalogOption = new DatabaseTypeRegistry(databaseType).getDialectDatabaseMetaData().getDriverQuerySystemCatalogOption();
-        if (driverQuerySystemCatalogOption.isPresent() && driverQuerySystemCatalogOption.get().isSystemTable(table.getName())) {
-            return createMemoryEnumerator(MemoryTableStatisticsBuilder.buildTableStatistics(table, queryContext.getMetaData(), driverQuerySystemCatalogOption.get()), table, databaseType);
-        }
-        String databaseName = sqlStatementContext.getTablesContext().getDatabaseName().orElse(executorContext.getCurrentDatabaseName());
-        String schemaName = sqlStatementContext.getTablesContext().getSchemaName().orElse(executorContext.getCurrentSchemaName());
-        Optional<TableStatistics> tableStatistics = Optional.ofNullable(executorContext.getStatistics().getDatabaseStatistics(databaseName))
-                .map(optional -> optional.getSchemaStatistics(schemaName)).map(optional -> optional.getTableStatistics(table.getName()));
-        return tableStatistics.map(optional -> createMemoryEnumerator(optional, table, databaseType)).orElseGet(this::createEmptyEnumerable);
-    }
-    
-    private Enumerable<Object> createMemoryEnumerator(final TableStatistics tableStatistics, final ShardingSphereTable table, final DatabaseType databaseType) {
-        return new AbstractEnumerable<Object>() {
-            
-            @Override
-            public Enumerator<Object> enumerator() {
-                return new MemoryDataRowEnumerator(tableStatistics.getRows(), table.getAllColumns(), databaseType);
-            }
-        };
     }
     
     private Collection<Statement> getStatements(final Collection<ExecutionGroup<JDBCExecutionUnit>> inputGroups) {
@@ -183,10 +195,9 @@ public final class EnumerableScanImplementor implements ScanImplementor {
     private void setParameters(final Collection<ExecutionGroup<JDBCExecutionUnit>> inputGroups) {
         for (ExecutionGroup<JDBCExecutionUnit> each : inputGroups) {
             for (JDBCExecutionUnit executionUnit : each.getInputs()) {
-                if (!(executionUnit.getStorageResource() instanceof PreparedStatement)) {
-                    continue;
+                if (executionUnit.getStorageResource() instanceof PreparedStatement) {
+                    setParameters((PreparedStatement) executionUnit.getStorageResource(), executionUnit.getExecutionUnit().getSqlUnit().getParameters());
                 }
-                setParameters((PreparedStatement) executionUnit.getStorageResource(), executionUnit.getExecutionUnit().getSqlUnit().getParameters());
             }
         }
     }
@@ -196,35 +207,5 @@ public final class EnumerableScanImplementor implements ScanImplementor {
         for (int i = 0; i < params.size(); i++) {
             preparedStatement.setObject(i + 1, params.get(i));
         }
-    }
-    
-    private QueryContext createQueryContext(final ShardingSphereMetaData metaData, final ScanImplementorContext sqlString, final DatabaseType databaseType, final boolean useCache) {
-        String sql = sqlString.getSql().replace(System.lineSeparator(), " ");
-        SQLStatement sqlStatement = compilerContext.getSqlParserRule().getSQLParserEngine(databaseType).parse(sql, useCache);
-        List<Object> params = getParameters(sqlString.getParamIndexes());
-        HintValueContext hintValueContext = new HintValueContext();
-        SQLStatementContext sqlStatementContext = new SQLBindEngine(metaData, executorContext.getCurrentDatabaseName(), hintValueContext).bind(sqlStatement);
-        return new QueryContext(sqlStatementContext, sql, params, hintValueContext, queryContext.getConnectionContext(), metaData, useCache);
-    }
-    
-    private List<Object> getParameters(final int[] paramIndexes) {
-        if (null == paramIndexes) {
-            return Collections.emptyList();
-        }
-        List<Object> result = new ArrayList<>(paramIndexes.length);
-        for (int each : paramIndexes) {
-            result.add(queryContext.getParameters().get(each));
-        }
-        return result;
-    }
-    
-    private AbstractEnumerable<Object> createEmptyEnumerable() {
-        return new AbstractEnumerable<Object>() {
-            
-            @Override
-            public Enumerator<Object> enumerator() {
-                return new EmptyDataRowEnumerator();
-            }
-        };
     }
 }
