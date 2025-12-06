@@ -44,7 +44,7 @@ public final class PostgreSQLBinaryProtocolValueFactory {
         setFloatBinaryProtocolValue();
         setNumericBinaryProtocolValue();
         setDateBinaryProtocolValue();
-        setTimeBinaryProtocolValue();
+        setTimeStampBinaryProtocolValue();
         setInt2ArrayBinaryProtocolValue();
         setInt4ArrayBinaryProtocolValue();
         setInt8ArrayBinaryProtocolValue();
@@ -55,6 +55,13 @@ public final class PostgreSQLBinaryProtocolValueFactory {
         setByteaBinaryProtocolValue();
         setUUIDBinaryProtocolValue();
         setBoolBinaryProtocolValue();
+        setTimeBinaryProtocolValue();
+        setNumericArrayProtocolValue();
+        setByteaArrayBinaryProtocolValue();
+        setDateArrayBinaryProtocolValue();
+        setTimeArrayBinaryProtocolValue();
+        setTimeStampArrayBinaryProtocolValue();
+        setBooleanArrayBinaryProtocolValue();
     }
     
     private static void setUnspecifiedBinaryProtocolValue() {
@@ -65,6 +72,7 @@ public final class PostgreSQLBinaryProtocolValueFactory {
     private static void setStringLenencBinaryProtocolValue() {
         PostgreSQLStringBinaryProtocolValue binaryProtocolValue = new PostgreSQLStringBinaryProtocolValue();
         BINARY_PROTOCOL_VALUES.put(PostgreSQLColumnType.VARCHAR, binaryProtocolValue);
+        BINARY_PROTOCOL_VALUES.put(PostgreSQLColumnType.TEXT, binaryProtocolValue);
         BINARY_PROTOCOL_VALUES.put(PostgreSQLColumnType.CHAR, binaryProtocolValue);
     }
     
@@ -103,39 +111,45 @@ public final class PostgreSQLBinaryProtocolValueFactory {
         BINARY_PROTOCOL_VALUES.put(PostgreSQLColumnType.DATE, binaryProtocolValue);
     }
     
-    private static void setTimeBinaryProtocolValue() {
-        PostgreSQLTimeBinaryProtocolValue binaryProtocolValue = new PostgreSQLTimeBinaryProtocolValue();
+    private static void setTimeStampBinaryProtocolValue() {
+        PostgreSQLTimeStampBinaryProtocolValue binaryProtocolValue = new PostgreSQLTimeStampBinaryProtocolValue();
         BINARY_PROTOCOL_VALUES.put(PostgreSQLColumnType.TIMESTAMP, binaryProtocolValue);
     }
     
+    private static void setTimeBinaryProtocolValue() {
+        PostgreSQLTimeBinaryProtocolValue timeBinaryProtocolValue = new PostgreSQLTimeBinaryProtocolValue();
+        BINARY_PROTOCOL_VALUES.put(PostgreSQLColumnType.TIME, timeBinaryProtocolValue);
+    }
+    
     private static void setInt2ArrayBinaryProtocolValue() {
-        BINARY_PROTOCOL_VALUES.put(PostgreSQLColumnType.INT2_ARRAY, new PostgreSQLInt2ArrayBinaryProtocolValue());
+        BINARY_PROTOCOL_VALUES.put(PostgreSQLColumnType.INT2_ARRAY, PostgreSQLArrayBinaryProtocolValue.INSTANCE);
     }
     
     private static void setInt4ArrayBinaryProtocolValue() {
-        BINARY_PROTOCOL_VALUES.put(PostgreSQLColumnType.INT4_ARRAY, new PostgreSQLInt4ArrayBinaryProtocolValue());
+        BINARY_PROTOCOL_VALUES.put(PostgreSQLColumnType.INT4_ARRAY, PostgreSQLArrayBinaryProtocolValue.INSTANCE);
     }
     
     private static void setInt8ArrayBinaryProtocolValue() {
-        BINARY_PROTOCOL_VALUES.put(PostgreSQLColumnType.INT8_ARRAY, new PostgreSQLInt8ArrayBinaryProtocolValue());
+        BINARY_PROTOCOL_VALUES.put(PostgreSQLColumnType.INT8_ARRAY, PostgreSQLArrayBinaryProtocolValue.INSTANCE);
     }
     
     private static void setFloat4ArrayBinaryProtocolValue() {
-        BINARY_PROTOCOL_VALUES.put(PostgreSQLColumnType.FLOAT4_ARRAY, new PostgreSQLFloat4ArrayBinaryProtocolValue());
+        BINARY_PROTOCOL_VALUES.put(PostgreSQLColumnType.FLOAT4_ARRAY, PostgreSQLArrayBinaryProtocolValue.INSTANCE);
     }
     
     private static void setFloat8ArrayBinaryProtocolValue() {
-        BINARY_PROTOCOL_VALUES.put(PostgreSQLColumnType.FLOAT8_ARRAY, new PostgreSQLFloat8ArrayBinaryProtocolValue());
+        BINARY_PROTOCOL_VALUES.put(PostgreSQLColumnType.FLOAT8_ARRAY, PostgreSQLArrayBinaryProtocolValue.INSTANCE);
     }
     
     private static void setBoolArrayBinaryProtocolValue() {
-        BINARY_PROTOCOL_VALUES.put(PostgreSQLColumnType.BOOL_ARRAY, new PostgreSQLBoolArrayBinaryProtocolValue());
+        BINARY_PROTOCOL_VALUES.put(PostgreSQLColumnType.BOOL_ARRAY, PostgreSQLArrayBinaryProtocolValue.INSTANCE);
     }
     
     private static void setStringArrayBinaryProtocolValue() {
-        BINARY_PROTOCOL_VALUES.put(PostgreSQLColumnType.VARCHAR_ARRAY, new PostgreSQLStringArrayBinaryProtocolValue());
-        BINARY_PROTOCOL_VALUES.put(PostgreSQLColumnType.CHAR_ARRAY, new PostgreSQLStringArrayBinaryProtocolValue());
-        BINARY_PROTOCOL_VALUES.put(PostgreSQLColumnType.TEXT_ARRAY, new PostgreSQLTextArrayBinaryProtocolValue());
+        PostgreSQLStringArrayBinaryProtocolValue value = new PostgreSQLStringArrayBinaryProtocolValue();
+        BINARY_PROTOCOL_VALUES.put(PostgreSQLColumnType.VARCHAR_ARRAY, value);
+        BINARY_PROTOCOL_VALUES.put(PostgreSQLColumnType.CHAR_ARRAY, value);
+        BINARY_PROTOCOL_VALUES.put(PostgreSQLColumnType.TEXT_ARRAY, value);
     }
     
     private static void setByteaBinaryProtocolValue() {
@@ -148,6 +162,30 @@ public final class PostgreSQLBinaryProtocolValueFactory {
     
     private static void setBoolBinaryProtocolValue() {
         BINARY_PROTOCOL_VALUES.put(PostgreSQLColumnType.BOOL, new PostgreSQLBoolBinaryProtocolValue());
+    }
+    
+    private static void setNumericArrayProtocolValue() {
+        BINARY_PROTOCOL_VALUES.put(PostgreSQLColumnType.NUMERIC_ARRAY, PostgreSQLArrayBinaryProtocolValue.INSTANCE);
+    }
+    
+    private static void setByteaArrayBinaryProtocolValue() {
+        BINARY_PROTOCOL_VALUES.put(PostgreSQLColumnType.BYTEA_ARRAY, PostgreSQLArrayBinaryProtocolValue.INSTANCE);
+    }
+    
+    private static void setDateArrayBinaryProtocolValue() {
+        BINARY_PROTOCOL_VALUES.put(PostgreSQLColumnType.DATE_ARRAY, PostgreSQLArrayBinaryProtocolValue.INSTANCE);
+    }
+    
+    private static void setTimeArrayBinaryProtocolValue() {
+        BINARY_PROTOCOL_VALUES.put(PostgreSQLColumnType.TIME_ARRAY, PostgreSQLArrayBinaryProtocolValue.INSTANCE);
+    }
+    
+    private static void setTimeStampArrayBinaryProtocolValue() {
+        BINARY_PROTOCOL_VALUES.put(PostgreSQLColumnType.TIMESTAMP_ARRAY, PostgreSQLArrayBinaryProtocolValue.INSTANCE);
+    }
+    
+    private static void setBooleanArrayBinaryProtocolValue() {
+        BINARY_PROTOCOL_VALUES.put(PostgreSQLColumnType.BOOL_ARRAY, PostgreSQLArrayBinaryProtocolValue.INSTANCE);
     }
     
     /**

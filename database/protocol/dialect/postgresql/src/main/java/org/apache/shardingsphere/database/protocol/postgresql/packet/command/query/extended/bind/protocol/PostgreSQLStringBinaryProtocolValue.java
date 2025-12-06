@@ -26,25 +26,26 @@ public final class PostgreSQLStringBinaryProtocolValue implements PostgreSQLBina
     
     @Override
     public int getColumnLength(final PostgreSQLPacketPayload payload, final Object value) {
-        if (value instanceof byte[]) {
-            return ((byte[]) value).length;
-        }
-        return value.toString().getBytes(payload.getCharset()).length;
+        return -1;
     }
     
     @Override
     public Object read(final PostgreSQLPacketPayload payload, final int parameterValueLength) {
         byte[] result = new byte[parameterValueLength];
         payload.getByteBuf().readBytes(result);
-        return new String(result);
+        return new String(result, payload.getCharset());
     }
     
     @Override
     public void write(final PostgreSQLPacketPayload payload, final Object value) {
         if (value instanceof byte[]) {
+            payload.writeInt4(((byte[]) value).length);
+            // we may convert charset?
             payload.writeBytes((byte[]) value);
         } else {
-            payload.writeStringEOF(value.toString());
+            byte[] bytes = value.toString().getBytes(payload.getCharset());
+            payload.writeInt4(bytes.length);
+            payload.writeBytes(bytes);
         }
     }
 }

@@ -17,34 +17,32 @@
 
 package org.apache.shardingsphere.database.protocol.postgresql.packet.command.query.extended.bind.protocol;
 
+import io.netty.buffer.ByteBufAllocator;
 import org.apache.shardingsphere.database.protocol.postgresql.packet.command.query.extended.bind.protocol.util.codec.decoder.PgBinaryObj;
 import org.apache.shardingsphere.database.protocol.postgresql.payload.PostgreSQLPacketPayload;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+import org.postgresql.util.ByteConverter;
 
-import java.sql.Time;
-import java.util.TimeZone;
+import java.nio.charset.StandardCharsets;
+import java.sql.Timestamp;
+import java.util.Date;
 
-/**
- * Binary protocol value for time for PostgreSQL.
- */
-public final class PostgreSQLTimeBinaryProtocolValue implements PostgreSQLBinaryProtocolValue {
+class PostgreSQLTimeStampBinaryProtocolValueTest {
     
-    @Override
-    public int getColumnLength(final PostgreSQLPacketPayload payload, final Object value) {
-        return 8;
-    }
-    
-    @Override
-    public Object read(final PostgreSQLPacketPayload payload, final int parameterValueLength) {
-        byte[] bytes = new byte[8];
-        payload.getByteBuf().readBytes(bytes);
-        PgBinaryObj result = new PgBinaryObj(bytes);
-        result.setType("time");
-        return result;
-    }
-    
-    @Override
-    public void write(final PostgreSQLPacketPayload payload, final Object value) {
-        long time = ((Time) value).getTime() * 1000 + TimeZone.getDefault().getRawOffset() * 1000L;
-        payload.writeInt8(time);
+    @Test
+    void test() {
+        PostgreSQLPacketPayload payload = new PostgreSQLPacketPayload(ByteBufAllocator.DEFAULT.buffer(), StandardCharsets.UTF_8);
+        PostgreSQLTimeStampBinaryProtocolValue actual = new PostgreSQLTimeStampBinaryProtocolValue();
+        Timestamp timestamp = new Timestamp(new Date(100, 0, 1).getTime());
+        actual.write(payload, timestamp);
+        
+        PgBinaryObj read = (PgBinaryObj) actual.read(payload, 8);
+        Assertions.assertEquals("timestamp", read.getType());
+        byte[] target = new byte[8];
+        read.toBytes(target, 0);
+        long l = ByteConverter.int8(target, 0);
+        Assertions.assertEquals(0L, l);
+        payload.getByteBuf().release();
     }
 }
