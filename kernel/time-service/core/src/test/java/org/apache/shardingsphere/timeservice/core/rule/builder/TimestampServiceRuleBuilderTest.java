@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.timeservice.core.rule.builder;
 
-import org.apache.shardingsphere.infra.config.rule.scope.GlobalRuleConfiguration;
 import org.apache.shardingsphere.infra.rule.builder.global.GlobalRuleBuilder;
 import org.apache.shardingsphere.infra.spi.type.ordered.OrderedSPILoader;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
@@ -28,7 +27,6 @@ import org.junit.jupiter.api.Test;
 import org.mockito.MockedStatic;
 
 import java.util.Collections;
-import java.util.Map;
 import java.util.Properties;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -38,15 +36,14 @@ import static org.mockito.Mockito.mockStatic;
 
 class TimestampServiceRuleBuilderTest {
     
-    @SuppressWarnings({"rawtypes", "unchecked"})
     @Test
     void assertBuild() {
         TimestampServiceRuleConfiguration ruleConfig = new TimestampServiceRuleConfiguration("System", new Properties());
-        Map<GlobalRuleConfiguration, GlobalRuleBuilder> builders = OrderedSPILoader.getServices(GlobalRuleBuilder.class, Collections.singleton(ruleConfig));
+        TimestampServiceRuleBuilder builder = (TimestampServiceRuleBuilder) OrderedSPILoader.getServices(GlobalRuleBuilder.class, Collections.singleton(ruleConfig)).get(ruleConfig);
         TimestampService timestampService = mock(TimestampService.class);
         try (MockedStatic<TypedSPILoader> typedSpiLoader = mockStatic(TypedSPILoader.class)) {
             typedSpiLoader.when(() -> TypedSPILoader.getService(TimestampService.class, "System", new Properties())).thenReturn(timestampService);
-            assertThat(builders.get(ruleConfig).build(ruleConfig, Collections.emptyList(), null), isA(TimestampServiceRule.class));
+            assertThat(builder.build(ruleConfig, Collections.emptyList(), null), isA(TimestampServiceRule.class));
         }
     }
 }

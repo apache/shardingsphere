@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.parser.rule.builder;
 
-import org.apache.shardingsphere.infra.config.rule.scope.GlobalRuleConfiguration;
 import org.apache.shardingsphere.infra.rule.builder.global.GlobalRuleBuilder;
 import org.apache.shardingsphere.infra.spi.type.ordered.OrderedSPILoader;
 import org.apache.shardingsphere.parser.config.SQLParserRuleConfiguration;
@@ -26,18 +25,16 @@ import org.apache.shardingsphere.sql.parser.engine.api.CacheOption;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
-import java.util.Map;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.isA;
 
 class SQLParserRuleBuilderTest {
     
-    @SuppressWarnings({"rawtypes", "unchecked"})
     @Test
     void assertBuild() {
         SQLParserRuleConfiguration ruleConfig = new SQLParserRuleConfiguration(new CacheOption(4, 64L), new CacheOption(8, 128L));
-        Map<GlobalRuleConfiguration, GlobalRuleBuilder> builders = OrderedSPILoader.getServices(GlobalRuleBuilder.class, Collections.singleton(ruleConfig));
-        assertThat(builders.get(ruleConfig).build(ruleConfig, Collections.emptyList(), null), isA(SQLParserRule.class));
+        SQLParserRuleBuilder builder = (SQLParserRuleBuilder) OrderedSPILoader.getServices(GlobalRuleBuilder.class, Collections.singleton(ruleConfig)).get(ruleConfig);
+        assertThat(builder.build(ruleConfig, Collections.emptyList(), null), isA(SQLParserRule.class));
     }
 }

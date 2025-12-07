@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.transaction.rule.builder;
 
-import org.apache.shardingsphere.infra.config.rule.scope.GlobalRuleConfiguration;
 import org.apache.shardingsphere.infra.rule.builder.global.GlobalRuleBuilder;
 import org.apache.shardingsphere.infra.spi.type.ordered.OrderedSPILoader;
 import org.apache.shardingsphere.transaction.config.TransactionRuleConfiguration;
@@ -25,7 +24,6 @@ import org.apache.shardingsphere.transaction.rule.TransactionRule;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
-import java.util.Map;
 import java.util.Properties;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -33,11 +31,10 @@ import static org.hamcrest.Matchers.isA;
 
 class TransactionRuleBuilderTest {
     
-    @SuppressWarnings({"rawtypes", "unchecked"})
     @Test
     void assertBuild() {
         TransactionRuleConfiguration ruleConfig = new TransactionRuleConfiguration("LOCAL", "FIXTURE", new Properties());
-        Map<GlobalRuleConfiguration, GlobalRuleBuilder> builders = OrderedSPILoader.getServices(GlobalRuleBuilder.class, Collections.singleton(ruleConfig));
-        assertThat(builders.get(ruleConfig).build(ruleConfig, Collections.emptyList(), null), isA(TransactionRule.class));
+        TransactionRuleBuilder builder = (TransactionRuleBuilder) OrderedSPILoader.getServices(GlobalRuleBuilder.class, Collections.singleton(ruleConfig)).get(ruleConfig);
+        assertThat(builder.build(ruleConfig, Collections.emptyList(), null), isA(TransactionRule.class));
     }
 }

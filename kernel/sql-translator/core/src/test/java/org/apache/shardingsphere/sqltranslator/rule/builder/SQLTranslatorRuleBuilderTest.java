@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.sqltranslator.rule.builder;
 
-import org.apache.shardingsphere.infra.config.rule.scope.GlobalRuleConfiguration;
 import org.apache.shardingsphere.infra.rule.builder.global.GlobalRuleBuilder;
 import org.apache.shardingsphere.infra.spi.type.ordered.OrderedSPILoader;
 import org.apache.shardingsphere.sqltranslator.config.SQLTranslatorRuleConfiguration;
@@ -25,7 +24,6 @@ import org.apache.shardingsphere.sqltranslator.rule.SQLTranslatorRule;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
-import java.util.Map;
 import java.util.Properties;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -33,11 +31,10 @@ import static org.hamcrest.Matchers.isA;
 
 class SQLTranslatorRuleBuilderTest {
     
-    @SuppressWarnings({"rawtypes", "unchecked"})
     @Test
     void assertBuild() {
         SQLTranslatorRuleConfiguration ruleConfig = new SQLTranslatorRuleConfiguration("FIXTURE", new Properties(), true);
-        Map<GlobalRuleConfiguration, GlobalRuleBuilder> builders = OrderedSPILoader.getServices(GlobalRuleBuilder.class, Collections.singleton(ruleConfig));
-        assertThat(builders.get(ruleConfig).build(ruleConfig, Collections.emptyList(), null), isA(SQLTranslatorRule.class));
+        SQLTranslatorRuleBuilder builder = (SQLTranslatorRuleBuilder) OrderedSPILoader.getServices(GlobalRuleBuilder.class, Collections.singleton(ruleConfig)).get(ruleConfig);
+        assertThat(builder.build(ruleConfig, Collections.emptyList(), null), isA(SQLTranslatorRule.class));
     }
 }
