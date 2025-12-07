@@ -105,8 +105,7 @@ public final class SQLFederationResultSetMetaData extends SQLFederationWrapperAd
     
     @Override
     public int getColumnDisplaySize(final int column) {
-        return findTableName(column).flatMap(optional -> Optional.ofNullable(sqlFederationSchema.tables().get(optional))).map(optional -> optional.getRowType(typeFactory).getPrecision())
-                .orElse(0);
+        return findTableName(column).flatMap(optional -> Optional.ofNullable(sqlFederationSchema.tables().get(optional))).map(optional -> optional.getRowType(typeFactory).getPrecision()).orElse(0);
     }
     
     @Override
@@ -119,10 +118,7 @@ public final class SQLFederationResultSetMetaData extends SQLFederationWrapperAd
     
     @Override
     public String getColumnName(final int column) {
-        if (expandProjections.size() < column) {
-            return resultColumnType.getFieldList().get(column - 1).getName();
-        }
-        return expandProjections.get(column - 1).getColumnName();
+        return expandProjections.size() < column ? resultColumnType.getFieldList().get(column - 1).getName() : expandProjections.get(column - 1).getColumnName();
     }
     
     @Override
