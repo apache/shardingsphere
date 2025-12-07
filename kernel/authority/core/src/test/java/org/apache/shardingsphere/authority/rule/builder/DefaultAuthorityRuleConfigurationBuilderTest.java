@@ -18,21 +18,41 @@
 package org.apache.shardingsphere.authority.rule.builder;
 
 import org.apache.shardingsphere.authority.config.AuthorityRuleConfiguration;
+import org.apache.shardingsphere.authority.config.UserConfiguration;
+import org.apache.shardingsphere.infra.rule.builder.global.DefaultGlobalRuleConfigurationBuilder;
+import org.apache.shardingsphere.infra.rule.builder.global.GlobalRuleBuilder;
+import org.apache.shardingsphere.infra.spi.type.ordered.OrderedSPILoader;
 import org.junit.jupiter.api.Test;
 
-import static org.hamcrest.CoreMatchers.is;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Map;
+import java.util.Properties;
+
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class DefaultAuthorityRuleConfigurationBuilderTest {
     
+    @SuppressWarnings("rawtypes")
     @Test
     void assertBuild() {
-        AuthorityRuleConfiguration actual = new DefaultAuthorityRuleConfigurationBuilder().build();
+        Map<GlobalRuleBuilder, DefaultGlobalRuleConfigurationBuilder> builders = OrderedSPILoader.getServices(
+                DefaultGlobalRuleConfigurationBuilder.class, Collections.singleton(new AuthorityRuleBuilder()));
+        AuthorityRuleConfiguration actual = (AuthorityRuleConfiguration) builders.values().iterator().next().build();
+        Collection<UserConfiguration> users = actual.getUsers();
+        assertThat(users.size(), is(1));
+        UserConfiguration user = users.iterator().next();
+        assertThat(user.getUsername(), is(DefaultUser.USERNAME));
+        assertThat(user.getPassword(), is(DefaultUser.PASSWORD));
+        assertThat(user.getHostname(), is(DefaultUser.HOSTNAME));
+        assertThat(user.getAuthenticationMethodName(), is(""));
+        assertTrue(user.isAdmin());
         assertThat(actual.getPrivilegeProvider().getType(), is("ALL_PERMITTED"));
-        assertThat(actual.getUsers().size(), is(1));
-        assertNull(actual.getDefaultAuthenticator());
+        assertThat(actual.getPrivilegeProvider().getProps(), is(new Properties()));
         assertTrue(actual.getAuthenticators().isEmpty());
+        assertNull(actual.getDefaultAuthenticator());
     }
 }
