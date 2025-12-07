@@ -284,9 +284,7 @@ class SQLFederationResultSetMetaDataTest {
         when(javaBigIntegerType.getJavaClass()).thenReturn(BigInteger.class);
         when(javaBigIntegerType.getSqlTypeName()).thenReturn(SqlTypeName.DECIMAL);
         RelDataType resultType = createResultType(new String[]{"foo_col"}, javaBigIntegerType);
-        SQLFederationColumnTypeConverter converter = mock(SQLFederationColumnTypeConverter.class);
-        SQLFederationResultSetMetaData metaData = new SQLFederationResultSetMetaData(mock(Schema.class), Collections.emptyList(),
-                databaseType, resultType, Collections.singletonMap(1, "foo_label"), converter);
+        SQLFederationResultSetMetaData metaData = new SQLFederationResultSetMetaData(mock(), Collections.emptyList(), databaseType, resultType, Collections.singletonMap(1, "foo_label"), mock());
         assertThat(metaData.getColumnType(1), is(SqlType.BIGINT.id));
     }
     
