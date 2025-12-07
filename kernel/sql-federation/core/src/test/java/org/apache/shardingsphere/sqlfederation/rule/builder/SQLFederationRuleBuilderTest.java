@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.sqlfederation.rule.builder;
 
-import org.apache.shardingsphere.infra.config.rule.scope.GlobalRuleConfiguration;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.rule.builder.global.GlobalRuleBuilder;
 import org.apache.shardingsphere.infra.spi.type.ordered.OrderedSPILoader;
@@ -32,7 +31,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
 import java.util.Collections;
-import java.util.Map;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.isA;
@@ -43,13 +41,12 @@ import static org.mockito.Mockito.when;
 @StaticMockSettings(CompilerContextFactory.class)
 class SQLFederationRuleBuilderTest {
     
-    @SuppressWarnings({"rawtypes", "unchecked"})
     @Test
     void assertBuild() {
         SQLFederationRuleConfiguration ruleConfig = new SQLFederationRuleConfiguration(true, false, new SQLFederationCacheOption(4, 64L));
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class);
         when(CompilerContextFactory.create(Collections.singleton(database))).thenReturn(mock(CompilerContext.class));
-        Map<GlobalRuleConfiguration, GlobalRuleBuilder> builders = OrderedSPILoader.getServices(GlobalRuleBuilder.class, Collections.singleton(ruleConfig));
-        assertThat(builders.get(ruleConfig).build(ruleConfig, Collections.singleton(database), null), isA(SQLFederationRule.class));
+        SQLFederationRuleBuilder builder = (SQLFederationRuleBuilder) OrderedSPILoader.getServices(GlobalRuleBuilder.class, Collections.singleton(ruleConfig)).get(ruleConfig);
+        assertThat(builder.build(ruleConfig, Collections.singleton(database), null), isA(SQLFederationRule.class));
     }
 }
