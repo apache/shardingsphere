@@ -29,7 +29,6 @@ import org.apache.shardingsphere.infra.binder.context.statement.type.dal.Explain
 import org.apache.shardingsphere.infra.binder.context.statement.type.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
-import org.apache.shardingsphere.infra.exception.kernel.connection.SQLExecutionInterruptedException;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutor;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutorCallback;
@@ -68,6 +67,7 @@ import org.apache.shardingsphere.sqlfederation.engine.fixture.rule.SQLFederation
 import org.apache.shardingsphere.sqlfederation.engine.processor.SQLFederationProcessor;
 import org.apache.shardingsphere.sqlfederation.engine.processor.SQLFederationProcessorFactory;
 import org.apache.shardingsphere.sqlfederation.rule.SQLFederationRule;
+import org.apache.shardingsphere.infra.exception.kernel.connection.SQLExecutionInterruptedException;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -78,9 +78,11 @@ import org.mockito.MockedConstruction;
 import org.mockito.MockedStatic;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.lang.reflect.Field;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.SQLIntegrityConstraintViolationException;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -95,7 +97,9 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockConstruction;
 import static org.mockito.Mockito.mockStatic;
@@ -360,9 +364,9 @@ class SQLFederationEngineTest {
         when(selectStatementContext.getTablesContext()).thenReturn(tablesContext);
         QueryContext queryContext = mock(QueryContext.class);
         when(queryContext.getSqlStatementContext()).thenReturn(selectStatementContext);
-        when(queryContext.getSql()).thenReturn("SELECT * FROM t_order");
-        when(queryContext.getParameters()).thenReturn(Collections.emptyList());
-        when(queryContext.getConnectionContext()).thenReturn(new ConnectionContext(Collections::emptyList, new Grantee("root", "localhost")));
+        lenient().when(queryContext.getSql()).thenReturn("SELECT * FROM t_order");
+        lenient().when(queryContext.getParameters()).thenReturn(Collections.emptyList());
+        lenient().when(queryContext.getConnectionContext()).thenReturn(new ConnectionContext(Collections::emptyList, new Grantee("root", "localhost")));
         SQLFederationContext federationContext = new SQLFederationContext(false, queryContext, actualMetaData, "process_3");
         DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine = mock(DriverExecutionPrepareEngine.class);
         JDBCExecutorCallback<? extends ExecuteResult> callback = mock(JDBCExecutorCallback.class);
@@ -384,6 +388,7 @@ class SQLFederationEngineTest {
         ShardingSphereMetaData actualMetaData = createMetaData(config, Collections.emptyList(), Collections.singleton(table), databaseType, props);
         SQLFederationProcessor processor = mock(SQLFederationProcessor.class);
         when(processor.getConvention()).thenReturn(mock(Convention.class));
+        final SQLFederationEngine engine = createEngineWithProcessor(processor, actualMetaData, mock(ShardingSphereStatistics.class), mock(JDBCExecutor.class));
         SimpleTableSegment simpleTableSegment = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order")));
         TablesContext tablesContext = mock(TablesContext.class);
         when(tablesContext.getSimpleTables()).thenReturn(Collections.singleton(simpleTableSegment));
@@ -401,7 +406,6 @@ class SQLFederationEngineTest {
         DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine = mock(DriverExecutionPrepareEngine.class);
         JDBCExecutorCallback<? extends ExecuteResult> callback = mock(JDBCExecutorCallback.class);
         SQLFederationExecutionPlan executionPlan = mock(SQLFederationExecutionPlan.class);
-        SQLFederationEngine engine = createEngineWithProcessor(processor, actualMetaData, mock(ShardingSphereStatistics.class), mock(JDBCExecutor.class));
         assertThrows(SQLExecutionInterruptedException.class, () -> executeWithInterruptedPlan(engine, processor, prepareEngine, callback, federationContext, executionPlan));
     }
     
@@ -414,7 +418,7 @@ class SQLFederationEngineTest {
         ShardingSphereMetaData actualMetaData = createMetaData(config, Collections.emptyList(), Collections.singleton(table), TypedSPILoader.getService(DatabaseType.class, "PostgreSQL"), props);
         SQLFederationProcessor processor = mock(SQLFederationProcessor.class);
         when(processor.getConvention()).thenReturn(mock(Convention.class));
-        SQLFederationEngine engine = createEngineWithProcessor(processor, actualMetaData, mock(ShardingSphereStatistics.class), mock(JDBCExecutor.class));
+        final SQLFederationEngine engine = createEngineWithProcessor(processor, actualMetaData, mock(ShardingSphereStatistics.class), mock(JDBCExecutor.class));
         SimpleTableSegment simpleTableSegment = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order")));
         TablesContext tablesContext = mock(TablesContext.class);
         when(tablesContext.getSimpleTables()).thenReturn(Collections.singleton(simpleTableSegment));
@@ -450,6 +454,129 @@ class SQLFederationEngineTest {
         }
     }
     
+    @Test
+    void assertExecuteQueryWithoutSqlShow() throws SQLException {
+        Properties props = new Properties();
+        props.setProperty(ConfigurationPropertyKey.SQL_SHOW.getKey(), Boolean.FALSE.toString());
+        SQLFederationRuleConfiguration config = new SQLFederationRuleConfiguration(true, false, new SQLFederationCacheOption(1, 1L));
+        ShardingSphereTable table = new ShardingSphereTable("t_order", Collections.emptyList(), Collections.emptyList(), Collections.emptyList());
+        ShardingSphereMetaData actualMetaData = createMetaData(config, Collections.emptyList(), Collections.singleton(table), TypedSPILoader.getService(DatabaseType.class, "MySQL"), props);
+        SQLFederationProcessor processor = mock(SQLFederationProcessor.class);
+        when(processor.getConvention()).thenReturn(mock(Convention.class));
+        SQLFederationEngine engine = createEngineWithProcessor(processor, actualMetaData, mock(ShardingSphereStatistics.class), mock(JDBCExecutor.class));
+        SimpleTableSegment simpleTableSegment = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order")));
+        TablesContext tablesContext = mock(TablesContext.class);
+        when(tablesContext.getSimpleTables()).thenReturn(Collections.singleton(simpleTableSegment));
+        SelectStatement selectStatement = mock(SelectStatement.class);
+        when(selectStatement.getDatabaseType()).thenReturn(TypedSPILoader.getService(DatabaseType.class, "MySQL"));
+        SQLStatementContext selectStatementContext = mock(SQLStatementContext.class, RETURNS_DEEP_STUBS);
+        when(selectStatementContext.getSqlStatement()).thenReturn(selectStatement, selectStatement);
+        when(selectStatementContext.getTablesContext()).thenReturn(tablesContext);
+        QueryContext queryContext = mock(QueryContext.class);
+        when(queryContext.getSqlStatementContext()).thenReturn(selectStatementContext);
+        when(queryContext.getSql()).thenReturn("SELECT * FROM t_order");
+        when(queryContext.getConnectionContext()).thenReturn(new ConnectionContext(Collections::emptyList, new Grantee("root", "localhost")));
+        SQLFederationContext federationContext = new SQLFederationContext(false, queryContext, actualMetaData, "process_6");
+        DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine = mock(DriverExecutionPrepareEngine.class);
+        JDBCExecutorCallback<? extends ExecuteResult> callback = mock(JDBCExecutorCallback.class);
+        ResultSet resultSet = mock(ResultSet.class);
+        when(resultSet.isClosed()).thenReturn(true);
+        SQLFederationExecutionPlan executionPlan = mock(SQLFederationExecutionPlan.class);
+        when(processor.executePlan(eq(prepareEngine), eq(callback), eq(executionPlan), any(SQLFederationRelConverter.class), eq(federationContext), any())).thenReturn(resultSet);
+        try (MockedConstruction<SQLFederationRelConverter> ignored = mockConstruction(SQLFederationRelConverter.class,
+                (mock, context) -> when(mock.getSchemaPlus()).thenReturn(mock(SchemaPlus.class)));
+                MockedConstruction<SQLFederationCompilerEngine> ignoredCompiler = mockConstruction(SQLFederationCompilerEngine.class,
+                        (mock, context) -> when(mock.compile(any(ExecutionPlanCacheKey.class), eq(false))).thenReturn(executionPlan));
+                MockedStatic<RelOptUtil> relOptUtil = mockStatic(RelOptUtil.class)) {
+            relOptUtil.when(() -> RelOptUtil.toString(any(RelNode.class), eq(SqlExplainLevel.ALL_ATTRIBUTES))).thenReturn("plan");
+            engine.executeQuery(prepareEngine, callback, federationContext);
+            engine.close();
+        }
+    }
+    
+    @Test
+    void assertCloseWithoutExecution() throws SQLException {
+        Properties props = new Properties();
+        SQLFederationRuleConfiguration config = new SQLFederationRuleConfiguration(true, false, new SQLFederationCacheOption(1, 1L));
+        ShardingSphereMetaData actualMetaData = createMetaData(config, Collections.emptyList(), Collections.emptyList(), databaseType, props);
+        SQLFederationEngine engine = createEngineWithProcessor(mock(SQLFederationProcessor.class), actualMetaData, mock(ShardingSphereStatistics.class), mock(JDBCExecutor.class));
+        engine.close();
+    }
+    
+    @Test
+    void assertGetResultSetForNonSelect() throws Exception {
+        Properties props = new Properties();
+        props.setProperty(ConfigurationPropertyKey.SQL_SHOW.getKey(), Boolean.FALSE.toString());
+        SQLFederationRuleConfiguration config = new SQLFederationRuleConfiguration(true, false, new SQLFederationCacheOption(1, 1L));
+        ShardingSphereTable table = new ShardingSphereTable("t_order", Collections.emptyList(), Collections.emptyList(), Collections.emptyList());
+        ShardingSphereMetaData actualMetaData = createMetaData(config, Collections.emptyList(), Collections.singleton(table), databaseType, props);
+        SQLFederationProcessor processor = mock(SQLFederationProcessor.class);
+        when(processor.getConvention()).thenReturn(mock(Convention.class));
+        final SQLFederationEngine engine = createEngineWithProcessor(processor, actualMetaData, mock(ShardingSphereStatistics.class), mock(JDBCExecutor.class));
+        SimpleTableSegment simpleTableSegment = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order")));
+        TablesContext tablesContext = mock(TablesContext.class);
+        when(tablesContext.getSimpleTables()).thenReturn(Collections.singleton(simpleTableSegment));
+        SelectStatement selectStatement = mock(SelectStatement.class);
+        when(selectStatement.getDatabaseType()).thenReturn(databaseType);
+        SQLStatementContext selectStatementContext = mock(SQLStatementContext.class, RETURNS_DEEP_STUBS);
+        when(selectStatementContext.getSqlStatement()).thenReturn(selectStatement);
+        when(selectStatementContext.getTablesContext()).thenReturn(tablesContext);
+        QueryContext queryContext = mock(QueryContext.class);
+        when(queryContext.getSqlStatementContext()).thenReturn(selectStatementContext);
+        when(queryContext.getSql()).thenReturn("SELECT * FROM t_order");
+        lenient().when(queryContext.getParameters()).thenReturn(Collections.emptyList());
+        when(queryContext.getConnectionContext()).thenReturn(new ConnectionContext(Collections::emptyList, new Grantee("root", "localhost")));
+        SQLFederationContext federationContext = new SQLFederationContext(false, queryContext, actualMetaData, "process_7");
+        DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine = mock(DriverExecutionPrepareEngine.class);
+        JDBCExecutorCallback<? extends ExecuteResult> callback = mock(JDBCExecutorCallback.class);
+        ResultSet resultSet = mock(ResultSet.class);
+        SQLFederationExecutionPlan executionPlan = mock(SQLFederationExecutionPlan.class);
+        lenient().when(processor.executePlan(eq(prepareEngine), eq(callback), eq(executionPlan), any(SQLFederationRelConverter.class), eq(federationContext), any())).thenReturn(resultSet);
+        try (MockedConstruction<SQLFederationRelConverter> ignored = mockConstruction(SQLFederationRelConverter.class,
+                (mock, context) -> when(mock.getSchemaPlus()).thenReturn(mock(SchemaPlus.class)));
+                MockedConstruction<SQLFederationCompilerEngine> ignoredCompiler = mockConstruction(SQLFederationCompilerEngine.class,
+                        (mock, context) -> when(mock.compile(any(ExecutionPlanCacheKey.class), eq(false))).thenReturn(executionPlan));
+                MockedStatic<RelOptUtil> relOptUtil = mockStatic(RelOptUtil.class)) {
+            relOptUtil.when(() -> RelOptUtil.toString(any(RelNode.class), eq(SqlExplainLevel.ALL_ATTRIBUTES))).thenReturn("plan");
+            engine.executeQuery(prepareEngine, callback, federationContext);
+        }
+        QueryContext ddlQueryContext = mock(QueryContext.class, RETURNS_DEEP_STUBS);
+        when(ddlQueryContext.getSqlStatementContext().getSqlStatement()).thenReturn(mock(CreateTableStatement.class));
+        setField(engine, "queryContext", ddlQueryContext);
+        assertNull(engine.getResultSet());
+    }
+    
+    @Test
+    void assertThrowIntegrityConstraintViolationDirectly() {
+        Properties props = new Properties();
+        props.setProperty(ConfigurationPropertyKey.SQL_SHOW.getKey(), Boolean.FALSE.toString());
+        SQLFederationRuleConfiguration config = new SQLFederationRuleConfiguration(true, false, new SQLFederationCacheOption(1, 1L));
+        ShardingSphereTable table = new ShardingSphereTable("t_order", Collections.emptyList(), Collections.emptyList(), Collections.emptyList());
+        ShardingSphereMetaData actualMetaData = createMetaData(config, Collections.emptyList(), Collections.singleton(table), databaseType, props);
+        SQLFederationProcessor processor = mock(SQLFederationProcessor.class);
+        when(processor.getConvention()).thenReturn(mock(Convention.class));
+        SimpleTableSegment simpleTableSegment = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order")));
+        TablesContext tablesContext = mock(TablesContext.class);
+        when(tablesContext.getSimpleTables()).thenReturn(Collections.singleton(simpleTableSegment));
+        SelectStatement selectStatement = mock(SelectStatement.class);
+        when(selectStatement.getDatabaseType()).thenReturn(databaseType);
+        SQLStatementContext selectStatementContext = mock(SQLStatementContext.class, RETURNS_DEEP_STUBS);
+        when(selectStatementContext.getSqlStatement()).thenReturn(selectStatement);
+        when(selectStatementContext.getTablesContext()).thenReturn(tablesContext);
+        QueryContext queryContext = mock(QueryContext.class);
+        when(queryContext.getSqlStatementContext()).thenReturn(selectStatementContext);
+        when(queryContext.getSql()).thenReturn("SELECT * FROM t_order");
+        when(queryContext.getParameters()).thenReturn(Collections.emptyList());
+        when(queryContext.getConnectionContext()).thenReturn(new ConnectionContext(Collections::emptyList, new Grantee("root", "localhost")));
+        SQLFederationContext federationContext = new SQLFederationContext(false, queryContext, actualMetaData, "process_8");
+        final SQLFederationEngine engine = createEngineWithProcessor(processor, actualMetaData, mock(ShardingSphereStatistics.class), mock(JDBCExecutor.class));
+        DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine = mock(DriverExecutionPrepareEngine.class);
+        JDBCExecutorCallback<? extends ExecuteResult> callback = mock(JDBCExecutorCallback.class);
+        SQLFederationExecutionPlan executionPlan = mock(SQLFederationExecutionPlan.class);
+        assertThrows(SQLIntegrityConstraintViolationException.class,
+                () -> executeWithIntegrityViolation(engine, processor, prepareEngine, callback, federationContext, executionPlan));
+    }
+    
     private void executeWithInterruptedPlan(final SQLFederationEngine engine, final SQLFederationProcessor processor,
                                             final DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine,
                                             final JDBCExecutorCallback<? extends ExecuteResult> callback, final SQLFederationContext federationContext,
@@ -463,6 +590,29 @@ class SQLFederationEngineTest {
                     .thenThrow(new SQLExecutionInterruptedException());
             engine.executeQuery(prepareEngine, callback, federationContext);
         }
+    }
+    
+    private void executeWithIntegrityViolation(final SQLFederationEngine engine, final SQLFederationProcessor processor,
+                                               final DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine,
+                                               final JDBCExecutorCallback<? extends ExecuteResult> callback, final SQLFederationContext federationContext,
+                                               final SQLFederationExecutionPlan executionPlan) throws SQLException {
+        try (MockedConstruction<SQLFederationRelConverter> ignored = mockConstruction(SQLFederationRelConverter.class,
+                (mock, context) -> when(mock.getSchemaPlus()).thenReturn(mock(SchemaPlus.class)));
+                MockedConstruction<SQLFederationCompilerEngine> ignoredCompiler = mockConstruction(SQLFederationCompilerEngine.class,
+                        (mock, context) -> when(mock.compile(any(ExecutionPlanCacheKey.class), eq(false))).thenReturn(executionPlan));
+                MockedStatic<RelOptUtil> relOptUtil = mockStatic(RelOptUtil.class)) {
+            relOptUtil.when(() -> RelOptUtil.toString(any(RelNode.class), eq(SqlExplainLevel.ALL_ATTRIBUTES))).thenReturn("plan");
+            doAnswer(invocation -> {
+                throw new SQLIntegrityConstraintViolationException();
+            }).when(processor).executePlan(eq(prepareEngine), eq(callback), eq(executionPlan), any(SQLFederationRelConverter.class), eq(federationContext), any());
+            engine.executeQuery(prepareEngine, callback, federationContext);
+        }
+    }
+    
+    private void setField(final SQLFederationEngine engine, final String name, final Object value) throws Exception {
+        Field field = SQLFederationEngine.class.getDeclaredField(name);
+        field.setAccessible(true);
+        field.set(engine, value);
     }
     
     private ShardingSphereMetaData createMetaData(final SQLFederationRuleConfiguration config, final Collection<ShardingSphereRule> databaseRules,
