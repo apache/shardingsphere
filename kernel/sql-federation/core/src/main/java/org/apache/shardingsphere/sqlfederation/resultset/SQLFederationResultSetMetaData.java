@@ -189,10 +189,10 @@ public final class SQLFederationResultSetMetaData extends SQLFederationWrapperAd
         return resultColumnType.getFieldList().get(column - 1).getType().getSqlTypeName().getClass().getName();
     }
     
-    private Optional<String> findTableName(final int columnIndex) {
-        Projection projection = expandProjections.size() < columnIndex
-                ? new ColumnProjection(null, resultColumnType.getFieldList().get(columnIndex - 1).getName(), null, databaseType)
-                : expandProjections.get(columnIndex - 1);
+    private Optional<String> findTableName(final int column) {
+        Projection projection = expandProjections.size() < column
+                ? new ColumnProjection(null, resultColumnType.getFieldList().get(column - 1).getName(), null, databaseType)
+                : expandProjections.get(column - 1);
         return projection instanceof ColumnProjection ? Optional.ofNullable(((ColumnProjection) projection).getOriginalTable().getValue()) : Optional.empty();
     }
 }
