@@ -367,8 +367,9 @@ class SQLFederationEngineTest {
         DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine = mock(DriverExecutionPrepareEngine.class);
         JDBCExecutorCallback<? extends ExecuteResult> callback = mock(JDBCExecutorCallback.class);
         assertThrows(SQLFederationUnsupportedSQLException.class, () -> {
-            try (MockedConstruction<SQLFederationRelConverter> ignored = mockConstruction(SQLFederationRelConverter.class,
-                    (mock, context) -> when(mock.getSchemaPlus()).thenReturn(mock(SchemaPlus.class)))) {
+            try (
+                    MockedConstruction<SQLFederationRelConverter> ignored = mockConstruction(SQLFederationRelConverter.class,
+                            (mock, context) -> when(mock.getSchemaPlus()).thenReturn(mock(SchemaPlus.class)))) {
                 engine.executeQuery(prepareEngine, callback, federationContext);
             }
         });
