@@ -184,7 +184,7 @@ public final class StandardDatabaseProxyConnector implements DatabaseProxyConnec
             return doExecuteFederation();
         }
         FederationMetaDataRefreshEngine federationMetaDataRefreshEngine = new FederationMetaDataRefreshEngine(queryContext.getSqlStatementContext());
-        if (proxySQLExecutor.getSqlFederationEngine().isSqlFederationEnabled() && federationMetaDataRefreshEngine.isNeedRefresh()) {
+        if (proxySQLExecutor.getSqlFederationEngine().isSQLFederationEnabled() && federationMetaDataRefreshEngine.isNeedRefresh()) {
             federationMetaDataRefreshEngine.refresh(contextManager.getPersistServiceFacade().getModeFacade().getMetaDataManagerService(), database);
             return new UpdateResponseHeader(queryContext.getSqlStatementContext().getSqlStatement());
         }

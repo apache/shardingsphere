@@ -103,6 +103,6 @@ class MySQLTimeBinaryProtocolValueTest {
         verify(payload, atLeastOnce()).writeInt1(12);
         verify(payload, times(5)).writeInt1(anyInt());
         verify(payload).writeInt4(0);
-        verify(payload).writeInt4(1000000);
+        verify(payload).writeInt4(1000);
     }
 }

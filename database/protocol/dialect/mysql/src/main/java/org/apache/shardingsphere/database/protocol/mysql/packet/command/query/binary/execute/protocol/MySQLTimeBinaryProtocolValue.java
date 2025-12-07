@@ -89,6 +89,6 @@ public final class MySQLTimeBinaryProtocolValue implements MySQLBinaryProtocolVa
     }
     
     private void writeNanos(final MySQLPacketPayload payload, final int nanos) {
-        payload.writeInt4(nanos);
+        payload.writeInt4(nanos / 1000);
     }
 }

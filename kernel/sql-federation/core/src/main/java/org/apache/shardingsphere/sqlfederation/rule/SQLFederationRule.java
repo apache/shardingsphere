@@ -44,18 +44,13 @@ public final class SQLFederationRule implements GlobalRule {
     public SQLFederationRule(final SQLFederationRuleConfiguration ruleConfig, final Collection<ShardingSphereDatabase> databases) {
         configuration = ruleConfig;
         compilerContext = new AtomicReference<>(CompilerContextFactory.create(databases));
-        checkExecutionPlanCacheConfig(ruleConfig.getExecutionPlanCache());
+        checkExecutionPlanCacheConfiguration(ruleConfig.getExecutionPlanCache());
     }
     
-    private void checkExecutionPlanCacheConfig(final SQLFederationCacheOption executionPlanCache) {
+    private void checkExecutionPlanCacheConfiguration(final SQLFederationCacheOption executionPlanCache) {
         ShardingSpherePreconditions.checkState(executionPlanCache.getInitialCapacity() > 0,
                 () -> new InvalidExecutionPlanCacheConfigException("initialCapacity", executionPlanCache.getInitialCapacity()));
         ShardingSpherePreconditions.checkState(executionPlanCache.getMaximumSize() > 0, () -> new InvalidExecutionPlanCacheConfigException("maximumSize", executionPlanCache.getMaximumSize()));
-    }
-    
-    @Override
-    public void refresh(final Collection<ShardingSphereDatabase> databases, final GlobalRuleChangedType changedType) {
-        compilerContext.set(CompilerContextFactory.create(databases));
     }
     
     /**
@@ -65,6 +60,11 @@ public final class SQLFederationRule implements GlobalRule {
      */
     public CompilerContext getCompilerContext() {
         return compilerContext.get();
+    }
+    
+    @Override
+    public void refresh(final Collection<ShardingSphereDatabase> databases, final GlobalRuleChangedType changedType) {
+        compilerContext.set(CompilerContextFactory.create(databases));
     }
     
     @Override

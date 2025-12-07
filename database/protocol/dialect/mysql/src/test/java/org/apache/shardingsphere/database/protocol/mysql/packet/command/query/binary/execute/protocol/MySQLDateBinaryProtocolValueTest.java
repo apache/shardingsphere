@@ -148,6 +148,6 @@ class MySQLDateBinaryProtocolValueTest {
         verify(payload).writeInt1(12);
         verify(payload).writeInt1(10);
         verify(payload).writeInt1(30);
-        verify(payload).writeInt4(100000000);
+        verify(payload).writeInt4(100000);
     }
 }

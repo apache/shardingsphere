@@ -15,33 +15,27 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.transaction.rule.builder;
+package org.apache.shardingsphere.authority.rule.builder;
 
-import org.apache.shardingsphere.infra.rule.builder.global.DefaultGlobalRuleConfigurationBuilder;
+import org.apache.shardingsphere.authority.config.AuthorityRuleConfiguration;
+import org.apache.shardingsphere.authority.rule.AuthorityRule;
+import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.rule.builder.global.GlobalRuleBuilder;
 import org.apache.shardingsphere.infra.spi.type.ordered.OrderedSPILoader;
-import org.apache.shardingsphere.transaction.api.TransactionType;
-import org.apache.shardingsphere.transaction.config.TransactionRuleConfiguration;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
-import java.util.Map;
 import java.util.Properties;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
-import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.hamcrest.Matchers.isA;
 
-class DefaultTransactionRuleConfigurationBuilderTest {
+class AuthorityRuleBuilderTest {
     
-    @SuppressWarnings("rawtypes")
     @Test
     void assertBuild() {
-        Map<GlobalRuleBuilder, DefaultGlobalRuleConfigurationBuilder> builders = OrderedSPILoader.getServices(
-                DefaultGlobalRuleConfigurationBuilder.class, Collections.singleton(new TransactionRuleBuilder()));
-        TransactionRuleConfiguration actual = (TransactionRuleConfiguration) builders.values().iterator().next().build();
-        assertThat(actual.getDefaultType(), is(TransactionType.LOCAL.name()));
-        assertNull(actual.getProviderType());
-        assertThat(actual.getProps(), is(new Properties()));
+        AuthorityRuleConfiguration ruleConfig = new AuthorityRuleConfiguration(Collections.emptyList(), new AlgorithmConfiguration("FIXTURE", new Properties()), Collections.emptyMap(), "FIXTURE");
+        AuthorityRuleBuilder builder = (AuthorityRuleBuilder) OrderedSPILoader.getServices(GlobalRuleBuilder.class, Collections.singleton(ruleConfig)).get(ruleConfig);
+        assertThat(builder.build(ruleConfig, Collections.emptyList(), null), isA(AuthorityRule.class));
     }
 }

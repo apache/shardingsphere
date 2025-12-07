@@ -17,22 +17,23 @@
 
 package org.apache.shardingsphere.sqlfederation.resultset;
 
+import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
+
 import java.sql.SQLException;
 import java.sql.SQLFeatureNotSupportedException;
 import java.sql.Wrapper;
 
 /**
- * Adapter for {@code java.sql.Wrapper}.
+ * SQL federation wrapper adapter.
  */
-public abstract class WrapperAdapter implements Wrapper {
+public abstract class SQLFederationWrapperAdapter implements Wrapper {
     
     @SuppressWarnings("unchecked")
     @Override
     public final <T> T unwrap(final Class<T> iface) throws SQLException {
-        if (isWrapperFor(iface)) {
-            return (T) this;
-        }
-        throw new SQLFeatureNotSupportedException(String.format("`%s` cannot be unwrapped as `%s`", getClass().getName(), iface.getName()));
+        ShardingSpherePreconditions.checkState(isWrapperFor(iface),
+                () -> new SQLFeatureNotSupportedException(String.format("`%s` cannot be unwrapped as `%s`", getClass().getName(), iface.getName())));
+        return (T) this;
     }
     
     @Override

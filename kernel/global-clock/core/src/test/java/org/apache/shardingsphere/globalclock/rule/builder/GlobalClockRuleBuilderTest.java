@@ -19,13 +19,11 @@ package org.apache.shardingsphere.globalclock.rule.builder;
 
 import org.apache.shardingsphere.globalclock.config.GlobalClockRuleConfiguration;
 import org.apache.shardingsphere.globalclock.rule.GlobalClockRule;
-import org.apache.shardingsphere.infra.config.rule.scope.GlobalRuleConfiguration;
 import org.apache.shardingsphere.infra.rule.builder.global.GlobalRuleBuilder;
 import org.apache.shardingsphere.infra.spi.type.ordered.OrderedSPILoader;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
-import java.util.Map;
 import java.util.Properties;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -33,11 +31,10 @@ import static org.hamcrest.Matchers.isA;
 
 class GlobalClockRuleBuilderTest {
     
-    @SuppressWarnings({"rawtypes", "unchecked"})
     @Test
     void assertBuild() {
         GlobalClockRuleConfiguration ruleConfig = new GlobalClockRuleConfiguration("FIXTURE", "FIXTURE", false, new Properties());
-        Map<GlobalRuleConfiguration, GlobalRuleBuilder> builders = OrderedSPILoader.getServices(GlobalRuleBuilder.class, Collections.singleton(ruleConfig));
-        assertThat(builders.get(ruleConfig).build(ruleConfig, Collections.emptyList(), null), isA(GlobalClockRule.class));
+        GlobalClockRuleBuilder builder = (GlobalClockRuleBuilder) OrderedSPILoader.getServices(GlobalRuleBuilder.class, Collections.singleton(ruleConfig)).get(ruleConfig);
+        assertThat(builder.build(ruleConfig, Collections.emptyList(), null), isA(GlobalClockRule.class));
     }
 }

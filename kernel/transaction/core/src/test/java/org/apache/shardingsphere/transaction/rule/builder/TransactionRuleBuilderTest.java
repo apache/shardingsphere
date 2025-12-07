@@ -17,42 +17,24 @@
 
 package org.apache.shardingsphere.transaction.rule.builder;
 
-import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
-import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
-import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
-import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
-import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
-import org.apache.shardingsphere.test.infra.fixture.jdbc.MockedDataSource;
+import org.apache.shardingsphere.infra.rule.builder.global.GlobalRuleBuilder;
+import org.apache.shardingsphere.infra.spi.type.ordered.OrderedSPILoader;
 import org.apache.shardingsphere.transaction.config.TransactionRuleConfiguration;
 import org.apache.shardingsphere.transaction.rule.TransactionRule;
 import org.junit.jupiter.api.Test;
 
-import javax.sql.DataSource;
 import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Properties;
 
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.mockito.Mockito.mock;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.isA;
 
 class TransactionRuleBuilderTest {
     
     @Test
     void assertBuild() {
-        TransactionRuleConfiguration ruleConfig = new TransactionRuleConfiguration("LOCAL", "provider", new Properties());
-        ShardingSphereDatabase database = new ShardingSphereDatabase("logic_db", null, new ResourceMetaData(createDataSourceMap()),
-                new RuleMetaData(Collections.singletonList(mock(ShardingSphereRule.class))), Collections.singleton(new ShardingSphereSchema("test")));
-        try (TransactionRule rule = new TransactionRuleBuilder().build(ruleConfig, Collections.singleton(database), mock(ConfigurationProperties.class))) {
-            assertNotNull(rule.getConfiguration());
-        }
-    }
-    
-    private Map<String, DataSource> createDataSourceMap() {
-        Map<String, DataSource> result = new HashMap<>(2, 1F);
-        result.put("not_change", new MockedDataSource());
-        result.put("replace", new MockedDataSource());
-        return result;
+        TransactionRuleConfiguration ruleConfig = new TransactionRuleConfiguration("LOCAL", "FIXTURE", new Properties());
+        TransactionRuleBuilder builder = (TransactionRuleBuilder) OrderedSPILoader.getServices(GlobalRuleBuilder.class, Collections.singleton(ruleConfig)).get(ruleConfig);
+        assertThat(builder.build(ruleConfig, Collections.emptyList(), null), isA(TransactionRule.class));
     }
 }

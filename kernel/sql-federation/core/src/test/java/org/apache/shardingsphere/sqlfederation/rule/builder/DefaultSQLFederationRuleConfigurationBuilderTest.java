@@ -15,33 +15,31 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.transaction.rule.builder;
+package org.apache.shardingsphere.sqlfederation.rule.builder;
 
 import org.apache.shardingsphere.infra.rule.builder.global.DefaultGlobalRuleConfigurationBuilder;
 import org.apache.shardingsphere.infra.rule.builder.global.GlobalRuleBuilder;
 import org.apache.shardingsphere.infra.spi.type.ordered.OrderedSPILoader;
-import org.apache.shardingsphere.transaction.api.TransactionType;
-import org.apache.shardingsphere.transaction.config.TransactionRuleConfiguration;
+import org.apache.shardingsphere.sqlfederation.config.SQLFederationRuleConfiguration;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
 import java.util.Map;
-import java.util.Properties;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
-import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
-class DefaultTransactionRuleConfigurationBuilderTest {
+class DefaultSQLFederationRuleConfigurationBuilderTest {
     
     @SuppressWarnings("rawtypes")
     @Test
     void assertBuild() {
         Map<GlobalRuleBuilder, DefaultGlobalRuleConfigurationBuilder> builders = OrderedSPILoader.getServices(
-                DefaultGlobalRuleConfigurationBuilder.class, Collections.singleton(new TransactionRuleBuilder()));
-        TransactionRuleConfiguration actual = (TransactionRuleConfiguration) builders.values().iterator().next().build();
-        assertThat(actual.getDefaultType(), is(TransactionType.LOCAL.name()));
-        assertNull(actual.getProviderType());
-        assertThat(actual.getProps(), is(new Properties()));
+                DefaultGlobalRuleConfigurationBuilder.class, Collections.singleton(new SQLFederationRuleBuilder()));
+        SQLFederationRuleConfiguration actual = (SQLFederationRuleConfiguration) builders.values().iterator().next().build();
+        assertFalse(actual.isSqlFederationEnabled());
+        assertFalse(actual.isAllQueryUseSQLFederation());
+        assertThat(actual.getExecutionPlanCache(), is(DefaultSQLFederationRuleConfigurationBuilder.DEFAULT_EXECUTION_PLAN_CACHE_OPTION));
     }
 }
