@@ -110,10 +110,7 @@ public final class SQLFederationResultSetMetaData extends SQLFederationWrapperAd
     
     @Override
     public String getColumnLabel(final int column) {
-        if (indexAndColumnLabels.size() < column) {
-            return resultColumnType.getFieldList().get(column - 1).getName();
-        }
-        return indexAndColumnLabels.get(column);
+        return indexAndColumnLabels.size() < column ? resultColumnType.getFieldList().get(column - 1).getName() : indexAndColumnLabels.get(column);
     }
     
     @Override
