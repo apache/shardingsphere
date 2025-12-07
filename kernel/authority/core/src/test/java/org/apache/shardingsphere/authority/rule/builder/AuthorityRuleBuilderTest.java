@@ -15,13 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.transaction.rule.builder;
+package org.apache.shardingsphere.authority.rule.builder;
 
+import org.apache.shardingsphere.authority.config.AuthorityRuleConfiguration;
+import org.apache.shardingsphere.authority.rule.AuthorityRule;
+import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.config.rule.scope.GlobalRuleConfiguration;
 import org.apache.shardingsphere.infra.rule.builder.global.GlobalRuleBuilder;
 import org.apache.shardingsphere.infra.spi.type.ordered.OrderedSPILoader;
-import org.apache.shardingsphere.transaction.config.TransactionRuleConfiguration;
-import org.apache.shardingsphere.transaction.rule.TransactionRule;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
@@ -31,13 +32,13 @@ import java.util.Properties;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.isA;
 
-class TransactionRuleBuilderTest {
+class AuthorityRuleBuilderTest {
     
     @SuppressWarnings({"rawtypes", "unchecked"})
     @Test
     void assertBuild() {
-        TransactionRuleConfiguration ruleConfig = new TransactionRuleConfiguration("LOCAL", "FIXTURE", new Properties());
+        AuthorityRuleConfiguration ruleConfig = new AuthorityRuleConfiguration(Collections.emptyList(), new AlgorithmConfiguration("FIXTURE", new Properties()), Collections.emptyMap(), "FIXTURE");
         Map<GlobalRuleConfiguration, GlobalRuleBuilder> builders = OrderedSPILoader.getServices(GlobalRuleBuilder.class, Collections.singleton(ruleConfig));
-        assertThat(builders.get(ruleConfig).build(ruleConfig, Collections.emptyList(), null), isA(TransactionRule.class));
+        assertThat(builders.get(ruleConfig).build(ruleConfig, Collections.emptyList(), null), isA(AuthorityRule.class));
     }
 }

@@ -15,29 +15,41 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.transaction.rule.builder;
+package org.apache.shardingsphere.sqlfederation.rule.builder;
 
 import org.apache.shardingsphere.infra.config.rule.scope.GlobalRuleConfiguration;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.rule.builder.global.GlobalRuleBuilder;
 import org.apache.shardingsphere.infra.spi.type.ordered.OrderedSPILoader;
-import org.apache.shardingsphere.transaction.config.TransactionRuleConfiguration;
-import org.apache.shardingsphere.transaction.rule.TransactionRule;
+import org.apache.shardingsphere.sqlfederation.compiler.context.CompilerContext;
+import org.apache.shardingsphere.sqlfederation.compiler.context.CompilerContextFactory;
+import org.apache.shardingsphere.sqlfederation.config.SQLFederationCacheOption;
+import org.apache.shardingsphere.sqlfederation.config.SQLFederationRuleConfiguration;
+import org.apache.shardingsphere.sqlfederation.rule.SQLFederationRule;
+import org.apache.shardingsphere.test.infra.framework.extension.mock.AutoMockExtension;
+import org.apache.shardingsphere.test.infra.framework.extension.mock.StaticMockSettings;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 import java.util.Collections;
 import java.util.Map;
-import java.util.Properties;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.isA;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
-class TransactionRuleBuilderTest {
+@ExtendWith(AutoMockExtension.class)
+@StaticMockSettings(CompilerContextFactory.class)
+class SQLFederationRuleBuilderTest {
     
     @SuppressWarnings({"rawtypes", "unchecked"})
     @Test
     void assertBuild() {
-        TransactionRuleConfiguration ruleConfig = new TransactionRuleConfiguration("LOCAL", "FIXTURE", new Properties());
+        SQLFederationRuleConfiguration ruleConfig = new SQLFederationRuleConfiguration(true, false, new SQLFederationCacheOption(4, 64L));
+        ShardingSphereDatabase database = mock(ShardingSphereDatabase.class);
+        when(CompilerContextFactory.create(Collections.singleton(database))).thenReturn(mock(CompilerContext.class));
         Map<GlobalRuleConfiguration, GlobalRuleBuilder> builders = OrderedSPILoader.getServices(GlobalRuleBuilder.class, Collections.singleton(ruleConfig));
-        assertThat(builders.get(ruleConfig).build(ruleConfig, Collections.emptyList(), null), isA(TransactionRule.class));
+        assertThat(builders.get(ruleConfig).build(ruleConfig, Collections.singleton(database), null), isA(SQLFederationRule.class));
     }
 }
