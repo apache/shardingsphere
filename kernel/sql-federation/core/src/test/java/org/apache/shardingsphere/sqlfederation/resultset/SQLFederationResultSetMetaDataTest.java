@@ -103,7 +103,8 @@ class SQLFederationResultSetMetaDataTest {
     
     @Test
     void assertIsNullableWhenTableNullable() {
-        Schema schema = createSchemaWithTable("foo_tbl", createRowType(true, 0, 0));
+        RelDataType rowType = createRowType(true, 0, 0);
+        Schema schema = createSchemaWithTable("foo_tbl", rowType);
         SQLFederationResultSetMetaData metaData = new SQLFederationResultSetMetaData(schema, Collections.singletonList(new ColumnProjection("foo_tbl", "foo_col", null, databaseType)),
                 databaseType, createResultType(new String[]{"foo_col"}, mock(RelDataType.class)), Collections.singletonMap(1, "foo_label"), mock());
         assertThat(metaData.isNullable(1), is(ResultSetMetaData.columnNullable));
@@ -129,7 +130,8 @@ class SQLFederationResultSetMetaDataTest {
     
     @Test
     void assertGetColumnDisplaySizeWithTable() {
-        Schema schema = createSchemaWithTable("foo_tbl", createRowType(false, 8, 0));
+        RelDataType rowType = createRowType(false, 8, 0);
+        Schema schema = createSchemaWithTable("foo_tbl", rowType);
         SQLFederationResultSetMetaData metaData = new SQLFederationResultSetMetaData(schema, Collections.singletonList(new ColumnProjection("foo_tbl", "foo_col", null, databaseType)),
                 databaseType, createResultType(new String[]{"foo_col"}, mock(RelDataType.class)), Collections.singletonMap(1, "foo_label"), mock());
         assertThat(metaData.getColumnDisplaySize(1), is(8));
@@ -206,7 +208,8 @@ class SQLFederationResultSetMetaDataTest {
     
     @Test
     void assertGetPrecisionWithTable() {
-        Schema schema = createSchemaWithTable("foo_tbl", createRowType(false, 12, 0));
+        RelDataType rowType = createRowType(false, 12, 0);
+        Schema schema = createSchemaWithTable("foo_tbl", rowType);
         SQLFederationResultSetMetaData metaData = new SQLFederationResultSetMetaData(schema, Collections.singletonList(new ColumnProjection("foo_tbl", "foo_col", null, databaseType)),
                 databaseType, createResultType(new String[]{"foo_col"}, mock(RelDataType.class)), Collections.singletonMap(1, "foo_label"), mock());
         assertThat(metaData.getPrecision(1), is(12));
@@ -214,7 +217,8 @@ class SQLFederationResultSetMetaDataTest {
     
     @Test
     void assertGetPrecisionNotSpecified() {
-        Schema schema = createSchemaWithTable("foo_tbl", createRowType(false, RelDataType.PRECISION_NOT_SPECIFIED, 0));
+        RelDataType rowType = createRowType(false, RelDataType.PRECISION_NOT_SPECIFIED, 0);
+        Schema schema = createSchemaWithTable("foo_tbl", rowType);
         SQLFederationResultSetMetaData metaData = new SQLFederationResultSetMetaData(schema, Collections.singletonList(new ColumnProjection("foo_tbl", "foo_col", null, databaseType)),
                 databaseType, createResultType(new String[]{"foo_col"}, mock(RelDataType.class)), Collections.singletonMap(1, "foo_label"), mock());
         assertThat(metaData.getPrecision(1), is(0));
@@ -237,7 +241,8 @@ class SQLFederationResultSetMetaDataTest {
     
     @Test
     void assertGetScaleWithTable() {
-        Schema schema = createSchemaWithTable("foo_tbl", createRowType(false, 0, 4));
+        RelDataType rowType = createRowType(false, 0, 4);
+        Schema schema = createSchemaWithTable("foo_tbl", rowType);
         SQLFederationResultSetMetaData metaData = new SQLFederationResultSetMetaData(schema, Collections.singletonList(new ColumnProjection("foo_tbl", "foo_col", null, databaseType)),
                 databaseType, createResultType(new String[]{"foo_col"}, mock(RelDataType.class)), Collections.singletonMap(1, "foo_label"), mock());
         assertThat(metaData.getScale(1), is(4));
@@ -245,7 +250,8 @@ class SQLFederationResultSetMetaDataTest {
     
     @Test
     void assertGetScaleNotSpecified() {
-        Schema schema = createSchemaWithTable("foo_tbl", createRowType(false, 0, RelDataType.SCALE_NOT_SPECIFIED));
+        RelDataType rowType = createRowType(false, 0, RelDataType.SCALE_NOT_SPECIFIED);
+        Schema schema = createSchemaWithTable("foo_tbl", rowType);
         SQLFederationResultSetMetaData metaData = new SQLFederationResultSetMetaData(schema, Collections.singletonList(new ColumnProjection("foo_tbl", "foo_col", null, databaseType)),
                 databaseType, createResultType(new String[]{"foo_col"}, mock(RelDataType.class)), Collections.singletonMap(1, "foo_label"), mock());
         assertThat(metaData.getScale(1), is(0));
