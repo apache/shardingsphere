@@ -34,6 +34,8 @@ import org.apache.shardingsphere.sql.parser.statement.core.enums.SubqueryType;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.CombineType;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.BinaryOperationExpression;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.InExpression;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ListExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simple.LiteralExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.subquery.SubqueryExpressionSegment;
@@ -444,5 +446,162 @@ class SelectStatementContextTest {
         tableNameSegment.setTableBoundInfo(new TableSegmentBoundInfo(new IdentifierValue("foo_db"), new IdentifierValue("foo_schema")));
         result.setFrom(new SimpleTableSegment(tableNameSegment));
         return result;
+    }
+    
+    @Test
+    void assertHasInExpressionReturnsTrueWhenInExpressionPresent() {
+        SelectStatement selectStatement = new SelectStatement(databaseType);
+        selectStatement.setProjections(new ProjectionsSegment(0, 0));
+        ListExpression listExpression = new ListExpression(20, 30);
+        listExpression.getItems().add(new ParameterMarkerExpressionSegment(21, 22, 0));
+        listExpression.getItems().add(new ParameterMarkerExpressionSegment(24, 25, 1));
+        InExpression inExpression = new InExpression(0, 30, new ColumnSegment(0, 10, new IdentifierValue("user_id")), listExpression, false);
+        selectStatement.setWhere(new WhereSegment(0, 30, inExpression));
+        SelectStatementContext selectStatementContext = createSelectStatementContext(selectStatement);
+        selectStatementContext.bindParameters(Arrays.asList(100, 101));
+        assertTrue(selectStatementContext.hasInExpression());
+        assertNotNull(selectStatementContext.getInValueContext());
+        assertThat(selectStatementContext.getInValueContext().getParameterCount(), is(2));
+    }
+    
+    @Test
+    void assertHasInExpressionReturnsFalseWhenNoWhereClause() {
+        SelectStatement selectStatement = new SelectStatement(databaseType);
+        selectStatement.setProjections(new ProjectionsSegment(0, 0));
+        SelectStatementContext selectStatementContext = createSelectStatementContext(selectStatement);
+        assertFalse(selectStatementContext.hasInExpression());
+        assertTrue(selectStatementContext.getGroupedParameters().isEmpty());
+    }
+    
+    @Test
+    void assertGetGroupedParametersWithParameterMarkers() {
+        SelectStatement selectStatement = new SelectStatement(databaseType);
+        selectStatement.setProjections(new ProjectionsSegment(0, 0));
+        ListExpression listExpression = new ListExpression(20, 30);
+        listExpression.getItems().add(new ParameterMarkerExpressionSegment(21, 22, 0));
+        listExpression.getItems().add(new ParameterMarkerExpressionSegment(24, 25, 1));
+        listExpression.getItems().add(new ParameterMarkerExpressionSegment(27, 28, 2));
+        InExpression inExpression = new InExpression(0, 30, new ColumnSegment(0, 10, new IdentifierValue("user_id")), listExpression, false);
+        selectStatement.setWhere(new WhereSegment(0, 30, inExpression));
+        SelectStatementContext selectStatementContext = createSelectStatementContext(selectStatement);
+        selectStatementContext.bindParameters(Arrays.asList(100, 101, 102));
+        assertThat(selectStatementContext.getGroupedParameters().size(), is(3));
+        assertThat(selectStatementContext.getGroupedParameters().get(0), is(Collections.singletonList(100)));
+        assertThat(selectStatementContext.getGroupedParameters().get(1), is(Collections.singletonList(101)));
+        assertThat(selectStatementContext.getGroupedParameters().get(2), is(Collections.singletonList(102)));
+    }
+    
+    @Test
+    void assertGetBeforeAndAfterGenericParametersWithInExpression() {
+        SelectStatement selectStatement = new SelectStatement(databaseType);
+        selectStatement.setProjections(new ProjectionsSegment(0, 0));
+        ColumnSegment ageColumn = new ColumnSegment(0, 5, new IdentifierValue("age"));
+        ParameterMarkerExpressionSegment ageParam = new ParameterMarkerExpressionSegment(10, 11, 0);
+        BinaryOperationExpression ageCondition = new BinaryOperationExpression(0, 12, ageColumn, ageParam, ">", "age > ?");
+        ListExpression listExpression = new ListExpression(30, 40);
+        listExpression.getItems().add(new ParameterMarkerExpressionSegment(31, 32, 1));
+        listExpression.getItems().add(new ParameterMarkerExpressionSegment(34, 35, 2));
+        InExpression inExpression = new InExpression(20, 40, new ColumnSegment(20, 27, new IdentifierValue("user_id")), listExpression, false);
+        BinaryOperationExpression andExpr = new BinaryOperationExpression(0, 40, ageCondition, inExpression, "AND", "");
+        ColumnSegment statusColumn = new ColumnSegment(50, 56, new IdentifierValue("status"));
+        ParameterMarkerExpressionSegment statusParam = new ParameterMarkerExpressionSegment(60, 61, 3);
+        BinaryOperationExpression statusCondition = new BinaryOperationExpression(50, 62, statusColumn, statusParam, "=", "status = ?");
+        BinaryOperationExpression fullExpr = new BinaryOperationExpression(0, 62, andExpr, statusCondition, "AND", "");
+        selectStatement.setWhere(new WhereSegment(0, 62, fullExpr));
+        SelectStatementContext selectStatementContext = createSelectStatementContext(selectStatement);
+        selectStatementContext.bindParameters(Arrays.asList(20, 100, 101, "ACTIVE"));
+        assertThat(selectStatementContext.getBeforeGenericParameters(Arrays.asList(20, 100, 101, "ACTIVE")), is(Collections.singletonList(20)));
+        assertThat(selectStatementContext.getAfterGenericParameters(Arrays.asList(20, 100, 101, "ACTIVE")), is(Collections.singletonList("ACTIVE")));
+    }
+    
+    @Test
+    void assertGetBeforeAndAfterGenericParametersWithEmptyParams() {
+        SelectStatement selectStatement = new SelectStatement(databaseType);
+        selectStatement.setProjections(new ProjectionsSegment(0, 0));
+        ListExpression listExpression = new ListExpression(20, 30);
+        listExpression.getItems().add(new LiteralExpressionSegment(21, 23, 100));
+        listExpression.getItems().add(new LiteralExpressionSegment(25, 27, 101));
+        InExpression inExpression = new InExpression(0, 30, new ColumnSegment(0, 10, new IdentifierValue("user_id")), listExpression, false);
+        selectStatement.setWhere(new WhereSegment(0, 30, inExpression));
+        SelectStatementContext selectStatementContext = createSelectStatementContext(selectStatement);
+        selectStatementContext.bindParameters(Collections.emptyList());
+        assertTrue(selectStatementContext.getBeforeGenericParameters(Collections.emptyList()).isEmpty());
+        assertTrue(selectStatementContext.getAfterGenericParameters(Collections.emptyList()).isEmpty());
+    }
+    
+    @Test
+    void assertGetBeforeAndAfterGenericParametersWithNullParams() {
+        SelectStatement selectStatement = new SelectStatement(databaseType);
+        selectStatement.setProjections(new ProjectionsSegment(0, 0));
+        ListExpression listExpression = new ListExpression(20, 30);
+        listExpression.getItems().add(new ParameterMarkerExpressionSegment(21, 22, 0));
+        listExpression.getItems().add(new ParameterMarkerExpressionSegment(24, 25, 1));
+        InExpression inExpression = new InExpression(0, 30, new ColumnSegment(0, 10, new IdentifierValue("user_id")), listExpression, false);
+        selectStatement.setWhere(new WhereSegment(0, 30, inExpression));
+        SelectStatementContext selectStatementContext = createSelectStatementContext(selectStatement);
+        selectStatementContext.bindParameters(Arrays.asList(100, 101));
+        assertTrue(selectStatementContext.getBeforeGenericParameters(null).isEmpty());
+        assertTrue(selectStatementContext.getAfterGenericParameters(null).isEmpty());
+    }
+    
+    @Test
+    void assertGetBeforeAndAfterGenericParametersWithNoBeforeParams() {
+        SelectStatement selectStatement = new SelectStatement(databaseType);
+        selectStatement.setProjections(new ProjectionsSegment(0, 0));
+        ListExpression listExpression = new ListExpression(0, 20);
+        listExpression.getItems().add(new ParameterMarkerExpressionSegment(1, 2, 0));
+        listExpression.getItems().add(new ParameterMarkerExpressionSegment(4, 5, 1));
+        InExpression inExpression = new InExpression(0, 20, new ColumnSegment(0, 10, new IdentifierValue("user_id")), listExpression, false);
+        selectStatement.setWhere(new WhereSegment(0, 20, inExpression));
+        SelectStatementContext selectStatementContext = createSelectStatementContext(selectStatement);
+        selectStatementContext.bindParameters(Arrays.asList(100, 101));
+        assertTrue(selectStatementContext.getBeforeGenericParameters(Arrays.asList(100, 101)).isEmpty());
+    }
+    
+    @Test
+    void assertGetAfterGenericParametersWithNoAfterParams() {
+        SelectStatement selectStatement = new SelectStatement(databaseType);
+        selectStatement.setProjections(new ProjectionsSegment(0, 0));
+        ColumnSegment ageColumn = new ColumnSegment(0, 5, new IdentifierValue("age"));
+        ParameterMarkerExpressionSegment ageParam = new ParameterMarkerExpressionSegment(10, 11, 0);
+        BinaryOperationExpression ageCondition = new BinaryOperationExpression(0, 12, ageColumn, ageParam, ">", "age > ?");
+        ListExpression listExpression = new ListExpression(30, 40);
+        listExpression.getItems().add(new ParameterMarkerExpressionSegment(31, 32, 1));
+        listExpression.getItems().add(new ParameterMarkerExpressionSegment(34, 35, 2));
+        InExpression inExpression = new InExpression(20, 40, new ColumnSegment(20, 27, new IdentifierValue("user_id")), listExpression, false);
+        BinaryOperationExpression fullExpr = new BinaryOperationExpression(0, 40, ageCondition, inExpression, "AND", "");
+        selectStatement.setWhere(new WhereSegment(0, 40, fullExpr));
+        SelectStatementContext selectStatementContext = createSelectStatementContext(selectStatement);
+        selectStatementContext.bindParameters(Arrays.asList(20, 100, 101));
+        assertTrue(selectStatementContext.getAfterGenericParameters(Arrays.asList(20, 100, 101)).isEmpty());
+    }
+    
+    @Test
+    void assertGetBeforeAndAfterGenericParametersWithNoInExpression() {
+        SelectStatement selectStatement = new SelectStatement(databaseType);
+        selectStatement.setProjections(new ProjectionsSegment(0, 0));
+        ColumnSegment ageColumn = new ColumnSegment(0, 5, new IdentifierValue("age"));
+        ParameterMarkerExpressionSegment ageParam = new ParameterMarkerExpressionSegment(10, 11, 0);
+        BinaryOperationExpression ageCondition = new BinaryOperationExpression(0, 12, ageColumn, ageParam, ">", "age > ?");
+        selectStatement.setWhere(new WhereSegment(0, 12, ageCondition));
+        SelectStatementContext selectStatementContext = createSelectStatementContext(selectStatement);
+        selectStatementContext.bindParameters(Collections.singletonList(20));
+        assertTrue(selectStatementContext.getBeforeGenericParameters(Collections.singletonList(20)).isEmpty());
+        assertTrue(selectStatementContext.getAfterGenericParameters(Collections.singletonList(20)).isEmpty());
+    }
+    
+    @Test
+    void assertBindParametersWithLiteralOnlyInExpression() {
+        SelectStatement selectStatement = new SelectStatement(databaseType);
+        selectStatement.setProjections(new ProjectionsSegment(0, 0));
+        ListExpression listExpression = new ListExpression(20, 30);
+        listExpression.getItems().add(new LiteralExpressionSegment(21, 23, 100));
+        listExpression.getItems().add(new LiteralExpressionSegment(25, 27, 101));
+        InExpression inExpression = new InExpression(0, 30, new ColumnSegment(0, 10, new IdentifierValue("user_id")), listExpression, false);
+        selectStatement.setWhere(new WhereSegment(0, 30, inExpression));
+        SelectStatementContext selectStatementContext = createSelectStatementContext(selectStatement);
+        selectStatementContext.bindParameters(Collections.emptyList());
+        assertTrue(selectStatementContext.hasInExpression());
+        assertThat(selectStatementContext.getInValueContext().getParameterCount(), is(0));
     }
 }

@@ -23,6 +23,7 @@ import org.apache.shardingsphere.infra.binder.context.available.WhereContextAvai
 import org.apache.shardingsphere.infra.binder.context.aware.ParameterAware;
 import org.apache.shardingsphere.infra.binder.context.segment.select.groupby.GroupByContext;
 import org.apache.shardingsphere.infra.binder.context.segment.select.orderby.OrderByContext;
+import org.apache.shardingsphere.infra.binder.context.segment.select.invalues.InValueContext;
 import org.apache.shardingsphere.infra.binder.context.segment.select.pagination.PaginationContext;
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.ProjectionsContext;
 import org.apache.shardingsphere.infra.binder.context.segment.table.TablesContext;
@@ -266,12 +267,77 @@ public final class SelectStatementContext implements SQLStatementContext, WhereC
     }
     
     /**
+     * Set need IN values rewrite.
+     *
+     * @param needInValuesRewrite need IN values rewrite
+     */
+    public void setNeedInValuesRewrite(final boolean needInValuesRewrite) {
+        bindingContext.setNeedInValuesRewrite(needInValuesRewrite);
+    }
+    
+    /**
+     * Judge whether need IN values rewrite or not.
+     *
+     * @return whether need IN values rewrite or not
+     */
+    public boolean isNeedInValuesRewrite() {
+        return bindingContext.isNeedInValuesRewrite();
+    }
+    
+    /**
      * Get pagination context.
      *
      * @return pagination context
      */
     public PaginationContext getPaginationContext() {
         return bindingContext.getPaginationContext();
+    }
+    
+    /**
+     * Check if this SELECT has IN expression.
+     *
+     * @return true if has IN expression
+     */
+    public boolean hasInExpression() {
+        return bindingContext.hasInExpression();
+    }
+    
+    /**
+     * Get IN value context.
+     *
+     * @return IN value context
+     */
+    public InValueContext getInValueContext() {
+        return bindingContext.getInValueContext();
+    }
+    
+    /**
+     * Get grouped parameters for IN query.
+     *
+     * @return grouped parameters
+     */
+    public List<List<Object>> getGroupedParameters() {
+        return bindingContext.getGroupedParameters();
+    }
+    
+    /**
+     * Get generic parameters before IN expression.
+     *
+     * @param params all parameters
+     * @return parameters before IN expression
+     */
+    public List<Object> getBeforeGenericParameters(final List<Object> params) {
+        return bindingContext.getBeforeGenericParameters(params);
+    }
+    
+    /**
+     * Get generic parameters after IN expression.
+     *
+     * @param params all parameters
+     * @return parameters after IN expression
+     */
+    public List<Object> getAfterGenericParameters(final List<Object> params) {
+        return bindingContext.getAfterGenericParameters(params);
     }
     
     @Override

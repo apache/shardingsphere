@@ -21,6 +21,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.dml.InsertStatementContext;
+import org.apache.shardingsphere.infra.binder.context.statement.type.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.rewrite.parameter.builder.ParameterBuilder;
 import org.apache.shardingsphere.infra.rewrite.parameter.builder.impl.GroupedParameterBuilder;
@@ -73,7 +74,7 @@ public final class SQLRewriteContext {
     }
     
     private boolean containsGroupedParameter(final SQLStatementContext sqlStatementContext) {
-        return containsInsertValues(sqlStatementContext);
+        return containsInsertValues(sqlStatementContext) || containsInQueryGroupedRewrite(sqlStatementContext);
     }
     
     private GroupedParameterBuilder buildGroupedParameterBuilder(final SQLStatementContext sqlStatementContext) {
@@ -85,6 +86,14 @@ public final class SQLRewriteContext {
             // TODO check insert statement whether has beforeGenericParams
             afterGenericParams.addAll(((InsertStatementContext) sqlStatementContext).getOnDuplicateKeyUpdateParameters());
         }
+        if (sqlStatementContext instanceof SelectStatementContext) {
+            SelectStatementContext selectCtx = (SelectStatementContext) sqlStatementContext;
+            if (selectCtx.isNeedInValuesRewrite()) {
+                groupedParams.addAll(selectCtx.getGroupedParameters());
+                beforeGenericParams.addAll(selectCtx.getBeforeGenericParameters(parameters));
+                afterGenericParams.addAll(selectCtx.getAfterGenericParameters(parameters));
+            }
+        }
         return new GroupedParameterBuilder(groupedParams, beforeGenericParams, afterGenericParams);
     }
     
@@ -93,6 +102,18 @@ public final class SQLRewriteContext {
             return false;
         }
         return null == ((InsertStatementContext) sqlStatementContext).getInsertSelectContext();
+    }
+    
+    private boolean containsInQueryGroupedRewrite(final SQLStatementContext sqlStatementContext) {
+        if (!(sqlStatementContext instanceof SelectStatementContext)) {
+            return false;
+        }
+        SelectStatementContext selectCtx = (SelectStatementContext) sqlStatementContext;
+        return selectCtx.isNeedInValuesRewrite() && hasParameterizedInValues(selectCtx);
+    }
+    
+    private boolean hasParameterizedInValues(final SelectStatementContext selectCtx) {
+        return null != selectCtx.getInValueContext() && selectCtx.getInValueContext().getParameterCount() > 0;
     }
     
     /**

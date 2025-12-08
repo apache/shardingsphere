@@ -35,6 +35,7 @@ import org.apache.shardingsphere.sharding.rewrite.token.generator.impl.ShardingD
 import org.apache.shardingsphere.sharding.rewrite.token.generator.impl.ShardingFetchDirectionTokenGenerator;
 import org.apache.shardingsphere.sharding.rewrite.token.generator.impl.ShardingIndexTokenGenerator;
 import org.apache.shardingsphere.sharding.rewrite.token.generator.impl.ShardingInsertValuesTokenGenerator;
+import org.apache.shardingsphere.sharding.rewrite.token.generator.impl.ShardingInValuesTokenGenerator;
 import org.apache.shardingsphere.sharding.rewrite.token.generator.impl.ShardingOffsetTokenGenerator;
 import org.apache.shardingsphere.sharding.rewrite.token.generator.impl.ShardingOrderByTokenGenerator;
 import org.apache.shardingsphere.sharding.rewrite.token.generator.impl.ShardingProjectionsTokenGenerator;
@@ -74,6 +75,7 @@ public final class ShardingTokenGenerateBuilder implements SQLTokenGeneratorBuil
         addSQLTokenGenerator(result, new GeneratedKeyForUseDefaultInsertColumnsTokenGenerator());
         addSQLTokenGenerator(result, new GeneratedKeyAssignmentTokenGenerator());
         addSQLTokenGenerator(result, new ShardingInsertValuesTokenGenerator());
+        addSQLTokenGenerator(result, new ShardingInValuesTokenGenerator());
         addSQLTokenGenerator(result, new GeneratedKeyInsertValuesTokenGenerator());
         addSQLTokenGenerator(result, new ShardingRemoveTokenGenerator());
         addSQLTokenGenerator(result, new ShardingCursorTokenGenerator(rule));

@@ -18,7 +18,9 @@
 package org.apache.shardingsphere.sharding.route.engine.type.standard;
 
 import com.cedarsoftware.util.CaseInsensitiveSet;
+import org.apache.shardingsphere.infra.binder.context.segment.select.invalues.InValueContext;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
+import org.apache.shardingsphere.infra.binder.context.statement.type.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
@@ -44,10 +46,17 @@ import org.apache.shardingsphere.sharding.rule.BindingTableRule;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sharding.rule.ShardingTable;
 import org.apache.shardingsphere.sharding.spi.ShardingAlgorithm;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.BinaryOperationExpression;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExpressionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.InExpression;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ListExpression;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.predicate.WhereSegment;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -138,6 +147,10 @@ public final class ShardingStandardRouteEngine implements ShardingRouteEngine {
     
     private Collection<DataNode> routeByShardingConditionsWithCondition(final ShardingRule shardingRule, final ShardingTable shardingTable,
                                                                         final ShardingStrategy databaseShardingStrategy, final ShardingStrategy tableShardingStrategy) {
+        if (shouldSplitInQuery(databaseShardingStrategy, tableShardingStrategy)) {
+            markNeedInValuesRewrite();
+            return splitAndRouteInQuery(shardingRule, shardingTable, databaseShardingStrategy, tableShardingStrategy);
+        }
         Collection<DataNode> result = new LinkedList<>();
         for (ShardingCondition each : shardingConditions.getConditions()) {
             Collection<DataNode> dataNodes = route0(shardingTable,
@@ -283,5 +296,97 @@ public final class ShardingStandardRouteEngine implements ShardingRouteEngine {
                                                     final String defaultShardingColumn) {
         return null == shardingStrategyConfig ? new NoneShardingStrategy()
                 : ShardingStrategyFactory.newInstance(shardingStrategyConfig, shardingAlgorithms.get(shardingStrategyConfig.getShardingAlgorithmName()), defaultShardingColumn);
+    }
+    
+    private boolean shouldSplitInQuery(final ShardingStrategy databaseShardingStrategy, final ShardingStrategy tableShardingStrategy) {
+        if (1 != shardingConditions.getConditions().size()) {
+            return false;
+        }
+        if (databaseShardingStrategy instanceof NoneShardingStrategy && tableShardingStrategy instanceof NoneShardingStrategy) {
+            return false;
+        }
+        ShardingCondition condition = shardingConditions.getConditions().iterator().next();
+        if (1 != condition.getValues().size()) {
+            return false;
+        }
+        ShardingConditionValue conditionValue = condition.getValues().iterator().next();
+        if (!(conditionValue instanceof ListShardingConditionValue)) {
+            return false;
+        }
+        ListShardingConditionValue<?> listValue = (ListShardingConditionValue<?>) conditionValue;
+        if (listValue.getValues().size() < 2) {
+            return false;
+        }
+        if (!(sqlStatementContext instanceof SelectStatementContext)) {
+            return false;
+        }
+        SelectStatementContext selectCtx = (SelectStatementContext) sqlStatementContext;
+        InValueContext inValueContext = selectCtx.getInValueContext();
+        if (null == inValueContext) {
+            return false;
+        }
+        InExpression inExpression = inValueContext.getInExpression();
+        if (!(inExpression.getLeft() instanceof ColumnSegment)) {
+            return false;
+        }
+        ColumnSegment column = (ColumnSegment) inExpression.getLeft();
+        String inColumnName = column.getColumnBoundInfo().getOriginalColumn().getValue();
+        if (!inColumnName.equalsIgnoreCase(conditionValue.getColumnName())) {
+            return false;
+        }
+        int inExpressionCount = 0;
+        for (WhereSegment each : selectCtx.getWhereSegments()) {
+            inExpressionCount += countInExpressions(each.getExpr());
+            if (inExpressionCount > 1) {
+                return false;
+            }
+        }
+        int valueCount = inValueContext.getValueExpressions().size();
+        int parameterCount = inValueContext.getParameterCount();
+        if (parameterCount > 0 && parameterCount < valueCount) {
+            return false;
+        }
+        String columnName = conditionValue.getColumnName();
+        return isSingleShardingColumn(databaseShardingStrategy.getShardingColumns(), columnName)
+                || isSingleShardingColumn(tableShardingStrategy.getShardingColumns(), columnName);
+    }
+    
+    private int countInExpressions(final ExpressionSegment expression) {
+        if (expression instanceof InExpression && ((InExpression) expression).getRight() instanceof ListExpression) {
+            return 1;
+        }
+        if (expression instanceof BinaryOperationExpression) {
+            BinaryOperationExpression binaryExpr = (BinaryOperationExpression) expression;
+            return countInExpressions(binaryExpr.getLeft()) + countInExpressions(binaryExpr.getRight());
+        }
+        return 0;
+    }
+    
+    private boolean isSingleShardingColumn(final Collection<String> shardingColumns, final String columnName) {
+        return null != shardingColumns && shardingColumns.size() == 1 && shardingColumns.contains(columnName);
+    }
+    
+    private Collection<DataNode> splitAndRouteInQuery(final ShardingRule shardingRule, final ShardingTable shardingTable,
+                                                      final ShardingStrategy databaseShardingStrategy, final ShardingStrategy tableShardingStrategy) {
+        ShardingCondition condition = shardingConditions.getConditions().iterator().next();
+        ListShardingConditionValue<?> listValue = (ListShardingConditionValue<?>) condition.getValues().iterator().next();
+        Collection<DataNode> result = new LinkedHashSet<>();
+        boolean isDatabaseShardingColumn = databaseShardingStrategy.getShardingColumns().contains(listValue.getColumnName());
+        boolean isTableShardingColumn = tableShardingStrategy.getShardingColumns().contains(listValue.getColumnName());
+        for (Object each : listValue.getValues()) {
+            ListShardingConditionValue<?> singleValue = new ListShardingConditionValue<>(listValue.getColumnName(), listValue.getTableName(), Collections.singleton(each));
+            List<ShardingConditionValue> databaseShardingValues = isDatabaseShardingColumn ? Collections.singletonList(singleValue) : Collections.emptyList();
+            List<ShardingConditionValue> tableShardingValues = isTableShardingColumn ? Collections.singletonList(singleValue) : Collections.emptyList();
+            Collection<DataNode> dataNodes = route0(shardingTable, databaseShardingStrategy, databaseShardingValues, tableShardingStrategy, tableShardingValues);
+            result.addAll(dataNodes);
+            originalDataNodes.add(dataNodes);
+        }
+        return result;
+    }
+    
+    private void markNeedInValuesRewrite() {
+        if (sqlStatementContext instanceof SelectStatementContext) {
+            ((SelectStatementContext) sqlStatementContext).setNeedInValuesRewrite(true);
+        }
     }
 }
