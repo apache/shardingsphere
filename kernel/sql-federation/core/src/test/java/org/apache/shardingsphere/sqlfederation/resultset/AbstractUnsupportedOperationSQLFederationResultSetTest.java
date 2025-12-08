@@ -45,826 +45,826 @@ import static org.mockito.Mockito.mock;
 class AbstractUnsupportedOperationSQLFederationResultSetTest {
     
     @Test
-    void assertUpdateNullWithColumnIndexUnsupported() {
+    void assertUpdateNullWithColumnIndex() {
         SQLFeatureNotSupportedException ex = assertThrows(SQLFeatureNotSupportedException.class,
                 () -> mock(AbstractUnsupportedOperationSQLFederationResultSet.class, CALLS_REAL_METHODS).updateNull(1));
         assertThat(ex.getMessage(), is("updateNull"));
     }
     
     @Test
-    void assertUpdateNullWithColumnLabelUnsupported() {
+    void assertUpdateNullWithColumnLabel() {
         SQLFeatureNotSupportedException ex = assertThrows(SQLFeatureNotSupportedException.class,
                 () -> mock(AbstractUnsupportedOperationSQLFederationResultSet.class, CALLS_REAL_METHODS).updateNull("c"));
         assertThat(ex.getMessage(), is("updateNull"));
     }
     
     @Test
-    void assertUpdateBooleanWithColumnIndexUnsupported() {
+    void assertUpdateBooleanWithColumnIndex() {
         SQLFeatureNotSupportedException ex = assertThrows(SQLFeatureNotSupportedException.class,
                 () -> mock(AbstractUnsupportedOperationSQLFederationResultSet.class, CALLS_REAL_METHODS).updateBoolean(1, true));
         assertThat(ex.getMessage(), is("updateBoolean"));
     }
     
     @Test
-    void assertUpdateBooleanWithColumnLabelUnsupported() {
+    void assertUpdateBooleanWithColumnLabel() {
         SQLFeatureNotSupportedException ex = assertThrows(SQLFeatureNotSupportedException.class,
                 () -> mock(AbstractUnsupportedOperationSQLFederationResultSet.class, CALLS_REAL_METHODS).updateBoolean("c", true));
         assertThat(ex.getMessage(), is("updateBoolean"));
     }
     
     @Test
-    void assertUpdateByteWithColumnIndexUnsupported() {
+    void assertUpdateByteWithColumnIndex() {
         SQLFeatureNotSupportedException ex = assertThrows(SQLFeatureNotSupportedException.class,
                 () -> mock(AbstractUnsupportedOperationSQLFederationResultSet.class, CALLS_REAL_METHODS).updateByte(1, (byte) 1));
         assertThat(ex.getMessage(), is("updateByte"));
     }
     
     @Test
-    void assertUpdateByteWithColumnLabelUnsupported() {
+    void assertUpdateByteWithColumnLabel() {
         SQLFeatureNotSupportedException ex = assertThrows(SQLFeatureNotSupportedException.class,
                 () -> mock(AbstractUnsupportedOperationSQLFederationResultSet.class, CALLS_REAL_METHODS).updateByte("c", (byte) 1));
         assertThat(ex.getMessage(), is("updateByte"));
     }
     
     @Test
-    void assertUpdateShortWithColumnIndexUnsupported() {
+    void assertUpdateShortWithColumnIndex() {
         SQLFeatureNotSupportedException ex = assertThrows(SQLFeatureNotSupportedException.class,
                 () -> mock(AbstractUnsupportedOperationSQLFederationResultSet.class, CALLS_REAL_METHODS).updateShort(1, (short) 1));
         assertThat(ex.getMessage(), is("updateShort"));
     }
     
     @Test
-    void assertUpdateShortWithColumnLabelUnsupported() {
+    void assertUpdateShortWithColumnLabel() {
         SQLFeatureNotSupportedException ex = assertThrows(SQLFeatureNotSupportedException.class,
                 () -> mock(AbstractUnsupportedOperationSQLFederationResultSet.class, CALLS_REAL_METHODS).updateShort("c", (short) 1));
         assertThat(ex.getMessage(), is("updateShort"));
     }
     
     @Test
-    void assertUpdateIntWithColumnIndexUnsupported() {
+    void assertUpdateIntWithColumnIndex() {
         SQLFeatureNotSupportedException ex = assertThrows(SQLFeatureNotSupportedException.class,
                 () -> mock(AbstractUnsupportedOperationSQLFederationResultSet.class, CALLS_REAL_METHODS).updateInt(1, 1));
         assertThat(ex.getMessage(), is("updateInt"));
     }
     
     @Test
-    void assertUpdateIntWithColumnLabelUnsupported() {
+    void assertUpdateIntWithColumnLabel() {
         SQLFeatureNotSupportedException ex = assertThrows(SQLFeatureNotSupportedException.class,
                 () -> mock(AbstractUnsupportedOperationSQLFederationResultSet.class, CALLS_REAL_METHODS).updateInt("c", 1));
         assertThat(ex.getMessage(), is("updateInt"));
     }
     
     @Test
-    void assertUpdateLongWithColumnIndexUnsupported() {
+    void assertUpdateLongWithColumnIndex() {
         SQLFeatureNotSupportedException ex = assertThrows(SQLFeatureNotSupportedException.class,
                 () -> mock(AbstractUnsupportedOperationSQLFederationResultSet.class, CALLS_REAL_METHODS).updateLong(1, 1L));
         assertThat(ex.getMessage(), is("updateLong"));
     }
     
     @Test
-    void assertUpdateLongWithColumnLabelUnsupported() {
+    void assertUpdateLongWithColumnLabel() {
         SQLFeatureNotSupportedException ex = assertThrows(SQLFeatureNotSupportedException.class,
                 () -> mock(AbstractUnsupportedOperationSQLFederationResultSet.class, CALLS_REAL_METHODS).updateLong("c", 1L));
         assertThat(ex.getMessage(), is("updateLong"));
     }
     
     @Test
-    void assertUpdateFloatWithColumnIndexUnsupported() {
+    void assertUpdateFloatWithColumnIndex() {
         SQLFeatureNotSupportedException ex = assertThrows(SQLFeatureNotSupportedException.class,
                 () -> mock(AbstractUnsupportedOperationSQLFederationResultSet.class, CALLS_REAL_METHODS).updateFloat(1, 1F));
         assertThat(ex.getMessage(), is("updateFloat"));
     }
     
     @Test
-    void assertUpdateFloatWithColumnLabelUnsupported() {
+    void assertUpdateFloatWithColumnLabel() {
         SQLFeatureNotSupportedException ex = assertThrows(SQLFeatureNotSupportedException.class,
                 () -> mock(AbstractUnsupportedOperationSQLFederationResultSet.class, CALLS_REAL_METHODS).updateFloat("c", 1F));
         assertThat(ex.getMessage(), is("updateFloat"));
     }
     
     @Test
-    void assertUpdateDoubleWithColumnIndexUnsupported() {
+    void assertUpdateDoubleWithColumnIndex() {
         SQLFeatureNotSupportedException ex = assertThrows(SQLFeatureNotSupportedException.class,
                 () -> mock(AbstractUnsupportedOperationSQLFederationResultSet.class, CALLS_REAL_METHODS).updateDouble(1, 1D));
         assertThat(ex.getMessage(), is("updateDouble"));
     }
     
     @Test
-    void assertUpdateDoubleWithColumnLabelUnsupported() {
+    void assertUpdateDoubleWithColumnLabel() {
         SQLFeatureNotSupportedException ex = assertThrows(SQLFeatureNotSupportedException.class,
                 () -> mock(AbstractUnsupportedOperationSQLFederationResultSet.class, CALLS_REAL_METHODS).updateDouble("c", 1D));
         assertThat(ex.getMessage(), is("updateDouble"));
     }
     
     @Test
-    void assertUpdateBigDecimalWithColumnIndexUnsupported() {
+    void assertUpdateBigDecimalWithColumnIndex() {
         SQLFeatureNotSupportedException ex = assertThrows(SQLFeatureNotSupportedException.class,
                 () -> mock(AbstractUnsupportedOperationSQLFederationResultSet.class, CALLS_REAL_METHODS).updateBigDecimal(1, BigDecimal.ONE));
         assertThat(ex.getMessage(), is("updateBigDecimal"));
     }
     
     @Test
-    void assertUpdateBigDecimalWithColumnLabelUnsupported() {
+    void assertUpdateBigDecimalWithColumnLabel() {
         SQLFeatureNotSupportedException ex = assertThrows(SQLFeatureNotSupportedException.class,
                 () -> mock(AbstractUnsupportedOperationSQLFederationResultSet.class, CALLS_REAL_METHODS).updateBigDecimal("c", BigDecimal.ONE));
         assertThat(ex.getMessage(), is("updateBigDecimal"));
     }
     
     @Test
-    void assertUpdateStringWithColumnIndexUnsupported() {
+    void assertUpdateStringWithColumnIndex() {
         SQLFeatureNotSupportedException ex = assertThrows(SQLFeatureNotSupportedException.class,
                 () -> mock(AbstractUnsupportedOperationSQLFederationResultSet.class, CALLS_REAL_METHODS).updateString(1, "v"));
         assertThat(ex.getMessage(), is("updateString"));
     }
     
     @Test
-    void assertUpdateStringWithColumnLabelUnsupported() {
+    void assertUpdateStringWithColumnLabel() {
         SQLFeatureNotSupportedException ex = assertThrows(SQLFeatureNotSupportedException.class,
                 () -> mock(AbstractUnsupportedOperationSQLFederationResultSet.class, CALLS_REAL_METHODS).updateString("c", "v"));
         assertThat(ex.getMessage(), is("updateString"));
     }
     
     @Test
-    void assertUpdateNStringWithColumnIndexUnsupported() {
+    void assertUpdateNStringWithColumnIndex() {
         SQLFeatureNotSupportedException ex = assertThrows(SQLFeatureNotSupportedException.class,
                 () -> mock(AbstractUnsupportedOperationSQLFederationResultSet.class, CALLS_REAL_METHODS).updateNString(1, "v"));
         assertThat(ex.getMessage(), is("updateNString"));
     }
     
     @Test
-    void assertUpdateNStringWithColumnLabelUnsupported() {
+    void assertUpdateNStringWithColumnLabel() {
         SQLFeatureNotSupportedException ex = assertThrows(SQLFeatureNotSupportedException.class,
                 () -> mock(AbstractUnsupportedOperationSQLFederationResultSet.class, CALLS_REAL_METHODS).updateNString("c", "v"));
         assertThat(ex.getMessage(), is("updateNString"));
     }
     
     @Test
-    void assertUpdateBytesWithColumnIndexUnsupported() {
+    void assertUpdateBytesWithColumnIndex() {
         SQLFeatureNotSupportedException ex = assertThrows(SQLFeatureNotSupportedException.class,
                 () -> mock(AbstractUnsupportedOperationSQLFederationResultSet.class, CALLS_REAL_METHODS).updateBytes(1, new byte[]{}));
         assertThat(ex.getMessage(), is("updateBytes"));
     }
     
     @Test
-    void assertUpdateBytesWithColumnLabelUnsupported() {
+    void assertUpdateBytesWithColumnLabel() {
         SQLFeatureNotSupportedException ex = assertThrows(SQLFeatureNotSupportedException.class,
                 () -> mock(AbstractUnsupportedOperationSQLFederationResultSet.class, CALLS_REAL_METHODS).updateBytes("c", new byte[]{}));
         assertThat(ex.getMessage(), is("updateBytes"));
     }
     
     @Test
-    void assertUpdateDateWithColumnIndexUnsupported() {
+    void assertUpdateDateWithColumnIndex() {
         SQLFeatureNotSupportedException ex = assertThrows(SQLFeatureNotSupportedException.class,
                 () -> mock(AbstractUnsupportedOperationSQLFederationResultSet.class, CALLS_REAL_METHODS).updateDate(1, mock(Date.class)));
         assertThat(ex.getMessage(), is("updateDate"));
     }
     
     @Test
-    void assertUpdateDateWithColumnLabelUnsupported() {
+    void assertUpdateDateWithColumnLabel() {
         SQLFeatureNotSupportedException ex = assertThrows(SQLFeatureNotSupportedException.class,
                 () -> mock(AbstractUnsupportedOperationSQLFederationResultSet.class, CALLS_REAL_METHODS).updateDate("c", mock(Date.class)));
         assertThat(ex.getMessage(), is("updateDate"));
     }
     
     @Test
-    void assertUpdateTimeWithColumnIndexUnsupported() {
+    void assertUpdateTimeWithColumnIndex() {
         SQLFeatureNotSupportedException ex = assertThrows(SQLFeatureNotSupportedException.class,
                 () -> mock(AbstractUnsupportedOperationSQLFederationResultSet.class, CALLS_REAL_METHODS).updateTime(1, mock(Time.class)));
         assertThat(ex.getMessage(), is("updateTime"));
     }
     
     @Test
-    void assertUpdateTimeWithColumnLabelUnsupported() {
+    void assertUpdateTimeWithColumnLabel() {
         SQLFeatureNotSupportedException ex = assertThrows(SQLFeatureNotSupportedException.class, 
                 () -> mock(AbstractUnsupportedOperationSQLFederationResultSet.class, CALLS_REAL_METHODS).updateTime("c", mock(Time.class)));
         assertThat(ex.getMessage(), is("updateTime"));
     }
     
     @Test
-    void assertUpdateTimestampWithColumnIndexUnsupported() {
+    void assertUpdateTimestampWithColumnIndex() {
         SQLFeatureNotSupportedException ex = assertThrows(SQLFeatureNotSupportedException.class,
                 () -> mock(AbstractUnsupportedOperationSQLFederationResultSet.class, CALLS_REAL_METHODS).updateTimestamp(1, mock(Timestamp.class)));
         assertThat(ex.getMessage(), is("updateTimestamp"));
     }
     
     @Test
-    void assertUpdateTimestampWithColumnLabelUnsupported() {
+    void assertUpdateTimestampWithColumnLabel() {
         SQLFeatureNotSupportedException ex = assertThrows(SQLFeatureNotSupportedException.class,
                 () -> mock(AbstractUnsupportedOperationSQLFederationResultSet.class, CALLS_REAL_METHODS).updateTimestamp("c", mock(Timestamp.class)));
         assertThat(ex.getMessage(), is("updateTimestamp"));
     }
     
     @Test
-    void assertUpdateAsciiStreamWithColumnIndexUnsupported() {
+    void assertUpdateAsciiStreamWithColumnIndex() {
         SQLFeatureNotSupportedException ex = assertThrows(SQLFeatureNotSupportedException.class,
                 () -> mock(AbstractUnsupportedOperationSQLFederationResultSet.class, CALLS_REAL_METHODS).updateAsciiStream(1, mock(InputStream.class)));
         assertThat(ex.getMessage(), is("updateAsciiStream"));
     }
     
     @Test
-    void assertUpdateAsciiStreamWithColumnLabelUnsupported() {
+    void assertUpdateAsciiStreamWithColumnLabel() {
         SQLFeatureNotSupportedException ex = assertThrows(SQLFeatureNotSupportedException.class,
                 () -> mock(AbstractUnsupportedOperationSQLFederationResultSet.class, CALLS_REAL_METHODS).updateAsciiStream("c", mock(InputStream.class)));
         assertThat(ex.getMessage(), is("updateAsciiStream"));
     }
     
     @Test
-    void assertUpdateAsciiStreamWithLengthByIndexUnsupported() {
+    void assertUpdateAsciiStreamWithLengthByIndex() {
         SQLFeatureNotSupportedException ex = assertThrows(SQLFeatureNotSupportedException.class,
                 () -> mock(AbstractUnsupportedOperationSQLFederationResultSet.class, CALLS_REAL_METHODS).updateAsciiStream(1, mock(InputStream.class), 1));
         assertThat(ex.getMessage(), is("updateAsciiStream"));
     }
     
     @Test
-    void assertUpdateAsciiStreamWithLengthByLabelUnsupported() {
+    void assertUpdateAsciiStreamWithLengthByLabel() {
         SQLFeatureNotSupportedException ex = assertThrows(SQLFeatureNotSupportedException.class,
                 () -> mock(AbstractUnsupportedOperationSQLFederationResultSet.class, CALLS_REAL_METHODS).updateAsciiStream("c", mock(InputStream.class), 1));
         assertThat(ex.getMessage(), is("updateAsciiStream"));
     }
     
     @Test
-    void assertUpdateAsciiStreamWithLongLengthByIndexUnsupported() {
+    void assertUpdateAsciiStreamWithLongLengthByIndex() {
         SQLFeatureNotSupportedException ex = assertThrows(SQLFeatureNotSupportedException.class,
                 () -> mock(AbstractUnsupportedOperationSQLFederationResultSet.class, CALLS_REAL_METHODS).updateAsciiStream(1, mock(InputStream.class), 1L));
         assertThat(ex.getMessage(), is("updateAsciiStream"));
     }
     
     @Test
-    void assertUpdateAsciiStreamWithLongLengthByLabelUnsupported() {
+    void assertUpdateAsciiStreamWithLongLengthByLabel() {
         SQLFeatureNotSupportedException ex = assertThrows(SQLFeatureNotSupportedException.class,
                 () -> mock(AbstractUnsupportedOperationSQLFederationResultSet.class, CALLS_REAL_METHODS).updateAsciiStream("c", mock(InputStream.class), 1L));
         assertThat(ex.getMessage(), is("updateAsciiStream"));
     }
     
     @Test
-    void assertUpdateBinaryStreamWithColumnIndexUnsupported() {
+    void assertUpdateBinaryStreamWithColumnIndex() {
         SQLFeatureNotSupportedException ex = assertThrows(SQLFeatureNotSupportedException.class,
                 () -> mock(AbstractUnsupportedOperationSQLFederationResultSet.class, CALLS_REAL_METHODS).updateBinaryStream(1, mock(InputStream.class)));
         assertThat(ex.getMessage(), is("updateBinaryStream"));
     }
     
     @Test
-    void assertUpdateBinaryStreamWithColumnLabelUnsupported() {
+    void assertUpdateBinaryStreamWithColumnLabel() {
         SQLFeatureNotSupportedException ex = assertThrows(SQLFeatureNotSupportedException.class,
                 () -> mock(AbstractUnsupportedOperationSQLFederationResultSet.class, CALLS_REAL_METHODS).updateBinaryStream("c", mock(InputStream.class)));
         assertThat(ex.getMessage(), is("updateBinaryStream"));
     }
     
     @Test
-    void assertUpdateBinaryStreamWithLengthByIndexUnsupported() {
+    void assertUpdateBinaryStreamWithLengthByIndex() {
         SQLFeatureNotSupportedException ex = assertThrows(SQLFeatureNotSupportedException.class,
                 () -> mock(AbstractUnsupportedOperationSQLFederationResultSet.class, CALLS_REAL_METHODS).updateBinaryStream(1, mock(InputStream.class), 1));
         assertThat(ex.getMessage(), is("updateBinaryStream"));
     }
     
     @Test
-    void assertUpdateBinaryStreamWithLengthByLabelUnsupported() {
+    void assertUpdateBinaryStreamWithLengthByLabel() {
         SQLFeatureNotSupportedException ex = assertThrows(SQLFeatureNotSupportedException.class,
                 () -> mock(AbstractUnsupportedOperationSQLFederationResultSet.class, CALLS_REAL_METHODS).updateBinaryStream("c", mock(InputStream.class), 1));
         assertThat(ex.getMessage(), is("updateBinaryStream"));
     }
     
     @Test
-    void assertUpdateBinaryStreamWithLongLengthByIndexUnsupported() {
+    void assertUpdateBinaryStreamWithLongLengthByIndex() {
         SQLFeatureNotSupportedException ex = assertThrows(SQLFeatureNotSupportedException.class,
                 () -> mock(AbstractUnsupportedOperationSQLFederationResultSet.class, CALLS_REAL_METHODS).updateBinaryStream(1, mock(InputStream.class), 1L));
         assertThat(ex.getMessage(), is("updateBinaryStream"));
     }
     
     @Test
-    void assertUpdateBinaryStreamWithLongLengthByLabelUnsupported() {
+    void assertUpdateBinaryStreamWithLongLengthByLabel() {
         SQLFeatureNotSupportedException ex = assertThrows(SQLFeatureNotSupportedException.class,
                 () -> mock(AbstractUnsupportedOperationSQLFederationResultSet.class, CALLS_REAL_METHODS).updateBinaryStream("c", mock(InputStream.class), 1L));
         assertThat(ex.getMessage(), is("updateBinaryStream"));
     }
     
     @Test
-    void assertUpdateCharacterStreamWithColumnIndexUnsupported() {
+    void assertUpdateCharacterStreamWithColumnIndex() {
         SQLFeatureNotSupportedException ex = assertThrows(SQLFeatureNotSupportedException.class,
                 () -> mock(AbstractUnsupportedOperationSQLFederationResultSet.class, CALLS_REAL_METHODS).updateCharacterStream(1, mock(Reader.class)));
         assertThat(ex.getMessage(), is("updateCharacterStream"));
     }
     
     @Test
-    void assertUpdateCharacterStreamWithColumnLabelUnsupported() {
+    void assertUpdateCharacterStreamWithColumnLabel() {
         SQLFeatureNotSupportedException ex = assertThrows(SQLFeatureNotSupportedException.class,
                 () -> mock(AbstractUnsupportedOperationSQLFederationResultSet.class, CALLS_REAL_METHODS).updateCharacterStream("c", mock(Reader.class)));
         assertThat(ex.getMessage(), is("updateCharacterStream"));
     }
     
     @Test
-    void assertUpdateCharacterStreamWithLengthByIndexUnsupported() {
+    void assertUpdateCharacterStreamWithLengthByIndex() {
         SQLFeatureNotSupportedException ex = assertThrows(SQLFeatureNotSupportedException.class,
                 () -> mock(AbstractUnsupportedOperationSQLFederationResultSet.class, CALLS_REAL_METHODS).updateCharacterStream(1, mock(Reader.class), 1));
         assertThat(ex.getMessage(), is("updateCharacterStream"));
     }
     
     @Test
-    void assertUpdateCharacterStreamWithLengthByLabelUnsupported() {
+    void assertUpdateCharacterStreamWithLengthByLabel() {
         SQLFeatureNotSupportedException ex = assertThrows(SQLFeatureNotSupportedException.class,
                 () -> mock(AbstractUnsupportedOperationSQLFederationResultSet.class, CALLS_REAL_METHODS).updateCharacterStream("c", mock(Reader.class), 1));
         assertThat(ex.getMessage(), is("updateCharacterStream"));
     }
     
     @Test
-    void assertUpdateCharacterStreamWithLongLengthByIndexUnsupported() {
+    void assertUpdateCharacterStreamWithLongLengthByIndex() {
         SQLFeatureNotSupportedException ex = assertThrows(SQLFeatureNotSupportedException.class,
                 () -> mock(AbstractUnsupportedOperationSQLFederationResultSet.class, CALLS_REAL_METHODS).updateCharacterStream(1, mock(Reader.class), 1L));
         assertThat(ex.getMessage(), is("updateCharacterStream"));
     }
     
     @Test
-    void assertUpdateCharacterStreamWithLongLengthByLabelUnsupported() {
+    void assertUpdateCharacterStreamWithLongLengthByLabel() {
         SQLFeatureNotSupportedException ex = assertThrows(SQLFeatureNotSupportedException.class,
                 () -> mock(AbstractUnsupportedOperationSQLFederationResultSet.class, CALLS_REAL_METHODS).updateCharacterStream("c", mock(Reader.class), 1L));
         assertThat(ex.getMessage(), is("updateCharacterStream"));
     }
     
     @Test
-    void assertUpdateNCharacterStreamWithColumnIndexUnsupported() {
+    void assertUpdateNCharacterStreamWithColumnIndex() {
         SQLFeatureNotSupportedException ex = assertThrows(SQLFeatureNotSupportedException.class,
                 () -> mock(AbstractUnsupportedOperationSQLFederationResultSet.class, CALLS_REAL_METHODS).updateNCharacterStream(1, mock(Reader.class)));
         assertThat(ex.getMessage(), is("updateNCharacterStream"));
     }
     
     @Test
-    void assertUpdateNCharacterStreamWithColumnLabelUnsupported() {
+    void assertUpdateNCharacterStreamWithColumnLabel() {
         SQLFeatureNotSupportedException ex = assertThrows(SQLFeatureNotSupportedException.class,
                 () -> mock(AbstractUnsupportedOperationSQLFederationResultSet.class, CALLS_REAL_METHODS).updateNCharacterStream("c", mock(Reader.class)));
         assertThat(ex.getMessage(), is("updateNCharacterStream"));
     }
     
     @Test
-    void assertUpdateNCharacterStreamWithLongLengthByIndexUnsupported() {
+    void assertUpdateNCharacterStreamWithLongLengthByIndex() {
         SQLFeatureNotSupportedException ex = assertThrows(SQLFeatureNotSupportedException.class,
                 () -> mock(AbstractUnsupportedOperationSQLFederationResultSet.class, CALLS_REAL_METHODS).updateNCharacterStream(1, mock(Reader.class), 1L));
         assertThat(ex.getMessage(), is("updateNCharacterStream"));
     }
     
     @Test
-    void assertUpdateNCharacterStreamWithLongLengthByLabelUnsupported() {
+    void assertUpdateNCharacterStreamWithLongLengthByLabel() {
         SQLFeatureNotSupportedException ex = assertThrows(SQLFeatureNotSupportedException.class,
                 () -> mock(AbstractUnsupportedOperationSQLFederationResultSet.class, CALLS_REAL_METHODS).updateNCharacterStream("c", mock(Reader.class), 1L));
         assertThat(ex.getMessage(), is("updateNCharacterStream"));
     }
     
     @Test
-    void assertUpdateObjectWithColumnIndexUnsupported() {
+    void assertUpdateObjectWithColumnIndex() {
         SQLFeatureNotSupportedException ex = assertThrows(SQLFeatureNotSupportedException.class,
                 () -> mock(AbstractUnsupportedOperationSQLFederationResultSet.class, CALLS_REAL_METHODS).updateObject(1, new Object()));
         assertThat(ex.getMessage(), is("updateObject"));
     }
     
     @Test
-    void assertUpdateObjectWithColumnLabelUnsupported() {
+    void assertUpdateObjectWithColumnLabel() {
         SQLFeatureNotSupportedException ex = assertThrows(SQLFeatureNotSupportedException.class,
                 () -> mock(AbstractUnsupportedOperationSQLFederationResultSet.class, CALLS_REAL_METHODS).updateObject("c", new Object()));
         assertThat(ex.getMessage(), is("updateObject"));
     }
     
     @Test
-    void assertUpdateObjectWithScaleByIndexUnsupported() {
+    void assertUpdateObjectWithScaleByIndex() {
         SQLFeatureNotSupportedException ex = assertThrows(SQLFeatureNotSupportedException.class,
                 () -> mock(AbstractUnsupportedOperationSQLFederationResultSet.class, CALLS_REAL_METHODS).updateObject(1, new Object(), 1));
         assertThat(ex.getMessage(), is("updateObject"));
     }
     
     @Test
-    void assertUpdateObjectWithScaleByLabelUnsupported() {
+    void assertUpdateObjectWithScaleByLabel() {
         SQLFeatureNotSupportedException ex = assertThrows(SQLFeatureNotSupportedException.class,
                 () -> mock(AbstractUnsupportedOperationSQLFederationResultSet.class, CALLS_REAL_METHODS).updateObject("c", new Object(), 1));
         assertThat(ex.getMessage(), is("updateObject"));
     }
     
     @Test
-    void assertUpdateRefWithColumnIndexUnsupported() {
+    void assertUpdateRefWithColumnIndex() {
         SQLFeatureNotSupportedException ex = assertThrows(SQLFeatureNotSupportedException.class,
                 () -> mock(AbstractUnsupportedOperationSQLFederationResultSet.class, CALLS_REAL_METHODS).updateRef(1, mock(Ref.class)));
         assertThat(ex.getMessage(), is("updateRef"));
     }
     
     @Test
-    void assertUpdateRefWithColumnLabelUnsupported() {
+    void assertUpdateRefWithColumnLabel() {
         SQLFeatureNotSupportedException ex = assertThrows(SQLFeatureNotSupportedException.class,
                 () -> mock(AbstractUnsupportedOperationSQLFederationResultSet.class, CALLS_REAL_METHODS).updateRef("c", mock(Ref.class)));
         assertThat(ex.getMessage(), is("updateRef"));
     }
     
     @Test
-    void assertUpdateBlobWithColumnIndexUnsupported() {
+    void assertUpdateBlobWithColumnIndex() {
         SQLFeatureNotSupportedException ex = assertThrows(SQLFeatureNotSupportedException.class,
                 () -> mock(AbstractUnsupportedOperationSQLFederationResultSet.class, CALLS_REAL_METHODS).updateBlob(1, mock(Blob.class)));
         assertThat(ex.getMessage(), is("updateBlob"));
     }
     
     @Test
-    void assertUpdateBlobWithColumnLabelUnsupported() {
+    void assertUpdateBlobWithColumnLabel() {
         SQLFeatureNotSupportedException ex = assertThrows(SQLFeatureNotSupportedException.class,
                 () -> mock(AbstractUnsupportedOperationSQLFederationResultSet.class, CALLS_REAL_METHODS).updateBlob("c", mock(Blob.class)));
         assertThat(ex.getMessage(), is("updateBlob"));
     }
     
     @Test
-    void assertUpdateBlobWithStreamByIndexUnsupported() {
+    void assertUpdateBlobWithStreamByIndex() {
         SQLFeatureNotSupportedException ex = assertThrows(SQLFeatureNotSupportedException.class,
                 () -> mock(AbstractUnsupportedOperationSQLFederationResultSet.class, CALLS_REAL_METHODS).updateBlob(1, mock(InputStream.class)));
         assertThat(ex.getMessage(), is("updateBlob"));
     }
     
     @Test
-    void assertUpdateBlobWithStreamByLabelUnsupported() {
+    void assertUpdateBlobWithStreamByLabel() {
         SQLFeatureNotSupportedException ex = assertThrows(SQLFeatureNotSupportedException.class,
                 () -> mock(AbstractUnsupportedOperationSQLFederationResultSet.class, CALLS_REAL_METHODS).updateBlob("c", mock(InputStream.class)));
         assertThat(ex.getMessage(), is("updateBlob"));
     }
     
     @Test
-    void assertUpdateBlobWithLongLengthByIndexUnsupported() {
+    void assertUpdateBlobWithLongLengthByIndex() {
         SQLFeatureNotSupportedException ex = assertThrows(SQLFeatureNotSupportedException.class,
                 () -> mock(AbstractUnsupportedOperationSQLFederationResultSet.class, CALLS_REAL_METHODS).updateBlob(1, mock(InputStream.class), 1L));
         assertThat(ex.getMessage(), is("updateBlob"));
     }
     
     @Test
-    void assertUpdateBlobWithLongLengthByLabelUnsupported() {
+    void assertUpdateBlobWithLongLengthByLabel() {
         SQLFeatureNotSupportedException ex = assertThrows(SQLFeatureNotSupportedException.class,
                 () -> mock(AbstractUnsupportedOperationSQLFederationResultSet.class, CALLS_REAL_METHODS).updateBlob("c", mock(InputStream.class), 1L));
         assertThat(ex.getMessage(), is("updateBlob"));
     }
     
     @Test
-    void assertUpdateClobWithColumnIndexUnsupported() {
+    void assertUpdateClobWithColumnIndex() {
         SQLFeatureNotSupportedException ex = assertThrows(SQLFeatureNotSupportedException.class,
                 () -> mock(AbstractUnsupportedOperationSQLFederationResultSet.class, CALLS_REAL_METHODS).updateClob(1, mock(Clob.class)));
         assertThat(ex.getMessage(), is("updateClob"));
     }
     
     @Test
-    void assertUpdateClobWithColumnLabelUnsupported() {
+    void assertUpdateClobWithColumnLabel() {
         SQLFeatureNotSupportedException ex = assertThrows(SQLFeatureNotSupportedException.class,
                 () -> mock(AbstractUnsupportedOperationSQLFederationResultSet.class, CALLS_REAL_METHODS).updateClob("c", mock(Clob.class)));
         assertThat(ex.getMessage(), is("updateClob"));
     }
     
     @Test
-    void assertUpdateClobWithReaderByIndexUnsupported() {
+    void assertUpdateClobWithReaderByIndex() {
         SQLFeatureNotSupportedException ex = assertThrows(SQLFeatureNotSupportedException.class,
                 () -> mock(AbstractUnsupportedOperationSQLFederationResultSet.class, CALLS_REAL_METHODS).updateClob(1, mock(Reader.class)));
         assertThat(ex.getMessage(), is("updateClob"));
     }
     
     @Test
-    void assertUpdateClobWithReaderByLabelUnsupported() {
+    void assertUpdateClobWithReaderByLabel() {
         SQLFeatureNotSupportedException ex = assertThrows(SQLFeatureNotSupportedException.class,
                 () -> mock(AbstractUnsupportedOperationSQLFederationResultSet.class, CALLS_REAL_METHODS).updateClob("c", mock(Reader.class)));
         assertThat(ex.getMessage(), is("updateClob"));
     }
     
     @Test
-    void assertUpdateClobWithLongLengthByIndexUnsupported() {
+    void assertUpdateClobWithLongLengthByIndex() {
         SQLFeatureNotSupportedException ex = assertThrows(SQLFeatureNotSupportedException.class,
                 () -> mock(AbstractUnsupportedOperationSQLFederationResultSet.class, CALLS_REAL_METHODS).updateClob(1, mock(Reader.class), 1L));
         assertThat(ex.getMessage(), is("updateClob"));
     }
     
     @Test
-    void assertUpdateClobWithLongLengthByLabelUnsupported() {
+    void assertUpdateClobWithLongLengthByLabel() {
         SQLFeatureNotSupportedException ex = assertThrows(SQLFeatureNotSupportedException.class,
                 () -> mock(AbstractUnsupportedOperationSQLFederationResultSet.class, CALLS_REAL_METHODS).updateClob("c", mock(Reader.class), 1L));
         assertThat(ex.getMessage(), is("updateClob"));
     }
     
     @Test
-    void assertUpdateNClobWithColumnIndexUnsupported() {
+    void assertUpdateNClobWithColumnIndex() {
         SQLFeatureNotSupportedException ex = assertThrows(SQLFeatureNotSupportedException.class,
                 () -> mock(AbstractUnsupportedOperationSQLFederationResultSet.class, CALLS_REAL_METHODS).updateNClob(1, mock(NClob.class)));
         assertThat(ex.getMessage(), is("updateNClob"));
     }
     
     @Test
-    void assertUpdateNClobWithColumnLabelUnsupported() {
+    void assertUpdateNClobWithColumnLabel() {
         SQLFeatureNotSupportedException ex = assertThrows(SQLFeatureNotSupportedException.class,
                 () -> mock(AbstractUnsupportedOperationSQLFederationResultSet.class, CALLS_REAL_METHODS).updateNClob("c", mock(NClob.class)));
         assertThat(ex.getMessage(), is("updateNClob"));
     }
     
     @Test
-    void assertUpdateNClobWithReaderByIndexUnsupported() {
+    void assertUpdateNClobWithReaderByIndex() {
         SQLFeatureNotSupportedException ex = assertThrows(SQLFeatureNotSupportedException.class,
                 () -> mock(AbstractUnsupportedOperationSQLFederationResultSet.class, CALLS_REAL_METHODS).updateNClob(1, mock(Reader.class)));
         assertThat(ex.getMessage(), is("updateNClob"));
     }
     
     @Test
-    void assertUpdateNClobWithReaderByLabelUnsupported() {
+    void assertUpdateNClobWithReaderByLabel() {
         SQLFeatureNotSupportedException ex = assertThrows(SQLFeatureNotSupportedException.class,
                 () -> mock(AbstractUnsupportedOperationSQLFederationResultSet.class, CALLS_REAL_METHODS).updateNClob("c", mock(Reader.class)));
         assertThat(ex.getMessage(), is("updateNClob"));
     }
     
     @Test
-    void assertUpdateNClobWithLongLengthByIndexUnsupported() {
+    void assertUpdateNClobWithLongLengthByIndex() {
         SQLFeatureNotSupportedException ex = assertThrows(SQLFeatureNotSupportedException.class,
                 () -> mock(AbstractUnsupportedOperationSQLFederationResultSet.class, CALLS_REAL_METHODS).updateNClob(1, mock(Reader.class), 1L));
         assertThat(ex.getMessage(), is("updateNClob"));
     }
     
     @Test
-    void assertUpdateNClobWithLongLengthByLabelUnsupported() {
+    void assertUpdateNClobWithLongLengthByLabel() {
         SQLFeatureNotSupportedException ex = assertThrows(SQLFeatureNotSupportedException.class,
                 () -> mock(AbstractUnsupportedOperationSQLFederationResultSet.class, CALLS_REAL_METHODS).updateNClob("c", mock(Reader.class), 1L));
         assertThat(ex.getMessage(), is("updateNClob"));
     }
     
     @Test
-    void assertUpdateArrayWithColumnIndexUnsupported() {
+    void assertUpdateArrayWithColumnIndex() {
         SQLFeatureNotSupportedException ex = assertThrows(SQLFeatureNotSupportedException.class,
                 () -> mock(AbstractUnsupportedOperationSQLFederationResultSet.class, CALLS_REAL_METHODS).updateArray(1, mock(Array.class)));
         assertThat(ex.getMessage(), is("updateArray"));
     }
     
     @Test
-    void assertUpdateArrayWithColumnLabelUnsupported() {
+    void assertUpdateArrayWithColumnLabel() {
         SQLFeatureNotSupportedException ex = assertThrows(SQLFeatureNotSupportedException.class,
                 () -> mock(AbstractUnsupportedOperationSQLFederationResultSet.class, CALLS_REAL_METHODS).updateArray("c", mock(Array.class)));
         assertThat(ex.getMessage(), is("updateArray"));
     }
     
     @Test
-    void assertUpdateRowIdWithColumnIndexUnsupported() {
+    void assertUpdateRowIdWithColumnIndex() {
         SQLFeatureNotSupportedException ex = assertThrows(SQLFeatureNotSupportedException.class,
                 () -> mock(AbstractUnsupportedOperationSQLFederationResultSet.class, CALLS_REAL_METHODS).updateRowId(1, mock(RowId.class)));
         assertThat(ex.getMessage(), is("updateRowId"));
     }
     
     @Test
-    void assertUpdateRowIdWithColumnLabelUnsupported() {
+    void assertUpdateRowIdWithColumnLabel() {
         SQLFeatureNotSupportedException ex = assertThrows(SQLFeatureNotSupportedException.class,
                 () -> mock(AbstractUnsupportedOperationSQLFederationResultSet.class, CALLS_REAL_METHODS).updateRowId("c", mock(RowId.class)));
         assertThat(ex.getMessage(), is("updateRowId"));
     }
     
     @Test
-    void assertUpdateSQLXMLWithColumnIndexUnsupported() {
+    void assertUpdateSQLXMLWithColumnIndex() {
         SQLFeatureNotSupportedException ex = assertThrows(SQLFeatureNotSupportedException.class,
                 () -> mock(AbstractUnsupportedOperationSQLFederationResultSet.class, CALLS_REAL_METHODS).updateSQLXML(1, mock(SQLXML.class)));
         assertThat(ex.getMessage(), is("updateSQLXML"));
     }
     
     @Test
-    void assertUpdateSQLXMLWithColumnLabelUnsupported() {
+    void assertUpdateSQLXMLWithColumnLabel() {
         SQLFeatureNotSupportedException ex = assertThrows(SQLFeatureNotSupportedException.class,
                 () -> mock(AbstractUnsupportedOperationSQLFederationResultSet.class, CALLS_REAL_METHODS).updateSQLXML("c", mock(SQLXML.class)));
         assertThat(ex.getMessage(), is("updateSQLXML"));
     }
     
     @Test
-    void assertPreviousUnsupported() {
+    void assertPrevious() {
         SQLFeatureNotSupportedException ex = assertThrows(SQLFeatureNotSupportedException.class,
                 () -> mock(AbstractUnsupportedOperationSQLFederationResultSet.class, CALLS_REAL_METHODS).previous());
         assertThat(ex.getMessage(), is("previous"));
     }
     
     @Test
-    void assertIsBeforeFirstUnsupported() {
+    void assertIsBeforeFirst() {
         SQLFeatureNotSupportedException ex = assertThrows(SQLFeatureNotSupportedException.class,
                 () -> mock(AbstractUnsupportedOperationSQLFederationResultSet.class, CALLS_REAL_METHODS).isBeforeFirst());
         assertThat(ex.getMessage(), is("isBeforeFirst"));
     }
     
     @Test
-    void assertIsAfterLastUnsupported() {
+    void assertIsAfterLast() {
         SQLFeatureNotSupportedException ex = assertThrows(SQLFeatureNotSupportedException.class,
                 () -> mock(AbstractUnsupportedOperationSQLFederationResultSet.class, CALLS_REAL_METHODS).isAfterLast());
         assertThat(ex.getMessage(), is("isAfterLast"));
     }
     
     @Test
-    void assertIsFirstUnsupported() {
+    void assertIsFirst() {
         SQLFeatureNotSupportedException ex = assertThrows(SQLFeatureNotSupportedException.class,
                 () -> mock(AbstractUnsupportedOperationSQLFederationResultSet.class, CALLS_REAL_METHODS).isFirst());
         assertThat(ex.getMessage(), is("isFirst"));
     }
     
     @Test
-    void assertIsLastUnsupported() {
+    void assertIsLast() {
         SQLFeatureNotSupportedException ex = assertThrows(SQLFeatureNotSupportedException.class,
                 () -> mock(AbstractUnsupportedOperationSQLFederationResultSet.class, CALLS_REAL_METHODS).isLast());
         assertThat(ex.getMessage(), is("isLast"));
     }
     
     @Test
-    void assertBeforeFirstUnsupported() {
+    void assertBeforeFirst() {
         SQLFeatureNotSupportedException ex = assertThrows(SQLFeatureNotSupportedException.class,
                 () -> mock(AbstractUnsupportedOperationSQLFederationResultSet.class, CALLS_REAL_METHODS).beforeFirst());
         assertThat(ex.getMessage(), is("beforeFirst"));
     }
     
     @Test
-    void assertAfterLastUnsupported() {
+    void assertAfterLast() {
         SQLFeatureNotSupportedException ex = assertThrows(SQLFeatureNotSupportedException.class,
                 () -> mock(AbstractUnsupportedOperationSQLFederationResultSet.class, CALLS_REAL_METHODS).afterLast());
         assertThat(ex.getMessage(), is("afterLast"));
     }
     
     @Test
-    void assertFirstUnsupported() {
+    void assertFirst() {
         SQLFeatureNotSupportedException ex = assertThrows(SQLFeatureNotSupportedException.class,
                 () -> mock(AbstractUnsupportedOperationSQLFederationResultSet.class, CALLS_REAL_METHODS).first());
         assertThat(ex.getMessage(), is("first"));
     }
     
     @Test
-    void assertLastUnsupported() {
+    void assertLast() {
         SQLFeatureNotSupportedException ex = assertThrows(SQLFeatureNotSupportedException.class,
                 () -> mock(AbstractUnsupportedOperationSQLFederationResultSet.class, CALLS_REAL_METHODS).last());
         assertThat(ex.getMessage(), is("last"));
     }
     
     @Test
-    void assertAbsoluteUnsupported() {
+    void assertAbsolute() {
         SQLFeatureNotSupportedException ex = assertThrows(SQLFeatureNotSupportedException.class,
                 () -> mock(AbstractUnsupportedOperationSQLFederationResultSet.class, CALLS_REAL_METHODS).absolute(1));
         assertThat(ex.getMessage(), is("absolute"));
     }
     
     @Test
-    void assertRelativeUnsupported() {
+    void assertRelative() {
         SQLFeatureNotSupportedException ex = assertThrows(SQLFeatureNotSupportedException.class,
                 () -> mock(AbstractUnsupportedOperationSQLFederationResultSet.class, CALLS_REAL_METHODS).relative(1));
         assertThat(ex.getMessage(), is("relative"));
     }
     
     @Test
-    void assertGetRowUnsupported() {
+    void assertGetRow() {
         SQLFeatureNotSupportedException ex = assertThrows(SQLFeatureNotSupportedException.class,
                 () -> mock(AbstractUnsupportedOperationSQLFederationResultSet.class, CALLS_REAL_METHODS).getRow());
         assertThat(ex.getMessage(), is("getRow"));
     }
     
     @Test
-    void assertInsertRowUnsupported() {
+    void assertInsertRow() {
         SQLFeatureNotSupportedException ex = assertThrows(SQLFeatureNotSupportedException.class,
                 () -> mock(AbstractUnsupportedOperationSQLFederationResultSet.class, CALLS_REAL_METHODS).insertRow());
         assertThat(ex.getMessage(), is("insertRow"));
     }
     
     @Test
-    void assertUpdateRowUnsupported() {
+    void assertUpdateRow() {
         SQLFeatureNotSupportedException ex = assertThrows(SQLFeatureNotSupportedException.class,
                 () -> mock(AbstractUnsupportedOperationSQLFederationResultSet.class, CALLS_REAL_METHODS).updateRow());
         assertThat(ex.getMessage(), is("updateRow"));
     }
     
     @Test
-    void assertDeleteRowUnsupported() {
+    void assertDeleteRow() {
         SQLFeatureNotSupportedException ex = assertThrows(SQLFeatureNotSupportedException.class,
                 () -> mock(AbstractUnsupportedOperationSQLFederationResultSet.class, CALLS_REAL_METHODS).deleteRow());
         assertThat(ex.getMessage(), is("deleteRow"));
     }
     
     @Test
-    void assertRefreshRowUnsupported() {
+    void assertRefreshRow() {
         SQLFeatureNotSupportedException ex = assertThrows(SQLFeatureNotSupportedException.class,
                 () -> mock(AbstractUnsupportedOperationSQLFederationResultSet.class, CALLS_REAL_METHODS).refreshRow());
         assertThat(ex.getMessage(), is("refreshRow"));
     }
     
     @Test
-    void assertCancelRowUpdatesUnsupported() {
+    void assertCancelRowUpdates() {
         SQLFeatureNotSupportedException ex = assertThrows(SQLFeatureNotSupportedException.class,
                 () -> mock(AbstractUnsupportedOperationSQLFederationResultSet.class, CALLS_REAL_METHODS).cancelRowUpdates());
         assertThat(ex.getMessage(), is("cancelRowUpdates"));
     }
     
     @Test
-    void assertMoveToInsertRowUnsupported() {
+    void assertMoveToInsertRow() {
         SQLFeatureNotSupportedException ex = assertThrows(SQLFeatureNotSupportedException.class,
                 () -> mock(AbstractUnsupportedOperationSQLFederationResultSet.class, CALLS_REAL_METHODS).moveToInsertRow());
         assertThat(ex.getMessage(), is("moveToInsertRow"));
     }
     
     @Test
-    void assertMoveToCurrentRowUnsupported() {
+    void assertMoveToCurrentRow() {
         SQLFeatureNotSupportedException ex = assertThrows(SQLFeatureNotSupportedException.class,
                 () -> mock(AbstractUnsupportedOperationSQLFederationResultSet.class, CALLS_REAL_METHODS).moveToCurrentRow());
         assertThat(ex.getMessage(), is("moveToCurrentRow"));
     }
     
     @Test
-    void assertRowInsertedUnsupported() {
+    void assertRowInserted() {
         SQLFeatureNotSupportedException ex = assertThrows(SQLFeatureNotSupportedException.class,
                 () -> mock(AbstractUnsupportedOperationSQLFederationResultSet.class, CALLS_REAL_METHODS).rowInserted());
         assertThat(ex.getMessage(), is("rowInserted"));
     }
     
     @Test
-    void assertRowUpdatedUnsupported() {
+    void assertRowUpdated() {
         SQLFeatureNotSupportedException ex = assertThrows(SQLFeatureNotSupportedException.class,
                 () -> mock(AbstractUnsupportedOperationSQLFederationResultSet.class, CALLS_REAL_METHODS).rowUpdated());
         assertThat(ex.getMessage(), is("rowUpdated"));
     }
     
     @Test
-    void assertRowDeletedUnsupported() {
+    void assertRowDeleted() {
         SQLFeatureNotSupportedException ex = assertThrows(SQLFeatureNotSupportedException.class,
                 () -> mock(AbstractUnsupportedOperationSQLFederationResultSet.class, CALLS_REAL_METHODS).rowDeleted());
         assertThat(ex.getMessage(), is("rowDeleted"));
     }
     
     @Test
-    void assertGetCursorNameUnsupported() {
+    void assertGetCursorName() {
         SQLFeatureNotSupportedException ex = assertThrows(SQLFeatureNotSupportedException.class,
                 () -> mock(AbstractUnsupportedOperationSQLFederationResultSet.class, CALLS_REAL_METHODS).getCursorName());
         assertThat(ex.getMessage(), is("getCursorName"));
     }
     
     @Test
-    void assertGetHoldabilityUnsupported() {
+    void assertGetHoldability() {
         SQLFeatureNotSupportedException ex = assertThrows(SQLFeatureNotSupportedException.class,
                 () -> mock(AbstractUnsupportedOperationSQLFederationResultSet.class, CALLS_REAL_METHODS).getHoldability());
         assertThat(ex.getMessage(), is("getHoldability"));
     }
     
     @Test
-    void assertGetNClobWithColumnIndexUnsupported() {
+    void assertGetNClobWithColumnIndex() {
         SQLFeatureNotSupportedException ex = assertThrows(SQLFeatureNotSupportedException.class,
                 () -> mock(AbstractUnsupportedOperationSQLFederationResultSet.class, CALLS_REAL_METHODS).getNClob(1));
         assertThat(ex.getMessage(), is("getNClob"));
     }
     
     @Test
-    void assertGetNClobWithColumnLabelUnsupported() {
+    void assertGetNClobWithColumnLabel() {
         SQLFeatureNotSupportedException ex = assertThrows(SQLFeatureNotSupportedException.class,
                 () -> mock(AbstractUnsupportedOperationSQLFederationResultSet.class, CALLS_REAL_METHODS).getNClob("c"));
         assertThat(ex.getMessage(), is("getNClob"));
     }
     
     @Test
-    void assertGetNCharacterStreamWithColumnIndexUnsupported() {
+    void assertGetNCharacterStreamWithColumnIndex() {
         SQLFeatureNotSupportedException ex = assertThrows(SQLFeatureNotSupportedException.class,
                 () -> mock(AbstractUnsupportedOperationSQLFederationResultSet.class, CALLS_REAL_METHODS).getNCharacterStream(1));
         assertThat(ex.getMessage(), is("getNCharacterStream"));
     }
     
     @Test
-    void assertGetNCharacterStreamWithColumnLabelUnsupported() {
+    void assertGetNCharacterStreamWithColumnLabel() {
         SQLFeatureNotSupportedException ex = assertThrows(SQLFeatureNotSupportedException.class,
                 () -> mock(AbstractUnsupportedOperationSQLFederationResultSet.class, CALLS_REAL_METHODS).getNCharacterStream("c"));
         assertThat(ex.getMessage(), is("getNCharacterStream"));
     }
     
     @Test
-    void assertGetRefWithColumnIndexUnsupported() {
+    void assertGetRefWithColumnIndex() {
         SQLFeatureNotSupportedException ex = assertThrows(SQLFeatureNotSupportedException.class,
                 () -> mock(AbstractUnsupportedOperationSQLFederationResultSet.class, CALLS_REAL_METHODS).getRef(1));
         assertThat(ex.getMessage(), is("getRef"));
     }
     
     @Test
-    void assertGetRefWithColumnLabelUnsupported() {
+    void assertGetRefWithColumnLabel() {
         SQLFeatureNotSupportedException ex = assertThrows(SQLFeatureNotSupportedException.class,
                 () -> mock(AbstractUnsupportedOperationSQLFederationResultSet.class, CALLS_REAL_METHODS).getRef("c"));
         assertThat(ex.getMessage(), is("getRef"));
     }
     
     @Test
-    void assertGetRowIdWithColumnIndexUnsupported() {
+    void assertGetRowIdWithColumnIndex() {
         SQLFeatureNotSupportedException ex = assertThrows(SQLFeatureNotSupportedException.class,
                 () -> mock(AbstractUnsupportedOperationSQLFederationResultSet.class, CALLS_REAL_METHODS).getRowId(1));
         assertThat(ex.getMessage(), is("getRowId"));
     }
     
     @Test
-    void assertGetRowIdWithColumnLabelUnsupported() {
+    void assertGetRowIdWithColumnLabel() {
         SQLFeatureNotSupportedException ex = assertThrows(SQLFeatureNotSupportedException.class,
                 () -> mock(AbstractUnsupportedOperationSQLFederationResultSet.class, CALLS_REAL_METHODS).getRowId("c"));
         assertThat(ex.getMessage(), is("getRowId"));
     }
     
     @Test
-    void assertGetObjectWithTypeByColumnIndexUnsupported() {
+    void assertGetObjectWithTypeByColumnIndex() {
         SQLFeatureNotSupportedException ex = assertThrows(SQLFeatureNotSupportedException.class,
                 () -> mock(AbstractUnsupportedOperationSQLFederationResultSet.class, CALLS_REAL_METHODS).getObject(1, Object.class));
         assertThat(ex.getMessage(), is("getObject with type"));
     }
     
     @Test
-    void assertGetObjectWithTypeByColumnLabelUnsupported() {
+    void assertGetObjectWithTypeByColumnLabel() {
         SQLFeatureNotSupportedException ex = assertThrows(SQLFeatureNotSupportedException.class,
                 () -> mock(AbstractUnsupportedOperationSQLFederationResultSet.class, CALLS_REAL_METHODS).getObject("c", Object.class));
         assertThat(ex.getMessage(), is("getObject with type"));
     }
     
     @Test
-    void assertGetObjectWithMapByColumnLabelUnsupported() {
+    void assertGetObjectWithMapByColumnLabel() {
         SQLFeatureNotSupportedException ex = assertThrows(SQLFeatureNotSupportedException.class,
                 () -> mock(AbstractUnsupportedOperationSQLFederationResultSet.class, CALLS_REAL_METHODS).getObject("c", Collections.emptyMap()));
         assertThat(ex.getMessage(), is("getObject with map"));
     }
     
     @Test
-    void assertGetObjectWithMapByColumnIndexUnsupported() {
+    void assertGetObjectWithMapByColumnIndex() {
         SQLFeatureNotSupportedException ex = assertThrows(SQLFeatureNotSupportedException.class,
                 () -> mock(AbstractUnsupportedOperationSQLFederationResultSet.class, CALLS_REAL_METHODS).getObject(1, Collections.emptyMap()));
         assertThat(ex.getMessage(), is("getObject with map"));
