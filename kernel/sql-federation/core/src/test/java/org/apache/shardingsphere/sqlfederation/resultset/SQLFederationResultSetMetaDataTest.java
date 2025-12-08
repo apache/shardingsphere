@@ -45,6 +45,8 @@ import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -58,44 +60,44 @@ class SQLFederationResultSetMetaDataTest {
         Map<Integer, String> labels = new HashMap<>(2, 1F);
         labels.put(1, "c1");
         labels.put(2, "c2");
-        SQLFederationResultSetMetaData metaData = new SQLFederationResultSetMetaData(mock(Schema.class), Collections.emptyList(),
-                databaseType, createResultType(new String[]{"c1", "c2"}, mock(RelDataType.class), mock(RelDataType.class)), labels, mock(SQLFederationColumnTypeConverter.class));
+        SQLFederationResultSetMetaData metaData = new SQLFederationResultSetMetaData(
+                mock(), Collections.emptyList(), databaseType, createResultType(new String[]{"c1", "c2"}, mock(RelDataType.class), mock()), labels, mock());
         assertThat(metaData.getColumnCount(), is(2));
     }
     
     @Test
     void assertIsAutoIncrement() {
-        SQLFederationResultSetMetaData metaData = new SQLFederationResultSetMetaData(mock(Schema.class), Collections.emptyList(),
-                databaseType, createResultType(new String[]{"c1"}, mock(RelDataType.class)), Collections.singletonMap(1, "c1"), mock(SQLFederationColumnTypeConverter.class));
-        assertThat(metaData.isAutoIncrement(1), is(false));
+        SQLFederationResultSetMetaData metaData = new SQLFederationResultSetMetaData(
+                mock(), Collections.emptyList(), databaseType, createResultType(new String[]{"c1"}, mock(RelDataType.class)), Collections.singletonMap(1, "c1"), mock());
+        assertFalse(metaData.isAutoIncrement(1));
     }
     
     @Test
     void assertIsCaseSensitive() {
-        SQLFederationResultSetMetaData metaData = new SQLFederationResultSetMetaData(mock(Schema.class), Collections.emptyList(),
-                databaseType, createResultType(new String[]{"c1"}, mock(RelDataType.class)), Collections.singletonMap(1, "c1"), mock(SQLFederationColumnTypeConverter.class));
-        assertThat(metaData.isCaseSensitive(1), is(false));
+        SQLFederationResultSetMetaData metaData = new SQLFederationResultSetMetaData(
+                mock(), Collections.emptyList(), databaseType, createResultType(new String[]{"c1"}, mock(RelDataType.class)), Collections.singletonMap(1, "c1"), mock());
+        assertFalse(metaData.isCaseSensitive(1));
     }
     
     @Test
     void assertIsSearchable() {
-        SQLFederationResultSetMetaData metaData = new SQLFederationResultSetMetaData(mock(Schema.class), Collections.emptyList(),
-                databaseType, createResultType(new String[]{"c1"}, mock(RelDataType.class)), Collections.singletonMap(1, "c1"), mock(SQLFederationColumnTypeConverter.class));
-        assertThat(metaData.isSearchable(1), is(false));
+        SQLFederationResultSetMetaData metaData = new SQLFederationResultSetMetaData(
+                mock(), Collections.emptyList(), databaseType, createResultType(new String[]{"c1"}, mock(RelDataType.class)), Collections.singletonMap(1, "c1"), mock());
+        assertFalse(metaData.isSearchable(1));
     }
     
     @Test
     void assertIsCurrency() {
-        SQLFederationResultSetMetaData metaData = new SQLFederationResultSetMetaData(mock(Schema.class), Collections.emptyList(),
-                databaseType, createResultType(new String[]{"c1"}, mock(RelDataType.class)), Collections.singletonMap(1, "c1"), mock(SQLFederationColumnTypeConverter.class));
-        assertThat(metaData.isCurrency(1), is(false));
+        SQLFederationResultSetMetaData metaData = new SQLFederationResultSetMetaData(
+                mock(), Collections.emptyList(), databaseType, createResultType(new String[]{"c1"}, mock(RelDataType.class)), Collections.singletonMap(1, "c1"), mock());
+        assertFalse(metaData.isCurrency(1));
     }
     
     @Test
     void assertIsNullableWhenTableNotNullable() {
         Schema schema = createSchemaWithTable("foo_tbl", createRowType(false, 0, 0));
         SQLFederationResultSetMetaData metaData = new SQLFederationResultSetMetaData(schema, Collections.singletonList(new ColumnProjection("foo_tbl", "foo_col", null, databaseType)),
-                databaseType, createResultType(new String[]{"foo_col"}, mock(RelDataType.class)), Collections.singletonMap(1, "foo_label"), mock(SQLFederationColumnTypeConverter.class));
+                databaseType, createResultType(new String[]{"foo_col"}, mock(RelDataType.class)), Collections.singletonMap(1, "foo_label"), mock());
         assertThat(metaData.isNullable(1), is(ResultSetMetaData.columnNoNulls));
     }
     
@@ -103,7 +105,7 @@ class SQLFederationResultSetMetaDataTest {
     void assertIsNullableWhenTableNullable() {
         Schema schema = createSchemaWithTable("foo_tbl", createRowType(true, 0, 0));
         SQLFederationResultSetMetaData metaData = new SQLFederationResultSetMetaData(schema, Collections.singletonList(new ColumnProjection("foo_tbl", "foo_col", null, databaseType)),
-                databaseType, createResultType(new String[]{"foo_col"}, mock(RelDataType.class)), Collections.singletonMap(1, "foo_label"), mock(SQLFederationColumnTypeConverter.class));
+                databaseType, createResultType(new String[]{"foo_col"}, mock(RelDataType.class)), Collections.singletonMap(1, "foo_label"), mock());
         assertThat(metaData.isNullable(1), is(ResultSetMetaData.columnNullable));
     }
     
@@ -114,59 +116,59 @@ class SQLFederationResultSetMetaDataTest {
         Schema schema = mock(Schema.class);
         when(schema.tables()).thenReturn(tables);
         SQLFederationResultSetMetaData metaData = new SQLFederationResultSetMetaData(schema, Collections.singletonList(new ColumnProjection("foo_tbl", "foo_col", null, databaseType)),
-                databaseType, createResultType(new String[]{"foo_col"}, mock(RelDataType.class)), Collections.singletonMap(1, "foo_label"), mock(SQLFederationColumnTypeConverter.class));
+                databaseType, createResultType(new String[]{"foo_col"}, mock(RelDataType.class)), Collections.singletonMap(1, "foo_label"), mock());
         assertThat(metaData.isNullable(1), is(ResultSetMetaData.columnNullable));
     }
     
     @Test
     void assertIsSigned() {
-        SQLFederationResultSetMetaData metaData = new SQLFederationResultSetMetaData(mock(Schema.class), Collections.emptyList(),
-                databaseType, createResultType(new String[]{"c1"}, mock(RelDataType.class)), Collections.singletonMap(1, "c1"), mock(SQLFederationColumnTypeConverter.class));
-        assertThat(metaData.isSigned(1), is(true));
+        SQLFederationResultSetMetaData metaData = new SQLFederationResultSetMetaData(
+                mock(), Collections.emptyList(), databaseType, createResultType(new String[]{"c1"}, mock(RelDataType.class)), Collections.singletonMap(1, "c1"), mock());
+        assertTrue(metaData.isSigned(1));
     }
     
     @Test
     void assertGetColumnDisplaySizeWithTable() {
         Schema schema = createSchemaWithTable("foo_tbl", createRowType(false, 8, 0));
         SQLFederationResultSetMetaData metaData = new SQLFederationResultSetMetaData(schema, Collections.singletonList(new ColumnProjection("foo_tbl", "foo_col", null, databaseType)),
-                databaseType, createResultType(new String[]{"foo_col"}, mock(RelDataType.class)), Collections.singletonMap(1, "foo_label"), mock(SQLFederationColumnTypeConverter.class));
+                databaseType, createResultType(new String[]{"foo_col"}, mock(RelDataType.class)), Collections.singletonMap(1, "foo_label"), mock());
         assertThat(metaData.getColumnDisplaySize(1), is(8));
     }
     
     @Test
     void assertGetColumnDisplaySizeWithoutTable() {
-        SQLFederationResultSetMetaData metaData = new SQLFederationResultSetMetaData(mock(Schema.class), Collections.singletonList(mock(Projection.class)),
-                databaseType, createResultType(new String[]{"foo_col"}, mock(RelDataType.class)), Collections.singletonMap(1, "foo_label"), mock(SQLFederationColumnTypeConverter.class));
+        SQLFederationResultSetMetaData metaData = new SQLFederationResultSetMetaData(mock(), Collections.singletonList(mock(Projection.class)),
+                databaseType, createResultType(new String[]{"foo_col"}, mock(RelDataType.class)), Collections.singletonMap(1, "foo_label"), mock());
         assertThat(metaData.getColumnDisplaySize(1), is(0));
     }
     
     @Test
     void assertGetColumnLabelFromIndexLabel() {
         Map<Integer, String> labels = Collections.singletonMap(1, "foo_label");
-        SQLFederationResultSetMetaData metaData = new SQLFederationResultSetMetaData(mock(Schema.class), Collections.singletonList(mock(Projection.class)),
-                databaseType, createResultType(new String[]{"foo_col"}, mock(RelDataType.class)), labels, mock(SQLFederationColumnTypeConverter.class));
+        SQLFederationResultSetMetaData metaData = new SQLFederationResultSetMetaData(
+                mock(), Collections.singletonList(mock(Projection.class)), databaseType, createResultType(new String[]{"foo_col"}, mock(RelDataType.class)), labels, mock());
         assertThat(metaData.getColumnLabel(1), is("foo_label"));
     }
     
     @Test
     void assertGetColumnLabelFallbackToResultField() {
-        SQLFederationResultSetMetaData metaData = new SQLFederationResultSetMetaData(mock(Schema.class), Collections.singletonList(mock(Projection.class)),
-                databaseType, createResultType(new String[]{"foo_col"}, mock(RelDataType.class)), Collections.emptyMap(), mock(SQLFederationColumnTypeConverter.class));
+        SQLFederationResultSetMetaData metaData = new SQLFederationResultSetMetaData(
+                mock(), Collections.singletonList(mock(Projection.class)), databaseType, createResultType(new String[]{"foo_col"}, mock(RelDataType.class)), Collections.emptyMap(), mock());
         assertThat(metaData.getColumnLabel(1), is("foo_col"));
     }
     
     @Test
     void assertGetTableNameWithAutoProjection() {
-        SQLFederationResultSetMetaData metaData = new SQLFederationResultSetMetaData(mock(Schema.class), Collections.emptyList(),
-                databaseType, createResultType(new String[]{"foo_col"}, mock(RelDataType.class)), Collections.singletonMap(1, "foo_label"), mock(SQLFederationColumnTypeConverter.class));
+        SQLFederationResultSetMetaData metaData = new SQLFederationResultSetMetaData(
+                mock(), Collections.emptyList(), databaseType, createResultType(new String[]{"foo_col"}, mock(RelDataType.class)), Collections.singletonMap(1, "foo_label"), mock());
         assertThat(metaData.getTableName(1), is(""));
     }
     
     @Test
     void assertGetColumnLabelFallbackForSecondColumn() {
         Map<Integer, String> labels = Collections.singletonMap(1, "foo_label");
-        SQLFederationResultSetMetaData metaData = new SQLFederationResultSetMetaData(mock(Schema.class), Collections.singletonList(mock(Projection.class)),
-                databaseType, createResultType(new String[]{"foo_col", "col2"}, mock(RelDataType.class), mock(RelDataType.class)), labels, mock(SQLFederationColumnTypeConverter.class));
+        SQLFederationResultSetMetaData metaData = new SQLFederationResultSetMetaData(
+                mock(), Collections.singletonList(mock(Projection.class)), databaseType, createResultType(new String[]{"foo_col", "col2"}, mock(), mock()), labels, mock());
         assertThat(metaData.getColumnLabel(2), is("col2"));
     }
     
@@ -174,9 +176,8 @@ class SQLFederationResultSetMetaDataTest {
     void assertGetColumnNameFallbackForSecondColumn() {
         Projection projection = mock(Projection.class);
         when(projection.getColumnName()).thenReturn("projection_col1");
-        SQLFederationResultSetMetaData metaData = new SQLFederationResultSetMetaData(mock(Schema.class), Collections.singletonList(projection),
-                databaseType, createResultType(new String[]{"foo_col", "col2"}, mock(RelDataType.class), mock(RelDataType.class)), Collections.singletonMap(1, "foo_label"),
-                mock(SQLFederationColumnTypeConverter.class));
+        SQLFederationResultSetMetaData metaData = new SQLFederationResultSetMetaData(
+                mock(), Collections.singletonList(projection), databaseType, createResultType(new String[]{"foo_col", "col2"}, mock(), mock()), Collections.singletonMap(1, "foo_label"), mock());
         assertThat(metaData.getColumnName(2), is("col2"));
     }
     
@@ -184,22 +185,22 @@ class SQLFederationResultSetMetaDataTest {
     void assertGetColumnNameFromProjection() {
         Projection projection = mock(Projection.class);
         when(projection.getColumnName()).thenReturn("projection_col");
-        SQLFederationResultSetMetaData metaData = new SQLFederationResultSetMetaData(mock(Schema.class), Collections.singletonList(projection),
-                databaseType, createResultType(new String[]{"foo_col"}, mock(RelDataType.class)), Collections.singletonMap(1, "foo_label"), mock(SQLFederationColumnTypeConverter.class));
+        SQLFederationResultSetMetaData metaData = new SQLFederationResultSetMetaData(
+                mock(), Collections.singletonList(projection), databaseType, createResultType(new String[]{"foo_col"}, mock(RelDataType.class)), Collections.singletonMap(1, "foo_label"), mock());
         assertThat(metaData.getColumnName(1), is("projection_col"));
     }
     
     @Test
     void assertGetColumnNameFromResultType() {
-        SQLFederationResultSetMetaData metaData = new SQLFederationResultSetMetaData(mock(Schema.class), Collections.emptyList(),
-                databaseType, createResultType(new String[]{"fallback_col"}, mock(RelDataType.class)), Collections.emptyMap(), mock(SQLFederationColumnTypeConverter.class));
+        SQLFederationResultSetMetaData metaData = new SQLFederationResultSetMetaData(
+                mock(), Collections.emptyList(), databaseType, createResultType(new String[]{"fallback_col"}, mock(RelDataType.class)), Collections.emptyMap(), mock());
         assertThat(metaData.getColumnName(1), is("fallback_col"));
     }
     
     @Test
     void assertGetSchemaName() {
-        SQLFederationResultSetMetaData metaData = new SQLFederationResultSetMetaData(mock(Schema.class), Collections.emptyList(),
-                databaseType, createResultType(new String[]{"foo_col"}, mock(RelDataType.class)), Collections.singletonMap(1, "foo_label"), mock(SQLFederationColumnTypeConverter.class));
+        SQLFederationResultSetMetaData metaData = new SQLFederationResultSetMetaData(
+                mock(), Collections.emptyList(), databaseType, createResultType(new String[]{"foo_col"}, mock(RelDataType.class)), Collections.singletonMap(1, "foo_label"), mock());
         assertThat(metaData.getSchemaName(1), is(DefaultDatabase.LOGIC_NAME));
     }
     
@@ -207,7 +208,7 @@ class SQLFederationResultSetMetaDataTest {
     void assertGetPrecisionWithTable() {
         Schema schema = createSchemaWithTable("foo_tbl", createRowType(false, 12, 0));
         SQLFederationResultSetMetaData metaData = new SQLFederationResultSetMetaData(schema, Collections.singletonList(new ColumnProjection("foo_tbl", "foo_col", null, databaseType)),
-                databaseType, createResultType(new String[]{"foo_col"}, mock(RelDataType.class)), Collections.singletonMap(1, "foo_label"), mock(SQLFederationColumnTypeConverter.class));
+                databaseType, createResultType(new String[]{"foo_col"}, mock(RelDataType.class)), Collections.singletonMap(1, "foo_label"), mock());
         assertThat(metaData.getPrecision(1), is(12));
     }
     
@@ -215,22 +216,22 @@ class SQLFederationResultSetMetaDataTest {
     void assertGetPrecisionNotSpecified() {
         Schema schema = createSchemaWithTable("foo_tbl", createRowType(false, RelDataType.PRECISION_NOT_SPECIFIED, 0));
         SQLFederationResultSetMetaData metaData = new SQLFederationResultSetMetaData(schema, Collections.singletonList(new ColumnProjection("foo_tbl", "foo_col", null, databaseType)),
-                databaseType, createResultType(new String[]{"foo_col"}, mock(RelDataType.class)), Collections.singletonMap(1, "foo_label"), mock(SQLFederationColumnTypeConverter.class));
+                databaseType, createResultType(new String[]{"foo_col"}, mock(RelDataType.class)), Collections.singletonMap(1, "foo_label"), mock());
         assertThat(metaData.getPrecision(1), is(0));
     }
     
     @Test
     void assertGetPrecisionWithoutTable() {
-        SQLFederationResultSetMetaData metaData = new SQLFederationResultSetMetaData(mock(Schema.class), Collections.singletonList(mock(Projection.class)),
-                databaseType, createResultType(new String[]{"foo_col"}, mock(RelDataType.class)), Collections.singletonMap(1, "foo_label"), mock(SQLFederationColumnTypeConverter.class));
+        SQLFederationResultSetMetaData metaData = new SQLFederationResultSetMetaData(mock(), Collections.singletonList(mock(Projection.class)),
+                databaseType, createResultType(new String[]{"foo_col"}, mock(RelDataType.class)), Collections.singletonMap(1, "foo_label"), mock());
         assertThat(metaData.getPrecision(1), is(0));
     }
     
     @Test
     void assertGetPrecisionWithAutoProjectionAndMatchedTable() {
         Schema schema = createSchemaWithTable("", createRowType(false, 7, 0));
-        SQLFederationResultSetMetaData metaData = new SQLFederationResultSetMetaData(schema, Collections.emptyList(),
-                databaseType, createResultType(new String[]{"foo_col"}, mock(RelDataType.class)), Collections.singletonMap(1, "foo_label"), mock(SQLFederationColumnTypeConverter.class));
+        SQLFederationResultSetMetaData metaData = new SQLFederationResultSetMetaData(
+                schema, Collections.emptyList(), databaseType, createResultType(new String[]{"foo_col"}, mock(RelDataType.class)), Collections.singletonMap(1, "foo_label"), mock());
         assertThat(metaData.getPrecision(1), is(7));
     }
     
@@ -238,7 +239,7 @@ class SQLFederationResultSetMetaDataTest {
     void assertGetScaleWithTable() {
         Schema schema = createSchemaWithTable("foo_tbl", createRowType(false, 0, 4));
         SQLFederationResultSetMetaData metaData = new SQLFederationResultSetMetaData(schema, Collections.singletonList(new ColumnProjection("foo_tbl", "foo_col", null, databaseType)),
-                databaseType, createResultType(new String[]{"foo_col"}, mock(RelDataType.class)), Collections.singletonMap(1, "foo_label"), mock(SQLFederationColumnTypeConverter.class));
+                databaseType, createResultType(new String[]{"foo_col"}, mock(RelDataType.class)), Collections.singletonMap(1, "foo_label"), mock());
         assertThat(metaData.getScale(1), is(4));
     }
     
@@ -246,35 +247,35 @@ class SQLFederationResultSetMetaDataTest {
     void assertGetScaleNotSpecified() {
         Schema schema = createSchemaWithTable("foo_tbl", createRowType(false, 0, RelDataType.SCALE_NOT_SPECIFIED));
         SQLFederationResultSetMetaData metaData = new SQLFederationResultSetMetaData(schema, Collections.singletonList(new ColumnProjection("foo_tbl", "foo_col", null, databaseType)),
-                databaseType, createResultType(new String[]{"foo_col"}, mock(RelDataType.class)), Collections.singletonMap(1, "foo_label"), mock(SQLFederationColumnTypeConverter.class));
+                databaseType, createResultType(new String[]{"foo_col"}, mock(RelDataType.class)), Collections.singletonMap(1, "foo_label"), mock());
         assertThat(metaData.getScale(1), is(0));
     }
     
     @Test
     void assertGetScaleWithoutTable() {
-        SQLFederationResultSetMetaData metaData = new SQLFederationResultSetMetaData(mock(Schema.class), Collections.singletonList(mock(Projection.class)),
-                databaseType, createResultType(new String[]{"foo_col"}, mock(RelDataType.class)), Collections.singletonMap(1, "foo_label"), mock(SQLFederationColumnTypeConverter.class));
+        SQLFederationResultSetMetaData metaData = new SQLFederationResultSetMetaData(mock(), Collections.singletonList(mock(Projection.class)),
+                databaseType, createResultType(new String[]{"foo_col"}, mock(RelDataType.class)), Collections.singletonMap(1, "foo_label"), mock());
         assertThat(metaData.getScale(1), is(0));
     }
     
     @Test
     void assertGetTableNameFromColumnProjection() {
-        SQLFederationResultSetMetaData metaData = new SQLFederationResultSetMetaData(mock(Schema.class), Collections.singletonList(new ColumnProjection("foo_tbl", "foo_col", null, databaseType)),
-                databaseType, createResultType(new String[]{"foo_col"}, mock(RelDataType.class)), Collections.singletonMap(1, "foo_label"), mock(SQLFederationColumnTypeConverter.class));
+        SQLFederationResultSetMetaData metaData = new SQLFederationResultSetMetaData(mock(), Collections.singletonList(new ColumnProjection("foo_tbl", "foo_col", null, databaseType)),
+                databaseType, createResultType(new String[]{"foo_col"}, mock(RelDataType.class)), Collections.singletonMap(1, "foo_label"), mock());
         assertThat(metaData.getTableName(1), is("foo_tbl"));
     }
     
     @Test
     void assertGetTableNameFromNonColumnProjection() {
-        SQLFederationResultSetMetaData metaData = new SQLFederationResultSetMetaData(mock(Schema.class), Collections.singletonList(mock(Projection.class)),
-                databaseType, createResultType(new String[]{"foo_col"}, mock(RelDataType.class)), Collections.singletonMap(1, "foo_label"), mock(SQLFederationColumnTypeConverter.class));
+        SQLFederationResultSetMetaData metaData = new SQLFederationResultSetMetaData(mock(), Collections.singletonList(mock(Projection.class)),
+                databaseType, createResultType(new String[]{"foo_col"}, mock(RelDataType.class)), Collections.singletonMap(1, "foo_label"), mock());
         assertThat(metaData.getTableName(1), is(""));
     }
     
     @Test
     void assertGetCatalogName() {
-        SQLFederationResultSetMetaData metaData = new SQLFederationResultSetMetaData(mock(Schema.class), Collections.emptyList(),
-                databaseType, createResultType(new String[]{"foo_col"}, mock(RelDataType.class)), Collections.singletonMap(1, "foo_label"), mock(SQLFederationColumnTypeConverter.class));
+        SQLFederationResultSetMetaData metaData = new SQLFederationResultSetMetaData(
+                mock(), Collections.emptyList(), databaseType, createResultType(new String[]{"foo_col"}, mock(RelDataType.class)), Collections.singletonMap(1, "foo_label"), mock());
         assertThat(metaData.getCatalogName(1), is(DefaultDatabase.LOGIC_NAME));
     }
     
@@ -294,8 +295,8 @@ class SQLFederationResultSetMetaDataTest {
         when(intType.getSqlTypeName()).thenReturn(SqlTypeName.INTEGER);
         SQLFederationColumnTypeConverter converter = mock(SQLFederationColumnTypeConverter.class);
         when(converter.convertColumnType(intType.getSqlTypeName())).thenReturn(Types.INTEGER);
-        SQLFederationResultSetMetaData metaData = new SQLFederationResultSetMetaData(mock(Schema.class), Collections.emptyList(),
-                databaseType, createResultType(new String[]{"foo_col"}, intType), Collections.singletonMap(1, "foo_label"), converter);
+        SQLFederationResultSetMetaData metaData = new SQLFederationResultSetMetaData(
+                mock(), Collections.emptyList(), databaseType, createResultType(new String[]{"foo_col"}, intType), Collections.singletonMap(1, "foo_label"), converter);
         assertThat(metaData.getColumnType(1), is(Types.INTEGER));
     }
     
@@ -305,8 +306,8 @@ class SQLFederationResultSetMetaDataTest {
         when(intType.getSqlTypeName()).thenReturn(SqlTypeName.INTEGER);
         SQLFederationColumnTypeConverter converter = mock(SQLFederationColumnTypeConverter.class);
         when(converter.convertColumnType(intType.getSqlTypeName())).thenReturn(Types.INTEGER);
-        SQLFederationResultSetMetaData metaData = new SQLFederationResultSetMetaData(mock(Schema.class), Collections.emptyList(),
-                databaseType, createResultType(new String[]{"foo_col"}, intType), Collections.singletonMap(1, "foo_label"), converter);
+        SQLFederationResultSetMetaData metaData = new SQLFederationResultSetMetaData(
+                mock(), Collections.emptyList(), databaseType, createResultType(new String[]{"foo_col"}, intType), Collections.singletonMap(1, "foo_label"), converter);
         assertThat(metaData.getColumnTypeName(1), is(SqlTypeName.INTEGER.getName()));
     }
     
@@ -316,38 +317,39 @@ class SQLFederationResultSetMetaDataTest {
         when(varcharType.getSqlTypeName()).thenReturn(SqlTypeName.VARCHAR);
         SQLFederationColumnTypeConverter converter = mock(SQLFederationColumnTypeConverter.class);
         when(converter.convertColumnType(varcharType.getSqlTypeName())).thenReturn(999);
-        SQLFederationResultSetMetaData metaData = new SQLFederationResultSetMetaData(mock(Schema.class), Collections.emptyList(),
-                databaseType, createResultType(new String[]{"foo_col"}, varcharType), Collections.singletonMap(1, "foo_label"), converter);
+        SQLFederationResultSetMetaData metaData = new SQLFederationResultSetMetaData(
+                mock(), Collections.emptyList(), databaseType, createResultType(new String[]{"foo_col"}, varcharType), Collections.singletonMap(1, "foo_label"), converter);
         assertThat(metaData.getColumnTypeName(1), is(SqlTypeName.VARCHAR.getName()));
     }
     
     @Test
     void assertIsReadOnly() {
-        SQLFederationResultSetMetaData metaData = new SQLFederationResultSetMetaData(mock(Schema.class), Collections.emptyList(),
-                databaseType, createResultType(new String[]{"foo_col"}, mock(RelDataType.class)), Collections.singletonMap(1, "foo_label"), mock(SQLFederationColumnTypeConverter.class));
-        assertThat(metaData.isReadOnly(1), is(false));
+        SQLFederationResultSetMetaData metaData = new SQLFederationResultSetMetaData(
+                mock(), Collections.emptyList(), databaseType, createResultType(new String[]{"foo_col"}, mock(RelDataType.class)), Collections.singletonMap(1, "foo_label"), mock());
+        assertFalse(metaData.isReadOnly(1));
     }
     
     @Test
     void assertIsWritable() {
-        SQLFederationResultSetMetaData metaData = new SQLFederationResultSetMetaData(mock(Schema.class), Collections.emptyList(),
-                databaseType, createResultType(new String[]{"foo_col"}, mock(RelDataType.class)), Collections.singletonMap(1, "foo_label"), mock(SQLFederationColumnTypeConverter.class));
-        assertThat(metaData.isWritable(1), is(false));
+        SQLFederationResultSetMetaData metaData = new SQLFederationResultSetMetaData(
+                mock(), Collections.emptyList(), databaseType, createResultType(new String[]{"foo_col"}, mock(RelDataType.class)), Collections.singletonMap(1, "foo_label"), mock());
+        assertFalse(metaData.isWritable(1));
     }
     
     @Test
     void assertIsDefinitelyWritable() {
-        SQLFederationResultSetMetaData metaData = new SQLFederationResultSetMetaData(mock(Schema.class), Collections.emptyList(),
-                databaseType, createResultType(new String[]{"foo_col"}, mock(RelDataType.class)), Collections.singletonMap(1, "foo_label"), mock(SQLFederationColumnTypeConverter.class));
-        assertThat(metaData.isDefinitelyWritable(1), is(false));
+        SQLFederationResultSetMetaData metaData = new SQLFederationResultSetMetaData(
+                mock(), Collections.emptyList(), databaseType, createResultType(new String[]{"foo_col"}, mock(RelDataType.class)), Collections.singletonMap(1, "foo_label"), mock());
+        assertFalse(metaData.isDefinitelyWritable(1));
     }
     
     @Test
     void assertGetColumnClassName() {
-        RelDataType varcharType = mock(RelDataType.class);
+        JavaType varcharType = mock(JavaType.class);
+        when(varcharType.getJavaClass()).thenReturn(SqlTypeName.class);
         when(varcharType.getSqlTypeName()).thenReturn(SqlTypeName.VARCHAR);
-        SQLFederationResultSetMetaData metaData = new SQLFederationResultSetMetaData(mock(), Collections.emptyList(),
-                databaseType, createResultType(new String[]{"foo_col"}, varcharType), Collections.singletonMap(1, "foo_label"), mock(SQLFederationColumnTypeConverter.class));
+        SQLFederationResultSetMetaData metaData = new SQLFederationResultSetMetaData(
+                mock(), Collections.emptyList(), databaseType, createResultType(new String[]{"foo_col"}, varcharType), Collections.singletonMap(1, "foo_label"), mock());
         assertThat(metaData.getColumnClassName(1), is(SqlTypeName.VARCHAR.getClass().getName()));
     }
     
