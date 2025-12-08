@@ -235,7 +235,7 @@ class AbstractUnsupportedOperationSQLFederationResultSetTest {
     
     @Test
     void assertUpdateTimeWithColumnLabel() {
-        SQLFeatureNotSupportedException ex = assertThrows(SQLFeatureNotSupportedException.class, 
+        SQLFeatureNotSupportedException ex = assertThrows(SQLFeatureNotSupportedException.class,
                 () -> mock(AbstractUnsupportedOperationSQLFederationResultSet.class, CALLS_REAL_METHODS).updateTime("c", mock(Time.class)));
         assertThat(ex.getMessage(), is("updateTime"));
     }
