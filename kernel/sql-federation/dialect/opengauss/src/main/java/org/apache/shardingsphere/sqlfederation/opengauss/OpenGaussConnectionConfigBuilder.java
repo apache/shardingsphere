@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sqlfederation.compiler.context.connection.config.impl;
+package org.apache.shardingsphere.sqlfederation.opengauss;
 
 import org.apache.calcite.config.CalciteConnectionConfig;
 import org.apache.calcite.config.CalciteConnectionConfigImpl;
@@ -28,9 +28,9 @@ import org.apache.shardingsphere.sqlfederation.compiler.context.connection.confi
 import java.util.Properties;
 
 /**
- * Connection config builder for PostgreSQL.
+ * Connection config builder for openGauss.
  */
-public final class PostgreSQLConnectionConfigBuilder implements ConnectionConfigBuilder {
+public final class OpenGaussConnectionConfigBuilder implements ConnectionConfigBuilder {
     
     @Override
     public CalciteConnectionConfig build() {
@@ -44,6 +44,6 @@ public final class PostgreSQLConnectionConfigBuilder implements ConnectionConfig
     
     @Override
     public String getDatabaseType() {
-        return "PostgreSQL";
+        return "openGauss";
     }
 }

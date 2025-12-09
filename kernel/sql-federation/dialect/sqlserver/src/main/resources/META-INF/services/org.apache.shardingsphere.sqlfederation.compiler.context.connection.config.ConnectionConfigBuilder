@@ -15,10 +15,4 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.sqlfederation.compiler.context.connection.config.impl.H2ConnectionConfigBuilder
-org.apache.shardingsphere.sqlfederation.compiler.context.connection.config.impl.MySQLConnectionConfigBuilder
-org.apache.shardingsphere.sqlfederation.compiler.context.connection.config.impl.PostgreSQLConnectionConfigBuilder
-org.apache.shardingsphere.sqlfederation.compiler.context.connection.config.impl.OpenGaussConnectionConfigBuilder
-org.apache.shardingsphere.sqlfederation.compiler.context.connection.config.impl.SQLServerConnectionConfigBuilder
-org.apache.shardingsphere.sqlfederation.compiler.context.connection.config.impl.OracleConnectionConfigBuilder
-org.apache.shardingsphere.sqlfederation.compiler.context.connection.config.impl.SQL92ConnectionConfigBuilder
+org.apache.shardingsphere.sqlfederation.sqlserver.SQLServerConnectionConfigBuilder

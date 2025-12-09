@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sqlfederation.compiler.context.connection.config.impl;
+package org.apache.shardingsphere.sqlfederation.postgresql;
 
 import org.apache.calcite.config.CalciteConnectionConfig;
 import org.apache.calcite.config.CalciteConnectionConfigImpl;
@@ -28,22 +28,22 @@ import org.apache.shardingsphere.sqlfederation.compiler.context.connection.confi
 import java.util.Properties;
 
 /**
- * Connection config builder for Oracle.
+ * Connection config builder for PostgreSQL.
  */
-public final class OracleConnectionConfigBuilder implements ConnectionConfigBuilder {
+public final class PostgreSQLConnectionConfigBuilder implements ConnectionConfigBuilder {
     
     @Override
     public CalciteConnectionConfig build() {
         Properties result = new Properties();
-        result.setProperty(CalciteConnectionProperty.LEX.camelName(), Lex.ORACLE.name());
-        result.setProperty(CalciteConnectionProperty.CONFORMANCE.camelName(), SqlConformanceEnum.ORACLE_12.name());
-        result.setProperty(CalciteConnectionProperty.FUN.camelName(), SqlLibrary.ORACLE.fun);
-        result.setProperty(CalciteConnectionProperty.CASE_SENSITIVE.camelName(), String.valueOf(Lex.ORACLE.caseSensitive));
+        result.setProperty(CalciteConnectionProperty.LEX.camelName(), Lex.JAVA.name());
+        result.setProperty(CalciteConnectionProperty.CONFORMANCE.camelName(), SqlConformanceEnum.BABEL.name());
+        result.setProperty(CalciteConnectionProperty.FUN.camelName(), SqlLibrary.POSTGRESQL.fun);
+        result.setProperty(CalciteConnectionProperty.CASE_SENSITIVE.camelName(), String.valueOf(false));
         return new CalciteConnectionConfigImpl(result);
     }
     
     @Override
     public String getDatabaseType() {
-        return "Oracle";
+        return "PostgreSQL";
     }
 }
