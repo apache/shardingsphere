@@ -22,10 +22,10 @@ import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPI;
 import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
 
 /**
- * Connection config builder.
+ * Dialect SQL federation connection config builder.
  */
 @SingletonSPI
-public interface ConnectionConfigBuilder extends DatabaseTypedSPI {
+public interface DialectSQLFederationConnectionConfigBuilder extends DatabaseTypedSPI {
     
     /**
      * Build connection config.

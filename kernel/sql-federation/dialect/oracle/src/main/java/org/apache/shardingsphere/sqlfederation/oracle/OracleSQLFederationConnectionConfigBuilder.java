@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sqlfederation.compiler.context.connection.config;
+package org.apache.shardingsphere.sqlfederation.oracle;
 
 import org.apache.calcite.config.CalciteConnectionConfig;
 import org.apache.calcite.config.CalciteConnectionConfigImpl;
@@ -23,37 +23,27 @@ import org.apache.calcite.config.CalciteConnectionProperty;
 import org.apache.calcite.config.Lex;
 import org.apache.calcite.sql.fun.SqlLibrary;
 import org.apache.calcite.sql.validate.SqlConformanceEnum;
-import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoader;
-import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
+import org.apache.shardingsphere.sqlfederation.compiler.context.connection.config.DialectSQLFederationConnectionConfigBuilder;
 
 import java.util.Properties;
 
 /**
- * Connection config builder factory.
+ * SQL federation connection config builder for Oracle.
  */
-public final class ConnectionConfigBuilderFactory {
+public final class OracleSQLFederationConnectionConfigBuilder implements DialectSQLFederationConnectionConfigBuilder {
     
-    private final ConnectionConfigBuilder dialectBuilder;
-    
-    public ConnectionConfigBuilderFactory(final DatabaseType databaseType) {
-        dialectBuilder = DatabaseTypedSPILoader.findService(ConnectionConfigBuilder.class, databaseType).orElse(null);
-    }
-    
-    /**
-     * Build.
-     *
-     * @return built connection config
-     */
+    @Override
     public CalciteConnectionConfig build() {
-        return null == dialectBuilder ? buildStandardConnectionConfig() : dialectBuilder.build();
+        Properties result = new Properties();
+        result.setProperty(CalciteConnectionProperty.LEX.camelName(), Lex.ORACLE.name());
+        result.setProperty(CalciteConnectionProperty.CONFORMANCE.camelName(), SqlConformanceEnum.ORACLE_12.name());
+        result.setProperty(CalciteConnectionProperty.FUN.camelName(), SqlLibrary.ORACLE.fun);
+        result.setProperty(CalciteConnectionProperty.CASE_SENSITIVE.camelName(), String.valueOf(Lex.ORACLE.caseSensitive));
+        return new CalciteConnectionConfigImpl(result);
     }
     
-    private CalciteConnectionConfig buildStandardConnectionConfig() {
-        Properties result = new Properties();
-        result.setProperty(CalciteConnectionProperty.LEX.camelName(), Lex.JAVA.name());
-        result.setProperty(CalciteConnectionProperty.CONFORMANCE.camelName(), SqlConformanceEnum.LENIENT.name());
-        result.setProperty(CalciteConnectionProperty.FUN.camelName(), SqlLibrary.STANDARD.fun);
-        result.setProperty(CalciteConnectionProperty.CASE_SENSITIVE.camelName(), String.valueOf(Lex.JAVA.caseSensitive));
-        return new CalciteConnectionConfigImpl(result);
+    @Override
+    public String getDatabaseType() {
+        return "Oracle";
     }
 }
