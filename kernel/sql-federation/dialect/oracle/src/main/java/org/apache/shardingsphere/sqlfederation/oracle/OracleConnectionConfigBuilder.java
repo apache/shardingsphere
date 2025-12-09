@@ -15,13 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sqlfederation.compiler.context.connection.config.impl;
+package org.apache.shardingsphere.sqlfederation.oracle;
 
 import org.apache.calcite.config.CalciteConnectionConfig;
 import org.apache.calcite.config.CalciteConnectionConfigImpl;
 import org.apache.calcite.config.CalciteConnectionProperty;
 import org.apache.calcite.config.Lex;
-import org.apache.calcite.config.NullCollation;
 import org.apache.calcite.sql.fun.SqlLibrary;
 import org.apache.calcite.sql.validate.SqlConformanceEnum;
 import org.apache.shardingsphere.sqlfederation.compiler.context.connection.config.ConnectionConfigBuilder;
@@ -29,28 +28,22 @@ import org.apache.shardingsphere.sqlfederation.compiler.context.connection.confi
 import java.util.Properties;
 
 /**
- * Connection config builder for MySQL.
+ * Connection config builder for Oracle.
  */
-public final class MySQLConnectionConfigBuilder implements ConnectionConfigBuilder {
+public final class OracleConnectionConfigBuilder implements ConnectionConfigBuilder {
     
     @Override
     public CalciteConnectionConfig build() {
         Properties result = new Properties();
-        result.setProperty(CalciteConnectionProperty.LEX.camelName(), Lex.MYSQL.name());
-        result.setProperty(CalciteConnectionProperty.CONFORMANCE.camelName(), SqlConformanceEnum.MYSQL_5.name());
-        result.setProperty(CalciteConnectionProperty.FUN.camelName(), SqlLibrary.MYSQL.fun);
-        result.setProperty(CalciteConnectionProperty.CASE_SENSITIVE.camelName(), String.valueOf(Lex.MYSQL.caseSensitive));
-        result.setProperty(CalciteConnectionProperty.DEFAULT_NULL_COLLATION.camelName(), NullCollation.LOW.name());
+        result.setProperty(CalciteConnectionProperty.LEX.camelName(), Lex.ORACLE.name());
+        result.setProperty(CalciteConnectionProperty.CONFORMANCE.camelName(), SqlConformanceEnum.ORACLE_12.name());
+        result.setProperty(CalciteConnectionProperty.FUN.camelName(), SqlLibrary.ORACLE.fun);
+        result.setProperty(CalciteConnectionProperty.CASE_SENSITIVE.camelName(), String.valueOf(Lex.ORACLE.caseSensitive));
         return new CalciteConnectionConfigImpl(result);
     }
     
     @Override
     public String getDatabaseType() {
-        return "MySQL";
-    }
-    
-    @Override
-    public boolean isDefault() {
-        return true;
+        return "Oracle";
     }
 }

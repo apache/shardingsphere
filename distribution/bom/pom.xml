@@ -662,6 +662,16 @@
             </dependency>
             <dependency>
                 <groupId>org.apache.shardingsphere</groupId>
+                <artifactId>shardingsphere-sql-federation-sqlserver</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.shardingsphere</groupId>
+                <artifactId>shardingsphere-sql-federation-oracle</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.shardingsphere</groupId>
                 <artifactId>shardingsphere-sql-federation-opengauss</artifactId>
                 <version>${project.version}</version>
             </dependency>

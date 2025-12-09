@@ -30,6 +30,8 @@
     <modules>
         <module>mysql</module>
         <module>postgresql</module>
+        <module>oracle</module>
+        <module>sqlserver</module>
         <module>opengauss</module>
     </modules>
     
