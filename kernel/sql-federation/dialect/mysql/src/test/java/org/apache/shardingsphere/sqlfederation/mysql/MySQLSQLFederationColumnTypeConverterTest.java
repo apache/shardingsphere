@@ -58,15 +58,13 @@ class MySQLSQLFederationColumnTypeConverterTest {
                 arguments("booleanTrueConvertedToOne", Boolean.TRUE, 1),
                 arguments("booleanFalseConvertedToZero", Boolean.FALSE, 0),
                 arguments("nonBooleanValueUntouched", "text", "text"),
-                arguments("nullRemainsNull", null, null)
-        );
+                arguments("nullRemainsNull", null, null));
     }
     
     private static Iterable<Arguments> convertTypeSource() {
         return Arrays.asList(
                 arguments("booleanMapsToVarchar", SqlTypeName.BOOLEAN, SqlTypeName.VARCHAR.getJdbcOrdinal()),
                 arguments("anyMapsToVarchar", SqlTypeName.ANY, SqlTypeName.VARCHAR.getJdbcOrdinal()),
-                arguments("otherTypesUnchanged", SqlTypeName.INTEGER, SqlTypeName.INTEGER.getJdbcOrdinal())
-        );
+                arguments("otherTypesUnchanged", SqlTypeName.INTEGER, SqlTypeName.INTEGER.getJdbcOrdinal()));
     }
 }
