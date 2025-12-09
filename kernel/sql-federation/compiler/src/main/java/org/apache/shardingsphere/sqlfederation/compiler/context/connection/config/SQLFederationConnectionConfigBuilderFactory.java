@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sqlfederation.postgresql;
+package org.apache.shardingsphere.sqlfederation.compiler.context.connection.config;
 
 import org.apache.calcite.config.CalciteConnectionConfig;
 import org.apache.calcite.config.CalciteConnectionConfigImpl;
@@ -23,27 +23,37 @@ import org.apache.calcite.config.CalciteConnectionProperty;
 import org.apache.calcite.config.Lex;
 import org.apache.calcite.sql.fun.SqlLibrary;
 import org.apache.calcite.sql.validate.SqlConformanceEnum;
-import org.apache.shardingsphere.sqlfederation.compiler.context.connection.config.ConnectionConfigBuilder;
+import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoader;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 
 import java.util.Properties;
 
 /**
- * Connection config builder for PostgreSQL.
+ * SQL federation connection config builder factory.
  */
-public final class PostgreSQLConnectionConfigBuilder implements ConnectionConfigBuilder {
+public final class SQLFederationConnectionConfigBuilderFactory {
     
-    @Override
-    public CalciteConnectionConfig build() {
-        Properties result = new Properties();
-        result.setProperty(CalciteConnectionProperty.LEX.camelName(), Lex.JAVA.name());
-        result.setProperty(CalciteConnectionProperty.CONFORMANCE.camelName(), SqlConformanceEnum.BABEL.name());
-        result.setProperty(CalciteConnectionProperty.FUN.camelName(), SqlLibrary.POSTGRESQL.fun);
-        result.setProperty(CalciteConnectionProperty.CASE_SENSITIVE.camelName(), String.valueOf(false));
-        return new CalciteConnectionConfigImpl(result);
+    private final DialectSQLFederationConnectionConfigBuilder dialectBuilder;
+    
+    public SQLFederationConnectionConfigBuilderFactory(final DatabaseType databaseType) {
+        dialectBuilder = DatabaseTypedSPILoader.findService(DialectSQLFederationConnectionConfigBuilder.class, databaseType).orElse(null);
     }
     
-    @Override
-    public String getDatabaseType() {
-        return "PostgreSQL";
+    /**
+     * Build.
+     *
+     * @return built connection config
+     */
+    public CalciteConnectionConfig build() {
+        return null == dialectBuilder ? buildStandardConnectionConfig() : dialectBuilder.build();
+    }
+    
+    private CalciteConnectionConfig buildStandardConnectionConfig() {
+        Properties result = new Properties();
+        result.setProperty(CalciteConnectionProperty.LEX.camelName(), Lex.JAVA.name());
+        result.setProperty(CalciteConnectionProperty.CONFORMANCE.camelName(), SqlConformanceEnum.LENIENT.name());
+        result.setProperty(CalciteConnectionProperty.FUN.camelName(), SqlLibrary.STANDARD.fun);
+        result.setProperty(CalciteConnectionProperty.CASE_SENSITIVE.camelName(), String.valueOf(Lex.JAVA.caseSensitive));
+        return new CalciteConnectionConfigImpl(result);
     }
 }

@@ -23,14 +23,14 @@ import org.apache.calcite.config.CalciteConnectionProperty;
 import org.apache.calcite.config.Lex;
 import org.apache.calcite.sql.fun.SqlLibrary;
 import org.apache.calcite.sql.validate.SqlConformanceEnum;
-import org.apache.shardingsphere.sqlfederation.compiler.context.connection.config.ConnectionConfigBuilder;
+import org.apache.shardingsphere.sqlfederation.compiler.context.connection.config.DialectSQLFederationConnectionConfigBuilder;
 
 import java.util.Properties;
 
 /**
- * Connection config builder for openGauss.
+ * SQL federation connection config builder for openGauss.
  */
-public final class OpenGaussConnectionConfigBuilder implements ConnectionConfigBuilder {
+public final class OpenGaussSQLFederationConnectionConfigBuilder implements DialectSQLFederationConnectionConfigBuilder {
     
     @Override
     public CalciteConnectionConfig build() {

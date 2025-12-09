@@ -15,4 +15,4 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.sqlfederation.oracle.OracleConnectionConfigBuilder
+org.apache.shardingsphere.sqlfederation.sqlserver.SQLServerSQLFederationConnectionConfigBuilder
