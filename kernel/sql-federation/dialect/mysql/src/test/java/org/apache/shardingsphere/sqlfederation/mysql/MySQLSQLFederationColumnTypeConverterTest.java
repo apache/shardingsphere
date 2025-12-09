@@ -34,7 +34,9 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 
 class MySQLSQLFederationColumnTypeConverterTest {
     
-    private final DialectSQLFederationColumnTypeConverter converter = DatabaseTypedSPILoader.getService(DialectSQLFederationColumnTypeConverter.class, TypedSPILoader.getService(DatabaseType.class, "MySQL"));
+    private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "MySQL");
+    
+    private final DialectSQLFederationColumnTypeConverter converter = DatabaseTypedSPILoader.getService(DialectSQLFederationColumnTypeConverter.class, databaseType);
     
     @ParameterizedTest(name = "{0}")
     @MethodSource("convertValueSource")
