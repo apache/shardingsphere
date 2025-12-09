@@ -31,7 +31,6 @@ import java.util.Arrays;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.params.provider.Arguments.arguments;
 
 class MySQLSQLFederationColumnTypeConverterTest {
     
@@ -55,16 +54,16 @@ class MySQLSQLFederationColumnTypeConverterTest {
     
     private static Iterable<Arguments> convertValueSource() {
         return Arrays.asList(
-                arguments("booleanTrueConvertedToOne", Boolean.TRUE, 1),
-                arguments("booleanFalseConvertedToZero", Boolean.FALSE, 0),
-                arguments("nonBooleanValueUntouched", "text", "text"),
-                arguments("nullRemainsNull", null, null));
+                Arguments.arguments("booleanTrueConvertedToOne", Boolean.TRUE, 1),
+                Arguments.arguments("booleanFalseConvertedToZero", Boolean.FALSE, 0),
+                Arguments.arguments("nonBooleanValueUntouched", "text", "text"),
+                Arguments.arguments("nullRemainsNull", null, null));
     }
     
     private static Iterable<Arguments> convertTypeSource() {
         return Arrays.asList(
-                arguments("booleanMapsToVarchar", SqlTypeName.BOOLEAN, SqlTypeName.VARCHAR.getJdbcOrdinal()),
-                arguments("anyMapsToVarchar", SqlTypeName.ANY, SqlTypeName.VARCHAR.getJdbcOrdinal()),
-                arguments("otherTypesUnchanged", SqlTypeName.INTEGER, SqlTypeName.INTEGER.getJdbcOrdinal()));
+                Arguments.arguments("booleanMapsToVarchar", SqlTypeName.BOOLEAN, SqlTypeName.VARCHAR.getJdbcOrdinal()),
+                Arguments.arguments("anyMapsToVarchar", SqlTypeName.ANY, SqlTypeName.VARCHAR.getJdbcOrdinal()),
+                Arguments.arguments("otherTypesUnchanged", SqlTypeName.INTEGER, SqlTypeName.INTEGER.getJdbcOrdinal()));
     }
 }
