@@ -15,4 +15,4 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.sqlfederation.mysql.MySQLColumnTypeConverter
+org.apache.shardingsphere.sqlfederation.mysql.MySQLSQLFederationColumnTypeConverter
