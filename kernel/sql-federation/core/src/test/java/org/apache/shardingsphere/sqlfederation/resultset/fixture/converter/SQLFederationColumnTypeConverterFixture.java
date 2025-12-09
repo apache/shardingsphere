@@ -17,9 +17,20 @@
 
 package org.apache.shardingsphere.sqlfederation.resultset.fixture.converter;
 
+import org.apache.calcite.sql.type.SqlTypeName;
 import org.apache.shardingsphere.sqlfederation.resultset.converter.SQLFederationColumnTypeConverter;
 
 public final class SQLFederationColumnTypeConverterFixture implements SQLFederationColumnTypeConverter {
+    
+    @Override
+    public Object convertColumnValue(final Object columnValue) {
+        return columnValue;
+    }
+    
+    @Override
+    public int convertColumnType(final SqlTypeName sqlTypeName) {
+        return sqlTypeName.getJdbcOrdinal();
+    }
     
     @Override
     public String getDatabaseType() {
