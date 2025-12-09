@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.test.e2e.sql.it.sql.dal;
 
+import com.google.common.base.Splitter;
 import lombok.Setter;
 import org.apache.shardingsphere.infra.util.datetime.DateTimeFormatterFactory;
 import org.apache.shardingsphere.test.e2e.env.runtime.E2ETestEnvironment;
@@ -30,11 +31,13 @@ import org.apache.shardingsphere.test.e2e.sql.framework.param.model.AssertionTes
 import org.apache.shardingsphere.test.e2e.sql.framework.type.SQLCommandType;
 import org.apache.shardingsphere.test.e2e.sql.it.SQLE2EIT;
 import org.apache.shardingsphere.test.e2e.sql.it.SQLE2EITContext;
+import org.awaitility.Awaitility;
 import org.junit.jupiter.api.condition.EnabledIf;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ArgumentsSource;
 
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
@@ -43,6 +46,7 @@ import java.sql.Types;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -75,7 +79,33 @@ class DALE2EIT implements SQLE2EIT {
             } catch (final InterruptedException ignore) {
                 Thread.currentThread().interrupt();
             }
+        } finally {
+            tearDown(context);
         }
+    }
+    
+    private void tearDown(final SQLE2EITContext context) throws SQLException {
+        if (null != context.getAssertion().getDestroySQL()) {
+            try (Connection connection = environmentEngine.getTargetDataSource().getConnection()) {
+                executeDestroySQLs(context, connection);
+            }
+        }
+    }
+    
+    private void executeDestroySQLs(final SQLE2EITContext context, final Connection connection) throws SQLException {
+        if (null == context.getAssertion().getDestroySQL().getSql()) {
+            return;
+        }
+        for (String each : Splitter.on(";").trimResults().omitEmptyStrings().splitToList(context.getAssertion().getDestroySQL().getSql())) {
+            try (PreparedStatement preparedStatement = connection.prepareStatement(each)) {
+                preparedStatement.executeUpdate();
+            }
+            waitCompleted();
+        }
+    }
+    
+    private void waitCompleted() {
+        Awaitility.await().pollDelay(1500L, TimeUnit.MILLISECONDS).until(() -> true);
     }
     
     private void assertExecuteResult(final SQLE2EITContext context, final Statement statement) throws SQLException {

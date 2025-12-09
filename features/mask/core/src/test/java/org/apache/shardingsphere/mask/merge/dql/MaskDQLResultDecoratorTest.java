@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.mask.merge.dql;
 
-import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
@@ -26,7 +25,6 @@ import org.apache.shardingsphere.mask.rule.MaskRule;
 import org.junit.jupiter.api.Test;
 
 import java.sql.SQLException;
-import java.util.Collections;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
@@ -39,7 +37,7 @@ class MaskDQLResultDecoratorTest {
         MergedResult mergedResult = mock(MergedResult.class);
         when(mergedResult.next()).thenReturn(true);
         MaskDQLResultDecorator decorator = new MaskDQLResultDecorator(mock(ShardingSphereDatabase.class), mock(ShardingSphereMetaData.class), mock(SelectStatementContext.class));
-        MergedResult actual = decorator.decorate(mergedResult, mock(SQLStatementContext.class), Collections.emptyList(), mock(MaskRule.class));
+        MergedResult actual = decorator.decorate(mergedResult, mock(), mock(MaskRule.class));
         assertTrue(actual.next());
     }
 }

@@ -15,25 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.merge.engine.decorator.impl;
+package com.sphereex.dbplusengine.sql.parser.statement.core.statement.attribute.type;
 
-import org.apache.shardingsphere.infra.merge.result.MergedResult;
-import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
-import org.junit.jupiter.api.Test;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.SQLStatementAttribute;
 
-import java.sql.SQLException;
-
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-
-class TransparentResultDecoratorTest {
+/**
+ * Table in result set SQL statement attribute.
+ */
+@RequiredArgsConstructor
+@Getter
+public final class ViewInResultSetSQLStatementAttribute implements SQLStatementAttribute {
     
-    @Test
-    void assertDecorate() throws SQLException {
-        MergedResult mergedResult = mock(MergedResult.class);
-        when(mergedResult.next()).thenReturn(true);
-        TransparentResultDecorator decorator = new TransparentResultDecorator();
-        assertTrue(decorator.decorate(mergedResult, mock(), mock(ShardingSphereRule.class)).next());
-    }
+    private final int nameResultSetIndex;
+    
+    private final String viewName;
 }

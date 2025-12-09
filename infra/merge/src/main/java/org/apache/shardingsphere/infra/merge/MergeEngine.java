@@ -98,8 +98,8 @@ public final class MergeEngine {
         for (Entry<ShardingSphereRule, ResultProcessEngine> entry : engines.entrySet()) {
             if (entry.getValue() instanceof ResultDecoratorEngine) {
                 ResultDecorator resultDecorator = getResultDecorator(queryContext.getSqlStatementContext(), entry.getValue());
-                result = null == result ? resultDecorator.decorate(mergedResult, queryContext.getSqlStatementContext(), queryContext.getParameters(), entry.getKey())
-                        : resultDecorator.decorate(result, queryContext.getSqlStatementContext(), queryContext.getParameters(), entry.getKey());
+                result = null == result ? resultDecorator.decorate(mergedResult, queryContext, entry.getKey())
+                        : resultDecorator.decorate(result, queryContext, entry.getKey());
             }
         }
         return null == result ? mergedResult : result;

@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.encrypt.merge.dql;
 
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
-import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
@@ -26,7 +25,6 @@ import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.junit.jupiter.api.Test;
 
 import java.sql.SQLException;
-import java.util.Collections;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
@@ -41,7 +39,7 @@ class EncryptDQLResultDecoratorTest {
         when(mergedResult.next()).thenReturn(true);
         EncryptDQLResultDecorator decorator =
                 new EncryptDQLResultDecorator(mock(ShardingSphereDatabase.class), mock(ShardingSphereMetaData.class), mock(SelectStatementContext.class, RETURNS_DEEP_STUBS));
-        MergedResult actual = decorator.decorate(mergedResult, mock(SQLStatementContext.class), Collections.emptyList(), mock(EncryptRule.class));
+        MergedResult actual = decorator.decorate(mergedResult, mock(), mock(EncryptRule.class));
         assertTrue(actual.next());
     }
 }
