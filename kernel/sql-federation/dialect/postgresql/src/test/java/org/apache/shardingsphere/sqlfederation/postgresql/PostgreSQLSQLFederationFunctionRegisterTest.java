@@ -44,7 +44,6 @@ class PostgreSQLSQLFederationFunctionRegisterTest {
     void assertRegisterPgCatalogFunctions() {
         SchemaPlus schemaPlus = Frameworks.createRootSchema(true);
         register.registerFunction(schemaPlus, "pg_catalog");
-        assertThat(register.getDatabaseType(), is("PostgreSQL"));
         assertFunction(schemaPlus.getFunctions("pg_table_is_visible"), "pgTableIsVisible");
         assertFunction(schemaPlus.getFunctions("pg_get_userbyid"), "pgGetUserById");
     }

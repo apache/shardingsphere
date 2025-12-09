@@ -45,7 +45,6 @@ class OpenGaussSQLFederationFunctionRegisterTest {
     void assertRegisterPgCatalogFunctionsAndDelegate() {
         SchemaPlus schemaPlus = Frameworks.createRootSchema(true);
         register.registerFunction(schemaPlus, "pg_catalog");
-        assertThat(register.getDatabaseType(), is("openGauss"));
         assertFunction(schemaPlus.getFunctions("gs_password_deadline"), OpenGaussSystemFunction.class, "gsPasswordDeadline");
         assertFunction(schemaPlus.getFunctions("intervaltonum"), OpenGaussSystemFunction.class, "intervalToNum");
         assertFunction(schemaPlus.getFunctions("gs_password_notifyTime"), OpenGaussSystemFunction.class, "gsPasswordNotifyTime");

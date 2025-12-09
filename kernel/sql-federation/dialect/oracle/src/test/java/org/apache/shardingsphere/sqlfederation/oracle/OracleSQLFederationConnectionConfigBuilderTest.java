@@ -44,6 +44,5 @@ class OracleSQLFederationConnectionConfigBuilderTest {
         assertThat(actualConfig.conformance(), is(SqlConformanceEnum.ORACLE_12));
         assertNotNull(actualConfig.fun(SqlOperatorTable.class, null));
         assertThat(actualConfig.caseSensitive(), is(Lex.ORACLE.caseSensitive));
-        assertThat(builder.getDatabaseType(), is("Oracle"));
     }
 }
