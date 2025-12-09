@@ -47,4 +47,3 @@ public final class MySQLColumnTypeConverter implements SQLFederationColumnTypeCo
         return "MySQL";
     }
 }
- 
