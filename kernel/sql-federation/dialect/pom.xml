@@ -20,19 +20,22 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>org.apache.shardingsphere</groupId>
-        <artifactId>shardingsphere-kernel</artifactId>
+        <artifactId>shardingsphere-sql-federation</artifactId>
         <version>5.5.3-SNAPSHOT</version>
     </parent>
-    <artifactId>shardingsphere-sql-federation</artifactId>
+    <artifactId>shardingsphere-sql-federation-dialect</artifactId>
     <packaging>pom</packaging>
     <name>${project.artifactId}</name>
     
     <modules>
-        <module>api</module>
-        <module>core</module>
-        <module>distsql</module>
-        <module>compiler</module>
-        <module>executor</module>
-        <module>dialect</module>
+        <module>mysql</module>
     </modules>
+    
+    <dependencies>
+        <dependency>
+            <groupId>org.apache.shardingsphere</groupId>
+            <artifactId>shardingsphere-sql-federation-core</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+    </dependencies>
 </project>

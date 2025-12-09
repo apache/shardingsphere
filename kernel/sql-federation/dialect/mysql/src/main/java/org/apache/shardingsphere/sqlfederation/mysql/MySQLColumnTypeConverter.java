@@ -15,13 +15,13 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sqlfederation.resultset.converter.impl;
+package org.apache.shardingsphere.sqlfederation.mysql;
 
 import org.apache.calcite.sql.type.SqlTypeName;
 import org.apache.shardingsphere.sqlfederation.resultset.converter.SQLFederationColumnTypeConverter;
 
 /**
- * MySQL column type converter.
+ * Column type converter for MySQL.
  */
 public final class MySQLColumnTypeConverter implements SQLFederationColumnTypeConverter {
     
