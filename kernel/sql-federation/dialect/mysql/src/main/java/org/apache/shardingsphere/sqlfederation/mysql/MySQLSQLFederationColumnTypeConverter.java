@@ -21,9 +21,9 @@ import org.apache.calcite.sql.type.SqlTypeName;
 import org.apache.shardingsphere.sqlfederation.resultset.converter.SQLFederationColumnTypeConverter;
 
 /**
- * Column type converter for MySQL.
+ * SQL federation column type converter for MySQL.
  */
-public final class MySQLColumnTypeConverter implements SQLFederationColumnTypeConverter {
+public final class MySQLSQLFederationColumnTypeConverter implements SQLFederationColumnTypeConverter {
     
     @Override
     public Object convertColumnValue(final Object columnValue) {
