@@ -438,21 +438,21 @@
     },
     {
       "condition": {
-        "typeReached": "org.apache.shardingsphere.sqlfederation.compiler.sql.function.mysql.MySQLFunctionRegister"
+        "typeReached": "org.apache.shardingsphere.sqlfederation.mysql.MySQLSQLFederationFunctionRegister"
       },
       "type": "org.apache.shardingsphere.sqlfederation.compiler.sql.function.mysql.impl.MySQLBinFunction",
       "allPublicMethods": true
     },
     {
       "condition": {
-        "typeReached": "org.apache.shardingsphere.sqlfederation.compiler.sql.function.opengauss.OpenGaussFunctionRegister"
+        "typeReached": "org.apache.shardingsphere.sqlfederation.opengauss.OpenGaussSQLFederationFunctionRegister"
       },
       "type": "org.apache.shardingsphere.sqlfederation.compiler.sql.function.opengauss.impl.OpenGaussSystemFunction",
       "allPublicMethods": true
     },
     {
       "condition": {
-        "typeReached": "org.apache.shardingsphere.sqlfederation.compiler.sql.function.postgresql.PostgreSQLFunctionRegister"
+        "typeReached": "org.apache.shardingsphere.sqlfederation.postgresql.PostgreSQLSQLFederationFunctionRegister"
       },
       "type": "org.apache.shardingsphere.sqlfederation.compiler.sql.function.postgresql.impl.PostgreSQLSystemFunction",
       "allPublicMethods": true

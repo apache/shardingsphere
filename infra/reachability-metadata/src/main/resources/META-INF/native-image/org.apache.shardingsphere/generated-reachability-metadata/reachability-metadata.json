@@ -10181,43 +10181,43 @@
     },
     {
       "condition": {
-        "typeReached": "org.apache.shardingsphere.sqlfederation.compiler.context.connection.config.ConnectionConfigBuilderFactory"
+        "typeReached": "org.apache.shardingsphere.sqlfederation.compiler.context.connection.config.SQLFederationConnectionConfigBuilderFactory"
       },
-      "type": "org.apache.shardingsphere.sqlfederation.compiler.context.connection.config.impl.H2ConnectionConfigBuilder"
+      "type": "org.apache.shardingsphere.sqlfederation.compiler.context.connection.config.SQLFederationConnectionConfigBuilderFactory"
     },
     {
       "condition": {
-        "typeReached": "org.apache.shardingsphere.sqlfederation.compiler.context.connection.config.ConnectionConfigBuilderFactory"
+        "typeReached": "org.apache.shardingsphere.sqlfederation.compiler.context.connection.config.SQLFederationConnectionConfigBuilderFactory"
       },
-      "type": "org.apache.shardingsphere.sqlfederation.compiler.context.connection.config.impl.MySQLConnectionConfigBuilder"
+      "type": "org.apache.shardingsphere.sqlfederation.compiler.context.connection.config.SQLFederationConnectionConfigBuilderFactory"
     },
     {
       "condition": {
-        "typeReached": "org.apache.shardingsphere.sqlfederation.compiler.context.connection.config.ConnectionConfigBuilderFactory"
+        "typeReached": "org.apache.shardingsphere.sqlfederation.compiler.context.connection.config.SQLFederationConnectionConfigBuilderFactory"
       },
       "type": "org.apache.shardingsphere.sqlfederation.compiler.context.connection.config.impl.OpenGaussConnectionConfigBuilder"
     },
     {
       "condition": {
-        "typeReached": "org.apache.shardingsphere.sqlfederation.compiler.context.connection.config.ConnectionConfigBuilderFactory"
+        "typeReached": "org.apache.shardingsphere.sqlfederation.compiler.context.connection.config.SQLFederationConnectionConfigBuilderFactory"
       },
       "type": "org.apache.shardingsphere.sqlfederation.compiler.context.connection.config.impl.OracleConnectionConfigBuilder"
     },
     {
       "condition": {
-        "typeReached": "org.apache.shardingsphere.sqlfederation.compiler.context.connection.config.ConnectionConfigBuilderFactory"
+        "typeReached": "org.apache.shardingsphere.sqlfederation.compiler.context.connection.config.SQLFederationConnectionConfigBuilderFactory"
       },
       "type": "org.apache.shardingsphere.sqlfederation.compiler.context.connection.config.impl.PostgreSQLConnectionConfigBuilder"
     },
     {
       "condition": {
-        "typeReached": "org.apache.shardingsphere.sqlfederation.compiler.context.connection.config.ConnectionConfigBuilderFactory"
+        "typeReached": "org.apache.shardingsphere.sqlfederation.compiler.context.connection.config.SQLFederationConnectionConfigBuilderFactory"
       },
       "type": "org.apache.shardingsphere.sqlfederation.compiler.context.connection.config.impl.SQL92ConnectionConfigBuilder"
     },
     {
       "condition": {
-        "typeReached": "org.apache.shardingsphere.sqlfederation.compiler.context.connection.config.ConnectionConfigBuilderFactory"
+        "typeReached": "org.apache.shardingsphere.sqlfederation.compiler.context.connection.config.SQLFederationConnectionConfigBuilderFactory"
       },
       "type": "org.apache.shardingsphere.sqlfederation.compiler.context.connection.config.impl.SQLServerConnectionConfigBuilder"
     },
@@ -10384,7 +10384,7 @@
     },
     {
       "condition": {
-        "typeReached": "org.apache.shardingsphere.sqlfederation.compiler.sql.function.mysql.MySQLFunctionRegister"
+        "typeReached": "org.apache.shardingsphere.sqlfederation.mysql.MySQLSQLFederationFunctionRegister"
       },
       "type": "org.apache.shardingsphere.sqlfederation.compiler.sql.function.mysql.impl.MySQLBinFunction"
     },
@@ -10402,19 +10402,19 @@
     },
     {
       "condition": {
-        "typeReached": "org.apache.shardingsphere.sqlfederation.compiler.sql.function.opengauss.OpenGaussFunctionRegister"
+        "typeReached": "org.apache.shardingsphere.sqlfederation.opengauss.OpenGaussSQLFederationFunctionRegister"
       },
       "type": "org.apache.shardingsphere.sqlfederation.compiler.sql.function.opengauss.impl.OpenGaussSystemFunction"
     },
     {
       "condition": {
-        "typeReached": "org.apache.shardingsphere.sqlfederation.compiler.sql.function.opengauss.OpenGaussFunctionRegister"
+        "typeReached": "org.apache.shardingsphere.sqlfederation.opengauss.OpenGaussSQLFederationFunctionRegister"
       },
       "type": "org.apache.shardingsphere.sqlfederation.compiler.sql.function.postgresql.impl.PostgreSQLSystemFunction"
     },
     {
       "condition": {
-        "typeReached": "org.apache.shardingsphere.sqlfederation.compiler.sql.function.postgresql.PostgreSQLFunctionRegister"
+        "typeReached": "org.apache.shardingsphere.sqlfederation.postgresql.PostgreSQLSQLFederationFunctionRegister"
       },
       "type": "org.apache.shardingsphere.sqlfederation.compiler.sql.function.postgresql.impl.PostgreSQLSystemFunction"
     },
@@ -12080,9 +12080,9 @@
     },
     {
       "condition": {
-        "typeReached": "org.apache.shardingsphere.sqlfederation.compiler.context.connection.config.ConnectionConfigBuilderFactory"
+        "typeReached": "org.apache.shardingsphere.sqlfederation.compiler.context.connection.config.SQLFederationConnectionConfigBuilderFactory"
       },
-      "glob": "META-INF/services/org.apache.shardingsphere.sqlfederation.compiler.context.connection.config.ConnectionConfigBuilder"
+      "glob": "META-INF/services/org.apache.shardingsphere.sqlfederation.compiler.context.connection.config.DialectSQLFederationConnectionConfigBuilder"
     },
     {
       "condition": {
