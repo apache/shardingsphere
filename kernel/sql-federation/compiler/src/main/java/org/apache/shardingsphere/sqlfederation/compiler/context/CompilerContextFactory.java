@@ -32,7 +32,7 @@ import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.parser.rule.SQLParserRule;
 import org.apache.shardingsphere.parser.rule.builder.DefaultSQLParserRuleConfigurationBuilder;
 import org.apache.shardingsphere.parser.rule.builder.SQLParserRuleBuilder;
-import org.apache.shardingsphere.sqlfederation.compiler.context.connection.config.ConnectionConfigBuilderFactory;
+import org.apache.shardingsphere.sqlfederation.compiler.context.connection.config.SQLFederationConnectionConfigBuilderFactory;
 import org.apache.shardingsphere.sqlfederation.compiler.context.schema.CalciteSchemaBuilder;
 import org.apache.shardingsphere.sqlfederation.compiler.sql.function.mysql.MySQLOperatorTable;
 
@@ -66,7 +66,7 @@ public final class CompilerContextFactory {
         // TODO consider to use sqlParserRule in global rule
         SQLParserRule sqlParserRule = new SQLParserRuleBuilder().build(new DefaultSQLParserRuleConfigurationBuilder().build(), databases, new ConfigurationProperties(new Properties()));
         DatabaseType databaseType = databases.isEmpty() ? DatabaseTypeEngine.getDefaultStorageType() : databases.iterator().next().getProtocolType();
-        CalciteConnectionConfig connectionConfig = new ConnectionConfigBuilderFactory(databaseType).build();
+        CalciteConnectionConfig connectionConfig = new SQLFederationConnectionConfigBuilderFactory(databaseType).build();
         CalciteSchema calciteSchema = CalciteSchemaBuilder.build(databases);
         return new CompilerContext(sqlParserRule, calciteSchema, connectionConfig, getOperatorTables(databaseType));
     }

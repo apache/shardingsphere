@@ -15,4 +15,4 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.sqlfederation.opengauss.OpenGaussConnectionConfigBuilder
+org.apache.shardingsphere.sqlfederation.oracle.OracleSQLFederationConnectionConfigBuilder
