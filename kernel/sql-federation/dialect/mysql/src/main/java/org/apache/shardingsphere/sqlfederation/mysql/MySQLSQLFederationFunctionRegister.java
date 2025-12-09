@@ -15,28 +15,28 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sqlfederation.postgresql;
+package org.apache.shardingsphere.sqlfederation.mysql;
 
+import org.apache.calcite.runtime.SqlFunctions;
 import org.apache.calcite.schema.SchemaPlus;
 import org.apache.calcite.schema.impl.ScalarFunctionImpl;
 import org.apache.shardingsphere.sqlfederation.compiler.sql.function.SQLFederationFunctionRegister;
-import org.apache.shardingsphere.sqlfederation.compiler.sql.function.postgresql.impl.PostgreSQLSystemFunction;
+import org.apache.shardingsphere.sqlfederation.compiler.sql.function.mysql.impl.MySQLBinFunction;
 
 /**
- * PostgreSQL function register.
+ * SQL federation function register for MySQL.
  */
-public final class PostgreSQLFunctionRegister implements SQLFederationFunctionRegister {
+public final class MySQLSQLFederationFunctionRegister implements SQLFederationFunctionRegister {
     
     @Override
     public void registerFunction(final SchemaPlus schemaPlus, final String schemaName) {
-        if ("pg_catalog".equalsIgnoreCase(schemaName)) {
-            schemaPlus.add("pg_table_is_visible", ScalarFunctionImpl.create(PostgreSQLSystemFunction.class, "pgTableIsVisible"));
-            schemaPlus.add("pg_get_userbyid", ScalarFunctionImpl.create(PostgreSQLSystemFunction.class, "pgGetUserById"));
-        }
+        schemaPlus.add("bin", ScalarFunctionImpl.create(MySQLBinFunction.class, "bin"));
+        schemaPlus.add("atan", ScalarFunctionImpl.create(SqlFunctions.class, "atan2"));
+        schemaPlus.add("atan2", ScalarFunctionImpl.create(SqlFunctions.class, "atan"));
     }
     
     @Override
     public String getDatabaseType() {
-        return "PostgreSQL";
+        return "MySQL";
     }
 }

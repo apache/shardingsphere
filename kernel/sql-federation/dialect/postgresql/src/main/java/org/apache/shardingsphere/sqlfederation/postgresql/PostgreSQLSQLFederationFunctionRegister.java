@@ -15,35 +15,28 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sqlfederation.opengauss;
+package org.apache.shardingsphere.sqlfederation.postgresql;
 
 import org.apache.calcite.schema.SchemaPlus;
 import org.apache.calcite.schema.impl.ScalarFunctionImpl;
 import org.apache.shardingsphere.sqlfederation.compiler.sql.function.SQLFederationFunctionRegister;
-import org.apache.shardingsphere.sqlfederation.compiler.sql.function.opengauss.impl.OpenGaussSystemFunction;
-import org.apache.shardingsphere.sqlfederation.postgresql.PostgreSQLFunctionRegister;
+import org.apache.shardingsphere.sqlfederation.compiler.sql.function.postgresql.impl.PostgreSQLSystemFunction;
 
 /**
- * Opengauss function register.
+ * SQL federation function register for PostgreSQL.
  */
-public final class OpenGaussFunctionRegister implements SQLFederationFunctionRegister {
-    
-    private final SQLFederationFunctionRegister delegate = new PostgreSQLFunctionRegister();
+public final class PostgreSQLSQLFederationFunctionRegister implements SQLFederationFunctionRegister {
     
     @Override
     public void registerFunction(final SchemaPlus schemaPlus, final String schemaName) {
         if ("pg_catalog".equalsIgnoreCase(schemaName)) {
-            schemaPlus.add("gs_password_deadline", ScalarFunctionImpl.create(OpenGaussSystemFunction.class, "gsPasswordDeadline"));
-            schemaPlus.add("intervaltonum", ScalarFunctionImpl.create(OpenGaussSystemFunction.class, "intervalToNum"));
-            schemaPlus.add("gs_password_notifyTime", ScalarFunctionImpl.create(OpenGaussSystemFunction.class, "gsPasswordNotifyTime"));
-            schemaPlus.add("version", ScalarFunctionImpl.create(OpenGaussSystemFunction.class, "version"));
-            schemaPlus.add("opengauss_version", ScalarFunctionImpl.create(OpenGaussSystemFunction.class, "openGaussVersion"));
+            schemaPlus.add("pg_table_is_visible", ScalarFunctionImpl.create(PostgreSQLSystemFunction.class, "pgTableIsVisible"));
+            schemaPlus.add("pg_get_userbyid", ScalarFunctionImpl.create(PostgreSQLSystemFunction.class, "pgGetUserById"));
         }
-        delegate.registerFunction(schemaPlus, schemaName);
     }
     
     @Override
     public String getDatabaseType() {
-        return "openGauss";
+        return "PostgreSQL";
     }
 }
