@@ -38,6 +38,7 @@ import java.sql.Blob;
 import java.sql.Clob;
 import java.sql.Date;
 import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.SQLFeatureNotSupportedException;
 import java.sql.SQLWarning;
@@ -45,9 +46,9 @@ import java.sql.SQLXML;
 import java.sql.Statement;
 import java.sql.Time;
 import java.sql.Timestamp;
-import java.sql.ResultSetMetaData;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.List;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -585,5 +586,19 @@ class SQLFederationResultSetTest {
         federationResultSet.next();
         assertThat(federationResultSet.getDate(1, Calendar.getInstance()), is((Date) null));
         assertTrue(federationResultSet.wasNull());
+    }
+    
+    @Test
+    void assertGetValueWithoutColumnTypeConverter() throws SQLException {
+        DatabaseType unknownDatabaseType = mock(DatabaseType.class);
+        Enumerator<Object> singleRowEnumerator = mock(Enumerator.class);
+        when(singleRowEnumerator.moveNext()).thenReturn(true, false);
+        when(singleRowEnumerator.current()).thenReturn(new Object[]{10});
+        SQLFederationResultSet resultSet = new SQLFederationResultSet(singleRowEnumerator, mock(SQLFederationSchema.class),
+                Collections.singletonList(new ColumnProjection("o", "order_id", null, unknownDatabaseType)), unknownDatabaseType, mock(RelDataType.class), "noConverter");
+        assertTrue(resultSet.next());
+        assertThat(resultSet.getInt(1), is(10));
+        assertFalse(resultSet.wasNull());
+        resultSet.close();
     }
 }
