@@ -19,16 +19,16 @@ package org.apache.shardingsphere.sqlfederation.opengauss;
 
 import org.apache.calcite.schema.SchemaPlus;
 import org.apache.calcite.schema.impl.ScalarFunctionImpl;
-import org.apache.shardingsphere.sqlfederation.compiler.sql.function.SQLFederationFunctionRegister;
+import org.apache.shardingsphere.sqlfederation.compiler.sql.function.DialectSQLFederationFunctionRegister;
 import org.apache.shardingsphere.sqlfederation.compiler.sql.function.opengauss.impl.OpenGaussSystemFunction;
 import org.apache.shardingsphere.sqlfederation.postgresql.PostgreSQLSQLFederationFunctionRegister;
 
 /**
  * SQL federation function register for opengauss.
  */
-public final class OpenGaussSQLFederationFunctionRegister implements SQLFederationFunctionRegister {
+public final class OpenGaussSQLFederationFunctionRegister implements DialectSQLFederationFunctionRegister {
     
-    private final SQLFederationFunctionRegister delegate = new PostgreSQLSQLFederationFunctionRegister();
+    private final DialectSQLFederationFunctionRegister delegate = new PostgreSQLSQLFederationFunctionRegister();
     
     @Override
     public void registerFunction(final SchemaPlus schemaPlus, final String schemaName) {

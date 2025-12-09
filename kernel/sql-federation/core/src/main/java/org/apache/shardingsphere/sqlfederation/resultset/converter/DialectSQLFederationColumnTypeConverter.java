@@ -22,10 +22,10 @@ import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPI;
 import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
 
 /**
- * SQL federation column type converter.
+ * Dialect SQL federation column type converter.
  */
 @SingletonSPI
-public interface SQLFederationColumnTypeConverter extends DatabaseTypedSPI {
+public interface DialectSQLFederationColumnTypeConverter extends DatabaseTypedSPI {
     
     /**
      * Convert column value.

@@ -15,4 +15,4 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.sqlfederation.resultset.fixture.converter.SQLFederationColumnTypeConverterFixture
+org.apache.shardingsphere.sqlfederation.resultset.fixture.converter.DialectSQLFederationColumnTypeConverterFixture
