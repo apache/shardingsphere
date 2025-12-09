@@ -657,6 +657,16 @@
             </dependency>
             <dependency>
                 <groupId>org.apache.shardingsphere</groupId>
+                <artifactId>shardingsphere-sql-federation-postgresql</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.shardingsphere</groupId>
+                <artifactId>shardingsphere-sql-federation-opengauss</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.shardingsphere</groupId>
                 <artifactId>shardingsphere-sql-parser-api</artifactId>
                 <version>${project.version}</version>
             </dependency>

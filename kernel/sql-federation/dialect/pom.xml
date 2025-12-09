@@ -29,12 +29,19 @@
     
     <modules>
         <module>mysql</module>
+        <module>postgresql</module>
+        <module>opengauss</module>
     </modules>
     
     <dependencies>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
             <artifactId>shardingsphere-sql-federation-core</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.shardingsphere</groupId>
+            <artifactId>shardingsphere-sql-federation-compiler</artifactId>
             <version>${project.version}</version>
         </dependency>
     </dependencies>
