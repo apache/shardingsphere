@@ -22,49 +22,51 @@ import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoa
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.sqlfederation.resultset.converter.SQLFederationColumnTypeConverter;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
+
+import java.util.Arrays;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.params.provider.Arguments.arguments;
 
 class MySQLSQLFederationColumnTypeConverterTest {
     
     private final SQLFederationColumnTypeConverter converter = DatabaseTypedSPILoader.getService(SQLFederationColumnTypeConverter.class, TypedSPILoader.getService(DatabaseType.class, "MySQL"));
     
-    @Test
-    void assertConvertColumnValueWhenBooleanTrue() {
-        assertThat(converter.convertColumnValue(Boolean.TRUE), is(1));
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("convertValueSource")
+    void assertConvertColumnValue(final String name, final Object input, final Object expected) {
+        if (null == expected) {
+            assertNull(converter.convertColumnValue(input));
+            return;
+        }
+        assertThat(converter.convertColumnValue(input), is(expected));
     }
     
-    @Test
-    void assertConvertColumnValueWhenBooleanFalse() {
-        assertThat(converter.convertColumnValue(Boolean.FALSE), is(0));
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("convertTypeSource")
+    void assertConvertColumnType(final String name, final SqlTypeName sqlTypeName, final int expected) {
+        assertThat(converter.convertColumnType(sqlTypeName), is(expected));
     }
     
-    @Test
-    void assertConvertColumnValueWithNonBoolean() {
-        String value = "text";
-        assertThat(converter.convertColumnValue(value), is(value));
+    private static Iterable<Arguments> convertValueSource() {
+        return Arrays.asList(
+                arguments("booleanTrueConvertedToOne", Boolean.TRUE, 1),
+                arguments("booleanFalseConvertedToZero", Boolean.FALSE, 0),
+                arguments("nonBooleanValueUntouched", "text", "text"),
+                arguments("nullRemainsNull", null, null)
+        );
     }
     
-    @Test
-    void assertConvertColumnValueWithNull() {
-        assertNull(converter.convertColumnValue(null));
-    }
-    
-    @Test
-    void assertConvertColumnTypeWhenBoolean() {
-        assertThat(converter.convertColumnType(SqlTypeName.BOOLEAN), is(SqlTypeName.VARCHAR.getJdbcOrdinal()));
-    }
-    
-    @Test
-    void assertConvertColumnTypeWhenAny() {
-        assertThat(converter.convertColumnType(SqlTypeName.ANY), is(SqlTypeName.VARCHAR.getJdbcOrdinal()));
-    }
-    
-    @Test
-    void assertConvertColumnTypeWhenOthers() {
-        assertThat(converter.convertColumnType(SqlTypeName.INTEGER), is(SqlTypeName.INTEGER.getJdbcOrdinal()));
+    private static Iterable<Arguments> convertTypeSource() {
+        return Arrays.asList(
+                arguments("booleanMapsToVarchar", SqlTypeName.BOOLEAN, SqlTypeName.VARCHAR.getJdbcOrdinal()),
+                arguments("anyMapsToVarchar", SqlTypeName.ANY, SqlTypeName.VARCHAR.getJdbcOrdinal()),
+                arguments("otherTypesUnchanged", SqlTypeName.INTEGER, SqlTypeName.INTEGER.getJdbcOrdinal())
+        );
     }
 }
