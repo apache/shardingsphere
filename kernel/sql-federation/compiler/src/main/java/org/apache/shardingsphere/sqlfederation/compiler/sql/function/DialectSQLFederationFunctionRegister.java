@@ -15,25 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sqlfederation.resultset.fixture.converter;
+package org.apache.shardingsphere.sqlfederation.compiler.sql.function;
 
-import org.apache.calcite.sql.type.SqlTypeName;
-import org.apache.shardingsphere.sqlfederation.resultset.converter.SQLFederationColumnTypeConverter;
+import org.apache.calcite.schema.SchemaPlus;
+import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPI;
+import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
 
-public final class SQLFederationColumnTypeConverterFixture implements SQLFederationColumnTypeConverter {
+/**
+ * Dialect SQL federation function register.
+ */
+@SingletonSPI
+public interface DialectSQLFederationFunctionRegister extends DatabaseTypedSPI {
     
-    @Override
-    public Object convertColumnValue(final Object columnValue) {
-        return columnValue;
-    }
-    
-    @Override
-    public int convertColumnType(final SqlTypeName sqlTypeName) {
-        return sqlTypeName.getJdbcOrdinal();
-    }
-    
-    @Override
-    public String getDatabaseType() {
-        return "FIXTURE";
-    }
+    /**
+     * Register function.
+     *
+     * @param schemaPlus schema plus
+     * @param schemaName schema name
+     */
+    void registerFunction(SchemaPlus schemaPlus, String schemaName);
 }

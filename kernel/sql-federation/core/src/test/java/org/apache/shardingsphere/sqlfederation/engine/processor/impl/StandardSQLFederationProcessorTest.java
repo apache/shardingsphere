@@ -49,7 +49,7 @@ import org.apache.shardingsphere.sqlfederation.compiler.rel.converter.SQLFederat
 import org.apache.shardingsphere.sqlfederation.context.SQLFederationContext;
 import org.apache.shardingsphere.sqlfederation.engine.processor.SQLFederationProcessor;
 import org.apache.shardingsphere.sqlfederation.resultset.SQLFederationResultSet;
-import org.apache.shardingsphere.sqlfederation.resultset.converter.SQLFederationColumnTypeConverter;
+import org.apache.shardingsphere.sqlfederation.resultset.converter.DialectSQLFederationColumnTypeConverter;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockedConstruction;
@@ -224,7 +224,7 @@ class StandardSQLFederationProcessorTest {
                 MockedStatic<DatabaseTypedSPILoader> mockedSpiLoader = mockStatic(DatabaseTypedSPILoader.class)) {
             ignoredInterpretable.when(() -> EnumerableInterpretable.toBindable(any(Map.class), any(), any(), any())).thenReturn(bindable);
             mockedSpiLoader.when(() -> DatabaseTypedSPILoader
-                    .getService(eq(SQLFederationColumnTypeConverter.class), any(DatabaseType.class))).thenReturn(mock(SQLFederationColumnTypeConverter.class));
+                    .getService(eq(DialectSQLFederationColumnTypeConverter.class), any(DatabaseType.class))).thenReturn(mock(DialectSQLFederationColumnTypeConverter.class));
             ResultSet result = processor.executePlan(prepareEngine, callback, executionPlan, converter, federationContext, rootSchema);
             ((SQLFederationResultSet) result).close();
         }
@@ -264,7 +264,7 @@ class StandardSQLFederationProcessorTest {
                 MockedStatic<DatabaseTypedSPILoader> mockedSpiLoader = mockStatic(DatabaseTypedSPILoader.class)) {
             ignoredInterpretable.when(() -> EnumerableInterpretable.toBindable(any(Map.class), any(), any(), any())).thenReturn(bindable);
             mockedSpiLoader.when(() -> DatabaseTypedSPILoader
-                    .getService(eq(SQLFederationColumnTypeConverter.class), any(DatabaseType.class))).thenReturn(mock(SQLFederationColumnTypeConverter.class));
+                    .getService(eq(DialectSQLFederationColumnTypeConverter.class), any(DatabaseType.class))).thenReturn(mock(DialectSQLFederationColumnTypeConverter.class));
             ResultSet previewResult = processor.executePlan(prepareEngine, callback, executionPlan, converter, federationContext, rootSchema);
             ((SQLFederationResultSet) previewResult).close();
             ResultSet normalResult = processor.executePlan(prepareEngine, callback, executionPlan, converter, federationContext, rootSchema);

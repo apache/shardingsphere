@@ -21,7 +21,7 @@ import org.apache.calcite.sql.type.SqlTypeName;
 import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
-import org.apache.shardingsphere.sqlfederation.resultset.converter.SQLFederationColumnTypeConverter;
+import org.apache.shardingsphere.sqlfederation.resultset.converter.DialectSQLFederationColumnTypeConverter;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -34,7 +34,9 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 
 class MySQLSQLFederationColumnTypeConverterTest {
     
-    private final SQLFederationColumnTypeConverter converter = DatabaseTypedSPILoader.getService(SQLFederationColumnTypeConverter.class, TypedSPILoader.getService(DatabaseType.class, "MySQL"));
+    private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "MySQL");
+    
+    private final DialectSQLFederationColumnTypeConverter converter = DatabaseTypedSPILoader.getService(DialectSQLFederationColumnTypeConverter.class, databaseType);
     
     @ParameterizedTest(name = "{0}")
     @MethodSource("convertValueSource")

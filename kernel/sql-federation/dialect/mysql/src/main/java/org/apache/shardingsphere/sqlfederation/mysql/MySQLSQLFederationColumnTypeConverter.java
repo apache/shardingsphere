@@ -18,12 +18,12 @@
 package org.apache.shardingsphere.sqlfederation.mysql;
 
 import org.apache.calcite.sql.type.SqlTypeName;
-import org.apache.shardingsphere.sqlfederation.resultset.converter.SQLFederationColumnTypeConverter;
+import org.apache.shardingsphere.sqlfederation.resultset.converter.DialectSQLFederationColumnTypeConverter;
 
 /**
  * SQL federation column type converter for MySQL.
  */
-public final class MySQLSQLFederationColumnTypeConverter implements SQLFederationColumnTypeConverter {
+public final class MySQLSQLFederationColumnTypeConverter implements DialectSQLFederationColumnTypeConverter {
     
     @Override
     public Object convertColumnValue(final Object columnValue) {

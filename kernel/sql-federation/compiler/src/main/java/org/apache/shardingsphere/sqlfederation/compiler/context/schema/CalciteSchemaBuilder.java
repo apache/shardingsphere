@@ -31,7 +31,7 @@ import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.sqlfederation.compiler.metadata.schema.SQLFederationDatabase;
 import org.apache.shardingsphere.sqlfederation.compiler.metadata.schema.SQLFederationSchema;
-import org.apache.shardingsphere.sqlfederation.compiler.sql.function.SQLFederationFunctionRegister;
+import org.apache.shardingsphere.sqlfederation.compiler.sql.function.DialectSQLFederationFunctionRegister;
 
 import java.util.Collection;
 import java.util.Optional;
@@ -83,13 +83,13 @@ public final class CalciteSchemaBuilder {
     
     private static void registerFunction(final CalciteSchema calciteSchema, final DatabaseType databaseType) {
         for (CalciteSchema each : calciteSchema.getSubSchemaMap().values()) {
-            DatabaseTypedSPILoader.findService(SQLFederationFunctionRegister.class, databaseType).ifPresent(optional -> optional.registerFunction(each.plus(), each.getName()));
+            DatabaseTypedSPILoader.findService(DialectSQLFederationFunctionRegister.class, databaseType).ifPresent(optional -> optional.registerFunction(each.plus(), each.getName()));
         }
     }
     
     private static void registerFunction(final Collection<CalciteSchema> subSchemas, final DatabaseType databaseType) {
         for (CalciteSchema each : subSchemas) {
-            DatabaseTypedSPILoader.findService(SQLFederationFunctionRegister.class, databaseType).ifPresent(optional -> optional.registerFunction(each.plus(), each.getName()));
+            DatabaseTypedSPILoader.findService(DialectSQLFederationFunctionRegister.class, databaseType).ifPresent(optional -> optional.registerFunction(each.plus(), each.getName()));
         }
     }
     

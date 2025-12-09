@@ -19,13 +19,13 @@ package org.apache.shardingsphere.sqlfederation.postgresql;
 
 import org.apache.calcite.schema.SchemaPlus;
 import org.apache.calcite.schema.impl.ScalarFunctionImpl;
-import org.apache.shardingsphere.sqlfederation.compiler.sql.function.SQLFederationFunctionRegister;
+import org.apache.shardingsphere.sqlfederation.compiler.sql.function.DialectSQLFederationFunctionRegister;
 import org.apache.shardingsphere.sqlfederation.compiler.sql.function.postgresql.impl.PostgreSQLSystemFunction;
 
 /**
  * SQL federation function register for PostgreSQL.
  */
-public final class PostgreSQLSQLFederationFunctionRegister implements SQLFederationFunctionRegister {
+public final class PostgreSQLSQLFederationFunctionRegister implements DialectSQLFederationFunctionRegister {
     
     @Override
     public void registerFunction(final SchemaPlus schemaPlus, final String schemaName) {

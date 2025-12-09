@@ -27,7 +27,7 @@ import org.apache.shardingsphere.infra.binder.context.segment.select.projection.
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.driver.jdbc.type.util.ResultSetUtils;
 import org.apache.shardingsphere.infra.executor.sql.process.ProcessEngine;
-import org.apache.shardingsphere.sqlfederation.resultset.converter.SQLFederationColumnTypeConverter;
+import org.apache.shardingsphere.sqlfederation.resultset.converter.DialectSQLFederationColumnTypeConverter;
 
 import java.io.InputStream;
 import java.io.Reader;
@@ -73,7 +73,7 @@ public final class SQLFederationResultSet extends AbstractUnsupportedOperationSQ
     
     private final SQLFederationResultSetMetaData resultSetMetaData;
     
-    private final SQLFederationColumnTypeConverter columnTypeConverter;
+    private final DialectSQLFederationColumnTypeConverter columnTypeConverter;
     
     private final String processId;
     
@@ -87,7 +87,7 @@ public final class SQLFederationResultSet extends AbstractUnsupportedOperationSQ
                                   final RelDataType resultColumnType, final String processId) {
         this.enumerator = enumerator;
         this.processId = processId;
-        columnTypeConverter = DatabaseTypedSPILoader.findService(SQLFederationColumnTypeConverter.class, databaseType).orElse(null);
+        columnTypeConverter = DatabaseTypedSPILoader.findService(DialectSQLFederationColumnTypeConverter.class, databaseType).orElse(null);
         columnLabelAndIndexes = new CaseInsensitiveMap<>(expandProjections.size(), 1F);
         Map<Integer, String> indexAndColumnLabels = new CaseInsensitiveMap<>(expandProjections.size(), 1F);
         handleColumnLabelAndIndex(columnLabelAndIndexes, indexAndColumnLabels, expandProjections);

@@ -20,13 +20,13 @@ package org.apache.shardingsphere.sqlfederation.mysql;
 import org.apache.calcite.runtime.SqlFunctions;
 import org.apache.calcite.schema.SchemaPlus;
 import org.apache.calcite.schema.impl.ScalarFunctionImpl;
-import org.apache.shardingsphere.sqlfederation.compiler.sql.function.SQLFederationFunctionRegister;
+import org.apache.shardingsphere.sqlfederation.compiler.sql.function.DialectSQLFederationFunctionRegister;
 import org.apache.shardingsphere.sqlfederation.compiler.sql.function.mysql.impl.MySQLBinFunction;
 
 /**
  * SQL federation function register for MySQL.
  */
-public final class MySQLSQLFederationFunctionRegister implements SQLFederationFunctionRegister {
+public final class MySQLSQLFederationFunctionRegister implements DialectSQLFederationFunctionRegister {
     
     @Override
     public void registerFunction(final SchemaPlus schemaPlus, final String schemaName) {

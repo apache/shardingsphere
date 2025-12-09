@@ -29,7 +29,7 @@ import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.Projection;
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.impl.ColumnProjection;
 import org.apache.shardingsphere.sqlfederation.compiler.sql.type.SQLFederationDataTypeFactory;
-import org.apache.shardingsphere.sqlfederation.resultset.converter.SQLFederationColumnTypeConverter;
+import org.apache.shardingsphere.sqlfederation.resultset.converter.DialectSQLFederationColumnTypeConverter;
 
 import java.math.BigInteger;
 import java.sql.ResultSetMetaData;
@@ -54,10 +54,10 @@ public final class SQLFederationResultSetMetaData extends SQLFederationWrapperAd
     
     private final Map<Integer, String> indexAndColumnLabels;
     
-    private final SQLFederationColumnTypeConverter columnTypeConverter;
+    private final DialectSQLFederationColumnTypeConverter columnTypeConverter;
     
     public SQLFederationResultSetMetaData(final Schema sqlFederationSchema, final List<Projection> expandProjections, final DatabaseType databaseType, final RelDataType resultColumnType,
-                                          final Map<Integer, String> indexAndColumnLabels, final SQLFederationColumnTypeConverter columnTypeConverter) {
+                                          final Map<Integer, String> indexAndColumnLabels, final DialectSQLFederationColumnTypeConverter columnTypeConverter) {
         this.sqlFederationSchema = sqlFederationSchema;
         typeFactory = SQLFederationDataTypeFactory.getInstance();
         this.expandProjections = expandProjections;

@@ -31,7 +31,7 @@ import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.Projection;
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.impl.ColumnProjection;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
-import org.apache.shardingsphere.sqlfederation.resultset.converter.SQLFederationColumnTypeConverter;
+import org.apache.shardingsphere.sqlfederation.resultset.converter.DialectSQLFederationColumnTypeConverter;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigInteger;
@@ -299,7 +299,7 @@ class SQLFederationResultSetMetaDataTest {
     void assertGetColumnTypeForRegularType() {
         RelDataType intType = mock(RelDataType.class);
         when(intType.getSqlTypeName()).thenReturn(SqlTypeName.INTEGER);
-        SQLFederationColumnTypeConverter converter = mock(SQLFederationColumnTypeConverter.class);
+        DialectSQLFederationColumnTypeConverter converter = mock(DialectSQLFederationColumnTypeConverter.class);
         when(converter.convertColumnType(intType.getSqlTypeName())).thenReturn(Types.INTEGER);
         SQLFederationResultSetMetaData metaData = new SQLFederationResultSetMetaData(
                 mock(), Collections.emptyList(), databaseType, createResultType(new String[]{"foo_col"}, intType), Collections.singletonMap(1, "foo_label"), converter);
@@ -310,7 +310,7 @@ class SQLFederationResultSetMetaDataTest {
     void assertGetColumnTypeNameWithMapping() {
         RelDataType intType = mock(RelDataType.class);
         when(intType.getSqlTypeName()).thenReturn(SqlTypeName.INTEGER);
-        SQLFederationColumnTypeConverter converter = mock(SQLFederationColumnTypeConverter.class);
+        DialectSQLFederationColumnTypeConverter converter = mock(DialectSQLFederationColumnTypeConverter.class);
         when(converter.convertColumnType(intType.getSqlTypeName())).thenReturn(Types.INTEGER);
         SQLFederationResultSetMetaData metaData = new SQLFederationResultSetMetaData(
                 mock(), Collections.emptyList(), databaseType, createResultType(new String[]{"foo_col"}, intType), Collections.singletonMap(1, "foo_label"), converter);
@@ -321,7 +321,7 @@ class SQLFederationResultSetMetaDataTest {
     void assertGetColumnTypeNameWithoutMapping() {
         RelDataType varcharType = mock(RelDataType.class);
         when(varcharType.getSqlTypeName()).thenReturn(SqlTypeName.VARCHAR);
-        SQLFederationColumnTypeConverter converter = mock(SQLFederationColumnTypeConverter.class);
+        DialectSQLFederationColumnTypeConverter converter = mock(DialectSQLFederationColumnTypeConverter.class);
         when(converter.convertColumnType(varcharType.getSqlTypeName())).thenReturn(999);
         SQLFederationResultSetMetaData metaData = new SQLFederationResultSetMetaData(
                 mock(), Collections.emptyList(), databaseType, createResultType(new String[]{"foo_col"}, varcharType), Collections.singletonMap(1, "foo_label"), converter);
