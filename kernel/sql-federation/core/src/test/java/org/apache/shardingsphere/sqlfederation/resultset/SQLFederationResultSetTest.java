@@ -454,7 +454,7 @@ class SQLFederationResultSetTest {
         federationResultSet.next();
         assertThrows(SQLFeatureNotSupportedException.class, () -> federationResultSet.getCharacterStream(1));
     }
-
+    
     @Test
     void assertGetCharacterStreamWithColumnLabel() {
         when(enumerator.current()).thenReturn(new Object[]{mock(Reader.class), 1, "OK", 1});
@@ -503,7 +503,7 @@ class SQLFederationResultSetTest {
         federationResultSet.next();
         assertThat(federationResultSet.getArray("order_id"), isA(Array.class));
     }
-
+    
     @Test
     void assertGetArrayNullSetsWasNull() throws SQLException {
         when(enumerator.current()).thenReturn(new Object[]{null, 1, "OK", 1});
@@ -539,12 +539,12 @@ class SQLFederationResultSetTest {
         federationResultSet.next();
         assertThrows(SQLFeatureNotSupportedException.class, () -> federationResultSet.getSQLXML("order_id"));
     }
-
+    
     @Test
     void assertFindColumnNotFoundThrows() {
         assertThrows(SQLFeatureNotSupportedException.class, () -> federationResultSet.findColumn("missing"));
     }
-
+    
     @Test
     void assertClearAndWarningsAndFetch() {
         federationResultSet.clearWarnings();
@@ -554,7 +554,7 @@ class SQLFederationResultSetTest {
         federationResultSet.setFetchSize(10);
         assertThat(federationResultSet.getFetchSize(), is(0));
     }
-
+    
     @Test
     void assertTypeConcurrencyStatementAndClosed() {
         assertThat(federationResultSet.getType(), is(ResultSet.TYPE_FORWARD_ONLY));
@@ -578,7 +578,7 @@ class SQLFederationResultSetTest {
         assertFalse(federationResultSet.wasNull());
         assertThat(federationResultSet.getObject("order_id"), is(10));
     }
-
+    
     @Test
     void assertGetCalendarValueNullSetsWasNull() throws SQLException {
         when(enumerator.current()).thenReturn(new Object[]{null, 1, "OK", 1});
