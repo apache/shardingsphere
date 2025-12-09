@@ -152,13 +152,14 @@ public final class SQLFederationResultSetMetaData extends SQLFederationWrapperAd
         if (relDataType instanceof JavaType && BigInteger.class.isAssignableFrom(((JavaType) relDataType).getJavaClass())) {
             return SqlType.BIGINT.id;
         }
-        return columnTypeConverter.convertColumnType(relDataType.getSqlTypeName());
+        return null == columnTypeConverter ? relDataType.getSqlTypeName().getJdbcOrdinal() : columnTypeConverter.convertColumnType(relDataType.getSqlTypeName());
     }
     
     @Override
     public String getColumnTypeName(final int column) {
         SqlTypeName originalSqlTypeName = resultColumnType.getFieldList().get(column - 1).getType().getSqlTypeName();
-        SqlTypeName convertSqlTypeName = SqlTypeName.getNameForJdbcType(columnTypeConverter.convertColumnType(originalSqlTypeName));
+        SqlTypeName convertSqlTypeName = SqlTypeName.getNameForJdbcType(
+                null == columnTypeConverter ? originalSqlTypeName.getJdbcOrdinal() : columnTypeConverter.convertColumnType(originalSqlTypeName));
         return null == convertSqlTypeName ? originalSqlTypeName.getName() : convertSqlTypeName.getName();
     }
     

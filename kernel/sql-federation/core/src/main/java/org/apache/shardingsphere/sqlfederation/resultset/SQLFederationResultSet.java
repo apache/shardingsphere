@@ -87,7 +87,7 @@ public final class SQLFederationResultSet extends AbstractUnsupportedOperationSQ
                                   final RelDataType resultColumnType, final String processId) {
         this.enumerator = enumerator;
         this.processId = processId;
-        columnTypeConverter = DatabaseTypedSPILoader.getService(SQLFederationColumnTypeConverter.class, databaseType);
+        columnTypeConverter = DatabaseTypedSPILoader.findService(SQLFederationColumnTypeConverter.class, databaseType).orElse(null);
         columnLabelAndIndexes = new CaseInsensitiveMap<>(expandProjections.size(), 1F);
         Map<Integer, String> indexAndColumnLabels = new CaseInsensitiveMap<>(expandProjections.size(), 1F);
         handleColumnLabelAndIndex(columnLabelAndIndexes, indexAndColumnLabels, expandProjections);
@@ -494,7 +494,7 @@ public final class SQLFederationResultSet extends AbstractUnsupportedOperationSQ
         ShardingSpherePreconditions.checkNotContains(INVALID_FEDERATION_TYPES, type, () -> new SQLFeatureNotSupportedException(String.format("Get value from `%s`", type.getName())));
         Object result = currentRows[columnIndex - 1];
         wasNull = null == result;
-        return columnTypeConverter.convertColumnValue(result);
+        return null == columnTypeConverter ? result : columnTypeConverter.convertColumnValue(result);
     }
     
     private Object getCalendarValue(final int columnIndex) {

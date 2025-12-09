@@ -33,9 +33,7 @@ public interface SQLFederationColumnTypeConverter extends DatabaseTypedSPI {
      * @param columnValue column value
      * @return converted column value
      */
-    default Object convertColumnValue(Object columnValue) {
-        return columnValue;
-    }
+    Object convertColumnValue(Object columnValue);
     
     /**
      * Convert column type.
@@ -43,7 +41,5 @@ public interface SQLFederationColumnTypeConverter extends DatabaseTypedSPI {
      * @param sqlTypeName column type
      * @return converted column type
      */
-    default int convertColumnType(SqlTypeName sqlTypeName) {
-        return sqlTypeName.getJdbcOrdinal();
-    }
+    int convertColumnType(SqlTypeName sqlTypeName);
 }
