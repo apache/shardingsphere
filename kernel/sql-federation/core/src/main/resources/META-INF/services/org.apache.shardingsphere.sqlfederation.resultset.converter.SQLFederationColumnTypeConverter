@@ -16,6 +16,3 @@
 #
 
 org.apache.shardingsphere.sqlfederation.resultset.converter.impl.MySQLColumnTypeConverter
-org.apache.shardingsphere.sqlfederation.resultset.converter.impl.OracleColumnTypeConverter
-org.apache.shardingsphere.sqlfederation.resultset.converter.impl.OpenGaussColumnTypeConverter
-org.apache.shardingsphere.sqlfederation.resultset.converter.impl.PostgreSQLColumnTypeConverter
