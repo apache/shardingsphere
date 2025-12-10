@@ -46,7 +46,7 @@ import java.util.Optional;
 public final class SQLNodeConverterEngine {
     
     /**
-     * Convert SQL sql statement to SQL node.
+     * Convert SQL statement to SQL node.
      *
      * @param sqlStatement SQL sqlStatement to be converted
      * @return sqlNode converted SQL node
