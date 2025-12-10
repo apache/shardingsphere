@@ -82,8 +82,8 @@ class EnumerableScanTest {
         rowType = typeFactory.builder().add("col", SqlTypeName.INTEGER).build();
         SQLFederationTable federationTable = mock(SQLFederationTable.class);
         when(federationTable.getRowType(typeFactory)).thenReturn(rowType);
-        when(federationTable.toRel(any(RelOptTable.ToRelContext.class), any(RelOptTable.class))).thenAnswer(invocation ->
-                LogicalTableScan.create(invocation.getArgument(0, RelOptTable.ToRelContext.class).getCluster(), invocation.getArgument(1, RelOptTable.class), Collections.emptyList()));
+        when(federationTable.toRel(any(RelOptTable.ToRelContext.class), any(RelOptTable.class))).thenAnswer(
+                invocation -> LogicalTableScan.create(invocation.getArgument(0, RelOptTable.ToRelContext.class).getCluster(), invocation.getArgument(1, RelOptTable.class), Collections.emptyList()));
         when(federationTable.getStatistic()).thenReturn(Statistics.of(1D, ImmutableList.of()));
         when(federationTable.getJdbcTableType()).thenReturn(Schema.TableType.TABLE);
         when(federationTable.implement(any(DataContext.class), any(), any(int[].class))).thenReturn(Linq4j.emptyEnumerable());

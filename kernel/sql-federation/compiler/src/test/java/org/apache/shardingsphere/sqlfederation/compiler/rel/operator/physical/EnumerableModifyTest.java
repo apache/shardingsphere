@@ -70,8 +70,8 @@ class EnumerableModifyTest {
         RelDataType rowType = typeFactory.builder().add("col", SqlTypeName.INTEGER).build();
         SQLFederationTable federationTable = mock(SQLFederationTable.class);
         when(federationTable.getRowType(typeFactory)).thenReturn(rowType);
-        when(federationTable.toRel(org.mockito.ArgumentMatchers.any(RelOptTable.ToRelContext.class), org.mockito.ArgumentMatchers.any(RelOptTable.class))).thenAnswer(invocation ->
-                LogicalTableScan.create(invocation.getArgument(0, RelOptTable.ToRelContext.class).getCluster(), invocation.getArgument(1, RelOptTable.class), Collections.emptyList()));
+        when(federationTable.toRel(org.mockito.ArgumentMatchers.any(RelOptTable.ToRelContext.class), org.mockito.ArgumentMatchers.any(RelOptTable.class))).thenAnswer(
+                invocation -> LogicalTableScan.create(invocation.getArgument(0, RelOptTable.ToRelContext.class).getCluster(), invocation.getArgument(1, RelOptTable.class), Collections.emptyList()));
         when(federationTable.getStatistic()).thenReturn(Statistics.of(1D, ImmutableList.of()));
         when(federationTable.getJdbcTableType()).thenReturn(Schema.TableType.TABLE);
         RelOptSchema schema = mock(RelOptSchema.class);
