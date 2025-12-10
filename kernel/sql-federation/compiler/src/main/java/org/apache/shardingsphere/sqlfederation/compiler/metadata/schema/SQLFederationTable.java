@@ -68,6 +68,45 @@ public final class SQLFederationTable extends AbstractTable implements Modifiabl
     
     private final DatabaseType protocolType;
     
+    /**
+     * Implement.
+     *
+     * @param root data context
+     * @param sql SQL
+     * @param paramIndexes param indexes
+     * @return enumerable result
+     */
+    @SuppressWarnings("unused")
+    public Enumerable<Object> implement(final DataContext root, final String sql, final int[] paramIndexes) {
+        return null == SCAN_IMPLEMENTOR_HOLDER.get() ? createEmptyEnumerable() : SCAN_IMPLEMENTOR_HOLDER.get().implement(table, new ScanImplementorContext(root, sql, paramIndexes));
+    }
+    
+    private AbstractEnumerable<Object> createEmptyEnumerable() {
+        return new AbstractEnumerable<Object>() {
+            
+            @Override
+            public Enumerator<Object> enumerator() {
+                return new EmptyDataRowEnumerator();
+            }
+        };
+    }
+    
+    /**
+     * Set scan implementor.
+     *
+     * @param scanImplementor scan implementor
+     */
+    public void setScanImplementor(final ScanImplementor scanImplementor) {
+        SCAN_IMPLEMENTOR_HOLDER.set(scanImplementor);
+    }
+    
+    /**
+     * Clear scan implementor.
+     */
+    public void clearScanImplementor() {
+        SCAN_IMPLEMENTOR_HOLDER.remove();
+    }
+    
     @Override
     public RelDataType getRowType(final RelDataTypeFactory typeFactory) {
         return SQLFederationDataTypeBuilder.build(table, protocolType, typeFactory);
@@ -93,37 +132,6 @@ public final class SQLFederationTable extends AbstractTable implements Modifiabl
         return LogicalTableScan.create(context.getCluster(), relOptTable, Collections.emptyList());
     }
     
-    /**
-     * Implement.
-     *
-     * @param root data context
-     * @param sql sql
-     * @param paramIndexes param indexes
-     * @return enumerable result
-     */
-    @SuppressWarnings("unused")
-    public Enumerable<Object> implement(final DataContext root, final String sql, final int[] paramIndexes) {
-        if (null == SCAN_IMPLEMENTOR_HOLDER.get()) {
-            return createEmptyEnumerable();
-        }
-        return SCAN_IMPLEMENTOR_HOLDER.get().implement(table, new ScanImplementorContext(root, sql, paramIndexes));
-    }
-    
-    private AbstractEnumerable<Object> createEmptyEnumerable() {
-        return new AbstractEnumerable<Object>() {
-            
-            @Override
-            public Enumerator<Object> enumerator() {
-                return new EmptyDataRowEnumerator();
-            }
-        };
-    }
-    
-    @Override
-    public String toString() {
-        return "SQLFederationTable";
-    }
-    
     @Override
     public Collection<Object[]> getModifiableCollection() {
         throw new UnsupportedOperationException();
@@ -131,24 +139,12 @@ public final class SQLFederationTable extends AbstractTable implements Modifiabl
     
     @Override
     public TableModify toModificationRel(final RelOptCluster relOptCluster, final RelOptTable table, final CatalogReader schema,
-                                         final RelNode relNode, final Operation operation, final List<String> updateColumnList,
-                                         final List<RexNode> sourceExpressionList, final boolean flattened) {
+                                         final RelNode relNode, final Operation operation, final List<String> updateColumnList, final List<RexNode> sourceExpressionList, final boolean flattened) {
         return LogicalTableModify.create(table, schema, relNode, operation, updateColumnList, sourceExpressionList, flattened);
     }
     
-    /**
-     * Set scan implementor.
-     *
-     * @param scanImplementor scan implementor
-     */
-    public void setScanImplementor(final ScanImplementor scanImplementor) {
-        SCAN_IMPLEMENTOR_HOLDER.set(scanImplementor);
-    }
-    
-    /**
-     * Clear scan implementor.
-     */
-    public void clearScanImplementor() {
-        SCAN_IMPLEMENTOR_HOLDER.remove();
+    @Override
+    public String toString() {
+        return "SQLFederationTable";
     }
 }
