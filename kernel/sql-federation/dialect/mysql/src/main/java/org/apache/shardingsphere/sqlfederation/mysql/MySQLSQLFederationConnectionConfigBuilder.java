@@ -48,9 +48,4 @@ public final class MySQLSQLFederationConnectionConfigBuilder implements DialectS
     public String getDatabaseType() {
         return "MySQL";
     }
-    
-    @Override
-    public boolean isDefault() {
-        return true;
-    }
 }
