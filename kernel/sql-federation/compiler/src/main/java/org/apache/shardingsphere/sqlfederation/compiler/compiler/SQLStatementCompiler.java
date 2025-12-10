@@ -43,11 +43,11 @@ public final class SQLStatementCompiler {
     private final Convention convention;
     
     /**
-     * Compile sql statement to execution plan.
+     * Compile SQL statement to execution plan.
      *
      * @param sqlStatement SQL statement
      * @param databaseType database type
-     * @return sql federation execution plan
+     * @return SQL federation execution plan
      */
     public SQLFederationExecutionPlan compile(final SQLStatement sqlStatement, final String databaseType) {
         RelMetadataQueryBase.THREAD_PROVIDERS.set(JaninoRelMetadataProvider.DEFAULT);
@@ -70,11 +70,7 @@ public final class SQLStatementCompiler {
     private RelNode optimize(final RelNode logicalPlan, final SQLFederationRelConverter converter, final String databaseType) {
         RelNode rewrittenPlan = rewriteTableScan(logicalPlan, databaseType);
         RelOptPlanner planner = converter.getCluster().getPlanner();
-        if (rewrittenPlan.getTraitSet().contains(convention)) {
-            planner.setRoot(rewrittenPlan);
-        } else {
-            planner.setRoot(planner.changeTraits(rewrittenPlan, converter.getCluster().traitSet().replace(convention)));
-        }
+        planner.setRoot(rewrittenPlan.getTraitSet().contains(convention) ? rewrittenPlan : planner.changeTraits(rewrittenPlan, converter.getCluster().traitSet().replace(convention)));
         return planner.findBestExp();
     }
     
