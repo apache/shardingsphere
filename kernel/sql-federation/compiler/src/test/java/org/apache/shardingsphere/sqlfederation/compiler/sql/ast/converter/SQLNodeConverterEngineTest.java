@@ -37,9 +37,7 @@ import org.apache.shardingsphere.sqlfederation.compiler.sql.ast.converter.statem
 import org.apache.shardingsphere.sqlfederation.compiler.sql.ast.converter.statement.select.SelectStatementConverter;
 import org.apache.shardingsphere.sqlfederation.compiler.sql.ast.converter.statement.update.UpdateStatementConverter;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.MockedConstruction;
-import org.mockito.junit.jupiter.MockitoExtension;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -49,7 +47,6 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockConstruction;
 import static org.mockito.Mockito.when;
 
-@ExtendWith(MockitoExtension.class)
 class SQLNodeConverterEngineTest {
     
     private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "FIXTURE");
