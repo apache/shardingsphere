@@ -49,7 +49,6 @@ import java.util.Collections;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.isA;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -90,7 +89,7 @@ class SQLFederationTableTest {
     
     @Test
     void assertGetElementType() {
-        assertEquals(Object[].class, new SQLFederationTable(table, databaseType).getElementType());
+        assertThat(new SQLFederationTable(table, databaseType).getElementType(), is(Object[].class));
     }
     
     @Test
