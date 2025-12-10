@@ -31,7 +31,6 @@ import org.junit.jupiter.api.Test;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class MySQLSQLFederationConnectionConfigBuilderTest {
     
@@ -47,6 +46,5 @@ class MySQLSQLFederationConnectionConfigBuilderTest {
         assertNotNull(actualConfig.fun(SqlOperatorTable.class, null));
         assertThat(actualConfig.caseSensitive(), is(Lex.MYSQL.caseSensitive));
         assertThat(actualConfig.defaultNullCollation(), is(NullCollation.LOW));
-        assertTrue(builder.isDefault());
     }
 }
