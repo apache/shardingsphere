@@ -95,8 +95,7 @@ public final class CalciteSchemaBuilder {
     
     private static void registerNestedSchemaFunction(final CalciteSchema calciteSchema, final DatabaseType databaseType) {
         for (CalciteSchema each : calciteSchema.getSubSchemaMap().values()) {
-            Collection<CalciteSchema> subSchemas = each.subSchemas().getNames(LikePattern.any()).stream().map(schemaName -> each.subSchemas().get(schemaName)).collect(Collectors.toList());
-            registerFunction(subSchemas, databaseType);
+            registerFunction(each.subSchemas().getNames(LikePattern.any()).stream().map(schemaName -> each.subSchemas().get(schemaName)).collect(Collectors.toList()), databaseType);
         }
     }
 }
