@@ -51,9 +51,6 @@ public final class DataTypeConverter {
      * @return converted SQL operator
      */
     public static SqlTypeName convert(final String dataType) {
-        if (!REGISTRY.containsKey(dataType)) {
-            return SqlTypeName.valueOf(dataType);
-        }
-        return REGISTRY.get(dataType);
+        return REGISTRY.containsKey(dataType) ? REGISTRY.get(dataType) : SqlTypeName.valueOf(dataType.toUpperCase());
     }
 }
