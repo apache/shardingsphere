@@ -103,4 +103,24 @@ public final class ShardingSphereDatabaseFactory {
         Collection<ShardingSphereRule> rules = DatabaseRulesBuilder.build(name, protocolType, databaseConfig, computeNodeInstanceContext, resourceMetaData);
         return new ShardingSphereDatabase(name, protocolType, resourceMetaData, new RuleMetaData(rules), schemas);
     }
+    
+    /**
+     * Create database without system schema.
+     *
+     * @param name database name
+     * @param protocolType database protocol type
+     * @param databaseConfig database configuration
+     * @param props configuration properties
+     * @param computeNodeInstanceContext compute node instance context
+     * @return created database
+     * @throws SQLException SQL exception
+     */
+    public static ShardingSphereDatabase createWithoutSystemSchema(final String name, final DatabaseType protocolType, final DatabaseConfiguration databaseConfig,
+                                                final ConfigurationProperties props, final ComputeNodeInstanceContext computeNodeInstanceContext) throws SQLException {
+        ResourceMetaData resourceMetaData = new ResourceMetaData(databaseConfig.getDataSources(), databaseConfig.getStorageUnits());
+        Collection<ShardingSphereRule> databaseRules = DatabaseRulesBuilder.build(name, protocolType, databaseConfig, computeNodeInstanceContext, resourceMetaData);
+        Map<String, ShardingSphereSchema> schemas = new ConcurrentHashMap<>(GenericSchemaBuilder.build(protocolType,
+                new GenericSchemaBuilderMaterial(resourceMetaData.getStorageUnits(), databaseRules, props, new DatabaseTypeRegistry(protocolType).getDefaultSchemaName(name))));
+        return new ShardingSphereDatabase(name, protocolType, resourceMetaData, new RuleMetaData(databaseRules), schemas.values());
+    }
 }
