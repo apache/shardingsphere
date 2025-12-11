@@ -36,10 +36,10 @@ import java.util.Optional;
 public final class ColumnConverter {
     
     /**
-     * Convert column segment to sql node.
+     * Convert column segment to SQL node.
      *
      * @param segment column segment
-     * @return sql node
+     * @return SQL node
      */
     public static Optional<SqlNode> convert(final ColumnSegment segment) {
         List<String> names = new ArrayList<>();

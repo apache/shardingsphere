@@ -31,10 +31,10 @@ import java.util.List;
 public final class OwnerConverter {
     
     /**
-     * Convert ower segment to collection.
+     * Convert ower segment.
      *
      * @param segment owner segment
-     * @return owner collection
+     * @return owners
      */
     public static List<String> convert(final OwnerSegment segment) {
         List<String> result = new ArrayList<>();

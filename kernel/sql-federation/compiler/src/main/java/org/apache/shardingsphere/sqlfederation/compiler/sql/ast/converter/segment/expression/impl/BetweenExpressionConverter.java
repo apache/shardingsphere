@@ -38,10 +38,10 @@ import java.util.Optional;
 public final class BetweenExpressionConverter {
     
     /**
-     * Convert between expression to sql node.
+     * Convert between expression to SQL node.
      *
      * @param expression between expression
-     * @return sql node
+     * @return SQL node
      */
     public static Optional<SqlNode> convert(final BetweenExpression expression) {
         if (null == expression) {

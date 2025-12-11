@@ -38,10 +38,10 @@ import java.util.Optional;
 public final class ExpressionProjectionConverter {
     
     /**
-     * Convert expression projection segment to sql node.
+     * Convert expression projection segment to SQL node.
      *
      * @param segment expression projection segment
-     * @return sql node
+     * @return SQL node
      */
     public static Optional<SqlNode> convert(final ExpressionProjectionSegment segment) {
         if (null == segment) {

@@ -32,10 +32,10 @@ import java.util.Optional;
 public final class SubqueryExpressionConverter {
     
     /**
-     * Convert subquery expression segment to sql node.
+     * Convert subquery expression segment to SQL node.
      *
      * @param expression subquery expression segment
-     * @return sql node
+     * @return SQL node
      */
     public static Optional<SqlNode> convert(final SubqueryExpressionSegment expression) {
         return null == expression ? Optional.empty() : Optional.of(new SelectStatementConverter().convert(expression.getSubquery().getSelect()));

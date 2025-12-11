@@ -38,10 +38,10 @@ import java.util.Optional;
 public final class CollateExpressionConverter {
     
     /**
-     * Convert collate expression to sql node.
+     * Convert collate expression to SQL node.
      *
      * @param segment collate expression
-     * @return sql node
+     * @return SQL node
      */
     public static Optional<SqlNode> convert(final CollateExpression segment) {
         List<SqlNode> sqlNodes = new LinkedList<>();

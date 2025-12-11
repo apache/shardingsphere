@@ -33,10 +33,10 @@ import java.util.Optional;
 public final class OrderByConverter {
     
     /**
-     * Convert order by segment to sql node.
+     * Convert order by segment to SQL node.
      *
      * @param segment order by segment
-     * @return sql node
+     * @return SQL node
      */
     public static Optional<SqlNodeList> convert(final OrderBySegment segment) {
         return null == segment ? Optional.empty() : Optional.of(new SqlNodeList(OrderByItemConverterUtils.convert(segment.getOrderByItems()), SqlParserPos.ZERO));

@@ -42,10 +42,10 @@ import java.util.Optional;
 public final class SubqueryTableConverter {
     
     /**
-     * Convert subquery table segment to sql node.
+     * Convert subquery table segment to SQL node.
      *
      * @param segment subquery table segment
-     * @return sql node
+     * @return SQL node
      */
     public static Optional<SqlNode> convert(final SubqueryTableSegment segment) {
         if (null == segment) {
