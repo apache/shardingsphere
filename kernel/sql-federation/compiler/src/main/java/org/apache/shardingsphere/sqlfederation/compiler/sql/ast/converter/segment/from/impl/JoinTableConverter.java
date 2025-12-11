@@ -43,10 +43,10 @@ import java.util.Optional;
 public final class JoinTableConverter {
     
     /**
-     * Convert join table segment to sql node.
+     * Convert join table segment to SQL node.
      *
      * @param segment join table segment
-     * @return sql node
+     * @return SQL node
      */
     public static Optional<SqlNode> convert(final JoinTableSegment segment) {
         SqlNode left = TableConverter.convert(segment.getLeft()).orElseThrow(IllegalStateException::new);
@@ -58,10 +58,11 @@ public final class JoinTableConverter {
     }
     
     private static SqlLiteral convertJoinType(final JoinTableSegment segment) {
-        if (JoinType.INNER.name().equals(segment.getJoinType()) && !segment.isNatural() && null == segment.getCondition() && segment.getUsing().isEmpty()) {
+        String joinTypeName = null == segment.getJoinType() ? JoinType.INNER.name() : segment.getJoinType();
+        if (JoinType.INNER.name().equals(joinTypeName) && !segment.isNatural() && null == segment.getCondition() && segment.getUsing().isEmpty()) {
             return JoinType.COMMA.symbol(SqlParserPos.ZERO);
         }
-        return JoinType.valueOf(segment.getJoinType()).symbol(SqlParserPos.ZERO);
+        return JoinType.valueOf(joinTypeName).symbol(SqlParserPos.ZERO);
     }
     
     private static SqlLiteral convertConditionType(final JoinTableSegment segment) {
