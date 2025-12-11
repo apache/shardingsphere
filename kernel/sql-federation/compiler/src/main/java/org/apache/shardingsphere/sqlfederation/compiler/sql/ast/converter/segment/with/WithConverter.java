@@ -42,11 +42,11 @@ import java.util.stream.Collectors;
 public final class WithConverter {
     
     /**
-     * Convert with segment to sql node list.
+     * Convert with segment to SQL node list.
      *
      * @param withSegment with segment
-     * @param sqlNode sql node
-     * @return sql node list
+     * @param sqlNode SQL node
+     * @return SQL node list
      */
     public static Optional<SqlNode> convert(final WithSegment withSegment, final SqlNode sqlNode) {
         return Optional.of(new SqlWith(SqlParserPos.ZERO, convertWithItem(withSegment.getCommonTableExpressions()), sqlNode));

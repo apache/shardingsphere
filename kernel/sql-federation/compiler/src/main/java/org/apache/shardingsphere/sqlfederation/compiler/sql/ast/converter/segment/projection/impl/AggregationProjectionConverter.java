@@ -69,10 +69,10 @@ public final class AggregationProjectionConverter {
     }
     
     /**
-     * Convert aggregation projection segment to sql node.
+     * Convert aggregation projection segment to SQL node.
      *
      * @param segment aggregation projection segment
-     * @return sql node
+     * @return SQL node
      */
     public static Optional<SqlNode> convert(final AggregationProjectionSegment segment) {
         if (null == segment) {

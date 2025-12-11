@@ -36,10 +36,10 @@ import java.util.Optional;
 public final class PaginationValueSQLConverter {
     
     /**
-     * Convert pagination value segment to sql node.
+     * Convert pagination value segment to SQL node.
      *
      * @param segment pagination value segment
-     * @return sql node
+     * @return SQL node
      */
     public static Optional<SqlNode> convert(final PaginationValueSegment segment) {
         return Optional.of(segment instanceof NumberLiteralPaginationValueSegment

@@ -36,10 +36,10 @@ import java.util.Optional;
 public final class ExistsSubqueryExpressionConverter {
     
     /**
-     * Convert exists subquery expression to sql node.
+     * Convert exists subquery expression to SQL node.
      *
      * @param expression exists subquery expression
-     * @return sql node
+     * @return SQL node
      */
     public static Optional<SqlNode> convert(final ExistsSubqueryExpression expression) {
         if (null == expression) {

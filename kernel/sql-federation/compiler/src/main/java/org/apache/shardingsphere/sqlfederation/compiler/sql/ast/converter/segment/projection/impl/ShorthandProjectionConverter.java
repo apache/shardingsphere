@@ -38,10 +38,10 @@ import java.util.stream.IntStream;
 public final class ShorthandProjectionConverter {
     
     /**
-     * Convert shorthand projection segment to sql node.
+     * Convert shorthand projection segment to SQL node.
      *
      * @param segment shorthand projection segment
-     * @return sql node
+     * @return SQL node
      */
     public static Optional<SqlNode> convert(final ShorthandProjectionSegment segment) {
         if (null == segment) {

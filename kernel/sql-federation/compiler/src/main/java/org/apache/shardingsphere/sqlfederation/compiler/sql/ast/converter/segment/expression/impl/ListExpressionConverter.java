@@ -37,10 +37,10 @@ import java.util.Optional;
 public final class ListExpressionConverter {
     
     /**
-     * Convert list expression to sql node.
+     * Convert list expression to SQL node.
      *
      * @param segment list expression
-     * @return sql node
+     * @return SQL node
      */
     public static Optional<SqlNode> convert(final ListExpression segment) {
         Collection<SqlNode> sqlNodes = new LinkedList<>();

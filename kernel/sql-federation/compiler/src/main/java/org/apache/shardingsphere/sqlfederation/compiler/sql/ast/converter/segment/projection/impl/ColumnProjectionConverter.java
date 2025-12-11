@@ -37,10 +37,10 @@ import java.util.Optional;
 public final class ColumnProjectionConverter {
     
     /**
-     * Convert column projection segment to sql node.
+     * Convert column projection segment to SQL node.
      *
      * @param segment column projection segment
-     * @return sql node
+     * @return SQL node
      */
     public static Optional<SqlNode> convert(final ColumnProjectionSegment segment) {
         if (segment.getAliasName().isPresent()) {

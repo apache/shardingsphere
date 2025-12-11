@@ -48,10 +48,10 @@ import java.util.Optional;
 public final class ProjectionsConverter {
     
     /**
-     * Convert projections segment to sql node list.
+     * Convert projections segment to SQL node list.
      *
      * @param segment projections segment
-     * @return sql node list
+     * @return SQL node list
      */
     public static Optional<SqlNodeList> convert(final ProjectionsSegment segment) {
         Collection<SqlNode> projectionSQLNodes = new LinkedList<>();

@@ -39,10 +39,10 @@ import java.util.Optional;
 public final class ColumnOrderByItemConverter {
     
     /**
-     * Convert column order by item segment to sql node.
+     * Convert column order by item segment to SQL node.
      *
      * @param segment column order by item segment
-     * @return sql node
+     * @return SQL node
      */
     public static Optional<SqlNode> convert(final ColumnOrderByItemSegment segment) {
         Optional<SqlNode> result = ColumnConverter.convert(segment.getColumn());

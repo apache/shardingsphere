@@ -42,10 +42,10 @@ import java.util.Optional;
 public final class MatchExpressionConverter {
     
     /**
-     * Convert match against expression to sql node.
+     * Convert match against expression to SQL node.
      *
      * @param segment match against expression
-     * @return sql node
+     * @return SQL node
      */
     public static Optional<SqlNode> convert(final MatchAgainstExpression segment) {
         List<SqlNode> sqlNodes = new LinkedList<>();

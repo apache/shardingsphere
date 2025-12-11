@@ -24,13 +24,12 @@ import org.apache.calcite.sql.SqlNode;
 import org.apache.calcite.sql.SqlNodeList;
 import org.apache.calcite.sql.parser.SqlParserPos;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.DeleteMultiTableSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sqlfederation.compiler.sql.ast.converter.segment.from.TableConverter;
 
 import java.util.Collection;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * Delete multi table converter.
@@ -39,10 +38,10 @@ import java.util.Optional;
 public final class DeleteMultiTableConverter {
     
     /**
-     * Convert delete multi table segment to sql node.
+     * Convert delete multi table segment to SQL node.
      *
      * @param segment delete multi table segment
-     * @return sql node
+     * @return SQL node
      */
     public static Optional<SqlNode> convert(final DeleteMultiTableSegment segment) {
         if (null == segment) {
@@ -50,11 +49,7 @@ public final class DeleteMultiTableConverter {
         }
         Collection<SqlNode> sqlNodes = new LinkedList<>();
         TableConverter.convert(segment.getRelationTable()).ifPresent(sqlNodes::add);
-        List<String> tableNames = new LinkedList<>();
-        for (SimpleTableSegment each : segment.getActualDeleteTables()) {
-            tableNames.add(each.getTableName().getIdentifier().getValue());
-        }
-        sqlNodes.add(new SqlIdentifier(tableNames, SqlParserPos.ZERO));
+        sqlNodes.add(new SqlIdentifier(segment.getActualDeleteTables().stream().map(each -> each.getTableName().getIdentifier().getValue()).collect(Collectors.toList()), SqlParserPos.ZERO));
         return Optional.of(new SqlNodeList(sqlNodes, SqlParserPos.ZERO));
     }
 }

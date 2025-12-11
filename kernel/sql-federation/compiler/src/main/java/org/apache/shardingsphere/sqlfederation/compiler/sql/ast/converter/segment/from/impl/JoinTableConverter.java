@@ -59,10 +59,9 @@ public final class JoinTableConverter {
     
     private static SqlLiteral convertJoinType(final JoinTableSegment segment) {
         String joinTypeName = null == segment.getJoinType() ? JoinType.INNER.name() : segment.getJoinType();
-        if (JoinType.INNER.name().equals(joinTypeName) && !segment.isNatural() && null == segment.getCondition() && segment.getUsing().isEmpty()) {
-            return JoinType.COMMA.symbol(SqlParserPos.ZERO);
-        }
-        return JoinType.valueOf(joinTypeName).symbol(SqlParserPos.ZERO);
+        return JoinType.INNER.name().equals(joinTypeName) && !segment.isNatural() && null == segment.getCondition() && segment.getUsing().isEmpty()
+                ? JoinType.COMMA.symbol(SqlParserPos.ZERO)
+                : JoinType.valueOf(joinTypeName).symbol(SqlParserPos.ZERO);
     }
     
     private static SqlLiteral convertConditionType(final JoinTableSegment segment) {

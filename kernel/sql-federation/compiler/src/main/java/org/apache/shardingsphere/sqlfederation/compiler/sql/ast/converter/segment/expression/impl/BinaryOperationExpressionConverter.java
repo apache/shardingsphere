@@ -109,10 +109,10 @@ public final class BinaryOperationExpressionConverter {
     }
     
     /**
-     * Convert binary operation expression to sql node.
+     * Convert binary operation expression to SQL node.
      *
      * @param segment binary operation expression
-     * @return sql node
+     * @return SQL node
      */
     public static Optional<SqlNode> convert(final BinaryOperationExpression segment) {
         SqlOperator operator = convertOperator(segment);

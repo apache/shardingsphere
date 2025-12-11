@@ -58,10 +58,10 @@ public final class UnaryOperationExpressionConverter {
     }
     
     /**
-     * Convert unary operation expression to sql node.
+     * Convert unary operation expression to SQL node.
      *
      * @param segment unary operation expression
-     * @return sql node
+     * @return SQL node
      */
     public static Optional<SqlNode> convert(final UnaryOperationExpression segment) {
         SqlOperator operator = convertOperator(segment);

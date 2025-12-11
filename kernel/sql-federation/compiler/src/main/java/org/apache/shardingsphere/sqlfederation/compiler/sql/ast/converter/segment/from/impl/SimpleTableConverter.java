@@ -40,10 +40,10 @@ import java.util.Optional;
 public final class SimpleTableConverter {
     
     /**
-     * Convert simple table segment to sql node.
+     * Convert simple table segment to SQL node.
      *
      * @param segment simple table segment
-     * @return sql node
+     * @return SQL node
      */
     public static Optional<SqlNode> convert(final SimpleTableSegment segment) {
         if ("DUAL".equalsIgnoreCase(segment.getTableName().getIdentifier().getValue())) {
@@ -57,10 +57,8 @@ public final class SimpleTableConverter {
             names.add(segment.getDbLink().get().getValue());
         }
         SqlNode tableNameSQLNode = new SqlIdentifier(names, SqlParserPos.ZERO);
-        if (segment.getAliasName().isPresent()) {
-            SqlNode aliasSQLNode = new SqlIdentifier(segment.getAliasName().get(), SqlParserPos.ZERO);
-            return Optional.of(new SqlBasicCall(SqlStdOperatorTable.AS, Arrays.asList(tableNameSQLNode, aliasSQLNode), SqlParserPos.ZERO));
-        }
-        return Optional.of(tableNameSQLNode);
+        return Optional.of(segment.getAliasName().isPresent()
+                ? new SqlBasicCall(SqlStdOperatorTable.AS, Arrays.asList(tableNameSQLNode, new SqlIdentifier(segment.getAliasName().get(), SqlParserPos.ZERO)), SqlParserPos.ZERO)
+                : tableNameSQLNode);
     }
 }

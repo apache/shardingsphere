@@ -33,10 +33,10 @@ import java.util.Optional;
 public final class VariableSegmentConverter {
     
     /**
-     * Convert variable segment to sql node.
+     * Convert variable segment to SQL node.
      *
      * @param segment variable segment
-     * @return sql node
+     * @return SQL node
      */
     public static Optional<SqlNode> convert(final VariableSegment segment) {
         return Optional.of(new SqlIdentifier(segment.getText(), SqlParserPos.ZERO));

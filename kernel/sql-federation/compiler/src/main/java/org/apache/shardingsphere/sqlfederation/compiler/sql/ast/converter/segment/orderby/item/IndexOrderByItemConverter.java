@@ -39,10 +39,10 @@ import java.util.Optional;
 public final class IndexOrderByItemConverter {
     
     /**
-     * Convert index order by item segment to sql node.
+     * Convert index order by item segment to SQL node.
      *
      * @param segment index order by item segment
-     * @return sql node
+     * @return SQL node
      */
     public static Optional<SqlNode> convert(final IndexOrderByItemSegment segment) {
         SqlNode result = SqlLiteral.createExactNumeric(String.valueOf(segment.getColumnIndex()), SqlParserPos.ZERO);
