@@ -59,8 +59,9 @@ class SubqueryProjectionConverterTest {
         SubqueryProjectionSegment projectionSegment = new SubqueryProjectionSegment(new SubquerySegment(0, 0, selectStatement, "sub"), "text");
         projectionSegment.setAlias(new AliasSegment(0, 0, new IdentifierValue("alias")));
         SqlNode convertedNode = mock(SqlNode.class);
-        try (MockedConstruction<SelectStatementConverter> ignored = mockConstruction(SelectStatementConverter.class,
-                (mock, context) -> when(mock.convert(selectStatement)).thenReturn(convertedNode))) {
+        try (
+                MockedConstruction<SelectStatementConverter> ignored = mockConstruction(SelectStatementConverter.class,
+                        (mock, context) -> when(mock.convert(selectStatement)).thenReturn(convertedNode))) {
             Optional<SqlNode> actual = SubqueryProjectionConverter.convert(projectionSegment);
             assertTrue(actual.isPresent());
             SqlBasicCall asCall = (SqlBasicCall) actual.orElse(null);
@@ -77,8 +78,9 @@ class SubqueryProjectionConverterTest {
         selectStatement.setSubqueryType(SubqueryType.EXISTS);
         SubqueryProjectionSegment projectionSegment = new SubqueryProjectionSegment(new SubquerySegment(0, 0, selectStatement, "sub"), "text");
         SqlNode convertedNode = mock(SqlNode.class);
-        try (MockedConstruction<SelectStatementConverter> ignored = mockConstruction(SelectStatementConverter.class,
-                (mock, context) -> when(mock.convert(selectStatement)).thenReturn(convertedNode))) {
+        try (
+                MockedConstruction<SelectStatementConverter> ignored = mockConstruction(SelectStatementConverter.class,
+                        (mock, context) -> when(mock.convert(selectStatement)).thenReturn(convertedNode))) {
             Optional<SqlNode> actual = SubqueryProjectionConverter.convert(projectionSegment);
             assertTrue(actual.isPresent());
             SqlBasicCall existsCall = (SqlBasicCall) actual.orElse(null);
