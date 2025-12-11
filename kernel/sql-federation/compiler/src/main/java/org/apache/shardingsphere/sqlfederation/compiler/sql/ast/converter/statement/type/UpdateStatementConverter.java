@@ -15,43 +15,54 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sqlfederation.compiler.sql.ast.converter.statement.merge;
+package org.apache.shardingsphere.sqlfederation.compiler.sql.ast.converter.statement.type;
 
-import org.apache.calcite.sql.SqlMerge;
+import org.apache.calcite.sql.SqlBasicCall;
+import org.apache.calcite.sql.SqlIdentifier;
 import org.apache.calcite.sql.SqlNode;
 import org.apache.calcite.sql.SqlNodeList;
+import org.apache.calcite.sql.SqlOrderBy;
 import org.apache.calcite.sql.SqlUpdate;
 import org.apache.calcite.sql.parser.SqlParserPos;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.assignment.ColumnAssignmentSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExpressionSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.MergeStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.pagination.limit.LimitSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.UpdateStatement;
-import org.apache.shardingsphere.sqlfederation.compiler.sql.ast.converter.segment.expression.impl.ColumnConverter;
+import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 import org.apache.shardingsphere.sqlfederation.compiler.sql.ast.converter.segment.expression.ExpressionConverter;
+import org.apache.shardingsphere.sqlfederation.compiler.sql.ast.converter.segment.expression.impl.ColumnConverter;
 import org.apache.shardingsphere.sqlfederation.compiler.sql.ast.converter.segment.from.TableConverter;
+import org.apache.shardingsphere.sqlfederation.compiler.sql.ast.converter.segment.limit.PaginationValueSQLConverter;
+import org.apache.shardingsphere.sqlfederation.compiler.sql.ast.converter.segment.orderby.OrderByConverter;
 import org.apache.shardingsphere.sqlfederation.compiler.sql.ast.converter.segment.where.WhereConverter;
 import org.apache.shardingsphere.sqlfederation.compiler.sql.ast.converter.statement.SQLStatementConverter;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
- * Merge statement converter.
+ * Update statement converter.
  */
-public final class MergeStatementConverter implements SQLStatementConverter<MergeStatement, SqlNode> {
+public final class UpdateStatementConverter implements SQLStatementConverter<UpdateStatement, SqlNode> {
     
     @Override
-    public SqlNode convert(final MergeStatement mergeStatement) {
-        SqlNode targetTable = TableConverter.convert(mergeStatement.getTarget()).orElseThrow(IllegalStateException::new);
-        SqlNode condition = ExpressionConverter.convert(mergeStatement.getExpression().getExpr()).orElseThrow(IllegalStateException::new);
-        SqlNode sourceTable = TableConverter.convert(mergeStatement.getSource()).orElseThrow(IllegalStateException::new);
-        SqlUpdate sqlUpdate = mergeStatement.getUpdate().map(this::convertUpdate).orElse(null);
-        return new SqlMerge(SqlParserPos.ZERO, targetTable, condition, sourceTable, sqlUpdate, null, null, null);
+    public SqlNode convert(final UpdateStatement updateStatement) {
+        SqlUpdate sqlUpdate = convertUpdate(updateStatement);
+        SqlNodeList orderBy = updateStatement.getOrderBy().flatMap(OrderByConverter::convert).orElse(SqlNodeList.EMPTY);
+        Optional<LimitSegment> limit = updateStatement.getLimit();
+        if (limit.isPresent()) {
+            SqlNode offset = limit.get().getOffset().flatMap(PaginationValueSQLConverter::convert).orElse(null);
+            SqlNode rowCount = limit.get().getRowCount().flatMap(PaginationValueSQLConverter::convert).orElse(null);
+            return new SqlOrderBy(SqlParserPos.ZERO, sqlUpdate, orderBy, offset, rowCount);
+        }
+        return orderBy.isEmpty() ? sqlUpdate : new SqlOrderBy(SqlParserPos.ZERO, sqlUpdate, orderBy, null, null);
     }
     
     private SqlUpdate convertUpdate(final UpdateStatement updateStatement) {
-        SqlNode table = TableConverter.convert(updateStatement.getTable()).orElse(SqlNodeList.EMPTY);
+        SqlNode table = TableConverter.convert(updateStatement.getTable()).orElseThrow(IllegalStateException::new);
+        SqlIdentifier alias = convertTableAlias(updateStatement);
         SqlNode condition = updateStatement.getWhere().flatMap(WhereConverter::convert).orElse(null);
         SqlNodeList columns = new SqlNodeList(SqlParserPos.ZERO);
         SqlNodeList expressions = new SqlNodeList(SqlParserPos.ZERO);
@@ -59,7 +70,15 @@ public final class MergeStatementConverter implements SQLStatementConverter<Merg
             columns.addAll(convertColumn(each.getColumns()));
             expressions.add(convertExpression(each.getValue()));
         }
-        return new SqlUpdate(SqlParserPos.ZERO, table, columns, expressions, condition, null, null);
+        return new SqlUpdate(SqlParserPos.ZERO, getTargetTableName(table), columns, expressions, condition, null, alias);
+    }
+    
+    private SqlIdentifier convertTableAlias(final UpdateStatement updateStatement) {
+        if (updateStatement.getTable().getAlias().isPresent()) {
+            IdentifierValue aliasIdentifier = updateStatement.getTable().getAlias().get();
+            return new SqlIdentifier(aliasIdentifier.getValue(), SqlParserPos.ZERO);
+        }
+        return null;
     }
     
     private List<SqlNode> convertColumn(final List<ColumnSegment> columnSegments) {
@@ -68,5 +87,9 @@ public final class MergeStatementConverter implements SQLStatementConverter<Merg
     
     private SqlNode convertExpression(final ExpressionSegment expressionSegment) {
         return ExpressionConverter.convert(expressionSegment).orElseThrow(IllegalStateException::new);
+    }
+    
+    private SqlNode getTargetTableName(final SqlNode deleteTable) {
+        return deleteTable instanceof SqlBasicCall ? ((SqlBasicCall) deleteTable).getOperandList().iterator().next() : deleteTable;
     }
 }

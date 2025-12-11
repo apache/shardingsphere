@@ -30,12 +30,12 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.Me
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.UpdateStatement;
 import org.apache.shardingsphere.sqlfederation.compiler.exception.SQLFederationSQLNodeConvertException;
-import org.apache.shardingsphere.sqlfederation.compiler.sql.ast.converter.statement.delete.DeleteStatementConverter;
-import org.apache.shardingsphere.sqlfederation.compiler.sql.ast.converter.statement.explain.ExplainStatementConverter;
-import org.apache.shardingsphere.sqlfederation.compiler.sql.ast.converter.statement.insert.InsertStatementConverter;
-import org.apache.shardingsphere.sqlfederation.compiler.sql.ast.converter.statement.merge.MergeStatementConverter;
-import org.apache.shardingsphere.sqlfederation.compiler.sql.ast.converter.statement.select.SelectStatementConverter;
-import org.apache.shardingsphere.sqlfederation.compiler.sql.ast.converter.statement.update.UpdateStatementConverter;
+import org.apache.shardingsphere.sqlfederation.compiler.sql.ast.converter.statement.type.DeleteStatementConverter;
+import org.apache.shardingsphere.sqlfederation.compiler.sql.ast.converter.statement.type.ExplainStatementConverter;
+import org.apache.shardingsphere.sqlfederation.compiler.sql.ast.converter.statement.type.InsertStatementConverter;
+import org.apache.shardingsphere.sqlfederation.compiler.sql.ast.converter.statement.type.MergeStatementConverter;
+import org.apache.shardingsphere.sqlfederation.compiler.sql.ast.converter.statement.type.SelectStatementConverter;
+import org.apache.shardingsphere.sqlfederation.compiler.sql.ast.converter.statement.type.UpdateStatementConverter;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockedConstruction;
 

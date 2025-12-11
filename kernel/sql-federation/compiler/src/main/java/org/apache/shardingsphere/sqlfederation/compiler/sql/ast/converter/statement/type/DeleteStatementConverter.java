@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sqlfederation.compiler.sql.ast.converter.statement.delete;
+package org.apache.shardingsphere.sqlfederation.compiler.sql.ast.converter.statement.type;
 
 import com.cedarsoftware.util.CaseInsensitiveMap;
 import org.apache.calcite.sql.SqlBasicCall;
