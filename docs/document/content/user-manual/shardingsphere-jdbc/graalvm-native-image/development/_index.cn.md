@@ -81,7 +81,7 @@ newgrp docker
 可在 Powershell 7 通过如下命令利用 `version-fox/vfox` 安装 GraalVM CE。
 
 ```shell
-winget install version-fox.vfox
+winget install --id version-fox.vfox --source winget --exact
 if (-not (Test-Path -Path $PROFILE)) { New-Item -Type File -Path $PROFILE -Force }; Add-Content -Path $PROFILE -Value 'Invoke-Expression "$(vfox activate pwsh)"'
 # 此时需要打开新的 Powershell 7 终端
 vfox add java
@@ -95,7 +95,7 @@ vfox use --global java@24.0.2-graalce
 可在 Powershell 7 通过如下命令安装编译 GraalVM Native Image 所需要的本地工具链。**特定情况下，开发者可能需要为 Visual Studio 的使用购买许可证。**
 
 ```shell
-winget install --id Microsoft.VisualStudio.2022.Community
+winget install --id Microsoft.VisualStudio.2022.Community --source winget --exact
 ```
 
 打开 `Visual Studio Installer` 以修改 `Visual Studio Community 2022` 的 `工作负荷`，勾选 `桌面应用与移动应用` 的 `使用 C++ 的桌面开发` 后点击`修改`。
@@ -106,7 +106,15 @@ winget install --id Microsoft.VisualStudio.2022.Community
 wsl --install
 ```
 
-完成 WSL2 的启用后，在 https://rancherdesktop.io/ 下载和安装 `rancher-sandbox/rancher-desktop`，并设置使用 `dockerd(moby)` 的 `Container Engine`。
+完成 WSL2 的启用后，通过如下的 PowerShell 7 命令下载和安装 `rancher-sandbox/rancher-desktop`，
+并设置使用 `dockerd(moby)` 的 `Container Engine`。
+
+```shell
+winget install --id SUSE.RancherDesktop --source winget --skip-dependencies
+# 打开新的 PowerShell 7 终端
+rdctl start --application.start-in-background --container-engine.name=moby --kubernetes.enabled=false
+```
+
 本文不讨论更改 Linux 发行版 `rancher-desktop` 的 `/etc/docker/daemon.json` 的默认 logging driver。
 
 ### Windows Server
@@ -119,12 +127,13 @@ wsl --install
 可在 PowerShell 7 执行如下命令，
 
 ```shell
-iwr -Uri "https://raw.githubusercontent.com/microsoft/Windows-Containers/refs/heads/Main/helpful_tools/Install-DockerCE/uninstall-docker-ce.ps1" -OutFile uninstall-docker-ce.ps1
-.\uninstall-docker-ce.ps1 -Force
-ri .\uninstall-docker-ce.ps1
+iex "& { $(irm https://raw.githubusercontent.com/microsoft/Windows-Containers/refs/heads/Main/helpful_tools/Install-DockerCE/uninstall-docker-ce.ps1) } -Force"
+winget install --id SUSE.RancherDesktop --source winget --skip-dependencies
+# 打开新的 PowerShell 7 终端
+rdctl start --application.start-in-background --container-engine.name=moby --kubernetes.enabled=false
 ```
 
-这类操作常见于 `windows-2025` 的 GitHub Actions Runner 中。
+这类操作常见于 `windows-latest` 的 GitHub Actions Runner 中。
 
 ## 处理单元测试
 

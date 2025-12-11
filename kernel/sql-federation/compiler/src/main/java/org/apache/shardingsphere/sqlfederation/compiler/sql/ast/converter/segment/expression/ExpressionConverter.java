@@ -51,6 +51,7 @@ import org.apache.shardingsphere.sqlfederation.compiler.sql.ast.converter.segmen
 import org.apache.shardingsphere.sqlfederation.compiler.sql.ast.converter.segment.expression.impl.CaseWhenExpressionConverter;
 import org.apache.shardingsphere.sqlfederation.compiler.sql.ast.converter.segment.expression.impl.CollateExpressionConverter;
 import org.apache.shardingsphere.sqlfederation.compiler.sql.ast.converter.segment.expression.impl.ColumnConverter;
+import org.apache.shardingsphere.sqlfederation.compiler.sql.ast.converter.segment.expression.impl.DataTypeExpressionConverter;
 import org.apache.shardingsphere.sqlfederation.compiler.sql.ast.converter.segment.expression.impl.ExistsSubqueryExpressionConverter;
 import org.apache.shardingsphere.sqlfederation.compiler.sql.ast.converter.segment.expression.impl.ExtractArgExpressionConverter;
 import org.apache.shardingsphere.sqlfederation.compiler.sql.ast.converter.segment.expression.impl.FunctionConverter;
@@ -68,7 +69,6 @@ import org.apache.shardingsphere.sqlfederation.compiler.sql.ast.converter.segmen
 import org.apache.shardingsphere.sqlfederation.compiler.sql.ast.converter.segment.expression.impl.UnaryOperationExpressionConverter;
 import org.apache.shardingsphere.sqlfederation.compiler.sql.ast.converter.segment.expression.impl.VariableSegmentConverter;
 import org.apache.shardingsphere.sqlfederation.compiler.sql.ast.converter.segment.projection.impl.AggregationProjectionConverter;
-import org.apache.shardingsphere.sqlfederation.compiler.sql.ast.converter.segment.projection.impl.DataTypeConverter;
 
 import java.util.Optional;
 
@@ -79,10 +79,10 @@ import java.util.Optional;
 public final class ExpressionConverter {
     
     /**
-     * Convert expression segment to sql node.
+     * Convert expression segment to SQL node.
      *
      * @param segment expression segment
-     * @return sql node
+     * @return SQL node
      * @throws UnsupportedSQLOperationException unsupported SQL operation exception
      */
     public static Optional<SqlNode> convert(final ExpressionSegment segment) {
@@ -127,7 +127,7 @@ public final class ExpressionConverter {
             return AggregationProjectionConverter.convert((AggregationProjectionSegment) segment);
         }
         if (segment instanceof DataTypeSegment) {
-            return DataTypeConverter.convert((DataTypeSegment) segment);
+            return DataTypeExpressionConverter.convert((DataTypeSegment) segment);
         }
         if (segment instanceof CaseWhenExpression) {
             return CaseWhenExpressionConverter.convert((CaseWhenExpression) segment);

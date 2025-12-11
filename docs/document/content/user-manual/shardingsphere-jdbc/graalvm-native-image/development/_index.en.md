@@ -84,7 +84,7 @@ It is assumed that the developer is on a fresh Windows 11 Home 24H2 instance wit
 GraalVM CE can be installed using `version-fox/vfox` in Powershell 7 using the following command.
 
 ```shell
-winget install version-fox.vfox
+winget install --id version-fox.vfox --source winget --exact
 if (-not (Test-Path -Path $PROFILE)) { New-Item -Type File -Path $PROFILE -Force }; Add-Content -Path $PROFILE -Value 'Invoke-Expression "$(vfox activate pwsh)"'
 # At this time, developer need to open a new Powershell 7 terminal
 vfox add java
@@ -100,7 +100,7 @@ Developer can install the local toolchain required to compile GraalVM Native Ima
 **In certain cases, developer may need to purchase a license for the use of Visual Studio.**
 
 ```shell
-winget install --id Microsoft.VisualStudio.2022.Community
+winget install --id Microsoft.VisualStudio.2022.Community --source winget --exact
 ```
 
 Open `Visual Studio Installer` to modify `Workloads` of `Visual Studio Community 2022`, 
@@ -112,9 +112,16 @@ Developer can enable WSL2 and set `Ubuntu WSL` as the default Linux distribution
 wsl --install
 ```
 
-After enabling WSL2, 
-download and install `rancher-sandbox/rancher-desktop` from https://rancherdesktop.io/ and set up `Container Engine` using `dockerd(moby)`.
-This article does not discuss changing the default logging driver in `/etc/docker/daemon.json` of the Linux distribution `rancher-desktop`.
+After enabling WSL2, download and install `rancher-sandbox/rancher-desktop` using the following PowerShell 7 command,
+and configure it to use the `dockerd(moby)` `Container Engine`.
+
+```shell
+winget install --id SUSE.RancherDesktop --source winget --skip-dependencies
+# Open a new PowerShell 7 terminal
+rdctl start --application.start-in-background --container-engine.name=moby --kubernetes.enabled=false
+```
+
+This article does not discuss changing the default logging driver in `/etc/docker/daemon.json` of the Linux distribution's `rancher-desktop`.
 
 ### Windows Server
 
@@ -126,12 +133,13 @@ they will need to uninstall Docker Engine using the script provided by Microsoft
 You can execute the following command in PowerShell 7:
 
 ```shell
-iwr -Uri "https://raw.githubusercontent.com/microsoft/Windows-Containers/refs/heads/Main/helpful_tools/Install-DockerCE/uninstall-docker-ce.ps1" -OutFile uninstall-docker-ce.ps1
-.\uninstall-docker-ce.ps1 -Force
-ri .\uninstall-docker-ce.ps1
+iex "& { $(irm https://raw.githubusercontent.com/microsoft/Windows-Containers/refs/heads/Main/helpful_tools/Install-DockerCE/uninstall-docker-ce.ps1) } -Force"
+winget install --id SUSE.RancherDesktop --source winget --skip-dependencies
+# Open a new PowerShell 7 terminal
+rdctl start --application.start-in-background --container-engine.name=moby --kubernetes.enabled=false
 ```
 
-This type of operation is commonly found in the GitHub Actions Runner for `windows-2025`.
+This type of operation is commonly found in the GitHub Actions Runner for `windows-latest`.
 
 ## Handling unit tests
 
