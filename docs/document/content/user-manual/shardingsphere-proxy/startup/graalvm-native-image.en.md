@@ -171,7 +171,7 @@ Assuming the contributor is on a fresh Windows 11 Home 24H2 instance with `git-f
 OpenJDK 21 can be installed using `version-fox/vfox` in Powershell 7 using the following command.
 
 ```shell
-winget install version-fox.vfox
+winget install --id version-fox.vfox --source winget --exact
 if (-not (Test-Path -Path $PROFILE)) { New-Item -Type File -Path $PROFILE -Force }; Add-Content -Path $PROFILE -Value 'Invoke-Expression "$(vfox activate pwsh)"'
 # At this time, you need to open a new Powershell 7 terminal
 vfox add java

@@ -278,37 +278,37 @@
   "resources": [
     {
       "condition": {
-        "typeReached": "org.apache.shardingsphere.infra.url.classpath.ClassPathURLLoader"
+        "typeReached": "org.apache.shardingsphere.infra.url.classpath.ClassPathLocalFileURLLoader"
       },
       "glob": "test-native/properties/**/*.properties"
     },
     {
       "condition": {
-        "typeReached": "org.apache.shardingsphere.infra.url.classpath.ClassPathURLLoader"
+        "typeReached": "org.apache.shardingsphere.infra.url.classpath.ClassPathLocalFileURLLoader"
       },
       "glob": "test-native/sh/**/*.sh"
     },
     {
       "condition": {
-        "typeReached": "org.apache.shardingsphere.infra.url.classpath.ClassPathURLLoader"
+        "typeReached": "org.apache.shardingsphere.infra.url.classpath.ClassPathLocalFileURLLoader"
       },
       "glob": "test-native/yaml/**/*.yaml"
     },
     {
       "condition": {
-        "typeReached": "org.apache.shardingsphere.infra.url.classpath.ClassPathURLLoader"
+        "typeReached": "org.apache.shardingsphere.infra.url.classpath.ClassPathLocalFileURLLoader"
       },
       "glob": "test-native/sql/**/*.sql"
     },
     {
       "condition": {
-        "typeReached": "org.apache.shardingsphere.infra.url.classpath.ClassPathURLLoader"
+        "typeReached": "org.apache.shardingsphere.infra.url.classpath.ClassPathLocalFileURLLoader"
       },
       "glob": "*.conf"
     },
     {
       "condition": {
-        "typeReached": "org.apache.shardingsphere.infra.url.classpath.ClassPathURLLoader"
+        "typeReached": "org.apache.shardingsphere.infra.url.classpath.ClassPathLocalFileURLLoader"
       },
       "glob": "container-license-acceptance.txt"
     },
