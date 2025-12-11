@@ -40,10 +40,10 @@ import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
@@ -95,7 +95,7 @@ class AggregationProjectionConverterTest {
         assertThat(sqlBasicCall.getOperandList().get(0), is(firstNode));
         assertThat(sqlBasicCall.getOperandList().get(1), is(secondNode));
         assertThat(sqlBasicCall.getOperandList().get(2), instanceOf(SqlLiteral.class));
-        assertThat(sqlBasicCall.getFunctionQuantifier(), is(nullValue()));
+        assertNull(sqlBasicCall.getFunctionQuantifier());
     }
     
     @Test
@@ -111,7 +111,7 @@ class AggregationProjectionConverterTest {
         assertThat(sqlBasicCall.getOperator(), is(SqlStdOperatorTable.MAX));
         assertThat(sqlBasicCall.getOperandList().size(), is(1));
         assertThat(sqlBasicCall.getOperandList().get(0), is(expectedNode));
-        assertThat(sqlBasicCall.getFunctionQuantifier(), is(nullValue()));
+        assertNull(sqlBasicCall.getFunctionQuantifier());
     }
     
     @Test
