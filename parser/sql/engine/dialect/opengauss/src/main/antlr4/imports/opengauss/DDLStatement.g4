@@ -139,10 +139,11 @@ createDatabaseSpecification
     ;
 
 createdbOptName
-    : identifier
-    | CONNECTION LIMIT
+    : CONNECTION LIMIT
     | ENCODING
-    | LOCATION
+    | LC_COLLATE
+    | LC_CTYPE
+    | DBCOMPATIBILITY
     | OWNER
     | TABLESPACE
     | TEMPLATE
