@@ -52,8 +52,9 @@ class ExistsSubqueryExpressionConverterTest {
     @Test
     void assertConvertExistsExpression() {
         SqlNode expected = mock(SqlNode.class);
-        try (MockedConstruction<SelectStatementConverter> ignored = mockConstruction(SelectStatementConverter.class,
-                (mock, context) -> when(mock.convert(any(SelectStatement.class))).thenReturn(expected))) {
+        try (
+                MockedConstruction<SelectStatementConverter> ignored = mockConstruction(SelectStatementConverter.class,
+                        (mock, context) -> when(mock.convert(any(SelectStatement.class))).thenReturn(expected))) {
             ExistsSubqueryExpression expression = new ExistsSubqueryExpression(0, 0, new SubquerySegment(0, 0, new SelectStatement(databaseType), "text"));
             SqlBasicCall actual = (SqlBasicCall) ExistsSubqueryExpressionConverter.convert(expression).orElse(null);
             assertNotNull(actual);
@@ -65,8 +66,9 @@ class ExistsSubqueryExpressionConverterTest {
     @Test
     void assertConvertNotExistsExpression() {
         SqlNode expected = mock(SqlNode.class);
-        try (MockedConstruction<SelectStatementConverter> ignored = mockConstruction(SelectStatementConverter.class,
-                (mock, context) -> when(mock.convert(any(SelectStatement.class))).thenReturn(expected))) {
+        try (
+                MockedConstruction<SelectStatementConverter> ignored = mockConstruction(SelectStatementConverter.class,
+                        (mock, context) -> when(mock.convert(any(SelectStatement.class))).thenReturn(expected))) {
             ExistsSubqueryExpression expression = new ExistsSubqueryExpression(0, 0, new SubquerySegment(0, 0, new SelectStatement(databaseType), "text"));
             expression.setNot(true);
             SqlBasicCall actual = (SqlBasicCall) ExistsSubqueryExpressionConverter.convert(expression).orElse(null);

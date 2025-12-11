@@ -206,7 +206,6 @@ class BinaryOperationExpressionConverterTest {
                 Arguments.of("<=", "ALL", SqlStdOperatorTable.ALL_LE),
                 Arguments.of("<=", "SOME", SqlStdOperatorTable.SOME_LE),
                 Arguments.of("!=", "ALL", SqlStdOperatorTable.ALL_NE),
-                Arguments.of("<>", "SOME", SqlStdOperatorTable.SOME_NE)
-        );
+                Arguments.of("<>", "SOME", SqlStdOperatorTable.SOME_NE));
     }
 }
