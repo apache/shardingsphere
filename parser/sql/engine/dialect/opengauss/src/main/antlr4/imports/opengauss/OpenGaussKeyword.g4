@@ -1061,6 +1061,14 @@ LOCATION
     : L O C A T I O N
     ;
 
+LC_COLLATE
+    : L C UL_ C O L L A T E
+    ;
+
+LC_CTYPE
+    : L C UL_ C T Y P E
+    ;
+
 LABEL
     : L A B E L
     ;
