@@ -81,7 +81,6 @@ class IntervalExpressionConverterTest {
                 Arguments.of(IntervalUnit.WEEK, TimeUnit.WEEK),
                 Arguments.of(IntervalUnit.MONTH, TimeUnit.MONTH),
                 Arguments.of(IntervalUnit.QUARTER, TimeUnit.QUARTER),
-                Arguments.of(IntervalUnit.YEAR, TimeUnit.YEAR)
-        );
+                Arguments.of(IntervalUnit.YEAR, TimeUnit.YEAR));
     }
 }
