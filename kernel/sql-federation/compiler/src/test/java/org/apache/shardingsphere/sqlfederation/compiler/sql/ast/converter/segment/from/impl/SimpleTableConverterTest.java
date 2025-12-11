@@ -34,6 +34,7 @@ import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 class SimpleTableConverterTest {
     
@@ -47,6 +48,7 @@ class SimpleTableConverterTest {
     void assertConvertReturnsIdentifierWithoutOwnerAliasOrDbLink() {
         SimpleTableSegment segment = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_simple")));
         SqlIdentifier actual = SimpleTableConverter.convert(segment).map(SqlIdentifier.class::cast).orElse(null);
+        assertNotNull(actual);
         assertThat(actual.names, is(Collections.singletonList("t_simple")));
     }
     
@@ -58,6 +60,7 @@ class SimpleTableConverterTest {
         segment.setAt(new IdentifierValue("db"));
         segment.setAlias(new AliasSegment(0, 0, new IdentifierValue("t_alias")));
         SqlBasicCall actual = SimpleTableConverter.convert(segment).map(SqlBasicCall.class::cast).orElse(null);
+        assertNotNull(actual);
         assertThat(actual.getOperator(), is(SqlStdOperatorTable.AS));
         assertThat(((SqlIdentifier) actual.getOperandList().get(0)).names, is(Arrays.asList("schema", "t_complex", "db", "remote")));
         assertThat(((SqlIdentifier) actual.getOperandList().get(1)).names, is(Collections.singletonList("t_alias")));
