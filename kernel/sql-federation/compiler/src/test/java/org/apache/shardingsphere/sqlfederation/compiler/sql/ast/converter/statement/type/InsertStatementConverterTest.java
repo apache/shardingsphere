@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sqlfederation.compiler.sql.ast.converter.statement.insert;
+package org.apache.shardingsphere.sqlfederation.compiler.sql.ast.converter.statement.type;
 
 import org.apache.calcite.sql.SqlBasicCall;
 import org.apache.calcite.sql.SqlInsert;

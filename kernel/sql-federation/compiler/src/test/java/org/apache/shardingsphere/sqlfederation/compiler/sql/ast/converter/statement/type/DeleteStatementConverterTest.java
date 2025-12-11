@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sqlfederation.compiler.sql.ast.converter.statement.delete;
+package org.apache.shardingsphere.sqlfederation.compiler.sql.ast.converter.statement.type;
 
 import org.apache.calcite.sql.SqlDelete;
 import org.apache.calcite.sql.SqlDynamicParam;

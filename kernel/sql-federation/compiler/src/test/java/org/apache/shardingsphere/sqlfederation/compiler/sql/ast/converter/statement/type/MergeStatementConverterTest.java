@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sqlfederation.compiler.sql.ast.converter.statement.merge;
+package org.apache.shardingsphere.sqlfederation.compiler.sql.ast.converter.statement.type;
 
 import org.apache.calcite.sql.SqlMerge;
 import org.apache.calcite.sql.SqlNode;
