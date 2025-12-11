@@ -62,11 +62,7 @@ public final class DeleteStatementConverter implements SQLStatementConverter<Del
     }
     
     private SqlNode convertDelete(final DeleteStatement deleteStatement) {
-        if (deleteStatement.getTable() instanceof DeleteMultiTableSegment) {
-            return convertDeleteMultipleTable(deleteStatement);
-        } else {
-            return convertDeleteSingleTable(deleteStatement);
-        }
+        return deleteStatement.getTable() instanceof DeleteMultiTableSegment ? convertDeleteMultipleTable(deleteStatement) : convertDeleteSingleTable(deleteStatement);
     }
     
     private SqlNode convertDeleteMultipleTable(final DeleteStatement deleteStatement) {
@@ -74,8 +70,7 @@ public final class DeleteStatementConverter implements SQLStatementConverter<Del
         SqlNodeList targetTables = convertTargetTables(multiTableSegment);
         SqlNodeList targetTableAliases = convertTargetTableAliases(multiTableSegment);
         SqlNode condition = deleteStatement.getWhere().flatMap(WhereConverter::convert).orElse(null);
-        SqlDelete sqlDelete = new SqlDelete(SqlParserPos.ZERO, targetTables.get(0), condition, null,
-                targetTableAliases.isEmpty() ? null : (SqlIdentifier) targetTableAliases.get(0));
+        SqlDelete sqlDelete = new SqlDelete(SqlParserPos.ZERO, targetTables.get(0), condition, null, targetTableAliases.isEmpty() ? null : (SqlIdentifier) targetTableAliases.get(0));
         return deleteStatement.getWith().flatMap(optional -> WithConverter.convert(optional, sqlDelete)).orElse(sqlDelete);
     }
     
