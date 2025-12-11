@@ -25,10 +25,10 @@ import org.apache.calcite.sql.type.SqlTypeName;
 import java.util.Map;
 
 /**
- * Data type converter.
+ * SQL type name converter.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class DataTypeConverter {
+public final class SqlTypeNameConverter {
     
     private static final Map<String, SqlTypeName> REGISTRY = new CaseInsensitiveMap<>();
     
