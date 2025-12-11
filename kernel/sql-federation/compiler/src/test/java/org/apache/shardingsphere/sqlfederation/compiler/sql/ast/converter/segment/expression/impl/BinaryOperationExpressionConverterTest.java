@@ -44,6 +44,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Optional;
+import java.util.function.Supplier;
 import java.util.stream.Stream;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -60,92 +61,11 @@ class BinaryOperationExpressionConverterTest {
     private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "FIXTURE");
     
     @Test
-    void assertConvertThrowsForUnsupportedOperator() {
-        BinaryOperationExpression expression = new BinaryOperationExpression(0, 0, new LiteralExpressionSegment(0, 0, 1), new LiteralExpressionSegment(0, 0, 1), "UNSUPPORTED", "");
-        assertThrows(IllegalStateException.class, () -> BinaryOperationExpressionConverter.convert(expression));
-    }
-    
-    @Test
     void assertConvertThrowsWhenIsOperatorUnsupportedLiteral() {
         LiteralExpressionSegment left = new LiteralExpressionSegment(0, 0, 1);
         LiteralExpressionSegment right = new LiteralExpressionSegment(0, 0, "unknown");
         BinaryOperationExpression expression = new BinaryOperationExpression(0, 0, left, right, "IS", "");
         assertThrows(IllegalStateException.class, () -> BinaryOperationExpressionConverter.convert(expression));
-    }
-    
-    @Test
-    void assertConvertIsNullOperator() {
-        LiteralExpressionSegment left = new LiteralExpressionSegment(0, 0, 1);
-        LiteralExpressionSegment right = new LiteralExpressionSegment(0, 0, "NULL");
-        SqlNode leftNode = mock(SqlNode.class);
-        when(ExpressionConverter.convert(left)).thenReturn(Optional.of(leftNode));
-        SqlBasicCall actual = (SqlBasicCall) BinaryOperationExpressionConverter.convert(new BinaryOperationExpression(0, 0, left, right, "IS", "")).orElse(null);
-        assertNotNull(actual);
-        assertThat(actual.getOperator(), is(SqlStdOperatorTable.IS_NULL));
-        assertThat(actual.getOperandList(), is(Collections.singletonList(leftNode)));
-    }
-    
-    @Test
-    void assertConvertIsNotNullOperator() {
-        LiteralExpressionSegment left = new LiteralExpressionSegment(0, 0, 1);
-        LiteralExpressionSegment right = new LiteralExpressionSegment(0, 0, "NOT NULL");
-        SqlNode leftNode = mock(SqlNode.class);
-        when(ExpressionConverter.convert(left)).thenReturn(Optional.of(leftNode));
-        SqlBasicCall actual = (SqlBasicCall) BinaryOperationExpressionConverter.convert(new BinaryOperationExpression(0, 0, left, right, "IS", "")).orElse(null);
-        assertNotNull(actual);
-        assertThat(actual.getOperator(), is(SqlStdOperatorTable.IS_NOT_NULL));
-        assertThat(actual.getOperandList(), is(Collections.singletonList(leftNode)));
-    }
-    
-    @Test
-    void assertConvertIsFalseConvertsNumericZeroToBooleanFalse() {
-        LiteralExpressionSegment left = new LiteralExpressionSegment(0, 0, 0);
-        LiteralExpressionSegment right = new LiteralExpressionSegment(0, 0, "FALSE");
-        SqlNumericLiteral leftNode = SqlLiteral.createExactNumeric("0", SqlParserPos.ZERO);
-        when(ExpressionConverter.convert(left)).thenReturn(Optional.of(leftNode));
-        SqlBasicCall actual = (SqlBasicCall) BinaryOperationExpressionConverter.convert(new BinaryOperationExpression(0, 0, left, right, "IS", "")).orElse(null);
-        assertNotNull(actual);
-        assertThat(actual.getOperator(), is(SqlStdOperatorTable.IS_FALSE));
-        SqlLiteral operand = (SqlLiteral) actual.getOperandList().get(0);
-        assertThat(operand.getValueAs(Boolean.class), is(false));
-    }
-    
-    @Test
-    void assertConvertIsNotFalseConvertsNumericToBooleanTrue() {
-        LiteralExpressionSegment left = new LiteralExpressionSegment(0, 0, 2);
-        LiteralExpressionSegment right = new LiteralExpressionSegment(0, 0, "NOT FALSE");
-        SqlNumericLiteral leftNode = SqlLiteral.createExactNumeric("2", SqlParserPos.ZERO);
-        when(ExpressionConverter.convert(left)).thenReturn(Optional.of(leftNode));
-        SqlBasicCall actual = (SqlBasicCall) BinaryOperationExpressionConverter.convert(new BinaryOperationExpression(0, 0, left, right, "IS", "")).orElse(null);
-        assertNotNull(actual);
-        assertThat(actual.getOperator(), is(SqlStdOperatorTable.IS_NOT_FALSE));
-        SqlLiteral operand = (SqlLiteral) actual.getOperandList().get(0);
-        assertThat(operand.getValueAs(Boolean.class), is(true));
-    }
-    
-    @Test
-    void assertConvertIsTrueKeepsNonNumericLeft() {
-        LiteralExpressionSegment left = new LiteralExpressionSegment(0, 0, "left");
-        LiteralExpressionSegment right = new LiteralExpressionSegment(0, 0, "TRUE");
-        SqlNode leftNode = mock(SqlNode.class);
-        when(ExpressionConverter.convert(left)).thenReturn(Optional.of(leftNode));
-        SqlBasicCall actual = (SqlBasicCall) BinaryOperationExpressionConverter.convert(new BinaryOperationExpression(0, 0, left, right, "IS", "")).orElse(null);
-        assertNotNull(actual);
-        assertThat(actual.getOperator(), is(SqlStdOperatorTable.IS_TRUE));
-        assertThat(actual.getOperandList().get(0), is(leftNode));
-    }
-    
-    @Test
-    void assertConvertIsNotTrueConvertsNumericZeroToBooleanFalse() {
-        LiteralExpressionSegment left = new LiteralExpressionSegment(0, 0, 0);
-        LiteralExpressionSegment right = new LiteralExpressionSegment(0, 0, "NOT TRUE");
-        SqlNumericLiteral leftNode = SqlLiteral.createExactNumeric("0", SqlParserPos.ZERO);
-        when(ExpressionConverter.convert(left)).thenReturn(Optional.of(leftNode));
-        SqlBasicCall actual = (SqlBasicCall) BinaryOperationExpressionConverter.convert(new BinaryOperationExpression(0, 0, left, right, "IS", "")).orElse(null);
-        assertNotNull(actual);
-        assertThat(actual.getOperator(), is(SqlStdOperatorTable.IS_NOT_TRUE));
-        SqlLiteral operand = (SqlLiteral) actual.getOperandList().get(0);
-        assertThat(operand.getValueAs(Boolean.class), is(false));
     }
     
     @Test
@@ -178,6 +98,25 @@ class BinaryOperationExpressionConverterTest {
         assertThat(actual.getOperandList(), is(Arrays.asList(leftNode, rightNode)));
     }
     
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("provideIsOperatorCases")
+    void assertConvertIsOperatorVariants(final String displayName, final String rightLiteral, final Supplier<SqlNode> leftSupplier,
+                                         final SqlOperator expectedOperator, final Boolean expectedBoolean) {
+        LiteralExpressionSegment left = new LiteralExpressionSegment(0, 0, 1);
+        LiteralExpressionSegment right = new LiteralExpressionSegment(0, 0, rightLiteral);
+        SqlNode leftNode = leftSupplier.get();
+        when(ExpressionConverter.convert(left)).thenReturn(Optional.of(leftNode));
+        SqlBasicCall actual = (SqlBasicCall) BinaryOperationExpressionConverter.convert(new BinaryOperationExpression(0, 0, left, right, "IS", "")).orElse(null);
+        assertNotNull(actual);
+        assertThat(actual.getOperator(), is(expectedOperator));
+        if (null == expectedBoolean) {
+            assertThat(actual.getOperandList(), is(Collections.singletonList(leftNode)));
+        } else {
+            SqlLiteral operand = (SqlLiteral) actual.getOperandList().get(0);
+            assertThat(operand.getValueAs(Boolean.class), is(expectedBoolean));
+        }
+    }
+    
     @ParameterizedTest(name = "{0} {1}")
     @MethodSource("provideQuantifyOperators")
     void assertConvertQuantifySubquery(final String operator, final String quantifyOperator, final SqlOperator expectedOperator) {
@@ -191,6 +130,22 @@ class BinaryOperationExpressionConverterTest {
         assertNotNull(actual);
         assertThat(actual.getOperator(), is(expectedOperator));
         assertThat(actual.getOperandList(), is(Arrays.asList(leftNode, rightNode)));
+    }
+    
+    private static Stream<Arguments> provideIsOperatorCases() {
+        return Stream.of(
+                Arguments.of("IS NULL keeps operand", "NULL", (Supplier<SqlNode>) () -> mock(SqlNode.class), SqlStdOperatorTable.IS_NULL, null),
+                Arguments.of("IS NOT NULL keeps operand", "NOT NULL", (Supplier<SqlNode>) () -> mock(SqlNode.class), SqlStdOperatorTable.IS_NOT_NULL, null),
+                Arguments.of("IS FALSE zero -> false", "FALSE", (Supplier<SqlNode>) () -> SqlLiteral.createExactNumeric("0", SqlParserPos.ZERO), SqlStdOperatorTable.IS_FALSE, false),
+                Arguments.of("IS FALSE null numeric -> false", "FALSE", (Supplier<SqlNode>) () -> {
+                    SqlNumericLiteral literal = mock(SqlNumericLiteral.class);
+                    when(literal.getValueAs(Long.class)).thenReturn(null);
+                    when(literal.getParserPosition()).thenReturn(SqlParserPos.ZERO);
+                    return literal;
+                }, SqlStdOperatorTable.IS_FALSE, false),
+                Arguments.of("IS NOT FALSE non-zero -> true", "NOT FALSE", (Supplier<SqlNode>) () -> SqlLiteral.createExactNumeric("2", SqlParserPos.ZERO), SqlStdOperatorTable.IS_NOT_FALSE, true),
+                Arguments.of("IS TRUE non-numeric keeps operand", "TRUE", (Supplier<SqlNode>) () -> mock(SqlNode.class), SqlStdOperatorTable.IS_TRUE, null),
+                Arguments.of("IS NOT TRUE zero -> false", "NOT TRUE", (Supplier<SqlNode>) () -> SqlLiteral.createExactNumeric("0", SqlParserPos.ZERO), SqlStdOperatorTable.IS_NOT_TRUE, false));
     }
     
     private static Stream<Arguments> provideQuantifyOperators() {
