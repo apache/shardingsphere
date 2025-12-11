@@ -3701,6 +3701,17 @@
         <storage-format type="ORC" start-index="73" stop-index="76" />
     </create-table>
 
+    <create-table sql-case-id="create_iceberg_table_as_select">
+        <table name="target" start-index="13" stop-index="18" />
+        <storage-handler name="ICEBERG" start-index="36" stop-index="43" />
+        <as-select query="SELECT * FROM source" start-index="48" stop-index="64" />
+    </create-table>
+
+    <create-table sql-case-id="create_iceberg_table_like_table">
+        <table name="target" like="source" start-index="13" stop-index="18"/>
+        <storage-handler name="ICEBERG" start-index="37" stop-index="44" />
+    </create-table>
+
     <create-table sql-case-id="create_table_with_blob">
         <table name="t_blob" start-index="13" stop-index="18" />
         <column-definition type="INT" start-index="21" stop-index="26">

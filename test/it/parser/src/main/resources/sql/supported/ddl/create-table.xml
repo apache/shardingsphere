@@ -512,6 +512,8 @@
     <sql-case id="create_iceberg_table" value="CREATE EXTERNAL TABLE user_log (user_name STRING) STORED BY ICEBERG;" db-types="Hive" />
     <sql-case id="create_iceberg_table_partition" value="CREATE TABLE user_log (user_name STRING) PARTITIONED BY (year int) STORED BY ICEBERG;" db-types="Hive" />
     <sql-case id="create_iceberg_table_orc" value="CREATE TABLE user_log (user_name STRING) STORED BY ICEBERG STORED AS ORC;" db-types="Hive" />
+    <sql-case id="create_iceberg_table_as_select" value="CREATE TABLE target STORED BY ICEBERG AS SELECT * FROM source;" db-types="Hive" />
+    <sql-case id="create_iceberg_table_like_table" value="CREATE TABLE target LIKE source STORED BY ICEBERG;" db-types="Hive" />
     <sql-case id="create_table_with_blob" value="CREATE TABLE t_blob (id INT, payload BLOB)" db-types="Firebird" />
     <sql-case id="create_table_with_blob_subtype_numeric" value="CREATE TABLE t_blob_subtype_numeric (payload BLOB SUB_TYPE 1)" db-types="Firebird" />
     <sql-case id="create_table_with_blob_subtype_text" value="CREATE TABLE t_blob_subtype_text (payload BLOB SUB_TYPE TEXT CHARACTER SET UTF8)" db-types="Firebird" />
