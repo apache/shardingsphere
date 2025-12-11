@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sqlfederation.compiler.sql.ast.converter.segment.projection.impl;
+package org.apache.shardingsphere.sqlfederation.compiler.sql.ast.converter.segment.expression.impl;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -30,16 +30,16 @@ import java.util.Objects;
 import java.util.Optional;
 
 /**
- * Data type converter. 
+ * Data type expression converter. 
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class DataTypeConverter {
+public final class DataTypeExpressionConverter {
     
     /**
-     * Convert data type segment to sql node.
+     * Convert data type segment to SQL node.
      *
      * @param segment data type segment
-     * @return sql node
+     * @return SQL node
      */
     public static Optional<SqlNode> convert(final DataTypeSegment segment) {
         if (null == segment) {
@@ -50,7 +50,8 @@ public final class DataTypeConverter {
     
     private static SqlBasicTypeNameSpec getSqlBasicTypeNameSpec(final DataTypeSegment segment) {
         SqlTypeName sqlTypeName = Objects.requireNonNull(SqlTypeName.get(segment.getDataTypeName().toUpperCase()));
-        return segment.getDataTypeLength().isPresent() ? new SqlBasicTypeNameSpec(sqlTypeName, segment.getDataLength().getPrecision(), SqlParserPos.ZERO)
+        return segment.getDataTypeLength().isPresent()
+                ? new SqlBasicTypeNameSpec(sqlTypeName, segment.getDataLength().getPrecision(), SqlParserPos.ZERO)
                 : new SqlBasicTypeNameSpec(sqlTypeName, SqlParserPos.ZERO);
     }
 }
