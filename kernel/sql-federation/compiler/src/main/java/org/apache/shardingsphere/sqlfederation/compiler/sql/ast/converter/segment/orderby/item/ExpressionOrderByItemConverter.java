@@ -38,10 +38,10 @@ import java.util.Optional;
 public final class ExpressionOrderByItemConverter {
     
     /**
-     * Convert expression order by item segment to sql node.
+     * Convert expression order by item segment to SQL node.
      *
      * @param segment expression order by item segment
-     * @return sql node
+     * @return SQL node
      */
     public static Optional<SqlNode> convert(final ExpressionOrderByItemSegment segment) {
         Optional<SqlNode> result = null == segment ? Optional.empty() : ExpressionConverter.convert(segment.getExpr());

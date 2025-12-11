@@ -34,10 +34,10 @@ import java.util.Optional;
 public final class DistinctConverter {
     
     /**
-     * Convert projections segment to sql node list.
+     * Convert projections segment to SQL node list.
      *
      * @param segment projections segment
-     * @return sql node list
+     * @return SQL node list
      */
     public static Optional<SqlNodeList> convert(final ProjectionsSegment segment) {
         return segment.isDistinctRow() ? Optional.of(new SqlNodeList(Collections.singletonList(SqlSelectKeyword.DISTINCT.symbol(SqlParserPos.ZERO)), SqlParserPos.ZERO)) : Optional.empty();

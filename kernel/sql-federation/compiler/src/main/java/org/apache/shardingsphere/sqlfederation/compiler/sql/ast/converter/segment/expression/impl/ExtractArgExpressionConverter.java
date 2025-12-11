@@ -33,10 +33,10 @@ import java.util.Optional;
 public final class ExtractArgExpressionConverter {
     
     /**
-     * Convert extract arg expression to sql node.
+     * Convert extract arg expression to SQL node.
      *
      * @param expression extract arg expression
-     * @return sql node
+     * @return SQL node
      */
     public static Optional<SqlNode> convert(final ExtractArgExpression expression) {
         if (null == expression) {

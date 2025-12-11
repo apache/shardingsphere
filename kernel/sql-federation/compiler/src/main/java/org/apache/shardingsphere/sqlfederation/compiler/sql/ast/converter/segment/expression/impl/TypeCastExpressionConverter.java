@@ -40,10 +40,10 @@ import java.util.Optional;
 public final class TypeCastExpressionConverter {
     
     /**
-     * Convert type cast expression to sql node.
+     * Convert type cast expression to SQL node.
      *
      * @param segment type cast expression
-     * @return sql node
+     * @return SQL node
      */
     public static Optional<SqlNode> convert(final TypeCastExpression segment) {
         Optional<SqlNode> expression = ExpressionConverter.convert(segment.getExpression());

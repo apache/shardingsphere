@@ -41,10 +41,10 @@ import java.util.Optional;
 public final class SubqueryProjectionConverter {
     
     /**
-     * Convert subquery projection segment to sql node.
+     * Convert subquery projection segment to SQL node.
      *
      * @param segment subquery projection segment
-     * @return sql node
+     * @return SQL node
      */
     public static Optional<SqlNode> convert(final SubqueryProjectionSegment segment) {
         if (null == segment) {

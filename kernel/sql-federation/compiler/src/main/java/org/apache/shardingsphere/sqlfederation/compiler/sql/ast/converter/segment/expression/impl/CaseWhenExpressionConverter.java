@@ -42,10 +42,10 @@ import java.util.Optional;
 public final class CaseWhenExpressionConverter {
     
     /**
-     * Convert case when expression to sql node.
+     * Convert case when expression to SQL node.
      *
      * @param segment case when expression
-     * @return sql node
+     * @return SQL node
      */
     public static Optional<SqlNode> convert(final CaseWhenExpression segment) {
         Collection<SqlNode> whenExprs = convertWhenExprs(segment.getCaseExpr(), segment.getWhenExprs());

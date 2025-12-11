@@ -70,10 +70,10 @@ public final class LiteralExpressionConverter {
     }
     
     /**
-     * Convert literal expression segment to sql node.
+     * Convert literal expression segment to SQL node.
      *
      * @param segment literal expression segment
-     * @return sql node
+     * @return SQL node
      */
     public static Optional<SqlNode> convert(final LiteralExpressionSegment segment) {
         if (null == segment.getLiterals()) {
