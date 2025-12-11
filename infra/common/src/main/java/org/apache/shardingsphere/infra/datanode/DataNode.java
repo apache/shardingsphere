@@ -57,10 +57,10 @@ public final class DataNode {
     public DataNode(final String dataNode) {
         validateDataNodeFormat(dataNode);
         List<String> segments = Splitter.on(DELIMITER).splitToList(dataNode);
-        boolean isIncludeInstance = 3 == segments.size();
-        dataSourceName = isIncludeInstance ? segments.get(0) + DELIMITER + segments.get(1) : segments.get(0);
-        schemaName = null;
-        tableName = segments.get(isIncludeInstance ? 2 : 1);
+        boolean isIncludeSchema = 3 == segments.size();
+        dataSourceName = segments.get(0);
+        schemaName = isIncludeSchema ? segments.get(1) : null;
+        tableName = segments.get(isIncludeSchema ? 2 : 1);
     }
     
     /**

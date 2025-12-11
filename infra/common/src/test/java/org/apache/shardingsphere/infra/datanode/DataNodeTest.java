@@ -95,7 +95,7 @@ class DataNodeTest {
     void assertToString() {
         assertThat(new DataNode("ds_0.tbl_0").toString(), is("DataNode(dataSourceName=ds_0, schemaName=null, tableName=tbl_0)"));
         assertThat(new DataNode("ds", "schema", "tbl").toString(), is("DataNode(dataSourceName=ds, schemaName=schema, tableName=tbl)"));
-        assertThat(new DataNode("ds_0.db_0.tbl_0").toString(), is("DataNode(dataSourceName=ds_0.db_0, schemaName=null, tableName=tbl_0)"));
+        assertThat(new DataNode("ds_0.schema_0.tbl_0").toString(), is("DataNode(dataSourceName=ds_0, schemaName=schema_0, tableName=tbl_0)"));
     }
     
     @Test
@@ -110,9 +110,10 @@ class DataNodeTest {
     
     @Test
     void assertNewValidDataNodeIncludeInstance() {
-        DataNode dataNode = new DataNode("ds_0.db_0.tbl_0");
-        assertThat(dataNode.getDataSourceName(), is("ds_0.db_0"));
+        DataNode dataNode = new DataNode("ds_0.schema_0.tbl_0");
+        assertThat(dataNode.getDataSourceName(), is("ds_0"));
         assertThat(dataNode.getTableName(), is("tbl_0"));
+        assertThat(dataNode.getSchemaName(), is("schema_0"));
     }
     
     @Test
@@ -174,7 +175,7 @@ class DataNodeTest {
     @Test
     void assertNewDataNodeWithMixedFormat() {
         DataNode dataNode = new DataNode("prod-db-01.schema_01.users");
-        assertThat(dataNode.getDataSourceName(), is("prod-db-01.schema_01"));
+        assertThat(dataNode.getDataSourceName(), is("prod-db-01"));
         assertThat(dataNode.getTableName(), is("users"));
     }
     
@@ -197,14 +198,14 @@ class DataNodeTest {
     @Test
     void assertNewDataNodeWithInstanceFormat() {
         DataNode dataNode = new DataNode("instance1.database1.table1");
-        assertThat(dataNode.getDataSourceName(), is("instance1.database1"));
+        assertThat(dataNode.getDataSourceName(), is("instance1"));
         assertThat(dataNode.getTableName(), is("table1"));
     }
     
     @Test
     void assertNewDataNodeWithComplexInstanceFormat() {
         DataNode dataNode = new DataNode("prod-cluster-01.mysql-master.users");
-        assertThat(dataNode.getDataSourceName(), is("prod-cluster-01.mysql-master"));
+        assertThat(dataNode.getDataSourceName(), is("prod-cluster-01"));
         assertThat(dataNode.getTableName(), is("users"));
     }
     
