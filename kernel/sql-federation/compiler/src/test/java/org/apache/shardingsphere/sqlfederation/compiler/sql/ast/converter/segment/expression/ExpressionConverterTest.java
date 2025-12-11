@@ -142,11 +142,11 @@ class ExpressionConverterTest {
         SqlNode expectedAggregationNode = mock(SqlNode.class);
         AggregationProjectionSegment aggregationSegment = new AggregationProjectionSegment(0, 0, AggregationType.COUNT, "count(expr)");
         when(AggregationProjectionConverter.convert(aggregationSegment)).thenReturn(Optional.of(expectedAggregationNode));
-        SqlNode expectedDataTypeNode = mock(SqlNode.class);
         DataTypeSegment dataTypeSegment = new DataTypeSegment();
         dataTypeSegment.setStartIndex(0);
         dataTypeSegment.setStopIndex(0);
         dataTypeSegment.setDataTypeName("int");
+        SqlNode expectedDataTypeNode = mock(SqlNode.class);
         when(DataTypeExpressionConverter.convert(dataTypeSegment)).thenReturn(Optional.of(expectedDataTypeNode));
         SqlNode expectedCaseWhenNode = mock(SqlNode.class);
         CaseWhenExpression caseWhenExpression = new CaseWhenExpression(0, 0, literalSegment, Collections.singleton(literalSegment), Collections.singleton(literalSegment), literalSegment);
