@@ -23,20 +23,20 @@ import org.junit.jupiter.api.Test;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-class DataTypeConverterTest {
+class SqlTypeNameConverterTest {
     
     @Test
     void assertConvertRegisteredDataType() {
-        assertThat(DataTypeConverter.convert("int"), is(SqlTypeName.INTEGER));
-        assertThat(DataTypeConverter.convert("int2"), is(SqlTypeName.SMALLINT));
-        assertThat(DataTypeConverter.convert("int4"), is(SqlTypeName.INTEGER));
-        assertThat(DataTypeConverter.convert("int8"), is(SqlTypeName.BIGINT));
-        assertThat(DataTypeConverter.convert("money"), is(SqlTypeName.DECIMAL));
+        assertThat(SqlTypeNameConverter.convert("int"), is(SqlTypeName.INTEGER));
+        assertThat(SqlTypeNameConverter.convert("int2"), is(SqlTypeName.SMALLINT));
+        assertThat(SqlTypeNameConverter.convert("INT4"), is(SqlTypeName.INTEGER));
+        assertThat(SqlTypeNameConverter.convert("INT8"), is(SqlTypeName.BIGINT));
+        assertThat(SqlTypeNameConverter.convert("money"), is(SqlTypeName.DECIMAL));
     }
     
     @Test
     void assertConvertUnregisteredDataType() {
-        assertThat(DataTypeConverter.convert("varchar"), is(SqlTypeName.VARCHAR));
-        assertThat(DataTypeConverter.convert("VARCHAR"), is(SqlTypeName.VARCHAR));
+        assertThat(SqlTypeNameConverter.convert("varchar"), is(SqlTypeName.VARCHAR));
+        assertThat(SqlTypeNameConverter.convert("VARCHAR"), is(SqlTypeName.VARCHAR));
     }
 }
