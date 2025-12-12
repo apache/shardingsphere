@@ -150,7 +150,7 @@ class ExpressionConverterTest {
         dataTypeSegment.setStopIndex(0);
         dataTypeSegment.setDataTypeName("int");
         SqlNode expectedDataTypeNode = mock(SqlNode.class);
-        when(DataTypeExpressionConverter.convert(dataTypeSegment)).thenReturn(Optional.of(expectedDataTypeNode));
+        when(DataTypeExpressionConverter.convert(dataTypeSegment)).thenReturn(expectedDataTypeNode);
         SqlCase expectedCaseWhenNode = mock(SqlCase.class);
         CaseWhenExpression caseWhenExpression = new CaseWhenExpression(0, 0, literalSegment, Collections.singleton(literalSegment), Collections.singleton(literalSegment), literalSegment);
         when(CaseWhenExpressionConverter.convert(caseWhenExpression)).thenReturn(expectedCaseWhenNode);

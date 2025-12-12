@@ -127,7 +127,7 @@ public final class ExpressionConverter {
             return AggregationProjectionConverter.convert((AggregationProjectionSegment) segment);
         }
         if (segment instanceof DataTypeSegment) {
-            return DataTypeExpressionConverter.convert((DataTypeSegment) segment);
+            return Optional.of(DataTypeExpressionConverter.convert((DataTypeSegment) segment));
         }
         if (segment instanceof CaseWhenExpression) {
             return Optional.of(CaseWhenExpressionConverter.convert((CaseWhenExpression) segment));
