@@ -178,9 +178,9 @@ class ExpressionConverterTest {
         SqlNode expectedUnaryNode = mock(SqlNode.class);
         UnaryOperationExpression unaryOperationExpression = new UnaryOperationExpression(0, 0, literalSegment, "+", "text");
         when(UnaryOperationExpressionConverter.convert(unaryOperationExpression)).thenReturn(Optional.of(expectedUnaryNode));
-        SqlNode expectedIntervalNode = mock(SqlNode.class);
+        SqlBasicCall expectedIntervalNode = mock(SqlBasicCall.class);
         IntervalExpression intervalExpression = new IntervalExpression(0, 0, literalSegment, IntervalUnit.DAY, "interval");
-        when(IntervalExpressionConverter.convert(intervalExpression)).thenReturn(Optional.of(expectedIntervalNode));
+        when(IntervalExpressionConverter.convert(intervalExpression)).thenReturn(expectedIntervalNode);
         SqlNode expectedQuantifyNode = mock(SqlNode.class);
         QuantifySubqueryExpression quantifySubqueryExpression = new QuantifySubqueryExpression(0, 0, new SubquerySegment(0, 0, new SelectStatement(databaseType), "sub"), "ALL");
         when(QuantifySubqueryExpressionConverter.convert(quantifySubqueryExpression)).thenReturn(Optional.of(expectedQuantifyNode));

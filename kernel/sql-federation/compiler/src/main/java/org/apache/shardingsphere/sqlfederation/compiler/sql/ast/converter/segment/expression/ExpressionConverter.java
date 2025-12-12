@@ -157,7 +157,7 @@ public final class ExpressionConverter {
             return UnaryOperationExpressionConverter.convert((UnaryOperationExpression) segment);
         }
         if (segment instanceof IntervalExpression) {
-            return IntervalExpressionConverter.convert((IntervalExpression) segment);
+            return Optional.of(IntervalExpressionConverter.convert((IntervalExpression) segment));
         }
         if (segment instanceof QuantifySubqueryExpression) {
             return QuantifySubqueryExpressionConverter.convert((QuantifySubqueryExpression) segment);
