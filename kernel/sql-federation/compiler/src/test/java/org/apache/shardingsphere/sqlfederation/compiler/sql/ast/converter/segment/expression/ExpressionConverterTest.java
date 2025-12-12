@@ -173,9 +173,9 @@ class ExpressionConverterTest {
         SqlNode expectedRowNode = mock(SqlNode.class);
         RowExpression rowExpression = new RowExpression(0, 0, "row");
         when(RowExpressionConverter.convert(rowExpression)).thenReturn(expectedRowNode);
-        SqlNode expectedVariableNode = mock(SqlNode.class);
+        SqlIdentifier expectedVariableNode = mock(SqlIdentifier.class);
         VariableSegment variableSegment = new VariableSegment(0, 0, "@@session");
-        when(VariableSegmentConverter.convert(variableSegment)).thenReturn(Optional.of(expectedVariableNode));
+        when(VariableSegmentConverter.convert(variableSegment)).thenReturn(expectedVariableNode);
         SqlBasicCall expectedUnaryNode = mock(SqlBasicCall.class);
         UnaryOperationExpression unaryOperationExpression = new UnaryOperationExpression(0, 0, literalSegment, "+", "text");
         when(UnaryOperationExpressionConverter.convert(unaryOperationExpression)).thenReturn(expectedUnaryNode);

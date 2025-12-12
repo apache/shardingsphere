@@ -151,7 +151,7 @@ public final class ExpressionConverter {
             return Optional.of(RowExpressionConverter.convert((RowExpression) segment));
         }
         if (segment instanceof VariableSegment) {
-            return VariableSegmentConverter.convert((VariableSegment) segment);
+            return Optional.of(VariableSegmentConverter.convert((VariableSegment) segment));
         }
         if (segment instanceof UnaryOperationExpression) {
             return Optional.of(UnaryOperationExpressionConverter.convert((UnaryOperationExpression) segment));
