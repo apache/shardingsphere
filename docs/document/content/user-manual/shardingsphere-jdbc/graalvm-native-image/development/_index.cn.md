@@ -184,7 +184,7 @@ cd ./shardingsphere/
 而 `META-INF/native-image/org.apache.shardingsphere/generated-reachability-metadata/` 中的条目仅应由 `generateMetadata` 的 Maven Profile 生成。
 
 对于测试类和测试文件独立使用的 GraalVM Reachability Metadata，贡献者应该放置到 `shardingsphere-test-native` 子模块的 classpath 的
-`META-INF/native-image/shardingsphere-test-native-test-metadata/` 下。
+`META-INF/native-image/shardingsphere-test-native/` 下。
 
 ## 已知限制
 
@@ -276,9 +276,6 @@ class SolutionTest {
 ```
 
 ### 单元测试的已知问题
-
-受 https://github.com/apache/shardingsphere/issues/35052 影响，
-`org.apache.shardingsphere.test.natived.jdbc.modes.cluster.EtcdTest` 的单元测试无法在通过 `Windows 11 Home 24H2` 编译的 GraalVM Native Image 下运行。
 
 受 https://github.com/apache/incubator-seata/issues/7523 影响，
 `org.apache.shardingsphere.test.natived.proxy.transactions.base.SeataTest` 已被禁用，
