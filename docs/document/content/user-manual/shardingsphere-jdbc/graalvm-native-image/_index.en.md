@@ -16,7 +16,7 @@ ShardingSphere JDBC requires GraalVM Native Image to be built with GraalVM CE as
 JDK through `SDKMAN!`. Same reason applicable to downstream distributions of `GraalVM CE` such as https://sdkman.io/jdks#graal ,
 https://sdkman.io/jdks#nik and https://sdkman.io/jdks#mandrel .
 
-- GraalVM CE For JDK 24.0.2, corresponding to `24.0.2-graalce` of SDKMAN!
+- GraalVM CE For JDK 25.0.1, corresponding to `25.0.1-graalce` of SDKMAN!
 
 Users can still use old versions of Oracle GraalVM such as `21.0.8-graal` on SDKMAN! to build ShardingSphere's GraalVM Native Image product.
 But this will cause the failure of building GraalVM Native Image when integrating some third-party dependencies.
@@ -53,7 +53,7 @@ and the documentation of GraalVM Native Build Tools shall prevail.
              <plugin>
                  <groupId>org.graalvm.buildtools</groupId>
                  <artifactId>native-maven-plugin</artifactId>
-                 <version>0.11.0</version>
+                 <version>0.11.3</version>
                  <extensions>true</extensions>
                  <configuration>
                     <buildArgs>
@@ -95,12 +95,12 @@ Reference https://github.com/graalvm/native-build-tools/issues/572 .
 
 ```groovy
 plugins {
-   id 'org.graalvm.buildtools.native' version '0.11.0'
+   id 'org.graalvm.buildtools.native' version '0.11.3'
 }
 
 dependencies {
    implementation 'org.apache.shardingsphere:shardingsphere-jdbc:${shardingsphere.version}'
-   implementation(group: 'org.graalvm.buildtools', name: 'graalvm-reachability-metadata', version: '0.11.0', classifier: 'repository', ext: 'zip')
+   implementation(group: 'org.graalvm.buildtools', name: 'graalvm-reachability-metadata', version: '0.11.3', classifier: 'repository', ext: 'zip')
 }
 
 graalvmNative {

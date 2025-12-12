@@ -145,7 +145,7 @@
         <protobuf-maven-plugin.version>0.6.1</protobuf-maven-plugin.version>
         <dockerfile-maven.version>1.4.13</dockerfile-maven.version>
         <os-detector-maven-plugin.version>0.3.1</os-detector-maven-plugin.version>
-        <native-maven-plugin.version>0.11.0</native-maven-plugin.version>
+        <native-maven-plugin.version>0.11.3</native-maven-plugin.version>
         
         <!-- Compile plugin versions -->
         <maven-antrun-plugin.version>3.1.0</maven-antrun-plugin.version>
@@ -1176,14 +1176,6 @@
                                         <goal>merge-agent-files</goal>
                                     </goals>
                                     <phase>integration-test</phase>
-                                </execution>
-                                <!--TODO See https://github.com/graalvm/native-build-tools/pull/748 -->
-                                <execution>
-                                    <id>metadata-copy-manually</id>
-                                    <goals>
-                                        <goal>metadata-copy</goal>
-                                    </goals>
-                                    <phase>deploy</phase>
                                 </execution>
                             </executions>
                         </plugin>

@@ -21,19 +21,16 @@ import org.apache.shardingsphere.database.connector.core.DefaultDatabase;
 import org.apache.shardingsphere.driver.jdbc.core.connection.ShardingSphereConnection;
 import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnit;
 import org.apache.shardingsphere.mode.manager.ContextManager;
-import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.List;
 
 /**
- * When creating {@link com.zaxxer.hikari.HikariDataSource} through {@link org.apache.shardingsphere.driver.ShardingSphereDriver}
- * or starting ShardingSphere Proxy through {@link org.apache.shardingsphere.proxy.Bootstrap},
+ * When creating {@link com.zaxxer.hikari.HikariDataSource} through {@link org.apache.shardingsphere.driver.ShardingSphereDriver},
  * the internal real data source will not be closed directly.
  * This causes the hooks for closing the data source of third-party dependencies such as Seata Client to not take effect.
- * Refer to the changes in <a href="https://github.com/apache/incubator-seata/pull/7044">apache/incubator-seata#7044</a>.
+ * Refer to the changes in <a href="https://github.com/apache/incubator-seata/issues/7523">apache/incubator-seata#7523</a>.
  *
  * @see org.apache.shardingsphere.driver.jdbc.core.datasource.ShardingSphereDataSource#close()
  */
@@ -67,21 +64,6 @@ public class ResourceUtils {
             contextManager.getStorageUnits(logicDataBaseName).values().stream().map(StorageUnit::getDataSource).forEach(ResourceUtils::close);
             contextManager.close();
         }
-    }
-    
-    /**
-     * Close Proxy dataSource.
-     *
-     * @param logicDataBaseNameList List of logical database names created by Proxy.
-     */
-    public static void closeProxyDataSource(final List<String> logicDataBaseNameList) {
-        ContextManager contextManager = ProxyContext.getInstance().getContextManager();
-        logicDataBaseNameList.forEach(logicDataBaseName -> contextManager.getStorageUnits(logicDataBaseName)
-                .values()
-                .stream()
-                .map(StorageUnit::getDataSource)
-                .forEach(ResourceUtils::close));
-        contextManager.close();
     }
     
     private static void close(final DataSource dataSource) {

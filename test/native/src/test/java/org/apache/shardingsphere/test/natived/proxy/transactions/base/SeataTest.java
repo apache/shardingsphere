@@ -41,7 +41,6 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.time.Duration;
-import java.util.Collections;
 import java.util.Properties;
 import java.util.concurrent.TimeUnit;
 
@@ -95,7 +94,7 @@ class SeataTest {
     void afterEach() {
         Awaitility.await().pollDelay(5L, TimeUnit.SECONDS).until(() -> true);
         System.clearProperty(serviceDefaultGroupListKey);
-        proxyTestingServer.close(Collections.singletonList("sharding_db"));
+        proxyTestingServer.close();
     }
     
     /**
