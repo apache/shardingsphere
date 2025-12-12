@@ -62,7 +62,7 @@ public final class FunctionConverter {
             return Optional.of(functionName);
         }
         if ("TRIM".equalsIgnoreCase(functionName.getSimple())) {
-            return TrimFunctionConverter.convert(segment);
+            return Optional.of(TrimFunctionConverter.convert(segment));
         }
         if ("OVER".equalsIgnoreCase(functionName.getSimple())) {
             return WindowFunctionConverter.convert(segment);
