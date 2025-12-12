@@ -75,8 +75,8 @@ class FunctionConverterTest {
     @Test
     void assertConvertDelegatesToWindowFunctionConverter() {
         FunctionSegment segment = new FunctionSegment(0, 0, "OVER", "OVER");
-        SqlNode expected = mock(SqlNode.class);
-        when(WindowFunctionConverter.convert(segment)).thenReturn(Optional.of(expected));
+        SqlBasicCall expected = mock(SqlBasicCall.class);
+        when(WindowFunctionConverter.convert(segment)).thenReturn(expected);
         SqlNode actual = FunctionConverter.convert(segment).orElse(null);
         assertThat(actual, is(expected));
     }
