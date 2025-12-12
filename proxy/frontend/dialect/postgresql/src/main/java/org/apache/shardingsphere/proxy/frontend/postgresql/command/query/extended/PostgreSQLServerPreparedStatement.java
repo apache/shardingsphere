@@ -48,6 +48,8 @@ public final class PostgreSQLServerPreparedStatement implements ServerPreparedSt
     
     private final List<PostgreSQLColumnType> parameterTypes;
     
+    private final List<String> parameterTypeNames;
+    
     private final List<Integer> actualParameterMarkerIndexes;
     
     @Getter(AccessLevel.NONE)
