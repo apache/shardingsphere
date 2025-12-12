@@ -56,7 +56,7 @@
     },
     {
       "condition": {
-        "typeReached": "org.apache.shardingsphere.mode.repository.cluster.etcd.EtcdRepository"
+        "typeReached": "org.apache.shardingsphere.proxy.frontend.ShardingSphereProxy"
       },
       "type": "java.io.FileDescriptor"
     },
@@ -134,7 +134,7 @@
     },
     {
       "condition": {
-        "typeReached": "org.apache.shardingsphere.mode.repository.cluster.etcd.EtcdRepository"
+        "typeReached": "org.apache.shardingsphere.transaction.base.seata.at.SeataATShardingSphereTransactionManager"
       },
       "type": "java.lang.BaseVirtualThread"
     },
@@ -356,7 +356,8 @@
       "condition": {
         "typeReached": "org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.database.metadata.TableChangedHandler"
       },
-      "type": "java.lang.Object"
+      "type": "java.lang.Object",
+      "allDeclaredFields": true
     },
     {
       "condition": {
@@ -453,6 +454,12 @@
     },
     {
       "condition": {
+        "typeReached": "org.apache.shardingsphere.mode.metadata.refresher.pushdown.PushDownMetaDataRefreshEngine"
+      },
+      "type": "java.lang.Object"
+    },
+    {
+      "condition": {
         "typeReached": "org.apache.shardingsphere.mode.metadata.refresher.pushdown.type.table.CreateTablePushDownMetaDataRefresher"
       },
       "type": "java.lang.Object"
@@ -462,20 +469,6 @@
         "typeReached": "org.apache.shardingsphere.mode.node.rule.tuple.YamlRuleNodeTupleSwapperEngine"
       },
       "type": "java.lang.Object"
-    },
-    {
-      "condition": {
-        "typeReached": "org.apache.shardingsphere.mode.repository.cluster.etcd.EtcdRepository"
-      },
-      "type": "java.lang.Object",
-      "allDeclaredFields": true
-    },
-    {
-      "condition": {
-        "typeReached": "org.apache.shardingsphere.mode.repository.cluster.zookeeper.ZookeeperRepository"
-      },
-      "type": "java.lang.Object",
-      "allDeclaredFields": true
     },
     {
       "condition": {
@@ -554,6 +547,22 @@
     },
     {
       "condition": {
+        "typeReached": "org.apache.shardingsphere.transaction.base.seata.at.SeataATShardingSphereTransactionManager"
+      },
+      "type": "java.lang.ProcessHandle",
+      "methods": [
+        {
+          "name": "current",
+          "parameterTypes": []
+        },
+        {
+          "name": "pid",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "condition": {
         "typeReached": "org.apache.shardingsphere.infra.expr.groovy.GroovyInlineExpressionParser"
       },
       "type": "java.lang.Readable"
@@ -608,44 +617,13 @@
     },
     {
       "condition": {
-        "typeReached": "org.apache.shardingsphere.mode.repository.cluster.etcd.EtcdRepository"
+        "typeReached": "org.apache.shardingsphere.transaction.base.seata.at.SeataATShardingSphereTransactionManager"
       },
       "type": "java.lang.Thread",
       "methods": [
         {
           "name": "isVirtual",
           "parameterTypes": []
-        },
-        {
-          "name": "ofVirtual",
-          "parameterTypes": []
-        }
-      ]
-    },
-    {
-      "condition": {
-        "typeReached": "org.apache.shardingsphere.mode.repository.cluster.etcd.EtcdRepository"
-      },
-      "type": "java.lang.Thread$Builder",
-      "methods": [
-        {
-          "name": "factory",
-          "parameterTypes": []
-        }
-      ]
-    },
-    {
-      "condition": {
-        "typeReached": "org.apache.shardingsphere.mode.repository.cluster.etcd.EtcdRepository"
-      },
-      "type": "java.lang.Thread$Builder$OfVirtual",
-      "methods": [
-        {
-          "name": "name",
-          "parameterTypes": [
-            "java.lang.String",
-            "long"
-          ]
         }
       ]
     },
@@ -681,7 +659,7 @@
     },
     {
       "condition": {
-        "typeReached": "org.apache.shardingsphere.mode.repository.cluster.etcd.EtcdRepository"
+        "typeReached": "org.apache.shardingsphere.transaction.base.seata.at.SeataATShardingSphereTransactionManager"
       },
       "type": "java.lang.management.ManagementFactory",
       "methods": [
@@ -693,7 +671,7 @@
     },
     {
       "condition": {
-        "typeReached": "org.apache.shardingsphere.mode.repository.cluster.etcd.EtcdRepository"
+        "typeReached": "org.apache.shardingsphere.transaction.base.seata.at.SeataATShardingSphereTransactionManager"
       },
       "type": "java.lang.management.RuntimeMXBean",
       "methods": [
@@ -753,13 +731,13 @@
     },
     {
       "condition": {
-        "typeReached": "org.apache.shardingsphere.mode.repository.cluster.etcd.EtcdRepository"
+        "typeReached": "org.apache.shardingsphere.transaction.base.seata.at.SeataATShardingSphereTransactionManager"
       },
       "type": "java.nio.Bits"
     },
     {
       "condition": {
-        "typeReached": "org.apache.shardingsphere.mode.repository.cluster.etcd.EtcdRepository"
+        "typeReached": "org.apache.shardingsphere.transaction.base.seata.at.SeataATShardingSphereTransactionManager"
       },
       "type": "java.nio.Buffer",
       "fields": [
@@ -770,31 +748,37 @@
     },
     {
       "condition": {
-        "typeReached": "org.apache.shardingsphere.mode.repository.cluster.etcd.EtcdRepository"
-      },
-      "type": "java.nio.ByteBuffer"
-    },
-    {
-      "condition": {
         "typeReached": "org.apache.shardingsphere.sqlfederation.compiler.sql.function.mysql.impl.MySQLNotFunction"
       },
       "type": "java.nio.ByteBuffer"
     },
     {
       "condition": {
-        "typeReached": "org.apache.shardingsphere.mode.repository.cluster.etcd.EtcdRepository"
+        "typeReached": "org.apache.shardingsphere.transaction.base.seata.at.SeataATShardingSphereTransactionManager"
+      },
+      "type": "java.nio.ByteBuffer"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.shardingsphere.transaction.base.seata.at.SeataATShardingSphereTransactionManager"
       },
       "type": "java.nio.DirectByteBuffer"
     },
     {
       "condition": {
-        "typeReached": "org.apache.shardingsphere.mode.repository.cluster.etcd.EtcdRepository"
+        "typeReached": "org.apache.shardingsphere.proxy.frontend.ShardingSphereProxy"
       },
       "type": "java.nio.channels.FileChannel"
     },
     {
       "condition": {
         "typeReached": "org.apache.shardingsphere.proxy.frontend.ShardingSphereProxy"
+      },
+      "type": "java.nio.channels.spi.SelectorProvider"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.shardingsphere.transaction.base.seata.at.SeataATShardingSphereTransactionManager"
       },
       "type": "java.nio.channels.spi.SelectorProvider"
     },
@@ -847,12 +831,6 @@
         "typeReached": "org.apache.shardingsphere.infra.util.yaml.YamlEngine"
       },
       "type": "java.sql.Timestamp"
-    },
-    {
-      "condition": {
-        "typeReached": "org.apache.shardingsphere.mode.repository.cluster.etcd.EtcdRepository"
-      },
-      "type": "java.time.Instant"
     },
     {
       "condition": {
@@ -1207,30 +1185,6 @@
         "typeReached": "org.apache.shardingsphere.infra.expr.groovy.GroovyInlineExpressionParser"
       },
       "type": "java.util.concurrent.Future"
-    },
-    {
-      "condition": {
-        "typeReached": "org.apache.shardingsphere.mode.manager.cluster.dispatch.listener.DataChangedEventListenerRegistry"
-      },
-      "type": "java.util.concurrent.atomic.LongAdder"
-    },
-    {
-      "condition": {
-        "typeReached": "org.apache.shardingsphere.mode.repository.cluster.etcd.EtcdRepository"
-      },
-      "type": "java.util.concurrent.atomic.LongAdder",
-      "methods": [
-        {
-          "name": "<init>",
-          "parameterTypes": []
-        },
-        {
-          "name": "add",
-          "parameterTypes": [
-            "long"
-          ]
-        }
-      ]
     },
     {
       "condition": {
@@ -3931,18 +3885,6 @@
     },
     {
       "condition": {
-        "typeReached": "org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.global.node.compute.type.ComputeNodeOnlineHandler"
-      },
-      "type": "org.apache.shardingsphere.infra.instance.yaml.YamlComputeNodeData",
-      "methods": [
-        {
-          "name": "<init>",
-          "parameterTypes": []
-        }
-      ]
-    },
-    {
-      "condition": {
         "typeReached": "org.apache.shardingsphere.mode.manager.cluster.persist.service.ClusterComputeNodePersistService"
       },
       "type": "org.apache.shardingsphere.infra.instance.yaml.YamlComputeNodeData",
@@ -4348,7 +4290,8 @@
       "condition": {
         "typeReached": "org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.database.metadata.TableChangedHandler"
       },
-      "type": "org.apache.shardingsphere.infra.yaml.schema.pojo.YamlShardingSphereColumn"
+      "type": "org.apache.shardingsphere.infra.yaml.schema.pojo.YamlShardingSphereColumn",
+      "allDeclaredFields": true
     },
     {
       "condition": {
@@ -4413,20 +4356,6 @@
     },
     {
       "condition": {
-        "typeReached": "org.apache.shardingsphere.mode.repository.cluster.etcd.EtcdRepository"
-      },
-      "type": "org.apache.shardingsphere.infra.yaml.schema.pojo.YamlShardingSphereColumn",
-      "allDeclaredFields": true
-    },
-    {
-      "condition": {
-        "typeReached": "org.apache.shardingsphere.mode.repository.cluster.zookeeper.ZookeeperRepository"
-      },
-      "type": "org.apache.shardingsphere.infra.yaml.schema.pojo.YamlShardingSphereColumn",
-      "allDeclaredFields": true
-    },
-    {
-      "condition": {
         "typeReached": "org.apache.shardingsphere.infra.metadata.database.schema.builder.SystemSchemaBuilder"
       },
       "type": "org.apache.shardingsphere.infra.yaml.schema.pojo.YamlShardingSphereIndex",
@@ -4447,7 +4376,8 @@
       "condition": {
         "typeReached": "org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.database.metadata.TableChangedHandler"
       },
-      "type": "org.apache.shardingsphere.infra.yaml.schema.pojo.YamlShardingSphereIndex"
+      "type": "org.apache.shardingsphere.infra.yaml.schema.pojo.YamlShardingSphereIndex",
+      "allDeclaredFields": true
     },
     {
       "condition": {
@@ -4473,20 +4403,6 @@
           ]
         }
       ]
-    },
-    {
-      "condition": {
-        "typeReached": "org.apache.shardingsphere.mode.repository.cluster.etcd.EtcdRepository"
-      },
-      "type": "org.apache.shardingsphere.infra.yaml.schema.pojo.YamlShardingSphereIndex",
-      "allDeclaredFields": true
-    },
-    {
-      "condition": {
-        "typeReached": "org.apache.shardingsphere.mode.repository.cluster.zookeeper.ZookeeperRepository"
-      },
-      "type": "org.apache.shardingsphere.infra.yaml.schema.pojo.YamlShardingSphereIndex",
-      "allDeclaredFields": true
     },
     {
       "condition": {
@@ -4523,6 +4439,7 @@
         "typeReached": "org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.database.metadata.TableChangedHandler"
       },
       "type": "org.apache.shardingsphere.infra.yaml.schema.pojo.YamlShardingSphereTable",
+      "allDeclaredFields": true,
       "methods": [
         {
           "name": "setType",
@@ -4598,23 +4515,15 @@
     },
     {
       "condition": {
-        "typeReached": "org.apache.shardingsphere.mode.metadata.refresher.pushdown.type.table.CreateTablePushDownMetaDataRefresher"
+        "typeReached": "org.apache.shardingsphere.mode.metadata.refresher.pushdown.PushDownMetaDataRefreshEngine"
       },
       "type": "org.apache.shardingsphere.infra.yaml.schema.pojo.YamlShardingSphereTable"
     },
     {
       "condition": {
-        "typeReached": "org.apache.shardingsphere.mode.repository.cluster.etcd.EtcdRepository"
+        "typeReached": "org.apache.shardingsphere.mode.metadata.refresher.pushdown.type.table.CreateTablePushDownMetaDataRefresher"
       },
-      "type": "org.apache.shardingsphere.infra.yaml.schema.pojo.YamlShardingSphereTable",
-      "allDeclaredFields": true
-    },
-    {
-      "condition": {
-        "typeReached": "org.apache.shardingsphere.mode.repository.cluster.zookeeper.ZookeeperRepository"
-      },
-      "type": "org.apache.shardingsphere.infra.yaml.schema.pojo.YamlShardingSphereTable",
-      "allDeclaredFields": true
+      "type": "org.apache.shardingsphere.infra.yaml.schema.pojo.YamlShardingSphereTable"
     },
     {
       "condition": {
@@ -5255,12 +5164,7 @@
       "condition": {
         "typeReached": "org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.database.metadata.TableChangedHandler"
       },
-      "type": "org.apache.shardingsphere.mode.node.path.type.database.metadata.DatabaseMetaDataNodePath",
-      "fields": [
-        {
-          "name": "databaseName"
-        }
-      ]
+      "type": "org.apache.shardingsphere.mode.node.path.type.database.metadata.DatabaseMetaDataNodePath"
     },
     {
       "condition": {
@@ -5427,15 +5331,26 @@
     },
     {
       "condition": {
+        "typeReached": "org.apache.shardingsphere.mode.metadata.refresher.pushdown.PushDownMetaDataRefreshEngine"
+      },
+      "type": "org.apache.shardingsphere.mode.node.path.type.database.metadata.DatabaseMetaDataNodePath"
+    },
+    {
+      "condition": {
         "typeReached": "org.apache.shardingsphere.mode.metadata.refresher.pushdown.type.table.CreateTablePushDownMetaDataRefresher"
       },
       "type": "org.apache.shardingsphere.mode.node.path.type.database.metadata.DatabaseMetaDataNodePath"
     },
     {
       "condition": {
-        "typeReached": "org.apache.shardingsphere.mode.repository.cluster.etcd.EtcdRepository"
+        "typeReached": "org.apache.shardingsphere.mode.node.path.engine.searcher.NodePathSearcher"
       },
-      "type": "org.apache.shardingsphere.mode.node.path.type.database.metadata.DatabaseMetaDataNodePath"
+      "type": "org.apache.shardingsphere.mode.node.path.type.database.metadata.DatabaseMetaDataNodePath",
+      "fields": [
+        {
+          "name": "databaseName"
+        }
+      ]
     },
     {
       "condition": {
@@ -5492,12 +5407,6 @@
           "name": "storageNodeName"
         }
       ]
-    },
-    {
-      "condition": {
-        "typeReached": "org.apache.shardingsphere.mode.repository.cluster.etcd.EtcdRepository"
-      },
-      "type": "org.apache.shardingsphere.mode.node.path.type.database.metadata.datasource.StorageNodeNodePath"
     },
     {
       "condition": {
@@ -5568,12 +5477,6 @@
           "name": "storageUnitName"
         }
       ]
-    },
-    {
-      "condition": {
-        "typeReached": "org.apache.shardingsphere.mode.repository.cluster.etcd.EtcdRepository"
-      },
-      "type": "org.apache.shardingsphere.mode.node.path.type.database.metadata.datasource.StorageUnitNodePath"
     },
     {
       "condition": {
@@ -5704,12 +5607,6 @@
     },
     {
       "condition": {
-        "typeReached": "org.apache.shardingsphere.mode.repository.cluster.etcd.EtcdRepository"
-      },
-      "type": "org.apache.shardingsphere.mode.node.path.type.database.metadata.rule.DatabaseRuleNodePath"
-    },
-    {
-      "condition": {
         "typeReached": "org.apache.shardingsphere.mode.repository.cluster.zookeeper.ZookeeperRepository"
       },
       "type": "org.apache.shardingsphere.mode.node.path.type.database.metadata.rule.DatabaseRuleNodePath"
@@ -5748,15 +5645,7 @@
       "condition": {
         "typeReached": "org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.database.metadata.TableChangedHandler"
       },
-      "type": "org.apache.shardingsphere.mode.node.path.type.database.metadata.schema.SchemaMetaDataNodePath",
-      "fields": [
-        {
-          "name": "database"
-        },
-        {
-          "name": "schemaName"
-        }
-      ]
+      "type": "org.apache.shardingsphere.mode.node.path.type.database.metadata.schema.SchemaMetaDataNodePath"
     },
     {
       "condition": {
@@ -5852,15 +5741,29 @@
     },
     {
       "condition": {
+        "typeReached": "org.apache.shardingsphere.mode.metadata.refresher.pushdown.PushDownMetaDataRefreshEngine"
+      },
+      "type": "org.apache.shardingsphere.mode.node.path.type.database.metadata.schema.SchemaMetaDataNodePath"
+    },
+    {
+      "condition": {
         "typeReached": "org.apache.shardingsphere.mode.metadata.refresher.pushdown.type.table.CreateTablePushDownMetaDataRefresher"
       },
       "type": "org.apache.shardingsphere.mode.node.path.type.database.metadata.schema.SchemaMetaDataNodePath"
     },
     {
       "condition": {
-        "typeReached": "org.apache.shardingsphere.mode.repository.cluster.etcd.EtcdRepository"
+        "typeReached": "org.apache.shardingsphere.mode.node.path.engine.searcher.NodePathSearcher"
       },
-      "type": "org.apache.shardingsphere.mode.node.path.type.database.metadata.schema.SchemaMetaDataNodePath"
+      "type": "org.apache.shardingsphere.mode.node.path.type.database.metadata.schema.SchemaMetaDataNodePath",
+      "fields": [
+        {
+          "name": "database"
+        },
+        {
+          "name": "schemaName"
+        }
+      ]
     },
     {
       "condition": {
@@ -5896,15 +5799,7 @@
       "condition": {
         "typeReached": "org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.database.metadata.TableChangedHandler"
       },
-      "type": "org.apache.shardingsphere.mode.node.path.type.database.metadata.schema.TableMetaDataNodePath",
-      "fields": [
-        {
-          "name": "schema"
-        },
-        {
-          "name": "tableName"
-        }
-      ]
+      "type": "org.apache.shardingsphere.mode.node.path.type.database.metadata.schema.TableMetaDataNodePath"
     },
     {
       "condition": {
@@ -5974,15 +5869,29 @@
     },
     {
       "condition": {
+        "typeReached": "org.apache.shardingsphere.mode.metadata.refresher.pushdown.PushDownMetaDataRefreshEngine"
+      },
+      "type": "org.apache.shardingsphere.mode.node.path.type.database.metadata.schema.TableMetaDataNodePath"
+    },
+    {
+      "condition": {
         "typeReached": "org.apache.shardingsphere.mode.metadata.refresher.pushdown.type.table.CreateTablePushDownMetaDataRefresher"
       },
       "type": "org.apache.shardingsphere.mode.node.path.type.database.metadata.schema.TableMetaDataNodePath"
     },
     {
       "condition": {
-        "typeReached": "org.apache.shardingsphere.mode.repository.cluster.etcd.EtcdRepository"
+        "typeReached": "org.apache.shardingsphere.mode.node.path.engine.searcher.NodePathSearcher"
       },
-      "type": "org.apache.shardingsphere.mode.node.path.type.database.metadata.schema.TableMetaDataNodePath"
+      "type": "org.apache.shardingsphere.mode.node.path.type.database.metadata.schema.TableMetaDataNodePath",
+      "fields": [
+        {
+          "name": "schema"
+        },
+        {
+          "name": "tableName"
+        }
+      ]
     },
     {
       "condition": {
@@ -6047,12 +5956,6 @@
           "name": "viewName"
         }
       ]
-    },
-    {
-      "condition": {
-        "typeReached": "org.apache.shardingsphere.mode.repository.cluster.etcd.EtcdRepository"
-      },
-      "type": "org.apache.shardingsphere.mode.node.path.type.database.metadata.schema.ViewMetaDataNodePath"
     },
     {
       "condition": {
@@ -6652,20 +6555,6 @@
       "fields": [
         {
           "name": "instanceProcess"
-        }
-      ]
-    },
-    {
-      "condition": {
-        "typeReached": "org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.global.node.compute.type.ComputeNodeOnlineHandler"
-      },
-      "type": "org.apache.shardingsphere.mode.node.path.type.global.node.compute.status.OnlineNodePath",
-      "fields": [
-        {
-          "name": "instanceId"
-        },
-        {
-          "name": "instanceType"
         }
       ]
     },
@@ -11287,18 +11176,6 @@
     },
     {
       "condition": {
-        "typeReached": "org.apache.shardingsphere.mode.repository.cluster.etcd.EtcdRepository"
-      },
-      "glob": "META-INF/services/io.grpc.LoadBalancerProvider"
-    },
-    {
-      "condition": {
-        "typeReached": "org.apache.shardingsphere.mode.repository.cluster.etcd.EtcdRepository"
-      },
-      "glob": "META-INF/services/io.grpc.NameResolverProvider"
-    },
-    {
-      "condition": {
         "typeReached": "org.apache.shardingsphere.transaction.base.seata.at.SeataATShardingSphereTransactionManager"
       },
       "glob": "META-INF/services/io.seata.config.ConfigurationProvider"
@@ -11326,18 +11203,6 @@
         "typeReached": "org.apache.shardingsphere.transaction.base.seata.at.SeataATShardingSphereTransactionManager"
       },
       "glob": "META-INF/services/io.seata.discovery.registry.RegistryProvider"
-    },
-    {
-      "condition": {
-        "typeReached": "org.apache.shardingsphere.mode.repository.cluster.etcd.EtcdRepository"
-      },
-      "glob": "META-INF/services/io.vertx.core.spi.VerticleFactory"
-    },
-    {
-      "condition": {
-        "typeReached": "org.apache.shardingsphere.mode.repository.cluster.etcd.EtcdRepository"
-      },
-      "glob": "META-INF/services/io.vertx.core.spi.VertxServiceProvider"
     },
     {
       "condition": {
@@ -11824,12 +11689,6 @@
         "typeReached": "org.apache.shardingsphere.infra.version.ShardingSphereVersion"
       },
       "glob": "current-git-commit.properties"
-    },
-    {
-      "condition": {
-        "typeReached": "org.apache.shardingsphere.mode.repository.cluster.etcd.EtcdRepository"
-      },
-      "glob": "jndi.properties"
     },
     {
       "condition": {
@@ -13245,12 +13104,6 @@
       "condition": {
         "typeReached": "org.apache.shardingsphere.infra.url.classpath.ClassPathLocalFileURLLoader"
       },
-      "glob": "test-native/yaml/jdbc/modes/cluster/etcd.yaml"
-    },
-    {
-      "condition": {
-        "typeReached": "org.apache.shardingsphere.infra.url.classpath.ClassPathLocalFileURLLoader"
-      },
       "glob": "test-native/yaml/jdbc/modes/cluster/zookeeper.yaml"
     },
     {
@@ -13282,12 +13135,6 @@
         "typeReached": "org.apache.shardingsphere.transaction.xa.atomikos.manager.AtomikosTransactionManagerProvider"
       },
       "glob": "transactions.properties"
-    },
-    {
-      "condition": {
-        "typeReached": "org.apache.shardingsphere.mode.repository.cluster.etcd.EtcdRepository"
-      },
-      "glob": "vertx-default-jul-logging.properties"
     }
   ],
   "bundles": []

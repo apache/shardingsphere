@@ -56,16 +56,6 @@
     },
     {
       "condition": {
-        "typeReached": "org.apache.shardingsphere.test.natived.jdbc.modes.cluster.EtcdTest"
-      },
-      "type": "org.apache.shardingsphere.test.natived.jdbc.modes.cluster.EtcdTest",
-      "allDeclaredConstructors": true,
-      "allDeclaredMethods": true,
-      "allPublicMethods": true,
-      "allDeclaredFields": true
-    },
-    {
-      "condition": {
         "typeReached": "org.apache.shardingsphere.test.natived.jdbc.features.EncryptTest"
       },
       "type": "org.apache.shardingsphere.test.natived.jdbc.features.EncryptTest",

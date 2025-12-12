@@ -354,3 +354,9 @@ without it being registered as reachable. Add it to the resource metadata to sol
 10. Due to the use of `janino-compiler/janino` by `apache/calcite`, 
     ShardingSphere's `SQL Federation` feature is unavailable in the GraalVM Native Image.
     This also prevents ShardingSphere Proxy Native from integrating with OpenGauss.
+
+11. Due to the issue at https://github.com/oracle/graal/issues/11280, 
+    Etcd's Cluster mode integration cannot be used on GraalVM Native Images compiled via Windows 11,
+    and Etcd's Cluster mode will conflict with the GraalVM Tracing Agent.
+    If developers need to use Etcd's Cluster mode on GraalVM Native Images compiled via Linux,
+    they need to provide additional GraalVM Reachability Metadata related JSON themselves.
