@@ -160,7 +160,7 @@ public final class ExpressionConverter {
             return Optional.of(IntervalExpressionConverter.convert((IntervalExpression) segment));
         }
         if (segment instanceof QuantifySubqueryExpression) {
-            return QuantifySubqueryExpressionConverter.convert((QuantifySubqueryExpression) segment);
+            return Optional.of(QuantifySubqueryExpressionConverter.convert((QuantifySubqueryExpression) segment));
         }
         throw new UnsupportedSQLOperationException("unsupported TableSegment type: " + segment.getClass());
     }
