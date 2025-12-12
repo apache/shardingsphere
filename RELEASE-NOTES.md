@@ -66,6 +66,7 @@
 1. Pipeline: Improve "alter transmission rule": verify STREAM_CHANNEL TYPE NAME - [#36864](https://github.com/apache/shardingsphere/pull/36864)
 1. Pipeline: InventoryDumperContextSplitter supports multi-columns unique key first integer column splitting - [#36935](https://github.com/apache/shardingsphere/pull/36935)
 1. Encrypt: Support handling show create view result decoration in encrypt - [#37299](https://github.com/apache/shardingsphere/pull/37299)
+1. Proxy Native: Support building Proxy Native via GraalVM CE for JDK 25 - [#37357](https://github.com/apache/shardingsphere/pull/37357)
 
 ### Bug Fixes
 

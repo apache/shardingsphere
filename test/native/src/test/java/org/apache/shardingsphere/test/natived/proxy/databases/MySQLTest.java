@@ -40,6 +40,7 @@ import java.sql.Statement;
 import java.time.Duration;
 import java.util.Collections;
 import java.util.Properties;
+import java.util.concurrent.TimeUnit;
 
 @SuppressWarnings({"SqlNoDataSourceInspection", "SameParameterValue", "resource"})
 @EnabledInNativeImage
@@ -71,10 +72,9 @@ class MySQLTest {
         }
         String absolutePath = Paths.get("src/test/resources/test-native/yaml/proxy/databases/mysql").toAbsolutePath().toString();
         proxyTestingServer = new ProxyTestingServer(absolutePath);
-        Awaitility.await().atMost(Duration.ofSeconds(30L)).ignoreExceptionsMatching(CommunicationsException.class::isInstance).until(() -> {
-            openConnection("root", "root", "jdbc:mysql://127.0.0.1:" + proxyTestingServer.getProxyPort()).close();
-            return true;
-        });
+        // TODO lingh remove
+        Awaitility.await().timeout(5L, TimeUnit.MINUTES).pollDelay(30L, TimeUnit.SECONDS).until(() -> true);
+        openConnection("root", "root", "jdbc:mysql://127.0.0.1:" + proxyTestingServer.getProxyPort()).close();
     }
     
     @AfterEach

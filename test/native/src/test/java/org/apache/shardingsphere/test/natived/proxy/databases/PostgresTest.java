@@ -40,6 +40,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.time.Duration;
 import java.util.Collections;
+import java.util.concurrent.TimeUnit;
 
 @SuppressWarnings("SqlNoDataSourceInspection")
 @EnabledInNativeImage
@@ -68,10 +69,9 @@ class PostgresTest {
         }
         String absolutePath = Paths.get("src/test/resources/test-native/yaml/proxy/databases/postgresql").toAbsolutePath().toString();
         proxyTestingServer = new ProxyTestingServer(absolutePath);
-        Awaitility.await().atMost(Duration.ofSeconds(30L)).ignoreExceptions().until(() -> {
-            getConnection("root", "root", "jdbc:postgresql://127.0.0.1:" + proxyTestingServer.getProxyPort() + "/postgres").close();
-            return true;
-        });
+        // TODO lingh remove
+        Awaitility.await().timeout(5L, TimeUnit.MINUTES).pollDelay(30L, TimeUnit.SECONDS).until(() -> true);
+        getConnection("root", "root", "jdbc:postgresql://127.0.0.1:" + proxyTestingServer.getProxyPort() + "/postgres").close();
     }
     
     @AfterEach

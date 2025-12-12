@@ -15,7 +15,7 @@
 # limitations under the License.
 #
 
-FROM ghcr.io/graalvm/native-image-community:24.0.2-muslib AS nativebuild
+FROM ghcr.io/graalvm/native-image-community:25.0.1-muslib AS nativebuild
 ENV NATIVE_IMAGE_OPTIONS="--static,--libc=musl"
 WORKDIR /build
 COPY ./ .
