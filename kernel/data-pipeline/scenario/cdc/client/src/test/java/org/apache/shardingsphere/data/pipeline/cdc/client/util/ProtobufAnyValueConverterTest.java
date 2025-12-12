@@ -92,7 +92,6 @@ class ProtobufAnyValueConverterTest {
                 Arguments.of(Any.pack(BytesValue.of(ByteString.copyFrom(new byte[]{1, 2, 3}))), new byte[]{1, 2, 3}),
                 Arguments.of(Any.pack(UInt64Value.of(101010L)), 101010L),
                 Arguments.of(Any.pack(Empty.getDefaultInstance()), null),
-                Arguments.of(Any.pack(struct), struct)
-        );
+                Arguments.of(Any.pack(struct), struct));
     }
 }
