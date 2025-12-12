@@ -176,9 +176,9 @@ class ExpressionConverterTest {
         SqlNode expectedVariableNode = mock(SqlNode.class);
         VariableSegment variableSegment = new VariableSegment(0, 0, "@@session");
         when(VariableSegmentConverter.convert(variableSegment)).thenReturn(Optional.of(expectedVariableNode));
-        SqlNode expectedUnaryNode = mock(SqlNode.class);
+        SqlBasicCall expectedUnaryNode = mock(SqlBasicCall.class);
         UnaryOperationExpression unaryOperationExpression = new UnaryOperationExpression(0, 0, literalSegment, "+", "text");
-        when(UnaryOperationExpressionConverter.convert(unaryOperationExpression)).thenReturn(Optional.of(expectedUnaryNode));
+        when(UnaryOperationExpressionConverter.convert(unaryOperationExpression)).thenReturn(expectedUnaryNode);
         SqlBasicCall expectedIntervalNode = mock(SqlBasicCall.class);
         IntervalExpression intervalExpression = new IntervalExpression(0, 0, literalSegment, IntervalUnit.DAY, "interval");
         when(IntervalExpressionConverter.convert(intervalExpression)).thenReturn(expectedIntervalNode);

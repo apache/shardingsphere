@@ -109,7 +109,7 @@ public final class ExpressionConverter {
             return Optional.of(ExistsSubqueryExpressionConverter.convert((ExistsSubqueryExpression) segment));
         }
         if (segment instanceof SubqueryExpressionSegment) {
-            return SubqueryExpressionConverter.convert((SubqueryExpressionSegment) segment);
+            return Optional.of(SubqueryExpressionConverter.convert((SubqueryExpressionSegment) segment));
         }
         if (segment instanceof InExpression) {
             return Optional.of(InExpressionConverter.convert((InExpression) segment));
@@ -154,7 +154,7 @@ public final class ExpressionConverter {
             return VariableSegmentConverter.convert((VariableSegment) segment);
         }
         if (segment instanceof UnaryOperationExpression) {
-            return UnaryOperationExpressionConverter.convert((UnaryOperationExpression) segment);
+            return Optional.of(UnaryOperationExpressionConverter.convert((UnaryOperationExpression) segment));
         }
         if (segment instanceof IntervalExpression) {
             return Optional.of(IntervalExpressionConverter.convert((IntervalExpression) segment));
