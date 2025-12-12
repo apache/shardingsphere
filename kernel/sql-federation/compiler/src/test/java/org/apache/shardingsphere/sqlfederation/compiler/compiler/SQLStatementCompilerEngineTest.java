@@ -78,7 +78,7 @@ class SQLStatementCompilerEngineTest {
     void assertCompileWithCache() {
         LoadingCache<ExecutionPlanCacheKey, SQLFederationExecutionPlan> cache = mock(LoadingCache.class);
         SQLFederationExecutionPlan expectedCachedPlan = mock(SQLFederationExecutionPlan.class);
-        when(cache.get(cacheKey)).thenReturn(null, expectedCachedPlan, expectedCachedPlan, expectedCachedPlan);
+        when(cache.get(cacheKey)).thenReturn(expectedCachedPlan);
         when(ExecutionPlanCacheBuilder.build(any(SQLFederationCacheOption.class))).thenReturn(cache);
         SQLStatementCompilerEngine engine = new SQLStatementCompilerEngine(new SQLFederationCacheOption(1, 1L));
         assertThat(engine.compile(cacheKey, true), is(expectedCachedPlan));

@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.sqlfederation.compiler.sql.ast.converter.segment.expression;
 
+import org.apache.calcite.sql.SqlBasicCall;
 import org.apache.calcite.sql.SqlNode;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.exception.generic.UnsupportedSQLOperationException;
@@ -130,9 +131,9 @@ class ExpressionConverterTest {
         SqlNode expectedInNode = mock(SqlNode.class);
         InExpression inExpression = new InExpression(0, 0, literalSegment, literalSegment, false);
         when(InExpressionConverter.convert(inExpression)).thenReturn(Optional.of(expectedInNode));
-        SqlNode expectedBetweenNode = mock(SqlNode.class);
+        SqlBasicCall expectedBetweenNode = mock(SqlBasicCall.class);
         BetweenExpression betweenExpression = new BetweenExpression(0, 0, literalSegment, literalSegment, literalSegment, false);
-        when(BetweenExpressionConverter.convert(betweenExpression)).thenReturn(Optional.of(expectedBetweenNode));
+        when(BetweenExpressionConverter.convert(betweenExpression)).thenReturn(expectedBetweenNode);
         SqlNode expectedParameterNode = mock(SqlNode.class);
         ParameterMarkerExpressionSegment parameterSegment = new ParameterMarkerExpressionSegment(0, 0, 0);
         when(ParameterMarkerExpressionConverter.convert(parameterSegment)).thenReturn(Optional.of(expectedParameterNode));
