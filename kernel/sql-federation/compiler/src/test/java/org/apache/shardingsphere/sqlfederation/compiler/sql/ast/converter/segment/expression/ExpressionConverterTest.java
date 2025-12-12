@@ -19,6 +19,7 @@ package org.apache.shardingsphere.sqlfederation.compiler.sql.ast.converter.segme
 
 import org.apache.calcite.sql.SqlBasicCall;
 import org.apache.calcite.sql.SqlNode;
+import org.apache.calcite.sql.fun.SqlCase;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.exception.generic.UnsupportedSQLOperationException;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
@@ -149,9 +150,9 @@ class ExpressionConverterTest {
         dataTypeSegment.setDataTypeName("int");
         SqlNode expectedDataTypeNode = mock(SqlNode.class);
         when(DataTypeExpressionConverter.convert(dataTypeSegment)).thenReturn(Optional.of(expectedDataTypeNode));
-        SqlNode expectedCaseWhenNode = mock(SqlNode.class);
+        SqlCase expectedCaseWhenNode = mock(SqlCase.class);
         CaseWhenExpression caseWhenExpression = new CaseWhenExpression(0, 0, literalSegment, Collections.singleton(literalSegment), Collections.singleton(literalSegment), literalSegment);
-        when(CaseWhenExpressionConverter.convert(caseWhenExpression)).thenReturn(Optional.of(expectedCaseWhenNode));
+        when(CaseWhenExpressionConverter.convert(caseWhenExpression)).thenReturn(expectedCaseWhenNode);
         SqlNode expectedNotNode = mock(SqlNode.class);
         NotExpression notExpression = new NotExpression(0, 0, literalSegment, true);
         when(NotExpressionConverter.convert(notExpression)).thenReturn(Optional.of(expectedNotNode));
@@ -164,9 +165,9 @@ class ExpressionConverterTest {
         SqlNode expectedMatchNode = mock(SqlNode.class);
         MatchAgainstExpression matchAgainstExpression = new MatchAgainstExpression(0, 0, literalSegment, "search", "text");
         when(MatchExpressionConverter.convert(matchAgainstExpression)).thenReturn(Optional.of(expectedMatchNode));
-        SqlNode expectedCollateNode = mock(SqlNode.class);
+        SqlBasicCall expectedCollateNode = mock(SqlBasicCall.class);
         CollateExpression collateExpression = new CollateExpression(0, 0, literalSegment, literalSegment);
-        when(CollateExpressionConverter.convert(collateExpression)).thenReturn(Optional.of(expectedCollateNode));
+        when(CollateExpressionConverter.convert(collateExpression)).thenReturn(expectedCollateNode);
         SqlNode expectedRowNode = mock(SqlNode.class);
         RowExpression rowExpression = new RowExpression(0, 0, "row");
         when(RowExpressionConverter.convert(rowExpression)).thenReturn(Optional.of(expectedRowNode));

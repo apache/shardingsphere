@@ -37,6 +37,7 @@ import java.util.Optional;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -60,8 +61,7 @@ class CaseWhenExpressionConverterTest {
         when(ExpressionConverter.convert(whenExpr)).thenReturn(Optional.of(whenNode));
         when(ExpressionConverter.convert(thenExpr)).thenReturn(Optional.of(thenNode));
         when(ExpressionConverter.convert(elseExpr)).thenReturn(Optional.of(elseNode));
-        SqlCase actual = (SqlCase) CaseWhenExpressionConverter.convert(expression).orElse(null);
-        assertNotNull(actual);
+        SqlCase actual = CaseWhenExpressionConverter.convert(expression);
         SqlBasicCall whenCall = (SqlBasicCall) actual.getWhenOperands().get(0);
         assertThat(whenCall.getOperator(), is(SqlStdOperatorTable.EQUALS));
         assertThat(whenCall.getOperandList().get(0), is(caseNode));
@@ -80,9 +80,8 @@ class CaseWhenExpressionConverterTest {
         when(ExpressionConverter.convert(whenExpr)).thenReturn(Optional.of(whenNode));
         when(ExpressionConverter.convert(thenExpr)).thenReturn(Optional.of(thenNode));
         when(ExpressionConverter.convert(null)).thenReturn(Optional.empty());
-        SqlCase actual = (SqlCase) CaseWhenExpressionConverter.convert(expression).orElse(null);
-        assertNotNull(actual);
-        assertThat(actual.getValueOperand(), is((SqlNode) null));
+        SqlCase actual = CaseWhenExpressionConverter.convert(expression);
+        assertNull(actual.getValueOperand());
         assertThat(actual.getWhenOperands().get(0), is(whenNode));
         assertThat(actual.getThenOperands().get(0), is(thenNode));
         assertNotNull(actual.getElseOperand());
@@ -101,8 +100,7 @@ class CaseWhenExpressionConverterTest {
         when(ExpressionConverter.convert(whenExpr)).thenReturn(Optional.empty());
         when(ExpressionConverter.convert(thenExpr)).thenReturn(Optional.of(thenNode));
         when(ExpressionConverter.convert(null)).thenReturn(Optional.empty());
-        SqlCase actual = (SqlCase) CaseWhenExpressionConverter.convert(expression).orElse(null);
-        assertNotNull(actual);
+        SqlCase actual = CaseWhenExpressionConverter.convert(expression);
         assertTrue(actual.getWhenOperands().isEmpty());
         assertThat(actual.getThenOperands().get(0), is(thenNode));
     }
