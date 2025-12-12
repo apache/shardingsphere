@@ -28,15 +28,13 @@ import java.util.Collections;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 class ColumnConverterTest {
     
     @Test
     void assertConvertColumnWithoutOwner() {
         ColumnSegment columnSegment = new ColumnSegment(0, 0, new IdentifierValue("col"));
-        SqlIdentifier actual = (SqlIdentifier) ColumnConverter.convert(columnSegment).orElse(null);
-        assertNotNull(actual);
+        SqlIdentifier actual = ColumnConverter.convert(columnSegment);
         assertThat(actual.getSimple(), is("col"));
         assertThat(actual.names, is(Collections.singletonList("col")));
     }
@@ -47,8 +45,7 @@ class ColumnConverterTest {
         owner.setOwner(new OwnerSegment(0, 0, new IdentifierValue("catalog")));
         ColumnSegment columnSegment = new ColumnSegment(0, 0, new IdentifierValue("col"));
         columnSegment.setOwner(owner);
-        SqlIdentifier actual = (SqlIdentifier) ColumnConverter.convert(columnSegment).orElse(null);
-        assertNotNull(actual);
+        SqlIdentifier actual = ColumnConverter.convert(columnSegment);
         assertThat(actual.names, is(Arrays.asList("catalog", "schema", "col")));
     }
 }

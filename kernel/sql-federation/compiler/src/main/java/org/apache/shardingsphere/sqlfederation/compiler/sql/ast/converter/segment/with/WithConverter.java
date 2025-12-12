@@ -63,6 +63,6 @@ public final class WithConverter {
     }
     
     private static SqlNodeList convertColumns(final Collection<ColumnSegment> columnSegments) {
-        return new SqlNodeList(columnSegments.stream().map(each -> ColumnConverter.convert(each).orElseThrow(IllegalStateException::new)).collect(Collectors.toList()), SqlParserPos.ZERO);
+        return new SqlNodeList(columnSegments.stream().map(ColumnConverter::convert).collect(Collectors.toList()), SqlParserPos.ZERO);
     }
 }

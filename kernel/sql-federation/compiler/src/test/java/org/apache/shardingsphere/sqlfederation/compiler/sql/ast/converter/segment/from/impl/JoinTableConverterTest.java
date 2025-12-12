@@ -19,6 +19,7 @@ package org.apache.shardingsphere.sqlfederation.compiler.sql.ast.converter.segme
 
 import org.apache.calcite.sql.JoinConditionType;
 import org.apache.calcite.sql.JoinType;
+import org.apache.calcite.sql.SqlIdentifier;
 import org.apache.calcite.sql.SqlJoin;
 import org.apache.calcite.sql.SqlNode;
 import org.apache.calcite.sql.SqlNodeList;
@@ -91,8 +92,8 @@ class JoinTableConverterTest {
         segment.setNatural(true);
         ColumnSegment usingColumn = new ColumnSegment(0, 0, new IdentifierValue("id"));
         segment.setUsing(new ArrayList<>(Collections.singletonList(usingColumn)));
-        SqlNode usingNode = mock(SqlNode.class);
-        when(ColumnConverter.convert(usingColumn)).thenReturn(Optional.of(usingNode));
+        SqlIdentifier usingNode = mock(SqlIdentifier.class);
+        when(ColumnConverter.convert(usingColumn)).thenReturn(usingNode);
         SqlJoin actual = (SqlJoin) JoinTableConverter.convert(segment).orElse(null);
         assertNotNull(actual);
         assertThat(actual.getJoinType(), is(JoinType.INNER));

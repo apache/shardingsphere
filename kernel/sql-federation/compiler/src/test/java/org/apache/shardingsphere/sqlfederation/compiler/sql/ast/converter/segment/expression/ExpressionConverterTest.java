@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.sqlfederation.compiler.sql.ast.converter.segment.expression;
 
 import org.apache.calcite.sql.SqlBasicCall;
+import org.apache.calcite.sql.SqlIdentifier;
 import org.apache.calcite.sql.SqlNode;
 import org.apache.calcite.sql.fun.SqlCase;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
@@ -119,9 +120,9 @@ class ExpressionConverterTest {
         SqlBasicCall expectedBinaryNode = mock(SqlBasicCall.class);
         BinaryOperationExpression binarySegment = new BinaryOperationExpression(0, 0, literalSegment, literalSegment, "+", "text");
         when(BinaryOperationExpressionConverter.convert(binarySegment)).thenReturn(expectedBinaryNode);
-        SqlNode expectedColumnNode = mock(SqlNode.class);
+        SqlIdentifier expectedColumnNode = mock(SqlIdentifier.class);
         ColumnSegment columnSegment = new ColumnSegment(0, 0, new IdentifierValue("col"));
-        when(ColumnConverter.convert(columnSegment)).thenReturn(Optional.of(expectedColumnNode));
+        when(ColumnConverter.convert(columnSegment)).thenReturn(expectedColumnNode);
         SqlNode expectedExistsSubqueryNode = mock(SqlNode.class);
         SubquerySegment subquerySegment = new SubquerySegment(0, 0, new SelectStatement(databaseType), "sub");
         ExistsSubqueryExpression existsSubqueryExpression = new ExistsSubqueryExpression(0, 0, subquerySegment);
