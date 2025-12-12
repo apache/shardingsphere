@@ -148,7 +148,7 @@ public final class ExpressionConverter {
             return Optional.of(CollateExpressionConverter.convert((CollateExpression) segment));
         }
         if (segment instanceof RowExpression) {
-            return RowExpressionConverter.convert((RowExpression) segment);
+            return Optional.of(RowExpressionConverter.convert((RowExpression) segment));
         }
         if (segment instanceof VariableSegment) {
             return VariableSegmentConverter.convert((VariableSegment) segment);

@@ -172,7 +172,7 @@ class ExpressionConverterTest {
         when(CollateExpressionConverter.convert(collateExpression)).thenReturn(expectedCollateNode);
         SqlNode expectedRowNode = mock(SqlNode.class);
         RowExpression rowExpression = new RowExpression(0, 0, "row");
-        when(RowExpressionConverter.convert(rowExpression)).thenReturn(Optional.of(expectedRowNode));
+        when(RowExpressionConverter.convert(rowExpression)).thenReturn(expectedRowNode);
         SqlNode expectedVariableNode = mock(SqlNode.class);
         VariableSegment variableSegment = new VariableSegment(0, 0, "@@session");
         when(VariableSegmentConverter.convert(variableSegment)).thenReturn(Optional.of(expectedVariableNode));
