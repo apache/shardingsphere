@@ -20,11 +20,8 @@ package org.apache.shardingsphere.sqlfederation.compiler.sql.ast.converter.segme
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.calcite.sql.SqlIdentifier;
-import org.apache.calcite.sql.SqlNode;
 import org.apache.calcite.sql.parser.SqlParserPos;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.VariableSegment;
-
-import java.util.Optional;
 
 /**
  * Variable segment converter.
@@ -38,7 +35,7 @@ public final class VariableSegmentConverter {
      * @param segment variable segment
      * @return SQL node
      */
-    public static Optional<SqlNode> convert(final VariableSegment segment) {
-        return Optional.of(new SqlIdentifier(segment.getText(), SqlParserPos.ZERO));
+    public static SqlIdentifier convert(final VariableSegment segment) {
+        return new SqlIdentifier(segment.getText(), SqlParserPos.ZERO);
     }
 }

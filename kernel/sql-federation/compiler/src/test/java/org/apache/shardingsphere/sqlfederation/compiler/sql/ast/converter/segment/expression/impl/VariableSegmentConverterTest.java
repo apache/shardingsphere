@@ -17,23 +17,17 @@
 
 package org.apache.shardingsphere.sqlfederation.compiler.sql.ast.converter.segment.expression.impl;
 
-import org.apache.calcite.sql.SqlIdentifier;
-import org.apache.calcite.sql.SqlNode;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.VariableSegment;
 import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 class VariableSegmentConverterTest {
     
     @Test
     void assertConvertVariableSegment() {
         VariableSegment variableSegment = new VariableSegment(0, 0, "@@session.tx");
-        SqlNode actual = VariableSegmentConverter.convert(variableSegment).orElse(null);
-        assertNotNull(actual);
-        SqlIdentifier identifier = (SqlIdentifier) actual;
-        assertThat(identifier.getSimple(), is("@@session.tx"));
+        assertThat(VariableSegmentConverter.convert(variableSegment).getSimple(), is("@@session.tx"));
     }
 }

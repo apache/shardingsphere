@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.sqlfederation.compiler.sql.ast.converter.segment.expression.impl;
 
-import org.apache.calcite.sql.SqlNode;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.QuantifySubqueryExpression;
@@ -27,17 +26,11 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.Proj
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.SelectStatement;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 class QuantifySubqueryExpressionConverterTest {
     
     private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "FIXTURE");
-    
-    @Test
-    void assertConvertReturnsEmptyWhenExpressionIsNull() {
-        assertFalse(QuantifySubqueryExpressionConverter.convert(null).isPresent());
-    }
     
     @Test
     void assertConvertQuantifySubqueryExpression() {
@@ -47,7 +40,6 @@ class QuantifySubqueryExpressionConverterTest {
         selectStatement.setProjections(projections);
         SubquerySegment subquerySegment = new SubquerySegment(0, 0, selectStatement, "sub");
         QuantifySubqueryExpression expression = new QuantifySubqueryExpression(0, 0, subquerySegment, "ALL");
-        SqlNode actual = QuantifySubqueryExpressionConverter.convert(expression).orElse(null);
-        assertNotNull(actual);
+        assertNotNull(QuantifySubqueryExpressionConverter.convert(expression));
     }
 }

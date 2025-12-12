@@ -41,7 +41,6 @@ import java.util.stream.Stream;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.when;
 
@@ -63,8 +62,7 @@ class IntervalExpressionConverterTest {
         SqlNode literalNode = SqlLiteral.createExactNumeric("1", SqlParserPos.ZERO);
         when(ExpressionConverter.convert(value)).thenReturn(Optional.of(literalNode));
         IntervalExpression intervalExpression = new IntervalExpression(0, 0, value, intervalUnit, "INTERVAL 1");
-        SqlBasicCall actual = (SqlBasicCall) IntervalExpressionConverter.convert(intervalExpression).orElse(null);
-        assertNotNull(actual);
+        SqlBasicCall actual = IntervalExpressionConverter.convert(intervalExpression);
         assertThat(actual.getOperator(), is(SQLExtensionOperatorTable.INTERVAL_OPERATOR));
         assertThat(actual.getOperandList().get(0), is(literalNode));
         SqlIntervalQualifier qualifier = (SqlIntervalQualifier) actual.getOperandList().get(1);
