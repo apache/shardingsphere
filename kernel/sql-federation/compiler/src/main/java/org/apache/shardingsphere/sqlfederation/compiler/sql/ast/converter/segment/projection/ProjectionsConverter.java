@@ -78,7 +78,7 @@ public final class ProjectionsConverter {
             return AggregationProjectionConverter.convert((AggregationProjectionSegment) segment);
         }
         if (segment instanceof ParameterMarkerExpressionSegment) {
-            return ParameterMarkerExpressionConverter.convert((ParameterMarkerExpressionSegment) segment);
+            return Optional.of(ParameterMarkerExpressionConverter.convert((ParameterMarkerExpressionSegment) segment));
         }
         // TODO process other projection
         return Optional.empty();

@@ -37,7 +37,6 @@ import org.apache.shardingsphere.sqlfederation.compiler.sql.ast.converter.segmen
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Optional;
 
 /**
  * Window function converter.
@@ -51,11 +50,11 @@ public final class WindowFunctionConverter {
      * @param segment function segment
      * @return SQL node
      */
-    public static Optional<SqlNode> convert(final FunctionSegment segment) {
+    public static SqlBasicCall convert(final FunctionSegment segment) {
         SqlIdentifier functionName = new SqlIdentifier(segment.getFunctionName(), SqlParserPos.ZERO);
         List<SqlOperator> functions = new LinkedList<>();
         SqlStdOperatorTable.instance().lookupOperatorOverloads(functionName, null, SqlSyntax.BINARY, functions, SqlNameMatchers.withCaseSensitive(false));
-        return Optional.of(new SqlBasicCall(functions.iterator().next(), getWindowFunctionParameters(segment.getParameters()), SqlParserPos.ZERO));
+        return new SqlBasicCall(functions.iterator().next(), getWindowFunctionParameters(segment.getParameters()), SqlParserPos.ZERO);
     }
     
     private static List<SqlNode> getWindowFunctionParameters(final Collection<ExpressionSegment> sqlSegments) {
@@ -64,8 +63,8 @@ public final class WindowFunctionConverter {
             ExpressionConverter.convert(each).ifPresent(result::add);
         }
         if (1 == result.size()) {
-            result.add(new SqlWindow(SqlParserPos.ZERO, null, null, new SqlNodeList(SqlParserPos.ZERO), new SqlNodeList(SqlParserPos.ZERO), SqlLiteral.createBoolean(false, SqlParserPos.ZERO), null,
-                    null, null));
+            result.add(new SqlWindow(
+                    SqlParserPos.ZERO, null, null, new SqlNodeList(SqlParserPos.ZERO), new SqlNodeList(SqlParserPos.ZERO), SqlLiteral.createBoolean(false, SqlParserPos.ZERO), null, null, null));
         }
         return result;
     }

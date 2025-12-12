@@ -28,7 +28,6 @@ import org.apache.shardingsphere.sqlfederation.compiler.sql.ast.converter.segmen
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 /**
  * Row expression converter.
@@ -42,11 +41,11 @@ public final class RowExpressionConverter {
      * @param segment row expression
      * @return SQL node
      */
-    public static Optional<SqlNode> convert(final RowExpression segment) {
+    public static SqlNode convert(final RowExpression segment) {
         List<SqlNode> sqlNodes = new ArrayList<>(segment.getItems().size());
         for (ExpressionSegment each : segment.getItems()) {
             ExpressionConverter.convert(each).ifPresent(sqlNodes::add);
         }
-        return Optional.of(SqlStdOperatorTable.ROW.createCall(SqlParserPos.ZERO, sqlNodes));
+        return SqlStdOperatorTable.ROW.createCall(SqlParserPos.ZERO, sqlNodes);
     }
 }

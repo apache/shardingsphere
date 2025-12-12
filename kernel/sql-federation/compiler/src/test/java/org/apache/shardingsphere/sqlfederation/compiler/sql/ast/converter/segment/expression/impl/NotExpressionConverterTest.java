@@ -32,7 +32,6 @@ import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -45,8 +44,7 @@ class NotExpressionConverterTest {
         LiteralExpressionSegment expression = new LiteralExpressionSegment(0, 0, 1);
         SqlNode expressionNode = mock(SqlNode.class);
         when(ExpressionConverter.convert(expression)).thenReturn(Optional.of(expressionNode));
-        SqlBasicCall actual = (SqlBasicCall) NotExpressionConverter.convert(new NotExpression(0, 0, expression, true)).orElse(null);
-        assertNotNull(actual);
+        SqlBasicCall actual = NotExpressionConverter.convert(new NotExpression(0, 0, expression, true));
         assertThat(actual.getOperator(), is(SQLExtensionOperatorTable.NOT_SIGN));
         assertThat(actual.getOperandList().get(0), is(expressionNode));
     }
@@ -56,8 +54,7 @@ class NotExpressionConverterTest {
         LiteralExpressionSegment expression = new LiteralExpressionSegment(0, 0, 1);
         SqlNode expressionNode = mock(SqlNode.class);
         when(ExpressionConverter.convert(expression)).thenReturn(Optional.of(expressionNode));
-        SqlBasicCall actual = (SqlBasicCall) NotExpressionConverter.convert(new NotExpression(0, 0, expression, false)).orElse(null);
-        assertNotNull(actual);
+        SqlBasicCall actual = NotExpressionConverter.convert(new NotExpression(0, 0, expression, false));
         assertThat(actual.getOperator(), is(SQLExtensionOperatorTable.NOT));
     }
 }

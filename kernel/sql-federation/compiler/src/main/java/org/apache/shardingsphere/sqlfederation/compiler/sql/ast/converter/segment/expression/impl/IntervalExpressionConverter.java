@@ -31,7 +31,6 @@ import org.apache.shardingsphere.sqlfederation.compiler.sql.ast.converter.segmen
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 /**
  * Interval expression converter.
@@ -45,13 +44,12 @@ public final class IntervalExpressionConverter {
      * @param segment unary operation expression
      * @return SQL node
      */
-    public static Optional<SqlNode> convert(final IntervalExpression segment) {
+    public static SqlBasicCall convert(final IntervalExpression segment) {
         TimeUnit timeUnit = getTimeUnit(segment.getIntervalUnit());
         List<SqlNode> sqlNodes = new ArrayList<>();
         ExpressionConverter.convert(segment.getValue()).ifPresent(sqlNodes::add);
         sqlNodes.add(new SqlIntervalQualifier(timeUnit, timeUnit, SqlParserPos.ZERO));
-        SqlBasicCall result = new SqlBasicCall(SQLExtensionOperatorTable.INTERVAL_OPERATOR, sqlNodes, SqlParserPos.ZERO);
-        return Optional.of(result);
+        return new SqlBasicCall(SQLExtensionOperatorTable.INTERVAL_OPERATOR, sqlNodes, SqlParserPos.ZERO);
     }
     
     private static TimeUnit getTimeUnit(final IntervalUnit unit) {

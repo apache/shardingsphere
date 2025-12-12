@@ -35,7 +35,6 @@ import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(AutoMockExtension.class)
@@ -53,8 +52,7 @@ class RowExpressionConverterTest {
         SqlNode secondNode = SqlLiteral.createExactNumeric("2", SqlParserPos.ZERO);
         when(ExpressionConverter.convert(first)).thenReturn(Optional.of(firstNode));
         when(ExpressionConverter.convert(second)).thenReturn(Optional.of(secondNode));
-        SqlBasicCall actual = (SqlBasicCall) RowExpressionConverter.convert(expression).orElse(null);
-        assertNotNull(actual);
+        SqlBasicCall actual = (SqlBasicCall) RowExpressionConverter.convert(expression);
         assertThat(actual.getOperator(), is(SqlStdOperatorTable.ROW));
         assertThat(actual.getOperandList(), is(Arrays.asList(firstNode, secondNode)));
     }

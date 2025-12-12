@@ -33,7 +33,6 @@ import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -48,8 +47,7 @@ class TrimFunctionConverterTest {
         segment.getParameters().add(parameter);
         SqlNode paramNode = mock(SqlNode.class);
         when(ExpressionConverter.convert(parameter)).thenReturn(Optional.of(paramNode));
-        SqlBasicCall actual = (SqlBasicCall) TrimFunctionConverter.convert(segment).orElse(null);
-        assertNotNull(actual);
+        SqlBasicCall actual = TrimFunctionConverter.convert(segment);
         SqlLiteral trimFlag = (SqlLiteral) actual.getOperandList().get(0);
         assertThat(trimFlag.getValueAs(Flag.class), is(Flag.BOTH));
         SqlLiteral padding = (SqlLiteral) actual.getOperandList().get(1);
@@ -68,8 +66,7 @@ class TrimFunctionConverterTest {
         SqlNode secondNode = mock(SqlNode.class);
         when(ExpressionConverter.convert(first)).thenReturn(Optional.of(firstNode));
         when(ExpressionConverter.convert(second)).thenReturn(Optional.of(secondNode));
-        SqlBasicCall actual = (SqlBasicCall) TrimFunctionConverter.convert(segment).orElse(null);
-        assertNotNull(actual);
+        SqlBasicCall actual = TrimFunctionConverter.convert(segment);
         SqlLiteral trimFlag = (SqlLiteral) actual.getOperandList().get(0);
         assertThat(trimFlag.getValueAs(Flag.class), is(Flag.BOTH));
         assertThat(actual.getOperandList().get(1), is(firstNode));

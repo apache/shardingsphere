@@ -32,7 +32,6 @@ import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -46,8 +45,7 @@ class UnaryOperationExpressionConverterTest {
         SqlNode expressionNode = mock(SqlNode.class);
         when(ExpressionConverter.convert(expression)).thenReturn(Optional.of(expressionNode));
         UnaryOperationExpression unaryOperationExpression = new UnaryOperationExpression(0, 0, expression, "~", "~1");
-        SqlBasicCall actual = (SqlBasicCall) UnaryOperationExpressionConverter.convert(unaryOperationExpression).orElse(null);
-        assertNotNull(actual);
+        SqlBasicCall actual = UnaryOperationExpressionConverter.convert(unaryOperationExpression);
         assertThat(actual.getOperator(), is(SQLExtensionOperatorTable.TILDE));
         assertThat(actual.getOperandList().get(0), is(expressionNode));
     }

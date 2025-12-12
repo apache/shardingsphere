@@ -23,8 +23,6 @@ import org.apache.calcite.sql.SqlNode;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.subquery.SubqueryExpressionSegment;
 import org.apache.shardingsphere.sqlfederation.compiler.sql.ast.converter.statement.type.SelectStatementConverter;
 
-import java.util.Optional;
-
 /**
  * Subquery expression converter.
  */
@@ -37,7 +35,7 @@ public final class SubqueryExpressionConverter {
      * @param expression subquery expression segment
      * @return SQL node
      */
-    public static Optional<SqlNode> convert(final SubqueryExpressionSegment expression) {
-        return null == expression ? Optional.empty() : Optional.of(new SelectStatementConverter().convert(expression.getSubquery().getSelect()));
+    public static SqlNode convert(final SubqueryExpressionSegment expression) {
+        return new SelectStatementConverter().convert(expression.getSubquery().getSelect());
     }
 }

@@ -34,7 +34,6 @@ import java.util.Optional;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -50,8 +49,7 @@ class WindowFunctionConverterTest {
         segment.getParameters().add(parameter);
         SqlNode paramNode = mock(SqlNode.class);
         when(ExpressionConverter.convert(parameter)).thenReturn(Optional.of(paramNode));
-        SqlBasicCall actual = (SqlBasicCall) WindowFunctionConverter.convert(segment).orElse(null);
-        assertNotNull(actual);
+        SqlBasicCall actual = WindowFunctionConverter.convert(segment);
         assertThat(actual.getOperator(), is(SqlStdOperatorTable.OVER));
         assertThat(actual.getOperandList().get(0), is(paramNode));
         assertThat(actual.getOperandList().get(1), instanceOf(SqlWindow.class));
@@ -63,8 +61,7 @@ class WindowFunctionConverterTest {
         LiteralExpressionSegment parameter = new LiteralExpressionSegment(0, 0, "value");
         segment.getParameters().add(parameter);
         when(ExpressionConverter.convert(parameter)).thenReturn(Optional.empty());
-        SqlBasicCall actual = (SqlBasicCall) WindowFunctionConverter.convert(segment).orElse(null);
-        assertNotNull(actual);
+        SqlBasicCall actual = WindowFunctionConverter.convert(segment);
         assertTrue(actual.getOperandList().isEmpty());
     }
 }

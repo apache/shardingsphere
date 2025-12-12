@@ -28,7 +28,6 @@ import org.apache.shardingsphere.sqlfederation.compiler.sql.ast.converter.segmen
 
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Optional;
 
 /**
  * Not expression converter.
@@ -42,13 +41,10 @@ public final class NotExpressionConverter {
      * @param segment not expression
      * @return SQL node
      */
-    public static Optional<SqlNode> convert(final NotExpression segment) {
+    public static SqlBasicCall convert(final NotExpression segment) {
         SqlNode expression = ExpressionConverter.convert(segment.getExpression()).orElseThrow(IllegalStateException::new);
         List<SqlNode> sqlNodes = new LinkedList<>();
         sqlNodes.add(expression);
-        if (segment.getNotSign().equals(true)) {
-            return Optional.of(new SqlBasicCall(SQLExtensionOperatorTable.NOT_SIGN, sqlNodes, SqlParserPos.ZERO));
-        }
-        return Optional.of(new SqlBasicCall(SQLExtensionOperatorTable.NOT, sqlNodes, SqlParserPos.ZERO));
+        return new SqlBasicCall(segment.getNotSign() ? SQLExtensionOperatorTable.NOT_SIGN : SQLExtensionOperatorTable.NOT, sqlNodes, SqlParserPos.ZERO);
     }
 }
