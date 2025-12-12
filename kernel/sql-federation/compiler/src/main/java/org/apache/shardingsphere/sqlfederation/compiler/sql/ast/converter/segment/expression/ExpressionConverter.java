@@ -115,7 +115,7 @@ public final class ExpressionConverter {
             return InExpressionConverter.convert((InExpression) segment);
         }
         if (segment instanceof BetweenExpression) {
-            return BetweenExpressionConverter.convert((BetweenExpression) segment);
+            return Optional.of(BetweenExpressionConverter.convert((BetweenExpression) segment));
         }
         if (segment instanceof ParameterMarkerExpressionSegment) {
             return ParameterMarkerExpressionConverter.convert((ParameterMarkerExpressionSegment) segment);
