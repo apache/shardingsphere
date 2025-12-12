@@ -160,9 +160,9 @@ class ExpressionConverterTest {
         SqlNode expectedTypeCastNode = mock(SqlNode.class);
         TypeCastExpression typeCastExpression = new TypeCastExpression(0, 0, "text", literalSegment, "int");
         when(TypeCastExpressionConverter.convert(typeCastExpression)).thenReturn(Optional.of(expectedTypeCastNode));
-        SqlNode expectedExtractNode = mock(SqlNode.class);
+        SqlIdentifier expectedExtractNode = mock(SqlIdentifier.class);
         ExtractArgExpression extractArgExpression = new ExtractArgExpression(0, 0, "extract");
-        when(ExtractArgExpressionConverter.convert(extractArgExpression)).thenReturn(Optional.of(expectedExtractNode));
+        when(ExtractArgExpressionConverter.convert(extractArgExpression)).thenReturn(expectedExtractNode);
         SqlNode expectedMatchNode = mock(SqlNode.class);
         MatchAgainstExpression matchAgainstExpression = new MatchAgainstExpression(0, 0, literalSegment, "search", "text");
         when(MatchExpressionConverter.convert(matchAgainstExpression)).thenReturn(Optional.of(expectedMatchNode));
