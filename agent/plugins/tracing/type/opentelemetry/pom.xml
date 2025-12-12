@@ -26,6 +26,13 @@
     <artifactId>shardingsphere-agent-tracing-opentelemetry</artifactId>
     <name>${project.artifactId}</name>
     
+    <properties>
+        <opentelemetry.version>1.41.0</opentelemetry.version>
+        <opentelemetry-semconv.version>1.27.0-alpha</opentelemetry-semconv.version>
+        <okhttp.version>4.12.0</okhttp.version>
+        <kotlin-stdlib.version>1.9.10</kotlin-stdlib.version>
+    </properties>
+    
     <dependencyManagement>
         <dependencies>
             <dependency>
@@ -54,6 +61,11 @@
                 <groupId>com.squareup.okhttp3</groupId>
                 <artifactId>okhttp</artifactId>
                 <version>${okhttp.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.opentelemetry.semconv</groupId>
+                <artifactId>opentelemetry-semconv</artifactId>
+                <version>${opentelemetry-semconv.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
@@ -95,7 +107,6 @@
         <dependency>
             <groupId>io.opentelemetry.semconv</groupId>
             <artifactId>opentelemetry-semconv</artifactId>
-            <version>${opentelemetry-semconv.version}</version>
         </dependency>
         <dependency>
             <groupId>com.squareup.okhttp3</groupId>

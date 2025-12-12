@@ -16,7 +16,7 @@
 --
 
 -- ClickHouse does not support `AUTO_INCREMENT`, refer to https://github.com/ClickHouse/ClickHouse/issues/56228 .
--- TODO The `shardingsphere-parser-sql-clickhouse` module needs to be fixed to use SQL like `create table`, `truncate table` and `drop table`.
+-- TODO The `shardingsphere-parser-sql-engine-clickhouse` module needs to be fixed to use SQL like `create table`, `truncate table` and `drop table`.
 create table IF NOT EXISTS t_order (
     order_id   Int64 NOT NULL,
     order_type Int32,

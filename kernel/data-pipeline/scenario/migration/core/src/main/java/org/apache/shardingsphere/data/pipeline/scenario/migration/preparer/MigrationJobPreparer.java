@@ -61,16 +61,13 @@ import org.apache.shardingsphere.data.pipeline.scenario.migration.MigrationJobTy
 import org.apache.shardingsphere.data.pipeline.scenario.migration.config.MigrationJobConfiguration;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.config.MigrationTaskConfiguration;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.context.MigrationJobItemContext;
-import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPILoader;
-import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
-import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
+import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoader;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.exception.generic.UnsupportedSQLOperationException;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.parser.SQLParserEngine;
-import org.apache.shardingsphere.mode.lock.LockContext;
-import org.apache.shardingsphere.mode.lock.LockDefinition;
 import org.apache.shardingsphere.mode.manager.ContextManager;
-import org.apache.shardingsphere.mode.manager.cluster.lock.global.GlobalLockDefinition;
 import org.apache.shardingsphere.parser.rule.SQLParserRule;
 
 import java.sql.SQLException;
@@ -83,7 +80,7 @@ import java.util.Collections;
 @Slf4j
 public final class MigrationJobPreparer implements PipelineJobPreparer<MigrationJobItemContext> {
     
-    private final PipelineJobItemManager<TransmissionJobItemProgress> jobItemManager = new PipelineJobItemManager<>(new MigrationJobType().getYamlJobItemProgressSwapper());
+    private final PipelineJobItemManager<TransmissionJobItemProgress> jobItemManager = new PipelineJobItemManager<>(new MigrationJobType().getOption().getYamlJobItemProgressSwapper());
     
     @Override
     public void prepare(final MigrationJobItemContext jobItemContext) throws SQLException {
@@ -112,31 +109,20 @@ public final class MigrationJobPreparer implements PipelineJobPreparer<Migration
         MigrationJobConfiguration jobConfig = jobItemContext.getJobConfig();
         String jobId = jobConfig.getJobId();
         PipelineContextKey contextKey = PipelineJobIdUtils.parseContextKey(jobId);
-        ContextManager contextManager = PipelineContextManager.getContext(contextKey).getContextManager();
-        LockContext lockContext = contextManager.getLockContext();
+        ContextManager contextManager = PipelineContextManager.getContext(contextKey);
         if (!jobItemManager.getProgress(jobId, jobItemContext.getShardingItem()).isPresent()) {
             jobItemManager.persistProgress(jobItemContext);
         }
-        LockDefinition lockDefinition = new GlobalLockDefinition(new MigrationPrepareLock(jobConfig.getJobId()));
-        long startTimeMillis = System.currentTimeMillis();
-        if (lockContext.tryLock(lockDefinition, 600 * 1000L)) {
-            log.info("Lock success, jobId={}, shardingItem={}, cost {} ms.", jobId, jobItemContext.getShardingItem(), System.currentTimeMillis() - startTimeMillis);
-            try {
-                PipelineJobOffsetGovernanceRepository offsetRepository = PipelineAPIFactory.getPipelineGovernanceFacade(contextKey).getJobFacade().getOffset();
-                JobOffsetInfo offsetInfo = offsetRepository.load(jobId);
-                if (!offsetInfo.isTargetSchemaTableCreated()) {
-                    jobItemContext.setStatus(JobStatus.PREPARING);
-                    jobItemManager.updateStatus(jobId, jobItemContext.getShardingItem(), JobStatus.PREPARING);
-                    prepareAndCheckTarget(jobItemContext, contextManager);
-                    offsetRepository.persist(jobId, new JobOffsetInfo(true));
-                }
-            } finally {
-                log.info("Unlock, jobId={}, shardingItem={}, cost {} ms.", jobId, jobItemContext.getShardingItem(), System.currentTimeMillis() - startTimeMillis);
-                lockContext.unlock(lockDefinition);
+        contextManager.getExclusiveOperatorEngine().operate(new MigrationPrepareOperation(jobId), 600 * 1000L, () -> {
+            PipelineJobOffsetGovernanceRepository offsetRepository = PipelineAPIFactory.getPipelineGovernanceFacade(contextKey).getJobFacade().getOffset();
+            JobOffsetInfo offsetInfo = offsetRepository.load(jobId);
+            if (!offsetInfo.isTargetSchemaTableCreated()) {
+                jobItemContext.setStatus(JobStatus.PREPARING);
+                jobItemManager.updateStatus(jobId, jobItemContext.getShardingItem(), JobStatus.PREPARING);
+                prepareAndCheckTarget(jobItemContext, contextManager);
+                offsetRepository.persist(jobId, new JobOffsetInfo(true));
             }
-        } else {
-            log.warn("Lock failed, jobId={}, shardingItem={}.", jobId, jobItemContext.getShardingItem());
-        }
+        });
     }
     
     private void prepareAndCheckTarget(final MigrationJobItemContext jobItemContext, final ContextManager contextManager) throws SQLException {

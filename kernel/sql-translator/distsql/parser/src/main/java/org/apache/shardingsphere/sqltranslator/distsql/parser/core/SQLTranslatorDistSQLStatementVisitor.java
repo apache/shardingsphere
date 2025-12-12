@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.sqltranslator.distsql.parser.core;
 
+import org.apache.shardingsphere.database.connector.core.metadata.database.enums.QuoteCharacter;
 import org.apache.shardingsphere.distsql.parser.autogen.SQLTranslatorDistSQLStatementBaseVisitor;
 import org.apache.shardingsphere.distsql.parser.autogen.SQLTranslatorDistSQLStatementParser.AlgorithmDefinitionContext;
 import org.apache.shardingsphere.distsql.parser.autogen.SQLTranslatorDistSQLStatementParser.AlterSQLTranslatorRuleContext;
@@ -25,7 +26,6 @@ import org.apache.shardingsphere.distsql.parser.autogen.SQLTranslatorDistSQLStat
 import org.apache.shardingsphere.distsql.parser.autogen.SQLTranslatorDistSQLStatementParser.ShowSQLTranslatorRuleContext;
 import org.apache.shardingsphere.distsql.parser.autogen.SQLTranslatorDistSQLStatementParser.UseOriginalSQLDefinitionContext;
 import org.apache.shardingsphere.distsql.segment.AlgorithmSegment;
-import org.apache.shardingsphere.infra.database.core.metadata.database.enums.QuoteCharacter;
 import org.apache.shardingsphere.sql.parser.api.ASTNode;
 import org.apache.shardingsphere.sql.parser.api.visitor.SQLVisitor;
 import org.apache.shardingsphere.sql.parser.statement.core.util.IdentifierValueUtils;

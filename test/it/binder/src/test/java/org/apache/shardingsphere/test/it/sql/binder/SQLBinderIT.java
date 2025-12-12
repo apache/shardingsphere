@@ -18,10 +18,10 @@
 package org.apache.shardingsphere.test.it.sql.binder;
 
 import com.google.common.base.Preconditions;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.binder.engine.SQLBindEngine;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
-import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
-import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.apache.shardingsphere.infra.hint.SQLHintUtils;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
@@ -33,9 +33,9 @@ import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSp
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
-import org.apache.shardingsphere.sql.parser.api.CacheOption;
-import org.apache.shardingsphere.sql.parser.api.SQLParserEngine;
-import org.apache.shardingsphere.sql.parser.api.SQLStatementVisitorEngine;
+import org.apache.shardingsphere.sql.parser.engine.api.CacheOption;
+import org.apache.shardingsphere.sql.parser.engine.api.SQLParserEngine;
+import org.apache.shardingsphere.sql.parser.engine.api.SQLStatementVisitorEngine;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
 import org.apache.shardingsphere.test.it.sql.binder.cases.registry.binder.SQLBinderTestCasesRegistry;
 import org.apache.shardingsphere.test.it.sql.binder.cases.registry.sql.SQLBinderCasesRegistry;
@@ -84,7 +84,7 @@ public abstract class SQLBinderIT {
     private SQLStatement bindSQLStatement(final String databaseType, final String sql, final List<Object> parameters) {
         HintValueContext hintValueContext = SQLHintUtils.extractHint(sql);
         SQLStatement sqlStatement = new SQLStatementVisitorEngine(databaseType).visit(new SQLParserEngine(databaseType, new CacheOption(128, 1024L)).parse(sql, false));
-        return new SQLBindEngine(mockMetaData(TypedSPILoader.getService(DatabaseType.class, databaseType)), "foo_db_1", hintValueContext).bind(sqlStatement, parameters).getSqlStatement();
+        return new SQLBindEngine(mockMetaData(TypedSPILoader.getService(DatabaseType.class, databaseType)), "foo_db_1", hintValueContext).bind(sqlStatement).getSqlStatement();
     }
     
     private ShardingSphereMetaData mockMetaData(final DatabaseType databaseType) {
@@ -171,7 +171,7 @@ public abstract class SQLBinderIT {
         return result;
     }
     
-    private static class TestCaseArgumentsProvider implements ArgumentsProvider {
+    private static final class TestCaseArgumentsProvider implements ArgumentsProvider {
         
         @Override
         public Stream<? extends Arguments> provideArguments(final ParameterDeclarations parameters, final ExtensionContext context) {

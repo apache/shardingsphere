@@ -20,7 +20,7 @@ package org.apache.shardingsphere.infra.route.context;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.ToString;
-import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
+import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 
 import java.util.Collection;
 import java.util.HashSet;

@@ -103,7 +103,7 @@ public final class DataSourceXAResourceRecoveryHelper implements XAResourceRecov
         try {
             return getDelegate().recover(flag);
         } finally {
-            if (flag == XAResource.TMENDRSCAN) {
+            if (flag == TMENDRSCAN) {
                 disconnect();
             }
         }

@@ -20,7 +20,6 @@ package org.apache.shardingsphere.data.pipeline.core.metadata.loader;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.SneakyThrows;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.api.PipelineDataSourceConfiguration;
 import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSource;
 
@@ -31,22 +30,19 @@ import java.sql.SQLException;
  * Pipeline schema utility class.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-@Slf4j
 public final class PipelineSchemaUtils {
     
     /**
-     * Get default schema by connection.getSchema().
+     * Get default schema.
      *
      * @param dataSourceConfig pipeline data source configuration
-     * @return schema
+     * @return default schema
      */
     @SneakyThrows(SQLException.class)
     public static String getDefaultSchema(final PipelineDataSourceConfiguration dataSourceConfig) {
         try (PipelineDataSource dataSource = new PipelineDataSource(dataSourceConfig)) {
             try (Connection connection = dataSource.getConnection()) {
-                String result = connection.getSchema();
-                log.info("get default schema {}", result);
-                return result;
+                return connection.getSchema();
             }
         }
     }

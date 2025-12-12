@@ -19,7 +19,7 @@ package org.apache.shardingsphere.transaction.xa.jta.datasource;
 
 import com.atomikos.jdbc.AtomikosDataSourceBean;
 import com.zaxxer.hikari.HikariDataSource;
-import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.transaction.xa.fixture.DataSourceUtils;
 import org.apache.shardingsphere.transaction.xa.spi.SingleXAResource;
@@ -44,6 +44,7 @@ import java.sql.SQLException;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -72,7 +73,7 @@ class XATransactionDataSourceTest {
         DataSource dataSource = DataSourceUtils.build(AtomikosDataSourceBean.class, TypedSPILoader.getService(DatabaseType.class, "H2"), "ds1");
         XATransactionDataSource transactionDataSource = new XATransactionDataSource(TypedSPILoader.getService(DatabaseType.class, "H2"), "ds1", dataSource, xaTransactionManagerProvider);
         try (Connection ignored = transactionDataSource.getConnection()) {
-            verify(xaTransactionManagerProvider, times(0)).getTransactionManager();
+            verify(xaTransactionManagerProvider, never()).getTransactionManager();
         }
     }
     
@@ -95,7 +96,7 @@ class XATransactionDataSourceTest {
         DataSource dataSource = DataSourceUtils.build(AtomikosDataSourceBean.class, TypedSPILoader.getService(DatabaseType.class, "H2"), "ds11");
         XATransactionDataSource transactionDataSource = new XATransactionDataSource(TypedSPILoader.getService(DatabaseType.class, "H2"), "ds11", dataSource, xaTransactionManagerProvider);
         transactionDataSource.close();
-        verify(xaTransactionManagerProvider, times(0)).removeRecoveryResource(anyString(), any(XADataSource.class));
+        verify(xaTransactionManagerProvider, never()).removeRecoveryResource(anyString(), any(XADataSource.class));
     }
     
     @Test

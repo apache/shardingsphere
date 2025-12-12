@@ -19,8 +19,9 @@ package org.apache.shardingsphere.readwritesplitting.route.standard.filter;
 
 import org.apache.shardingsphere.infra.algorithm.loadbalancer.random.RandomLoadBalanceAlgorithm;
 import org.apache.shardingsphere.readwritesplitting.config.rule.ReadwriteSplittingDataSourceGroupRuleConfiguration;
-import org.apache.shardingsphere.readwritesplitting.transaction.TransactionalReadQueryStrategy;
+import org.apache.shardingsphere.readwritesplitting.route.standard.filter.type.DisabledReadDataSourcesFilter;
 import org.apache.shardingsphere.readwritesplitting.rule.ReadwriteSplittingDataSourceGroupRule;
+import org.apache.shardingsphere.readwritesplitting.transaction.TransactionalReadQueryStrategy;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -44,12 +45,6 @@ class DisabledReadDataSourcesFilterTest {
     @Test
     void assertGetReadDataSourceNamesWithoutDisabledDataSourceNames() {
         assertThat(new DisabledReadDataSourcesFilter().filter(rule, Arrays.asList("read_ds_0", "read_ds_1")), is(Arrays.asList("read_ds_0", "read_ds_1")));
-    }
-    
-    @Test
-    void assertGetReadDataSourceNamesWithDisabledDataSourceNames() {
-        rule.disableDataSource("read_ds_0");
-        assertThat(new DisabledReadDataSourcesFilter().filter(rule, Arrays.asList("read_ds_0", "read_ds_1")), is(Collections.singletonList("read_ds_1")));
     }
     
     @Test

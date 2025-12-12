@@ -33,7 +33,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -48,19 +48,19 @@ class GlobalRuleChangedHandlerTest {
     @BeforeEach
     void setUp() {
         handler = ShardingSphereServiceLoader.getServiceInstances(GlobalDataChangedEventHandler.class).stream()
-                .filter(each -> NodePathGenerator.toPath(each.getSubscribedNodePath()).equals("/rules")).findFirst().orElse(null);
+                .filter(each -> "/rules".equals(NodePathGenerator.toPath(each.getSubscribedNodePath()))).findFirst().orElse(null);
     }
     
     @Test
     void assertHandleWithInvalidEventKey() {
         handler.handle(contextManager, new DataChangedEvent("/rules/foo_rule/xxx", "rule_value", Type.ADDED));
-        verify(contextManager.getPersistServiceFacade().getMetaDataFacade().getGlobalRuleService(), times(0)).load(any());
+        verify(contextManager.getPersistServiceFacade().getMetaDataFacade().getGlobalRuleService(), never()).load(any());
     }
     
     @Test
     void assertHandleWithEmptyRuleName() {
         handler.handle(contextManager, new DataChangedEvent("/rules/foo_rule/active_version/foo", "rule_value", Type.ADDED));
-        verify(contextManager.getPersistServiceFacade().getMetaDataFacade().getGlobalRuleService(), times(0)).load(any());
+        verify(contextManager.getPersistServiceFacade().getMetaDataFacade().getGlobalRuleService(), never()).load(any());
     }
     
     @Test

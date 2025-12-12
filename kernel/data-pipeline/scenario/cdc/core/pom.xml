@@ -44,10 +44,9 @@
             <version>${project.version}</version>
             <scope>test</scope>
         </dependency>
-        
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-infra-database-opengauss</artifactId>
+            <artifactId>shardingsphere-database-connector-opengauss</artifactId>
             <version>${project.version}</version>
             <scope>test</scope>
         </dependency>

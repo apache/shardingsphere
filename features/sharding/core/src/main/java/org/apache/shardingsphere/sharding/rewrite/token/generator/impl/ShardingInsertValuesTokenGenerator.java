@@ -19,18 +19,18 @@ package org.apache.shardingsphere.sharding.rewrite.token.generator.impl;
 
 import lombok.Setter;
 import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
-import org.apache.shardingsphere.infra.rewrite.sql.token.common.generator.aware.RouteContextAware;
-import org.apache.shardingsphere.sharding.rewrite.token.pojo.ShardingInsertValue;
-import org.apache.shardingsphere.sharding.rewrite.token.pojo.ShardingInsertValuesToken;
 import org.apache.shardingsphere.infra.binder.context.segment.insert.values.InsertValueContext;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.dml.InsertStatementContext;
-import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.assignment.InsertValuesSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.rewrite.sql.token.common.generator.OptionalSQLTokenGenerator;
+import org.apache.shardingsphere.infra.rewrite.sql.token.common.generator.aware.RouteContextAware;
 import org.apache.shardingsphere.infra.rewrite.sql.token.common.pojo.generic.InsertValuesToken;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
+import org.apache.shardingsphere.sharding.rewrite.token.pojo.ShardingInsertValue;
+import org.apache.shardingsphere.sharding.rewrite.token.pojo.ShardingInsertValuesToken;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.assignment.InsertValuesSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExpressionSegment;
 
 import java.util.Collection;
 import java.util.Collections;

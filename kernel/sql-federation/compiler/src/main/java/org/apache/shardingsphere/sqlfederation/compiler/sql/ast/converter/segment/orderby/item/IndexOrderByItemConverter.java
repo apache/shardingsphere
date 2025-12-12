@@ -25,7 +25,7 @@ import org.apache.calcite.sql.SqlNode;
 import org.apache.calcite.sql.SqlPostfixOperator;
 import org.apache.calcite.sql.fun.SqlStdOperatorTable;
 import org.apache.calcite.sql.parser.SqlParserPos;
-import org.apache.shardingsphere.infra.database.core.metadata.database.enums.NullsOrderType;
+import org.apache.shardingsphere.database.connector.core.metadata.database.enums.NullsOrderType;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.OrderDirection;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.order.item.IndexOrderByItemSegment;
 
@@ -39,10 +39,10 @@ import java.util.Optional;
 public final class IndexOrderByItemConverter {
     
     /**
-     * Convert index order by item segment to sql node.
+     * Convert index order by item segment to SQL node.
      *
      * @param segment index order by item segment
-     * @return sql node
+     * @return SQL node
      */
     public static Optional<SqlNode> convert(final IndexOrderByItemSegment segment) {
         SqlNode result = SqlLiteral.createExactNumeric(String.valueOf(segment.getColumnIndex()), SqlParserPos.ZERO);

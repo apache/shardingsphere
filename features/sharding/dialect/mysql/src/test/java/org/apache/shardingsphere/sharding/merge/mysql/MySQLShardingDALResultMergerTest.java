@@ -17,9 +17,9 @@
 
 package org.apache.shardingsphere.sharding.merge.mysql;
 
+import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoader;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPILoader;
-import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataMergedResult;
@@ -42,8 +42,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.isA;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
@@ -62,7 +62,7 @@ class MySQLShardingDALResultMergerTest {
         SQLStatementContext sqlStatementContext = mockSQLStatementContext(mock(MySQLShowDatabasesStatement.class));
         Optional<MergedResult> actual = resultMerger.merge("foo_db", mock(), sqlStatementContext, mock(), queryResults);
         assertTrue(actual.isPresent());
-        assertThat(actual.get(), instanceOf(LocalDataMergedResult.class));
+        assertThat(actual.get(), isA(LocalDataMergedResult.class));
     }
     
     @Test
@@ -70,7 +70,7 @@ class MySQLShardingDALResultMergerTest {
         SQLStatementContext sqlStatementContext = mockSQLStatementContext(new MySQLShowTablesStatement(databaseType, null, null, false));
         Optional<MergedResult> actual = resultMerger.merge("foo_db", mock(), sqlStatementContext, mock(), queryResults);
         assertTrue(actual.isPresent());
-        assertThat(actual.get(), instanceOf(MySQLShardingLogicTablesMergedResult.class));
+        assertThat(actual.get(), isA(MySQLShardingLogicTablesMergedResult.class));
     }
     
     @Test
@@ -78,7 +78,7 @@ class MySQLShardingDALResultMergerTest {
         SQLStatementContext sqlStatementContext = mockSQLStatementContext(new MySQLShowTableStatusStatement(databaseType, null, null));
         Optional<MergedResult> actual = resultMerger.merge("foo_db", mock(), sqlStatementContext, mock(), queryResults);
         assertTrue(actual.isPresent());
-        assertThat(actual.get(), instanceOf(MySQLShardingShowTableStatusMergedResult.class));
+        assertThat(actual.get(), isA(MySQLShardingShowTableStatusMergedResult.class));
     }
     
     @Test
@@ -86,7 +86,7 @@ class MySQLShardingDALResultMergerTest {
         SQLStatementContext sqlStatementContext = mockSQLStatementContext(new MySQLShowIndexStatement(databaseType, null, null));
         Optional<MergedResult> actual = resultMerger.merge("foo_db", mock(), sqlStatementContext, mock(), queryResults);
         assertTrue(actual.isPresent());
-        assertThat(actual.get(), instanceOf(MySQLShardingShowIndexMergedResult.class));
+        assertThat(actual.get(), isA(MySQLShardingShowIndexMergedResult.class));
     }
     
     @Test
@@ -94,7 +94,7 @@ class MySQLShardingDALResultMergerTest {
         SQLStatementContext sqlStatementContext = mockSQLStatementContext(new MySQLShowCreateTableStatement(databaseType, null));
         Optional<MergedResult> actual = resultMerger.merge("foo_db", mock(), sqlStatementContext, mock(), queryResults);
         assertTrue(actual.isPresent());
-        assertThat(actual.get(), instanceOf(MySQLShardingShowCreateTableMergedResult.class));
+        assertThat(actual.get(), isA(MySQLShardingShowCreateTableMergedResult.class));
     }
     
     private SQLStatementContext mockSQLStatementContext(final DALStatement sqlStatement) {

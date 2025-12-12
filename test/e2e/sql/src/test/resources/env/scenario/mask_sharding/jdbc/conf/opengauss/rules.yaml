@@ -22,7 +22,7 @@ dataSources:
     url: jdbc:opengauss://opengauss.mask_sharding.host:5432/mask_ds_0?batchMode=OFF
     dataSourceClassName: com.zaxxer.hikari.HikariDataSource
     username: test_user
-    password: Test@123
+    password: Test@9876
     connectionTimeoutMilliseconds: 30000
     idleTimeoutMilliseconds: 60000
     maxLifetimeMilliseconds: 1800000
@@ -32,7 +32,7 @@ dataSources:
     url: jdbc:opengauss://opengauss.mask_sharding.host:5432/mask_ds_1?batchMode=OFF
     dataSourceClassName: com.zaxxer.hikari.HikariDataSource
     username: test_user
-    password: Test@123
+    password: Test@9876
     connectionTimeoutMilliseconds: 30000
     idleTimeoutMilliseconds: 60000
     maxLifetimeMilliseconds: 1800000
@@ -42,7 +42,7 @@ dataSources:
     url: jdbc:opengauss://opengauss.mask_sharding.host:5432/mask_ds_2?batchMode=OFF
     dataSourceClassName: com.zaxxer.hikari.HikariDataSource
     username: test_user
-    password: Test@123
+    password: Test@9876
     connectionTimeoutMilliseconds: 30000
     idleTimeoutMilliseconds: 60000
     maxLifetimeMilliseconds: 1800000
@@ -52,7 +52,7 @@ dataSources:
     url: jdbc:opengauss://opengauss.mask_sharding.host:5432/mask_ds_3?batchMode=OFF
     dataSourceClassName: com.zaxxer.hikari.HikariDataSource
     username: test_user
-    password: Test@123
+    password: Test@9876
     connectionTimeoutMilliseconds: 30000
     idleTimeoutMilliseconds: 60000
     maxLifetimeMilliseconds: 1800000
@@ -62,7 +62,7 @@ dataSources:
     url: jdbc:opengauss://opengauss.mask_sharding.host:5432/mask_ds_4?batchMode=OFF
     dataSourceClassName: com.zaxxer.hikari.HikariDataSource
     username: test_user
-    password: Test@123
+    password: Test@9876
     connectionTimeoutMilliseconds: 30000
     idleTimeoutMilliseconds: 60000
     maxLifetimeMilliseconds: 1800000
@@ -72,7 +72,7 @@ dataSources:
     url: jdbc:opengauss://opengauss.mask_sharding.host:5432/mask_ds_5?batchMode=OFF
     dataSourceClassName: com.zaxxer.hikari.HikariDataSource
     username: test_user
-    password: Test@123
+    password: Test@9876
     connectionTimeoutMilliseconds: 30000
     idleTimeoutMilliseconds: 60000
     maxLifetimeMilliseconds: 1800000
@@ -82,7 +82,7 @@ dataSources:
     url: jdbc:opengauss://opengauss.mask_sharding.host:5432/mask_ds_6?batchMode=OFF
     dataSourceClassName: com.zaxxer.hikari.HikariDataSource
     username: test_user
-    password: Test@123
+    password: Test@9876
     connectionTimeoutMilliseconds: 30000
     idleTimeoutMilliseconds: 60000
     maxLifetimeMilliseconds: 1800000
@@ -92,7 +92,7 @@ dataSources:
     url: jdbc:opengauss://opengauss.mask_sharding.host:5432/mask_ds_7?batchMode=OFF
     dataSourceClassName: com.zaxxer.hikari.HikariDataSource
     username: test_user
-    password: Test@123
+    password: Test@9876
     connectionTimeoutMilliseconds: 30000
     idleTimeoutMilliseconds: 60000
     maxLifetimeMilliseconds: 1800000
@@ -102,7 +102,7 @@ dataSources:
     url: jdbc:opengauss://opengauss.mask_sharding.host:5432/mask_ds_8?batchMode=OFF
     dataSourceClassName: com.zaxxer.hikari.HikariDataSource
     username: test_user
-    password: Test@123
+    password: Test@9876
     connectionTimeoutMilliseconds: 30000
     idleTimeoutMilliseconds: 60000
     maxLifetimeMilliseconds: 1800000
@@ -112,7 +112,7 @@ dataSources:
     url: jdbc:opengauss://opengauss.mask_sharding.host:5432/mask_ds_9?batchMode=OFF
     dataSourceClassName: com.zaxxer.hikari.HikariDataSource
     username: test_user
-    password: Test@123
+    password: Test@9876
     connectionTimeoutMilliseconds: 30000
     idleTimeoutMilliseconds: 60000
     maxLifetimeMilliseconds: 1800000

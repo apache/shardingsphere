@@ -260,7 +260,7 @@ Caused by: java.io.UnsupportedEncodingException: Codepage Cp1252 is not supporte
 5. To discuss the steps required to use XA distributed transactions under the GraalVM Native Image of ShardingSphere JDBC, 
 additional known prerequisites need to be introduced,
    - `org.apache.shardingsphere.transaction.xa.jta.datasource.swapper.DataSourceSwapper#loadXADataSource(String)` will instantiate the `javax.sql.XADataSource` implementation class of each database driver through `java.lang.Class#getDeclaredConstructors`.
-   - The full class name of the `javax.sql.XADataSource` implementation class of each database driver is stored in the metadata of ShardingSphere by implementing the SPI of `org.apache.shardingsphere.transaction.xa.jta.datasource.properties.XADataSourceDefinition`.
+   - The full class name of the `javax.sql.XADataSource` implementation class of each database driver is stored in the metadata of ShardingSphere by implementing the SPI of `org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.transaction.DialectTransactionOption`.
 
 In the GraalVM Native Image, this actually requires the definition of the GraalVM Reachability Metadata of the third-party dependencies,
 while ShardingSphere itself only provides the corresponding GraalVM Reachability Metadata for `com.h2database:h2`.
@@ -268,17 +268,15 @@ while ShardingSphere itself only provides the corresponding GraalVM Reachability
 GraalVM Reachability Metadata of other database drivers such as `com.mysql:mysql-connector-j` should be defined by themselves,
 or the corresponding JSON should be submitted to https://github.com/oracle/graalvm-reachability-metadata .
 
-Take the `com.mysql.cj.jdbc.MysqlXADataSource` class of `com.mysql:mysql-connector-j:9.0.0` as an example,
-which is the implementation of `javax.sql.XADataSource` of MySQL JDBC Driver.
-Users need to define the following JSON in the `reachability-metadata.json` file in the `/META-INF/native-image/com.mysql/mysql-connector-j/9.0.0/` folder of their own project's claapath,
-to define the constructor of `com.mysql.cj.jdbc.MysqlXADataSource` inside the GraalVM Native Image.
+For example, the `com.mysql.cj.jdbc.MysqlXADataSource` class in `com.mysql:mysql-connector-j:9.0.0` implements the `javax.sql.XADataSource` class of the MySQL JDBC Driver.
+Users need to define the following JSON in the `reachability-metadata.json` file in the `/META-INF/native-image/com.mysql/mysql-connector-j/9.0.0/` folder of their project's buildpath.
 
 ```json
 {
    "reflection": [
       {
          "condition": {
-            "typeReached": "com.mysql.cj.jdbc.MysqlXADataSource"
+            "typeReached": "com.mysql.cj.jdbc.Driver"
          },
          "type": "com.mysql.cj.jdbc.MysqlXADataSource",
          "allPublicMethods": true,
@@ -356,3 +354,9 @@ without it being registered as reachable. Add it to the resource metadata to sol
 10. Due to the use of `janino-compiler/janino` by `apache/calcite`, 
     ShardingSphere's `SQL Federation` feature is unavailable in the GraalVM Native Image.
     This also prevents ShardingSphere Proxy Native from integrating with OpenGauss.
+
+11. Due to the issue at https://github.com/oracle/graal/issues/11280, 
+    Etcd's Cluster mode integration cannot be used on GraalVM Native Images compiled via Windows 11,
+    and Etcd's Cluster mode will conflict with the GraalVM Tracing Agent.
+    If developers need to use Etcd's Cluster mode on GraalVM Native Images compiled via Linux,
+    they need to provide additional GraalVM Reachability Metadata related JSON themselves.

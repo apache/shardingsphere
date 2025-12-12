@@ -23,7 +23,7 @@ import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.api.PipelineDataSourceConfiguration;
 import org.apache.shardingsphere.data.pipeline.spi.PipelineDataSourceCreator;
-import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.datasource.pool.destroyer.DataSourcePoolDestroyer;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 
@@ -110,7 +110,7 @@ public final class PipelineDataSource implements DataSource, AutoCloseable {
     }
     
     @Override
-    public void close() throws SQLException {
+    public void close() {
         if (closed.get()) {
             return;
         }

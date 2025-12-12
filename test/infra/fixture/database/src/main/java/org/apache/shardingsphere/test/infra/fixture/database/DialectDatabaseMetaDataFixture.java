@@ -17,10 +17,11 @@
 
 package org.apache.shardingsphere.test.infra.fixture.database;
 
-import org.apache.shardingsphere.infra.database.core.metadata.database.enums.NullsOrderType;
-import org.apache.shardingsphere.infra.database.core.metadata.database.enums.QuoteCharacter;
-import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.DialectDatabaseMetaData;
-import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.option.IdentifierPatternType;
+import org.apache.shardingsphere.database.connector.core.metadata.database.enums.NullsOrderType;
+import org.apache.shardingsphere.database.connector.core.metadata.database.enums.QuoteCharacter;
+import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.DialectDatabaseMetaData;
+import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.IdentifierPatternType;
+import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.version.DialectProtocolVersionOption;
 
 public final class DialectDatabaseMetaDataFixture implements DialectDatabaseMetaData {
     
@@ -37,6 +38,11 @@ public final class DialectDatabaseMetaDataFixture implements DialectDatabaseMeta
     @Override
     public NullsOrderType getDefaultNullsOrderType() {
         return NullsOrderType.LOW;
+    }
+    
+    @Override
+    public DialectProtocolVersionOption getProtocolVersionOption() {
+        return new DialectProtocolVersionOption("1.0");
     }
     
     @Override

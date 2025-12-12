@@ -19,9 +19,7 @@ package org.apache.shardingsphere.test.it.sql.parser.presto;
 
 import org.apache.shardingsphere.test.it.sql.parser.internal.InternalSQLParserIT;
 import org.apache.shardingsphere.test.it.sql.parser.internal.InternalSQLParserITSettings;
-import org.junit.jupiter.api.Disabled;
 
-@Disabled("Presto dependency has been excluded")
 @InternalSQLParserITSettings("Presto")
 class InternalPrestoParserIT extends InternalSQLParserIT {
 }

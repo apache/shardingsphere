@@ -37,9 +37,9 @@ import java.time.Month;
 import java.time.OffsetDateTime;
 import java.util.Date;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.isA;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -88,8 +88,8 @@ class ResultSetUtilsTest {
         assertThat(ResultSetUtils.convertValue(timestamp, LocalDateTime.class), is(localDateTime));
         assertThat(ResultSetUtils.convertValue(timestamp, LocalDate.class), is(LocalDate.of(2021, Month.DECEMBER, 23)));
         assertThat(ResultSetUtils.convertValue(timestamp, LocalTime.class), is(LocalTime.of(19, 30)));
-        assertThat(ResultSetUtils.convertValue(timestamp, OffsetDateTime.class), instanceOf(OffsetDateTime.class));
-        assertThat(ResultSetUtils.convertValue(timestamp, String.class), instanceOf(String.class));
+        assertThat(ResultSetUtils.convertValue(timestamp, OffsetDateTime.class), isA(OffsetDateTime.class));
+        assertThat(ResultSetUtils.convertValue(timestamp, String.class), isA(String.class));
         assertThat(ResultSetUtils.convertValue(timestamp, Object.class), is(timestamp));
     }
     
@@ -171,5 +171,32 @@ class ResultSetUtilsTest {
         assertNull(ResultSetUtils.convertBigDecimalValue(null, false, 0));
         assertThat(ResultSetUtils.convertBigDecimalValue("12.243", true, 2), is(BigDecimal.valueOf(12.24)));
         assertThrows(UnsupportedDataTypeConversionException.class, () -> ResultSetUtils.convertBigDecimalValue(new Date(), true, 2));
+    }
+    
+    @Test
+    void assertConvertDateValueToLocalDate() throws SQLException {
+        Date date = new Date(1609459200000L);
+        LocalDate result = (LocalDate) ResultSetUtils.convertValue(date, LocalDate.class);
+        assertThat(result, isA(LocalDate.class));
+        java.sql.Date sqlDate = new java.sql.Date(date.getTime());
+        assertThat(result, is(sqlDate.toLocalDate()));
+    }
+    
+    @Test
+    void assertConvertDateValueToLocalDateWithDifferentTimestamps() throws SQLException {
+        Date epochDate = new Date(0L);
+        LocalDate epochResult = (LocalDate) ResultSetUtils.convertValue(epochDate, LocalDate.class);
+        assertThat(epochResult, is(LocalDate.of(1970, 1, 1)));
+        Date christmasDate = new Date(1703462400000L);
+        LocalDate christmasResult = (LocalDate) ResultSetUtils.convertValue(christmasDate, LocalDate.class);
+        assertThat(christmasResult, is(new java.sql.Date(christmasDate.getTime()).toLocalDate()));
+    }
+    
+    @Test
+    void assertConvertDateValueToLocalDateWithCurrentDate() throws SQLException {
+        Date now = new Date();
+        LocalDate result = (LocalDate) ResultSetUtils.convertValue(now, LocalDate.class);
+        java.sql.Date sqlDate = new java.sql.Date(now.getTime());
+        assertThat(result, is(sqlDate.toLocalDate()));
     }
 }

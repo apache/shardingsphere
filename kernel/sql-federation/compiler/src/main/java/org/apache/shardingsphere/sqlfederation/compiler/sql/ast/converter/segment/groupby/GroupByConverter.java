@@ -33,10 +33,10 @@ import java.util.Optional;
 public final class GroupByConverter {
     
     /**
-     * Convert group by segment to sql node list.
+     * Convert group by segment to SQL node list.
      *
      * @param segment group by segment
-     * @return sql node list
+     * @return SQL node list
      */
     public static Optional<SqlNodeList> convert(final GroupBySegment segment) {
         return null == segment || segment.getGroupByItems().isEmpty()

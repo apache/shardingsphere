@@ -51,7 +51,7 @@ public final class CircuitBreakerResultSetMetaData implements ResultSetMetaData 
     
     @Override
     public int isNullable(final int column) {
-        return ResultSetMetaData.columnNullable;
+        return columnNullable;
     }
     
     @Override

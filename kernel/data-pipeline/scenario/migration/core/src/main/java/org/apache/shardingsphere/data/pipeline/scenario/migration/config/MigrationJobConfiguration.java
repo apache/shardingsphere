@@ -23,7 +23,7 @@ import lombok.ToString;
 import org.apache.shardingsphere.data.pipeline.api.PipelineDataSourceConfiguration;
 import org.apache.shardingsphere.data.pipeline.core.datanode.JobDataNodeLine;
 import org.apache.shardingsphere.data.pipeline.core.job.config.PipelineJobConfiguration;
-import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 
 import java.util.List;
 import java.util.Map;
@@ -51,7 +51,7 @@ public final class MigrationJobConfiguration implements PipelineJobConfiguration
     private final List<String> targetTableNames;
     
     /**
-     * Map{logic table names, schema name}.
+     * Map {logic table names, schema name}.
      */
     private final Map<String, String> targetTableSchemaMap;
     

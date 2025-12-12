@@ -20,7 +20,7 @@ package org.apache.shardingsphere.data.pipeline.postgresql.sqlbuilder.ddl;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.data.pipeline.postgresql.sqlbuilder.template.PostgreSQLPipelineFreemarkerManager;
-import org.apache.shardingsphere.infra.exception.core.external.sql.type.wrapper.SQLWrapperException;
+import org.apache.shardingsphere.infra.exception.external.sql.type.wrapper.SQLWrapperException;
 
 import java.sql.Array;
 import java.sql.Connection;

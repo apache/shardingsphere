@@ -22,7 +22,8 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoader;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.test.e2e.agent.engine.container.ShardingSphereJdbcAgentContainer;
 import org.apache.shardingsphere.test.e2e.agent.engine.container.plugin.AgentPluginContainerFactory;
@@ -30,16 +31,17 @@ import org.apache.shardingsphere.test.e2e.agent.engine.container.plugin.AgentPlu
 import org.apache.shardingsphere.test.e2e.agent.engine.env.props.AgentE2ETestConfiguration;
 import org.apache.shardingsphere.test.e2e.agent.engine.env.props.AgentE2ETestImageConfiguration;
 import org.apache.shardingsphere.test.e2e.agent.fixture.proxy.ProxyRequestExecutor;
-import org.apache.shardingsphere.test.e2e.env.container.atomic.DockerITContainer;
-import org.apache.shardingsphere.test.e2e.env.container.atomic.ITContainers;
-import org.apache.shardingsphere.test.e2e.env.container.atomic.adapter.config.AdaptorContainerConfiguration;
-import org.apache.shardingsphere.test.e2e.env.container.atomic.adapter.impl.ShardingSphereProxyClusterContainer;
-import org.apache.shardingsphere.test.e2e.env.container.atomic.constants.ProxyContainerConstants;
-import org.apache.shardingsphere.test.e2e.env.container.atomic.enums.AdapterType;
-import org.apache.shardingsphere.test.e2e.env.container.atomic.governance.GovernanceContainer;
-import org.apache.shardingsphere.test.e2e.env.container.atomic.governance.GovernanceContainerFactory;
-import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.config.StorageContainerConfiguration;
-import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.impl.MySQLContainer;
+import org.apache.shardingsphere.test.e2e.env.container.DockerE2EContainer;
+import org.apache.shardingsphere.test.e2e.env.container.E2EContainers;
+import org.apache.shardingsphere.test.e2e.env.container.adapter.config.AdaptorContainerConfiguration;
+import org.apache.shardingsphere.test.e2e.env.container.adapter.impl.ShardingSphereProxyDockerContainer;
+import org.apache.shardingsphere.test.e2e.env.container.constants.ProxyContainerConstants;
+import org.apache.shardingsphere.test.e2e.env.container.governance.GovernanceContainer;
+import org.apache.shardingsphere.test.e2e.env.container.governance.option.GovernanceContainerOption;
+import org.apache.shardingsphere.test.e2e.env.container.storage.StorageContainer;
+import org.apache.shardingsphere.test.e2e.env.container.storage.option.StorageContainerOption;
+import org.apache.shardingsphere.test.e2e.env.container.storage.type.DockerStorageContainer;
+import org.apache.shardingsphere.test.e2e.env.runtime.type.ArtifactEnvironment.Adapter;
 import org.awaitility.Awaitility;
 import org.testcontainers.containers.output.OutputFrame;
 
@@ -62,6 +64,8 @@ public final class AgentE2ETestEnvironment {
     
     private static final AgentE2ETestEnvironment INSTANCE = new AgentE2ETestEnvironment();
     
+    private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "MySQL");
+    
     private final AgentE2ETestConfiguration testConfig = AgentE2ETestConfiguration.getInstance();
     
     private final AgentE2ETestImageConfiguration imageConfig = AgentE2ETestImageConfiguration.getInstance();
@@ -69,7 +73,7 @@ public final class AgentE2ETestEnvironment {
     @Getter
     private final Collection<String> containerLogs = new LinkedList<>();
     
-    private ITContainers containers;
+    private E2EContainers containers;
     
     @Getter
     private String agentPluginURL;
@@ -94,11 +98,12 @@ public final class AgentE2ETestEnvironment {
         if (!AgentE2ETestConfiguration.getInstance().containsTestParameter()) {
             return;
         }
-        Optional<DockerITContainer> agentPluginContainer = TypedSPILoader.findService(AgentPluginContainerFactory.class, testConfig.getPluginType()).map(AgentPluginContainerFactory::create);
-        if (AdapterType.PROXY.getValue().equalsIgnoreCase(testConfig.getAdapter())) {
-            createProxyEnvironment(agentPluginContainer);
-        } else if (AdapterType.JDBC.getValue().equalsIgnoreCase(testConfig.getAdapter())) {
-            createJDBCEnvironment(agentPluginContainer);
+        StorageContainerOption storageContainerOption = DatabaseTypedSPILoader.getService(StorageContainerOption.class, databaseType);
+        Optional<DockerE2EContainer> agentPluginContainer = TypedSPILoader.findService(AgentPluginContainerFactory.class, testConfig.getPluginType()).map(AgentPluginContainerFactory::create);
+        if (Adapter.PROXY.getValue().equalsIgnoreCase(testConfig.getAdapter())) {
+            createProxyEnvironment(storageContainerOption, agentPluginContainer.orElse(null));
+        } else if (Adapter.JDBC.getValue().equalsIgnoreCase(testConfig.getAdapter())) {
+            createJDBCEnvironment(storageContainerOption, agentPluginContainer.orElse(null));
         }
         log.info("Waiting to collect data ...");
         long collectDataWaitSeconds = testConfig.getCollectDataWaitSeconds();
@@ -109,19 +114,20 @@ public final class AgentE2ETestEnvironment {
         initialized = true;
     }
     
-    @SuppressWarnings("OptionalUsedAsFieldOrParameterType")
-    private void createProxyEnvironment(final Optional<DockerITContainer> agentPluginContainer) {
-        containers = new ITContainers();
-        ShardingSphereProxyClusterContainer proxyContainer = new ShardingSphereProxyClusterContainer(TypedSPILoader.getService(DatabaseType.class, "MySQL"), getAdaptorContainerConfiguration());
+    private void createProxyEnvironment(final StorageContainerOption storageContainerOption, final DockerE2EContainer agentPluginContainer) {
+        containers = new E2EContainers(null);
+        ShardingSphereProxyDockerContainer proxyContainer = new ShardingSphereProxyDockerContainer(databaseType, getAdaptorContainerConfiguration());
         proxyContainer.withLogConsumer(testConfig.isLogEnabled() ? this::collectLogs : null);
-        MySQLContainer storageContainer = new MySQLContainer(imageConfig.getMysqlImage(), getStorageContainerConfiguration());
+        StorageContainer storageContainer = new DockerStorageContainer(imageConfig.getMysqlImage(), storageContainerOption, null);
         proxyContainer.dependsOn(storageContainer);
         containers.registerContainer(storageContainer);
-        GovernanceContainer governanceContainer = GovernanceContainerFactory.newInstance("ZooKeeper");
+        GovernanceContainer governanceContainer = new GovernanceContainer(TypedSPILoader.getService(GovernanceContainerOption.class, "ZooKeeper"));
         proxyContainer.dependsOn(governanceContainer);
         containers.registerContainer(governanceContainer);
-        agentPluginContainer.ifPresent(proxyContainer::dependsOn);
-        agentPluginContainer.ifPresent(optional -> containers.registerContainer(optional));
+        if (null != agentPluginContainer) {
+            proxyContainer.dependsOn(agentPluginContainer);
+            containers.registerContainer(agentPluginContainer);
+        }
         containers.registerContainer(proxyContainer);
         containers.start();
         try {
@@ -129,16 +135,6 @@ public final class AgentE2ETestEnvironment {
             proxyRequestExecutor.start();
         } catch (final SQLException ignored) {
         }
-    }
-    
-    private static StorageContainerConfiguration getStorageContainerConfiguration() {
-        Map<String, String> containerEnvironments = new HashMap<>(3, 1F);
-        containerEnvironments.put("LANG", "C.UTF-8");
-        containerEnvironments.put("MYSQL_RANDOM_ROOT_PASSWORD", "yes");
-        Map<String, String> mountedResources = new HashMap<>();
-        mountedResources.put("/env/mysql/init.sql", "/docker-entrypoint-initdb.d/init.sql");
-        return new StorageContainerConfiguration("--sql_mode= --default-authentication-plugin=mysql_native_password", containerEnvironments,
-                mountedResources, Collections.emptyMap(), Collections.emptyMap());
     }
     
     private AdaptorContainerConfiguration getAdaptorContainerConfiguration() {
@@ -151,15 +147,16 @@ public final class AgentE2ETestEnvironment {
         return new AdaptorContainerConfiguration("sharding_db", Collections.emptyList(), mountedResources, imageConfig.getProxyImage(), "");
     }
     
-    @SuppressWarnings("OptionalUsedAsFieldOrParameterType")
-    private void createJDBCEnvironment(final Optional<DockerITContainer> agentPluginContainer) {
-        containers = new ITContainers();
-        MySQLContainer storageContainer = new MySQLContainer(imageConfig.getMysqlImage(), getStorageContainerConfiguration());
+    private void createJDBCEnvironment(final StorageContainerOption storageContainerOption, final DockerE2EContainer agentPluginContainer) {
+        containers = new E2EContainers(null);
+        StorageContainer storageContainer = new DockerStorageContainer(imageConfig.getMysqlImage(), storageContainerOption, null);
         ShardingSphereJdbcAgentContainer jdbcAgentContainer = new ShardingSphereJdbcAgentContainer(
                 imageConfig.getJdbcProjectImage(), testConfig.getPluginType(), testConfig.isLogEnabled() ? this::collectLogs : null);
         jdbcAgentContainer.dependsOn(storageContainer);
-        agentPluginContainer.ifPresent(jdbcAgentContainer::dependsOn);
-        agentPluginContainer.ifPresent(optional -> containers.registerContainer(optional));
+        if (null != agentPluginContainer) {
+            jdbcAgentContainer.dependsOn(agentPluginContainer);
+            containers.registerContainer(agentPluginContainer);
+        }
         containers.registerContainer(storageContainer);
         containers.registerContainer(jdbcAgentContainer);
         containers.start();
@@ -172,7 +169,7 @@ public final class AgentE2ETestEnvironment {
     }
     
     /**
-     * Destroy environment.
+     * Destroy the environment.
      */
     public void destroy() {
         if (!AgentE2ETestConfiguration.getInstance().containsTestParameter()) {

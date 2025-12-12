@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.infra.exception.kernel.connection;
 
-import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.XOpenSQLState;
-import org.apache.shardingsphere.infra.exception.core.external.sql.type.kernel.category.ConnectionSQLException;
+import org.apache.shardingsphere.infra.exception.external.sql.sqlstate.XOpenSQLState;
+import org.apache.shardingsphere.infra.exception.external.sql.type.kernel.category.ConnectionSQLException;
 
 /**
  * SQL execution interrupted exception.

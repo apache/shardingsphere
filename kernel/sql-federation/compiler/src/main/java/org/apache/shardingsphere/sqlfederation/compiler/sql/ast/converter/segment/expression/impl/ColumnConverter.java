@@ -20,14 +20,12 @@ package org.apache.shardingsphere.sqlfederation.compiler.sql.ast.converter.segme
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.calcite.sql.SqlIdentifier;
-import org.apache.calcite.sql.SqlNode;
 import org.apache.calcite.sql.parser.SqlParserPos;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.OwnerSegment;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 /**
  * Column converter.
@@ -36,16 +34,16 @@ import java.util.Optional;
 public final class ColumnConverter {
     
     /**
-     * Convert column segment to sql node.
+     * Convert column segment to SQL node.
      *
      * @param segment column segment
-     * @return sql node
+     * @return SQL node
      */
-    public static Optional<SqlNode> convert(final ColumnSegment segment) {
+    public static SqlIdentifier convert(final ColumnSegment segment) {
         List<String> names = new ArrayList<>();
         segment.getOwner().ifPresent(optional -> addOwnerNames(names, optional));
         names.add(segment.getIdentifier().getValue());
-        return Optional.of(new SqlIdentifier(names, SqlParserPos.ZERO));
+        return new SqlIdentifier(names, SqlParserPos.ZERO);
     }
     
     private static void addOwnerNames(final List<String> names, final OwnerSegment owner) {

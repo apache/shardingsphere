@@ -19,10 +19,12 @@ package org.apache.shardingsphere.infra.datasource.pool.creator;
 
 import com.google.common.base.CaseFormat;
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPILoader;
-import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeFactory;
-import org.apache.shardingsphere.infra.database.core.connector.ConnectionProperties;
-import org.apache.shardingsphere.infra.database.core.connector.ConnectionPropertiesParser;
+import org.apache.shardingsphere.database.connector.core.jdbcurl.DialectDefaultQueryPropertiesProvider;
+import org.apache.shardingsphere.database.connector.core.jdbcurl.parser.ConnectionProperties;
+import org.apache.shardingsphere.database.connector.core.jdbcurl.parser.ConnectionPropertiesParser;
+import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoader;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeFactory;
 import org.apache.shardingsphere.infra.datasource.pool.metadata.DataSourcePoolMetaData;
 import org.apache.shardingsphere.infra.datasource.pool.metadata.DataSourcePoolMetaDataReflection;
 import org.apache.shardingsphere.infra.datasource.pool.metadata.impl.DefaultDataSourcePoolFieldMetaData;
@@ -177,14 +179,18 @@ public final class DataSourcePoolReflection {
         if (!jdbcUrl.isPresent() || !jdbcConnectionProps.isPresent()) {
             return;
         }
-        ConnectionProperties connectionProps = DatabaseTypedSPILoader.getService(ConnectionPropertiesParser.class, DatabaseTypeFactory.get(jdbcUrl.get())).parse(jdbcUrl.get(), null, null);
+        DatabaseType databaseType = DatabaseTypeFactory.get(jdbcUrl.get());
+        ConnectionProperties connectionProps = DatabaseTypedSPILoader.getService(ConnectionPropertiesParser.class, databaseType).parse(jdbcUrl.get(), null, null);
         Properties queryProps = connectionProps.getQueryProperties();
         Properties jdbcProps = jdbcConnectionProps.get();
-        for (Entry<Object, Object> entry : connectionProps.getDefaultQueryProperties().entrySet()) {
-            String defaultPropertyKey = entry.getKey().toString();
-            String defaultPropertyValue = entry.getValue().toString();
-            if (!containsDefaultProperty(defaultPropertyKey, jdbcProps, queryProps)) {
-                jdbcProps.setProperty(defaultPropertyKey, defaultPropertyValue);
+        Optional<DialectDefaultQueryPropertiesProvider> defaultQueryPropertiesProvider = DatabaseTypedSPILoader.findService(DialectDefaultQueryPropertiesProvider.class, databaseType);
+        if (defaultQueryPropertiesProvider.isPresent()) {
+            for (Entry<Object, Object> entry : defaultQueryPropertiesProvider.get().getDefaultQueryProperties().entrySet()) {
+                String defaultPropertyKey = entry.getKey().toString();
+                String defaultPropertyValue = entry.getValue().toString();
+                if (!containsDefaultProperty(defaultPropertyKey, jdbcProps, queryProps)) {
+                    jdbcProps.setProperty(defaultPropertyKey, defaultPropertyValue);
+                }
             }
         }
         setField(metaData.getFieldMetaData().getJdbcUrlPropertiesFieldName(), jdbcProps);

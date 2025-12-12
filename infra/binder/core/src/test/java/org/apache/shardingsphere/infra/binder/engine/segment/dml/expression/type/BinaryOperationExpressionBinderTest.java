@@ -17,30 +17,47 @@
 
 package org.apache.shardingsphere.infra.binder.engine.segment.dml.expression.type;
 
+import com.cedarsoftware.util.CaseInsensitiveMap.CaseInsensitiveString;
 import com.google.common.collect.LinkedHashMultimap;
+import com.google.common.collect.Multimap;
 import org.apache.shardingsphere.infra.binder.engine.segment.SegmentType;
+import org.apache.shardingsphere.infra.binder.engine.segment.dml.expression.ExpressionSegmentBinder;
+import org.apache.shardingsphere.infra.binder.engine.segment.dml.from.context.TableSegmentBinderContext;
 import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementBinderContext;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.BinaryOperationExpression;
-import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simple.LiteralExpressionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExpressionSegment;
+import org.apache.shardingsphere.test.infra.framework.extension.mock.AutoMockExtension;
+import org.apache.shardingsphere.test.infra.framework.extension.mock.StaticMockSettings;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
+@ExtendWith(AutoMockExtension.class)
+@StaticMockSettings(ExpressionSegmentBinder.class)
 class BinaryOperationExpressionBinderTest {
     
     @Test
-    void assertBinaryOperationExpression() {
-        BinaryOperationExpression binaryOperationExpression = new BinaryOperationExpression(0, 0,
-                new LiteralExpressionSegment(0, 0, "test"),
-                new LiteralExpressionSegment(0, 0, "test"), "=", "test");
+    void assertBind() {
+        ExpressionSegment leftSegment = mock(ExpressionSegment.class);
+        ExpressionSegment rightSegment = mock(ExpressionSegment.class);
+        BinaryOperationExpression segment = new BinaryOperationExpression(3, 9, leftSegment, rightSegment, "+", "a + b");
+        ExpressionSegment boundLeftSegment = mock(ExpressionSegment.class);
+        ExpressionSegment boundRightSegment = mock(ExpressionSegment.class);
         SQLStatementBinderContext binderContext = mock(SQLStatementBinderContext.class);
-        BinaryOperationExpression actual =
-                BinaryOperationExpressionBinder.bind(binaryOperationExpression, SegmentType.PROJECTION, binderContext, LinkedHashMultimap.create(), LinkedHashMultimap.create());
-        assertThat(actual.getLeft().getText(), is("test"));
-        assertThat(actual.getRight().getText(), is("test"));
-        assertThat(actual.getOperator(), is("="));
-        assertThat(actual.getText(), is("test"));
+        Multimap<CaseInsensitiveString, TableSegmentBinderContext> tableBinderContexts = LinkedHashMultimap.create();
+        Multimap<CaseInsensitiveString, TableSegmentBinderContext> outerTableBinderContexts = LinkedHashMultimap.create();
+        when(ExpressionSegmentBinder.bind(leftSegment, SegmentType.PREDICATE, binderContext, tableBinderContexts, outerTableBinderContexts)).thenReturn(boundLeftSegment);
+        when(ExpressionSegmentBinder.bind(rightSegment, SegmentType.PREDICATE, binderContext, tableBinderContexts, outerTableBinderContexts)).thenReturn(boundRightSegment);
+        BinaryOperationExpression actual = BinaryOperationExpressionBinder.bind(segment, SegmentType.PREDICATE, binderContext, tableBinderContexts, outerTableBinderContexts);
+        assertThat(actual.getStartIndex(), is(3));
+        assertThat(actual.getStopIndex(), is(9));
+        assertThat(actual.getLeft(), is(boundLeftSegment));
+        assertThat(actual.getRight(), is(boundRightSegment));
+        assertThat(actual.getOperator(), is("+"));
+        assertThat(actual.getText(), is("a + b"));
     }
 }

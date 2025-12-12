@@ -2,160 +2,112 @@
 
 ### CVE
 
-1. Fixes CVE-2025-48924 [#36085](https://github.com/apache/shardingsphere/pull/36085)
-1. Fixes CVE-2024-7254 [#36153](https://github.com/apache/shardingsphere/pull/36153)
+1. Fix CVE-2025-55163, CVE-2025-58056, CVE-2025-58057 [#36758](https://github.com/apache/shardingsphere/pull/36758)
+1. Fix CVE-2025-48924 [#36085](https://github.com/apache/shardingsphere/pull/36085)
+1. Fix CVE-2024-7254 [#36153](https://github.com/apache/shardingsphere/pull/36153)
 
 ### Metadata Storage Changes
 
-1. Remove `default_strategies` prefix on sharding rule metadata persist [#34664](https://github.com/apache/shardingsphere/pull/34664)
-   1. Change `metadata/${databaseName}/rules/sharding/default_strategies/default_database_strategy` to `metadata/${databaseName}/rules/sharding/default_database_strategy`
-   1. Change `metadata/${databaseName}/rules/sharding/default_strategies/default_table_strategy` to `metadata/${databaseName}/rules/sharding/default_table_strategy`
-   1. Change `metadata/${databaseName}/rules/sharding/default_strategies/default_key_generate_strategy` to `metadata/${databaseName}/rules/sharding/default_key_generate_strategy`
-   1. Change `metadata/${databaseName}/rules/sharding/default_strategies/default_audit_strategy` to `metadata/${databaseName}/rules/sharding/default_audit_strategy`
-   1. Change `metadata/${databaseName}/rules/sharding/default_strategies/default_sharding_column` to `metadata/${databaseName}/rules/sharding/default_sharding_column`
+1. Remove `default_strategies` prefix on sharding rule metadata persist - [#34664](https://github.com/apache/shardingsphere/pull/34664)
 
 ### API Changes
 
-1. Remove SQL formatting feature [#35390](https://github.com/apache/shardingsphere/pull/35390)
-1. Remove logging rule feature [#35458](https://github.com/apache/shardingsphere/pull/35458)
-1. Remove configuration property key `system-log-level` [#35493](https://github.com/apache/shardingsphere/pull/35493)
+1. Remove SQL formatting feature - [#35390](https://github.com/apache/shardingsphere/pull/35390)
+1. Remove logging rule feature - [#35458](https://github.com/apache/shardingsphere/pull/35458)
+1. Remove configuration property key `system-log-level` - [#35493](https://github.com/apache/shardingsphere/pull/35493)
+1. Change ShardingSphere SQL log topic from `ShardingSphere-SQL` to `org.apache.shardingsphere.sql` - [#37022](https://github.com/apache/shardingsphere/pull/37022)
 
 ### New Features
 
-1. Decouple database types as pluggable [#35346](https://github.com/apache/shardingsphere/pull/35346)
-1. Decouple features as pluggable [#36086](https://github.com/apache/shardingsphere/pull/36086)
-1. Decouple mode repositories as pluggable [#36087](https://github.com/apache/shardingsphere/pull/36087)
-1. Firebird: Support Firebird Proxy [#35937](https://github.com/apache/shardingsphere/pull/35937)
+1. Add ShardingSphere BOM - [#36866](https://github.com/apache/shardingsphere/issues/36866)
+1. Decouple feature modules as pluggable - [#36086](https://github.com/apache/shardingsphere/pull/36086)
+1. Decouple database types as pluggable - [#35346](https://github.com/apache/shardingsphere/pull/35346)
+1. Decouple registry center types as pluggable - [#36087](https://github.com/apache/shardingsphere/pull/36087)
+1. Proxy: Support Firebird Proxy - [#35937](https://github.com/apache/shardingsphere/pull/35937)
+1. JDBC: Support ZooKeeper and ETCD URL format - [#37037](https://github.com/apache/shardingsphere/pull/37037)
 
 ### Enhancements
 
-1. Build: Support compiling and using ShardingSphere under OpenJDK 24 - [#35145](https://github.com/apache/shardingsphere/pull/35145)
-1. Infra: Support for connecting to Presto's Memory Connector in ShardingSphere config - [#34432](https://github.com/apache/shardingsphere/pull/34432)
-1. Infra: Eliminate HiveServer2 integration's dependency on Hive Metastore Client - [#36114](https://github.com/apache/shardingsphere/pull/36114)
-1. Infra: Support IPv6 for JDBC connection URL - [#35289](https://github.com/apache/shardingsphere/issues/35289)
-1. Metadata: Add support for partition tables in PostgreSQL [#34346](https://github.com/apache/shardingsphere/pull/34346)
-1. SQL Parser: Support MySQL SELECT CAST AS YEAR statement parse - [#34638](https://github.com/apache/shardingsphere/pull/34638)
-1. SQL Parser: Support MySQL SELECT MAX(ALL expr) statement parse - [#34639](https://github.com/apache/shardingsphere/pull/34639)
-1. SQL Parser: Support MySQL INSERT with GEOMCOLLECTION function parse - [#34654](https://github.com/apache/shardingsphere/pull/34654)
-1. SQL Parser: Support MySQL DELETE with statement parse - [#34817](https://github.com/apache/shardingsphere/pull/34817)
-1. SQL Parser: Support Doris CREATE MATERIALIZED VIEW - [#31499](https://github.com/apache/shardingsphere/pull/31499)
-1. SQL Parser: Enhance combineType in Oracle to support EXCEPT ALL and INTERSECT ALL - [#35099](https://github.com/apache/shardingsphere/pull/35099)
-1. SQL Parser: Support parsing MySQL stored procedure syntax - [#35137](https://github.com/apache/shardingsphere/pull/35137), [#35441](https://github.com/apache/shardingsphere/pull/35441)
-1. SQL Parser: Support parsing MySQL stored procedure syntax - [#35503](https://github.com/apache/shardingsphere/pull/35503/files)
-1. SQL Parser: Support Oracle SQL parsing V1 keywords as identifiers - [#35373](https://github.com/apache/shardingsphere/pull/35373)
-1. SQL Parser: Support Oracle in literal sql parsing - [#35384](https://github.com/apache/shardingsphere/pull/35384)
-1. SQL Parser: Add MySQL interval expression sql parsing - [#35468](https://github.com/apache/shardingsphere/pull/35468)
-1. SQL Parser: Support Hive CREATE DATABASE statement parse - [#35929](https://github.com/apache/shardingsphere/pull/35929)
-1. SQL Parser: Support sql parser extract unique index - [#35941](https://github.com/apache/shardingsphere/pull/35941)
-1. SQL Parser: Support postgresql and opengauss create function with $$ symbol parse [#35947](https://github.com/apache/shardingsphere/pull/35947)
-1. SQL Parser: Support Hive DROP DATABASE statement parse - [#35948](https://github.com/apache/shardingsphere/pull/35948)
-1. SQL Parser: Support mysql quantify operator parse and upgrade calcite to 1.40.0 - [#35675](https://github.com/apache/shardingsphere/pull/35675)
-1. SQL Parser: Support Oracle create table with lob storage clause sql parsing - [#35782](https://github.com/apache/shardingsphere/pull/35782)
-1. SQL Parser: Support Oracle multiple backslash literal parsing - [#35784](https://github.com/apache/shardingsphere/pull/35784)
-1. SQL Parser: Support Hive Loading files into tables statement parse - [#36001](https://github.com/apache/shardingsphere/pull/36001)
-1. SQL Parser: Support Hive ALTER DATABASE statement parse - [#36008](https://github.com/apache/shardingsphere/pull/36008)
-1. SQL Parser: Support Hive DROP TABLE statement parse - [#36018](https://github.com/apache/shardingsphere/pull/36018)
-1. SQL Parser: Support Hive USE DATABASE statement parse - [#36024](https://github.com/apache/shardingsphere/pull/36024)
-1. SQL Parser: Support Hive CREATE TABLE statement parse - [#36040](https://github.com/apache/shardingsphere/pull/36040)
-1. SQL Parser: Support Hive TRUNCATE TABLE statement parse - [#36049](https://github.com/apache/shardingsphere/pull/36049)
-1. SQL Parser: Support Hive ALTER TABLE statement parse - [#36066](https://github.com/apache/shardingsphere/pull/36066)
-1. SQL Parser: Support Hive ALTER COLUMN statement parse - [#36096](https://github.com/apache/shardingsphere/pull/36096)
-1. SQL Parser: Support Hive CREATE VIEW statement parse - [#36120](https://github.com/apache/shardingsphere/pull/36120)
-1. SQL Parser: Support Hive DROP VIEW statement parse - [#36122](https://github.com/apache/shardingsphere/pull/36122)
-1. SQL Parser: Support Hive ALTER VIEW statement parse - [#36134](https://github.com/apache/shardingsphere/pull/36134)
-1. SQL Parser: Support Hive CREATE MATERIALIZED VIEW statement parse - [#36144](https://github.com/apache/shardingsphere/pull/36144)
-1. SQL Parser: Support Hive DROP MATERIALIZED VIEW statement parse - [#36145](https://github.com/apache/shardingsphere/pull/36145)
-1. SQL Parser: Support Hive ALTER MATERIALIZED VIEW statement parse - [#36146](https://github.com/apache/shardingsphere/pull/36146)
-1. SQL Parser: Support Hive CREATE INDEX statement parse - [#36157](https://github.com/apache/shardingsphere/pull/36157)
-1. SQL Parser: Support Hive DROP INDEX statement parse - [#36166](https://github.com/apache/shardingsphere/pull/36166)
-1. SQL Parser: Support Hive ALTER INDEX statement parse - [#36167](https://github.com/apache/shardingsphere/pull/36167)
-1. SQL Parser: Support Hive CREATE MACRO statement parse - [#36181](https://github.com/apache/shardingsphere/pull/36181)
-1. SQL Parser: Support Hive DROP MACRO statement parse - [#36187](https://github.com/apache/shardingsphere/pull/36187)
-1. SQL Parser: Support Hive CREATE FUNCTION statement parse - [#36193](https://github.com/apache/shardingsphere/pull/36193)
-1. SQL Parser: Support Hive DROP FUNCTION statement parse - [#36196](https://github.com/apache/shardingsphere/pull/36196)
-1. SQL Parser: Support Hive RELOAD FUNCTION statement parse - [#36200](https://github.com/apache/shardingsphere/pull/36200)
-1. SQL Parser: Support Hive SHOW DATABASES & SHOW CONNECTORS & SHOW TABLES statement parse - [#36221](https://github.com/apache/shardingsphere/pull/36221)
-1. SQL Parser: Support Hive SHOW VIEWS & SHOW MATERIALIZED VIEWS & SHOW PARTITIONS statement parse - [#36263](https://github.com/apache/shardingsphere/pull/36263)
-1. SQL Parser: Support SQL Server xml methods parse - [#35911](https://github.com/apache/shardingsphere/pull/35911)
-1. SQL Parser: Support SQL Server CHANGETABLE function parse - [#35920](https://github.com/apache/shardingsphere/pull/35920)
-1. SQL Parser: Support SQL Server AI_GENERATE_EMBEDDINGS function parse - [#35922](https://github.com/apache/shardingsphere/pull/35922)
-1. SQL Parser: Support SQL Server the LAG and LEAD analytical functions parse - [#35928](https://github.com/apache/shardingsphere/pull/35928)
-1. SQL Parser: Support SQL Server the language term parameter of the FREETEXTTABLE function parse - [#35930](https://github.com/apache/shardingsphere/pull/35930)
-1. SQL Parser: Support SQL Server the NCHAR function parse - [#35982](https://github.com/apache/shardingsphere/pull/35982)
-1. SQL Parser: Support SQL Server the LEFT function parse - [#35985](https://github.com/apache/shardingsphere/pull/35985)
-1. SQL Parser: Support SQL Server the NTILE function parse - [#35989](https://github.com/apache/shardingsphere/pull/35989)
-1. SQL Parser: Support SQL Server the RANK function parse - [#35991](https://github.com/apache/shardingsphere/pull/35991)
-1. SQL Parser: Support SQL Server WITH ROLLUP parse - [#36000](https://github.com/apache/shardingsphere/pull/36000)
-1. SQL Parser: Support SQL Server the COLLATE rule parse - [#36002](https://github.com/apache/shardingsphere/pull/36002)
-1. SQL Parser: Support SQL Server the operators PIVOT and UNPIVOT parse - [#36007](https://github.com/apache/shardingsphere/pull/36007)
-1. SQL Parser: Support SQL Server the CURRENT_USER function parse - [#36009](https://github.com/apache/shardingsphere/pull/36009)
-1. SQL Parser: Support SQL Server the PARSE function parse - [#36013](https://github.com/apache/shardingsphere/pull/36013)
-1. SQL Parser: Support SQL Server the TRY_PARSE function parse - [#36016](https://github.com/apache/shardingsphere/pull/36016)
-1. SQL Parser: Support SQL Server three-level naming of table-valued function parse - [#36019](https://github.com/apache/shardingsphere/pull/36019)
-1. SQL Parser: Support SQL Server static methods of the form dataTypeName::methodName parse - [#36033](https://github.com/apache/shardingsphere/pull/36033)
-1. SQL Parser: Support SQL Server the STRING AGG aggregation function parse - [#36045](https://github.com/apache/shardingsphere/pull/36045)
-1. SQL Parser: Support SQL Server the PATINDEX function parse - [#36046](https://github.com/apache/shardingsphere/pull/36046)
-1. SQL Parser: Support SQL Server the PERCENTILE function parse - [#36048](https://github.com/apache/shardingsphere/pull/36048)
-1. SQL Parser: Support SQL Server the AT TIME ZONE operator parse - [#36053](https://github.com/apache/shardingsphere/pull/36053)
-1. SQL Parser: Support SQL Server the DENSE_RANK function parse - [#36057](https://github.com/apache/shardingsphere/pull/36057)
-1. SQL Parser: Support SQL Server the PERCENT_RANK function parse - [#36062](https://github.com/apache/shardingsphere/pull/36062)
-1. SQL Parser: Support SQL Server the CUME_DIST function parse - [#36063](https://github.com/apache/shardingsphere/pull/36063)
-1. SQL Parser: Support SQL Server table hints parse - [#36065](https://github.com/apache/shardingsphere/pull/36065)
-1. SQL Parser: Support SQL Server join hints parse - [#36069](https://github.com/apache/shardingsphere/pull/36069)
-1. SQL Parser: Support SQL Server the OVER clause of aggregation function parse - [#36070](https://github.com/apache/shardingsphere/pull/36070)
-1. SQL Parser: Support SQL Server naming of the four parts parse - [#36071](https://github.com/apache/shardingsphere/pull/36071)
-1. SQL Parser: Support SQL Server ON clause in SELECT INTO statements parse - [#36075](https://github.com/apache/shardingsphere/pull/36075)
-1. SQL Parser: Support SQL Server the OPENDATASOURCE function in INSERT statements parse - [#36093](https://github.com/apache/shardingsphere/pull/36093)
-1. SQL Parser: Support SQL Server the LANGUAGE identifier parse - [#36110](https://github.com/apache/shardingsphere/pull/36110)
-1. SQL Parser: Support SQL Server clustered index parse - [#36132](https://github.com/apache/shardingsphere/pull/36132)
-1. SQL Parser: Support SQL Server the CATALOG identifier parse - [#36137](https://github.com/apache/shardingsphere/pull/36137)
-1. SQL Parser: Support Hive ALTER PARTITION statement parse - [#36072](https://github.com/apache/shardingsphere/pull/36072)
-1. SQL Binder: Fix is unable to find the outer table in the ExistsSubqueryExpressionBinder - [#36068](https://github.com/apache/shardingsphere/pull/36068)
-1. SQL Binder: Support select aggregation function sql bind in projection and having - [#34379](https://github.com/apache/shardingsphere/pull/34379)
-1. SQL Binder: Support column definition for the WITH clause and ExternalTableBinderContext in CommonTableExpressionBinder.[#34384](https://github.com/apache/shardingsphere/pull/34384)
-1. SQL Binder: Support case when then else segment bind - [#34600](https://github.com/apache/shardingsphere/pull/34600)
-1. SQL Binder: Support outer join expression bind - [#35019](https://github.com/apache/shardingsphere/pull/35019)
-1. SQL Binder: Support explain statement sql bind - [#35439](https://github.com/apache/shardingsphere/pull/35439)
-1. SQL Binder: Support AnalyzeTable statement SQL bind - [#35954](https://github.com/apache/shardingsphere/pull/35954)
-1. SQL Binder: Support Comment statement SQL bind - [#36012](https://github.com/apache/shardingsphere/pull/36012)
-1. SQL Binder: Support Prepare statement SQL bind - [#36064](https://github.com/apache/shardingsphere/pull/36064)
-1. SQL Binder: Support Flush statement SQL bind - [#36036](https://github.com/apache/shardingsphere/pull/36036)
-1. SQL Binder: Support Revoke statement SQL bind - [#36124](https://github.com/apache/shardingsphere/pull/36124)
-1. SQL Binder: Add alter table metadata check - [#35877](https://github.com/apache/shardingsphere/pull/35877)
-1. SQL Router: Add check for select with union all routing to multi data sources - [#35037](https://github.com/apache/shardingsphere/pull/35037)
+1. Build: Support compiling and using ShardingSphere under OpenJDK 24 and 25 - [#36688](https://github.com/apache/shardingsphere/issues/36688)
+1. Metadata: Support IPv6 for JDBC connection URL - [#35289](https://github.com/apache/shardingsphere/issues/35289)
+1. Metadata: Support to load partition tables for PostgreSQL - [#34346](https://github.com/apache/shardingsphere/pull/34346)
+1. Metadata: Support for connecting to Presto's Memory Connector - [#34432](https://github.com/apache/shardingsphere/pull/34432)
+1. Kernel: Add LocalDate data type support - [#37053](https://github.com/apache/shardingsphere/pull/37053)
+1. SQL Parser: Support to parse stored procedure syntax for MySQL - [#36690](https://github.com/apache/shardingsphere/pull/36690)
+1. SQL Parser: Support to parse more SQL statements for MySQL - [#36689](https://github.com/apache/shardingsphere/issues/36689)
+1. SQL Parser: Support to parse more SQL statements for SQLServer - [#36695](https://github.com/apache/shardingsphere/issues/36695)
+1. SQL Parser: Support to parse more SQL statements for Oracle - [#36696](https://github.com/apache/shardingsphere/issues/36696)
+1. SQL Parser: Support to parse more SQL statements for Hive - [#36694](https://github.com/apache/shardingsphere/pull/36694) [#37074](https://github.com/apache/shardingsphere/pull/37074)
+1. SQL Parser: Support to parse CREATE MATERIALIZED VIEW for Doris - [#31499](https://github.com/apache/shardingsphere/pull/31499)
+1. SQL Parser: Support to parse CREATE FUNCTION with $$ symbol for PostgreSQL and openGauss - [#35947](https://github.com/apache/shardingsphere/pull/35947)
+1. SQL Binder: Support to bind more SQL statements - [#36697](https://github.com/apache/shardingsphere/pull/36697)
+1. SQL Binder: Add ALTER TABLE metadata check - [#35877](https://github.com/apache/shardingsphere/pull/35877)
+1. SQL Router: Add SELECT with UNION ALL routing to multi data sources check - [#35037](https://github.com/apache/shardingsphere/pull/35037)
 1. SQL Router: Improve support for executing tableless SQL with single data source - [#35659](https://github.com/apache/shardingsphere/pull/35659)
-1. DistSQL: Add job sharding nodes to the result set of `SHOW MIGRATION LIST` - [#35053](https://github.com/apache/shardingsphere/pull/35053)
-1. DistSQL: Add InUsedStorageUnitRetriever for single rule - [#35131](https://github.com/apache/shardingsphere/pull/35131)
-1. Proxy: Implement write method for PostgreSQL bool binary data type - [#35831](https://github.com/apache/shardingsphere/pull/35831)
+1. DistSQL: Add job sharding nodes info to the query results of `SHOW MIGRATION LIST` - [#35053](https://github.com/apache/shardingsphere/pull/35053)
+1. DistSQL: Add DistSQL for query storage units which used in single rule - [#35131](https://github.com/apache/shardingsphere/pull/35131)
+1. Proxy: Implement write bool binary data type for PostgreSQL protocol - [#35831](https://github.com/apache/shardingsphere/pull/35831)
+1. Proxy: Add authority check on SQL `SHOW CREATE DATABASE` for MySQL - [#36862](https://github.com/apache/shardingsphere/pull/36862)
+1. Sharding: Using cache to avoid memory overflow from inline expression parsing - [#22196](https://github.com/apache/shardingsphere/issues/22196)
+1. Sharding: Add digital suffix check with binding table names - [#35293](https://github.com/apache/shardingsphere/issues/35293)
 1. Encrypt: Use EncryptDerivedColumnSuffix to enhance encrypt table subquery rewrite logic - [#34829](https://github.com/apache/shardingsphere/pull/34829)
 1. Encrypt: Add quotes to encrypt rewrite derived columns - [#34950](https://github.com/apache/shardingsphere/pull/34950)
-1. Encrypt: Add support for NOT LIKE operator in encryption - [#35984](https://github.com/apache/shardingsphere/pull/35984)
-1. SQL Parser: Support table alias in insert statement in Oracle - [#36202](https://github.com/apache/shardingsphere/pull/36202)
+1. Encrypt: Support NOT LIKE operator in encryption feature - [#35984](https://github.com/apache/shardingsphere/pull/35984)
+1. Readwrite-splitting: Update transactional read query strategy default type as PRIMARY - [#36477](https://github.com/apache/shardingsphere/pull/36477)
+1. Pipeline: Improve pipeline job progress incremental latestActiveTimeMillis persistence - [#34655](https://github.com/apache/shardingsphere/pull/34655)
+1. Pipeline: Improve heterogeneous databases migration - [#35424](https://github.com/apache/shardingsphere/pull/35424)
+1. Pipeline: Improve DATA_MATCH data consistency check to use range streaming query - [#35740](https://github.com/apache/shardingsphere/pull/35740)
+1. Pipeline: Add streaming-range-type property and LARGE impl in DATA_MATCH consistency check on MySQL sharding table for better performance - [#35786](https://github.com/apache/shardingsphere/pull/35786)
+1. Pipeline: Improve migration consistency check to reflect storage unit maxPoolSize dynamically - [#36507](https://github.com/apache/shardingsphere/pull/36507)
+1. Pipeline: Improve "show migration check status" inventory_finished_percentage column inaccurate result - [#36509](https://github.com/apache/shardingsphere/pull/36509)
+1. Pipeline: Compatible with COMPLEX_INLINE allow-range-query-with-inline-sharding - [#36524](https://github.com/apache/shardingsphere/pull/36524)
+1. Pipeline: Support pipeline job realtime reflection on proxy global properties after restarting - [#36749](https://github.com/apache/shardingsphere/pull/36749)
+1. Pipeline: InventoryDumper reuse table inventory calculator for better function and performance - [#36830](https://github.com/apache/shardingsphere/pull/36830)
+1. Pipeline: Improve "alter transmission rule": verify STREAM_CHANNEL TYPE NAME - [#36864](https://github.com/apache/shardingsphere/pull/36864)
+1. Pipeline: InventoryDumperContextSplitter supports multi-columns unique key first integer column splitting - [#36935](https://github.com/apache/shardingsphere/pull/36935)
+1. Encrypt: Support handling show create view result decoration in encrypt - [#37299](https://github.com/apache/shardingsphere/pull/37299)
 
 ### Bug Fixes
 
-1. Kernel: Fix not return generate key when id set null - [35783](https://github.com/apache/shardingsphere/pull/35783)
-1. SQL Parser: Fix set OnDuplicateKeyColumnsSegment on PostgreSQLInsertStatement - [#34425](https://github.com/apache/shardingsphere/pull/34425)
-1. SQL Parser: Fix mysql sql parser error when sql contains implicit concat expression - [#34660](https://github.com/apache/shardingsphere/pull/34660)
-1. SQL Parser: Refactor pivot and unpivot clause handling to support multiple column names - [35586](https://github.com/apache/shardingsphere/pull/35586)
-1. SQL Binder: Fix is unable to find the outer table in the NotExpressionBinder - [36135](https://github.com/apache/shardingsphere/pull/36135)
+1. Kernel: Fix not return generate key when set null in INSERT statement - [35783](https://github.com/apache/shardingsphere/pull/35783)
+1. Kernel: Add AllowNotUseDatabaseSQLStatementAttribute to support some mysql dal statement execute without use database - [#37033](https://github.com/apache/shardingsphere/pull/37033)
+1. Metadata: Fix the exception to rename schema name when executing ALTER SCHEMA - [#34465](https://github.com/apache/shardingsphere/pull/34465)
+1. SQL Parser: Support multiple column names with pivot and unpivot clause - [35586](https://github.com/apache/shardingsphere/pull/35586)
+1. SQL Parser: Fix set OnDuplicateKeyColumnsSegment on INSERT for PostgreSQL - [#34425](https://github.com/apache/shardingsphere/pull/34425)
+1. SQL Parser: Fix SQL parser error when SQL contains implicit concat expression for MySQL - [#34660](https://github.com/apache/shardingsphere/pull/34660)
+1. SQL Parser: Fix SQL parser error when SQL contains subquery with alias for Oracle - [#35239](https://github.com/apache/shardingsphere/pull/35239)
+1. SQL Parser: Fix multiple SQLs split error when comma contained - [#31609](https://github.com/apache/shardingsphere/pull/31609)
+1. SQL Binder: Fix unable to find the outer table in the NotExpressionBinder - [36135](https://github.com/apache/shardingsphere/pull/36135)
+1. SQL Binder: Fix unable to find the outer table in the ExistsSubqueryExpressionBinder - [#36068](https://github.com/apache/shardingsphere/pull/36068)
+1. SQL Binder: Fix column bind exception caused by oracle XMLELEMENT function first parameter without quote - [#36963](https://github.com/apache/shardingsphere/pull/36963)
 1. Transaction: Fix conflicting dependencies of BASE transaction integration module - [#35142](https://github.com/apache/shardingsphere/pull/35142)
-1. SQL Federation: Fix Operation not allowed after ResultSet closed exception when use sql federation - [#35206](https://github.com/apache/shardingsphere/pull/35206)
+1. Transaction: Alleviate connection leaks caused by SEATA client throwing exceptions - [#34463](https://github.com/apache/shardingsphere/pull/34463)
+1. SQL Federation: Fix Operation not allowed after ResultSet closed exception when use SQL federation - [#35206](https://github.com/apache/shardingsphere/pull/35206)
 1. DistSQL: Fix duplicate result when show rules used storage unit with readwrite-splitting rule - [#35129](https://github.com/apache/shardingsphere/pull/35129)
 1. DistSQL: Fix missing comma in `ALTER SQL_FEDERATION RULE` - [#35523](https://github.com/apache/shardingsphere/pull/35523)
-1. JDBC: Alleviate connection leaks caused by Seata Client throwing exceptions - [#34463](https://github.com/apache/shardingsphere/pull/34463)
-1. JDBC: Fix wrong jdbc database metadata pass through logic - [#34959](https://github.com/apache/shardingsphere/pull/34959)
-1. JDBC: Fix getting database name from sql statement context - [#34960](https://github.com/apache/shardingsphere/pull/34960)
-1. JDBC: Support set datasource properties type with java.time.Duration - [#35241](https://github.com/apache/shardingsphere/pull/35241)
+1. JDBC: Fix some wrong JDBC database metadata retrieve logics - [#34959](https://github.com/apache/shardingsphere/pull/34959)
+1. JDBC: Fix getting database name from SQL statement context - [#34960](https://github.com/apache/shardingsphere/pull/34960)
+1. JDBC: Support set data source properties type with java.time.Duration - [#35241](https://github.com/apache/shardingsphere/pull/35241)
 1. JDBC: Resolve statement manager leaks when creating multiple statements - [#35665](https://github.com/apache/shardingsphere/pull/35665)
 1. JDBC: Fix the issue where cached connections in DriverDatabaseConnectionManager were not released in time - [35834](https://github.com/apache/shardingsphere/pull/35834)
-1. Proxy: Fix `show processlist` not wait for all nodes - [#35348](https://github.com/apache/shardingsphere/pull/35348)
+1. JDBC: Clear batch generated keys result set when call clearBatch method - [37204](https://github.com/apache/shardingsphere/pull/37204)
+1. JDBC: Fix Oracle TIMESTAMP WITH TIME ZONE ORDER BY exception - [#37181](https://github.com/apache/shardingsphere/pull/37181)
+1. Proxy: Fix `SHOW PROCESSLIST` not wait for all nodes - [#35348](https://github.com/apache/shardingsphere/pull/35348)
 1. Proxy: Fix NoSuchElementException exception when execute MySQL SHOW VARIABLES without current database - [#35550](https://github.com/apache/shardingsphere/pull/35550)
 1. Proxy: Fix column length for PostgreSQL string binary protocol value - [35840](https://github.com/apache/shardingsphere/pull/35840)
 1. Proxy: Fix the connection leak caused by rollback failure in Proxy - [35867](https://github.com/apache/shardingsphere/pull/35867)
-1. Mode: Fixes issue of drop schema can not work on standalone mode - [#34470](https://github.com/apache/shardingsphere/pull/34470)
-1. Mode: Fixes the exception to missing renamed schema name when alter schema - [#34465](https://github.com/apache/shardingsphere/pull/34465)
-1. Encrypt: Resolve rewrite issue in nested concat function - [35815](https://github.com/apache/shardingsphere/pull/35815)
+1. Proxy: Fix the behavior difference of select built-in function names with spaces -[#36537](https://github.com/apache/shardingsphere/pull/36537)
+1. Proxy: Fix MySQL binary protocol datetime/time fractional seconds precision - [#37294](https://github.com/apache/shardingsphere/pull/37294)
+1. Proxy: Fix PostgreSQL boolean text output to return `t`/`f` as per protocol - [#37184](https://github.com/apache/shardingsphere/pull/37184)
+1. Mode: Fix issue of drop schema can not work on standalone mode - [#34470](https://github.com/apache/shardingsphere/pull/34470)
+1. Encrypt: Resolve rewrite issue in nested concat function - [#35815](https://github.com/apache/shardingsphere/pull/35815)
+1. Sharding: Fix mod sharding algorithm judgement -[#36386](https://github.com/apache/shardingsphere/pull/36386)
+1. Sharding: Fix check inline sharding algorithms in table rules - [#36999](https://github.com/apache/shardingsphere/pull/36999)
+1. Pipeline: Recover value of migration incremental importer batch size - [#34670](https://github.com/apache/shardingsphere/pull/34670)
+1. Pipeline: Fix InventoryDumper first time dump SQL without ORDER BY on multiple columns unique key table - [#34736](https://github.com/apache/shardingsphere/pull/34736)
+1. Pipeline: Fix MySQL JDBC query properties extension when SSL is required on server - [#36581](https://github.com/apache/shardingsphere/pull/36581)
+1. Pipeline: Fix migration might skip some records on big table after job restarting - [#36878](https://github.com/apache/shardingsphere/pull/36878)
+1. Pipeline: Fix unsigned number column value type inconsistent in inventory and incremental - [#37280](https://github.com/apache/shardingsphere/pull/37280)
 
 ### Change Logs
 
@@ -167,47 +119,21 @@
 
 ### New Features
 
-1. Kernel: Add firebird SQL parser module and database type [#33773](https://github.com/apache/shardingsphere/pull/33773)
+1. Firebird: Add Firebird SQL parser module and database type - [#33773](https://github.com/apache/shardingsphere/pull/33773)
 
 ### Enhancements
 
-1. Kernel: Add arguments not null check when creating RouteUnit - [#33382](https://github.com/apache/shardingsphere/pull/33382)
-1. Kernel: Add index columns not empty judgement for IndexColumnTokenGenerator - [#33384](https://github.com/apache/shardingsphere/pull/33384)
-1. Kernel: Add binding to owner table - [#33533](https://github.com/apache/shardingsphere/pull/33533)
-1. Kernel: Add binding to owner table - [#33533](https://github.com/apache/shardingsphere/pull/33533)
-1. Kernel: Add WithAvailable interface and encrypt with, combine, insert select support checker - [#34175](https://github.com/apache/shardingsphere/pull/34175)
-1. Metadata: Add load-table-metadata-batch-size props to concurrent load table metadata - [#34009](https://github.com/apache/shardingsphere/pull/34009)
+1. Metadata: Support table metadata loading concurrently - [#34009](https://github.com/apache/shardingsphere/pull/34009)
+1. Metadata: Support setting `hive_conf_list`, `hive_var_list` and `sess_var_list` for jdbcURL when connecting to HiveServer2 - [#33749](https://github.com/apache/shardingsphere/pull/33749)
+1. Metadata: Support connecting to HiveServer2 through database connection pools other than HikariCP - [#33762](https://github.com/apache/shardingsphere/pull/33762)
+1. Metadata: Partial support for connecting to embedded ClickHouse `chDB` - [#33786](https://github.com/apache/shardingsphere/pull/33786)
+1. SQL Parser: Support to parse more SQL statements for MySQL - [#36701](https://github.com/apache/shardingsphere/pull/36701)
+1. SQL Parser: Support to parse more SQL statements for Doris - [#36700](https://github.com/apache/shardingsphere/pull/36700)
+1. SQL Parser: Enhance CREATE VIEW, ALTER VIEW, DROP VIEW SQL parser - [#34283](https://github.com/apache/shardingsphere/pull/34283)
+1. SQL Binder: Significantly enhance SQL binding capability - [#36702](https://github.com/apache/shardingsphere/issues/36702)
 1. DistSQL: Check inline expression when create sharding table rule with inline sharding algorithm - [#33735](https://github.com/apache/shardingsphere/pull/33735)
-1. SQL Parser: Support parsing Doris BITXOR - [#33258](https://github.com/apache/shardingsphere/pull/33258)
-1. SQL Parser: Support parsing Doris INSTR - [#33289](https://github.com/apache/shardingsphere/pull/33289)
-1. SQL Parser: Support parsing Doris STRRIGHT - [#33393](https://github.com/apache/shardingsphere/pull/33393)
-1. SQL Parser: Support parsing MySQL by adding non-reserved keywords in BaseRule.g4 file according to MySQL 8.4 doc - [#33846](https://github.com/apache/shardingsphere/pull/33846)
-1. SQL Parser: Support parsing Doris EXTRACT\_URL\_PARAMETER - [#33571](https://github.com/apache/shardingsphere/pull/33571)
-1. SQL Parser: Enhance create view, alter view, drop view sql parser - [#34283](https://github.com/apache/shardingsphere/pull/34283)
-1. SQL Parser: Support Quoted strings placed next to each other in MySQL parser. - [#34619](https://github.com/apache/shardingsphere/pull/34619)
-1. SQL Binder: Add sql bind logic for create table statement - [#34074](https://github.com/apache/shardingsphere/pull/34074)
-1. SQL Binder: Support create index statement sql bind - [#34112](https://github.com/apache/shardingsphere/pull/34112)
-1. SQL Parser: Support MySQL update with statement parse - [#34126](https://github.com/apache/shardingsphere/pull/34126)
-1. SQL Binder: Remove TablesContext#findTableNames method and implement select order by, group by bind logic - [#34123](https://github.com/apache/shardingsphere/pull/34123)
-1. SQL Binder: Support select with statement sql bind and add bind test case - [#34141](https://github.com/apache/shardingsphere/pull/34141)
-1. SQL Binder: Support sql bind for select with current select projection reference - [#34151](https://github.com/apache/shardingsphere/pull/34151)
-1. SQL Binder: Support alter table, drop table sql bind and add test case - [#34154](https://github.com/apache/shardingsphere/pull/34154)
-1. SQL Binder: Support rename table statement sql bind and split segment bind to ddl and dml package - [#34158](https://github.com/apache/shardingsphere/pull/34158)
-1. SQL Binder: Support copy statement sql bind and add bind test case - [#34159](https://github.com/apache/shardingsphere/pull/34159)
-1. SQL Binder: Support truncate table sql bind and add test case - [#34162](https://github.com/apache/shardingsphere/pull/34162)
-1. SQL Binder: Support create view, alter view, drop view sql bind logic - [#34167](https://github.com/apache/shardingsphere/pull/34167)
-1. SQL Binder: Support load data and load xml sql bind and add test case - [#34177](https://github.com/apache/shardingsphere/pull/34177)
-1. SQL Binder: Support optimize table sql bind and add test case - [#34242](https://github.com/apache/shardingsphere/pull/34242)
-1. SQL Binder: Support show create table, show columns, show index statement bind - [#34271](https://github.com/apache/shardingsphere/pull/34271)
-1. SQL Binder: Support deny user sql bind and add test case - [#34279](https://github.com/apache/shardingsphere/pull/34279)
-1. SQL Binder: Support with segment bind check with UniqueCommonTableExpressionException - [#34163](https://github.com/apache/shardingsphere/pull/34163)
-1. Storage: Support setting `hive_conf_list`, `hive_var_list` and `sess_var_list` for jdbcURL when connecting to HiveServer2 - [#33749](https://github.com/apache/shardingsphere/pull/33749)
-1. Storage: Support connecting to HiveServer2 through database connection pools other than HikariCP - [#33762](https://github.com/apache/shardingsphere/pull/33762)
-1. Storage: Partial support for connecting to embedded ClickHouse `chDB` - [#33786](https://github.com/apache/shardingsphere/pull/33786)
-1. Transaction: Support savepoint/release savepoint TCL statements in jdbc adapter -[#34173](https://github.com/apache/shardingsphere/pull/34173)
-1. Transaction: Bump the minimum Seata Client version for Seata AT integration to 2.2.0 - [#33872](https://github.com/apache/shardingsphere/pull/33872)
-1. SQL Federation: Upgrade calcite version to 1.38.0 and update all license info in LICENSE file - [#33279](https://github.com/apache/shardingsphere/pull/33279)
-1. JDBC: Add show database name for JDBC when execute SHOW COMPUTE NODES - [#33437](https://github.com/apache/shardingsphere/pull/33437)
+1. Transaction: Support savepoint/release savepoint TCL statements in JDBC -[#34173](https://github.com/apache/shardingsphere/pull/34173)
+1. JDBC: Show database name for JDBC when execute SHOW COMPUTE NODES - [#33437](https://github.com/apache/shardingsphere/pull/33437)
 1. JDBC: Support ZonedDateTime on ResultSet - [#33660](https://github.com/apache/shardingsphere/issues/33660)
 1. Proxy: Add query parameters and check for MySQL kill processId - [#33274](https://github.com/apache/shardingsphere/pull/33274)
 1. Proxy: Support table not exist exception for PostgreSQL proxy - [#33885](https://github.com/apache/shardingsphere/pull/33274)
@@ -216,34 +142,35 @@
 1. Proxy Native: Support local transactions of ClickHouse under GraalVM Native Image - [#33801](https://github.com/apache/shardingsphere/pull/33801)
 1. Proxy Native: Support Seata AT integration under Proxy Native in GraalVM Native Image - [#33889](https://github.com/apache/shardingsphere/pull/33889)
 1. Mode: Support modifying Hikari-CP configurations via props in standalone mode [#34185](https://github.com/apache/shardingsphere/pull/34185)
-1. Agent: Simplify the use of Agent's Docker Image - [#33356](https://github.com/apache/shardingsphere/pull/33356)
+1. Agent: Simplify the usage of Agent's Docker Image - [#33356](https://github.com/apache/shardingsphere/pull/33356)
 1. Sharding: Support GroupConcat function for aggregating multiple shards in MySQL, OpenGauss, Doris - [#33808](https://github.com/apache/shardingsphere/pull/33808)
-1. Encrypt: Support insert statement rewrite use quote [#34259](https://github.com/apache/shardingsphere/pull/34259)
+1. Encrypt: Add non-support checker for WITH, COMBINE, INSERT SELECT on encrypt feature  - [#34175](https://github.com/apache/shardingsphere/pull/34175)
+1. Encrypt: Support INSERT statement rewrite use quote [#34259](https://github.com/apache/shardingsphere/pull/34259)
 
 ### Bug Fixes
 
-1. SQL Parser: Fixes LiteralExpressionSegment cast exception in SQL parser - [#33332](https://github.com/apache/shardingsphere/pull/33332)
-1. SQL Parser: Fixes PostgreSQL and openGauss time extract function parse week and quarter error - [#33564](https://github.com/apache/shardingsphere/pull/33564)
-1. SQL Parser: Fixes MySQL parse zone unreserved keyword error - [#33720](https://github.com/apache/shardingsphere/pull/33720)
-1. SQL Parser: Fixes MySQL range parse error when use table owner - [#33874](https://github.com/apache/shardingsphere/pull/33874)
-1. SQL Parser: Fix the issue where join conditions cannot be extracted when more than two conditions are used - [#34707](https://github.com/apache/shardingsphere/pull/34707)
-1. SQL Binder: Fixes table does not exist exception when use HintManager#setDatabaseName to transparent - [#33370](https://github.com/apache/shardingsphere/pull/33370)
+1. Metadata: Fix cannot connect to HiveServer2 using remote Hive Metastore Server - [#33837](https://github.com/apache/shardingsphere/pull/33837)
+1. SQL Parser: Fix LiteralExpressionSegment cast exception in SQL parser - [#33332](https://github.com/apache/shardingsphere/pull/33332)
+1. SQL Parser: Fix time extract function parse week and quarter error for PostgreSQL and openGauss - [#33564](https://github.com/apache/shardingsphere/pull/33564)
+1. SQL Parser: Fix parse zone unreserved keyword error for MySQL - [#33720](https://github.com/apache/shardingsphere/pull/33720)
+1. SQL Parser: Fix range parse error when use table owner for MySQL - [#33874](https://github.com/apache/shardingsphere/pull/33874)
+1. SQL Parser: Fix the issue WHERE JOIN conditions cannot be extracted when more than two conditions are used - [#34707](https://github.com/apache/shardingsphere/pull/34707)
+1. SQL Binder: Fix table does not exist exception when use HintManager#setDatabaseName to transparent - [#33370](https://github.com/apache/shardingsphere/pull/33370)
 1. SQL Binder: Use Multimap and CaseInsensitiveString to replace CaseInsensitiveMap for supporting MySQL multi table join with same table alias - [#33303](https://github.com/apache/shardingsphere/pull/33303)
-1. SQL Binder: Fixes the combine statement cannot find the outer table when bind - [#33357](https://github.com/apache/shardingsphere/pull/33357)
-1. SQL Binder: Fixes SQL performance issues caused by repeated subquery fetches - [#33361](https://github.com/apache/shardingsphere/pull/33361)
-1. SQL Binder: Fixes the expression segment cannot find the outer table when binding - [#34015](https://github.com/apache/shardingsphere/pull/34015)
-1. Storage: Fixes cannot connect to HiveServer2 using remote Hive Metastore Server - [#33837](https://github.com/apache/shardingsphere/pull/33837)
-1. Proxy: Fixes BatchUpdateException when execute INSERT INTO ON DUPLICATE KEY UPDATE in proxy adapter - [#33796](https://github.com/apache/shardingsphere/pull/33796)
-1. Proxy: Fixes "ALL PRIVILEGES ON `DB`.*" is not recognized during SELECT privilege verification for MySQL - [#34037](https://github.com/apache/shardingsphere/pull/34037)
-1. Proxy: Fixes MySQL longblob wrong column type returned by proxy protocol - [#34121](https://github.com/apache/shardingsphere/pull/34121)
-1. Proxy: Fixes MySQL proxy error if insert SQL contains more parameters not in insert values syntax - [#34287](https://github.com/apache/shardingsphere/pull/34287)
-1. Mode: Fixes `JDBCRepository` improper handling of H2-database in memory mode - [#33281](https://github.com/apache/shardingsphere/issues/33281)
-1. Mode: Fixes duplicate column names added when index changed in DDL - [#33982](https://github.com/apache/shardingsphere/issues/33281)
+1. SQL Binder: Fix the combine statement cannot find the outer table when bind - [#33357](https://github.com/apache/shardingsphere/pull/33357)
+1. SQL Binder: Fix SQL performance issues caused by repeated subquery fetches - [#33361](https://github.com/apache/shardingsphere/pull/33361)
+1. SQL Binder: Fix the expression segment cannot find the outer table when binding - [#34015](https://github.com/apache/shardingsphere/pull/34015)
+1. Proxy: Fix BatchUpdateException when execute INSERT INTO ON DUPLICATE KEY UPDATE in proxy adapter - [#33796](https://github.com/apache/shardingsphere/pull/33796)
+1. Proxy: Fix "ALL PRIVILEGES ON `DB`.*" is not recognized during SELECT privilege verification for MySQL - [#34037](https://github.com/apache/shardingsphere/pull/34037)
+1. Proxy: Fix MySQL longblob wrong column type returned by proxy protocol - [#34121](https://github.com/apache/shardingsphere/pull/34121)
+1. Proxy: Fix MySQL proxy error if insert SQL contains more parameters not in insert values syntax - [#34287](https://github.com/apache/shardingsphere/pull/34287)
+1. Mode: Fix `JDBCRepository` improper handling of H2-database in memory mode - [#33281](https://github.com/apache/shardingsphere/issues/33281)
+1. Mode: Fix duplicate column names added when index changed in DDL - [#33982](https://github.com/apache/shardingsphere/issues/33281)
 1. Sharding: Remove ShardingRouteAlgorithmException check logic temporarily to support different actual table name configuration - [#33367](https://github.com/apache/shardingsphere/pull/33367)
-1. Sharding: Fixes SQL COUNT with GROUP BY to prevent incorrect row returns - [#33380](https://github.com/apache/shardingsphere/pull/33380)
-1. Sharding: Fixes avg, sum, min, max function return empty data when no query result return - [#33449](https://github.com/apache/shardingsphere/pull/33449)
-1. Encrypt: Fixes merge exception without encrypt rule in database - [#33708](https://github.com/apache/shardingsphere/pull/33708)
-1. Encrypt: Use sql bind info in EncryptInsertPredicateColumnTokenGenerator to avoid wrong column table mapping - [#34110](https://github.com/apache/shardingsphere/pull/34110)
+1. Sharding: Fix SQL COUNT with GROUP BY to prevent incorrect row returns - [#33380](https://github.com/apache/shardingsphere/pull/33380)
+1. Sharding: Fix avg, sum, min, max function return empty data when no query result return - [#33449](https://github.com/apache/shardingsphere/pull/33449)
+1. Encrypt: Fix merge exception without encrypt rule in database - [#33708](https://github.com/apache/shardingsphere/pull/33708)
+1. Encrypt: Use SQL bind info in EncryptInsertPredicateColumnTokenGenerator to avoid wrong column table mapping - [#34110](https://github.com/apache/shardingsphere/pull/34110)
 
 ### Change Logs
 
@@ -259,15 +186,14 @@
 
 ### New Features
 
-1. Kernel: Add new doris, hive and presto sql parser module and database type
+1. SQL Parser: Add Doris, Hive and Presto SQL parser module and database type
 
 ### Enhancements
 
-1. Kernel: Support sql hint extract when sql contains dbeaver hint comment
-1. Kernel: Add extract combine left select in extractFromSelectStatementWithoutProjection method
+1. Kernel: Support SQL hint extract when SQL contains dbeaver hint comment
+1. Kernel: Add extract COMBINE LEFT SELECT in extractFromSelectStatementWithoutProjection method
 1. Metadata: Collect table type for PostgreSQL
-1. Metadata: Add assisted node to create and delete databases
-1. Mode: Change shadow、sharding's algorithms node path to shadow_algorithms and sharding_algorithms node path
+1. Metadata: Support CHARACTER VARYING type metadata load for PostgreSQL and openGauss - [#34221](https://github.com/apache/shardingsphere/pull/34221)
 1. DistSQL: Check privilege when registering or altering storage unit
 1. DistSQL: Check duplicate actual data nodes when creating or altering sharding table rule
 1. DistSQL: Add like support for show storage units
@@ -276,35 +202,21 @@
 1. Proxy: Make the results of show tables in order
 1. Proxy: Trigger metadata collection when creating and deleting database and table
 1. Proxy: Optimize Agent to support collecting metrics data from multiple data sources when used with Driver
-1. SQL Parser: Support PostgreSQL COLLATION and CONSTRAINT keywords
-1. SQL Parser: Support MySQL change replication with no server ids
-1. SQL Parser: Support MySQL row and column aliases with ON DUPLICATE KEY UPDATE
-1. SQL Parser: Support MySQL CALL SQL with mysql prefix
-1. SQL Parser: Support MySQL create loadable function returns int/dec
-1. SQL Parser: Support parsing MySQL CREATE TABLESPACE/TABLE in Mysql-8
-1. SQL Parser: Support parsing MySQL CREATE INDEX with ENGINE_ATTRIBUTE
-1. SQL Parser: Support parsing MySQL LOAD DATA with @ variable
-1. SQL Parser: Support parsing MySQL START REPLICA statement
-1. SQL Parser: Support parsing MySQL json table function
-1. SQL Parser: Enhance mysql json function visit statement result
-1. SQL Parser: Enhance Oracle update statement as alias parse and add test case
-1. SQL Parser: Add MySQL column not null SQL parsing
-1. SQL Parser: Add MySQL charset sql parsing
-1. SQL Parser: Support Oracle column length unit type SQL parsing
-1. SQL Parser: Support PostgreSQL, openGauss function table and update from parse
-1. SQL Parser: Support cte with postgres and openGauss
-1. SQL Parser: Optimize the timezone support of PostgreSQLDateValueParser
-1. SQL Parser: Support PostgreSQL limit and offset as null
+1. SQL Parser: Support to parse more SQL statements for MySQL - [#36703](https://github.com/apache/shardingsphere/issues/36703)
+1. SQL Parser: Support to parse more SQL statements for PostgreSQL - [#36704](https://github.com/apache/shardingsphere/issues/36704)
+1. SQL Parser: Support to parse more SQL statements for Oracle - [#36705](https://github.com/apache/shardingsphere/issues/36705)
 1. SQL Federation: Support SQL federation bit_count function for MySQL
-1. SQL Federation: Improve atan and anan2 sql function for MySQL
-1. SQL Federation: Support federated query mysql bin function
+1. SQL Federation: Improve atan and anan2 SQL function for MySQL
+1. SQL Federation: Support federated query bin function for MySQL
 1. SQL Federation: Support for federated query NOT operator
 1. Transaction: Support for switching transaction types
-1. Use same transaction type in one transaction in jdbc adapter
+1. Transaction: Use same transaction type in one transaction in JDBC
 1. Proxy Native: Add more graalvm reachability metadata for caffeine cache
+1. Mode: Change shadow、sharding's algorithms node path to shadow_algorithms and sharding_algorithms node path
 1. Sharding: Revise all local index for sharding table and add object uniqueness level spi to control index token generator
 1. Sharding: Add NullsOrderType.LOW and NullsOrderType.HIGH to handle NULL order by in sharding feature
-1. Add inline sharding algorithms match actual data nodes check
+1. Sharding: Add inline sharding algorithms match actual data nodes check
+1. Sharding: Optimize sharding table index name rewriting rules and remove unnecessary suffix rewriting - [#31171](https://github.com/apache/shardingsphere/issues/31171)
 1. Encrypt: Add unsupported check for combine statement with encrypt columns
 1. Encrypt: Support select distinct(column) encrypt rewrite and refactor SubstitutableColumnNameToken build logic
 1. Encrypt: Support like concat nested concat statement rewrite with encrypt feature
@@ -312,52 +224,51 @@
 1. Pipeline: Support page query for inventory dumper and data consistency streaming query
 1. Pipeline: Use case-insensitive identifiers to enhance the table metadata loader
 1. Pipeline: Support primary key columns ordering for standard pipeline table metadata loader
-1. Sharding: Optimize sharding table index name rewriting rules and remove unnecessary suffix rewriting - [#31171](https://github.com/apache/shardingsphere/issues/31171)
-1. Metadata: Support postgresql and opengauss CHARACTER VARYING type metadata load - [#34221](https://github.com/apache/shardingsphere/pull/34221)
 
 ### Bug Fixes
 
 1. Kernel: Replace ThreadLocal with TransmittableThreadLocal in HintManager to support cross Thread usage
-1. Kernel: Use ConnectionPropertiesParser spi to parse jdbcUrl to solve oracle url parse error
-1. Kernel: Fixes column count assert exception caused by postgresql system table judge
+1. Kernel: Use ConnectionPropertiesParser spi to parse standardJdbcUrl to solve oracle url parse error
+1. Kernel: Fix column count assert exception caused by postgresql system table judge
 1. Metadata: Keep in-used storage node when unregister storage unit
-1. Metadata: Fixes the generated key column name case insensitivity error
+1. Metadata: Fix the generated key column name case insensitivity error
 1. SQL Parser: Support PostgreSQL do nothing conflict action
 1. SQL Parser: Fix oracle nvl function and interval hour parse error
-1. DistSQL: Fixes load single table error after creating logical data source
-1. DistSQL: Fixes set default single table storage unit to random failed
-1. DistSQL: Fixes set default single table storage unit to logical data source failed
-1. DistSQL: Fixes NPE when import metadata
-1. Fixes the problem of missing storage unit when registering storage unit
+1. DistSQL: Fix load single table error after creating logical data source
+1. DistSQL: Fix set default single table storage unit to random failed
+1. DistSQL: Fix set default single table storage unit to logical data source failed
+1. DistSQL: Fix NPE when import metadata
+1. Fix the problem of missing storage unit when registering storage unit
 1. SQL Binder: Add TableAvailable interface for CloseStatementContext, MoveStatementContext, FetchStatementContext and fix SQL rewrite test case
-1. SQL Federation: Fixes federated query LocalDateTime conversion
-1. SQL Federation: Fixes push down SQL execute error when sql contains chinese character with SQL federation
-1. SQL Federation: Fixes federation query binary type data query
-1. SQL Federation: Fixes null result in federated query for a single projected column
-1. SQL Federation: Fixes SQL federation unknown type exception caused by calcite wrong result type with bigint
-1. Transaction: Fixes savepoint manager not cleaned up in distributed transactions
-1. Transaction: Fixes PostgreSQL rollback only
-1. Transaction: Fixes transaction context not cleaned up when xa transaction is committed
-1. Transaction: Fixes setSavepoint method invocation not cleaning up
-1. Transaction: Fixes the issue that cursor is not rewritten
+1. SQL Federation: Fix federated query LocalDateTime conversion
+1. SQL Federation: Fix push down SQL execute error when sql contains chinese character with SQL federation
+1. SQL Federation: Fix federation query binary type data query
+1. SQL Federation: Fix null result in federated query for a single projected column
+1. SQL Federation: Fix SQL federation unknown type exception caused by calcite wrong result type with bigint
+1. Transaction: Fix savepoint manager not cleaned up in distributed transactions
+1. Transaction: Fix PostgreSQL rollback only
+1. Transaction: Fix transaction context not cleaned up when xa transaction is committed
+1. Transaction: Fix setSavepoint method invocation not cleaning up
+1. Transaction: Fix the issue that cursor is not rewritten
 1. Proxy: Support binary type bool value in PostgreSQL
 1. Proxy: Support array type prepared param in PostgreSQL
 1. Proxy: Support binary protocol value for text array in PostgreSQL
-1. Proxy: Fixes duplicate results when querying information_schema.SCHEMATA
-1. Proxy: Fixes incorrect results for querying information_schema.SCHEMATA
-1. Proxy: Fixes NPE when execute show table status
-1. Proxy: Fixes no database selected exception occurs when show tables from database
-1. Proxy: Fixes the error that the process does not exit after proxy startup fail
-1. Proxy: Fixes the error that the persisted system metadata was not cleared after the database was deleted in the PostgreSQL scenario
-1. Proxy: Fixes no database selected exception in the query SQL
-1. JDBC: Fixes the NPE when it does not contain a specified logic database in Driver
-1. Sharding: Fixes Sharding column not tracked through aliases
-1. Sharding: Fixes alter view exception when config sharding rule and binding table rule
-1. Sharding: Fixes is need accumulate logic
-1. Encrypt: Fixes show create table wrong result with encrypt when data type contains float
+1. Proxy: Fix duplicate results when querying information_schema.SCHEMATA
+1. Proxy: Fix incorrect results for querying information_schema.SCHEMATA
+1. Proxy: Fix NPE when execute show table status
+1. Proxy: Fix no database selected exception occurs when show tables from database
+1. Proxy: Fix the error that the process does not exit after proxy startup fail
+1. Proxy: Fix the error that the persisted system metadata was not cleared after the database was deleted in the PostgreSQL scenario
+1. Proxy: Fix no database selected exception in the query SQL
+1. JDBC: Fix the NPE when it does not contain a specified logic database in Driver
+1. Sharding: Fix Sharding column not tracked through aliases
+1. Sharding: Fix alter view exception when config sharding rule and binding table rule
+1. Sharding: Fix is need accumulate logic
+1. Sharding: Fix NOT IN condition routing being treated as IN causing missing shards - [#32076](https://github.com/apache/shardingsphere/pull/32076)
+1. Encrypt: Fix show create table wrong result with encrypt when data type contains float
 1. Encrypt: Add insert select rewrite for encrypt
-1. Encrypt: Fixes the issue where updating a non-encrypted table and using a subquery on an encrypted table
-1. Pipeline: Fixes default data source lost when create migration job
+1. Encrypt: Fix the issue where updating a non-encrypted table and using a subquery on an encrypted table
+1. Pipeline: Fix default data source lost when create migration job
 1. Pipeline: InventoryTaskSplitter compatible with `BigInteger` primary key
 1. Resolve the issue where "zip file closed" in versions prior to SpringBoot 2.3
 
@@ -390,7 +301,7 @@
 1. SQL Parser: Fix mysql TimeStampDiff function parse
 1. SQL Parser: Fix sqlServer unqualified shorthand parsing
 1. SQL Parser: Support sqlServer SEARCH unreserved word parsing
-1. SQL Parser: Add sql server MEMBER unreserved word
+1. SQL Parser: Add SQL server MEMBER unreserved word
 1. DistSQL: Use JSON format to output props in RQL
 1. DistSQL: Optimize REFRESH DATABASE METADATA logic
 1. DistSQL: SHOW COMPUTE NODES supports JDBC nodes
@@ -410,25 +321,25 @@
 
 ### Bug Fixes
 
-1. MetaData: Fixes database system schema is not built when create database
-1. Metadata: Fixes NPE of system schema builder rule
-1. Governance: Fixes thread blocking problem when create logic database for Etcd register center
-1. Governance：Fixes register storage units and create feature rules failure when use Standalone mode
-1. SQL Parser: Fixes PostgreSQL NPE when parse columnRef
-1. SQL Parser: Fixes npe cause by parse MySQL select window statement
-1. SQL Federation: Fixes Object 'DUAL' not found exception when execute select 1 from dual with sql federation
-1. Transaction: Fixes xa auto commit in executeQuery
+1. MetaData: Fix database system schema is not built when create database
+1. Metadata: Fix NPE of system schema builder rule
+1. Governance: Fix thread blocking problem when create logic database for Etcd register center
+1. Governance：Fix register storage units and create feature rules failure when use Standalone mode
+1. SQL Parser: Fix PostgreSQL NPE when parse columnRef
+1. SQL Parser: Fix npe cause by parse MySQL select window statement
+1. SQL Federation: Fix Object 'DUAL' not found exception when execute select 1 from dual with sql federation
+1. Transaction: Fix xa auto commit in executeQuery
 1. Proxy: Restore original databaseName in connectionSession after unicast
-1. Proxy: Fixes show tables can be executed without use database
-1. Proxy: Fixes the incorrect current database after unicast routing
-1. Proxy: Fixes the problem that show tables can be executed before use database
-1. Proxy: Fixes multi statements with specified database name
-1. Sharding: Fixes routing error when joining tables in uppercase
-1. Sharding: Fixes drop sharding table exception when table name is uppercase
-1. Sharding: Fixes generated key with upper case column name
+1. Proxy: Fix show tables can be executed without use database
+1. Proxy: Fix the incorrect current database after unicast routing
+1. Proxy: Fix the problem that show tables can be executed before use database
+1. Proxy: Fix multi statements with specified database name
+1. Sharding: Fix routing error when joining tables in uppercase
+1. Sharding: Fix drop sharding table exception when table name is uppercase
+1. Sharding: Fix generated key with upper case column name
 1. Readwrite-splitting: Fix check exception when using shadow data source
-1. Pipeline: Fixes commit/rollback migration job doesn't drop related consistency check job when check job is not completed
-1. Pipeline: Fixes show consistency check status stop_time display
+1. Pipeline: Fix commit/rollback migration job doesn't drop related consistency check job when check job is not completed
+1. Pipeline: Fix show consistency check status stop_time display
 
 ### Change Log
 
@@ -457,10 +368,10 @@
 
 ### Bug Fixes
 
-1. Single Table: Fixes not switched active version when CREATE/DROP table modifies the Single rule configuration
-1. JDBC: Fixes JDBC memory leak with MySQL in the 5.4.0 version
-1. Pipeline: Fixes get inventory position not correctly on breakpoint resuming when table names are similar
-1. Pipeline: Fixes CDC importer not start on breakpoint resuming when first inventory task is finished
+1. Single Table: Fix not switched active version when CREATE/DROP table modifies the Single rule configuration
+1. JDBC: Fix JDBC memory leak with MySQL in the 5.4.0 version
+1. Pipeline: Fix get inventory position not correctly on breakpoint resuming when table names are similar
+1. Pipeline: Fix CDC importer not start on breakpoint resuming when first inventory task is finished
 
 ### Change Log
 
@@ -694,7 +605,7 @@
 1. Scaling: Improve MySQLBinlogEventType.valueOf to support unknown event type
 1. Kernel: Support case when for federation
 
-### Bug Fix
+### Bug Fixes
 
 1. Scaling: Fix barrier node created at job deletion
 1. Scaling: Fix part of columns value might be ignored in DATA_MATCH consistency check
@@ -788,7 +699,7 @@
 1. Fix openGauss cursor execution in xa transaction
 1. Added transaction related exceptions
 
-### Bug Fix
+### Bug Fixes
 
 1. Generate proper placeholder for PostgreSQL when rewriting
 1. Fix opengauss update set parse exception
@@ -949,7 +860,7 @@
 1. Support global transaction manager
 1. Delete support for branch transaction on proxy
 
-### Bug Fix
+### Bug Fixes
 
 1. Fix single table metadata refresh error caused by filtering DataSourceContainedRule
 1. Fix parsing exception caused by the null value of MySQL blob type
@@ -1142,7 +1053,7 @@
 1. Distributed Transaction: DistSQL is prohibited from executing within a transaction
 1. Distributed Transaction: autocommit = 0, DDL part of DML will automatically open the transaction
 
-### Bug Fix
+### Bug Fixes
 
 1. Kernel: Fix parsing error about show statement for PostgreSQL and openGauss
 1. Kernel: Fix parsing error about time extract function for for PostgreSQL and openGauss
@@ -1159,7 +1070,7 @@
 1. Scaling: Fix resource leak caused by error occurred when creating DataSource in ShardingSphere-Scaling
 1. Scaling: Fix ShardingSphereDataSource creation ignoring other rules
 1. Scaling: Fix on preparation job could not be stopped
-1. Scaling: Fix data source property url and jdbcUrl compatibility
+1. Scaling: Fix data source property url and standardJdbcUrl compatibility
 1. Scaling: Fix openGauss logical replication slot creation, avoid possible incremental data loss
 1. Scaling: Update local job status before persisting job status to registry center, make sure it won't be overwritten later
 1. Scaling: Handling null value in TestDecodingPlugin for PostgreSQL
@@ -1244,7 +1155,7 @@
 1. Mode: Refactor governance center meta data structure
 1. Mode: Adjust the database discovery MGR module to MySQL module
 
-### Bug Fix
+### Bug Fixes
 1. Kernel: Fix function with no parameter
 1. Kernel: Fix `InsertValueContext.getValue` cast exception
 1. Kernel: Fix aggregate distinct column error
@@ -1378,7 +1289,7 @@
 1. Optimize meta data structure of the registry center
 1. Rename Note shadow algorithm to HINT shadow algorithm
 
-### Bug Fix
+### Bug Fixes
 
 1. Support parsing function
 1. Fix alter table drop constrain
@@ -1421,11 +1332,6 @@
 1. Fix DIABLE INSTANCE could disable the current instance in some cases
 1. Fix the issue that user may query the unauthorized logic schema when the provider is SCHEMA_PRIVILEGES_PERMITTED
 1. Fix NPE when authority provider is not configured
-1. Scaling: Fix DB connection leak on XA initialization which triggered by data consistency check
-1. Scaling: Fix PostgreSQL replication stream exception on multiple data sources
-1. Scaling: Fix migrating updated record exception on PostgreSQL incremental phase
-1. Scaling: Fix MySQL 5.5 check BINLOG_ROW_IMAGE option failure
-1. Scaling: Fix PostgreSQL xml data type consistency check
 1. Fix database discovery failed to modify cron configuration
 1. Fix single read data source use weight loadbalance algorithm error
 1. Fix create redundant data source without memory mode
@@ -1452,12 +1358,6 @@
 1. New DistSQL syntax：`SHOW VARIABLE variableName;`
 1. Support `3` modes, including Memory, Standalone and Cluster mode
 1. Proxy supports for openGauss
-1. Scaling: Add basic support for openGauss
-1. Scaling: Add incremental task completion detect algorithm SPI interface
-1. Scaling: Add data consistency check algorithm SPI interface
-1. Scaling: Basic support of create table on target automatically for MySQL and openGauss
-1. Scaling: Support auto switch cluster configuration when job finished
-1. Scaling: Add more DistSQL support such as data consistency check, etc
 
 ### API Change
 
@@ -1491,8 +1391,6 @@
 1. PostgreSQL's protocol enhancements (Such as supports Portal, unspecified type)
 1. Using Netty executor to optimize Proxy performance in specified scenarios
 1. Make memory strictly fetch size configurable in Proxy
-1. Scaling: Improve support for PostgreSQL
-1. Scaling: Support concurrent data consistency check of source and target side
 
 ### Refactor
 
@@ -1500,11 +1398,8 @@
 1. Adjust the persistent data structure of the registry center state node
 1. Remove the SQL rewrite of DML for Shadow
 1. Support the SQL routing of DDL for Shadow
-1. Scaling: Refactor default implementation of incremental task completion detect algorithm
-1. Scaling: Refactor default implementation of data consistency check algorithm
-1. Scaling: Remove HTTP API and binary distribution
 
-### Bug Fix
+### Bug Fixes
 
 1. Fix sharding interval algorithm
 1. Fix `SHOW INDEX FROM TABLE FROM TABLE` statement rewrite exception
@@ -1569,9 +1464,8 @@
 1. New schema structure in registry center
 1. Remove Nacos and Apollo config center support
 1. ShardingScaling leverages elasticJob as its job distribution
-1. Refactor the metadata content and its update process
 
-### Bug Fix
+### Bug Fixes
 
 1. Bug fix for cannot use `SELECT * wildcard` when readwrite-splitting only
 1. Fix instance error when the custom sharding algorithm does not match the configuration type.
@@ -1628,8 +1522,6 @@
 1. Rename Orchestration module to Governance module
 1. Rename MasterSlave module to QueryReplica module
 1. Refactor the metadata structure in the governance registration center
-1. Refactor GovernmentShardingSphereDataSource
-1. ShardingSphere UI merges configuration center and registration center display layout
 
 ### Enhancement
 
@@ -1703,10 +1595,6 @@
 1. Support integration with Spring using @ShardingSphereTransactionType
 1. Enhance ShardingDataSource to compatible with Seata in micro-service distribution transaction
 
-### Refactor
-
-1. Remove leaf key generator
-
 ### Bug Fixes
 
 1. Fix an exception caused by using a CHAR/VARCHAR type column as an order by item
@@ -1716,7 +1604,6 @@
 1. Fix the problem of the stop index dislocation of segment with alias
 1. Fix the problem that overwriting SQL `SELECT * FROM tbl WHERE encrypt_col = ? AND (sharding_key = ? OR sharding_key = ?)` when using sharding + encrypt would throw StringIndexOutOfBoundsException
 1. Fix the problem of incorrect decoding after AES encoding when using ShardingSphere-Proxy in Spring Boot
-1. Fix a long-time problem of adding schema dynamically in ShardingSphere-UI
 
 ###  Change Logs
 
@@ -1738,7 +1625,6 @@
 ### Enhancement
 
 1. Optimize antlr performance using two-stage parsing strategy.
-1. Add class filter constructor to restrict the illegal class from YAML.
 
 ###  Change Logs
 
@@ -1760,7 +1646,6 @@
 1. Less-than(<), greater-than(>) and Less-than-equal(<=), greater-than-equal(>=) for sharding key operator available.
 1. DISTINCT SQL syntax available.
 1. Broadcast table available.
-1. LEAF key generator available.
 1. XA Transaction available, Atomikos, Narayana and Bitronix integrated.
 1. BASE Transaction available, Seata integrated.
 1. Data encrypt available.
@@ -1780,9 +1665,6 @@
 ### Bug Fixes
 
 1. Improve the compatibility of JDBC Driver URL.
-1. Delete statement with alias available.
-1. Check and disable updating sharding column.
-1. Fix wrong type of TINYINT and SMALLINT as INTEGER.
 
 ###  Change Logs
 
@@ -1796,11 +1678,6 @@
 
 ## 4.0.0.RC3
 
-### New Features
-
-1. ShardingSphere-UI, an orchestration management platform for ShardingSphere comes online.
-1. Not only SQLs from MySQL, PostgreSQL, SQLServer, Oracle, but any SQL92 Syntax can be parsed correctly and used in ShardingSphere.
-
 ### Enhancement
 
 1. Support using less-than character(<) and greater-than character(>) for sharding data.
@@ -1811,15 +1688,9 @@
 
 ### Bug Fixes
 
-1. Through Bug fix, the feature of encryption becomes much stable and applicable.
 1. Support delete statement with alias.
 1. Check and disable updating sharding column.
 1. Fix wrong type of TINYINT and SMALLINT as INTEGER.
-
-### Refactor
-
-1. Rename optimized module to preprocessor module.
-1. Decouple rewrite core module and sharding/encrypt features.
 
 ### Change Logs
 
@@ -1830,25 +1701,18 @@
 ### API Changes
 
 1. Optimize and delete API and configuration item of sharding logic index.
-1. Update the API of encryption to support the encrypted and plain data coexistence.
 
 ### New Features
 
 1. Integration of Seata for distributed transaction.
 1. User can do data encryption by using ShardingProxy.
-1. User can use Leaf-segment generator to get distributed ID.
 1. Support Skywalking plugin for application performance management.
 
 ### Enhancement
 
 1. Renew modified dataSources, not all the datasources to improve performance for configuration orchestration.
 1. Improve the compatibility of SQL parsing.
-
-### Refactor
-
-1. Remove DatabaseType enum, use dynamic SPI to load data source type.
 1. The parse engine upgrade from the 2nd generation to 3rd.
-1. The Refactoring of SQL rewriting module.
 
 ### Change Logs
 

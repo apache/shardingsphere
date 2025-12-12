@@ -46,7 +46,7 @@ public final class PostgreSQLStatisticsAppender implements DialectStatisticsAppe
     public void append(final DatabaseStatistics databaseStatistics, final ShardingSphereDatabase database) {
         for (Entry<String, Collection<String>> entry : INIT_DATA_SCHEMA_TABLES.entrySet()) {
             SchemaStatistics schemaStatistics = new SchemaStatistics();
-            if (null != database.getSchema(entry.getKey())) {
+            if (database.containsSchema(entry.getKey())) {
                 initTables(database.getSchema(entry.getKey()), entry.getValue(), schemaStatistics);
                 databaseStatistics.putSchemaStatistics(entry.getKey(), schemaStatistics);
             }

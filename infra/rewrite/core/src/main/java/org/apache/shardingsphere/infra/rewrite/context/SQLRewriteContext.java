@@ -32,6 +32,7 @@ import org.apache.shardingsphere.infra.rewrite.sql.token.common.pojo.SQLToken;
 import org.apache.shardingsphere.infra.session.connection.ConnectionContext;
 import org.apache.shardingsphere.infra.session.query.QueryContext;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
@@ -68,9 +69,23 @@ public final class SQLRewriteContext {
         if (!queryContext.getHintValueContext().isSkipSQLRewrite()) {
             addSQLTokenGenerators(new DefaultTokenGeneratorBuilder(sqlStatementContext).getSQLTokenGenerators());
         }
-        parameterBuilder = containsInsertValues(sqlStatementContext)
-                ? new GroupedParameterBuilder(((InsertStatementContext) sqlStatementContext).getGroupedParameters(), ((InsertStatementContext) sqlStatementContext).getOnDuplicateKeyUpdateParameters())
-                : new StandardParameterBuilder(parameters);
+        parameterBuilder = containsGroupedParameter(sqlStatementContext) ? buildGroupedParameterBuilder(sqlStatementContext) : new StandardParameterBuilder(parameters);
+    }
+    
+    private boolean containsGroupedParameter(final SQLStatementContext sqlStatementContext) {
+        return containsInsertValues(sqlStatementContext);
+    }
+    
+    private GroupedParameterBuilder buildGroupedParameterBuilder(final SQLStatementContext sqlStatementContext) {
+        List<List<Object>> groupedParams = new ArrayList<>();
+        List<Object> beforeGenericParams = new ArrayList<>();
+        List<Object> afterGenericParams = new ArrayList<>();
+        if (sqlStatementContext instanceof InsertStatementContext) {
+            groupedParams.addAll(((InsertStatementContext) sqlStatementContext).getGroupedParameters());
+            // TODO check insert statement whether has beforeGenericParams
+            afterGenericParams.addAll(((InsertStatementContext) sqlStatementContext).getOnDuplicateKeyUpdateParameters());
+        }
+        return new GroupedParameterBuilder(groupedParams, beforeGenericParams, afterGenericParams);
     }
     
     private boolean containsInsertValues(final SQLStatementContext sqlStatementContext) {

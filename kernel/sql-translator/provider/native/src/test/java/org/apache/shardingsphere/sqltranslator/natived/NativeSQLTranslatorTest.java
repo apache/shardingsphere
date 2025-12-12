@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.sqltranslator.natived;
 
-import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.session.query.QueryContext;
@@ -37,13 +37,6 @@ class NativeSQLTranslatorTest {
     @Test
     void assertTranslateByType() {
         SQLTranslator sqlTranslator = TypedSPILoader.getService(SQLTranslator.class, "NATIVE");
-        assertThat(sqlTranslator.translate("SELECT 1", Collections.emptyList(), mock(QueryContext.class), mock(DatabaseType.class), mock(ShardingSphereDatabase.class), mock(RuleMetaData.class)),
-                deepEqual(new SQLTranslatorContext("SELECT 1", Collections.emptyList())));
-    }
-    
-    @Test
-    void assertTranslateByDefault() {
-        SQLTranslator sqlTranslator = TypedSPILoader.getService(SQLTranslator.class, null);
         assertThat(sqlTranslator.translate("SELECT 1", Collections.emptyList(), mock(QueryContext.class), mock(DatabaseType.class), mock(ShardingSphereDatabase.class), mock(RuleMetaData.class)),
                 deepEqual(new SQLTranslatorContext("SELECT 1", Collections.emptyList())));
     }

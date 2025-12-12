@@ -37,10 +37,10 @@ import java.util.Optional;
 public final class RowExpressionConverter {
     
     /**
-     * Convert row expression to sql node.
+     * Convert row expression to SQL node.
      *
      * @param segment row expression
-     * @return sql node
+     * @return SQL node
      */
     public static Optional<SqlNode> convert(final RowExpression segment) {
         List<SqlNode> sqlNodes = new ArrayList<>(segment.getItems().size());

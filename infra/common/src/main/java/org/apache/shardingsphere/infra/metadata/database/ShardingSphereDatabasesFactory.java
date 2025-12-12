@@ -22,8 +22,8 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.config.database.DatabaseConfiguration;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.DatabaseTypeEngine;
-import org.apache.shardingsphere.infra.database.core.metadata.database.system.SystemDatabase;
-import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.database.connector.core.metadata.database.system.SystemDatabase;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstanceContext;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 
@@ -100,8 +100,8 @@ public final class ShardingSphereDatabasesFactory {
     
     private static Collection<ShardingSphereDatabase> createSystemDatabases(final Map<String, DatabaseConfiguration> databaseConfigMap, final DatabaseType protocolType,
                                                                             final SystemDatabase systemDatabase, final ConfigurationProperties props) {
-        Collection<ShardingSphereDatabase> result = new HashSet<>(systemDatabase.getSystemDatabaseSchemaMap().size(), 1F);
-        for (String each : systemDatabase.getSystemDatabaseSchemaMap().keySet()) {
+        Collection<ShardingSphereDatabase> result = new HashSet<>(systemDatabase.getSystemDatabases().size(), 1F);
+        for (String each : systemDatabase.getSystemDatabases()) {
             if (!databaseConfigMap.containsKey(each) || databaseConfigMap.get(each).getStorageUnits().isEmpty()) {
                 result.add(ShardingSphereDatabaseFactory.create(each, protocolType, props));
             }

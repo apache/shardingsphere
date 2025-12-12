@@ -24,10 +24,6 @@ mode:
     props:
       namespace: test
       server-lists: localhost:3181
-      retryIntervalMilliseconds: 500
-      timeToLiveSeconds: 60
-      maxRetries: 3
-      operationTimeoutMilliseconds: 500
 
 props:
   system-schema-metadata-assembly-enabled: false

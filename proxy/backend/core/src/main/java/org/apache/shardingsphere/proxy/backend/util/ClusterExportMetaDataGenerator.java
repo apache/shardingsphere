@@ -49,7 +49,7 @@ public final class ClusterExportMetaDataGenerator {
     private final ContextManager contextManager;
     
     /**
-     * Generate Json format.
+     * Generate JSON format.
      *
      * @return export data
      */

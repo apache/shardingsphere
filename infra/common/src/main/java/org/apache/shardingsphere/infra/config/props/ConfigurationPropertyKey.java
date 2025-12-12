@@ -19,7 +19,7 @@ package org.apache.shardingsphere.infra.config.props;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.props.TypedPropertyKey;
 
 import java.util.Arrays;
@@ -127,7 +127,12 @@ public enum ConfigurationPropertyKey implements TypedPropertyKey {
     /**
      * Persist schemas to repository.
      */
-    PERSIST_SCHEMAS_TO_REPOSITORY_ENABLED("persist-schemas-to-repository-enabled", String.valueOf(Boolean.TRUE), boolean.class, true);
+    PERSIST_SCHEMAS_TO_REPOSITORY_ENABLED("persist-schemas-to-repository-enabled", String.valueOf(Boolean.TRUE), boolean.class, true),
+    
+    /**
+     * Maximum size of Groovy inline expression parsing cache.
+     */
+    GROOVY_INLINE_EXPRESSION_PARSING_CACHE_MAX_SIZE("groovy-inline-expression-parsing-cache-max-size", "1000", long.class, false);
     
     private final String key;
     

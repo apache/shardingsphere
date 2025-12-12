@@ -30,9 +30,9 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ServiceLoader;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.isA;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -62,7 +62,7 @@ class ShardingSphereDriverTest {
         try (
                 Connection connection = DriverManager.getConnection("jdbc:shardingsphere:classpath:config/driver/foo-driver-fixture.yaml");
                 Statement statement = connection.createStatement()) {
-            assertThat(connection, instanceOf(ShardingSphereConnection.class));
+            assertThat(connection, isA(ShardingSphereConnection.class));
             statement.execute("DROP TABLE IF EXISTS t_order");
             statement.execute("CREATE TABLE t_order (order_id INT PRIMARY KEY, user_id INT)");
             statement.execute("INSERT INTO t_order (order_id, user_id) VALUES (1, 101), (2, 102)");
@@ -74,11 +74,44 @@ class ShardingSphereDriverTest {
     }
     
     @Test
+    void assertHashModSetLongOnIntColumnWorks() throws SQLException {
+        try (Connection connection = DriverManager.getConnection("jdbc:shardingsphere:classpath:config/driver/foo-driver-fixture.yaml")) {
+            assertThat(connection, isA(ShardingSphereConnection.class));
+            try (Statement statement = connection.createStatement()) {
+                statement.execute("DROP TABLE IF EXISTS t_order");
+                statement.execute("CREATE TABLE t_order (order_id INT PRIMARY KEY, user_id INT)");
+            }
+            // TODO Replace 1 to -1 after HASH_MOD algorithm improved
+            int value = 1;
+            try (PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO t_order (order_id, user_id) VALUES (?, ?)")) {
+                preparedStatement.setObject(1, value);
+                preparedStatement.setObject(2, 101);
+                int updatedCount = preparedStatement.executeUpdate();
+                assertThat(updatedCount, is(1));
+            }
+            try (PreparedStatement preparedStatement = connection.prepareStatement("SELECT * FROM t_order WHERE order_id = ?")) {
+                preparedStatement.setObject(1, value);
+                ResultSet resultSet = preparedStatement.executeQuery();
+                assertTrue(resultSet.next());
+                assertThat(resultSet.getInt(1), is(value));
+                resultSet.close();
+            }
+            try (PreparedStatement preparedStatement = connection.prepareStatement("SELECT * FROM t_order WHERE order_id = ?")) {
+                preparedStatement.setObject(1, (long) value);
+                ResultSet resultSet = preparedStatement.executeQuery();
+                assertTrue(resultSet.next());
+                assertThat(resultSet.getInt(1), is(value));
+                resultSet.close();
+            }
+        }
+    }
+    
+    @Test
     void assertVarbinaryColumnWorks() throws SQLException {
         try (
                 Connection connection = DriverManager.getConnection("jdbc:shardingsphere:classpath:config/driver/foo-driver-fixture.yaml");
                 Statement statement = connection.createStatement()) {
-            assertThat(connection, instanceOf(ShardingSphereConnection.class));
+            assertThat(connection, isA(ShardingSphereConnection.class));
             statement.execute("DROP TABLE IF EXISTS t_order");
             statement.execute("CREATE TABLE t_order (order_id VARBINARY(64) PRIMARY KEY, user_id INT)");
             PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO t_order (order_id, user_id) VALUES (?, ?)");
@@ -98,7 +131,7 @@ class ShardingSphereDriverTest {
         try (
                 Connection connection = DriverManager.getConnection("jdbc:shardingsphere:classpath:config/driver/foo-driver-fixture.yaml");
                 Statement statement = connection.createStatement()) {
-            assertThat(connection, instanceOf(ShardingSphereConnection.class));
+            assertThat(connection, isA(ShardingSphereConnection.class));
             statement.execute("DROP TABLE IF EXISTS t_order");
             statement.execute("CREATE TABLE t_order (order_id INT PRIMARY KEY, user_id INT)");
             statement.execute("INSERT INTO t_order (order_id, user_id) VALUES (1, 101), (2, 102)");

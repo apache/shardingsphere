@@ -251,22 +251,21 @@ Caused by: java.io.UnsupportedEncodingException: Codepage Cp1252 is not supporte
 
 5. 讨论在 ShardingSphere JDBC 的 GraalVM Native Image 下使用 XA 分布式事务的所需步骤，则需要引入额外的已知前提，
    - `org.apache.shardingsphere.transaction.xa.jta.datasource.swapper.DataSourceSwapper#loadXADataSource(String)` 会通过 `java.lang.Class#getDeclaredConstructors` 实例化各数据库驱动的 `javax.sql.XADataSource` 实现类。
-   - 各数据库驱动的 `javax.sql.XADataSource` 实现类的全类名通过实现 `org.apache.shardingsphere.transaction.xa.jta.datasource.properties.XADataSourceDefinition` 的 SPI，来存入 ShardingSphere 的元数据。
+   - 各数据库驱动的 `javax.sql.XADataSource` 实现类的全类名通过实现 `org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.transaction.DialectTransactionOption` 的 SPI，来存入 ShardingSphere 的元数据。
 
 在 GraalVM Native Image 内部，这实际上要求定义第三方依赖的 GraalVM Reachability Metadata，而 ShardingSphere 自身仅为 `com.h2database:h2` 提供对应的 GraalVM Reachability Metadata。
 `com.mysql:mysql-connector-j` 等其他数据库驱动的 GraalVM Reachability Metadata 应自行定义，
 或将对应 JSON 提交到 https://github.com/oracle/graalvm-reachability-metadata 一侧。
 
 以 `com.mysql:mysql-connector-j:9.0.0` 的 `com.mysql.cj.jdbc.MysqlXADataSource` 类为例，这是 MySQL JDBC Driver 的 `javax.sql.XADataSource` 的实现。
-用户需要在自有项目的 claapath 的 `/META-INF/native-image/com.mysql/mysql-connector-j/9.0.0/` 文件夹的 `reachability-metadata.json`文件内定义如下 JSON，
-以在 GraalVM Native Image 内部定义 `com.mysql.cj.jdbc.MysqlXADataSource` 的构造函数。
+用户需要在自有项目的 claapath 的 `/META-INF/native-image/com.mysql/mysql-connector-j/9.0.0/` 文件夹的 `reachability-metadata.json`文件内定义如下 JSON。
 
 ```json
 {
    "reflection": [
       {
          "condition": {
-            "typeReached": "com.mysql.cj.jdbc.MysqlXADataSource"
+            "typeReached": "com.mysql.cj.jdbc.Driver"
          },
          "type": "com.mysql.cj.jdbc.MysqlXADataSource",
          "allPublicMethods": true,
@@ -344,3 +343,9 @@ without it being registered as reachable. Add it to the resource metadata to sol
 10. 受 `apache/calcite` 使用的 `janino-compiler/janino` 的影响，
     ShardingSphere 的 `SQL Federation` 功能在 GraalVM Native Image 下不可用。
     这同样导致 ShardingSphere Proxy Native 无法使用 OpenGauss 集成。
+
+11. 受 https://github.com/oracle/graal/issues/11280 影响，
+    Etcd 的 Cluster 模式集成无法在通过 Windows 11 编译的 GraalVM Native Image 下使用，
+    且 Etcd 的 Cluster 模式会与 GraalVM Tracing Agent 产生冲突。
+    若开发者需要在通过 Linux 编译的 GraalVM Native Image 下使用 Etcd 的 Cluster 模式，
+    需要自行提供额外的 GraalVM Reachability Metadata 相关的 JSON。

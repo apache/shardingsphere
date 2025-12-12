@@ -52,9 +52,9 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.cases.sql.type.SQLC
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.isA;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -95,22 +95,22 @@ public final class ProjectionAssert {
      */
     public static void assertProjection(final SQLCaseAssertContext assertContext, final ProjectionSegment actual, final ExpectedProjection expected) {
         if (actual instanceof ShorthandProjectionSegment) {
-            assertThat(assertContext.getText("Projection type assertion error: "), expected, instanceOf(ExpectedShorthandProjection.class));
+            assertThat(assertContext.getText("Projection type assertion error: "), expected, isA(ExpectedShorthandProjection.class));
             assertShorthandProjection(assertContext, (ShorthandProjectionSegment) actual, (ExpectedShorthandProjection) expected);
         } else if (actual instanceof ColumnProjectionSegment) {
-            assertThat(assertContext.getText("Projection type assertion error: "), expected, instanceOf(ExpectedColumnProjection.class));
+            assertThat(assertContext.getText("Projection type assertion error: "), expected, isA(ExpectedColumnProjection.class));
             assertColumnProjection(assertContext, (ColumnProjectionSegment) actual, (ExpectedColumnProjection) expected);
         } else if (actual instanceof AggregationProjectionSegment) {
-            assertThat(assertContext.getText("Projection type assertion error: "), expected, instanceOf(ExpectedAggregationProjection.class));
+            assertThat(assertContext.getText("Projection type assertion error: "), expected, isA(ExpectedAggregationProjection.class));
             assertAggregationProjection(assertContext, (AggregationProjectionSegment) actual, (ExpectedAggregationProjection) expected);
         } else if (actual instanceof ExpressionProjectionSegment) {
-            assertThat(assertContext.getText("Projection type assertion error: "), expected, instanceOf(ExpectedExpressionProjection.class));
+            assertThat(assertContext.getText("Projection type assertion error: "), expected, isA(ExpectedExpressionProjection.class));
             assertExpressionProjection(assertContext, (ExpressionProjectionSegment) actual, (ExpectedExpressionProjection) expected);
         } else if (actual instanceof TopProjectionSegment) {
-            assertThat(assertContext.getText("Projection type assertion error: "), expected, instanceOf(ExpectedTopProjection.class));
+            assertThat(assertContext.getText("Projection type assertion error: "), expected, isA(ExpectedTopProjection.class));
             assertTopProjection(assertContext, (TopProjectionSegment) actual, (ExpectedTopProjection) expected);
         } else if (actual instanceof SubqueryProjectionSegment) {
-            assertThat(assertContext.getText("Projection type assertion error: "), expected, instanceOf(ExpectedSubqueryProjection.class));
+            assertThat(assertContext.getText("Projection type assertion error: "), expected, isA(ExpectedSubqueryProjection.class));
             assertSubqueryProjection(assertContext, (SubqueryProjectionSegment) actual, (ExpectedSubqueryProjection) expected);
         }
         SQLSegmentAssert.assertIs(assertContext, actual, expected);
@@ -193,7 +193,7 @@ public final class ProjectionAssert {
         assertThat(assertContext.getText("Aggregation projection alias assertion error: "), actual.getAliasName().orElse(null), is(expected.getAlias()));
         assertThat(assertContext.getText("Aggregation projection separator assertion error: "), actual.getSeparator().orElse(null), is(expected.getSeparator()));
         if (actual instanceof AggregationDistinctProjectionSegment) {
-            assertThat(assertContext.getText("Projection type assertion error: "), expected, instanceOf(ExpectedAggregationDistinctProjection.class));
+            assertThat(assertContext.getText("Projection type assertion error: "), expected, isA(ExpectedAggregationDistinctProjection.class));
             assertThat(assertContext.getText("Aggregation projection distinct inner expression assertion error: "),
                     ((AggregationDistinctProjectionSegment) actual).getDistinctInnerExpression(), is(((ExpectedAggregationDistinctProjection) expected).getDistinctInnerExpression()));
         }

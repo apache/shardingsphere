@@ -106,20 +106,21 @@ The assertion file format is as follows:
 
 #### Native environment configuration
 
-Modify `it.cluster.env.type` in `src/test/resources/env/it-env.properties` file of `e2e-sql` module to `NATIVE` mode, and then modify the following properties to the local database address and account.
+Modify `e2e.run.type` in `src/test/resources/env/e2e-env.properties` file of `e2e-sql` module to `NATIVE` mode, and then modify the following properties to the local database address and account.
 
 ```properties
-it.native.storage.host=127.0.0.1
-it.native.storage.port=3306
-it.native.storage.username=root
-it.native.storage.password=123456
+e2e.native.database.host=127.0.0.1
+e2e.native.database.port=3306
+e2e.native.database.username=root
+e2e.native.database.password=123456
 ```
 
-After the modification is completed, you can adjust other properties in `it-env.properties` to test ShardingSphere's Proxy, JDBC access terminal, or test the stand-alone and cluster modes.
+After the modification is completed, you can adjust other properties in `e2e-env.properties` to test ShardingSphere's Proxy, JDBC access terminal, or test the stand-alone and cluster modes.
 
 #### Docker environment configuration
 
-Modify `it.cluster.env.type` in the `src/test/resources/env/it-env.properties` file of the `e2e-sql` module to `DOCKER` mode. If you perform a Proxy access end test, you need to execute the following command to package the Proxy image.
+Modify `e2e.run.type` in the `src/test/resources/env/e2e-env.properties` file of the `e2e-sql` module to `DOCKER` mode.
+If you perform a Proxy access end test, you need to execute the following command to package the Proxy image.
 
 ```bash
 ./mvnw -B clean install -am -pl test/e2e/sql -Pit.env.docker -DskipTests -Dspotless.apply.skip=true -Drat.skip=true
@@ -136,43 +137,44 @@ socat TCP-LISTEN:2375,reuseaddr,fork UNIX-CLIENT:/var/run/docker.sock
 export DOCKER_HOST=tcp://127.0.0.1:2375
 ```
 
-After the modification is completed, you can adjust other properties in `it-env.properties` to test ShardingSphere's Proxy, JDBC access terminal, or test the stand-alone and cluster modes.
+After the modification is completed, you can adjust other properties in `e2e-env.properties` to test ShardingSphere's Proxy, JDBC access terminal, or test the stand-alone and cluster modes.
 
 ### Run the test engine
 
 #### Configure the running environment of the test engine
 
-Control the test engine by configuring `src/test/resources/env/it-env.properties`.
+Control the test engine by configuring `src/test/resources/env/e2e-env.properties`.
 
 All attribute values can be dynamically injected via Maven command line `-D`.
 
 ```properties
 
 # Scenario type. Multiple values can be separated by commas. Optional values: db, tbl, dbtbl_with_replica_query, replica_query
-it.scenarios=db,tbl,dbtbl_with_replica_query,replica_query
+e2e.scenarios=db,tbl,dbtbl_with_replica_query,replica_query
 
 # Whether to run additional test cases
-it.run.additional.cases=false
+e2e.run.additional.cases=false
 
 # Whether to run smoke test
-it.run.smoke=false
+e2e.run.smoke.cases=false
 
 # Configure the environment type. Only one value is supported. Optional value: DOCKER, NATIVE
-it.cluster.env.type=${it.env}
+e2e.run.type=DOCKER
+
 # Access port types to be tested. Multiple values can be separated by commas. Optional value: jdbc, proxy. The default value: jdbc
-it.cluster.adapters=jdbc
+e2e.artifact.adapters=jdbc
 
-# Scenario type. Multiple values can be separated by commas. Optional value: H2, MySQL, PostgreSQL, openGauss
-it.cluster.databases=H2,MySQL,PostgreSQL,openGauss
+# Database type. Multiple values can be separated by commas. Optional value: H2, MySQL, PostgreSQL, openGauss
+e2e.artifact.databases=H2,MySQL,PostgreSQL,openGauss
 
-# The mirror version of the database
-it.cluster.database.mysql.image=mysql:8.2.0
+# The docker image version of the database
+e2e.docker.database.mysql.images=mysql:8.2.0
 
 # Database connection information and account in NATIVE mode
-it.native.storage.host=127.0.0.1
-it.native.storage.port=3306
-it.native.storage.username=root
-it.native.storage.password=123456
+e2e.native.database.host=127.0.0.1
+e2e.native.database.port=3306
+e2e.native.database.username=root
+e2e.native.database.password=123456
 ```
 
 #### Run debugging mode
@@ -185,22 +187,22 @@ it.native.storage.password=123456
 
   - Additional test engine
     Run `org.apache.shardingsphere.test.e2e.it.sql.${SQL-TYPE}.Additional${SQL-TYPE}E2EIT` to start the test engine with more JDBC method calls.
-    Additional test engines need to be enabled by setting `it.run.additional.cases=true`.
+    Additional test engines need to be enabled by setting `e2e.run.additional.cases=true`.
 
 #### Run Docker mode
 
 ```bash
-./mvnw -B clean install -f test/e2e/pom.xml -Pit.env.docker -Dit.cluster.adapters=proxy,jdbc -Dit.scenarios=${scenario_name_1,scenario_name_2,scenario_name_n} -Dit.cluster.databases=MySQL
+./mvnw -B clean install -f test/e2e/pom.xml -Pit.env.docker -De2e.artifact.adapters=proxy,jdbc -De2e.scenarios=${scenario_name_1,scenario_name_2,scenario_name_n} -De2e.artifact.databases=MySQL
 ```
 Run the above command to build a Docker mirror `apache/shardingsphere-proxy-test:latest` used for integration testing.
 If you only modify the test code, you can reuse the existing test mirror without rebuilding it. Skip the mirror building and run the integration testing directly with the following command:
 
 ```bash
-./mvnw -B clean install -f test/e2e/sql/pom.xml -Pit.env.docker -Dit.cluster.adapters=proxy,jdbc -Dit.scenarios=${scenario_name_1,scenario_name_2,scenario_name_n} -Dit.cluster.databases=MySQL
+./mvnw -B clean install -f test/e2e/sql/pom.xml -Pit.env.docker -De2e.artifact.adapters=proxy,jdbc -De2e.scenarios=${scenario_name_1,scenario_name_2,scenario_name_n} -De2e.artifact.databases=MySQL
 ```
 
 #### Remote debug Proxy code in Docker container
-First of all, you need to modify the configuration file it-env.properties, set function.it.env.type to `docker`, and then set the corresponding database image version like `transaction.it.docker.mysql.version=mysql:5.7`.
+First of all, you need to modify the configuration file e2e-env.properties, set function.it.env.type to `docker`, and then set the corresponding database image version like `transaction.it.docker.mysql.version=mysql:5.7`.
 Then generate the test image through the command, for example:
 
 ```bash

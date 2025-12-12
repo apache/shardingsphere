@@ -25,9 +25,9 @@ import java.util.List;
 public interface ParameterAware {
     
     /**
-     * Set up parameters.
+     * Bind parameters.
      *
      * @param params parameters
      */
-    void setUpParameters(List<Object> params);
+    void bindParameters(List<Object> params);
 }

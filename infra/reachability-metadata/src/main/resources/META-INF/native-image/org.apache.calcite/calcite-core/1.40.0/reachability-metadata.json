@@ -1,0 +1,771 @@
+{
+  "reflection": [
+    {
+      "condition": {
+        "typeReached": "org.apache.calcite.linq4j.tree.Types"
+      },
+      "type": "org.apache.calcite.DataContext"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.calcite.linq4j.tree.Types"
+      },
+      "type": "org.apache.calcite.adapter.enumerable.AggregateLambdaFactory"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.calcite.linq4j.tree.Types"
+      },
+      "type": "org.apache.calcite.adapter.enumerable.BasicAggregateLambdaFactory"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.calcite.linq4j.tree.Types"
+      },
+      "type": "org.apache.calcite.adapter.enumerable.BasicLazyAccumulator"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.calcite.linq4j.tree.Types"
+      },
+      "type": "org.apache.calcite.adapter.enumerable.EnumUtils"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.calcite.linq4j.tree.Types"
+      },
+      "type": "org.apache.calcite.adapter.enumerable.LazyAggregateLambdaFactory"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.calcite.linq4j.tree.Types"
+      },
+      "type": "org.apache.calcite.adapter.enumerable.MatchUtils"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.calcite.adapter.enumerable.RexImpTable$AbstractBuilder"
+      },
+      "type": "org.apache.calcite.adapter.enumerable.RexImpTable$ArgMinMaxImplementor"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.calcite.adapter.enumerable.RexImpTable$AbstractBuilder"
+      },
+      "type": "org.apache.calcite.adapter.enumerable.RexImpTable$BitOpImplementor"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.calcite.adapter.enumerable.RexImpTable$AbstractBuilder"
+      },
+      "type": "org.apache.calcite.adapter.enumerable.RexImpTable$CollectImplementor"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.calcite.adapter.enumerable.RexImpTable$AbstractBuilder"
+      },
+      "type": "org.apache.calcite.adapter.enumerable.RexImpTable$CountImplementor"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.calcite.adapter.enumerable.RexImpTable$AbstractBuilder"
+      },
+      "type": "org.apache.calcite.adapter.enumerable.RexImpTable$CountWinImplementor"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.calcite.adapter.enumerable.RexImpTable$AbstractBuilder"
+      },
+      "type": "org.apache.calcite.adapter.enumerable.RexImpTable$DenseRankImplementor"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.calcite.adapter.enumerable.RexImpTable$AbstractBuilder"
+      },
+      "type": "org.apache.calcite.adapter.enumerable.RexImpTable$FirstValueImplementor"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.calcite.adapter.enumerable.RexImpTable$AbstractBuilder"
+      },
+      "type": "org.apache.calcite.adapter.enumerable.RexImpTable$FusionImplementor"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.calcite.adapter.enumerable.RexImpTable$AbstractBuilder"
+      },
+      "type": "org.apache.calcite.adapter.enumerable.RexImpTable$GroupingImplementor"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.calcite.adapter.enumerable.RexImpTable$AbstractBuilder"
+      },
+      "type": "org.apache.calcite.adapter.enumerable.RexImpTable$IntersectionImplementor"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.calcite.adapter.enumerable.RexImpTable$AbstractBuilder"
+      },
+      "type": "org.apache.calcite.adapter.enumerable.RexImpTable$LagImplementor"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.calcite.adapter.enumerable.RexImpTable$AbstractBuilder"
+      },
+      "type": "org.apache.calcite.adapter.enumerable.RexImpTable$LastValueImplementor"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.calcite.adapter.enumerable.RexImpTable$AbstractBuilder"
+      },
+      "type": "org.apache.calcite.adapter.enumerable.RexImpTable$LeadImplementor"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.calcite.adapter.enumerable.RexImpTable$AbstractBuilder"
+      },
+      "type": "org.apache.calcite.adapter.enumerable.RexImpTable$ListaggImplementor"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.calcite.adapter.enumerable.RexImpTable$AbstractBuilder"
+      },
+      "type": "org.apache.calcite.adapter.enumerable.RexImpTable$LiteralAggImplementor"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.calcite.adapter.enumerable.RexImpTable$AbstractBuilder"
+      },
+      "type": "org.apache.calcite.adapter.enumerable.RexImpTable$MinMaxImplementor"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.calcite.adapter.enumerable.RexImpTable$AbstractBuilder"
+      },
+      "type": "org.apache.calcite.adapter.enumerable.RexImpTable$ModeImplementor"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.calcite.adapter.enumerable.RexImpTable$AbstractBuilder"
+      },
+      "type": "org.apache.calcite.adapter.enumerable.RexImpTable$NthValueImplementor"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.calcite.adapter.enumerable.RexImpTable$AbstractBuilder"
+      },
+      "type": "org.apache.calcite.adapter.enumerable.RexImpTable$NtileImplementor"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.calcite.adapter.enumerable.RexImpTable$AbstractBuilder"
+      },
+      "type": "org.apache.calcite.adapter.enumerable.RexImpTable$RankImplementor"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.calcite.adapter.enumerable.RexImpTable$AbstractBuilder"
+      },
+      "type": "org.apache.calcite.adapter.enumerable.RexImpTable$RowNumberImplementor"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.calcite.adapter.enumerable.RexImpTable$AbstractBuilder"
+      },
+      "type": "org.apache.calcite.adapter.enumerable.RexImpTable$SingleValueImplementor"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.calcite.adapter.enumerable.RexImpTable$AbstractBuilder"
+      },
+      "type": "org.apache.calcite.adapter.enumerable.RexImpTable$SumImplementor"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.calcite.linq4j.tree.Types"
+      },
+      "type": "org.apache.calcite.adapter.enumerable.SourceSorter"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.calcite.linq4j.tree.Types"
+      },
+      "type": "org.apache.calcite.adapter.java.ReflectiveSchema"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.calcite.linq4j.tree.Types"
+      },
+      "type": "org.apache.calcite.adapter.jdbc.JdbcSchema"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.calcite.avatica.remote.Driver"
+      },
+      "type": "org.apache.calcite.avatica.AvaticaJdbc41Factory",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.calcite.linq4j.tree.Types"
+      },
+      "type": "org.apache.calcite.avatica.util.DateTimeUtils"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.calcite.linq4j.tree.Types"
+      },
+      "type": "org.apache.calcite.interpreter.Context",
+      "fields": [
+        {
+          "name": "root"
+        },
+        {
+          "name": "values"
+        }
+      ]
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.calcite.linq4j.tree.Types"
+      },
+      "type": "org.apache.calcite.interpreter.Row"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.calcite.linq4j.tree.Types"
+      },
+      "type": "org.apache.calcite.interpreter.Scalar"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.calcite.jdbc.Driver"
+      },
+      "type": "org.apache.calcite.jdbc.CalciteJdbc41Factory",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.calcite.linq4j.tree.Types"
+      },
+      "type": "org.apache.calcite.linq4j.AbstractEnumerable"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.calcite.linq4j.tree.Types"
+      },
+      "type": "org.apache.calcite.linq4j.Enumerable"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.calcite.linq4j.tree.Types"
+      },
+      "type": "org.apache.calcite.linq4j.EnumerableDefaults"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.calcite.linq4j.tree.Types"
+      },
+      "type": "org.apache.calcite.linq4j.Enumerator"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.calcite.linq4j.tree.Types"
+      },
+      "type": "org.apache.calcite.linq4j.ExtendedEnumerable"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.calcite.linq4j.tree.Types"
+      },
+      "type": "org.apache.calcite.linq4j.Linq4j"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.calcite.linq4j.tree.Types"
+      },
+      "type": "org.apache.calcite.linq4j.MemoryFactory$Memory"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.calcite.linq4j.tree.Types"
+      },
+      "type": "org.apache.calcite.linq4j.Queryable"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.calcite.linq4j.tree.Types"
+      },
+      "type": "org.apache.calcite.linq4j.function.Function0"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.calcite.linq4j.tree.Types"
+      },
+      "type": "org.apache.calcite.linq4j.function.Function1"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.calcite.linq4j.tree.Types"
+      },
+      "type": "org.apache.calcite.linq4j.function.Functions"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.calcite.linq4j.tree.Types"
+      },
+      "type": "org.apache.calcite.linq4j.tree.Primitive"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.calcite.linq4j.tree.Types"
+      },
+      "type": "org.apache.calcite.rel.metadata.BuiltInMetadata$AllPredicates"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.calcite.linq4j.tree.Types"
+      },
+      "type": "org.apache.calcite.rel.metadata.BuiltInMetadata$Collation"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.calcite.linq4j.tree.Types"
+      },
+      "type": "org.apache.calcite.rel.metadata.BuiltInMetadata$ColumnOrigin"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.calcite.linq4j.tree.Types"
+      },
+      "type": "org.apache.calcite.rel.metadata.BuiltInMetadata$ColumnUniqueness"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.calcite.linq4j.tree.Types"
+      },
+      "type": "org.apache.calcite.rel.metadata.BuiltInMetadata$CumulativeCost"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.calcite.linq4j.tree.Types"
+      },
+      "type": "org.apache.calcite.rel.metadata.BuiltInMetadata$DistinctRowCount"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.calcite.linq4j.tree.Types"
+      },
+      "type": "org.apache.calcite.rel.metadata.BuiltInMetadata$Distribution"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.calcite.linq4j.tree.Types"
+      },
+      "type": "org.apache.calcite.rel.metadata.BuiltInMetadata$ExplainVisibility"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.calcite.linq4j.tree.Types"
+      },
+      "type": "org.apache.calcite.rel.metadata.BuiltInMetadata$ExpressionLineage"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.calcite.linq4j.tree.Types"
+      },
+      "type": "org.apache.calcite.rel.metadata.BuiltInMetadata$LowerBoundCost"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.calcite.linq4j.tree.Types"
+      },
+      "type": "org.apache.calcite.rel.metadata.BuiltInMetadata$MaxRowCount"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.calcite.linq4j.tree.Types"
+      },
+      "type": "org.apache.calcite.rel.metadata.BuiltInMetadata$Measure"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.calcite.linq4j.tree.Types"
+      },
+      "type": "org.apache.calcite.rel.metadata.BuiltInMetadata$Memory"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.calcite.linq4j.tree.Types"
+      },
+      "type": "org.apache.calcite.rel.metadata.BuiltInMetadata$MinRowCount"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.calcite.linq4j.tree.Types"
+      },
+      "type": "org.apache.calcite.rel.metadata.BuiltInMetadata$NodeTypes"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.calcite.linq4j.tree.Types"
+      },
+      "type": "org.apache.calcite.rel.metadata.BuiltInMetadata$NonCumulativeCost"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.calcite.linq4j.tree.Types"
+      },
+      "type": "org.apache.calcite.rel.metadata.BuiltInMetadata$Parallelism"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.calcite.linq4j.tree.Types"
+      },
+      "type": "org.apache.calcite.rel.metadata.BuiltInMetadata$PercentageOriginalRows"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.calcite.linq4j.tree.Types"
+      },
+      "type": "org.apache.calcite.rel.metadata.BuiltInMetadata$PopulationSize"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.calcite.linq4j.tree.Types"
+      },
+      "type": "org.apache.calcite.rel.metadata.BuiltInMetadata$Predicates"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.calcite.linq4j.tree.Types"
+      },
+      "type": "org.apache.calcite.rel.metadata.BuiltInMetadata$RowCount"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.calcite.linq4j.tree.Types"
+      },
+      "type": "org.apache.calcite.rel.metadata.BuiltInMetadata$Selectivity"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.calcite.linq4j.tree.Types"
+      },
+      "type": "org.apache.calcite.rel.metadata.BuiltInMetadata$Size"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.calcite.linq4j.tree.Types"
+      },
+      "type": "org.apache.calcite.rel.metadata.BuiltInMetadata$TableReferences"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.calcite.linq4j.tree.Types"
+      },
+      "type": "org.apache.calcite.rel.metadata.BuiltInMetadata$UniqueKeys"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.calcite.linq4j.tree.Types"
+      },
+      "type": "org.apache.calcite.rel.metadata.Metadata"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.calcite.linq4j.tree.Types"
+      },
+      "type": "org.apache.calcite.runtime.ArrayBindable"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.calcite.linq4j.tree.Types"
+      },
+      "type": "org.apache.calcite.runtime.BinarySearch"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.calcite.linq4j.tree.Types"
+      },
+      "type": "org.apache.calcite.runtime.Bindable"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.calcite.linq4j.tree.Types"
+      },
+      "type": "org.apache.calcite.runtime.CompressionFunctions"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.calcite.linq4j.tree.Types"
+      },
+      "type": "org.apache.calcite.runtime.Enumerables"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.calcite.linq4j.tree.Types"
+      },
+      "type": "org.apache.calcite.runtime.Enumerables$Emitter"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.calcite.linq4j.tree.Types"
+      },
+      "type": "org.apache.calcite.runtime.FlatLists",
+      "fields": [
+        {
+          "name": "COMPARABLE_EMPTY_LIST"
+        }
+      ]
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.calcite.linq4j.tree.Types"
+      },
+      "type": "org.apache.calcite.runtime.FunctionContexts"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.calcite.linq4j.tree.Types"
+      },
+      "type": "org.apache.calcite.runtime.JsonFunctions"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.calcite.linq4j.tree.Types"
+      },
+      "type": "org.apache.calcite.runtime.JsonFunctions$StatefulFunction"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.calcite.linq4j.tree.Types"
+      },
+      "type": "org.apache.calcite.runtime.Matcher"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.calcite.linq4j.tree.Types"
+      },
+      "type": "org.apache.calcite.runtime.Matcher$Builder"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.calcite.linq4j.tree.Types"
+      },
+      "type": "org.apache.calcite.runtime.PairList$Helper"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.calcite.linq4j.tree.Types"
+      },
+      "type": "org.apache.calcite.runtime.Pattern$PatternBuilder"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.calcite.linq4j.tree.Types"
+      },
+      "type": "org.apache.calcite.runtime.RandomFunction"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.calcite.linq4j.tree.Types"
+      },
+      "type": "org.apache.calcite.runtime.ResultSetEnumerable"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.calcite.linq4j.tree.Types"
+      },
+      "type": "org.apache.calcite.runtime.SortedMultiMap"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.calcite.linq4j.tree.Types"
+      },
+      "type": "org.apache.calcite.runtime.SpatialTypeFunctions"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.calcite.linq4j.tree.Types"
+      },
+      "type": "org.apache.calcite.runtime.SqlFunctions"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.calcite.schema.impl.ReflectiveFunctionBase"
+      },
+      "type": "org.apache.calcite.runtime.SqlFunctions"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.calcite.linq4j.tree.Types"
+      },
+      "type": "org.apache.calcite.runtime.SqlFunctions$DateFormatFunction"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.calcite.linq4j.tree.Types"
+      },
+      "type": "org.apache.calcite.runtime.SqlFunctions$DateFormatFunctionPg"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.calcite.linq4j.tree.Types"
+      },
+      "type": "org.apache.calcite.runtime.SqlFunctions$DateParseFunction"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.calcite.linq4j.tree.Types"
+      },
+      "type": "org.apache.calcite.runtime.SqlFunctions$LikeFunction"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.calcite.linq4j.tree.Types"
+      },
+      "type": "org.apache.calcite.runtime.SqlFunctions$ParseUrlFunction"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.calcite.linq4j.tree.Types"
+      },
+      "type": "org.apache.calcite.runtime.SqlFunctions$PosixRegexFunction"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.calcite.linq4j.tree.Types"
+      },
+      "type": "org.apache.calcite.runtime.SqlFunctions$RegexFunction"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.calcite.linq4j.tree.Types"
+      },
+      "type": "org.apache.calcite.runtime.SqlFunctions$SimilarEscapeFunction"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.calcite.linq4j.tree.Types"
+      },
+      "type": "org.apache.calcite.runtime.SqlFunctions$SimilarFunction"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.calcite.linq4j.tree.Types"
+      },
+      "type": "org.apache.calcite.runtime.UrlFunctions"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.calcite.linq4j.tree.Types"
+      },
+      "type": "org.apache.calcite.runtime.Utilities"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.calcite.linq4j.tree.Types"
+      },
+      "type": "org.apache.calcite.runtime.XmlFunctions"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.calcite.linq4j.tree.Types"
+      },
+      "type": "org.apache.calcite.runtime.variant.VariantNull"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.calcite.linq4j.tree.Types"
+      },
+      "type": "org.apache.calcite.runtime.variant.VariantSqlValue"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.calcite.linq4j.tree.Types"
+      },
+      "type": "org.apache.calcite.runtime.variant.VariantValue"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.calcite.linq4j.tree.Types"
+      },
+      "type": "org.apache.calcite.schema.ModifiableTable"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.calcite.linq4j.tree.Types"
+      },
+      "type": "org.apache.calcite.schema.QueryableTable"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.calcite.linq4j.tree.Types"
+      },
+      "type": "org.apache.calcite.schema.ScannableTable"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.calcite.linq4j.tree.Types"
+      },
+      "type": "org.apache.calcite.schema.Schema"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.calcite.linq4j.tree.Types"
+      },
+      "type": "org.apache.calcite.schema.SchemaPlus"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.calcite.linq4j.tree.Types"
+      },
+      "type": "org.apache.calcite.schema.Schemas"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.calcite.sql.fun.SqlLibraryOperatorTableFactory"
+      },
+      "type": "org.apache.calcite.sql.fun.SqlLibraryOperators",
+      "allPublicFields": true
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.calcite.sql.fun.SqlStdOperatorTable"
+      },
+      "type": "org.apache.calcite.sql.fun.SqlStdOperatorTable",
+      "allPublicFields": true
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.calcite.linq4j.tree.Types"
+      },
+      "type": "org.apache.calcite.util.ImmutableIntList"
+    }
+  ],
+  "resources": [
+    {
+      "condition": {
+        "typeReached": "org.apache.calcite.avatica.DriverVersion"
+      },
+      "glob": "org-apache-calcite-jdbc.properties"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.calcite.config.CalciteSystemProperty"
+      },
+      "glob": "saffron.properties"
+    }
+  ]
+}

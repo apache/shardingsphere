@@ -19,7 +19,7 @@ package org.apache.shardingsphere.infra.binder.engine.segment.util;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
+import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.exception.kernel.metadata.ColumnNotFoundException;
 import org.apache.shardingsphere.infra.exception.kernel.metadata.DuplicateColumnException;
 import org.apache.shardingsphere.infra.exception.kernel.metadata.DuplicateIndexException;

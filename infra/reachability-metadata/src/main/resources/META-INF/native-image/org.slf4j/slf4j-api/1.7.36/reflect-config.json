@@ -1,7 +1,0 @@
-[
-{
-  "condition":{"typeReachable":"org.slf4j.event.Level"},
-  "name":"org.slf4j.event.Level",
-  "methods":[{"name":"valueOf","parameterTypes":["java.lang.String"] }]
-}
-]

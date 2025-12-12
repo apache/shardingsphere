@@ -116,6 +116,14 @@ class ModShardingAlgorithmTest {
         assertThrows(AlgorithmInitializationException.class, () -> TypedSPILoader.getService(ShardingAlgorithm.class, "MOD", props));
     }
     
+    @Test
+    void assertRangeDoShardingWithLargeRange() {
+        ModShardingAlgorithm algorithm = (ModShardingAlgorithm) TypedSPILoader.getService(ShardingAlgorithm.class, "MOD", createZeroPaddingProperties());
+        Collection<String> actual = algorithm.doSharding(createAvailableTargetNames(),
+                new RangeShardingValue<>("t_order", "order_id", DATA_NODE_INFO, Range.closed(1164582715995979777L, 1164583049303058023L)));
+        assertThat(actual.size(), is(16));
+    }
+    
     private Properties createZeroPaddingProperties() {
         return PropertiesBuilder.build(
                 new Property("sharding-count", "16"), new Property("zero-padding", Boolean.TRUE.toString()), new Property("start-offset", "1"), new Property("stop-offset", "1"));

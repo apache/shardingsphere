@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.data.pipeline.mysql.datasource;
 
 import org.apache.shardingsphere.data.pipeline.spi.JdbcQueryPropertiesExtension;
-import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
-import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPILoader;
+import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoader;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.junit.jupiter.api.Test;
 
@@ -27,8 +27,8 @@ import java.util.Optional;
 import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.isA;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class MySQLJdbcQueryPropertiesExtensionTest {
@@ -48,13 +48,12 @@ class MySQLJdbcQueryPropertiesExtensionTest {
     }
     
     private void assertExtension(final JdbcQueryPropertiesExtension actual) {
-        assertThat(actual, instanceOf(MySQLJdbcQueryPropertiesExtension.class));
+        assertThat(actual, isA(MySQLJdbcQueryPropertiesExtension.class));
         assertThat(actual.getType(), is(TypedSPILoader.getService(DatabaseType.class, "MySQL")));
     }
     
     private void assertQueryProperties(final Properties actual, final String expectedNetTimeoutForStreamingResults) {
-        assertThat(actual.size(), is(8));
-        assertThat(actual.getProperty("useSSL"), is(Boolean.FALSE.toString()));
+        assertThat(actual.size(), is(7));
         assertThat(actual.getProperty("useServerPrepStmts"), is(Boolean.FALSE.toString()));
         assertThat(actual.getProperty("rewriteBatchedStatements"), is(Boolean.TRUE.toString()));
         assertThat(actual.getProperty("yearIsDateType"), is(Boolean.FALSE.toString()));

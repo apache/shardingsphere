@@ -25,9 +25,9 @@ import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.isA;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class PipelineJobIdUtilsTest {
@@ -42,7 +42,7 @@ class PipelineJobIdUtilsTest {
     void assertParseJobType() {
         PipelineContextKey contextKey = new PipelineContextKey("foo_db", InstanceType.JDBC);
         String jobId = PipelineJobIdUtils.marshal(new MigrationJobId(contextKey, Collections.singletonList("foo_tbl:foo_ds.foo_tbl_0,foo_ds.foo_tbl_1")));
-        assertThat(PipelineJobIdUtils.parseJobType(jobId), instanceOf(MigrationJobType.class));
+        assertThat(PipelineJobIdUtils.parseJobType(jobId), isA(MigrationJobType.class));
     }
     
     @Test

@@ -1388,7 +1388,7 @@
             <shorthand-projection name="*" start-index="86" stop-index="103">
                 <owner name="planForceDetails" start-index="86" stop-index="101"/>
             </shorthand-projection>
-            <expression-projection start-index="106" stop-index="255" text="regressedPlanExecutionCount + recommendedPlanExecutionCount) * (regressedPlanCpuTimeAverage - recommendedPlanCpuTimeAverage)/100000" alias="estimated_gain">
+            <expression-projection start-index="106" stop-index="255" text="(regressedPlanExecutionCount + recommendedPlanExecutionCount) * (regressedPlanCpuTimeAverage - recommendedPlanCpuTimeAverage)/1000000" alias="estimated_gain">
                 <expr>
                     <binary-operation-expression start-index="123" stop-index="255">
                         <left>
@@ -2116,7 +2116,7 @@
             <column-projection name="text" start-index="7" stop-index="12">
                 <owner name="t" start-index="7" stop-index="7"/>
             </column-projection>
-            <expression-projection start-index="15" stop-index="83" text="qs.total_elapsed_time/1000) / qs.execution_coun" alias="avg_elapsed_time">
+            <expression-projection start-index="15" stop-index="83" text="(qs.total_elapsed_time/1000) / qs.execution_count" alias="avg_elapsed_time">
                 <expr>
                     <binary-operation-expression start-index="15" stop-index="63">
                         <left>
@@ -2141,7 +2141,7 @@
                     </binary-operation-expression>
                 </expr>
             </expression-projection>
-            <expression-projection text="qs.total_worker_time/1000) / qs.execution_coun" start-index="86" stop-index="149" alias="avg_cpu_time">
+            <expression-projection text="(qs.total_worker_time/1000) / qs.execution_count" start-index="86" stop-index="149" alias="avg_cpu_time">
                 <expr>
                     <binary-operation-expression start-index="86" stop-index="133">
                         <left>
@@ -2166,7 +2166,7 @@
                     </binary-operation-expression>
                 </expr>
             </expression-projection>
-            <expression-projection text="qs.total_elapsed_time/1000) / qs.execution_count ) - ((qs.total_worker_time/1000) / qs.execution_coun" start-index="152" stop-index="273" alias="avg_wait_time">
+            <expression-projection text="((qs.total_elapsed_time/1000) / qs.execution_count ) - ((qs.total_worker_time/1000) / qs.execution_count)" start-index="152" stop-index="273" alias="avg_wait_time">
                 <expr>
                     <binary-operation-expression start-index="152" stop-index="256">
                         <left>
@@ -2823,7 +2823,7 @@
             <shorthand-projection start-index="83" stop-index="100">
                 <owner name="planForceDetails" start-index="83" stop-index="98" />
             </shorthand-projection>
-            <expression-projection alias="estimated_gain" text="regressedPlanExecutionCount + recommendedPlanExecutionCount) * (regressedPlanCpuTimeAverage - recommendedPlanCpuTimeAverage) / 100000" start-index="102" stop-index="253">
+            <expression-projection alias="estimated_gain" text="(regressedPlanExecutionCount + recommendedPlanExecutionCount) * (regressedPlanCpuTimeAverage - recommendedPlanCpuTimeAverage) / 1000000" start-index="102" stop-index="253">
                 <expr>
                     <binary-operation-expression start-index="119" stop-index="253">
                         <left>

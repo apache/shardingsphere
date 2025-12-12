@@ -936,4 +936,166 @@
     <show sql-case-id="show_partitions_with_order_by" />
     <show sql-case-id="show_partitions_with_limit" />
     <show sql-case-id="show_partitions_all_options" />
+    <show sql-case-id="show_table_extended_basic" />
+    <show sql-case-id="show_table_extended_in_database" />
+    <show sql-case-id="show_table_extended_from_database" />
+    <show sql-case-id="show_table_extended_with_partition" />
+    <show sql-case-id="show_table_extended_all_options_in" />
+    <show sql-case-id="show_table_extended_all_options_from" />
+    <show sql-case-id="show_tblproperties_basic" />
+    <show sql-case-id="show_tblproperties_with_key" />
+
+    <show-create-table sql-case-id="show_create_table_basic">
+        <table name="orders" start-index="18" stop-index="23" />
+    </show-create-table>
+
+    <show-create-table sql-case-id="show_create_table_with_db">
+        <table name="orders" start-index="18" stop-index="32">
+            <owner name="sales_db" start-index="18" stop-index="25" />
+        </table>
+    </show-create-table>
+
+    <show-create-table sql-case-id="show_create_table_view">
+        <table name="user_view" start-index="18" stop-index="26" />
+    </show-create-table>
+
+    <show-create-table sql-case-id="show_create_view_with_db">
+        <table name="user_view" start-index="18" stop-index="39">
+            <owner name="analytics_db" start-index="18" stop-index="29" />
+        </table>
+    </show-create-table>
+
+    <show-index sql-case-id="show_indexes_basic">
+        <table name="orders" start-index="16" stop-index="21" />
+    </show-index>
+
+    <show-index sql-case-id="show_index_basic">
+        <table name="products" start-index="14" stop-index="21" />
+    </show-index>
+
+    <show-index sql-case-id="show_indexes_with_db_from">
+        <table name="user_logs" start-index="16" stop-index="24" />
+        <database name="analytics_db" start-index="26" stop-index="42" />
+    </show-index>
+
+    <show-index sql-case-id="show_indexes_with_db_in">
+        <table name="inventory" start-index="16" stop-index="24" />
+        <database name="warehouse_db" start-index="26" stop-index="40" />
+    </show-index>
+
+    <show-index sql-case-id="show_formatted_indexes">
+        <table name="sales" start-index="26" stop-index="30" />
+    </show-index>
+
+    <show-index sql-case-id="show_formatted_indexes_with_db">
+        <table name="orders" start-index="26" stop-index="31" />
+        <database name="sales_db" start-index="33" stop-index="45" />
+    </show-index>
+
+    <show-index sql-case-id="show_formatted_indexes_with_db_in">
+        <table name="orders" start-index="26" stop-index="31" />
+        <database name="sales_db" start-index="33" stop-index="43" />
+    </show-index>
+
+    <show-index sql-case-id="show_index_with_db_from">
+        <table name="user_logs" start-index="14" stop-index="22" />
+        <database name="analytics_db" start-index="24" stop-index="40" />
+    </show-index>
+
+    <show-index sql-case-id="show_index_with_db_in">
+        <table name="inventory" start-index="14" stop-index="22" />
+        <database name="warehouse_db" start-index="24" stop-index="38" />
+    </show-index>
+
+    <show-index sql-case-id="show_formatted_index">
+        <table name="sales" start-index="24" stop-index="28" />
+    </show-index>
+
+    <show-index sql-case-id="show_formatted_index_with_db">
+        <table name="orders" start-index="24" stop-index="29" />
+        <database name="sales_db" start-index="31" stop-index="43" />
+    </show-index>
+
+    <show-index sql-case-id="show_formatted_index_with_db_in">
+        <table name="orders" start-index="24" stop-index="29" />
+        <database name="sales_db" start-index="31" stop-index="41" />
+    </show-index>
+
+    <show-columns sql-case-id="show_columns_basic_from">
+        <table name="users" start-index="18" stop-index="22" />
+    </show-columns>
+
+    <show-columns sql-case-id="show_columns_basic_in">
+        <table name="products" start-index="16" stop-index="23" />
+    </show-columns>
+
+    <show-columns sql-case-id="show_columns_with_like">
+        <table name="orders" start-index="18" stop-index="23" />
+        <filter start-index="25" stop-index="37">
+            <like pattern="user_*" start-delimiter="'" end-delimiter="'" start-index="25" stop-index="37" />
+        </filter>
+    </show-columns>
+
+    <show-columns sql-case-id="show_columns_with_db_from">
+        <table name="logs" start-index="18" stop-index="21" />
+        <database name="analytics_db" start-index="28" stop-index="39" />
+    </show-columns>
+
+    <show-columns sql-case-id="show_columns_with_db_from_in">
+        <table name="logs" start-index="18" stop-index="21" />
+        <database name="analytics_db" start-index="26" stop-index="37" />
+    </show-columns>
+
+    <show-columns sql-case-id="show_columns_with_like_in">
+        <table name="orders" start-index="16" stop-index="21" />
+        <filter start-index="23" stop-index="35">
+            <like pattern="user_*" start-delimiter="'" end-delimiter="'" start-index="23" stop-index="35" />
+        </filter>
+    </show-columns>
+
+    <show-columns sql-case-id="show_columns_with_db_in_from">
+        <table name="logs" start-index="16" stop-index="19" />
+        <database name="analytics_db" start-index="26" stop-index="37" />
+    </show-columns>
+
+    <show-columns sql-case-id="show_columns_with_db_in_in">
+        <table name="sales" start-index="16" stop-index="20" />
+        <database name="commerce_db" start-index="25" stop-index="35" />
+    </show-columns>
+
+    <show-columns sql-case-id="show_columns_db_like_from">
+        <table name="inventory" start-index="18" stop-index="26" />
+        <database name="warehouse_db" start-index="33" stop-index="44" />
+        <filter start-index="46" stop-index="68">
+            <like pattern="stock_*|quantity" start-delimiter="'" end-delimiter="'" start-index="46" stop-index="68" />
+        </filter>
+    </show-columns>
+
+    <show sql-case-id="show_functions_basic" />
+    <show sql-case-id="show_functions_with_like" />
+    <show sql-case-id="show_role_grant_basic" />
+    <show sql-case-id="show_grant_basic" />
+    <show sql-case-id="show_current_roles" />
+    <show sql-case-id="show_roles_basic" />
+    <show sql-case-id="show_principals_basic" />
+    <show sql-case-id="show_locks_basic" />
+    <show sql-case-id="show_locks_extended" />
+    <show sql-case-id="show_locks_partition" />
+    <show sql-case-id="show_locks_partition_extended" />
+    <show sql-case-id="show_locks_database" />
+    <show sql-case-id="show_locks_schema" />
+    <show sql-case-id="show_conf" />
+    <show sql-case-id="show_transactions" />
+    <show sql-case-id="show_compactions_basic" />
+    <show sql-case-id="show_compactions_with_database" />
+    <show sql-case-id="show_compactions_with_schema" />
+    <show sql-case-id="show_compactions_with_table" />
+    <show sql-case-id="show_compactions_with_partition" />
+    <show sql-case-id="show_compactions_with_type" />
+    <show sql-case-id="show_compactions_with_pool" />
+    <show sql-case-id="show_compactions_with_state" />
+    <show sql-case-id="show_compactions_with_order" />
+    <show sql-case-id="show_compactions_with_limit" />
+    <show sql-case-id="show_compactions_with_compaction_ID" />
+    <show sql-case-id="show_compactions_all_options" />
 </sql-parser-test-cases>

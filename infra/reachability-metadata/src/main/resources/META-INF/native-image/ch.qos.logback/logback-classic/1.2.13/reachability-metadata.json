@@ -1,0 +1,94 @@
+{
+  "reflection": [
+    {
+      "condition": {
+        "typeReached": "ch.qos.logback.core.joran.action.NestedComplexPropertyIA"
+      },
+      "type": "ch.qos.logback.classic.encoder.PatternLayoutEncoder",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "condition": {
+        "typeReached": "ch.qos.logback.core.joran.action.AppenderAction"
+      },
+      "type": "ch.qos.logback.core.ConsoleAppender",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "condition": {
+        "typeReached": "ch.qos.logback.core.joran.util.PropertySetter"
+      },
+      "type": "ch.qos.logback.core.OutputStreamAppender",
+      "methods": [
+        {
+          "name": "setEncoder",
+          "parameterTypes": [
+            "ch.qos.logback.core.encoder.Encoder"
+          ]
+        }
+      ]
+    },
+    {
+      "condition": {
+        "typeReached": "ch.qos.logback.core.joran.action.NestedComplexPropertyIA"
+      },
+      "type": "ch.qos.logback.core.encoder.Encoder"
+    },
+    {
+      "condition": {
+        "typeReached": "ch.qos.logback.core.joran.util.PropertySetter"
+      },
+      "type": "ch.qos.logback.core.encoder.LayoutWrappingEncoder",
+      "methods": [
+        {
+          "name": "setParent",
+          "parameterTypes": [
+            "ch.qos.logback.core.spi.ContextAware"
+          ]
+        }
+      ]
+    },
+    {
+      "condition": {
+        "typeReached": "ch.qos.logback.core.joran.util.PropertySetter"
+      },
+      "type": "ch.qos.logback.core.pattern.PatternLayoutEncoderBase",
+      "methods": [
+        {
+          "name": "setPattern",
+          "parameterTypes": [
+            "java.lang.String"
+          ]
+        }
+      ]
+    },
+    {
+      "condition": {
+        "typeReached": "ch.qos.logback.core.joran.action.NestedComplexPropertyIA"
+      },
+      "type": "ch.qos.logback.core.spi.ContextAware"
+    },
+    {
+      "condition": {
+        "typeReached": "ch.qos.logback.core.joran.action.StatusListenerAction"
+      },
+      "type": "ch.qos.logback.core.status.NopStatusListener",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    }
+  ]
+}

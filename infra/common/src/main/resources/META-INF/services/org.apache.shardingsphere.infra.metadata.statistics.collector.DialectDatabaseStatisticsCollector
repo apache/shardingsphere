@@ -15,6 +15,5 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.infra.metadata.statistics.collector.shardingsphere.ShardingSphereStatisticsCollector
 org.apache.shardingsphere.infra.metadata.statistics.collector.postgresql.PostgreSQLStatisticsCollector
 org.apache.shardingsphere.infra.metadata.statistics.collector.opengauss.OpenGaussStatisticsCollector

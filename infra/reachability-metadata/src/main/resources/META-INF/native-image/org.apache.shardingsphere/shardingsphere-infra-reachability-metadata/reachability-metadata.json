@@ -382,30 +382,30 @@
     },
     {
       "condition": {
-        "typeReached": "org.apache.shardingsphere.sql.parser.hive.visitor.statement.type.HiveDMLStatementVisitor"
+        "typeReached": "org.apache.shardingsphere.sql.parser.engine.hive.visitor.statement.type.HiveDMLStatementVisitor"
       },
-      "type": "org.apache.shardingsphere.sql.parser.hive.visitor.statement.type.HiveDMLStatementVisitor",
+      "type": "org.apache.shardingsphere.sql.parser.engine.hive.visitor.statement.type.HiveDMLStatementVisitor",
       "allPublicConstructors": true
     },
     {
       "condition": {
-        "typeReached": "org.apache.shardingsphere.sql.parser.postgresql.visitor.statement.type.PostgreSQLDALStatementVisitor"
+        "typeReached": "org.apache.shardingsphere.sql.parser.engine.postgresql.visitor.statement.type.PostgreSQLDALStatementVisitor"
       },
-      "type": "org.apache.shardingsphere.sql.parser.postgresql.visitor.statement.type.PostgreSQLDALStatementVisitor",
+      "type": "org.apache.shardingsphere.sql.parser.engine.postgresql.visitor.statement.type.PostgreSQLDALStatementVisitor",
       "allPublicConstructors": true
     },
     {
       "condition": {
-        "typeReached": "org.apache.shardingsphere.sql.parser.postgresql.visitor.statement.type.PostgreSQLTCLStatementVisitor"
+        "typeReached": "org.apache.shardingsphere.sql.parser.engine.postgresql.visitor.statement.type.PostgreSQLTCLStatementVisitor"
       },
-      "type": "org.apache.shardingsphere.sql.parser.postgresql.visitor.statement.type.PostgreSQLTCLStatementVisitor",
+      "type": "org.apache.shardingsphere.sql.parser.engine.postgresql.visitor.statement.type.PostgreSQLTCLStatementVisitor",
       "allPublicConstructors": true
     },
     {
       "condition": {
-        "typeReached": "org.apache.shardingsphere.sql.parser.clickhouse.parser.ClickHouseLexer"
+        "typeReached": "org.apache.shardingsphere.sql.parser.engine.clickhouse.parser.ClickHouseLexer"
       },
-      "type": "org.apache.shardingsphere.sql.parser.clickhouse.parser.ClickHouseLexer",
+      "type": "org.apache.shardingsphere.sql.parser.engine.clickhouse.parser.ClickHouseLexer",
       "methods": [
         {
           "name": "<init>",
@@ -417,9 +417,9 @@
     },
     {
       "condition": {
-        "typeReached": "org.apache.shardingsphere.sql.parser.clickhouse.parser.ClickHouseParser"
+        "typeReached": "org.apache.shardingsphere.sql.parser.engine.clickhouse.parser.ClickHouseParser"
       },
-      "type": "org.apache.shardingsphere.sql.parser.clickhouse.parser.ClickHouseParser",
+      "type": "org.apache.shardingsphere.sql.parser.engine.clickhouse.parser.ClickHouseParser",
       "methods": [
         {
           "name": "<init>",
@@ -431,37 +431,37 @@
     },
     {
       "condition": {
-        "typeReached": "org.apache.shardingsphere.sql.parser.clickhouse.visitor.statement.type.ClickHouseDMLStatementVisitor"
+        "typeReached": "org.apache.shardingsphere.sql.parser.engine.clickhouse.visitor.statement.type.ClickHouseDMLStatementVisitor"
       },
-      "type": "org.apache.shardingsphere.sql.parser.clickhouse.visitor.statement.type.ClickHouseDMLStatementVisitor",
+      "type": "org.apache.shardingsphere.sql.parser.engine.clickhouse.visitor.statement.type.ClickHouseDMLStatementVisitor",
       "allPublicConstructors": true
     },
     {
       "condition": {
-        "typeReached": "org.apache.shardingsphere.sqlfederation.compiler.sql.function.mysql.MySQLFunctionRegister"
+        "typeReached": "org.apache.shardingsphere.sqlfederation.mysql.MySQLSQLFederationFunctionRegister"
       },
       "type": "org.apache.shardingsphere.sqlfederation.compiler.sql.function.mysql.impl.MySQLBinFunction",
       "allPublicMethods": true
     },
     {
       "condition": {
-        "typeReached": "org.apache.shardingsphere.sqlfederation.compiler.sql.function.opengauss.OpenGaussFunctionRegister"
+        "typeReached": "org.apache.shardingsphere.sqlfederation.opengauss.OpenGaussSQLFederationFunctionRegister"
       },
       "type": "org.apache.shardingsphere.sqlfederation.compiler.sql.function.opengauss.impl.OpenGaussSystemFunction",
       "allPublicMethods": true
     },
     {
       "condition": {
-        "typeReached": "org.apache.shardingsphere.sqlfederation.compiler.sql.function.postgresql.PostgreSQLFunctionRegister"
+        "typeReached": "org.apache.shardingsphere.sqlfederation.postgresql.PostgreSQLSQLFederationFunctionRegister"
       },
       "type": "org.apache.shardingsphere.sqlfederation.compiler.sql.function.postgresql.impl.PostgreSQLSystemFunction",
       "allPublicMethods": true
     },
     {
       "condition": {
-        "typeReached": "org.apache.shardingsphere.sql.parser.presto.visitor.statement.type.PrestoDMLStatementVisitor"
+        "typeReached": "org.apache.shardingsphere.sql.parser.engine.presto.visitor.statement.type.PrestoDMLStatementVisitor"
       },
-      "type": "org.apache.shardingsphere.sql.parser.presto.visitor.statement.type.PrestoDMLStatementVisitor",
+      "type": "org.apache.shardingsphere.sql.parser.engine.presto.visitor.statement.type.PrestoDMLStatementVisitor",
       "allPublicConstructors": true
     },
     {
@@ -540,15 +540,13 @@
     },
     {
       "condition": {
-        "typeReached": "javax.security.auth.login.Configuration"
+        "typeReached": "com.facebook.presto.jdbc.internal.guava.reflect.Reflection"
       },
-      "type": "sun.security.provider.ConfigFile",
-      "methods": [
-        {
-          "name": "<init>",
-          "parameterTypes": []
-        }
-      ]
+      "type": {
+        "proxy": [
+          "java.lang.reflect.TypeVariable"
+        ]
+      }
     }
   ],
   "resources": [
@@ -556,7 +554,7 @@
       "condition": {
         "typeReached": "org.apache.shardingsphere.infra.spi.type.ordered.OrderedSPILoader"
       },
-      "glob": "META-INF/services/org.apache.shardingsphere.**"
+      "glob": "META-INF/services/org.apache.shardingsphere.*"
     },
     {
       "condition": {
@@ -578,12 +576,6 @@
     }
   ],
   "bundles": [
-    {
-      "condition": {
-        "typeReached": "com.microsoft.sqlserver.jdbc.SQLServerResource"
-      },
-      "name": "com.microsoft.sqlserver.jdbc.SQLServerResource"
-    },
     {
       "condition": {
         "typeReached": "org.opengauss.util.GT"

@@ -17,28 +17,24 @@
 
 package org.apache.shardingsphere.driver.executor.engine.transaction;
 
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.driver.jdbc.core.connection.ShardingSphereConnection;
 import org.apache.shardingsphere.driver.jdbc.core.savepoint.ShardingSphereSavepoint;
 import org.apache.shardingsphere.infra.session.query.QueryContext;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.tcl.ReleaseSavepointStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.tcl.SavepointStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.tcl.TCLStatement;
-import org.apache.shardingsphere.transaction.core.TransactionOperationType;
 
 import java.sql.SQLException;
 
 /**
  * Driver transaction statement executor.
  */
+@RequiredArgsConstructor
 public final class DriverTransactionSQLStatementExecutor {
     
     private final ShardingSphereConnection connection;
-    
-    private TransactionOperationType operationType;
-    
-    public DriverTransactionSQLStatementExecutor(final ShardingSphereConnection connection) {
-        this.connection = connection;
-    }
     
     /**
      * Decide whether to execute TCL statement.
@@ -50,34 +46,25 @@ public final class DriverTransactionSQLStatementExecutor {
         if (!(queryContext.getSqlStatementContext().getSqlStatement() instanceof TCLStatement)) {
             return false;
         }
-        TCLStatement tclStatement = (TCLStatement) queryContext.getSqlStatementContext().getSqlStatement();
-        if (tclStatement instanceof SavepointStatement) {
-            operationType = TransactionOperationType.SAVEPOINT;
-            return true;
-        }
-        if (tclStatement instanceof ReleaseSavepointStatement) {
-            operationType = TransactionOperationType.RELEASE_SAVEPOINT;
-            return true;
-        }
+        SQLStatement sqlStatement = queryContext.getSqlStatementContext().getSqlStatement();
+        return sqlStatement instanceof SavepointStatement || sqlStatement instanceof ReleaseSavepointStatement;
         // TODO support more TCL statements
-        return false;
     }
     
     /**
      * Execute TCL statement.
      *
-     * @param tclStatement SQL statement
+     * @param sqlStatement SQL statement
      * @return whether to execute TCL statement or not
      * @throws SQLException SQL exception
      */
-    public boolean execute(final TCLStatement tclStatement) throws SQLException {
-        if (TransactionOperationType.SAVEPOINT == operationType) {
-            connection.setSavepoint(((SavepointStatement) tclStatement).getSavepointName());
+    public boolean execute(final TCLStatement sqlStatement) throws SQLException {
+        if (sqlStatement instanceof SavepointStatement) {
+            connection.setSavepoint(((SavepointStatement) sqlStatement).getSavepointName());
             return true;
         }
-        if (TransactionOperationType.RELEASE_SAVEPOINT == operationType) {
-            ShardingSphereSavepoint savepoint = new ShardingSphereSavepoint(((ReleaseSavepointStatement) tclStatement).getSavepointName());
-            connection.releaseSavepoint(savepoint);
+        if (sqlStatement instanceof ReleaseSavepointStatement) {
+            connection.releaseSavepoint(new ShardingSphereSavepoint(((ReleaseSavepointStatement) sqlStatement).getSavepointName()));
             return true;
         }
         return false;

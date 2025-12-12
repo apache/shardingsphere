@@ -39,7 +39,7 @@ public final class SingleXAResource implements XAResource {
     
     public SingleXAResource(final String resourceName, final XAResource delegate) {
         this.resourceName = resourceName;
-        this.uniqueName = "";
+        uniqueName = "";
         this.delegate = delegate;
     }
     

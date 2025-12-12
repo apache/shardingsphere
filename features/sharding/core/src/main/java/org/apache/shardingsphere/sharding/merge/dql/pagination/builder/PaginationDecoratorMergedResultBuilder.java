@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.sharding.merge.dql.pagination.builder;
 
 import org.apache.shardingsphere.infra.binder.context.segment.select.pagination.PaginationContext;
-import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPI;
+import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPI;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.apache.shardingsphere.infra.merge.result.impl.decorator.DecoratorMergedResult;
 import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;

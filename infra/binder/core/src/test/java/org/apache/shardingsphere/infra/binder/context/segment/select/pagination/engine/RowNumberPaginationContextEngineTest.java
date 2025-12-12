@@ -17,12 +17,12 @@
 
 package org.apache.shardingsphere.infra.binder.context.segment.select.pagination.engine;
 
+import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.pagination.DialectPaginationOption;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.binder.context.segment.select.pagination.PaginationContext;
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.Projection;
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.ProjectionsContext;
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.impl.ColumnProjection;
-import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.option.pagination.DialectPaginationOption;
-import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.BinaryOperationExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simple.LiteralExpressionSegment;
@@ -37,9 +37,9 @@ import org.junit.jupiter.api.Test;
 import java.util.Collections;
 import java.util.Optional;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.isA;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
@@ -112,7 +112,7 @@ class RowNumberPaginationContextEngineTest {
         PaginationContext paginationContext = paginationContextEngine.createPaginationContext(Collections.singletonList(expression), projectionsContext, Collections.singletonList(1));
         Optional<PaginationValueSegment> offSetSegmentPaginationValue = paginationContext.getOffsetSegment();
         assertTrue(offSetSegmentPaginationValue.isPresent());
-        assertThat(offSetSegmentPaginationValue.get(), instanceOf(ParameterMarkerRowNumberValueSegment.class));
+        assertThat(offSetSegmentPaginationValue.get(), isA(ParameterMarkerRowNumberValueSegment.class));
         assertFalse(paginationContext.getRowCountSegment().isPresent());
     }
     
@@ -142,7 +142,7 @@ class RowNumberPaginationContextEngineTest {
         Optional<PaginationValueSegment> paginationValueSegment = rowNumberPaginationContextEngine.getOffsetSegment();
         assertTrue(paginationValueSegment.isPresent());
         PaginationValueSegment actualPaginationValueSegment = paginationValueSegment.get();
-        assertThat(actualPaginationValueSegment, instanceOf(NumberLiteralRowNumberValueSegment.class));
+        assertThat(actualPaginationValueSegment, isA(NumberLiteralRowNumberValueSegment.class));
         assertThat(actualPaginationValueSegment.getStartIndex(), is(0));
         assertThat(actualPaginationValueSegment.getStopIndex(), is(10));
         assertThat(((NumberLiteralRowNumberValueSegment) actualPaginationValueSegment).getValue(), is(100L));

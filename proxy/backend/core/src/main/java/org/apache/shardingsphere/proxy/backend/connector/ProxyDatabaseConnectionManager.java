@@ -23,14 +23,14 @@ import com.google.common.collect.Multimap;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.ConnectionMode;
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.DatabaseConnectionManager;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.spi.type.ordered.OrderedSPILoader;
 import org.apache.shardingsphere.proxy.backend.connector.jdbc.connection.ConnectionPostProcessor;
 import org.apache.shardingsphere.proxy.backend.connector.jdbc.connection.ConnectionResourceLock;
-import org.apache.shardingsphere.proxy.backend.connector.jdbc.transaction.BackendTransactionManager;
+import org.apache.shardingsphere.proxy.backend.connector.jdbc.transaction.ProxyBackendTransactionManager;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.exception.BackendConnectionException;
 import org.apache.shardingsphere.proxy.backend.handler.ProxyBackendHandler;
@@ -54,18 +54,18 @@ import java.util.concurrent.atomic.AtomicBoolean;
 /**
  * Database connection manager of ShardingSphere-Proxy.
  */
-@Slf4j
 @RequiredArgsConstructor
 @Getter
+@Slf4j
 public final class ProxyDatabaseConnectionManager implements DatabaseConnectionManager<Connection> {
     
     private final ConnectionSession connectionSession;
     
     private final Multimap<String, Connection> cachedConnections = LinkedHashMultimap.create();
     
-    private final Collection<ProxyBackendHandler> backendHandlers = Collections.newSetFromMap(new ConcurrentHashMap<>(64));
+    private final Collection<ProxyBackendHandler> proxyBackendHandlers = Collections.newSetFromMap(new ConcurrentHashMap<>(64));
     
-    private final Collection<ProxyBackendHandler> inUseBackendHandlers = Collections.newSetFromMap(new ConcurrentHashMap<>(64));
+    private final Collection<ProxyBackendHandler> inUseProxyBackendHandlers = Collections.newSetFromMap(new ConcurrentHashMap<>(64));
     
     private final Collection<ConnectionPostProcessor> connectionPostProcessors = new LinkedList<>();
     
@@ -119,7 +119,7 @@ public final class ProxyDatabaseConnectionManager implements DatabaseConnectionM
     @SuppressWarnings({"unchecked", "rawtypes"})
     private void executeTransactionHooksAfterCreateConnections(final List<Connection> connections) throws SQLException {
         if (connectionSession.getTransactionStatus().isInTransaction()) {
-            DatabaseType databaseType = ProxyContext.getInstance().getDatabaseType();
+            DatabaseType databaseType = ProxyContext.getInstance().getContextManager().getDatabaseType();
             for (Entry<ShardingSphereRule, TransactionHook> entry : transactionHooks.entrySet()) {
                 entry.getValue().afterCreateConnections(entry.getKey(), databaseType, connections, connectionSession.getConnectionContext().getTransactionContext());
             }
@@ -132,7 +132,7 @@ public final class ProxyDatabaseConnectionManager implements DatabaseConnectionM
         for (Connection each : result) {
             replayTransactionOption(each);
         }
-        if (connectionSession.getTransactionStatus().isInTransaction()) {
+        if (connectionSession.getConnectionContext().getTransactionContext().isTransactionStarted()) {
             for (Connection each : result) {
                 replayMethodsInvocation(each);
             }
@@ -180,6 +180,7 @@ public final class ProxyDatabaseConnectionManager implements DatabaseConnectionM
         }
     }
     
+    @SuppressWarnings("MagicConstant")
     private void replayTransactionOption(final Connection connection) throws SQLException {
         if (null == connection) {
             return;
@@ -226,7 +227,7 @@ public final class ProxyDatabaseConnectionManager implements DatabaseConnectionM
      * @param handler handler to be added
      */
     public void add(final ProxyBackendHandler handler) {
-        backendHandlers.add(handler);
+        proxyBackendHandlers.add(handler);
     }
     
     /**
@@ -235,7 +236,7 @@ public final class ProxyDatabaseConnectionManager implements DatabaseConnectionM
      * @param handler handler to be marked
      */
     public void markResourceInUse(final ProxyBackendHandler handler) {
-        inUseBackendHandlers.add(handler);
+        inUseProxyBackendHandlers.add(handler);
     }
     
     /**
@@ -244,7 +245,7 @@ public final class ProxyDatabaseConnectionManager implements DatabaseConnectionM
      * @param handler proxy backend handler to be added
      */
     public void unmarkResourceInUse(final ProxyBackendHandler handler) {
-        inUseBackendHandlers.remove(handler);
+        inUseProxyBackendHandlers.remove(handler);
     }
     
     /**
@@ -252,7 +253,7 @@ public final class ProxyDatabaseConnectionManager implements DatabaseConnectionM
      */
     public void handleAutoCommit() {
         if (!connectionSession.isAutoCommit() && !connectionSession.getTransactionStatus().isInTransaction()) {
-            BackendTransactionManager transactionManager = new BackendTransactionManager(this);
+            ProxyBackendTransactionManager transactionManager = new ProxyBackendTransactionManager(this);
             transactionManager.begin();
         }
     }
@@ -302,8 +303,8 @@ public final class ProxyDatabaseConnectionManager implements DatabaseConnectionM
      */
     public Collection<SQLException> closeHandlers(final boolean includeInUse) {
         Collection<SQLException> result = new LinkedList<>();
-        for (ProxyBackendHandler each : backendHandlers) {
-            if (!includeInUse && inUseBackendHandlers.contains(each)) {
+        for (ProxyBackendHandler each : proxyBackendHandlers) {
+            if (!includeInUse && inUseProxyBackendHandlers.contains(each)) {
                 continue;
             }
             try {
@@ -313,9 +314,9 @@ public final class ProxyDatabaseConnectionManager implements DatabaseConnectionM
             }
         }
         if (includeInUse) {
-            inUseBackendHandlers.clear();
+            inUseProxyBackendHandlers.clear();
         }
-        backendHandlers.retainAll(inUseBackendHandlers);
+        proxyBackendHandlers.retainAll(inUseProxyBackendHandlers);
         return result;
     }
     

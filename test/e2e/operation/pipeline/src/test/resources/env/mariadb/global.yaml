@@ -20,7 +20,7 @@ mode:
   repository:
     type: ZooKeeper
     props:
-      namespace: it_db_mariadb
+      namespace: e2e_db_mariadb
       server-lists: zk.host:2181
 
 authority:
@@ -40,6 +40,6 @@ sqlFederation:
 props:
   system-schema-metadata-assembly-enabled: false
   max-connections-size-per-query: 1
-  kernel-executor-size: 16  # Infinite by default.
-  proxy-frontend-flush-threshold: 128  # The default value is 128.
+  kernel-executor-size: 16
+  proxy-frontend-flush-threshold: 128
   sql-show: false

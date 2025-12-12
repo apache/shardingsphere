@@ -17,10 +17,10 @@
 
 package org.apache.shardingsphere.encrypt.checker.sql;
 
-import org.apache.shardingsphere.encrypt.checker.sql.projection.EncryptInsertSelectProjectionSupportedChecker;
-import org.apache.shardingsphere.encrypt.checker.sql.projection.EncryptSelectProjectionSupportedChecker;
 import org.apache.shardingsphere.encrypt.checker.sql.orderby.EncryptOrderByItemSupportedChecker;
 import org.apache.shardingsphere.encrypt.checker.sql.predicate.EncryptPredicateColumnSupportedChecker;
+import org.apache.shardingsphere.encrypt.checker.sql.projection.EncryptInsertSelectProjectionSupportedChecker;
+import org.apache.shardingsphere.encrypt.checker.sql.projection.EncryptSelectProjectionSupportedChecker;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.infra.checker.SupportedSQLChecker;
 import org.apache.shardingsphere.infra.checker.SupportedSQLCheckersBuilder;
@@ -32,8 +32,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.isA;
 
 class EncryptSupportedSQLCheckersBuilderTest {
     
@@ -49,9 +49,9 @@ class EncryptSupportedSQLCheckersBuilderTest {
     @Test
     void assertGetSupportedSQLCheckers() {
         List<SupportedSQLChecker<?, EncryptRule>> actual = new ArrayList<SupportedSQLChecker<?, EncryptRule>>(builder.getSupportedSQLCheckers());
-        assertThat(actual.get(0), instanceOf(EncryptSelectProjectionSupportedChecker.class));
-        assertThat(actual.get(1), instanceOf(EncryptInsertSelectProjectionSupportedChecker.class));
-        assertThat(actual.get(2), instanceOf(EncryptPredicateColumnSupportedChecker.class));
-        assertThat(actual.get(3), instanceOf(EncryptOrderByItemSupportedChecker.class));
+        assertThat(actual.get(0), isA(EncryptSelectProjectionSupportedChecker.class));
+        assertThat(actual.get(1), isA(EncryptInsertSelectProjectionSupportedChecker.class));
+        assertThat(actual.get(2), isA(EncryptPredicateColumnSupportedChecker.class));
+        assertThat(actual.get(3), isA(EncryptOrderByItemSupportedChecker.class));
     }
 }

@@ -24,13 +24,12 @@ import org.apache.calcite.sql.SqlNode;
 import org.apache.calcite.sql.SqlPostfixOperator;
 import org.apache.calcite.sql.fun.SqlStdOperatorTable;
 import org.apache.calcite.sql.parser.SqlParserPos;
-import org.apache.shardingsphere.infra.database.core.metadata.database.enums.NullsOrderType;
+import org.apache.shardingsphere.database.connector.core.metadata.database.enums.NullsOrderType;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.OrderDirection;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.order.item.ColumnOrderByItemSegment;
 import org.apache.shardingsphere.sqlfederation.compiler.sql.ast.converter.segment.expression.impl.ColumnConverter;
 
 import java.util.Collections;
-import java.util.Optional;
 
 /**
  *  Column of order by item converter. 
@@ -39,22 +38,19 @@ import java.util.Optional;
 public final class ColumnOrderByItemConverter {
     
     /**
-     * Convert column order by item segment to sql node.
+     * Convert column order by item segment to SQL node.
      *
      * @param segment column order by item segment
-     * @return sql node
+     * @return SQL node
      */
-    public static Optional<SqlNode> convert(final ColumnOrderByItemSegment segment) {
-        Optional<SqlNode> result = ColumnConverter.convert(segment.getColumn());
-        if (!result.isPresent()) {
-            return Optional.empty();
-        }
+    public static SqlNode convert(final ColumnOrderByItemSegment segment) {
+        SqlNode result = ColumnConverter.convert(segment.getColumn());
         if (OrderDirection.DESC == segment.getOrderDirection()) {
-            result = Optional.of(new SqlBasicCall(SqlStdOperatorTable.DESC, Collections.singletonList(result.get()), SqlParserPos.ZERO));
+            result = new SqlBasicCall(SqlStdOperatorTable.DESC, Collections.singletonList(result), SqlParserPos.ZERO);
         }
         if (segment.getNullsOrderType().isPresent()) {
             SqlPostfixOperator nullsOrderType = NullsOrderType.FIRST == segment.getNullsOrderType().get() ? SqlStdOperatorTable.NULLS_FIRST : SqlStdOperatorTable.NULLS_LAST;
-            result = Optional.of(new SqlBasicCall(nullsOrderType, Collections.singletonList(result.get()), SqlParserPos.ZERO));
+            result = new SqlBasicCall(nullsOrderType, Collections.singletonList(result), SqlParserPos.ZERO);
         }
         return result;
     }

@@ -1,0 +1,423 @@
+{
+  "reflection": [
+    {
+      "condition": {
+        "typeReached": "com.arjuna.ats.arjuna.common.arjPropertyManager"
+      },
+      "type": "com.arjuna.ats.arjuna.common.CoordinatorEnvironmentBean",
+      "allDeclaredFields": true,
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "condition": {
+        "typeReached": "com.arjuna.ats.arjuna.common.arjPropertyManager"
+      },
+      "type": "com.arjuna.ats.arjuna.common.CoreEnvironmentBean",
+      "allDeclaredFields": true,
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "condition": {
+        "typeReached": "com.arjuna.ats.arjuna.common.arjPropertyManager"
+      },
+      "type": "com.arjuna.ats.arjuna.common.MetaObjectStoreEnvironmentBean",
+      "allDeclaredFields": true,
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "condition": {
+        "typeReached": "com.arjuna.ats.arjuna.common.MetaObjectStoreEnvironmentBean"
+      },
+      "type": "com.arjuna.ats.arjuna.common.ObjectStoreEnvironmentBean",
+      "allDeclaredFields": true
+    },
+    {
+      "condition": {
+        "typeReached": "com.arjuna.ats.arjuna.objectstore.StoreManager"
+      },
+      "type": "com.arjuna.ats.arjuna.common.ObjectStoreEnvironmentBean",
+      "allDeclaredFields": true
+    },
+    {
+      "condition": {
+        "typeReached": "com.arjuna.ats.internal.arjuna.recovery.TransactionStatusManagerItem"
+      },
+      "type": "com.arjuna.ats.arjuna.common.ObjectStoreEnvironmentBean",
+      "allDeclaredFields": true
+    },
+    {
+      "condition": {
+        "typeReached": "com.arjuna.common.internal.util.propertyservice.BeanPopulator"
+      },
+      "type": "com.arjuna.ats.arjuna.common.ObjectStoreEnvironmentBean",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "condition": {
+        "typeReached": "com.arjuna.ats.arjuna.common.recoveryPropertyManager"
+      },
+      "type": "com.arjuna.ats.arjuna.common.RecoveryEnvironmentBean",
+      "allDeclaredFields": true,
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "condition": {
+        "typeReached": "com.arjuna.ats.arjuna.logging.tsLogger"
+      },
+      "type": "com.arjuna.ats.arjuna.logging.arjunaI18NLogger_$logger",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": [
+            "org.jboss.logging.Logger"
+          ]
+        }
+      ]
+    },
+    {
+      "condition": {
+        "typeReached": "com.arjuna.ats.arjuna.logging.tsLogger"
+      },
+      "type": "com.arjuna.ats.arjuna.logging.arjunaI18NLogger_$logger_zh"
+    },
+    {
+      "condition": {
+        "typeReached": "com.arjuna.ats.arjuna.logging.tsLogger"
+      },
+      "type": "com.arjuna.ats.arjuna.logging.arjunaI18NLogger_$logger_zh_CN"
+    },
+    {
+      "condition": {
+        "typeReached": "com.arjuna.ats.arjuna.recovery.TransactionStatusManager"
+      },
+      "type": "com.arjuna.ats.arjuna.recovery.ActionStatusService",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "condition": {
+        "typeReached": "com.arjuna.ats.arjuna.common.CoordinatorEnvironmentBean"
+      },
+      "type": "com.arjuna.ats.internal.arjuna.coordinator.CheckedActionFactoryImple",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "condition": {
+        "typeReached": "com.arjuna.ats.arjuna.objectstore.StoreManager"
+      },
+      "type": "com.arjuna.ats.internal.arjuna.objectstore.ShadowNoFileLockStore",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": [
+            "com.arjuna.ats.arjuna.common.ObjectStoreEnvironmentBean"
+          ]
+        }
+      ]
+    },
+    {
+      "condition": {
+        "typeReached": "com.arjuna.ats.internal.arjuna.recovery.TransactionStatusManagerItem"
+      },
+      "type": "com.arjuna.ats.internal.arjuna.objectstore.ShadowNoFileLockStore"
+    },
+    {
+      "condition": {
+        "typeReached": "com.arjuna.ats.arjuna.common.CoreEnvironmentBean"
+      },
+      "type": "com.arjuna.ats.internal.arjuna.utils.SocketProcessId",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "condition": {
+        "typeReached": "com.arjuna.ats.jta.common.JTAEnvironmentBean"
+      },
+      "type": "com.arjuna.ats.internal.jta.transaction.arjunacore.TransactionManagerImple",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "condition": {
+        "typeReached": "com.arjuna.ats.jbossatx.logging.jbossatxLogger"
+      },
+      "type": "com.arjuna.ats.jbossatx.logging.jbossatxI18NLogger_$logger",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": [
+            "org.jboss.logging.Logger"
+          ]
+        }
+      ]
+    },
+    {
+      "condition": {
+        "typeReached": "com.arjuna.ats.jbossatx.logging.jbossatxLogger"
+      },
+      "type": "com.arjuna.ats.jbossatx.logging.jbossatxI18NLogger_$logger_zh"
+    },
+    {
+      "condition": {
+        "typeReached": "com.arjuna.ats.jbossatx.logging.jbossatxLogger"
+      },
+      "type": "com.arjuna.ats.jbossatx.logging.jbossatxI18NLogger_$logger_zh_CN"
+    },
+    {
+      "condition": {
+        "typeReached": "com.arjuna.ats.jta.common.jtaPropertyManager"
+      },
+      "type": "com.arjuna.ats.jta.common.JTAEnvironmentBean",
+      "allDeclaredFields": true,
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "condition": {
+        "typeReached": "com.arjuna.ats.jta.logging.jtaLogger"
+      },
+      "type": "com.arjuna.ats.jta.logging.jtaI18NLogger_$logger",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": [
+            "org.jboss.logging.Logger"
+          ]
+        }
+      ]
+    },
+    {
+      "condition": {
+        "typeReached": "com.arjuna.ats.jta.logging.jtaLogger"
+      },
+      "type": "com.arjuna.ats.jta.logging.jtaI18NLogger_$logger_zh"
+    },
+    {
+      "condition": {
+        "typeReached": "com.arjuna.ats.jta.logging.jtaLogger"
+      },
+      "type": "com.arjuna.ats.jta.logging.jtaI18NLogger_$logger_zh_CN"
+    },
+    {
+      "condition": {
+        "typeReached": "com.arjuna.ats.jta.common.JTAEnvironmentBean"
+      },
+      "type": "com.arjuna.ats.jta.resources.LastResourceCommitOptimisation"
+    },
+    {
+      "condition": {
+        "typeReached": "com.arjuna.common.logging.commonLogger"
+      },
+      "type": "com.arjuna.common.logging.commonI18NLogger_$logger",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": [
+            "org.jboss.logging.Logger"
+          ]
+        }
+      ]
+    },
+    {
+      "condition": {
+        "typeReached": "com.arjuna.common.logging.commonLogger"
+      },
+      "type": "com.arjuna.common.logging.commonI18NLogger_$logger_zh"
+    },
+    {
+      "condition": {
+        "typeReached": "com.arjuna.common.logging.commonLogger"
+      },
+      "type": "com.arjuna.common.logging.commonI18NLogger_$logger_zh_CN"
+    },
+    {
+      "condition": {
+        "typeReached": "com.arjuna.common.util.propertyservice.PropertiesFactory"
+      },
+      "type": "com.arjuna.common.util.propertyservice.PropertiesFactory",
+      "fields": [
+        {
+          "name": "delegatePropertiesFactory"
+        }
+      ]
+    },
+    {
+      "condition": {
+        "typeReached": "com.arjuna.common.internal.util.propertyservice.BeanPopulator"
+      },
+      "type": "com.arjuna.common.internal.util.propertyservice.BeanPopulator",
+      "fields": [
+        {
+          "name": "beanInstances"
+        }
+      ]
+    },
+    {
+      "condition": {
+        "typeReached": "com.arjuna.ats.internal.arjuna.recovery.AtomicActionRecoveryModule"
+      },
+      "type": "com.arjuna.ats.internal.arjuna.recovery.AtomicActionRecoveryModule",
+      "fields": [
+        {
+          "name": "_recoveryStore"
+        }
+      ],
+      "allDeclaredConstructors": true,
+      "allDeclaredMethods": true
+    },
+    {
+      "condition": {
+        "typeReached": "com.arjuna.ats.internal.jta.recovery.arjunacore.XARecoveryModule"
+      },
+      "type": "com.arjuna.ats.internal.jta.recovery.arjunacore.XARecoveryModule",
+      "fields": [
+        {
+          "name": "registeredXARecoveryModule"
+        }
+      ],
+      "allDeclaredConstructors": true,
+      "allDeclaredMethods": true
+    },
+    {
+      "condition": {
+        "typeReached": "com.arjuna.ats.arjuna.objectstore.StoreManager"
+      },
+      "type": "com.arjuna.ats.arjuna.objectstore.StoreManager",
+      "allDeclaredFields": true
+    },
+    {
+      "condition": {
+        "typeReached": "com.arjuna.ats.internal.jta.recovery.arjunacore.CommitMarkableResourceRecordRecoveryModule"
+      },
+      "type": "com.arjuna.ats.internal.jta.recovery.arjunacore.CommitMarkableResourceRecordRecoveryModule",
+      "allDeclaredConstructors": true,
+      "allDeclaredMethods": true
+    },
+    {
+      "condition": {
+        "typeReached": "com.arjuna.ats.internal.txoj.recovery.TORecoveryModule"
+      },
+      "type": "com.arjuna.ats.internal.txoj.recovery.TORecoveryModule",
+      "allDeclaredConstructors": true,
+      "allDeclaredMethods": true
+    },
+    {
+      "condition": {
+        "typeReached": "com.arjuna.ats.internal.arjuna.recovery.ExpiredTransactionStatusManagerScanner"
+      },
+      "type": "com.arjuna.ats.internal.arjuna.recovery.ExpiredTransactionStatusManagerScanner",
+      "allDeclaredConstructors": true,
+      "allDeclaredMethods": true
+    },
+    {
+      "condition": {
+        "typeReached": "com.arjuna.ats.internal.jta.recovery.arjunacore.JTATransactionLogXAResourceOrphanFilter"
+      },
+      "type": "com.arjuna.ats.internal.jta.recovery.arjunacore.JTATransactionLogXAResourceOrphanFilter"
+    },
+    {
+      "condition": {
+        "typeReached": "com.arjuna.ats.internal.jta.recovery.arjunacore.JTANodeNameXAResourceOrphanFilter"
+      },
+      "type": "com.arjuna.ats.internal.jta.recovery.arjunacore.JTANodeNameXAResourceOrphanFilter"
+    },
+    {
+      "condition": {
+        "typeReached": "com.arjuna.ats.internal.jta.recovery.arjunacore.JTAActionStatusServiceXAResourceOrphanFilter"
+      },
+      "type": "com.arjuna.ats.internal.jta.recovery.arjunacore.JTAActionStatusServiceXAResourceOrphanFilter"
+    }
+  ],
+  "resources": [
+    {
+      "condition": {
+        "typeReached": "com.arjuna.common.util.ConfigurationInfo"
+      },
+      "glob": "ConfigurationInfo.properties"
+    },
+    {
+      "condition": {
+        "typeReached": "com.arjuna.common.util.propertyservice.AbstractPropertiesFactory"
+      },
+      "glob": "default-jbossts-properties.xml"
+    },
+    {
+      "condition": {
+        "typeReached": "com.arjuna.common.util.propertyservice.FileLocator"
+      },
+      "glob": "jbossts-properties.xml"
+    }
+  ],
+  "bundles": [
+    {
+      "condition": {
+        "typeReached": "com.arjuna.common.logging.commonI18NLogger_$logger"
+      },
+      "name": "com.arjuna.common.logging.commonI18NLogger_$logger"
+    },
+    {
+      "condition": {
+        "typeReached": "com.arjuna.ats.jta.logging.jtaI18NLogger_$logger"
+      },
+      "name": "com.arjuna.ats.jta.logging.jtaI18NLogger_$logger"
+    },
+    {
+      "condition": {
+        "typeReached": "com.arjuna.ats.arjuna.logging.arjunaI18NLogger_$logger"
+      },
+      "name": "com.arjuna.ats.arjuna.logging.arjunaI18NLogger_$logger"
+    },
+    {
+      "condition": {
+        "typeReached": "com.arjuna.ats.jbossatx.logging.jbossatxI18NLogger_$logger"
+      },
+      "name": "com.arjuna.ats.jbossatx.logging.jbossatxI18NLogger_$logger"
+    }
+  ]
+}

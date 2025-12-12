@@ -19,6 +19,10 @@ package org.apache.shardingsphere.driver.jdbc.core.statement;
 
 import lombok.AccessLevel;
 import lombok.Getter;
+import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.keygen.DialectGeneratedKeyOption;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeRegistry;
+import org.apache.shardingsphere.database.exception.core.SQLExceptionTransformEngine;
 import org.apache.shardingsphere.driver.executor.callback.add.StatementAddCallback;
 import org.apache.shardingsphere.driver.executor.callback.execute.StatementExecuteCallback;
 import org.apache.shardingsphere.driver.executor.callback.execute.StatementExecuteUpdateCallback;
@@ -32,11 +36,7 @@ import org.apache.shardingsphere.infra.binder.context.segment.insert.keygen.Gene
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.dml.InsertStatementContext;
 import org.apache.shardingsphere.infra.binder.engine.SQLBindEngine;
-import org.apache.shardingsphere.infra.database.core.keygen.GeneratedKeyColumnProvider;
-import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPILoader;
-import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
-import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
-import org.apache.shardingsphere.infra.exception.dialect.SQLExceptionTransformEngine;
+import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.exception.kernel.syntax.EmptySQLException;
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.JDBCDriverType;
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.StatementOption;
@@ -82,7 +82,7 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
     
     private String usedDatabaseName;
     
-    private SQLStatementContext sqlStatementContext;
+    private QueryContext queryContext;
     
     private boolean returnGeneratedKeys;
     
@@ -257,15 +257,15 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
         String sql = SQLHintUtils.removeHint(originSQL);
         DatabaseType databaseType = metaData.getDatabase(usedDatabaseName).getProtocolType();
         SQLStatement sqlStatement = metaData.getGlobalRuleMetaData().getSingleRule(SQLParserRule.class).getSQLParserEngine(databaseType).parse(sql, false);
-        SQLStatementContext sqlStatementContext = new SQLBindEngine(metaData, connection.getCurrentDatabaseName(), hintValueContext).bind(sqlStatement, Collections.emptyList());
+        SQLStatementContext sqlStatementContext = new SQLBindEngine(metaData, connection.getCurrentDatabaseName(), hintValueContext).bind(sqlStatement);
         return new QueryContext(sqlStatementContext, sql, Collections.emptyList(), hintValueContext, connection.getDatabaseConnectionManager().getConnectionContext(), metaData);
     }
     
     private void prepareExecute(final QueryContext queryContext) throws SQLException {
         handleAutoCommitBeforeExecution(queryContext.getSqlStatementContext().getSqlStatement(), connection);
-        sqlStatementContext = queryContext.getSqlStatementContext();
-        ShardingSpherePreconditions.checkNotNull(sqlStatementContext, () -> new IllegalStateException("Statement context can not be null"));
-        usedDatabaseName = sqlStatementContext.getTablesContext().getDatabaseName().orElse(connection.getCurrentDatabaseName());
+        this.queryContext = queryContext;
+        ShardingSpherePreconditions.checkNotNull(this.queryContext, () -> new IllegalStateException("Query context can not be null"));
+        usedDatabaseName = queryContext.getSqlStatementContext().getTablesContext().getDatabaseName().orElse(connection.getCurrentDatabaseName());
         connection.getDatabaseConnectionManager().getConnectionContext().setCurrentDatabaseName(connection.getCurrentDatabaseName());
         clearStatements();
     }
@@ -284,7 +284,7 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
     }
     
     @Override
-    public void addBatch(final String sql) throws SQLException {
+    public void addBatch(final String sql) {
         batchStatementExecutor.addBatch(sql);
     }
     
@@ -303,7 +303,7 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
         if (null != currentResultSet) {
             return currentResultSet;
         }
-        driverExecutorFacade.getResultSet(metaData.getDatabase(usedDatabaseName), sqlStatementContext, this, statements).ifPresent(optional -> currentResultSet = optional);
+        driverExecutorFacade.getResultSet(metaData.getDatabase(usedDatabaseName), queryContext, this, statements).ifPresent(optional -> currentResultSet = optional);
         return currentResultSet;
     }
     
@@ -327,7 +327,7 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
     @Override
     public boolean isAccumulate() {
         for (DataNodeRuleAttribute each : metaData.getDatabase(usedDatabaseName).getRuleMetaData().getAttributes(DataNodeRuleAttribute.class)) {
-            if (each.isNeedAccumulate(sqlStatementContext.getTablesContext().getTableNames())) {
+            if (each.isNeedAccumulate(queryContext.getSqlStatementContext().getTablesContext().getTableNames())) {
                 return true;
             }
         }
@@ -357,12 +357,14 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
     }
     
     private Optional<GeneratedKeyContext> findGeneratedKey() {
+        SQLStatementContext sqlStatementContext = queryContext.getSqlStatementContext();
         return sqlStatementContext instanceof InsertStatementContext ? ((InsertStatementContext) sqlStatementContext).getGeneratedKeyContext() : Optional.empty();
     }
     
     private String getGeneratedKeysColumnName(final String columnName) {
-        return DatabaseTypedSPILoader.findService(GeneratedKeyColumnProvider.class, metaData.getDatabase(usedDatabaseName).getProtocolType())
-                .map(GeneratedKeyColumnProvider::getColumnName).orElse(columnName);
+        Optional<DialectGeneratedKeyOption> generatedKeyOption =
+                new DatabaseTypeRegistry(metaData.getDatabase(usedDatabaseName).getProtocolType()).getDialectDatabaseMetaData().getGeneratedKeyOption();
+        return generatedKeyOption.isPresent() ? generatedKeyOption.get().getColumnName() : columnName;
     }
     
     @Override

@@ -25,7 +25,7 @@ import lombok.ToString;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.datanode.DataNodeInfo;
 import org.apache.shardingsphere.infra.datanode.DataNodeUtils;
-import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
+import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.expr.entry.InlineExpressionParserFactory;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingAutoTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
@@ -155,7 +155,7 @@ public final class ShardingTable {
         }
         List<String> dataSources = Strings.isNullOrEmpty(tableRuleConfig.getActualDataSources()) ? new ArrayList<>(dataSourceNames)
                 : InlineExpressionParserFactory.newInstance(tableRuleConfig.getActualDataSources()).splitAndEvaluate();
-        return DataNodeUtils.getFormatDataNodes(shardingAlgorithm.getAutoTablesAmount(), logicTable, dataSources);
+        return DataNodeUtils.getFormattedDataNodes(shardingAlgorithm.getAutoTablesAmount(), logicTable, dataSources);
     }
     
     private Set<String> getActualTables() {
@@ -174,7 +174,7 @@ public final class ShardingTable {
         List<DataNode> result = new ArrayList<>(dataSourceNames.size());
         int index = 0;
         for (String each : dataSourceNames) {
-            DataNode dataNode = new DataNode(each, logicTable);
+            DataNode dataNode = new DataNode(each, (String) null, logicTable);
             result.add(dataNode);
             dataNodeIndexMap.put(dataNode, index);
             actualDataSourceNames.add(each);
@@ -228,7 +228,7 @@ public final class ShardingTable {
      * @return actual table index
      */
     public int findActualTableIndex(final String dataSourceName, final String actualTableName) {
-        return dataNodeIndexMap.getOrDefault(new DataNode(dataSourceName, actualTableName), -1);
+        return dataNodeIndexMap.getOrDefault(new DataNode(dataSourceName, (String) null, actualTableName), -1);
     }
     
     /**

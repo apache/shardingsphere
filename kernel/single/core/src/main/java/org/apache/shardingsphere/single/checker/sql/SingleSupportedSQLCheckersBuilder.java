@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.single.checker.sql;
 
+import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 import org.apache.shardingsphere.infra.checker.SupportedSQLChecker;
 import org.apache.shardingsphere.infra.checker.SupportedSQLCheckersBuilder;
 import org.apache.shardingsphere.single.checker.sql.schema.SingleDropSchemaSupportedChecker;
@@ -32,11 +33,14 @@ import java.util.Collection;
  */
 public final class SingleSupportedSQLCheckersBuilder implements SupportedSQLCheckersBuilder<SingleRule> {
     
+    private final Collection<SupportedSQLChecker<?, SingleRule>> supportedSQLCheckers = Arrays.asList(
+            new SingleDropSchemaSupportedChecker(),
+            new SingleDropTableSupportedChecker());
+    
+    @HighFrequencyInvocation
     @Override
     public Collection<SupportedSQLChecker<?, SingleRule>> getSupportedSQLCheckers() {
-        return Arrays.asList(
-                new SingleDropSchemaSupportedChecker(),
-                new SingleDropTableSupportedChecker());
+        return supportedSQLCheckers;
     }
     
     @Override

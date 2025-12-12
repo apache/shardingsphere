@@ -16,7 +16,6 @@
     {"excludeClasses": "org.**"},
     {"includeClasses": "org.apache.shardingsphere.**"},
     {"excludeClasses": "sun.**"},
-    {"includeClasses": "sun.security.provider.ConfigFile"},
     {"includeClasses": "sun.security.provider.SecureRandom"},
     {"excludeClasses": "JdkLogger"},
 

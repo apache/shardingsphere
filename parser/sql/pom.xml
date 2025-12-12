@@ -31,6 +31,5 @@
         <module>spi</module>
         <module>statement</module>
         <module>engine</module>
-        <module>dialect</module>
     </modules>
 </project>

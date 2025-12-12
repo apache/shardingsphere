@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.infra.expr.interval;
 
-import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
+import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.expr.spi.InlineExpressionParser;
 
 import java.time.LocalDate;

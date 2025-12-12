@@ -22,9 +22,9 @@ import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.isA;
 
 class LocalTSOProviderTest {
     
@@ -44,6 +44,6 @@ class LocalTSOProviderTest {
     
     @Test
     void assertGetInstanceByDefault() {
-        assertThat(TypedSPILoader.getService(GlobalClockProvider.class, null), instanceOf(LocalTSOProvider.class));
+        assertThat(TypedSPILoader.getService(GlobalClockProvider.class, null), isA(LocalTSOProvider.class));
     }
 }

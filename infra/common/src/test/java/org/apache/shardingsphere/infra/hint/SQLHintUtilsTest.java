@@ -129,6 +129,10 @@ class SQLHintUtilsTest {
             return Stream.of(
                     Arguments.of("PrefixNotFound", "/* FOO_HINT: xxx=xxx */", false),
                     Arguments.of("ContentNotMatch", "/* SHARDINGSPHERE_HINT: xxx=xxx */", false),
+                    Arguments.of("CommentWithoutPrefix", "SHARDINGSPHERE_HINT: DATA_SOURCE_NAME=foo_ds */", false),
+                    Arguments.of("EmptyHintValue", "/* SHARDINGSPHERE_HINT: DATA_SOURCE_NAME= */", false),
+                    Arguments.of("MalformedHintWithoutEquals", "/* SHARDINGSPHERE_HINT: DATA_SOURCE_NAME=foo_ds, DISABLE_AUDIT_NAMES */", true),
+                    Arguments.of("EmptyDisableAuditNames", "/* SHARDINGSPHERE_HINT: DATA_SOURCE_NAME=foo_ds, DISABLE_AUDIT_NAMES= */", true),
                     Arguments.of("UnderlineMode", "/* SHARDINGSPHERE_HINT: DATA_SOURCE_NAME=foo_ds */", true),
                     Arguments.of("SpaceMode", "/* ShardingSphere hint: dataSourceName=foo_ds */", true),
                     Arguments.of("DBeaverHint", "/* ApplicationName=DBeaver 24.1.0 - SQLEditor <Script-84.sql> */ /* SHARDINGSPHERE_HINT: DATA_SOURCE_NAME=foo_ds*/ SELECT * FROM t_order", true));
@@ -140,6 +144,7 @@ class SQLHintUtilsTest {
         @Override
         public Stream<? extends Arguments> provideArguments(final ParameterDeclarations parameters, final ExtensionContext context) {
             return Stream.of(
+                    Arguments.of("WithoutHint", "SELECT * FROM t_order", "SELECT * FROM t_order"),
                     Arguments.of("UnderlineMode", "/* SHARDINGSPHERE_HINT: DATA_SOURCE_NAME=foo_ds*/ SELECT * FROM t_order", "SELECT * FROM t_order"),
                     Arguments.of("SpaceMode", "/* ShardingSphere hint: DATA_SOURCE_NAME=foo_ds*/ SELECT * FROM t_order", "SELECT * FROM t_order"),
                     Arguments.of("DBeaverHint", "/* ApplicationName=DBeaver 24.1.0 - SQLEditor <Script-84.sql> */ /* SHARDINGSPHERE_HINT: DATA_SOURCE_NAME=foo_ds*/ SELECT * FROM t_order",

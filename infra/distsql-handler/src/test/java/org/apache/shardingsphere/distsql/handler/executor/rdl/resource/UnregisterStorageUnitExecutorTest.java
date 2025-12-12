@@ -70,6 +70,7 @@ class UnregisterStorageUnitExecutorTest {
         when(database.getName()).thenReturn("foo_db");
         StorageUnit storageUnit = createStorageUnit();
         when(database.getResourceMetaData().getStorageUnits()).thenReturn(Collections.singletonMap("foo_ds", storageUnit));
+        when(database.getRuleMetaData().getRules()).thenReturn(Collections.singleton(new DistSQLHandlerFixtureRule()));
         contextManager = mockContextManager();
         executor.setDatabase(database);
     }

@@ -49,7 +49,7 @@ class AlterViewStatementContextTest {
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         when(database.getRuleMetaData().getAttributes(TableMapperRuleAttribute.class)).thenReturn(Collections.emptyList());
         when(metaData.getDatabase("foo_db")).thenReturn(database);
-        AlterViewStatementContext actual = new AlterViewStatementContext(metaData, Collections.emptyList(), alterViewStatement, "foo_db");
+        AlterViewStatementContext actual = new AlterViewStatementContext(metaData, alterViewStatement, "foo_db");
         assertThat(actual.getSqlStatement(), is(alterViewStatement));
         assertThat(actual.getTablesContext().getSimpleTables().size(), is(2));
         assertThat(actual.getTablesContext().getSimpleTables().stream().map(each -> each.getTableName().getIdentifier().getValue()).collect(Collectors.toList()),

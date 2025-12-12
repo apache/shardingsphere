@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.mode.manager.cluster.exception;
 
-import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.XOpenSQLState;
-import org.apache.shardingsphere.infra.exception.core.external.sql.type.kernel.category.ClusterSQLException;
+import org.apache.shardingsphere.infra.exception.external.sql.sqlstate.XOpenSQLState;
+import org.apache.shardingsphere.infra.exception.external.sql.type.kernel.category.ClusterSQLException;
 
 /**
  * Missing required cluster repository configuration exception.

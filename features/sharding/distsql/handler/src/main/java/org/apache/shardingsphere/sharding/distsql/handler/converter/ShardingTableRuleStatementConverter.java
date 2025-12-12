@@ -24,7 +24,7 @@ import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfigurat
 import org.apache.shardingsphere.infra.algorithm.core.exception.AlgorithmInitializationException;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.datanode.DataNodeUtils;
-import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
+import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.expr.entry.InlineExpressionParserFactory;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
@@ -251,7 +251,7 @@ public final class ShardingTableRuleStatementConverter {
                 TypedSPILoader.getService(ShardingAlgorithm.class, ruleSegment.getShardingAlgorithmSegment().getName(), ruleSegment.getShardingAlgorithmSegment().getProps());
         ShardingSpherePreconditions.checkState(shardingAlgorithm instanceof ShardingAutoTableAlgorithm,
                 () -> new AlgorithmInitializationException(shardingAlgorithm, "Auto sharding algorithm is required for table '%s'", ruleSegment.getLogicTable()));
-        List<String> dataNodes = DataNodeUtils.getFormatDataNodes(((ShardingAutoTableAlgorithm) shardingAlgorithm).getAutoTablesAmount(),
+        List<String> dataNodes = DataNodeUtils.getFormattedDataNodes(((ShardingAutoTableAlgorithm) shardingAlgorithm).getAutoTablesAmount(),
                 ruleSegment.getLogicTable(), ruleSegment.getDataSourceNodes());
         return dataNodes.stream().map(DataNode::new).collect(Collectors.toList());
     }

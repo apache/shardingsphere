@@ -28,9 +28,9 @@ import java.util.ServiceLoader;
 /**
  * Registered ShardingSphere SPI.
  * 
- * @param <T> type of service
+ * @param <T> type of ShardingSphere SPI
  */
-class RegisteredShardingSphereSPI<T> {
+class RegisteredShardingSphereSPI<T extends ShardingSphereSPI> {
     
     private final Class<T> serviceInterface;
     

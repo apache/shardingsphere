@@ -20,11 +20,8 @@ package org.apache.shardingsphere.sqlfederation.compiler.sql.ast.converter.segme
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.calcite.sql.SqlIdentifier;
-import org.apache.calcite.sql.SqlNode;
 import org.apache.calcite.sql.parser.SqlParserPos;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExtractArgExpression;
-
-import java.util.Optional;
 
 /**
  * Extract arg expression converter.
@@ -33,15 +30,12 @@ import java.util.Optional;
 public final class ExtractArgExpressionConverter {
     
     /**
-     * Convert extract arg expression to sql node.
+     * Convert extract arg expression to SQL node.
      *
      * @param expression extract arg expression
-     * @return sql node
+     * @return SQL node
      */
-    public static Optional<SqlNode> convert(final ExtractArgExpression expression) {
-        if (null == expression) {
-            return Optional.empty();
-        }
-        return Optional.of(new SqlIdentifier(expression.getText(), SqlParserPos.ZERO));
+    public static SqlIdentifier convert(final ExtractArgExpression expression) {
+        return new SqlIdentifier(expression.getText(), SqlParserPos.ZERO);
     }
 }

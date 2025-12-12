@@ -20,12 +20,8 @@ mode:
   repository:
     type: ZooKeeper
     props:
-      namespace: it_db_mysql
+      namespace: e2e_db_mysql
       server-lists: zk.host:2181
-      timeToLiveSeconds: 60
-      operationTimeoutMilliseconds: 500
-      retryIntervalMilliseconds: 500
-      maxRetries: 3
 
 authority:
   users:
@@ -43,7 +39,7 @@ sqlFederation:
 
 props:
   max-connections-size-per-query: 1
-  kernel-executor-size: 16  # Infinite by default.
-  proxy-frontend-flush-threshold: 128  # The default value is 128.
+  kernel-executor-size: 16
+  proxy-frontend-flush-threshold: 128
   sql-show: true
   proxy-frontend-ssl-enabled: true

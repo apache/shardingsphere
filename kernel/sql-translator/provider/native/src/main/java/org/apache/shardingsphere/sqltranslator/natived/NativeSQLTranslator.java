@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.sqltranslator.natived;
 
-import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.session.query.QueryContext;
@@ -41,10 +41,5 @@ public final class NativeSQLTranslator implements SQLTranslator {
     @Override
     public String getType() {
         return "NATIVE";
-    }
-    
-    @Override
-    public boolean isDefault() {
-        return true;
     }
 }

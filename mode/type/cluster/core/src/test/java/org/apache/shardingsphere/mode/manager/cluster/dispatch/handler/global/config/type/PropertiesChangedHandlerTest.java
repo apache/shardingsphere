@@ -33,7 +33,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.Properties;
 
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -48,13 +48,13 @@ class PropertiesChangedHandlerTest {
     @BeforeEach
     void setUp() {
         handler = ShardingSphereServiceLoader.getServiceInstances(GlobalDataChangedEventHandler.class).stream()
-                .filter(each -> NodePathGenerator.toPath(each.getSubscribedNodePath()).equals("/props")).findFirst().orElse(null);
+                .filter(each -> "/props".equals(NodePathGenerator.toPath(each.getSubscribedNodePath()))).findFirst().orElse(null);
     }
     
     @Test
     void assertHandleWithInvalidEventKey() {
         handler.handle(contextManager, new DataChangedEvent("/props/xxx", "key=value", Type.ADDED));
-        verify(contextManager.getPersistServiceFacade().getMetaDataFacade().getPropsService(), times(0)).load();
+        verify(contextManager.getPersistServiceFacade().getMetaDataFacade().getPropsService(), never()).load();
     }
     
     @Test

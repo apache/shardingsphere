@@ -21,7 +21,7 @@ import com.google.common.base.Strings;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
-import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
+import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.exception.kernel.connection.SQLExecutionInterruptedException;
 
 import java.sql.SQLException;
@@ -110,7 +110,7 @@ public final class ProcessRegistry {
      * @throws SQLException SQL exception
      */
     public void kill(final String processId) throws SQLException {
-        Process process = ProcessRegistry.getInstance().get(processId);
+        Process process = getInstance().get(processId);
         if (null != process) {
             process.kill();
         }

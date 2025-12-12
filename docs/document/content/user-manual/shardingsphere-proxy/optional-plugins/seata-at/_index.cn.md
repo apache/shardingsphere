@@ -19,7 +19,7 @@ ShardingSphere Proxy 或 GraalVM Native Image 形态的 ShardingSphere Proxy Nat
    传播事务到其他使用 Seata 集成的 ShardingSphere Proxy 实例或其他使用 Seata 集成的微服务。用户如果有这种需求，应考虑为 ShardingSphere 提交 PR
 5. ShardingSphere JDBC 对 Seata 的 TCC 模式建立的假设，在 ShardingSphere Proxy 上失效
 
-下文以使用 Seata Client 2.3.0 的 ShardingSphere Proxy 为例讨论。
+下文以使用 Seata Client 2.5.0 的 ShardingSphere Proxy 为例讨论。
 
 ## 操作步骤
 
@@ -33,21 +33,27 @@ ShardingSphere Proxy 或 GraalVM Native Image 形态的 ShardingSphere Proxy Nat
 
 ### 确认 Seata Client 的 JAR 和依赖列表
 
-对于已安装 `SDKMAN!` 的 Ubuntu 22.04.4，可以以如下命令确认 Seata Client 的所有 `compile` scope 的依赖，
+`OpenJDK` 和 `Maven` 可以通过 `sdkman/sdkman-cli` 或 `version-fox/vfox` 安装。
+对于已安装 `OpenJDK 23` 和 `Maven 3.9.11` 的 `Ubuntu 24.04.3` 或 `Windows 11 Home 24H2`，可以以如下命令确认 Seata Client 的所有 `compile` scope 的依赖，
+
+1. 如果使用 Bash，
 
 ```shell
-sdk install java 23-open
-sdk use java 23-open
-sdk install maven 3.9.11
-sdk use maven 3.9.11
-mvn dependency:get -Dartifact=org.apache.seata:seata-all:2.3.0
-mvn -f ~/.m2/repository/org/apache/seata/seata-all/2.3.0/seata-all-2.3.0.pom dependency:tree | grep -v ':provided' | grep -v ':runtime'
+mvn dependency:get "-Dartifact=org.apache.seata:seata-all:2.5.0"
+mvn -f "${HOME}/.m2/repository/org/apache/seata/seata-all/2.5.0/seata-all-2.5.0.pom" dependency:tree | grep -v ':provided' | grep -v ':runtime'
+```
+
+2. 如果使用 PowerShell 7，
+
+```shell
+mvn dependency:get "-Dartifact=org.apache.seata:seata-all:2.5.0"
+mvn -f "${HOME}/.m2/repository/org/apache/seata/seata-all/2.5.0/seata-all-2.5.0.pom" dependency:tree | Where-Object { $_ -notmatch ':provided' -and $_ -notmatch ':runtime' }
 ```
 
 与 `org.apache.shardingsphere:shardingsphere-proxy-distribution` 的 `pom.xml` 对比，不难发现有差异列表为，
 
 ```
-org.apache.seata:seata-all:jar:2.3.0
+org.apache.seata:seata-all:jar:2.5.0
 org.springframework:spring-context:jar:5.3.39
 org.springframework:spring-expression:jar:5.3.39
 org.springframework:spring-core:jar:5.3.39
@@ -104,9 +110,9 @@ services:
       volumes:
          - ./docker-entrypoint-initdb.d:/docker-entrypoint-initdb.d
    apache-seata-server:
-      image: apache/seata-server:2.3.0
+      image: apache/seata-server:2.5.0
       healthcheck:
-         test: [ "CMD", "sh", "-c", "curl -s apache-seata-server:7091/health | grep -q '^ok$'" ]
+        test: [ "CMD", "sh", "-c", "curl -s apache-seata-server:8091/health | grep -q '\"ok\"'" ]
    shardingsphere-proxy-custom:
       image: example/shardingsphere-proxy-custom:latest
       pull_policy: build
@@ -115,7 +121,7 @@ services:
          dockerfile_inline: |
             FROM apache/shardingsphere-proxy:latest
             RUN wget https://repo1.maven.org/maven2/org/apache/shardingsphere/shardingsphere-transaction-base-seata-at/5.5.2/shardingsphere-transaction-base-seata-at-5.5.2.jar --directory-prefix=/opt/shardingsphere-proxy/ext-lib
-            RUN wget https://repo1.maven.org/maven2/org/apache/seata/seata-all/2.3.0/seata-all-2.3.0.jar --directory-prefix=/opt/shardingsphere-proxy/ext-lib
+            RUN wget https://repo1.maven.org/maven2/org/apache/seata/seata-all/2.5.0/seata-all-2.5.0.jar --directory-prefix=/opt/shardingsphere-proxy/ext-lib
             RUN wget https://repo1.maven.org/maven2/org/springframework/spring-context/5.3.39/spring-context-5.3.39.jar --directory-prefix=/opt/shardingsphere-proxy/ext-lib
             RUN wget https://repo1.maven.org/maven2/org/springframework/spring-expression/5.3.39/spring-expression-5.3.39.jar --directory-prefix=/opt/shardingsphere-proxy/ext-lib
             RUN wget https://repo1.maven.org/maven2/org/springframework/spring-core/5.3.39/spring-core-5.3.39.jar --directory-prefix=/opt/shardingsphere-proxy/ext-lib
@@ -279,7 +285,7 @@ sudo snap install dbeaver-ce
 snap run dbeaver-ce
 ```
 
-在 DBeaver Community 内，使用 `jdbc:postgresql://127.0.0.1:3308/postgres` 的 `jdbcUrl` 连接至 ShardingSphere Proxy，
+在 DBeaver Community 内，使用 `jdbc:postgresql://127.0.0.1:3308/postgres` 的 `standardJdbcUrl` 连接至 ShardingSphere Proxy，
 username 和 password 均为 `root`。所需的 JDBC Driver 与 ShardingSphere Proxy 设置的 `proxy-frontend-database-protocol-type` 对应。
 执行如下 SQL，
 
@@ -288,7 +294,7 @@ username 和 password 均为 `root`。所需的 JDBC Driver 与 ShardingSphere P
 CREATE DATABASE sharding_db;
 ```
 
-在 DBeaver Community 内，使用 `jdbc:postgresql://127.0.0.1:3308/sharding_db` 的 `jdbcUrl` 连接至 ShardingSphere Proxy，
+在 DBeaver Community 内，使用 `jdbc:postgresql://127.0.0.1:3308/sharding_db` 的 `standardJdbcUrl` 连接至 ShardingSphere Proxy，
 username 和 password 均为 `root`。
 执行如下 SQL，
 
@@ -335,7 +341,7 @@ CREATE SHARDING TABLE RULE t_order (
 <dependency>
     <groupId>org.postgresql</groupId>
     <artifactId>postgresql</artifactId>
-    <version>42.7.5</version>
+    <version>42.7.8</version>
 </dependency>
 ```
 

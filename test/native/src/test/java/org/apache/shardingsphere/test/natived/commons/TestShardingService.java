@@ -73,15 +73,15 @@ public final class TestShardingService {
      * @throws SQLException An exception that provides information on a database access error or other errors
      */
     public void processSuccessInClickHouse() throws SQLException {
-        final Collection<Long> orderIds = insertData(Statement.NO_GENERATED_KEYS);
-        extracted();
+        Collection<Long> orderIds = insertData(Statement.NO_GENERATED_KEYS);
+        assertQueryInClickHouse();
         deleteDataInClickHouse(orderIds);
         assertTrue(orderRepository.selectAll().isEmpty());
         assertTrue(orderItemRepository.selectAll().isEmpty());
         assertTrue(addressRepository.selectAll().isEmpty());
     }
     
-    private void extracted() throws SQLException {
+    private void assertQueryInClickHouse() throws SQLException {
         Collection<Order> orders = orderRepository.selectAll();
         assertThat(orders.stream().map(Order::getOrderId).collect(Collectors.toList()), not(empty()));
         assertThat(orders.stream().map(Order::getOrderType).collect(Collectors.toList()),
@@ -105,6 +105,15 @@ public final class TestShardingService {
                 is(LongStream.range(1L, 11L).mapToObj(each -> new Address(each, "address_test_" + each)).collect(Collectors.toSet())));
     }
     
+    private void deleteDataInClickHouse(final Collection<Long> orderIds) throws SQLException {
+        long count = 1L;
+        for (Long each : orderIds) {
+            orderRepository.deleteInClickHouse(each);
+            orderItemRepository.deleteInClickHouse(each);
+            addressRepository.deleteInClickHouse(count++);
+        }
+    }
+    
     /**
      * Process success in Hive.
      * Hive has not fully supported BEGIN, COMMIT, and ROLLBACK. Refer to <a href="https://cwiki.apache.org/confluence/display/Hive/Hive+Transactions">Hive Transactions</a>.
@@ -115,7 +124,7 @@ public final class TestShardingService {
      * @throws SQLException An exception that provides information on a database access error or other errors
      */
     public void processSuccessInHive() throws SQLException {
-        final Collection<Long> orderIds = insertData(Statement.RETURN_GENERATED_KEYS);
+        Collection<Long> orderIds = insertData(Statement.RETURN_GENERATED_KEYS);
         deleteData(orderIds);
         assertTrue(orderRepository.selectAll().isEmpty());
         assertTrue(orderItemRepository.selectAll().isEmpty());
@@ -133,8 +142,8 @@ public final class TestShardingService {
      * @throws SQLException SQL exception
      */
     public void processSuccessWithoutTransactions() throws SQLException {
-        final Collection<Long> orderIds = insertData(Statement.RETURN_GENERATED_KEYS);
-        extracted();
+        Collection<Long> orderIds = insertData(Statement.RETURN_GENERATED_KEYS);
+        assertQueryInClickHouse();
         deleteData(orderIds);
         assertTrue(orderRepository.selectAll().isEmpty());
         assertTrue(orderItemRepository.selectAll().isEmpty());
@@ -182,21 +191,6 @@ public final class TestShardingService {
             orderRepository.delete(each);
             orderItemRepository.delete(each);
             addressRepository.delete(count++);
-        }
-    }
-    
-    /**
-     * Delete data in ClickHouse.
-     *
-     * @param orderIds orderId of the insert statement
-     * @throws SQLException An exception that provides information on a database access error or other errors
-     */
-    public void deleteDataInClickHouse(final Collection<Long> orderIds) throws SQLException {
-        long count = 1L;
-        for (Long each : orderIds) {
-            orderRepository.deleteInClickHouse(each);
-            orderItemRepository.deleteInClickHouse(each);
-            addressRepository.deleteInClickHouse(count++);
         }
     }
     

@@ -26,8 +26,8 @@ import org.junit.jupiter.api.Test;
 import java.sql.Connection;
 import java.util.Collections;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.isA;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -39,6 +39,6 @@ class OKDriverStateTest {
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         when(contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData()).thenReturn(new RuleMetaData(Collections.singleton(mock(TransactionRule.class, RETURNS_DEEP_STUBS))));
         Connection actual = new OKDriverState().getConnection("foo_db", contextManager);
-        assertThat(actual, instanceOf(ShardingSphereConnection.class));
+        assertThat(actual, isA(ShardingSphereConnection.class));
     }
 }

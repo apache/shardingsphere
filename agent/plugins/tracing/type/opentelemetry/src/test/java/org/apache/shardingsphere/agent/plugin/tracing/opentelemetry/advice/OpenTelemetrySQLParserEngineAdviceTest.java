@@ -43,7 +43,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 
 class OpenTelemetrySQLParserEngineAdviceTest {
     
-    private static final String SQL = "select 1";
+    private static final String SQL = "SELECT 1";
     
     private final InMemorySpanExporter testExporter = InMemorySpanExporter.create();
     

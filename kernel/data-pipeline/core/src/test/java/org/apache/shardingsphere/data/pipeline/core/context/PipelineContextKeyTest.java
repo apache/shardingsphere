@@ -23,7 +23,7 @@ import org.junit.jupiter.api.Test;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
 class PipelineContextKeyTest {
     
@@ -33,9 +33,10 @@ class PipelineContextKeyTest {
         assertThat(pipelineContextKey, is(pipelineContextKey));
     }
     
+    @SuppressWarnings({"SimplifiableAssertion", "ConstantValue"})
     @Test
     void assertEqualsWithNull() {
-        assertNotEquals(null, new PipelineContextKey(InstanceType.JDBC));
+        assertFalse(new PipelineContextKey(InstanceType.JDBC).equals(null));
     }
     
     @Test

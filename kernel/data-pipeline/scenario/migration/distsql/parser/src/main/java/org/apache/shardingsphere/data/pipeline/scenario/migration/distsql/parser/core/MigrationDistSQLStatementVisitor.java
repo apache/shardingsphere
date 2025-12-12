@@ -37,6 +37,7 @@ import org.apache.shardingsphere.data.pipeline.scenario.migration.distsql.statem
 import org.apache.shardingsphere.data.pipeline.scenario.migration.distsql.statement.updatable.StopMigrationCheckStatement;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.distsql.statement.updatable.StopMigrationStatement;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.distsql.statement.updatable.UnregisterMigrationSourceStorageUnitStatement;
+import org.apache.shardingsphere.database.connector.core.metadata.database.enums.QuoteCharacter;
 import org.apache.shardingsphere.distsql.parser.autogen.MigrationDistSQLStatementBaseVisitor;
 import org.apache.shardingsphere.distsql.parser.autogen.MigrationDistSQLStatementParser;
 import org.apache.shardingsphere.distsql.parser.autogen.MigrationDistSQLStatementParser.AlgorithmDefinitionContext;
@@ -79,7 +80,6 @@ import org.apache.shardingsphere.distsql.segment.ReadOrWriteSegment;
 import org.apache.shardingsphere.distsql.segment.TransmissionRuleSegment;
 import org.apache.shardingsphere.distsql.segment.URLBasedDataSourceSegment;
 import org.apache.shardingsphere.distsql.statement.type.ral.queryable.show.ShowPluginsStatement;
-import org.apache.shardingsphere.infra.database.core.metadata.database.enums.QuoteCharacter;
 import org.apache.shardingsphere.sql.parser.api.ASTNode;
 import org.apache.shardingsphere.sql.parser.api.visitor.SQLVisitor;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;

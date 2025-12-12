@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.infra.algorithm.cryptographic.aes.props;
 
 import org.apache.shardingsphere.infra.algorithm.core.exception.AlgorithmInitializationException;
-import org.apache.shardingsphere.infra.algorithm.cryptographic.core.CryptographicPropertiesProvider;
+import org.apache.shardingsphere.infra.algorithm.cryptographic.spi.CryptographicPropertiesProvider;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.infra.util.props.PropertiesBuilder;
 import org.apache.shardingsphere.infra.util.props.PropertiesBuilder.Property;
@@ -30,14 +30,16 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class DefaultAESPropertiesProviderTest {
     
+    private static final String DEFAULT_AES = "DEFAULT";
+    
     @Test
     void assertCreateNewInstanceWithoutAESKey() {
-        assertThrows(AlgorithmInitializationException.class, () -> TypedSPILoader.getService(CryptographicPropertiesProvider.class, "DEFAULT"));
+        assertThrows(AlgorithmInitializationException.class, () -> TypedSPILoader.getService(CryptographicPropertiesProvider.class, DEFAULT_AES));
     }
     
     @Test
     void assertCreateNewInstanceWithAESKey() {
-        CryptographicPropertiesProvider provider = TypedSPILoader.getService(CryptographicPropertiesProvider.class, "DEFAULT",
+        CryptographicPropertiesProvider provider = TypedSPILoader.getService(CryptographicPropertiesProvider.class, DEFAULT_AES,
                 PropertiesBuilder.build(new Property("aes-key-value", "test"), new Property("digest-algorithm-name", "SHA-1")));
         assertThat(provider.getSecretKey().length, is(16));
         assertThat(provider.getMode(), is(""));

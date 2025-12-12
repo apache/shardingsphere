@@ -20,8 +20,8 @@ package org.apache.shardingsphere.infra.metadata.database.schema.util;
 import com.google.common.base.Strings;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
-import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.QualifiedTable;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
@@ -76,18 +76,13 @@ public final class IndexMetaDataUtils {
         String schemaName = new DatabaseTypeRegistry(protocolType).getDefaultSchemaName(database.getName());
         for (IndexSegment each : indexes) {
             String actualSchemaName = each.getOwner().map(optional -> optional.getIdentifier().getValue()).orElse(schemaName);
-            findLogicTableNameFromMetaData(database.getSchema(actualSchemaName),
-                    each.getIndexName().getIdentifier().getValue()).ifPresent(optional -> result.add(new QualifiedTable(actualSchemaName, optional)));
+            findLogicTableNameFromMetaData(database.getSchema(actualSchemaName), each.getIndexName().getIdentifier().getValue())
+                    .ifPresent(optional -> result.add(new QualifiedTable(actualSchemaName, optional)));
         }
         return result;
     }
     
     private static Optional<String> findLogicTableNameFromMetaData(final ShardingSphereSchema schema, final String logicIndexName) {
-        for (ShardingSphereTable each : schema.getAllTables()) {
-            if (each.containsIndex(logicIndexName)) {
-                return Optional.of(each.getName());
-            }
-        }
-        return Optional.empty();
+        return schema.getAllTables().stream().filter(table -> table.containsIndex(logicIndexName)).findFirst().map(ShardingSphereTable::getName);
     }
 }

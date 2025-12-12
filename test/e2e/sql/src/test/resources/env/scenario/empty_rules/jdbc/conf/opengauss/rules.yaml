@@ -22,7 +22,7 @@ dataSources:
     url: jdbc:opengauss://opengauss.empty_rules.host:5432/write_ds_0?batchMode=OFF
     dataSourceClassName: com.zaxxer.hikari.HikariDataSource
     username: test_user
-    password: Test@123
+    password: Test@9876
     connectionTimeoutMilliseconds: 30000
     idleTimeoutMilliseconds: 60000
     maxLifetimeMilliseconds: 1800000
@@ -32,7 +32,7 @@ dataSources:
     url: jdbc:opengauss://opengauss.empty_rules.host:5432/write_ds_1?batchMode=OFF
     dataSourceClassName: com.zaxxer.hikari.HikariDataSource
     username: test_user
-    password: Test@123
+    password: Test@9876
     connectionTimeoutMilliseconds: 30000
     idleTimeoutMilliseconds: 60000
     maxLifetimeMilliseconds: 1800000
@@ -42,7 +42,7 @@ dataSources:
     url: jdbc:opengauss://opengauss.empty_rules.host:5432/write_ds_2?batchMode=OFF
     dataSourceClassName: com.zaxxer.hikari.HikariDataSource
     username: test_user
-    password: Test@123
+    password: Test@9876
     connectionTimeoutMilliseconds: 30000
     idleTimeoutMilliseconds: 60000
     maxLifetimeMilliseconds: 1800000
@@ -52,7 +52,7 @@ dataSources:
     url: jdbc:opengauss://opengauss.empty_rules.host:5432/write_ds_3?batchMode=OFF
     dataSourceClassName: com.zaxxer.hikari.HikariDataSource
     username: test_user
-    password: Test@123
+    password: Test@9876
     connectionTimeoutMilliseconds: 30000
     idleTimeoutMilliseconds: 60000
     maxLifetimeMilliseconds: 1800000
@@ -62,7 +62,7 @@ dataSources:
     url: jdbc:opengauss://opengauss.empty_rules.host:5432/write_ds_4?batchMode=OFF
     dataSourceClassName: com.zaxxer.hikari.HikariDataSource
     username: test_user
-    password: Test@123
+    password: Test@9876
     connectionTimeoutMilliseconds: 30000
     idleTimeoutMilliseconds: 60000
     maxLifetimeMilliseconds: 1800000
@@ -72,7 +72,7 @@ dataSources:
     url: jdbc:opengauss://opengauss.empty_rules.host:5432/write_ds_5?batchMode=OFF
     dataSourceClassName: com.zaxxer.hikari.HikariDataSource
     username: test_user
-    password: Test@123
+    password: Test@9876
     connectionTimeoutMilliseconds: 30000
     idleTimeoutMilliseconds: 60000
     maxLifetimeMilliseconds: 1800000
@@ -82,7 +82,7 @@ dataSources:
     url: jdbc:opengauss://opengauss.empty_rules.host:5432/write_ds_6?batchMode=OFF
     dataSourceClassName: com.zaxxer.hikari.HikariDataSource
     username: test_user
-    password: Test@123
+    password: Test@9876
     connectionTimeoutMilliseconds: 30000
     idleTimeoutMilliseconds: 60000
     maxLifetimeMilliseconds: 1800000
@@ -92,7 +92,7 @@ dataSources:
     url: jdbc:opengauss://opengauss.empty_rules.host:5432/write_ds_7?batchMode=OFF
     dataSourceClassName: com.zaxxer.hikari.HikariDataSource
     username: test_user
-    password: Test@123
+    password: Test@9876
     connectionTimeoutMilliseconds: 30000
     idleTimeoutMilliseconds: 60000
     maxLifetimeMilliseconds: 1800000
@@ -102,7 +102,7 @@ dataSources:
     url: jdbc:opengauss://opengauss.empty_rules.host:5432/write_ds_8?batchMode=OFF
     dataSourceClassName: com.zaxxer.hikari.HikariDataSource
     username: test_user
-    password: Test@123
+    password: Test@9876
     connectionTimeoutMilliseconds: 30000
     idleTimeoutMilliseconds: 60000
     maxLifetimeMilliseconds: 1800000
@@ -112,7 +112,7 @@ dataSources:
     url: jdbc:opengauss://opengauss.empty_rules.host:5432/write_ds_9?batchMode=OFF
     dataSourceClassName: com.zaxxer.hikari.HikariDataSource
     username: test_user
-    password: Test@123
+    password: Test@9876
     connectionTimeoutMilliseconds: 30000
     idleTimeoutMilliseconds: 60000
     maxLifetimeMilliseconds: 1800000
@@ -122,7 +122,7 @@ dataSources:
     url: jdbc:opengauss://opengauss.empty_rules.host:5432/read_ds_0?batchMode=OFF
     dataSourceClassName: com.zaxxer.hikari.HikariDataSource
     username: test_user
-    password: Test@123
+    password: Test@9876
     connectionTimeoutMilliseconds: 30000
     idleTimeoutMilliseconds: 60000
     maxLifetimeMilliseconds: 1800000
@@ -132,7 +132,7 @@ dataSources:
     url: jdbc:opengauss://opengauss.empty_rules.host:5432/read_ds_1?batchMode=OFF
     dataSourceClassName: com.zaxxer.hikari.HikariDataSource
     username: test_user
-    password: Test@123
+    password: Test@9876
     connectionTimeoutMilliseconds: 30000
     idleTimeoutMilliseconds: 60000
     maxLifetimeMilliseconds: 1800000
@@ -142,7 +142,7 @@ dataSources:
     url: jdbc:opengauss://opengauss.empty_rules.host:5432/read_ds_2?batchMode=OFF
     dataSourceClassName: com.zaxxer.hikari.HikariDataSource
     username: test_user
-    password: Test@123
+    password: Test@9876
     connectionTimeoutMilliseconds: 30000
     idleTimeoutMilliseconds: 60000
     maxLifetimeMilliseconds: 1800000
@@ -152,7 +152,7 @@ dataSources:
     url: jdbc:opengauss://opengauss.empty_rules.host:5432/read_ds_3?batchMode=OFF
     dataSourceClassName: com.zaxxer.hikari.HikariDataSource
     username: test_user
-    password: Test@123
+    password: Test@9876
     connectionTimeoutMilliseconds: 30000
     idleTimeoutMilliseconds: 60000
     maxLifetimeMilliseconds: 1800000
@@ -162,7 +162,7 @@ dataSources:
     url: jdbc:opengauss://opengauss.empty_rules.host:5432/read_ds_4?batchMode=OFF
     dataSourceClassName: com.zaxxer.hikari.HikariDataSource
     username: test_user
-    password: Test@123
+    password: Test@9876
     connectionTimeoutMilliseconds: 30000
     idleTimeoutMilliseconds: 60000
     maxLifetimeMilliseconds: 1800000
@@ -172,7 +172,7 @@ dataSources:
     url: jdbc:opengauss://opengauss.empty_rules.host:5432/read_ds_5?batchMode=OFF
     dataSourceClassName: com.zaxxer.hikari.HikariDataSource
     username: test_user
-    password: Test@123
+    password: Test@9876
     connectionTimeoutMilliseconds: 30000
     idleTimeoutMilliseconds: 60000
     maxLifetimeMilliseconds: 1800000
@@ -182,7 +182,7 @@ dataSources:
     url: jdbc:opengauss://opengauss.empty_rules.host:5432/read_ds_6?batchMode=OFF
     dataSourceClassName: com.zaxxer.hikari.HikariDataSource
     username: test_user
-    password: Test@123
+    password: Test@9876
     connectionTimeoutMilliseconds: 30000
     idleTimeoutMilliseconds: 60000
     maxLifetimeMilliseconds: 1800000
@@ -192,7 +192,7 @@ dataSources:
     url: jdbc:opengauss://opengauss.empty_rules.host:5432/read_ds_7?batchMode=OFF
     dataSourceClassName: com.zaxxer.hikari.HikariDataSource
     username: test_user
-    password: Test@123
+    password: Test@9876
     connectionTimeoutMilliseconds: 30000
     idleTimeoutMilliseconds: 60000
     maxLifetimeMilliseconds: 1800000
@@ -202,7 +202,7 @@ dataSources:
     url: jdbc:opengauss://opengauss.empty_rules.host:5432/read_ds_8?batchMode=OFF
     dataSourceClassName: com.zaxxer.hikari.HikariDataSource
     username: test_user
-    password: Test@123
+    password: Test@9876
     connectionTimeoutMilliseconds: 30000
     idleTimeoutMilliseconds: 60000
     maxLifetimeMilliseconds: 1800000
@@ -212,7 +212,7 @@ dataSources:
     url: jdbc:opengauss://opengauss.empty_rules.host:5432/read_ds_9?batchMode=OFF
     dataSourceClassName: com.zaxxer.hikari.HikariDataSource
     username: test_user
-    password: Test@123
+    password: Test@9876
     connectionTimeoutMilliseconds: 30000
     idleTimeoutMilliseconds: 60000
     maxLifetimeMilliseconds: 1800000
@@ -222,7 +222,7 @@ dataSources:
     url: jdbc:opengauss://opengauss.empty_rules.host:5432/rdl_test_0?batchMode=OFF
     dataSourceClassName: com.zaxxer.hikari.HikariDataSource
     username: test_user
-    password: Test@123
+    password: Test@9876
     connectionTimeoutMilliseconds: 30000
     idleTimeoutMilliseconds: 60000
     maxLifetimeMilliseconds: 1800000
@@ -266,13 +266,13 @@ rules:
 
     keyGenerators:
       constant:
-        type: IT.FIXTURE
+        type: E2E.KEYGEN.FIXTURE
         props:
           worker-id: 1
 
     auditors:
       auditor_constant:
-        type: IT.AUDITOR.FIXTURE
+        type: E2E.AUDITOR.FIXTURE
 
   - !READWRITE_SPLITTING
     dataSourceGroups:

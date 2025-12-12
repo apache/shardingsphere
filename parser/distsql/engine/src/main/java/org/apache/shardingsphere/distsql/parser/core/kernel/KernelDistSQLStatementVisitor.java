@@ -19,6 +19,7 @@ package org.apache.shardingsphere.distsql.parser.core.kernel;
 
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.apache.groovy.parser.antlr4.util.StringUtils;
+import org.apache.shardingsphere.database.connector.core.metadata.database.enums.QuoteCharacter;
 import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementBaseVisitor;
 import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.AlgorithmDefinitionContext;
 import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.AlterComputeNodeContext;
@@ -95,7 +96,6 @@ import org.apache.shardingsphere.distsql.statement.type.rdl.resource.unit.type.U
 import org.apache.shardingsphere.distsql.statement.type.rql.resource.ShowLogicalTablesStatement;
 import org.apache.shardingsphere.distsql.statement.type.rql.resource.ShowStorageUnitsStatement;
 import org.apache.shardingsphere.distsql.statement.type.rql.rule.database.ShowRulesUsedStorageUnitStatement;
-import org.apache.shardingsphere.infra.database.core.metadata.database.enums.QuoteCharacter;
 import org.apache.shardingsphere.sql.parser.api.ASTNode;
 import org.apache.shardingsphere.sql.parser.api.visitor.SQLVisitor;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.FromDatabaseSegment;
@@ -249,7 +249,7 @@ public final class KernelDistSQLStatementVisitor extends KernelDistSQLStatementB
     
     @Override
     public ASTNode visitShowDistVariables(final ShowDistVariablesContext ctx) {
-        return new ShowDistVariablesStatement(null == ctx.showLike() ? null : IdentifierValueUtils.getValue(ctx.showLike().likePattern()));
+        return new ShowDistVariablesStatement(null != ctx.TEMP(), null == ctx.showLike() ? null : IdentifierValueUtils.getValue(ctx.showLike().likePattern()));
     }
     
     @Override
