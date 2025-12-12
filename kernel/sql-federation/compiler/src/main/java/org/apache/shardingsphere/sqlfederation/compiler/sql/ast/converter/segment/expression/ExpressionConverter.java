@@ -121,7 +121,7 @@ public final class ExpressionConverter {
             return Optional.of(ParameterMarkerExpressionConverter.convert((ParameterMarkerExpressionSegment) segment));
         }
         if (segment instanceof FunctionSegment) {
-            return FunctionConverter.convert((FunctionSegment) segment);
+            return Optional.of(FunctionConverter.convert((FunctionSegment) segment));
         }
         if (segment instanceof AggregationProjectionSegment) {
             return AggregationProjectionConverter.convert((AggregationProjectionSegment) segment);
