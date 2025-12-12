@@ -130,7 +130,7 @@ class ExpressionConverterTest {
         when(ExistsSubqueryExpressionConverter.convert(existsSubqueryExpression)).thenReturn(expectedExistsSubqueryNode);
         SqlNode expectedSubqueryNode = mock(SqlNode.class);
         SubqueryExpressionSegment subqueryExpressionSegment = new SubqueryExpressionSegment(subquerySegment);
-        when(SubqueryExpressionConverter.convert(subqueryExpressionSegment)).thenReturn(Optional.of(expectedSubqueryNode));
+        when(SubqueryExpressionConverter.convert(subqueryExpressionSegment)).thenReturn(expectedSubqueryNode);
         SqlBasicCall expectedInNode = mock(SqlBasicCall.class);
         InExpression inExpression = new InExpression(0, 0, literalSegment, literalSegment, false);
         when(InExpressionConverter.convert(inExpression)).thenReturn(expectedInNode);
