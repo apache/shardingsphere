@@ -60,6 +60,9 @@ public final class ShowMigrationJobStatusExecutor implements DistSQLQueryExecuto
     }
     
     private Optional<Long> getIncrementalIdleSeconds(final TransmissionJobItemProgress jobItemProgress, final TransmissionJobItemInfo jobItemInfo, final long currentTimeMillis) {
+        if (!jobItemProgress.isActive()) {
+            return Optional.empty();
+        }
         if (jobItemProgress.getIncremental().getIncrementalLatestActiveTimeMillis() > 0L) {
             long latestActiveTimeMillis = Math.max(jobItemInfo.getStartTimeMillis(), jobItemProgress.getIncremental().getIncrementalLatestActiveTimeMillis());
             return Optional.of(TimeUnit.MILLISECONDS.toSeconds(currentTimeMillis - latestActiveTimeMillis));

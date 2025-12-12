@@ -20,7 +20,7 @@ package org.apache.shardingsphere.test.natived.jdbc.databases;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import org.apache.shardingsphere.test.natived.commons.TestShardingService;
-import org.apache.shardingsphere.test.natived.commons.util.ResourceUtil;
+import org.apache.shardingsphere.test.natived.commons.util.ResourceUtils;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.EnabledInNativeImage;
@@ -38,12 +38,12 @@ class SQLServerTest {
     
     @AfterEach
     void afterEach() throws SQLException {
-        ResourceUtil.closeJdbcDataSource(logicDataSource);
+        ResourceUtils.closeJdbcDataSource(logicDataSource);
         ContainerDatabaseDriver.killContainers();
     }
     
     /**
-     * TODO `shardingsphere-parser-sql-sqlserver` module does not support `DROP TABLE IF EXISTS t_order` statements yet.
+     * TODO `shardingsphere-parser-sql-engine-sqlserver` module does not support `DROP TABLE IF EXISTS t_order` statements yet.
      *
      * @throws SQLException SQL exception
      */

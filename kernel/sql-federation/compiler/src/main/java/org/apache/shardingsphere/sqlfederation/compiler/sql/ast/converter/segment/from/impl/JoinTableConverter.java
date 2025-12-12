@@ -26,15 +26,14 @@ import org.apache.calcite.sql.SqlLiteral;
 import org.apache.calcite.sql.SqlNode;
 import org.apache.calcite.sql.SqlNodeList;
 import org.apache.calcite.sql.parser.SqlParserPos;
-import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.JoinTableSegment;
-import org.apache.shardingsphere.sqlfederation.compiler.sql.ast.converter.segment.expression.impl.ColumnConverter;
 import org.apache.shardingsphere.sqlfederation.compiler.sql.ast.converter.segment.expression.ExpressionConverter;
+import org.apache.shardingsphere.sqlfederation.compiler.sql.ast.converter.segment.expression.impl.ColumnConverter;
 import org.apache.shardingsphere.sqlfederation.compiler.sql.ast.converter.segment.from.TableConverter;
 
 import java.util.Collection;
-import java.util.LinkedList;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * Join converter.
@@ -43,10 +42,10 @@ import java.util.Optional;
 public final class JoinTableConverter {
     
     /**
-     * Convert join table segment to sql node.
+     * Convert join table segment to SQL node.
      *
      * @param segment join table segment
-     * @return sql node
+     * @return SQL node
      */
     public static Optional<SqlNode> convert(final JoinTableSegment segment) {
         SqlNode left = TableConverter.convert(segment.getLeft()).orElseThrow(IllegalStateException::new);
@@ -58,10 +57,10 @@ public final class JoinTableConverter {
     }
     
     private static SqlLiteral convertJoinType(final JoinTableSegment segment) {
-        if (JoinType.INNER.name().equals(segment.getJoinType()) && !segment.isNatural() && null == segment.getCondition() && segment.getUsing().isEmpty()) {
-            return JoinType.COMMA.symbol(SqlParserPos.ZERO);
-        }
-        return JoinType.valueOf(segment.getJoinType()).symbol(SqlParserPos.ZERO);
+        String joinTypeName = null == segment.getJoinType() ? JoinType.INNER.name() : segment.getJoinType();
+        return JoinType.INNER.name().equals(joinTypeName) && !segment.isNatural() && null == segment.getCondition() && segment.getUsing().isEmpty()
+                ? JoinType.COMMA.symbol(SqlParserPos.ZERO)
+                : JoinType.valueOf(joinTypeName).symbol(SqlParserPos.ZERO);
     }
     
     private static SqlLiteral convertConditionType(final JoinTableSegment segment) {
@@ -78,10 +77,7 @@ public final class JoinTableConverter {
         if (segment.getUsing().isEmpty()) {
             return Optional.empty();
         }
-        Collection<SqlNode> sqlNodes = new LinkedList<>();
-        for (ColumnSegment each : segment.getUsing()) {
-            ColumnConverter.convert(each).ifPresent(sqlNodes::add);
-        }
+        Collection<SqlNode> sqlNodes = segment.getUsing().stream().map(ColumnConverter::convert).collect(Collectors.toList());
         return Optional.of(new SqlNodeList(sqlNodes, SqlParserPos.ZERO));
     }
 }

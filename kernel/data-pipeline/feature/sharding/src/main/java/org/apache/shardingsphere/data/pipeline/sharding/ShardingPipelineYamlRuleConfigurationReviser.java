@@ -35,8 +35,8 @@ public final class ShardingPipelineYamlRuleConfigurationReviser implements Pipel
     
     private void enableRangeQueryForInline(final YamlShardingRuleConfiguration yamlRuleConfig) {
         for (YamlAlgorithmConfiguration each : yamlRuleConfig.getShardingAlgorithms().values()) {
-            if ("INLINE".equalsIgnoreCase(each.getType())) {
-                each.getProps().put("allow-range-query-with-inline-sharding", Boolean.TRUE.toString());
+            if ("INLINE".equalsIgnoreCase(each.getType()) || "COMPLEX_INLINE".equalsIgnoreCase(each.getType())) {
+                each.getProps().setProperty("allow-range-query-with-inline-sharding", Boolean.TRUE.toString());
             }
         }
     }

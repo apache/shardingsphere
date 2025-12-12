@@ -10,7 +10,7 @@ All references to Seata integration in this article refer to Seata AT mode.
 
 ## Prerequisites
 
-ShardingSphere's Seata integration is only available in `apache/incubator-seata:v2.3.0` or higher.
+ShardingSphere's Seata integration is only available in `apache/incubator-seata:v2.5.0` or higher.
 For Seata Client corresponding to the `org.apache.seata:seata-all` Maven module, this limitation applies to both HotSpot VM and GraalVM Native Image.
 Introduce Maven dependencies and exclude the outdated Maven dependency of `org.antlr:antlr4-runtime:4.8` in `org.apache.seata:seata-all`.
 
@@ -30,7 +30,7 @@ Introduce Maven dependencies and exclude the outdated Maven dependency of `org.a
       <dependency>
          <groupId>org.apache.seata</groupId>
          <artifactId>seata-all</artifactId>
-         <version>2.3.0</version>
+         <version>2.5.0</version>
          <exclusions>
             <exclusion>
                <groupId>org.antlr</groupId>
@@ -50,7 +50,7 @@ This type of database includes but is not limited to `mysql`, `gvenzl/oracle-fre
 ### `undo_log` table restrictions
 
 In each real database instance involved in ShardingSphere, an `undo_log` table needs to be created.
-The SQL content of each database is based on the corresponding database in https://github.com/apache/incubator-seata/tree/v2.3.0/script/client/at/db .
+The SQL content of each database is based on the corresponding database in https://github.com/apache/incubator-seata/tree/v2.5.0/script/client/at/db .
 
 ### Related configuration
 
@@ -66,7 +66,7 @@ transaction:
 ```
 
 Add the `seata.conf` file to the root directory of the classpath.
-For the configuration file format, refer to the [JavaDoc](https://github.com/apache/incubator-seata/blob/v2.3.0/config/seata-config-core/src/main/java/org/apache/seata/config/FileConfiguration.java) of `org.apache.seata.config.FileConfiguration`.
+For the configuration file format, refer to the [JavaDoc](https://github.com/apache/incubator-seata/blob/v2.5.0/config/seata-config-core/src/main/java/org/apache/seata/config/FileConfiguration.java) of `org.apache.seata.config.FileConfiguration`.
 
 `seata.conf` has four properties,
 
@@ -121,7 +121,7 @@ Write Docker Compose file to start Seata Server and MySQL Server.
 ```yaml
 services:
    apache-seata-server:
-      image: apache/seata-server:2.3.0
+      image: apache/seata-server:2.5.0
       ports:
          - "8091:8091"
    mysql:
@@ -235,19 +235,19 @@ dataSources:
    ds_0:
       dataSourceClassName: com.zaxxer.hikari.HikariDataSource
       driverClassName: com.mysql.cj.jdbc.Driver
-      jdbcUrl: jdbc:mysql://localhost:3306/demo_ds_0?sslMode=REQUIRED
+      standardJdbcUrl: jdbc:mysql://localhost:3306/demo_ds_0?sslMode=REQUIRED
       username: root
       password: example
    ds_1:
       dataSourceClassName: com.zaxxer.hikari.HikariDataSource
       driverClassName: com.mysql.cj.jdbc.Driver
-      jdbcUrl: jdbc:mysql://localhost:3306/demo_ds_1?sslMode=REQUIRED
+      standardJdbcUrl: jdbc:mysql://localhost:3306/demo_ds_1?sslMode=REQUIRED
       username: root
       password: example
    ds_2:
       dataSourceClassName: com.zaxxer.hikari.HikariDataSource
       driverClassName: com.mysql.cj.jdbc.Driver
-      jdbcUrl: jdbc:mysql://localhost:3306/demo_ds_2?sslMode=REQUIRED
+      standardJdbcUrl: jdbc:mysql://localhost:3306/demo_ds_2?sslMode=REQUIRED
       username: root
       password: example
 rules:
@@ -363,7 +363,7 @@ A possible dependency relationship is as follows.
        <dependency>
           <groupId>org.apache.seata</groupId>
           <artifactId>seata-spring-boot-starter</artifactId>
-          <version>2.3.0</version>
+          <version>2.5.0</version>
           <exclusions>
              <exclusion>
                 <groupId>org.antlr</groupId>
@@ -583,7 +583,7 @@ the changes to the MySQL database instances `a-mysql` and `b-mysql` in the busin
 but the API gateway middleware used blocks all HTTP requests containing the HTTP Header of `TX_XID`.
 The user needs to consider changing the HTTP Header used to pass XID to the microservice instance `a-service` through service calls, 
 or use the RPC framework to pass XID to the microservice instance `a-service` through service calls.
-Refer to https://github.com/apache/incubator-seata/tree/v2.3.0/integration .
+Refer to https://github.com/apache/incubator-seata/tree/v2.5.0/integration .
 
 4. The microservice instances `a-service` and `b-service` are both microservices such as Quarkus, 
 Micronaut Framework and Helidon. In this case, Spring WebMVC HandlerInterceptor cannot be used.

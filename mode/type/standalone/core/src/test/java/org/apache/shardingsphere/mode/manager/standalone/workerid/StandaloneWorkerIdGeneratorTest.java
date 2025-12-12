@@ -19,8 +19,8 @@ package org.apache.shardingsphere.mode.manager.standalone.workerid;
 
 import org.apache.shardingsphere.infra.instance.workerid.WorkerIdAssignedException;
 import org.apache.shardingsphere.infra.instance.workerid.WorkerIdGenerator;
-import org.apache.shardingsphere.test.props.PropertiesBuilder;
-import org.apache.shardingsphere.test.props.PropertiesBuilder.Property;
+import org.apache.shardingsphere.infra.util.props.PropertiesBuilder;
+import org.apache.shardingsphere.infra.util.props.PropertiesBuilder.Property;
 import org.junit.jupiter.api.Test;
 
 import java.util.Properties;

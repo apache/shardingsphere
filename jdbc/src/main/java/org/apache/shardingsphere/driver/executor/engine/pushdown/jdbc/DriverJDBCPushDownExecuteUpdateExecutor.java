@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.driver.executor.engine.pushdown.jdbc;
 
+import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.transaction.DialectTransactionOption;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.driver.executor.callback.add.StatementAddCallback;
 import org.apache.shardingsphere.driver.executor.callback.execute.ExecuteUpdateCallbackFactory;
 import org.apache.shardingsphere.driver.executor.callback.execute.StatementExecuteUpdateCallback;
@@ -25,8 +27,6 @@ import org.apache.shardingsphere.driver.executor.engine.transaction.DriverTransa
 import org.apache.shardingsphere.driver.jdbc.core.connection.ShardingSphereConnection;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
-import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.option.transaction.DialectTransactionOption;
-import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroup;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroupContext;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroupReportContext;
@@ -96,10 +96,10 @@ public final class DriverJDBCPushDownExecuteUpdateExecutor {
     @SuppressWarnings({"rawtypes", "unchecked"})
     private int doExecuteUpdate(final ShardingSphereDatabase database, final ExecutionContext executionContext, final DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine,
                                 final StatementExecuteUpdateCallback updateCallback, final StatementAddCallback addCallback, final StatementReplayCallback replayCallback) throws SQLException {
-        ExecutionGroupContext<JDBCExecutionUnit> executionGroupContext = prepareEngine.prepare(database.getName(), executionContext.getRouteContext(), executionContext.getExecutionUnits(),
+        ExecutionGroupContext<JDBCExecutionUnit> executionGroupContext = prepareEngine.prepare(database.getName(), executionContext, executionContext.getExecutionUnits(),
                 new ExecutionGroupReportContext(processId, database.getName(), connection.getDatabaseConnectionManager().getConnectionContext().getGrantee()));
         for (ExecutionGroup<JDBCExecutionUnit> each : executionGroupContext.getInputGroups()) {
-            addCallback.add(getStatements(each), JDBCDriverType.PREPARED_STATEMENT.equals(prepareEngine.getType()) ? getParameterSets(each) : Collections.emptyList());
+            addCallback.add(getStatements(each), JDBCDriverType.PREPARED_STATEMENT == prepareEngine.getType() ? getParameterSets(each) : Collections.emptyList());
         }
         replayCallback.replay();
         ProcessEngine processEngine = new ProcessEngine();
@@ -108,13 +108,13 @@ public final class DriverJDBCPushDownExecuteUpdateExecutor {
             JDBCExecutorCallback<Integer> callback = new ExecuteUpdateCallbackFactory(prepareEngine.getType())
                     .newInstance(database, executionContext.getSqlStatementContext().getSqlStatement(), updateCallback);
             List<Integer> updateCounts = jdbcExecutor.execute(executionGroupContext, callback);
-            PushDownMetaDataRefreshEngine pushDownMetaDataRefreshEngine =
-                    new PushDownMetaDataRefreshEngine(connection.getContextManager().getPersistServiceFacade().getModeFacade().getMetaDataManagerService(), database, props);
-            if (pushDownMetaDataRefreshEngine.isNeedRefresh(executionContext.getSqlStatementContext())) {
+            PushDownMetaDataRefreshEngine pushDownMetaDataRefreshEngine = new PushDownMetaDataRefreshEngine(executionContext.getSqlStatementContext());
+            if (pushDownMetaDataRefreshEngine.isNeedRefresh()) {
                 if (isNeedImplicitCommit(executionContext.getSqlStatementContext().getSqlStatement())) {
                     connection.commit();
                 }
-                pushDownMetaDataRefreshEngine.refresh(executionContext.getSqlStatementContext(), executionContext.getRouteContext().getRouteUnits());
+                pushDownMetaDataRefreshEngine.refresh(
+                        connection.getContextManager().getPersistServiceFacade().getModeFacade().getMetaDataManagerService(), database, props, executionContext.getRouteContext().getRouteUnits());
             }
             return isNeedAccumulate(database.getRuleMetaData().getRules(), executionContext.getSqlStatementContext()) ? accumulate(updateCounts) : updateCounts.get(0);
         } finally {

@@ -21,7 +21,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.data.pipeline.core.exception.param.PipelineInvalidParameterException;
 import org.apache.shardingsphere.infra.datanode.DataNode;
-import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
+import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.rule.attribute.datanode.DataNodeRuleAttribute;
 
@@ -33,7 +33,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Pipeline data node utils.
+ * Pipeline data node utility class.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class PipelineDataNodeUtils {
@@ -47,7 +47,7 @@ public final class PipelineDataNodeUtils {
      * @throws PipelineInvalidParameterException thrown invalid parameter exception when can't get data nodes.
      */
     public static Map<String, List<DataNode>> buildTableAndDataNodesMap(final ShardingSphereDatabase database, final Collection<String> tableNames) {
-        ShardingSpherePreconditions.checkNotEmpty(tableNames, () -> new PipelineInvalidParameterException("Tables can not empty."));
+        ShardingSpherePreconditions.checkNotEmpty(tableNames, () -> new PipelineInvalidParameterException("Table names are empty."));
         Map<String, List<DataNode>> result = new HashMap<>(tableNames.size(), 1F);
         Collection<DataNodeRuleAttribute> attributes = database.getRuleMetaData().getAttributes(DataNodeRuleAttribute.class);
         // TODO support virtual data source name

@@ -18,9 +18,9 @@
 package org.apache.shardingsphere.mask.algorithm.replace;
 
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
+import org.apache.shardingsphere.infra.util.props.PropertiesBuilder;
+import org.apache.shardingsphere.infra.util.props.PropertiesBuilder.Property;
 import org.apache.shardingsphere.mask.spi.MaskAlgorithm;
-import org.apache.shardingsphere.test.props.PropertiesBuilder;
-import org.apache.shardingsphere.test.props.PropertiesBuilder.Property;
 import org.hamcrest.CoreMatchers;
 import org.junit.jupiter.api.Test;
 

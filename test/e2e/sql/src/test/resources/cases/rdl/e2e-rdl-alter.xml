@@ -16,7 +16,7 @@
   -->
 <e2e-test-cases>
     <!-- TODO FIX HOST CANNOT CONNECT -->
-    <!--    <test-case sql="ALTER STORAGE UNIT ds_2 (URL='jdbc:mysql://mysql.rdl.empty_rules.host:3306/rdl_ds_2?amp;useSSL=false', USER='test_user',PASSWORD='Test@123',PROPERTIES('idleTimeout'='30000'));" db-types="MySQL">-->
+    <!--    <test-case sql="ALTER STORAGE UNIT ds_2 (URL='jdbc:mysql://mysql.rdl.empty_rules.host:3306/rdl_ds_2?amp;useSSL=false', USER='test_user',PASSWORD='Test@9876',PROPERTIES('idleTimeout'='30000'));" db-types="MySQL">-->
     <!--        <assertion expected-data-file="alter_storage_unit.xml">-->
     <!--            <assertion-sql sql="SHOW DATABASE RESOURCES" />-->
     <!--        </assertion>-->

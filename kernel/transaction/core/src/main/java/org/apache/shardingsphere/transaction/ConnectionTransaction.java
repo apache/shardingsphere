@@ -46,7 +46,7 @@ public final class ConnectionTransaction {
         if (transactionContext.getTransactionManager().isPresent()) {
             distributedTransactionManager = (ShardingSphereDistributedTransactionManager) transactionContext.getTransactionManager().get();
         } else {
-            distributedTransactionManager = TransactionType.LOCAL == this.transactionType ? null : rule.getResource().getTransactionManager(rule.getDefaultType());
+            distributedTransactionManager = TransactionType.LOCAL == transactionType ? null : rule.getResource().getTransactionManager(rule.getDefaultType());
         }
     }
     
@@ -57,7 +57,7 @@ public final class ConnectionTransaction {
      * @return in distributed transaction or not
      */
     public boolean isInDistributedTransaction(final TransactionConnectionContext transactionContext) {
-        return transactionContext.isInTransaction() && isInDistributedTransaction();
+        return transactionContext.isTransactionStarted() && isInDistributedTransaction();
     }
     
     /**

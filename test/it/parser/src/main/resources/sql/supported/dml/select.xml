@@ -364,4 +364,18 @@
     <sql-case id="select_collation_identifier" value="SELECT DATABASEPROPERTYEX('AdventureWorks2022', 'Collation') AS Collation, DATABASEPROPERTYEX('AdventureWorks2022', 'Edition') AS Edition;" db-types="SQLServer"/>
     <sql-case id="select_with_temptable_no_alias" value="SELECT * FROM OPENXML(@idoc, '/ROOT/Customer', 1) WITH (CustomerID VARCHAR(10),ContactName VARCHAR(20));" db-types="SQLServer"/>
     <sql-case id="select_vector_search_function" value="SELECT r.* FROM VECTOR_SEARCH(TABLE = dbo.sessions AS s, COLUMN = embedding, SIMILAR_TO = @qv, METRIC = 'cosine', TOP_N = 10) AS r;" db-types="SQLServer"/>
+    <sql-case id="select_grouping_sets" value="SELECT Country, Region, SUM(Sales) AS TotalSales FROM Sales GROUP BY GROUPING SETS ( ROLLUP (Country, Region), CUBE (Country, Region));" db-types="SQLServer"/>
+    <sql-case id="select_identity_function" value="SELECT IDENTITY(int,1,1) AS ID_Num INTO NewTable FROM OldTable;" db-types="SQLServer"/>
+    <sql-case id="select_group_by_with_distributed_agg" value="SELECT CustomerKey FROM FactInternetSales GROUP BY CustomerKey WITH (DISTRIBUTED_AGG)" db-types="SQLServer"/>
+    <sql-case id="select_with_predict_function" value="SELECT d.*, p.Score FROM PREDICT(MODEL = @model, DATA = dbo.mytable AS d) WITH (Score FLOAT) AS p;" db-types="SQLServer"/>
+    <sql-case id="select_window_clause" value="SELECT user_id, ROW_NUMBER() OVER w AS 'row_number', RANK() OVER w AS 'rank', DENSE_RANK() OVER w AS 'dense_rank' FROM t_order WHERE order_id = ? WINDOW w AS (ORDER BY user_id)" db-types="SQLServer"/>
+    <sql-case id="select_maxrecursion_hint" value="SELECT * FROM Person OPTION (MAXRECURSION 2);" db-types="SQLServer"/>
+    <sql-case id="select_optimize_for_hint" value="SELECT * FROM Person OPTION ( OPTIMIZE FOR (@city_name = 'Seattle', @postal_code UNKNOWN) );" db-types="SQLServer"/>
+    <sql-case id="select_fast_hint" value="SELECT * FROM Person OPTION (HASH GROUP, FAST 10);" db-types="SQLServer"/>
+    <sql-case id="select_use_hint" value="SELECT * FROM Person OPTION (RECOMPILE, USE HINT ('ASSUME_MIN_SELECTIVITY_FOR_FILTER_ESTIMATES', 'DISABLE_PARAMETER_SNIFFING'));" db-types="SQLServer"/>
+    <sql-case id="select_maxdop_hint" value="SELECT * FROM Person OPTION (MAXDOP 2);" db-types="SQLServer"/>
+    <sql-case id="select_for_timestamp_as_of_hint" value="SELECT * FROM Person OPTION (FOR TIMESTAMP AS OF '2024-03-13T19:39:35.28');" db-types="SQLServer"/>
+    <sql-case id="select_force_single_node_plan_hint" value="SELECT * FROM Person OPTION (FORCE SINGLE NODE PLAN);" db-types="SQLServer"/>
+    <sql-case id="select_querytraceon_hint" value="SELECT * FROM Person OPTION (QUERYTRACEON 4199, QUERYTRACEON 4137);" db-types="SQLServer"/>
+    <sql-case id="select_with_sample_clause" value="SELECT 1 AS C1 FROM T_ORDER SAMPLE BLOCK (1.43302, 8) SEED(9) T_ORDER" db-types="Oracle" />
 </sql-cases>

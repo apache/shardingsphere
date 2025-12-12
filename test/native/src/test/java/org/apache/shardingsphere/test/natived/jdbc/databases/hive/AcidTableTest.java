@@ -20,7 +20,7 @@ package org.apache.shardingsphere.test.natived.jdbc.databases.hive;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import org.apache.shardingsphere.test.natived.commons.TestShardingService;
-import org.apache.shardingsphere.test.natived.commons.util.ResourceUtil;
+import org.apache.shardingsphere.test.natived.commons.util.ResourceUtils;
 import org.awaitility.Awaitility;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -73,7 +73,7 @@ class AcidTableTest {
     
     @AfterEach
     void afterEach() throws SQLException {
-        ResourceUtil.closeJdbcDataSource(logicDataSource);
+        ResourceUtils.closeJdbcDataSource(logicDataSource);
         System.clearProperty(systemPropKeyPrefix + "ds0.jdbc-url");
         System.clearProperty(systemPropKeyPrefix + "ds1.jdbc-url");
         System.clearProperty(systemPropKeyPrefix + "ds2.jdbc-url");
@@ -121,7 +121,7 @@ class AcidTableTest {
     }
     
     /**
-     * TODO `shardingsphere-parser-sql-hive` module does not support `set` statements yet,
+     * TODO `shardingsphere-parser-sql-engine-hive` module does not support `set` statements yet,
      *  we always need to execute the following Hive Session-level SQL in the current {@link javax.sql.DataSource}.
      * Hive does not support `AUTO_INCREMENT`,
      * refer to <a href="https://issues.apache.org/jira/browse/HIVE-6905">HIVE-6905</a>.

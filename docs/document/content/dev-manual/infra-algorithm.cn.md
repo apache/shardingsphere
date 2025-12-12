@@ -9,7 +9,7 @@ chapter = true
 
 ### 全限定类名
 
-[`org.apache.shardingsphere.infra.algorithm.loadbalancer.core.LoadBalanceAlgorithm`](https://github.com/apache/shardingsphere/blob/master/infra/algorithm/type/load-balancer/core/src/main/java/org/apache/shardingsphere/infra/algorithm/loadbalancer/core/LoadBalanceAlgorithm.java)
+[`org.apache.shardingsphere.infra.algorithm.loadbalancer.spi.LoadBalanceAlgorithm`](https://github.com/apache/shardingsphere/blob/master/infra/algorithm/type/load-balancer/spi/src/main/java/org/apache/shardingsphere/infra/algorithm/loadbalancer/spi/LoadBalanceAlgorithm.java)
 
 ### 定义
 
@@ -27,7 +27,7 @@ chapter = true
 
 ### 全限定类名
 
-[`org.apache.shardingsphere.keygen.core.algorithm.KeyGenerateAlgorithm`](https://github.com/apache/shardingsphere/blob/master/infra/algorithm/type/key-generator/core/src/main/java/org/apache/shardingsphere/infra/algorithm/keygen/core/KeyGenerateAlgorithm.java)
+[`org.apache.shardingsphere.infra.algorithm.keygen.spi.KeyGenerateAlgorithm`](https://github.com/apache/shardingsphere/blob/master/infra/algorithm/type/key-generator/spi/src/main/java/org/apache/shardingsphere/infra/algorithm/keygen/spi/KeyGenerateAlgorithm.java)
 
 ### 定义
 
@@ -44,7 +44,7 @@ chapter = true
 
 ### 全限定类名
 
-[`org.apache.shardingsphere.infra.algorithm.messagedigest.core.MessageDigestAlgorithm`](https://github.com/apache/shardingsphere/blob/master/infra/algorithm/type/message-digest/core/src/main/java/org/apache/shardingsphere/infra/algorithm/messagedigest/core/MessageDigestAlgorithm.java)
+[`org.apache.shardingsphere.infra.algorithm.messagedigest.spi.MessageDigestAlgorithm`](https://github.com/apache/shardingsphere/blob/master/infra/algorithm/type/message-digest/spi/src/main/java/org/apache/shardingsphere/infra/algorithm/messagedigest/spi/MessageDigestAlgorithm.java)
 
 ### 定义
 

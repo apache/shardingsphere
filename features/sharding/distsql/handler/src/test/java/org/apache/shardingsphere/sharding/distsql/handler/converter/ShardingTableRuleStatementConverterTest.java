@@ -18,6 +18,8 @@
 package org.apache.shardingsphere.sharding.distsql.handler.converter;
 
 import org.apache.shardingsphere.distsql.segment.AlgorithmSegment;
+import org.apache.shardingsphere.infra.util.props.PropertiesBuilder;
+import org.apache.shardingsphere.infra.util.props.PropertiesBuilder.Property;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingAutoTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
@@ -28,8 +30,6 @@ import org.apache.shardingsphere.sharding.distsql.segment.strategy.ShardingStrat
 import org.apache.shardingsphere.sharding.distsql.segment.table.AbstractTableRuleSegment;
 import org.apache.shardingsphere.sharding.distsql.segment.table.AutoTableRuleSegment;
 import org.apache.shardingsphere.sharding.distsql.segment.table.TableRuleSegment;
-import org.apache.shardingsphere.test.props.PropertiesBuilder;
-import org.apache.shardingsphere.test.props.PropertiesBuilder.Property;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;

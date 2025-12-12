@@ -22,6 +22,7 @@ import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.attribute.RuleAttributes;
 import org.apache.shardingsphere.infra.rule.attribute.datanode.DataNodeRuleAttribute;
+import org.apache.shardingsphere.infra.rule.attribute.resoure.UnregisterStorageUnitRuleAttribute;
 
 import java.util.Collections;
 import java.util.Optional;
@@ -39,10 +40,10 @@ public final class DistSQLHandlerFixtureRule implements ShardingSphereRule {
     
     @Override
     public RuleAttributes getAttributes() {
-        return new RuleAttributes(getDataNodeRuleAttribute());
+        return new RuleAttributes(mockDataNodeRuleAttribute(), mockStorageUnitDefinitionProcessorRuleAttribute());
     }
     
-    private DataNodeRuleAttribute getDataNodeRuleAttribute() {
+    private DataNodeRuleAttribute mockDataNodeRuleAttribute() {
         DataNodeRuleAttribute result = mock(DataNodeRuleAttribute.class);
         DataNode dataNode = mock(DataNode.class);
         when(dataNode.getDataSourceName()).thenReturn("foo_ds");
@@ -50,6 +51,12 @@ public final class DistSQLHandlerFixtureRule implements ShardingSphereRule {
         when(result.findFirstActualTable(any())).thenReturn(Optional.empty());
         when(result.findLogicTableByActualTable(any())).thenReturn(Optional.empty());
         when(result.findActualTableByCatalog(any(), any())).thenReturn(Optional.empty());
+        return result;
+    }
+    
+    private UnregisterStorageUnitRuleAttribute mockStorageUnitDefinitionProcessorRuleAttribute() {
+        UnregisterStorageUnitRuleAttribute result = mock(UnregisterStorageUnitRuleAttribute.class);
+        when(result.ignoreUsageCheck(true, false)).thenReturn(true);
         return result;
     }
     

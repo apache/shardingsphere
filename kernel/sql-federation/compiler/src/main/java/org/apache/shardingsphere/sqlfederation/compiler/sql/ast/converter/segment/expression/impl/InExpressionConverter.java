@@ -39,10 +39,10 @@ import java.util.Optional;
 public final class InExpressionConverter {
     
     /**
-     * Convert in expression to sql node.
+     * Convert in expression to SQL node.
      *
      * @param expression in expression
-     * @return sql node
+     * @return SQL node
      */
     public static Optional<SqlNode> convert(final InExpression expression) {
         if (null == expression) {

@@ -20,15 +20,13 @@ package org.apache.shardingsphere.infra.spi.type.typed;
 import org.apache.shardingsphere.infra.spi.exception.ServiceProviderNotFoundException;
 import org.apache.shardingsphere.infra.spi.type.typed.fixture.TypedSPIFixture;
 import org.apache.shardingsphere.infra.spi.type.typed.fixture.impl.TypedSPIFixtureImpl;
-import org.apache.shardingsphere.test.props.PropertiesBuilder;
-import org.apache.shardingsphere.test.props.PropertiesBuilder.Property;
 import org.junit.jupiter.api.Test;
 
 import java.util.Properties;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.isA;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -47,12 +45,14 @@ class TypedSPILoaderTest {
     
     @Test
     void assertGetServiceWithoutProperties() {
-        assertThat(TypedSPILoader.getService(TypedSPIFixture.class, "TYPED.FIXTURE"), instanceOf(TypedSPIFixtureImpl.class));
+        assertThat(TypedSPILoader.getService(TypedSPIFixture.class, "TYPED.FIXTURE"), isA(TypedSPIFixtureImpl.class));
     }
     
     @Test
     void assertGetServiceWithProperties() {
-        assertThat(((TypedSPIFixtureImpl) TypedSPILoader.getService(TypedSPIFixture.class, "TYPED.FIXTURE", PropertiesBuilder.build(new Property("key", "1")))).getValue(), is("1"));
+        Properties props = new Properties();
+        props.setProperty("key", "1");
+        assertThat(((TypedSPIFixtureImpl) TypedSPILoader.getService(TypedSPIFixture.class, "TYPED.FIXTURE", props)).getValue(), is("1"));
     }
     
     @Test

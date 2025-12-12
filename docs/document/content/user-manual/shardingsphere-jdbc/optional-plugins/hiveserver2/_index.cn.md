@@ -10,7 +10,7 @@ ShardingSphere 对 HiveServer2 JDBC Driver 的支持位于可选模块中。
 
 ## 前提条件
 
-要在 ShardingSphere 的配置文件为数据节点使用类似 `jdbc:hive2://localhost:10000/` 的 `jdbcUrl`，
+要在 ShardingSphere 的配置文件为数据节点使用类似 `jdbc:hive2://localhost:10000/` 的 `standardJdbcUrl`，
 可能的 Maven 依赖关系如下，
 
 ```xml
@@ -53,7 +53,7 @@ ShardingSphere 对 HiveServer2 JDBC Driver 的支持位于可选模块中。
     </dependency>
     <dependency>
         <groupId>org.apache.shardingsphere</groupId>
-        <artifactId>shardingsphere-parser-sql-hive</artifactId>
+        <artifactId>shardingsphere-parser-engine-sql-hive</artifactId>
         <version>${shardingsphere.version}</version>
     </dependency>
     <dependency>
@@ -101,7 +101,7 @@ sudo snap install dbeaver-ce
 snap run dbeaver-ce
 ```
 
-在 DBeaver Community 内，使用 `jdbc:hive2://localhost:10000/` 的 `jdbcUrl` 连接至 HiveServer2，`username` 和 `password` 留空。
+在 DBeaver Community 内，使用 `jdbc:hive2://localhost:10000/` 的 `standardJdbcUrl` 连接至 HiveServer2，`username` 和 `password` 留空。
 执行如下 SQL，
 
 ```sql
@@ -112,7 +112,7 @@ CREATE DATABASE demo_ds_2;
 ```
 
 分别使用 `jdbc:hive2://localhost:10000/demo_ds_0` ，
-`jdbc:hive2://localhost:10000/demo_ds_1` 和 `jdbc:hive2://localhost:10000/demo_ds_2` 的 `jdbcUrl` 连接至 HiveServer2 来执行如下 SQL，
+`jdbc:hive2://localhost:10000/demo_ds_1` 和 `jdbc:hive2://localhost:10000/demo_ds_2` 的 `standardJdbcUrl` 连接至 HiveServer2 来执行如下 SQL，
 
 ```sql
 -- noinspection SqlNoDataSourceInspectionForFile
@@ -136,15 +136,15 @@ dataSources:
     ds_0:
         dataSourceClassName: com.zaxxer.hikari.HikariDataSource
         driverClassName: org.apache.hive.jdbc.HiveDriver
-        jdbcUrl: jdbc:hive2://localhost:10000/demo_ds_0
+        standardJdbcUrl: jdbc:hive2://localhost:10000/demo_ds_0
     ds_1:
         dataSourceClassName: com.zaxxer.hikari.HikariDataSource
         driverClassName: org.apache.hive.jdbc.HiveDriver
-        jdbcUrl: jdbc:hive2://localhost:10000/demo_ds_1
+        standardJdbcUrl: jdbc:hive2://localhost:10000/demo_ds_1
     ds_2:
         dataSourceClassName: com.zaxxer.hikari.HikariDataSource
         driverClassName: org.apache.hive.jdbc.HiveDriver
-        jdbcUrl: jdbc:hive2://localhost:10000/demo_ds_2
+        standardJdbcUrl: jdbc:hive2://localhost:10000/demo_ds_2
 rules:
 - !SHARDING
     tables:
@@ -199,7 +199,7 @@ public class ExampleUtils {
 
 ### 连接至开启 ZooKeeper Service Discovery 的 HiveServer2
 
-ShardingSphere 配置文件中的 `jdbcUrl` 可配置连接至开启 ZooKeeper Service Discovery 的 HiveServer2。
+ShardingSphere 配置文件中的 `standardJdbcUrl` 可配置连接至开启 ZooKeeper Service Discovery 的 HiveServer2。
 
 引入讨论，假设存在如下 Docker Compose 文件来启动开启 ZooKeeper Service Discovery 的 HiveServer2。
 
@@ -207,7 +207,7 @@ ShardingSphere 配置文件中的 `jdbcUrl` 可配置连接至开启 ZooKeeper S
 name: test-1
 services:
   zookeeper:
-    image: zookeeper:3.9.3-jre-17
+    image: zookeeper:3.9.4-jre-17
     ports:
       - "2181:2181"
   apache-hive-1:
@@ -226,7 +226,7 @@ services:
 ```
 
 在 DBeaver Community 内，
-使用 `jdbc:hive2://127.0.0.1:2181/;serviceDiscoveryMode=zooKeeper;zooKeeperNamespace=hiveserver2` 的 `jdbcUrl` 连接至 HiveServer2，
+使用 `jdbc:hive2://127.0.0.1:2181/;serviceDiscoveryMode=zooKeeper;zooKeeperNamespace=hiveserver2` 的 `standardJdbcUrl` 连接至 HiveServer2，
 `username` 和 `password` 留空。
 执行如下 SQL，
 
@@ -240,7 +240,7 @@ CREATE DATABASE demo_ds_2;
 分别使用 `jdbc:hive2://127.0.0.1:2181/demo_ds_0;serviceDiscoveryMode=zooKeeper;zooKeeperNamespace=hiveserver2` ，
 `jdbc:hive2://127.0.0.1:2181/demo_ds_1;serviceDiscoveryMode=zooKeeper;zooKeeperNamespace=hiveserver2` 和
 `jdbc:hive2://127.0.0.1:2181/demo_ds_2;serviceDiscoveryMode=zooKeeper;zooKeeperNamespace=hiveserver2`
-的 `jdbcUrl` 连接至 HiveServer2 来执行如下 SQL，
+的 `standardJdbcUrl` 连接至 HiveServer2 来执行如下 SQL，
 
 ```sql
 -- noinspection SqlNoDataSourceInspectionForFile
@@ -262,15 +262,15 @@ dataSources:
     ds_0:
         dataSourceClassName: com.zaxxer.hikari.HikariDataSource
         driverClassName: org.apache.hive.jdbc.HiveDriver
-        jdbcUrl: jdbc:hive2://127.0.0.1:2181/demo_ds_0;serviceDiscoveryMode=zooKeeper;zooKeeperNamespace=hiveserver2
+        standardJdbcUrl: jdbc:hive2://127.0.0.1:2181/demo_ds_0;serviceDiscoveryMode=zooKeeper;zooKeeperNamespace=hiveserver2
     ds_1:
         dataSourceClassName: com.zaxxer.hikari.HikariDataSource
         driverClassName: org.apache.hive.jdbc.HiveDriver
-        jdbcUrl: jdbc:hive2://127.0.0.1:2181/demo_ds_1;serviceDiscoveryMode=zooKeeper;zooKeeperNamespace=hiveserver2
+        standardJdbcUrl: jdbc:hive2://127.0.0.1:2181/demo_ds_1;serviceDiscoveryMode=zooKeeper;zooKeeperNamespace=hiveserver2
     ds_2:
         dataSourceClassName: com.zaxxer.hikari.HikariDataSource
         driverClassName: org.apache.hive.jdbc.HiveDriver
-        jdbcUrl: jdbc:hive2://127.0.0.1:2181/demo_ds_2;serviceDiscoveryMode=zooKeeper;zooKeeperNamespace=hiveserver2
+        standardJdbcUrl: jdbc:hive2://127.0.0.1:2181/demo_ds_2;serviceDiscoveryMode=zooKeeper;zooKeeperNamespace=hiveserver2
 rules:
 - !SHARDING
     tables:
@@ -343,7 +343,7 @@ networks:
 ```
 
 在 DBeaver Community 内，
-使用 `jdbc:hive2://127.0.0.1:2181/;serviceDiscoveryMode=zooKeeper;zooKeeperNamespace=hiveserver2` 的 `jdbcUrl` 连接至 HiveServer2，
+使用 `jdbc:hive2://127.0.0.1:2181/;serviceDiscoveryMode=zooKeeper;zooKeeperNamespace=hiveserver2` 的 `standardJdbcUrl` 连接至 HiveServer2，
 `username` 和 `password` 留空。
 执行如下 SQL，
 
@@ -357,7 +357,7 @@ CREATE DATABASE demo_ds_2;
 分别使用 `jdbc:hive2://127.0.0.1:2181/demo_ds_0;serviceDiscoveryMode=zooKeeper;zooKeeperNamespace=hiveserver2` ，
 `jdbc:hive2://127.0.0.1:2181/demo_ds_1;serviceDiscoveryMode=zooKeeper;zooKeeperNamespace=hiveserver2` 和
 `jdbc:hive2://127.0.0.1:2181/demo_ds_2;serviceDiscoveryMode=zooKeeper;zooKeeperNamespace=hiveserver2`
-的 `jdbcUrl` 连接至 HiveServer2 来执行如下 SQL，
+的 `standardJdbcUrl` 连接至 HiveServer2 来执行如下 SQL，
 
 ```sql
 -- noinspection SqlNoDataSourceInspectionForFile
@@ -462,15 +462,15 @@ dataSources:
   ds_0:
     dataSourceClassName: com.zaxxer.hikari.HikariDataSource
     driverClassName: org.apache.hive.jdbc.HiveDriver
-    jdbcUrl: jdbc:hive2://localhost:10000/demo_ds_0;initFile=/tmp/init.sql
+    standardJdbcUrl: jdbc:hive2://localhost:10000/demo_ds_0;initFile=/tmp/init.sql
   ds_1:
     dataSourceClassName: com.zaxxer.hikari.HikariDataSource
     driverClassName: org.apache.hive.jdbc.HiveDriver
-    jdbcUrl: jdbc:hive2://localhost:10000/demo_ds_0;initFile=/tmp/init.sql
+    standardJdbcUrl: jdbc:hive2://localhost:10000/demo_ds_0;initFile=/tmp/init.sql
   ds_2:
     dataSourceClassName: com.zaxxer.hikari.HikariDataSource
     driverClassName: org.apache.hive.jdbc.HiveDriver
-    jdbcUrl: jdbc:hive2://localhost:10000/demo_ds_0;initFile=/tmp/init.sql
+    standardJdbcUrl: jdbc:hive2://localhost:10000/demo_ds_0;initFile=/tmp/init.sql
 ```
 
 `/tmp/init.sql` 的可能内容如下，
@@ -495,15 +495,15 @@ dataSources:
   ds_0:
     dataSourceClassName: com.zaxxer.hikari.HikariDataSource
     driverClassName: org.apache.hive.jdbc.HiveDriver
-    jdbcUrl: $${fixture.hive.ds0.jdbc-url::}
+    standardJdbcUrl: $${fixture.hive.ds0.jdbc-url::}
   ds_1:
     dataSourceClassName: com.zaxxer.hikari.HikariDataSource
     driverClassName: org.apache.hive.jdbc.HiveDriver
-    jdbcUrl: $${fixture.hive.ds1.jdbc-url::}
+    standardJdbcUrl: $${fixture.hive.ds1.jdbc-url::}
   ds_2:
     dataSourceClassName: com.zaxxer.hikari.HikariDataSource
     driverClassName: org.apache.hive.jdbc.HiveDriver
-    jdbcUrl: $${fixture.hive.ds2.jdbc-url::}
+    standardJdbcUrl: $${fixture.hive.ds2.jdbc-url::}
 ```
 
 此时使用 ShardingSphere JDBC Driver 时可以通过拼接字符串的手段传入业务项目的 classpath 上的文件的绝对路径。

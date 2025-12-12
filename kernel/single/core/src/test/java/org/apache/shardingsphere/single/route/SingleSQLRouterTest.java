@@ -18,9 +18,9 @@
 package org.apache.shardingsphere.single.route;
 
 import org.apache.groovy.util.Maps;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.binder.context.statement.type.CommonSQLStatementContext;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
-import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePoolProperties;
 import org.apache.shardingsphere.infra.hint.HintValueContext;
@@ -47,7 +47,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableNameSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.table.CreateTableStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
-import org.apache.shardingsphere.test.fixture.jdbc.MockedDataSource;
+import org.apache.shardingsphere.test.infra.fixture.jdbc.MockedDataSource;
 import org.junit.jupiter.api.Test;
 
 import javax.sql.DataSource;
@@ -80,7 +80,7 @@ class SingleSQLRouterTest {
     @Test
     void assertCreateRouteContextWithSingleDataSource() throws SQLException {
         SingleRule rule = new SingleRule(new SingleRuleConfiguration(), "foo_db", databaseType, Collections.singletonMap("foo_ds", new MockedDataSource(mockConnection())), Collections.emptyList());
-        rule.getAttributes().getAttribute(DataNodeRuleAttribute.class).getAllDataNodes().put("t_order", Collections.singleton(createDataNode("foo_ds")));
+        rule.getAttributes().getAttribute(DataNodeRuleAttribute.class).getAllDataNodes().put("t_order", Collections.singleton(new DataNode("foo_ds", "foo_db", "t_order")));
         ShardingSphereDatabase database = mockSingleDatabase();
         RouteContext actual = new SingleSQLRouter().createRouteContext(
                 createQueryContext(), mock(RuleMetaData.class), database, rule, Collections.singletonList("t_order"), new ConfigurationProperties(new Properties()));
@@ -101,7 +101,7 @@ class SingleSQLRouterTest {
     void assertCreateRouteContextWithReadwriteSplittingDataSource() throws SQLException {
         SingleRule rule = new SingleRule(new SingleRuleConfiguration(),
                 "foo_db", databaseType, Collections.singletonMap("readwrite_ds", new MockedDataSource(mockConnection())), Collections.emptyList());
-        rule.getAttributes().getAttribute(DataNodeRuleAttribute.class).getAllDataNodes().put("t_order", Collections.singletonList(createDataNode("write_ds")));
+        rule.getAttributes().getAttribute(DataNodeRuleAttribute.class).getAllDataNodes().put("t_order", Collections.singletonList(new DataNode("write_ds", "foo_db", "t_order")));
         ShardingSphereDatabase database = mockReadwriteSplittingDatabase();
         RouteContext actual = new SingleSQLRouter().createRouteContext(
                 createQueryContext(), mock(RuleMetaData.class), database, rule, Collections.singletonList("t_order"), new ConfigurationProperties(new Properties()));
@@ -145,12 +145,6 @@ class SingleSQLRouterTest {
     private Connection mockConnection() throws SQLException {
         Connection result = mock(Connection.class, RETURNS_DEEP_STUBS);
         when(result.getMetaData().getURL()).thenReturn("jdbc:mock://127.0.0.1/db");
-        return result;
-    }
-    
-    private DataNode createDataNode(final String dataSourceName) {
-        DataNode result = new DataNode(dataSourceName, "t_order");
-        result.setSchemaName("foo_db");
         return result;
     }
     

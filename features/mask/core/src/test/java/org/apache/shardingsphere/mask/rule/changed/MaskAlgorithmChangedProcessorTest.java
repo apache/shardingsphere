@@ -22,8 +22,8 @@ import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.mask.config.MaskRuleConfiguration;
-import org.apache.shardingsphere.mode.spi.rule.RuleItemConfigurationChangedProcessor;
 import org.apache.shardingsphere.mode.spi.rule.RuleChangedItemType;
+import org.apache.shardingsphere.mode.spi.rule.RuleItemConfigurationChangedProcessor;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
@@ -32,7 +32,7 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Properties;
 
-import static org.apache.shardingsphere.test.matcher.ShardingSphereAssertionMatchers.deepEqual;
+import static org.apache.shardingsphere.test.infra.framework.matcher.ShardingSphereAssertionMatchers.deepEqual;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -45,6 +45,7 @@ class MaskAlgorithmChangedProcessorTest {
     private final RuleItemConfigurationChangedProcessor<MaskRuleConfiguration, AlgorithmConfiguration> processor = TypedSPILoader.getService(
             RuleItemConfigurationChangedProcessor.class, new RuleChangedItemType("mask", "mask_algorithms"));
     
+    @SuppressWarnings("CollectionWithoutInitialCapacity")
     @Test
     void assertFindRuleConfigurationWhenAbsent() {
         assertThat(processor.findRuleConfiguration(mockDatabase()), deepEqual(new MaskRuleConfiguration(new LinkedList<>(), new LinkedHashMap<>())));

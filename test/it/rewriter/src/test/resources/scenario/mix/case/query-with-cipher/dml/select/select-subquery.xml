@@ -25,14 +25,14 @@
     
     <rewrite-assertion id="select_not_nested_subquery_in_table_segment_with_shorthand_project_alias" db-types="MySQL">
         <input sql="SELECT u.amount, u.password FROM (SELECT a.* FROM t_account a) o, t_account u WHERE u.password=?" parameters="1" />
-        <output sql="SELECT u.`cipher_amount` AS amount, u.`cipher_password` AS password FROM (SELECT a.`account_id`, a.`cipher_password` AS `password_CIPHER`, a.`assisted_query_password` AS password_ASSISTED, a.`cipher_amount` AS `amount_CIPHER` FROM t_account_0 a) o, t_account_0 u WHERE u.`assisted_query_password`=?" parameters="assisted_query_1" />
-        <output sql="SELECT u.`cipher_amount` AS amount, u.`cipher_password` AS password FROM (SELECT a.`account_id`, a.`cipher_password` AS `password_CIPHER`, a.`assisted_query_password` AS password_ASSISTED, a.`cipher_amount` AS `amount_CIPHER` FROM t_account_1 a) o, t_account_1 u WHERE u.`assisted_query_password`=?" parameters="assisted_query_1" />
+        <output sql="SELECT u.`cipher_amount` AS amount, u.`cipher_password` AS password FROM (SELECT a.`account_id`, a.`cipher_password` AS `password_CIPHER`, a.`assisted_query_password` AS `password_ASSISTED`, a.`cipher_amount` AS `amount_CIPHER` FROM t_account_0 a) o, t_account_0 u WHERE u.`assisted_query_password`=?" parameters="assisted_query_1" />
+        <output sql="SELECT u.`cipher_amount` AS amount, u.`cipher_password` AS password FROM (SELECT a.`account_id`, a.`cipher_password` AS `password_CIPHER`, a.`assisted_query_password` AS `password_ASSISTED`, a.`cipher_amount` AS `amount_CIPHER` FROM t_account_1 a) o, t_account_1 u WHERE u.`assisted_query_password`=?" parameters="assisted_query_1" />
     </rewrite-assertion>
 
     <rewrite-assertion id="select_not_nested_subquery_in_table_segment_with_shorthand_project_alias_quote" db-types="MySQL">
         <input sql="SELECT u.amount, u.password FROM (SELECT `a`.* FROM t_account `a`) o, t_account u WHERE u.password=?" parameters="1" />
-        <output sql="SELECT u.`cipher_amount` AS amount, u.`cipher_password` AS password FROM (SELECT `a`.`account_id`, `a`.`cipher_password` AS `password_CIPHER`, `a`.`assisted_query_password` AS password_ASSISTED, `a`.`cipher_amount` AS `amount_CIPHER` FROM t_account_0 `a`) o, t_account_0 u WHERE u.`assisted_query_password`=?" parameters="assisted_query_1" />
-        <output sql="SELECT u.`cipher_amount` AS amount, u.`cipher_password` AS password FROM (SELECT `a`.`account_id`, `a`.`cipher_password` AS `password_CIPHER`, `a`.`assisted_query_password` AS password_ASSISTED, `a`.`cipher_amount` AS `amount_CIPHER` FROM t_account_1 `a`) o, t_account_1 u WHERE u.`assisted_query_password`=?" parameters="assisted_query_1" />
+        <output sql="SELECT u.`cipher_amount` AS amount, u.`cipher_password` AS password FROM (SELECT `a`.`account_id`, `a`.`cipher_password` AS `password_CIPHER`, `a`.`assisted_query_password` AS `password_ASSISTED`, `a`.`cipher_amount` AS `amount_CIPHER` FROM t_account_0 `a`) o, t_account_0 u WHERE u.`assisted_query_password`=?" parameters="assisted_query_1" />
+        <output sql="SELECT u.`cipher_amount` AS amount, u.`cipher_password` AS password FROM (SELECT `a`.`account_id`, `a`.`cipher_password` AS `password_CIPHER`, `a`.`assisted_query_password` AS `password_ASSISTED`, `a`.`cipher_amount` AS `amount_CIPHER` FROM t_account_1 `a`) o, t_account_1 u WHERE u.`assisted_query_password`=?" parameters="assisted_query_1" />
     </rewrite-assertion>
     
     <rewrite-assertion id="select_not_nested_subquery_in_table_segment_alias" db-types="MySQL">

@@ -17,38 +17,42 @@
 
 package org.apache.shardingsphere.infra.binder.engine.segment.dml.expression.type;
 
+import com.cedarsoftware.util.CaseInsensitiveMap.CaseInsensitiveString;
 import com.google.common.collect.LinkedHashMultimap;
+import com.google.common.collect.Multimap;
+import org.apache.shardingsphere.infra.binder.engine.segment.dml.from.context.TableSegmentBinderContext;
 import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementBinderContext;
-import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
-import org.apache.shardingsphere.infra.hint.HintValueContext;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
-import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExistsSubqueryExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.subquery.SubquerySegment;
-import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ProjectionsSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.SelectStatement;
+import org.apache.shardingsphere.test.infra.framework.extension.mock.AutoMockExtension;
+import org.apache.shardingsphere.test.infra.framework.extension.mock.StaticMockSettings;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
+@ExtendWith(AutoMockExtension.class)
+@StaticMockSettings(SubquerySegmentBinder.class)
 class ExistsSubqueryExpressionBinderTest {
     
-    private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "FIXTURE");
-    
     @Test
-    void assertBindExistsSubqueryExpression() {
-        SelectStatement selectStatement = new SelectStatement(databaseType);
-        selectStatement.setProjections(new ProjectionsSegment(0, 0));
-        ExistsSubqueryExpression existsSubqueryExpression = new ExistsSubqueryExpression(0, 0, new SubquerySegment(0, 0, selectStatement, "t_test"));
-        SQLStatementBinderContext binderContext = new SQLStatementBinderContext(mock(ShardingSphereMetaData.class), "foo_db", new HintValueContext(), mock());
-        ExistsSubqueryExpression actual = ExistsSubqueryExpressionBinder.bind(existsSubqueryExpression, binderContext, LinkedHashMultimap.create());
-        assertThat(actual.getStartIndex(), is(existsSubqueryExpression.getStartIndex()));
-        assertThat(actual.getStopIndex(), is(existsSubqueryExpression.getStopIndex()));
-        assertThat(actual.getText(), is("t_test"));
-        assertThat(actual.getSubquery().getStartIndex(), is(existsSubqueryExpression.getSubquery().getStartIndex()));
-        assertThat(actual.getSubquery().getStopIndex(), is(existsSubqueryExpression.getSubquery().getStopIndex()));
-        assertThat(actual.getSubquery().getText(), is("t_test"));
+    void assertBind() {
+        SubquerySegment subquerySegment = new SubquerySegment(0, 5, mock(SelectStatement.class), "SELECT 1");
+        ExistsSubqueryExpression segment = new ExistsSubqueryExpression(1, 10, subquerySegment);
+        segment.setNot(true);
+        SubquerySegment boundSubquerySegment = new SubquerySegment(0, 5, mock(SelectStatement.class), "SELECT 1");
+        SQLStatementBinderContext binderContext = mock(SQLStatementBinderContext.class);
+        Multimap<CaseInsensitiveString, TableSegmentBinderContext> tableBinderContexts = LinkedHashMultimap.create();
+        when(SubquerySegmentBinder.bind(subquerySegment, binderContext, tableBinderContexts)).thenReturn(boundSubquerySegment);
+        ExistsSubqueryExpression actual = ExistsSubqueryExpressionBinder.bind(segment, binderContext, tableBinderContexts);
+        assertThat(actual.getStartIndex(), is(1));
+        assertThat(actual.getStopIndex(), is(10));
+        assertThat(actual.getSubquery(), is(boundSubquerySegment));
+        assertTrue(actual.isNot());
     }
 }

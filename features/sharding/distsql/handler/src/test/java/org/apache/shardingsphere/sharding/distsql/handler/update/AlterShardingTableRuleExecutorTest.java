@@ -24,6 +24,8 @@ import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfigurat
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
+import org.apache.shardingsphere.infra.util.props.PropertiesBuilder;
+import org.apache.shardingsphere.infra.util.props.PropertiesBuilder.Property;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingAutoTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
@@ -39,11 +41,9 @@ import org.apache.shardingsphere.sharding.exception.metadata.DuplicateShardingAc
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sharding.rule.checker.ShardingRuleChecker;
 import org.apache.shardingsphere.sql.parser.api.visitor.SQLVisitor;
-import org.apache.shardingsphere.sql.parser.core.ParseASTNode;
-import org.apache.shardingsphere.sql.parser.core.SQLParserFactory;
-import org.apache.shardingsphere.test.fixture.jdbc.MockedDataSource;
-import org.apache.shardingsphere.test.props.PropertiesBuilder;
-import org.apache.shardingsphere.test.props.PropertiesBuilder.Property;
+import org.apache.shardingsphere.sql.parser.engine.core.ParseASTNode;
+import org.apache.shardingsphere.sql.parser.engine.core.SQLParserFactory;
+import org.apache.shardingsphere.test.infra.fixture.jdbc.MockedDataSource;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -54,9 +54,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.isA;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
@@ -106,10 +106,10 @@ class AlterShardingTableRuleExecutorTest {
         ShardingTableRuleConfiguration tableRule = toBeAlteredRuleConfig.getTables().iterator().next();
         assertThat(tableRule.getLogicTable(), is("t_order"));
         assertThat(tableRule.getActualDataNodes(), is("ds_${0..1}.t_order${0..1}"));
-        assertThat(tableRule.getTableShardingStrategy(), instanceOf(StandardShardingStrategyConfiguration.class));
+        assertThat(tableRule.getTableShardingStrategy(), isA(StandardShardingStrategyConfiguration.class));
         assertThat(((StandardShardingStrategyConfiguration) tableRule.getTableShardingStrategy()).getShardingColumn(), is("product_id"));
         assertThat(tableRule.getTableShardingStrategy().getShardingAlgorithmName(), is("t_order_table_core.standard.fixture"));
-        assertThat(tableRule.getDatabaseShardingStrategy(), instanceOf(StandardShardingStrategyConfiguration.class));
+        assertThat(tableRule.getDatabaseShardingStrategy(), isA(StandardShardingStrategyConfiguration.class));
         assertThat(tableRule.getDatabaseShardingStrategy().getShardingAlgorithmName(), is("t_order_database_inline"));
         assertThat(toBeAlteredRuleConfig.getTables().size(), is(1));
         ShardingAutoTableRuleConfiguration autoTableRule = toBeAlteredRuleConfig.getAutoTables().iterator().next();
@@ -130,10 +130,10 @@ class AlterShardingTableRuleExecutorTest {
         ShardingTableRuleConfiguration tableRule = toBeAlteredRuleConfig.getTables().iterator().next();
         assertThat(tableRule.getLogicTable(), is("T_ORDER"));
         assertThat(tableRule.getActualDataNodes(), is("ds_${0..1}.t_order${0..1}"));
-        assertThat(tableRule.getTableShardingStrategy(), instanceOf(StandardShardingStrategyConfiguration.class));
+        assertThat(tableRule.getTableShardingStrategy(), isA(StandardShardingStrategyConfiguration.class));
         assertThat(((StandardShardingStrategyConfiguration) tableRule.getTableShardingStrategy()).getShardingColumn(), is("product_id"));
         assertThat(tableRule.getTableShardingStrategy().getShardingAlgorithmName(), is("t_order_table_core.standard.fixture"));
-        assertThat(tableRule.getDatabaseShardingStrategy(), instanceOf(StandardShardingStrategyConfiguration.class));
+        assertThat(tableRule.getDatabaseShardingStrategy(), isA(StandardShardingStrategyConfiguration.class));
         assertThat(tableRule.getDatabaseShardingStrategy().getShardingAlgorithmName(), is("t_order_database_inline"));
         assertThat(toBeAlteredRuleConfig.getTables().size(), is(1));
         ShardingAutoTableRuleConfiguration autoTableRule = toBeAlteredRuleConfig.getAutoTables().iterator().next();
@@ -154,10 +154,10 @@ class AlterShardingTableRuleExecutorTest {
         ShardingTableRuleConfiguration tableRule = toBeAlteredRuleConfig.getTables().iterator().next();
         assertThat(tableRule.getLogicTable(), is("t_order_item"));
         assertThat(tableRule.getActualDataNodes(), is("ds_${0..1}.t_order${0..1}"));
-        assertThat(tableRule.getTableShardingStrategy(), instanceOf(StandardShardingStrategyConfiguration.class));
+        assertThat(tableRule.getTableShardingStrategy(), isA(StandardShardingStrategyConfiguration.class));
         assertThat(((StandardShardingStrategyConfiguration) tableRule.getTableShardingStrategy()).getShardingColumn(), is("product_id"));
         assertThat(tableRule.getTableShardingStrategy().getShardingAlgorithmName(), is("t_order_item_table_core.standard.fixture"));
-        assertThat(tableRule.getDatabaseShardingStrategy(), instanceOf(StandardShardingStrategyConfiguration.class));
+        assertThat(tableRule.getDatabaseShardingStrategy(), isA(StandardShardingStrategyConfiguration.class));
         assertThat(tableRule.getDatabaseShardingStrategy().getShardingAlgorithmName(), is("t_order_item_database_inline"));
         assertThat(toBeAlteredRuleConfig.getTables().size(), is(1));
         ShardingAutoTableRuleConfiguration autoTableRule = toBeAlteredRuleConfig.getAutoTables().iterator().next();

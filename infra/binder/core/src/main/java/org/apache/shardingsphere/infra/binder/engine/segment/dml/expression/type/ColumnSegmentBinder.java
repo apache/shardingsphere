@@ -31,7 +31,7 @@ import org.apache.shardingsphere.infra.binder.engine.segment.dml.from.context.Ta
 import org.apache.shardingsphere.infra.binder.engine.segment.dml.from.context.type.FunctionTableSegmentBinderContext;
 import org.apache.shardingsphere.infra.binder.engine.segment.dml.from.context.type.SimpleTableSegmentBinderContext;
 import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementBinderContext;
-import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
+import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.exception.kernel.metadata.ColumnNotFoundException;
 import org.apache.shardingsphere.infra.exception.kernel.syntax.AmbiguousColumnException;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.TableSourceType;
@@ -259,18 +259,6 @@ public final class ColumnSegmentBinder {
         return false;
     }
     
-    private static ColumnSegmentBoundInfo createColumnSegmentBoundInfo(final ColumnSegment segment, final ColumnSegment inputColumnSegment, final TableSourceType tableSourceType) {
-        IdentifierValue originalDatabase = null == inputColumnSegment ? null : inputColumnSegment.getColumnBoundInfo().getOriginalDatabase();
-        IdentifierValue originalSchema = null == inputColumnSegment ? null : inputColumnSegment.getColumnBoundInfo().getOriginalSchema();
-        IdentifierValue segmentOriginalTable = segment.getColumnBoundInfo().getOriginalTable();
-        IdentifierValue originalTable = Strings.isNullOrEmpty(segmentOriginalTable.getValue())
-                ? Optional.ofNullable(inputColumnSegment).map(optional -> optional.getColumnBoundInfo().getOriginalTable()).orElse(segmentOriginalTable)
-                : segmentOriginalTable;
-        IdentifierValue segmentOriginalColumn = segment.getColumnBoundInfo().getOriginalColumn();
-        IdentifierValue originalColumn = Optional.ofNullable(inputColumnSegment).map(optional -> optional.getColumnBoundInfo().getOriginalColumn()).orElse(segmentOriginalColumn);
-        return new ColumnSegmentBoundInfo(new TableSegmentBoundInfo(originalDatabase, originalSchema), originalTable, originalColumn, tableSourceType);
-    }
-    
     /**
      * Bind using column segment.
      *
@@ -304,9 +292,29 @@ public final class ColumnSegmentBinder {
         return result;
     }
     
+    /**
+     * Create column segment bound info.
+     *
+     * @param segment column segment
+     * @param inputColumnSegment input column segment
+     * @param tableSourceType table source type
+     * @return created column segment bound info
+     */
+    public static ColumnSegmentBoundInfo createColumnSegmentBoundInfo(final ColumnSegment segment, final ColumnSegment inputColumnSegment, final TableSourceType tableSourceType) {
+        IdentifierValue originalDatabase = null == inputColumnSegment ? null : inputColumnSegment.getColumnBoundInfo().getOriginalDatabase();
+        IdentifierValue originalSchema = null == inputColumnSegment ? null : inputColumnSegment.getColumnBoundInfo().getOriginalSchema();
+        IdentifierValue segmentOriginalTable = segment.getColumnBoundInfo().getOriginalTable();
+        IdentifierValue originalTable = Strings.isNullOrEmpty(segmentOriginalTable.getValue())
+                ? Optional.ofNullable(inputColumnSegment).map(optional -> optional.getColumnBoundInfo().getOriginalTable()).orElse(segmentOriginalTable)
+                : segmentOriginalTable;
+        IdentifierValue segmentOriginalColumn = segment.getColumnBoundInfo().getOriginalColumn();
+        IdentifierValue originalColumn = Optional.ofNullable(inputColumnSegment).map(optional -> optional.getColumnBoundInfo().getOriginalColumn()).orElse(segmentOriginalColumn);
+        return new ColumnSegmentBoundInfo(new TableSegmentBoundInfo(originalDatabase, originalSchema), originalTable, originalColumn, tableSourceType);
+    }
+    
     @RequiredArgsConstructor
     @Getter
-    static class ColumnSegmentInfo {
+    private static class ColumnSegmentInfo {
         
         private final ColumnSegment inputColumnSegment;
         

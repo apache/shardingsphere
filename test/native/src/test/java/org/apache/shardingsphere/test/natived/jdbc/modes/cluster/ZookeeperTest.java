@@ -24,7 +24,7 @@ import org.apache.curator.framework.CuratorFrameworkFactory;
 import org.apache.curator.retry.ExponentialBackoffRetry;
 import org.apache.curator.test.TestingServer;
 import org.apache.shardingsphere.test.natived.commons.TestShardingService;
-import org.apache.shardingsphere.test.natived.commons.util.ResourceUtil;
+import org.apache.shardingsphere.test.natived.commons.util.ResourceUtils;
 import org.awaitility.Awaitility;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -58,7 +58,7 @@ class ZookeeperTest {
     
     @AfterEach
     void afterEach() throws SQLException {
-        ResourceUtil.closeJdbcDataSource(logicDataSource);
+        ResourceUtils.closeJdbcDataSource(logicDataSource);
         System.clearProperty(systemPropKeyPrefix + "server-lists");
     }
     
@@ -88,9 +88,9 @@ class ZookeeperTest {
         testShardingService.getAddressRepository().createTableIfNotExistsInMySQL();
         Awaitility.await().atMost(Duration.ofMinutes(2L)).ignoreExceptions().until(() -> {
             try (Connection connection = logicDataSource.getConnection()) {
-                connection.createStatement().execute("select * from t_order");
-                connection.createStatement().execute("select * from t_order_item");
-                connection.createStatement().execute("select * from t_address");
+                connection.createStatement().execute("SELECT * FROM t_order");
+                connection.createStatement().execute("SELECT * FROM t_order_item");
+                connection.createStatement().execute("SELECT * FROM t_address");
             }
             return true;
         });

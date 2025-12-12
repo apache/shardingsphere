@@ -64,7 +64,7 @@ public final class EncryptPredicateFunctionRightValueToken extends SQLToken impl
     }
     
     private void appendFunctionSegment(final String functionName, final Collection<ExpressionSegment> parameters, final StringBuilder builder, final AtomicInteger parameterIndex) {
-        builder.append(functionName).append(" (");
+        builder.append(functionName).append("(");
         for (ExpressionSegment each : parameters) {
             if (each instanceof FunctionSegment) {
                 appendFunctionSegment(((FunctionSegment) each).getFunctionName(), ((FunctionSegment) each).getParameters(), builder, parameterIndex);

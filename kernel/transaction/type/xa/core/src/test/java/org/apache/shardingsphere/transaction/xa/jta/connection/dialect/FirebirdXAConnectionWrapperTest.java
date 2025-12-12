@@ -18,12 +18,13 @@
 package org.apache.shardingsphere.transaction.xa.jta.connection.dialect;
 
 import com.zaxxer.hikari.HikariDataSource;
-import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPILoader;
-import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.transaction.DialectTransactionOption;
+import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoader;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.transaction.xa.fixture.DataSourceUtils;
 import org.apache.shardingsphere.transaction.xa.jta.connection.XAConnectionWrapper;
-import org.apache.shardingsphere.transaction.xa.jta.datasource.properties.XADataSourceDefinition;
 import org.apache.shardingsphere.transaction.xa.jta.datasource.swapper.DataSourceSwapper;
 import org.firebirdsql.ds.FBXAConnection;
 import org.firebirdsql.jdbc.FBConnection;
@@ -35,8 +36,8 @@ import javax.sql.XADataSource;
 import java.sql.Connection;
 import java.sql.SQLException;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.isA;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -47,14 +48,15 @@ class FirebirdXAConnectionWrapperTest {
     @Test
     void assertWrap() throws SQLException {
         XAConnection actual = DatabaseTypedSPILoader.getService(XAConnectionWrapper.class, databaseType).wrap(createXADataSource(), mockConnection());
-        assertThat(actual, instanceOf(FBXAConnection.class));
+        assertThat(actual, isA(FBXAConnection.class));
         // TODO Fix the error with getting XAResource
-        // assertThat(actual.getXAResource(), instanceOf(FBXAConnection.class));
+        // assertThat(actual.getXAResource(), isA(FBXAConnection.class));
     }
     
     private XADataSource createXADataSource() {
+        DialectTransactionOption transactionOption = new DatabaseTypeRegistry(databaseType).getDialectDatabaseMetaData().getTransactionOption();
         DataSource dataSource = DataSourceUtils.build(HikariDataSource.class, databaseType, "foo_ds");
-        return new DataSourceSwapper(DatabaseTypedSPILoader.getService(XADataSourceDefinition.class, databaseType)).swap(dataSource);
+        return new DataSourceSwapper(databaseType, transactionOption.getXaDriverClassNames()).swap(dataSource);
     }
     
     private Connection mockConnection() throws SQLException {

@@ -29,7 +29,7 @@
     <dependencies>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-parser-sql-mysql</artifactId>
+            <artifactId>shardingsphere-parser-sql-engine-mysql</artifactId>
             <version>${project.version}</version>
             <scope>runtime</scope>
         </dependency>
@@ -48,6 +48,12 @@
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
             <artifactId>shardingsphere-infra-rewrite-mysql</artifactId>
+            <version>${project.version}</version>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.shardingsphere</groupId>
+            <artifactId>shardingsphere-sql-federation-mysql</artifactId>
             <version>${project.version}</version>
             <scope>runtime</scope>
         </dependency>

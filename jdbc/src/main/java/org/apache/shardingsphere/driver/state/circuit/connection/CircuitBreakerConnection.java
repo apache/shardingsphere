@@ -24,7 +24,6 @@ import org.apache.shardingsphere.driver.state.circuit.statement.CircuitBreakerSt
 
 import java.sql.Array;
 import java.sql.Clob;
-import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
@@ -62,12 +61,21 @@ public final class CircuitBreakerConnection extends AbstractUnsupportedOperation
     }
     
     @Override
+    public void setSchema(final String schema) {
+    }
+    
+    @Override
+    public String getSchema() {
+        return "";
+    }
+    
+    @Override
     public void setTransactionIsolation(final int level) {
     }
     
     @Override
     public int getTransactionIsolation() {
-        return Connection.TRANSACTION_NONE;
+        return TRANSACTION_NONE;
     }
     
     @Override
@@ -156,30 +164,6 @@ public final class CircuitBreakerConnection extends AbstractUnsupportedOperation
     }
     
     @Override
-    public boolean isValid(final int timeout) {
-        return true;
-    }
-    
-    @Override
-    public Clob createClob() {
-        return null;
-    }
-    
-    @Override
-    public Array createArrayOf(final String typeName, final Object[] elements) {
-        return null;
-    }
-    
-    @Override
-    public void setSchema(final String schema) {
-    }
-    
-    @Override
-    public String getSchema() {
-        return "";
-    }
-    
-    @Override
     public Statement createStatement() {
         return new CircuitBreakerStatement();
     }
@@ -195,11 +179,26 @@ public final class CircuitBreakerConnection extends AbstractUnsupportedOperation
     }
     
     @Override
-    public void close() {
+    public boolean isValid(final int timeout) {
+        return true;
+    }
+    
+    @Override
+    public Clob createClob() {
+        return null;
+    }
+    
+    @Override
+    public Array createArrayOf(final String typeName, final Object[] elements) {
+        return null;
     }
     
     @Override
     public boolean isClosed() {
         return false;
+    }
+    
+    @Override
+    public void close() {
     }
 }

@@ -33,12 +33,12 @@ class UnsupportedGeneratedKeysResultSetTest {
     private GeneratedKeysResultSet actual;
     
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         actual = new GeneratedKeysResultSet();
     }
     
     @AfterEach
-    public void tearDown() {
+    void tearDown() {
         actual.close();
     }
     

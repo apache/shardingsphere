@@ -21,19 +21,12 @@ import lombok.Getter;
 import org.apache.shardingsphere.infra.binder.context.available.WhereContextAvailable;
 import org.apache.shardingsphere.infra.binder.context.segment.table.TablesContext;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
-import org.apache.shardingsphere.sql.parser.statement.core.extractor.ColumnExtractor;
-import org.apache.shardingsphere.sql.parser.statement.core.extractor.ExpressionExtractor;
-import org.apache.shardingsphere.sql.parser.statement.core.extractor.TableExtractor;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.BinaryOperationExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.predicate.WhereSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.DeleteStatement;
 
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.Map;
 
 /**
  * Delete statement context.
@@ -41,68 +34,34 @@ import java.util.Map;
 @Getter
 public final class DeleteStatementContext implements SQLStatementContext, WhereContextAvailable {
     
-    private final DeleteStatement sqlStatement;
-    
-    private final TablesContext tablesContext;
-    
-    private final Collection<WhereSegment> whereSegments;
-    
-    private final Collection<ColumnSegment> columnSegments;
-    
-    private final Collection<BinaryOperationExpression> joinConditions = new LinkedList<>();
+    private final DeleteStatementBaseContext baseContext;
     
     public DeleteStatementContext(final DeleteStatement sqlStatement) {
-        this.sqlStatement = sqlStatement;
-        tablesContext = new TablesContext(getAllSimpleTableSegments());
-        whereSegments = createWhereSegments(sqlStatement);
-        columnSegments = ColumnExtractor.extractColumnSegments(whereSegments);
-        ExpressionExtractor.extractJoinConditions(joinConditions, whereSegments);
-    }
-    
-    private Collection<WhereSegment> createWhereSegments(final DeleteStatement deleteStatement) {
-        Collection<WhereSegment> result = new LinkedList<>();
-        deleteStatement.getWhere().ifPresent(result::add);
-        return result;
-    }
-    
-    private Collection<SimpleTableSegment> getAllSimpleTableSegments() {
-        TableExtractor tableExtractor = new TableExtractor();
-        tableExtractor.extractTablesFromDelete(sqlStatement);
-        return filterAliasDeleteTable(tableExtractor.getRewriteTables());
-    }
-    
-    private Collection<SimpleTableSegment> filterAliasDeleteTable(final Collection<SimpleTableSegment> tableSegments) {
-        Collection<SimpleTableSegment> result = new LinkedList<>();
-        Map<String, SimpleTableSegment> aliasAndTableSegmentMap = getAliasAndTableSegmentMap(tableSegments);
-        for (SimpleTableSegment each : tableSegments) {
-            SimpleTableSegment aliasDeleteTable = aliasAndTableSegmentMap.get(each.getTableName().getIdentifier().getValue());
-            if (null == aliasDeleteTable || aliasDeleteTable.equals(each)) {
-                result.add(each);
-            }
-        }
-        return result;
-    }
-    
-    private Map<String, SimpleTableSegment> getAliasAndTableSegmentMap(final Collection<SimpleTableSegment> tableSegments) {
-        Map<String, SimpleTableSegment> result = new HashMap<>(tableSegments.size(), 1F);
-        for (SimpleTableSegment each : tableSegments) {
-            each.getAliasName().ifPresent(optional -> result.putIfAbsent(optional, each));
-        }
-        return result;
+        baseContext = new DeleteStatementBaseContext(sqlStatement);
     }
     
     @Override
     public Collection<WhereSegment> getWhereSegments() {
-        return whereSegments;
+        return baseContext.getWhereSegments();
     }
     
     @Override
     public Collection<ColumnSegment> getColumnSegments() {
-        return columnSegments;
+        return baseContext.getColumnSegments();
     }
     
     @Override
     public Collection<BinaryOperationExpression> getJoinConditions() {
-        return joinConditions;
+        return baseContext.getJoinConditions();
+    }
+    
+    @Override
+    public DeleteStatement getSqlStatement() {
+        return baseContext.getSqlStatement();
+    }
+    
+    @Override
+    public TablesContext getTablesContext() {
+        return baseContext.getTablesContext();
     }
 }

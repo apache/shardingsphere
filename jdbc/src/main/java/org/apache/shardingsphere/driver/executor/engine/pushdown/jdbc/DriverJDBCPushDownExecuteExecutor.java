@@ -18,6 +18,8 @@
 package org.apache.shardingsphere.driver.executor.engine.pushdown.jdbc;
 
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.transaction.DialectTransactionOption;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.driver.executor.callback.add.StatementAddCallback;
 import org.apache.shardingsphere.driver.executor.callback.execute.ExecuteCallbackFactory;
 import org.apache.shardingsphere.driver.executor.callback.execute.StatementExecuteCallback;
@@ -27,8 +29,6 @@ import org.apache.shardingsphere.driver.jdbc.core.connection.ShardingSphereConne
 import org.apache.shardingsphere.driver.jdbc.core.resultset.ShardingSphereResultSet;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.dml.SelectStatementContext;
-import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.option.transaction.DialectTransactionOption;
-import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroup;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroupContext;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroupReportContext;
@@ -44,6 +44,7 @@ import org.apache.shardingsphere.infra.merge.MergeEngine;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.session.query.QueryContext;
 import org.apache.shardingsphere.mode.metadata.refresher.pushdown.PushDownMetaDataRefreshEngine;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.DALStatement;
@@ -94,10 +95,10 @@ public final class DriverJDBCPushDownExecuteExecutor {
     @SuppressWarnings({"rawtypes", "unchecked"})
     private boolean doExecute(final ShardingSphereDatabase database, final ExecutionContext executionContext, final DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine,
                               final StatementExecuteCallback executeCallback, final StatementAddCallback addCallback, final StatementReplayCallback replayCallback) throws SQLException {
-        ExecutionGroupContext<JDBCExecutionUnit> executionGroupContext = prepareEngine.prepare(database.getName(), executionContext.getRouteContext(), executionContext.getExecutionUnits(),
+        ExecutionGroupContext<JDBCExecutionUnit> executionGroupContext = prepareEngine.prepare(database.getName(), executionContext, executionContext.getExecutionUnits(),
                 new ExecutionGroupReportContext(connection.getProcessId(), database.getName(), connection.getDatabaseConnectionManager().getConnectionContext().getGrantee()));
         for (ExecutionGroup<JDBCExecutionUnit> each : executionGroupContext.getInputGroups()) {
-            addCallback.add(getStatements(each), JDBCDriverType.PREPARED_STATEMENT.equals(prepareEngine.getType()) ? getParameterSets(each) : Collections.emptyList());
+            addCallback.add(getStatements(each), JDBCDriverType.PREPARED_STATEMENT == prepareEngine.getType() ? getParameterSets(each) : Collections.emptyList());
         }
         replayCallback.replay();
         ProcessEngine processEngine = new ProcessEngine();
@@ -108,8 +109,11 @@ public final class DriverJDBCPushDownExecuteExecutor {
             if (isNeedImplicitCommit(executionContext.getSqlStatementContext().getSqlStatement())) {
                 connection.commit();
             }
-            new PushDownMetaDataRefreshEngine(connection.getContextManager().getPersistServiceFacade().getModeFacade().getMetaDataManagerService(), database, metaData.getProps())
-                    .refresh(executionContext.getSqlStatementContext(), executionContext.getRouteContext().getRouteUnits());
+            PushDownMetaDataRefreshEngine pushDownMetaDataRefreshEngine = new PushDownMetaDataRefreshEngine(executionContext.getSqlStatementContext());
+            if (pushDownMetaDataRefreshEngine.isNeedRefresh()) {
+                pushDownMetaDataRefreshEngine.refresh(connection.getContextManager().getPersistServiceFacade().getModeFacade().getMetaDataManagerService(),
+                        database, metaData.getProps(), executionContext.getRouteContext().getRouteUnits());
+            }
             return null != results && !results.isEmpty() && null != results.get(0) && results.get(0);
         } finally {
             processEngine.completeSQLExecution(executionGroupContext.getReportContext().getProcessId());
@@ -141,14 +145,15 @@ public final class DriverJDBCPushDownExecuteExecutor {
      * Get result set.
      *
      * @param database database
-     * @param sqlStatementContext SQL statement context
+     * @param queryContext query context
      * @param statement statement
      * @param statements statements
      * @return result set
      * @throws SQLException SQL exception
      */
-    public Optional<ResultSet> getResultSet(final ShardingSphereDatabase database, final SQLStatementContext sqlStatementContext,
+    public Optional<ResultSet> getResultSet(final ShardingSphereDatabase database, final QueryContext queryContext,
                                             final Statement statement, final List<? extends Statement> statements) throws SQLException {
+        SQLStatementContext sqlStatementContext = queryContext.getSqlStatementContext();
         if (sqlStatementContext instanceof SelectStatementContext || sqlStatementContext.getSqlStatement() instanceof DALStatement) {
             List<ResultSet> resultSets = getResultSets(statements);
             if (resultSets.isEmpty()) {
@@ -156,7 +161,7 @@ public final class DriverJDBCPushDownExecuteExecutor {
             }
             List<QueryResult> queryResults = getQueryResults(resultSets);
             MergedResult mergedResult = new MergeEngine(metaData, database, metaData.getProps(), connection.getDatabaseConnectionManager().getConnectionContext())
-                    .merge(queryResults, sqlStatementContext);
+                    .merge(queryResults, queryContext);
             return Optional.of(new ShardingSphereResultSet(resultSets, mergedResult, statement, sqlStatementContext));
         }
         return Optional.empty();

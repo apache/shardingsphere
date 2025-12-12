@@ -56,7 +56,7 @@ jobs:
       - name: Build Project
         run: ./mvnw -B clean install -DskipTests -Prelease,default-dep
       - name: Build Proxy E2E Image
-        run: ./mvnw clean install -DskipTests -Pit.env.proxy -f test/e2e/agent/engine/pom.xml
+        run: ./mvnw clean install -DskipTests -Pe2e.env.proxy -f test/e2e/agent/engine/pom.xml
       - name: Save Proxy E2E Image
         run: docker save -o /tmp/apache-shardingsphere-proxy-agent-test.tar apache/shardingsphere-proxy-agent-test:latest
       - uses: actions/upload-artifact@v4
@@ -65,7 +65,7 @@ jobs:
           path: /tmp/apache-shardingsphere-proxy-agent-test.tar
           retention-days: 10
       - name: Build JDBC E2E Image
-        run: ./mvnw clean install -DskipTests -Pit.env.jdbc -f test/e2e/agent/engine/pom.xml
+        run: ./mvnw clean install -DskipTests -Pe2e.env.jdbc -f test/e2e/agent/engine/pom.xml
       - name: Save JDBC E2E Image
         run: docker save -o /tmp/apache-shardingsphere-jdbc-agent-test.tar apache/shardingsphere-jdbc-agent-test:latest
       - uses: actions/upload-artifact@v4
@@ -142,4 +142,4 @@ jobs:
       - name: Build Project
         run: ./mvnw -B clean install -am -pl test/e2e/agent/plugins/${{ matrix.feature }}/${{ matrix.plugin }} -DskipTests
       - name: Run E2E Test
-        run: ./mvnw -nsu -B clean install -f test/e2e/agent/plugins/${{ matrix.feature }}/${{ matrix.plugin }}/pom.xml -Dit.env.adapter=${{ matrix.adapter }} -Dit.env.plugin=${{ matrix.plugin }}
+        run: ./mvnw -nsu -B clean install -f test/e2e/agent/plugins/${{ matrix.feature }}/${{ matrix.plugin }}/pom.xml -De2e.env.adapter=${{ matrix.adapter }} -De2e.env.plugin=${{ matrix.plugin }}

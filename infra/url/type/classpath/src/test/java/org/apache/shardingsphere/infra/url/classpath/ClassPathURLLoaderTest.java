@@ -41,6 +41,6 @@ class ClassPathURLLoaderTest {
     }
     
     private void assertGetContent(final int expectedLength) {
-        assertThat(new ClassPathURLLoader().load("config/classpath/fixture.yaml", new Properties()).length(), is(expectedLength));
+        assertThat(new ClassPathLocalFileURLLoader().load("config/classpath/fixture.yaml", new Properties()).length(), is(expectedLength));
     }
 }

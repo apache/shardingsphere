@@ -18,10 +18,10 @@
 package org.apache.shardingsphere.proxy.frontend.command;
 
 import io.netty.channel.ChannelHandlerContext;
-import org.apache.shardingsphere.db.protocol.packet.command.CommandPacket;
-import org.apache.shardingsphere.db.protocol.packet.command.CommandPacketType;
-import org.apache.shardingsphere.db.protocol.packet.DatabasePacket;
-import org.apache.shardingsphere.db.protocol.payload.PacketPayload;
+import org.apache.shardingsphere.database.protocol.packet.DatabasePacket;
+import org.apache.shardingsphere.database.protocol.packet.command.CommandPacket;
+import org.apache.shardingsphere.database.protocol.packet.command.CommandPacketType;
+import org.apache.shardingsphere.database.protocol.payload.PacketPayload;
 import org.apache.shardingsphere.proxy.backend.connector.ProxyDatabaseConnectionManager;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.frontend.command.executor.CommandExecutor;

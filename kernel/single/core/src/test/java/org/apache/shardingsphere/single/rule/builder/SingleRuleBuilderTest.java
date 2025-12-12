@@ -27,8 +27,8 @@ import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.isA;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 
@@ -39,7 +39,7 @@ class SingleRuleBuilderTest {
     void assertBuild() {
         DatabaseRuleBuilder builder = OrderedSPILoader.getServices(DatabaseRuleBuilder.class).iterator().next();
         DatabaseRule actual = builder.build(mock(SingleRuleConfiguration.class), "", mock(), mock(), Collections.singleton(mock(ShardingSphereRule.class, RETURNS_DEEP_STUBS)), mock());
-        assertThat(actual, instanceOf(SingleRule.class));
+        assertThat(actual, isA(SingleRule.class));
     }
     
     @SuppressWarnings({"rawtypes", "unchecked"})
@@ -48,6 +48,6 @@ class SingleRuleBuilderTest {
         DatabaseRuleBuilder builder = OrderedSPILoader.getServices(DatabaseRuleBuilder.class).iterator().next();
         DatabaseRule actual = builder.build(
                 new SingleRuleConfiguration(Collections.emptyList(), "foo_ds"), "", mock(), mock(), Collections.singleton(mock(ShardingSphereRule.class, RETURNS_DEEP_STUBS)), mock());
-        assertThat(actual, instanceOf(SingleRule.class));
+        assertThat(actual, isA(SingleRule.class));
     }
 }

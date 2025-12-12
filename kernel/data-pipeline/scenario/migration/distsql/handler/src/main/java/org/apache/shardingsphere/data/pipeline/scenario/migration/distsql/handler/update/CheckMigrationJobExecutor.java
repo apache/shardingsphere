@@ -21,7 +21,6 @@ import org.apache.shardingsphere.data.pipeline.core.exception.param.PipelineInva
 import org.apache.shardingsphere.data.pipeline.core.job.progress.PipelineJobProgressDetector;
 import org.apache.shardingsphere.data.pipeline.core.job.service.PipelineJobConfigurationManager;
 import org.apache.shardingsphere.data.pipeline.core.job.service.TransmissionJobManager;
-import org.apache.shardingsphere.data.pipeline.core.job.type.PipelineJobType;
 import org.apache.shardingsphere.data.pipeline.scenario.consistencycheck.ConsistencyCheckJobType;
 import org.apache.shardingsphere.data.pipeline.scenario.consistencycheck.api.ConsistencyCheckJobAPI;
 import org.apache.shardingsphere.data.pipeline.scenario.consistencycheck.api.CreateConsistencyCheckJobParameter;
@@ -30,10 +29,9 @@ import org.apache.shardingsphere.data.pipeline.scenario.migration.config.Migrati
 import org.apache.shardingsphere.data.pipeline.scenario.migration.distsql.statement.updatable.CheckMigrationStatement;
 import org.apache.shardingsphere.distsql.handler.engine.update.DistSQLUpdateExecutor;
 import org.apache.shardingsphere.distsql.segment.AlgorithmSegment;
-import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
+import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 
-import java.sql.SQLException;
 import java.util.Properties;
 
 /**
@@ -43,21 +41,21 @@ public final class CheckMigrationJobExecutor implements DistSQLUpdateExecutor<Ch
     
     private final ConsistencyCheckJobAPI checkJobAPI = new ConsistencyCheckJobAPI(new ConsistencyCheckJobType());
     
-    private final PipelineJobType migrationJobType = new MigrationJobType();
+    private final MigrationJobType jobType = new MigrationJobType();
     
     @Override
-    public void executeUpdate(final CheckMigrationStatement sqlStatement, final ContextManager contextManager) throws SQLException {
+    public void executeUpdate(final CheckMigrationStatement sqlStatement, final ContextManager contextManager) {
         AlgorithmSegment typeStrategy = sqlStatement.getTypeStrategy();
         String algorithmTypeName = null == typeStrategy ? null : typeStrategy.getName();
         Properties algorithmProps = null == typeStrategy ? null : typeStrategy.getProps();
         String jobId = sqlStatement.getJobId();
-        MigrationJobConfiguration jobConfig = new PipelineJobConfigurationManager(migrationJobType).getJobConfiguration(jobId);
+        MigrationJobConfiguration jobConfig = new PipelineJobConfigurationManager(jobType.getOption()).getJobConfiguration(jobId);
         verifyInventoryFinished(jobConfig);
         checkJobAPI.start(new CreateConsistencyCheckJobParameter(jobId, algorithmTypeName, algorithmProps, jobConfig.getSourceDatabaseType(), jobConfig.getTargetDatabaseType()));
     }
     
     private void verifyInventoryFinished(final MigrationJobConfiguration jobConfig) {
-        TransmissionJobManager transmissionJobManager = new TransmissionJobManager(migrationJobType);
+        TransmissionJobManager transmissionJobManager = new TransmissionJobManager(jobType);
         ShardingSpherePreconditions.checkState(PipelineJobProgressDetector.isInventoryFinished(jobConfig.getJobShardingCount(), transmissionJobManager.getJobProgress(jobConfig).values()),
                 () -> new PipelineInvalidParameterException("Inventory is not finished."));
     }

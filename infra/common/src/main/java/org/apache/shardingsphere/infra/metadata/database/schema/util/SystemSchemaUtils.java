@@ -19,11 +19,11 @@ package org.apache.shardingsphere.infra.metadata.database.schema.util;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.option.schema.DialectSchemaOption;
-import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.option.table.DialectDriverQuerySystemCatalogOption;
-import org.apache.shardingsphere.infra.database.core.metadata.database.system.SystemDatabase;
-import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
-import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
+import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.schema.DialectSchemaOption;
+import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.table.DialectDriverQuerySystemCatalogOption;
+import org.apache.shardingsphere.database.connector.core.metadata.database.system.SystemDatabase;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ExpressionProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ProjectionSegment;
@@ -78,9 +78,14 @@ public final class SystemSchemaUtils {
      * @return whether query or not
      */
     public static boolean isDriverQuerySystemCatalog(final DatabaseType databaseType, final Collection<ProjectionSegment> projections) {
+        if (1 != projections.size()) {
+            return false;
+        }
+        ProjectionSegment firstProjection = projections.iterator().next();
+        if (!(firstProjection instanceof ExpressionProjectionSegment)) {
+            return false;
+        }
         Optional<DialectDriverQuerySystemCatalogOption> driverQuerySystemCatalogOption = new DatabaseTypeRegistry(databaseType).getDialectDatabaseMetaData().getDriverQuerySystemCatalogOption();
-        return driverQuerySystemCatalogOption.isPresent()
-                && 1 == projections.size() && projections.iterator().next() instanceof ExpressionProjectionSegment
-                && driverQuerySystemCatalogOption.get().isSystemCatalogQueryExpressions(((ExpressionProjectionSegment) projections.iterator().next()).getText());
+        return driverQuerySystemCatalogOption.map(optional -> optional.isSystemCatalogQueryExpressions(((ExpressionProjectionSegment) firstProjection).getText())).orElse(false);
     }
 }

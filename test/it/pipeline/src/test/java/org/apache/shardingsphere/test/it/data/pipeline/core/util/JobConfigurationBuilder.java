@@ -31,9 +31,9 @@ import org.apache.shardingsphere.data.pipeline.scenario.migration.MigrationJobId
 import org.apache.shardingsphere.data.pipeline.scenario.migration.config.MigrationJobConfiguration;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.config.yaml.config.YamlMigrationJobConfiguration;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.config.yaml.swapper.YamlMigrationJobConfigurationSwapper;
-import org.apache.shardingsphere.infra.exception.core.external.sql.type.wrapper.SQLWrapperException;
+import org.apache.shardingsphere.infra.exception.external.sql.type.wrapper.SQLWrapperException;
 import org.apache.shardingsphere.infra.instance.metadata.InstanceType;
-import org.apache.shardingsphere.test.file.ConfigurationFileUtils;
+import org.apache.shardingsphere.infra.util.file.SystemResourceFileUtils;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -80,7 +80,7 @@ public final class JobConfigurationBuilder {
         Map<String, YamlPipelineDataSourceConfiguration> sources = new LinkedHashMap<>();
         String databaseNameSuffix = RandomStringUtils.randomAlphabetic(9);
         PipelineDataSourceConfiguration sourceDataSourceConfig = new StandardPipelineDataSourceConfiguration(
-                ConfigurationFileUtils.readFile("migration_standard_jdbc_source.yaml").replace("${databaseNameSuffix}", databaseNameSuffix));
+                SystemResourceFileUtils.readFile("migration_standard_jdbc_source.yaml").replace("${databaseNameSuffix}", databaseNameSuffix));
         try (
                 PipelineDataSource dataSource = new PipelineDataSource(sourceDataSourceConfig);
                 Connection connection = dataSource.getConnection();
@@ -92,7 +92,7 @@ public final class JobConfigurationBuilder {
         sources.put("ds_0", createYamlPipelineDataSourceConfiguration(sourceDataSourceConfig));
         result.setSources(sources);
         result.setTarget(createYamlPipelineDataSourceConfiguration(new ShardingSpherePipelineDataSourceConfiguration(
-                ConfigurationFileUtils.readFile("migration_sharding_sphere_jdbc_target.yaml").replace("${databaseNameSuffix}", databaseNameSuffix))));
+                SystemResourceFileUtils.readFile("migration_sharding_sphere_jdbc_target.yaml").replace("${databaseNameSuffix}", databaseNameSuffix))));
         return result;
     }
     

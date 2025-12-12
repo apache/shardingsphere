@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.encrypt.rewrite.token.generator.ddl;
 
+import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.encrypt.rule.column.EncryptColumn;
 import org.apache.shardingsphere.encrypt.rule.column.item.AssistedQueryColumnItem;
@@ -25,7 +26,6 @@ import org.apache.shardingsphere.encrypt.rule.column.item.LikeQueryColumnItem;
 import org.apache.shardingsphere.encrypt.rule.table.EncryptTable;
 import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
 import org.apache.shardingsphere.infra.binder.context.statement.type.CommonSQLStatementContext;
-import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.rewrite.sql.token.common.pojo.SQLToken;
 import org.apache.shardingsphere.infra.rewrite.sql.token.common.pojo.generic.ColumnDefinitionToken;
 import org.apache.shardingsphere.infra.rewrite.sql.token.common.pojo.generic.SubstituteColumnDefinitionToken;
@@ -43,9 +43,9 @@ import org.junit.jupiter.api.Test;
 import java.util.Collection;
 import java.util.Iterator;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.isA;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
@@ -89,7 +89,7 @@ class EncryptCreateTableTokenGeneratorTest {
         Collection<SQLToken> actual = generator.generateSQLTokens(new CommonSQLStatementContext(createCreateTableStatement()));
         assertThat(actual.size(), is(1));
         SQLToken token = actual.iterator().next();
-        assertThat(token, instanceOf(SubstituteColumnDefinitionToken.class));
+        assertThat(token, isA(SubstituteColumnDefinitionToken.class));
         Collection<SQLToken> columnTokens = ((SubstituteColumnDefinitionToken) token).getColumnDefinitionTokens();
         Iterator<SQLToken> actualIterator = columnTokens.iterator();
         ColumnDefinitionToken cipherToken = (ColumnDefinitionToken) actualIterator.next();

@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.parser.yaml;
 
 import org.apache.shardingsphere.parser.config.SQLParserRuleConfiguration;
-import org.apache.shardingsphere.sql.parser.api.CacheOption;
+import org.apache.shardingsphere.sql.parser.engine.api.CacheOption;
 import org.apache.shardingsphere.test.it.yaml.YamlRuleConfigurationIT;
 
 class SQLParserRuleConfigurationYamlIT extends YamlRuleConfigurationIT {

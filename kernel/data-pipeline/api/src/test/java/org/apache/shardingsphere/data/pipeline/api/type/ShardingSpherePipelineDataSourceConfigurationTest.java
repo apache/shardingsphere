@@ -18,14 +18,14 @@
 package org.apache.shardingsphere.data.pipeline.api.type;
 
 import org.apache.shardingsphere.data.pipeline.spi.JdbcQueryPropertiesExtension;
-import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPILoader;
-import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoader;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
+import org.apache.shardingsphere.infra.util.file.SystemResourceFileUtils;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRootConfiguration;
-import org.apache.shardingsphere.test.file.ConfigurationFileUtils;
-import org.apache.shardingsphere.test.mock.AutoMockExtension;
-import org.apache.shardingsphere.test.mock.StaticMockSettings;
+import org.apache.shardingsphere.test.infra.framework.extension.mock.AutoMockExtension;
+import org.apache.shardingsphere.test.infra.framework.extension.mock.StaticMockSettings;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
@@ -35,9 +35,9 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.isA;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
@@ -53,7 +53,7 @@ class ShardingSpherePipelineDataSourceConfigurationTest {
     void assertNewInstance() {
         JdbcQueryPropertiesExtension queryPropsExtension = mock(JdbcQueryPropertiesExtension.class);
         when(DatabaseTypedSPILoader.findService(JdbcQueryPropertiesExtension.class, databaseType)).thenReturn(Optional.of(queryPropsExtension));
-        YamlRootConfiguration rootConfig = YamlEngine.unmarshal(ConfigurationFileUtils.readFile("yaml/shardingsphere-pipeline-datasource-config.yaml"), YamlRootConfiguration.class, true);
+        YamlRootConfiguration rootConfig = YamlEngine.unmarshal(SystemResourceFileUtils.readFile("yaml/shardingsphere-pipeline-datasource-config.yaml"), YamlRootConfiguration.class, true);
         Map<String, Object> backupDataSource0 = new HashMap<>(rootConfig.getDataSources().get("ds_0"));
         Map<String, Object> backupDataSource1 = new HashMap<>(rootConfig.getDataSources().get("ds_1"));
         ShardingSpherePipelineDataSourceConfiguration actual = new ShardingSpherePipelineDataSourceConfiguration(rootConfig);
@@ -74,7 +74,7 @@ class ShardingSpherePipelineDataSourceConfigurationTest {
     private void assertPipelineDataSourceConfiguration(final ShardingSpherePipelineDataSourceConfiguration actual) {
         assertThat(actual.getDatabaseType().getType(), is("FIXTURE"));
         assertThat(actual.getType(), is(ShardingSpherePipelineDataSourceConfiguration.TYPE));
-        assertThat(actual.getDataSourceConfiguration(), instanceOf(YamlRootConfiguration.class));
+        assertThat(actual.getDataSourceConfiguration(), isA(YamlRootConfiguration.class));
         Map<String, Map<String, Object>> dataSources = actual.getRootConfig().getDataSources();
         assertThat(dataSources.size(), is(2));
         assertTrue(dataSources.containsKey("ds_0"));
@@ -88,7 +88,7 @@ class ShardingSpherePipelineDataSourceConfigurationTest {
     
     @Test
     void assertGetActualDataSourceConfiguration() {
-        YamlRootConfiguration rootConfig = YamlEngine.unmarshal(ConfigurationFileUtils.readFile("yaml/shardingsphere-pipeline-datasource-config.yaml"), YamlRootConfiguration.class, true);
+        YamlRootConfiguration rootConfig = YamlEngine.unmarshal(SystemResourceFileUtils.readFile("yaml/shardingsphere-pipeline-datasource-config.yaml"), YamlRootConfiguration.class, true);
         ShardingSpherePipelineDataSourceConfiguration config = new ShardingSpherePipelineDataSourceConfiguration(rootConfig);
         StandardPipelineDataSourceConfiguration actual = config.getActualDataSourceConfiguration("ds_0");
         assertThat(actual.getDatabaseType().getType(), is("FIXTURE"));

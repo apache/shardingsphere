@@ -37,10 +37,10 @@ import java.util.Optional;
 public final class NotExpressionConverter {
     
     /**
-     * Convert not expression to sql node.
+     * Convert not expression to SQL node.
      *
      * @param segment not expression
-     * @return sql node
+     * @return SQL node
      */
     public static Optional<SqlNode> convert(final NotExpression segment) {
         SqlNode expression = ExpressionConverter.convert(segment.getExpression()).orElseThrow(IllegalStateException::new);

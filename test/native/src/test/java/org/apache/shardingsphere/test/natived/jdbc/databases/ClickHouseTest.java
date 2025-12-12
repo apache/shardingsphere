@@ -20,7 +20,7 @@ package org.apache.shardingsphere.test.natived.jdbc.databases;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import org.apache.shardingsphere.test.natived.commons.TestShardingService;
-import org.apache.shardingsphere.test.natived.commons.util.ResourceUtil;
+import org.apache.shardingsphere.test.natived.commons.util.ResourceUtils;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.EnabledInNativeImage;
@@ -30,6 +30,8 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 import javax.sql.DataSource;
 import java.sql.SQLException;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+
 @EnabledInNativeImage
 @Testcontainers
 class ClickHouseTest {
@@ -38,17 +40,17 @@ class ClickHouseTest {
     
     @AfterEach
     void afterEach() throws SQLException {
-        ResourceUtil.closeJdbcDataSource(logicDataSource);
+        ResourceUtils.closeJdbcDataSource(logicDataSource);
         ContainerDatabaseDriver.killContainers();
     }
     
     @Test
-    void assertShardingInLocalTransactions() throws SQLException {
+    void assertShardingInLocalTransactions() {
         HikariConfig config = new HikariConfig();
         config.setDriverClassName("org.apache.shardingsphere.driver.ShardingSphereDriver");
         config.setJdbcUrl("jdbc:shardingsphere:classpath:test-native/yaml/jdbc/databases/clickhouse.yaml");
         logicDataSource = new HikariDataSource(config);
         TestShardingService testShardingService = new TestShardingService(logicDataSource);
-        testShardingService.processSuccessInClickHouse();
+        assertDoesNotThrow(testShardingService::processSuccessInClickHouse);
     }
 }

@@ -33,7 +33,7 @@
     <dependencies>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-parser-sql-engine</artifactId>
+            <artifactId>shardingsphere-parser-sql-engine-core</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
@@ -109,52 +109,52 @@
         
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-parser-sql-sql92</artifactId>
+            <artifactId>shardingsphere-parser-sql-engine-sql92</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-parser-sql-postgresql</artifactId>
+            <artifactId>shardingsphere-parser-sql-engine-postgresql</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-parser-sql-mysql</artifactId>
+            <artifactId>shardingsphere-parser-sql-engine-mysql</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-parser-sql-oracle</artifactId>
+            <artifactId>shardingsphere-parser-sql-engine-oracle</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-parser-sql-sqlserver</artifactId>
+            <artifactId>shardingsphere-parser-sql-engine-sqlserver</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-parser-sql-firebird</artifactId>
+            <artifactId>shardingsphere-parser-sql-engine-firebird</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-parser-sql-opengauss</artifactId>
+            <artifactId>shardingsphere-parser-sql-engine-opengauss</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-parser-sql-hive</artifactId>
+            <artifactId>shardingsphere-parser-sql-engine-hive</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-parser-sql-presto</artifactId>
+            <artifactId>shardingsphere-parser-sql-engine-presto</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-parser-sql-doris</artifactId>
+            <artifactId>shardingsphere-parser-sql-engine-doris</artifactId>
             <version>${project.version}</version>
         </dependency>
         

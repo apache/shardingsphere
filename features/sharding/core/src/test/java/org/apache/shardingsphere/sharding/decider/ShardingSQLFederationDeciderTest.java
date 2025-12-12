@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.sharding.decider;
 
+import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.binder.context.statement.type.dml.SelectStatementContext;
-import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
@@ -202,8 +202,8 @@ class ShardingSQLFederationDeciderTest {
         ShardingRule result = mock(ShardingRule.class, RETURNS_DEEP_STUBS);
         when(result.getShardingLogicTableNames(Arrays.asList("foo_tbl", "bar_tbl"))).thenReturn(Arrays.asList("foo_tbl", "bar_tbl"));
         DataNodeRuleAttribute dataNodeRuleAttribute = mock(DataNodeRuleAttribute.class);
-        when(dataNodeRuleAttribute.getDataNodesByTableName("foo_tbl")).thenReturn(Arrays.asList(new DataNode("ds_0", "foo_tbl"), new DataNode("ds_1", "foo_tbl")));
-        when(dataNodeRuleAttribute.getDataNodesByTableName("bar_tbl")).thenReturn(Arrays.asList(new DataNode("ds_0", "bar_tbl"), new DataNode("ds_1", "bar_tbl")));
+        when(dataNodeRuleAttribute.getDataNodesByTableName("foo_tbl")).thenReturn(Arrays.asList(new DataNode("ds_0", (String) null, "foo_tbl"), new DataNode("ds_1", (String) null, "foo_tbl")));
+        when(dataNodeRuleAttribute.getDataNodesByTableName("bar_tbl")).thenReturn(Arrays.asList(new DataNode("ds_0", (String) null, "bar_tbl"), new DataNode("ds_1", (String) null, "bar_tbl")));
         when(result.getAttributes()).thenReturn(new RuleAttributes(dataNodeRuleAttribute));
         when(result.findShardingTable("foo_tbl")).thenReturn(Optional.of(mock(ShardingTable.class)));
         when(result.findShardingTable("bar_tbl")).thenReturn(Optional.of(mock(ShardingTable.class)));

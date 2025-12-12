@@ -25,8 +25,8 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.dat
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.SQLParserTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.DatabaseContainedTestCase;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.isA;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
 /**
@@ -43,7 +43,7 @@ public final class ShowRulesStatementAssert {
      * @param expected expected show rules statement test case
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final ShowDatabaseRulesStatement actual, final SQLParserTestCase expected) {
-        assertThat("Expected value should be DatabaseContainedTestCase", expected, instanceOf(DatabaseContainedTestCase.class));
+        assertThat("Expected value should be DatabaseContainedTestCase", expected, isA(DatabaseContainedTestCase.class));
         assertIs(assertContext, actual, (DatabaseContainedTestCase) expected);
     }
     

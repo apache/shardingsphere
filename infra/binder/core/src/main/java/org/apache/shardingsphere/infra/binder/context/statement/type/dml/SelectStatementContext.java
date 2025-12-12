@@ -37,6 +37,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.SelectStatement;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -52,15 +53,10 @@ public final class SelectStatementContext implements SQLStatementContext, WhereC
     
     private SelectStatementBindingContext bindingContext;
     
-    public SelectStatementContext(final SelectStatement sqlStatement, final List<Object> params, final ShardingSphereMetaData metaData,
+    public SelectStatementContext(final SelectStatement sqlStatement, final ShardingSphereMetaData metaData,
                                   final String currentDatabaseName, final Collection<TableSegment> inheritedTables) {
-        baseContext = new SelectStatementBaseContext(sqlStatement, params, metaData, currentDatabaseName, inheritedTables);
-        bindingContext = new SelectStatementBindingContext(params, baseContext);
-    }
-    
-    public SelectStatementContext(final SelectStatementBaseContext baseContext, final List<Object> params) {
-        this.baseContext = baseContext;
-        bindingContext = new SelectStatementBindingContext(params, baseContext);
+        baseContext = new SelectStatementBaseContext(sqlStatement, metaData, currentDatabaseName, inheritedTables);
+        bindingContext = new SelectStatementBindingContext(Collections.emptyList(), baseContext);
     }
     
     /**
@@ -279,7 +275,9 @@ public final class SelectStatementContext implements SQLStatementContext, WhereC
     }
     
     @Override
-    public void setUpParameters(final List<Object> params) {
-        bindingContext = new SelectStatementBindingContext(params, baseContext);
+    public void bindParameters(final List<Object> params) {
+        if (!params.isEmpty()) {
+            bindingContext = new SelectStatementBindingContext(params, baseContext);
+        }
     }
 }

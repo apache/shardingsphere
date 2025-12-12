@@ -52,17 +52,17 @@ class DataSourceUnitPersistServiceTest {
     void assertLoad() {
         when(repository.getChildrenKeys("/metadata/foo_db/data_sources/units")).thenReturn(Collections.singletonList("foo_ds"));
         when(repository.query("/metadata/foo_db/data_sources/units/foo_ds/active_version")).thenReturn("10");
-        when(repository.query("/metadata/foo_db/data_sources/units/foo_ds/versions/10")).thenReturn("{dataSourceClassName: org.apache.shardingsphere.test.fixture.jdbc.MockedDataSource}");
+        when(repository.query("/metadata/foo_db/data_sources/units/foo_ds/versions/10")).thenReturn("{dataSourceClassName: org.apache.shardingsphere.test.infra.fixture.jdbc.MockedDataSource}");
         Map<String, DataSourcePoolProperties> actual = persistService.load("foo_db");
         assertThat(actual.size(), is(1));
-        assertThat(actual.get("foo_ds").getPoolClassName(), is("org.apache.shardingsphere.test.fixture.jdbc.MockedDataSource"));
+        assertThat(actual.get("foo_ds").getPoolClassName(), is("org.apache.shardingsphere.test.infra.fixture.jdbc.MockedDataSource"));
     }
     
     @Test
     void assertPersist() {
         Map<String, DataSourcePoolProperties> dataSourcePropsMap = new LinkedHashMap<>(1, 1F);
-        dataSourcePropsMap.put("foo_ds", new DataSourcePoolProperties("org.apache.shardingsphere.test.fixture.jdbc.MockedDataSource", Collections.emptyMap()));
-        dataSourcePropsMap.put("bar_ds", new DataSourcePoolProperties("org.apache.shardingsphere.test.fixture.jdbc.MockedDataSource", Collections.emptyMap()));
+        dataSourcePropsMap.put("foo_ds", new DataSourcePoolProperties("org.apache.shardingsphere.test.infra.fixture.jdbc.MockedDataSource", Collections.emptyMap()));
+        dataSourcePropsMap.put("bar_ds", new DataSourcePoolProperties("org.apache.shardingsphere.test.infra.fixture.jdbc.MockedDataSource", Collections.emptyMap()));
         when(repository.getChildrenKeys("/metadata/foo_db/data_sources/units/foo_ds/versions")).thenReturn(Collections.singletonList("10"));
         persistService.persist("foo_db", dataSourcePropsMap);
         verify(repository).persist("/metadata/foo_db/data_sources/units/foo_ds/active_version", "11");

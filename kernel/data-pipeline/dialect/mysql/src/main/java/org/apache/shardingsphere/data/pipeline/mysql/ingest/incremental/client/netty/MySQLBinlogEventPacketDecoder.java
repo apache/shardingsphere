@@ -31,14 +31,14 @@ import org.apache.shardingsphere.data.pipeline.mysql.ingest.incremental.binlog.e
 import org.apache.shardingsphere.data.pipeline.mysql.ingest.incremental.binlog.event.rows.MySQLUpdateRowsBinlogEvent;
 import org.apache.shardingsphere.data.pipeline.mysql.ingest.incremental.binlog.event.rows.MySQLWriteRowsBinlogEvent;
 import org.apache.shardingsphere.data.pipeline.mysql.ingest.incremental.binlog.event.transaction.MySQLXidBinlogEvent;
-import org.apache.shardingsphere.db.protocol.constant.CommonConstants;
-import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLBinlogEventType;
-import org.apache.shardingsphere.db.protocol.mysql.packet.binlog.MySQLBinlogEventHeader;
-import org.apache.shardingsphere.db.protocol.mysql.packet.binlog.management.MySQLBinlogFormatDescriptionEventPacket;
-import org.apache.shardingsphere.db.protocol.mysql.packet.binlog.management.MySQLBinlogRotateEventPacket;
-import org.apache.shardingsphere.db.protocol.mysql.packet.binlog.row.MySQLBinlogRowsEventPacket;
-import org.apache.shardingsphere.db.protocol.mysql.packet.binlog.row.MySQLBinlogTableMapEventPacket;
-import org.apache.shardingsphere.db.protocol.mysql.payload.MySQLPacketPayload;
+import org.apache.shardingsphere.database.protocol.constant.CommonConstants;
+import org.apache.shardingsphere.database.protocol.mysql.constant.MySQLBinlogEventType;
+import org.apache.shardingsphere.database.protocol.mysql.packet.binlog.MySQLBinlogEventHeader;
+import org.apache.shardingsphere.database.protocol.mysql.packet.binlog.management.MySQLBinlogFormatDescriptionEventPacket;
+import org.apache.shardingsphere.database.protocol.mysql.packet.binlog.management.MySQLBinlogRotateEventPacket;
+import org.apache.shardingsphere.database.protocol.mysql.packet.binlog.row.MySQLBinlogRowsEventPacket;
+import org.apache.shardingsphere.database.protocol.mysql.packet.binlog.row.MySQLBinlogTableMapEventPacket;
+import org.apache.shardingsphere.database.protocol.mysql.payload.MySQLPacketPayload;
 
 import java.util.LinkedList;
 import java.util.List;

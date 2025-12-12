@@ -61,10 +61,9 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertInstanceOf;
+import static org.hamcrest.Matchers.isA;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class WALEventConverterTest {
@@ -152,7 +151,7 @@ class WALEventConverterTest {
         BeginTXEvent beginTXEvent = new BeginTXEvent(100L, null);
         beginTXEvent.setLogSequenceNumber(new PostgreSQLLogSequenceNumber(logSequenceNumber));
         Record record = walEventConverter.convert(beginTXEvent);
-        assertInstanceOf(PlaceholderRecord.class, record);
+        assertThat(record, isA(PlaceholderRecord.class));
         assertThat(((WALPosition) record.getPosition()).getLogSequenceNumber().asString(), is(logSequenceNumber.asString()));
     }
     
@@ -161,40 +160,40 @@ class WALEventConverterTest {
         CommitTXEvent commitTXEvent = new CommitTXEvent(1L, 3468L);
         commitTXEvent.setLogSequenceNumber(new PostgreSQLLogSequenceNumber(logSequenceNumber));
         Record record = walEventConverter.convert(commitTXEvent);
-        assertInstanceOf(PlaceholderRecord.class, record);
+        assertThat(record, isA(PlaceholderRecord.class));
         assertThat(((WALPosition) record.getPosition()).getLogSequenceNumber().asString(), is(logSequenceNumber.asString()));
     }
     
     @Test
     void assertConvertWriteRowEvent() {
         Record record = walEventConverter.convert(mockWriteRowEvent());
-        assertThat(record, instanceOf(DataRecord.class));
+        assertThat(record, isA(DataRecord.class));
         assertThat(((DataRecord) record).getType(), is(PipelineSQLOperationType.INSERT));
     }
     
     @Test
     void assertConvertUpdateRowEvent() {
         Record record = walEventConverter.convert(mockUpdateRowEvent());
-        assertThat(record, instanceOf(DataRecord.class));
+        assertThat(record, isA(DataRecord.class));
         assertThat(((DataRecord) record).getType(), is(PipelineSQLOperationType.UPDATE));
     }
     
     @Test
     void assertConvertDeleteRowEvent() {
         Record record = walEventConverter.convert(mockDeleteRowEvent());
-        assertThat(record, instanceOf(DataRecord.class));
+        assertThat(record, isA(DataRecord.class));
         assertThat(((DataRecord) record).getType(), is(PipelineSQLOperationType.DELETE));
     }
     
     @Test
     void assertConvertPlaceholderEvent() {
         Record record = walEventConverter.convert(new PlaceholderEvent());
-        assertThat(record, instanceOf(PlaceholderRecord.class));
+        assertThat(record, isA(PlaceholderRecord.class));
     }
     
     @Test
     void assertUnknownTable() {
-        assertInstanceOf(PlaceholderRecord.class, walEventConverter.convert(mockUnknownTableEvent()));
+        assertThat(walEventConverter.convert(mockUnknownTableEvent()), isA(PlaceholderRecord.class));
     }
     
     @Test

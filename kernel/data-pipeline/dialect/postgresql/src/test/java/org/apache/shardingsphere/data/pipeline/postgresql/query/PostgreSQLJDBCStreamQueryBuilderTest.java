@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.data.pipeline.postgresql.query;
 
 import org.apache.shardingsphere.data.pipeline.core.query.DialectJDBCStreamQueryBuilder;
-import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPILoader;
-import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoader;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.junit.jupiter.api.Test;
 
@@ -32,7 +32,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -59,6 +59,6 @@ class PostgreSQLJDBCStreamQueryBuilderTest {
         when(connection.prepareStatement("SELECT 1", ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY, ResultSet.CLOSE_CURSORS_AT_COMMIT)).thenReturn(preparedStatement);
         assertThat(queryBuilder.build(connection, "SELECT 1", 0), is(preparedStatement));
         verify(connection).setAutoCommit(false);
-        verify(preparedStatement, times(0)).setFetchSize(anyInt());
+        verify(preparedStatement, never()).setFetchSize(anyInt());
     }
 }

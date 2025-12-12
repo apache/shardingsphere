@@ -18,11 +18,11 @@
 package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.updatable.refresh;
 
 import lombok.Setter;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.distsql.handler.aware.DistSQLExecutorDatabaseAware;
 import org.apache.shardingsphere.distsql.handler.engine.update.DistSQLUpdateExecutor;
 import org.apache.shardingsphere.distsql.statement.type.ral.updatable.RefreshTableMetaDataStatement;
-import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
-import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
+import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.exception.kernel.metadata.SchemaNotFoundException;
 import org.apache.shardingsphere.infra.exception.kernel.metadata.TableNotFoundException;
 import org.apache.shardingsphere.infra.exception.kernel.metadata.resource.storageunit.EmptyStorageUnitException;
@@ -31,7 +31,6 @@ import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnit;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 
-import java.sql.SQLException;
 import java.util.Collections;
 import java.util.Map;
 
@@ -44,7 +43,7 @@ public final class RefreshTableMetaDataExecutor implements DistSQLUpdateExecutor
     private ShardingSphereDatabase database;
     
     @Override
-    public void executeUpdate(final RefreshTableMetaDataStatement sqlStatement, final ContextManager contextManager) throws SQLException {
+    public void executeUpdate(final RefreshTableMetaDataStatement sqlStatement, final ContextManager contextManager) {
         String schemaName = getSchemaName(sqlStatement);
         checkBeforeUpdate(sqlStatement, schemaName);
         if (sqlStatement.getStorageUnitName().isPresent()) {

@@ -29,7 +29,7 @@ import java.util.Collection;
 import java.util.Map;
 
 /**
- * Sharding token utils.
+ * Sharding token utility class.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ShardingTokenUtils {

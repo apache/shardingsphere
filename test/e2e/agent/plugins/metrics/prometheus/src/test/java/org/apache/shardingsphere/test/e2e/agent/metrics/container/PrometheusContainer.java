@@ -18,14 +18,14 @@
 package org.apache.shardingsphere.test.e2e.agent.metrics.container;
 
 import org.apache.shardingsphere.test.e2e.agent.engine.env.props.AgentE2ETestConfiguration;
-import org.apache.shardingsphere.test.e2e.env.container.atomic.DockerITContainer;
+import org.apache.shardingsphere.test.e2e.env.container.DockerE2EContainer;
 import org.testcontainers.containers.BindMode;
 import org.testcontainers.containers.wait.strategy.HttpWaitStrategy;
 
 /**
  * Prometheus container.
  */
-public final class PrometheusContainer extends DockerITContainer {
+public final class PrometheusContainer extends DockerE2EContainer {
     
     public PrometheusContainer(final String image) {
         super("prometheus", image);

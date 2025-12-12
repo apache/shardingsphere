@@ -24,10 +24,8 @@ import org.apache.shardingsphere.infra.metadata.statistics.collector.DialectData
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 
-import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Optional;
 
 /**
@@ -47,31 +45,14 @@ public final class ShardingSphereStatisticsCollector implements DialectDatabaseS
     }
     
     @Override
-    public Optional<Collection<Map<String, Object>>> collectRowColumnValues(final String databaseName, final String schemaName, final String tableName,
-                                                                            final ShardingSphereMetaData metaData) throws SQLException {
-        Optional<ShardingSphereTableStatisticsCollector> tableStatisticsCollector = TypedSPILoader.findService(ShardingSphereTableStatisticsCollector.class,
-                String.format("%s.%s", schemaName, tableName));
-        return tableStatisticsCollector.isPresent() ? Optional.of(tableStatisticsCollector.get().collect(databaseName, schemaName, tableName, metaData)) : Optional.empty();
+    public Optional<Collection<Map<String, Object>>> collectRowColumnValues(final String databaseName, final String schemaName, final String tableName, final ShardingSphereMetaData metaData) {
+        return TypedSPILoader.findService(ShardingSphereTableStatisticsCollector.class, String.format("%s.%s", schemaName, tableName))
+                .map(optional -> optional.collect(databaseName, schemaName, tableName, metaData));
     }
     
     @Override
     public boolean isStatisticsTables(final Map<String, Collection<String>> schemaTables) {
-        if (schemaTables.isEmpty()) {
-            return false;
-        }
-        for (Entry<String, Collection<String>> entry : schemaTables.entrySet()) {
-            if (!STATISTICS_SCHEMA_TABLES.containsKey(entry.getKey())) {
-                return false;
-            }
-            if (!STATISTICS_SCHEMA_TABLES.get(entry.getKey()).containsAll(entry.getValue())) {
-                return false;
-            }
-        }
-        return true;
-    }
-    
-    @Override
-    public String getDatabaseType() {
-        return "ShardingSphere";
+        return !schemaTables.isEmpty() && schemaTables.entrySet().stream()
+                .noneMatch(entry -> !STATISTICS_SCHEMA_TABLES.containsKey(entry.getKey()) || !STATISTICS_SCHEMA_TABLES.get(entry.getKey()).containsAll(entry.getValue()));
     }
 }

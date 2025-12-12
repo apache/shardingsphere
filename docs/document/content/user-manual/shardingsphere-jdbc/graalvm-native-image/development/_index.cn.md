@@ -81,7 +81,7 @@ newgrp docker
 可在 Powershell 7 通过如下命令利用 `version-fox/vfox` 安装 GraalVM CE。
 
 ```shell
-winget install version-fox.vfox
+winget install --id version-fox.vfox --source winget --exact
 if (-not (Test-Path -Path $PROFILE)) { New-Item -Type File -Path $PROFILE -Force }; Add-Content -Path $PROFILE -Value 'Invoke-Expression "$(vfox activate pwsh)"'
 # 此时需要打开新的 Powershell 7 终端
 vfox add java
@@ -95,7 +95,7 @@ vfox use --global java@24.0.2-graalce
 可在 Powershell 7 通过如下命令安装编译 GraalVM Native Image 所需要的本地工具链。**特定情况下，开发者可能需要为 Visual Studio 的使用购买许可证。**
 
 ```shell
-winget install --id Microsoft.VisualStudio.2022.Community
+winget install --id Microsoft.VisualStudio.2022.Community --source winget --exact
 ```
 
 打开 `Visual Studio Installer` 以修改 `Visual Studio Community 2022` 的 `工作负荷`，勾选 `桌面应用与移动应用` 的 `使用 C++ 的桌面开发` 后点击`修改`。
@@ -106,17 +106,34 @@ winget install --id Microsoft.VisualStudio.2022.Community
 wsl --install
 ```
 
-完成 WSL2 的启用后，在 https://rancherdesktop.io/ 下载和安装 `rancher-sandbox/rancher-desktop`，并设置使用 `dockerd(moby)` 的 `Container Engine`。
+完成 WSL2 的启用后，通过如下的 PowerShell 7 命令下载和安装 `rancher-sandbox/rancher-desktop`，
+并设置使用 `dockerd(moby)` 的 `Container Engine`。
+
+```shell
+winget install --id SUSE.RancherDesktop --source winget --skip-dependencies
+# 打开新的 PowerShell 7 终端
+rdctl start --application.start-in-background --container-engine.name=moby --kubernetes.enabled=false
+```
+
 本文不讨论更改 Linux 发行版 `rancher-desktop` 的 `/etc/docker/daemon.json` 的默认 logging driver。
 
 ### Windows Server
 
-对于通常的 Windows Server 2025 实例，操作等同于 Windows 11 Home 24H2。
+对于通常的 `Windows Server 2025` 实例，操作等同于 `Windows 11 Home 24H2`。
+
 但受 https://github.com/rancher-sandbox/rancher-desktop/issues/3999 影响，
-如果开发者正在使用的 Windows Server 2025 实例包含可运行 Windows Containers 的 Docker Engine，
-则需要根据 https://github.com/microsoft/Windows-Containers/pull/602 的内容来完全卸载 Docker Engine，
-再安装 Rancher Desktop。
-这类操作常见于 `windows-2025` 的 GitHub Actions Runner 中。
+如果开发者正在使用的 `Windows Server 2025` 实例包含可运行 Windows Containers 的 Docker Engine，
+则需要使用 Microsoft 提供的脚本卸载 Docker Engine 后，再安装 Rancher Desktop。
+可在 PowerShell 7 执行如下命令，
+
+```shell
+iex "& { $(irm https://raw.githubusercontent.com/microsoft/Windows-Containers/refs/heads/Main/helpful_tools/Install-DockerCE/uninstall-docker-ce.ps1) } -Force"
+winget install --id SUSE.RancherDesktop --source winget --skip-dependencies
+# 打开新的 PowerShell 7 终端
+rdctl start --application.start-in-background --container-engine.name=moby --kubernetes.enabled=false
+```
+
+这类操作常见于 `windows-latest` 的 GitHub Actions Runner 中。
 
 ## 处理单元测试
 
@@ -167,7 +184,7 @@ cd ./shardingsphere/
 而 `META-INF/native-image/org.apache.shardingsphere/generated-reachability-metadata/` 中的条目仅应由 `generateMetadata` 的 Maven Profile 生成。
 
 对于测试类和测试文件独立使用的 GraalVM Reachability Metadata，贡献者应该放置到 `shardingsphere-test-native` 子模块的 classpath 的
-`META-INF/native-image/shardingsphere-test-native-test-metadata/` 下。
+`META-INF/native-image/shardingsphere-test-native/` 下。
 
 ## 已知限制
 
@@ -260,9 +277,7 @@ class SolutionTest {
 
 ### 单元测试的已知问题
 
-受 https://github.com/apache/shardingsphere/issues/35052 影响，
-`org.apache.shardingsphere.test.natived.jdbc.modes.cluster.EtcdTest` 的单元测试无法在通过 Windows 11 Home 24H2 编译的 GraalVM Native Image 下运行。
-
+受 https://github.com/apache/incubator-seata/issues/7523 影响，
 `org.apache.shardingsphere.test.natived.proxy.transactions.base.SeataTest` 已被禁用，
 因为在 Github Actions Runner 执行此单元测试将导致其他单元测试出现 JDBC 连接泄露。
 

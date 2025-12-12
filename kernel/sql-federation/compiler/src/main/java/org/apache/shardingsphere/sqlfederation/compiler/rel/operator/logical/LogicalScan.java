@@ -23,7 +23,6 @@ import org.apache.calcite.rel.RelWriter;
 import org.apache.calcite.rel.core.TableScan;
 import org.apache.calcite.rel.logical.LogicalFilter;
 import org.apache.calcite.rel.logical.LogicalProject;
-import org.apache.calcite.rel.logical.LogicalTableScan;
 import org.apache.shardingsphere.sqlfederation.compiler.rel.builder.LogicalScanPushDownRelBuilder;
 
 import java.util.Collections;
@@ -82,9 +81,6 @@ public final class LogicalScan extends TableScan {
     
     @Override
     public boolean deepEquals(final Object other) {
-        if (pushDownRelBuilder.peek() instanceof LogicalTableScan) {
-            return super.deepEquals(other);
-        }
         if (this == other) {
             return true;
         }
@@ -92,20 +88,14 @@ public final class LogicalScan extends TableScan {
             return false;
         }
         LogicalScan otherLogicalScan = (LogicalScan) other;
-        return traitSet.equals(otherLogicalScan.getTraitSet()) && safePeek(this).deepEquals(safePeek(otherLogicalScan))
+        return traitSet.equals(otherLogicalScan.getTraitSet())
+                && databaseType.equals(otherLogicalScan.databaseType) && pushDownRelBuilder.equals(otherLogicalScan.pushDownRelBuilder)
                 && hints.equals(otherLogicalScan.hints) && getRowType().equalsSansFieldNames(otherLogicalScan.getRowType());
-    }
-    
-    private RelNode safePeek(final LogicalScan logicalScan) {
-        return 0 == logicalScan.getPushDownRelBuilder().size() ? logicalScan : logicalScan.getPushDownRelBuilder().peek();
     }
     
     @Override
     public int deepHashCode() {
-        if (pushDownRelBuilder.peek() instanceof LogicalTableScan) {
-            return super.deepHashCode();
-        }
-        return Objects.hash(traitSet, pushDownRelBuilder.peek().deepHashCode(), hints);
+        return Objects.hash(traitSet, databaseType, pushDownRelBuilder, hints, getRowType());
     }
     
     @Override

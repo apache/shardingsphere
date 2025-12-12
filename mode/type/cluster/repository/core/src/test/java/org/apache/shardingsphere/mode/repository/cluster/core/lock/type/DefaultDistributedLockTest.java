@@ -18,11 +18,11 @@
 package org.apache.shardingsphere.mode.repository.cluster.core.lock.type;
 
 import lombok.SneakyThrows;
+import org.apache.shardingsphere.infra.util.props.PropertiesBuilder;
+import org.apache.shardingsphere.infra.util.props.PropertiesBuilder.Property;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 import org.apache.shardingsphere.mode.repository.cluster.core.lock.type.props.DefaultLockPropertyKey;
 import org.apache.shardingsphere.mode.repository.cluster.core.lock.type.props.DefaultLockTypedProperties;
-import org.apache.shardingsphere.test.props.PropertiesBuilder;
-import org.apache.shardingsphere.test.props.PropertiesBuilder.Property;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -35,7 +35,7 @@ import java.util.Map;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -85,7 +85,7 @@ class DefaultDistributedLockTest {
         distributedLock.tryLock(10L);
         distributedLock.tryLock(10L);
         distributedLock.unlock();
-        verify(client, times(0)).delete("foo_key");
+        verify(client, never()).delete("foo_key");
         assertFalse(getThreadData().isEmpty());
     }
     

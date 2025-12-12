@@ -20,7 +20,6 @@ package org.apache.shardingsphere.data.pipeline.core.util;
 import org.apache.shardingsphere.data.pipeline.core.context.PipelineContextKey;
 import org.apache.shardingsphere.data.pipeline.core.context.PipelineContextManager;
 import org.apache.shardingsphere.data.pipeline.core.metadata.node.PipelineMetaDataNode;
-import org.apache.shardingsphere.mode.spi.repository.PersistRepository;
 import org.apache.shardingsphere.test.it.data.pipeline.core.util.JobConfigurationBuilder;
 import org.apache.shardingsphere.test.it.data.pipeline.core.util.PipelineContextUtils;
 import org.junit.jupiter.api.BeforeAll;
@@ -38,15 +37,14 @@ class PipelineDistributedBarrierTest {
     
     @BeforeAll
     static void setUp() {
-        PipelineContextUtils.mockModeConfigAndContextManager();
+        PipelineContextUtils.initPipelineContextManager();
     }
     
     @Test
     void assertRegisterAndRemove() throws ReflectiveOperationException {
         String jobId = JobConfigurationBuilder.createYamlMigrationJobConfiguration().getJobId();
         PipelineContextKey contextKey = PipelineContextUtils.getContextKey();
-        PersistRepository repository = PipelineContextManager.getContext(contextKey).getContextManager().getPersistServiceFacade().getRepository();
-        repository.persist(PipelineMetaDataNode.getJobRootPath(jobId), "");
+        PipelineContextManager.getContext(contextKey).getPersistServiceFacade().getRepository().persist(PipelineMetaDataNode.getJobRootPath(jobId), "");
         PipelineDistributedBarrier instance = PipelineDistributedBarrier.getInstance(contextKey);
         String parentPath = "/barrier";
         instance.register(parentPath, 1);
@@ -61,8 +59,7 @@ class PipelineDistributedBarrierTest {
     void assertAwait() {
         String jobId = JobConfigurationBuilder.createYamlMigrationJobConfiguration().getJobId();
         PipelineContextKey contextKey = PipelineContextUtils.getContextKey();
-        PersistRepository repository = PipelineContextManager.getContext(contextKey).getContextManager().getPersistServiceFacade().getRepository();
-        repository.persist(PipelineMetaDataNode.getJobRootPath(jobId), "");
+        PipelineContextManager.getContext(contextKey).getPersistServiceFacade().getRepository().persist(PipelineMetaDataNode.getJobRootPath(jobId), "");
         PipelineDistributedBarrier instance = PipelineDistributedBarrier.getInstance(contextKey);
         String barrierEnablePath = PipelineMetaDataNode.getJobBarrierEnablePath(jobId);
         instance.register(barrierEnablePath, 1);

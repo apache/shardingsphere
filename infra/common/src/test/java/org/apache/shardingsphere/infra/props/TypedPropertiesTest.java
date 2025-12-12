@@ -20,8 +20,8 @@ package org.apache.shardingsphere.infra.props;
 import org.apache.shardingsphere.infra.props.exception.TypedPropertiesServerException;
 import org.apache.shardingsphere.infra.props.fixture.TypedPropertiesFixture;
 import org.apache.shardingsphere.infra.props.fixture.TypedPropertyKeyFixture;
-import org.apache.shardingsphere.test.props.PropertiesBuilder;
-import org.apache.shardingsphere.test.props.PropertiesBuilder.Property;
+import org.apache.shardingsphere.infra.util.props.PropertiesBuilder;
+import org.apache.shardingsphere.infra.util.props.PropertiesBuilder.Property;
 import org.junit.jupiter.api.Test;
 
 import java.util.Properties;

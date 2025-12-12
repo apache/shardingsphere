@@ -29,6 +29,7 @@ chapter = true
 ## 编码规范
 
  - 使用 linux 换行符。
+ - 每行代码不超过 200 字符无需换行。
  - 不应有无意义的空行。请提炼私有方法，代替方法体过长或代码段逻辑闭环而采用的空行间隔。
  - 命名规范：
    - 命名要做到顾名思义。
@@ -79,8 +80,8 @@ chapter = true
      - 禁止调用 LinkedList 的 `get(int index)` 方法。
  - 注释 & 日志规范：
    - 日志与注释一律使用英文。
-   - 注释只能包含 javadoc，todo 和 fixme。
-   - 公开的类和方法必须有 javadoc，对用户的 API 和 SPI 的 javadoc 需要写的清晰全面，其他类和方法以及覆盖自父类的方法无需 javadoc。
+   - 注释只能包含 JAVADOC，TODO 和 FIXME。
+   - 公开的类和方法必须有 JAVADOC，对用户的 API 和 SPI 的 JAVADOC 需要写的清晰全面，其他类和方法以及覆盖自父类的方法无需 JAVADOC。
 
 ## 单元测试规范
 
@@ -101,14 +102,18 @@ chapter = true
  - 数据断言规范应遵循：
     - 布尔类型断言应使用 `assertTrue` 和 `assertFalse`；
     - 空值断言应使用 `assertNull` 和 `assertNotNull`；
-    - 其他类型应使用 `assertThat`。
+    - 其他类型断言应使用 `assertThat(actual, is(expected))` 代替 `assertEquals`；
+    - 使用 Hamcrest 匹配器（如 `is()`、`not()`）来进行精确且可读性高的断言。
  - 测试用例的真实值应名为为 actual XXX，期望值应命名为 expected XXX。
- - 测试类和 `@Test` 标注的方法无需 javadoc。
+ - 测试类和 `@Test` 标注的方法无需 JAVADOC。
  - 使用 `mock` 应遵循如下规范：
    - 单元测试需要连接某个环境时，应使用 `mock`；
    - 单元测试包含不容易构建的对象时，例如：超过两层嵌套并且和测试无关的对象，应使用 `mock`。
    - 模拟静态方法或构造器，应优先考虑使用测试框架提供的 `AutoMockExtension` 和 `StaticMockSettings` 自动释放资源；若使用 Mockito `mockStatic` 和 `mockConstruction` 方法，必须搭配 `try-with-resource` 或在清理方法中关闭，避免泄漏。
    - 校验仅有一次调用时，无需使用 `times(1)` 参数，使用 `verify` 的单参数方法即可。
+ - 使用 `assert` 前缀命名所有的测试用例。
+ - 测试数据应使用标准化前缀（如 `foo_`/`bar_`）明确标识其测试用途。
+ - 使用 `PropertiesBuilder` 简化 `Properties` 构造。
 
 ## SQL 解析规范
 
@@ -135,8 +140,6 @@ chapter = true
 
 ### G4 规范
 
- - 公共规范
-   - 每行长度不超过 `200` 个字符，保证每一行语义完整以便于理解。
  - 词法解析规范
    - 每个规则一行，规则间无需空行。
    - 规则名称使用大写字母。如果名称由多个单词组成，用 `下划线` 间隔。`DataType` 和 `Symbol` 的规则命名以 `下划线` 结尾。与 ANTLR 内置变量或关键字重名的规则在结尾加 `下划线` 以示区分。

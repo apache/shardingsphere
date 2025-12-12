@@ -33,7 +33,6 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.Cu
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
-import java.util.List;
 
 /**
  * Cursor statement context.
@@ -53,10 +52,10 @@ public final class CursorStatementContext implements SQLStatementContext, WhereC
     
     private final SelectStatementContext selectStatementContext;
     
-    public CursorStatementContext(final ShardingSphereMetaData metaData, final List<Object> params, final CursorStatement sqlStatement, final String currentDatabaseName) {
+    public CursorStatementContext(final ShardingSphereMetaData metaData, final CursorStatement sqlStatement, final String currentDatabaseName) {
         this.sqlStatement = sqlStatement;
         tablesContext = new TablesContext(getSimpleTableSegments());
-        selectStatementContext = new SelectStatementContext(sqlStatement.getSelect(), params, metaData, currentDatabaseName, Collections.emptyList());
+        selectStatementContext = new SelectStatementContext(sqlStatement.getSelect(), metaData, currentDatabaseName, Collections.emptyList());
         whereSegments.addAll(selectStatementContext.getWhereSegments());
         columnSegments.addAll(selectStatementContext.getColumnSegments());
         joinConditions.addAll(selectStatementContext.getJoinConditions());

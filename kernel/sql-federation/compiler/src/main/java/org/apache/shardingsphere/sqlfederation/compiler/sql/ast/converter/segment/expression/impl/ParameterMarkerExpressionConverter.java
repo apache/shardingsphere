@@ -33,10 +33,10 @@ import java.util.Optional;
 public final class ParameterMarkerExpressionConverter {
     
     /**
-     * Convert parameter marker expression segment to sql node.
+     * Convert parameter marker expression segment to SQL node.
      *
      * @param segment parameter marker expression segment
-     * @return sql node
+     * @return SQL node
      */
     public static Optional<SqlNode> convert(final ParameterMarkerExpressionSegment segment) {
         return Optional.of(new SqlDynamicParam(segment.getParameterMarkerIndex(), SqlParserPos.ZERO));

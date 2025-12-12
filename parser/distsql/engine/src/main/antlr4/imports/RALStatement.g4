@@ -28,7 +28,7 @@ showDistVariable
     ;
 
 showDistVariables
-    : SHOW DIST VARIABLES showLike?
+    : SHOW TEMP? DIST VARIABLES showLike?
     ;
 
 alterComputeNode

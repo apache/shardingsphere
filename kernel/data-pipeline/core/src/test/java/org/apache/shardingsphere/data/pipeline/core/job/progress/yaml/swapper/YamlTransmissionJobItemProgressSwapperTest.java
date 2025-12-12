@@ -19,8 +19,8 @@ package org.apache.shardingsphere.data.pipeline.core.job.progress.yaml.swapper;
 
 import org.apache.shardingsphere.data.pipeline.core.job.progress.TransmissionJobItemProgress;
 import org.apache.shardingsphere.data.pipeline.core.job.progress.yaml.config.YamlTransmissionJobItemProgress;
+import org.apache.shardingsphere.infra.util.file.SystemResourceFileUtils;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
-import org.apache.shardingsphere.test.file.ConfigurationFileUtils;
 import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -33,7 +33,7 @@ class YamlTransmissionJobItemProgressSwapperTest {
     
     @Test
     void assertFullSwapToYamlConfiguration() {
-        TransmissionJobItemProgress progress = SWAPPER.swapToObject(YamlEngine.unmarshal(ConfigurationFileUtils.readFile("job-progress.yaml"), YamlTransmissionJobItemProgress.class));
+        TransmissionJobItemProgress progress = SWAPPER.swapToObject(YamlEngine.unmarshal(SystemResourceFileUtils.readFile("job-progress.yaml"), YamlTransmissionJobItemProgress.class));
         YamlTransmissionJobItemProgress actual = SWAPPER.swapToYamlConfiguration(progress);
         assertThat(actual.getStatus(), is("RUNNING"));
         assertThat(actual.getSourceDatabaseType(), is("H2"));
@@ -48,14 +48,14 @@ class YamlTransmissionJobItemProgressSwapperTest {
     
     @Test
     void assertSwapWithFullConfig() {
-        YamlTransmissionJobItemProgress yamlProgress = YamlEngine.unmarshal(ConfigurationFileUtils.readFile("job-progress.yaml"), YamlTransmissionJobItemProgress.class);
+        YamlTransmissionJobItemProgress yamlProgress = YamlEngine.unmarshal(SystemResourceFileUtils.readFile("job-progress.yaml"), YamlTransmissionJobItemProgress.class);
         YamlTransmissionJobItemProgress actual = SWAPPER.swapToYamlConfiguration(SWAPPER.swapToObject(yamlProgress));
         assertThat(YamlEngine.marshal(actual), is(YamlEngine.marshal(yamlProgress)));
     }
     
     @Test
     void assertSwapWithRunningConfig() {
-        YamlTransmissionJobItemProgress yamlProgress = YamlEngine.unmarshal(ConfigurationFileUtils.readFile("job-progress-running.yaml"), YamlTransmissionJobItemProgress.class);
+        YamlTransmissionJobItemProgress yamlProgress = YamlEngine.unmarshal(SystemResourceFileUtils.readFile("job-progress-running.yaml"), YamlTransmissionJobItemProgress.class);
         TransmissionJobItemProgress progress = SWAPPER.swapToObject(yamlProgress);
         assertNotNull(progress.getInventory());
         assertNotNull(progress.getIncremental());

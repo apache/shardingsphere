@@ -21,7 +21,8 @@ import org.apache.shardingsphere.data.pipeline.core.constant.PipelineSQLOperatio
 import org.apache.shardingsphere.data.pipeline.core.ratelimit.JobRateLimitAlgorithm;
 import org.apache.shardingsphere.infra.algorithm.core.exception.AlgorithmInitializationException;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
-import org.apache.shardingsphere.test.props.PropertiesBuilder;
+import org.apache.shardingsphere.infra.util.props.PropertiesBuilder;
+import org.apache.shardingsphere.infra.util.props.PropertiesBuilder.Property;
 import org.junit.jupiter.api.Test;
 
 import java.util.Properties;
@@ -35,13 +36,13 @@ class QPSJobRateLimitAlgorithmTest {
     
     @Test
     void assertInitFailed() {
-        Properties props = PropertiesBuilder.build(new PropertiesBuilder.Property("tps", "0"));
+        Properties props = PropertiesBuilder.build(new Property("tps", "0"));
         assertThrows(AlgorithmInitializationException.class, () -> TypedSPILoader.getService(JobRateLimitAlgorithm.class, "TPS", props));
     }
     
     @Test
     void assertInitSuccess() {
-        Properties props = PropertiesBuilder.build(new PropertiesBuilder.Property("tps", "1"));
+        Properties props = PropertiesBuilder.build(new Property("tps", "1"));
         assertDoesNotThrow(() -> TypedSPILoader.getService(JobRateLimitAlgorithm.class, "TPS", props));
     }
     

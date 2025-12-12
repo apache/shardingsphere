@@ -19,12 +19,12 @@ package org.apache.shardingsphere.infra.rule.builder.database;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.config.database.DatabaseConfiguration;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.rule.checker.DatabaseRuleConfigurationChecker;
 import org.apache.shardingsphere.infra.config.rule.function.DistributedRuleConfiguration;
 import org.apache.shardingsphere.infra.config.rule.function.EnhancedRuleConfiguration;
-import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstanceContext;
 import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
@@ -53,7 +53,7 @@ public final class DatabaseRulesBuilder {
      * @param protocolType protocol type
      * @param databaseConfig database configuration
      * @param computeNodeInstanceContext compute node instance context
-     * @param resourceMetaData  resource meta data
+     * @param resourceMetaData resource meta data
      * @return built rules
      */
     @SuppressWarnings({"unchecked", "rawtypes"})
@@ -79,7 +79,7 @@ public final class DatabaseRulesBuilder {
      * @param rules rules
      * @param ruleConfig rule configuration
      * @param computeNodeInstanceContext compute node instance context
-     * @param resourceMetaData  resource meta data
+     * @param resourceMetaData resource meta data
      * @return built rule
      */
     @SuppressWarnings({"unchecked", "rawtypes"})
@@ -121,9 +121,9 @@ public final class DatabaseRulesBuilder {
     
     @SuppressWarnings("rawtypes")
     private static Map<RuleConfiguration, DatabaseRuleBuilder> getMissedDefaultRuleBuilderMap(final Collection<DatabaseRuleBuilder> configuredBuilders) {
-        Map<RuleConfiguration, DatabaseRuleBuilder> result = new LinkedHashMap<>();
         Map<DatabaseRuleBuilder, DefaultDatabaseRuleConfigurationBuilder> defaultBuilders =
                 OrderedSPILoader.getServices(DefaultDatabaseRuleConfigurationBuilder.class, getMissedDefaultRuleBuilders(configuredBuilders));
+        Map<RuleConfiguration, DatabaseRuleBuilder> result = new LinkedHashMap<>(defaultBuilders.size(), 1F);
         // TODO consider about order for new put items
         for (Entry<DatabaseRuleBuilder, DefaultDatabaseRuleConfigurationBuilder> entry : defaultBuilders.entrySet()) {
             result.put(entry.getValue().build(), entry.getKey());

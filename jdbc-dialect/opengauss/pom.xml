@@ -29,7 +29,7 @@
     <dependencies>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-parser-sql-opengauss</artifactId>
+            <artifactId>shardingsphere-parser-sql-engine-opengauss</artifactId>
             <version>${project.version}</version>
             <scope>runtime</scope>
         </dependency>
@@ -42,6 +42,12 @@
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
             <artifactId>shardingsphere-infra-route-postgresql</artifactId>
+            <version>${project.version}</version>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.shardingsphere</groupId>
+            <artifactId>shardingsphere-sql-federation-opengauss</artifactId>
             <version>${project.version}</version>
             <scope>runtime</scope>
         </dependency>

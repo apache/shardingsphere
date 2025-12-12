@@ -47,7 +47,9 @@ import java.util.LinkedList;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class SQLFederationPlannerBuilder {
     
-    private static final int DEFAULT_MATCH_LIMIT = 1024;
+    private static final int GLOBAL_MATCH_LIMIT = 1024;
+    
+    private static final int GROUP_MATCH_LIMIT = 500;
     
     /**
      * Build new instance of volcano planner.
@@ -102,15 +104,15 @@ public final class SQLFederationPlannerBuilder {
      */
     public static RelOptPlanner buildHepPlanner() {
         HepProgramBuilder builder = new HepProgramBuilder();
-        builder.addGroupBegin().addRuleCollection(getSubQueryRules()).addGroupEnd().addMatchOrder(HepMatchOrder.BOTTOM_UP);
-        builder.addGroupBegin().addRuleCollection(getJoinRules()).addGroupEnd().addMatchOrder(HepMatchOrder.BOTTOM_UP);
-        builder.addGroupBegin().addRuleCollection(getFilterRules()).addGroupEnd().addMatchOrder(HepMatchOrder.BOTTOM_UP);
-        builder.addGroupBegin().addRuleCollection(getProjectRules()).addGroupEnd().addMatchOrder(HepMatchOrder.BOTTOM_UP);
-        builder.addGroupBegin().addRuleCollection(getAggregationRules()).addGroupEnd().addMatchOrder(HepMatchOrder.BOTTOM_UP);
-        builder.addGroupBegin().addRuleCollection(getSortRules()).addGroupEnd().addMatchOrder(HepMatchOrder.BOTTOM_UP);
-        builder.addGroupBegin().addRuleCollection(getPushIntoScanRules()).addGroupEnd().addMatchOrder(HepMatchOrder.BOTTOM_UP);
-        builder.addGroupBegin().addRuleCollection(getCalcRules()).addGroupEnd().addMatchOrder(HepMatchOrder.BOTTOM_UP);
-        builder.addMatchLimit(DEFAULT_MATCH_LIMIT);
+        builder.addGroupBegin().addRuleCollection(getSubQueryRules()).addGroupEnd().addMatchOrder(HepMatchOrder.BOTTOM_UP).addMatchLimit(GROUP_MATCH_LIMIT);
+        builder.addGroupBegin().addRuleCollection(getJoinRules()).addGroupEnd().addMatchOrder(HepMatchOrder.BOTTOM_UP).addMatchLimit(GROUP_MATCH_LIMIT);
+        builder.addGroupBegin().addRuleCollection(getFilterRules()).addGroupEnd().addMatchOrder(HepMatchOrder.BOTTOM_UP).addMatchLimit(GROUP_MATCH_LIMIT);
+        builder.addGroupBegin().addRuleCollection(getProjectRules()).addGroupEnd().addMatchOrder(HepMatchOrder.BOTTOM_UP).addMatchLimit(GROUP_MATCH_LIMIT);
+        builder.addGroupBegin().addRuleCollection(getAggregationRules()).addGroupEnd().addMatchOrder(HepMatchOrder.BOTTOM_UP).addMatchLimit(GROUP_MATCH_LIMIT);
+        builder.addGroupBegin().addRuleCollection(getSortRules()).addGroupEnd().addMatchOrder(HepMatchOrder.BOTTOM_UP).addMatchLimit(GROUP_MATCH_LIMIT);
+        builder.addGroupBegin().addRuleCollection(getPushIntoScanRules()).addGroupEnd().addMatchOrder(HepMatchOrder.BOTTOM_UP).addMatchLimit(GROUP_MATCH_LIMIT);
+        builder.addGroupBegin().addRuleCollection(getCalcRules()).addGroupEnd().addMatchOrder(HepMatchOrder.BOTTOM_UP).addMatchLimit(GROUP_MATCH_LIMIT);
+        builder.addMatchLimit(GLOBAL_MATCH_LIMIT);
         return new HepPlanner(builder.build());
     }
     
@@ -171,10 +173,10 @@ public final class SQLFederationPlannerBuilder {
         Collection<RelOptRule> result = new LinkedList<>();
         result.add(CoreRules.FILTER_INTO_JOIN);
         result.add(CoreRules.FILTER_AGGREGATE_TRANSPOSE);
-        result.add(CoreRules.FILTER_PROJECT_TRANSPOSE);
         result.add(CoreRules.FILTER_SET_OP_TRANSPOSE);
         result.add(CoreRules.FILTER_REDUCE_EXPRESSIONS);
         result.add(CoreRules.FILTER_MERGE);
+        result.add(CoreRules.FILTER_PROJECT_TRANSPOSE);
         result.add(CoreRules.JOIN_PUSH_TRANSITIVE_PREDICATES);
         return result;
     }

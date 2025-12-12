@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.mode.exception;
 
-import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.XOpenSQLState;
-import org.apache.shardingsphere.infra.exception.core.external.sql.type.kernel.category.MetaDataSQLException;
+import org.apache.shardingsphere.infra.exception.external.sql.sqlstate.XOpenSQLState;
+import org.apache.shardingsphere.infra.exception.external.sql.type.kernel.category.MetaDataSQLException;
 
 import java.sql.SQLException;
 import java.util.Collection;
@@ -27,6 +27,8 @@ import java.util.Collection;
  * Load table meta data failed exception.
  */
 public final class LoadTableMetaDataFailedException extends MetaDataSQLException {
+    
+    private static final long serialVersionUID = -1815882437319677159L;
     
     public LoadTableMetaDataFailedException(final String databaseName, final SQLException cause) {
         super(XOpenSQLState.GENERAL_ERROR, 12, cause, "Load table meta data failed for database '%s'.", databaseName);

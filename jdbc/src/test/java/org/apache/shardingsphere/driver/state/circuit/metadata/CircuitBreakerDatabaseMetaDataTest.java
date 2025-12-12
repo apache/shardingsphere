@@ -57,7 +57,7 @@ class CircuitBreakerDatabaseMetaDataTest {
     
     @Test
     void assertNullsAreSortedHigh() {
-        assertFalse(metaData.isReadOnly());
+        assertFalse(metaData.nullsAreSortedHigh());
     }
     
     @Test
@@ -127,7 +127,7 @@ class CircuitBreakerDatabaseMetaDataTest {
     
     @Test
     void assertStoresLowerCaseIdentifiers() {
-        assertFalse(metaData.storesUpperCaseIdentifiers());
+        assertFalse(metaData.storesLowerCaseIdentifiers());
     }
     
     @Test
@@ -142,12 +142,12 @@ class CircuitBreakerDatabaseMetaDataTest {
     
     @Test
     void assertStoresUpperCaseQuotedIdentifiers() {
-        assertFalse(metaData.supportsMixedCaseQuotedIdentifiers());
+        assertFalse(metaData.storesUpperCaseQuotedIdentifiers());
     }
     
     @Test
     void assertStoresLowerCaseQuotedIdentifiers() {
-        assertFalse(metaData.storesLowerCaseIdentifiers());
+        assertFalse(metaData.storesLowerCaseQuotedIdentifiers());
     }
     
     @Test
@@ -767,7 +767,7 @@ class CircuitBreakerDatabaseMetaDataTest {
     
     @Test
     void assertSupportsBatchUpdates() {
-        assertFalse(metaData.insertsAreDetected(0));
+        assertFalse(metaData.supportsBatchUpdates());
     }
     
     @Test

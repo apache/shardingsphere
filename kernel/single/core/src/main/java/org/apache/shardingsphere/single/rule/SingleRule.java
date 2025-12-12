@@ -19,9 +19,9 @@ package org.apache.shardingsphere.single.rule;
 
 import com.cedarsoftware.util.CaseInsensitiveSet;
 import lombok.Getter;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
-import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.PhysicalDataSourceAggregator;
@@ -35,6 +35,11 @@ import org.apache.shardingsphere.infra.rule.scope.DatabaseRule;
 import org.apache.shardingsphere.single.config.SingleRuleConfiguration;
 import org.apache.shardingsphere.single.constant.SingleOrder;
 import org.apache.shardingsphere.single.datanode.SingleTableDataNodeLoader;
+import org.apache.shardingsphere.single.rule.attribute.SingleDataNodeRuleAttribute;
+import org.apache.shardingsphere.single.rule.attribute.SingleExportableRuleAttribute;
+import org.apache.shardingsphere.single.rule.attribute.SingleMutableDataNodeRuleAttribute;
+import org.apache.shardingsphere.single.rule.attribute.SingleTableMapperRuleAttribute;
+import org.apache.shardingsphere.single.rule.attribute.SingleUnregisterStorageUnitRuleAttribute;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.type.IndexSQLStatementAttribute;
 
@@ -80,7 +85,8 @@ public final class SingleRule implements DatabaseRule {
         SingleTableMapperRuleAttribute tableMapperRuleAttribute = new SingleTableMapperRuleAttribute(singleTableDataNodes.values());
         mutableDataNodeRuleAttribute = new SingleMutableDataNodeRuleAttribute(configuration, dataSourceNames, singleTableDataNodes, protocolType, tableMapperRuleAttribute);
         attributes = new RuleAttributes(new SingleDataNodeRuleAttribute(singleTableDataNodes), tableMapperRuleAttribute,
-                new SingleExportableRuleAttribute(tableMapperRuleAttribute), mutableDataNodeRuleAttribute, new AggregatedDataSourceRuleAttribute(aggregatedDataSources));
+                new SingleExportableRuleAttribute(tableMapperRuleAttribute), mutableDataNodeRuleAttribute, new AggregatedDataSourceRuleAttribute(aggregatedDataSources),
+                new SingleUnregisterStorageUnitRuleAttribute());
     }
     
     /**

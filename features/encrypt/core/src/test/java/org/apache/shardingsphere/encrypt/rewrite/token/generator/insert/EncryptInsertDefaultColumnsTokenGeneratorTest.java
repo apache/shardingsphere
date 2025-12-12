@@ -60,6 +60,6 @@ class EncryptInsertDefaultColumnsTokenGeneratorTest {
     @Test
     void assertGenerateSQLTokensWhenInsertColumnsUseDifferentEncryptorWithSelectProjection() {
         generator.setPreviousSQLTokens(EncryptGeneratorFixtureBuilder.getPreviousSQLTokens());
-        assertThrows(UnsupportedSQLOperationException.class, () -> generator.generateSQLToken(EncryptGeneratorFixtureBuilder.createInsertSelectStatementContext(Collections.emptyList(), false)));
+        assertThrows(UnsupportedSQLOperationException.class, () -> generator.generateSQLToken(EncryptGeneratorFixtureBuilder.createInsertSelectStatementContext(false)));
     }
 }

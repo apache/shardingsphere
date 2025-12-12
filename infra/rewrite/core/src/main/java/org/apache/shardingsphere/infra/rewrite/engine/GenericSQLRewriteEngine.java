@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.infra.rewrite.engine;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnit;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
@@ -30,7 +30,9 @@ import org.apache.shardingsphere.infra.session.query.QueryContext;
 import org.apache.shardingsphere.sqltranslator.context.SQLTranslatorContext;
 import org.apache.shardingsphere.sqltranslator.rule.SQLTranslatorRule;
 
+import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * Generic SQL rewrite engine.
@@ -55,8 +57,12 @@ public final class GenericSQLRewriteEngine {
         DatabaseType protocolType = database.getProtocolType();
         Map<String, StorageUnit> storageUnits = database.getResourceMetaData().getStorageUnits();
         DatabaseType storageType = storageUnits.isEmpty() ? protocolType : storageUnits.values().iterator().next().getStorageType();
-        SQLTranslatorContext sqlTranslatorContext = translatorRule.translate(new DefaultSQLBuilder(sqlRewriteContext.getSql(), sqlRewriteContext.getSqlTokens()).toSQL(),
-                sqlRewriteContext.getParameterBuilder().getParameters(), queryContext, storageType, database, globalRuleMetaData);
-        return new GenericSQLRewriteResult(new SQLRewriteUnit(sqlTranslatorContext.getSql(), sqlTranslatorContext.getParameters()));
+        String sql = sqlRewriteContext.getSql();
+        List<Object> parameters = sqlRewriteContext.getParameterBuilder().getParameters();
+        Optional<SQLTranslatorContext> sqlTranslatorContext = translatorRule.translate(
+                new DefaultSQLBuilder(sql, sqlRewriteContext.getSqlTokens()).toSQL(), parameters, queryContext, storageType, database, globalRuleMetaData);
+        String translatedSQL = sqlTranslatorContext.isPresent() ? sqlTranslatorContext.get().getSql() : sql;
+        List<Object> translatedParameters = sqlTranslatorContext.isPresent() ? sqlTranslatorContext.get().getParameters() : parameters;
+        return new GenericSQLRewriteResult(new SQLRewriteUnit(translatedSQL, translatedParameters));
     }
 }

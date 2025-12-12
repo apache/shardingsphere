@@ -21,13 +21,13 @@ import com.cedarsoftware.util.CaseInsensitiveMap;
 import org.apache.calcite.linq4j.Enumerator;
 import org.apache.calcite.rel.type.RelDataType;
 import org.apache.calcite.schema.Schema;
+import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoader;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.Projection;
-import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPILoader;
-import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
-import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
+import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.driver.jdbc.type.util.ResultSetUtils;
 import org.apache.shardingsphere.infra.executor.sql.process.ProcessEngine;
-import org.apache.shardingsphere.sqlfederation.resultset.converter.SQLFederationColumnTypeConverter;
+import org.apache.shardingsphere.sqlfederation.resultset.converter.DialectSQLFederationColumnTypeConverter;
 
 import java.io.InputStream;
 import java.io.Reader;
@@ -73,7 +73,7 @@ public final class SQLFederationResultSet extends AbstractUnsupportedOperationSQ
     
     private final SQLFederationResultSetMetaData resultSetMetaData;
     
-    private final SQLFederationColumnTypeConverter columnTypeConverter;
+    private final DialectSQLFederationColumnTypeConverter columnTypeConverter;
     
     private final String processId;
     
@@ -87,7 +87,7 @@ public final class SQLFederationResultSet extends AbstractUnsupportedOperationSQ
                                   final RelDataType resultColumnType, final String processId) {
         this.enumerator = enumerator;
         this.processId = processId;
-        columnTypeConverter = DatabaseTypedSPILoader.getService(SQLFederationColumnTypeConverter.class, databaseType);
+        columnTypeConverter = DatabaseTypedSPILoader.findService(DialectSQLFederationColumnTypeConverter.class, databaseType).orElse(null);
         columnLabelAndIndexes = new CaseInsensitiveMap<>(expandProjections.size(), 1F);
         Map<Integer, String> indexAndColumnLabels = new CaseInsensitiveMap<>(expandProjections.size(), 1F);
         handleColumnLabelAndIndex(columnLabelAndIndexes, indexAndColumnLabels, expandProjections);
@@ -494,7 +494,7 @@ public final class SQLFederationResultSet extends AbstractUnsupportedOperationSQ
         ShardingSpherePreconditions.checkNotContains(INVALID_FEDERATION_TYPES, type, () -> new SQLFeatureNotSupportedException(String.format("Get value from `%s`", type.getName())));
         Object result = currentRows[columnIndex - 1];
         wasNull = null == result;
-        return columnTypeConverter.convertColumnValue(result);
+        return null == columnTypeConverter ? result : columnTypeConverter.convertColumnValue(result);
     }
     
     private Object getCalendarValue(final int columnIndex) {

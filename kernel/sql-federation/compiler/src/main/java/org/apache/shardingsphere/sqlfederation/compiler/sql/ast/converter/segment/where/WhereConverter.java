@@ -32,10 +32,10 @@ import java.util.Optional;
 public final class WhereConverter {
     
     /**
-     * Convert where segment to sql node.
+     * Convert where segment to SQL node.
      *
      * @param segment where segment
-     * @return sql node
+     * @return SQL node
      */
     public static Optional<SqlNode> convert(final WhereSegment segment) {
         return null == segment ? Optional.empty() : ExpressionConverter.convert(segment.getExpr());

@@ -20,7 +20,7 @@ package org.apache.shardingsphere.sharding.algorithm.sharding.range;
 import com.google.common.base.Splitter;
 import com.google.common.collect.Range;
 import org.apache.shardingsphere.infra.algorithm.core.exception.AlgorithmInitializationException;
-import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
+import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 
 import java.util.HashMap;
 import java.util.List;

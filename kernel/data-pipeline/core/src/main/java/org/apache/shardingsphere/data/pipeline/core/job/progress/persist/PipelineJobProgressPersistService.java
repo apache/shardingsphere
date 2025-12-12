@@ -25,7 +25,7 @@ import org.apache.shardingsphere.data.pipeline.core.job.PipelineJobRegistry;
 import org.apache.shardingsphere.data.pipeline.core.job.id.PipelineJobIdUtils;
 import org.apache.shardingsphere.data.pipeline.core.job.service.PipelineJobItemManager;
 import org.apache.shardingsphere.data.pipeline.core.job.type.PipelineJobType;
-import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
+import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.executor.kernel.thread.ExecutorThreadFactoryBuilder;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 
@@ -135,7 +135,7 @@ public final class PipelineJobProgressPersistService {
             }
             long startTimeMillis = System.currentTimeMillis();
             new PipelineJobItemManager<>(TypedSPILoader.getService(PipelineJobType.class,
-                    PipelineJobIdUtils.parseJobType(jobId).getType()).getYamlJobItemProgressSwapper()).updateProgress(jobItemContext.get());
+                    PipelineJobIdUtils.parseJobType(jobId).getType()).getOption().getYamlJobItemProgressSwapper()).updateProgress(jobItemContext.get());
             persistContext.getUnhandledEventCount().addAndGet(-currentUnhandledEventCount);
             if (6 == ThreadLocalRandom.current().nextInt(100)) {
                 log.info("persist, jobId={}, shardingItem={}, cost {} ms", jobId, shardingItem, System.currentTimeMillis() - startTimeMillis);

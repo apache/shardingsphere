@@ -27,17 +27,17 @@ import org.apache.shardingsphere.data.pipeline.core.job.JobStatus;
 import org.apache.shardingsphere.data.pipeline.core.job.progress.yaml.config.YamlTransmissionJobItemProgress;
 import org.apache.shardingsphere.data.pipeline.core.job.progress.yaml.swapper.YamlTransmissionJobItemProgressSwapper;
 import org.apache.shardingsphere.data.pipeline.core.task.progress.InventoryTaskProgress;
+import org.apache.shardingsphere.infra.util.file.SystemResourceFileUtils;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
-import org.apache.shardingsphere.test.file.ConfigurationFileUtils;
 import org.junit.jupiter.api.Test;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.isA;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -47,7 +47,7 @@ class TransmissionJobItemProgressTest {
     
     @Test
     void assertInit() {
-        TransmissionJobItemProgress actual = getJobItemProgress(ConfigurationFileUtils.readFile("job-progress.yaml"));
+        TransmissionJobItemProgress actual = getJobItemProgress(SystemResourceFileUtils.readFile("job-progress.yaml"));
         assertThat(actual.getStatus(), is(JobStatus.RUNNING));
         assertThat(actual.getSourceDatabaseType().getType(), is("H2"));
         assertThat(actual.getInventory().getProgresses().size(), is(4));
@@ -56,29 +56,29 @@ class TransmissionJobItemProgressTest {
     
     @Test
     void assertGetIncrementalPosition() {
-        TransmissionJobItemProgress actual = getJobItemProgress(ConfigurationFileUtils.readFile("job-progress.yaml"));
+        TransmissionJobItemProgress actual = getJobItemProgress(SystemResourceFileUtils.readFile("job-progress.yaml"));
         Optional<IngestPosition> position = actual.getIncremental().getIncrementalPosition();
         assertTrue(position.isPresent());
-        assertThat(position.get(), instanceOf(IngestPlaceholderPosition.class));
+        assertThat(position.get(), isA(IngestPlaceholderPosition.class));
     }
     
     @Test
     void assertGetInventoryPosition() {
-        TransmissionJobItemProgress actual = getJobItemProgress(ConfigurationFileUtils.readFile("job-progress.yaml"));
-        assertThat(actual.getInventory().getInventoryPosition("t_1").get("ds0.t_1#1"), instanceOf(IngestFinishedPosition.class));
-        assertThat(actual.getInventory().getInventoryPosition("t_1").get("ds1.t_1#1"), instanceOf(IngestPlaceholderPosition.class));
-        assertThat(actual.getInventory().getInventoryPosition("t_2").get("ds0.t_2#2"), instanceOf(IngestFinishedPosition.class));
-        assertThat(actual.getInventory().getInventoryPosition("t_2").get("ds1.t_2#2"), instanceOf(IntegerPrimaryKeyIngestPosition.class));
+        TransmissionJobItemProgress actual = getJobItemProgress(SystemResourceFileUtils.readFile("job-progress.yaml"));
+        assertThat(actual.getInventory().getInventoryPosition("t_1").get("ds0.t_1#1"), isA(IngestFinishedPosition.class));
+        assertThat(actual.getInventory().getInventoryPosition("t_1").get("ds1.t_1#1"), isA(IngestPlaceholderPosition.class));
+        assertThat(actual.getInventory().getInventoryPosition("t_2").get("ds0.t_2#2"), isA(IngestFinishedPosition.class));
+        assertThat(actual.getInventory().getInventoryPosition("t_2").get("ds1.t_2#2"), isA(IntegerPrimaryKeyIngestPosition.class));
     }
     
     @Test
     void assertGetIncrementalLatestActiveTimeMillis() {
-        assertThat(getJobItemProgress(ConfigurationFileUtils.readFile("job-progress.yaml")).getIncremental().getIncrementalLatestActiveTimeMillis(), is(0L));
+        assertThat(getJobItemProgress(SystemResourceFileUtils.readFile("job-progress.yaml")).getIncremental().getIncrementalLatestActiveTimeMillis(), is(0L));
     }
     
     @Test
     void assertGetIncrementalDataLatestActiveTimeMillis() {
-        assertThat(getJobItemProgress(ConfigurationFileUtils.readFile("job-progress-all-finished.yaml")).getIncremental().getIncrementalLatestActiveTimeMillis(), is(50L));
+        assertThat(getJobItemProgress(SystemResourceFileUtils.readFile("job-progress-all-finished.yaml")).getIncremental().getIncrementalLatestActiveTimeMillis(), is(50L));
     }
     
     @Test
@@ -91,14 +91,14 @@ class TransmissionJobItemProgressTest {
         JobItemInventoryTasksProgress progress = new JobItemInventoryTasksProgress(progresses);
         Map<String, IngestPosition> orderPosition = progress.getInventoryPosition("order");
         assertThat(orderPosition.size(), is(1));
-        assertThat(orderPosition.get("ds.order#0"), instanceOf(IngestFinishedPosition.class));
+        assertThat(orderPosition.get("ds.order#0"), isA(IngestFinishedPosition.class));
         Map<String, IngestPosition> testOrderPosition = progress.getInventoryPosition("test_order");
         assertThat(testOrderPosition.size(), is(1));
-        assertThat(testOrderPosition.get("ds.test_order#0"), instanceOf(StringPrimaryKeyIngestPosition.class));
+        assertThat(testOrderPosition.get("ds.test_order#0"), isA(StringPrimaryKeyIngestPosition.class));
         Map<String, IngestPosition> orderItemPosition = progress.getInventoryPosition("order_item");
         assertThat(orderItemPosition.size(), is(2));
-        assertThat(orderItemPosition.get("ds.order_item#0"), instanceOf(IntegerPrimaryKeyIngestPosition.class));
-        assertThat(orderItemPosition.get("ds.order_item#1"), instanceOf(UnsupportedKeyIngestPosition.class));
+        assertThat(orderItemPosition.get("ds.order_item#0"), isA(IntegerPrimaryKeyIngestPosition.class));
+        assertThat(orderItemPosition.get("ds.order_item#1"), isA(UnsupportedKeyIngestPosition.class));
     }
     
     private TransmissionJobItemProgress getJobItemProgress(final String data) {

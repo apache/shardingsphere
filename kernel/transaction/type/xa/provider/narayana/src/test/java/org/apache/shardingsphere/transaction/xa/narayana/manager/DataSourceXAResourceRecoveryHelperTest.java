@@ -35,7 +35,7 @@ import java.sql.SQLException;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.sameInstance;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -78,8 +78,8 @@ class DataSourceXAResourceRecoveryHelperTest {
         XAResource[] xaResources = recoveryHelper.getXAResources();
         assertThat(xaResources.length, is(1));
         assertThat(xaResources[0], sameInstance(recoveryHelper));
-        verify(xaConnection, times(0)).getXAResource();
-        verify(xaDataSource, times(0)).getXAConnection();
+        verify(xaConnection, never()).getXAResource();
+        verify(xaDataSource, never()).getXAConnection();
     }
     
     @Test
@@ -87,7 +87,7 @@ class DataSourceXAResourceRecoveryHelperTest {
         recoveryHelper.getXAResources();
         recoveryHelper.recover(XAResource.TMSTARTRSCAN);
         verify(xaResource).recover(XAResource.TMSTARTRSCAN);
-        verify(xaConnection, times(0)).close();
+        verify(xaConnection, never()).close();
     }
     
     @Test

@@ -17,13 +17,13 @@
 
 package org.apache.shardingsphere.mask.algorithm.cover;
 
+import org.apache.shardingsphere.infra.util.props.PropertiesBuilder;
+import org.apache.shardingsphere.infra.util.props.PropertiesBuilder.Property;
 import org.apache.shardingsphere.mask.algorithm.parameterized.MaskAlgorithmAssertions;
 import org.apache.shardingsphere.mask.algorithm.parameterized.execute.MaskAlgorithmExecuteArgumentsProvider;
 import org.apache.shardingsphere.mask.algorithm.parameterized.execute.MaskAlgorithmExecuteCaseAssert;
 import org.apache.shardingsphere.mask.algorithm.parameterized.init.MaskAlgorithmInitArgumentsProvider;
 import org.apache.shardingsphere.mask.algorithm.parameterized.init.MaskAlgorithmInitCaseAssert;
-import org.apache.shardingsphere.test.props.PropertiesBuilder;
-import org.apache.shardingsphere.test.props.PropertiesBuilder.Property;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ArgumentsSource;
 
@@ -51,7 +51,7 @@ class MaskFirstNLastMMaskAlgorithmTest {
         MaskAlgorithmAssertions.assertMask(type, props, plainValue, maskedValue);
     }
     
-    private static class AlgorithmInitArgumentsProvider extends MaskAlgorithmInitArgumentsProvider {
+    private static final class AlgorithmInitArgumentsProvider extends MaskAlgorithmInitArgumentsProvider {
         
         AlgorithmInitArgumentsProvider() {
             super("MASK_FIRST_N_LAST_M");
@@ -66,7 +66,7 @@ class MaskFirstNLastMMaskAlgorithmTest {
         }
     }
     
-    private static class AlgorithmMaskExecuteArgumentsProvider extends MaskAlgorithmExecuteArgumentsProvider {
+    private static final class AlgorithmMaskExecuteArgumentsProvider extends MaskAlgorithmExecuteArgumentsProvider {
         
         AlgorithmMaskExecuteArgumentsProvider() {
             super("MASK_FIRST_N_LAST_M", PropertiesBuilder.build(new Property("first-n", "3"), new Property("last-m", "5"), new Property("replace-char", "*")));
@@ -87,7 +87,7 @@ class MaskFirstNLastMMaskAlgorithmTest {
         }
     }
     
-    private static class AlgorithmMaskExecuteWithSameNMArgumentsProvider extends MaskAlgorithmExecuteArgumentsProvider {
+    private static final class AlgorithmMaskExecuteWithSameNMArgumentsProvider extends MaskAlgorithmExecuteArgumentsProvider {
         
         AlgorithmMaskExecuteWithSameNMArgumentsProvider() {
             super("MASK_FIRST_N_LAST_M", PropertiesBuilder.build(new Property("first-n", "5"), new Property("last-m", "5"), new Property("replace-char", "*")));

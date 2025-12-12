@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.infra.instance.metadata.jdbc;
 
 import lombok.Getter;
-import org.apache.shardingsphere.infra.autogen.version.ShardingSphereVersion;
+import org.apache.shardingsphere.infra.version.ShardingSphereVersion;
 import org.apache.shardingsphere.infra.instance.metadata.InstanceMetaData;
 import org.apache.shardingsphere.infra.instance.metadata.InstanceType;
 import org.apache.shardingsphere.infra.instance.util.IpUtils;
@@ -60,10 +60,4 @@ public final class JDBCInstanceMetaData implements InstanceMetaData {
     public String getAttributes() {
         return ip;
     }
-    
-    @Override
-    public String getDatabaseName() {
-        return databaseName;
-    }
-    
 }

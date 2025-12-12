@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.infra.binder.context.statement.type.ddl;
 
-import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.rule.attribute.table.TableMapperRuleAttribute;
@@ -59,7 +59,7 @@ class CreateViewStatementContextTest {
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         when(database.getRuleMetaData().getAttributes(TableMapperRuleAttribute.class)).thenReturn(Collections.emptyList());
         when(metaData.getDatabase("foo_db")).thenReturn(database);
-        CreateViewStatementContext actual = new CreateViewStatementContext(metaData, Collections.emptyList(), createViewStatement, "foo_db");
+        CreateViewStatementContext actual = new CreateViewStatementContext(metaData, createViewStatement, "foo_db");
         assertThat(actual.getSqlStatement(), is(createViewStatement));
     }
 }

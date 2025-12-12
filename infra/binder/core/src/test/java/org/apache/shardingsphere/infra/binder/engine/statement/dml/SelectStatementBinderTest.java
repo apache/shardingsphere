@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.infra.binder.engine.statement.dml;
 
+import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementBinderContext;
-import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereColumn;
@@ -43,10 +43,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.isA;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
@@ -69,45 +69,45 @@ class SelectStatementBinderTest {
         projections.getProjections().add(statusProjection);
         SimpleTableSegment simpleTableSegment = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order")));
         selectStatement.setFrom(simpleTableSegment);
-        selectStatement.setWhere(mockWhereSegment());
-        SelectStatement actual = new SelectStatementBinder().bind(selectStatement, new SQLStatementBinderContext(createMetaData(), "foo_db", new HintValueContext(), selectStatement));
+        selectStatement.setWhere(createWhereSegment());
+        SelectStatement actual = new SelectStatementBinder().bind(selectStatement, new SQLStatementBinderContext(mockMetaData(), "foo_db", new HintValueContext(), selectStatement));
         assertThat(actual, not(selectStatement));
         assertTrue(actual.getFrom().isPresent());
         assertThat(actual.getFrom().get(), not(simpleTableSegment));
-        assertThat(actual.getFrom().get(), instanceOf(SimpleTableSegment.class));
+        assertThat(actual.getFrom().get(), isA(SimpleTableSegment.class));
         assertThat(((SimpleTableSegment) actual.getFrom().get()).getTableName(), not(simpleTableSegment.getTableName()));
         assertThat(actual.getProjections(), not(selectStatement.getProjections()));
         List<ProjectionSegment> actualProjections = new ArrayList<>(actual.getProjections().getProjections());
         assertThat(actualProjections, not(selectStatement.getProjections()));
         assertThat(actualProjections.get(0), not(orderIdProjection));
-        assertThat(actualProjections.get(0), instanceOf(ColumnProjectionSegment.class));
+        assertThat(actualProjections.get(0), isA(ColumnProjectionSegment.class));
         assertThat(((ColumnProjectionSegment) actualProjections.get(0)).getColumn(), not(orderIdProjection.getColumn()));
         assertThat(actualProjections.get(1), not(userIdProjection));
-        assertThat(actualProjections.get(1), instanceOf(ColumnProjectionSegment.class));
+        assertThat(actualProjections.get(1), isA(ColumnProjectionSegment.class));
         assertThat(((ColumnProjectionSegment) actualProjections.get(1)).getColumn(), not(userIdProjection.getColumn()));
         assertThat(actualProjections.get(2), not(statusProjection));
-        assertThat(actualProjections.get(2), instanceOf(ColumnProjectionSegment.class));
+        assertThat(actualProjections.get(2), isA(ColumnProjectionSegment.class));
         assertThat(((ColumnProjectionSegment) actualProjections.get(2)).getColumn(), not(statusProjection.getColumn()));
         assertTrue(actual.getWhere().isPresent());
         assertThat(actual.getWhere().get(), not(selectStatement.getWhere()));
-        assertThat(actual.getWhere().get(), instanceOf(WhereSegment.class));
+        assertThat(actual.getWhere().get(), isA(WhereSegment.class));
         assertTrue(selectStatement.getWhere().isPresent());
         assertThat(actual.getWhere().get().getExpr(), not(selectStatement.getWhere().get().getExpr()));
-        assertThat(actual.getWhere().get().getExpr(), instanceOf(BinaryOperationExpression.class));
-        assertThat(((BinaryOperationExpression) actual.getWhere().get().getExpr()).getLeft(), instanceOf(FunctionSegment.class));
-        assertThat(((FunctionSegment) ((BinaryOperationExpression) actual.getWhere().get().getExpr()).getLeft()).getParameters().iterator().next(), instanceOf(ColumnSegment.class));
+        assertThat(actual.getWhere().get().getExpr(), isA(BinaryOperationExpression.class));
+        assertThat(((BinaryOperationExpression) actual.getWhere().get().getExpr()).getLeft(), isA(FunctionSegment.class));
+        assertThat(((FunctionSegment) ((BinaryOperationExpression) actual.getWhere().get().getExpr()).getLeft()).getParameters().iterator().next(), isA(ColumnSegment.class));
         assertThat(((ColumnSegment) ((FunctionSegment) ((BinaryOperationExpression) actual.getWhere().get().getExpr()).getLeft()).getParameters().iterator().next())
                 .getColumnBoundInfo().getOriginalTable().getValue(), is("t_order"));
     }
     
-    private static WhereSegment mockWhereSegment() {
+    private WhereSegment createWhereSegment() {
         FunctionSegment functionSegment = new FunctionSegment(0, 0, "nvl", "nvl(status, 0)");
         functionSegment.getParameters().add(new ColumnSegment(0, 0, new IdentifierValue("status")));
         functionSegment.getParameters().add(new LiteralExpressionSegment(0, 0, 0));
         return new WhereSegment(0, 0, new BinaryOperationExpression(0, 0, functionSegment, new LiteralExpressionSegment(0, 0, 0), "=", "nvl(status, 0) = 0"));
     }
     
-    private ShardingSphereMetaData createMetaData() {
+    private ShardingSphereMetaData mockMetaData() {
         ShardingSphereSchema schema = mock(ShardingSphereSchema.class, RETURNS_DEEP_STUBS);
         when(schema.getTable("t_order").getAllColumns()).thenReturn(Arrays.asList(
                 new ShardingSphereColumn("order_id", Types.INTEGER, true, false, false, true, false, false),

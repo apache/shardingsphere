@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.infra.binder.context.segment.select.projection.impl;
 
-import org.apache.shardingsphere.infra.database.core.metadata.database.enums.QuoteCharacter;
+import org.apache.shardingsphere.database.connector.core.metadata.database.enums.QuoteCharacter;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.ParameterMarkerType;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 import org.junit.jupiter.api.Test;
@@ -31,7 +31,7 @@ class ParameterMarkerProjectionTest {
     
     @Test
     void assertGetColumnName() {
-        assertThat(new ParameterMarkerProjection(1, ParameterMarkerType.QUESTION, new IdentifierValue("foo")).getColumnName(), is("1"));
+        assertThat(new ParameterMarkerProjection(1, ParameterMarkerType.QUESTION, new IdentifierValue("foo")).getColumnName(), is("foo"));
     }
     
     @Test

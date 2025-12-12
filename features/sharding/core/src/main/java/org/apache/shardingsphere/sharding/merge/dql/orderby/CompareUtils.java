@@ -19,7 +19,7 @@ package org.apache.shardingsphere.sharding.merge.dql.orderby;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.infra.database.core.metadata.database.enums.NullsOrderType;
+import org.apache.shardingsphere.database.connector.core.metadata.database.enums.NullsOrderType;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.OrderDirection;
 
 /**
@@ -35,7 +35,7 @@ public final class CompareUtils {
      * @param otherValue other value
      * @param orderDirection order direction 
      * @param nullsOrderType order type for nulls value
-     * @param caseSensitive case sensitive
+     * @param caseSensitive case-sensitive
      * @return compare result
      */
     @SuppressWarnings({"unchecked", "rawtypes"})

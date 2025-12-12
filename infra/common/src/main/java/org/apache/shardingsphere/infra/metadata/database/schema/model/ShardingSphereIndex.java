@@ -20,7 +20,7 @@ package org.apache.shardingsphere.infra.metadata.database.schema.model;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
-import org.apache.shardingsphere.infra.database.core.metadata.data.model.IndexMetaData;
+import org.apache.shardingsphere.database.connector.core.metadata.data.model.IndexMetaData;
 
 import java.util.Collection;
 
@@ -39,8 +39,6 @@ public final class ShardingSphereIndex {
     private final boolean unique;
     
     public ShardingSphereIndex(final IndexMetaData indexMetaData) {
-        name = indexMetaData.getName();
-        columns = indexMetaData.getColumns();
-        unique = indexMetaData.isUnique();
+        this(indexMetaData.getName(), indexMetaData.getColumns(), indexMetaData.isUnique());
     }
 }

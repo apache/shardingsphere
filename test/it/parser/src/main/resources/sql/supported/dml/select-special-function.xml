@@ -26,7 +26,7 @@
     <sql-case id="select_cast_multiset" value="select CAST(MULTISET(SELECT cust_address FROM customers c WHERE c.customer_id = cd.customer_id) as cust_address_tab_typ) from customer;" db-types="Oracle" />
     <sql-case id="select_convert_function" value="SELECT CONVERT('2020-10-01', DATE)" db-types="MySQL" />
     <sql-case id="select_position" value="SELECT POSITION('bar' IN 'foobarbar')" db-types="MySQL" />
-    <sql-case id="select_substring" value="SELECT SUBSTRING('foobarbar' from 4)" db-types="MySQL" />
+    <sql-case id="select_substring" value="SELECT SUBSTRING('foobarbar' from -4 for 2)" db-types="MySQL" />
     <sql-case id="select_substr" value="SELECT SUBSTR('foobarbar' from 4)" db-types="MySQL" />
     <sql-case id="select_extract" value="SELECT EXTRACT(YEAR FROM '2019-07-02')" db-types="MySQL" />
     <sql-case id="select_extract_from_column" value="SELECT EXTRACT(YEAR FROM o.creation_date) FROM t_order o" db-types="MySQL,Presto" />
@@ -48,7 +48,7 @@
     <sql-case id="select_mod_function" value="SELECT MOD(order_id, 1) from t_order" db-types="PostgreSQL,openGauss" />
     <sql-case id="select_sys_xml_agg" value="SELECT SYS_XMLAGG(SYS_XMLGEN(last_name)) XMLAGG FROM employees WHERE last_name LIKE 'R%' ORDER BY xmlagg;" db-types="Oracle" />
     <sql-case id="select_set_function" value="SELECT customer_id, SET(cust_address_ntab) address FROM customers_demo ORDER BY customer_id;" db-types="Oracle" />
-    <sql-case id="select_pivot" value="SELECT * FROM (SELECT * FROM sales) PIVOT (SUM(amount) FOR (year, month) IN ((2018, 'Jan'), (2018, 'Feb')))" db-types="Oracle"/>
+    <sql-case id="select_pivot" value="SELECT pivotAlias.* FROM (SELECT * FROM sales) PIVOT (SUM(amount) FOR month IN ('Jan', 'Feb')) pivotAlias" db-types="Oracle"/>
     <sql-case id="select_unpivot" value="SELECT * FROM (SELECT * FROM sales) UNPIVOT ((cert_type, cert_number) FOR cert_source IN ((primary_cert_type, primary_cert_no), (alt_cert_type1, alt_cert_no1), (alt_cert_type2, alt_cert_no2)))" db-types="Oracle"/>
     <sql-case id="select_string_split_function" value="SELECT value as tag, COUNT(*) AS [number_of_articles] FROM Product CROSS APPLY STRING_SPLIT(Tags, ',') GROUP BY value HAVING COUNT(*) > 2 ORDER BY COUNT(*) DESC"  db-types="SQLServer"/>
     <sql-case id="select_from_open_json_function" value="SELECT * FROM OPENJSON(@array) WITH (  month VARCHAR(3), temp int, month_id tinyint '$.sql:identity()') as months" db-types="SQLServer"/>

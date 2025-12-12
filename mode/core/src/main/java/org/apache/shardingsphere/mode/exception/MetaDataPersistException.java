@@ -17,13 +17,15 @@
 
 package org.apache.shardingsphere.mode.exception;
 
-import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.SQLState;
-import org.apache.shardingsphere.infra.exception.core.external.sql.type.kernel.category.MetaDataSQLException;
+import org.apache.shardingsphere.infra.exception.external.sql.sqlstate.SQLState;
+import org.apache.shardingsphere.infra.exception.external.sql.type.kernel.category.MetaDataSQLException;
 
 /**
  * Meta data persist exception.
  */
 public abstract class MetaDataPersistException extends MetaDataSQLException {
+    
+    private static final long serialVersionUID = 8997644844343785667L;
     
     protected MetaDataPersistException(final SQLState sqlState, final int errorCode, final Exception cause, final String reason, final Object... messageArgs) {
         super(sqlState, errorCode, cause, reason, messageArgs);

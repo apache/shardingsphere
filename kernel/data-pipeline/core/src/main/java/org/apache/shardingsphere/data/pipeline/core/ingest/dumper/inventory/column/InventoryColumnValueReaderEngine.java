@@ -18,9 +18,10 @@
 package org.apache.shardingsphere.data.pipeline.core.ingest.dumper.inventory.column;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPILoader;
-import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoader;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 
+import java.math.BigDecimal;
 import java.sql.Blob;
 import java.sql.Clob;
 import java.sql.NClob;
@@ -85,7 +86,8 @@ public final class InventoryColumnValueReaderEngine {
                 if (isSigned(metaData, columnIndex)) {
                     return resultSet.getLong(columnIndex);
                 } else {
-                    return resultSet.getBigDecimal(columnIndex);
+                    BigDecimal decimal = resultSet.getBigDecimal(columnIndex);
+                    return null == decimal ? null : decimal.toBigInteger();
                 }
             case Types.NUMERIC:
             case Types.DECIMAL:

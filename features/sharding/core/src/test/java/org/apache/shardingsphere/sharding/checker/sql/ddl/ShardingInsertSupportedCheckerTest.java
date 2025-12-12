@@ -17,9 +17,9 @@
 
 package org.apache.shardingsphere.sharding.checker.sql.ddl;
 
+import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.binder.context.segment.table.TablesContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.dml.InsertStatementContext;
-import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
@@ -72,23 +72,23 @@ class ShardingInsertSupportedCheckerTest {
     
     @Test
     void assertCheckWhenInsertMultiTables() {
-        InsertStatementContext sqlStatementContext = createInsertStatementContext(Collections.singletonList(1), createInsertStatement());
+        InsertStatementContext sqlStatementContext = createInsertStatementContext(createInsertStatement());
         Collection<String> tableNames = sqlStatementContext.getTablesContext().getTableNames();
         when(rule.containsShardingTable(tableNames)).thenReturn(true);
         assertThrows(DMLWithMultipleShardingTablesException.class, () -> new ShardingInsertSupportedChecker().check(rule, database, mock(), sqlStatementContext));
     }
     
-    private InsertStatementContext createInsertStatementContext(final List<Object> params, final InsertStatement insertStatement) {
+    private InsertStatementContext createInsertStatementContext(final InsertStatement insertStatement) {
         when(database.getName()).thenReturn("foo_db");
         ShardingSphereMetaData metaData = new ShardingSphereMetaData(Collections.singleton(database), mock(), mock(), mock());
-        return new InsertStatementContext(insertStatement, params, metaData, "foo_db");
+        return new InsertStatementContext(insertStatement, metaData, "foo_db");
     }
     
     @Test
     void assertCheckWhenInsertSelectWithoutKeyGenerateColumn() {
         when(rule.findGenerateKeyColumnName("user")).thenReturn(Optional.of("id"));
         when(rule.isGenerateKeyColumn("id", "user")).thenReturn(false);
-        InsertStatementContext sqlStatementContext = createInsertStatementContext(Collections.singletonList(1), createInsertSelectStatement());
+        InsertStatementContext sqlStatementContext = createInsertStatementContext(createInsertSelectStatement());
         sqlStatementContext.getTablesContext().getTableNames().addAll(createSingleTablesContext().getTableNames());
         assertThrows(MissingGenerateKeyColumnWithInsertSelectException.class, () -> new ShardingInsertSupportedChecker().check(rule, database, mock(), sqlStatementContext));
     }
@@ -97,7 +97,7 @@ class ShardingInsertSupportedCheckerTest {
     void assertCheckWhenInsertSelectWithKeyGenerateColumn() {
         when(rule.findGenerateKeyColumnName("user")).thenReturn(Optional.of("id"));
         when(rule.isGenerateKeyColumn("id", "user")).thenReturn(true);
-        InsertStatementContext sqlStatementContext = createInsertStatementContext(Collections.singletonList(1), createInsertSelectStatement());
+        InsertStatementContext sqlStatementContext = createInsertStatementContext(createInsertSelectStatement());
         sqlStatementContext.getTablesContext().getTableNames().addAll(createSingleTablesContext().getTableNames());
         assertDoesNotThrow(() -> new ShardingInsertSupportedChecker().check(rule, database, mock(), sqlStatementContext));
     }
@@ -108,7 +108,7 @@ class ShardingInsertSupportedCheckerTest {
         when(rule.isGenerateKeyColumn("id", "user")).thenReturn(true);
         TablesContext multiTablesContext = createMultiTablesContext();
         when(rule.containsShardingTable(multiTablesContext.getTableNames())).thenReturn(true);
-        InsertStatementContext sqlStatementContext = createInsertStatementContext(Collections.singletonList(1), createInsertSelectStatement());
+        InsertStatementContext sqlStatementContext = createInsertStatementContext(createInsertSelectStatement());
         sqlStatementContext.getTablesContext().getTableNames().addAll(multiTablesContext.getTableNames());
         assertThrows(InsertSelectTableViolationException.class, () -> new ShardingInsertSupportedChecker().check(rule, database, mock(), sqlStatementContext));
     }
@@ -118,7 +118,7 @@ class ShardingInsertSupportedCheckerTest {
         when(rule.findGenerateKeyColumnName("user")).thenReturn(Optional.of("id"));
         when(rule.isGenerateKeyColumn("id", "user")).thenReturn(true);
         TablesContext multiTablesContext = createMultiTablesContext();
-        InsertStatementContext sqlStatementContext = createInsertStatementContext(Collections.singletonList(1), createInsertSelectStatement());
+        InsertStatementContext sqlStatementContext = createInsertStatementContext(createInsertSelectStatement());
         sqlStatementContext.getTablesContext().getTableNames().addAll(multiTablesContext.getTableNames());
         assertDoesNotThrow(() -> new ShardingInsertSupportedChecker().check(rule, database, mock(), sqlStatementContext));
     }

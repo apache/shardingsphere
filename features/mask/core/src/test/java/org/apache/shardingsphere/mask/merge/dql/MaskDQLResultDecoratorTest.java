@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.mask.merge.dql;
 
-import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
@@ -38,7 +37,7 @@ class MaskDQLResultDecoratorTest {
         MergedResult mergedResult = mock(MergedResult.class);
         when(mergedResult.next()).thenReturn(true);
         MaskDQLResultDecorator decorator = new MaskDQLResultDecorator(mock(ShardingSphereDatabase.class), mock(ShardingSphereMetaData.class), mock(SelectStatementContext.class));
-        MergedResult actual = decorator.decorate(mergedResult, mock(SQLStatementContext.class), mock(MaskRule.class));
+        MergedResult actual = decorator.decorate(mergedResult, mock(), mock(MaskRule.class));
         assertTrue(actual.next());
     }
 }

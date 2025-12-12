@@ -18,11 +18,11 @@
 package org.apache.shardingsphere.infra.parser.sql;
 
 import lombok.Getter;
-import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.parser.cache.CacheManager;
 import org.apache.shardingsphere.infra.parser.cache.SQLStatementCacheBuilder;
 import org.apache.shardingsphere.infra.parser.cache.SQLStatementCacheLoader;
-import org.apache.shardingsphere.sql.parser.api.CacheOption;
+import org.apache.shardingsphere.sql.parser.engine.api.CacheOption;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
 
 /**

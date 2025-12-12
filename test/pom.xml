@@ -28,9 +28,7 @@
     <name>${project.artifactId}</name>
     
     <modules>
-        <module>fixture</module>
-        <module>util</module>
-        
+        <module>infra</module>
         <module>it</module>
         <module>e2e</module>
         <module>native</module>
@@ -60,4 +58,16 @@
             </dependency>
         </dependencies>
     </dependencyManagement>
+    
+    <build>
+        <outputDirectory>${project.build.directory}/shardingsphere-test-classes</outputDirectory>
+        <testOutputDirectory>${project.build.directory}/shardingsphere-test-test-classes</testOutputDirectory>
+        <plugins>
+            <plugin>
+                <groupId>org.jacoco</groupId>
+                <artifactId>jacoco-maven-plugin</artifactId>
+                <executions combine.self="override" />
+            </plugin>
+        </plugins>
+    </build>
 </project>

@@ -19,13 +19,13 @@ package org.apache.shardingsphere.infra.expr.interval;
 
 import org.apache.shardingsphere.infra.expr.spi.InlineExpressionParser;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
-import org.apache.shardingsphere.test.props.PropertiesBuilder;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
+import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -109,6 +109,8 @@ class IntervalInlineExpressionParserTest {
     }
     
     private InlineExpressionParser getInlineExpressionParser(final String expression) {
-        return TypedSPILoader.getService(InlineExpressionParser.class, "INTERVAL", PropertiesBuilder.build(new PropertiesBuilder.Property(InlineExpressionParser.INLINE_EXPRESSION_KEY, expression)));
+        Properties props = new Properties();
+        props.setProperty(InlineExpressionParser.INLINE_EXPRESSION_KEY, expression);
+        return TypedSPILoader.getService(InlineExpressionParser.class, "INTERVAL", props);
     }
 }

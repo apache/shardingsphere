@@ -38,9 +38,9 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Optional;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.isA;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
@@ -109,6 +109,6 @@ class ShardingTableTokenGeneratorTest {
                 new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("bar_tbl")))));
         Collection<SQLToken> actual = generator.generateSQLTokens(sqlStatementContext);
         assertThat(actual.size(), is(1));
-        assertThat(actual.iterator().next(), instanceOf(ShardingTableToken.class));
+        assertThat(actual.iterator().next(), isA(ShardingTableToken.class));
     }
 }
