@@ -29,7 +29,6 @@ import org.apache.shardingsphere.sqlfederation.compiler.sql.ast.converter.segmen
 
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Optional;
 
 /**
  * Collate expression converter.
@@ -43,10 +42,10 @@ public final class CollateExpressionConverter {
      * @param segment collate expression
      * @return SQL node
      */
-    public static Optional<SqlNode> convert(final CollateExpression segment) {
+    public static SqlBasicCall convert(final CollateExpression segment) {
         List<SqlNode> sqlNodes = new LinkedList<>();
         sqlNodes.add(segment.getExpr().flatMap(ExpressionConverter::convert).orElse(SqlNodeList.EMPTY));
         sqlNodes.add(ExpressionConverter.convert(segment.getCollateName()).orElse(SqlNodeList.EMPTY));
-        return Optional.of(new SqlBasicCall(SQLExtensionOperatorTable.COLLATE, sqlNodes, SqlParserPos.ZERO));
+        return new SqlBasicCall(SQLExtensionOperatorTable.COLLATE, sqlNodes, SqlParserPos.ZERO);
     }
 }

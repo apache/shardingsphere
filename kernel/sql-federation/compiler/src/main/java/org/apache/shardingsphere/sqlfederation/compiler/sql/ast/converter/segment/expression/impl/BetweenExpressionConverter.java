@@ -29,7 +29,6 @@ import org.apache.shardingsphere.sqlfederation.compiler.sql.ast.converter.segmen
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedList;
-import java.util.Optional;
 
 /**
  * Between expression converter.
@@ -43,15 +42,11 @@ public final class BetweenExpressionConverter {
      * @param expression between expression
      * @return SQL node
      */
-    public static Optional<SqlNode> convert(final BetweenExpression expression) {
-        if (null == expression) {
-            return Optional.empty();
-        }
+    public static SqlBasicCall convert(final BetweenExpression expression) {
         Collection<SqlNode> sqlNodes = new LinkedList<>();
         ExpressionConverter.convert(expression.getLeft()).ifPresent(sqlNodes::add);
         ExpressionConverter.convert(expression.getBetweenExpr()).ifPresent(sqlNodes::add);
         ExpressionConverter.convert(expression.getAndExpr()).ifPresent(sqlNodes::add);
-        return Optional.of(expression.isNot() ? new SqlBasicCall(SqlStdOperatorTable.NOT_BETWEEN, new ArrayList<>(sqlNodes), SqlParserPos.ZERO)
-                : new SqlBasicCall(SqlStdOperatorTable.BETWEEN, new ArrayList<>(sqlNodes), SqlParserPos.ZERO));
+        return new SqlBasicCall(expression.isNot() ? SqlStdOperatorTable.NOT_BETWEEN : SqlStdOperatorTable.BETWEEN, new ArrayList<>(sqlNodes), SqlParserPos.ZERO);
     }
 }

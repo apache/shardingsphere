@@ -49,7 +49,6 @@ import java.util.stream.Stream;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -78,8 +77,7 @@ class BinaryOperationExpressionConverterTest {
         SqlNode secondRightNode = mock(SqlNode.class);
         when(ExpressionConverter.convert(left)).thenReturn(Optional.of(leftNode));
         when(ExpressionConverter.convert(right)).thenReturn(Optional.of(new SqlNodeList(Arrays.asList(firstRightNode, secondRightNode), SqlParserPos.ZERO)));
-        SqlBasicCall actual = (SqlBasicCall) BinaryOperationExpressionConverter.convert(expression).orElse(null);
-        assertNotNull(actual);
+        SqlBasicCall actual = BinaryOperationExpressionConverter.convert(expression);
         assertThat(actual.getOperator(), is(SqlStdOperatorTable.PLUS));
         assertThat(actual.getOperandList(), is(Arrays.asList(leftNode, firstRightNode, secondRightNode)));
     }
@@ -92,8 +90,7 @@ class BinaryOperationExpressionConverterTest {
         SqlNode rightNode = mock(SqlNode.class);
         when(ExpressionConverter.convert(left)).thenReturn(Optional.of(leftNode));
         when(ExpressionConverter.convert(right)).thenReturn(Optional.of(rightNode));
-        SqlBasicCall actual = (SqlBasicCall) BinaryOperationExpressionConverter.convert(new BinaryOperationExpression(0, 0, left, right, "AND", "")).orElse(null);
-        assertNotNull(actual);
+        SqlBasicCall actual = BinaryOperationExpressionConverter.convert(new BinaryOperationExpression(0, 0, left, right, "AND", ""));
         assertThat(actual.getOperator(), is(SqlStdOperatorTable.AND));
         assertThat(actual.getOperandList(), is(Arrays.asList(leftNode, rightNode)));
     }
@@ -106,8 +103,7 @@ class BinaryOperationExpressionConverterTest {
         LiteralExpressionSegment right = new LiteralExpressionSegment(0, 0, rightLiteral);
         SqlNode leftNode = leftSupplier.get();
         when(ExpressionConverter.convert(left)).thenReturn(Optional.of(leftNode));
-        SqlBasicCall actual = (SqlBasicCall) BinaryOperationExpressionConverter.convert(new BinaryOperationExpression(0, 0, left, right, "IS", "")).orElse(null);
-        assertNotNull(actual);
+        SqlBasicCall actual = BinaryOperationExpressionConverter.convert(new BinaryOperationExpression(0, 0, left, right, "IS", ""));
         assertThat(actual.getOperator(), is(expectedOperator));
         if (null == expectedBoolean) {
             assertThat(actual.getOperandList(), is(Collections.singletonList(leftNode)));
@@ -126,8 +122,7 @@ class BinaryOperationExpressionConverterTest {
         SqlNode rightNode = mock(SqlNode.class);
         when(ExpressionConverter.convert(left)).thenReturn(Optional.of(leftNode));
         when(ExpressionConverter.convert(right)).thenReturn(Optional.of(rightNode));
-        SqlBasicCall actual = (SqlBasicCall) BinaryOperationExpressionConverter.convert(new BinaryOperationExpression(0, 0, left, right, operator, "")).orElse(null);
-        assertNotNull(actual);
+        SqlBasicCall actual = BinaryOperationExpressionConverter.convert(new BinaryOperationExpression(0, 0, left, right, operator, ""));
         assertThat(actual.getOperator(), is(expectedOperator));
         assertThat(actual.getOperandList(), is(Arrays.asList(leftNode, rightNode)));
     }

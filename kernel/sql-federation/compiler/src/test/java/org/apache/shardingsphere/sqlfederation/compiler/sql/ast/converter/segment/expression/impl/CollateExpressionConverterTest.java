@@ -35,7 +35,6 @@ import java.util.Optional;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.isA;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -53,8 +52,7 @@ class CollateExpressionConverterTest {
         SqlNode collateNode = mock(SqlNode.class);
         when(ExpressionConverter.convert(expr)).thenReturn(Optional.of(exprNode));
         when(ExpressionConverter.convert(collateName)).thenReturn(Optional.of(collateNode));
-        SqlBasicCall actual = (SqlBasicCall) CollateExpressionConverter.convert(collateExpression).orElse(null);
-        assertNotNull(actual);
+        SqlBasicCall actual = CollateExpressionConverter.convert(collateExpression);
         assertThat(actual.getOperator(), is(SQLExtensionOperatorTable.COLLATE));
         assertThat(actual.getOperandList().get(0), is(exprNode));
         assertThat(actual.getOperandList().get(1), is(collateNode));
@@ -65,8 +63,7 @@ class CollateExpressionConverterTest {
         LiteralExpressionSegment collateName = new LiteralExpressionSegment(0, 0, "collation");
         CollateExpression collateExpression = new CollateExpression(0, 0, collateName, null);
         when(ExpressionConverter.convert(collateName)).thenReturn(Optional.empty());
-        SqlBasicCall actual = (SqlBasicCall) CollateExpressionConverter.convert(collateExpression).orElse(null);
-        assertNotNull(actual);
+        SqlBasicCall actual = CollateExpressionConverter.convert(collateExpression);
         assertThat(actual.getOperandList().get(0), isA(SqlNodeList.class));
         assertTrue(((SqlNodeList) actual.getOperandList().get(0)).isEmpty());
         assertThat(actual.getOperandList().get(1), isA(SqlNodeList.class));

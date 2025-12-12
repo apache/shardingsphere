@@ -100,7 +100,7 @@ public final class ExpressionConverter {
             return ListExpressionConverter.convert((ListExpression) segment);
         }
         if (segment instanceof BinaryOperationExpression) {
-            return BinaryOperationExpressionConverter.convert((BinaryOperationExpression) segment);
+            return Optional.of(BinaryOperationExpressionConverter.convert((BinaryOperationExpression) segment));
         }
         if (segment instanceof ColumnSegment) {
             return ColumnConverter.convert((ColumnSegment) segment);
@@ -115,7 +115,7 @@ public final class ExpressionConverter {
             return InExpressionConverter.convert((InExpression) segment);
         }
         if (segment instanceof BetweenExpression) {
-            return BetweenExpressionConverter.convert((BetweenExpression) segment);
+            return Optional.of(BetweenExpressionConverter.convert((BetweenExpression) segment));
         }
         if (segment instanceof ParameterMarkerExpressionSegment) {
             return ParameterMarkerExpressionConverter.convert((ParameterMarkerExpressionSegment) segment);
@@ -130,7 +130,7 @@ public final class ExpressionConverter {
             return DataTypeExpressionConverter.convert((DataTypeSegment) segment);
         }
         if (segment instanceof CaseWhenExpression) {
-            return CaseWhenExpressionConverter.convert((CaseWhenExpression) segment);
+            return Optional.of(CaseWhenExpressionConverter.convert((CaseWhenExpression) segment));
         }
         if (segment instanceof NotExpression) {
             return NotExpressionConverter.convert((NotExpression) segment);
@@ -145,7 +145,7 @@ public final class ExpressionConverter {
             return MatchExpressionConverter.convert((MatchAgainstExpression) segment);
         }
         if (segment instanceof CollateExpression) {
-            return CollateExpressionConverter.convert((CollateExpression) segment);
+            return Optional.of(CollateExpressionConverter.convert((CollateExpression) segment));
         }
         if (segment instanceof RowExpression) {
             return RowExpressionConverter.convert((RowExpression) segment);
