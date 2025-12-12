@@ -22,7 +22,7 @@ import com.arjuna.ats.arjuna.common.arjPropertyManager;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import org.apache.shardingsphere.test.natived.commons.TestShardingService;
-import org.apache.shardingsphere.test.natived.commons.util.ResourceUtil;
+import org.apache.shardingsphere.test.natived.commons.util.ResourceUtils;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 
@@ -37,7 +37,7 @@ class NarayanaTest {
     
     @AfterEach
     void afterEach() throws SQLException {
-        ResourceUtil.closeJdbcDataSource(logicDataSource);
+        ResourceUtils.closeJdbcDataSource(logicDataSource);
     }
     
     @Test

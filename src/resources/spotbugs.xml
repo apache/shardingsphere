@@ -25,7 +25,7 @@
         <Package name="~.*\.autogen(\.|\w)*" />
     </Match>
     <Match>
-        <Class name="org.apache.shardingsphere.test.fixture.jdbc.MockedDataSource" />
+        <Class name="org.apache.shardingsphere.test.infra.fixture.jdbc.MockedDataSource" />
         <Bug code="OBL, ODR" />
     </Match>
     <Match>
@@ -61,11 +61,11 @@
         <Bug code="DP" />
     </Match>
     <Match>
-        <Class name="org.apache.shardingsphere.sql.parser.opengauss.visitor.statement.impl.OpenGaussStatementSQLVisitor" />
+        <Class name="org.apache.shardingsphere.sql.parser.engine.opengauss.visitor.statement.impl.OpenGaussStatementSQLVisitor" />
         <Bug code="BC" />
     </Match>
     <Match>
-        <Class name="org.apache.shardingsphere.sql.parser.postgresql.visitor.statement.impl.PostgreSQLStatementSQLVisitor" />
+        <Class name="org.apache.shardingsphere.sql.parser.engine.postgresql.visitor.statement.impl.PostgreSQLStatementSQLVisitor" />
         <Bug code="BC" />
     </Match>
     <Match>

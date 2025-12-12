@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.transaction.core.fixture;
 
 import lombok.Setter;
-import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.transaction.api.TransactionType;
 import org.apache.shardingsphere.transaction.spi.ShardingSphereDistributedTransactionManager;
 

@@ -63,7 +63,7 @@ class SQLLoggerTest {
     @SuppressWarnings({"unchecked", "rawtypes"})
     @BeforeAll
     static void setupLogger() {
-        ch.qos.logback.classic.Logger log = (ch.qos.logback.classic.Logger) LoggerFactory.getLogger("ShardingSphere-SQL");
+        ch.qos.logback.classic.Logger log = (ch.qos.logback.classic.Logger) LoggerFactory.getLogger("org.apache.shardingsphere.sql");
         ListAppender<LoggingEvent> appender = (ListAppender) log.getAppender("SQLLoggerTestAppender");
         appenderList = appender.list;
     }

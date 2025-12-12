@@ -17,20 +17,20 @@
   -->
 
 <configuration>
-    <statusListener class="ch.qos.logback.core.status.NopStatusListener" />
     <appender name="console" class="ch.qos.logback.core.ConsoleAppender">
         <encoder>
             <pattern>[%-5level] %d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %logger{36} - %msg%n</pattern>
         </encoder>
     </appender>
-    <logger name="org.apache.shardingsphere" level="warn" additivity="false">
+    
+    <logger name="org.apache.shardingsphere" level="info" additivity="false">
         <appender-ref ref="console" />
     </logger>
-    <logger name="org.apache.shardingsphere.proxy.frontend.command.CommandExecutorTask" level="off" />
-    <logger name="org.apache.shardingsphere.proxy.frontend.netty.FrontendChannelInboundHandler" level="off" />
-    <logger name="org.apache.shardingsphere.proxy.frontend.netty.CDCChannelInboundHandler" level="off" />
+    
+    <logger name="com.zaxxer.hikari" level="error" />
+    
     <root>
         <level value="info" />
         <appender-ref ref="console" />
     </root>
-</configuration> 
+</configuration>

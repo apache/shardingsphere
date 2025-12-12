@@ -49,7 +49,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.Optional;
 
-import static org.apache.shardingsphere.test.matcher.ShardingSphereArgumentVerifyMatchers.deepEq;
+import static org.apache.shardingsphere.test.infra.framework.matcher.ShardingSphereArgumentVerifyMatchers.deepEq;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -145,6 +145,7 @@ class EncryptMergedResultTest {
         return result;
     }
     
+    @SuppressWarnings("UseOfObsoleteDateTimeApi")
     @Test
     void assertGetCalendarValue() throws SQLException {
         Calendar calendar = Calendar.getInstance();

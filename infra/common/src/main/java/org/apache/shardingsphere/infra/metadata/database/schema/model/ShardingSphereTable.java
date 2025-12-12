@@ -21,7 +21,7 @@ import com.cedarsoftware.util.CaseInsensitiveMap;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.ToString;
-import org.apache.shardingsphere.infra.database.core.metadata.database.enums.TableType;
+import org.apache.shardingsphere.database.connector.core.metadata.database.enums.TableType;
 import org.apache.shardingsphere.infra.metadata.identifier.ShardingSphereIdentifier;
 
 import java.util.ArrayList;

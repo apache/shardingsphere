@@ -27,7 +27,7 @@ import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.rule.attribute.datasource.DataSourceMapperRuleAttribute;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
-import org.apache.shardingsphere.test.mock.AutoMockExtension;
+import org.apache.shardingsphere.test.infra.framework.extension.mock.AutoMockExtension;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -73,6 +73,7 @@ class RegisterStorageUnitExecutorTest {
         assertThrows(DuplicateStorageUnitException.class, () -> executor.executeUpdate(createRegisterStorageUnitStatementWithDuplicateStorageUnitNames(), mock(ContextManager.class)));
     }
     
+    @SuppressWarnings("resource")
     @Test
     void assertExecuteUpdateWithDuplicateStorageUnitNamesWithResourceMetaData() {
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
@@ -80,6 +81,7 @@ class RegisterStorageUnitExecutorTest {
         assertThrows(DuplicateStorageUnitException.class, () -> executor.executeUpdate(createRegisterStorageUnitStatement(), contextManager));
     }
     
+    @SuppressWarnings("resource")
     @Test
     void assertExecuteUpdateWithDuplicateStorageUnitNamesWithDataSourceContainedRule() {
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);

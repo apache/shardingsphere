@@ -17,10 +17,10 @@
 
 package org.apache.shardingsphere.sharding.merge.ddl;
 
+import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.binder.context.statement.type.ddl.CursorHeldSQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.ddl.CursorStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.dml.SelectStatementContext;
-import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
 import org.apache.shardingsphere.infra.merge.result.impl.stream.IteratorStreamMergedResult;
 import org.apache.shardingsphere.infra.merge.result.impl.transparent.TransparentMergedResult;
@@ -45,8 +45,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.isA;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -61,12 +61,12 @@ class ShardingDDLResultMergerTest {
     void assertMergeWithIteratorStreamMergedResult() throws SQLException {
         CursorHeldSQLStatementContext sqlStatement = mock(CursorHeldSQLStatementContext.class);
         when(sqlStatement.getSqlStatement()).thenReturn(mock(FetchStatement.class));
-        assertThat(merger.merge(Collections.singletonList(createQueryResult()), sqlStatement, mock(), mock()), instanceOf(IteratorStreamMergedResult.class));
+        assertThat(merger.merge(Collections.singletonList(createQueryResult()), sqlStatement, mock(), mock()), isA(IteratorStreamMergedResult.class));
     }
     
     @Test
     void assertMergeWithTransparentMergedResult() throws SQLException {
-        assertThat(merger.merge(createQueryResults(), mock(SelectStatementContext.class), mock(), mock()), instanceOf(TransparentMergedResult.class));
+        assertThat(merger.merge(createQueryResults(), mock(SelectStatementContext.class), mock(), mock()), isA(TransparentMergedResult.class));
     }
     
     @Test
@@ -75,7 +75,7 @@ class ShardingDDLResultMergerTest {
         when(database.getName()).thenReturn("foo_db");
         ConnectionContext connectionContext = mock(ConnectionContext.class);
         when(connectionContext.getCursorContext()).thenReturn(new CursorConnectionContext());
-        assertThat(merger.merge(createQueryResults(), createCursorHeldSQLStatementContext(database), mock(), connectionContext), instanceOf(FetchStreamMergedResult.class));
+        assertThat(merger.merge(createQueryResults(), createCursorHeldSQLStatementContext(database), mock(), connectionContext), isA(FetchStreamMergedResult.class));
     }
     
     private CursorHeldSQLStatementContext createCursorHeldSQLStatementContext(final ShardingSphereDatabase database) {
@@ -89,7 +89,7 @@ class ShardingDDLResultMergerTest {
         SelectStatement selectStatement = createSelectStatement();
         selectStatement.setProjections(new ProjectionsSegment(0, 0));
         SelectStatementContext selectStatementContext = new SelectStatementContext(
-                selectStatement, Collections.emptyList(), new ShardingSphereMetaData(Collections.singleton(database), mock(), mock(), mock()), "foo_db", Collections.emptyList());
+                selectStatement, new ShardingSphereMetaData(Collections.singleton(database), mock(), mock(), mock()), "foo_db", Collections.emptyList());
         when(result.getSelectStatementContext()).thenReturn(selectStatementContext);
         when(result.getSqlStatement().getSelect()).thenReturn(selectStatement);
         return result;

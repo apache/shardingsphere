@@ -19,7 +19,8 @@ package org.apache.shardingsphere.mask.algorithm.cover;
 
 import com.google.common.base.Strings;
 import org.apache.shardingsphere.infra.algorithm.core.exception.AlgorithmInitializationException;
-import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
+import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
+import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.mask.algorithm.MaskAlgorithmPropertiesChecker;
 import org.apache.shardingsphere.mask.spi.MaskAlgorithm;
 
@@ -65,6 +66,7 @@ public final class KeepFromXToYMaskAlgorithm implements MaskAlgorithm<Object, St
         return props.getProperty(REPLACE_CHAR).charAt(0);
     }
     
+    @HighFrequencyInvocation
     @Override
     public String mask(final Object plainValue) {
         String result = null == plainValue ? null : String.valueOf(plainValue);

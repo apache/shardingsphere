@@ -22,12 +22,12 @@ import org.apache.shardingsphere.infra.datanode.DataNodeInfo;
 import org.apache.shardingsphere.infra.exception.generic.UnsupportedSQLOperationException;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.infra.util.datetime.DateTimeFormatterFactory;
+import org.apache.shardingsphere.infra.util.props.PropertiesBuilder;
+import org.apache.shardingsphere.infra.util.props.PropertiesBuilder.Property;
 import org.apache.shardingsphere.sharding.api.sharding.standard.PreciseShardingValue;
 import org.apache.shardingsphere.sharding.api.sharding.standard.RangeShardingValue;
 import org.apache.shardingsphere.sharding.exception.data.InvalidDatetimeFormatException;
 import org.apache.shardingsphere.sharding.spi.ShardingAlgorithm;
-import org.apache.shardingsphere.test.util.PropertiesBuilder;
-import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -232,11 +232,11 @@ class IntervalShardingAlgorithmTest {
                 "SQL Date values do not have a time component.");
         assertThat(createAlgorithm("yyyy-MM-dd", "2021-06-01",
                 "2021-07-31", "yyyyMMdd", stepAmount, null)
-                        .doSharding(availableTargetNames, shardingValueAsSqlDate).size(),
+                .doSharding(availableTargetNames, shardingValueAsSqlDate).size(),
                 is(expectSize));
         final RangeShardingValue<Comparable<?>> shardingValueAsString = createShardingValue(
-                DateTimeFormatterFactory.getStandardFormatter().format(lower),
-                DateTimeFormatterFactory.getStandardFormatter().format(upper));
+                DateTimeFormatterFactory.getDatetimeFormatter().format(lower),
+                DateTimeFormatterFactory.getDatetimeFormatter().format(upper));
         assertThat(algorithm.doSharding(availableTargetNames, shardingValueAsString).size(), is(expectSize));
         assertThat(shardingAlgorithmByDay.doSharding(availableTablesForDayDataSources, shardingValueAsString).size(), is(expectSize));
     }
@@ -252,8 +252,8 @@ class IntervalShardingAlgorithmTest {
         }
         Collection<String> actualAsLocalDate = createAlgorithm("yyyy-MM-dd", "2021-06-01",
                 "2021-07-31", "yyyyMMdd", stepAmount, null)
-                        .doSharding(availableTargetNames,
-                                createShardingValue(LocalDate.of(2021, 6, 15), LocalDate.of(2021, 7, 31)));
+                .doSharding(availableTargetNames,
+                        createShardingValue(LocalDate.of(2021, 6, 15), LocalDate.of(2021, 7, 31)));
         assertThat(actualAsLocalDate.size(), is(24));
     }
     
@@ -283,7 +283,7 @@ class IntervalShardingAlgorithmTest {
         }
         Collection<String> actual = createAlgorithm("yyyy", "2000",
                 "2022", "yyyy", 2, "Years")
-                        .doSharding(availableTargetNames, createShardingValue(Year.of(2001), Year.of(2013)));
+                .doSharding(availableTargetNames, createShardingValue(Year.of(2001), Year.of(2013)));
         assertThat(actual.size(), is(7));
     }
     
@@ -297,8 +297,8 @@ class IntervalShardingAlgorithmTest {
         }
         Collection<String> actualAsYearMonth = createAlgorithm("yyyy-MM", "2016-01",
                 "2021-12", "yyyyMM", 2, "Years")
-                        .doSharding(availableTargetNames,
-                                createShardingValue(YearMonth.of(2016, 1), YearMonth.of(2020, 1)));
+                .doSharding(availableTargetNames,
+                        createShardingValue(YearMonth.of(2016, 1), YearMonth.of(2020, 1)));
         assertThat(actualAsYearMonth.size(), is(3));
     }
     
@@ -329,7 +329,7 @@ class IntervalShardingAlgorithmTest {
                 new Property("sharding-suffix-pattern", shardingSuffixPattern),
                 new Property("datetime-interval-amount", Integer.toString(datetimeIntervalAmount)));
         if (null != datetimeIntervalUnit) {
-            props.put("datetime-interval-unit", datetimeIntervalUnit);
+            props.setProperty("datetime-interval-unit", datetimeIntervalUnit);
         }
         return (IntervalShardingAlgorithm) TypedSPILoader.getService(ShardingAlgorithm.class, "INTERVAL", props);
     }

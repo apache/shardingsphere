@@ -24,7 +24,7 @@ import org.apache.calcite.sql.SqlNode;
 import org.apache.calcite.sql.SqlPostfixOperator;
 import org.apache.calcite.sql.fun.SqlStdOperatorTable;
 import org.apache.calcite.sql.parser.SqlParserPos;
-import org.apache.shardingsphere.infra.database.core.metadata.database.enums.NullsOrderType;
+import org.apache.shardingsphere.database.connector.core.metadata.database.enums.NullsOrderType;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.order.item.ExpressionOrderByItemSegment;
 import org.apache.shardingsphere.sqlfederation.compiler.sql.ast.converter.segment.expression.ExpressionConverter;
 
@@ -38,10 +38,10 @@ import java.util.Optional;
 public final class ExpressionOrderByItemConverter {
     
     /**
-     * Convert expression order by item segment to sql node.
+     * Convert expression order by item segment to SQL node.
      *
      * @param segment expression order by item segment
-     * @return sql node
+     * @return SQL node
      */
     public static Optional<SqlNode> convert(final ExpressionOrderByItemSegment segment) {
         Optional<SqlNode> result = null == segment ? Optional.empty() : ExpressionConverter.convert(segment.getExpr());

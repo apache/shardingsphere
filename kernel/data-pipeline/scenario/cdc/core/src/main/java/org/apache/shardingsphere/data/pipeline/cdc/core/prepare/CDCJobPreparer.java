@@ -52,7 +52,7 @@ import org.apache.shardingsphere.data.pipeline.core.preparer.inventory.splitter.
 import org.apache.shardingsphere.data.pipeline.core.task.PipelineTask;
 import org.apache.shardingsphere.data.pipeline.core.task.PipelineTaskUtils;
 import org.apache.shardingsphere.data.pipeline.core.task.progress.IncrementalTaskProgress;
-import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 
 import java.sql.SQLException;
 import java.util.Collection;
@@ -130,7 +130,7 @@ public final class CDCJobPreparer {
                 channelProgressPairs.add(new CDCChannelProgressPair(channel, jobItemContext));
             }
             InventoryDataRecordPositionCreator positionCreator = each.hasUniqueKey() ? new UniqueKeyInventoryDataRecordPositionCreator() : new PlaceholderInventoryDataRecordPositionCreator();
-            Dumper dumper = new InventoryDumper(each, channel, jobItemContext.getSourceDataSource(), jobItemContext.getSourceMetaDataLoader(), positionCreator);
+            Dumper dumper = new InventoryDumper(each, channel, jobItemContext.getSourceDataSource(), positionCreator);
             Importer importer = importerUsed.get() ? null
                     : new CDCImporter(channelProgressPairs, importerConfig.getBatchSize(), 100L, jobItemContext.getSink(), false, importerConfig.getRateLimitAlgorithm());
             jobItemContext.getInventoryTasks().add(new CDCInventoryTask(PipelineTaskUtils.generateInventoryTaskId(each), processContext.getInventoryDumperExecuteEngine(),

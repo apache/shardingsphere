@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.test.it.optimizer.sqlnode.converter.cases;
 
-import com.google.common.base.Preconditions;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.test.it.optimizer.sqlnode.converter.cases.jaxb.SQLNodeConverterTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.sql.type.SQLCaseType;
@@ -42,7 +41,6 @@ public final class SQLNodeConverterTestCases {
      */
     public SQLNodeConverterTestCase get(final String sqlCaseId, final SQLCaseType sqlCaseType, final String databaseType) {
         String caseKey = sqlCaseId + "_" + sqlCaseType + "_" + databaseType;
-        Preconditions.checkState(cases.containsKey(caseKey), "Can not find SQL node convert case id %s, case type %s for %s.", sqlCaseId, sqlCaseType, databaseType);
         return cases.get(caseKey);
     }
 }

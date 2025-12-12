@@ -3672,4 +3672,74 @@
         <location path="/user/hive/warehouse/test_db.db/target_table" start-index="85" stop-index="135" />
         <tblproperties properties="" start-index="0" stop-index="0" />
     </create-table>
+
+    <create-table sql-case-id="create_iceberg_table">
+        <table name="user_log" temporary="false" external="true" if-not-exists="false" start-index="22" stop-index="29" />
+        <column-definition type="STRING" start-index="32" stop-index="47" >
+            <column name="user_name" />
+        </column-definition>
+        <stored-by handler="ICEBERG" start-index="61" stop-index="68" />
+    </create-table>
+    
+    <create-table sql-case-id="create_iceberg_table_partition">
+        <table name="user_log" temporary="false" external="false" if-not-exists="false" start-index="13" stop-index="20" />
+        <column-definition type="STRING" start-index="23" stop-index="38" >
+            <column name="user_name" />
+        </column-definition>
+        <partition column="year" type="int" start-index="57" stop-index="66"  >
+            <column name="year" />
+        </partition>
+        <stored-by handler="ICEBERG" start-index="81" stop-index="88" />
+    </create-table>
+    
+    <create-table sql-case-id="create_iceberg_table_orc">
+        <table name="user_log" temporary="false" external="false" if-not-exists="false" start-index="13" stop-index="20" />
+        <column-definition type="STRING" start-index="23" stop-index="38" >
+            <column name="user_name" />
+        </column-definition>
+        <storage-handler name="ICEBERG" start-index="54" stop-index="61" />
+        <storage-format type="ORC" start-index="73" stop-index="76" />
+    </create-table>
+
+    <create-table sql-case-id="create_iceberg_table_as_select">
+        <table name="target" start-index="13" stop-index="18" />
+        <storage-handler name="ICEBERG" start-index="36" stop-index="43" />
+        <as-select query="SELECT * FROM source" start-index="48" stop-index="64" />
+    </create-table>
+
+    <create-table sql-case-id="create_iceberg_table_like_table">
+        <table name="target" like="source" start-index="13" stop-index="18"/>
+        <storage-handler name="ICEBERG" start-index="37" stop-index="44" />
+    </create-table>
+
+    <create-table sql-case-id="create_table_with_blob">
+        <table name="t_blob" start-index="13" stop-index="18" />
+        <column-definition type="INT" start-index="21" stop-index="26">
+            <column name="id" />
+        </column-definition>
+        <column-definition type="BLOB" start-index="29" stop-index="40">
+            <column name="payload" />
+        </column-definition>
+    </create-table>
+
+    <create-table sql-case-id="create_table_with_blob_subtype_numeric">
+        <table name="t_blob_subtype_numeric" start-index="13" stop-index="34" />
+        <column-definition type="BLOB SUB_TYPE 1" start-index="37" stop-index="59">
+            <column name="payload" />
+        </column-definition>
+    </create-table>
+
+    <create-table sql-case-id="create_table_with_blob_subtype_text">
+        <table name="t_blob_subtype_text" start-index="13" stop-index="31" />
+        <column-definition type="BLOB SUB_TYPE TEXT CHARACTER SET UTF8" start-index="34" stop-index="78">
+            <column name="payload" />
+        </column-definition>
+    </create-table>
+
+    <create-table sql-case-id="create_table_with_blob_segment_size">
+        <table name="t_blob_segment" start-index="13" stop-index="26" />
+        <column-definition type="BLOB SUB_TYPE 0 SEGMENT SIZE 80" start-index="29" stop-index="67">
+            <column name="payload" />
+        </column-definition>
+    </create-table>
 </sql-parser-test-cases>

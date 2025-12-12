@@ -253,7 +253,6 @@ The text of each license is the standard Apache 2.0 license.
     gson 2.10.1: https://github.com/google/gson, Apache 2.0
     guava 33.4.6-jre: https://github.com/google/guava, Apache 2.0
     HikariCP 4.0.3: https://github.com/brettwooldridge/HikariCP, Apache 2.0
-    j2objc-annotations 1.3 https://github.com/google/j2objc/, Apache 2.0
     jackson-annotations 2.16.1: http://github.com/FasterXML/jackson, Apache 2.0
     jackson-core 2.16.1: http://github.com/FasterXML/jackson, Apache 2.0
     jackson-databind 2.16.1: http://github.com/FasterXML/jackson, Apache 2.0
@@ -301,8 +300,8 @@ The text of each license is the standard Apache 2.0 license.
     transmittable-thread-local 2.14.2: https://github.com/alibaba/transmittable-thread-local, Apache 2.0
     uzaygezen-core 0.2: https://code.google.com/p/uzaygezen, Apache 2.0
     woodstox-core 6.5.1: https://github.com/FasterXML/woodstox, Apache 2.0
-    zookeeper 3.9.3: https://github.com/apache/zookeeper, Apache 2.0
-    zookeeper-jute 3.9.3: https://github.com/apache/zookeeper, Apache 2.0
+    zookeeper 3.9.4: https://github.com/apache/zookeeper, Apache 2.0
+    zookeeper-jute 3.9.4: https://github.com/apache/zookeeper, Apache 2.0
     java-util 2.4.0: https://github.com/jdereg/java-util, Apache 2.0
 
 ========================================================================
@@ -330,7 +329,7 @@ The text of each license is also included at licenses/LICENSE-[project].txt.
     commons-compiler 3.1.11: https://github.com/janino-compiler/janino, BSD-3-Clause
     janino 3.1.11: https://github.com/janino-compiler/janino, BSD-3-Clause
     opengauss-jdbc 3.1.0-og: https://gitee.com/opengauss/openGauss-connector-jdbc, BSD-2-Clause
-    postgresql 42.7.5: https://github.com/pgjdbc/pgjdbc, BSD-2-Clause
+    postgresql 42.7.8: https://github.com/pgjdbc/pgjdbc, BSD-2-Clause
     protobuf-java 3.25.8: https://github.com/protocolbuffers/protobuf/blob/master/java, BSD-3-Clause
     protobuf-java-util 3.25.8: https://github.com/protocolbuffers/protobuf/blob/master/java, BSD-3-Clause
     stax2-api 4.2.1: https://github.com/FasterXML/stax2-api, BSD-2-Clause
@@ -357,10 +356,10 @@ MIT licenses
 The following components are provided under the MIT License. See project link for details.
 The text of each license is also included at licenses/LICENSE-[project].txt.
 
-    bcpkix-jdk18on 1.78.1: https://www.bouncycastle.org, MIT
-    bcprov-jdk18on 1.78.1: https://www.bouncycastle.org, MIT
-    bctls-jdk18on 1.78.1: https://www.bouncycastle.org, MIT
-    bcutil-jdk18on 1.78.1: https://www.bouncycastle.org, MIT
+    bcpkix-jdk18on 1.79: https://www.bouncycastle.org, MIT
+    bcprov-jdk18on 1.79: https://www.bouncycastle.org, MIT
+    bctls-jdk18on 1.79: https://www.bouncycastle.org, MIT
+    bcutil-jdk18on 1.79: https://www.bouncycastle.org, MIT
     checker-qual 3.39.0: https://github.com/typetools/checker-framework/blob/master/checker-qual, MIT
     jul-to-slf4j 1.7.36: https://www.slf4j.org, MIT
     slf4j-api 1.7.36: https://www.slf4j.org, MIT

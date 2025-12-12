@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.sqlfederation.compiler.compiler;
 
 import com.github.benmanes.caffeine.cache.LoadingCache;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.sqlfederation.compiler.SQLFederationExecutionPlan;
 import org.apache.shardingsphere.sqlfederation.compiler.planner.cache.ExecutionPlanCacheBuilder;
@@ -32,8 +33,12 @@ public final class SQLStatementCompilerEngine {
     
     private final LoadingCache<ExecutionPlanCacheKey, SQLFederationExecutionPlan> executionPlanCache;
     
+    @Getter
+    private final SQLFederationCacheOption cacheOption;
+    
     public SQLStatementCompilerEngine(final SQLFederationCacheOption cacheOption) {
         executionPlanCache = ExecutionPlanCacheBuilder.build(cacheOption);
+        this.cacheOption = cacheOption;
     }
     
     /**
@@ -49,5 +54,14 @@ public final class SQLStatementCompilerEngine {
             log.debug("Execution plan cache {} for SQL: {}, useCache: {}.", cacheExists, cacheKey.getSql(), useCache);
         }
         return useCache ? executionPlanCache.get(cacheKey) : cacheKey.getSqlStatementCompiler().compile(cacheKey.getSqlStatement(), cacheKey.getSqlStatement().getDatabaseType().getType());
+    }
+    
+    /**
+     * Update cache option.
+     *
+     * @param cacheOption cache option
+     */
+    public void updateCacheOption(final SQLFederationCacheOption cacheOption) {
+        executionPlanCache.policy().eviction().ifPresent(optional -> optional.setMaximum(cacheOption.getMaximumSize()));
     }
 }

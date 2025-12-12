@@ -116,30 +116,31 @@ public final class StatisticsCollectJobWorker {
     }
     
     /**
+     * Update job configuration.
+     */
+    public void updateJobConfiguration() {
+        if (null == contextManager) {
+            return;
+        }
+        String cron = contextManager.getMetaDataContexts().getMetaData().getTemporaryProps().getValue(TemporaryConfigurationPropertyKey.PROXY_META_DATA_COLLECTOR_CRON);
+        log.info("Changing cron of statistics collect job to `{}`", cron);
+        try {
+            new JobConfigurationAPIImpl(registryCenter).updateJobConfiguration(JobConfigurationPOJO.fromJobConfiguration(createJobConfiguration()));
+            log.info("Changed cron of statistics collect job to `{}`", cron);
+            // CHECKSTYLE:OFF
+        } catch (final Exception ex) {
+            // CHECKSTYLE:ON
+            log.error("Change statistics collect job cron value error", ex);
+        }
+    }
+    
+    /**
      * Destroy job worker.
      */
     public void destroy() {
         if (WORKER_INITIALIZED.compareAndSet(true, false)) {
             Optional.ofNullable(scheduleJobBootstrap).ifPresent(ScheduleJobBootstrap::shutdown);
             scheduleJobBootstrap = null;
-        }
-    }
-    
-    /**
-     * Update job configuration.
-     */
-    public void updateJobConfiguration() {
-        if (null != contextManager && null != registryCenter) {
-            String cron = contextManager.getMetaDataContexts().getMetaData().getTemporaryProps().getValue(TemporaryConfigurationPropertyKey.PROXY_META_DATA_COLLECTOR_CRON);
-            log.info("Changing cron of statistics collect job to `{}`", cron);
-            try {
-                new JobConfigurationAPIImpl(registryCenter).updateJobConfiguration(JobConfigurationPOJO.fromJobConfiguration(createJobConfiguration()));
-                log.info("Changed cron of statistics collect job to `{}`", cron);
-                // CHECKSTYLE:OFF
-            } catch (final Exception ex) {
-                // CHECKSTYLE:ON
-                log.error("Change statistics collect job cron value error", ex);
-            }
         }
     }
 }

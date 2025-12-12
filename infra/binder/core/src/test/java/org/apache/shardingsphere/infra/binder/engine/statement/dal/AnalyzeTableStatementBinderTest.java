@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.infra.binder.engine.statement.dal;
 
+import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementBinderContext;
-import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
@@ -61,15 +61,19 @@ class AnalyzeTableStatementBinderTest {
         when(metaData.getDatabase("foo_db")).thenReturn(database);
         when(database.containsSchema("foo_db")).thenReturn(true);
         when(database.getSchema("foo_db")).thenReturn(schema);
-        HintValueContext hintValueContext = new HintValueContext();
-        hintValueContext.setSkipMetadataValidate(true);
-        SimpleTableSegment tableSegment = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("DUAL")));
-        AnalyzeTableStatement original = new AnalyzeTableStatement(databaseType, Collections.singletonList(tableSegment));
-        SQLStatementBinderContext binderContext = new SQLStatementBinderContext(metaData, "foo_db", hintValueContext, original);
-        AnalyzeTableStatement actual = new AnalyzeTableStatementBinder().bind(original, binderContext);
+        AnalyzeTableStatement actual = getAnalyzeTableStatement();
         Collection<SimpleTableSegment> actualTables = actual.getTables();
         assertThat(actualTables.size(), is(1));
         assertThat(actualTables.iterator().next().getTableName().getIdentifier().getValue(), is("DUAL"));
+    }
+    
+    private AnalyzeTableStatement getAnalyzeTableStatement() {
+        HintValueContext hintValueContext = new HintValueContext();
+        hintValueContext.setSkipMetadataValidate(true);
+        SimpleTableSegment tableSegment = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("DUAL")));
+        AnalyzeTableStatement original = new AnalyzeTableStatement(databaseType, Collections.singleton(tableSegment));
+        SQLStatementBinderContext binderContext = new SQLStatementBinderContext(metaData, "foo_db", hintValueContext, original);
+        return new AnalyzeTableStatementBinder().bind(original, binderContext);
     }
     
     @Test

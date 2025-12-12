@@ -19,11 +19,11 @@ package org.apache.shardingsphere.proxy.backend.connector.jdbc.executor.callback
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.exception.generic.UnsupportedSQLOperationException;
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.JDBCDriverType;
 import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
-import org.apache.shardingsphere.infra.exception.generic.UnsupportedSQLOperationException;
-import org.apache.shardingsphere.proxy.backend.connector.DatabaseConnector;
+import org.apache.shardingsphere.proxy.backend.connector.DatabaseProxyConnector;
 import org.apache.shardingsphere.proxy.backend.connector.jdbc.executor.callback.impl.ProxyPreparedStatementExecutorCallback;
 import org.apache.shardingsphere.proxy.backend.connector.jdbc.executor.callback.impl.ProxyStatementExecutorCallback;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
@@ -41,21 +41,21 @@ public final class ProxyJDBCExecutorCallbackFactory {
      * @param protocolType protocol type
      * @param resourceMetaData resource meta data
      * @param sqlStatement SQL statement
-     * @param databaseConnector database connector
+     * @param databaseProxyConnector database proxy connector
      * @param isReturnGeneratedKeys is return generated keys or not
      * @param isExceptionThrown is exception thrown or not
      * @param isFetchMetaData is fetch meta data or not
      * @return created instance
      * @throws UnsupportedSQLOperationException unsupported SQL operation exception
      */
-    public static ProxyJDBCExecutorCallback newInstance(final String type, final DatabaseType protocolType, final ResourceMetaData resourceMetaData, final SQLStatement sqlStatement,
-                                                        final DatabaseConnector databaseConnector, final boolean isReturnGeneratedKeys, final boolean isExceptionThrown,
+    public static ProxyJDBCExecutorCallback newInstance(final JDBCDriverType type, final DatabaseType protocolType, final ResourceMetaData resourceMetaData, final SQLStatement sqlStatement,
+                                                        final DatabaseProxyConnector databaseProxyConnector, final boolean isReturnGeneratedKeys, final boolean isExceptionThrown,
                                                         final boolean isFetchMetaData) {
-        if (JDBCDriverType.STATEMENT.equals(type)) {
-            return new ProxyStatementExecutorCallback(protocolType, resourceMetaData, sqlStatement, databaseConnector, isReturnGeneratedKeys, isExceptionThrown, isFetchMetaData);
+        if (JDBCDriverType.STATEMENT == type) {
+            return new ProxyStatementExecutorCallback(protocolType, resourceMetaData, sqlStatement, databaseProxyConnector, isReturnGeneratedKeys, isExceptionThrown, isFetchMetaData);
         }
-        if (JDBCDriverType.PREPARED_STATEMENT.equals(type)) {
-            return new ProxyPreparedStatementExecutorCallback(protocolType, resourceMetaData, sqlStatement, databaseConnector, isReturnGeneratedKeys, isExceptionThrown, isFetchMetaData);
+        if (JDBCDriverType.PREPARED_STATEMENT == type) {
+            return new ProxyPreparedStatementExecutorCallback(protocolType, resourceMetaData, sqlStatement, databaseProxyConnector, isReturnGeneratedKeys, isExceptionThrown, isFetchMetaData);
         }
         throw new UnsupportedSQLOperationException(String.format("Unsupported driver type: `%s`", type));
     }

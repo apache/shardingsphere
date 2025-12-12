@@ -44,7 +44,7 @@ public final class ShadowTableRule {
     private final Map<ShadowOperationType, Collection<ShadowAlgorithmNameRule>> columnShadowAlgorithmNames;
     
     public ShadowTableRule(final String tableName, final Collection<String> logicDataSourceNames, final Collection<String> shadowAlgorithmNames, final Map<String, ShadowAlgorithm> shadowAlgorithms) {
-        this.name = tableName;
+        name = tableName;
         this.logicDataSourceNames = logicDataSourceNames;
         hintShadowAlgorithmNames = getHintShadowAlgorithmNames(shadowAlgorithmNames, shadowAlgorithms);
         columnShadowAlgorithmNames = getColumnShadowAlgorithmRules(shadowAlgorithmNames, shadowAlgorithms);

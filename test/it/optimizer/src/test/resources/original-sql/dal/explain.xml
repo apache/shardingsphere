@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Licensed to the Apache Software Foundation (ASF) under one or more
+  ~ contributor license agreements.  See the NOTICE file distributed with
+  ~ this work for additional information regarding copyright ownership.
+  ~ The ASF licenses this file to You under the Apache License, Version 2.0
+  ~ (the "License"); you may not use this file except in compliance with
+  ~ the License.  You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<sql-cases>
+    <sql-case id="explain_extended_select" value="explain extended select 10 % 7, 10 mod 7, 10 div 3" db-types="MySQL" />
+    <sql-case id="explain_partitions_select" value="explain partitions select 1" db-types="MySQL" />
+    <sql-case id="explain_select_constant_without_table" value="EXPLAIN SELECT 1 as a" db-types="PostgreSQL, openGauss, MySQL, SQLServer" />
+    <sql-case id="explain_update_without_condition" value="EXPLAIN UPDATE t_order SET status = 'finished'" db-types="PostgreSQL, openGauss, MySQL, SQLServer" />
+    <sql-case id="explain_insert_without_parameters" value="EXPLAIN INSERT INTO t_order (order_id, user_id, status) VALUES (1, 1, 'insert')" db-types="PostgreSQL, openGauss, MySQL, SQLServer" />
+    <sql-case id="explain_delete_without_sharding_value" value="EXPLAIN DELETE FROM t_order WHERE status='init'" db-types="PostgreSQL, openGauss, MySQL, SQLServer" />
+    <sql-case id="explain_select_with_binding_tables" value="EXPLAIN SELECT i.* FROM t_order o JOIN t_order_item i USING(order_id) WHERE o.order_id = 10" db-types="SQLServer" />
+    <sql-case id="explain_create_table_as_select" value="EXPLAIN CREATE TABLE t_order_new WITH (DISTRIBUTION = HASH(product_key), CLUSTERED COLUMNSTORE INDEX, PARTITION (order_date RANGE RIGHT FOR VALUES (20000101,20010101))) AS SELECT * FROM t_order" db-types="SQLServer" />
+    <sql-case id="explain_create_table_as_select_with_explicit_column_names" value="EXPLAIN CREATE TABLE t_order_new (order_id_new, user_id_new) WITH (DISTRIBUTION = HASH(product_key), CLUSTERED COLUMNSTORE INDEX, PARTITION (order_date RANGE RIGHT FOR VALUES (20000101,20010101))) AS SELECT order_id, user_id FROM t_order" db-types="SQLServer" />
+    <sql-case id="explain_create_remote_table_as_select" value="EXPLAIN CREATE REMOTE TABLE t_order_new AT ('Data Source = ds_0, 3306; User ID = ROOT; Password = 123456;') AS SELECT i.* FROM t_order_item i JOIN t_order o ON i.order_id = o.order_id" db-types="SQLServer" />
+    <sql-case id="explain_with_analyze" value="EXPLAIN ANALYZE SELECT * FROM t_order WHERE order_id > 8" db-types="MySQL" />
+    <sql-case id="explain_with_analyze_format" value="EXPLAIN ANALYZE FORMAT = TREE SELECT * FROM t_order WHERE order_id > 8" db-types="MySQL" />
+    <sql-case id="explain_with_analyze_delete" value="EXPLAIN ANALYZE DELETE FROM t_order" db-types="MySQL" />
+    <sql-case id="explain_with_analyze_delete_condition" value="EXPLAIN ANALYZE DELETE t1 FROM t_order t1, t_order t2 WHERE t1.x = t2.x + 1" db-types="MySQL" />
+    <sql-case id="explain_with_analyze_update" value="EXPLAIN ANALYZE UPDATE t_order SET id = 1" db-types="MySQL" />
+    <sql-case id="explain_with_analyze_insert" value="EXPLAIN ANALYZE INSERT INTO t_order (order_id) VALUES(1)" db-types="MySQL" />
+    <sql-case id="explain_table" value="EXPLAIN TABLE t_order ORDER BY order_id LIMIT 1 OFFSET 2" db-types="MySQL" />
+    <sql-case id="explain_create_materialized_view_with_data" value="EXPLAIN (ANALYZE, COSTS OFF, SUMMARY OFF, TIMING OFF) CREATE MATERIALIZED VIEW matview_schema.mv_withdata2 (a) AS SELECT generate_series(1, 10) WITH DATA;" db-types="PostgreSQL" />
+    <sql-case id="explain_create_materialized_view_with_no_data" value="EXPLAIN (ANALYZE, COSTS OFF, SUMMARY OFF, TIMING OFF) CREATE MATERIALIZED VIEW matview_schema.mv_nodata2 (a) AS SELECT generate_series(1, 10) WITH NO DATA;" db-types="PostgreSQL" />
+    <sql-case id="explain_performance" value="EXPLAIN PERFORMANCE SELECT 1" db-types="openGauss" />
+    <sql-case id="explain_for_select_alias_as_keyword" value="EXPLAIN PLAN FOR SELECT length.item_id password FROM t_order_item length where length.item_id = 1;" db-types="Oracle" />
+    <sql-case id="explain_for_select_with_binding_tables" value="EXPLAIN PLAN FOR SELECT i.* FROM t_order o JOIN t_order_item i USING(order_id) WHERE o.order_id = 10" db-types="Oracle" />
+    <sql-case id="explain_for_select_with_analyze" value="EXPLAIN PLAN FOR SELECT * FROM t_order WHERE order_id > 8" db-types="Oracle" />
+    <sql-case id="explain_for_select_with_statement" value="EXPLAIN PLAN SET STATEMENT_ID = 'select1' FOR SELECT * FROM t_order WHERE order_id > 8" db-types="Oracle" />
+    <sql-case id="explain_for_select_with_into" value="EXPLAIN PLAN INTO t_order FOR SELECT * FROM t_order WHERE order_id > 8" db-types="Oracle" />
+    <sql-case id="explain_for_select_with_into_dblink" value="EXPLAIN PLAN INTO t_order@t_database.test_domain_name FOR SELECT * FROM t_order WHERE order_id > 8" db-types="Oracle" />
+    <sql-case id="explain_for_update_without_condition" value="EXPLAIN PLAN FOR UPDATE t_order SET status = 'finished'" db-types="Oracle" />
+    <sql-case id="explain_for_update" value="EXPLAIN PLAN FOR UPDATE t_order SET id = 1" db-types="Oracle" />
+    <sql-case id="explain_for_update_with_statement" value="EXPLAIN PLAN SET STATEMENT_ID = 'update1' FOR UPDATE t_order SET id = 1" db-types="Oracle" />
+    <sql-case id="explain_for_update_with_into" value="EXPLAIN PLAN INTO t_order FOR UPDATE t_order SET id = 1" db-types="Oracle" />
+    <sql-case id="explain_for_update_with_into_dblink" value="EXPLAIN PLAN INTO t_order@t_database.test_domain_name FOR UPDATE t_order SET id = 1" db-types="Oracle" />
+    <sql-case id="explain_for_insert_without_parameters" value="EXPLAIN PLAN FOR INSERT INTO t_order (order_id, user_id, status) VALUES (1, 1, 'insert')" db-types="Oracle" />
+    <sql-case id="explain_for_with_analyze_insert" value="EXPLAIN PLAN FOR INSERT INTO t_order (order_id) VALUES(1)" db-types="Oracle" />
+    <sql-case id="explain_for_insert_statement" value="EXPLAIN PLAN SET STATEMENT_ID = 'insert1' FOR INSERT INTO t_order (order_id) VALUES(1)" db-types="Oracle" />
+    <sql-case id="explain_for_insert_into" value="EXPLAIN PLAN INTO t_order FOR INSERT INTO t_order (order_id) VALUES(1)" db-types="Oracle" />
+    <sql-case id="explain_for_insert_into_dblink" value="EXPLAIN PLAN INTO t_order@t_database.test_domain_name FOR INSERT INTO t_order (order_id) VALUES(1)" db-types="Oracle" />
+    <sql-case id="explain_for_delete_without_sharding_value" value="EXPLAIN PLAN FOR DELETE FROM t_order WHERE status='init'" db-types="Oracle" />
+    <sql-case id="explain_for_with_analyze_delete" value="EXPLAIN PLAN FOR DELETE FROM t_order" db-types="Oracle" />
+    <sql-case id="explain_for_delete_condition" value="EXPLAIN PLAN FOR DELETE FROM t_order WHERE t_order.x = 1" db-types="Oracle" />
+    <sql-case id="explain_for_delete_statement" value="EXPLAIN PLAN SET STATEMENT_ID = 'insert1' FOR DELETE FROM t_order WHERE t_order.x = 1" db-types="Oracle" />
+    <sql-case id="explain_for_delete_into" value="EXPLAIN PLAN INTO t_order FOR DELETE FROM t_order WHERE t_order.x = 1" db-types="Oracle" />
+    <sql-case id="explain_for_delete_into_dblink" value="EXPLAIN PLAN INTO t_order@t_database.test_domain_name FOR DELETE FROM t_order WHERE t_order.x = 1" db-types="Oracle" />
+    <sql-case id="explain_set_statement_id_with_select" value="EXPLAIN PLAN SET STATEMENT_ID = 'st1' INTO my_plan_table FOR SELECT last_name FROM employees" db-types="Oracle" />
+    <sql-case id="explain_set_statement_id_with_into_select1" value="EXPLAIN PLAN SET STATEMENT_ID = 'Test 2' INTO plan_table FOR (SELECT /*+ LEADING(E@SEL$2 D@SEL$2 T@SEL$1) */ * FROM t, v WHERE t.department_id = v.department_id)" db-types="Oracle" />
+    <sql-case id="explain_set_statement_id_with_into_select2" value="EXPLAIN PLAN SET STATEMENT_ID = 'Test 1' INTO plan_table FOR (SELECT /*+ LEADING(v.e v.d t) */ * FROM t, v WHERE t.department_id = v.department_id)" db-types="Oracle" />
+    <sql-case id="explain_set_statement_id_with_into_update" value="EXPLAIN PLAN SET STATEMENT_ID = 'Raise in Tokyo' INTO plan_table FOR UPDATE employees SET salary = salary * 1.10 WHERE department_id = (SELECT department_id FROM departments WHERE location_id = 1700)" db-types="Oracle" />
+    <sql-case id="explain_for_select_with_unique_partition_by" value="EXPLAIN PLAN FOR SELECT country, prod, year, sales FROM sales_view WHERE country IN ('Italy', 'Japan') MODEL UNIQUE DIMENSION PARTITION BY (country) DIMENSION BY (prod, year)
+    MEASURES (sale sales) RULES UPSERT (sales['Bounce', 2003] = AVG(sales)[ANY, 2002] * 1.24, sales[prod &lt;&gt; 'Bounce', 2003] = sales['Bounce', 2003] * 0.25)" db-types="Oracle" />
+    <sql-case id="explain_with_select_comment" value="/*FORCE_IMCI_NODES*/ explain select /*+ SET_VAR(cost_threshold_for_imci=0) */ * from t_order" db-types="MySQL" />
+    <sql-case id="explain_for_select_with_group_by" value="EXPLAIN PLAN FOR SELECT t.calendar_month_desc, SUM(s.amount_sold) FROM  sales s, times t WHERE s.time_id = t.time_id GROUP BY t.calendar_month_desc" db-types="Oracle" />
+    <sql-case id="explain_for_select_with_function" value="EXPLAIN PLAN FOR SELECT SUM(amount_sold) FROM sales WHERE TO_CHAR(time_id,'yyyy') = '2000'" db-types="Oracle" />
+    <sql-case id="explain_for_select_with_function_and_function" value="EXPLAIN PLAN FOR SELECT SUM(quantity_sold) FROM sales WHERE time_id = TO_TIMESTAMP('1-jan-2000', 'dd-mon-yyyy')" db-types="Oracle" />
+    <sql-case id="explain_for_select" value="EXPLAIN PLAN FOR SELECT * FROM sh.customers WHERE cust_city='Los Angeles' AND cust_state_province='CA'" db-types="Oracle" />
+    <sql-case id="explain_for_select_emp_range" value="EXPLAIN PLAN FOR SELECT * FROM emp_range;" db-types="Oracle"/>
+    <sql-case id="explain_for_select_emp_comp" value="EXPLAIN PLAN FOR SELECT * FROM emp_comp;" db-types="Oracle"/>
+    <sql-case id="explain_for_select_with_comments" value="EXPLAIN PLAN FOR select /*+ result_cache */ deptno, avg(sal) from emp group by deptno;" db-types="Oracle"/>
+    <sql-case id="explain_for_select_job_history" value="EXPLAIN PLAN FOR SELECT * FROM v_emp_job_history;" db-types="Oracle" />
+    <sql-case id="explain_for_select_emp_comp_where" value="EXPLAIN PLAN FOR SELECT * FROM emp_comp WHERE department_id = 20;" db-types="Oracle" />
+    <sql-case id="explain_for_select_emp_range_where" value="EXPLAIN PLAN FOR SELECT * FROM emp_range WHERE hire_date &lt; TO_DATE('1-JAN-1992','DD-MON-YYYY');" db-types="Oracle" />
+    <sql-case id="explain_for_select_where_and_function" value="EXPLAIN PLAN FOR SELECT * FROM emp_range WHERE hire_date >= TO_DATE('1-JAN-1996','DD-MON-YYYY');" db-types="Oracle" />
+    <sql-case id="explain_for_select_xml_query" value="EXPLAIN PLAN FOR SELECT XMLQuery('/PurchaseOrder/LineItems/LineItem' PASSING OBJECT_VALUE RETURNING CONTENT) FROM po_clob WHERE XMLExists('/PurchaseOrder/LineItems/LineItem [ora:contains(Description, &quot;Picnic&quot;) &gt; 0]' PASSING OBJECT_VALUE) AND XMLExists('/PurchaseOrder[User=&quot;SBELL&quot;]' PASSING OBJECT_VALUE);" db-types="Oracle" />
+    <sql-case id="explain_for_select_where_between" value="EXPLAIN PLAN FOR SELECT SUM(amount_sold) total_revenue FROM sales WHERE time_id BETWEEN '01-JAN-00' AND '31-DEC-00';" db-types="Oracle"/>
+    <sql-case id="explain_for_select_where_between_groupby_having" value="EXPLAIN PLAN FOR SELECT c.cust_last_name, COUNT(*) FROM sales s, customers c WHERE s.cust_id = c.cust_id AND s.time_id BETWEEN TO_DATE('01-JUL-1999', 'DD-MON-YYYY') AND TO_DATE('01-OCT-1999', 'DD-MON-YYYY') GROUP BY c.cust_last_name HAVING COUNT(*) > 100;" db-types="Oracle"/>
+    <sql-case id="explain_for_select_where_todate_function" value="explain plan for select * from sales where time_id = to_date('01-jan-2001', 'dd-mon-yyyy');" db-types="Oracle"/>
+    <sql-case id="explain_for_select_group_by_multi_columns" value="explain plan for select p.prod_name, t.time_id, sum(s.amount_sold) from sales s, times t, products p where s.time_id = t.time_id and s.prod_id = p.prod_id and t.fiscal_year = 2000 and t.fiscal_week_number = 3 and p.prod_category = 'Hardware' group by t.time_id, p.prod_name;" db-types="Oracle"/>
+    <sql-case id="explain_for_select_in_sub_query" value="explain plan for select sum(amount_sold) from sales where time_id in (select time_id from times where fiscal_year = 2000);" db-types="Oracle"/>
+    <sql-case id="explain_for_select_between_to_date_function" value="explain plan for select sum(amount_sold) from sales where time_id between to_date('01-JAN-2000','dd-MON-yyyy') and to_date('31-DEC-2000','dd-MON-yyyy') ;" db-types="Oracle"/>
+</sql-cases>

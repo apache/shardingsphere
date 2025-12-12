@@ -28,8 +28,8 @@ import org.junit.jupiter.api.Test;
 import java.util.Collections;
 import java.util.Optional;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.isA;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
@@ -49,7 +49,7 @@ class GeneratedKeyAssignmentTokenGeneratorTest {
         InsertStatementContext insertStatementContext = mockInsertStatementContext();
         GeneratedKeyAssignmentTokenGenerator generator = new GeneratedKeyAssignmentTokenGenerator();
         generator.setParameters(Collections.emptyList());
-        assertThat(generator.generateSQLToken(insertStatementContext), instanceOf(LiteralGeneratedKeyAssignmentToken.class));
+        assertThat(generator.generateSQLToken(insertStatementContext), isA(LiteralGeneratedKeyAssignmentToken.class));
     }
     
     @Test
@@ -57,7 +57,7 @@ class GeneratedKeyAssignmentTokenGeneratorTest {
         InsertStatementContext insertStatementContext = mockInsertStatementContext();
         GeneratedKeyAssignmentTokenGenerator generator = new GeneratedKeyAssignmentTokenGenerator();
         generator.setParameters(Collections.singletonList("testObject"));
-        assertThat(generator.generateSQLToken(insertStatementContext), instanceOf(ParameterMarkerGeneratedKeyAssignmentToken.class));
+        assertThat(generator.generateSQLToken(insertStatementContext), isA(ParameterMarkerGeneratedKeyAssignmentToken.class));
     }
     
     private InsertStatementContext mockInsertStatementContext() {

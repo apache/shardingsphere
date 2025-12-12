@@ -37,7 +37,7 @@ import java.util.Properties;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -57,13 +57,13 @@ class DatabaseListenerChangedHandlerTest {
         when(contextManager.getPersistServiceFacade().getRepository()).thenReturn(repository);
         when(contextManager.getMetaDataContexts().getMetaData().getTemporaryProps()).thenReturn(new TemporaryConfigurationProperties(new Properties()));
         handler = ShardingSphereServiceLoader.getServiceInstances(GlobalDataChangedEventHandler.class).stream()
-                .filter(each -> NodePathGenerator.toPath(each.getSubscribedNodePath()).equals("/states/database_listener_coordinator")).findFirst().orElse(null);
+                .filter(each -> "/states/database_listener_coordinator".equals(NodePathGenerator.toPath(each.getSubscribedNodePath()))).findFirst().orElse(null);
     }
     
     @Test
     void assertHandleWithoutDatabase() {
         handler.handle(contextManager, new DataChangedEvent("/states/database_listener_coordinator", "", Type.ADDED));
-        verify(contextManager.getPersistServiceFacade(), times(0)).getRepository();
+        verify(contextManager.getPersistServiceFacade(), never()).getRepository();
     }
     
     @Test

@@ -10,7 +10,7 @@ ShardingSphere 对 Presto JDBC Driver 的支持位于可选模块中。
 
 ## 前提条件
 
-要在 ShardingSphere 的配置文件为数据节点使用类似 `jdbc:presto://localhost:8080/iceberg/demo_ds_0` 的 `jdbcUrl`，
+要在 ShardingSphere 的配置文件为数据节点使用类似 `jdbc:presto://localhost:8080/iceberg/demo_ds_0` 的 `standardJdbcUrl`，
 可能的 Maven 依赖关系如下，
 
 ```xml
@@ -70,7 +70,7 @@ sudo snap install dbeaver-ce
 snap run dbeaver-ce
 ```
 
-在 DBeaver Community 内，使用 `jdbc:presto://localhost:8080/iceberg` 的 `jdbcUrl`，`test` 的`username` 连接至 Presto，
+在 DBeaver Community 内，使用 `jdbc:presto://localhost:8080/iceberg` 的 `standardJdbcUrl`，`test` 的`username` 连接至 Presto，
 `password` 留空。
 执行如下 SQL，
 
@@ -82,7 +82,7 @@ CREATE SCHEMA iceberg.demo_ds_2;
 ```
 
 分别使用 `jdbc:presto://localhost:8080/iceberg/demo_ds_0` ，
-`jdbc:presto://localhost:8080/iceberg/demo_ds_1` 和 `jdbc:presto://localhost:8080/iceberg/demo_ds_2` 的 `jdbcUrl` 连接至 Presto 来执行如下 SQL，
+`jdbc:presto://localhost:8080/iceberg/demo_ds_1` 和 `jdbc:presto://localhost:8080/iceberg/demo_ds_2` 的 `standardJdbcUrl` 连接至 Presto 来执行如下 SQL，
 
 ```sql
 -- noinspection SqlNoDataSourceInspectionForFile
@@ -105,17 +105,17 @@ dataSources:
   ds_0:
     dataSourceClassName: com.zaxxer.hikari.HikariDataSource
     driverClassName: com.facebook.presto.jdbc.PrestoDriver
-    jdbcUrl: jdbc:presto://localhost:8080/iceberg/demo_ds_0
+    standardJdbcUrl: jdbc:presto://localhost:8080/iceberg/demo_ds_0
     username: test
   ds_1:
     dataSourceClassName: com.zaxxer.hikari.HikariDataSource
     driverClassName: com.facebook.presto.jdbc.PrestoDriver
-    jdbcUrl: jdbc:presto://localhost:8080/iceberg/demo_ds_1
+    standardJdbcUrl: jdbc:presto://localhost:8080/iceberg/demo_ds_1
     username: test
   ds_2:
     dataSourceClassName: com.zaxxer.hikari.HikariDataSource
     driverClassName: com.facebook.presto.jdbc.PrestoDriver
-    jdbcUrl: jdbc:presto://localhost:8080/iceberg/demo_ds_2
+    standardJdbcUrl: jdbc:presto://localhost:8080/iceberg/demo_ds_2
     username: test
 rules:
   - !SHARDING

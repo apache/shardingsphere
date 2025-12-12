@@ -17,12 +17,15 @@
 
 package org.apache.shardingsphere.test.it.optimizer.sqlnode.converter.cases.jaxb;
 
+import com.google.common.base.Splitter;
 import lombok.Getter;
 import lombok.Setter;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * SQL node converter test case.
@@ -43,4 +46,16 @@ public final class SQLNodeConverterTestCase {
     
     @XmlAttribute(name = "sql-case-types")
     private String sqlCaseTypes;
+    
+    @XmlAttribute
+    private String parameters;
+    
+    /**
+     * Get parameters.
+     *
+     * @return parameters
+     */
+    public List<String> getParameters() {
+        return null == parameters ? Collections.emptyList() : Splitter.on(",").trimResults().splitToList(parameters);
+    }
 }

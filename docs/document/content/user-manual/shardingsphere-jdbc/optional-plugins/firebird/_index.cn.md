@@ -10,7 +10,7 @@ ShardingSphere 对 Firebird JDBC Driver 的支持位于可选模块中。
 
 ## 前提条件
 
-要在 ShardingSphere 的配置文件为数据节点使用类似 `jdbc:firebird://localhost:3050//var/lib/firebird/data/demo_ds_0.fdb` 的 `jdbcUrl`，
+要在 ShardingSphere 的配置文件为数据节点使用类似 `jdbc:firebird://localhost:3050//var/lib/firebird/data/demo_ds_0.fdb` 的 `standardJdbcUrl`，
 可能的 Maven 依赖关系如下，
 
 ```xml
@@ -91,19 +91,19 @@ dataSources:
   ds_0:
     dataSourceClassName: com.zaxxer.hikari.HikariDataSource
     driverClassName: org.firebirdsql.jdbc.FBDriver
-    jdbcUrl: jdbc:firebird://localhost:3050//var/lib/firebird/data/demo_ds_0.fdb
+    standardJdbcUrl: jdbc:firebird://localhost:3050//var/lib/firebird/data/demo_ds_0.fdb
     username: alice
     password: masterkey
   ds_1:
     dataSourceClassName: com.zaxxer.hikari.HikariDataSource
     driverClassName: org.firebirdsql.jdbc.FBDriver
-    jdbcUrl: jdbc:firebird://localhost:3050//var/lib/firebird/data/demo_ds_1.fdb
+    standardJdbcUrl: jdbc:firebird://localhost:3050//var/lib/firebird/data/demo_ds_1.fdb
     username: alice
     password: masterkey
   ds_2:
     dataSourceClassName: com.zaxxer.hikari.HikariDataSource
     driverClassName: org.firebirdsql.jdbc.FBDriver
-    jdbcUrl: jdbc:firebird://localhost:3050//var/lib/firebird/data/demo_ds_2.fdb
+    standardJdbcUrl: jdbc:firebird://localhost:3050//var/lib/firebird/data/demo_ds_2.fdb
     username: alice
     password: masterkey
 rules:

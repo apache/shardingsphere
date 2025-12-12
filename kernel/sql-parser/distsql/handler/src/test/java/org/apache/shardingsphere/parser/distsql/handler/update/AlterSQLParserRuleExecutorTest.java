@@ -20,53 +20,26 @@ package org.apache.shardingsphere.parser.distsql.handler.update;
 import org.apache.shardingsphere.distsql.statement.DistSQLStatement;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.rule.scope.GlobalRuleConfiguration;
-import org.apache.shardingsphere.parser.config.SQLParserRuleConfiguration;
-import org.apache.shardingsphere.parser.distsql.segment.CacheOptionSegment;
-import org.apache.shardingsphere.parser.distsql.statement.updatable.AlterSQLParserRuleStatement;
 import org.apache.shardingsphere.parser.rule.SQLParserRule;
-import org.apache.shardingsphere.parser.rule.builder.DefaultSQLParserRuleConfigurationBuilder;
-import org.apache.shardingsphere.sql.parser.api.CacheOption;
-import org.apache.shardingsphere.test.it.distsql.handler.engine.update.GlobalRuleDefinitionExecutorTest;
-import org.junit.jupiter.api.extension.ExtensionContext;
+import org.apache.shardingsphere.test.it.distsql.handler.engine.update.DistSQLGlobalRuleDefinitionExecutorAssert;
+import org.apache.shardingsphere.test.it.distsql.handler.engine.update.DistSQLRuleDefinitionExecutorSettings;
+import org.apache.shardingsphere.test.it.distsql.handler.engine.update.DistSQLRuleDefinitionExecutorTestCaseArgumentsProvider;
 import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.Arguments;
-import org.junit.jupiter.params.provider.ArgumentsProvider;
 import org.junit.jupiter.params.provider.ArgumentsSource;
-import org.junit.jupiter.params.support.ParameterDeclarations;
 
 import java.sql.SQLException;
-import java.util.stream.Stream;
 
 import static org.mockito.Mockito.mock;
 
-class AlterSQLParserRuleExecutorTest extends GlobalRuleDefinitionExecutorTest {
+@DistSQLRuleDefinitionExecutorSettings("cases/alter-sql-parser-rule.xml")
+class AlterSQLParserRuleExecutorTest {
     
-    AlterSQLParserRuleExecutorTest() {
-        super(mock(SQLParserRule.class));
-    }
+    private final DistSQLGlobalRuleDefinitionExecutorAssert executorAssert = new DistSQLGlobalRuleDefinitionExecutorAssert(mock(SQLParserRule.class));
     
     @ParameterizedTest(name = "{0}")
-    @ArgumentsSource(TestCaseArgumentsProvider.class)
-    void assertExecuteUpdate(final String name, final GlobalRuleConfiguration ruleConfig, final DistSQLStatement sqlStatement, final RuleConfiguration matchedRuleConfig) throws SQLException {
-        assertExecuteUpdate(ruleConfig, sqlStatement, matchedRuleConfig, null);
-    }
-    
-    private static class TestCaseArgumentsProvider implements ArgumentsProvider {
-        
-        @Override
-        public Stream<? extends Arguments> provideArguments(final ParameterDeclarations parameters, final ExtensionContext context) {
-            return Stream.of(Arguments.arguments("normal",
-                    new DefaultSQLParserRuleConfigurationBuilder().build(),
-                    new AlterSQLParserRuleStatement(new CacheOptionSegment(64, 512L), new CacheOptionSegment(1000, 1000L)),
-                    new SQLParserRuleConfiguration(new CacheOption(64, 512L), new CacheOption(1000, 1000L))),
-                    Arguments.arguments("withNullStatement",
-                            new DefaultSQLParserRuleConfigurationBuilder().build(),
-                            new AlterSQLParserRuleStatement(null, null),
-                            new SQLParserRuleConfiguration(new CacheOption(128, 1024L), new CacheOption(2000, 65535L))),
-                    Arguments.arguments("wthNullCacheOptionSegment",
-                            new DefaultSQLParserRuleConfigurationBuilder().build(),
-                            new AlterSQLParserRuleStatement(new CacheOptionSegment(null, null), new CacheOptionSegment(null, null)),
-                            new SQLParserRuleConfiguration(new CacheOption(128, 1024L), new CacheOption(2000, 65535L))));
-        }
+    @ArgumentsSource(DistSQLRuleDefinitionExecutorTestCaseArgumentsProvider.class)
+    void assertExecuteUpdate(final String name, final GlobalRuleConfiguration ruleConfig, final DistSQLStatement sqlStatement,
+                             final RuleConfiguration matchedRuleConfig, final Class<? extends Exception> expectedException) throws SQLException {
+        executorAssert.assertExecuteUpdate(ruleConfig, sqlStatement, matchedRuleConfig, expectedException);
     }
 }

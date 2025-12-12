@@ -22,7 +22,7 @@ import org.apache.shardingsphere.distsql.handler.engine.update.DistSQLUpdateExec
 import org.apache.shardingsphere.distsql.statement.type.ral.updatable.SetDistVariableStatement;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.config.props.temporary.TemporaryConfigurationPropertyKey;
-import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
+import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.exception.kernel.syntax.InvalidVariableValueException;
 import org.apache.shardingsphere.infra.exception.kernel.syntax.UnsupportedVariableException;
 import org.apache.shardingsphere.infra.props.TypedPropertyKey;
@@ -33,7 +33,6 @@ import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.quartz.CronExpression;
 
-import java.sql.SQLException;
 import java.util.Properties;
 
 /**
@@ -42,7 +41,7 @@ import java.util.Properties;
 public final class SetDistVariableExecutor implements DistSQLUpdateExecutor<SetDistVariableStatement> {
     
     @Override
-    public void executeUpdate(final SetDistVariableStatement sqlStatement, final ContextManager contextManager) throws SQLException {
+    public void executeUpdate(final SetDistVariableStatement sqlStatement, final ContextManager contextManager) {
         ShardingSpherePreconditions.checkState(getEnumType(sqlStatement.getName()) instanceof TypedPropertyKey, () -> new UnsupportedVariableException(sqlStatement.getName()));
         handleConfigurationProperty(contextManager, (TypedPropertyKey) getEnumType(sqlStatement.getName()), sqlStatement.getValue());
     }

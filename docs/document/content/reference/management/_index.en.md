@@ -135,7 +135,7 @@ ds_0:
   minimumIdle: 1
   password: root
   idleTimeout: 60000
-  jdbcUrl: jdbc:mysql://127.0.0.1:3306/ds_0?serverTimezone=UTC&useSSL=false
+  standardJdbcUrl: jdbc:mysql://127.0.0.1:3306/ds_0?serverTimezone=UTC&useSSL=false
   dataSourceClassName: com.zaxxer.hikari.HikariDataSource
   maximumPoolSize: 50
   connectionTimeout: 30000
@@ -156,7 +156,7 @@ ds_0:
   minimumIdle: 1
   password: root
   idleTimeout: 60000
-  jdbcUrl: jdbc:mysql://127.0.0.1:3306/ds_0?serverTimezone=UTC&useSSL=false
+  standardJdbcUrl: jdbc:mysql://127.0.0.1:3306/ds_0?serverTimezone=UTC&useSSL=false
   dataSourceClassName: com.zaxxer.hikari.HikariDataSource
   maximumPoolSize: 50
   connectionTimeout: 30000

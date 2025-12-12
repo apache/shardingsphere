@@ -17,19 +17,18 @@
 
 package org.apache.shardingsphere.test.it.optimizer.sqlnode.converter;
 
-import org.apache.shardingsphere.sql.parser.api.CacheOption;
-import org.apache.shardingsphere.sql.parser.api.SQLParserEngine;
-import org.apache.shardingsphere.sql.parser.api.SQLStatementVisitorEngine;
+import com.google.common.base.Preconditions;
+import org.apache.shardingsphere.sql.parser.engine.api.CacheOption;
+import org.apache.shardingsphere.sql.parser.engine.api.SQLParserEngine;
+import org.apache.shardingsphere.sql.parser.engine.api.SQLStatementVisitorEngine;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
 import org.apache.shardingsphere.sqlfederation.compiler.sql.ast.converter.SQLNodeConverterEngine;
 import org.apache.shardingsphere.sqlfederation.compiler.sql.dialect.SQLDialectFactory;
 import org.apache.shardingsphere.test.it.optimizer.sqlnode.converter.cases.SQLNodeConverterTestCases;
-import org.apache.shardingsphere.test.it.optimizer.sqlnode.converter.cases.SQLNodeConverterTestCasesRegistry;
+import org.apache.shardingsphere.test.it.optimizer.sqlnode.converter.cases.registry.converter.SQLNodeConverterTestCasesRegistry;
+import org.apache.shardingsphere.test.it.optimizer.sqlnode.converter.cases.registry.sql.SQLConverterCasesRegistry;
 import org.apache.shardingsphere.test.it.sql.parser.internal.InternalSQLParserTestParameter;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.SQLParserTestCases;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.registry.SQLParserTestCasesRegistry;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.sql.SQLCases;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.sql.registry.SQLCasesRegistry;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.sql.type.SQLCaseType;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -47,11 +46,9 @@ import java.util.stream.Stream;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 
-class SQLNodeConverterEngineIT {
+public abstract class SQLNodeConverterEngineIT {
     
-    private static final SQLCases SQL_CASES = SQLCasesRegistry.getInstance().getCases();
-    
-    private static final SQLParserTestCases SQL_PARSER_TEST_CASES = SQLParserTestCasesRegistry.getInstance().getCases();
+    private static final SQLCases SQL_CASES = SQLConverterCasesRegistry.getInstance().getCases();
     
     private static final SQLNodeConverterTestCases SQL_NODE_CONVERTER_TEST_CASES = SQLNodeConverterTestCasesRegistry.getInstance().getCases();
     
@@ -70,14 +67,9 @@ class SQLNodeConverterEngineIT {
     @ParameterizedTest(name = "{0} ({1}) -> {2}")
     @ArgumentsSource(TestCaseArgumentsProvider.class)
     void assertConvert(final String sqlCaseId, final SQLCaseType sqlCaseType, final String databaseType) {
-        String expected;
-        try {
-            expected = SQL_NODE_CONVERTER_TEST_CASES.get(sqlCaseId, sqlCaseType, databaseType).getExpectedSQL();
-        } catch (final IllegalStateException ignore) {
-            return;
-        }
-        String sql = SQL_CASES.getSQL(sqlCaseId, sqlCaseType, SQL_PARSER_TEST_CASES.get(sqlCaseId).getParameters());
+        String sql = SQL_CASES.getSQL(sqlCaseId, sqlCaseType, SQL_NODE_CONVERTER_TEST_CASES.get(sqlCaseId, sqlCaseType, databaseType).getParameters());
         String actual = SQLNodeConverterEngine.convert(parseSQLStatement(databaseType, sql)).toSqlString(SQLDialectFactory.getSQLDialect(databaseType)).getSql().replace("\n", " ").replace("\r", "");
+        String expected = SQL_NODE_CONVERTER_TEST_CASES.get(sqlCaseId, sqlCaseType, databaseType).getExpectedSQL();
         assertThat(actual, is(expected));
     }
     
@@ -85,17 +77,19 @@ class SQLNodeConverterEngineIT {
         return new SQLStatementVisitorEngine(databaseType).visit(new SQLParserEngine(databaseType, new CacheOption(128, 1024L)).parse(sql, false));
     }
     
-    private static class TestCaseArgumentsProvider implements ArgumentsProvider {
+    private static final class TestCaseArgumentsProvider implements ArgumentsProvider {
         
         @Override
         public Stream<? extends Arguments> provideArguments(final ParameterDeclarations parameters, final ExtensionContext context) {
-            return getTestParameters("MySQL", "PostgreSQL", "openGauss", "Oracle", "SQLServer").stream();
+            SQLNodeConverterEngineITSettings settings = context.getRequiredTestClass().getAnnotation(SQLNodeConverterEngineITSettings.class);
+            Preconditions.checkNotNull(settings, "Annotation SQLBinderITSettings is required.");
+            return getTestParameters(settings.value()).stream();
         }
         
         private Collection<Arguments> getTestParameters(final String... databaseTypes) {
             Collection<Arguments> result = new LinkedList<>();
             for (InternalSQLParserTestParameter each : SQL_CASES.generateTestParameters(Arrays.stream(databaseTypes).collect(Collectors.toSet()))) {
-                if (!isPlaceholderWithoutParameter(each) && isSupportedSQLCase(each)) {
+                if (null != SQL_NODE_CONVERTER_TEST_CASES.get(each.getSqlCaseId(), each.getSqlCaseType(), each.getDatabaseType()) && !isPlaceholderWithoutParameter(each) && isSupportedSQLCase(each)) {
                     result.add(Arguments.of(each.getSqlCaseId(), each.getSqlCaseType(), "H2".equals(each.getDatabaseType()) ? "MySQL" : each.getDatabaseType()));
                 }
             }
@@ -103,7 +97,8 @@ class SQLNodeConverterEngineIT {
         }
         
         private boolean isPlaceholderWithoutParameter(final InternalSQLParserTestParameter testParam) {
-            return SQLCaseType.PLACEHOLDER == testParam.getSqlCaseType() && SQL_PARSER_TEST_CASES.get(testParam.getSqlCaseId()).getParameters().isEmpty();
+            return SQLCaseType.PLACEHOLDER == testParam.getSqlCaseType()
+                    && SQL_NODE_CONVERTER_TEST_CASES.get(testParam.getSqlCaseId(), testParam.getSqlCaseType(), testParam.getDatabaseType()).getParameters().isEmpty();
         }
         
         private boolean isSupportedSQLCase(final InternalSQLParserTestParameter testParam) {

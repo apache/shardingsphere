@@ -40,7 +40,7 @@ class PostgreSQLIndexSQLGeneratorTest {
         ResultSet getNodesResultSet = mockGetNodesResultSet();
         when(connection.createStatement().executeQuery(
                 contains("SELECT DISTINCT ON(cls.relname) cls.oid, cls.relname as name," + "\n" + "(SELECT (CASE WHEN count(i.inhrelid) > 0 THEN true ELSE false END)")))
-                        .thenReturn(getNodesResultSet);
+                .thenReturn(getNodesResultSet);
         ResultSet getPropertiesResultSet = mockGetPropertiesResultSet();
         when(connection.createStatement().executeQuery(contains("SELECT DISTINCT ON(cls.relname) cls.oid, cls.relname as name, indrelid, indkey, indisclustered"))).thenReturn(getPropertiesResultSet);
         Map<String, Object> context = new HashMap<>(5, 1F);

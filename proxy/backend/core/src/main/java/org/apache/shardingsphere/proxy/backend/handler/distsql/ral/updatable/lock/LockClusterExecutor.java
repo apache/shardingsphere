@@ -21,15 +21,15 @@ import org.apache.shardingsphere.distsql.handler.engine.update.DistSQLUpdateExec
 import org.apache.shardingsphere.distsql.handler.required.DistSQLExecutorClusterModeRequired;
 import org.apache.shardingsphere.distsql.statement.type.ral.updatable.LockClusterStatement;
 import org.apache.shardingsphere.infra.algorithm.core.exception.MissingRequiredAlgorithmException;
-import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
-import org.apache.shardingsphere.infra.exception.core.external.sql.identifier.SQLExceptionIdentifier;
+import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
+import org.apache.shardingsphere.infra.exception.external.sql.identifier.SQLExceptionIdentifier;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
-import org.apache.shardingsphere.mode.lock.LockContext;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.cluster.lock.exception.LockedClusterException;
-import org.apache.shardingsphere.mode.manager.cluster.lock.global.GlobalLockDefinition;
 import org.apache.shardingsphere.mode.state.ShardingSphereState;
 import org.apache.shardingsphere.proxy.backend.lock.spi.ClusterLockStrategy;
+
+import java.sql.SQLException;
 
 /**
  * Lock cluster executor.
@@ -38,20 +38,14 @@ import org.apache.shardingsphere.proxy.backend.lock.spi.ClusterLockStrategy;
 public final class LockClusterExecutor implements DistSQLUpdateExecutor<LockClusterStatement> {
     
     @Override
-    public void executeUpdate(final LockClusterStatement sqlStatement, final ContextManager contextManager) {
+    public void executeUpdate(final LockClusterStatement sqlStatement, final ContextManager contextManager) throws SQLException {
         checkState(contextManager);
         checkAlgorithm(sqlStatement);
-        LockContext lockContext = contextManager.getLockContext();
-        GlobalLockDefinition lockDefinition = new GlobalLockDefinition(new ClusterLock());
         long timeoutMillis = sqlStatement.getTimeoutMillis().orElse(3000L);
-        if (lockContext.tryLock(lockDefinition, timeoutMillis)) {
-            try {
-                checkState(contextManager);
-                TypedSPILoader.getService(ClusterLockStrategy.class, sqlStatement.getLockStrategy().getName()).lock();
-            } finally {
-                lockContext.unlock(lockDefinition);
-            }
-        }
+        contextManager.getExclusiveOperatorEngine().operate(new LockClusterOperation(), timeoutMillis, () -> {
+            checkState(contextManager);
+            TypedSPILoader.getService(ClusterLockStrategy.class, sqlStatement.getLockStrategy().getName()).lock();
+        });
     }
     
     private void checkState(final ContextManager contextManager) {

@@ -28,11 +28,11 @@
         <assertion parameters="update:String, 2800:int, 28:int" expected-data-file="update_batch_4.xml" />
     </test-case>
     
-    <test-case sql="UPDATE t_order AS o SET o.status = ? WHERE o.order_id = ? AND o.user_id = ?" db-types="H2,MySQL" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
+    <test-case sql="UPDATE t_order AS o SET o.status = ? WHERE o.order_id = ? AND o.user_id = ?" db-types="MySQL" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
         <assertion parameters="update:String, 1000:int, 10:int" expected-data-file="update.xml" />
     </test-case>
     
-    <test-case sql="UPDATE t_order o SET o.status = 'finished'" db-types="H2,MySQL" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
+    <test-case sql="UPDATE t_order o SET o.status = 'finished'" db-types="MySQL" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
         <assertion expected-data-file="update_without_condition.xml" />
     </test-case>
     
@@ -40,7 +40,7 @@
         <assertion expected-data-file="update.xml" />
     </test-case>
     
-    <test-case sql="UPDATE t_order SET status = 'update' WHERE (order_id = ? OR order_id = ?) AND user_id = ?" db-types="H2,MySQL" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
+    <test-case sql="UPDATE t_order SET status = 'update' WHERE (order_id = ? OR order_id = ?) AND user_id = ?" db-types="MySQL" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
         <assertion parameters="1000:int, 0:int, 10:int" expected-data-file="update.xml" />
     </test-case>
     
@@ -49,7 +49,7 @@
     </test-case>
     
     <!-- TODO FIXED ME PostgreSQL return 0 and replace with standard table structure -->
-    <!--<test-case sql="UPDATE t_broadcast_table b SET b.status = 'finished'" db-types="H2,MySQL" scenario-types="db,tbl,dbtbl_with_readwrite_splitting">
+    <!--<test-case sql="UPDATE t_broadcast_table b SET b.status = 'finished'" db-types="MySQL" scenario-types="db,tbl,dbtbl_with_readwrite_splitting">
         <assertion expected-data-file="update_broadcast_table.xml" />
     </test-case>-->
     
@@ -58,19 +58,19 @@
     <!--        <assertion expected-data-file="update_single_table.xml" />-->
     <!--    </test-case>-->
     
-    <test-case sql="UPDATE t_user u SET u.password = ? WHERE u.user_id = ?" db-types="H2,MySQL,openGauss" scenario-types="encrypt">
+    <test-case sql="UPDATE t_user u SET u.password = ? WHERE u.user_id = ?" db-types="MySQL,openGauss" scenario-types="encrypt">
         <assertion parameters="222222:String, 10:int" expected-data-file="update_user_table.xml" />
     </test-case>
     
-    <test-case sql="UPDATE t_user u SET u.telephone = ? WHERE u.password = ?" db-types="H2,MySQL,openGauss" scenario-types="encrypt">
+    <test-case sql="UPDATE t_user u SET u.telephone = ? WHERE u.password = ?" db-types="MySQL,openGauss" scenario-types="encrypt">
         <assertion parameters="12345678901:String, 111111:String" expected-data-file="update_user_table_by_pwd.xml" />
     </test-case>
     
-    <test-case sql="UPDATE t_user SET password = ? WHERE user_id = ?" db-types="H2,MySQL,PostgreSQL,openGauss" scenario-types="encrypt">
+    <test-case sql="UPDATE t_user SET password = ? WHERE user_id = ?" db-types="MySQL,PostgreSQL,openGauss" scenario-types="encrypt">
         <assertion parameters="222222:String, 10:int" expected-data-file="update_user_table.xml" />
     </test-case>
     
-    <test-case sql="UPDATE t_user SET telephone = ? WHERE password = ?" db-types="H2,MySQL,PostgreSQL,openGauss" scenario-types="encrypt">
+    <test-case sql="UPDATE t_user SET telephone = ? WHERE password = ?" db-types="MySQL,PostgreSQL,openGauss" scenario-types="encrypt">
         <assertion parameters="12345678901:String, 111111:String" expected-data-file="update_user_table_by_pwd.xml" />
     </test-case>
     
@@ -108,5 +108,9 @@
 
     <test-case sql="UPDATE t_data_type_date SET creation_date = ?, update_date = ? where id = ?" db-types="MySQL" scenario-types="passthrough">
         <assertion parameters="2018-08-08:Date, 2018-08-08:datetime, 1:int" expected-data-file="update_date_values.xml"/>
+    </test-case>
+
+    <test-case sql="UPDATE t_user SET password = ? WHERE user_id = ?" db-types="Hive" scenario-types="encrypt" skip-batch="true">
+        <assertion parameters="222222:String, 11:int" expected-data-file="update_user_table_for_hive.xml" />
     </test-case>
 </e2e-test-cases>

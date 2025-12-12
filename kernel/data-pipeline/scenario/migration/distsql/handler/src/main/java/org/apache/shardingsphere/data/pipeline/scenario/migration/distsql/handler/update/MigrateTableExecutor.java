@@ -18,25 +18,33 @@
 package org.apache.shardingsphere.data.pipeline.scenario.migration.distsql.handler.update;
 
 import lombok.Setter;
+import org.apache.shardingsphere.data.pipeline.api.type.StandardPipelineDataSourceConfiguration;
 import org.apache.shardingsphere.data.pipeline.core.context.PipelineContextKey;
 import org.apache.shardingsphere.data.pipeline.core.exception.job.MissingRequiredTargetDatabaseException;
 import org.apache.shardingsphere.data.pipeline.core.job.api.TransmissionJobAPI;
+import org.apache.shardingsphere.data.pipeline.core.metadata.PipelineDataSourcePersistService;
+import org.apache.shardingsphere.data.pipeline.core.metadata.loader.PipelineSchemaUtils;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.api.MigrationJobAPI;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.api.MigrationSourceTargetEntry;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.distsql.segment.MigrationSourceTargetSegment;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.distsql.statement.updatable.MigrateTableStatement;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.distsql.handler.aware.DistSQLExecutorDatabaseAware;
 import org.apache.shardingsphere.distsql.handler.engine.update.DistSQLUpdateExecutor;
 import org.apache.shardingsphere.distsql.handler.required.DistSQLExecutorClusterModeRequired;
 import org.apache.shardingsphere.infra.datanode.DataNode;
-import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
+import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePoolProperties;
+import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.instance.metadata.InstanceType;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
+import org.apache.shardingsphere.infra.yaml.config.swapper.resource.YamlDataSourceConfigurationSwapper;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 
 import java.util.Collection;
 import java.util.LinkedList;
+import java.util.Map;
+import java.util.Optional;
 
 /**
  * Migrate table executor.
@@ -53,17 +61,26 @@ public final class MigrateTableExecutor implements DistSQLUpdateExecutor<Migrate
         ShardingSpherePreconditions.checkState(contextManager.getMetaDataContexts().getMetaData().containsDatabase(targetDatabaseName),
                 () -> new MissingRequiredTargetDatabaseException(targetDatabaseName));
         MigrationJobAPI jobAPI = (MigrationJobAPI) TypedSPILoader.getService(TransmissionJobAPI.class, "MIGRATION");
-        jobAPI.schedule(new PipelineContextKey(InstanceType.PROXY), getMigrationSourceTargetEntries(sqlStatement), targetDatabaseName);
+        PipelineContextKey contextKey = new PipelineContextKey(InstanceType.PROXY);
+        jobAPI.schedule(contextKey, getMigrationSourceTargetEntries(contextKey, sqlStatement), targetDatabaseName);
     }
     
-    private Collection<MigrationSourceTargetEntry> getMigrationSourceTargetEntries(final MigrateTableStatement sqlStatement) {
+    private Collection<MigrationSourceTargetEntry> getMigrationSourceTargetEntries(final PipelineContextKey contextKey, final MigrateTableStatement sqlStatement) {
         Collection<MigrationSourceTargetEntry> result = new LinkedList<>();
         for (MigrationSourceTargetSegment each : sqlStatement.getSourceTargetEntries()) {
-            DataNode dataNode = new DataNode(each.getSourceDatabaseName(), each.getSourceTableName());
-            dataNode.setSchemaName(each.getSourceSchemaName());
-            result.add(new MigrationSourceTargetEntry(dataNode, each.getTargetTableName()));
+            String schemaName = null == each.getSourceSchemaName() ? getDefaultSchemaName(contextKey, each.getSourceDatabaseName()).orElse(null) : each.getSourceSchemaName();
+            result.add(new MigrationSourceTargetEntry(new DataNode(each.getSourceDatabaseName(), schemaName, each.getSourceTableName()), each.getTargetTableName()));
         }
         return result;
+    }
+    
+    private Optional<String> getDefaultSchemaName(final PipelineContextKey contextKey, final String sourceDatabaseName) {
+        if (new DatabaseTypeRegistry(database.getProtocolType()).getDialectDatabaseMetaData().getSchemaOption().isSchemaAvailable()) {
+            Map<String, DataSourcePoolProperties> metaDataDataSource = new PipelineDataSourcePersistService().load(contextKey, "MIGRATION");
+            Map<String, Object> sourceDataSourcePoolProps = new YamlDataSourceConfigurationSwapper().swapToMap(metaDataDataSource.get(sourceDatabaseName));
+            return Optional.of(PipelineSchemaUtils.getDefaultSchema(new StandardPipelineDataSourceConfiguration(sourceDataSourcePoolProps)));
+        }
+        return Optional.empty();
     }
     
     @Override

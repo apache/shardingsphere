@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.test.e2e.driver.statement;
 
-import org.apache.shardingsphere.infra.database.core.DefaultDatabase;
+import org.apache.shardingsphere.database.connector.core.DefaultDatabase;
 import org.apache.shardingsphere.test.e2e.driver.AbstractShardingDriverTest;
 import org.junit.jupiter.api.Test;
 

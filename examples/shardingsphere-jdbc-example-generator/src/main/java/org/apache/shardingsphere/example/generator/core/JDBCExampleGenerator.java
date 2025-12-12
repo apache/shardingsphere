@@ -25,7 +25,7 @@ import lombok.SneakyThrows;
 import org.apache.shardingsphere.example.generator.core.yaml.config.YamlExampleConfiguration;
 import org.apache.shardingsphere.example.generator.core.yaml.config.YamlExampleConfigurationValidator;
 import org.apache.shardingsphere.example.generator.scenario.ExampleScenarioFactory;
-import org.apache.shardingsphere.infra.autogen.version.ShardingSphereVersion;
+import org.apache.shardingsphere.infra.version.ShardingSphereVersion;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 
 import java.io.File;
@@ -45,15 +45,15 @@ public final class JDBCExampleGenerator {
     
     private static final String CONFIG_FILE = "/config.yaml";
     
-    private final Configuration templateConfig;
-    
-    String PROJECT_PATH = "shardingsphere-jdbc-sample/${feature?replace(',', '-')}--${framework}--${mode}--${transaction}/";
-    
-    String RESOURCES_PATH = "src/main/resources";
-    
     private static final String JAVA_CLASS_PATH = "src/main/java/org/apache/shardingsphere/example/"
             + "<#assign package = feature?replace('-', '')?replace(',', '.') />"
             + "${package}/${framework?replace('-', '/')}";
+    
+    private static final String PROJECT_PATH = "shardingsphere-jdbc-sample/${feature?replace(',', '-')}--${framework}--${mode}--${transaction}/";
+    
+    private static final String RESOURCES_PATH = "src/main/resources";
+    
+    private final Configuration templateConfig;
     
     public JDBCExampleGenerator() throws IOException {
         templateConfig = createTemplateConfiguration();
@@ -61,11 +61,10 @@ public final class JDBCExampleGenerator {
     
     private Configuration createTemplateConfiguration() throws IOException {
         Configuration result = new Configuration(Configuration.VERSION_2_3_31);
-        result.setDirectoryForTemplateLoading(new File(Objects.requireNonNull(this.getClass().getClassLoader().getResource("template")).getFile()));
+        result.setDirectoryForTemplateLoading(new File(Objects.requireNonNull(getClass().getClassLoader().getResource("template")).getFile()));
         result.setDefaultEncoding("UTF-8");
         return result;
     }
-    
     
     /**
      * Generate example.
@@ -133,9 +132,9 @@ public final class JDBCExampleGenerator {
      * @param exampleConfig example configuration
      * @return built output path
      */
-    private String buildOutputPath(YamlExampleConfiguration exampleConfig) {
+    private String buildOutputPath(final YamlExampleConfiguration exampleConfig) {
         if (Strings.isNullOrEmpty(exampleConfig.getOutput())) {
-            File file = new File(Objects.requireNonNull(this.getClass().getClassLoader().getResource("")).getPath());
+            File file = new File(Objects.requireNonNull(getClass().getClassLoader().getResource("")).getPath());
             return file.getParent() + "/generated-sources/" + PROJECT_PATH;
         }
         return exampleConfig.getOutput() + PROJECT_PATH;
@@ -163,7 +162,7 @@ public final class JDBCExampleGenerator {
      * @return built data model
      */
     private Map<String, String> buildDataModel(final Properties props, final String mode, final String transaction, final String framework, final String feature) {
-        Map<String, String> result = new LinkedHashMap<>();
+        Map<String, String> result = new LinkedHashMap<>(props.size() + 5, 1F);
         props.forEach((key, value) -> result.put(key.toString(), value.toString()));
         result.put("mode", mode);
         result.put("transaction", transaction);

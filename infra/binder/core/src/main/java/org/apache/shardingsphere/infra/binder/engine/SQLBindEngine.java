@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.infra.binder.engine;
 
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.infra.binder.context.SQLStatementContextFactory;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementBinderContext;
@@ -25,7 +26,6 @@ import org.apache.shardingsphere.infra.binder.engine.type.DALStatementBindEngine
 import org.apache.shardingsphere.infra.binder.engine.type.DCLStatementBindEngine;
 import org.apache.shardingsphere.infra.binder.engine.type.DDLStatementBindEngine;
 import org.apache.shardingsphere.infra.binder.engine.type.DMLStatementBindEngine;
-import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.infra.hint.HintManager;
 import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
@@ -35,7 +35,6 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dcl.DC
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.DDLStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.DMLStatement;
 
-import java.util.List;
 import java.util.Optional;
 
 /**
@@ -54,15 +53,14 @@ public final class SQLBindEngine {
      * Bind SQL statement.
      *
      * @param sqlStatement SQL statement
-     * @param params parameters
      * @return SQL statement context
      */
-    public SQLStatementContext bind(final SQLStatement sqlStatement, final List<Object> params) {
-        SQLStatement boundSQLStatement = isNeedBind() ? bind(sqlStatement) : sqlStatement;
-        return SQLStatementContextFactory.newInstance(metaData, boundSQLStatement, params, currentDatabaseName);
+    public SQLStatementContext bind(final SQLStatement sqlStatement) {
+        SQLStatement boundSQLStatement = isNeedBind() ? bindSQLStatement(sqlStatement) : sqlStatement;
+        return SQLStatementContextFactory.newInstance(metaData, boundSQLStatement, currentDatabaseName);
     }
     
-    private SQLStatement bind(final SQLStatement sqlStatement) {
+    private SQLStatement bindSQLStatement(final SQLStatement sqlStatement) {
         SQLStatementBinderContext binderContext = new SQLStatementBinderContext(metaData, currentDatabaseName, hintValueContext, sqlStatement);
         Optional<DialectSQLBindEngine> dialectSQLBindEngine = DatabaseTypedSPILoader.findService(DialectSQLBindEngine.class, sqlStatement.getDatabaseType());
         if (dialectSQLBindEngine.isPresent()) {

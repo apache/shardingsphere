@@ -497,7 +497,7 @@
                 <expr>
                     <function start-index="7" stop-index="59" text="CONVERT(TIMESTAMP &quot;2004-01-22 21:45:33&quot; USING latin1)" function-name="CONVERT">
                         <parameter>
-                            <common-expression start-index="15" stop-index="45" text="TIMESTAMP&quot;2004-01-22 21:45:33&quot;" />
+                            <literal-expression value="2004-01-22 21:45:33" start-index="15" stop-index="45" />
                         </parameter>
                         <parameter start-index="53" stop-index="58">
                             <literal-expression value="latin1" start-index="53" stop-index="58"/>
@@ -514,7 +514,7 @@
                 <expr>
                     <function start-index="7" stop-index="57" text="CONVERT(TIMESTAMP &quot;2004-01-22 21:45:33&quot;, BINARY(4))" function-name="CONVERT" >
                         <parameter>
-                            <common-expression start-index="15" stop-index="45" text="TIMESTAMP&quot;2004-01-22 21:45:33&quot;" function-name="GROUPING(f1)" />
+                            <literal-expression value="2004-01-22 21:45:33" start-index="15" stop-index="45" />
                         </parameter>
                         <parameter start-index="48" stop-index="56">
                             <data-type value="BINARY" start-index="48" stop-index="56"/>
@@ -531,7 +531,7 @@
                 <expr>
                     <function start-index="7" stop-index="55" text="CONVERT(TIMESTAMP &quot;2004-01-22 21:45:33&quot;, CHAR(4))" function-name="CONVERT">
                         <parameter>
-                            <common-expression start-index="15" stop-index="45" text="TIMESTAMP&quot;2004-01-22 21:45:33&quot;" />
+                            <literal-expression value="2004-01-22 21:45:33" start-index="15" stop-index="45" />
                         </parameter>
                         <parameter start-index="48" stop-index="54">
                             <data-type value="CHAR" start-index="48" stop-index="54"/>
@@ -548,7 +548,7 @@
                 <expr>
                     <function start-index="7" stop-index="52" text="CONVERT(TIMESTAMP &quot;2004-01-22 21:45:33&quot;, CHAR)" function-name="CONVERT">
                         <parameter>
-                            <common-expression start-index="15" stop-index="45" text="TIMESTAMP&quot;2004-01-22 21:45:33&quot;" />
+                            <literal-expression value="2004-01-22 21:45:33" start-index="15" stop-index="45" />
                         </parameter>
                         <parameter start-index="48" stop-index="51">
                             <data-type value="CHAR" start-index="48" stop-index="51"/>
@@ -7698,7 +7698,7 @@
             <column-projection name="empid" start-index="75" stop-index="81" literal-start-index="75" literal-stop-index="81">`
                 <owner name="a" start-index="75" stop-index="75" literal-start-index="75" literal-stop-index="75" />
             </column-projection>
-            <expression-projection text="a.enddate - term + term2 + 1) / (last_day(term) - term + 1" alias="cnt" start-index="8" stop-index="72" literal-start-index="8" literal-stop-index="72">
+            <expression-projection text="(a.enddate - term + term2 + 1) / (last_day(term) - term + 1)" alias="cnt" start-index="8" stop-index="72" literal-start-index="8" literal-stop-index="72">
                 <literalText>a.enddate - term + term2 + 1) / (last_day(term) - term + 1</literalText>
                 <expr>
                     <binary-operation-expression start-index="8" stop-index="67" literal-start-index="8" literal-stop-index="67">
@@ -11595,6 +11595,209 @@
                     </parameter>
                 </table-function>
             </function-table>
+        </from>
+    </select>
+
+    <select sql-case-id="select_grouping_sets">
+        <projections start-index="7" stop-index="47">
+            <column-projection name="Country" start-index="7" stop-index="13" />
+            <column-projection name="Region" start-index="16" stop-index="21" />
+            <aggregation-projection type="SUM" expression="SUM(Sales)" alias="TotalSales" start-index="24" stop-index="33" />
+        </projections>
+        <from>
+            <simple-table name="Sales" start-index="54" stop-index="58" />
+        </from>
+        <group-by>
+            <column-item name="Country" start-index="93" stop-index="99"/>
+            <column-item name="Region" start-index="102" stop-index="107"/>
+            <column-item name="Country" start-index="117" stop-index="123"/>
+            <column-item name="Region" start-index="126" stop-index="131"/>
+        </group-by>
+    </select>
+
+    <select sql-case-id="select_identity_function">
+        <projections start-index="7" stop-index="33">
+            <expression-projection text="IDENTITY(int,1,1)" alias="ID_Num" start-index="7" stop-index="33">
+                <expr>
+                    <function function-name="IDENTITY" start-index="7" stop-index="23" text="IDENTITY(int,1,1)">
+                        <parameter>
+                            <column name="int" start-index="16" stop-index="18" />
+                        </parameter>
+                        <parameter>
+                            <literal-expression value="1" start-index="20" stop-index="20" />
+                        </parameter>
+                        <parameter>
+                            <literal-expression value="1" start-index="22" stop-index="22" />
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+        <into start-index="37" stop-index="49">
+            <simple-table name="NewTable" start-index="40" stop-index="47"/>
+        </into>
+        <from start-index="50" stop-index="63">
+            <simple-table name="OldTable" start-index="54" stop-index="61"/>
+        </from>
+    </select>
+
+    <select sql-case-id="select_group_by_with_distributed_agg">
+        <projections start-index="7" stop-index="17">
+            <column-projection name="CustomerKey" start-index="7" stop-index="17" />
+        </projections>
+        <from>
+            <simple-table name="FactInternetSales" start-index="24" stop-index="40" />
+        </from>
+        <group-by start-index="41" stop-index="86">
+            <column-item name="CustomerKey" start-index="51" stop-index="61" />
+        </group-by>
+    </select>
+
+    <select sql-case-id="select_with_predict_function">
+        <projections start-index="7" stop-index="18">
+            <shorthand-projection start-index="7" stop-index="9">
+                <owner name="d" start-index="7" stop-index="7" />
+            </shorthand-projection>
+            <column-projection name="Score" start-index="12" stop-index="18">
+                <owner name="p" start-index="12" stop-index="12" />
+            </column-projection>
+        </projections>
+        <from start-index="26" stop-index="96">
+            <function-table table-alias="p" start-index="26" stop-index="91">
+                <table-function function-name="PREDICT" text="PREDICT(MODEL = @model, DATA = dbo.mytable AS d) WITH (Score FLOAT)">
+                    <parameter>
+                        <parameter-marker value="@model" start-index="40" stop-index="45" />
+                    </parameter>
+                    <parameter>
+                        <simple-table name="mytable" alias="d" start-index="54" stop-index="70">
+                            <owner name="dbo" start-index="54" stop-index="54" />
+                        </simple-table>
+                    </parameter>
+                </table-function>
+            </function-table>
+        </from>
+    </select>
+
+    <select sql-case-id="select_window_clause" parameters="1">
+        <projections start-index="7" stop-index="112">
+            <column-projection name="user_id" start-index="7" stop-index="13" />
+            <expression-projection text="ROW_NUMBER() OVER w" start-index="16" stop-index="50" alias="row_number">
+                <expr>
+                    <function start-index="16" stop-index="34" text="ROW_NUMBER() OVER w" function-name="ROW_NUMBER" />
+                </expr>
+            </expression-projection>
+            <expression-projection text="RANK() OVER w" start-index="53" stop-index="75" alias="rank">
+                <expr>
+                    <function start-index="53" stop-index="65" text="RANK() OVER w" function-name="RANK" />
+                </expr>
+            </expression-projection>
+            <expression-projection text="DENSE_RANK() OVER w" start-index="78" stop-index="112" alias="dense_rank">
+                <expr>
+                    <function start-index="78" stop-index="96" text="DENSE_RANK() OVER w" function-name="DENSE_RANK" />
+                </expr>
+            </expression-projection>
+        </projections>
+        <from>
+            <simple-table name="t_order" start-index="119" stop-index="125" />
+        </from>
+        <where start-index="127" stop-index="144">
+            <expr>
+                <binary-operation-expression start-index="133" stop-index="144">
+                    <left>
+                        <column name="order_id" start-index="133" stop-index="140" />
+                    </left>
+                    <operator>=</operator>
+                    <right>
+                        <literal-expression value="1" start-index="144" stop-index="144" />
+                        <parameter-marker-expression parameter-index="0" start-index="144" stop-index="144" />
+                    </right>
+                </binary-operation-expression>
+            </expr>
+        </where>
+    </select>
+
+    <select sql-case-id="select_maxrecursion_hint">
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" />
+        </projections>
+        <from>
+            <simple-table name="Person" start-index="14" stop-index="19" />
+        </from>
+    </select>
+
+    <select sql-case-id="select_optimize_for_hint">
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" />
+        </projections>
+        <from>
+            <simple-table name="Person" start-index="14" stop-index="19" />
+        </from>
+    </select>
+
+    <select sql-case-id="select_fast_hint">
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" />
+        </projections>
+        <from>
+            <simple-table name="Person" start-index="14" stop-index="19" />
+        </from>
+    </select>
+
+    <select sql-case-id="select_use_hint">
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" />
+        </projections>
+        <from>
+            <simple-table name="Person" start-index="14" stop-index="19" />
+        </from>
+    </select>
+
+    <select sql-case-id="select_maxdop_hint">
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" />
+        </projections>
+        <from>
+            <simple-table name="Person" start-index="14" stop-index="19" />
+        </from>
+    </select>
+
+    <select sql-case-id="select_for_timestamp_as_of_hint">
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" />
+        </projections>
+        <from>
+            <simple-table name="Person" start-index="14" stop-index="19" />
+        </from>
+    </select>
+
+    <select sql-case-id="select_force_single_node_plan_hint">
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" />
+        </projections>
+        <from>
+            <simple-table name="Person" start-index="14" stop-index="19" />
+        </from>
+    </select>
+
+    <select sql-case-id="select_querytraceon_hint">
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" />
+        </projections>
+        <from>
+            <simple-table name="Person" start-index="14" stop-index="19" />
+        </from>
+    </select>
+    
+    <select sql-case-id="select_with_sample_clause">
+        <projections start-index="7" stop-index="13">
+            <expression-projection text="1" alias="C1" start-index="7" stop-index="13">
+                <expr start-index="7" stop-index="7">
+                    <literal-expression value="1" start-index="7" stop-index="7"/>
+                </expr>
+            </expression-projection>
+        </projections>
+        <from start-index="20" stop-index="68">
+            <simple-table alias="T_ORDER" name="T_ORDER" start-index="20" stop-index="68"/>
         </from>
     </select>
 </sql-parser-test-cases>

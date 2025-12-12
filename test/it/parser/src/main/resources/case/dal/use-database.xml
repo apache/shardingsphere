@@ -17,6 +17,10 @@
   -->
 
 <sql-parser-test-cases>
-    <use sql-case-id="use_databasename_hive" />
-    <use sql-case-id="use_default_hive" />
+    <use sql-case-id="use_database">
+        <database name="test_db" />
+    </use>
+    <use sql-case-id="use_default">
+        <database name="default" />
+    </use>
 </sql-parser-test-cases>

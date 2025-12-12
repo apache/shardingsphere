@@ -35,6 +35,7 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.out
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.table.TableAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.where.WhereClauseAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.with.WithClauseAssert;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.table.ExpectedTable;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dml.standard.DeleteStatementTestCase;
 
 import java.util.LinkedList;
@@ -89,6 +90,11 @@ public final class DeleteStatementAssert {
                 actualTableSegments.addAll(deleteMultiTableSegment.getActualDeleteTables());
             }
             TableAssert.assertIs(assertContext, actualTableSegments, expected.getTables());
+        } else if (null != expected.getFunctionTable()) {
+            assertNotNull(actual.getTable(), assertContext.getText("Actual function table segment should exist."));
+            ExpectedTable expectedTable = new ExpectedTable();
+            expectedTable.setFunctionTable(expected.getFunctionTable());
+            TableAssert.assertIs(assertContext, actual.getTable(), expectedTable);
         } else if (null != expected.getSubqueryTable()) {
             assertNotNull(actual.getTable(), assertContext.getText("Actual subquery table segment should exist."));
             TableAssert.assertIs(assertContext, (SubqueryTableSegment) actual.getTable(), expected.getSubqueryTable());

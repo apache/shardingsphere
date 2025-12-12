@@ -26,7 +26,7 @@ dataSources:
   ds_0:
     url: jdbc:opengauss://opengauss.default.host:5432/ds_0
     username: test_user
-    password: Test@123
+    password: Test@9876
     connectionTimeoutMilliseconds: 30000
     idleTimeoutMilliseconds: 60000
     maxLifetimeMilliseconds: 1800000
@@ -35,7 +35,7 @@ dataSources:
   ds_1:
     url: jdbc:opengauss://opengauss.default.host:5432/ds_1
     username: test_user
-    password: Test@123
+    password: Test@9876
     connectionTimeoutMilliseconds: 30000
     idleTimeoutMilliseconds: 60000
     maxLifetimeMilliseconds: 1800000

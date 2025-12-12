@@ -1,0 +1,98 @@
+#
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements.  See the NOTICE file distributed with
+# this work for additional information regarding copyright ownership.
+# The ASF licenses this file to You under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with
+# the License.  You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+databaseName: encrypt
+
+dataSources:
+  encrypt:
+    url: jdbc:hive2://hive.encrypt.host:10000/encrypt?ssl=false&useUnicode=true&characterEncoding=utf-8&hive.exec.dynamic.partition=true&hive.exec.dynamic.partition.mode=nonstrict
+    dataSourceClassName: com.zaxxer.hikari.HikariDataSource
+    connectionTimeoutMilliseconds: 30000
+    idleTimeoutMilliseconds: 60000
+    maxLifetimeMilliseconds: 1800000
+    maxPoolSize: 2
+    minPoolSize: 2
+
+rules:
+  - !SINGLE
+    tables:
+      - "*.*"
+  - !ENCRYPT
+    encryptors:
+      aes_encryptor:
+        type: AES
+        props:
+          aes-key-value: 123456abc
+          digest-algorithm-name: SHA-1
+      like_encryptor:
+        type: E2E.ENCRYPT.LIKE.FIXTURE
+        props:
+          mask: 4093
+    tables:
+      t_user:
+        columns:
+          user_name:
+            cipher:
+              name: user_name_cipher
+              encryptorName: aes_encryptor
+            likeQuery:
+              name: user_name_like
+              encryptorName: like_encryptor
+          password:
+            cipher:
+              name: password_cipher
+              encryptorName: aes_encryptor
+          email:
+            cipher:
+              name: email_cipher
+              encryptorName: aes_encryptor
+          telephone:
+            cipher:
+              name: user_telephone_cipher
+              encryptorName: aes_encryptor
+            likeQuery:
+              name: user_telephone_like
+              encryptorName: like_encryptor
+      t_user_details:
+        columns:
+          number:
+            cipher:
+              name: number_cipher
+              encryptorName: aes_encryptor
+          number_new:
+            cipher:
+              name: number_new_cipher
+              encryptorName: aes_encryptor
+      t_merchant:
+        columns:
+          business_code:
+            cipher:
+              name: business_code_cipher
+              encryptorName: aes_encryptor
+            likeQuery:
+              name: business_code_like
+              encryptorName: like_encryptor
+          telephone:
+            cipher:
+              name: merchant_telephone_cipher
+              encryptorName: aes_encryptor
+            likeQuery:
+              name: merchant_telephone_like
+              encryptorName: like_encryptor
+
+props:
+  sql-show: true

@@ -22,7 +22,7 @@ dataSources:
     url: jdbc:opengauss://opengauss.tbl.host:5432/tbl?batchMode=OFF
     dataSourceClassName: com.zaxxer.hikari.HikariDataSource
     username: test_user
-    password: Test@123
+    password: Test@9876
     connectionTimeoutMilliseconds: 30000
     idleTimeoutMilliseconds: 60000
     maxLifetimeMilliseconds: 1800000
@@ -40,13 +40,13 @@ rules:
         tableStrategy:
           standard:
             shardingColumn: order_id
-            shardingAlgorithmName: it_standard_fixture
+            shardingAlgorithmName: e2e_standard_fixture
       t_order_item:
         actualDataNodes: tbl.t_order_item_${0..9}
         tableStrategy:
           standard:
             shardingColumn: order_id
-            shardingAlgorithmName: it_standard_fixture
+            shardingAlgorithmName: e2e_standard_fixture
         keyGenerateStrategy:
           column: item_id
           keyGeneratorName: auto_increment
@@ -59,13 +59,13 @@ rules:
         tableStrategy:
           standard:
             shardingColumn: order_id
-            shardingAlgorithmName: it_standard_fixture
+            shardingAlgorithmName: e2e_standard_fixture
       t_order_details:
         actualDataNodes: tbl.t_order_details_${0..9}
         tableStrategy:
           standard:
             shardingColumn: order_id
-            shardingAlgorithmName: it_standard_fixture
+            shardingAlgorithmName: e2e_standard_fixture
       t_product:
         actualDataNodes: tbl.t_product_${0..9}
         tableStrategy:
@@ -75,8 +75,8 @@ rules:
       - ref_0:t_order,t_order_item,t_order_sharding_view,t_order_details
 
     shardingAlgorithms:
-      it_standard_fixture:
-        type: IT.STANDARD.FIXTURE
+      e2e_standard_fixture:
+        type: E2E.SHARDING.STANDARD.FIXTURE
       t_product_hint_inline:
         type: HINT_INLINE
         props:
@@ -84,11 +84,11 @@ rules:
 
     keyGenerators:
       auto_increment:
-        type: IT.AUTO_INCREMENT.FIXTURE
+        type: E2E.AUTO_INCREMENT.FIXTURE
 
     auditors:
       auditor_constant:
-        type: IT.AUDITOR.FIXTURE
+        type: E2E.AUDITOR.FIXTURE
 
   - !BROADCAST
     tables:

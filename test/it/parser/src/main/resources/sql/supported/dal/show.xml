@@ -146,4 +146,93 @@
     <sql-case id="show_search_path" value="SHOW search_path;" db-types="PostgreSQL,openGauss" />
     <sql-case id="show_errors" value="SHOW ERRORS;" db-types="Oracle"/>
     <sql-case id="show_parameter_smtp_out_server" value="SHOW PARAMETER SMTP_OUT_SERVER" db-types="Oracle"/>
+    <sql-case id="show_databases_basic" value="SHOW DATABASES;" db-types="Hive" />
+    <sql-case id="show_schemas_basic" value="SHOW SCHEMAS;" db-types="Hive" />
+    <sql-case id="show_databases_with_like_wildcard" value="SHOW DATABASES LIKE 'emp*';" db-types="Hive" />
+    <sql-case id="show_schemas_with_like_sql_wildcard" value="SHOW SCHEMAS LIKE 'emplo_ees';" db-types="Hive" />
+    <sql-case id="show_databases_with_like_exact_match" value="SHOW DATABASES LIKE 'employees';" db-types="Hive" />
+    <sql-case id="show_connectors" value="SHOW CONNECTORS;" db-types="Hive" />
+    <sql-case id="show_tables_basic" value="SHOW TABLES;" db-types="Hive" />
+    <sql-case id="show_tables_in_database" value="SHOW TABLES IN sales_db;" db-types="Hive" />
+    <sql-case id="show_tables_with_wildcard" value="SHOW TABLES 'order_*';" db-types="Hive" />
+    <sql-case id="show_tables_in_db_with_wildcard" value="SHOW TABLES IN sales_db 'order_*';" db-types="Hive" />
+    <sql-case id="show_views_basic" value="SHOW VIEWS;" db-types="Hive" />
+    <sql-case id="show_views_with_like_wildcard" value="SHOW VIEWS LIKE 'user_*';" db-types="Hive" />
+    <sql-case id="show_views_from_database" value="SHOW VIEWS FROM analytics_db;" db-types="Hive" />
+    <sql-case id="show_views_in_database" value="SHOW VIEWS IN reports_db;" db-types="Hive" />
+    <sql-case id="show_views_in_db_with_like" value="SHOW VIEWS IN sales_db LIKE 'quarterly_*|annual_*';" db-types="Hive" />
+    <sql-case id="show_views_from_db_with_like" value="SHOW VIEWS FROM inventory_db LIKE 'low_stock_|out_of_stock';" db-types="Hive" />
+    <sql-case id="show_materialized_views_basic" value="SHOW MATERIALIZED VIEWS;" db-types="Hive" />
+    <sql-case id="show_materialized_views_with_like" value="SHOW MATERIALIZED VIEWS LIKE 'sales_*';" db-types="Hive" />
+    <sql-case id="show_materialized_views_in_database" value="SHOW MATERIALIZED VIEWS IN analytics_db;" db-types="Hive" />
+    <sql-case id="show_materialized_views_from_database" value="SHOW MATERIALIZED VIEWS FROM reports_db;" db-types="Hive" />
+    <sql-case id="show_materialized_views_in_db_with_like" value="SHOW MATERIALIZED VIEWS IN inventory_db LIKE 'stock_*|supply_*';" db-types="Hive" />
+    <sql-case id="show_materialized_views_from_db_with_like" value="SHOW MATERIALIZED VIEWS FROM orders_db LIKE 'daily_*|monthly_*';" db-types="Hive" />
+    <sql-case id="show_partitions_basic" value="SHOW PARTITIONS orders;" db-types="Hive" />
+    <sql-case id="show_partitions_with_db" value="SHOW PARTITIONS sales.orders;" db-types="Hive" />
+    <sql-case id="show_partitions_with_partition_spec" value="SHOW PARTITIONS access_logs PARTITION(year='2023');" db-types="Hive" />
+    <sql-case id="show_partitions_with_where" value="SHOW PARTITIONS products WHERE month >= 6;" db-types="Hive" />
+    <sql-case id="show_partitions_with_order_by" value="SHOW PARTITIONS user_activity ORDER BY day DESC;" db-types="Hive" />
+    <sql-case id="show_partitions_with_limit" value="SHOW PARTITIONS sales LIMIT 50;" db-types="Hive" />
+    <sql-case id="show_partitions_all_options" value="SHOW PARTITIONS retail.sales PARTITION(region='north') WHERE quarter=4 AND revenue > 50000 ORDER BY revenue DESC LIMIT 20;" db-types="Hive" />
+    <sql-case id="show_table_extended_basic" value="SHOW TABLE EXTENDED LIKE 'order_*';" db-types="Hive" />
+    <sql-case id="show_table_extended_in_database" value="SHOW TABLE EXTENDED IN sales_db LIKE 'order_*';" db-types="Hive" />
+    <sql-case id="show_table_extended_from_database" value="SHOW TABLE EXTENDED FROM inventory_db LIKE 'product_*';" db-types="Hive" />
+    <sql-case id="show_table_extended_with_partition" value="SHOW TABLE EXTENDED LIKE 'user_logs' PARTITION(dt='2023-10-01');" db-types="Hive" />
+    <sql-case id="show_table_extended_all_options_in" value="SHOW TABLE EXTENDED IN analytics_db LIKE 'daily_metrics' PARTITION(region='asia');" db-types="Hive" />
+    <sql-case id="show_table_extended_all_options_from" value="SHOW TABLE EXTENDED FROM analytics_db LIKE 'daily_metrics' PARTITION(region='asia');" db-types="Hive" />
+    <sql-case id="show_tblproperties_basic" value="SHOW TBLPROPERTIES orders;" db-types="Hive" />
+    <sql-case id="show_tblproperties_with_key" value="SHOW TBLPROPERTIES products('owner');" db-types="Hive" />
+    <sql-case id="show_create_table_basic" value="SHOW CREATE TABLE orders;" db-types="Hive" />
+    <sql-case id="show_create_table_with_db" value="SHOW CREATE TABLE sales_db.orders;" db-types="Hive" />
+    <sql-case id="show_create_table_view" value="SHOW CREATE TABLE user_view;" db-types="Hive" />
+    <sql-case id="show_create_view_with_db" value="SHOW CREATE TABLE analytics_db.user_view;" db-types="Hive" />
+    <sql-case id="show_indexes_basic" value="SHOW INDEXES ON orders;" db-types="Hive" />
+    <sql-case id="show_index_basic" value="SHOW INDEX ON products;" db-types="Hive" />
+    <sql-case id="show_indexes_with_db_from" value="SHOW INDEXES ON user_logs FROM analytics_db;" db-types="Hive" />
+    <sql-case id="show_indexes_with_db_in" value="SHOW INDEXES ON inventory IN warehouse_db;" db-types="Hive" />
+    <sql-case id="show_formatted_indexes" value="SHOW FORMATTED INDEXES ON sales;" db-types="Hive" />
+    <sql-case id="show_formatted_indexes_with_db" value="SHOW FORMATTED INDEXES ON orders FROM sales_db;" db-types="Hive" />
+    <sql-case id="show_formatted_indexes_with_db_in" value="SHOW FORMATTED INDEXES ON orders IN sales_db;" db-types="Hive" />
+    <sql-case id="show_index_with_db_from" value="SHOW INDEX ON user_logs FROM analytics_db;" db-types="Hive" />
+    <sql-case id="show_index_with_db_in" value="SHOW INDEX ON inventory IN warehouse_db;" db-types="Hive" />
+    <sql-case id="show_formatted_index" value="SHOW FORMATTED INDEX ON sales;" db-types="Hive" />
+    <sql-case id="show_formatted_index_with_db" value="SHOW FORMATTED INDEX ON orders FROM sales_db;" db-types="Hive" />
+    <sql-case id="show_formatted_index_with_db_in" value="SHOW FORMATTED INDEX ON orders IN sales_db;" db-types="Hive" />
+    <sql-case id="show_columns_basic_from" value="SHOW COLUMNS FROM users;" db-types="Hive" />
+    <sql-case id="show_columns_basic_in" value="SHOW COLUMNS IN products;" db-types="Hive" />
+    <sql-case id="show_columns_with_like" value="SHOW COLUMNS FROM orders LIKE 'user_*';" db-types="Hive" />
+    <sql-case id="show_columns_with_db_from" value="SHOW COLUMNS FROM logs FROM analytics_db;" db-types="Hive" />
+    <sql-case id="show_columns_with_db_from_in" value="SHOW COLUMNS FROM logs IN analytics_db;" db-types="Hive" />
+    <sql-case id="show_columns_with_like_in" value="SHOW COLUMNS IN orders LIKE 'user_*';" db-types="Hive" />
+    <sql-case id="show_columns_with_db_in_from" value="SHOW COLUMNS IN logs FROM analytics_db;" db-types="Hive" />
+    <sql-case id="show_columns_with_db_in_in" value="SHOW COLUMNS IN sales IN commerce_db;" db-types="Hive" />
+    <sql-case id="show_columns_db_like_from" value="SHOW COLUMNS FROM inventory FROM warehouse_db LIKE 'stock_*|quantity';" db-types="Hive" />
+    <sql-case id="show_functions_basic" value="SHOW FUNCTIONS;" db-types="Hive" />
+    <sql-case id="show_functions_with_like" value="SHOW FUNCTIONS LIKE 'concat*';" db-types="Hive" />
+    <sql-case id="show_role_grant_basic" value="SHOW ROLE GRANT;" db-types="Hive" />
+    <sql-case id="show_grant_basic" value="SHOW GRANT;" db-types="Hive" />
+    <sql-case id="show_current_roles" value="SHOW CURRENT ROLES;" db-types="Hive" />
+    <sql-case id="show_roles_basic" value="SHOW ROLES;" db-types="Hive" />
+    <sql-case id="show_principals_basic" value="SHOW PRINCIPALS;" db-types="Hive" />
+    <sql-case id="show_locks_basic" value="SHOW LOCKS orders;" db-types="Hive" />
+    <sql-case id="show_locks_extended" value="SHOW LOCKS orders EXTENDED;" db-types="Hive" />
+    <sql-case id="show_locks_partition" value="SHOW LOCKS orders PARTITION(dt='2024-08-01');" db-types="Hive" />
+    <sql-case id="show_locks_partition_extended" value="SHOW LOCKS orders PARTITION(dt='2024-08-01') EXTENDED;" db-types="Hive" />
+    <sql-case id="show_locks_database" value="SHOW LOCKS DATABASE sales_db;" db-types="Hive" />
+    <sql-case id="show_locks_schema" value="SHOW LOCKS SCHEMA sales_db;" db-types="Hive" />
+    <sql-case id="show_conf" value="SHOW CONF 'hive.exec.dynamic.partition';" db-types="Hive" />
+    <sql-case id="show_transactions" value="SHOW TRANSACTIONS;" db-types="Hive" />
+    <sql-case id="show_compactions_basic" value="SHOW COMPACTIONS;" db-types="Hive" />
+    <sql-case id="show_compactions_with_database" value="SHOW COMPACTIONS DATABASE db1;" db-types="Hive" />
+    <sql-case id="show_compactions_with_schema" value="SHOW COMPACTIONS SCHEMA db1;" db-types="Hive" />
+    <sql-case id="show_compactions_with_table" value="SHOW COMPACTIONS tbl0;" db-types="Hive" />
+    <sql-case id="show_compactions_with_partition" value="SHOW COMPACTIONS tbl0 PARTITION (p=101, day='Monday');" db-types="Hive" />
+    <sql-case id="show_compactions_with_type" value="SHOW COMPACTIONS TYPE 'minor';" db-types="Hive" />
+    <sql-case id="show_compactions_with_pool" value="SHOW COMPACTIONS POOL 'pool0';" db-types="Hive" />
+    <sql-case id="show_compactions_with_state" value="SHOW COMPACTIONS STATE 'working';" db-types="Hive" />
+    <sql-case id="show_compactions_with_order" value="SHOW COMPACTIONS ORDER BY `start` DESC;" db-types="Hive" />
+    <sql-case id="show_compactions_with_limit" value="SHOW COMPACTIONS LIMIT 10;" db-types="Hive" />
+    <sql-case id="show_compactions_with_compaction_ID" value="SHOW COMPACTIONS compactionid=1;" db-types="Hive" />
+    <sql-case id="show_compactions_all_options" value="SHOW COMPACTIONS db1.tbl0 PARTITION (p=101, day='Monday') POOL 'pool0' TYPE 'minor' STATE 'ready for cleaning' ORDER BY `start` DESC LIMIT 5;" db-types="Hive" />
 </sql-cases>

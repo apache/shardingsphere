@@ -25,14 +25,14 @@ import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.isA;
 
 class CDCJobIdTest {
     
     @Test
     void assertParseJobType() {
         String jobId = PipelineJobIdUtils.marshal(new CDCJobId(new PipelineContextKey("sharding_db", InstanceType.PROXY), Collections.singletonList("foo"), true, CDCSinkType.SOCKET));
-        assertThat(PipelineJobIdUtils.parseJobType(jobId), instanceOf(CDCJobType.class));
+        assertThat(PipelineJobIdUtils.parseJobType(jobId), isA(CDCJobType.class));
     }
 }

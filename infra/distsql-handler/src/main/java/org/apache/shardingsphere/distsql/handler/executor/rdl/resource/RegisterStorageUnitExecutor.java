@@ -18,17 +18,16 @@
 package org.apache.shardingsphere.distsql.handler.executor.rdl.resource;
 
 import lombok.Setter;
-import lombok.extern.slf4j.Slf4j;
+import org.apache.shardingsphere.database.connector.core.checker.PrivilegeCheckType;
 import org.apache.shardingsphere.distsql.handler.aware.DistSQLExecutorDatabaseAware;
 import org.apache.shardingsphere.distsql.handler.engine.update.DistSQLUpdateExecutor;
 import org.apache.shardingsphere.distsql.handler.validate.DistSQLDataSourcePoolPropertiesValidator;
 import org.apache.shardingsphere.distsql.segment.DataSourceSegment;
 import org.apache.shardingsphere.distsql.segment.converter.DataSourceSegmentsConverter;
 import org.apache.shardingsphere.distsql.statement.type.rdl.resource.unit.type.RegisterStorageUnitStatement;
-import org.apache.shardingsphere.infra.database.core.checker.PrivilegeCheckType;
 import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePoolProperties;
-import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
-import org.apache.shardingsphere.infra.exception.core.external.ShardingSphereExternalException;
+import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
+import org.apache.shardingsphere.infra.exception.external.ShardingSphereExternalException;
 import org.apache.shardingsphere.infra.exception.kernel.metadata.resource.storageunit.DuplicateStorageUnitException;
 import org.apache.shardingsphere.infra.exception.kernel.metadata.resource.storageunit.StorageUnitsOperateException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
@@ -45,7 +44,6 @@ import java.util.stream.Collectors;
  * Register storage unit executor.
  */
 @Setter
-@Slf4j
 public final class RegisterStorageUnitExecutor implements DistSQLUpdateExecutor<RegisterStorageUnitStatement>, DistSQLExecutorDatabaseAware {
     
     private final DistSQLDataSourcePoolPropertiesValidator validateHandler = new DistSQLDataSourcePoolPropertiesValidator();

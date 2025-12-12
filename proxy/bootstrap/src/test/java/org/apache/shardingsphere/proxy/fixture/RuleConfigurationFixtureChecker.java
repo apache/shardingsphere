@@ -19,7 +19,7 @@ package org.apache.shardingsphere.proxy.fixture;
 
 import org.apache.shardingsphere.infra.config.rule.checker.DatabaseRuleConfigurationChecker;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
-import org.apache.shardingsphere.test.fixture.infra.rule.MockedRuleConfiguration;
+import org.apache.shardingsphere.test.infra.fixture.rule.MockedRuleConfiguration;
 
 import javax.sql.DataSource;
 import java.util.Collection;

@@ -81,7 +81,7 @@ public final class YamlReadwriteSplittingRuleConfigurationSwapper implements Yam
     
     private TransactionalReadQueryStrategy getTransactionalReadQueryStrategy(final YamlReadwriteSplittingDataSourceGroupRuleConfiguration yamlDataSourceGroupRuleConfig) {
         return Strings.isNullOrEmpty(yamlDataSourceGroupRuleConfig.getTransactionalReadQueryStrategy())
-                ? TransactionalReadQueryStrategy.DYNAMIC
+                ? TransactionalReadQueryStrategy.PRIMARY
                 : TransactionalReadQueryStrategy.valueOf(yamlDataSourceGroupRuleConfig.getTransactionalReadQueryStrategy());
     }
     

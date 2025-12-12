@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.proxy.backend.handler.admin.executor;
 
+import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPI;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPI;
 import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
 
 import java.util.List;
@@ -29,14 +29,6 @@ import java.util.Optional;
  */
 @SingletonSPI
 public interface DatabaseAdminExecutorCreator extends DatabaseTypedSPI {
-    
-    /**
-     * Create database admin executor, and this executor requires a connection containing a schema to be used.
-     *
-     * @param sqlStatementContext SQL statement context
-     * @return created instance
-     */
-    Optional<DatabaseAdminExecutor> create(SQLStatementContext sqlStatementContext);
     
     /**
      * Create database admin executor.

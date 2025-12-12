@@ -28,7 +28,6 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.Colu
 import org.apache.shardingsphere.sqlfederation.compiler.sql.ast.converter.segment.expression.impl.ColumnConverter;
 
 import java.util.Arrays;
-import java.util.Optional;
 
 /**
  * Column projection converter. 
@@ -37,16 +36,16 @@ import java.util.Optional;
 public final class ColumnProjectionConverter {
     
     /**
-     * Convert column projection segment to sql node.
+     * Convert column projection segment to SQL node.
      *
      * @param segment column projection segment
-     * @return sql node
+     * @return SQL node
      */
-    public static Optional<SqlNode> convert(final ColumnProjectionSegment segment) {
+    public static SqlNode convert(final ColumnProjectionSegment segment) {
         if (segment.getAliasName().isPresent()) {
-            Optional<SqlNode> column = ColumnConverter.convert(segment.getColumn());
+            SqlNode column = ColumnConverter.convert(segment.getColumn());
             SqlIdentifier alias = new SqlIdentifier(segment.getAliasName().get(), SqlParserPos.ZERO);
-            return column.map(optional -> new SqlBasicCall(new SqlAsOperator(), Arrays.asList(optional, alias), SqlParserPos.ZERO));
+            return new SqlBasicCall(new SqlAsOperator(), Arrays.asList(column, alias), SqlParserPos.ZERO);
         }
         return ColumnConverter.convert(segment.getColumn());
     }

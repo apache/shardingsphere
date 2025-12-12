@@ -29,7 +29,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.Co
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.complex.CommonTableExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.WithSegment;
 import org.apache.shardingsphere.sqlfederation.compiler.sql.ast.converter.segment.expression.impl.ColumnConverter;
-import org.apache.shardingsphere.sqlfederation.compiler.sql.ast.converter.statement.select.SelectStatementConverter;
+import org.apache.shardingsphere.sqlfederation.compiler.sql.ast.converter.statement.type.SelectStatementConverter;
 
 import java.util.Collection;
 import java.util.Optional;
@@ -42,11 +42,11 @@ import java.util.stream.Collectors;
 public final class WithConverter {
     
     /**
-     * Convert with segment to sql node list.
+     * Convert with segment to SQL node list.
      *
      * @param withSegment with segment
-     * @param sqlNode sql node
-     * @return sql node list
+     * @param sqlNode SQL node
+     * @return SQL node list
      */
     public static Optional<SqlNode> convert(final WithSegment withSegment, final SqlNode sqlNode) {
         return Optional.of(new SqlWith(SqlParserPos.ZERO, convertWithItem(withSegment.getCommonTableExpressions()), sqlNode));
@@ -63,6 +63,6 @@ public final class WithConverter {
     }
     
     private static SqlNodeList convertColumns(final Collection<ColumnSegment> columnSegments) {
-        return new SqlNodeList(columnSegments.stream().map(each -> ColumnConverter.convert(each).orElseThrow(IllegalStateException::new)).collect(Collectors.toList()), SqlParserPos.ZERO);
+        return new SqlNodeList(columnSegments.stream().map(ColumnConverter::convert).collect(Collectors.toList()), SqlParserPos.ZERO);
     }
 }

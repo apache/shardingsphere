@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.infra.algorithm.core.exception;
 
 import org.apache.shardingsphere.infra.algorithm.core.ShardingSphereAlgorithm;
-import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.XOpenSQLState;
+import org.apache.shardingsphere.infra.exception.external.sql.sqlstate.XOpenSQLState;
 
 /**
  * Algorithm initialization exception.

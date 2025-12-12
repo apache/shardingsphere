@@ -29,7 +29,7 @@
     <dependencies>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-parser-sql-postgresql</artifactId>
+            <artifactId>shardingsphere-parser-sql-engine-postgresql</artifactId>
             <version>${project.version}</version>
             <scope>runtime</scope>
         </dependency>
@@ -47,7 +47,13 @@
         </dependency>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-postgresql-protocol</artifactId>
+            <artifactId>shardingsphere-sql-federation-postgresql</artifactId>
+            <version>${project.version}</version>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.shardingsphere</groupId>
+            <artifactId>shardingsphere-protocol-postgresql</artifactId>
             <version>${project.version}</version>
             <scope>runtime</scope>
         </dependency>

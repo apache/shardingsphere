@@ -21,7 +21,7 @@ import org.apache.shardingsphere.encrypt.exception.syntax.UnsupportedEncryptSQLE
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.encrypt.rule.table.EncryptTable;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
+import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.apache.shardingsphere.infra.merge.result.impl.decorator.DecoratorMergedResult;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;

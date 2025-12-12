@@ -17,85 +17,82 @@
 
 package org.apache.shardingsphere.infra.config.database.impl;
 
-import com.zaxxer.hikari.HikariDataSource;
+import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.datasource.pool.config.ConnectionConfiguration;
 import org.apache.shardingsphere.infra.datasource.pool.config.DataSourceConfiguration;
 import org.apache.shardingsphere.infra.datasource.pool.config.PoolConfiguration;
-import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePoolProperties;
 import org.apache.shardingsphere.infra.fixture.FixtureRuleConfiguration;
 import org.apache.shardingsphere.infra.metadata.database.resource.node.StorageNode;
+import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnit;
+import org.apache.shardingsphere.test.infra.fixture.jdbc.MockedDataSource;
 import org.junit.jupiter.api.Test;
 
 import javax.sql.DataSource;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.isA;
 import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class DataSourceGeneratedDatabaseConfigurationTest {
     
     @Test
-    void assertGetDataSources() {
-        DataSourceGeneratedDatabaseConfiguration databaseConfig = createDataSourceGeneratedDatabaseConfiguration();
-        DataSource dataSource = databaseConfig.getStorageUnits().get("normal_db").getDataSource();
-        assertTrue(dataSource instanceof HikariDataSource);
+    void assertNewSuccess() {
+        DataSourceGeneratedDatabaseConfiguration actual = createDatabaseConfiguration(MockedDataSource.class.getName());
+        assertRuleConfigurations(actual.getRuleConfigurations());
+        assertStorageUnits(actual.getStorageUnits().get("foo_db"));
+        assertDataSources((MockedDataSource) actual.getDataSources().get(new StorageNode("foo_db")));
+    }
+    
+    private void assertRuleConfigurations(final Collection<RuleConfiguration> actual) {
+        FixtureRuleConfiguration ruleConfig = (FixtureRuleConfiguration) actual.iterator().next();
+        assertThat(ruleConfig.getName(), is("foo_rule"));
+    }
+    
+    private void assertStorageUnits(final StorageUnit actual) {
+        DataSource dataSource = actual.getDataSource();
+        assertThat(dataSource, isA(MockedDataSource.class));
+        assertPoolProperties(actual.getDataSourcePoolProperties().getPoolPropertySynonyms().getStandardProperties());
+        assertConnectionProperties(actual.getDataSourcePoolProperties().getConnectionPropertySynonyms().getStandardProperties());
+    }
+    
+    private void assertPoolProperties(final Map<String, Object> actual) {
+        assertThat(actual.size(), is(6));
+        assertThat(actual.get("connectionTimeoutMilliseconds"), is(2000L));
+        assertThat(actual.get("idleTimeoutMilliseconds"), is(1000L));
+        assertThat(actual.get("maxLifetimeMilliseconds"), is(1000L));
+        assertThat(actual.get("maxPoolSize"), is(2));
+        assertThat(actual.get("minPoolSize"), is(1));
+        assertFalse((Boolean) actual.get("readOnly"));
+    }
+    
+    private void assertConnectionProperties(final Map<String, Object> actual) {
+        assertThat(actual.size(), is(4));
+        assertThat(actual.get("dataSourceClassName"), is(MockedDataSource.class.getName()));
+        assertThat(actual.get("url"), is("jdbc:mock://127.0.0.1/foo_db"));
+        assertThat(actual.get("username"), is("root"));
+        assertThat(actual.get("password"), is(""));
+    }
+    
+    private void assertDataSources(final MockedDataSource actual) {
+        assertThat(actual.getUrl(), is("jdbc:mock://127.0.0.1/foo_db"));
+        assertThat(actual.getUsername(), is("root"));
+        assertThat(actual.getPassword(), is(""));
     }
     
     @Test
-    void assertGetStorageNodes() {
-        DataSourceGeneratedDatabaseConfiguration databaseConfig = createDataSourceGeneratedDatabaseConfiguration();
-        HikariDataSource hikariDataSource = (HikariDataSource) databaseConfig.getDataSources().get(new StorageNode("normal_db"));
-        assertThat(hikariDataSource.getJdbcUrl(), is("jdbc:mock://127.0.0.1/normal_db"));
-        assertThat(hikariDataSource.getUsername(), is("root"));
-        assertThat(hikariDataSource.getPassword(), is(""));
+    void assertNewWithException() {
+        assertThrows(Exception.class, () -> createDatabaseConfiguration("non.existent.DataSourceClass"));
     }
     
-    @Test
-    void assertGetStorageUnits() {
-        DataSourceGeneratedDatabaseConfiguration databaseConfig = createDataSourceGeneratedDatabaseConfiguration();
-        DataSource dataSource = databaseConfig.getStorageUnits().get("normal_db").getDataSource();
-        assertTrue(dataSource instanceof HikariDataSource);
-    }
-    
-    @Test
-    void assertGetRuleConfigurations() {
-        DataSourceGeneratedDatabaseConfiguration databaseConfig = createDataSourceGeneratedDatabaseConfiguration();
-        FixtureRuleConfiguration ruleConfig = (FixtureRuleConfiguration) databaseConfig.getRuleConfigurations().iterator().next();
-        assertThat(ruleConfig.getName(), is("test_rule"));
-    }
-    
-    @Test
-    void assertGetDataSourcePoolProperties() {
-        DataSourceGeneratedDatabaseConfiguration databaseConfig = createDataSourceGeneratedDatabaseConfiguration();
-        DataSourcePoolProperties props = databaseConfig.getStorageUnits().get("normal_db").getDataSourcePoolProperties();
-        Map<String, Object> poolStandardProps = props.getPoolPropertySynonyms().getStandardProperties();
-        assertThat(poolStandardProps.size(), is(6));
-        assertThat(poolStandardProps.get("connectionTimeoutMilliseconds"), is(2000L));
-        assertThat(poolStandardProps.get("idleTimeoutMilliseconds"), is(1000L));
-        assertThat(poolStandardProps.get("maxLifetimeMilliseconds"), is(1000L));
-        assertThat(poolStandardProps.get("maxPoolSize"), is(2));
-        assertThat(poolStandardProps.get("minPoolSize"), is(1));
-        assertFalse((Boolean) poolStandardProps.get("readOnly"));
-        Map<String, Object> connStandardProps = props.getConnectionPropertySynonyms().getStandardProperties();
-        assertThat(connStandardProps.size(), is(4));
-        assertThat(connStandardProps.get("dataSourceClassName"), is("com.zaxxer.hikari.HikariDataSource"));
-        assertThat(connStandardProps.get("url"), is("jdbc:mock://127.0.0.1/normal_db"));
-        assertThat(connStandardProps.get("username"), is("root"));
-        assertThat(connStandardProps.get("password"), is(""));
-    }
-    
-    private DataSourceGeneratedDatabaseConfiguration createDataSourceGeneratedDatabaseConfiguration() {
-        return new DataSourceGeneratedDatabaseConfiguration(createDataSources(), Collections.singletonList(new FixtureRuleConfiguration("test_rule")));
-    }
-    
-    private Map<String, DataSourceConfiguration> createDataSources() {
-        PoolConfiguration poolConfig = new PoolConfiguration(2000L, 1000L, 1000L, 2, 1, false, new Properties());
-        DataSourceConfiguration dataSourceConfig = new DataSourceConfiguration(
-                new ConnectionConfiguration("com.zaxxer.hikari.HikariDataSource", "jdbc:mock://127.0.0.1/normal_db", "root", ""), poolConfig);
-        return Collections.singletonMap("normal_db", dataSourceConfig);
+    private DataSourceGeneratedDatabaseConfiguration createDatabaseConfiguration(final String dataSourceClassName) {
+        DataSourceConfiguration dataSourceConfig = new DataSourceConfiguration(new ConnectionConfiguration(dataSourceClassName, "jdbc:mock://127.0.0.1/foo_db", "root", ""),
+                new PoolConfiguration(2000L, 1000L, 1000L, 2, 1, false, new Properties()));
+        return new DataSourceGeneratedDatabaseConfiguration(Collections.singletonMap("foo_db", dataSourceConfig), Collections.singleton(new FixtureRuleConfiguration("foo_rule")));
     }
 }

@@ -21,6 +21,7 @@ import com.google.common.base.Preconditions;
 import lombok.Getter;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.CommonStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.tcl.HiveAbortStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.mysql.MySQLCloneStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.mysql.MySQLCreateLoadableFunctionTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.mysql.MySQLDelimiterStatementTestCase;
@@ -77,6 +78,7 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.s
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.standard.ExplainStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.standard.SetParameterStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.standard.ShowStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.DorisRefreshStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dcl.dialect.mysql.MySQLRenameUserStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dcl.dialect.mysql.MySQLSetDefaultRoleStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dcl.dialect.mysql.MySQLSetPasswordStatementTestCase;
@@ -282,6 +284,7 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.s
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.standard.table.AlterTableStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.standard.table.CreateTableStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.standard.table.DropTableStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.DropEncryptKeyStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.standard.table.RenameTableStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.standard.tablespace.AlterTablespaceStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.standard.tablespace.CreateTablespaceStatementTestCase;
@@ -504,6 +507,9 @@ public final class RootSQLParserTestCases {
     @XmlElement(name = "drop-table")
     private final List<DropTableStatementTestCase> dropTableTestCases = new LinkedList<>();
     
+    @XmlElement(name = "drop-encryptkey")
+    private final List<DropEncryptKeyStatementTestCase> dropEncryptKeyTestCases = new LinkedList<>();
+    
     @XmlElement(name = "drop-text-search")
     private final List<PostgreSQLDropTextSearchStatementTestCase> dropTextSearchTestCases = new LinkedList<>();
     
@@ -605,6 +611,9 @@ public final class RootSQLParserTestCases {
     
     @XmlElement(name = "describe")
     private final List<MySQLDescribeStatementTestCase> describeTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "refresh")
+    private final List<DorisRefreshStatementTestCase> refreshTestCases = new LinkedList<>();
     
     @XmlElement(name = "show-databases")
     private final List<MySQLShowDatabasesStatementTestCase> showDatabasesTestCases = new LinkedList<>();
@@ -1763,6 +1772,9 @@ public final class RootSQLParserTestCases {
     
     @XmlElement(name = "reload-function")
     private final List<ReloadFunctionStatementTestCase> reloadFunctionStatementTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "abort")
+    private final List<HiveAbortStatementTestCase> hiveAbortStatementTestCase = new LinkedList<>();
     
     /**
      * Get all SQL parser test cases.

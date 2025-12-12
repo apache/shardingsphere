@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.sql.parser.statement.core.value.literal.impl;
 
 import lombok.Getter;
+import org.apache.shardingsphere.sql.parser.statement.core.util.SQLUtils;
 import org.apache.shardingsphere.sql.parser.statement.core.value.literal.LiteralValue;
 
 import java.math.BigDecimal;
@@ -37,21 +38,10 @@ public final class NumberLiteralValue implements LiteralValue<Number> {
     
     private Number getNumber(final String value) {
         try {
-            return getBigInteger(value);
+            return SQLUtils.getExactlyNumber(new BigInteger(value));
         } catch (final NumberFormatException ex) {
             // TODO make sure with double and float
             return new BigDecimal(value);
         }
-    }
-    
-    private static Number getBigInteger(final String value) {
-        BigInteger result = new BigInteger(value);
-        if (result.compareTo(new BigInteger(String.valueOf(Integer.MIN_VALUE))) >= 0 && result.compareTo(new BigInteger(String.valueOf(Integer.MAX_VALUE))) <= 0) {
-            return result.intValue();
-        }
-        if (result.compareTo(new BigInteger(String.valueOf(Long.MIN_VALUE))) >= 0 && result.compareTo(new BigInteger(String.valueOf(Long.MAX_VALUE))) <= 0) {
-            return result.longValue();
-        }
-        return result;
     }
 }

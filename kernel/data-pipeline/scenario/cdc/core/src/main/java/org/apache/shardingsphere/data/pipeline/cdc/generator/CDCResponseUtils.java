@@ -30,7 +30,7 @@ import org.apache.shardingsphere.data.pipeline.cdc.protocol.response.StreamDataR
 import org.apache.shardingsphere.data.pipeline.core.exception.param.PipelineInvalidParameterException;
 
 /**
- * CDC response utils.
+ * CDC response utility class.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class CDCResponseUtils {
@@ -69,7 +69,7 @@ public final class CDCResponseUtils {
             case RESPONSE_NOT_SET:
                 break;
             default:
-                throw new PipelineInvalidParameterException(responseCase.name());
+                throw new PipelineInvalidParameterException("Unknown response case: `" + responseCase.name() + "`.");
         }
         return result.build();
     }

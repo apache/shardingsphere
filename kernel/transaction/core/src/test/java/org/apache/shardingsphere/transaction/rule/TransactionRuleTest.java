@@ -26,9 +26,10 @@ import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaDa
 import org.apache.shardingsphere.infra.metadata.database.resource.node.StorageNode;
 import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnit;
 import org.apache.shardingsphere.infra.rule.scope.GlobalRule.GlobalRuleChangedType;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.UpdateStatement;
-import org.apache.shardingsphere.test.fixture.jdbc.MockedDataSource;
+import org.apache.shardingsphere.test.infra.fixture.jdbc.MockedDataSource;
 import org.apache.shardingsphere.transaction.ConnectionTransaction;
 import org.apache.shardingsphere.transaction.api.TransactionType;
 import org.apache.shardingsphere.transaction.config.TransactionRuleConfiguration;
@@ -41,9 +42,10 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.isA;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
@@ -60,26 +62,26 @@ class TransactionRuleTest {
     void assertRefreshWithNotDatabaseChange() {
         TransactionRule actual = new TransactionRule(new TransactionRuleConfiguration("XA", "Atomikos", new Properties()), Collections.emptyList());
         actual.refresh(Collections.singleton(createAddDatabase()), GlobalRuleChangedType.SCHEMA_CHANGED);
-        assertThat(actual.getResource().getTransactionManager(TransactionType.XA), instanceOf(ShardingSphereTransactionManagerFixture.class));
+        assertThat(actual.getResource().getTransactionManager(TransactionType.XA), isA(ShardingSphereTransactionManagerFixture.class));
     }
     
     @Test
     void assertRefreshWithDatabaseChange() {
         TransactionRule actual = new TransactionRule(new TransactionRuleConfiguration("XA", "Atomikos", new Properties()), Collections.singleton(createDatabase()));
         actual.refresh(Collections.singleton(createAddDatabase()), GlobalRuleChangedType.DATABASE_CHANGED);
-        assertThat(actual.getResource().getTransactionManager(TransactionType.XA), instanceOf(ShardingSphereTransactionManagerFixture.class));
+        assertThat(actual.getResource().getTransactionManager(TransactionType.XA), isA(ShardingSphereTransactionManagerFixture.class));
     }
     
     @Test
     void assertIsNotImplicitCommitTransactionWhenNotAutoCommit() {
         assertFalse(new TransactionRule(new TransactionRuleConfiguration("XA", "Atomikos", new Properties()), Collections.emptyList())
-                .isImplicitCommitTransaction(mock(ExecutionContext.class), mock(ConnectionTransaction.class), false));
+                .isImplicitCommitTransaction(mock(SQLStatement.class), true, mock(ConnectionTransaction.class), false));
     }
     
     @Test
     void assertIsNotImplicitCommitTransactionWhenDefaultTypeIsNotDistributedTransaction() {
         assertFalse(new TransactionRule(new TransactionRuleConfiguration("LOCAL", null, new Properties()), Collections.emptyList())
-                .isImplicitCommitTransaction(mock(ExecutionContext.class), mock(ConnectionTransaction.class), true));
+                .isImplicitCommitTransaction(mock(SQLStatement.class), true, mock(ConnectionTransaction.class), true));
     }
     
     @Test
@@ -87,7 +89,7 @@ class TransactionRuleTest {
         ConnectionTransaction connectionTransaction = mock(ConnectionTransaction.class);
         when(connectionTransaction.isInDistributedTransaction()).thenReturn(true);
         assertFalse(new TransactionRule(new TransactionRuleConfiguration("XA", null, new Properties()), Collections.emptyList())
-                .isImplicitCommitTransaction(mock(ExecutionContext.class), connectionTransaction, true));
+                .isImplicitCommitTransaction(mock(SQLStatement.class), true, connectionTransaction, true));
     }
     
     @Test
@@ -95,7 +97,7 @@ class TransactionRuleTest {
         ExecutionContext executionContext = mock(ExecutionContext.class, RETURNS_DEEP_STUBS);
         when(executionContext.getSqlStatementContext().getSqlStatement()).thenReturn(mock(SelectStatement.class));
         assertFalse(new TransactionRule(new TransactionRuleConfiguration("XA", null, new Properties()), Collections.emptyList())
-                .isImplicitCommitTransaction(executionContext, mock(ConnectionTransaction.class), true));
+                .isImplicitCommitTransaction(mock(SelectStatement.class), false, mock(ConnectionTransaction.class), true));
     }
     
     @Test
@@ -104,7 +106,7 @@ class TransactionRuleTest {
         when(executionContext.getSqlStatementContext().getSqlStatement()).thenReturn(mock(UpdateStatement.class));
         when(executionContext.getExecutionUnits()).thenReturn(Collections.singleton(mock(ExecutionUnit.class)));
         assertFalse(new TransactionRule(new TransactionRuleConfiguration("XA", null, new Properties()), Collections.emptyList())
-                .isImplicitCommitTransaction(executionContext, mock(ConnectionTransaction.class), true));
+                .isImplicitCommitTransaction(mock(UpdateStatement.class), false, mock(ConnectionTransaction.class), true));
     }
     
     @Test
@@ -113,14 +115,14 @@ class TransactionRuleTest {
         when(executionContext.getSqlStatementContext().getSqlStatement()).thenReturn(mock(UpdateStatement.class));
         when(executionContext.getExecutionUnits()).thenReturn(Arrays.asList(mock(ExecutionUnit.class), mock(ExecutionUnit.class)));
         assertTrue(new TransactionRule(new TransactionRuleConfiguration("XA", null, new Properties()), Collections.emptyList())
-                .isImplicitCommitTransaction(executionContext, mock(ConnectionTransaction.class), true));
+                .isImplicitCommitTransaction(mock(UpdateStatement.class), true, mock(ConnectionTransaction.class), true));
     }
     
     @Test
     void assertClose() {
         TransactionRule actual = new TransactionRule(new TransactionRuleConfiguration("XA", "Atomikos", new Properties()), Collections.singleton(createDatabase()));
         actual.close();
-        assertThat(actual.getResource().getTransactionManager(TransactionType.XA), instanceOf(ShardingSphereTransactionManagerFixture.class));
+        assertNull(actual.getResource());
     }
     
     private ShardingSphereDatabase createDatabase() {

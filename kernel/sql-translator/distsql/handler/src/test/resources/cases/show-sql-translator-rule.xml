@@ -19,7 +19,7 @@
 <distsql-rule-query-executor-test-cases>
     <test-case dist-sql="SHOW SQL_TRANSLATOR RULE" current-rule-config-yaml-file="cases/show-sql-translator-rule-current-config.yaml">
         <expected-query-result-rows>
-            <expected-query-result-row>NATIVE||true</expected-query-result-row>
+            <expected-query-result-row>DistSQL:FIXTURE||true</expected-query-result-row>
         </expected-query-result-rows>
     </test-case>
 </distsql-rule-query-executor-test-cases>

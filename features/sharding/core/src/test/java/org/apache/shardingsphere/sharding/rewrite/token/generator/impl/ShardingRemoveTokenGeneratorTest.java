@@ -17,10 +17,10 @@
 
 package org.apache.shardingsphere.sharding.rewrite.token.generator.impl;
 
+import org.apache.shardingsphere.database.connector.core.metadata.database.enums.NullsOrderType;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.dml.SelectStatementContext;
-import org.apache.shardingsphere.infra.database.core.metadata.database.enums.NullsOrderType;
-import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.rewrite.sql.token.common.pojo.SQLToken;
@@ -41,9 +41,9 @@ import org.junit.jupiter.api.Test;
 import java.util.Collection;
 import java.util.Collections;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.isA;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
@@ -77,7 +77,7 @@ class ShardingRemoveTokenGeneratorTest {
     void assertGenerateSQLTokens() {
         Collection<? extends SQLToken> actual = generator.generateSQLTokens(createSelectStatementContext());
         assertThat(actual.size(), is(1));
-        assertThat(actual.iterator().next(), instanceOf(RemoveToken.class));
+        assertThat(actual.iterator().next(), isA(RemoveToken.class));
     }
     
     private SelectStatementContext createSelectStatementContext() {
@@ -88,7 +88,7 @@ class ShardingRemoveTokenGeneratorTest {
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         when(database.getName()).thenReturn("foo_db");
         return new SelectStatementContext(
-                selectStatement, Collections.emptyList(), new ShardingSphereMetaData(Collections.singleton(database), mock(), mock(), mock()), "foo_db", Collections.emptyList());
+                selectStatement, new ShardingSphereMetaData(Collections.singleton(database), mock(), mock(), mock()), "foo_db", Collections.emptyList());
     }
     
     private ProjectionsSegment createProjectionsSegment() {

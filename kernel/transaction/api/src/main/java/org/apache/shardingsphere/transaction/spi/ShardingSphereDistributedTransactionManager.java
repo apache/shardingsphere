@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.transaction.spi;
 
-import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.session.connection.transaction.TransactionManager;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPI;
 import org.apache.shardingsphere.transaction.api.TransactionType;
@@ -30,7 +30,7 @@ import java.util.Map;
 /**
  * ShardingSphere distributed transaction manager.
  */
-public interface ShardingSphereDistributedTransactionManager extends TypedSPI, AutoCloseable, TransactionManager {
+public interface ShardingSphereDistributedTransactionManager extends TypedSPI, TransactionManager, AutoCloseable {
     
     /**
      * Initialize distributed transaction manager.

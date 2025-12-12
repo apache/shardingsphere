@@ -19,13 +19,13 @@ package org.apache.shardingsphere.driver.jdbc.adapter;
 
 import lombok.AccessLevel;
 import lombok.Getter;
+import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.DialectDatabaseMetaData;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.driver.jdbc.adapter.executor.ForceExecuteTemplate;
 import org.apache.shardingsphere.driver.jdbc.core.connection.ShardingSphereConnection;
 import org.apache.shardingsphere.driver.jdbc.core.statement.StatementManager;
-import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.DialectDatabaseMetaData;
-import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
-import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
-import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
+import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
 import org.apache.shardingsphere.transaction.util.AutoCommitUtils;
@@ -57,7 +57,7 @@ public abstract class AbstractStatementAdapter extends WrapperAdapter implements
     private boolean closed;
     
     protected final void handleAutoCommitBeforeExecution(final SQLStatement sqlStatement, final ShardingSphereConnection connection) throws SQLException {
-        if (AutoCommitUtils.needOpenTransaction(sqlStatement)) {
+        if (AutoCommitUtils.isNeedStartTransaction(sqlStatement)) {
             connection.beginTransactionIfNeededWhenAutoCommitFalse();
         }
     }

@@ -151,7 +151,7 @@ public final class DataConsistencyCheckUtils {
     /**
      * Check two BigDecimal whether equals or not.
      *
-     * <p>Scale will be ignored, so <code>332.2</code> is equals to <code>332.20</code>.</p>
+     * <p>Scale will be ignored, so ${@code 332.2} is equals to {@code 332.20}.</p>
      *
      * @param one first BigDecimal
      * @param another second BigDecimal
@@ -205,11 +205,11 @@ public final class DataConsistencyCheckUtils {
     /**
      * Get first unique key value.
      *
-     * @param rawRecord raw record
+     * @param record record
      * @param uniqueKey unique key
      * @return first unique key value
      */
-    public static Object getFirstUniqueKeyValue(final Map<String, Object> rawRecord, final @Nullable String uniqueKey) {
-        return rawRecord.isEmpty() || null == uniqueKey ? null : rawRecord.get(uniqueKey);
+    public static Object getFirstUniqueKeyValue(final Map<String, Object> record, final @Nullable String uniqueKey) {
+        return record.isEmpty() || null == uniqueKey ? null : record.get(uniqueKey);
     }
 }

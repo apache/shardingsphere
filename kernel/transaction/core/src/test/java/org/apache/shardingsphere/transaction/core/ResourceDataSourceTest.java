@@ -17,15 +17,15 @@
 
 package org.apache.shardingsphere.transaction.core;
 
-import org.apache.shardingsphere.test.fixture.jdbc.MockedDataSource;
+import org.apache.shardingsphere.test.infra.fixture.jdbc.MockedDataSource;
 import org.apache.shardingsphere.transaction.exception.ResourceNameLengthExceededException;
 import org.junit.jupiter.api.Test;
 
 import java.util.regex.Pattern;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.isA;
 import static org.hamcrest.Matchers.matchesPattern;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
@@ -36,7 +36,7 @@ class ResourceDataSourceTest {
         String originalName = "foo_db.foo_ds";
         ResourceDataSource actual = new ResourceDataSource(originalName, new MockedDataSource());
         assertThat(actual.getOriginalName(), is(originalName));
-        assertThat(actual.getDataSource(), instanceOf(MockedDataSource.class));
+        assertThat(actual.getDataSource(), isA(MockedDataSource.class));
         assertThat(actual.getUniqueResourceName(), matchesPattern(Pattern.compile("\\d+-foo_ds")));
     }
     

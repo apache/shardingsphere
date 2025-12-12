@@ -183,3 +183,7 @@ Oracle 和 SQLServer 由于分页查询较为复杂，目前有部分分页查�
 ### LOAD DATA / LOAD XML
 
 不支持 MySQL `LOAD DATA` 和 `LOAD XML` 语句加载数据到分片表。
+
+### 分号分隔多语句
+
+不支持使用 `;` 分隔的多条 SQL 同时执行。

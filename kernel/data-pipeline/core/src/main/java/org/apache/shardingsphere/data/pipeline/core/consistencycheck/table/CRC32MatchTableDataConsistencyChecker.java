@@ -17,10 +17,11 @@
 
 package org.apache.shardingsphere.data.pipeline.core.consistencycheck.table;
 
-import org.apache.shardingsphere.data.pipeline.core.consistencycheck.table.calculator.CRC32SingleTableInventoryCalculator;
-import org.apache.shardingsphere.data.pipeline.core.consistencycheck.table.calculator.SingleTableInventoryCalculator;
-import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
-import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
+import org.apache.shardingsphere.data.pipeline.core.consistencycheck.result.TableInventoryCheckCalculatedResult;
+import org.apache.shardingsphere.data.pipeline.core.consistencycheck.table.calculator.CRC32TableInventoryCheckCalculator;
+import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.inventory.query.calculator.TableInventoryCalculator;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.spi.annotation.SPIDescription;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 
@@ -63,8 +64,8 @@ public final class CRC32MatchTableDataConsistencyChecker implements TableDataCon
         }
         
         @Override
-        protected SingleTableInventoryCalculator buildSingleTableInventoryCalculator() {
-            return new CRC32SingleTableInventoryCalculator();
+        protected TableInventoryCalculator<TableInventoryCheckCalculatedResult> buildSingleTableInventoryCalculator() {
+            return new CRC32TableInventoryCheckCalculator();
         }
     }
 }

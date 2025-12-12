@@ -45,10 +45,10 @@ import java.util.Optional;
 public final class TrimFunctionConverter {
     
     /**
-     * Convert function segment to sql node.
+     * Convert function segment to SQL node.
      *
      * @param segment function segment
-     * @return sql node
+     * @return SQL node
      */
     public static Optional<SqlNode> convert(final FunctionSegment segment) {
         SqlIdentifier functionName = new SqlIdentifier(segment.getFunctionName(), SqlParserPos.ZERO);

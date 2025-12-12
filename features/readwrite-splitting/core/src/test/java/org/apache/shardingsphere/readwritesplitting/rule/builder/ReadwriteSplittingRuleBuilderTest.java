@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.readwritesplitting.rule.builder;
 
-import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.rule.builder.database.DatabaseRuleBuilder;
 import org.apache.shardingsphere.infra.spi.type.ordered.OrderedSPILoader;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
@@ -28,8 +28,8 @@ import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.isA;
 import static org.mockito.Mockito.mock;
 
 class ReadwriteSplittingRuleBuilderTest {
@@ -42,6 +42,6 @@ class ReadwriteSplittingRuleBuilderTest {
         ReadwriteSplittingRuleConfiguration ruleConfig = new ReadwriteSplittingRuleConfiguration(Collections.singleton(
                 new ReadwriteSplittingDataSourceGroupRuleConfiguration("name", "writeDataSourceName", Collections.singletonList("readDataSourceName"), "loadBalancerName")), Collections.emptyMap());
         DatabaseRuleBuilder builder = OrderedSPILoader.getServices(DatabaseRuleBuilder.class, Collections.singleton(ruleConfig)).get(ruleConfig);
-        assertThat(builder.build(ruleConfig, "", databaseType, mock(), Collections.emptyList(), mock()), instanceOf(ReadwriteSplittingRule.class));
+        assertThat(builder.build(ruleConfig, "", databaseType, mock(), Collections.emptyList(), mock()), isA(ReadwriteSplittingRule.class));
     }
 }

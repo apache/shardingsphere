@@ -51,7 +51,7 @@ public final class ExecutorContext {
     
     private final JDBCExecutor jdbcExecutor;
     
-    private final JDBCExecutorCallback<? extends ExecuteResult> callback;
+    private final JDBCExecutorCallback<? extends ExecuteResult> queryCallback;
     
     private final ShardingSphereStatistics statistics;
     

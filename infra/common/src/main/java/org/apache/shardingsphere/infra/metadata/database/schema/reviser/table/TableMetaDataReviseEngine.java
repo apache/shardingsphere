@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.infra.metadata.database.schema.reviser.table;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.database.core.metadata.data.model.TableMetaData;
+import org.apache.shardingsphere.database.connector.core.metadata.data.model.TableMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.reviser.MetaDataReviseEntry;
 import org.apache.shardingsphere.infra.metadata.database.schema.reviser.column.ColumnReviseEngine;
 import org.apache.shardingsphere.infra.metadata.database.schema.reviser.constraint.ConstraintReviseEngine;

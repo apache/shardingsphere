@@ -17,9 +17,9 @@
 
 package org.apache.shardingsphere.single.route.engine.engine;
 
-import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
+import org.apache.shardingsphere.database.exception.core.exception.syntax.table.TableExistsException;
 import org.apache.shardingsphere.infra.datanode.DataNode;
-import org.apache.shardingsphere.infra.exception.dialect.exception.syntax.table.TableExistsException;
 import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.apache.shardingsphere.infra.metadata.database.schema.QualifiedTable;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
@@ -37,7 +37,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.table.CreateTableStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
-import org.apache.shardingsphere.test.fixture.jdbc.MockedDataSource;
+import org.apache.shardingsphere.test.infra.fixture.jdbc.MockedDataSource;
 import org.junit.jupiter.api.Test;
 
 import javax.sql.DataSource;
@@ -69,8 +69,8 @@ class SingleRouteEngineTest {
     void assertRouteInSameDataSource() throws SQLException {
         SingleRouteEngine engine = new SingleRouteEngine(mockQualifiedTables(), null, mock());
         SingleRule singleRule = new SingleRule(new SingleRuleConfiguration(), "foo_db", mock(), createDataSourceMap(), Collections.emptyList());
-        singleRule.getAttributes().getAttribute(DataNodeRuleAttribute.class).getAllDataNodes().put("t_order", Collections.singleton(mockDataNode("t_order")));
-        singleRule.getAttributes().getAttribute(DataNodeRuleAttribute.class).getAllDataNodes().put("t_order_item", Collections.singleton(mockDataNode("t_order_item")));
+        singleRule.getAttributes().getAttribute(DataNodeRuleAttribute.class).getAllDataNodes().put("t_order", Collections.singleton(new DataNode("ds_0", "foo_db", "t_order")));
+        singleRule.getAttributes().getAttribute(DataNodeRuleAttribute.class).getAllDataNodes().put("t_order_item", Collections.singleton(new DataNode("ds_0", "foo_db", "t_order_item")));
         RouteContext routeContext = new RouteContext();
         engine.route(routeContext, singleRule);
         List<RouteUnit> routeUnits = new ArrayList<>(routeContext.getRouteUnits());
@@ -84,12 +84,6 @@ class SingleRouteEngineTest {
         RouteMapper tableMapper1 = tableMappers.next();
         assertThat(tableMapper1.getActualName(), is("t_order_item"));
         assertThat(tableMapper1.getLogicName(), is("t_order_item"));
-    }
-    
-    private DataNode mockDataNode(final String tableName) {
-        DataNode result = new DataNode("ds_0", tableName);
-        result.setSchemaName("foo_db");
-        return result;
     }
     
     private Collection<QualifiedTable> mockQualifiedTables() {

@@ -32,7 +32,6 @@ import org.apache.shardingsphere.data.pipeline.opengauss.ingest.incremental.wal.
 import org.apache.shardingsphere.data.pipeline.opengauss.ingest.incremental.wal.decode.MppdbDecodingPlugin;
 import org.apache.shardingsphere.data.pipeline.opengauss.ingest.incremental.wal.decode.OpenGaussLogSequenceNumber;
 import org.apache.shardingsphere.data.pipeline.opengauss.ingest.incremental.wal.decode.OpenGaussTimestampUtils;
-import org.apache.shardingsphere.data.pipeline.postgresql.ingest.incremental.wal.position.slot.PostgreSQLSlotNameGenerator;
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.incremental.wal.WALEventConverter;
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.incremental.wal.WALPosition;
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.incremental.wal.decode.DecodingPlugin;
@@ -40,6 +39,7 @@ import org.apache.shardingsphere.data.pipeline.postgresql.ingest.incremental.wal
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.incremental.wal.event.AbstractWALEvent;
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.incremental.wal.event.BeginTXEvent;
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.incremental.wal.event.CommitTXEvent;
+import org.apache.shardingsphere.data.pipeline.postgresql.ingest.incremental.wal.position.slot.PostgreSQLSlotNameGenerator;
 import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 import org.opengauss.jdbc.PgConnection;
 import org.opengauss.replication.PGReplicationStream;

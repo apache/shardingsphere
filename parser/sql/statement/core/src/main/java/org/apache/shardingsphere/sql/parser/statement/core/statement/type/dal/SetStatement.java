@@ -18,8 +18,10 @@
 package org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal;
 
 import lombok.Getter;
-import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.VariableAssignSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.SQLStatementAttributes;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.type.AllowNotUseDatabaseSQLStatementAttribute;
 
 import java.util.List;
 
@@ -34,5 +36,10 @@ public final class SetStatement extends DALStatement {
     public SetStatement(final DatabaseType databaseType, final List<VariableAssignSegment> variableAssigns) {
         super(databaseType);
         this.variableAssigns = variableAssigns;
+    }
+    
+    @Override
+    public SQLStatementAttributes getAttributes() {
+        return new SQLStatementAttributes(new AllowNotUseDatabaseSQLStatementAttribute(true));
     }
 }

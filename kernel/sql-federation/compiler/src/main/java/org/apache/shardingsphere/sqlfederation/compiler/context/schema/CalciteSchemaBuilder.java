@@ -22,16 +22,16 @@ import lombok.NoArgsConstructor;
 import org.apache.calcite.jdbc.CalciteSchema;
 import org.apache.calcite.schema.impl.AbstractSchema;
 import org.apache.calcite.schema.lookup.LikePattern;
+import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.DialectDatabaseMetaData;
+import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoader;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.database.DatabaseTypeEngine;
-import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.DialectDatabaseMetaData;
-import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPILoader;
-import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
-import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.sqlfederation.compiler.metadata.schema.SQLFederationDatabase;
 import org.apache.shardingsphere.sqlfederation.compiler.metadata.schema.SQLFederationSchema;
-import org.apache.shardingsphere.sqlfederation.compiler.sql.function.SQLFederationFunctionRegister;
+import org.apache.shardingsphere.sqlfederation.compiler.sql.function.DialectSQLFederationFunctionRegister;
 
 import java.util.Collection;
 import java.util.Optional;
@@ -83,20 +83,19 @@ public final class CalciteSchemaBuilder {
     
     private static void registerFunction(final CalciteSchema calciteSchema, final DatabaseType databaseType) {
         for (CalciteSchema each : calciteSchema.getSubSchemaMap().values()) {
-            DatabaseTypedSPILoader.findService(SQLFederationFunctionRegister.class, databaseType).ifPresent(optional -> optional.registerFunction(each.plus(), each.getName()));
+            DatabaseTypedSPILoader.findService(DialectSQLFederationFunctionRegister.class, databaseType).ifPresent(optional -> optional.registerFunction(each.plus(), each.getName()));
         }
     }
     
     private static void registerFunction(final Collection<CalciteSchema> subSchemas, final DatabaseType databaseType) {
         for (CalciteSchema each : subSchemas) {
-            DatabaseTypedSPILoader.findService(SQLFederationFunctionRegister.class, databaseType).ifPresent(optional -> optional.registerFunction(each.plus(), each.getName()));
+            DatabaseTypedSPILoader.findService(DialectSQLFederationFunctionRegister.class, databaseType).ifPresent(optional -> optional.registerFunction(each.plus(), each.getName()));
         }
     }
     
     private static void registerNestedSchemaFunction(final CalciteSchema calciteSchema, final DatabaseType databaseType) {
         for (CalciteSchema each : calciteSchema.getSubSchemaMap().values()) {
-            Collection<CalciteSchema> subSchemas = each.subSchemas().getNames(LikePattern.any()).stream().map(schemaName -> each.subSchemas().get(schemaName)).collect(Collectors.toList());
-            registerFunction(subSchemas, databaseType);
+            registerFunction(each.subSchemas().getNames(LikePattern.any()).stream().map(schemaName -> each.subSchemas().get(schemaName)).collect(Collectors.toList()), databaseType);
         }
     }
 }

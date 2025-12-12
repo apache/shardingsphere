@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.infra.binder.engine.statement.ddl;
 
+import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementBinderContext;
-import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
@@ -41,6 +41,7 @@ import java.util.Collections;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.when;
 
@@ -79,9 +80,9 @@ class PrepareStatementBinderTest {
         PrepareStatement actual = new PrepareStatementBinder().bind(prepareStatement, binderContext);
         assertThat(actual.getDatabaseType(), is(databaseType));
         assertTrue(actual.getSelect().isPresent());
-        assertTrue(!actual.getInsert().isPresent());
-        assertTrue(!actual.getUpdate().isPresent());
-        assertTrue(!actual.getDelete().isPresent());
+        assertFalse(actual.getInsert().isPresent());
+        assertFalse(actual.getUpdate().isPresent());
+        assertFalse(actual.getDelete().isPresent());
     }
     
     @Test
@@ -92,10 +93,10 @@ class PrepareStatementBinderTest {
         SQLStatementBinderContext binderContext = new SQLStatementBinderContext(metaData, "foo_db_1", hintValueContext, prepareStatement);
         PrepareStatement actual = new PrepareStatementBinder().bind(prepareStatement, binderContext);
         assertThat(actual.getDatabaseType(), is(databaseType));
-        assertTrue(!actual.getSelect().isPresent());
-        assertTrue(!actual.getInsert().isPresent());
-        assertTrue(!actual.getUpdate().isPresent());
-        assertTrue(!actual.getDelete().isPresent());
+        assertFalse(actual.getSelect().isPresent());
+        assertFalse(actual.getInsert().isPresent());
+        assertFalse(actual.getUpdate().isPresent());
+        assertFalse(actual.getDelete().isPresent());
     }
     
     private SelectStatement createSelectStatement() {

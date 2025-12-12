@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.infra.exception.kernel.metadata.datanode;
 
-import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.XOpenSQLState;
+import org.apache.shardingsphere.infra.exception.external.sql.sqlstate.XOpenSQLState;
 
 /**
  * Invalid data node format exception.

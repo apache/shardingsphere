@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.infra.binder.engine.segment.dml.expression.type;
 
+import com.cedarsoftware.util.CaseInsensitiveMap;
 import com.cedarsoftware.util.CaseInsensitiveMap.CaseInsensitiveString;
 import com.google.common.collect.Multimap;
 import lombok.AccessLevel;
@@ -25,15 +26,22 @@ import org.apache.shardingsphere.infra.binder.engine.segment.SegmentType;
 import org.apache.shardingsphere.infra.binder.engine.segment.dml.expression.ExpressionSegmentBinder;
 import org.apache.shardingsphere.infra.binder.engine.segment.dml.from.context.TableSegmentBinderContext;
 import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementBinderContext;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.FunctionSegment;
 
-import java.util.stream.Collectors;
+import java.util.Map;
 
 /**
  * Function expression binder.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class FunctionExpressionSegmentBinder {
+    
+    private static final Map<String, Integer> SKIP_BIND_FUNCTION_PARAMETER_INDEXES = new CaseInsensitiveMap<>();
+    
+    static {
+        SKIP_BIND_FUNCTION_PARAMETER_INDEXES.put("XMLELEMENT", 0);
+    }
     
     /**
      * Bind function expression.
@@ -50,8 +58,15 @@ public final class FunctionExpressionSegmentBinder {
                                        final Multimap<CaseInsensitiveString, TableSegmentBinderContext> outerTableBinderContexts) {
         FunctionSegment result = new FunctionSegment(segment.getStartIndex(), segment.getStopIndex(), segment.getFunctionName(), segment.getText());
         result.setOwner(segment.getOwner());
-        result.getParameters().addAll(segment.getParameters().stream()
-                .map(each -> ExpressionSegmentBinder.bind(each, parentSegmentType, binderContext, tableBinderContexts, outerTableBinderContexts)).collect(Collectors.toList()));
+        int index = 0;
+        Integer skipParameterIndex = SKIP_BIND_FUNCTION_PARAMETER_INDEXES.getOrDefault(segment.getFunctionName(), -1);
+        for (ExpressionSegment each : segment.getParameters()) {
+            if (skipParameterIndex >= 0 && index++ == skipParameterIndex) {
+                result.getParameters().add(each);
+                continue;
+            }
+            result.getParameters().add(ExpressionSegmentBinder.bind(each, parentSegmentType, binderContext, tableBinderContexts, outerTableBinderContexts));
+        }
         segment.getWindow().ifPresent(result::setWindow);
         return result;
     }

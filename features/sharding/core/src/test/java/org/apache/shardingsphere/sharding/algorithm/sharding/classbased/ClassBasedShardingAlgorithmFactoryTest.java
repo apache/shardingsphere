@@ -25,8 +25,8 @@ import org.junit.jupiter.api.Test;
 
 import java.util.Properties;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.isA;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class ClassBasedShardingAlgorithmFactoryTest {
@@ -40,6 +40,6 @@ class ClassBasedShardingAlgorithmFactoryTest {
     @Test
     void assertNewInstance() {
         assertThat(ClassBasedShardingAlgorithmFactory.newInstance(ClassBasedStandardShardingAlgorithmFixture.class.getName(), StandardShardingAlgorithm.class, new Properties()),
-                instanceOf(ClassBasedStandardShardingAlgorithmFixture.class));
+                isA(ClassBasedStandardShardingAlgorithmFixture.class));
     }
 }

@@ -17,14 +17,15 @@
 
 package org.apache.shardingsphere.infra.executor.sql.hook;
 
-import org.apache.shardingsphere.infra.database.core.connector.ConnectionProperties;
+import org.apache.shardingsphere.database.connector.core.jdbcurl.parser.ConnectionProperties;
+import org.apache.shardingsphere.infra.spi.ShardingSphereSPI;
 
 import java.util.List;
 
 /**
  * SQL Execution hook.
  */
-public interface SQLExecutionHook {
+public interface SQLExecutionHook extends ShardingSphereSPI {
     
     /**
      * Handle when SQL execution started.

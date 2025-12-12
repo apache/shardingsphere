@@ -20,10 +20,12 @@ package org.apache.shardingsphere.sqlfederation.compiler.sql.ast.converter.opera
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.calcite.sql.SqlBinaryOperator;
+import org.apache.calcite.sql.SqlCall;
 import org.apache.calcite.sql.SqlFunction;
 import org.apache.calcite.sql.SqlFunctionCategory;
 import org.apache.calcite.sql.SqlKind;
 import org.apache.calcite.sql.SqlPrefixOperator;
+import org.apache.calcite.sql.SqlWriter;
 import org.apache.calcite.sql.type.InferTypes;
 import org.apache.calcite.sql.type.OperandTypes;
 import org.apache.calcite.sql.type.ReturnTypes;
@@ -70,7 +72,15 @@ public final class SQLExtensionOperatorTable {
     public static final MySQLMatchAgainstOperator MATCH_AGAINST = new MySQLMatchAgainstOperator();
     
     public static final SqlFunction INTERVAL_OPERATOR =
-            new SqlFunction("INTERVAL_OPERATOR", SqlKind.OTHER, ReturnTypes.BIGINT_NULLABLE, InferTypes.FIRST_KNOWN, OperandTypes.VARIADIC, SqlFunctionCategory.STRING);
+            new SqlFunction("INTERVAL_OPERATOR", SqlKind.OTHER, ReturnTypes.BIGINT_NULLABLE, InferTypes.FIRST_KNOWN, OperandTypes.VARIADIC, SqlFunctionCategory.STRING) {
+                
+                @Override
+                public void unparse(final SqlWriter writer, final SqlCall call, final int leftPrec, final int rightPrec) {
+                    writer.keyword("INTERVAL");
+                    call.operand(0).unparse(writer, 0, 0);
+                    call.operand(1).unparse(writer, 0, 0);
+                }
+            };
     
     public static final SqlBinaryOperator RLIKE = new SqlBinaryOperator("RLIKE", SqlKind.MATCH_RECOGNIZE, 30, true, ReturnTypes.INTEGER, InferTypes.VARCHAR_1024, OperandTypes.ANY_ANY);
 }

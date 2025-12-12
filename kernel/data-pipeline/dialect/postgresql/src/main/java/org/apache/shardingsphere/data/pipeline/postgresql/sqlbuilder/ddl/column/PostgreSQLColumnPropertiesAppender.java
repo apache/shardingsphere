@@ -117,14 +117,9 @@ public final class PostgreSQLColumnPropertiesAppender {
         return result;
     }
     
-    @SuppressWarnings("unchecked")
     private String getInheritedFromTableOrType(final Map<String, Object> context) {
         String result = "inheritedfrom";
-        if (null != context.get("typoid")) {
-            result += "type";
-        } else if (null != context.get("coll_inherits") && !((Collection<String>) context.get("coll_inherits")).isEmpty()) {
-            result += "table";
-        }
+        result += null == context.get("typoid") ? "table" : "type";
         return result;
     }
     
@@ -308,16 +303,13 @@ public final class PostgreSQLColumnPropertiesAppender {
         if (idx > 0 && result.endsWith(")")) {
             result = result.substring(0, idx);
         } else if (idx > 0 && result.startsWith("time")) {
-            int endIdx = result.indexOf(')');
-            if (1 != endIdx) {
-                Matcher matcher = BRACKETS_PATTERN.matcher(result);
-                StringBuffer buffer = new StringBuffer();
-                while (matcher.find()) {
-                    matcher.appendReplacement(buffer, "");
-                }
-                matcher.appendTail(buffer);
-                result = buffer.toString();
+            Matcher matcher = BRACKETS_PATTERN.matcher(result);
+            StringBuffer buffer = new StringBuffer();
+            while (matcher.find()) {
+                matcher.appendReplacement(buffer, "");
             }
+            matcher.appendTail(buffer);
+            result = buffer.toString();
         } else if (result.startsWith("interval")) {
             result = "interval";
         }

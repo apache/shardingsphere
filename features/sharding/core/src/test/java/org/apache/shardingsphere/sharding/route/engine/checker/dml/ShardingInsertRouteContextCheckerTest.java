@@ -17,9 +17,9 @@
 
 package org.apache.shardingsphere.sharding.route.engine.checker.dml;
 
+import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.dml.InsertStatementContext;
-import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
@@ -28,6 +28,8 @@ import org.apache.shardingsphere.infra.route.context.RouteMapper;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
 import org.apache.shardingsphere.infra.session.query.QueryContext;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
+import org.apache.shardingsphere.infra.util.props.PropertiesBuilder;
+import org.apache.shardingsphere.infra.util.props.PropertiesBuilder.Property;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.StandardShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.exception.algorithm.DuplicateInsertDataRecordException;
 import org.apache.shardingsphere.sharding.exception.syntax.UnsupportedUpdatingShardingValueException;
@@ -44,8 +46,6 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableNameSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.InsertStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
-import org.apache.shardingsphere.test.util.PropertiesBuilder;
-import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Answers;
@@ -89,21 +89,21 @@ class ShardingInsertRouteContextCheckerTest {
     
     @Test
     void assertCheckWhenInsertWithSingleRouting() {
-        SQLStatementContext sqlStatementContext = createInsertStatementContext(Collections.singletonList(1), createInsertStatement());
+        SQLStatementContext sqlStatementContext = createInsertStatementContext(createInsertStatement());
         when(routeContext.isSingleRouting()).thenReturn(true);
         when(queryContext.getSqlStatementContext()).thenReturn(sqlStatementContext);
         assertDoesNotThrow(() -> new ShardingInsertRouteContextChecker(shardingConditions).check(shardingRule, queryContext, database, mock(), routeContext));
     }
     
-    private InsertStatementContext createInsertStatementContext(final List<Object> params, final InsertStatement insertStatement) {
+    private InsertStatementContext createInsertStatementContext(final InsertStatement insertStatement) {
         when(database.getName()).thenReturn("foo_db");
         ShardingSphereMetaData metaData = new ShardingSphereMetaData(Collections.singleton(database), mock(), mock(), mock());
-        return new InsertStatementContext(insertStatement, params, metaData, "foo_db");
+        return new InsertStatementContext(insertStatement, metaData, "foo_db");
     }
     
     @Test
     void assertCheckWhenInsertWithBroadcastTable() {
-        SQLStatementContext sqlStatementContext = createInsertStatementContext(Collections.singletonList(1), createInsertStatement());
+        SQLStatementContext sqlStatementContext = createInsertStatementContext(createInsertStatement());
         when(routeContext.isSingleRouting()).thenReturn(false);
         when(queryContext.getSqlStatementContext()).thenReturn(sqlStatementContext);
         assertDoesNotThrow(() -> new ShardingInsertRouteContextChecker(shardingConditions).check(shardingRule, queryContext, database, mock(), routeContext));
@@ -111,7 +111,7 @@ class ShardingInsertRouteContextCheckerTest {
     
     @Test
     void assertCheckWhenInsertWithRoutingToSingleDataNode() {
-        SQLStatementContext sqlStatementContext = createInsertStatementContext(Collections.singletonList(1), createInsertStatement());
+        SQLStatementContext sqlStatementContext = createInsertStatementContext(createInsertStatement());
         when(routeContext.isSingleRouting()).thenReturn(false);
         when(routeContext.getOriginalDataNodes()).thenReturn(getSingleRouteDataNodes());
         when(queryContext.getSqlStatementContext()).thenReturn(sqlStatementContext);
@@ -120,7 +120,7 @@ class ShardingInsertRouteContextCheckerTest {
     
     @Test
     void assertCheckWhenInsertWithRoutingToMultipleDataNodes() {
-        SQLStatementContext sqlStatementContext = createInsertStatementContext(Collections.singletonList(1), createInsertStatement());
+        SQLStatementContext sqlStatementContext = createInsertStatementContext(createInsertStatement());
         when(routeContext.getOriginalDataNodes()).thenReturn(getMultipleRouteDataNodes());
         when(queryContext.getSqlStatementContext()).thenReturn(sqlStatementContext);
         assertThrows(DuplicateInsertDataRecordException.class, () -> new ShardingInsertRouteContextChecker(shardingConditions).check(shardingRule, queryContext, database, mock(), routeContext));
@@ -131,7 +131,7 @@ class ShardingInsertRouteContextCheckerTest {
         List<Object> params = Collections.singletonList(1);
         RouteContext routeContext = mock(RouteContext.class);
         when(routeContext.isSingleRouting()).thenReturn(true);
-        InsertStatementContext insertStatementContext = createInsertStatementContext(params, createInsertStatement());
+        InsertStatementContext insertStatementContext = createInsertStatementContext(createInsertStatement());
         when(queryContext.getSqlStatementContext()).thenReturn(insertStatementContext);
         when(queryContext.getParameters()).thenReturn(params);
         assertDoesNotThrow(() -> new ShardingInsertRouteContextChecker(mock(ShardingConditions.class)).check(shardingRule, queryContext, database, mock(), routeContext));
@@ -141,7 +141,7 @@ class ShardingInsertRouteContextCheckerTest {
     void assertCheckWhenOnDuplicateKeyUpdateShardingColumnWithSameRouteContext() {
         mockShardingRuleForUpdateShardingColumn();
         List<Object> params = Collections.singletonList(1);
-        InsertStatementContext insertStatementContext = createInsertStatementContext(params, createInsertStatement());
+        InsertStatementContext insertStatementContext = createInsertStatementContext(createInsertStatement());
         when(queryContext.getSqlStatementContext()).thenReturn(insertStatementContext);
         when(queryContext.getParameters()).thenReturn(params);
         assertDoesNotThrow(() -> new ShardingInsertRouteContextChecker(mock(ShardingConditions.class)).check(shardingRule, queryContext, database, mock(), createSingleRouteContext()));
@@ -151,7 +151,7 @@ class ShardingInsertRouteContextCheckerTest {
     void assertCheckWhenOnDuplicateKeyUpdateShardingColumnWithDifferentRouteContext() {
         mockShardingRuleForUpdateShardingColumn();
         List<Object> params = Collections.singletonList(1);
-        InsertStatementContext insertStatementContext = createInsertStatementContext(params, createInsertStatement());
+        InsertStatementContext insertStatementContext = createInsertStatementContext(createInsertStatement());
         when(queryContext.getSqlStatementContext()).thenReturn(insertStatementContext);
         when(queryContext.getParameters()).thenReturn(params);
         assertThrows(UnsupportedUpdatingShardingValueException.class,
@@ -187,10 +187,10 @@ class ShardingInsertRouteContextCheckerTest {
     
     private Collection<Collection<DataNode>> getMultipleRouteDataNodes() {
         Collection<DataNode> value1DataNodes = new LinkedList<>();
-        value1DataNodes.add(new DataNode("ds_0", "user_0"));
+        value1DataNodes.add(new DataNode("ds_0", (String) null, "user_0"));
         Collection<DataNode> value2DataNodes = new LinkedList<>();
-        value2DataNodes.add(new DataNode("ds_0", "user_0"));
-        value2DataNodes.add(new DataNode("ds_0", "user_1"));
+        value2DataNodes.add(new DataNode("ds_0", (String) null, "user_0"));
+        value2DataNodes.add(new DataNode("ds_0", (String) null, "user_1"));
         Collection<Collection<DataNode>> result = new LinkedList<>();
         result.add(value1DataNodes);
         result.add(value2DataNodes);
@@ -199,9 +199,9 @@ class ShardingInsertRouteContextCheckerTest {
     
     private Collection<Collection<DataNode>> getSingleRouteDataNodes() {
         Collection<DataNode> value1DataNodes = new LinkedList<>();
-        value1DataNodes.add(new DataNode("ds_0", "user_0"));
+        value1DataNodes.add(new DataNode("ds_0", (String) null, "user_0"));
         Collection<DataNode> value2DataNodes = new LinkedList<>();
-        value2DataNodes.add(new DataNode("ds_0", "user_0"));
+        value2DataNodes.add(new DataNode("ds_0", (String) null, "user_0"));
         Collection<Collection<DataNode>> result = new LinkedList<>();
         result.add(value1DataNodes);
         result.add(value2DataNodes);

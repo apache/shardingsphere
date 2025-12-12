@@ -45,7 +45,17 @@ public final class SQLStatementCompilerEngineFactory {
         SQLStatementCompilerEngine result = COMPILER_ENGINES.get(cacheKey);
         if (null == result) {
             result = COMPILER_ENGINES.computeIfAbsent(cacheKey, unused -> new SQLStatementCompilerEngine(cacheOption));
+        } else if (isOnlyModifyMaximumSizeConfig(cacheOption, result)) {
+            result.updateCacheOption(cacheOption);
+        } else if (!cacheOption.equals(result.getCacheOption())) {
+            result = new SQLStatementCompilerEngine(cacheOption);
+            COMPILER_ENGINES.put(cacheKey, result);
         }
         return result;
+    }
+    
+    private static boolean isOnlyModifyMaximumSizeConfig(final SQLFederationCacheOption cacheOption, final SQLStatementCompilerEngine compilerEngine) {
+        return cacheOption.getInitialCapacity() == compilerEngine.getCacheOption().getInitialCapacity()
+                && cacheOption.getMaximumSize() != compilerEngine.getCacheOption().getMaximumSize();
     }
 }

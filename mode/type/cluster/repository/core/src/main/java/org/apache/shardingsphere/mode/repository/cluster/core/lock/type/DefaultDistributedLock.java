@@ -17,12 +17,12 @@
 
 package org.apache.shardingsphere.mode.repository.cluster.core.lock.type;
 
-import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
-import org.apache.shardingsphere.infra.util.retry.RetryExecutor;
+import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
-import org.apache.shardingsphere.mode.repository.cluster.lock.DistributedLock;
 import org.apache.shardingsphere.mode.repository.cluster.core.lock.type.props.DefaultLockPropertyKey;
 import org.apache.shardingsphere.mode.repository.cluster.core.lock.type.props.DefaultLockTypedProperties;
+import org.apache.shardingsphere.mode.repository.cluster.lock.DistributedLock;
+import org.apache.shardingsphere.mode.retry.RetryExecutor;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;

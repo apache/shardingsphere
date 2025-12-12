@@ -19,7 +19,7 @@ package org.apache.shardingsphere.infra.datasource.pool.props.validator;
 
 import com.zaxxer.hikari.HikariDataSource;
 import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePoolProperties;
-import org.apache.shardingsphere.test.fixture.jdbc.MockedDriver;
+import org.apache.shardingsphere.test.infra.fixture.jdbc.MockedDriver;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 

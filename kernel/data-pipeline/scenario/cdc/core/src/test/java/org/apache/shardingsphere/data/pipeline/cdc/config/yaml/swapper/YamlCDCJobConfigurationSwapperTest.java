@@ -22,7 +22,7 @@ import org.apache.shardingsphere.data.pipeline.cdc.config.CDCJobConfiguration.Si
 import org.apache.shardingsphere.data.pipeline.cdc.config.yaml.config.YamlCDCJobConfiguration;
 import org.apache.shardingsphere.data.pipeline.cdc.config.yaml.config.YamlCDCJobConfiguration.YamlSinkConfiguration;
 import org.apache.shardingsphere.data.pipeline.cdc.constant.CDCSinkType;
-import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.junit.jupiter.api.Test;
 
@@ -39,20 +39,25 @@ class YamlCDCJobConfigurationSwapperTest {
     
     @Test
     void assertSwapToObject() {
-        YamlCDCJobConfiguration yamlJobConfig = new YamlCDCJobConfiguration();
-        yamlJobConfig.setJobId("j0302p00007a8bf46da145dc155ba25c710b550220");
-        yamlJobConfig.setDatabaseName("test_db");
-        yamlJobConfig.setSchemaTableNames(Arrays.asList("test.t_order", "t_order_item"));
-        yamlJobConfig.setFull(true);
-        yamlJobConfig.setSourceDatabaseType("MySQL");
-        YamlSinkConfiguration sinkConfig = new YamlSinkConfiguration();
-        sinkConfig.setSinkType(CDCSinkType.SOCKET.name());
-        yamlJobConfig.setSinkConfig(sinkConfig);
+        YamlCDCJobConfiguration yamlJobConfig = createYamlCDCJobConfiguration();
         CDCJobConfiguration actual = new YamlCDCJobConfigurationSwapper().swapToObject(yamlJobConfig);
         assertThat(actual.getJobId(), is("j0302p00007a8bf46da145dc155ba25c710b550220"));
         assertThat(actual.getDatabaseName(), is("test_db"));
         assertThat(actual.getSchemaTableNames(), is(Arrays.asList("test.t_order", "t_order_item")));
         assertTrue(actual.isFull());
+    }
+    
+    private YamlCDCJobConfiguration createYamlCDCJobConfiguration() {
+        YamlCDCJobConfiguration result = new YamlCDCJobConfiguration();
+        result.setJobId("j0302p00007a8bf46da145dc155ba25c710b550220");
+        result.setDatabaseName("test_db");
+        result.setSchemaTableNames(Arrays.asList("test.t_order", "t_order_item"));
+        result.setFull(true);
+        result.setSourceDatabaseType("MySQL");
+        YamlSinkConfiguration sinkConfig = new YamlSinkConfiguration();
+        sinkConfig.setSinkType(CDCSinkType.SOCKET.name());
+        result.setSinkConfig(sinkConfig);
+        return result;
     }
     
     @Test

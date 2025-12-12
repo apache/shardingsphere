@@ -67,5 +67,5 @@ public final class MergeStatementTestCase extends SQLParserTestCase {
     private ExpectedOutputClause outputClause;
     
     @XmlElement(name = "index")
-    private List<ExpectedIndex> indexs = new LinkedList<>();
+    private List<ExpectedIndex> indexes = new LinkedList<>();
 }

@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.mode.metadata.refresher.federation.type;
 
-import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereView;
 import org.apache.shardingsphere.mode.metadata.refresher.federation.FederationMetaDataRefresher;

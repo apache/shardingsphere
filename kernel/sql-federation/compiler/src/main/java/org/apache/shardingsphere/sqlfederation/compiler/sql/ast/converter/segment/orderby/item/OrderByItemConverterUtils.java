@@ -37,7 +37,7 @@ import java.util.LinkedList;
 public final class OrderByItemConverterUtils {
     
     /**
-     * Convert order by items to sql node.
+     * Convert order by items to SQL node.
      *
      * @param orderByItems order by items
      * @return SQL nodes converted by order by item
@@ -47,7 +47,7 @@ public final class OrderByItemConverterUtils {
         Collection<SqlNode> result = new LinkedList<>();
         for (OrderByItemSegment each : orderByItems) {
             if (each instanceof ColumnOrderByItemSegment) {
-                ColumnOrderByItemConverter.convert((ColumnOrderByItemSegment) each).ifPresent(result::add);
+                result.add(ColumnOrderByItemConverter.convert((ColumnOrderByItemSegment) each));
             } else if (each instanceof ExpressionOrderByItemSegment) {
                 ExpressionOrderByItemConverter.convert((ExpressionOrderByItemSegment) each).ifPresent(result::add);
             } else if (each instanceof IndexOrderByItemSegment) {

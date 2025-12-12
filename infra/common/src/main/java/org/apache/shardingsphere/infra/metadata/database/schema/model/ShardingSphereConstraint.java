@@ -20,7 +20,7 @@ package org.apache.shardingsphere.infra.metadata.database.schema.model;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
-import org.apache.shardingsphere.infra.database.core.metadata.data.model.ConstraintMetaData;
+import org.apache.shardingsphere.database.connector.core.metadata.data.model.ConstraintMetaData;
 
 /**
  * ShardingSphere constraint.
@@ -35,7 +35,6 @@ public final class ShardingSphereConstraint {
     private final String referencedTableName;
     
     public ShardingSphereConstraint(final ConstraintMetaData constraintMetaData) {
-        name = constraintMetaData.getName();
-        referencedTableName = constraintMetaData.getReferencedTableName();
+        this(constraintMetaData.getName(), constraintMetaData.getReferencedTableName());
     }
 }

@@ -18,10 +18,10 @@
 package org.apache.shardingsphere.mode.repository.standalone.jdbc;
 
 import com.zaxxer.hikari.HikariDataSource;
+import org.apache.shardingsphere.infra.util.props.PropertiesBuilder;
+import org.apache.shardingsphere.infra.util.props.PropertiesBuilder.Property;
 import org.apache.shardingsphere.mode.repository.standalone.jdbc.sql.JDBCRepositorySQL;
 import org.apache.shardingsphere.mode.repository.standalone.jdbc.sql.JDBCRepositorySQLLoader;
-import org.apache.shardingsphere.test.util.PropertiesBuilder;
-import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -45,6 +45,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.anyString;
 import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.mockConstruction;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -93,7 +94,7 @@ class JDBCRepositoryTest {
     }
     
     @Test
-    void assertInit() throws Exception {
+    void assertInit() throws SQLException {
         verify(mockStatement).execute(repositorySQL.getCreateTableSQL());
     }
     
@@ -199,22 +200,15 @@ class JDBCRepositoryTest {
                 nextSeparatorIndex = key.length();
             }
             String directoryPath = key.substring(0, nextSeparatorIndex);
-            // Verifying if get operation is called for every directory level
             verify(mockPreparedStatement).setString(1, directoryPath);
-            // Verifying that during insert operation, setString at index 2 is called for every directory level
             verify(mockPreparedStatementForPersist).setString(2, directoryPath);
-            // Verifying that during insert operation, setString at index 4 is called for every parent directory
             verify(mockPreparedStatementForPersist).setString(4, parentDirectory);
             beginIndex = nextSeparatorIndex;
             parentDirectory = directoryPath;
         }
-        // Verifying that during insert operation, setString at index 3 is called with "" for all the parent directories
         verify(mockPreparedStatementForPersist, times(depthOfDirectory - 1)).setString(3, "");
-        // Verifying that during insert operation, setString at index 3 is called with the leaf node once
         verify(mockPreparedStatementForPersist).setString(3, "test1_content");
-        // Verifying that during insert operation, setString at index 1 is called with a UUID
         verify(mockPreparedStatementForPersist, times(depthOfDirectory)).setString(eq(1), anyString());
-        // Verifying that executeOperation in insert is called for all the directory levels
         verify(mockPreparedStatementForPersist, times(depthOfDirectory)).executeUpdate();
     }
     
@@ -226,7 +220,7 @@ class JDBCRepositoryTest {
         when(mockResultSet.next()).thenReturn(true);
         when(mockJdbcConnection.prepareStatement(repositorySQL.getUpdateSQL())).thenReturn(mockPreparedStatement);
         repository.persist(key, "value");
-        verify(mockPreparedStatementForPersist, times(0)).executeUpdate();
+        verify(mockPreparedStatementForPersist, never()).executeUpdate();
     }
     
     @Test
@@ -253,7 +247,7 @@ class JDBCRepositoryTest {
         when(mockResultSet.next()).thenReturn(false);
         when(mockJdbcConnection.prepareStatement(repositorySQL.getInsertSQL())).thenReturn(mockPreparedStatement);
         repository.persist("key", "value");
-        verify(mockPreparedStatementForPersist, times(0)).executeUpdate();
+        verify(mockPreparedStatementForPersist, never()).executeUpdate();
     }
     
     @Test
@@ -273,7 +267,7 @@ class JDBCRepositoryTest {
         String value = "value";
         when(mockJdbcConnection.prepareStatement(repositorySQL.getUpdateSQL())).thenThrow(new SQLException(""));
         repository.update(key, value);
-        verify(mockPreparedStatement, times(0)).executeUpdate();
+        verify(mockPreparedStatement, never()).executeUpdate();
     }
     
     @Test
@@ -290,7 +284,7 @@ class JDBCRepositoryTest {
         String key = "key";
         when(mockJdbcConnection.prepareStatement(repositorySQL.getDeleteSQL())).thenThrow(new SQLException(""));
         repository.delete(key);
-        verify(mockPreparedStatement, times(0)).executeUpdate();
+        verify(mockPreparedStatement, never()).executeUpdate();
     }
     
     @Test

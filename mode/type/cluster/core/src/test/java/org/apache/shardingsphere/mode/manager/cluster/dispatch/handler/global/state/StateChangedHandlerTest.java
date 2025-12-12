@@ -44,7 +44,7 @@ class StateChangedHandlerTest {
     @BeforeEach
     void setUp() {
         handler = ShardingSphereServiceLoader.getServiceInstances(GlobalDataChangedEventHandler.class).stream()
-                .filter(each -> NodePathGenerator.toPath(each.getSubscribedNodePath()).equals("/states/cluster_state")).findFirst().orElse(null);
+                .filter(each -> "/states/cluster_state".equals(NodePathGenerator.toPath(each.getSubscribedNodePath()))).findFirst().orElse(null);
     }
     
     @Test

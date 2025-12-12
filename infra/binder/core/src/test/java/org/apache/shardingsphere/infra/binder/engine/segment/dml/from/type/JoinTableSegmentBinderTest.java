@@ -20,9 +20,9 @@ package org.apache.shardingsphere.infra.binder.engine.segment.dml.from.type;
 import com.cedarsoftware.util.CaseInsensitiveMap.CaseInsensitiveString;
 import com.google.common.collect.LinkedHashMultimap;
 import com.google.common.collect.Multimap;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.binder.engine.segment.dml.from.context.TableSegmentBinderContext;
 import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementBinderContext;
-import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereColumn;
@@ -46,9 +46,9 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.isA;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
@@ -71,8 +71,8 @@ class JoinTableSegmentBinderTest {
         Multimap<CaseInsensitiveString, TableSegmentBinderContext> tableBinderContexts = LinkedHashMultimap.create();
         JoinTableSegment actual = JoinTableSegmentBinder.bind(joinTableSegment,
                 new SQLStatementBinderContext(metaData, "foo_db", new HintValueContext(), new SelectStatement(databaseType)), tableBinderContexts, LinkedHashMultimap.create());
-        assertThat(actual.getLeft(), instanceOf(SimpleTableSegment.class));
-        assertThat(actual.getRight(), instanceOf(SimpleTableSegment.class));
+        assertThat(actual.getLeft(), isA(SimpleTableSegment.class));
+        assertThat(actual.getRight(), isA(SimpleTableSegment.class));
         assertJoinTableProjectionSegments(actual.getDerivedJoinTableProjectionSegments());
         assertTrue(tableBinderContexts.containsKey(new CaseInsensitiveString("o")));
         assertTrue(tableBinderContexts.containsKey(new CaseInsensitiveString("i")));
@@ -81,7 +81,7 @@ class JoinTableSegmentBinderTest {
     private void assertJoinTableProjectionSegments(final Collection<ProjectionSegment> joinTableProjectionSegments) {
         List<ProjectionSegment> actual = new ArrayList<>(joinTableProjectionSegments);
         assertThat(actual.size(), is(7));
-        assertThat(actual.get(0), instanceOf(ColumnProjectionSegment.class));
+        assertThat(actual.get(0), isA(ColumnProjectionSegment.class));
         assertThat(((ColumnProjectionSegment) actual.get(0)).getColumn().getColumnBoundInfo().getOriginalColumn().getValue(), is("order_id"));
         assertThat(((ColumnProjectionSegment) actual.get(0)).getColumn().getColumnBoundInfo().getOriginalTable().getValue(), is("t_order"));
         assertThat(((ColumnProjectionSegment) actual.get(1)).getColumn().getColumnBoundInfo().getOriginalColumn().getValue(), is("user_id"));
@@ -109,8 +109,8 @@ class JoinTableSegmentBinderTest {
         Multimap<CaseInsensitiveString, TableSegmentBinderContext> tableBinderContexts = LinkedHashMultimap.create();
         JoinTableSegment actual = JoinTableSegmentBinder.bind(joinTableSegment,
                 new SQLStatementBinderContext(metaData, "foo_db", new HintValueContext(), new SelectStatement(databaseType)), tableBinderContexts, LinkedHashMultimap.create());
-        assertThat(actual.getLeft(), instanceOf(SimpleTableSegment.class));
-        assertThat(actual.getRight(), instanceOf(SimpleTableSegment.class));
+        assertThat(actual.getLeft(), isA(SimpleTableSegment.class));
+        assertThat(actual.getRight(), isA(SimpleTableSegment.class));
         assertJoinTableProjectionSegments(actual.getDerivedJoinTableProjectionSegments());
         assertTrue(tableBinderContexts.containsKey(new CaseInsensitiveString("t_order")));
         assertTrue(tableBinderContexts.containsKey(new CaseInsensitiveString("t_order_item")));
@@ -131,8 +131,8 @@ class JoinTableSegmentBinderTest {
         Multimap<CaseInsensitiveString, TableSegmentBinderContext> tableBinderContexts = LinkedHashMultimap.create();
         JoinTableSegment actual = JoinTableSegmentBinder.bind(joinTableSegment,
                 new SQLStatementBinderContext(metaData, "foo_db", new HintValueContext(), new SelectStatement(databaseType)), tableBinderContexts, LinkedHashMultimap.create());
-        assertThat(actual.getLeft(), instanceOf(SimpleTableSegment.class));
-        assertThat(actual.getRight(), instanceOf(SimpleTableSegment.class));
+        assertThat(actual.getLeft(), isA(SimpleTableSegment.class));
+        assertThat(actual.getRight(), isA(SimpleTableSegment.class));
         assertJoinTableProjectionSegmentsWithNaturalJoin(actual.getDerivedJoinTableProjectionSegments());
         assertTrue(tableBinderContexts.containsKey(new CaseInsensitiveString("o")));
         assertTrue(tableBinderContexts.containsKey(new CaseInsensitiveString("i")));
@@ -141,7 +141,7 @@ class JoinTableSegmentBinderTest {
     private void assertJoinTableProjectionSegmentsWithNaturalJoin(final Collection<ProjectionSegment> joinTableProjectionSegments) {
         List<ProjectionSegment> actual = new ArrayList<>(joinTableProjectionSegments);
         assertThat(actual.size(), is(4));
-        assertThat(actual.get(0), instanceOf(ColumnProjectionSegment.class));
+        assertThat(actual.get(0), isA(ColumnProjectionSegment.class));
         assertThat(((ColumnProjectionSegment) actual.get(0)).getColumn().getColumnBoundInfo().getOriginalColumn().getValue(), is("order_id"));
         assertThat(((ColumnProjectionSegment) actual.get(0)).getColumn().getColumnBoundInfo().getOriginalTable().getValue(), is("t_order"));
         assertThat(((ColumnProjectionSegment) actual.get(1)).getColumn().getColumnBoundInfo().getOriginalColumn().getValue(), is("user_id"));
@@ -167,8 +167,8 @@ class JoinTableSegmentBinderTest {
         Multimap<CaseInsensitiveString, TableSegmentBinderContext> tableBinderContexts = LinkedHashMultimap.create();
         JoinTableSegment actual = JoinTableSegmentBinder.bind(joinTableSegment,
                 new SQLStatementBinderContext(metaData, "foo_db", new HintValueContext(), new SelectStatement(databaseType)), tableBinderContexts, LinkedHashMultimap.create());
-        assertThat(actual.getLeft(), instanceOf(SimpleTableSegment.class));
-        assertThat(actual.getRight(), instanceOf(SimpleTableSegment.class));
+        assertThat(actual.getLeft(), isA(SimpleTableSegment.class));
+        assertThat(actual.getRight(), isA(SimpleTableSegment.class));
         assertJoinTableProjectionSegmentsWithUsing(actual.getDerivedJoinTableProjectionSegments());
         assertTrue(tableBinderContexts.containsKey(new CaseInsensitiveString("o")));
         assertTrue(tableBinderContexts.containsKey(new CaseInsensitiveString("i")));
@@ -177,7 +177,7 @@ class JoinTableSegmentBinderTest {
     private void assertJoinTableProjectionSegmentsWithUsing(final Collection<ProjectionSegment> joinTableProjectionSegments) {
         List<ProjectionSegment> actual = new ArrayList<>(joinTableProjectionSegments);
         assertThat(actual.size(), is(5));
-        assertThat(actual.get(0), instanceOf(ColumnProjectionSegment.class));
+        assertThat(actual.get(0), isA(ColumnProjectionSegment.class));
         assertThat(((ColumnProjectionSegment) actual.get(0)).getColumn().getColumnBoundInfo().getOriginalColumn().getValue(), is("status"));
         assertThat(((ColumnProjectionSegment) actual.get(0)).getColumn().getColumnBoundInfo().getOriginalTable().getValue(), is("t_order_item"));
         assertThat(((ColumnProjectionSegment) actual.get(1)).getColumn().getColumnBoundInfo().getOriginalColumn().getValue(), is("order_id"));
@@ -202,10 +202,10 @@ class JoinTableSegmentBinderTest {
         Multimap<CaseInsensitiveString, TableSegmentBinderContext> tableBinderContexts = LinkedHashMultimap.create();
         JoinTableSegment actual = JoinTableSegmentBinder.bind(joinTableSegment,
                 new SQLStatementBinderContext(metaData, "foo_db", new HintValueContext(), new SelectStatement(databaseType)), tableBinderContexts, LinkedHashMultimap.create());
-        assertThat(actual.getLeft(), instanceOf(JoinTableSegment.class));
-        assertThat(((JoinTableSegment) actual.getLeft()).getLeft(), instanceOf(SimpleTableSegment.class));
-        assertThat(((JoinTableSegment) actual.getLeft()).getRight(), instanceOf(SimpleTableSegment.class));
-        assertThat(actual.getRight(), instanceOf(SimpleTableSegment.class));
+        assertThat(actual.getLeft(), isA(JoinTableSegment.class));
+        assertThat(((JoinTableSegment) actual.getLeft()).getLeft(), isA(SimpleTableSegment.class));
+        assertThat(((JoinTableSegment) actual.getLeft()).getRight(), isA(SimpleTableSegment.class));
+        assertThat(actual.getRight(), isA(SimpleTableSegment.class));
         assertThat(actual.getDerivedJoinTableProjectionSegments().size(), is(10));
         assertTrue(tableBinderContexts.containsKey(new CaseInsensitiveString("o")));
         assertTrue(tableBinderContexts.containsKey(new CaseInsensitiveString("o2")));

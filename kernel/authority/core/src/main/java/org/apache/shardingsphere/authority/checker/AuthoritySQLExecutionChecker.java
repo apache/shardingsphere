@@ -18,10 +18,9 @@
 package org.apache.shardingsphere.authority.checker;
 
 import org.apache.shardingsphere.authority.rule.AuthorityRule;
-import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
-import org.apache.shardingsphere.infra.exception.dialect.exception.syntax.database.UnknownDatabaseException;
+import org.apache.shardingsphere.database.exception.core.exception.syntax.database.UnknownDatabaseException;
+import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.executor.checker.SQLExecutionChecker;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.apache.shardingsphere.infra.session.query.QueryContext;
@@ -32,8 +31,8 @@ import org.apache.shardingsphere.infra.session.query.QueryContext;
 public final class AuthoritySQLExecutionChecker implements SQLExecutionChecker {
     
     @Override
-    public void check(final ShardingSphereMetaData metaData, final Grantee grantee, final QueryContext queryContext, final ShardingSphereDatabase database) {
-        AuthorityRule authorityRule = metaData.getGlobalRuleMetaData().getSingleRule(AuthorityRule.class);
+    public void check(final Grantee grantee, final QueryContext queryContext, final ShardingSphereDatabase database) {
+        AuthorityRule authorityRule = queryContext.getMetaData().getGlobalRuleMetaData().getSingleRule(AuthorityRule.class);
         ShardingSpherePreconditions.checkState(new AuthorityChecker(authorityRule, grantee).isAuthorized(database.getName()), () -> new UnknownDatabaseException(database.getName()));
     }
 }

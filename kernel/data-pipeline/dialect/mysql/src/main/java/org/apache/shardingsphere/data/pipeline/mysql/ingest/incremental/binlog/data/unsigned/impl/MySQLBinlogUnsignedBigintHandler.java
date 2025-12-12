@@ -30,6 +30,6 @@ public final class MySQLBinlogUnsignedBigintHandler implements MySQLBinlogUnsign
     
     @Override
     public Number handle(final Long value) {
-        return value < 0L ? BIGINT_MODULO.add(BigInteger.valueOf(value)) : value;
+        return value < 0L ? BIGINT_MODULO.add(BigInteger.valueOf(value)) : BigInteger.valueOf(value);
     }
 }

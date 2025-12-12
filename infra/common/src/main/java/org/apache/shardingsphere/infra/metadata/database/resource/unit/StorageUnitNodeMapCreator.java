@@ -19,12 +19,12 @@ package org.apache.shardingsphere.infra.metadata.database.resource.unit;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.infra.database.core.connector.ConnectionProperties;
-import org.apache.shardingsphere.infra.database.core.connector.ConnectionPropertiesParser;
-import org.apache.shardingsphere.infra.database.core.exception.UnrecognizedDatabaseURLException;
-import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPILoader;
-import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeFactory;
-import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
+import org.apache.shardingsphere.database.connector.core.exception.UnrecognizedDatabaseURLException;
+import org.apache.shardingsphere.database.connector.core.jdbcurl.parser.ConnectionProperties;
+import org.apache.shardingsphere.database.connector.core.jdbcurl.parser.ConnectionPropertiesParser;
+import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoader;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeFactory;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePoolProperties;
 import org.apache.shardingsphere.infra.metadata.database.resource.node.StorageNode;
 
@@ -51,10 +51,8 @@ public final class StorageUnitNodeMapCreator {
     
     private static StorageNode create(final String storageUnitName, final DataSourcePoolProperties props) {
         Map<String, Object> standardProps = props.getConnectionPropertySynonyms().getStandardProperties();
-        return create(storageUnitName, standardProps.get("url").toString(), standardProps.get("username").toString());
-    }
-    
-    private static StorageNode create(final String storageUnitName, final String url, final String username) {
+        String url = standardProps.get("url").toString();
+        String username = standardProps.get("username").toString();
         boolean isInstanceConnectionAvailable = new DatabaseTypeRegistry(DatabaseTypeFactory.get(url)).getDialectDatabaseMetaData().getConnectionOption().isInstanceConnectionAvailable();
         try {
             ConnectionProperties connectionProps = DatabaseTypedSPILoader.getService(ConnectionPropertiesParser.class, DatabaseTypeFactory.get(url)).parse(url, username, null);

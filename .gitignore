@@ -53,6 +53,8 @@ gen/
 .profiler/
 
 # hugo ignore
-public/
+blog/public/
+community/public/
+document/public/
 .hugo_build.lock
 *.html-e

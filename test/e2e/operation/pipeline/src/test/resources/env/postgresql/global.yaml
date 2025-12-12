@@ -20,12 +20,8 @@ mode:
   repository:
     type: ZooKeeper
     props:
-      namespace: it_db_postgresql
+      namespace: e2e_db_postgresql
       server-lists: zk.host:2181
-      retryIntervalMilliseconds: 500
-      timeToLiveSeconds: 60
-      maxRetries: 3
-      operationTimeoutMilliseconds: 500
 
 authority:
   users:
@@ -38,9 +34,9 @@ authority:
 props:
   system-schema-metadata-assembly-enabled: false
   max-connections-size-per-query: 1
-  kernel-executor-size: 16  # Infinite by default.
-  proxy-frontend-flush-threshold: 128  # The default value is 128.
+  kernel-executor-size: 16
+  proxy-frontend-flush-threshold: 128
   sql-show: false
-  cdc-server-port: 33071 # CDC server port
+  cdc-server-port: 33071
   proxy-frontend-ssl-enabled: true
   proxy-frontend-database-protocol-type: PostgreSQL

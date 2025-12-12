@@ -41,10 +41,10 @@ import java.util.Optional;
 public final class WindowConverter {
     
     /**
-     * Convert window segment to sql node list.
+     * Convert window segment to SQL node list.
      *
      * @param segment window segment
-     * @return sql node list
+     * @return SQL node list
      */
     public static Optional<SqlNodeList> convert(final WindowSegment segment) {
         Collection<SqlWindow> sqlWindows = new LinkedList<>();

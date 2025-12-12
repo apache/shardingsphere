@@ -17,13 +17,15 @@
 
 package org.apache.shardingsphere.mode.manager.cluster.exception;
 
-import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.XOpenSQLState;
-import org.apache.shardingsphere.infra.exception.core.external.sql.type.kernel.category.ClusterSQLException;
+import org.apache.shardingsphere.infra.exception.external.sql.sqlstate.XOpenSQLState;
+import org.apache.shardingsphere.infra.exception.external.sql.type.kernel.category.ClusterSQLException;
 
 /**
  * Reload meta data context failed exception.
  */
 public final class ReloadMetaDataContextFailedException extends ClusterSQLException {
+    
+    private static final long serialVersionUID = -2058668714389031484L;
     
     public ReloadMetaDataContextFailedException() {
         super(XOpenSQLState.GENERAL_ERROR, 11, "Failed to reload meta data context.");

@@ -19,6 +19,7 @@ package org.apache.shardingsphere.infra.binder.context;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.CommonSQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.dal.ExplainStatementContext;
@@ -31,7 +32,6 @@ import org.apache.shardingsphere.infra.binder.context.statement.type.dml.DeleteS
 import org.apache.shardingsphere.infra.binder.context.statement.type.dml.InsertStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.dml.UpdateStatementContext;
-import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.type.CursorSQLStatementAttribute;
@@ -51,7 +51,6 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.Se
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.UpdateStatement;
 
 import java.util.Collections;
-import java.util.List;
 
 /**
  * SQL statement context factory.
@@ -64,34 +63,33 @@ public final class SQLStatementContextFactory {
      *
      * @param metaData metadata
      * @param sqlStatement SQL statement
-     * @param params SQL parameters
      * @param currentDatabaseName current database name
      * @return SQL statement context
      */
-    public static SQLStatementContext newInstance(final ShardingSphereMetaData metaData, final SQLStatement sqlStatement, final List<Object> params, final String currentDatabaseName) {
+    public static SQLStatementContext newInstance(final ShardingSphereMetaData metaData, final SQLStatement sqlStatement, final String currentDatabaseName) {
         if (sqlStatement.getAttributes().findAttribute(TableSQLStatementAttribute.class).isPresent()
                 && DatabaseTypedSPILoader.findService(DialectCommonSQLStatementContextWarpProvider.class, sqlStatement.getDatabaseType())
                         .map(optional -> optional.getNeedToWarpSQLStatementTypes().contains(sqlStatement.getClass())).orElse(false)) {
             return new CommonSQLStatementContext(sqlStatement);
         }
         if (sqlStatement instanceof DMLStatement) {
-            return getDMLStatementContext(metaData, (DMLStatement) sqlStatement, params, currentDatabaseName);
+            return getDMLStatementContext(metaData, (DMLStatement) sqlStatement, currentDatabaseName);
         }
         if (sqlStatement instanceof DDLStatement) {
-            return getDDLStatementContext(metaData, (DDLStatement) sqlStatement, params, currentDatabaseName);
+            return getDDLStatementContext(metaData, (DDLStatement) sqlStatement, currentDatabaseName);
         }
         if (sqlStatement instanceof DCLStatement) {
             return getDCLStatementContext((DCLStatement) sqlStatement);
         }
         if (sqlStatement instanceof DALStatement) {
-            return getDALStatementContext(metaData, (DALStatement) sqlStatement, params, currentDatabaseName);
+            return getDALStatementContext(metaData, (DALStatement) sqlStatement, currentDatabaseName);
         }
         return new CommonSQLStatementContext(sqlStatement);
     }
     
-    private static SQLStatementContext getDMLStatementContext(final ShardingSphereMetaData metaData, final DMLStatement sqlStatement, final List<Object> params, final String currentDatabaseName) {
+    private static SQLStatementContext getDMLStatementContext(final ShardingSphereMetaData metaData, final DMLStatement sqlStatement, final String currentDatabaseName) {
         if (sqlStatement instanceof SelectStatement) {
-            return new SelectStatementContext((SelectStatement) sqlStatement, params, metaData, currentDatabaseName, Collections.emptyList());
+            return new SelectStatementContext((SelectStatement) sqlStatement, metaData, currentDatabaseName, Collections.emptyList());
         }
         if (sqlStatement instanceof UpdateStatement) {
             return new UpdateStatementContext((UpdateStatement) sqlStatement);
@@ -100,23 +98,23 @@ public final class SQLStatementContextFactory {
             return new DeleteStatementContext((DeleteStatement) sqlStatement);
         }
         if (sqlStatement instanceof InsertStatement) {
-            return new InsertStatementContext((InsertStatement) sqlStatement, params, metaData, currentDatabaseName);
+            return new InsertStatementContext((InsertStatement) sqlStatement, metaData, currentDatabaseName);
         }
         return new CommonSQLStatementContext(sqlStatement);
     }
     
-    private static SQLStatementContext getDDLStatementContext(final ShardingSphereMetaData metaData, final DDLStatement sqlStatement, final List<Object> params, final String currentDatabaseName) {
+    private static SQLStatementContext getDDLStatementContext(final ShardingSphereMetaData metaData, final DDLStatement sqlStatement, final String currentDatabaseName) {
         if (sqlStatement instanceof CreateProcedureStatement) {
             return new CreateProcedureStatementContext((CreateProcedureStatement) sqlStatement);
         }
         if (sqlStatement instanceof CreateViewStatement) {
-            return new CreateViewStatementContext(metaData, params, (CreateViewStatement) sqlStatement, currentDatabaseName);
+            return new CreateViewStatementContext(metaData, (CreateViewStatement) sqlStatement, currentDatabaseName);
         }
         if (sqlStatement instanceof AlterViewStatement) {
-            return new AlterViewStatementContext(metaData, params, (AlterViewStatement) sqlStatement, currentDatabaseName);
+            return new AlterViewStatementContext(metaData, (AlterViewStatement) sqlStatement, currentDatabaseName);
         }
         if (sqlStatement instanceof CursorStatement) {
-            return new CursorStatementContext(metaData, params, (CursorStatement) sqlStatement, currentDatabaseName);
+            return new CursorStatementContext(metaData, (CursorStatement) sqlStatement, currentDatabaseName);
         }
         if (sqlStatement.getAttributes().findAttribute(CursorSQLStatementAttribute.class).isPresent()) {
             return new CursorHeldSQLStatementContext(sqlStatement);
@@ -128,9 +126,9 @@ public final class SQLStatementContextFactory {
         return new CommonSQLStatementContext(sqlStatement);
     }
     
-    private static SQLStatementContext getDALStatementContext(final ShardingSphereMetaData metaData, final DALStatement sqlStatement, final List<Object> params, final String currentDatabaseName) {
+    private static SQLStatementContext getDALStatementContext(final ShardingSphereMetaData metaData, final DALStatement sqlStatement, final String currentDatabaseName) {
         if (sqlStatement instanceof ExplainStatement) {
-            return new ExplainStatementContext(metaData, (ExplainStatement) sqlStatement, params, currentDatabaseName);
+            return new ExplainStatementContext(metaData, (ExplainStatement) sqlStatement, currentDatabaseName);
         }
         return new CommonSQLStatementContext(sqlStatement);
     }

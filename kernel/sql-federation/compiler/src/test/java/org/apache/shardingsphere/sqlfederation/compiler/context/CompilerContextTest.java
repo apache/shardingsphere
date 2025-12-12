@@ -19,7 +19,7 @@ package org.apache.shardingsphere.sqlfederation.compiler.context;
 
 import org.apache.calcite.config.CalciteConnectionConfig;
 import org.apache.calcite.jdbc.CalciteSchema;
-import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.parser.rule.SQLParserRule;
@@ -27,8 +27,8 @@ import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.isA;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -38,25 +38,25 @@ class CompilerContextTest {
     @Test
     void assertGetSqlParserRule() {
         CompilerContext actual = CompilerContextFactory.create(Collections.singleton(mockDatabase()));
-        assertThat(actual.getSqlParserRule(), instanceOf(SQLParserRule.class));
+        assertThat(actual.getSqlParserRule(), isA(SQLParserRule.class));
     }
     
     @Test
     void assertGetCalciteSchema() {
         CompilerContext actual = CompilerContextFactory.create(Collections.singleton(mockDatabase()));
-        assertThat(actual.getCalciteSchema(), instanceOf(CalciteSchema.class));
+        assertThat(actual.getCalciteSchema(), isA(CalciteSchema.class));
     }
     
     @Test
     void assertGetConnectionConfig() {
         CompilerContext actual = CompilerContextFactory.create(Collections.singleton(mockDatabase()));
-        assertThat(actual.getConnectionConfig(), instanceOf(CalciteConnectionConfig.class));
+        assertThat(actual.getConnectionConfig(), isA(CalciteConnectionConfig.class));
     }
     
     private ShardingSphereDatabase mockDatabase() {
         ShardingSphereDatabase result = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         when(result.getName()).thenReturn("foo_db");
-        when(result.getProtocolType()).thenReturn(TypedSPILoader.getService(DatabaseType.class, "MySQL"));
+        when(result.getProtocolType()).thenReturn(TypedSPILoader.getService(DatabaseType.class, "FIXTURE"));
         return result;
     }
 }

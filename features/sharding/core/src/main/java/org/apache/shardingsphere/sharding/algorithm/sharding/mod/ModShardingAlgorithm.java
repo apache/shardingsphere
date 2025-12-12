@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.sharding.algorithm.sharding.mod;
 
 import org.apache.shardingsphere.infra.algorithm.core.exception.AlgorithmInitializationException;
-import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
+import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.sharding.algorithm.sharding.ShardingAutoTableAlgorithmUtils;
 import org.apache.shardingsphere.sharding.api.sharding.ShardingAutoTableAlgorithm;
 import org.apache.shardingsphere.sharding.api.sharding.standard.PreciseShardingValue;
@@ -110,8 +110,11 @@ public final class ModShardingAlgorithm implements StandardShardingAlgorithm<Com
     }
     
     private boolean containsAllTargets(final RangeShardingValue<Comparable<?>> shardingValue) {
-        return !shardingValue.getValueRange().hasUpperBound() || shardingValue.getValueRange().hasLowerBound()
-                && getBigInteger(shardingValue.getValueRange().upperEndpoint()).subtract(getBigInteger(shardingValue.getValueRange().lowerEndpoint())).intValue() >= shardingCount - 1;
+        if (!shardingValue.getValueRange().hasUpperBound() || !shardingValue.getValueRange().hasLowerBound()) {
+            return true;
+        }
+        return getBigInteger(shardingValue.getValueRange().upperEndpoint()).subtract(getBigInteger(shardingValue.getValueRange().lowerEndpoint()))
+                .compareTo(BigInteger.valueOf(shardingCount - 1L)) >= 0;
     }
     
     private Collection<String> getAvailableTargetNames(final Collection<String> availableTargetNames, final RangeShardingValue<Comparable<?>> shardingValue) {

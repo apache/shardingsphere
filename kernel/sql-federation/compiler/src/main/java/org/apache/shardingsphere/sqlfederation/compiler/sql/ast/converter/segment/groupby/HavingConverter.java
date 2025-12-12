@@ -32,10 +32,10 @@ import java.util.Optional;
 public final class HavingConverter {
     
     /**
-     * Convert having segment to sql node.
+     * Convert having segment to SQL node.
      *
      * @param segment having segment
-     * @return sql node
+     * @return SQL node
      */
     public static Optional<SqlNode> convert(final HavingSegment segment) {
         return null == segment ? Optional.empty() : ExpressionConverter.convert(segment.getExpr());

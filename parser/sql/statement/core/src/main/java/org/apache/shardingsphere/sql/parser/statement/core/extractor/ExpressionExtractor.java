@@ -165,6 +165,24 @@ public final class ExpressionExtractor {
             if (each instanceof InExpression) {
                 extractParameterMarkerExpressions(segments, ((InExpression) each).getExpressionList());
             }
+            if (each instanceof CaseWhenExpression) {
+                extractParameterMarkerInCaseWhenExpression(segments, (CaseWhenExpression) each);
+            }
+        }
+    }
+    
+    private static void extractParameterMarkerInCaseWhenExpression(final List<ParameterMarkerExpressionSegment> segments, final CaseWhenExpression expression) {
+        if (null != expression.getCaseExpr()) {
+            extractParameterMarkerExpressions(segments, Collections.singletonList(expression.getCaseExpr()));
+        }
+        if (null != expression.getWhenExprs()) {
+            extractParameterMarkerExpressions(segments, expression.getWhenExprs());
+        }
+        if (null != expression.getThenExprs()) {
+            extractParameterMarkerExpressions(segments, expression.getThenExprs());
+        }
+        if (null != expression.getElseExpr()) {
+            extractParameterMarkerExpressions(segments, Collections.singletonList(expression.getElseExpr()));
         }
     }
     

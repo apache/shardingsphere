@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Licensed to the Apache Software Foundation (ASF) under one or more
+  ~ contributor license agreements.  See the NOTICE file distributed with
+  ~ this work for additional information regarding copyright ownership.
+  ~ The ASF licenses this file to You under the Apache License, Version 2.0
+  ~ (the "License"); you may not use this file except in compliance with
+  ~ the License.  You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<sql-cases>
+    <sql-case id="select_with_except" value="(SELECT * FROM t1) EXCEPT (SELECT * FROM t2)" db-types="MySQL,Doris" />
+    <sql-case id="select_union" value="SELECT * FROM table1 UNION SELECT * FROM table2" db-types="MySQL,PostgreSQL,openGauss" />
+    <sql-case id="select_union_all" value="SELECT * FROM table1 UNION ALL SELECT * FROM table2" db-types="MySQL,PostgreSQL,openGauss" />
+    <sql-case id="select_union_all_order_by" value="SELECT * FROM table1 UNION ALL SELECT * FROM table2 ORDER BY id" db-types="MySQL,PostgreSQL,openGauss" />
+    <sql-case id="select_union_all_order_by_limit" value="SELECT * FROM table1 UNION ALL SELECT * FROM table2 ORDER BY id LIMIT 1, 1" db-types="MySQL,openGauss" />
+    <sql-case id="select_intersect" value="SELECT * FROM table1 INTERSECT SELECT * FROM table2 INTERSECT SELECT * FROM table3" db-types="MySQL,PostgreSQL,openGauss" />
+    <sql-case id="select_intersect_order_by" value="SELECT * FROM table1 INTERSECT SELECT * FROM table2 INTERSECT SELECT * FROM table3 ORDER BY id" db-types="MySQL,PostgreSQL,openGauss" />
+    <sql-case id="select_intersect_order_by_limit" value="SELECT * FROM table1 INTERSECT SELECT * FROM table2 INTERSECT SELECT * FROM table3 ORDER BY id LIMIT 1, 1" db-types="MySQL,openGauss" />
+    <sql-case id="select_except" value="SELECT * FROM table1 EXCEPT ALL SELECT * FROM table2 EXCEPT ALL SELECT * FROM table3" db-types="MySQL,PostgreSQL,openGauss" />
+    <sql-case id="select_except_order_by" value="SELECT * FROM table1 EXCEPT ALL SELECT * FROM table2 EXCEPT ALL SELECT * FROM table3 ORDER BY id" db-types="PostgreSQL,openGauss" />
+    <sql-case id="select_except_order_by_limit" value="SELECT * FROM table1 EXCEPT ALL SELECT * FROM table2 EXCEPT ALL SELECT * FROM table3 ORDER BY id LIMIT 1, 1" db-types="openGauss" />
+    <sql-case id="select_minus" value="SELECT * FROM table1 MINUS SELECT * FROM table2" db-types="openGauss" />
+    <sql-case id="select_minus_order_by" value="SELECT * FROM table1 MINUS SELECT * FROM table2 ORDER BY id" db-types="openGauss" />
+    <sql-case id="select_minus_order_by_limit" value="SELECT * FROM table1 MINUS SELECT * FROM table2 ORDER BY id LIMIT 1, 1" db-types="openGauss" />
+    <sql-case id="select_union_intersect" value="SELECT * FROM table1 UNION SELECT * FROM table2 INTERSECT SELECT * FROM table3" db-types="PostgreSQL,openGauss" />
+    <sql-case id="select_union_except" value="SELECT * FROM table1 UNION SELECT * FROM table2 EXCEPT SELECT * FROM table3" db-types="PostgreSQL,openGauss" />
+    <sql-case id="select_union_intersect_except" value="SELECT * FROM table1 UNION SELECT * FROM table2 INTERSECT SELECT * FROM table3 EXCEPT SELECT * FROM table4" db-types="PostgreSQL,openGauss" />
+    <sql-case id="select_except_union" value="SELECT * FROM table1 EXCEPT SELECT * FROM table2 UNION SELECT * FROM table3" db-types="PostgreSQL,openGauss" />
+    <sql-case id="select_except_intersect" value="SELECT * FROM table1 EXCEPT SELECT * FROM table2 INTERSECT SELECT * FROM table3" db-types="PostgreSQL,openGauss" />
+    <sql-case id="select_except_intersect_union" value="SELECT * FROM table1 EXCEPT SELECT * FROM table2 INTERSECT SELECT * FROM table3 UNION SELECT * FROM table4" db-types="MySQL,PostgreSQL,openGauss" />
+    <sql-case id="select_sub_union" value="SELECT * FROM table1 UNION (SELECT * FROM table2 UNION SELECT * FROM table3)" db-types="MySQL,PostgreSQL,openGauss" />
+    <sql-case id="select_union_all_where" value="SELECT * FROM TEST_TABLE_1 WHERE ID = 1 UNION ALL SELECT * FROM TEST_TABLE_2 WHERE ID = 2" db-types="Oracle" />
+    <sql-case id="select_union_all_minus" value="SELECT * FROM TEST_TABLE_1 UNION ALL SELECT * FROM TEST_TABLE_2 MINUS SELECT * FROM TEST_TABLE_3" db-types="Oracle" />
+    <sql-case id="select_union_subquery" value="(SELECT TEST_ID FROM  TEST_TABLE) UNION (SELECT TEST_ID FROM TEST_TABLE)" db-types="Oracle" />
+    <sql-case id="select_union_case_when_order_by" value="SELECT  PRODUCT_ID, PRODUCT_NAME, PRICE, CASE  WHEN REGION = 'NORTH' THEN 'NORTH REGION'  WHEN REGION = 'SOUTH' THEN 'SOUTH REGION'  ELSE 'OTHER REGION'  END AS REGION FROM PRODUCTS
+    UNION SELECT PRODUCT_ID, PRODUCT_NAME, PRICE, CASE WHEN COUNTRY = 'USA' THEN 'USA' WHEN COUNTRY = 'CHINA' THEN 'CHINA' ELSE 'OTHER COUNTRY' END AS COUNTRY FROM PRODUCTS
+    UNION SELECT PRODUCT_ID, PRODUCT_NAME, PRICE, CASE WHEN CONTINENT = 'AMERICA' THEN 'AMERICA' WHEN CONTINENT = 'EUROPE' THEN 'EUROPE' ELSE 'OTHER CONTINENT' END AS CONTINENT FROM PRODUCTS ORDER BY PRODUCT_ID" db-types="Oracle" />
+    <sql-case id="select_intersect_with_dual" value="SELECT 3 FROM DUAL INTERSECT SELECT 3f FROM DUAL" db-types="Oracle" />
+    <sql-case id="select_intersect_to_binary_float" value="SELECT TO_BINARY_FLOAT(3) FROM DUAL INTERSECT SELECT 3f FROM DUAL" db-types="Oracle" />
+    <sql-case id="select_intersect_with_order_by" value="SELECT PRODUCT_ID FROM INVENTORIES INTERSECT SELECT PRODUCT_ID FROM ORDER_ITEMS ORDER BY PRODUCT_ID" db-types="Oracle" />
+    <sql-case id="select_union_to_char_function" value="SELECT location_id, department_name &quot;Department&quot;, TO_CHAR(NULL) &quot;Warehouse&quot;  FROM departments UNION SELECT location_id, TO_CHAR(NULL) &quot;Department&quot;, warehouse_name FROM warehouses" db-types="Oracle" />
+    <sql-case id="select_minus_with_order_by" value="SELECT PRODUCT_ID FROM INVENTORIES MINUS SELECT PRODUCT_ID FROM ORDER_ITEMS ORDER BY PRODUCT_ID" db-types="Oracle" />
+    <sql-case id="select_priority_union_intersect_minus" value="SELECT EMPLOYEE_ID, FIRST_NAME FROM EMPLOYEES WHERE DEPARTMENT_ID = 10
+    UNION (SELECT EMPLOYEE_ID, FIRST_NAME FROM EMPLOYEES WHERE DEPARTMENT_ID = 20 INTERSECT SELECT EMPLOYEE_ID, FIRST_NAME FROM EMPLOYEES WHERE SALARY &gt; 5000)
+    MINUS SELECT EMPLOYEE_ID, FIRST_NAME FROM EMPLOYEES WHERE HIRE_DATE &lt; TO_DATE('01-JAN-2005', 'DD-MON-YYYY')" db-types="Oracle" />
+    <sql-case id="select_union_intersect_minus" value="SELECT employee_id, first_name, last_name FROM employees WHERE department_id = 10
+    UNION SELECT employee_id, first_name, last_name FROM employees WHERE department_id = 20 INTERSECT SELECT employee_id, first_name, last_name FROM employees WHERE salary &gt; 5000
+    MINUS SELECT employee_id, first_name, last_name FROM employees WHERE hire_date &lt; TO_DATE('01-JAN-2005', 'DD-MON-YYYY')" db-types="Oracle" />
+    <sql-case id="select_nest_union_intersect_union_all" value="SELECT EMPLOYEE_ID, FIRST_NAME FROM EMPLOYEES UNION (SELECT EMPLOYEE_ID, FIRST_NAME FROM EMPLOYEES WHERE DEPARTMENT_ID = 20 INTERSECT (SELECT EMPLOYEE_ID, FIRST_NAME FROM EMPLOYEES UNION ALL SELECT EMPLOYEE_ID, FIRST_NAME FROM EMPLOYEES))" db-types="Oracle" />
+</sql-cases>
