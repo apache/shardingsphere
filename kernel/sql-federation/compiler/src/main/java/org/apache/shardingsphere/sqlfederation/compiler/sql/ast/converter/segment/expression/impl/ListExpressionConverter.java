@@ -45,8 +45,7 @@ public final class ListExpressionConverter {
     public static Optional<SqlNode> convert(final ListExpression segment) {
         Collection<SqlNode> sqlNodes = new LinkedList<>();
         for (ExpressionSegment each : segment.getItems()) {
-            Optional<SqlNode> sqlNode = ExpressionConverter.convert(each);
-            sqlNode.ifPresent(sqlNodes::add);
+            ExpressionConverter.convert(each).ifPresent(sqlNodes::add);
         }
         return sqlNodes.isEmpty() ? Optional.empty() : Optional.of(new SqlNodeList(sqlNodes, SqlParserPos.ZERO));
     }
