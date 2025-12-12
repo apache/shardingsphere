@@ -116,9 +116,9 @@ class ExpressionConverterTest {
         SqlNode expectedListNode = mock(SqlNode.class);
         ListExpression listSegment = new ListExpression(0, 0);
         when(ListExpressionConverter.convert(listSegment)).thenReturn(Optional.of(expectedListNode));
-        SqlNode expectedBinaryNode = mock(SqlNode.class);
+        SqlBasicCall expectedBinaryNode = mock(SqlBasicCall.class);
         BinaryOperationExpression binarySegment = new BinaryOperationExpression(0, 0, literalSegment, literalSegment, "+", "text");
-        when(BinaryOperationExpressionConverter.convert(binarySegment)).thenReturn(Optional.of(expectedBinaryNode));
+        when(BinaryOperationExpressionConverter.convert(binarySegment)).thenReturn(expectedBinaryNode);
         SqlNode expectedColumnNode = mock(SqlNode.class);
         ColumnSegment columnSegment = new ColumnSegment(0, 0, new IdentifierValue("col"));
         when(ColumnConverter.convert(columnSegment)).thenReturn(Optional.of(expectedColumnNode));

@@ -100,7 +100,7 @@ public final class ExpressionConverter {
             return ListExpressionConverter.convert((ListExpression) segment);
         }
         if (segment instanceof BinaryOperationExpression) {
-            return BinaryOperationExpressionConverter.convert((BinaryOperationExpression) segment);
+            return Optional.of(BinaryOperationExpressionConverter.convert((BinaryOperationExpression) segment));
         }
         if (segment instanceof ColumnSegment) {
             return ColumnConverter.convert((ColumnSegment) segment);
