@@ -133,7 +133,7 @@ public final class ExpressionConverter {
             return Optional.of(CaseWhenExpressionConverter.convert((CaseWhenExpression) segment));
         }
         if (segment instanceof NotExpression) {
-            return NotExpressionConverter.convert((NotExpression) segment);
+            return Optional.of(NotExpressionConverter.convert((NotExpression) segment));
         }
         if (segment instanceof TypeCastExpression) {
             return TypeCastExpressionConverter.convert((TypeCastExpression) segment);

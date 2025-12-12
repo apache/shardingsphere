@@ -154,9 +154,9 @@ class ExpressionConverterTest {
         SqlCase expectedCaseWhenNode = mock(SqlCase.class);
         CaseWhenExpression caseWhenExpression = new CaseWhenExpression(0, 0, literalSegment, Collections.singleton(literalSegment), Collections.singleton(literalSegment), literalSegment);
         when(CaseWhenExpressionConverter.convert(caseWhenExpression)).thenReturn(expectedCaseWhenNode);
-        SqlNode expectedNotNode = mock(SqlNode.class);
+        SqlBasicCall expectedNotNode = mock(SqlBasicCall.class);
         NotExpression notExpression = new NotExpression(0, 0, literalSegment, true);
-        when(NotExpressionConverter.convert(notExpression)).thenReturn(Optional.of(expectedNotNode));
+        when(NotExpressionConverter.convert(notExpression)).thenReturn(expectedNotNode);
         SqlNode expectedTypeCastNode = mock(SqlNode.class);
         TypeCastExpression typeCastExpression = new TypeCastExpression(0, 0, "text", literalSegment, "int");
         when(TypeCastExpressionConverter.convert(typeCastExpression)).thenReturn(Optional.of(expectedTypeCastNode));
