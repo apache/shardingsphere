@@ -139,7 +139,7 @@ public final class ExpressionConverter {
             return TypeCastExpressionConverter.convert((TypeCastExpression) segment);
         }
         if (segment instanceof ExtractArgExpression) {
-            return ExtractArgExpressionConverter.convert((ExtractArgExpression) segment);
+            return Optional.of(ExtractArgExpressionConverter.convert((ExtractArgExpression) segment));
         }
         if (segment instanceof MatchAgainstExpression) {
             return MatchExpressionConverter.convert((MatchAgainstExpression) segment);
