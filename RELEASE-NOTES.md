@@ -146,6 +146,7 @@
 1. Sharding: Support GroupConcat function for aggregating multiple shards in MySQL, OpenGauss, Doris - [#33808](https://github.com/apache/shardingsphere/pull/33808)
 1. Encrypt: Add non-support checker for WITH, COMBINE, INSERT SELECT on encrypt feature  - [#34175](https://github.com/apache/shardingsphere/pull/34175)
 1. Encrypt: Support INSERT statement rewrite use quote [#34259](https://github.com/apache/shardingsphere/pull/34259)
+1. SQL Binder: Support Flush statement SQL bind - [#36036](https://github.com/apache/shardingsphere/pull/36036)
 
 ### Bug Fixes
 
