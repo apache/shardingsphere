@@ -33,7 +33,6 @@ import org.apache.shardingsphere.sqlfederation.compiler.sql.ast.converter.segmen
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 /**
  * Unary operation expression converter.
@@ -63,10 +62,10 @@ public final class UnaryOperationExpressionConverter {
      * @param segment unary operation expression
      * @return SQL node
      */
-    public static Optional<SqlNode> convert(final UnaryOperationExpression segment) {
+    public static SqlBasicCall convert(final UnaryOperationExpression segment) {
         SqlOperator operator = convertOperator(segment);
         List<SqlNode> sqlNodes = convertSqlNodes(segment);
-        return Optional.of(new SqlBasicCall(operator, sqlNodes, SqlParserPos.ZERO));
+        return new SqlBasicCall(operator, sqlNodes, SqlParserPos.ZERO);
     }
     
     private static SqlOperator convertOperator(final UnaryOperationExpression segment) {
