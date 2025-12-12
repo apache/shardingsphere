@@ -142,7 +142,7 @@ class ExpressionConverterTest {
         when(ParameterMarkerExpressionConverter.convert(parameterSegment)).thenReturn(expectedParameterNode);
         SqlNode expectedFunctionNode = mock(SqlNode.class);
         FunctionSegment functionSegment = new FunctionSegment(0, 0, "func", "func_text");
-        when(FunctionConverter.convert(functionSegment)).thenReturn(Optional.of(expectedFunctionNode));
+        when(FunctionConverter.convert(functionSegment)).thenReturn(expectedFunctionNode);
         SqlNode expectedAggregationNode = mock(SqlNode.class);
         AggregationProjectionSegment aggregationSegment = new AggregationProjectionSegment(0, 0, AggregationType.COUNT, "count(expr)");
         when(AggregationProjectionConverter.convert(aggregationSegment)).thenReturn(Optional.of(expectedAggregationNode));
