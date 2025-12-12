@@ -163,9 +163,9 @@ class ExpressionConverterTest {
         SqlIdentifier expectedExtractNode = mock(SqlIdentifier.class);
         ExtractArgExpression extractArgExpression = new ExtractArgExpression(0, 0, "extract");
         when(ExtractArgExpressionConverter.convert(extractArgExpression)).thenReturn(expectedExtractNode);
-        SqlNode expectedMatchNode = mock(SqlNode.class);
+        SqlBasicCall expectedMatchNode = mock(SqlBasicCall.class);
         MatchAgainstExpression matchAgainstExpression = new MatchAgainstExpression(0, 0, literalSegment, "search", "text");
-        when(MatchExpressionConverter.convert(matchAgainstExpression)).thenReturn(Optional.of(expectedMatchNode));
+        when(MatchExpressionConverter.convert(matchAgainstExpression)).thenReturn(expectedMatchNode);
         SqlBasicCall expectedCollateNode = mock(SqlBasicCall.class);
         CollateExpression collateExpression = new CollateExpression(0, 0, literalSegment, literalSegment);
         when(CollateExpressionConverter.convert(collateExpression)).thenReturn(expectedCollateNode);

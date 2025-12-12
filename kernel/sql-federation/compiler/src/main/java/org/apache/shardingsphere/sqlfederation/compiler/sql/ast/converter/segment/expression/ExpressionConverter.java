@@ -142,7 +142,7 @@ public final class ExpressionConverter {
             return Optional.of(ExtractArgExpressionConverter.convert((ExtractArgExpression) segment));
         }
         if (segment instanceof MatchAgainstExpression) {
-            return MatchExpressionConverter.convert((MatchAgainstExpression) segment);
+            return Optional.of(MatchExpressionConverter.convert((MatchAgainstExpression) segment));
         }
         if (segment instanceof CollateExpression) {
             return Optional.of(CollateExpressionConverter.convert((CollateExpression) segment));
