@@ -103,7 +103,7 @@ public final class ExpressionConverter {
             return Optional.of(BinaryOperationExpressionConverter.convert((BinaryOperationExpression) segment));
         }
         if (segment instanceof ColumnSegment) {
-            return ColumnConverter.convert((ColumnSegment) segment);
+            return Optional.of(ColumnConverter.convert((ColumnSegment) segment));
         }
         if (segment instanceof ExistsSubqueryExpression) {
             return ExistsSubqueryExpressionConverter.convert((ExistsSubqueryExpression) segment);

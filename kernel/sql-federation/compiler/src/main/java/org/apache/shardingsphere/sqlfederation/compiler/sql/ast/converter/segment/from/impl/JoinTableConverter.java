@@ -26,15 +26,14 @@ import org.apache.calcite.sql.SqlLiteral;
 import org.apache.calcite.sql.SqlNode;
 import org.apache.calcite.sql.SqlNodeList;
 import org.apache.calcite.sql.parser.SqlParserPos;
-import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.JoinTableSegment;
-import org.apache.shardingsphere.sqlfederation.compiler.sql.ast.converter.segment.expression.impl.ColumnConverter;
 import org.apache.shardingsphere.sqlfederation.compiler.sql.ast.converter.segment.expression.ExpressionConverter;
+import org.apache.shardingsphere.sqlfederation.compiler.sql.ast.converter.segment.expression.impl.ColumnConverter;
 import org.apache.shardingsphere.sqlfederation.compiler.sql.ast.converter.segment.from.TableConverter;
 
 import java.util.Collection;
-import java.util.LinkedList;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * Join converter.
@@ -78,10 +77,7 @@ public final class JoinTableConverter {
         if (segment.getUsing().isEmpty()) {
             return Optional.empty();
         }
-        Collection<SqlNode> sqlNodes = new LinkedList<>();
-        for (ColumnSegment each : segment.getUsing()) {
-            ColumnConverter.convert(each).ifPresent(sqlNodes::add);
-        }
+        Collection<SqlNode> sqlNodes = segment.getUsing().stream().map(ColumnConverter::convert).collect(Collectors.toList());
         return Optional.of(new SqlNodeList(sqlNodes, SqlParserPos.ZERO));
     }
 }

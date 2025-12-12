@@ -53,7 +53,8 @@ class OrderByItemConverterUtilsTest {
     @Test
     void assertConvertCoversSupportedBranches() {
         ColumnOrderByItemSegment columnItem = new ColumnOrderByItemSegment(new ColumnSegment(0, 0, new IdentifierValue("col")), OrderDirection.ASC, null);
-        when(ColumnOrderByItemConverter.convert(columnItem)).thenReturn(Optional.empty());
+        SqlNode expectedColumnNode = mock(SqlNode.class);
+        when(ColumnOrderByItemConverter.convert(columnItem)).thenReturn(expectedColumnNode);
         ExpressionOrderByItemSegment expressionItem = new ExpressionOrderByItemSegment(0, 0, "expr", OrderDirection.ASC, null, mock(ExpressionSegment.class));
         SqlNode expectedExpressionNode = mock(SqlNode.class);
         when(ExpressionOrderByItemConverter.convert(expressionItem)).thenReturn(Optional.of(expectedExpressionNode));
@@ -68,8 +69,9 @@ class OrderByItemConverterUtilsTest {
         orderByItems.add(indexItem);
         orderByItems.add(unsupportedItem);
         Collection<SqlNode> actual = OrderByItemConverterUtils.convert(orderByItems);
-        assertThat(actual.size(), is(2));
+        assertThat(actual.size(), is(3));
         Iterator<SqlNode> iterator = actual.iterator();
+        assertThat(iterator.next(), is(expectedColumnNode));
         assertThat(iterator.next(), is(expectedExpressionNode));
         assertThat(iterator.next(), is(expectedIndexNode));
     }
