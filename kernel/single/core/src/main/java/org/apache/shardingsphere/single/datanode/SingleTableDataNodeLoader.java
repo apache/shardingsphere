@@ -39,6 +39,7 @@ import java.util.LinkedList;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
 /**
  * Single table data node loader.
@@ -63,11 +64,14 @@ public final class SingleTableDataNodeLoader {
             return new LinkedHashMap<>();
         }
         Collection<String> excludedTables = SingleTableLoadUtils.getExcludedTables(builtRules);
-        Map<String, Collection<DataNode>> actualDataNodes = load(databaseName, dataSourceMap, excludedTables);
         Collection<String> splitTables = SingleTableLoadUtils.splitTableLines(configuredTables);
         if (splitTables.contains(SingleTableConstants.ALL_TABLES) || splitTables.contains(SingleTableConstants.ALL_SCHEMA_TABLES)) {
-            return actualDataNodes;
+            return load(databaseName, dataSourceMap, excludedTables);
         }
+        Collection<String> configuredDataSources = configuredTables.stream().map(DataNode::new).map(DataNode::getDataSourceName).collect(Collectors.toSet());
+        Map<String, DataSource> configuredDataSourceMap = dataSourceMap.entrySet().stream().filter(entry -> configuredDataSources.contains(entry.getKey()))
+                .collect(Collectors.toMap(Entry::getKey, Entry::getValue));
+        Map<String, Collection<DataNode>> actualDataNodes = load(databaseName, configuredDataSourceMap, excludedTables);
         Map<String, Map<String, Collection<String>>> configuredTableMap = getConfiguredTableMap(databaseName, protocolType, splitTables);
         return loadSpecifiedDataNodes(actualDataNodes, featureRequiredSingleTables, configuredTableMap);
     }
