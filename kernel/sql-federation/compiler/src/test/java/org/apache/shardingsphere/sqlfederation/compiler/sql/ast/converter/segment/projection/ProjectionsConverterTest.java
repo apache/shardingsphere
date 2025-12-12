@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.sqlfederation.compiler.sql.ast.converter.segment.projection;
 
+import org.apache.calcite.sql.SqlDynamicParam;
 import org.apache.calcite.sql.SqlNode;
 import org.apache.calcite.sql.SqlNodeList;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
@@ -77,9 +78,9 @@ class ProjectionsConverterTest {
         AggregationProjectionSegment aggregationProjectionSegment = mock(AggregationProjectionSegment.class);
         when(AggregationProjectionConverter.convert(aggregationProjectionSegment)).thenReturn(Optional.of(expectedAggregationNode));
         projectionsSegment.getProjections().add(aggregationProjectionSegment);
-        SqlNode expectedParameterNode = mock(SqlNode.class);
+        SqlDynamicParam expectedParameterNode = mock(SqlDynamicParam.class);
         ParameterMarkerExpressionSegment parameterMarkerExpressionSegment = new ParameterMarkerExpressionSegment(0, 0, 0);
-        when(ParameterMarkerExpressionConverter.convert(parameterMarkerExpressionSegment)).thenReturn(Optional.of(expectedParameterNode));
+        when(ParameterMarkerExpressionConverter.convert(parameterMarkerExpressionSegment)).thenReturn(expectedParameterNode);
         projectionsSegment.getProjections().add(parameterMarkerExpressionSegment);
         SqlNodeList actual = ProjectionsConverter.convert(projectionsSegment).orElse(null);
         assertNotNull(actual);

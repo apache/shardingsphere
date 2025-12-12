@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.sqlfederation.compiler.sql.ast.converter.segment.expression;
 
 import org.apache.calcite.sql.SqlBasicCall;
+import org.apache.calcite.sql.SqlDynamicParam;
 import org.apache.calcite.sql.SqlIdentifier;
 import org.apache.calcite.sql.SqlNode;
 import org.apache.calcite.sql.fun.SqlCase;
@@ -136,9 +137,9 @@ class ExpressionConverterTest {
         SqlBasicCall expectedBetweenNode = mock(SqlBasicCall.class);
         BetweenExpression betweenExpression = new BetweenExpression(0, 0, literalSegment, literalSegment, literalSegment, false);
         when(BetweenExpressionConverter.convert(betweenExpression)).thenReturn(expectedBetweenNode);
-        SqlNode expectedParameterNode = mock(SqlNode.class);
+        SqlDynamicParam expectedParameterNode = mock(SqlDynamicParam.class);
         ParameterMarkerExpressionSegment parameterSegment = new ParameterMarkerExpressionSegment(0, 0, 0);
-        when(ParameterMarkerExpressionConverter.convert(parameterSegment)).thenReturn(Optional.of(expectedParameterNode));
+        when(ParameterMarkerExpressionConverter.convert(parameterSegment)).thenReturn(expectedParameterNode);
         SqlNode expectedFunctionNode = mock(SqlNode.class);
         FunctionSegment functionSegment = new FunctionSegment(0, 0, "func", "func_text");
         when(FunctionConverter.convert(functionSegment)).thenReturn(Optional.of(expectedFunctionNode));
