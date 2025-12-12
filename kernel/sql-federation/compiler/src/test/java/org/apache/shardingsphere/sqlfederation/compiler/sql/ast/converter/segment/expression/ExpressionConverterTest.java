@@ -126,7 +126,7 @@ class ExpressionConverterTest {
         SqlNode expectedExistsSubqueryNode = mock(SqlNode.class);
         SubquerySegment subquerySegment = new SubquerySegment(0, 0, new SelectStatement(databaseType), "sub");
         ExistsSubqueryExpression existsSubqueryExpression = new ExistsSubqueryExpression(0, 0, subquerySegment);
-        when(ExistsSubqueryExpressionConverter.convert(existsSubqueryExpression)).thenReturn(Optional.of(expectedExistsSubqueryNode));
+        when(ExistsSubqueryExpressionConverter.convert(existsSubqueryExpression)).thenReturn(expectedExistsSubqueryNode);
         SqlNode expectedSubqueryNode = mock(SqlNode.class);
         SubqueryExpressionSegment subqueryExpressionSegment = new SubqueryExpressionSegment(subquerySegment);
         when(SubqueryExpressionConverter.convert(subqueryExpressionSegment)).thenReturn(Optional.of(expectedSubqueryNode));

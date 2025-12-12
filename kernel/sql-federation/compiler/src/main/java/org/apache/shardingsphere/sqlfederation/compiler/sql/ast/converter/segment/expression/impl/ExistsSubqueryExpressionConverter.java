@@ -27,7 +27,6 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.Exis
 import org.apache.shardingsphere.sqlfederation.compiler.sql.ast.converter.statement.type.SelectStatementConverter;
 
 import java.util.Collections;
-import java.util.Optional;
 
 /**
  * Exists subquery expression converter.
@@ -41,12 +40,9 @@ public final class ExistsSubqueryExpressionConverter {
      * @param expression exists subquery expression
      * @return SQL node
      */
-    public static Optional<SqlNode> convert(final ExistsSubqueryExpression expression) {
-        if (null == expression) {
-            return Optional.empty();
-        }
-        SqlBasicCall sqlNode = new SqlBasicCall(SqlStdOperatorTable.EXISTS,
-                Collections.singletonList(new SelectStatementConverter().convert(expression.getSubquery().getSelect())), SqlParserPos.ZERO);
-        return expression.isNot() ? Optional.of(new SqlBasicCall(SqlStdOperatorTable.NOT, Collections.singletonList(sqlNode), SqlParserPos.ZERO)) : Optional.of(sqlNode);
+    public static SqlNode convert(final ExistsSubqueryExpression expression) {
+        SqlBasicCall sqlNode = new SqlBasicCall(
+                SqlStdOperatorTable.EXISTS, Collections.singletonList(new SelectStatementConverter().convert(expression.getSubquery().getSelect())), SqlParserPos.ZERO);
+        return expression.isNot() ? new SqlBasicCall(SqlStdOperatorTable.NOT, Collections.singletonList(sqlNode), SqlParserPos.ZERO) : sqlNode;
     }
 }

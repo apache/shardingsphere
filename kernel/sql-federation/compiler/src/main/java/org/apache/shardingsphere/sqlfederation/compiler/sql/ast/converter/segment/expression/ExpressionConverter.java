@@ -106,7 +106,7 @@ public final class ExpressionConverter {
             return Optional.of(ColumnConverter.convert((ColumnSegment) segment));
         }
         if (segment instanceof ExistsSubqueryExpression) {
-            return ExistsSubqueryExpressionConverter.convert((ExistsSubqueryExpression) segment);
+            return Optional.of(ExistsSubqueryExpressionConverter.convert((ExistsSubqueryExpression) segment));
         }
         if (segment instanceof SubqueryExpressionSegment) {
             return SubqueryExpressionConverter.convert((SubqueryExpressionSegment) segment);
