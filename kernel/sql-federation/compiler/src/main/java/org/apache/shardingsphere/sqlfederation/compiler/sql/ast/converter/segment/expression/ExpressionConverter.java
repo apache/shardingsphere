@@ -112,7 +112,7 @@ public final class ExpressionConverter {
             return SubqueryExpressionConverter.convert((SubqueryExpressionSegment) segment);
         }
         if (segment instanceof InExpression) {
-            return InExpressionConverter.convert((InExpression) segment);
+            return Optional.of(InExpressionConverter.convert((InExpression) segment));
         }
         if (segment instanceof BetweenExpression) {
             return Optional.of(BetweenExpressionConverter.convert((BetweenExpression) segment));

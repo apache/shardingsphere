@@ -130,9 +130,9 @@ class ExpressionConverterTest {
         SqlNode expectedSubqueryNode = mock(SqlNode.class);
         SubqueryExpressionSegment subqueryExpressionSegment = new SubqueryExpressionSegment(subquerySegment);
         when(SubqueryExpressionConverter.convert(subqueryExpressionSegment)).thenReturn(Optional.of(expectedSubqueryNode));
-        SqlNode expectedInNode = mock(SqlNode.class);
+        SqlBasicCall expectedInNode = mock(SqlBasicCall.class);
         InExpression inExpression = new InExpression(0, 0, literalSegment, literalSegment, false);
-        when(InExpressionConverter.convert(inExpression)).thenReturn(Optional.of(expectedInNode));
+        when(InExpressionConverter.convert(inExpression)).thenReturn(expectedInNode);
         SqlBasicCall expectedBetweenNode = mock(SqlBasicCall.class);
         BetweenExpression betweenExpression = new BetweenExpression(0, 0, literalSegment, literalSegment, literalSegment, false);
         when(BetweenExpressionConverter.convert(betweenExpression)).thenReturn(expectedBetweenNode);
