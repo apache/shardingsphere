@@ -2147,6 +2147,10 @@ RETAIN
     : R E T A I N
     ;
 
+RETENTION
+    : R E T E N T I O N
+    ;
+
 RETURN
     : R E T U R N
     ;
@@ -2577,6 +2581,14 @@ SWITCHES
 
 SYSTEM
     : S Y S T E M
+    ;
+
+SYSTEM_TIME
+    : S Y S T E M UL_ T I M E
+    ;
+
+SYSTEM_VERSION
+    : S Y S T E M UL_ V E R S I O N
     ;
 
 SOURCE_BIND
