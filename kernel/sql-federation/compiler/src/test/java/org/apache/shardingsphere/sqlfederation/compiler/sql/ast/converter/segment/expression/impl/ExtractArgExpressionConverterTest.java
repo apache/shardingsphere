@@ -17,26 +17,16 @@
 
 package org.apache.shardingsphere.sqlfederation.compiler.sql.ast.converter.segment.expression.impl;
 
-import org.apache.calcite.sql.SqlIdentifier;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExtractArgExpression;
 import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 class ExtractArgExpressionConverterTest {
     
     @Test
-    void assertConvertReturnsEmptyForNullExpression() {
-        assertFalse(ExtractArgExpressionConverter.convert(null).isPresent());
-    }
-    
-    @Test
     void assertConvertExtractArgExpression() {
-        SqlIdentifier actual = (SqlIdentifier) ExtractArgExpressionConverter.convert(new ExtractArgExpression(0, 0, "DAY")).orElse(null);
-        assertNotNull(actual);
-        assertThat(actual.getSimple(), is("DAY"));
+        assertThat(ExtractArgExpressionConverter.convert(new ExtractArgExpression(0, 0, "DAY")).getSimple(), is("DAY"));
     }
 }

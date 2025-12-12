@@ -92,7 +92,7 @@ public final class InsertStatementConverter implements SQLStatementConverter<Ins
         List<SqlNode> columns = new ArrayList<>();
         insertStatement.getSetAssignment().ifPresent(optional -> columns.addAll(convertSetAssignmentColumns(optional)));
         for (ColumnSegment each : insertStatement.getColumns()) {
-            columns.add(ColumnConverter.convert(each).orElseThrow(IllegalStateException::new));
+            columns.add(ColumnConverter.convert(each));
         }
         return columns.isEmpty() ? null : new SqlNodeList(columns, SqlParserPos.ZERO);
     }
@@ -101,7 +101,7 @@ public final class InsertStatementConverter implements SQLStatementConverter<Ins
         List<SqlNode> result = new ArrayList<>();
         for (ColumnAssignmentSegment each : setAssignment.getAssignments()) {
             for (ColumnSegment column : each.getColumns()) {
-                result.add(ColumnConverter.convert(column).orElseThrow(IllegalStateException::new));
+                result.add(ColumnConverter.convert(column));
             }
         }
         return result;

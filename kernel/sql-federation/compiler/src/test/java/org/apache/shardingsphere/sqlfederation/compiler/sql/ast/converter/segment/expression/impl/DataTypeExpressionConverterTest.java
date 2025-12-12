@@ -25,15 +25,8 @@ import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 class DataTypeExpressionConverterTest {
-    
-    @Test
-    void assertConvertReturnsEmptyForNullSegment() {
-        assertFalse(DataTypeExpressionConverter.convert(null).isPresent());
-    }
     
     @Test
     void assertConvertWithoutLength() {
@@ -41,8 +34,7 @@ class DataTypeExpressionConverterTest {
         segment.setStartIndex(0);
         segment.setStopIndex(0);
         segment.setDataTypeName("INTEGER");
-        SqlDataTypeSpec actual = (SqlDataTypeSpec) DataTypeExpressionConverter.convert(segment).orElse(null);
-        assertNotNull(actual);
+        SqlDataTypeSpec actual = (SqlDataTypeSpec) DataTypeExpressionConverter.convert(segment);
         SqlBasicTypeNameSpec typeNameSpec = (SqlBasicTypeNameSpec) actual.getTypeNameSpec();
         assertThat(typeNameSpec.getTypeName().getSimple(), is("INTEGER"));
         assertThat(typeNameSpec.getPrecision(), is(-1));
@@ -57,8 +49,7 @@ class DataTypeExpressionConverterTest {
         DataTypeLengthSegment dataLength = new DataTypeLengthSegment();
         dataLength.setPrecision(10);
         segment.setDataLength(dataLength);
-        SqlDataTypeSpec actual = (SqlDataTypeSpec) DataTypeExpressionConverter.convert(segment).orElse(null);
-        assertNotNull(actual);
+        SqlDataTypeSpec actual = (SqlDataTypeSpec) DataTypeExpressionConverter.convert(segment);
         SqlBasicTypeNameSpec typeNameSpec = (SqlBasicTypeNameSpec) actual.getTypeNameSpec();
         assertThat(typeNameSpec.getPrecision(), is(10));
     }

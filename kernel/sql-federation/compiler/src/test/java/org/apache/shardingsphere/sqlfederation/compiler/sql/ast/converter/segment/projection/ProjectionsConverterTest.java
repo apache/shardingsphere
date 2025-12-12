@@ -59,7 +59,7 @@ class ProjectionsConverterTest {
         ProjectionsSegment projectionsSegment = new ProjectionsSegment(0, 0);
         SqlNode expectedColumnNode = mock(SqlNode.class);
         ColumnProjectionSegment columnProjectionSegment = mock(ColumnProjectionSegment.class);
-        when(ColumnProjectionConverter.convert(columnProjectionSegment)).thenReturn(Optional.of(expectedColumnNode));
+        when(ColumnProjectionConverter.convert(columnProjectionSegment)).thenReturn(expectedColumnNode);
         projectionsSegment.getProjections().add(columnProjectionSegment);
         SqlNode expectedExpressionNode = mock(SqlNode.class);
         ExpressionProjectionSegment expressionProjectionSegment = mock(ExpressionProjectionSegment.class);

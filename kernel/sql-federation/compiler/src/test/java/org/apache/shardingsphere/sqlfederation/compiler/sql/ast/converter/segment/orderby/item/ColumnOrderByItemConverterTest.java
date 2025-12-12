@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.sqlfederation.compiler.sql.ast.converter.segment.orderby.item;
 
 import org.apache.calcite.sql.SqlBasicCall;
+import org.apache.calcite.sql.SqlIdentifier;
 import org.apache.calcite.sql.SqlNode;
 import org.apache.calcite.sql.fun.SqlStdOperatorTable;
 import org.apache.shardingsphere.database.connector.core.metadata.database.enums.NullsOrderType;
@@ -31,13 +32,8 @@ import org.apache.shardingsphere.test.infra.framework.extension.mock.StaticMockS
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
-import java.util.Optional;
-
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.isA;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -46,32 +42,22 @@ import static org.mockito.Mockito.when;
 class ColumnOrderByItemConverterTest {
     
     @Test
-    void assertConvertReturnsEmptyWhenColumnConverterReturnsEmpty() {
-        ColumnSegment columnSegment = new ColumnSegment(0, 0, new IdentifierValue("col"));
-        when(ColumnConverter.convert(columnSegment)).thenReturn(Optional.empty());
-        assertFalse(ColumnOrderByItemConverter.convert(new ColumnOrderByItemSegment(columnSegment, OrderDirection.ASC, null)).isPresent());
-    }
-    
-    @Test
     void assertConvertReturnsOriginalNodeWhenAscAndNullsAbsent() {
         ColumnSegment columnSegment = new ColumnSegment(0, 0, new IdentifierValue("col"));
-        SqlNode expectedNode = mock(SqlNode.class);
-        when(ColumnConverter.convert(columnSegment)).thenReturn(Optional.of(expectedNode));
-        Optional<SqlNode> actual = ColumnOrderByItemConverter.convert(new ColumnOrderByItemSegment(columnSegment, OrderDirection.ASC, null));
-        assertTrue(actual.isPresent());
-        assertThat(actual.get(), is(expectedNode));
+        SqlIdentifier expectedNode = mock(SqlIdentifier.class);
+        when(ColumnConverter.convert(columnSegment)).thenReturn(expectedNode);
+        SqlNode actual = ColumnOrderByItemConverter.convert(new ColumnOrderByItemSegment(columnSegment, OrderDirection.ASC, null));
+        assertThat(actual, is(expectedNode));
     }
     
     @Test
     void assertConvertWrapsDescAndNullsFirst() {
         ColumnSegment columnSegment = new ColumnSegment(0, 0, new IdentifierValue("col"));
-        SqlNode expectedNode = mock(SqlNode.class);
-        when(ColumnConverter.convert(columnSegment)).thenReturn(Optional.of(expectedNode));
-        Optional<SqlNode> actual = ColumnOrderByItemConverter.convert(new ColumnOrderByItemSegment(columnSegment, OrderDirection.DESC, NullsOrderType.FIRST));
-        assertTrue(actual.isPresent());
-        SqlBasicCall nullsFirstCall = (SqlBasicCall) actual.get();
-        assertThat(nullsFirstCall.getOperator(), is(SqlStdOperatorTable.NULLS_FIRST));
-        SqlBasicCall descCall = (SqlBasicCall) nullsFirstCall.getOperandList().get(0);
+        SqlIdentifier expectedNode = mock(SqlIdentifier.class);
+        when(ColumnConverter.convert(columnSegment)).thenReturn(expectedNode);
+        SqlBasicCall actual = (SqlBasicCall) ColumnOrderByItemConverter.convert(new ColumnOrderByItemSegment(columnSegment, OrderDirection.DESC, NullsOrderType.FIRST));
+        assertThat(actual.getOperator(), is(SqlStdOperatorTable.NULLS_FIRST));
+        SqlBasicCall descCall = (SqlBasicCall) actual.getOperandList().get(0);
         assertThat(descCall.getOperator(), is(SqlStdOperatorTable.DESC));
         assertThat(descCall.getOperandList().get(0), is(expectedNode));
     }
@@ -80,13 +66,10 @@ class ColumnOrderByItemConverterTest {
     void assertConvertWrapsNullsLastWithoutDesc() {
         ColumnSegment columnSegment = new ColumnSegment(0, 0, new IdentifierValue("col"));
         ColumnOrderByItemSegment segment = new ColumnOrderByItemSegment(columnSegment, OrderDirection.ASC, NullsOrderType.LAST);
-        SqlNode expectedNode = mock(SqlNode.class);
-        when(ColumnConverter.convert(columnSegment)).thenReturn(Optional.of(expectedNode));
-        Optional<SqlNode> actual = ColumnOrderByItemConverter.convert(segment);
-        assertTrue(actual.isPresent());
-        SqlBasicCall nullsLastCall = (SqlBasicCall) actual.get();
-        assertThat(nullsLastCall, isA(SqlBasicCall.class));
-        assertThat(nullsLastCall.getOperator(), is(SqlStdOperatorTable.NULLS_LAST));
-        assertThat(nullsLastCall.getOperandList().get(0), is(expectedNode));
+        SqlIdentifier expectedNode = mock(SqlIdentifier.class);
+        when(ColumnConverter.convert(columnSegment)).thenReturn(expectedNode);
+        SqlBasicCall actual = (SqlBasicCall) ColumnOrderByItemConverter.convert(segment);
+        assertThat(actual.getOperator(), is(SqlStdOperatorTable.NULLS_LAST));
+        assertThat(actual.getOperandList().get(0), is(expectedNode));
     }
 }

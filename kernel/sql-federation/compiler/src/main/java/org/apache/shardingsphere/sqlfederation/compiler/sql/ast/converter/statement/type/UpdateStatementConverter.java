@@ -25,8 +25,6 @@ import org.apache.calcite.sql.SqlOrderBy;
 import org.apache.calcite.sql.SqlUpdate;
 import org.apache.calcite.sql.parser.SqlParserPos;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.assignment.ColumnAssignmentSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.pagination.limit.LimitSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.UpdateStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
@@ -38,7 +36,6 @@ import org.apache.shardingsphere.sqlfederation.compiler.sql.ast.converter.segmen
 import org.apache.shardingsphere.sqlfederation.compiler.sql.ast.converter.segment.where.WhereConverter;
 import org.apache.shardingsphere.sqlfederation.compiler.sql.ast.converter.statement.SQLStatementConverter;
 
-import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -67,8 +64,8 @@ public final class UpdateStatementConverter implements SQLStatementConverter<Upd
         SqlNodeList columns = new SqlNodeList(SqlParserPos.ZERO);
         SqlNodeList expressions = new SqlNodeList(SqlParserPos.ZERO);
         for (ColumnAssignmentSegment each : updateStatement.getAssignment().orElseThrow(IllegalStateException::new).getAssignments()) {
-            columns.addAll(convertColumn(each.getColumns()));
-            expressions.add(convertExpression(each.getValue()));
+            columns.addAll(each.getColumns().stream().map(ColumnConverter::convert).collect(Collectors.toList()));
+            expressions.add(ExpressionConverter.convert(each.getValue()).orElseThrow(IllegalStateException::new));
         }
         return new SqlUpdate(SqlParserPos.ZERO, getTargetTableName(table), columns, expressions, condition, null, alias);
     }
@@ -79,14 +76,6 @@ public final class UpdateStatementConverter implements SQLStatementConverter<Upd
             return new SqlIdentifier(aliasIdentifier.getValue(), SqlParserPos.ZERO);
         }
         return null;
-    }
-    
-    private List<SqlNode> convertColumn(final List<ColumnSegment> columnSegments) {
-        return columnSegments.stream().map(each -> ColumnConverter.convert(each).orElseThrow(IllegalStateException::new)).collect(Collectors.toList());
-    }
-    
-    private SqlNode convertExpression(final ExpressionSegment expressionSegment) {
-        return ExpressionConverter.convert(expressionSegment).orElseThrow(IllegalStateException::new);
     }
     
     private SqlNode getTargetTableName(final SqlNode deleteTable) {

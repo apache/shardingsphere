@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.sqlfederation.compiler.sql.ast.converter.segment.expression;
 
 import org.apache.calcite.sql.SqlBasicCall;
+import org.apache.calcite.sql.SqlIdentifier;
 import org.apache.calcite.sql.SqlNode;
 import org.apache.calcite.sql.fun.SqlCase;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
@@ -119,13 +120,13 @@ class ExpressionConverterTest {
         SqlBasicCall expectedBinaryNode = mock(SqlBasicCall.class);
         BinaryOperationExpression binarySegment = new BinaryOperationExpression(0, 0, literalSegment, literalSegment, "+", "text");
         when(BinaryOperationExpressionConverter.convert(binarySegment)).thenReturn(expectedBinaryNode);
-        SqlNode expectedColumnNode = mock(SqlNode.class);
+        SqlIdentifier expectedColumnNode = mock(SqlIdentifier.class);
         ColumnSegment columnSegment = new ColumnSegment(0, 0, new IdentifierValue("col"));
-        when(ColumnConverter.convert(columnSegment)).thenReturn(Optional.of(expectedColumnNode));
+        when(ColumnConverter.convert(columnSegment)).thenReturn(expectedColumnNode);
         SqlNode expectedExistsSubqueryNode = mock(SqlNode.class);
         SubquerySegment subquerySegment = new SubquerySegment(0, 0, new SelectStatement(databaseType), "sub");
         ExistsSubqueryExpression existsSubqueryExpression = new ExistsSubqueryExpression(0, 0, subquerySegment);
-        when(ExistsSubqueryExpressionConverter.convert(existsSubqueryExpression)).thenReturn(Optional.of(expectedExistsSubqueryNode));
+        when(ExistsSubqueryExpressionConverter.convert(existsSubqueryExpression)).thenReturn(expectedExistsSubqueryNode);
         SqlNode expectedSubqueryNode = mock(SqlNode.class);
         SubqueryExpressionSegment subqueryExpressionSegment = new SubqueryExpressionSegment(subquerySegment);
         when(SubqueryExpressionConverter.convert(subqueryExpressionSegment)).thenReturn(Optional.of(expectedSubqueryNode));
@@ -149,7 +150,7 @@ class ExpressionConverterTest {
         dataTypeSegment.setStopIndex(0);
         dataTypeSegment.setDataTypeName("int");
         SqlNode expectedDataTypeNode = mock(SqlNode.class);
-        when(DataTypeExpressionConverter.convert(dataTypeSegment)).thenReturn(Optional.of(expectedDataTypeNode));
+        when(DataTypeExpressionConverter.convert(dataTypeSegment)).thenReturn(expectedDataTypeNode);
         SqlCase expectedCaseWhenNode = mock(SqlCase.class);
         CaseWhenExpression caseWhenExpression = new CaseWhenExpression(0, 0, literalSegment, Collections.singleton(literalSegment), Collections.singleton(literalSegment), literalSegment);
         when(CaseWhenExpressionConverter.convert(caseWhenExpression)).thenReturn(expectedCaseWhenNode);
@@ -159,9 +160,9 @@ class ExpressionConverterTest {
         SqlNode expectedTypeCastNode = mock(SqlNode.class);
         TypeCastExpression typeCastExpression = new TypeCastExpression(0, 0, "text", literalSegment, "int");
         when(TypeCastExpressionConverter.convert(typeCastExpression)).thenReturn(Optional.of(expectedTypeCastNode));
-        SqlNode expectedExtractNode = mock(SqlNode.class);
+        SqlIdentifier expectedExtractNode = mock(SqlIdentifier.class);
         ExtractArgExpression extractArgExpression = new ExtractArgExpression(0, 0, "extract");
-        when(ExtractArgExpressionConverter.convert(extractArgExpression)).thenReturn(Optional.of(expectedExtractNode));
+        when(ExtractArgExpressionConverter.convert(extractArgExpression)).thenReturn(expectedExtractNode);
         SqlNode expectedMatchNode = mock(SqlNode.class);
         MatchAgainstExpression matchAgainstExpression = new MatchAgainstExpression(0, 0, literalSegment, "search", "text");
         when(MatchExpressionConverter.convert(matchAgainstExpression)).thenReturn(Optional.of(expectedMatchNode));

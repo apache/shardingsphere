@@ -63,7 +63,7 @@ public final class ProjectionsConverter {
     
     private static Optional<SqlNode> getProjectionSQLNode(final ProjectionSegment segment) {
         if (segment instanceof ColumnProjectionSegment) {
-            return ColumnProjectionConverter.convert((ColumnProjectionSegment) segment);
+            return Optional.of(ColumnProjectionConverter.convert((ColumnProjectionSegment) segment));
         }
         if (segment instanceof ExpressionProjectionSegment) {
             return ExpressionProjectionConverter.convert((ExpressionProjectionSegment) segment);

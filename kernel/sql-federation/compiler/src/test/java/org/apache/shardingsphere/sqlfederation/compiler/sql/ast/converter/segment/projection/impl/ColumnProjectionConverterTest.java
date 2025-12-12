@@ -20,7 +20,6 @@ package org.apache.shardingsphere.sqlfederation.compiler.sql.ast.converter.segme
 import org.apache.calcite.sql.SqlAsOperator;
 import org.apache.calcite.sql.SqlBasicCall;
 import org.apache.calcite.sql.SqlIdentifier;
-import org.apache.calcite.sql.SqlNode;
 import org.apache.calcite.sql.parser.SqlParserPos;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ColumnProjectionSegment;
@@ -33,13 +32,10 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
 import java.util.Collections;
-import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -53,23 +49,18 @@ class ColumnProjectionConverterTest {
         ColumnProjectionSegment projectionSegment = new ColumnProjectionSegment(columnSegment);
         projectionSegment.setAlias(new AliasSegment(0, 0, new IdentifierValue("alias")));
         SqlIdentifier columnNode = new SqlIdentifier("col", SqlParserPos.ZERO);
-        when(ColumnConverter.convert(columnSegment)).thenReturn(Optional.of(columnNode));
-        Optional<SqlNode> actual = ColumnProjectionConverter.convert(projectionSegment);
-        SqlBasicCall sqlBasicCall = (SqlBasicCall) actual.orElse(null);
-        assertNotNull(sqlBasicCall);
-        assertThat(sqlBasicCall.getOperator(), instanceOf(SqlAsOperator.class));
-        assertThat(sqlBasicCall.getOperandList().get(0), is(columnNode));
-        assertThat(((SqlIdentifier) sqlBasicCall.getOperandList().get(1)).names, is(Collections.singletonList("alias")));
+        when(ColumnConverter.convert(columnSegment)).thenReturn(columnNode);
+        SqlBasicCall actual = (SqlBasicCall) ColumnProjectionConverter.convert(projectionSegment);
+        assertThat(actual.getOperator(), instanceOf(SqlAsOperator.class));
+        assertThat(actual.getOperandList().get(0), is(columnNode));
+        assertThat(((SqlIdentifier) actual.getOperandList().get(1)).names, is(Collections.singletonList("alias")));
     }
     
     @Test
     void assertConvertDelegatesWhenAliasAbsent() {
         ColumnSegment columnSegment = new ColumnSegment(0, 0, new IdentifierValue("col"));
-        ColumnProjectionSegment projectionSegment = new ColumnProjectionSegment(columnSegment);
-        SqlNode expected = mock(SqlNode.class);
-        when(ColumnConverter.convert(columnSegment)).thenReturn(Optional.of(expected));
-        Optional<SqlNode> actual = ColumnProjectionConverter.convert(projectionSegment);
-        assertTrue(actual.isPresent());
-        assertThat(actual.get(), is(expected));
+        SqlIdentifier expected = mock(SqlIdentifier.class);
+        when(ColumnConverter.convert(columnSegment)).thenReturn(expected);
+        assertThat(ColumnProjectionConverter.convert(new ColumnProjectionSegment(columnSegment)), is(expected));
     }
 }

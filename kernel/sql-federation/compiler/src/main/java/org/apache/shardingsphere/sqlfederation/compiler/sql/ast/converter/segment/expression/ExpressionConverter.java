@@ -103,10 +103,10 @@ public final class ExpressionConverter {
             return Optional.of(BinaryOperationExpressionConverter.convert((BinaryOperationExpression) segment));
         }
         if (segment instanceof ColumnSegment) {
-            return ColumnConverter.convert((ColumnSegment) segment);
+            return Optional.of(ColumnConverter.convert((ColumnSegment) segment));
         }
         if (segment instanceof ExistsSubqueryExpression) {
-            return ExistsSubqueryExpressionConverter.convert((ExistsSubqueryExpression) segment);
+            return Optional.of(ExistsSubqueryExpressionConverter.convert((ExistsSubqueryExpression) segment));
         }
         if (segment instanceof SubqueryExpressionSegment) {
             return SubqueryExpressionConverter.convert((SubqueryExpressionSegment) segment);
@@ -127,7 +127,7 @@ public final class ExpressionConverter {
             return AggregationProjectionConverter.convert((AggregationProjectionSegment) segment);
         }
         if (segment instanceof DataTypeSegment) {
-            return DataTypeExpressionConverter.convert((DataTypeSegment) segment);
+            return Optional.of(DataTypeExpressionConverter.convert((DataTypeSegment) segment));
         }
         if (segment instanceof CaseWhenExpression) {
             return Optional.of(CaseWhenExpressionConverter.convert((CaseWhenExpression) segment));
@@ -139,7 +139,7 @@ public final class ExpressionConverter {
             return TypeCastExpressionConverter.convert((TypeCastExpression) segment);
         }
         if (segment instanceof ExtractArgExpression) {
-            return ExtractArgExpressionConverter.convert((ExtractArgExpression) segment);
+            return Optional.of(ExtractArgExpressionConverter.convert((ExtractArgExpression) segment));
         }
         if (segment instanceof MatchAgainstExpression) {
             return MatchExpressionConverter.convert((MatchAgainstExpression) segment);
