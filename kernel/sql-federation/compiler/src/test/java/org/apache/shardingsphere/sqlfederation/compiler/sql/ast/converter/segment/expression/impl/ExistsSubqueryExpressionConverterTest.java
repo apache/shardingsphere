@@ -33,8 +33,6 @@ import java.util.Collections;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockConstruction;
@@ -45,19 +43,13 @@ class ExistsSubqueryExpressionConverterTest {
     private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "FIXTURE");
     
     @Test
-    void assertConvertReturnsEmptyForNullExpression() {
-        assertFalse(ExistsSubqueryExpressionConverter.convert(null).isPresent());
-    }
-    
-    @Test
     void assertConvertExistsExpression() {
         SqlNode expected = mock(SqlNode.class);
         try (
                 MockedConstruction<SelectStatementConverter> ignored = mockConstruction(SelectStatementConverter.class,
                         (mock, context) -> when(mock.convert(any(SelectStatement.class))).thenReturn(expected))) {
             ExistsSubqueryExpression expression = new ExistsSubqueryExpression(0, 0, new SubquerySegment(0, 0, new SelectStatement(databaseType), "text"));
-            SqlBasicCall actual = (SqlBasicCall) ExistsSubqueryExpressionConverter.convert(expression).orElse(null);
-            assertNotNull(actual);
+            SqlBasicCall actual = (SqlBasicCall) ExistsSubqueryExpressionConverter.convert(expression);
             assertThat(actual.getOperator(), is(SqlStdOperatorTable.EXISTS));
             assertThat(actual.getOperandList(), is(Collections.singletonList(expected)));
         }
@@ -71,8 +63,7 @@ class ExistsSubqueryExpressionConverterTest {
                         (mock, context) -> when(mock.convert(any(SelectStatement.class))).thenReturn(expected))) {
             ExistsSubqueryExpression expression = new ExistsSubqueryExpression(0, 0, new SubquerySegment(0, 0, new SelectStatement(databaseType), "text"));
             expression.setNot(true);
-            SqlBasicCall actual = (SqlBasicCall) ExistsSubqueryExpressionConverter.convert(expression).orElse(null);
-            assertNotNull(actual);
+            SqlBasicCall actual = (SqlBasicCall) ExistsSubqueryExpressionConverter.convert(expression);
             assertThat(actual.getOperator(), is(SqlStdOperatorTable.NOT));
             SqlBasicCall existsCall = (SqlBasicCall) actual.getOperandList().get(0);
             assertThat(existsCall.getOperator(), is(SqlStdOperatorTable.EXISTS));
