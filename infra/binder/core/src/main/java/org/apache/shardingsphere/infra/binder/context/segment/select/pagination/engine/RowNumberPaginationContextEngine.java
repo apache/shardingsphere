@@ -111,16 +111,16 @@ public final class RowNumberPaginationContextEngine {
             String operator = each.getOperator();
             switch (operator) {
                 case ">":
-                    offset = createRowNumberValueSegment(each.getRight(), false);
+                    offset = createRowNumberValueSegment(each.getRight(), false, params);
                     break;
                 case ">=":
-                    offset = createRowNumberValueSegment(each.getRight(), true);
+                    offset = createRowNumberValueSegment(each.getRight(), true, params);
                     break;
                 case "<":
-                    rowCount = createRowNumberValueSegment(each.getRight(), false);
+                    rowCount = createRowNumberValueSegment(each.getRight(), false, params);
                     break;
                 case "<=":
-                    rowCount = createRowNumberValueSegment(each.getRight(), true);
+                    rowCount = createRowNumberValueSegment(each.getRight(), true, params);
                     break;
                 default:
                     break;
@@ -129,15 +129,33 @@ public final class RowNumberPaginationContextEngine {
         return new PaginationContext(offset, rowCount, params);
     }
     
-    private RowNumberValueSegment createRowNumberValueSegment(final ExpressionSegment expression, final boolean boundOpened) {
+    private RowNumberValueSegment createRowNumberValueSegment(final ExpressionSegment expression, final boolean boundOpened, final List<Object> params) {
         int startIndex = expression.getStartIndex();
         int stopIndex = expression.getStopIndex();
         if (expression instanceof LiteralExpressionSegment) {
             return new NumberLiteralRowNumberValueSegment(startIndex, stopIndex, Long.parseLong(((LiteralExpressionSegment) expression).getLiterals().toString()), boundOpened);
         }
         if (expression instanceof ParameterMarkerExpressionSegment) {
+            int parameterIndex = ((ParameterMarkerExpressionSegment) expression).getParameterMarkerIndex();
+            // The parameter index derived from the parser might be incorrect in complex subqueries.
+            // If the parameter value is not a number, it is not a valid pagination value, so we ignore it.
+            if (null != params && !params.isEmpty() && parameterIndex < params.size()) {
+                Object value = params.get(parameterIndex);
+                if (!(value instanceof Number) && !isStringNumber(value)) {
+                    return null;
+                }
+            }
             return new ParameterMarkerRowNumberValueSegment(startIndex, stopIndex, ((ParameterMarkerExpressionSegment) expression).getParameterMarkerIndex(), boundOpened);
         }
         return new ExpressionRowNumberValueSegment(startIndex, stopIndex, expression, boundOpened);
+    }
+    
+    private boolean isStringNumber(final Object value) {
+        try {
+            Long.parseLong(value.toString());
+            return true;
+        } catch (final NumberFormatException ex) {
+            return false;
+        }
     }
 }

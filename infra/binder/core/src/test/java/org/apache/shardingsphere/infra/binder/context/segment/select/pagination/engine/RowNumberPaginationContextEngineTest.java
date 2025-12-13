@@ -36,6 +36,7 @@ import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
 import java.util.Optional;
+import java.util.Arrays;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -113,6 +114,17 @@ class RowNumberPaginationContextEngineTest {
         Optional<PaginationValueSegment> offSetSegmentPaginationValue = paginationContext.getOffsetSegment();
         assertTrue(offSetSegmentPaginationValue.isPresent());
         assertThat(offSetSegmentPaginationValue.get(), isA(ParameterMarkerRowNumberValueSegment.class));
+        assertFalse(paginationContext.getRowCountSegment().isPresent());
+    }
+    
+    @Test
+    void assertCreatePaginationContextWithInvalidParameter() {
+        Projection projectionWithRowNumberAlias = new ColumnProjection(null, ROW_NUMBER_COLUMN_NAME, ROW_NUMBER_COLUMN_ALIAS, mock(DatabaseType.class));
+        ProjectionsContext projectionsContext = new ProjectionsContext(0, 0, false, Collections.singleton(projectionWithRowNumberAlias));
+        ColumnSegment left = new ColumnSegment(0, 10, new IdentifierValue(ROW_NUMBER_COLUMN_NAME));
+        ParameterMarkerExpressionSegment right = new ParameterMarkerExpressionSegment(0, 10, 0);
+        BinaryOperationExpression expression = new BinaryOperationExpression(0, 0, left, right, "<", null);
+        PaginationContext paginationContext = paginationContextEngine.createPaginationContext(Collections.singletonList(expression), projectionsContext, Arrays.asList("5214|1521|5152", 10));
         assertFalse(paginationContext.getRowCountSegment().isPresent());
     }
     
