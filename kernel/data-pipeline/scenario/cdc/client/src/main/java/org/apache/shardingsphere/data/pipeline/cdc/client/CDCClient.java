@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.data.pipeline.cdc.client;
 
+import com.google.common.base.Preconditions;
 import com.google.common.hash.Hashing;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.buffer.PooledByteBufAllocator;
@@ -69,17 +70,13 @@ public final class CDCClient implements AutoCloseable {
     private Channel channel;
     
     public CDCClient(final CDCClientConfiguration config) {
-        validateParameter(config);
+        validateConfiguration(config);
         this.config = config;
     }
     
-    private void validateParameter(final CDCClientConfiguration parameter) {
-        if (null == parameter.getAddress() || parameter.getAddress().isEmpty()) {
-            throw new IllegalArgumentException("The address parameter can't be null");
-        }
-        if (parameter.getPort() <= 0) {
-            throw new IllegalArgumentException("The port must be greater than 0");
-        }
+    private void validateConfiguration(final CDCClientConfiguration config) {
+        Preconditions.checkArgument(null != config.getAddress() && !config.getAddress().isEmpty(), "The address parameter can't be null");
+        Preconditions.checkArgument(config.getPort() > 0, "The port must be greater than 0");
     }
     
     /**
