@@ -17,23 +17,18 @@
 
 package org.apache.shardingsphere.data.pipeline.cdc.client.util;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
+import org.junit.jupiter.api.Test;
 
 import java.util.UUID;
 
-/**
- * Request ID utility class.
- */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class RequestIdUtils {
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
+
+class RequestIdUtilsTest {
     
-    /**
-     * Generate request ID.
-     *
-     * @return request ID.
-     */
-    public static String generateRequestId() {
-        return UUID.randomUUID().toString();
+    @Test
+    void assertGenerateRequestId() {
+        String actual = RequestIdUtils.generateRequestId();
+        assertThat(UUID.fromString(actual).toString(), is(actual));
     }
 }
