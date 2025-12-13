@@ -143,4 +143,6 @@
             <sql-statement start-index="28" stop-index="40" statement-class-simple-name="MySQLDropEventStatement" />
         </sql-statements>
     </create-procedure>
+    <create-procedure sql-case-id="create_procedure_with_begin_explain" />
+    <create-procedure sql-case-id="create_procedure_with_begin_do" />
 </sql-parser-test-cases>
