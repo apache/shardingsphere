@@ -218,7 +218,8 @@ class CDCJobAPITest {
                 mock(DatabaseType.class), createJobConfiguration(1).getDataSourceConfig(), new JobDataNodeLine(Collections.singletonList(
                         new JobDataNodeEntry("foo_tbl", Collections.singletonList(new DataNode("foo_ds" + ".foo_tbl"))))),
                 Collections.singletonList(new JobDataNodeLine(Collections.singletonList(new JobDataNodeEntry("foo_tbl",
-                        Collections.singletonList(new DataNode("foo_ds" + ".foo_tbl")))))), false, new CDCJobConfiguration.SinkConfiguration(CDCSinkType.SOCKET, new Properties()), 1, 0);
+                        Collections.singletonList(new DataNode("foo_ds" + ".foo_tbl")))))),
+                false, new CDCJobConfiguration.SinkConfiguration(CDCSinkType.SOCKET, new Properties()), 1, 0);
         when(PipelineAPIFactory.getPipelineGovernanceFacade(any())).thenReturn(mock(PipelineGovernanceFacade.class, RETURNS_DEEP_STUBS));
         PipelineJobConfigurationManager jobConfigManager = mock(PipelineJobConfigurationManager.class);
         when(jobConfigManager.convertToJobConfigurationPOJO(jobConfig)).thenReturn(createJobConfigurationPOJO());
@@ -343,7 +344,7 @@ class CDCJobAPITest {
                 MockedConstruction<TransmissionJobManager> ignoredJobManagerConstruction = mockConstruction(TransmissionJobManager.class,
                         (mock, context) -> when(mock.getJobItemInfos("foo_job")).thenReturn(
                                 Arrays.asList(new TransmissionJobItemInfo(0, "foo", null, 0L, 0, null),
-                                buildJobItemInfo("foo_ds", null), buildJobItemInfo("bar_ds", "binlog_001"))))) {
+                                        buildJobItemInfo("foo_ds", null), buildJobItemInfo("bar_ds", "binlog_001"))))) {
             DialectPipelineSQLBuilder builderWithoutSQL = mock(DialectPipelineSQLBuilder.class);
             when(builderWithoutSQL.buildQueryCurrentPositionSQL()).thenReturn(Optional.empty());
             DialectPipelineSQLBuilder builderWithSQL = mock(DialectPipelineSQLBuilder.class);
@@ -419,7 +420,7 @@ class CDCJobAPITest {
         dataSources.put("bar_ds", createStandardDataSourceProperties());
         ShardingSpherePipelineDataSourceConfiguration dataSourceConfig = new ShardingSpherePipelineDataSourceConfiguration(buildYamlRootConfiguration(dataSources));
         List<JobDataNodeLine> jobDataNodeLines = IntStream.range(0, shardingCount).mapToObj(
-                        i -> new JobDataNodeLine(Collections.singletonList(new JobDataNodeEntry("foo_tbl", Collections.singletonList(new DataNode((0 == i ? "foo_ds" : "bar_ds") + ".foo_tbl"))))))
+                i -> new JobDataNodeLine(Collections.singletonList(new JobDataNodeEntry("foo_tbl", Collections.singletonList(new DataNode((0 == i ? "foo_ds" : "bar_ds") + ".foo_tbl"))))))
                 .collect(Collectors.toList());
         return new CDCJobConfiguration("foo_job", "foo_db", Collections.singletonList("foo_schema.foo_tbl"), false, mock(),
                 dataSourceConfig, jobDataNodeLines.get(0), jobDataNodeLines, false, new CDCJobConfiguration.SinkConfiguration(CDCSinkType.SOCKET, new Properties()), 1, 0);
