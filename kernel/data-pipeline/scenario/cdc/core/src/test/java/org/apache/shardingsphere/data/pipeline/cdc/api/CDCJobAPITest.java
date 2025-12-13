@@ -74,6 +74,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.MockedConstruction;
 import org.mockito.MockedStatic;
 import org.mockito.internal.configuration.plugins.Plugins;
+import org.mockito.invocation.InvocationOnMock;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 
@@ -127,24 +128,22 @@ class CDCJobAPITest {
     
     @BeforeEach
     void setUp() throws ReflectiveOperationException {
-        databaseTypedSPILoader = mockDatabaseTypedSPILoader();
+        databaseTypedSPILoader = mockStatic(DatabaseTypedSPILoader.class, this::mockDatabaseTypedSPILoader);
         jobAPI = createJobAPI();
     }
     
-    private MockedStatic<DatabaseTypedSPILoader> mockDatabaseTypedSPILoader() {
-        return mockStatic(DatabaseTypedSPILoader.class, invocation -> {
-            if ("findService".equals(invocation.getMethod().getName())) {
-                return Optional.empty();
-            }
-            Class<?> targetClass = invocation.getArgument(0);
-            if (DialectPipelineSQLBuilder.class.equals(targetClass)) {
-                return mock(DialectPipelineSQLBuilder.class);
-            }
-            if (DialectIncrementalPositionManager.class.equals(targetClass)) {
-                return mock(DialectIncrementalPositionManager.class);
-            }
-            return mock(targetClass);
-        });
+    private Object mockDatabaseTypedSPILoader(final InvocationOnMock invocation) {
+        if ("findService".equals(invocation.getMethod().getName())) {
+            return Optional.empty();
+        }
+        Class<?> targetClass = invocation.getArgument(0);
+        if (DialectPipelineSQLBuilder.class.equals(targetClass)) {
+            return mock(DialectPipelineSQLBuilder.class);
+        }
+        if (DialectIncrementalPositionManager.class.equals(targetClass)) {
+            return mock(DialectIncrementalPositionManager.class);
+        }
+        return mock(targetClass);
     }
     
     private CDCJobAPI createJobAPI() throws ReflectiveOperationException {
@@ -325,7 +324,6 @@ class CDCJobAPITest {
     @SuppressWarnings("JDBCResourceOpenedButNotSafelyClosed")
     @Test
     void assertGetJobItemInfosCoversPositions() throws SQLException {
-        StorageUnit storageUnitWithoutSQL = mock(StorageUnit.class);
         Connection connection = mock(Connection.class, RETURNS_DEEP_STUBS);
         ResultSet resultSet = mock(ResultSet.class);
         when(resultSet.next()).thenReturn(true);
@@ -334,6 +332,7 @@ class CDCJobAPITest {
         StorageUnit storageUnitWithSQL = mock(StorageUnit.class, RETURNS_DEEP_STUBS);
         when(storageUnitWithSQL.getDataSource().getConnection()).thenReturn(connection);
         Map<String, StorageUnit> storageUnits = new LinkedHashMap<>(2, 1F);
+        StorageUnit storageUnitWithoutSQL = mock(StorageUnit.class);
         storageUnits.put("foo_ds", storageUnitWithoutSQL);
         storageUnits.put("bar_ds", storageUnitWithSQL);
         putContext(storageUnits);
