@@ -261,7 +261,7 @@ class CDCJobAPITest {
                         });
                 MockedConstruction<IncrementalTaskPositionManager> ignoredPositionManagerConstruction = mockConstruction(IncrementalTaskPositionManager.class,
                         (mock, context) -> when(mock.getPosition(any(), any(), any())).thenReturn(new SimpleIngestPosition("binlog_position")))) {
-            StreamDataParameter param = buildStreamDataParameter(storageUnits.keySet(), false);
+            StreamDataParameter param = buildStreamDataParameter(storageUnits.keySet());
             assertThat(jobAPI.create(param, CDCSinkType.SOCKET, new Properties()), is("foo_job"));
             verify(jobConfigManager).convertToJobConfigurationPOJO(jobConfig);
             verify(processGovernanceRepository).persist(anyString(), anyInt(), anyString());
@@ -283,7 +283,7 @@ class CDCJobAPITest {
                         (mock, context) -> when(mock.getProgress("foo_job", 0)).thenReturn(Optional.empty()));
                 MockedConstruction<IncrementalTaskPositionManager> positionManagerConstruction = mockConstruction(
                         IncrementalTaskPositionManager.class, (mock, context) -> when(mock.getPosition(any(), any(), any())).thenThrow(SQLException.class))) {
-            StreamDataParameter param = buildStreamDataParameter(Collections.singleton("foo_ds"), false);
+            StreamDataParameter param = buildStreamDataParameter(Collections.singleton("foo_ds"));
             assertThrows(PrepareJobWithGetBinlogPositionException.class, () -> jobAPI.create(param, CDCSinkType.SOCKET, new Properties()));
             assertThat(positionManagerConstruction.constructed().size(), is(1));
         }
@@ -440,10 +440,10 @@ class CDCJobAPITest {
         return result;
     }
     
-    private StreamDataParameter buildStreamDataParameter(final Collection<String> dataSourceNames, final boolean full) {
+    private StreamDataParameter buildStreamDataParameter(final Collection<String> dataSourceNames) {
         Map<String, List<DataNode>> tableAndNodes = dataSourceNames.stream()
                 .collect(Collectors.toMap(each -> "foo_schema.foo_tbl", each -> Collections.singletonList(new DataNode(each + ".foo_tbl")), (a, b) -> b, LinkedHashMap::new));
-        return new StreamDataParameter("foo_db", new LinkedList<>(Collections.singletonList("foo_schema.foo_tbl")), full, tableAndNodes, false);
+        return new StreamDataParameter("foo_db", new LinkedList<>(Collections.singletonList("foo_schema.foo_tbl")), false, tableAndNodes, false);
     }
     
     private TransmissionJobItemInfo buildJobItemInfo(final String dataSourceName, final String incrementalPosition) {
