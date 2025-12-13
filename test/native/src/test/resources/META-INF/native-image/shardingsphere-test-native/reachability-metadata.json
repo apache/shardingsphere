@@ -56,6 +56,19 @@
     },
     {
       "condition": {
+        "typeReached": "org.apache.shardingsphere.test.natived.jdbc.modes.cluster.ZookeeperTest"
+      },
+      "type": {
+        "lambda": {
+          "declaringClass": "org.apache.shardingsphere.test.natived.jdbc.modes.cluster.ZookeeperTest",
+          "interfaces": [
+            "java.util.concurrent.Callable"
+          ]
+        }
+      }
+    },
+    {
+      "condition": {
         "typeReached": "org.apache.shardingsphere.test.natived.jdbc.features.EncryptTest"
       },
       "type": "org.apache.shardingsphere.test.natived.jdbc.features.EncryptTest",
@@ -116,6 +129,19 @@
     },
     {
       "condition": {
+        "typeReached": "org.apache.shardingsphere.test.natived.jdbc.transactions.base.SeataTest"
+      },
+      "type": {
+        "lambda": {
+          "declaringClass": "org.apache.shardingsphere.test.natived.jdbc.transactions.base.SeataTest",
+          "interfaces": [
+            "java.util.concurrent.Callable"
+          ]
+        }
+      }
+    },
+    {
+      "condition": {
         "typeReached": "org.apache.shardingsphere.test.natived.jdbc.databases.PostgresTest"
       },
       "type": "org.apache.shardingsphere.test.natived.jdbc.databases.PostgresTest",
@@ -156,6 +182,19 @@
     },
     {
       "condition": {
+        "typeReached": "org.apache.shardingsphere.test.natived.jdbc.databases.MySQLTest"
+      },
+      "type": {
+        "lambda": {
+          "declaringClass": "org.apache.shardingsphere.test.natived.jdbc.databases.MySQLTest",
+          "interfaces": [
+            "java.util.concurrent.Callable"
+          ]
+        }
+      }
+    },
+    {
+      "condition": {
         "typeReached": "org.apache.shardingsphere.test.natived.jdbc.databases.OpenGaussTest"
       },
       "type": "org.apache.shardingsphere.test.natived.jdbc.databases.OpenGaussTest",
@@ -163,6 +202,19 @@
       "allDeclaredMethods": true,
       "allPublicMethods": true,
       "allDeclaredFields": true
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.shardingsphere.test.natived.jdbc.databases.OpenGaussTest"
+      },
+      "type": {
+        "lambda": {
+          "declaringClass": "org.apache.shardingsphere.test.natived.jdbc.databases.OpenGaussTest",
+          "interfaces": [
+            "java.util.concurrent.Callable"
+          ]
+        }
+      }
     },
     {
       "condition": {
@@ -176,6 +228,19 @@
     },
     {
       "condition": {
+        "typeReached": "org.apache.shardingsphere.test.natived.jdbc.databases.hive.ZookeeperServiceDiscoveryTest"
+      },
+      "type": {
+        "lambda": {
+          "declaringClass": "org.apache.shardingsphere.test.natived.jdbc.databases.hive.ZookeeperServiceDiscoveryTest",
+          "interfaces": [
+            "java.util.concurrent.Callable"
+          ]
+        }
+      }
+    },
+    {
+      "condition": {
         "typeReached": "org.apache.shardingsphere.test.natived.jdbc.databases.hive.IcebergTest"
       },
       "type": "org.apache.shardingsphere.test.natived.jdbc.databases.hive.IcebergTest",
@@ -183,6 +248,19 @@
       "allDeclaredConstructors": true,
       "allDeclaredMethods": true,
       "allPublicMethods": true
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.shardingsphere.test.natived.jdbc.databases.hive.IcebergTest"
+      },
+      "type": {
+        "lambda": {
+          "declaringClass": "org.apache.shardingsphere.test.natived.jdbc.databases.hive.IcebergTest",
+          "interfaces": [
+            "java.util.concurrent.Callable"
+          ]
+        }
+      }
     },
     {
       "condition": {
@@ -196,6 +274,19 @@
     },
     {
       "condition": {
+        "typeReached": "org.apache.shardingsphere.test.natived.jdbc.databases.hive.AcidTableTest"
+      },
+      "type": {
+        "lambda": {
+          "declaringClass": "org.apache.shardingsphere.test.natived.jdbc.databases.hive.AcidTableTest",
+          "interfaces": [
+            "java.util.concurrent.Callable"
+          ]
+        }
+      }
+    },
+    {
+      "condition": {
         "typeReached": "org.apache.shardingsphere.test.natived.jdbc.databases.hive.SystemSchemasTest"
       },
       "type": "org.apache.shardingsphere.test.natived.jdbc.databases.hive.SystemSchemasTest",
@@ -203,6 +294,19 @@
       "allDeclaredConstructors": true,
       "allDeclaredMethods": true,
       "allPublicMethods": true
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.shardingsphere.test.natived.jdbc.databases.hive.SystemSchemasTest"
+      },
+      "type": {
+        "lambda": {
+          "declaringClass": "org.apache.shardingsphere.test.natived.jdbc.databases.hive.SystemSchemasTest",
+          "interfaces": [
+            "java.util.concurrent.Callable"
+          ]
+        }
+      }
     },
     {
       "condition": {
@@ -216,6 +320,19 @@
     },
     {
       "condition": {
+        "typeReached": "org.apache.shardingsphere.test.natived.jdbc.databases.FirebirdTest"
+      },
+      "type": {
+        "lambda": {
+          "declaringClass": "org.apache.shardingsphere.test.natived.jdbc.databases.FirebirdTest",
+          "interfaces": [
+            "java.util.concurrent.Callable"
+          ]
+        }
+      }
+    },
+    {
+      "condition": {
         "typeReached": "org.apache.shardingsphere.test.natived.jdbc.databases.PrestoTest"
       },
       "type": "org.apache.shardingsphere.test.natived.jdbc.databases.PrestoTest",
@@ -223,6 +340,19 @@
       "allDeclaredConstructors": true,
       "allDeclaredMethods": true,
       "allPublicMethods": true
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.shardingsphere.test.natived.jdbc.databases.PrestoTest"
+      },
+      "type": {
+        "lambda": {
+          "declaringClass": "org.apache.shardingsphere.test.natived.jdbc.databases.PrestoTest",
+          "interfaces": [
+            "java.util.concurrent.Callable"
+          ]
+        }
+      }
     },
     {
       "condition": {
@@ -236,6 +366,19 @@
     },
     {
       "condition": {
+        "typeReached": "org.apache.shardingsphere.test.natived.jdbc.databases.DorisFETest"
+      },
+      "type": {
+        "lambda": {
+          "declaringClass": "org.apache.shardingsphere.test.natived.jdbc.databases.DorisFETest",
+          "interfaces": [
+            "java.util.concurrent.Callable"
+          ]
+        }
+      }
+    },
+    {
+      "condition": {
         "typeReached": "org.apache.shardingsphere.test.natived.proxy.databases.MySQLTest"
       },
       "type": "org.apache.shardingsphere.test.natived.proxy.databases.MySQLTest",
@@ -246,6 +389,19 @@
     },
     {
       "condition": {
+        "typeReached": "org.apache.shardingsphere.test.natived.proxy.databases.MySQLTest"
+      },
+      "type": {
+        "lambda": {
+          "declaringClass": "org.apache.shardingsphere.test.natived.proxy.databases.MySQLTest",
+          "interfaces": [
+            "java.util.concurrent.Callable"
+          ]
+        }
+      }
+    },
+    {
+      "condition": {
         "typeReached": "org.apache.shardingsphere.test.natived.proxy.databases.PostgresTest"
       },
       "type": "org.apache.shardingsphere.test.natived.proxy.databases.PostgresTest",
@@ -253,6 +409,19 @@
       "allDeclaredMethods": true,
       "allPublicMethods": true,
       "allDeclaredFields": true
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.shardingsphere.test.natived.proxy.databases.PostgresTest"
+      },
+      "type": {
+        "lambda": {
+          "declaringClass": "org.apache.shardingsphere.test.natived.proxy.databases.PostgresTest",
+          "interfaces": [
+            "java.util.concurrent.Callable"
+          ]
+        }
+      }
     },
     {
       "condition": {

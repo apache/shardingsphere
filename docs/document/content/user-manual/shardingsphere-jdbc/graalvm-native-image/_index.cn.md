@@ -15,7 +15,7 @@ CE 的 `native-image` 命令行工具的长篇大论的 shell 命令。
 ShardingSphere JDBC 要求在如下或更高版本的 `GraalVM CE` 完成构建 GraalVM Native Image。使用者可通过 SDKMAN! 快速切换 JDK。这同理
 适用于 https://sdkman.io/jdks#graal ， https://sdkman.io/jdks#nik 和 https://sdkman.io/jdks#mandrel 等 `GraalVM CE` 的下游发行版。
 
-- GraalVM CE For JDK 24.0.2，对应于 SDKMAN! 的 `24.0.2-graalce`
+- GraalVM CE For JDK 25.0.1，对应于 SDKMAN! 的 `25.0.1-graalce`
 
 用户依然可以使用 SDKMAN! 上的 `21.0.8-graal` 等旧版本的 Oracle GraalVM 来构建 ShardingSphere 的 GraalVM Native Image 产物。
 但这将导致集成部分第三方依赖时，构建 GraalVM Native Image 失败。
@@ -52,7 +52,7 @@ java.beans.Introspector was unintentionally initialized at build time. To see wh
             <plugin>
                 <groupId>org.graalvm.buildtools</groupId>
                 <artifactId>native-maven-plugin</artifactId>
-                <version>0.11.0</version>
+                <version>0.11.3</version>
                 <extensions>true</extensions>
                 <configuration>
                     <buildArgs>
@@ -92,12 +92,12 @@ java.beans.Introspector was unintentionally initialized at build time. To see wh
 
 ```groovy
 plugins {
-   id 'org.graalvm.buildtools.native' version '0.11.0'
+   id 'org.graalvm.buildtools.native' version '0.11.3'
 }
 
 dependencies {
    implementation 'org.apache.shardingsphere:shardingsphere-jdbc:${shardingsphere.version}'
-   implementation(group: 'org.graalvm.buildtools', name: 'graalvm-reachability-metadata', version: '0.11.0', classifier: 'repository', ext: 'zip')
+   implementation(group: 'org.graalvm.buildtools', name: 'graalvm-reachability-metadata', version: '0.11.3', classifier: 'repository', ext: 'zip')
 }
 
 graalvmNative {

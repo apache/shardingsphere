@@ -263,6 +263,18 @@
     },
     {
       "condition": {
+        "typeReached": "org.apache.shardingsphere.infra.yaml.schema.pojo.YamlShardingSphereIndex"
+      },
+      "type": "org.apache.shardingsphere.infra.yaml.schema.pojo.YamlShardingSphereIndexBeanInfo"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.shardingsphere.infra.yaml.schema.pojo.YamlShardingSphereIndex"
+      },
+      "type": "org.apache.shardingsphere.infra.yaml.schema.pojo.YamlShardingSphereIndexCustomizer"
+    },
+    {
+      "condition": {
         "typeReached": "org.apache.shardingsphere.infra.metadata.database.schema.builder.SystemSchemaBuilder"
       },
       "type": "org.apache.shardingsphere.infra.yaml.schema.pojo.YamlShardingSphereTable",
@@ -523,6 +535,160 @@
           "parameterTypes": []
         }
       ]
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.shardingsphere.mode.metadata.persist.metadata.service.DatabaseMetaDataPersistService"
+      },
+      "type": "org.apache.shardingsphere.mode.node.path.type.database.metadata.DatabaseMetaDataNodePath",
+      "allDeclaredFields": true
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.shardingsphere.mode.metadata.persist.statistics.StatisticsPersistService"
+      },
+      "type": "org.apache.shardingsphere.mode.node.path.type.database.statistics.StatisticsDatabaseNodePath",
+      "allDeclaredFields": true
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.shardingsphere.mode.manager.cluster.persist.service.ClusterComputeNodePersistService"
+      },
+      "type": "org.apache.shardingsphere.mode.node.path.type.global.node.compute.workerid.ComputeNodeWorkerIDNodePath",
+      "allDeclaredFields": true
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.shardingsphere.mode.node.path.version.VersionNodePath"
+      },
+      "type": "org.apache.shardingsphere.mode.node.path.type.global.config.GlobalRuleNodePath",
+      "allDeclaredFields": true
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.shardingsphere.mode.manager.cluster.workerid.ReservationPersistService"
+      },
+      "type": "org.apache.shardingsphere.mode.node.path.type.global.reservation.WorkerIDReservationNodePath",
+      "allDeclaredFields": true
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.shardingsphere.mode.node.path.version.VersionNodePath"
+      },
+      "type": "org.apache.shardingsphere.mode.node.path.type.database.metadata.datasource.StorageUnitNodePath",
+      "allDeclaredFields": true
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.shardingsphere.mode.node.path.version.VersionNodePath"
+      },
+      "type": "org.apache.shardingsphere.mode.node.path.type.database.metadata.rule.DatabaseRuleNodePath",
+      "allDeclaredFields": true
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.shardingsphere.mode.node.path.version.VersionNodePath"
+      },
+      "type": "org.apache.shardingsphere.mode.node.path.type.database.metadata.schema.TableMetaDataNodePath",
+      "allDeclaredFields": true
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.shardingsphere.mode.node.path.engine.generator.NodePathSegment"
+      },
+      "type": "org.apache.shardingsphere.mode.node.path.type.database.metadata.schema.SchemaMetaDataNodePath",
+      "allDeclaredFields": true
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.shardingsphere.mode.metadata.persist.metadata.service.TableRowDataPersistService"
+      },
+      "type": "org.apache.shardingsphere.mode.node.path.type.database.statistics.StatisticsDataNodePath",
+      "allDeclaredFields": true
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.shardingsphere.mode.metadata.persist.metadata.service.TableRowDataPersistService"
+      },
+      "type": "org.apache.shardingsphere.mode.node.path.type.database.statistics.StatisticsTableNodePath",
+      "allDeclaredFields": true
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.shardingsphere.mode.node.QualifiedDataSourceStatePersistService"
+      },
+      "type": "org.apache.shardingsphere.mode.node.path.type.global.node.storage.QualifiedDataSourceNodePath",
+      "allDeclaredFields": true
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.shardingsphere.mode.node.path.engine.generator.NodePathSegment"
+      },
+      "type": "org.apache.shardingsphere.mode.node.path.type.database.statistics.StatisticsSchemaNodePath",
+      "allDeclaredFields": true
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.shardingsphere.mode.manager.cluster.persist.service.ClusterComputeNodePersistService"
+      },
+      "type": "org.apache.shardingsphere.mode.node.path.type.global.node.compute.status.OnlineNodePath",
+      "allDeclaredFields": true
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.shardingsphere.mode.manager.cluster.persist.service.ClusterComputeNodePersistService"
+      },
+      "type": "org.apache.shardingsphere.mode.node.path.type.global.node.compute.status.StatusNodePath",
+      "allDeclaredFields": true
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.shardingsphere.mode.manager.cluster.persist.service.ClusterComputeNodePersistService"
+      },
+      "type": "org.apache.shardingsphere.mode.node.path.type.global.node.compute.label.LabelNodePath",
+      "allDeclaredFields": true
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.shardingsphere.mode.manager.cluster.dispatch.listener.DataChangedEventListenerRegistry"
+      },
+      "type": "org.apache.shardingsphere.mode.node.path.type.global.state.DatabaseListenerCoordinatorNodePath",
+      "allDeclaredFields": true
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.shardingsphere.mode.manager.cluster.dispatch.listener.DataChangedEventListenerRegistry"
+      },
+      "type": "org.apache.shardingsphere.mode.node.path.type.global.state.coordinator.TableCoordinatorNodePath",
+      "allDeclaredFields": true
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.shardingsphere.mode.manager.cluster.dispatch.listener.DataChangedEventListenerRegistry"
+      },
+      "type": "org.apache.shardingsphere.mode.node.path.type.global.node.compute.process.ShowProcessListTriggerNodePath",
+      "allDeclaredFields": true
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.shardingsphere.mode.manager.cluster.dispatch.listener.DataChangedEventListenerRegistry"
+      },
+      "type": "org.apache.shardingsphere.mode.node.path.type.global.node.compute.process.KillProcessTriggerNodePath",
+      "allDeclaredFields": true
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.shardingsphere.mode.node.path.version.VersionNodePath"
+      },
+      "type": "org.apache.shardingsphere.mode.node.path.type.database.metadata.schema.ViewMetaDataNodePath",
+      "allDeclaredFields": true
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.shardingsphere.mode.node.path.version.VersionNodePath"
+      },
+      "type": "org.apache.shardingsphere.mode.node.path.type.database.metadata.datasource.StorageNodeNodePath",
+      "allDeclaredFields": true
     },
     {
       "condition": {

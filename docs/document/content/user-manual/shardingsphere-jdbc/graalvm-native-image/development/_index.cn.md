@@ -25,7 +25,7 @@ ShardingSphere 定义了，
 
 贡献者必须在设备安装，
 
-1. GraalVM CE 24.0.2，或与 GraalVM CE 24.0.2 兼容的 GraalVM 下游发行版。以 [GraalVM Native Image](/cn/user-manual/shardingsphere-jdbc/graalvm-native-image) 为准。
+1. GraalVM CE 25.0.1，或与 GraalVM CE 25.0.1 兼容的 GraalVM 下游发行版。以 [GraalVM Native Image](/cn/user-manual/shardingsphere-jdbc/graalvm-native-image) 为准。
 2. 编译 GraalVM Native Image 所需要的本地工具链。以 https://www.graalvm.org/latest/reference-manual/native-image/#prerequisites 为准。
 3. 可运行 Linux Containers 的 Docker Engine，或与 testcontainers-java 兼容的 Container Runtime。以 https://java.testcontainers.org/supported_docker_environment/ 为准。
 
@@ -41,8 +41,8 @@ ShardingSphere 定义了，
 sudo apt install unzip zip -y
 curl -s "https://get.sdkman.io" | bash
 source "$HOME/.sdkman/bin/sdkman-init.sh"
-sdk install java 24.0.2-graalce
-sdk use java 24.0.2-graalce
+sdk install java 25.0.1-graalce
+sdk use java 25.0.1-graalce
 ```
 
 可在 bash 通过如下命令安装编译 GraalVM Native Image 所需要的本地工具链。
@@ -85,11 +85,11 @@ winget install --id version-fox.vfox --source winget --exact
 if (-not (Test-Path -Path $PROFILE)) { New-Item -Type File -Path $PROFILE -Force }; Add-Content -Path $PROFILE -Value 'Invoke-Expression "$(vfox activate pwsh)"'
 # 此时需要打开新的 Powershell 7 终端
 vfox add java
-vfox install java@24.0.2-graalce
-vfox use --global java@24.0.2-graalce
+vfox install java@25.0.1-graalce
+vfox use --global java@25.0.1-graalce
 ```
 
-当 Windows 弹出窗口，要求允许类似 `C:\users\shard\.version-fox\cache\java\v-24.0.2-graalce\java-24.0.2-graalce\bin\java.exe` 路径的应用通过 Windows 防火墙时，应当批准。
+当 Windows 弹出窗口，要求允许类似 `C:\users\shard\.version-fox\cache\java\v-25.0.1-graalce\java-25.0.1-graalce\bin\java.exe` 路径的应用通过 Windows 防火墙时，应当批准。
 背景参考 https://support.microsoft.com/en-us/windows/risks-of-allowing-apps-through-windows-firewall-654559af-3f54-3dcf-349f-71ccd90bcc5c 。
 
 可在 Powershell 7 通过如下命令安装编译 GraalVM Native Image 所需要的本地工具链。**特定情况下，开发者可能需要为 Visual Studio 的使用购买许可证。**
@@ -286,34 +286,38 @@ class SolutionTest {
 当前执行 `./mvnw -PnativeTestInShardingSphere -e -T 1C clean verify` 将涉及到针对 `com.oracle.svm.core.code.CodeCachePoolMXBean` 的警告日志，
 
 ```shell
-org.graalvm.nativeimage.MissingReflectionRegistrationError: The program tried to reflectively access
+org.graalvm.nativeimage.MissingReflectionRegistrationError: Cannot reflectively access the 'com.oracle.svm.core.code.CodeCachePoolMXBean$CodeAndDataPool'. To allow this operation, add the following to the 'reflection' section of 'reachability-metadata.json' and rebuild the native image:
 
-   com.oracle.svm.core.code.CodeCachePoolMXBean$CodeAndDataPool.getConstructors()
+  {
+    "type": "com.oracle.svm.core.code.CodeCachePoolMXBean$CodeAndDataPool"
+  }
 
-without it being registered for runtime reflection. Add com.oracle.svm.core.code.CodeCachePoolMXBean$CodeAndDataPool.getConstructors() to the reflection metadata to solve this problem. See https://www.graalvm.org/latest/reference-manual/native-image/metadata/#reflection for help.
-  java.base@24.0.2/java.lang.Class.getConstructors(DynamicHub.java:1128)
-  java.management@24.0.2/com.sun.jmx.mbeanserver.MBeanIntrospector.findConstructors(MBeanIntrospector.java:459)
-  java.management@24.0.2/com.sun.jmx.mbeanserver.MBeanIntrospector.getClassMBeanInfo(MBeanIntrospector.java:430)
-  java.management@24.0.2/com.sun.jmx.mbeanserver.MBeanIntrospector.getMBeanInfo(MBeanIntrospector.java:389)
-  java.management@24.0.2/com.sun.jmx.mbeanserver.MBeanSupport.<init>(MBeanSupport.java:137)
-  java.management@24.0.2/com.sun.jmx.mbeanserver.MXBeanSupport.<init>(MXBeanSupport.java:66)
-  java.management@24.0.2/javax.management.StandardMBean.construct(StandardMBean.java:174)
-  java.management@24.0.2/javax.management.StandardMBean.<init>(StandardMBean.java:268)
-org.graalvm.nativeimage.MissingReflectionRegistrationError: The program tried to reflectively access
+The 'reachability-metadata.json' file should be located in 'META-INF/native-image/<group-id>/<artifact-id>/' of your project. For further help, see https://www.graalvm.org/latest/reference-manual/native-image/metadata/#reflection
+  java.base@25.0.1/java.lang.Class.getConstructors(DynamicHub.java:1277)
+  java.management@25.0.1/com.sun.jmx.mbeanserver.MBeanIntrospector.findConstructors(MBeanIntrospector.java:459)
+  java.management@25.0.1/com.sun.jmx.mbeanserver.MBeanIntrospector.getClassMBeanInfo(MBeanIntrospector.java:430)
+  java.management@25.0.1/com.sun.jmx.mbeanserver.MBeanIntrospector.getMBeanInfo(MBeanIntrospector.java:389)
+  java.management@25.0.1/com.sun.jmx.mbeanserver.MBeanSupport.<init>(MBeanSupport.java:137)
+  java.management@25.0.1/com.sun.jmx.mbeanserver.MXBeanSupport.<init>(MXBeanSupport.java:66)
+  java.management@25.0.1/javax.management.StandardMBean.construct(StandardMBean.java:174)
+  java.management@25.0.1/javax.management.StandardMBean.<init>(StandardMBean.java:268)
+org.graalvm.nativeimage.MissingReflectionRegistrationError: Cannot reflectively access the 'com.oracle.svm.core.code.CodeCachePoolMXBean$NativeMetadataPool'. To allow this operation, add the following to the 'reflection' section of 'reachability-metadata.json' and rebuild the native image:
 
-   com.oracle.svm.core.code.CodeCachePoolMXBean$NativeMetadataPool.getConstructors()
+  {
+    "type": "com.oracle.svm.core.code.CodeCachePoolMXBean$NativeMetadataPool"
+  }
 
-without it being registered for runtime reflection. Add com.oracle.svm.core.code.CodeCachePoolMXBean$NativeMetadataPool.getConstructors() to the reflection metadata to solve this problem. See https://www.graalvm.org/latest/reference-manual/native-image/metadata/#reflection for help.
-  java.base@24.0.2/java.lang.Class.getConstructors(DynamicHub.java:1128)
-  java.management@24.0.2/com.sun.jmx.mbeanserver.MBeanIntrospector.findConstructors(MBeanIntrospector.java:459)
-  java.management@24.0.2/com.sun.jmx.mbeanserver.MBeanIntrospector.getClassMBeanInfo(MBeanIntrospector.java:430)
-  java.management@24.0.2/com.sun.jmx.mbeanserver.MBeanIntrospector.getMBeanInfo(MBeanIntrospector.java:389)
-  java.management@24.0.2/com.sun.jmx.mbeanserver.MBeanSupport.<init>(MBeanSupport.java:137)
-  java.management@24.0.2/com.sun.jmx.mbeanserver.MXBeanSupport.<init>(MXBeanSupport.java:66)
-  java.management@24.0.2/javax.management.StandardMBean.construct(StandardMBean.java:174)
-  java.management@24.0.2/javax.management.StandardMBean.<init>(StandardMBean.java:268)
+The 'reachability-metadata.json' file should be located in 'META-INF/native-image/<group-id>/<artifact-id>/' of your project. For further help, see https://www.graalvm.org/latest/reference-manual/native-image/metadata/#reflection
+  java.base@25.0.1/java.lang.Class.getConstructors(DynamicHub.java:1277)
+  java.management@25.0.1/com.sun.jmx.mbeanserver.MBeanIntrospector.findConstructors(MBeanIntrospector.java:459)
+  java.management@25.0.1/com.sun.jmx.mbeanserver.MBeanIntrospector.getClassMBeanInfo(MBeanIntrospector.java:430)
+  java.management@25.0.1/com.sun.jmx.mbeanserver.MBeanIntrospector.getMBeanInfo(MBeanIntrospector.java:389)
+  java.management@25.0.1/com.sun.jmx.mbeanserver.MBeanSupport.<init>(MBeanSupport.java:137)
+  java.management@25.0.1/com.sun.jmx.mbeanserver.MXBeanSupport.<init>(MXBeanSupport.java:66)
+  java.management@25.0.1/javax.management.StandardMBean.construct(StandardMBean.java:174)
+  java.management@25.0.1/javax.management.StandardMBean.<init>(StandardMBean.java:268)
 ```
 
-相关警告在 `GraalVM CE For JDK 24.0.2` 上无法避免。
+相关警告在 `GraalVM CE For JDK 25.0.1` 上无法避免。
 因为 `com.oracle.svm.core.code.CodeCachePoolMXBean` 的无参构造函数通过 Java 类 `org.graalvm.nativeimage.Platform.HOSTED_ONLY` 被标记为无论实际的 Platform 是什么，
 仅在 Native Image 生成期间可见，且无法在 Runtime 使用的元素。

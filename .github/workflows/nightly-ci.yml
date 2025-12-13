@@ -123,7 +123,7 @@ jobs:
           "PATH=$env:PATH" >> $env:GITHUB_ENV
       - uses: graalvm/setup-graalvm@v1
         with:
-          java-version: '24.0.2'
+          java-version: '25.0.1'
           distribution: 'graalvm-community'
           github-token: ${{ secrets.GITHUB_TOKEN }}
           native-image-job-reports: 'true'
@@ -135,9 +135,9 @@ jobs:
             ${{ needs.global-environment.outputs.GLOBAL_CACHE_PREFIX }}-maven-third-party-cache-
             ${{ needs.global-environment.outputs.GLOBAL_CACHE_PREFIX }}-maven-third-party-
       # TODO Remove this workaround after. The graalvm native image built with windows server is missing some GRMs for testcontainers
-      - name: Run test with GraalVM CE
+      - name: Run test with GraalVM CE for ${{ matrix.java-version }}
         if: matrix.os == 'windows-latest'
         run: ./mvnw -PgenerateMetadata -e -T 1C clean verify
-      - name: Run nativeTest with GraalVM CE
+      - name: Run nativeTest with GraalVM CE for ${{ matrix.java-version }}
         if: matrix.os == 'ubuntu-latest'
-        run: ./mvnw -PnativeTestInShardingSphere -e "-DjvmArgs=-XX:MaxRAMPercentage=85.0" clean verify
+        run: ./mvnw -PnativeTestInShardingSphere -e clean verify

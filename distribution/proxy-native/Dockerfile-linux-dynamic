@@ -15,7 +15,7 @@
 # limitations under the License.
 #
 
-FROM ghcr.io/graalvm/native-image-community:24.0.2 AS nativebuild
+FROM ghcr.io/graalvm/native-image-community:25.0.1 AS nativebuild
 WORKDIR /build
 COPY ./ .
 RUN --mount=type=cache,target=/root/.m2 ./mvnw -am -pl distribution/proxy-native -T1C -DskipTests "-Prelease.native" clean package
