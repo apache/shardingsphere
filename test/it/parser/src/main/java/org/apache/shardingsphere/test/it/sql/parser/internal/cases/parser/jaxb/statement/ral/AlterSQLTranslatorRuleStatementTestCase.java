@@ -35,5 +35,5 @@ public final class AlterSQLTranslatorRuleStatementTestCase extends SQLParserTest
     private final ExpectedAlgorithm provider = new ExpectedAlgorithm();
     
     @XmlElement(name = "use-original-sql-when-translating-failed")
-    private Boolean useOriginalSQLWhenTranslatingFailed;
+    private boolean useOriginalSQLWhenTranslatingFailed;
 }
