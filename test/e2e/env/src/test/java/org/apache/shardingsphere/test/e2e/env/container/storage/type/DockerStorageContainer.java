@@ -138,9 +138,10 @@ public final class DockerStorageContainer extends DockerE2EContainer implements 
         if (option.getCreateOption().isSupportDockerEntrypoint()) {
             return;
         }
-        try (Connection connection = DriverManager.getConnection(option.getConnectOption().getURL("localhost", getFirstMappedPort()),
-                option.getCreateOption().getDefaultUserWhenUnsupportedDockerEntrypoint().orElse(""),
-                option.getCreateOption().getDefaultPasswordWhenUnsupportedDockerEntrypoint().orElse(""))) {
+        try (
+                Connection connection = DriverManager.getConnection(option.getConnectOption().getURL("localhost", getFirstMappedPort()),
+                        option.getCreateOption().getDefaultUserWhenUnsupportedDockerEntrypoint().orElse(""),
+                        option.getCreateOption().getDefaultPasswordWhenUnsupportedDockerEntrypoint().orElse(""))) {
             for (String each : new MountSQLResourceGenerator(option.getType(), option.getCreateOption()).generate(majorVersion, scenario).keySet()) {
                 SQLScriptUtils.execute(connection, each);
             }
