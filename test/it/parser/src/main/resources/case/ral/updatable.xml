@@ -31,6 +31,17 @@
             <sql-statement-cache initial-capacity="11" maximum-size="11" />
         </sql-parser>
     </alter-sql-parser-rule>
+    <alter-sql-translator-rule sql-case-id="alter-sql-translator-rule">
+        <provider algorithm-name="DISTSQL:FIXTURE">
+            <property key="foo" value="bar" />
+        </provider>
+        <use-original-sql-when-translating-failed>true</use-original-sql-when-translating-failed>
+    </alter-sql-translator-rule>
+    <alter-sql-translator-rule sql-case-id="alter-sql-translator-rule-without-use-original">
+        <provider algorithm-name="DISTSQL:FIXTURE">
+            <property key="foo" value="bar" />
+        </provider>
+    </alter-sql-translator-rule>
     <alter-local-transaction-rule sql-case-id="alter-local-transaction-rule" />
     <alter-xa-transaction-rule sql-case-id="alter-xa-transaction-rule" />
     <alter-xa-transaction-rule sql-case-id="alter-xa-transaction-rule-without-quote-on-build-in-default-type-name-and-provider-type-name" />
