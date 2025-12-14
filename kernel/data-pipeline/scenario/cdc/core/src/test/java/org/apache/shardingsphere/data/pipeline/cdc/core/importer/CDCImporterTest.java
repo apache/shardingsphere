@@ -44,7 +44,6 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.contains;
 import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.mockito.AdditionalAnswers.answer;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyCollection;
 import static org.mockito.ArgumentMatchers.anyInt;
@@ -60,10 +59,7 @@ class CDCImporterTest {
     
     @Test
     void assertDoWithoutSortingCoversEmptyNonDataAndData() {
-        List<List<Record>> fetchResults = Arrays.asList(
-                Collections.emptyList(),
-                asList(mock(Record.class)),
-                asList(createDataRecord(1L), createFinishedRecord()));
+        List<List<Record>> fetchResults = Arrays.asList(Collections.emptyList(), asList(mock(Record.class)), asList(createDataRecord(1L), createFinishedRecord()));
         PipelineChannel channel = mockNonSortingChannel(fetchResults);
         PipelineJobProgressListener progressListener = mock(PipelineJobProgressListener.class);
         AtomicReference<CDCImporter> importerHolder = new AtomicReference<>();
@@ -106,9 +102,7 @@ class CDCImporterTest {
     
     @Test
     void assertDoWithSortingHandlesEmptyAndSingleTransaction() {
-        Queue<List<Record>> transactions = new LinkedList<>(Arrays.asList(
-                Collections.emptyList(),
-                asList(createFinishedRecord(), createDataRecord(2L), createFinishedRecord())));
+        Queue<List<Record>> transactions = new LinkedList<>(Arrays.asList(Collections.emptyList(), asList(createFinishedRecord(), createDataRecord(2L), createFinishedRecord())));
         PipelineChannel channel = mockSortingChannel(transactions);
         PipelineJobProgressListener progressListener = mock(PipelineJobProgressListener.class);
         AtomicReference<CDCImporter> importerHolder = new AtomicReference<>();
@@ -125,23 +119,13 @@ class CDCImporterTest {
     
     @Test
     void assertDoWithSortingProcessesMultipleCsnBatches() {
-        Queue<List<Record>> channelOneTransactions = new LinkedList<>(Arrays.asList(
-                asList(createFinishedRecord(), createDataRecord(4L)),
-                asList(createDataRecord(4L)),
-                Collections.emptyList()));
+        Queue<List<Record>> channelOneTransactions = new LinkedList<>(Arrays.asList(asList(createFinishedRecord(), createDataRecord(4L)), asList(createDataRecord(4L)), Collections.emptyList()));
         PipelineChannel channelOne = mockSortingChannel(channelOneTransactions);
-        Queue<List<Record>> channelTwoTransactions = new LinkedList<>(Arrays.asList(
-                asList(createDataRecord(4L), createFinishedRecord()),
-                asList(createFinishedRecord()),
-                Collections.emptyList()));
+        Queue<List<Record>> channelTwoTransactions = new LinkedList<>(Arrays.asList(asList(createDataRecord(4L), createFinishedRecord()), asList(createFinishedRecord()), Collections.emptyList()));
         PipelineChannel channelTwo = mockSortingChannel(channelTwoTransactions);
-        Queue<List<Record>> channelThreeTransactions = new LinkedList<>(Arrays.asList(
-                asList(createDataRecord(6L)),
-                asList(createDataRecord(7L))));
+        Queue<List<Record>> channelThreeTransactions = new LinkedList<>(Arrays.asList(asList(createDataRecord(6L)), asList(createDataRecord(7L))));
         PipelineChannel channelThree = mockSortingChannel(channelThreeTransactions);
-        Queue<List<Record>> channelFourTransactions = new LinkedList<>(Arrays.asList(
-                asList(createFinishedRecord()),
-                Collections.emptyList()));
+        Queue<List<Record>> channelFourTransactions = new LinkedList<>(Arrays.asList(asList(createFinishedRecord()), Collections.emptyList()));
         PipelineChannel channelFour = mockSortingChannel(channelFourTransactions);
         List<CDCChannelProgressPair> pairs = new LinkedList<>();
         pairs.add(new CDCChannelProgressPair(channelOne, mock(PipelineJobProgressListener.class)));
@@ -179,7 +163,7 @@ class CDCImporterTest {
     private PipelineChannel mockNonSortingChannel(final List<List<Record>> fetchResults) {
         PipelineChannel result = mock(PipelineChannel.class);
         Queue<List<Record>> fetchQueue = new LinkedList<>(fetchResults);
-        when(result.fetch(anyInt(), anyLong())).thenAnswer(answer((Integer unusedBatchSize, Long unusedTimeout) -> fetchQueue.isEmpty() ? Collections.emptyList() : fetchQueue.poll()));
+        when(result.fetch(anyInt(), anyLong())).thenAnswer(invocation -> fetchQueue.isEmpty() ? Collections.emptyList() : fetchQueue.poll());
         when(result.peek()).thenReturn(Collections.emptyList());
         when(result.poll()).thenReturn(Collections.emptyList());
         return result;
@@ -201,19 +185,24 @@ class CDCImporterTest {
     
     private PipelineSink mockSimpleSink() {
         PipelineSink result = mock(PipelineSink.class);
-        when(result.write(anyString(), anyCollection())).thenAnswer(answer((String unusedAckId, Collection<Record> records) -> new PipelineJobUpdateProgress(records.size())));
+        when(result.write(anyString(), anyCollection())).thenAnswer(invocation -> {
+            Collection<Record> records = invocation.getArgument(1);
+            return new PipelineJobUpdateProgress(records.size());
+        });
         return result;
     }
     
     private PipelineSink mockSinkWithAck(final AtomicReference<CDCImporter> importerHolder, final boolean stopAfterWrite) {
         PipelineSink result = mock(PipelineSink.class);
-        when(result.write(anyString(), anyCollection())).thenAnswer(answer((String ackId, Collection<Record> records) -> {
+        when(result.write(anyString(), anyCollection())).thenAnswer(invocation -> {
+            String ackId = invocation.getArgument(0);
+            Collection<Record> records = invocation.getArgument(1);
             importerHolder.get().ack(ackId);
             if (stopAfterWrite) {
                 importerHolder.get().stop();
             }
             return new PipelineJobUpdateProgress(records.size());
-        }));
+        });
         return result;
     }
     
