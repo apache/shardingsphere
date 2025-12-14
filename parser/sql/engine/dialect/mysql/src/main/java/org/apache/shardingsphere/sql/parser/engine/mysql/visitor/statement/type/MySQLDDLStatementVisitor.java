@@ -867,7 +867,11 @@ public final class MySQLDDLStatementVisitor extends MySQLStatementVisitor implem
     
     @Override
     public ASTNode visitDoStatement(final DoStatementContext ctx) {
-        return new DoStatement(getDatabaseType(), ctx.expr().stream().map(each -> (ExpressionSegment) visit(each)).collect(java.util.stream.Collectors.toList()));
+        List<ExpressionSegment> expressions = new LinkedList<>();
+        for (int i = 0; i < ctx.expr().size(); i++) {
+            expressions.add((ExpressionSegment) visit(ctx.expr(i)));
+        }
+        return new DoStatement(getDatabaseType(), expressions);
     }
     
     @Override
