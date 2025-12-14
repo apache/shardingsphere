@@ -34,6 +34,7 @@ import org.apache.shardingsphere.test.e2e.env.container.util.SQLScriptUtils;
 import org.apache.shardingsphere.test.e2e.env.container.util.StorageContainerUtils;
 import org.apache.shardingsphere.test.e2e.env.runtime.type.scenario.database.DatabaseEnvironmentManager;
 import org.apache.shardingsphere.test.e2e.env.runtime.type.scenario.path.ScenarioDataPath.Type;
+import org.awaitility.Awaitility;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -44,6 +45,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -138,7 +140,7 @@ public final class DockerStorageContainer extends DockerE2EContainer implements 
         if (option.getCreateOption().isSupportDockerEntrypoint()) {
             return;
         }
-        Thread.sleep(10000L);
+        Awaitility.await().pollDelay(10L, TimeUnit.SECONDS).until(() -> true);
         try (
                 Connection connection = DriverManager.getConnection(option.getConnectOption().getURL("localhost", getFirstMappedPort()),
                         option.getCreateOption().getDefaultUserWhenUnsupportedDockerEntrypoint().orElse(""),
