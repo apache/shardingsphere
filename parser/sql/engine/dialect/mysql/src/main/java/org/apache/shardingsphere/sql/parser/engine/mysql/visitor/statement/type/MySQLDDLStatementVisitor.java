@@ -199,6 +199,7 @@ import org.apache.shardingsphere.sql.parser.statement.mysql.ddl.instance.MySQLAl
 import org.apache.shardingsphere.sql.parser.statement.mysql.ddl.logfile.MySQLAlterLogfileGroupStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.ddl.logfile.MySQLCreateLogfileGroupStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.ddl.logfile.MySQLDropLogfileGroupStatement;
+import org.apache.shardingsphere.sql.parser.statement.mysql.dal.show.column.MySQLDescribeStatement;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -859,7 +860,7 @@ public final class MySQLDDLStatementVisitor extends MySQLStatementVisitor implem
         } else if (null != ctx.doStatement()) {
             sqlStatement = (DoStatement) visit(ctx.doStatement());
         } else if (null != ctx.explain()) {
-            sqlStatement = (ExplainStatement) visit(ctx.explain());
+            sqlStatement = (SQLStatement) visit(ctx.explain());
         }
         result.setSqlStatement(sqlStatement);
         return result;
@@ -876,22 +877,37 @@ public final class MySQLDDLStatementVisitor extends MySQLStatementVisitor implem
     
     @Override
     public ASTNode visitExplain(final ExplainContext ctx) {
-        if (null != ctx.tableName()) {
-            return visitChildren(ctx);
-        }
-        SQLStatement explainableStatement = null;
+        return null == ctx.tableName() ? new ExplainStatement(getDatabaseType(), getExplainableSQLStatement(ctx).orElse(null))
+                : new MySQLDescribeStatement(getDatabaseType(), (SimpleTableSegment) visit(ctx.tableName()), getColumnWildcard(ctx));
+    }
+    
+    private Optional<SQLStatement> getExplainableSQLStatement(final ExplainContext ctx) {
         if (null != ctx.explainableStatement()) {
-            explainableStatement = (SQLStatement) visit(ctx.explainableStatement());
-        } else if (null != ctx.select()) {
-            explainableStatement = (SQLStatement) visit(ctx.select());
-        } else if (null != ctx.delete()) {
-            explainableStatement = (SQLStatement) visit(ctx.delete());
-        } else if (null != ctx.update()) {
-            explainableStatement = (SQLStatement) visit(ctx.update());
-        } else if (null != ctx.insert()) {
-            explainableStatement = (SQLStatement) visit(ctx.insert());
+            return Optional.of((SQLStatement) visit(ctx.explainableStatement()));
         }
-        return new ExplainStatement(getDatabaseType(), explainableStatement);
+        if (null != ctx.select()) {
+            return Optional.of((SQLStatement) visit(ctx.select()));
+        }
+        if (null != ctx.delete()) {
+            return Optional.of((SQLStatement) visit(ctx.delete()));
+        }
+        if (null != ctx.update()) {
+            return Optional.of((SQLStatement) visit(ctx.update()));
+        }
+        if (null != ctx.insert()) {
+            return Optional.of((SQLStatement) visit(ctx.insert()));
+        }
+        return Optional.empty();
+    }
+    
+    private ColumnSegment getColumnWildcard(final ExplainContext ctx) {
+        if (null != ctx.columnRef()) {
+            return (ColumnSegment) visit(ctx.columnRef());
+        }
+        if (null != ctx.textString()) {
+            return (ColumnSegment) visit(ctx.textString());
+        }
+        return null;
     }
     
     @SuppressWarnings("unchecked")

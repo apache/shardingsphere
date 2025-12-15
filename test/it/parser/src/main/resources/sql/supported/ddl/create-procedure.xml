@@ -63,4 +63,6 @@
     <sql-case id="create_procedure_with_drop_event" value="create procedure p1() begin drop event e1; end;" db-types="MySQL"/>
     <sql-case id="create_procedure_with_begin_explain" value="CREATE PROCEDURE sub1(id CHAR(10) CHARACTER SET utf8mb3) BEGIN SELECT * FROM view1 WHERE table_name=id COLLATE utf8mb3_tolower_ci; EXPLAIN SELECT * FROM view1 WHERE table_name=id COLLATE utf8mb3_tolower_ci; END" db-types="MySQL"/>
     <sql-case id="create_procedure_with_begin_do" value="create procedure t_sysdate() begin select sysdate() into @a; do sleep(2); end;" db-types="MySQL"/>
+    <sql-case id="create_procedure_with_describe_table" value="create procedure p1() begin describe t1; end;" db-types="MySQL"/>
+    <sql-case id="create_procedure_with_explain_table" value="create procedure p1() begin explain t1; end;" db-types="MySQL"/>
 </sql-cases>
