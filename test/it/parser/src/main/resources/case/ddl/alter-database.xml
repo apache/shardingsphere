@@ -97,4 +97,5 @@
     <alter-database sql-case-id="alter_schema_set_location" />
     <alter-database sql-case-id="alter_database_set_managedlocation" />
     <alter-database sql-case-id="alter_schema_set_managedlocation" />
+    <alter-database sql-case-id="alter_database_set_lc_messages" />
 </sql-parser-test-cases>
