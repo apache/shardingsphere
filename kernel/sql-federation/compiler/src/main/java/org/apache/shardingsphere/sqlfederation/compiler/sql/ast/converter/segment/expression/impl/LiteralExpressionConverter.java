@@ -28,6 +28,7 @@ import org.apache.calcite.sql.fun.SqlTrimFunction.Flag;
 import org.apache.calcite.sql.parser.SqlParserPos;
 import org.apache.calcite.sql.type.SqlTypeName;
 import org.apache.calcite.util.DateString;
+import org.apache.calcite.util.NlsString;
 import org.apache.calcite.util.TimeString;
 import org.apache.calcite.util.TimestampString;
 import org.apache.calcite.util.TimestampWithTimeZoneString;
@@ -92,6 +93,9 @@ public final class LiteralExpressionConverter {
         if (segment.getLiterals() instanceof String) {
             return Optional.of(SqlLiteral.createCharString(literalValue, SqlParserPos.ZERO));
         }
+        if (segment.getLiterals() instanceof NlsString) {
+            return Optional.of(SqlLiteral.createCharString(((NlsString) segment.getLiterals()).getValue(), SqlParserPos.ZERO));
+        }
         if (segment.getLiterals() instanceof Boolean) {
             return Optional.of(SqlLiteral.createBoolean(Boolean.parseBoolean(literalValue), SqlParserPos.ZERO));
         }
@@ -100,6 +104,9 @@ public final class LiteralExpressionConverter {
         }
         if (segment.getLiterals() instanceof Date) {
             return Optional.of(convertDate(segment, literalValue));
+        }
+        if (segment.getLiterals() instanceof TimestampString) {
+            return Optional.of(SqlLiteral.createTimestamp(SqlTypeName.TIMESTAMP, (TimestampString) segment.getLiterals(), 1, SqlParserPos.ZERO));
         }
         if (segment.getLiterals() instanceof LocalDate) {
             return Optional.of(SqlLiteral.createDate(DateString.fromDaysSinceEpoch((int) ((LocalDate) segment.getLiterals()).toEpochDay()), SqlParserPos.ZERO));
