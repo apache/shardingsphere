@@ -109,6 +109,8 @@ import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.TextOrI
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.TruncateTableContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ValidStatementContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.WhileStatementContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.DoStatementContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ExplainContext;
 import org.apache.shardingsphere.sql.parser.engine.mysql.visitor.statement.MySQLStatementVisitor;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.AlgorithmOption;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.LockTableOption;
@@ -150,7 +152,9 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.Comme
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.DataTypeSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.OwnerSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.ExplainStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.DeallocateStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.ExecuteStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.PrepareStatement;
@@ -185,6 +189,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.De
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.InsertStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.UpdateStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.DoStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.value.collection.CollectionValue;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 import org.apache.shardingsphere.sql.parser.statement.mysql.ddl.event.MySQLAlterEventStatement;
@@ -194,6 +199,7 @@ import org.apache.shardingsphere.sql.parser.statement.mysql.ddl.instance.MySQLAl
 import org.apache.shardingsphere.sql.parser.statement.mysql.ddl.logfile.MySQLAlterLogfileGroupStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.ddl.logfile.MySQLCreateLogfileGroupStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.ddl.logfile.MySQLDropLogfileGroupStatement;
+import org.apache.shardingsphere.sql.parser.statement.mysql.dal.show.column.MySQLDescribeStatement;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -851,9 +857,57 @@ public final class MySQLDDLStatementVisitor extends MySQLStatementVisitor implem
             sqlStatement = (DeleteStatement) visit(ctx.delete());
         } else if (null != ctx.select()) {
             sqlStatement = (SelectStatement) visit(ctx.select());
+        } else if (null != ctx.doStatement()) {
+            sqlStatement = (DoStatement) visit(ctx.doStatement());
+        } else if (null != ctx.explain()) {
+            sqlStatement = (SQLStatement) visit(ctx.explain());
         }
         result.setSqlStatement(sqlStatement);
         return result;
+    }
+    
+    @Override
+    public ASTNode visitDoStatement(final DoStatementContext ctx) {
+        List<ExpressionSegment> expressions = new LinkedList<>();
+        for (int i = 0; i < ctx.expr().size(); i++) {
+            expressions.add((ExpressionSegment) visit(ctx.expr(i)));
+        }
+        return new DoStatement(getDatabaseType(), expressions);
+    }
+    
+    @Override
+    public ASTNode visitExplain(final ExplainContext ctx) {
+        return null == ctx.tableName() ? new ExplainStatement(getDatabaseType(), getExplainableSQLStatement(ctx).orElse(null))
+                : new MySQLDescribeStatement(getDatabaseType(), (SimpleTableSegment) visit(ctx.tableName()), getColumnWildcard(ctx));
+    }
+    
+    private Optional<SQLStatement> getExplainableSQLStatement(final ExplainContext ctx) {
+        if (null != ctx.explainableStatement()) {
+            return Optional.of((SQLStatement) visit(ctx.explainableStatement()));
+        }
+        if (null != ctx.select()) {
+            return Optional.of((SQLStatement) visit(ctx.select()));
+        }
+        if (null != ctx.delete()) {
+            return Optional.of((SQLStatement) visit(ctx.delete()));
+        }
+        if (null != ctx.update()) {
+            return Optional.of((SQLStatement) visit(ctx.update()));
+        }
+        if (null != ctx.insert()) {
+            return Optional.of((SQLStatement) visit(ctx.insert()));
+        }
+        return Optional.empty();
+    }
+    
+    private ColumnSegment getColumnWildcard(final ExplainContext ctx) {
+        if (null != ctx.columnRef()) {
+            return (ColumnSegment) visit(ctx.columnRef());
+        }
+        if (null != ctx.textString()) {
+            return (ColumnSegment) visit(ctx.textString());
+        }
+        return null;
     }
     
     @SuppressWarnings("unchecked")
