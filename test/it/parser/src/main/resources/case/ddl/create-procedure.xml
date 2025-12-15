@@ -169,4 +169,10 @@
             <sql-statement start-index="28" stop-index="38" statement-class-simple-name="MySQLDescribeStatement" />
         </sql-statements>
     </create-procedure>
+    <create-procedure sql-case-id="create_procedure_with_analyzeTable">
+        <procedure-name name="p" />
+        <sql-statements>
+            <sql-statement start-index="24" stop-index="59" statement-class-simple-name="AnalyzeTableStatement" />
+        </sql-statements>
+    </create-procedure>
 </sql-parser-test-cases>

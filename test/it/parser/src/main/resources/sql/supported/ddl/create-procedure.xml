@@ -65,4 +65,5 @@
     <sql-case id="create_procedure_with_begin_do" value="create procedure t_sysdate() begin select sysdate() into @a; do sleep(2); end;" db-types="MySQL"/>
     <sql-case id="create_procedure_with_describe_table" value="create procedure p1() begin describe t1; end;" db-types="MySQL"/>
     <sql-case id="create_procedure_with_explain_table" value="create procedure p1() begin explain t1; end;" db-types="MySQL"/>
+    <sql-case id="create_procedure_with_analyzeTable" value="CREATE PROCEDURE p() ANALYZE TABLE v UPDATE HISTOGRAM ON w;" db-types="MySQL"/>
 </sql-cases>
