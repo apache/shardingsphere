@@ -143,4 +143,30 @@
             <sql-statement start-index="28" stop-index="40" statement-class-simple-name="MySQLDropEventStatement" />
         </sql-statements>
     </create-procedure>
+    <create-procedure sql-case-id="create_procedure_with_begin_explain">
+        <procedure-name name="sub1" />
+        <sql-statements>
+            <sql-statement start-index="63" stop-index="128" statement-class-simple-name="SelectStatement" />
+            <sql-statement start-index="131" stop-index="204" statement-class-simple-name="ExplainStatement" />
+        </sql-statements>
+    </create-procedure>
+    <create-procedure sql-case-id="create_procedure_with_begin_do">
+        <procedure-name name="t_sysdate" />
+        <sql-statements>
+            <sql-statement start-index="35" stop-index="58" statement-class-simple-name="SelectStatement" />
+            <sql-statement start-index="61" stop-index="71" statement-class-simple-name="DoStatement" />
+        </sql-statements>
+    </create-procedure>
+    <create-procedure sql-case-id="create_procedure_with_describe_table">
+        <procedure-name name="p1" />
+        <sql-statements>
+            <sql-statement start-index="28" stop-index="39" statement-class-simple-name="MySQLDescribeStatement" />
+        </sql-statements>
+    </create-procedure>
+    <create-procedure sql-case-id="create_procedure_with_explain_table">
+        <procedure-name name="p1" />
+        <sql-statements>
+            <sql-statement start-index="28" stop-index="38" statement-class-simple-name="MySQLDescribeStatement" />
+        </sql-statements>
+    </create-procedure>
 </sql-parser-test-cases>
