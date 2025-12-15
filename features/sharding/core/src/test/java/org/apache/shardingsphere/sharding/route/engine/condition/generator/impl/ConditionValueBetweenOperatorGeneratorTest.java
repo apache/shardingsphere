@@ -56,7 +56,7 @@ class ConditionValueBetweenOperatorGeneratorTest {
     
     private final ConditionValueBetweenOperatorGenerator generator = new ConditionValueBetweenOperatorGenerator();
     
-    private final HashColumn column = new HashColumn("id", "tbl");
+    private final HashColumn column = new HashColumn("id", "tbl", false);
     
     private final TimestampServiceRule timestampServiceRule = new TimestampServiceRule(new TimestampServiceRuleConfiguration("System", new Properties()));
     

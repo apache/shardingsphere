@@ -26,7 +26,7 @@ public final class SQLFederationUnsupportedSQLException extends SQLFederationSQL
     
     private static final long serialVersionUID = -8571244162760408846L;
     
-    public SQLFederationUnsupportedSQLException(final String sql, final Exception cause) {
-        super(XOpenSQLState.SYNTAX_ERROR, 1, cause, "SQL federation does not support SQL '%s'.", sql);
+    public SQLFederationUnsupportedSQLException(final String sql, final String reason) {
+        super(XOpenSQLState.SYNTAX_ERROR, 1, reason, "SQL federation does not support SQL '%s'.", sql);
     }
 }

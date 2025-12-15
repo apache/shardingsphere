@@ -90,6 +90,8 @@ public final class SQLFederationEngine implements AutoCloseable {
     
     private static final Collection<Class<?>> NEED_THROW_EXCEPTION_TYPES = Arrays.asList(SQLExecutionInterruptedException.class, SQLIntegrityConstraintViolationException.class);
     
+    private static final int MAX_ERROR_MESSAGE_LENGTH = 5000;
+    
     private final ProcessEngine processEngine = new ProcessEngine();
     
     @SuppressWarnings("rawtypes")
@@ -205,13 +207,18 @@ public final class SQLFederationEngine implements AutoCloseable {
             // CHECKSTYLE:OFF
         } catch (final Exception ex) {
             // CHECKSTYLE:ON
-            log.error("SQL Federation execute failed, sql {}, parameters {}", queryContext.getSql(), queryContext.getParameters(), ex);
+            String errorMessage = splitErrorMessage(ex);
+            log.error("SQL Federation execute failed, sql {}, parameters {}, reason {}", queryContext.getSql(), queryContext.getParameters(), errorMessage);
             closeResources(federationContext);
             if (NEED_THROW_EXCEPTION_TYPES.stream().anyMatch(each -> each.isAssignableFrom(ex.getClass()))) {
                 throw ex;
             }
-            throw new SQLFederationUnsupportedSQLException(queryContext.getSql(), ex);
+            throw new SQLFederationUnsupportedSQLException(queryContext.getSql(), errorMessage);
         }
+    }
+    
+    private String splitErrorMessage(final Exception ex) {
+        return null == ex.getMessage() ? "" : ex.getMessage().substring(0, Math.min(ex.getMessage().length(), MAX_ERROR_MESSAGE_LENGTH));
     }
     
     private void closeResources(final SQLFederationContext federationContext) {
