@@ -22,4 +22,7 @@
     </alter-resource-group>
     <alter-resource-group sql-case-id="alter_resource_cost_cpu_time" />
     <alter-resource-group sql-case-id="alter_resource_cost_cpu" />
+    <alter-resource sql-case-id="alter_resource_properties">
+        <resource-name start-index="15" stop-index="25">remote_s3</resource-name>
+    </alter-resource>
 </sql-parser-test-cases>

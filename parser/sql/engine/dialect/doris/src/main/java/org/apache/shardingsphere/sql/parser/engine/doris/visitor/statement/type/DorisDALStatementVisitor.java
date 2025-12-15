@@ -120,6 +120,8 @@ import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.TablesO
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.UninstallComponentContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.UninstallPluginContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.UseContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.AlterResourceContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.PropertyAssignmentContext;
 import org.apache.shardingsphere.sql.parser.engine.doris.visitor.statement.DorisStatementVisitor;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.CacheTableIndexSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.CloneActionSegment;
@@ -153,6 +155,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.value.collection.Coll
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 import org.apache.shardingsphere.sql.parser.statement.core.value.literal.impl.NumberLiteralValue;
 import org.apache.shardingsphere.sql.parser.statement.core.value.literal.impl.StringLiteralValue;
+import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisAlterResourceStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLCloneStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLCreateLoadableFunctionStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLDelimiterStatement;
@@ -233,6 +236,7 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
+import java.util.Properties;
 import java.util.stream.Collectors;
 
 /**
@@ -900,6 +904,18 @@ public final class DorisDALStatementVisitor extends DorisStatementVisitor implem
     @Override
     public ASTNode visitAlterResourceGroup(final AlterResourceGroupContext ctx) {
         return new MySQLAlterResourceGroupStatement(getDatabaseType(), ((IdentifierValue) visit(ctx.groupName())).getValue());
+    }
+    
+    @Override
+    public ASTNode visitAlterResource(final AlterResourceContext ctx) {
+        String resourceName = ((StringLiteralValue) visit(ctx.string_())).getValue();
+        Properties properties = new Properties();
+        for (PropertyAssignmentContext each : ctx.propertyAssignments().propertyAssignment()) {
+            String key = ((StringLiteralValue) visit(each.string_(0))).getValue();
+            String value = ((StringLiteralValue) visit(each.string_(1))).getValue();
+            properties.setProperty(key, value);
+        }
+        return new DorisAlterResourceStatement(getDatabaseType(), resourceName, properties);
     }
     
     @Override

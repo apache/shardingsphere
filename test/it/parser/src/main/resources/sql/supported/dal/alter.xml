@@ -20,4 +20,5 @@
     <sql-case id="alter_resource_group" value="ALTER RESOURCE GROUP rg" db-types="MySQL" />
     <sql-case id="alter_resource_cost_cpu_time" value="ALTER RESOURCE COST CPU_PER_SESSION 100 CONNECT_TIME 1" db-types="Oracle" />
     <sql-case id="alter_resource_cost_cpu" value="ALTER RESOURCE COST CPU_PER_SESSION 100" db-types="Oracle" />
+    <sql-case id="alter_resource_properties" value="ALTER RESOURCE 'remote_s3' PROPERTIES (&quot;s3.connection.maximum&quot; = &quot;100&quot;);" db-types="Doris" />
 </sql-cases>
