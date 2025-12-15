@@ -44,6 +44,7 @@ import java.sql.SQLException;
 import java.sql.SQLXML;
 import java.sql.Time;
 import java.sql.Timestamp;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.util.Calendar;
@@ -272,6 +273,13 @@ class ShardingSphereResultSetTest {
     }
     
     @Test
+    void assertGetDateConvertedByLocalDateWithColumnIndex() throws SQLException {
+        LocalDate localDate = LocalDate.now();
+        when(mergeResultSet.getValue(1, Date.class)).thenReturn(localDate);
+        assertThat(shardingSphereResultSet.getDate(1), is(Date.valueOf(localDate)));
+    }
+    
+    @Test
     void assertGetDateWithColumnLabel() throws SQLException {
         when(mergeResultSet.getValue(1, Date.class)).thenReturn(new Date(0L));
         assertThat(shardingSphereResultSet.getDate("label"), is(new Date(0L)));
@@ -321,6 +329,13 @@ class ShardingSphereResultSetTest {
     void assertGetTimestampWithColumnIndex() throws SQLException {
         when(mergeResultSet.getValue(1, Timestamp.class)).thenReturn(new Timestamp(0L));
         assertThat(shardingSphereResultSet.getTimestamp(1), is(new Timestamp(0L)));
+    }
+    
+    @Test
+    void assertGetTimestampConvertedByLocalDateWithColumnIndex() throws SQLException {
+        LocalDate localDate = LocalDate.now();
+        when(mergeResultSet.getValue(1, Timestamp.class)).thenReturn(localDate);
+        assertThat(shardingSphereResultSet.getTimestamp(1), is(Timestamp.valueOf(localDate.atStartOfDay())));
     }
     
     @Test
