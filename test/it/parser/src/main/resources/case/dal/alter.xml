@@ -39,4 +39,18 @@
         <property key="s3.connection.maximum" value="100" />
         <property key="s3.connection.timeout" value="1000" />
     </alter-resource>
+    <alter-resource sql-case-id="alter_resource_with_boolean">
+        <resource-name start-index="15" stop-index="25">remote_s3</resource-name>
+        <property key="s3.use_path_style" value="true" />
+    </alter-resource>
+    <alter-resource sql-case-id="alter_resource_with_null">
+        <resource-name start-index="15" stop-index="25">remote_s3</resource-name>
+        <property key="s3.session_token" value="NULL" />
+    </alter-resource>
+    <alter-resource sql-case-id="alter_resource_mixed_types">
+        <resource-name start-index="15" stop-index="25">remote_s3</resource-name>
+        <property key="s3.connection.maximum" value="100" />
+        <property key="s3.connection.timeout" value="1000" />
+        <property key="s3.use_path_style" value="false" />
+    </alter-resource>
 </sql-parser-test-cases>

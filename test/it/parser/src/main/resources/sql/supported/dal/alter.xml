@@ -24,4 +24,7 @@
     <sql-case id="alter_resource_with_identifier" value="ALTER RESOURCE remote_s3 PROPERTIES (`s3.connection.maximum` = `100`);" db-types="Doris" />
     <sql-case id="alter_resource_with_number" value="ALTER RESOURCE 'remote_s3' PROPERTIES (&quot;s3.connection.timeout&quot; = 1000);" db-types="Doris" />
     <sql-case id="alter_resource_multiple_properties" value="ALTER RESOURCE 'remote_s3' PROPERTIES (&quot;s3.connection.maximum&quot; = &quot;100&quot;, &quot;s3.connection.timeout&quot; = 1000);" db-types="Doris" />
+    <sql-case id="alter_resource_with_boolean" value="ALTER RESOURCE 'remote_s3' PROPERTIES (&quot;s3.use_path_style&quot; = true);" db-types="Doris" />
+    <sql-case id="alter_resource_with_null" value="ALTER RESOURCE 'remote_s3' PROPERTIES (&quot;s3.session_token&quot; = NULL);" db-types="Doris" />
+    <sql-case id="alter_resource_mixed_types" value="ALTER RESOURCE 'remote_s3' PROPERTIES (&quot;s3.connection.maximum&quot; = &quot;100&quot;, &quot;s3.connection.timeout&quot; = 1000, &quot;s3.use_path_style&quot; = false);" db-types="Doris" />
 </sql-cases>

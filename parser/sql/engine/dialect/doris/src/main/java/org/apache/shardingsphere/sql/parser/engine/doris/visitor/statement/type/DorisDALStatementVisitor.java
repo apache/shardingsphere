@@ -158,6 +158,12 @@ import org.apache.shardingsphere.sql.parser.statement.core.value.collection.Coll
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 import org.apache.shardingsphere.sql.parser.statement.core.value.literal.impl.NumberLiteralValue;
 import org.apache.shardingsphere.sql.parser.statement.core.value.literal.impl.StringLiteralValue;
+import org.apache.shardingsphere.sql.parser.statement.core.value.literal.LiteralValue;
+import org.apache.shardingsphere.sql.parser.statement.core.value.literal.impl.BooleanLiteralValue;
+import org.apache.shardingsphere.sql.parser.statement.core.value.literal.impl.DateTimeLiteralValue;
+import org.apache.shardingsphere.sql.parser.statement.core.value.literal.impl.NullLiteralValue;
+import org.apache.shardingsphere.sql.parser.statement.core.value.literal.impl.OtherLiteralValue;
+import org.apache.shardingsphere.sql.parser.statement.core.value.literal.impl.TemporalLiteralValue;
 import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisAlterResourceStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLCloneStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLCreateLoadableFunctionStatement;
@@ -940,13 +946,35 @@ public final class DorisDALStatementVisitor extends DorisStatementVisitor implem
             return ((IdentifierValue) visit(ctx.identifier())).getValue();
         }
         ASTNode result = visit(ctx.literals());
-        if (result instanceof StringLiteralValue) {
-            return ((StringLiteralValue) result).getValue();
-        }
-        if (result instanceof NumberLiteralValue) {
-            return ((NumberLiteralValue) result).getValue().toString();
+        if (result instanceof LiteralValue) {
+            return getLiteralValueAsString((LiteralValue<?>) result);
         }
         return result.toString();
+    }
+    
+    private String getLiteralValueAsString(final LiteralValue<?> literalValue) {
+        if (literalValue instanceof StringLiteralValue) {
+            return ((StringLiteralValue) literalValue).getValue();
+        }
+        if (literalValue instanceof NumberLiteralValue) {
+            return ((NumberLiteralValue) literalValue).getValue().toString();
+        }
+        if (literalValue instanceof BooleanLiteralValue) {
+            return String.valueOf(((BooleanLiteralValue) literalValue).getValue());
+        }
+        if (literalValue instanceof NullLiteralValue) {
+            return "NULL";
+        }
+        if (literalValue instanceof DateTimeLiteralValue) {
+            return ((DateTimeLiteralValue) literalValue).getValue();
+        }
+        if (literalValue instanceof TemporalLiteralValue) {
+            return ((TemporalLiteralValue) literalValue).getValue();
+        }
+        if (literalValue instanceof OtherLiteralValue) {
+            return String.valueOf(((OtherLiteralValue) literalValue).getValue());
+        }
+        return String.valueOf(literalValue.getValue());
     }
     
     @Override
