@@ -93,7 +93,15 @@ public final class MySQLSelectWithoutFromAdminExecutorFactory {
             return Optional.of(new NoResourceShowExecutor(sqlStatement));
         }
         boolean isUseDatabase = null != databaseName || sqlStatement.getFrom().isPresent();
+        if (!isUseDatabase && hasMultipleProjections(sqlStatement)) {
+            return Optional.empty();
+        }
         return isUseDatabase ? Optional.empty() : Optional.of(new UnicastResourceShowExecutor(sqlStatement, sql));
+    }
+    
+    private static boolean hasMultipleProjections(final SelectStatement sqlStatement) {
+        Collection<ProjectionSegment> projections = sqlStatement.getProjections().getProjections();
+        return projections.size() > 1;
     }
     
     private static boolean isEmptyResource(final ShardingSphereMetaData metaData) {
