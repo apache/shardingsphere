@@ -284,7 +284,27 @@ installComponent
     ;
 
 installPlugin
-    : INSTALL PLUGIN pluginName SONAME shardLibraryName
+    : INSTALL PLUGIN (pluginName SONAME shardLibraryName | FROM pluginSource (PROPERTIES LP_ pluginPropertiesList RP_)?)
+    ;
+
+pluginSource
+    : identifier | string_
+    ;
+
+pluginPropertiesList
+    : pluginProperty (COMMA_ pluginProperty)*
+    ;
+
+pluginProperty
+    : pluginPropertyKey EQ_ pluginPropertyValue
+    ;
+
+pluginPropertyKey
+    : identifier | string_
+    ;
+
+pluginPropertyValue
+    : literals | identifier
     ;
 
 uninstallComponent

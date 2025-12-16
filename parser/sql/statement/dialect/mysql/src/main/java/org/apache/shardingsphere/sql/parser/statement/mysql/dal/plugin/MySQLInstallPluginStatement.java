@@ -21,6 +21,9 @@ import lombok.Getter;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.DALStatement;
 
+import java.util.Collections;
+import java.util.Map;
+
 /**
  * Install plugin statement for MySQL.
  */
@@ -29,8 +32,21 @@ public final class MySQLInstallPluginStatement extends DALStatement {
     
     private final String pluginName;
     
+    private final String source;
+    
+    private final Map<String, String> properties;
+    
     public MySQLInstallPluginStatement(final DatabaseType databaseType, final String pluginName) {
         super(databaseType);
         this.pluginName = pluginName;
+        this.source = null;
+        this.properties = Collections.emptyMap();
+    }
+    
+    public MySQLInstallPluginStatement(final DatabaseType databaseType, final String source, final Map<String, String> properties) {
+        super(databaseType);
+        this.pluginName = null;
+        this.source = source;
+        this.properties = null == properties ? Collections.emptyMap() : properties;
     }
 }
