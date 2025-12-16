@@ -119,6 +119,23 @@ public final class OrderItemRepository {
     }
     
     /**
+     * Create Iceberg table in HiveServer2.
+     * Hive does not support `AUTO_INCREMENT`,
+     * refer to <a href="https://issues.apache.org/jira/browse/HIVE-6905">HIVE-6905</a>.
+     *
+     * @throws SQLException SQL exception
+     */
+    public void createIcebergTableInHiveServer2() throws SQLException {
+        String sql = "CREATE TABLE IF NOT EXISTS t_order_item (order_item_id BIGINT NOT NULL,order_id BIGINT NOT NULL,user_id INT NOT NULL,phone string,status string, "
+                + "PRIMARY KEY (order_item_id) disable novalidate) STORED BY ICEBERG STORED AS ORC TBLPROPERTIES ('format-version' = '2')";
+        try (
+                Connection connection = dataSource.getConnection();
+                Statement statement = connection.createStatement()) {
+            statement.executeUpdate(sql);
+        }
+    }
+    
+    /**
      * drop table in MySQL.
      *
      * @throws SQLException SQL exception

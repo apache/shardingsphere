@@ -19,15 +19,15 @@ dataSources:
   ds_0:
     dataSourceClassName: com.zaxxer.hikari.HikariDataSource
     driverClassName: org.testcontainers.jdbc.ContainerDatabaseDriver
-    jdbcUrl: jdbc:tc:sqlserver:2022-CU20-ubuntu-22.04://test-native-databases-mssqlserver;databaseName=demo_ds_0
+    jdbcUrl: jdbc:tc:sqlserver:2025-RTM-ubuntu-22.04://test-native-databases-mssqlserver;databaseName=demo_ds_0
   ds_1:
     dataSourceClassName: com.zaxxer.hikari.HikariDataSource
     driverClassName: org.testcontainers.jdbc.ContainerDatabaseDriver
-    jdbcUrl: jdbc:tc:sqlserver:2022-CU20-ubuntu-22.04://test-native-databases-mssqlserver;databaseName=demo_ds_1
+    jdbcUrl: jdbc:tc:sqlserver:2025-RTM-ubuntu-22.04://test-native-databases-mssqlserver;databaseName=demo_ds_1
   ds_2:
     dataSourceClassName: com.zaxxer.hikari.HikariDataSource
     driverClassName: org.testcontainers.jdbc.ContainerDatabaseDriver
-    jdbcUrl: jdbc:tc:sqlserver:2022-CU20-ubuntu-22.04://test-native-databases-mssqlserver;databaseName=demo_ds_2
+    jdbcUrl: jdbc:tc:sqlserver:2025-RTM-ubuntu-22.04://test-native-databases-mssqlserver;databaseName=demo_ds_2
 
 rules:
 - !SHARDING
