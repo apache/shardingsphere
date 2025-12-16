@@ -21,4 +21,7 @@
     <sql-case id="alter_resource_cost_cpu_time" value="ALTER RESOURCE COST CPU_PER_SESSION 100 CONNECT_TIME 1" db-types="Oracle" />
     <sql-case id="alter_resource_cost_cpu" value="ALTER RESOURCE COST CPU_PER_SESSION 100" db-types="Oracle" />
     <sql-case id="alter_resource_properties" value="ALTER RESOURCE 'remote_s3' PROPERTIES (&quot;s3.connection.maximum&quot; = &quot;100&quot;);" db-types="Doris" />
+    <sql-case id="alter_resource_with_identifier" value="ALTER RESOURCE remote_s3 PROPERTIES (`s3.connection.maximum` = `100`);" db-types="Doris" />
+    <sql-case id="alter_resource_with_number" value="ALTER RESOURCE 'remote_s3' PROPERTIES (&quot;s3.connection.timeout&quot; = 1000);" db-types="Doris" />
+    <sql-case id="alter_resource_multiple_properties" value="ALTER RESOURCE 'remote_s3' PROPERTIES (&quot;s3.connection.maximum&quot; = &quot;100&quot;, &quot;s3.connection.timeout&quot; = 1000);" db-types="Doris" />
 </sql-cases>

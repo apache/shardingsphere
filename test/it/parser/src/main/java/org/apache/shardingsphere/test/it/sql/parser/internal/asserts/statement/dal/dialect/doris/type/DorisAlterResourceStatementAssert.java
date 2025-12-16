@@ -45,5 +45,13 @@ public final class DorisAlterResourceStatementAssert {
             assertThat(assertContext.getText("resource name does not match: "), actual.getResourceName(), is(expected.getResourceName()));
         }
         assertNotNull(actual.getProperties(), assertContext.getText("properties should not be null"));
+        if (!expected.getProperties().isEmpty()) {
+            assertThat(assertContext.getText("properties size does not match: "), actual.getProperties().size(), is(expected.getProperties().size()));
+            expected.getProperties().forEach(property -> {
+                String actualValue = actual.getProperties().getProperty(property.getKey());
+                assertNotNull(actualValue, assertContext.getText("property key '" + property.getKey() + "' should exist"));
+                assertThat(assertContext.getText("property value for key '" + property.getKey() + "' does not match: "), actualValue, is(property.getValue()));
+            });
+        }
     }
 }

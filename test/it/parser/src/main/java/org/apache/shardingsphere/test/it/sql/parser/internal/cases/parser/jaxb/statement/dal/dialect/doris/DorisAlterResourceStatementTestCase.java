@@ -21,15 +21,23 @@ import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.SQLParserTestCase;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * Alter resource statement test case for Doris.
  */
+@XmlAccessorType(XmlAccessType.FIELD)
 @Getter
 @Setter
 public final class DorisAlterResourceStatementTestCase extends SQLParserTestCase {
     
     @XmlElement(name = "resource-name")
     private String resourceName;
+    
+    @XmlElement(name = "property")
+    private final List<PropertyTestCase> properties = new LinkedList<>();
 }

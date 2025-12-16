@@ -330,7 +330,11 @@ alterResourceGroup
     ;
 
 alterResource
-    : ALTER RESOURCE string_ PROPERTIES LP_ propertyAssignments RP_
+    : ALTER RESOURCE resourceName PROPERTIES LP_ propertyAssignments RP_
+    ;
+
+resourceName
+    : identifier | string_
     ;
 
 propertyAssignments
@@ -338,7 +342,15 @@ propertyAssignments
     ;
 
 propertyAssignment
-    : string_ EQ_ string_
+    : propertyKey EQ_ propertyValue
+    ;
+
+propertyKey
+    : identifier | string_
+    ;
+
+propertyValue
+    : literals | identifier
     ;
 
 vcpuSpec

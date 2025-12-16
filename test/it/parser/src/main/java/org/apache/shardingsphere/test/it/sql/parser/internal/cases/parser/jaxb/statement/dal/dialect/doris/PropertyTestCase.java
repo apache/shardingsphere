@@ -15,27 +15,26 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.statement.doris.dal;
+package org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.doris;
 
 import lombok.Getter;
-import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.DALStatement;
+import lombok.Setter;
 
-import java.util.Properties;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
 
 /**
- * Alter resource statement for Doris.
+ * Property test case for Doris.
  */
+@XmlAccessorType(XmlAccessType.FIELD)
 @Getter
-public final class DorisAlterResourceStatement extends DALStatement {
+@Setter
+public final class PropertyTestCase {
     
-    private final String resourceName;
+    @XmlAttribute
+    private String key;
     
-    private final Properties properties;
-    
-    public DorisAlterResourceStatement(final DatabaseType databaseType, final String resourceName, final Properties properties) {
-        super(databaseType);
-        this.resourceName = resourceName;
-        this.properties = properties;
-    }
+    @XmlAttribute
+    private String value;
 }

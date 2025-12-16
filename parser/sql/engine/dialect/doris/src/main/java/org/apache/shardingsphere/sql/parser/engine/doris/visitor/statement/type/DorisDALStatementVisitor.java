@@ -122,6 +122,9 @@ import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.Uninsta
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.UseContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.AlterResourceContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.PropertyAssignmentContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ResourceNameContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.PropertyKeyContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.PropertyValueContext;
 import org.apache.shardingsphere.sql.parser.engine.doris.visitor.statement.DorisStatementVisitor;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.CacheTableIndexSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.CloneActionSegment;
@@ -908,14 +911,42 @@ public final class DorisDALStatementVisitor extends DorisStatementVisitor implem
     
     @Override
     public ASTNode visitAlterResource(final AlterResourceContext ctx) {
-        String resourceName = ((StringLiteralValue) visit(ctx.string_())).getValue();
+        String resourceName = getResourceName(ctx.resourceName());
         Properties properties = new Properties();
         for (PropertyAssignmentContext each : ctx.propertyAssignments().propertyAssignment()) {
-            String key = ((StringLiteralValue) visit(each.string_(0))).getValue();
-            String value = ((StringLiteralValue) visit(each.string_(1))).getValue();
+            String key = getPropertyKey(each.propertyKey());
+            String value = getPropertyValue(each.propertyValue());
             properties.setProperty(key, value);
         }
         return new DorisAlterResourceStatement(getDatabaseType(), resourceName, properties);
+    }
+    
+    private String getResourceName(final ResourceNameContext ctx) {
+        if (null != ctx.identifier()) {
+            return ((IdentifierValue) visit(ctx.identifier())).getValue();
+        }
+        return ((StringLiteralValue) visit(ctx.string_())).getValue();
+    }
+    
+    private String getPropertyKey(final PropertyKeyContext ctx) {
+        if (null != ctx.identifier()) {
+            return ((IdentifierValue) visit(ctx.identifier())).getValue();
+        }
+        return ((StringLiteralValue) visit(ctx.string_())).getValue();
+    }
+    
+    private String getPropertyValue(final PropertyValueContext ctx) {
+        if (null != ctx.identifier()) {
+            return ((IdentifierValue) visit(ctx.identifier())).getValue();
+        }
+        ASTNode result = visit(ctx.literals());
+        if (result instanceof StringLiteralValue) {
+            return ((StringLiteralValue) result).getValue();
+        }
+        if (result instanceof NumberLiteralValue) {
+            return ((NumberLiteralValue) result).getValue().toString();
+        }
+        return result.toString();
     }
     
     @Override
