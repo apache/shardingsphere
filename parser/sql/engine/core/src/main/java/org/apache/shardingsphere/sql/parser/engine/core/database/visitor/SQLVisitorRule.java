@@ -473,6 +473,8 @@ public enum SQLVisitorRule {
     
     ALTER_RESOURCE_GROUP("AlterResourceGroup", SQLStatementType.DAL),
     
+    ALTER_RESOURCE("AlterResource", SQLStatementType.DAL),
+    
     DELIMITER("Delimiter", SQLStatementType.DAL),
     
     CALL("Call", SQLStatementType.DML),

@@ -15,24 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.dal;
+package org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.dal.dialect.doris;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.DALStatement;
+import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisAlterResourceStatement;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAssertContext;
-import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.dal.dialect.mysql.MySQLDALStatementAssert;
-import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.dal.dialect.oracle.OracleDALStatementAssert;
-import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.dal.dialect.postgresql.PostgreSQLDALStatementAssert;
-import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.dal.dialect.doris.DorisDALStatementAssert;
-import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.dal.standard.StandardDALStatementAssert;
+import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.dal.dialect.doris.type.DorisAlterResourceStatementAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.SQLParserTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.doris.DorisAlterResourceStatementTestCase;
 
 /**
- * DAL statement assert.
+ * DAL statement assert for Doris.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class DALStatementAssert {
+public final class DorisDALStatementAssert {
     
     /**
      * Assert DAL statement is correct with expected parser result.
@@ -42,10 +40,8 @@ public final class DALStatementAssert {
      * @param expected expected DAL statement test case
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final DALStatement actual, final SQLParserTestCase expected) {
-        StandardDALStatementAssert.assertIs(assertContext, actual, expected);
-        MySQLDALStatementAssert.assertIs(assertContext, actual, expected);
-        PostgreSQLDALStatementAssert.assertIs(assertContext, actual, expected);
-        OracleDALStatementAssert.assertIs(assertContext, actual, expected);
-        DorisDALStatementAssert.assertIs(assertContext, actual, expected);
+        if (actual instanceof DorisAlterResourceStatement) {
+            DorisAlterResourceStatementAssert.assertIs(assertContext, (DorisAlterResourceStatement) actual, (DorisAlterResourceStatementTestCase) expected);
+        }
     }
 }

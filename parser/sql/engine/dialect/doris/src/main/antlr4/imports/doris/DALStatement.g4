@@ -329,6 +329,30 @@ alterResourceGroup
     (ENABLE | DISABLE FORCE?)?
     ;
 
+alterResource
+    : ALTER RESOURCE resourceName PROPERTIES LP_ propertyAssignments RP_
+    ;
+
+resourceName
+    : identifier | string_
+    ;
+
+propertyAssignments
+    : propertyAssignment (COMMA_ propertyAssignment)*
+    ;
+
+propertyAssignment
+    : propertyKey EQ_ propertyValue
+    ;
+
+propertyKey
+    : identifier | string_
+    ;
+
+propertyValue
+    : literals | identifier
+    ;
+
 vcpuSpec
     : NUMBER_ | NUMBER_ MINUS_ NUMBER_
     ;
