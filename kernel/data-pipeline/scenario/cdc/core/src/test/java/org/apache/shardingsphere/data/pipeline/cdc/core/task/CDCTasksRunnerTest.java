@@ -17,43 +17,30 @@
 
 package org.apache.shardingsphere.data.pipeline.cdc.core.task;
 
-import lombok.Getter;
 import org.apache.shardingsphere.data.pipeline.core.context.TransmissionJobItemContext;
 import org.apache.shardingsphere.data.pipeline.core.task.PipelineTask;
-import org.apache.shardingsphere.data.pipeline.core.task.runner.PipelineTasksRunner;
+import org.junit.jupiter.api.Test;
 
-import java.util.Collection;
+import java.util.Collections;
 
-/**
- * CDC tasks runner.
- */
-public final class CDCTasksRunner implements PipelineTasksRunner {
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
+class CDCTasksRunnerTest {
     
-    @Getter
-    private final TransmissionJobItemContext jobItemContext;
-    
-    private final Collection<PipelineTask> inventoryTasks;
-    
-    private final Collection<PipelineTask> incrementalTasks;
-    
-    public CDCTasksRunner(final TransmissionJobItemContext jobItemContext) {
-        this.jobItemContext = jobItemContext;
-        inventoryTasks = jobItemContext.getInventoryTasks();
-        incrementalTasks = jobItemContext.getIncrementalTasks();
-    }
-    
-    @Override
-    public void start() {
-    }
-    
-    @Override
-    public void stop() {
-        jobItemContext.setStopping(true);
-        for (PipelineTask each : inventoryTasks) {
-            each.stop();
-        }
-        for (PipelineTask each : incrementalTasks) {
-            each.stop();
-        }
+    @Test
+    void assertStartAndStop() {
+        PipelineTask inventoryTask = mock(PipelineTask.class);
+        PipelineTask incrementalTask = mock(PipelineTask.class);
+        TransmissionJobItemContext jobItemContext = mock(TransmissionJobItemContext.class);
+        when(jobItemContext.getInventoryTasks()).thenReturn(Collections.singleton(inventoryTask));
+        when(jobItemContext.getIncrementalTasks()).thenReturn(Collections.singleton(incrementalTask));
+        CDCTasksRunner runner = new CDCTasksRunner(jobItemContext);
+        runner.start();
+        runner.stop();
+        verify(jobItemContext).setStopping(true);
+        verify(inventoryTask).stop();
+        verify(incrementalTask).stop();
     }
 }
