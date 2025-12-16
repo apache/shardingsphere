@@ -110,8 +110,8 @@ public final class CDCBackendHandler {
             tableNames = schemaTableNameMap.values().stream().flatMap(Collection::stream).collect(Collectors.toList());
             schemaTableNameMap.forEach((key, value) -> value.forEach(tableName -> schemaTableNames.add(key.isEmpty() ? tableName : String.join(".", key, tableName))));
         } else {
-            schemaTableNames.addAll(CDCSchemaTableUtils.parseTableExpressionWithoutSchema(database, requestBody.getSourceSchemaTableList().stream().map(SchemaTable::getTable)
-                    .collect(Collectors.toList())));
+            schemaTableNames.addAll(CDCSchemaTableUtils.parseTableExpressionWithoutSchema(database,
+                    requestBody.getSourceSchemaTableList().stream().map(SchemaTable::getTable).collect(Collectors.toList())));
             tableNames = schemaTableNames;
         }
         ShardingSpherePreconditions.checkNotEmpty(tableNames, () -> new CDCExceptionWrapper(requestId, new MissingRequiredStreamDataSourceException()));
