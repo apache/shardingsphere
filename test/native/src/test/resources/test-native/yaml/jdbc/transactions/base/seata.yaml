@@ -19,15 +19,15 @@ dataSources:
   ds_0:
     dataSourceClassName: com.zaxxer.hikari.HikariDataSource
     driverClassName: org.testcontainers.jdbc.ContainerDatabaseDriver
-    jdbcUrl: jdbc:tc:postgresql:17.5-bookworm://test-native-transactions-base/demo_ds_0?TC_INITSCRIPT=test-native/sql/seata-script-client-at-postgresql.sql
+    jdbcUrl: jdbc:tc:postgresql:18.1-trixie:///demo_ds_0?TC_INITSCRIPT=test-native/sql/seata-script-client-at-postgresql.sql
   ds_1:
     dataSourceClassName: com.zaxxer.hikari.HikariDataSource
     driverClassName: org.testcontainers.jdbc.ContainerDatabaseDriver
-    jdbcUrl: jdbc:tc:postgresql:17.5-bookworm://test-native-transactions-base/demo_ds_1?TC_INITSCRIPT=test-native/sql/seata-script-client-at-postgresql.sql
+    jdbcUrl: jdbc:tc:postgresql:18.1-trixie:///demo_ds_1?TC_INITSCRIPT=test-native/sql/seata-script-client-at-postgresql.sql
   ds_2:
     dataSourceClassName: com.zaxxer.hikari.HikariDataSource
     driverClassName: org.testcontainers.jdbc.ContainerDatabaseDriver
-    jdbcUrl: jdbc:tc:postgresql:17.5-bookworm://test-native-transactions-base/demo_ds_2?TC_INITSCRIPT=test-native/sql/seata-script-client-at-postgresql.sql
+    jdbcUrl: jdbc:tc:postgresql:18.1-trixie:///demo_ds_2?TC_INITSCRIPT=test-native/sql/seata-script-client-at-postgresql.sql
 
 rules:
 - !SHARDING

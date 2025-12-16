@@ -263,6 +263,18 @@
     },
     {
       "condition": {
+        "typeReached": "org.apache.shardingsphere.infra.yaml.schema.pojo.YamlShardingSphereIndex"
+      },
+      "type": "org.apache.shardingsphere.infra.yaml.schema.pojo.YamlShardingSphereIndexBeanInfo"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.shardingsphere.infra.yaml.schema.pojo.YamlShardingSphereIndex"
+      },
+      "type": "org.apache.shardingsphere.infra.yaml.schema.pojo.YamlShardingSphereIndexCustomizer"
+    },
+    {
+      "condition": {
         "typeReached": "org.apache.shardingsphere.infra.metadata.database.schema.builder.SystemSchemaBuilder"
       },
       "type": "org.apache.shardingsphere.infra.yaml.schema.pojo.YamlShardingSphereTable",

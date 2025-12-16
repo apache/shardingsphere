@@ -59,7 +59,7 @@ class PrestoTest {
     private String baseJdbcUrl;
     
     @Container
-    private final GenericContainer<?> container = new GenericContainer<>("prestodb/presto:0.292")
+    private final GenericContainer<?> container = new GenericContainer<>("prestodb/presto:0.296")
             .withExposedPorts(8080)
             .withCopyFileToContainer(
                     MountableFile.forHostPath(Paths.get("src/test/resources/test-native/properties/presto-iceberg.properties").toAbsolutePath()),
