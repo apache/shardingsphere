@@ -64,6 +64,9 @@ public final class ResultSetUtils {
         if (value instanceof LocalDateTime) {
             return convertLocalDateTimeValue((LocalDateTime) value, convertType);
         }
+        if (value instanceof LocalDate) {
+            return convertLocalDateValue((LocalDate) value, convertType);
+        }
         if (value instanceof Timestamp) {
             return convertTimestampValue((Timestamp) value, convertType);
         }
@@ -116,6 +119,19 @@ public final class ResultSetUtils {
     private static Object convertLocalDateTimeValue(final LocalDateTime value, final Class<?> convertType) {
         if (Timestamp.class.equals(convertType)) {
             return Timestamp.valueOf(value);
+        }
+        if (String.class.equals(convertType)) {
+            return value.toString();
+        }
+        return value;
+    }
+    
+    private static Object convertLocalDateValue(final LocalDate value, final Class<?> convertType) {
+        if (java.sql.Date.class.equals(convertType)) {
+            return java.sql.Date.valueOf(value);
+        }
+        if (Timestamp.class.equals(convertType)) {
+            return Timestamp.valueOf(value.atStartOfDay());
         }
         if (String.class.equals(convertType)) {
             return value.toString();
