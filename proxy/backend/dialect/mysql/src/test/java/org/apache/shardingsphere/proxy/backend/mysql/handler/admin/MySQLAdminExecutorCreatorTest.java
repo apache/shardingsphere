@@ -73,6 +73,7 @@ import org.apache.shardingsphere.test.infra.framework.extension.mock.StaticMockS
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Optional;
@@ -404,5 +405,49 @@ class MySQLAdminExecutorCreatorTest {
         SQLStatementContext sqlStatementContext = new CommonSQLStatementContext(new DeleteStatement(databaseType));
         Optional<DatabaseAdminExecutor> actual = new MySQLAdminExecutorCreator().create(sqlStatementContext, "DELETE FROM t", "", Collections.emptyList());
         assertThat(actual, is(Optional.empty()));
+    }
+    
+    @Test
+    void assertCreateWithNoFromAndMultiProjectionsSkipsAdmin() {
+        ResourceMetaData resourceMetaData = new ResourceMetaData(Collections.singletonMap("ds_0", new MockedDataSource()));
+        ShardingSphereDatabase database = new ShardingSphereDatabase("db_0", databaseType, resourceMetaData, mock(RuleMetaData.class), Collections.emptyList());
+        initProxyContext(Collections.singleton(database));
+        
+        SelectStatement selectStatement = mock(SelectStatement.class);
+        when(selectStatement.getFrom()).thenReturn(Optional.empty());
+        ProjectionsSegment projectionsSegment = mock(ProjectionsSegment.class);
+        when(projectionsSegment.getProjections()).thenReturn(Arrays.asList(
+                new ExpressionProjectionSegment(0, 10, "database()"),
+                new ExpressionProjectionSegment(0, 10, "schema()"),
+                new ExpressionProjectionSegment(0, 10, "left(user(),instr(concat(user(),'@'),'@')-1)")));
+        when(selectStatement.getProjections()).thenReturn(projectionsSegment);
+        SelectStatementContext sqlStatementContext = mock(SelectStatementContext.class);
+        when(sqlStatementContext.getSqlStatement()).thenReturn(selectStatement);
+        
+        Optional<DatabaseAdminExecutor> actual =
+                new MySQLAdminExecutorCreator().create(sqlStatementContext, "SELECT database(),schema(),left(user(),instr(concat(user(),'@'),'@')-1)", null, Collections.emptyList());
+        assertThat(actual, is(Optional.empty()));
+    }
+    
+    @Test
+    void assertCreateWithMultiSystemVariablesUseSysVarExecutor() {
+        initProxyContext(Collections.emptyList());
+        SelectStatement selectStatement = mock(SelectStatement.class);
+        when(selectStatement.getFrom()).thenReturn(Optional.empty());
+        ProjectionsSegment projectionsSegment = mock(ProjectionsSegment.class);
+        VariableSegment v1 = new VariableSegment(0, 0, "version", "SESSION");
+        VariableSegment v2 = new VariableSegment(0, 0, "transaction_isolation", "SESSION");
+        when(projectionsSegment.getProjections()).thenReturn(Arrays.asList(
+                new ExpressionProjectionSegment(0, 10, "@@session.version", v1),
+                new ExpressionProjectionSegment(0, 10, "@@session.transaction_isolation", v2)));
+        when(selectStatement.getProjections()).thenReturn(projectionsSegment);
+        
+        SelectStatementContext sqlStatementContext = mock(SelectStatementContext.class);
+        when(sqlStatementContext.getSqlStatement()).thenReturn(selectStatement);
+        
+        Optional<DatabaseAdminExecutor> actual = new MySQLAdminExecutorCreator().create(
+                sqlStatementContext, "SELECT @@session.version, @@session.transaction_isolation", null, Collections.emptyList());
+        assertTrue(actual.isPresent());
+        assertThat(actual.get(), isA(MySQLSystemVariableQueryExecutor.class));
     }
 }
