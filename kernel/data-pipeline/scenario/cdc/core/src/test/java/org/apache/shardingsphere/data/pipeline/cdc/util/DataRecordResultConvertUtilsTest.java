@@ -56,7 +56,6 @@ class DataRecordResultConvertUtilsTest {
                 Arguments.of(PipelineSQLOperationType.INSERT, Record.DataChangeType.INSERT),
                 Arguments.of(PipelineSQLOperationType.UPDATE, Record.DataChangeType.UPDATE),
                 Arguments.of(PipelineSQLOperationType.DELETE, Record.DataChangeType.DELETE),
-                Arguments.of(PipelineSQLOperationType.SELECT, Record.DataChangeType.UNKNOWN)
-        );
+                Arguments.of(PipelineSQLOperationType.SELECT, Record.DataChangeType.UNKNOWN));
     }
 }
