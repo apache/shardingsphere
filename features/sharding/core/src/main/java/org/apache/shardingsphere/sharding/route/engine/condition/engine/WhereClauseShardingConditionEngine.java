@@ -117,7 +117,7 @@ public final class WhereClauseShardingConditionEngine {
                 String schemaName = columnSegment.getColumnBoundInfo().getOriginalSchema().getValue();
                 ShardingSpherePreconditions.checkState(database.containsSchema(schemaName), () -> new SchemaNotFoundException(schemaName));
                 ShardingSphereSchema schema = database.getSchema(schemaName);
-                ShardingSpherePreconditions.checkState(schema.containsTable(tableName), () -> new TableNotFoundException(schemaName));
+                ShardingSpherePreconditions.checkState(schema.containsTable(tableName), () -> new TableNotFoundException(tableName));
                 HashColumn column = new HashColumn(shardingColumn.get(), tableName, schema.getTable(tableName).getColumn(shardingColumn.get()).isCaseSensitive());
                 Optional<ShardingConditionValue> shardingConditionValue = ConditionValueGeneratorFactory.generate(each, column, params, timestampServiceRule);
                 if (!shardingConditionValue.isPresent()) {
