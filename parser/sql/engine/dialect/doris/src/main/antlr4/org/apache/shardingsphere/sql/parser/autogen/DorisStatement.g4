@@ -51,6 +51,7 @@ execute
     | createTrigger
     | dropTrigger
     | alterResourceGroup
+    | alterResource
     | createResourceGroup
     | dropResourceGroup
     | prepare
