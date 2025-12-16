@@ -11692,6 +11692,18 @@
     },
     {
       "condition": {
+        "typeReached": "org.apache.shardingsphere.driver.jdbc.core.statement.StatementManager"
+      },
+      "glob": "isc_error_msg.properties"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.shardingsphere.driver.jdbc.core.statement.StatementManager"
+      },
+      "glob": "isc_error_sqlstates.properties"
+    },
+    {
+      "condition": {
         "typeReached": "org.apache.shardingsphere.transaction.xa.atomikos.manager.AtomikosTransactionManagerProvider"
       },
       "glob": "jta.properties"
@@ -11701,6 +11713,18 @@
         "typeReached": "org.apache.shardingsphere.transaction.base.seata.at.SeataATShardingSphereTransactionManager"
       },
       "glob": "lib/sqlparser/druid.jar"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.shardingsphere.driver.jdbc.core.statement.StatementManager"
+      },
+      "glob": "org/firebirdsql/jaybird_error_msg.properties"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.shardingsphere.driver.jdbc.core.statement.StatementManager"
+      },
+      "glob": "org/firebirdsql/jaybird_error_sqlstates.properties"
     },
     {
       "condition": {

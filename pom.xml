@@ -136,6 +136,7 @@
         <hamcrest.version>3.0</hamcrest.version>
         <mockito.version>4.11.0</mockito.version>
         <awaitility.version>4.3.0</awaitility.version>
+        <firebird-testcontainers-java.version>1.6.0</firebird-testcontainers-java.version>
         <commons-csv.version>1.9.0</commons-csv.version>
         
         <graal-sdk.version>24.1.2</graal-sdk.version>
