@@ -25,6 +25,7 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.s
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 /**
  * Install plugin statement assert for MySQL.
@@ -40,6 +41,22 @@ public final class MySQLInstallPluginStatementAssert {
      * @param expected expected install plugin statement test case
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final MySQLInstallPluginStatement actual, final MySQLInstallPluginStatementTestCase expected) {
-        assertThat(assertContext.getText("Actual plugin name does not match: "), actual.getPluginName(), is(expected.getPlugin().getName()));
+        if (null != expected.getPlugin()) {
+            if (null != expected.getPlugin().getName()) {
+                assertThat(assertContext.getText("Actual plugin name does not match: "), actual.getPluginName(), is(expected.getPlugin().getName()));
+            }
+            if (null != expected.getPlugin().getSource()) {
+                assertThat(assertContext.getText("Actual plugin source does not match: "), actual.getSource(), is(expected.getPlugin().getSource()));
+            }
+            if (!expected.getPlugin().getProperties().isEmpty()) {
+                assertNotNull(actual.getProperties(), assertContext.getText("Plugin properties should not be null"));
+                assertThat(assertContext.getText("Plugin properties size does not match: "), actual.getProperties().size(), is(expected.getPlugin().getProperties().size()));
+                expected.getPlugin().getProperties().forEach(property -> {
+                    String actualValue = actual.getProperties().get(property.getKey());
+                    assertNotNull(actualValue, assertContext.getText("Plugin property key '" + property.getKey() + "' should exist"));
+                    assertThat(assertContext.getText("Plugin property value for key '" + property.getKey() + "' does not match: "), actualValue, is(property.getValue()));
+                });
+            }
+        }
     }
 }
