@@ -28,13 +28,19 @@ import com.google.protobuf.Message;
 import com.google.protobuf.StringValue;
 import org.junit.jupiter.api.Test;
 
+import javax.sql.rowset.serial.SerialBlob;
+import javax.sql.rowset.serial.SerialClob;
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.nio.charset.StandardCharsets;
+import java.sql.SQLException;
 import java.sql.Time;
 import java.sql.Timestamp;
+import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.OffsetDateTime;
 import java.time.OffsetTime;
+import java.time.ZonedDateTime;
 import java.util.Date;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -46,7 +52,7 @@ class ColumnValueConvertUtilsTest {
     
     @SuppressWarnings("UseOfObsoleteDateTimeApi")
     @Test
-    void assertConvertToProtobufMessage() {
+    void assertConvertToProtobufMessage() throws SQLException {
         Message actualMessage = ColumnValueConvertUtils.convertToProtobufMessage(null);
         assertThat(actualMessage, isA(Empty.class));
         actualMessage = ColumnValueConvertUtils.convertToProtobufMessage(1);
@@ -108,6 +114,38 @@ class ColumnValueConvertUtilsTest {
         assertThat(actualMessage, isA(com.google.protobuf.Timestamp.class));
         assertThat(((com.google.protobuf.Timestamp) actualMessage).getSeconds(), is(offsetDateTime.toEpochSecond()));
         assertThat(((com.google.protobuf.Timestamp) actualMessage).getNanos(), is(offsetDateTime.getNano()));
+        java.sql.Date sqlDate = new java.sql.Date(now.getTime());
+        actualMessage = ColumnValueConvertUtils.convertToProtobufMessage(sqlDate);
+        assertThat(actualMessage, isA(Int64Value.class));
+        assertThat(((Int64Value) actualMessage).getValue(), is(sqlDate.toLocalDate().toEpochDay()));
+        LocalDate localDate = sqlDate.toLocalDate();
+        actualMessage = ColumnValueConvertUtils.convertToProtobufMessage(localDate);
+        assertThat(actualMessage, isA(Int64Value.class));
+        assertThat(((Int64Value) actualMessage).getValue(), is(localDate.toEpochDay()));
+        ZonedDateTime zonedDateTime = ZonedDateTime.now();
+        actualMessage = ColumnValueConvertUtils.convertToProtobufMessage(zonedDateTime);
+        assertThat(actualMessage, isA(com.google.protobuf.Timestamp.class));
+        assertThat(((com.google.protobuf.Timestamp) actualMessage).getSeconds(), is(zonedDateTime.toEpochSecond()));
+        assertThat(((com.google.protobuf.Timestamp) actualMessage).getNanos(), is(zonedDateTime.getNano()));
+        SerialClob clob = new SerialClob("clob_value".toCharArray());
+        actualMessage = ColumnValueConvertUtils.convertToProtobufMessage(clob);
+        assertThat(actualMessage, isA(StringValue.class));
+        assertThat(((StringValue) actualMessage).getValue(), is("clob_value"));
+        byte[] expectedBlobBytes = "blob_value".getBytes(StandardCharsets.UTF_8);
+        SerialBlob blob = new SerialBlob(expectedBlobBytes);
+        actualMessage = ColumnValueConvertUtils.convertToProtobufMessage(blob);
+        assertThat(actualMessage, isA(BytesValue.class));
+        assertThat(((BytesValue) actualMessage).getValue().toByteArray(), is(expectedBlobBytes));
+        Object customObject = new Object() {
+            
+            @Override
+            public String toString() {
+                return "custom_object";
+            }
+        };
+        actualMessage = ColumnValueConvertUtils.convertToProtobufMessage(customObject);
+        assertThat(actualMessage, isA(StringValue.class));
+        assertThat(((StringValue) actualMessage).getValue(), is("custom_object"));
     }
     
     @Test
