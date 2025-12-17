@@ -27,7 +27,6 @@ import org.apache.shardingsphere.infra.rewrite.parameter.builder.impl.GroupedPar
 import org.apache.shardingsphere.infra.rewrite.parameter.builder.impl.StandardParameterBuilder;
 import org.apache.shardingsphere.infra.rewrite.sql.token.common.generator.SQLTokenGenerator;
 import org.apache.shardingsphere.infra.rewrite.sql.token.common.generator.SQLTokenGenerators;
-import org.apache.shardingsphere.infra.rewrite.sql.token.common.generator.builder.DefaultTokenGeneratorBuilder;
 import org.apache.shardingsphere.infra.rewrite.sql.token.common.pojo.SQLToken;
 import org.apache.shardingsphere.infra.session.connection.ConnectionContext;
 import org.apache.shardingsphere.infra.session.query.QueryContext;
@@ -66,9 +65,6 @@ public final class SQLRewriteContext {
         sql = queryContext.getSql();
         parameters = queryContext.getParameters();
         connectionContext = queryContext.getConnectionContext();
-        if (!queryContext.getHintValueContext().isSkipSQLRewrite()) {
-            addSQLTokenGenerators(new DefaultTokenGeneratorBuilder(sqlStatementContext).getSQLTokenGenerators());
-        }
         parameterBuilder = containsGroupedParameter(sqlStatementContext) ? buildGroupedParameterBuilder(sqlStatementContext) : new StandardParameterBuilder(parameters);
     }
     

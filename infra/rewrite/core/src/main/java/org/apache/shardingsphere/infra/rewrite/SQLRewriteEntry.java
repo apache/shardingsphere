@@ -27,6 +27,7 @@ import org.apache.shardingsphere.infra.rewrite.context.SQLRewriteContextDecorato
 import org.apache.shardingsphere.infra.rewrite.engine.GenericSQLRewriteEngine;
 import org.apache.shardingsphere.infra.rewrite.engine.RouteSQLRewriteEngine;
 import org.apache.shardingsphere.infra.rewrite.engine.result.SQLRewriteResult;
+import org.apache.shardingsphere.infra.rewrite.sql.token.common.generator.builder.DefaultTokenGeneratorBuilder;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.session.query.QueryContext;
@@ -76,6 +77,10 @@ public final class SQLRewriteEntry {
     private SQLRewriteContext createSQLRewriteContext(final QueryContext queryContext, final RouteContext routeContext) {
         HintValueContext hintValueContext = queryContext.getHintValueContext();
         SQLRewriteContext result = new SQLRewriteContext(database, queryContext);
+        if (hintValueContext.isSkipSQLRewrite()) {
+            return result;
+        }
+        result.addSQLTokenGenerators(new DefaultTokenGeneratorBuilder(queryContext.getSqlStatementContext()).getSQLTokenGenerators());
         decorate(result, routeContext, hintValueContext);
         result.generateSQLTokens();
         return result;
@@ -83,9 +88,6 @@ public final class SQLRewriteEntry {
     
     @SuppressWarnings({"unchecked", "rawtypes"})
     private void decorate(final SQLRewriteContext sqlRewriteContext, final RouteContext routeContext, final HintValueContext hintValueContext) {
-        if (hintValueContext.isSkipSQLRewrite()) {
-            return;
-        }
         for (Entry<ShardingSphereRule, SQLRewriteContextDecorator> entry : decorators.entrySet()) {
             entry.getValue().decorate(entry.getKey(), props, sqlRewriteContext, routeContext);
         }

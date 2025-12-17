@@ -32,7 +32,7 @@ import org.apache.shardingsphere.infra.rewrite.engine.result.SQLRewriteUnit;
 import org.apache.shardingsphere.infra.rewrite.parameter.builder.ParameterBuilder;
 import org.apache.shardingsphere.infra.rewrite.parameter.builder.impl.GroupedParameterBuilder;
 import org.apache.shardingsphere.infra.rewrite.parameter.builder.impl.StandardParameterBuilder;
-import org.apache.shardingsphere.infra.rewrite.sql.impl.RouteSQLBuilder;
+import org.apache.shardingsphere.infra.rewrite.sql.SQLBuilderEngine;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
 import org.apache.shardingsphere.infra.session.query.QueryContext;
@@ -118,7 +118,7 @@ public final class RouteSQLRewriteEngine {
         boolean containsDollarMarker = sqlRewriteContext.getSqlStatementContext() instanceof SelectStatementContext
                 && ((SelectStatementContext) (sqlRewriteContext.getSqlStatementContext())).isContainsDollarParameterMarker();
         for (RouteUnit each : routeUnits) {
-            sql.add(SQLUtils.trimSemicolon(new RouteSQLBuilder(sqlRewriteContext.getSql(), sqlRewriteContext.getSqlTokens(), each).toSQL()));
+            sql.add(SQLUtils.trimSemicolon(new SQLBuilderEngine(sqlRewriteContext.getSql(), sqlRewriteContext.getSqlTokens(), each).buildSQL()));
             if (containsDollarMarker && !params.isEmpty()) {
                 continue;
             }
@@ -132,7 +132,7 @@ public final class RouteSQLRewriteEngine {
     }
     
     private String getActualSQL(final SQLRewriteContext sqlRewriteContext, final RouteUnit routeUnit) {
-        return new RouteSQLBuilder(sqlRewriteContext.getSql(), sqlRewriteContext.getSqlTokens(), routeUnit).toSQL();
+        return new SQLBuilderEngine(sqlRewriteContext.getSql(), sqlRewriteContext.getSqlTokens(), routeUnit).buildSQL();
     }
     
     private List<Object> getParameters(final SQLRewriteContext sqlRewriteContext, final RouteContext routeContext, final RouteUnit routeUnit) {
