@@ -15,32 +15,26 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.natived.commons.algorithm.testcontainers;
+package org.apache.shardingsphere.test.natived.commons.algorithm.testcontainers.jdbcurl;
 
-import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
-import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
-
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Optional;
+import org.apache.shardingsphere.database.connector.core.jdbcurl.parser.ConnectionProperties;
+import org.apache.shardingsphere.database.connector.core.jdbcurl.parser.ConnectionPropertiesParser;
+import org.apache.shardingsphere.database.connector.core.jdbcurl.parser.StandardJdbcUrlParser;
 
 /**
- * Database type of Clickhouse in testcontainers.
+ * Connection properties parser of Firebird.
  */
-public final class TcClickhouseDatabaseType implements TestcontainersDatabaseType {
+public final class TcFirebirdConnectionPropertiesParser implements ConnectionPropertiesParser {
+    
+    private static final int DEFAULT_PORT = 3050;
     
     @Override
-    public Collection<String> getJdbcUrlPrefixes() {
-        return Collections.singleton("jdbc:tc:clickhouse:");
+    public ConnectionProperties parse(final String url, final String username, final String catalog) {
+        return new StandardJdbcUrlParser().parse(url, DEFAULT_PORT);
     }
     
     @Override
-    public Optional<DatabaseType> getTrunkDatabaseType() {
-        return Optional.of(TypedSPILoader.getService(DatabaseType.class, "ClickHouse"));
-    }
-    
-    @Override
-    public String getType() {
-        return "TC-Clickhouse";
+    public String getDatabaseType() {
+        return "TC-Firebird";
     }
 }

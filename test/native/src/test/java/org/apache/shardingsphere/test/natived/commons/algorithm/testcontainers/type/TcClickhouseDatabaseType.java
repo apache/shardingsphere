@@ -15,13 +15,32 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.natived.commons.algorithm.testcontainers;
+package org.apache.shardingsphere.test.natived.commons.algorithm.testcontainers.type;
 
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
+
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Optional;
 
 /**
- * Database type for Test containers.
- * All jdbcUrl prefixes supported by testcontainers should extend this class.
+ * Database type of Clickhouse in testcontainers.
  */
-public interface TestcontainersDatabaseType extends DatabaseType {
+public final class TcClickhouseDatabaseType implements TestcontainersDatabaseType {
+    
+    @Override
+    public Collection<String> getJdbcUrlPrefixes() {
+        return Collections.singleton("jdbc:tc:clickhouse:");
+    }
+    
+    @Override
+    public Optional<DatabaseType> getTrunkDatabaseType() {
+        return Optional.of(TypedSPILoader.getService(DatabaseType.class, "ClickHouse"));
+    }
+    
+    @Override
+    public String getType() {
+        return "TC-Clickhouse";
+    }
 }
