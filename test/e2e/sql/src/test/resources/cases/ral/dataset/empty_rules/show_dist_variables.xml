@@ -28,6 +28,7 @@
     <row values="kernel_executor_size| 16" />
     <row values="load_table_metadata_batch_size| 1000" />
     <row values="max_connections_size_per_query| 1" />
+    <row values="max_union_size_per_datasource| 2147483647" />
     <row values="persist_schemas_to_repository_enabled| true"/>
     <row values="proxy_backend_query_fetch_size| -1" />
     <row values="proxy_default_port| 3307" />
