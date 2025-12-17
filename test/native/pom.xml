@@ -137,6 +137,12 @@
             <scope>test</scope>
         </dependency>
         <dependency>
+            <groupId>org.firebirdsql</groupId>
+            <artifactId>firebird-testcontainers-java</artifactId>
+            <version>${firebird-testcontainers-java.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
             <groupId>org.apache.curator</groupId>
             <artifactId>curator-test</artifactId>
             <scope>test</scope>

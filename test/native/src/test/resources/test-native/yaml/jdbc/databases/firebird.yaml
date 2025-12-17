@@ -18,23 +18,16 @@
 dataSources:
   ds_0:
     dataSourceClassName: com.zaxxer.hikari.HikariDataSource
-    driverClassName: org.firebirdsql.jdbc.FBDriver
-    jdbcUrl: $${fixture.test-native.yaml.database.firebird.ds0.jdbc-url::}
-    username: alice
-    password: masterkey
+    driverClassName: org.testcontainers.jdbc.ContainerDatabaseDriver
+    jdbcUrl: jdbc:tc:firebird:5.0.3:///demo_ds_0
   ds_1:
     dataSourceClassName: com.zaxxer.hikari.HikariDataSource
-    driverClassName: org.firebirdsql.jdbc.FBDriver
-    jdbcUrl: $${fixture.test-native.yaml.database.firebird.ds1.jdbc-url::}
-    username: alice
-    password: masterkey
+    driverClassName: org.testcontainers.jdbc.ContainerDatabaseDriver
+    jdbcUrl: jdbc:tc:firebird:5.0.3:///demo_ds_1
   ds_2:
     dataSourceClassName: com.zaxxer.hikari.HikariDataSource
-    driverClassName: org.firebirdsql.jdbc.FBDriver
-    jdbcUrl: $${fixture.test-native.yaml.database.firebird.ds2.jdbc-url::}
-    username: alice
-    password: masterkey
-
+    driverClassName: org.testcontainers.jdbc.ContainerDatabaseDriver
+    jdbcUrl: jdbc:tc:firebird:5.0.3:///demo_ds_2
 rules:
 - !SHARDING
   tables:
