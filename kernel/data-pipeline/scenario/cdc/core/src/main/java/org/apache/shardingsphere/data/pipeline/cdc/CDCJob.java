@@ -212,10 +212,6 @@ public final class CDCJob implements PipelineJob {
     private void executeIncrementalTasks(final Collection<CDCJobItemContext> jobItemContexts, final PipelineJobItemManager<TransmissionJobItemProgress> jobItemManager) {
         Collection<CompletableFuture<?>> futures = new LinkedList<>();
         for (CDCJobItemContext each : jobItemContexts) {
-            if (JobStatus.EXECUTE_INCREMENTAL_TASK == each.getStatus()) {
-                log.info("Job status has already EXECUTE_INCREMENTAL_TASK, ignore.");
-                return;
-            }
             updateJobItemStatus(each, JobStatus.EXECUTE_INCREMENTAL_TASK, jobItemManager);
             for (PipelineTask task : each.getIncrementalTasks()) {
                 if (task.getTaskProgress().getPosition() instanceof IngestFinishedPosition) {
