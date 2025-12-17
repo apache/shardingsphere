@@ -74,9 +74,7 @@ public final class RouteSQLRewriteEngine {
      * @return SQL rewrite result
      */
     public RouteSQLRewriteResult rewrite(final SQLRewriteContext sqlRewriteContext, final RouteContext routeContext, final QueryContext queryContext) {
-        int maxUnionSizePerDataSource = Optional.ofNullable(queryContext.getMetaData().getProps())
-                .map(props -> props.<Integer>getValue(ConfigurationPropertyKey.MAX_UNION_SIZE_PER_DATASOURCE))
-                .orElse(Integer.parseInt(ConfigurationPropertyKey.MAX_UNION_SIZE_PER_DATASOURCE.getDefaultValue()));
+        int maxUnionSizePerDataSource = queryContext.getMetaData().getProps().getValue(ConfigurationPropertyKey.MAX_UNION_SIZE_PER_DATASOURCE);
         return new RouteSQLRewriteResult(translate(queryContext, createSQLRewriteUnits(sqlRewriteContext, routeContext, maxUnionSizePerDataSource)));
     }
     
@@ -91,25 +89,6 @@ public final class RouteSQLRewriteEngine {
                     result.put(each, createSQLRewriteUnit(sqlRewriteContext, routeContext, each));
                 }
             }
-        }
-        return result;
-    }
-    
-    private void createAggregatedRewriteUnits(final SQLRewriteContext sqlRewriteContext, final RouteContext routeContext,
-                                              final List<RouteUnit> routeUnits, final int maxUnionSizePerDataSource, final Map<RouteUnit, SQLRewriteUnit> result) {
-        if (routeUnits.size() <= maxUnionSizePerDataSource) {
-            result.put(routeUnits.get(ThreadLocalRandom.current().nextInt(routeUnits.size())), createSQLRewriteUnit(sqlRewriteContext, routeContext, routeUnits));
-        } else {
-            for (List<RouteUnit> batch : partitionRouteUnits(routeUnits, maxUnionSizePerDataSource)) {
-                result.put(batch.get(ThreadLocalRandom.current().nextInt(batch.size())), createSQLRewriteUnit(sqlRewriteContext, routeContext, batch));
-            }
-        }
-    }
-    
-    private List<List<RouteUnit>> partitionRouteUnits(final List<RouteUnit> routeUnits, final int batchSize) {
-        List<List<RouteUnit>> result = new ArrayList<>();
-        for (int i = 0; i < routeUnits.size(); i += batchSize) {
-            result.add(routeUnits.subList(i, Math.min(i + batchSize, routeUnits.size())));
         }
         return result;
     }
@@ -132,6 +111,25 @@ public final class RouteSQLRewriteEngine {
         boolean containsLockClause = statementContext.getSqlStatement().getLock().isPresent();
         boolean result = !containsSubqueryJoinQuery && !containsOrderByLimitClause && !containsLockClause;
         statementContext.setNeedAggregateRewrite(result);
+        return result;
+    }
+    
+    private void createAggregatedRewriteUnits(final SQLRewriteContext sqlRewriteContext, final RouteContext routeContext,
+                                              final List<RouteUnit> routeUnits, final int maxUnionSizePerDataSource, final Map<RouteUnit, SQLRewriteUnit> sqlRewriteUnits) {
+        if (routeUnits.size() <= maxUnionSizePerDataSource) {
+            sqlRewriteUnits.put(routeUnits.get(ThreadLocalRandom.current().nextInt(routeUnits.size())), createSQLRewriteUnit(sqlRewriteContext, routeContext, routeUnits));
+        } else {
+            for (List<RouteUnit> batch : partitionRouteUnits(routeUnits, maxUnionSizePerDataSource)) {
+                sqlRewriteUnits.put(batch.get(ThreadLocalRandom.current().nextInt(batch.size())), createSQLRewriteUnit(sqlRewriteContext, routeContext, batch));
+            }
+        }
+    }
+    
+    private List<List<RouteUnit>> partitionRouteUnits(final List<RouteUnit> routeUnits, final int batchSize) {
+        List<List<RouteUnit>> result = new ArrayList<>();
+        for (int i = 0; i < routeUnits.size(); i += batchSize) {
+            result.add(routeUnits.subList(i, Math.min(i + batchSize, routeUnits.size())));
+        }
         return result;
     }
     
