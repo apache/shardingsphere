@@ -84,4 +84,12 @@ class MySQLTextResultSetRowPacketTest {
         actual.write(payload);
         verify(payload).writeStringLenenc(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").format(LocalDateTime.parse(localDateTimeStr, DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss"))));
     }
+    
+    @Test
+    void assertLocalDateTimeWithMicros() {
+        LocalDateTime dateTime = LocalDateTime.of(2022, 2, 18, 17, 32, 38, 123456000);
+        MySQLTextResultSetRowPacket actual = new MySQLTextResultSetRowPacket(Collections.singletonList(dateTime));
+        actual.write(payload);
+        verify(payload).writeStringLenenc("2022-02-18 17:32:38.123456");
+    }
 }

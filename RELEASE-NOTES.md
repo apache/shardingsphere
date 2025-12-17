@@ -97,6 +97,7 @@
 1. Proxy: Fix column length for PostgreSQL string binary protocol value - [35840](https://github.com/apache/shardingsphere/pull/35840)
 1. Proxy: Fix the connection leak caused by rollback failure in Proxy - [35867](https://github.com/apache/shardingsphere/pull/35867)
 1. Proxy: Fix the behavior difference of select built-in function names with spaces -[#36537](https://github.com/apache/shardingsphere/pull/36537)
+1. Proxy: Fix MySQL text protocol datetime fractional seconds output - [#37410](https://github.com/apache/shardingsphere/pull/37410)
 1. Proxy: Fix IndexOutOfBoundsException for MySQL no-FROM multi-projection SELECT routed to admin path - [#37391](https://github.com/apache/shardingsphere/pull/37391)
 1. Proxy: Fix MySQL binary protocol datetime/time fractional seconds precision - [#37294](https://github.com/apache/shardingsphere/pull/37294)
 1. Proxy: Fix PostgreSQL boolean text output to return `t`/`f` as per protocol - [#37184](https://github.com/apache/shardingsphere/pull/37184)
