@@ -70,9 +70,27 @@ public final class MySQLTextResultSetRowPacket extends MySQLPacket {
         } else if (data instanceof Boolean) {
             payload.writeBytesLenenc((boolean) data ? new byte[]{1} : new byte[]{0});
         } else if (data instanceof LocalDateTime) {
-            payload.writeStringLenenc(DateTimeFormatterFactory.getDatetimeFormatter().format((LocalDateTime) data));
+            payload.writeStringLenenc(formatLocalDateTime((LocalDateTime) data));
         } else {
             payload.writeStringLenenc(data.toString());
         }
+    }
+    
+    private String formatLocalDateTime(final LocalDateTime value) {
+        int nanos = value.getNano();
+        if (0 == nanos) {
+            return DateTimeFormatterFactory.getDatetimeFormatter().format(value);
+        }
+        StringBuilder result = new StringBuilder(DateTimeFormatterFactory.getDatetimeFormatter().format(value)).append('.');
+        String microsecondsText = String.format("%06d", nanos / 1000);
+        int endIndex = microsecondsText.length();
+        while (endIndex > 0 && '0' == microsecondsText.charAt(endIndex - 1)) {
+            endIndex--;
+        }
+        if (0 == endIndex) {
+            return result.substring(0, result.length() - 1);
+        }
+        result.append(microsecondsText, 0, endIndex);
+        return result.toString();
     }
 }
