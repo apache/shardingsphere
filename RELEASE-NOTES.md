@@ -44,6 +44,7 @@
 1. SQL Binder: Add ALTER TABLE metadata check - [#35877](https://github.com/apache/shardingsphere/pull/35877)
 1. SQL Router: Add SELECT with UNION ALL routing to multi data sources check - [#35037](https://github.com/apache/shardingsphere/pull/35037)
 1. SQL Router: Improve support for executing tableless SQL with single data source - [#35659](https://github.com/apache/shardingsphere/pull/35659)
+1. SQL Router: Add `max-union-size-per-datasource` property to batch UNION ALL rewrite per data source and keep parallel execution - [#37405](https://github.com/apache/shardingsphere/pull/37405)
 1. DistSQL: Add job sharding nodes info to the query results of `SHOW MIGRATION LIST` - [#35053](https://github.com/apache/shardingsphere/pull/35053)
 1. DistSQL: Add DistSQL for query storage units which used in single rule - [#35131](https://github.com/apache/shardingsphere/pull/35131)
 1. Proxy: Implement write bool binary data type for PostgreSQL protocol - [#35831](https://github.com/apache/shardingsphere/pull/35831)

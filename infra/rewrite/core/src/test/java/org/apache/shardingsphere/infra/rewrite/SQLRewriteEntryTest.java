@@ -82,6 +82,7 @@ class SQLRewriteEntryTest {
         when(sqlStatementContext.getSqlStatement().getDatabaseType()).thenReturn(databaseType);
         when(result.getSqlStatementContext()).thenReturn(sqlStatementContext);
         when(result.getHintValueContext()).thenReturn(new HintValueContext());
+        when(result.getMetaData().getProps()).thenReturn(new ConfigurationProperties(new Properties()));
         return result;
     }
     
