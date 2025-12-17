@@ -25,7 +25,7 @@ import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.rewrite.context.SQLRewriteContext;
 import org.apache.shardingsphere.infra.rewrite.engine.result.GenericSQLRewriteResult;
 import org.apache.shardingsphere.infra.rewrite.engine.result.SQLRewriteUnit;
-import org.apache.shardingsphere.infra.rewrite.sql.impl.DefaultSQLBuilder;
+import org.apache.shardingsphere.infra.rewrite.sql.SQLBuilderEngine;
 import org.apache.shardingsphere.infra.session.query.QueryContext;
 import org.apache.shardingsphere.sqltranslator.context.SQLTranslatorContext;
 import org.apache.shardingsphere.sqltranslator.rule.SQLTranslatorRule;
@@ -60,7 +60,7 @@ public final class GenericSQLRewriteEngine {
         String sql = sqlRewriteContext.getSql();
         List<Object> parameters = sqlRewriteContext.getParameterBuilder().getParameters();
         Optional<SQLTranslatorContext> sqlTranslatorContext = translatorRule.translate(
-                new DefaultSQLBuilder(sql, sqlRewriteContext.getSqlTokens()).toSQL(), parameters, queryContext, storageType, database, globalRuleMetaData);
+                new SQLBuilderEngine(sql, sqlRewriteContext.getSqlTokens()).buildSQL(), parameters, queryContext, storageType, database, globalRuleMetaData);
         String translatedSQL = sqlTranslatorContext.isPresent() ? sqlTranslatorContext.get().getSql() : sql;
         List<Object> translatedParameters = sqlTranslatorContext.isPresent() ? sqlTranslatorContext.get().getParameters() : parameters;
         return new GenericSQLRewriteResult(new SQLRewriteUnit(translatedSQL, translatedParameters));
