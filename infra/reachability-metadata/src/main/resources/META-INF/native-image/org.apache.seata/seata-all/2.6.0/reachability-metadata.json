@@ -176,12 +176,6 @@
     },
     {
       "condition": {
-        "typeReached": "org.apache.seata.config.ConfigurationFactory"
-      },
-      "type": "org.apache.seata.config.file.SimpleFileConfig"
-    },
-    {
-      "condition": {
         "typeReached": "org.apache.seata.config.FileConfigFactory"
       },
       "type": "org.apache.seata.config.file.SimpleFileConfig",
@@ -194,12 +188,6 @@
           ]
         }
       ]
-    },
-    {
-      "condition": {
-        "typeReached": "org.apache.seata.config.FileConfiguration"
-      },
-      "type": "org.apache.seata.config.file.SimpleFileConfig"
     },
     {
       "condition": {
@@ -443,18 +431,6 @@
     },
     {
       "condition": {
-        "typeReached": "org.apache.seata.rm.datasource.PreparedStatementProxy"
-      },
-      "type": "org.apache.seata.rm.datasource.exec.postgresql.PostgresqlInsertExecutor"
-    },
-    {
-      "condition": {
-        "typeReached": "org.apache.seata.rm.datasource.StatementProxy"
-      },
-      "type": "org.apache.seata.rm.datasource.exec.postgresql.PostgresqlInsertExecutor"
-    },
-    {
-      "condition": {
         "typeReached": "org.apache.seata.rm.datasource.exec.ExecuteTemplate"
       },
       "type": "org.apache.seata.rm.datasource.exec.postgresql.PostgresqlInsertExecutor",
@@ -543,22 +519,9 @@
     },
     {
       "condition": {
-        "typeReached": "org.apache.seata.rm.datasource.ConnectionProxy"
-      },
-      "type": "org.apache.seata.rm.datasource.sql.struct.Field"
-    },
-    {
-      "condition": {
-        "typeReached": "org.apache.seata.rm.datasource.undo.AbstractUndoLogManager"
-      },
-      "type": "org.apache.seata.rm.datasource.sql.struct.Field"
-    },
-    {
-      "condition": {
         "typeReached": "org.apache.seata.rm.datasource.undo.parser.JacksonUndoLogParser"
       },
       "type": "org.apache.seata.rm.datasource.sql.struct.Field",
-      "allDeclaredFields": true,
       "methods": [
         {
           "name": "<init>",
@@ -610,27 +573,13 @@
       "condition": {
         "typeReached": "org.apache.seata.rm.datasource.undo.parser.JacksonUndoLogParser"
       },
-      "type": "org.apache.seata.rm.datasource.sql.struct.KeyType",
-      "allDeclaredFields": true
-    },
-    {
-      "condition": {
-        "typeReached": "org.apache.seata.rm.datasource.ConnectionProxy"
-      },
-      "type": "org.apache.seata.rm.datasource.sql.struct.Row"
-    },
-    {
-      "condition": {
-        "typeReached": "org.apache.seata.rm.datasource.undo.AbstractUndoLogManager"
-      },
-      "type": "org.apache.seata.rm.datasource.sql.struct.Row"
+      "type": "org.apache.seata.rm.datasource.sql.struct.KeyType"
     },
     {
       "condition": {
         "typeReached": "org.apache.seata.rm.datasource.undo.parser.JacksonUndoLogParser"
       },
       "type": "org.apache.seata.rm.datasource.sql.struct.Row",
-      "allDeclaredFields": true,
       "methods": [
         {
           "name": "<init>",
@@ -650,22 +599,9 @@
     },
     {
       "condition": {
-        "typeReached": "org.apache.seata.rm.datasource.ConnectionProxy"
-      },
-      "type": "org.apache.seata.rm.datasource.sql.struct.TableRecords"
-    },
-    {
-      "condition": {
-        "typeReached": "org.apache.seata.rm.datasource.undo.AbstractUndoLogManager"
-      },
-      "type": "org.apache.seata.rm.datasource.sql.struct.TableRecords"
-    },
-    {
-      "condition": {
         "typeReached": "org.apache.seata.rm.datasource.undo.parser.JacksonUndoLogParser"
       },
       "type": "org.apache.seata.rm.datasource.sql.struct.TableRecords",
-      "allDeclaredFields": true,
       "methods": [
         {
           "name": "<init>",
@@ -698,7 +634,6 @@
         "typeReached": "org.apache.seata.rm.datasource.undo.parser.JacksonUndoLogParser"
       },
       "type": "org.apache.seata.rm.datasource.sql.struct.TableRecords$EmptyTableRecords",
-      "allDeclaredFields": true,
       "methods": [
         {
           "name": "<init>",
@@ -774,22 +709,9 @@
     },
     {
       "condition": {
-        "typeReached": "org.apache.seata.rm.datasource.ConnectionProxy"
-      },
-      "type": "org.apache.seata.rm.datasource.undo.BranchUndoLog"
-    },
-    {
-      "condition": {
-        "typeReached": "org.apache.seata.rm.datasource.undo.AbstractUndoLogManager"
-      },
-      "type": "org.apache.seata.rm.datasource.undo.BranchUndoLog"
-    },
-    {
-      "condition": {
         "typeReached": "org.apache.seata.rm.datasource.undo.parser.JacksonUndoLogParser"
       },
       "type": "org.apache.seata.rm.datasource.undo.BranchUndoLog",
-      "allDeclaredFields": true,
       "methods": [
         {
           "name": "<init>",
@@ -829,22 +751,9 @@
     },
     {
       "condition": {
-        "typeReached": "org.apache.seata.rm.datasource.ConnectionProxy"
-      },
-      "type": "org.apache.seata.rm.datasource.undo.SQLUndoLog"
-    },
-    {
-      "condition": {
-        "typeReached": "org.apache.seata.rm.datasource.undo.AbstractUndoLogManager"
-      },
-      "type": "org.apache.seata.rm.datasource.undo.SQLUndoLog"
-    },
-    {
-      "condition": {
         "typeReached": "org.apache.seata.rm.datasource.undo.parser.JacksonUndoLogParser"
       },
       "type": "org.apache.seata.rm.datasource.undo.SQLUndoLog",
-      "allDeclaredFields": true,
       "methods": [
         {
           "name": "<init>",
@@ -1198,8 +1107,7 @@
       "condition": {
         "typeReached": "org.apache.seata.rm.datasource.undo.parser.JacksonUndoLogParser"
       },
-      "type": "org.apache.seata.sqlparser.SQLType",
-      "allDeclaredFields": true
+      "type": "org.apache.seata.sqlparser.SQLType"
     },
     {
       "condition": {
@@ -1319,29 +1227,25 @@
       "condition": {
         "typeReached": "org.apache.seata.rm.datasource.undo.parser.JacksonUndoLogParser"
       },
-      "type": "org.apache.seata.sqlparser.struct.ColumnMeta",
-      "allDeclaredFields": true
+      "type": "org.apache.seata.sqlparser.struct.ColumnMeta"
     },
     {
       "condition": {
         "typeReached": "org.apache.seata.rm.datasource.undo.parser.JacksonUndoLogParser"
       },
-      "type": "org.apache.seata.sqlparser.struct.IndexMeta",
-      "allDeclaredFields": true
+      "type": "org.apache.seata.sqlparser.struct.IndexMeta"
     },
     {
       "condition": {
         "typeReached": "org.apache.seata.rm.datasource.undo.parser.JacksonUndoLogParser"
       },
-      "type": "org.apache.seata.sqlparser.struct.IndexType",
-      "allDeclaredFields": true
+      "type": "org.apache.seata.sqlparser.struct.IndexType"
     },
     {
       "condition": {
         "typeReached": "org.apache.seata.rm.datasource.undo.parser.JacksonUndoLogParser"
       },
-      "type": "org.apache.seata.sqlparser.struct.TableMeta",
-      "allDeclaredFields": true
+      "type": "org.apache.seata.sqlparser.struct.TableMeta"
     },
     {
       "condition": {
@@ -1357,18 +1261,6 @@
     },
     {
       "condition": {
-        "typeReached": "org.apache.seata.common.loader.EnhancedServiceLoader"
-      },
-      "type": "org.apache.seata.config.file.YamlFileConfig"
-    },
-    {
-      "condition": {
-        "typeReached": "org.apache.seata.common.loader.EnhancedServiceLoader"
-      },
-      "type": "io.seata.config.file.FileConfig"
-    },
-    {
-      "condition": {
         "typeReached": "org.apache.seata.config.ConfigurationCache"
       },
       "type": {
@@ -1379,23 +1271,15 @@
     },
     {
       "condition": {
-        "typeReached": "org.apache.seata.config.ConfigurationFactory"
+        "typeReached": "org.apache.seata.common.loader.EnhancedServiceLoader"
       },
-      "type": {
-        "proxy": [
-          "org.apache.seata.config.Configuration"
-        ]
-      }
+      "type": "org.apache.seata.config.file.YamlFileConfig"
     },
     {
       "condition": {
-        "typeReached": "org.apache.seata.core.rpc.netty.NettyBaseConfig"
+        "typeReached": "org.apache.seata.common.loader.EnhancedServiceLoader"
       },
-      "type": {
-        "proxy": [
-          "org.apache.seata.config.Configuration"
-        ]
-      }
+      "type": "io.seata.config.file.FileConfig"
     }
   ],
   "resources": [
@@ -1403,13 +1287,13 @@
       "condition": {
         "typeReached": "org.apache.seata.config.ConfigurationFactory"
       },
-      "glob": "META-INF/*/io.seata.*"
+      "glob": "META-INF/*/org.apache.seata.*"
     },
     {
       "condition": {
         "typeReached": "org.apache.seata.config.ConfigurationFactory"
       },
-      "glob": "META-INF/*/org.apache.seata.*"
+      "glob": "META-INF/*/io.seata.*"
     },
     {
       "condition": {

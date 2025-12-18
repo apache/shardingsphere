@@ -16,7 +16,7 @@ ShardingSphere JDBC requires GraalVM Native Image to be built with GraalVM CE as
 JDK through `SDKMAN!`. Same reason applicable to downstream distributions of `GraalVM CE` such as https://sdkman.io/jdks#graal ,
 https://sdkman.io/jdks#nik and https://sdkman.io/jdks#mandrel .
 
-- GraalVM CE For JDK 24.0.2, corresponding to `24.0.2-graalce` of SDKMAN!
+- GraalVM CE For JDK 25.0.2, corresponding to `25.0.2-graalce` of SDKMAN!
 
 Users can still use old versions of Oracle GraalVM such as `21.0.8-graal` on SDKMAN! to build ShardingSphere's GraalVM Native Image product.
 But this will cause the failure of building GraalVM Native Image when integrating some third-party dependencies.
