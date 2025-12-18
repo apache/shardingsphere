@@ -366,9 +366,9 @@ ShardingSphere 仅针对 HiveServer2 `4.0.1` 进行集成测试。
 
 ### SQL 限制
 
-HiveServer2 并不能保证每一条 `insert` 相关的 DML SQL 都能成功执行，尽管可能没有任何异常被抛出。
-
 ShardingSphere JDBC DataSource 尚不支持执行 HiveServer2 的 `set` 语句。
+当前 ShardingSphere 对 HiveServer2 的 `INNER JOIN` 语法解析存在不足，
+对 `SELECT i.* FROM t_order o, t_order_item i WHERE o.order_id = i.order_id` 这类 SQL，它可能返回错误的查询结果。
 
 #### 使用 `initFile` 参数部分绕开 SQL 限制
 

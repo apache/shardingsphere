@@ -36,7 +36,7 @@ create table IF NOT EXISTS t_order_item (
     primary key (order_item_id)
     order by (order_item_id);
 CREATE TABLE IF NOT EXISTS t_address (
-    address_id   BIGINT NOT NULL,
+    address_id   Int64 NOT NULL,
     address_name VARCHAR(100) NOT NULL,
     PRIMARY      KEY (address_id)
 );

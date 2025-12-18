@@ -37,13 +37,24 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.OffsetDateTime;
 import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
+import java.time.temporal.TemporalAccessor;
 import java.util.Date;
+import java.util.Optional;
 
 /**
  * Result set utility class.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ResultSetUtils {
+    
+    private static final DateTimeFormatter LOOSE_DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern(
+            "[yyyy-MM-dd][yyyy_MM_dd][yyyyMMdd][yyyy-M-d][MM/dd/yy][yyMMdd]"
+                    + "['T'][ ]"
+                    + "[HH:mm:ss][HHmmss][HH:mm][HHmm]"
+                    + "[.SSSSSSSSS][.SSSSSSSS][.SSSSSSS][.SSSSSS][.SSSSS][.SSSS][.SSS][.SS][.S]"
+                    + "[ ]"
+                    + "[XXXXX][XXXX][XXX][XX][X]");
     
     /**
      * Convert value via expected class type.
@@ -88,11 +99,32 @@ public final class ResultSetUtils {
         if (String.class.equals(convertType)) {
             return value.toString();
         }
+        if (value instanceof String) {
+            Optional<Object> result = convertStringValue((String) value, convertType);
+            if (result.isPresent()) {
+                return result.get();
+            }
+        }
         try {
             return convertType.cast(value);
         } catch (final ClassCastException ignored) {
-            throw new SQLFeatureNotSupportedException("getObject with type");
+            throw new SQLFeatureNotSupportedException("getObject with type, cannot convert " + value.getClass().getName() + ":" + value + " to " + convertType.getName());
         }
+    }
+    
+    private static Optional<Object> convertStringValue(final String value, final Class<?> convertType) {
+        if (Timestamp.class.equals(convertType)) {
+            TemporalAccessor temporalAccessor = LOOSE_DATE_TIME_FORMATTER.parseBest(value, LocalDateTime::from, LocalDate::from);
+            LocalDateTime localDateTime = (temporalAccessor instanceof LocalDateTime) ? (LocalDateTime) temporalAccessor : ((LocalDate) temporalAccessor).atStartOfDay();
+            return Optional.of(Timestamp.valueOf(localDateTime));
+        }
+        if (java.sql.Date.class.equals(convertType)) {
+            return Optional.of(java.sql.Date.valueOf(LocalDate.from(LOOSE_DATE_TIME_FORMATTER.parse(value))));
+        }
+        if (java.sql.Time.class.equals(convertType)) {
+            return Optional.of(java.sql.Time.valueOf(LocalTime.from(LOOSE_DATE_TIME_FORMATTER.parse(value))));
+        }
+        return Optional.empty();
     }
     
     private static Object convertNullValue(final Class<?> convertType) {
