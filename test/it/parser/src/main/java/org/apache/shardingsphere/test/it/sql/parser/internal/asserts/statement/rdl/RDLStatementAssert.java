@@ -28,10 +28,12 @@ import org.apache.shardingsphere.distsql.statement.type.rdl.rule.database.type.C
 import org.apache.shardingsphere.distsql.statement.type.rdl.rule.database.type.DropRuleStatement;
 import org.apache.shardingsphere.globalclock.distsql.statement.updatable.AlterGlobalClockRuleStatement;
 import org.apache.shardingsphere.parser.distsql.statement.updatable.AlterSQLParserRuleStatement;
+import org.apache.shardingsphere.sqltranslator.distsql.statement.updateable.AlterSQLTranslatorRuleStatement;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.ExistingAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.ral.type.updatable.AlterGlobalClockRuleStatementAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.ral.type.updatable.AlterSQLParserRuleStatementAssert;
+import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.ral.type.updatable.AlterSQLTranslatorRuleStatementAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.rdl.alter.AlterRuleStatementAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.rdl.alter.AlterStorageUnitStatementAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.rdl.create.CreateRuleStatementAssert;
@@ -41,6 +43,7 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.r
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.SQLParserTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ral.AlterGlobalClockRuleStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ral.AlterSQLParserRuleStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ral.AlterSQLTranslatorRuleStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.rdl.resource.AlterStorageUnitStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.rdl.resource.RegisterStorageUnitStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.rdl.resource.UnregisterStorageUnitStatementTestCase;
@@ -74,6 +77,8 @@ public final class RDLStatementAssert {
             UnregisterStorageUnitStatementAssert.assertIs(assertContext, (UnregisterStorageUnitStatement) actual, (UnregisterStorageUnitStatementTestCase) expected);
         } else if (actual instanceof AlterSQLParserRuleStatement) {
             AlterSQLParserRuleStatementAssert.assertIs(assertContext, (AlterSQLParserRuleStatement) actual, (AlterSQLParserRuleStatementTestCase) expected);
+        } else if (actual instanceof AlterSQLTranslatorRuleStatement) {
+            AlterSQLTranslatorRuleStatementAssert.assertIs(assertContext, (AlterSQLTranslatorRuleStatement) actual, (AlterSQLTranslatorRuleStatementTestCase) expected);
         } else if (actual instanceof AlterTransactionRuleStatement) {
             ExistingAssert.assertIs(assertContext, actual, expected);
         } else if (actual instanceof AlterGlobalClockRuleStatement) {

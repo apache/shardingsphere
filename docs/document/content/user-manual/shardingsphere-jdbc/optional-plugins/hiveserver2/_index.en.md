@@ -61,7 +61,7 @@ The following is an example of a possible configuration,
     <dependency>
         <groupId>io.github.linghengqian</groupId>
         <artifactId>hive-server2-jdbc-driver-thin</artifactId>
-        <version>1.7.0</version>
+        <version>1.8.2</version>
         <exclusions>
             <exclusion>
                 <groupId>com.fasterxml.woodstox</groupId>
@@ -112,22 +112,6 @@ Execute the following SQL,
 CREATE DATABASE demo_ds_0;
 CREATE DATABASE demo_ds_1;
 CREATE DATABASE demo_ds_2;
-```
-
-Use the `standardJdbcUrl` of `jdbc:hive2://localhost:10000/demo_ds_0`, 
-`jdbc:hive2://localhost:10000/demo_ds_1` and `jdbc:hive2://localhost:10000/demo_ds_2` to connect to HiveServer2 to execute the following SQL,
-
-```sql
--- noinspection SqlNoDataSourceInspectionForFile
-CREATE TABLE IF NOT EXISTS t_order
-(
-    order_id   BIGINT NOT NULL,
-    order_type INT,
-    user_id    INT    NOT NULL,
-    address_id BIGINT NOT NULL,
-    status     string,
-    PRIMARY KEY (order_id) disable novalidate
-) STORED BY ICEBERG STORED AS ORC TBLPROPERTIES ('format-version' = '2');
 ```
 
 ### Create ShardingSphere data source in business projects
@@ -189,6 +173,7 @@ public class ExampleUtils {
         try (HikariDataSource dataSource = new HikariDataSource(config);
              Connection connection = dataSource.getConnection();
              Statement statement = connection.createStatement()) {
+            statement.execute("CREATE TABLE IF NOT EXISTS t_order (order_id BIGINT NOT NULL, order_type INT, user_id INT NOT NULL, address_id BIGINT NOT NULL, status string, PRIMARY KEY (order_id) disable novalidate) STORED BY ICEBERG STORED AS ORC TBLPROPERTIES ('format-version' = '2')");
             statement.execute("TRUNCATE TABLE t_order");
             statement.execute("INSERT INTO t_order (user_id, order_type, address_id, status) VALUES (1, 1, 1, 'INSERT_TEST')");
             statement.executeQuery("SELECT * FROM t_order");
@@ -239,24 +224,6 @@ Execute the following SQL,
 CREATE DATABASE demo_ds_0;
 CREATE DATABASE demo_ds_1;
 CREATE DATABASE demo_ds_2;
-```
-
-Use `standardJdbcUrl` of `jdbc:hive2://127.0.0.1:2181/demo_ds_0;serviceDiscoveryMode=zooKeeper;zooKeeperNamespace=hiveserver2`,
-`jdbc:hive2://127.0.0.1:2181/demo_ds_1;serviceDiscoveryMode=zooKeeper;zooKeeperNamespace=hiveserver2`
-and `jdbc:hive2://127.0.0.1:2181/demo_ds_2;serviceDiscoveryMode=zooKeeper;zooKeeperNamespace=hiveserver2`
-to connect to HiveServer2 and execute the following SQL,
-
-```sql
--- noinspection SqlNoDataSourceInspectionForFile
-CREATE TABLE IF NOT EXISTS t_order
-(
-    order_id   BIGINT NOT NULL,
-    order_type INT,
-    user_id    INT    NOT NULL,
-    address_id BIGINT NOT NULL,
-    status     string,
-    PRIMARY KEY (order_id) disable novalidate
-) STORED BY ICEBERG STORED AS ORC TBLPROPERTIES ('format-version' = '2');
 ```
 
 After the business project introduces the dependencies involved in the `prerequisites`,
@@ -314,6 +281,7 @@ public class ExampleUtils {
         try (HikariDataSource dataSource = new HikariDataSource(config);
              Connection connection = dataSource.getConnection();
              Statement statement = connection.createStatement()) {
+            statement.execute("CREATE TABLE IF NOT EXISTS t_order (order_id BIGINT NOT NULL, order_type INT, user_id INT NOT NULL, address_id BIGINT NOT NULL, status string, PRIMARY KEY (order_id) disable novalidate) STORED BY ICEBERG STORED AS ORC TBLPROPERTIES ('format-version' = '2')");
             statement.execute("TRUNCATE TABLE t_order");
             statement.execute("INSERT INTO t_order (user_id, order_type, address_id, status) VALUES (1, 1, 1, 'INSERT_TEST')");
             statement.executeQuery("SELECT * FROM t_order");
@@ -359,24 +327,6 @@ CREATE DATABASE demo_ds_1;
 CREATE DATABASE demo_ds_2;
 ```
 
-Use `standardJdbcUrl` of `jdbc:hive2://127.0.0.1:2181/demo_ds_0;serviceDiscoveryMode=zooKeeper;zooKeeperNamespace=hiveserver2`,
-`jdbc:hive2://127.0.0.1:2181/demo_ds_1;serviceDiscoveryMode=zooKeeper;zooKeeperNamespace=hiveserver2`
-and `jdbc:hive2://127.0.0.1:2181/demo_ds_2;serviceDiscoveryMode=zooKeeper;zooKeeperNamespace=hiveserver2`
-to connect to HiveServer2 and execute the following SQL,
-
-```sql
--- noinspection SqlNoDataSourceInspectionForFile
-CREATE TABLE IF NOT EXISTS t_order
-(
-    order_id   BIGINT NOT NULL,
-    order_type INT,
-    user_id    INT    NOT NULL,
-    address_id BIGINT NOT NULL,
-    status     string,
-    PRIMARY KEY (order_id) disable novalidate
-) STORED BY ICEBERG STORED AS ORC TBLPROPERTIES ('format-version' = '2');
-```
-
 At this point,
 the old ShardingSphere JDBC DataSource can still be switched to the HiveServer2 instance named `apache-hive-2` in the `service` to execute the logical SQL without recreating the JDBC DataSource.
 
@@ -389,6 +339,7 @@ public class ExampleUtils {
     void test(HikariDataSource dataSource) throws SQLException {
         try (Connection connection = dataSource.getConnection();
              Statement statement = connection.createStatement()) {
+            statement.execute("CREATE TABLE IF NOT EXISTS t_order (order_id BIGINT NOT NULL, order_type INT, user_id INT NOT NULL, address_id BIGINT NOT NULL, status string, PRIMARY KEY (order_id) disable novalidate) STORED BY ICEBERG STORED AS ORC TBLPROPERTIES ('format-version' = '2')");
             statement.execute("TRUNCATE TABLE t_order");
             statement.execute("INSERT INTO t_order (user_id, order_type, address_id, status) VALUES (1, 1, 1, 'INSERT_TEST')");
             statement.executeQuery("SELECT * FROM t_order");
@@ -421,39 +372,9 @@ Reference https://issues.apache.org/jira/browse/HIVE-28418 .
 
 ### SQL Limitations
 
-HiveServer2 does not guarantee that every `insert` related DML SQL can be executed successfully, although no exception may be thrown.
-
 ShardingSphere JDBC DataSource does not yet support executing the `set` statement of HiveServer2.
-
-ShardingSphere JDBC DataSource currently supports creating normal tables by executing the `create table` statement, 
-but does not support creating Iceberg tables by executing the `create table` statement.
-This means that ShardingSphere JDBC DataSource can execute statements similar to the following,
-
-```sql
--- noinspection SqlNoDataSourceInspectionForFile
-create table IF NOT EXISTS t_order (
-    order_id   BIGINT NOT NULL,
-    order_type INT,
-    user_id    INT    NOT NULL,
-    address_id BIGINT NOT NULL,
-    status     VARCHAR(50),
-    PRIMARY KEY (order_id) disable novalidate
-) CLUSTERED BY (order_id) INTO 2 BUCKETS STORED AS ORC TBLPROPERTIES ('transactional' = 'true');
-```
-
-But ShardingSphere JDBC DataSource cannot execute statements like the following,
-
-```sql
--- noinspection SqlNoDataSourceInspectionForFile
-CREATE TABLE IF NOT EXISTS t_order (
-    order_id   BIGINT NOT NULL,
-    order_type INT,
-    user_id    INT    NOT NULL,
-    address_id BIGINT NOT NULL,
-    status     string,
-    PRIMARY KEY (order_id) disable novalidate
-) STORED BY ICEBERG STORED AS ORC TBLPROPERTIES ('format-version' = '2');
-```
+The current ShardingSphere parsing of HiveServer2's `INNER JOIN` syntax has shortcomings,
+and it may return incorrect query results for SQL statements such as `SELECT i.* FROM t_order o, t_order_item i WHERE o.order_id = i.order_id`.
 
 #### Use `initFile` parameter to partially bypass SQL restrictions
 
@@ -593,7 +514,7 @@ CREATE TABLE IF NOT EXISTS t_order
 
 Iceberg table format supports relatively few Hive types. 
 Executing SQL `set iceberg.mr.schema.auto.conversion=true;` for HiveServer2 can help alleviate this problem.
-SQL `set iceberg.mr.schema.auto.conversion=true;` has the drawbacks mentioned in https://issues.apache.org/jira/browse/HIVE-26507 .
+However, the SQL statement `set iceberg.mr.schema.auto.conversion=true;` has the drawbacks mentioned in https://issues.apache.org/jira/browse/HIVE-26507 .
 
 ### Transaction Limitations
 

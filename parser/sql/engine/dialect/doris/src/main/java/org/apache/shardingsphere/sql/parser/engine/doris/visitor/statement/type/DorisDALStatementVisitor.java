@@ -120,6 +120,16 @@ import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.TablesO
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.UninstallComponentContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.UninstallPluginContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.UseContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.AlterResourceContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.PropertyAssignmentContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ResourceNameContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.PropertyKeyContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.PropertyValueContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.PluginSourceContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.PluginPropertiesListContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.PluginPropertyContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.PluginPropertyKeyContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.PluginPropertyValueContext;
 import org.apache.shardingsphere.sql.parser.engine.doris.visitor.statement.DorisStatementVisitor;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.CacheTableIndexSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.CloneActionSegment;
@@ -153,6 +163,13 @@ import org.apache.shardingsphere.sql.parser.statement.core.value.collection.Coll
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 import org.apache.shardingsphere.sql.parser.statement.core.value.literal.impl.NumberLiteralValue;
 import org.apache.shardingsphere.sql.parser.statement.core.value.literal.impl.StringLiteralValue;
+import org.apache.shardingsphere.sql.parser.statement.core.value.literal.LiteralValue;
+import org.apache.shardingsphere.sql.parser.statement.core.value.literal.impl.BooleanLiteralValue;
+import org.apache.shardingsphere.sql.parser.statement.core.value.literal.impl.DateTimeLiteralValue;
+import org.apache.shardingsphere.sql.parser.statement.core.value.literal.impl.NullLiteralValue;
+import org.apache.shardingsphere.sql.parser.statement.core.value.literal.impl.OtherLiteralValue;
+import org.apache.shardingsphere.sql.parser.statement.core.value.literal.impl.TemporalLiteralValue;
+import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisAlterResourceStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLCloneStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLCreateLoadableFunctionStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLDelimiterStatement;
@@ -233,6 +250,9 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
+import java.util.Properties;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -461,7 +481,47 @@ public final class DorisDALStatementVisitor extends DorisStatementVisitor implem
     
     @Override
     public ASTNode visitInstallPlugin(final InstallPluginContext ctx) {
-        return new MySQLInstallPluginStatement(getDatabaseType(), ((IdentifierValue) visit(ctx.pluginName())).getValue());
+        if (null != ctx.pluginName()) {
+            return new MySQLInstallPluginStatement(getDatabaseType(), ((IdentifierValue) visit(ctx.pluginName())).getValue());
+        }
+        String source = getPluginSource(ctx.pluginSource());
+        Map<String, String> properties = null == ctx.pluginPropertiesList() ? null : extractPluginProperties(ctx.pluginPropertiesList());
+        return new MySQLInstallPluginStatement(getDatabaseType(), source, properties);
+    }
+    
+    private String getPluginSource(final PluginSourceContext ctx) {
+        if (null != ctx.identifier()) {
+            return ((IdentifierValue) visit(ctx.identifier())).getValue();
+        }
+        return ((StringLiteralValue) visit(ctx.string_())).getValue();
+    }
+    
+    private Map<String, String> extractPluginProperties(final PluginPropertiesListContext ctx) {
+        Map<String, String> result = new LinkedHashMap<>();
+        for (PluginPropertyContext each : ctx.pluginProperty()) {
+            String key = getPluginPropertyKey(each.pluginPropertyKey());
+            String value = getPluginPropertyValue(each.pluginPropertyValue());
+            result.put(key, value);
+        }
+        return result;
+    }
+    
+    private String getPluginPropertyKey(final PluginPropertyKeyContext ctx) {
+        if (null != ctx.identifier()) {
+            return ((IdentifierValue) visit(ctx.identifier())).getValue();
+        }
+        return ((StringLiteralValue) visit(ctx.string_())).getValue();
+    }
+    
+    private String getPluginPropertyValue(final PluginPropertyValueContext ctx) {
+        if (null != ctx.identifier()) {
+            return ((IdentifierValue) visit(ctx.identifier())).getValue();
+        }
+        ASTNode result = visit(ctx.literals());
+        if (result instanceof LiteralValue) {
+            return getLiteralValueAsString((LiteralValue<?>) result);
+        }
+        return result.toString();
     }
     
     @Override
@@ -900,6 +960,68 @@ public final class DorisDALStatementVisitor extends DorisStatementVisitor implem
     @Override
     public ASTNode visitAlterResourceGroup(final AlterResourceGroupContext ctx) {
         return new MySQLAlterResourceGroupStatement(getDatabaseType(), ((IdentifierValue) visit(ctx.groupName())).getValue());
+    }
+    
+    @Override
+    public ASTNode visitAlterResource(final AlterResourceContext ctx) {
+        String resourceName = getResourceName(ctx.resourceName());
+        Properties properties = new Properties();
+        for (PropertyAssignmentContext each : ctx.propertyAssignments().propertyAssignment()) {
+            String key = getPropertyKey(each.propertyKey());
+            String value = getPropertyValue(each.propertyValue());
+            properties.setProperty(key, value);
+        }
+        return new DorisAlterResourceStatement(getDatabaseType(), resourceName, properties);
+    }
+    
+    private String getResourceName(final ResourceNameContext ctx) {
+        if (null != ctx.identifier()) {
+            return ((IdentifierValue) visit(ctx.identifier())).getValue();
+        }
+        return ((StringLiteralValue) visit(ctx.string_())).getValue();
+    }
+    
+    private String getPropertyKey(final PropertyKeyContext ctx) {
+        if (null != ctx.identifier()) {
+            return ((IdentifierValue) visit(ctx.identifier())).getValue();
+        }
+        return ((StringLiteralValue) visit(ctx.string_())).getValue();
+    }
+    
+    private String getPropertyValue(final PropertyValueContext ctx) {
+        if (null != ctx.identifier()) {
+            return ((IdentifierValue) visit(ctx.identifier())).getValue();
+        }
+        ASTNode result = visit(ctx.literals());
+        if (result instanceof LiteralValue) {
+            return getLiteralValueAsString((LiteralValue<?>) result);
+        }
+        return result.toString();
+    }
+    
+    private String getLiteralValueAsString(final LiteralValue<?> literalValue) {
+        if (literalValue instanceof StringLiteralValue) {
+            return ((StringLiteralValue) literalValue).getValue();
+        }
+        if (literalValue instanceof NumberLiteralValue) {
+            return ((NumberLiteralValue) literalValue).getValue().toString();
+        }
+        if (literalValue instanceof BooleanLiteralValue) {
+            return String.valueOf(((BooleanLiteralValue) literalValue).getValue());
+        }
+        if (literalValue instanceof NullLiteralValue) {
+            return "NULL";
+        }
+        if (literalValue instanceof DateTimeLiteralValue) {
+            return ((DateTimeLiteralValue) literalValue).getValue();
+        }
+        if (literalValue instanceof TemporalLiteralValue) {
+            return ((TemporalLiteralValue) literalValue).getValue();
+        }
+        if (literalValue instanceof OtherLiteralValue) {
+            return String.valueOf(((OtherLiteralValue) literalValue).getValue());
+        }
+        return String.valueOf(literalValue.getValue());
     }
     
     @Override

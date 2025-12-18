@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.natived.commons.algorithm.testcontainers;
+package org.apache.shardingsphere.test.natived.commons.algorithm.testcontainers.type;
 
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
@@ -25,22 +25,22 @@ import java.util.Collections;
 import java.util.Optional;
 
 /**
- * Database type of PostgreSQL in testcontainers.
+ * Database type of MSSQL Server in testcontainers.
  */
-public final class TcPostgreSQLDatabaseType implements TestcontainersDatabaseType {
+public final class TcSQLServerDatabaseType implements TestcontainersDatabaseType {
     
     @Override
     public Collection<String> getJdbcUrlPrefixes() {
-        return Collections.singleton("jdbc:tc:postgresql:");
+        return Collections.singleton("jdbc:tc:sqlserver:");
     }
     
     @Override
     public Optional<DatabaseType> getTrunkDatabaseType() {
-        return Optional.of(TypedSPILoader.getService(DatabaseType.class, "PostgreSQL"));
+        return Optional.of(TypedSPILoader.getService(DatabaseType.class, "SQLServer"));
     }
     
     @Override
     public String getType() {
-        return "TC-PostgreSQL";
+        return "TC-SQLServer";
     }
 }

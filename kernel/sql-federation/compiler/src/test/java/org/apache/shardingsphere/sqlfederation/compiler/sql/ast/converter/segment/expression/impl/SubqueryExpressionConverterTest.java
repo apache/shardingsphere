@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.sqlfederation.compiler.sql.ast.converter.segment.expression.impl;
 
-import org.apache.calcite.sql.SqlNode;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
@@ -27,17 +26,11 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.Proj
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.SelectStatement;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 class SubqueryExpressionConverterTest {
     
     private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "FIXTURE");
-    
-    @Test
-    void assertConvertReturnsEmptyWhenExpressionIsNull() {
-        assertFalse(SubqueryExpressionConverter.convert(null).isPresent());
-    }
     
     @Test
     void assertConvertSubqueryExpression() {
@@ -46,7 +39,6 @@ class SubqueryExpressionConverterTest {
         projections.getProjections().add(new ParameterMarkerExpressionSegment(0, 0, 0));
         selectStatement.setProjections(projections);
         SubquerySegment subquerySegment = new SubquerySegment(0, 0, selectStatement, "sub");
-        SqlNode actual = SubqueryExpressionConverter.convert(new SubqueryExpressionSegment(subquerySegment)).orElse(null);
-        assertNotNull(actual);
+        assertNotNull(SubqueryExpressionConverter.convert(new SubqueryExpressionSegment(subquerySegment)));
     }
 }

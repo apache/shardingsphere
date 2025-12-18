@@ -37,19 +37,12 @@ import java.util.Optional;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(AutoMockExtension.class)
 @StaticMockSettings(ExpressionConverter.class)
 class InExpressionConverterTest {
-    
-    @Test
-    void assertConvertReturnsEmptyWhenExpressionIsNull() {
-        assertFalse(InExpressionConverter.convert(null).isPresent());
-    }
     
     @Test
     void assertConvertWrapsSqlBasicCallRightAsListForNotIn() {
@@ -60,8 +53,7 @@ class InExpressionConverterTest {
         SqlBasicCall rightBasicCall = new SqlBasicCall(SqlStdOperatorTable.PLUS, Collections.singletonList(rightOperand), SqlParserPos.ZERO);
         when(ExpressionConverter.convert(left)).thenReturn(Optional.of(leftNode));
         when(ExpressionConverter.convert(right)).thenReturn(Optional.of(rightBasicCall));
-        SqlBasicCall actual = (SqlBasicCall) InExpressionConverter.convert(new InExpression(0, 0, left, right, true)).orElse(null);
-        assertNotNull(actual);
+        SqlBasicCall actual = InExpressionConverter.convert(new InExpression(0, 0, left, right, true));
         assertThat(actual.getOperator(), is(SqlStdOperatorTable.NOT_IN));
         SqlNode secondOperand = actual.getOperandList().get(1);
         assertThat(secondOperand, instanceOf(SqlNodeList.class));
@@ -77,8 +69,7 @@ class InExpressionConverterTest {
         SqlNode rightNode = mock(SqlNode.class);
         when(ExpressionConverter.convert(left)).thenReturn(Optional.of(leftNode));
         when(ExpressionConverter.convert(right)).thenReturn(Optional.of(rightNode));
-        SqlBasicCall actual = (SqlBasicCall) InExpressionConverter.convert(new InExpression(0, 0, left, right, false)).orElse(null);
-        assertNotNull(actual);
+        SqlBasicCall actual = InExpressionConverter.convert(new InExpression(0, 0, left, right, false));
         assertThat(actual.getOperator(), is(SqlStdOperatorTable.IN));
         assertThat(actual.getOperandList(), is(Arrays.asList(leftNode, rightNode)));
     }

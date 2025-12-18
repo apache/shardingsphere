@@ -17,13 +17,12 @@
 
 package org.apache.shardingsphere.data.pipeline.cdc.client.config;
 
+import com.google.common.base.Preconditions;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 
 /**
  * CDC client configuration.
  */
-@RequiredArgsConstructor
 @Getter
 public final class CDCClientConfiguration {
     
@@ -32,4 +31,12 @@ public final class CDCClientConfiguration {
     private final int port;
     
     private final int timeoutMillis;
+    
+    public CDCClientConfiguration(final String address, final int port, final int timeoutMillis) {
+        Preconditions.checkArgument(null != address && !address.isEmpty(), "The address parameter can't be null.");
+        Preconditions.checkArgument(port > 0, "The port must be greater than 0.");
+        this.address = address;
+        this.port = port;
+        this.timeoutMillis = timeoutMillis;
+    }
 }

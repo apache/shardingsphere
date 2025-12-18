@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.natived.commons.algorithm.testcontainers;
+package org.apache.shardingsphere.test.natived.commons.algorithm.testcontainers.type;
 
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
@@ -25,22 +25,22 @@ import java.util.Collections;
 import java.util.Optional;
 
 /**
- * Database type of MSSQL Server in testcontainers.
+ * Database type of Clickhouse in testcontainers.
  */
-public final class TcSQLServerDatabaseType implements TestcontainersDatabaseType {
+public final class TcClickhouseDatabaseType implements TestcontainersDatabaseType {
     
     @Override
     public Collection<String> getJdbcUrlPrefixes() {
-        return Collections.singleton("jdbc:tc:sqlserver:");
+        return Collections.singleton("jdbc:tc:clickhouse:");
     }
     
     @Override
     public Optional<DatabaseType> getTrunkDatabaseType() {
-        return Optional.of(TypedSPILoader.getService(DatabaseType.class, "SQLServer"));
+        return Optional.of(TypedSPILoader.getService(DatabaseType.class, "ClickHouse"));
     }
     
     @Override
     public String getType() {
-        return "TC-SQLServer";
+        return "TC-Clickhouse";
     }
 }

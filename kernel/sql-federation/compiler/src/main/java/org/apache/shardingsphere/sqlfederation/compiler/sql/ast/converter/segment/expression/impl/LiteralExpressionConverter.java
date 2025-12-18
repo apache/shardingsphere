@@ -28,6 +28,7 @@ import org.apache.calcite.sql.fun.SqlTrimFunction.Flag;
 import org.apache.calcite.sql.parser.SqlParserPos;
 import org.apache.calcite.sql.type.SqlTypeName;
 import org.apache.calcite.util.DateString;
+import org.apache.calcite.util.NlsString;
 import org.apache.calcite.util.TimeString;
 import org.apache.calcite.util.TimestampString;
 import org.apache.calcite.util.TimestampWithTimeZoneString;
@@ -87,19 +88,25 @@ public final class LiteralExpressionConverter {
             return Optional.of(new SqlIntervalQualifier(TimeUnit.valueOf(literalValue.toUpperCase()), null, SqlParserPos.ZERO));
         }
         if (segment.getLiterals() instanceof Number) {
-            return convertNumber(segment, literalValue);
+            return Optional.of(convertNumber(segment, literalValue));
         }
         if (segment.getLiterals() instanceof String) {
             return Optional.of(SqlLiteral.createCharString(literalValue, SqlParserPos.ZERO));
+        }
+        if (segment.getLiterals() instanceof NlsString) {
+            return Optional.of(SqlLiteral.createCharString(((NlsString) segment.getLiterals()).getValue(), SqlParserPos.ZERO));
         }
         if (segment.getLiterals() instanceof Boolean) {
             return Optional.of(SqlLiteral.createBoolean(Boolean.parseBoolean(literalValue), SqlParserPos.ZERO));
         }
         if (segment.getLiterals() instanceof Calendar) {
-            return convertCalendar(segment);
+            return Optional.of(convertCalendar(segment));
         }
         if (segment.getLiterals() instanceof Date) {
-            return convertDate(segment, literalValue);
+            return Optional.of(convertDate(segment, literalValue));
+        }
+        if (segment.getLiterals() instanceof TimestampString) {
+            return Optional.of(SqlLiteral.createTimestamp(SqlTypeName.TIMESTAMP, (TimestampString) segment.getLiterals(), 1, SqlParserPos.ZERO));
         }
         if (segment.getLiterals() instanceof LocalDate) {
             return Optional.of(SqlLiteral.createDate(DateString.fromDaysSinceEpoch((int) ((LocalDate) segment.getLiterals()).toEpochDay()), SqlParserPos.ZERO));
@@ -122,33 +129,31 @@ public final class LiteralExpressionConverter {
         return Optional.empty();
     }
     
-    private static Optional<SqlNode> convertNumber(final LiteralExpressionSegment segment, final String literalValue) {
-        if (segment.getLiterals() instanceof BigDecimal || segment.getLiterals() instanceof BigInteger) {
-            return Optional.of(SqlLiteral.createApproxNumeric(literalValue, SqlParserPos.ZERO));
-        }
-        return Optional.of(SqlLiteral.createExactNumeric(literalValue, SqlParserPos.ZERO));
+    private static SqlNode convertNumber(final LiteralExpressionSegment segment, final String literalValue) {
+        return segment.getLiterals() instanceof BigDecimal || segment.getLiterals() instanceof BigInteger
+                ? SqlLiteral.createApproxNumeric(literalValue, SqlParserPos.ZERO)
+                : SqlLiteral.createExactNumeric(literalValue, SqlParserPos.ZERO);
     }
     
-    private static Optional<SqlNode> convertCalendar(final LiteralExpressionSegment segment) {
+    private static SqlNode convertCalendar(final LiteralExpressionSegment segment) {
         Calendar calendar = (Calendar) segment.getLiterals();
-        if (hasTimePart(calendar)) {
-            return Optional.of(SqlLiteral.createTimestamp(SqlTypeName.TIMESTAMP, TimestampString.fromCalendarFields(calendar), 1, SqlParserPos.ZERO));
-        }
-        return Optional.of(SqlLiteral.createDate(DateString.fromCalendarFields(calendar), SqlParserPos.ZERO));
+        return hasTimePart(calendar)
+                ? SqlLiteral.createTimestamp(SqlTypeName.TIMESTAMP, TimestampString.fromCalendarFields(calendar), 1, SqlParserPos.ZERO)
+                : SqlLiteral.createDate(DateString.fromCalendarFields(calendar), SqlParserPos.ZERO);
     }
     
     private static boolean hasTimePart(final Calendar calendar) {
         return 0 != calendar.get(Calendar.HOUR_OF_DAY) || 0 != calendar.get(Calendar.MINUTE) || 0 != calendar.get(Calendar.SECOND) || 0 != calendar.get(Calendar.MILLISECOND);
     }
     
-    private static Optional<SqlNode> convertDate(final LiteralExpressionSegment segment, final String literalValue) {
+    private static SqlNode convertDate(final LiteralExpressionSegment segment, final String literalValue) {
         if (segment.getLiterals() instanceof Timestamp) {
             Timestamp timestamp = (Timestamp) segment.getLiterals();
-            return Optional.of(SqlLiteral.createTimestamp(SqlTypeName.TIMESTAMP, TimestampString.fromMillisSinceEpoch(timestamp.getTime()), 1, SqlParserPos.ZERO));
+            return SqlLiteral.createTimestamp(SqlTypeName.TIMESTAMP, TimestampString.fromMillisSinceEpoch(timestamp.getTime()), 1, SqlParserPos.ZERO);
         }
         if (segment.getLiterals() instanceof Time) {
-            return Optional.of(SqlLiteral.createTime(new TimeString(literalValue), 1, SqlParserPos.ZERO));
+            return SqlLiteral.createTime(new TimeString(literalValue), 1, SqlParserPos.ZERO);
         }
-        return Optional.of(SqlLiteral.createDate(new DateString(literalValue), SqlParserPos.ZERO));
+        return SqlLiteral.createDate(new DateString(literalValue), SqlParserPos.ZERO);
     }
 }
