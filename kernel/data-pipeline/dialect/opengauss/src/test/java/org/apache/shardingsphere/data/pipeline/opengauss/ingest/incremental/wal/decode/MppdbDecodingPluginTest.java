@@ -31,7 +31,9 @@ import org.junit.jupiter.api.Test;
 import org.opengauss.jdbc.TimestampUtils;
 import org.opengauss.replication.LogSequenceNumber;
 import org.opengauss.util.PGobject;
+import org.mockito.MockedConstruction;
 
+import java.math.BigDecimal;
 import java.nio.ByteBuffer;
 import java.sql.SQLException;
 import java.sql.Time;
@@ -46,7 +48,10 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.isA;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.mockConstruction;
 import static org.mockito.Mockito.when;
 
 class MppdbDecodingPluginTest {
@@ -328,5 +333,131 @@ class MppdbDecodingPluginTest {
         WriteRowEvent actual = (WriteRowEvent) new MppdbDecodingPlugin(null, false, false).decode(data, logSequenceNumber);
         Object byteaObj = actual.getAfterRow().get(0);
         assertThat(byteaObj, is(255));
+    }
+
+    @Test
+    void assertDecodeWriteRowEventWithVariousTypes() {
+        MppTableData tableData = new MppTableData();
+        tableData.setTableName("public.test");
+        tableData.setOpType("INSERT");
+        String[] columnTypes = new String[]{"numeric(10,2)", "bit(3)", "real", "double precision", "money", "bytea", "blob", "interval", "character", "text", "tstzrange"};
+        tableData.setColumnsName(IntStream.range(0, columnTypes.length).mapToObj(idx -> "data" + idx).toArray(String[]::new));
+        tableData.setColumnsType(columnTypes);
+        String[] columnValues = new String[]{"10.1", "b101", "1.5", "2.5", "'1.08'", "'\\x'", "'\\x01'", "'abc year'", "a", "null", "'[\"2020-01-01 00:00:00+00\",\"2021-01-01 00:00:00+00\"]'"};
+        tableData.setColumnsVal(columnValues);
+        WriteRowEvent actual = (WriteRowEvent) new MppdbDecodingPlugin(null, false, false).decode(ByteBuffer.wrap(JsonUtils.toJsonString(tableData).getBytes()), logSequenceNumber);
+        assertThat(actual.getAfterRow().get(0), is(new BigDecimal("10.1")));
+        assertThat(actual.getAfterRow().get(1), is("101"));
+        assertThat(actual.getAfterRow().get(2), is(1.5F));
+        assertThat(actual.getAfterRow().get(3), is(2.5D));
+        assertThat(actual.getAfterRow().get(4), is("1.08"));
+        assertThat(((byte[]) actual.getAfterRow().get(5)).length, is(0));
+        assertThat(((byte[]) actual.getAfterRow().get(6))[0], is((byte) 1));
+        assertNull(actual.getAfterRow().get(7));
+        assertThat(actual.getAfterRow().get(8), is("a"));
+        assertNull(actual.getAfterRow().get(9));
+        assertThat(actual.getAfterRow().get(10).toString(), is("[\"2020-01-01 00:00:00+00\",\"2021-01-01 00:00:00+00\"]"));
+    }
+
+    @Test
+    void assertDecodeSeriallyPlaceholderEvent() {
+        ByteBuffer data = ByteBuffer.wrap("RANDOM".getBytes());
+        AbstractWALEvent actual = new MppdbDecodingPlugin(null, true, false).decode(data, logSequenceNumber);
+        assertThat(actual, isA(PlaceholderEvent.class));
+    }
+
+    @Test
+    void assertDecodeParallelBeginWithoutFirstLsn() {
+        MppdbDecodingPlugin mppdbDecodingPlugin = new MppdbDecodingPlugin(null, true, true);
+        AbstractWALEvent beginEvent = mppdbDecodingPlugin.decode(ByteBuffer.wrap("BEGIN CSN: 10".getBytes()), logSequenceNumber);
+        assertThat(beginEvent, isA(BeginTXEvent.class));
+        assertThat(((BeginTXEvent) beginEvent).getCsn(), is(0L));
+        AbstractWALEvent placeholderEvent = mppdbDecodingPlugin.decode(ByteBuffer.wrap("OTHER".getBytes()), logSequenceNumber);
+        assertThat(placeholderEvent, isA(PlaceholderEvent.class));
+    }
+    
+    @Test
+    void assertDecodeParallelCommitUppercase() {
+        AbstractWALEvent actual = new MppdbDecodingPlugin(null, true, true).decode(ByteBuffer.wrap("COMMIT xid: 20".getBytes()), logSequenceNumber);
+        assertThat(actual, isA(CommitTXEvent.class));
+        assertThat(((CommitTXEvent) actual).getXid(), is(20L));
+        assertNull(((CommitTXEvent) actual).getCsn());
+    }
+
+    @Test
+    void assertDecodeSelectRowEventType() {
+        MppTableData tableData = new MppTableData();
+        tableData.setTableName("public.test");
+        tableData.setOpType("SELECT");
+        tableData.setColumnsName(new String[]{"data"});
+        tableData.setColumnsType(new String[]{"character varying"});
+        tableData.setColumnsVal(new String[]{"'1'"});
+        ByteBuffer data = ByteBuffer.wrap(JsonUtils.toJsonString(tableData).getBytes());
+        assertThrows(IngestException.class, () -> new MppdbDecodingPlugin(null, false, false).decode(data, logSequenceNumber));
+    }
+
+    @Test
+    void assertDecodeTimestampThrowsDecodingException() throws SQLException {
+        MppTableData tableData = new MppTableData();
+        tableData.setTableName("public.test");
+        tableData.setOpType("INSERT");
+        tableData.setColumnsName(new String[]{"data"});
+        tableData.setColumnsType(new String[]{"timestamp without time zone"});
+        tableData.setColumnsVal(new String[]{"'2020-01-01'"});
+        TimestampUtils timestampUtils = mock(TimestampUtils.class);
+        when(timestampUtils.toTimestamp(null, "2020-01-01")).thenThrow(new SQLException(""));
+        ByteBuffer data = ByteBuffer.wrap(JsonUtils.toJsonString(tableData).getBytes());
+        assertThrows(DecodingException.class, () -> new MppdbDecodingPlugin(new OpenGaussTimestampUtils(timestampUtils), false, false).decode(data, logSequenceNumber));
+    }
+
+    @Test
+    void assertDecodePgObjectWhenSetValueThrowsSQLException() {
+        MppTableData tableData = new MppTableData();
+        tableData.setTableName("public.test");
+        tableData.setOpType("INSERT");
+        tableData.setColumnsName(new String[]{"data"});
+        tableData.setColumnsType(new String[]{"raw"});
+        tableData.setColumnsVal(new String[]{"'7D'"});
+        ByteBuffer data = ByteBuffer.wrap(JsonUtils.toJsonString(tableData).getBytes());
+        try (MockedConstruction<PGobject> ignored = mockConstruction(PGobject.class, (mocked, mockContext) -> doThrow(new SQLException()).when(mocked).setValue(anyString()))) {
+            WriteRowEvent actual = (WriteRowEvent) new MppdbDecodingPlugin(null, false, false).decode(data, logSequenceNumber);
+            assertNull(actual.getAfterRow().get(0));
+        }
+    }
+
+    @Test
+    void assertDecodeByteaWithOddHexLength() {
+        MppTableData tableData = new MppTableData();
+        tableData.setTableName("public.test");
+        tableData.setOpType("INSERT");
+        tableData.setColumnsName(new String[]{"data"});
+        tableData.setColumnsType(new String[]{"bytea"});
+        tableData.setColumnsVal(new String[]{"'\\xabc'"});
+        ByteBuffer data = ByteBuffer.wrap(JsonUtils.toJsonString(tableData).getBytes());
+        assertThrows(IllegalArgumentException.class, () -> new MppdbDecodingPlugin(null, false, false).decode(data, logSequenceNumber));
+    }
+
+    @Test
+    void assertDecodeByteaWithIllegalHexCharacter() {
+        MppTableData tableData = new MppTableData();
+        tableData.setTableName("public.test");
+        tableData.setOpType("INSERT");
+        tableData.setColumnsName(new String[]{"data"});
+        tableData.setColumnsType(new String[]{"bytea"});
+        tableData.setColumnsVal(new String[]{"'\\x0g'"});
+        ByteBuffer data = ByteBuffer.wrap(JsonUtils.toJsonString(tableData).getBytes());
+        assertThrows(IllegalArgumentException.class, () -> new MppdbDecodingPlugin(null, false, false).decode(data, logSequenceNumber));
+    }
+    
+    @Test
+    void assertDecodeByteaWithIllegalFirstHexCharacter() {
+        MppTableData tableData = new MppTableData();
+        tableData.setTableName("public.test");
+        tableData.setOpType("INSERT");
+        tableData.setColumnsName(new String[]{"data"});
+        tableData.setColumnsType(new String[]{"bytea"});
+        tableData.setColumnsVal(new String[]{"'\\xg0'"});
+        ByteBuffer data = ByteBuffer.wrap(JsonUtils.toJsonString(tableData).getBytes());
+        assertThrows(IllegalArgumentException.class, () -> new MppdbDecodingPlugin(null, false, false).decode(data, logSequenceNumber));
     }
 }
