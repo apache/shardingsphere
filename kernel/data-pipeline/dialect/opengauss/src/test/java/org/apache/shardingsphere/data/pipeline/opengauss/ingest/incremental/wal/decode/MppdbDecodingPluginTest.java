@@ -337,7 +337,7 @@ class MppdbDecodingPluginTest {
         Object byteaObj = actual.getAfterRow().get(0);
         assertThat(byteaObj, is(255));
     }
-
+    
     @Test
     void assertDecodeWriteRowEventWithVariousTypes() {
         MppTableData tableData = new MppTableData();
@@ -361,14 +361,14 @@ class MppdbDecodingPluginTest {
         assertNull(actual.getAfterRow().get(9));
         assertThat(actual.getAfterRow().get(10).toString(), is("[\"2020-01-01 00:00:00+00\",\"2021-01-01 00:00:00+00\"]"));
     }
-
+    
     @Test
     void assertDecodeSeriallyPlaceholderEvent() {
         ByteBuffer data = ByteBuffer.wrap("RANDOM".getBytes());
         AbstractWALEvent actual = new MppdbDecodingPlugin(null, true, false).decode(data, logSequenceNumber);
         assertThat(actual, isA(PlaceholderEvent.class));
     }
-
+    
     @Test
     void assertDecodeParallelBeginWithoutFirstLsn() {
         MppdbDecodingPlugin mppdbDecodingPlugin = new MppdbDecodingPlugin(null, true, true);
@@ -386,7 +386,7 @@ class MppdbDecodingPluginTest {
         assertThat(((CommitTXEvent) actual).getXid(), is(20L));
         assertNull(((CommitTXEvent) actual).getCsn());
     }
-
+    
     @Test
     void assertDecodeSelectRowEventType() {
         MppTableData tableData = new MppTableData();
@@ -398,7 +398,7 @@ class MppdbDecodingPluginTest {
         ByteBuffer data = ByteBuffer.wrap(JsonUtils.toJsonString(tableData).getBytes());
         assertThrows(IngestException.class, () -> new MppdbDecodingPlugin(null, false, false).decode(data, logSequenceNumber));
     }
-
+    
     @Test
     void assertDecodeTimestampThrowsDecodingException() throws SQLException {
         MppTableData tableData = new MppTableData();
@@ -412,7 +412,7 @@ class MppdbDecodingPluginTest {
         ByteBuffer data = ByteBuffer.wrap(JsonUtils.toJsonString(tableData).getBytes());
         assertThrows(DecodingException.class, () -> new MppdbDecodingPlugin(new OpenGaussTimestampUtils(timestampUtils), false, false).decode(data, logSequenceNumber));
     }
-
+    
     @Test
     void assertDecodePgObjectWhenSetValueThrowsSQLException() {
         MppTableData tableData = new MppTableData();
@@ -427,7 +427,7 @@ class MppdbDecodingPluginTest {
             assertNull(actual.getAfterRow().get(0));
         }
     }
-
+    
     @ParameterizedTest
     @MethodSource("invalidHexValueProvider")
     void assertDecodeByteaWithInvalidHexValue(final String hexValue) {
