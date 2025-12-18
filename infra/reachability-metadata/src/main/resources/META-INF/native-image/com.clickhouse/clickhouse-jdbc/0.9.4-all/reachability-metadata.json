@@ -1,0 +1,167 @@
+{
+  "reflection": [
+    {
+      "condition": {
+        "typeReached": "com.clickhouse.client.internal.net.jpountz.lz4.LZ4Factory"
+      },
+      "type": "com.clickhouse.client.internal.net.jpountz.lz4.LZ4HCJNICompressor",
+      "fields": [
+        {
+          "name": "INSTANCE"
+        }
+      ],
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": [
+            "int"
+          ]
+        }
+      ]
+    },
+    {
+      "condition": {
+        "typeReached": "com.clickhouse.client.internal.net.jpountz.lz4.LZ4Factory"
+      },
+      "type": "com.clickhouse.client.internal.net.jpountz.lz4.LZ4HCJavaUnsafeCompressor",
+      "fields": [
+        {
+          "name": "INSTANCE"
+        }
+      ],
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": [
+            "int"
+          ]
+        }
+      ]
+    },
+    {
+      "condition": {
+        "typeReached": "com.clickhouse.client.internal.net.jpountz.lz4.LZ4Factory"
+      },
+      "type": "com.clickhouse.client.internal.net.jpountz.lz4.LZ4JNICompressor",
+      "fields": [
+        {
+          "name": "INSTANCE"
+        }
+      ]
+    },
+    {
+      "condition": {
+        "typeReached": "com.clickhouse.client.internal.net.jpountz.lz4.LZ4Factory"
+      },
+      "type": "com.clickhouse.client.internal.net.jpountz.lz4.LZ4JNIFastDecompressor",
+      "fields": [
+        {
+          "name": "INSTANCE"
+        }
+      ]
+    },
+    {
+      "condition": {
+        "typeReached": "com.clickhouse.client.internal.net.jpountz.lz4.LZ4Factory"
+      },
+      "type": "com.clickhouse.client.internal.net.jpountz.lz4.LZ4JNISafeDecompressor",
+      "fields": [
+        {
+          "name": "INSTANCE"
+        }
+      ]
+    },
+    {
+      "condition": {
+        "typeReached": "com.clickhouse.client.internal.net.jpountz.lz4.LZ4Factory"
+      },
+      "type": "com.clickhouse.client.internal.net.jpountz.lz4.LZ4JavaUnsafeCompressor",
+      "fields": [
+        {
+          "name": "INSTANCE"
+        }
+      ]
+    },
+    {
+      "condition": {
+        "typeReached": "com.clickhouse.client.internal.net.jpountz.lz4.LZ4Factory"
+      },
+      "type": "com.clickhouse.client.internal.net.jpountz.lz4.LZ4JavaUnsafeFastDecompressor",
+      "fields": [
+        {
+          "name": "INSTANCE"
+        }
+      ]
+    },
+    {
+      "condition": {
+        "typeReached": "com.clickhouse.client.internal.net.jpountz.lz4.LZ4Factory"
+      },
+      "type": "com.clickhouse.client.internal.net.jpountz.lz4.LZ4JavaUnsafeSafeDecompressor",
+      "fields": [
+        {
+          "name": "INSTANCE"
+        }
+      ]
+    },
+    {
+      "condition": {
+        "typeReached": "com.clickhouse.data.ClickHouseFormat"
+      },
+      "type": "com.clickhouse.data.ClickHouseFormat",
+      "fields": [
+        {
+          "name": "RowBinary"
+        },
+        {
+          "name": "TabSeparated"
+        }
+      ]
+    }
+  ],
+  "resources": [
+    {
+      "condition": {
+        "typeReached": "com.clickhouse.logging.LoggerFactory"
+      },
+      "glob": "META-INF/services/com.clickhouse.logging.LoggerFactory"
+    },
+    {
+      "condition": {
+        "typeReached": "com.clickhouse.client.config.ClickHouseClientOption"
+      },
+      "glob": "clickhouse-client-version.properties"
+    },
+    {
+      "condition": {
+        "typeReached": "com.clickhouse.client.api.Client"
+      },
+      "glob": "client-v2-version.properties"
+    },
+    {
+      "condition": {
+        "typeReached": "com.clickhouse.client.api.internal.HttpAPIClientHelper"
+      },
+      "glob": "client-v2-version.properties"
+    },
+    {
+      "condition": {
+        "typeReached": "com.clickhouse.client.internal.net.jpountz.util.Native"
+      },
+      "glob": "com/clickhouse/client/internal/net/jpountz/util/win32/amd64/liblz4-java.so"
+    },
+    {
+      "condition": {
+        "typeReached": "com.clickhouse.client.internal.org.apache.hc.core5.util.VersionInfo"
+      },
+      "glob": "com/clickhouse/client/internal/org/apache/hc/client5/version.properties"
+    },
+    {
+      "condition": {
+        "typeReached": "com.clickhouse.jdbc.Driver"
+      },
+      "glob": "jdbc-v2-version.properties"
+    }
+  ],
+  "bundles": []
+}

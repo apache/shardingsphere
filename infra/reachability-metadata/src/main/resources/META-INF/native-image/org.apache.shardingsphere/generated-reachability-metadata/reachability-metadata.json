@@ -613,7 +613,12 @@
       "condition": {
         "typeReached": "org.apache.shardingsphere.infra.expr.groovy.GroovyInlineExpressionParser"
       },
-      "type": "java.lang.Thread"
+      "type": "java.lang.Thread",
+      "fields": [
+        {
+          "name": "threadLocalRandomProbe"
+        }
+      ]
     },
     {
       "condition": {
@@ -2485,6 +2490,12 @@
     {
       "condition": {
         "typeReached": "org.apache.shardingsphere.mode.repository.standalone.jdbc.JDBCRepository"
+      },
+      "type": "org.apache.shardingsphere.driver.ShardingSphereDriver"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.shardingsphere.proxy.backend.connector.jdbc.datasource.JDBCBackendDataSource"
       },
       "type": "org.apache.shardingsphere.driver.ShardingSphereDriver"
     },
@@ -11221,6 +11232,12 @@
         "typeReached": "org.apache.shardingsphere.proxy.backend.postgresql.handler.admin.executor.variable.charset.PostgreSQLCharacterSets"
       },
       "glob": "META-INF/services/java.nio.charset.spi.CharsetProvider"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.shardingsphere.infra.algorithm.keygen.snowflake.SnowflakeKeyGenerateAlgorithm"
+      },
+      "glob": "META-INF/services/java.time.zone.ZoneRulesProvider"
     },
     {
       "condition": {

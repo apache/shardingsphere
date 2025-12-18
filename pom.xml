@@ -82,7 +82,7 @@
         <caffeine.version>2.9.3</caffeine.version>
         <transmittable-thread-local.version>2.14.2</transmittable-thread-local.version>
         
-        <antlr4.version>4.10.1</antlr4.version>
+        <antlr4.version>4.13.2</antlr4.version>
         <snakeyaml.version>2.2</snakeyaml.version>
         <gson.version>2.10.1</gson.version>
         <jackson.version>2.16.1</jackson.version>
@@ -124,7 +124,7 @@
         <h2.version>2.2.224</h2.version>
         <opengauss.version>3.1.0-og</opengauss.version>
         <mariadb-java-client.version>2.4.2</mariadb-java-client.version>
-        <clickhouse-jdbc.version>0.6.3</clickhouse-jdbc.version>
+        <clickhouse-jdbc.version>0.9.4</clickhouse-jdbc.version>
         <hive-jdbc.version>4.0.1</hive-jdbc.version>
         <hive-server2-jdbc-driver-thin.version>1.8.2</hive-server2-jdbc-driver-thin.version>
         <presto.version>0.296</presto.version>
@@ -561,7 +561,7 @@
                 <groupId>com.clickhouse</groupId>
                 <artifactId>clickhouse-jdbc</artifactId>
                 <version>${clickhouse-jdbc.version}</version>
-                <classifier>http</classifier>
+                <classifier>all</classifier>
                 <scope>test</scope>
             </dependency>
             <dependency>
