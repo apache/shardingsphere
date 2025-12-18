@@ -52,7 +52,7 @@ java.beans.Introspector was unintentionally initialized at build time. To see wh
             <plugin>
                 <groupId>org.graalvm.buildtools</groupId>
                 <artifactId>native-maven-plugin</artifactId>
-                <version>0.11.0</version>
+                <version>0.11.3</version>
                 <extensions>true</extensions>
                 <configuration>
                     <buildArgs>
@@ -92,12 +92,12 @@ java.beans.Introspector was unintentionally initialized at build time. To see wh
 
 ```groovy
 plugins {
-   id 'org.graalvm.buildtools.native' version '0.11.0'
+   id 'org.graalvm.buildtools.native' version '0.11.3'
 }
 
 dependencies {
    implementation 'org.apache.shardingsphere:shardingsphere-jdbc:${shardingsphere.version}'
-   implementation(group: 'org.graalvm.buildtools', name: 'graalvm-reachability-metadata', version: '0.11.0', classifier: 'repository', ext: 'zip')
+   implementation(group: 'org.graalvm.buildtools', name: 'graalvm-reachability-metadata', version: '0.11.3', classifier: 'repository', ext: 'zip')
 }
 
 graalvmNative {

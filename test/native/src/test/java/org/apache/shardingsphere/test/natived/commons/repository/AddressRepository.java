@@ -98,6 +98,21 @@ public final class AddressRepository {
     }
     
     /**
+     * Create Iceberg table in HiveServer2.
+     *
+     * @throws SQLException SQL exception
+     */
+    public void createIcebergTableInHiveServer2() throws SQLException {
+        String sql = "CREATE TABLE IF NOT EXISTS t_address (address_id BIGINT NOT NULL,address_name string NOT NULL, "
+                + "PRIMARY KEY (address_id) disable novalidate) STORED BY ICEBERG STORED AS ORC TBLPROPERTIES ('format-version' = '2')";
+        try (
+                Connection connection = dataSource.getConnection();
+                Statement statement = connection.createStatement()) {
+            statement.executeUpdate(sql);
+        }
+    }
+    
+    /**
      * Drop table t_address in MySQL.
      *
      * @throws SQLException SQL exception

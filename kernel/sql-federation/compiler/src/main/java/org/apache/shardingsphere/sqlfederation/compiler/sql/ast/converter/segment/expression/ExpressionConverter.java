@@ -109,19 +109,19 @@ public final class ExpressionConverter {
             return Optional.of(ExistsSubqueryExpressionConverter.convert((ExistsSubqueryExpression) segment));
         }
         if (segment instanceof SubqueryExpressionSegment) {
-            return SubqueryExpressionConverter.convert((SubqueryExpressionSegment) segment);
+            return Optional.of(SubqueryExpressionConverter.convert((SubqueryExpressionSegment) segment));
         }
         if (segment instanceof InExpression) {
-            return InExpressionConverter.convert((InExpression) segment);
+            return Optional.of(InExpressionConverter.convert((InExpression) segment));
         }
         if (segment instanceof BetweenExpression) {
             return Optional.of(BetweenExpressionConverter.convert((BetweenExpression) segment));
         }
         if (segment instanceof ParameterMarkerExpressionSegment) {
-            return ParameterMarkerExpressionConverter.convert((ParameterMarkerExpressionSegment) segment);
+            return Optional.of(ParameterMarkerExpressionConverter.convert((ParameterMarkerExpressionSegment) segment));
         }
         if (segment instanceof FunctionSegment) {
-            return FunctionConverter.convert((FunctionSegment) segment);
+            return Optional.of(FunctionConverter.convert((FunctionSegment) segment));
         }
         if (segment instanceof AggregationProjectionSegment) {
             return AggregationProjectionConverter.convert((AggregationProjectionSegment) segment);
@@ -133,7 +133,7 @@ public final class ExpressionConverter {
             return Optional.of(CaseWhenExpressionConverter.convert((CaseWhenExpression) segment));
         }
         if (segment instanceof NotExpression) {
-            return NotExpressionConverter.convert((NotExpression) segment);
+            return Optional.of(NotExpressionConverter.convert((NotExpression) segment));
         }
         if (segment instanceof TypeCastExpression) {
             return TypeCastExpressionConverter.convert((TypeCastExpression) segment);
@@ -142,25 +142,25 @@ public final class ExpressionConverter {
             return Optional.of(ExtractArgExpressionConverter.convert((ExtractArgExpression) segment));
         }
         if (segment instanceof MatchAgainstExpression) {
-            return MatchExpressionConverter.convert((MatchAgainstExpression) segment);
+            return Optional.of(MatchExpressionConverter.convert((MatchAgainstExpression) segment));
         }
         if (segment instanceof CollateExpression) {
             return Optional.of(CollateExpressionConverter.convert((CollateExpression) segment));
         }
         if (segment instanceof RowExpression) {
-            return RowExpressionConverter.convert((RowExpression) segment);
+            return Optional.of(RowExpressionConverter.convert((RowExpression) segment));
         }
         if (segment instanceof VariableSegment) {
-            return VariableSegmentConverter.convert((VariableSegment) segment);
+            return Optional.of(VariableSegmentConverter.convert((VariableSegment) segment));
         }
         if (segment instanceof UnaryOperationExpression) {
-            return UnaryOperationExpressionConverter.convert((UnaryOperationExpression) segment);
+            return Optional.of(UnaryOperationExpressionConverter.convert((UnaryOperationExpression) segment));
         }
         if (segment instanceof IntervalExpression) {
-            return IntervalExpressionConverter.convert((IntervalExpression) segment);
+            return Optional.of(IntervalExpressionConverter.convert((IntervalExpression) segment));
         }
         if (segment instanceof QuantifySubqueryExpression) {
-            return QuantifySubqueryExpressionConverter.convert((QuantifySubqueryExpression) segment);
+            return Optional.of(QuantifySubqueryExpressionConverter.convert((QuantifySubqueryExpression) segment));
         }
         throw new UnsupportedSQLOperationException("unsupported TableSegment type: " + segment.getClass());
     }

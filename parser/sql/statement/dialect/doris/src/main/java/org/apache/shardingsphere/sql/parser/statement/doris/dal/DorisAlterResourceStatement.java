@@ -15,13 +15,27 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.natived.commons.algorithm.testcontainers;
+package org.apache.shardingsphere.sql.parser.statement.doris.dal;
 
+import lombok.Getter;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.DALStatement;
+
+import java.util.Properties;
 
 /**
- * Database type for Test containers.
- * All jdbcUrl prefixes supported by testcontainers should extend this class.
+ * Alter resource statement for Doris.
  */
-public interface TestcontainersDatabaseType extends DatabaseType {
+@Getter
+public final class DorisAlterResourceStatement extends DALStatement {
+    
+    private final String resourceName;
+    
+    private final Properties properties;
+    
+    public DorisAlterResourceStatement(final DatabaseType databaseType, final String resourceName, final Properties properties) {
+        super(databaseType);
+        this.resourceName = resourceName;
+        this.properties = properties;
+    }
 }

@@ -127,15 +127,16 @@
         <clickhouse-jdbc.version>0.6.3</clickhouse-jdbc.version>
         <hive-jdbc.version>4.0.1</hive-jdbc.version>
         <hive-server2-jdbc-driver-thin.version>1.8.2</hive-server2-jdbc-driver-thin.version>
-        <presto.version>0.292</presto.version>
+        <presto.version>0.296</presto.version>
         <jaybird.version>5.0.6.java8</jaybird.version>
         
         <hikari-cp.version>4.0.3</hikari-cp.version>
         
-        <junit.version>5.13.4</junit.version>
+        <junit.version>5.14.1</junit.version>
         <hamcrest.version>3.0</hamcrest.version>
         <mockito.version>4.11.0</mockito.version>
         <awaitility.version>4.3.0</awaitility.version>
+        <firebird-testcontainers-java.version>1.6.0</firebird-testcontainers-java.version>
         <commons-csv.version>1.9.0</commons-csv.version>
         
         <graal-sdk.version>24.1.2</graal-sdk.version>
@@ -145,7 +146,7 @@
         <protobuf-maven-plugin.version>0.6.1</protobuf-maven-plugin.version>
         <dockerfile-maven.version>1.4.13</dockerfile-maven.version>
         <os-detector-maven-plugin.version>0.3.1</os-detector-maven-plugin.version>
-        <native-maven-plugin.version>0.11.0</native-maven-plugin.version>
+        <native-maven-plugin.version>0.11.3</native-maven-plugin.version>
         
         <!-- Compile plugin versions -->
         <maven-antrun-plugin.version>3.1.0</maven-antrun-plugin.version>
@@ -1176,14 +1177,6 @@
                                         <goal>merge-agent-files</goal>
                                     </goals>
                                     <phase>integration-test</phase>
-                                </execution>
-                                <!--TODO See https://github.com/graalvm/native-build-tools/pull/748 -->
-                                <execution>
-                                    <id>metadata-copy-manually</id>
-                                    <goals>
-                                        <goal>metadata-copy</goal>
-                                    </goals>
-                                    <phase>deploy</phase>
                                 </execution>
                             </executions>
                         </plugin>

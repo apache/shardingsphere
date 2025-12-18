@@ -51,6 +51,6 @@ public final class ShardingConditionEngine {
         TimestampServiceRule timestampServiceRule = globalRuleMetaData.getSingleRule(TimestampServiceRule.class);
         return sqlStatementContext instanceof InsertStatementContext
                 ? new InsertClauseShardingConditionEngine(database, shardingRule, timestampServiceRule).createShardingConditions((InsertStatementContext) sqlStatementContext, params)
-                : new WhereClauseShardingConditionEngine(shardingRule, timestampServiceRule).createShardingConditions(sqlStatementContext, params);
+                : new WhereClauseShardingConditionEngine(database, shardingRule, timestampServiceRule).createShardingConditions(sqlStatementContext, params);
     }
 }

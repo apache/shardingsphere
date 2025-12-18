@@ -29,4 +29,53 @@
     <install-plugin sql-case-id="install_plugin">
         <plugin name="binlog" start-index="15" stop-index="20" />
     </install-plugin>
+
+    <install-plugin sql-case-id="install_plugin_from">
+        <plugin source="/home/users/doris/auditdemo.zip" />
+    </install-plugin>
+    
+    <install-plugin sql-case-id="install_plugin_with_properties">
+        <plugin source="/home/users/doris/auditdemo.zip">
+            <property key="md5sum" value="d41d8cd98f00b204e9800998ecf8427e" />
+        </plugin>
+    </install-plugin>
+    
+    <install-plugin sql-case-id="install_plugin_with_identifier">
+        <plugin source="plugin_path">
+            <property key="timeout" value="30" />
+        </plugin>
+    </install-plugin>
+    
+    <install-plugin sql-case-id="install_plugin_with_number">
+        <plugin source="/path/to/plugin.zip">
+            <property key="timeout" value="30" />
+        </plugin>
+    </install-plugin>
+    
+    <install-plugin sql-case-id="install_plugin_with_boolean">
+        <plugin source="/path/to/plugin.zip">
+            <property key="auto_load" value="true" />
+        </plugin>
+    </install-plugin>
+    
+    <install-plugin sql-case-id="install_plugin_with_null">
+        <plugin source="/path/to/plugin.zip">
+            <property key="description" value="NULL" />
+        </plugin>
+    </install-plugin>
+    
+    <install-plugin sql-case-id="install_plugin_multiple_properties">
+        <plugin source="/path/to/plugin.zip">
+            <property key="md5sum" value="abc123" />
+            <property key="timeout" value="30" />
+        </plugin>
+    </install-plugin>
+    
+    <install-plugin sql-case-id="install_plugin_mixed_types">
+        <plugin source="/path/to/plugin.zip">
+            <property key="md5sum" value="abc123" />
+            <property key="timeout" value="30" />
+            <property key="auto_load" value="false" />
+        </plugin>
+    </install-plugin>
 </sql-parser-test-cases>

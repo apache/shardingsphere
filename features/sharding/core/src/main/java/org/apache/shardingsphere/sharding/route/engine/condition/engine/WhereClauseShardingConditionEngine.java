@@ -17,12 +17,18 @@
 
 package org.apache.shardingsphere.sharding.route.engine.condition.engine;
 
+import com.cedarsoftware.util.CaseInsensitiveSet;
 import com.google.common.collect.Range;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.binder.context.available.WhereContextAvailable;
 import org.apache.shardingsphere.infra.binder.context.extractor.SQLStatementContextExtractor;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
+import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
+import org.apache.shardingsphere.infra.exception.kernel.metadata.SchemaNotFoundException;
+import org.apache.shardingsphere.infra.exception.kernel.metadata.TableNotFoundException;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.HashColumn;
+import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.sharding.exception.data.ShardingValueDataTypeException;
 import org.apache.shardingsphere.sharding.route.engine.condition.AlwaysFalseShardingCondition;
 import org.apache.shardingsphere.sharding.route.engine.condition.ShardingCondition;
@@ -58,6 +64,8 @@ import java.util.Set;
  */
 @RequiredArgsConstructor
 public final class WhereClauseShardingConditionEngine {
+    
+    private final ShardingSphereDatabase database;
     
     private final ShardingRule rule;
     
@@ -106,7 +114,11 @@ public final class WhereClauseShardingConditionEngine {
                 if (!shardingColumn.isPresent()) {
                     continue;
                 }
-                HashColumn column = new HashColumn(shardingColumn.get(), tableName);
+                String schemaName = columnSegment.getColumnBoundInfo().getOriginalSchema().getValue();
+                ShardingSpherePreconditions.checkState(database.containsSchema(schemaName), () -> new SchemaNotFoundException(schemaName));
+                ShardingSphereSchema schema = database.getSchema(schemaName);
+                ShardingSpherePreconditions.checkState(schema.containsTable(tableName), () -> new TableNotFoundException(tableName));
+                HashColumn column = new HashColumn(shardingColumn.get(), tableName, schema.getTable(tableName).getColumn(shardingColumn.get()).isCaseSensitive());
                 Optional<ShardingConditionValue> shardingConditionValue = ConditionValueGeneratorFactory.generate(each, column, params, timestampServiceRule);
                 if (!shardingConditionValue.isPresent()) {
                     continue;
@@ -141,7 +153,7 @@ public final class WhereClauseShardingConditionEngine {
         for (ShardingConditionValue each : shardingConditionValues) {
             parameterMarkerIndexes.addAll(each.getParameterMarkerIndexes());
             if (each instanceof ListShardingConditionValue) {
-                listValue = mergeListShardingValues(((ListShardingConditionValue) each).getValues(), listValue);
+                listValue = mergeListShardingValues(column, ((ListShardingConditionValue) each).getValues(), listValue);
                 if (listValue.isEmpty()) {
                     return new AlwaysFalseShardingConditionValue();
                 }
@@ -164,12 +176,18 @@ public final class WhereClauseShardingConditionEngine {
                 : new ListShardingConditionValue<>(column.getName(), column.getTableName(), listValue, new ArrayList<>(parameterMarkerIndexes));
     }
     
-    private Collection<Comparable<?>> mergeListShardingValues(final Collection<Comparable<?>> value1, final Collection<Comparable<?>> value2) {
+    private Collection<Comparable<?>> mergeListShardingValues(final HashColumn column, final Collection<Comparable<?>> value1, final Collection<Comparable<?>> value2) {
         if (null == value2) {
             return value1;
         }
-        value1.retainAll(value2);
-        return value1;
+        if (column.isCaseSensitive()) {
+            value1.retainAll(value2);
+            return value1;
+        }
+        Collection<Comparable<?>> caseInSensitiveValue1 = new CaseInsensitiveSet<>(value1);
+        Collection<Comparable<?>> caseInSensitiveValue2 = new CaseInsensitiveSet<>(value2);
+        caseInSensitiveValue1.retainAll(caseInSensitiveValue2);
+        return caseInSensitiveValue1;
     }
     
     private Range<Comparable<?>> mergeRangeShardingValues(final Range<Comparable<?>> value1, final Range<Comparable<?>> value2) {

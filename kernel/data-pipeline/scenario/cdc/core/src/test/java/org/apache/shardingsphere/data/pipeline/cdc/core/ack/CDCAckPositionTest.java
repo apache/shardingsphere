@@ -15,18 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.cdc.client;
+package org.apache.shardingsphere.data.pipeline.cdc.core.ack;
 
-import org.apache.shardingsphere.data.pipeline.cdc.client.config.CDCClientConfiguration;
+import org.apache.shardingsphere.data.pipeline.core.ingest.position.type.placeholder.IngestPlaceholderPosition;
+import org.apache.shardingsphere.data.pipeline.core.ingest.record.FinishedRecord;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
 
-class CDCClientTest {
+class CDCAckPositionTest {
     
     @Test
-    void assertInvalidParameters() {
-        CDCClientConfiguration config = new CDCClientConfiguration("localhost", -1, 1000);
-        assertThrows(IllegalArgumentException.class, () -> new CDCClient(config));
+    void assertGetDataRecordCount() {
+        assertThat(new CDCAckPosition(new FinishedRecord(new IngestPlaceholderPosition()), 2).getDataRecordCount(), is(2));
     }
 }
