@@ -20,9 +20,9 @@ package org.apache.shardingsphere.infra.rewrite.engine;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
-import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.dml.SelectStatementContext;
+import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnit;
@@ -139,7 +139,7 @@ public final class RouteSQLRewriteEngine {
         boolean containsDollarMarker = sqlRewriteContext.getSqlStatementContext() instanceof SelectStatementContext
                 && ((SelectStatementContext) (sqlRewriteContext.getSqlStatementContext())).isContainsDollarParameterMarker();
         for (RouteUnit each : routeUnits) {
-            sql.add(SQLUtils.trimSemicolon(new SQLBuilderEngine(sqlRewriteContext.getSql(), sqlRewriteContext.getSqlTokens(), each).buildSQL()));
+            sql.add(SQLUtils.trimSemicolon(new SQLBuilderEngine(sqlRewriteContext, each).buildSQL()));
             if (containsDollarMarker && !params.isEmpty()) {
                 continue;
             }
@@ -153,7 +153,7 @@ public final class RouteSQLRewriteEngine {
     }
     
     private String getActualSQL(final SQLRewriteContext sqlRewriteContext, final RouteUnit routeUnit) {
-        return new SQLBuilderEngine(sqlRewriteContext.getSql(), sqlRewriteContext.getSqlTokens(), routeUnit).buildSQL();
+        return new SQLBuilderEngine(sqlRewriteContext, routeUnit).buildSQL();
     }
     
     private List<Object> getParameters(final SQLRewriteContext sqlRewriteContext, final RouteContext routeContext, final RouteUnit routeUnit) {

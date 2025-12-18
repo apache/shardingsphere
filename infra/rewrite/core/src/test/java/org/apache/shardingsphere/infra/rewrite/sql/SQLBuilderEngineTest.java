@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.infra.rewrite.sql;
 
+import org.apache.shardingsphere.infra.rewrite.context.SQLRewriteContext;
 import org.apache.shardingsphere.infra.rewrite.sql.fixture.SQLTokenFixture;
 import org.apache.shardingsphere.infra.route.context.RouteMapper;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
@@ -27,6 +28,7 @@ import java.util.Collections;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 class SQLBuilderEngineTest {
     
@@ -45,14 +47,20 @@ class SQLBuilderEngineTest {
     @Test
     void assertCreateSQLBuilderEngineWithRouteUnitConstructor() {
         RouteUnit routeUnit = new RouteUnit(mock(RouteMapper.class), Collections.singletonList(new RouteMapper("tbl", "tbl_0")));
-        SQLBuilderEngine actual = new SQLBuilderEngine("SELECT * FROM tbl WHERE id=?", Collections.emptyList(), routeUnit);
+        SQLRewriteContext sqlRewriteContext = mock(SQLRewriteContext.class);
+        when(sqlRewriteContext.getSql()).thenReturn("SELECT * FROM tbl WHERE id=?");
+        when(sqlRewriteContext.getSqlTokens()).thenReturn(Collections.emptyList());
+        SQLBuilderEngine actual = new SQLBuilderEngine(sqlRewriteContext, routeUnit);
         assertThat(actual.buildSQL(), is("SELECT * FROM tbl WHERE id=?"));
     }
     
     @Test
     void assertCreateSQLBuilderEngineWithRouteUnitConstructorAndTokens() {
         RouteUnit routeUnit = new RouteUnit(mock(RouteMapper.class), Collections.singletonList(new RouteMapper("tbl", "tbl_0")));
-        SQLBuilderEngine actual = new SQLBuilderEngine("SELECT * FROM tbl WHERE id=?", Collections.singletonList(new SQLTokenFixture(14, 16)), routeUnit);
+        SQLRewriteContext sqlRewriteContext = mock(SQLRewriteContext.class);
+        when(sqlRewriteContext.getSql()).thenReturn("SELECT * FROM tbl WHERE id=?");
+        when(sqlRewriteContext.getSqlTokens()).thenReturn(Collections.singletonList(new SQLTokenFixture(14, 16)));
+        SQLBuilderEngine actual = new SQLBuilderEngine(sqlRewriteContext, routeUnit);
         assertThat(actual.buildSQL(), is("SELECT * FROM XXX WHERE id=?"));
     }
     

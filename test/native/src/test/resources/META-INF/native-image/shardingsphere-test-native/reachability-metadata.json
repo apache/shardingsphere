@@ -286,7 +286,7 @@
     },
     {
       "condition": {
-        "typeReached": "org.apache.shardingsphere.infra.url.classpath.ClassPathLocalFileURLLoader"
+        "typeReached": "org.testcontainers.jdbc.ContainerDatabaseDriver"
       },
       "glob": "test-native/sql/**/*.sql"
     },

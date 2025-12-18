@@ -324,7 +324,7 @@ BSD licenses
 The following components are provided under a BSD license. See project link for details.
 The text of each license is also included at licenses/LICENSE-[project].txt.
 
-    antlr4-runtime 4.10.1: https://github.com/antlr/antlr4, BSD-3-Clause
+    antlr4-runtime 4.13.2: https://github.com/antlr/antlr4, BSD-3-Clause
     asm 9.3: https://github.com/llbit/ow2-asm, BSD-3-Clause
     commons-compiler 3.1.11: https://github.com/janino-compiler/janino, BSD-3-Clause
     janino 3.1.11: https://github.com/janino-compiler/janino, BSD-3-Clause

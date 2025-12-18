@@ -372,9 +372,9 @@ Reference https://issues.apache.org/jira/browse/HIVE-28418 .
 
 ### SQL Limitations
 
-HiveServer2 does not guarantee that every `insert` related DML SQL can be executed successfully, although no exception may be thrown.
-
 ShardingSphere JDBC DataSource does not yet support executing the `set` statement of HiveServer2.
+The current ShardingSphere parsing of HiveServer2's `INNER JOIN` syntax has shortcomings,
+and it may return incorrect query results for SQL statements such as `SELECT i.* FROM t_order o, t_order_item i WHERE o.order_id = i.order_id`.
 
 #### Use `initFile` parameter to partially bypass SQL restrictions
 

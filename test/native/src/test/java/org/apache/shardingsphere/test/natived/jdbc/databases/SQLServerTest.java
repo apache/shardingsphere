@@ -22,15 +22,12 @@ import com.zaxxer.hikari.HikariDataSource;
 import org.apache.shardingsphere.test.natived.commons.TestShardingService;
 import org.apache.shardingsphere.test.natived.commons.util.ResourceUtils;
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.EnabledInNativeImage;
 import org.testcontainers.jdbc.ContainerDatabaseDriver;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 @EnabledInNativeImage
 class SQLServerTest {
@@ -38,15 +35,6 @@ class SQLServerTest {
     private DataSource logicDataSource;
     
     private TestShardingService testShardingService;
-    
-    /**
-     * Related to <a href="https://github.com/testcontainers/testcontainers-java/issues/3079">testcontainers/testcontainers-java#3079</a>
-     * and {@link com.microsoft.sqlserver.jdbc.SQLServerConnection}.
-     */
-    @BeforeEach
-    void beforeEach() {
-        Logger.getLogger("com.microsoft.sqlserver.jdbc.internals.SQLServerConnection").setLevel(Level.SEVERE);
-    }
     
     @AfterEach
     void afterEach() throws SQLException {

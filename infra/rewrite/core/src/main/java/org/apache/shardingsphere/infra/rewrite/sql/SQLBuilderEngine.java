@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.infra.rewrite.sql;
 
+import org.apache.shardingsphere.infra.rewrite.context.SQLRewriteContext;
 import org.apache.shardingsphere.infra.rewrite.sql.impl.AbstractSQLBuilder;
 import org.apache.shardingsphere.infra.rewrite.sql.impl.DefaultSQLBuilder;
 import org.apache.shardingsphere.infra.rewrite.sql.impl.RouteSQLBuilder;
@@ -36,8 +37,8 @@ public final class SQLBuilderEngine {
         sqlBuilder = new DefaultSQLBuilder(sql, sqlTokens);
     }
     
-    public SQLBuilderEngine(final String sql, final List<SQLToken> sqlTokens, final RouteUnit routeUnit) {
-        sqlBuilder = new RouteSQLBuilder(sql, sqlTokens, routeUnit);
+    public SQLBuilderEngine(final SQLRewriteContext sqlRewriteContext, final RouteUnit routeUnit) {
+        sqlBuilder = new RouteSQLBuilder(sqlRewriteContext.getSql(), sqlRewriteContext.getSqlTokens(), routeUnit);
     }
     
     /**
