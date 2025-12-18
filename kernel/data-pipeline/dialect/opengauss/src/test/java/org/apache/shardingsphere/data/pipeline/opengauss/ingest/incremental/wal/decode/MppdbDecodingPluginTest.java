@@ -32,6 +32,8 @@ import org.opengauss.jdbc.TimestampUtils;
 import org.opengauss.replication.LogSequenceNumber;
 import org.opengauss.util.PGobject;
 import org.mockito.MockedConstruction;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 
 import java.math.BigDecimal;
 import java.nio.ByteBuffer;
@@ -41,6 +43,7 @@ import java.sql.Timestamp;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.stream.Stream;
 import java.util.stream.IntStream;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -425,39 +428,20 @@ class MppdbDecodingPluginTest {
         }
     }
 
-    @Test
-    void assertDecodeByteaWithOddHexLength() {
+    @ParameterizedTest
+    @MethodSource("invalidHexValueProvider")
+    void assertDecodeByteaWithInvalidHexValue(final String hexValue) {
         MppTableData tableData = new MppTableData();
         tableData.setTableName("public.test");
         tableData.setOpType("INSERT");
         tableData.setColumnsName(new String[]{"data"});
         tableData.setColumnsType(new String[]{"bytea"});
-        tableData.setColumnsVal(new String[]{"'\\xabc'"});
-        ByteBuffer data = ByteBuffer.wrap(JsonUtils.toJsonString(tableData).getBytes());
-        assertThrows(IllegalArgumentException.class, () -> new MppdbDecodingPlugin(null, false, false).decode(data, logSequenceNumber));
-    }
-
-    @Test
-    void assertDecodeByteaWithIllegalHexCharacter() {
-        MppTableData tableData = new MppTableData();
-        tableData.setTableName("public.test");
-        tableData.setOpType("INSERT");
-        tableData.setColumnsName(new String[]{"data"});
-        tableData.setColumnsType(new String[]{"bytea"});
-        tableData.setColumnsVal(new String[]{"'\\x0g'"});
+        tableData.setColumnsVal(new String[]{hexValue});
         ByteBuffer data = ByteBuffer.wrap(JsonUtils.toJsonString(tableData).getBytes());
         assertThrows(IllegalArgumentException.class, () -> new MppdbDecodingPlugin(null, false, false).decode(data, logSequenceNumber));
     }
     
-    @Test
-    void assertDecodeByteaWithIllegalFirstHexCharacter() {
-        MppTableData tableData = new MppTableData();
-        tableData.setTableName("public.test");
-        tableData.setOpType("INSERT");
-        tableData.setColumnsName(new String[]{"data"});
-        tableData.setColumnsType(new String[]{"bytea"});
-        tableData.setColumnsVal(new String[]{"'\\xg0'"});
-        ByteBuffer data = ByteBuffer.wrap(JsonUtils.toJsonString(tableData).getBytes());
-        assertThrows(IllegalArgumentException.class, () -> new MppdbDecodingPlugin(null, false, false).decode(data, logSequenceNumber));
+    private static Stream<String> invalidHexValueProvider() {
+        return Stream.of("'\\xabc'", "'\\x0g'", "'\\xg0'");
     }
 }
