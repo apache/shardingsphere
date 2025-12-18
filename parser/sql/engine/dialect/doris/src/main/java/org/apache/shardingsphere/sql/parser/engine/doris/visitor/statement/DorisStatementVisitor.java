@@ -30,6 +30,7 @@ import org.apache.shardingsphere.sql.parser.api.ASTNode;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementBaseVisitor;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.AggregationFunctionContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.AliasContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ArrayLiteralsContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.AssignmentContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.AssignmentValueContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.AssignmentValuesContext;
@@ -290,7 +291,10 @@ public abstract class DorisStatementVisitor extends DorisStatementBaseVisitor<AS
         if (null != ctx.nullValueLiterals()) {
             return visit(ctx.nullValueLiterals());
         }
-        throw new IllegalStateException("Literals must have string, number, dateTime, hex, bit, boolean or null.");
+        if (null != ctx.arrayLiterals()) {
+            return visit(ctx.arrayLiterals());
+        }
+        throw new IllegalStateException("Literals must have string, number, dateTime, hex, bit, boolean, null or array.");
     }
     
     @Override
@@ -334,6 +338,15 @@ public abstract class DorisStatementVisitor extends DorisStatementBaseVisitor<AS
     @Override
     public final ASTNode visitNullValueLiterals(final NullValueLiteralsContext ctx) {
         return new NullLiteralValue(ctx.getText());
+    }
+    
+    @Override
+    public final ASTNode visitArrayLiterals(final ArrayLiteralsContext ctx) {
+        ListExpression result = new ListExpression(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex());
+        for (ExprContext each : ctx.expr()) {
+            result.getItems().add((ExpressionSegment) visit(each));
+        }
+        return result;
     }
     
     @Override
@@ -622,7 +635,11 @@ public abstract class DorisStatementVisitor extends DorisStatementBaseVisitor<AS
             return result;
         }
         if (null != ctx.literals()) {
-            return SQLUtils.createLiteralExpression(visit(ctx.literals()), startIndex, stopIndex, ctx.literals().start.getInputStream().getText(new Interval(startIndex, stopIndex)));
+            ASTNode astNode = visit(ctx.literals());
+            if (astNode instanceof ExpressionSegment) {
+                return astNode;
+            }
+            return SQLUtils.createLiteralExpression(astNode, startIndex, stopIndex, ctx.literals().start.getInputStream().getText(new Interval(startIndex, stopIndex)));
         }
         if (null != ctx.intervalExpression()) {
             return visit(ctx.intervalExpression());

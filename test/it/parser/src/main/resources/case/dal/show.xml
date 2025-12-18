@@ -1098,4 +1098,70 @@
     <show sql-case-id="show_compactions_with_limit" />
     <show sql-case-id="show_compactions_with_compaction_ID" />
     <show sql-case-id="show_compactions_all_options" />
+
+    <show-transaction sql-case-id="show_transaction_with_id">
+        <where start-index="22" stop-index="31">
+            <expr>
+                <binary-operation-expression start-index="28" stop-index="31">
+                    <left>
+                        <column name="ID" start-index="28" stop-index="29" />
+                    </left>
+                    <operator>=</operator>
+                    <right>
+                        <literal-expression value="4005" start-index="31" stop-index="31" />
+                    </right>
+                </binary-operation-expression>
+            </expr>
+        </where>
+    </show-transaction>
+
+    <show-transaction sql-case-id="show_transaction_with_label">
+        <where start-index="22" stop-index="42">
+            <expr>
+                <binary-operation-expression start-index="28" stop-index="42">
+                    <left>
+                        <column name="label" start-index="28" stop-index="32" />
+                    </left>
+                    <operator>=</operator>
+                    <right>
+                        <literal-expression value="test_label" start-index="34" stop-index="42" />
+                    </right>
+                </binary-operation-expression>
+            </expr>
+        </where>
+    </show-transaction>
+
+    <show-transaction sql-case-id="show_transaction_from_db_with_id">
+        <database name="test_db" start-index="22" stop-index="28" />
+        <where start-index="30" stop-index="39">
+            <expr>
+                <binary-operation-expression start-index="36" stop-index="39">
+                    <left>
+                        <column name="ID" start-index="36" stop-index="37" />
+                    </left>
+                    <operator>=</operator>
+                    <right>
+                        <literal-expression value="4005" start-index="39" stop-index="39" />
+                    </right>
+                </binary-operation-expression>
+            </expr>
+        </where>
+    </show-transaction>
+
+    <show-transaction sql-case-id="show_transaction_from_db_with_label">
+        <database name="test_db" start-index="22" stop-index="28" />
+        <where start-index="30" stop-index="50">
+            <expr>
+                <binary-operation-expression start-index="36" stop-index="50">
+                    <left>
+                        <column name="label" start-index="36" stop-index="40" />
+                    </left>
+                    <operator>=</operator>
+                    <right>
+                        <literal-expression value="test_label" start-index="42" stop-index="50" />
+                    </right>
+                </binary-operation-expression>
+            </expr>
+        </where>
+    </show-transaction>
 </sql-parser-test-cases>

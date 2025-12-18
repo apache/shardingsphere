@@ -254,6 +254,10 @@ showCharset
     : SHOW CHARSET
     ;
 
+showTransaction
+    : SHOW TRANSACTION fromDatabase? showWhereClause
+    ;
+
 setCharacter
     : SET (CHARACTER SET | CHARSET) (charsetName | DEFAULT)
     ;
@@ -707,4 +711,5 @@ show
     | showVariables
     | showReplicas
     | showReplicaStatus
+    | showTransaction
     ;

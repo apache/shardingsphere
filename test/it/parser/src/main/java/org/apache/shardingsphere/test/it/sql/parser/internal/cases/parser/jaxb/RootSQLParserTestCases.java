@@ -68,6 +68,7 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.s
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.mysql.show.trigger.MySQLShowCreateTriggerStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.mysql.show.trigger.MySQLShowTriggersStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.mysql.show.variable.MySQLShowVariablesStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.mysql.show.MySQLShowTransactionStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.mysql.table.MySQLCheckTableStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.mysql.table.MySQLChecksumTableStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.mysql.table.MySQLOptimizeTableStatementTestCase;
@@ -670,6 +671,9 @@ public final class RootSQLParserTestCases {
     
     @XmlElement(name = "show-index")
     private final List<MySQLShowIndexStatementTestCase> showIndexTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "show-transaction")
+    private final List<MySQLShowTransactionStatementTestCase> showTransactionTestCases = new LinkedList<>();
     
     @XmlElement(name = "show")
     private final List<ShowStatementTestCase> showTestCases = new LinkedList<>();

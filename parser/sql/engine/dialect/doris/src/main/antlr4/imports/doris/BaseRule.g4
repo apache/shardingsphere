@@ -76,6 +76,7 @@ literals
     | bitValueLiterals
     | booleanLiterals
     | nullValueLiterals
+    | arrayLiterals
     ;
 
 string_
@@ -108,6 +109,10 @@ booleanLiterals
 
 nullValueLiterals
     : NULL
+    ;
+
+arrayLiterals
+    : LBT_ (expr (COMMA_ expr)*)? RBT_
     ;
 
 collationName

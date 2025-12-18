@@ -5304,4 +5304,92 @@
             <simple-table name="DUAL" start-index="74" stop-index="77"/>
         </from>
     </select>
+
+    <select sql-case-id="select_l2_distance">
+        <projections start-index="7" stop-index="33">
+            <expression-projection start-index="7" stop-index="33" text="L2_DISTANCE([4, 5], [6, 8])">
+                <expr>
+                    <function function-name="L2_DISTANCE" text="L2_DISTANCE([4, 5], [6, 8])" start-index="7" stop-index="33">
+                        <parameter>
+                            <list-expression start-index="19" stop-index="24">
+                                <items>
+                                    <literal-expression value="4" start-index="20" stop-index="20" />
+                                </items>
+                                <items>
+                                    <literal-expression value="5" start-index="23" stop-index="23" />
+                                </items>
+                            </list-expression>
+                        </parameter>
+                        <parameter>
+                            <list-expression start-index="27" stop-index="32">
+                                <items>
+                                    <literal-expression value="6" start-index="28" stop-index="28" />
+                                </items>
+                                <items>
+                                    <literal-expression value="8" start-index="31" stop-index="31" />
+                                </items>
+                            </list-expression>
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="select_l2_distance_multiple">
+        <projections start-index="7" stop-index="61">
+            <expression-projection start-index="7" stop-index="33" text="L2_DISTANCE([4, 5], [6, 8])">
+                <expr>
+                    <function function-name="L2_DISTANCE" text="L2_DISTANCE([4, 5], [6, 8])" start-index="7" stop-index="33">
+                        <parameter>
+                            <list-expression start-index="19" stop-index="24">
+                                <items>
+                                    <literal-expression value="4" start-index="20" stop-index="20" />
+                                </items>
+                                <items>
+                                    <literal-expression value="5" start-index="23" stop-index="23" />
+                                </items>
+                            </list-expression>
+                        </parameter>
+                        <parameter>
+                            <list-expression start-index="27" stop-index="32">
+                                <items>
+                                    <literal-expression value="6" start-index="28" stop-index="28" />
+                                </items>
+                                <items>
+                                    <literal-expression value="8" start-index="31" stop-index="31" />
+                                </items>
+                            </list-expression>
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+            <expression-projection start-index="35" stop-index="61" text="L2_DISTANCE([3, 6], [4, 5])">
+                <expr>
+                    <function function-name="L2_DISTANCE" text="L2_DISTANCE([3, 6], [4, 5])" start-index="35" stop-index="61">
+                        <parameter>
+                            <list-expression start-index="47" stop-index="52">
+                                <items>
+                                    <literal-expression value="3" start-index="48" stop-index="48" />
+                                </items>
+                                <items>
+                                    <literal-expression value="6" start-index="51" stop-index="51" />
+                                </items>
+                            </list-expression>
+                        </parameter>
+                        <parameter>
+                            <list-expression start-index="55" stop-index="60">
+                                <items>
+                                    <literal-expression value="4" start-index="56" stop-index="56" />
+                                </items>
+                                <items>
+                                    <literal-expression value="5" start-index="59" stop-index="59" />
+                                </items>
+                            </list-expression>
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
 </sql-parser-test-cases>

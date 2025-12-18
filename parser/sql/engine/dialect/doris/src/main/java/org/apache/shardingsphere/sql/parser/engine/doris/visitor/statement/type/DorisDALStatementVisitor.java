@@ -109,6 +109,7 @@ import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ShowSla
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ShowStatusContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ShowTableStatusContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ShowTablesContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ShowTransactionContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ShowTriggersContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ShowVariablesContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ShowWarningsContext;
@@ -232,6 +233,7 @@ import org.apache.shardingsphere.sql.parser.statement.mysql.dal.show.procedure.M
 import org.apache.shardingsphere.sql.parser.statement.mysql.dal.show.process.MySQLShowProcessListStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.dal.show.profile.MySQLShowProfileStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.dal.show.profile.MySQLShowProfilesStatement;
+import org.apache.shardingsphere.sql.parser.statement.mysql.dal.show.MySQLShowTransactionStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.dal.show.table.MySQLShowCreateTableStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.dal.show.table.MySQLShowOpenTablesStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.dal.show.table.MySQLShowTableStatusStatement;
@@ -813,6 +815,18 @@ public final class DorisDALStatementVisitor extends DorisStatementVisitor implem
     @Override
     public ASTNode visitShowPrivileges(final ShowPrivilegesContext ctx) {
         return new MySQLShowPrivilegesStatement(getDatabaseType());
+    }
+    
+    @Override
+    public ASTNode visitShowTransaction(final ShowTransactionContext ctx) {
+        MySQLShowTransactionStatement result = new MySQLShowTransactionStatement(getDatabaseType());
+        if (null != ctx.fromDatabase()) {
+            result.setFromDatabase(((FromDatabaseSegment) visit(ctx.fromDatabase())).getDatabase());
+        }
+        if (null != ctx.showWhereClause()) {
+            result.setWhere((WhereSegment) visit(ctx.showWhereClause()));
+        }
+        return result;
     }
     
     @Override
