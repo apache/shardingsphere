@@ -20,6 +20,7 @@
     <sql-case id="show-streaming-rule" value="SHOW STREAMING RULE;" db-types="ShardingSphere"/>
     <sql-case id="alter-streaming-rule" value="ALTER STREAMING RULE (READ(WORKER_THREAD=20,BATCH_SIZE=1000,SHARDING_SIZE=10000000,RATE_LIMITER (TYPE(NAME='QPS',PROPERTIES('qps'='500')))),WRITE(WORKER_THREAD=20,BATCH_SIZE=2000,RATE_LIMITER (TYPE(NAME='TPS',PROPERTIES('tps'='2000')))),STREAM_CHANNEL (TYPE(NAME='MEMORY',PROPERTIES('block-queue-size'='100'))));" db-types="ShardingSphere" />
     <sql-case id="alter-streaming-rule-read-lite" value="ALTER STREAMING RULE (READ(RATE_LIMITER (TYPE(NAME='QPS'))));" db-types="ShardingSphere" />
+    <sql-case id="alter-streaming-rule-read-without-rate-limiter" value="ALTER STREAMING RULE (READ(WORKER_THREAD=20,BATCH_SIZE=1000,SHARDING_SIZE=10000000));" db-types="ShardingSphere" />
     <sql-case id="alter-streaming-rule-write-lite" value="ALTER STREAMING RULE (WRITE(RATE_LIMITER (TYPE(NAME='TPS'))));" db-types="ShardingSphere" />
     <sql-case id="show-streaming-list" value="SHOW STREAMING LIST;" db-types="ShardingSphere"/>
     <sql-case id="show-streaming-status" value="SHOW STREAMING STATUS 123;" db-types="ShardingSphere"/>

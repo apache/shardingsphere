@@ -54,6 +54,17 @@
         </rule>
     </alter-streaming-rule>
 
+    <alter-streaming-rule sql-case-id="alter-streaming-rule-read-without-rate-limiter">
+        <job-type-name>STREAMING</job-type-name>
+        <rule>
+            <read>
+                <worker-thread>20</worker-thread>
+                <batch-size>1000</batch-size>
+                <sharding-size>10000000</sharding-size>
+            </read>
+        </rule>
+    </alter-streaming-rule>
+
     <alter-streaming-rule sql-case-id="alter-streaming-rule-write-lite">
         <job-type-name>STREAMING</job-type-name>
         <rule>
