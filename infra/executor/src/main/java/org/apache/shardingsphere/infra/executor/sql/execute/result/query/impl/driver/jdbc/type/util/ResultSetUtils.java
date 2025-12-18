@@ -91,7 +91,7 @@ public final class ResultSetUtils {
         try {
             return convertType.cast(value);
         } catch (final ClassCastException ignored) {
-            throw new SQLFeatureNotSupportedException("getObject with type");
+            throw new SQLFeatureNotSupportedException("getObject with type, cannot convert " + value.getClass().getName() + ":" + value + " to " + convertType.getName());
         }
     }
     
