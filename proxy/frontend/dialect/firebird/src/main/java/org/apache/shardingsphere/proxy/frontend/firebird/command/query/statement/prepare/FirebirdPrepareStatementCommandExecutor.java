@@ -458,7 +458,7 @@ public final class FirebirdPrepareStatementCommandExecutor implements CommandExe
         String tableAliasString = null == tableAlias ? table.getName() : tableAlias.getValue();
         String columnAliasString = null == columnAlias ? column.getName() : columnAlias.getValue();
         String owner = connectionSession.getConnectionContext().getGrantee().getUsername();
-        Integer columnLength = resolveColumnLength(table, column);
+        Integer columnLength = (null != column && isDynamicLengthType(column.getDataType())) ? resolveColumnLength(table, column) : null;
         describeColumns.add(new FirebirdReturnColumnPacket(requestedItems, idx, table, column, tableAliasString, columnAliasString, owner, columnLength));
     }
     
@@ -468,5 +468,22 @@ public final class FirebirdPrepareStatementCommandExecutor implements CommandExe
         }
         OptionalInt columnSize = FirebirdSizeRegistry.findColumnSize(connectionSession.getCurrentDatabaseName(), table.getName(), column.getName());
         return columnSize.isPresent() ? columnSize.getAsInt() : null;
+    }
+    
+    private boolean isDynamicLengthType(final int dataType) {
+        switch (dataType) {
+            case Types.CHAR:
+            case Types.NCHAR:
+            case Types.VARCHAR:
+            case Types.NVARCHAR:
+            case Types.LONGVARCHAR:
+            case Types.LONGNVARCHAR:
+            case Types.BINARY:
+            case Types.VARBINARY:
+            case Types.LONGVARBINARY:
+                return true;
+            default:
+                return false;
+        }
     }
 }

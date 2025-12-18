@@ -87,7 +87,16 @@ public final class FirebirdSizeRegistry {
     
     private static String buildTableKey(final String schemaName, final String tableName) {
         String schemaKey = null == schemaName ? "" : toKey(schemaName);
-        return schemaKey + "." + toKey(tableName);
+        String logicTable = trimToLogicTableName(tableName);
+        return schemaKey + "." + toKey(logicTable);
+    }
+    
+    private static String trimToLogicTableName(final String tableName) {
+        int end = tableName.length() - 1;
+        while (end >= 0 && !Character.isLetter(tableName.charAt(end))) {
+            end--;
+        }
+        return end < 0 ? tableName : tableName.substring(0, end + 1);
     }
     
     private static String toKey(final String value) {
