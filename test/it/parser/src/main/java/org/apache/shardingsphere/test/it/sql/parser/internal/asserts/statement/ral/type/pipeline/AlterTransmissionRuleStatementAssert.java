@@ -65,7 +65,7 @@ public final class AlterTransmissionRuleStatementAssert {
         assertThat(actual.getWorkerThread(), is(expected.getWorkerThread()));
         assertThat(actual.getBatchSize(), is(expected.getBatchSize()));
         assertThat(actual.getShardingSize(), is(expected.getShardingSize()));
-        assertThat(actual.getRateLimiter().getName(), is(expected.getRateLimiter().getName()));
+        assertAlgorithm(assertContext, actual.getRateLimiter(), expected.getRateLimiter(), "rate limiter");
     }
     
     private static void assertWrite(final SQLCaseAssertContext assertContext, final ReadOrWriteSegment actual, final ExpectedWrite expected) {
@@ -75,14 +75,18 @@ public final class AlterTransmissionRuleStatementAssert {
         }
         assertThat(actual.getWorkerThread(), is(expected.getWorkerThread()));
         assertThat(actual.getBatchSize(), is(expected.getBatchSize()));
-        assertThat(actual.getRateLimiter().getName(), is(expected.getRateLimiter().getName()));
+        assertAlgorithm(assertContext, actual.getRateLimiter(), expected.getRateLimiter(), "rate limiter");
     }
     
     private static void assertTypeStrategy(final SQLCaseAssertContext assertContext, final AlgorithmSegment actual, final ExpectedAlgorithm expected) {
+        assertAlgorithm(assertContext, actual, expected, "strategy");
+    }
+    
+    private static void assertAlgorithm(final SQLCaseAssertContext assertContext, final AlgorithmSegment actual, final ExpectedAlgorithm expected, final String subject) {
         if (null == expected) {
-            assertNull(actual, assertContext.getText("Actual strategy should not exist."));
+            assertNull(actual, assertContext.getText(String.format("Actual %s should not exist.", subject)));
         } else {
-            assertNotNull(actual, assertContext.getText("Actual strategy should exist."));
+            assertNotNull(actual, assertContext.getText(String.format("Actual %s should exist.", subject)));
             assertThat(assertContext.getText("Type assertion error"), actual.getName(), is(expected.getName()));
         }
     }
