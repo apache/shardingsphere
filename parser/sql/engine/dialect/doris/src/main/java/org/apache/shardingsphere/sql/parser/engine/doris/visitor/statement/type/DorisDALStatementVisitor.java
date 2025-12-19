@@ -821,11 +821,12 @@ public final class DorisDALStatementVisitor extends DorisStatementVisitor implem
     public ASTNode visitShowTransaction(final ShowTransactionContext ctx) {
         MySQLShowTransactionStatement result = new MySQLShowTransactionStatement(getDatabaseType());
         if (null != ctx.fromDatabase()) {
-            result.setFromDatabase(((FromDatabaseSegment) visit(ctx.fromDatabase())).getDatabase());
+            result.setFromDatabase((FromDatabaseSegment) visit(ctx.fromDatabase()));
         }
         if (null != ctx.showWhereClause()) {
             result.setWhere((WhereSegment) visit(ctx.showWhereClause()));
         }
+        result.addParameterMarkers(getParameterMarkerSegments());
         return result;
     }
     

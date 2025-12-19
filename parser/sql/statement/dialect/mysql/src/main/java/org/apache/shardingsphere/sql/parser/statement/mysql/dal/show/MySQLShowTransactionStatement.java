@@ -20,9 +20,14 @@ package org.apache.shardingsphere.sql.parser.statement.mysql.dal.show;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.DALStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.DatabaseSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.FromDatabaseSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.predicate.WhereSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.SQLStatementAttributes;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.type.AllowNotUseDatabaseSQLStatementAttribute;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.type.DatabaseSelectRequiredSQLStatementAttribute;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.type.FromDatabaseSQLStatementAttribute;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.type.TablelessDataSourceBroadcastRouteSQLStatementAttribute;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.DALStatement;
 
 /**
  * Show transaction statement for MySQL.
@@ -31,11 +36,18 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.predicate
 @Setter
 public final class MySQLShowTransactionStatement extends DALStatement {
     
-    private DatabaseSegment fromDatabase;
+    private FromDatabaseSegment fromDatabase;
     
     private WhereSegment where;
     
     public MySQLShowTransactionStatement(final DatabaseType databaseType) {
         super(databaseType);
+    }
+    
+    @Override
+    public SQLStatementAttributes getAttributes() {
+        String databaseName = null == fromDatabase ? null : fromDatabase.getDatabase().getIdentifier().getValue();
+        return new SQLStatementAttributes(new DatabaseSelectRequiredSQLStatementAttribute(), new FromDatabaseSQLStatementAttribute(fromDatabase),
+                new TablelessDataSourceBroadcastRouteSQLStatementAttribute(), new AllowNotUseDatabaseSQLStatementAttribute(true, databaseName));
     }
 }

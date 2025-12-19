@@ -20,7 +20,7 @@ package org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.SQLParserTestCase;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.database.ExpectedDatabase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.from.ExpectedFromDatabase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.where.ExpectedWhereClause;
 
 import javax.xml.bind.annotation.XmlElement;
@@ -32,8 +32,8 @@ import javax.xml.bind.annotation.XmlElement;
 @Setter
 public final class MySQLShowTransactionStatementTestCase extends SQLParserTestCase {
     
-    @XmlElement
-    private ExpectedDatabase database;
+    @XmlElement(name = "from")
+    private ExpectedFromDatabase fromDatabase;
     
     @XmlElement(name = "where")
     private ExpectedWhereClause where;

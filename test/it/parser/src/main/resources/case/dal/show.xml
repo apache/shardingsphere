@@ -1100,15 +1100,15 @@
     <show sql-case-id="show_compactions_all_options" />
 
     <show-transaction sql-case-id="show_transaction_with_id">
-        <where start-index="22" stop-index="31">
+        <where start-index="17" stop-index="29">
             <expr>
-                <binary-operation-expression start-index="28" stop-index="31">
+                <binary-operation-expression start-index="23" stop-index="29">
                     <left>
-                        <column name="ID" start-index="28" stop-index="29" />
+                        <column name="ID" start-index="23" stop-index="24" />
                     </left>
                     <operator>=</operator>
                     <right>
-                        <literal-expression value="4005" start-index="31" stop-index="31" />
+                        <literal-expression value="4005" start-index="26" stop-index="29" />
                     </right>
                 </binary-operation-expression>
             </expr>
@@ -1116,15 +1116,15 @@
     </show-transaction>
 
     <show-transaction sql-case-id="show_transaction_with_label">
-        <where start-index="22" stop-index="42">
+        <where start-index="17" stop-index="40">
             <expr>
-                <binary-operation-expression start-index="28" stop-index="42">
+                <binary-operation-expression start-index="23" stop-index="40">
                     <left>
-                        <column name="label" start-index="28" stop-index="32" />
+                        <column name="label" start-index="23" stop-index="27" />
                     </left>
                     <operator>=</operator>
                     <right>
-                        <literal-expression value="test_label" start-index="34" stop-index="42" />
+                        <literal-expression value="test_label" start-index="29" stop-index="40" />
                     </right>
                 </binary-operation-expression>
             </expr>
@@ -1132,16 +1132,18 @@
     </show-transaction>
 
     <show-transaction sql-case-id="show_transaction_from_db_with_id">
-        <database name="test_db" start-index="22" stop-index="28" />
-        <where start-index="30" stop-index="39">
+        <from start-index="17" stop-index="28">
+            <database name="test_db" start-index="22" stop-index="28" />
+        </from>
+        <where start-index="30" stop-index="42">
             <expr>
-                <binary-operation-expression start-index="36" stop-index="39">
+                <binary-operation-expression start-index="36" stop-index="42">
                     <left>
                         <column name="ID" start-index="36" stop-index="37" />
                     </left>
                     <operator>=</operator>
                     <right>
-                        <literal-expression value="4005" start-index="39" stop-index="39" />
+                        <literal-expression value="4005" start-index="39" stop-index="42" />
                     </right>
                 </binary-operation-expression>
             </expr>
@@ -1149,16 +1151,18 @@
     </show-transaction>
 
     <show-transaction sql-case-id="show_transaction_from_db_with_label">
-        <database name="test_db" start-index="22" stop-index="28" />
-        <where start-index="30" stop-index="50">
+        <from start-index="17" stop-index="28">
+            <database name="test_db" start-index="22" stop-index="28" />
+        </from>
+        <where start-index="30" stop-index="53">
             <expr>
-                <binary-operation-expression start-index="36" stop-index="50">
+                <binary-operation-expression start-index="36" stop-index="53">
                     <left>
                         <column name="label" start-index="36" stop-index="40" />
                     </left>
                     <operator>=</operator>
                     <right>
-                        <literal-expression value="test_label" start-index="42" stop-index="50" />
+                        <literal-expression value="test_label" start-index="42" stop-index="53" />
                     </right>
                 </binary-operation-expression>
             </expr>
