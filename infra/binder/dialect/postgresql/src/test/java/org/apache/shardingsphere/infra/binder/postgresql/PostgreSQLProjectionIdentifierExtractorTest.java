@@ -22,6 +22,7 @@ import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoa
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.extractor.DialectProjectionIdentifierExtractor;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.FunctionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.subquery.SubquerySegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ExpressionProjectionSegment;
@@ -52,6 +53,11 @@ class PostgreSQLProjectionIdentifierExtractorTest {
     @Test
     void assertGetColumnNameFromExpression() {
         assertThat(extractor.getColumnNameFromExpression(new ExpressionProjectionSegment(0, 0, "expression")), is("?column?"));
+    }
+    
+    @Test
+    void assertGetColumnNameFromExpressionWithNonExpressionProjection() {
+        assertThat(extractor.getColumnNameFromExpression(mock(ExpressionSegment.class)), is("?column?"));
     }
     
     @Test

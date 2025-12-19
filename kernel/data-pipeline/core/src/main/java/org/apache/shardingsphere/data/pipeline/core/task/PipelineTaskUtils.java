@@ -19,12 +19,18 @@ package org.apache.shardingsphere.data.pipeline.core.task;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.data.pipeline.core.exception.PipelineJobCancelingException;
 import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.inventory.InventoryDumperContext;
 import org.apache.shardingsphere.data.pipeline.core.ingest.position.IngestPosition;
 import org.apache.shardingsphere.data.pipeline.core.job.progress.TransmissionJobItemProgress;
 import org.apache.shardingsphere.data.pipeline.core.task.progress.IncrementalTaskProgress;
+import org.apache.shardingsphere.infra.exception.external.sql.type.kernel.category.PipelineSQLException;
+import org.apache.shardingsphere.infra.exception.external.sql.type.wrapper.SQLWrapperException;
 
+import java.sql.SQLException;
 import java.util.Optional;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
 
 /**
  * Pipeline task utilities.
@@ -56,5 +62,27 @@ public final class PipelineTaskUtils {
                     .ifPresent(optional -> result.setIncrementalTaskDelay(initProgress.getIncremental().getIncrementalTaskProgress().getIncrementalTaskDelay()));
         }
         return result;
+    }
+    
+    /**
+     * Wait future.
+     *
+     * @param future future to wait
+     * @param <T> result type
+     * @return execution result
+     * @throws SQLWrapperException if the future execution fails
+     */
+    public static <T> T waitFuture(final Future<T> future) {
+        try {
+            return future.get();
+        } catch (final InterruptedException ex) {
+            Thread.currentThread().interrupt();
+            throw new SQLWrapperException(new SQLException(ex));
+        } catch (final ExecutionException ex) {
+            if (ex.getCause() instanceof PipelineSQLException || ex.getCause() instanceof PipelineJobCancelingException) {
+                throw (PipelineSQLException) ex.getCause();
+            }
+            throw new SQLWrapperException(new SQLException(ex));
+        }
     }
 }

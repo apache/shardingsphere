@@ -31,16 +31,17 @@ import org.apache.shardingsphere.test.e2e.agent.engine.container.plugin.AgentPlu
 import org.apache.shardingsphere.test.e2e.agent.engine.env.props.AgentE2ETestConfiguration;
 import org.apache.shardingsphere.test.e2e.agent.engine.env.props.AgentE2ETestImageConfiguration;
 import org.apache.shardingsphere.test.e2e.agent.fixture.proxy.ProxyRequestExecutor;
-import org.apache.shardingsphere.test.e2e.env.container.atomic.DockerITContainer;
-import org.apache.shardingsphere.test.e2e.env.container.atomic.ITContainers;
-import org.apache.shardingsphere.test.e2e.env.container.atomic.adapter.config.AdaptorContainerConfiguration;
-import org.apache.shardingsphere.test.e2e.env.container.atomic.adapter.impl.ShardingSphereProxyClusterContainer;
-import org.apache.shardingsphere.test.e2e.env.container.atomic.constants.ProxyContainerConstants;
-import org.apache.shardingsphere.test.e2e.env.container.atomic.enums.AdapterType;
-import org.apache.shardingsphere.test.e2e.env.container.atomic.governance.GovernanceContainer;
-import org.apache.shardingsphere.test.e2e.env.container.atomic.governance.GovernanceContainerFactory;
-import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.option.StorageContainerConfigurationOption;
-import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.type.docker.DockerStorageContainer;
+import org.apache.shardingsphere.test.e2e.env.container.DockerE2EContainer;
+import org.apache.shardingsphere.test.e2e.env.container.E2EContainers;
+import org.apache.shardingsphere.test.e2e.env.container.adapter.config.AdaptorContainerConfiguration;
+import org.apache.shardingsphere.test.e2e.env.container.adapter.impl.ShardingSphereProxyDockerContainer;
+import org.apache.shardingsphere.test.e2e.env.container.constants.ProxyContainerConstants;
+import org.apache.shardingsphere.test.e2e.env.container.governance.GovernanceContainer;
+import org.apache.shardingsphere.test.e2e.env.container.governance.option.GovernanceContainerOption;
+import org.apache.shardingsphere.test.e2e.env.container.storage.StorageContainer;
+import org.apache.shardingsphere.test.e2e.env.container.storage.option.StorageContainerOption;
+import org.apache.shardingsphere.test.e2e.env.container.storage.type.DockerStorageContainer;
+import org.apache.shardingsphere.test.e2e.env.runtime.type.ArtifactEnvironment.Adapter;
 import org.awaitility.Awaitility;
 import org.testcontainers.containers.output.OutputFrame;
 
@@ -72,7 +73,7 @@ public final class AgentE2ETestEnvironment {
     @Getter
     private final Collection<String> containerLogs = new LinkedList<>();
     
-    private ITContainers containers;
+    private E2EContainers containers;
     
     @Getter
     private String agentPluginURL;
@@ -97,11 +98,12 @@ public final class AgentE2ETestEnvironment {
         if (!AgentE2ETestConfiguration.getInstance().containsTestParameter()) {
             return;
         }
-        Optional<DockerITContainer> agentPluginContainer = TypedSPILoader.findService(AgentPluginContainerFactory.class, testConfig.getPluginType()).map(AgentPluginContainerFactory::create);
-        if (AdapterType.PROXY.getValue().equalsIgnoreCase(testConfig.getAdapter())) {
-            createProxyEnvironment(agentPluginContainer.orElse(null));
-        } else if (AdapterType.JDBC.getValue().equalsIgnoreCase(testConfig.getAdapter())) {
-            createJDBCEnvironment(agentPluginContainer.orElse(null));
+        StorageContainerOption storageContainerOption = DatabaseTypedSPILoader.getService(StorageContainerOption.class, databaseType);
+        Optional<DockerE2EContainer> agentPluginContainer = TypedSPILoader.findService(AgentPluginContainerFactory.class, testConfig.getPluginType()).map(AgentPluginContainerFactory::create);
+        if (Adapter.PROXY.getValue().equalsIgnoreCase(testConfig.getAdapter())) {
+            createProxyEnvironment(storageContainerOption, agentPluginContainer.orElse(null));
+        } else if (Adapter.JDBC.getValue().equalsIgnoreCase(testConfig.getAdapter())) {
+            createJDBCEnvironment(storageContainerOption, agentPluginContainer.orElse(null));
         }
         log.info("Waiting to collect data ...");
         long collectDataWaitSeconds = testConfig.getCollectDataWaitSeconds();
@@ -112,15 +114,14 @@ public final class AgentE2ETestEnvironment {
         initialized = true;
     }
     
-    private void createProxyEnvironment(final DockerITContainer agentPluginContainer) {
-        containers = new ITContainers();
-        ShardingSphereProxyClusterContainer proxyContainer = new ShardingSphereProxyClusterContainer(databaseType, getAdaptorContainerConfiguration());
+    private void createProxyEnvironment(final StorageContainerOption storageContainerOption, final DockerE2EContainer agentPluginContainer) {
+        containers = new E2EContainers(null);
+        ShardingSphereProxyDockerContainer proxyContainer = new ShardingSphereProxyDockerContainer(databaseType, getAdaptorContainerConfiguration());
         proxyContainer.withLogConsumer(testConfig.isLogEnabled() ? this::collectLogs : null);
-        DockerStorageContainer storageContainer = new DockerStorageContainer(
-                databaseType, imageConfig.getMysqlImage(), DatabaseTypedSPILoader.getService(StorageContainerConfigurationOption.class, databaseType), null);
+        StorageContainer storageContainer = new DockerStorageContainer(imageConfig.getMysqlImage(), storageContainerOption, null);
         proxyContainer.dependsOn(storageContainer);
         containers.registerContainer(storageContainer);
-        GovernanceContainer governanceContainer = GovernanceContainerFactory.newInstance("ZooKeeper");
+        GovernanceContainer governanceContainer = new GovernanceContainer(TypedSPILoader.getService(GovernanceContainerOption.class, "ZooKeeper"));
         proxyContainer.dependsOn(governanceContainer);
         containers.registerContainer(governanceContainer);
         if (null != agentPluginContainer) {
@@ -146,10 +147,9 @@ public final class AgentE2ETestEnvironment {
         return new AdaptorContainerConfiguration("sharding_db", Collections.emptyList(), mountedResources, imageConfig.getProxyImage(), "");
     }
     
-    private void createJDBCEnvironment(final DockerITContainer agentPluginContainer) {
-        containers = new ITContainers();
-        DockerStorageContainer storageContainer = new DockerStorageContainer(
-                databaseType, imageConfig.getMysqlImage(), DatabaseTypedSPILoader.getService(StorageContainerConfigurationOption.class, databaseType), null);
+    private void createJDBCEnvironment(final StorageContainerOption storageContainerOption, final DockerE2EContainer agentPluginContainer) {
+        containers = new E2EContainers(null);
+        StorageContainer storageContainer = new DockerStorageContainer(imageConfig.getMysqlImage(), storageContainerOption, null);
         ShardingSphereJdbcAgentContainer jdbcAgentContainer = new ShardingSphereJdbcAgentContainer(
                 imageConfig.getJdbcProjectImage(), testConfig.getPluginType(), testConfig.isLogEnabled() ? this::collectLogs : null);
         jdbcAgentContainer.dependsOn(storageContainer);

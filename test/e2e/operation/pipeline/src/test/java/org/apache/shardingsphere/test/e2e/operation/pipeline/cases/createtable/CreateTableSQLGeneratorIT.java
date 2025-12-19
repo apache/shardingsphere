@@ -21,9 +21,8 @@ import org.apache.shardingsphere.data.pipeline.core.sqlbuilder.dialect.DialectPi
 import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
-import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.StorageContainerFactory;
-import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.option.StorageContainerConfigurationOption;
-import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.type.docker.DockerStorageContainer;
+import org.apache.shardingsphere.test.e2e.env.container.storage.option.StorageContainerOption;
+import org.apache.shardingsphere.test.e2e.env.container.storage.type.DockerStorageContainer;
 import org.apache.shardingsphere.test.e2e.operation.pipeline.entity.CreateTableSQLGeneratorAssertionEntity;
 import org.apache.shardingsphere.test.e2e.operation.pipeline.entity.CreateTableSQLGeneratorAssertionsRootEntity;
 import org.apache.shardingsphere.test.e2e.operation.pipeline.entity.CreateTableSQLGeneratorOutputEntity;
@@ -59,7 +58,7 @@ class CreateTableSQLGeneratorIT {
     
     private static final String DEFAULT_SCHEMA = "public";
     
-    private static final String DEFAULT_DATABASE = "pipeline_it_0";
+    private static final String DEFAULT_DATABASE = "pipeline_e2e_0";
     
     private static final Pattern REPLACE_LINE_SPACE = Pattern.compile("\\s*|\t|\r|\n");
     
@@ -74,7 +73,7 @@ class CreateTableSQLGeneratorIT {
     @EnabledIf("isEnabled")
     @ArgumentsSource(PipelineE2ETestCaseArgumentsProvider.class)
     void assertGenerateCreateTableSQL(final PipelineTestParameter testParam) throws SQLException {
-        startStorageContainer(testParam.getDatabaseType(), testParam.getStorageContainerImage());
+        startStorageContainer(testParam.getDatabaseType(), testParam.getDatabaseContainerImage());
         CreateTableSQLGeneratorAssertionsRootEntity rootEntity = JAXB.unmarshal(
                 Objects.requireNonNull(Thread.currentThread().getContextClassLoader().getResource(testParam.getScenario())), CreateTableSQLGeneratorAssertionsRootEntity.class);
         DataSource dataSource = storageContainer.createAccessDataSource(DEFAULT_DATABASE);
@@ -91,9 +90,8 @@ class CreateTableSQLGeneratorIT {
         }
     }
     
-    private void startStorageContainer(final DatabaseType databaseType, final String storageContainerImage) {
-        storageContainer = (DockerStorageContainer) StorageContainerFactory.newInstance(
-                databaseType, storageContainerImage, DatabaseTypedSPILoader.findService(StorageContainerConfigurationOption.class, databaseType).orElse(null), null);
+    private void startStorageContainer(final DatabaseType databaseType, final String databaseContainerImage) {
+        storageContainer = new DockerStorageContainer(databaseContainerImage, DatabaseTypedSPILoader.getService(StorageContainerOption.class, databaseType), null);
         storageContainer.start();
     }
     

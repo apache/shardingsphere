@@ -19,8 +19,9 @@ package org.apache.shardingsphere.data.pipeline.core.job.progress.yaml.config;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.shardingsphere.data.pipeline.core.consistencycheck.position.yaml.YamlTableCheckRangePosition;
 
-import java.util.Map;
+import java.util.List;
 
 /**
  * Yaml data consistency check job item progress.
@@ -43,9 +44,7 @@ public final class YamlConsistencyCheckJobItemProgress implements YamlPipelineJo
     
     private Long checkEndTimeMillis;
     
-    private Map<String, Object> sourceTableCheckPositions;
-    
-    private Map<String, Object> targetTableCheckPositions;
+    private List<YamlTableCheckRangePosition> tableCheckRangePositions;
     
     private String sourceDatabaseType;
 }

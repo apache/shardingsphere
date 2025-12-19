@@ -55,8 +55,8 @@ import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.frontend.mysql.ssl.MySQLSSLRequestHandler;
 import org.apache.shardingsphere.proxy.frontend.ssl.ProxySSLContext;
-import org.apache.shardingsphere.test.infra.framework.mock.AutoMockExtension;
-import org.apache.shardingsphere.test.infra.framework.mock.StaticMockSettings;
+import org.apache.shardingsphere.test.infra.framework.extension.mock.AutoMockExtension;
+import org.apache.shardingsphere.test.infra.framework.extension.mock.StaticMockSettings;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.MockedConstruction;
@@ -197,7 +197,6 @@ class MySQLAuthenticationEngineTest {
         ChannelHandlerContext context = mockChannelHandlerContext();
         ContextManager contextManager = mockContextManager(rule);
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
-        when(ProxyContext.getInstance().databaseExists("foo_db")).thenReturn(true);
         try (MockedConstruction<MySQLErrPacket> ignored = mockConstruction(MySQLErrPacket.class, (mock, mockContext) -> assertAuthenticationErrorPacket(mockContext.arguments()))) {
             assertThrows(AccessDeniedException.class, () -> authenticationEngine.authenticate(context, getPayload("root", "foo_db", authResponse)));
         }
@@ -214,7 +213,6 @@ class MySQLAuthenticationEngineTest {
         ChannelHandlerContext context = mockChannelHandlerContext();
         ContextManager contextManager = mockContextManager(rule);
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
-        when(ProxyContext.getInstance().databaseExists("foo_db")).thenReturn(true);
         try (
                 MockedConstruction<AuthenticatorFactory> mockedAuthenticatorFactory = mockConstruction(AuthenticatorFactory.class,
                         (mock, mockContext) -> when(mock.newInstance(user)).thenReturn(mock(Authenticator.class)));
@@ -238,7 +236,6 @@ class MySQLAuthenticationEngineTest {
         ChannelHandlerContext context = mockChannelHandlerContext();
         ContextManager contextManager = mockContextManager(rule);
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
-        when(ProxyContext.getInstance().databaseExists("foo_db")).thenReturn(true);
         try (MockedConstruction<MySQLErrPacket> ignored = mockConstruction(MySQLErrPacket.class, (mock, mockContext) -> assertDatabaseAccessDeniedErrorPacket(mockContext.arguments()))) {
             assertThrows(DatabaseAccessDeniedException.class, () -> authenticationEngine.authenticate(context, getPayload("root", "foo_db", authResponse)));
         }

@@ -28,7 +28,7 @@ Possible Maven dependencies are as follows,
     <dependency>
         <groupId>com.facebook.presto</groupId>
         <artifactId>presto-jdbc</artifactId>
-        <version>0.292</version>
+        <version>0.296</version>
     </dependency>
 </dependencies>
 ```
@@ -44,7 +44,7 @@ In addition, this Iceberg Connector will start a Hive Metastore Server using a l
 ```yaml
 services:
   presto:
-    image: prestodb/presto:0.292
+    image: prestodb/presto:0.296
     ports:
       - "8080:8080"
     volumes:

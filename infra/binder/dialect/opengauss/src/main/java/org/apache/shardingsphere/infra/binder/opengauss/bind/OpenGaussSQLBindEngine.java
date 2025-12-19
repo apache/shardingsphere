@@ -29,11 +29,11 @@ import java.util.Optional;
  */
 public final class OpenGaussSQLBindEngine implements DialectSQLBindEngine {
     
-    private final PostgreSQLSQLBindEngine delegated = new PostgreSQLSQLBindEngine();
+    private final PostgreSQLSQLBindEngine delegate = new PostgreSQLSQLBindEngine();
     
     @Override
     public Optional<SQLStatement> bind(final SQLStatement sqlStatement, final SQLStatementBinderContext binderContext) {
-        return delegated.bind(sqlStatement, binderContext);
+        return delegate.bind(sqlStatement, binderContext);
     }
     
     @Override

@@ -76,30 +76,71 @@ public final class FirebirdPacketCodecEngine implements DatabasePacketCodecEngin
     }
     
     private void addToBuffer(final ChannelHandlerContext context, final ByteBuf in, final List<Object> out) {
-        if (in.writerIndex() == in.capacity()) {
-            ByteBuf bufferPart = in.readRetainedSlice(in.readableBytes());
-            CompositeByteBuf result = context.alloc().compositeBuffer(pendingMessages.size() + 1);
-            result.addComponents(true, pendingMessages).addComponent(true, bufferPart);
-            FirebirdPacketPayload payload = new FirebirdPacketPayload(result, context.channel().attr(CommonConstants.CHARSET_ATTRIBUTE_KEY).get());
-            if (FirebirdCommandPacketFactory.isValidLength(pendingPacketType, payload, result.readableBytes(), context.channel().attr(FirebirdConstant.CONNECTION_PROTOCOL_VERSION).get())) {
-                out.add(result);
-                pendingMessages.clear();
-            } else {
-                pendingMessages.add(bufferPart);
+        if (!in.isReadable()) {
+            return;
+        }
+        ByteBuf buffer = mergePendingMessages(context, in);
+        boolean shouldRelease = buffer != in;
+        try {
+            processPackets(context, buffer, out);
+        } finally {
+            if (shouldRelease) {
+                buffer.release();
             }
-        } else {
-            writePendingMessages(context, in, out);
         }
     }
     
-    private void writePendingMessages(final ChannelHandlerContext context, final ByteBuf in, final List<Object> out) {
+    private ByteBuf mergePendingMessages(final ChannelHandlerContext context, final ByteBuf in) {
         if (pendingMessages.isEmpty()) {
-            out.add(in.readRetainedSlice(in.readableBytes()));
-        } else {
-            CompositeByteBuf result = context.alloc().compositeBuffer(pendingMessages.size() + 1);
-            result.addComponents(true, pendingMessages).addComponent(true, in.readRetainedSlice(in.readableBytes()));
-            out.add(result);
-            pendingMessages.clear();
+            return in;
+        }
+        CompositeByteBuf result = context.alloc().compositeBuffer(pendingMessages.size() + 1);
+        result.addComponents(true, pendingMessages);
+        pendingMessages.clear();
+        result.addComponent(true, in.readRetainedSlice(in.readableBytes()));
+        return result;
+    }
+    
+    private void processPackets(final ChannelHandlerContext context, final ByteBuf buffer, final List<Object> out) {
+        Charset charset = context.channel().attr(CommonConstants.CHARSET_ATTRIBUTE_KEY).get();
+        while (buffer.isReadable()) {
+            if (!isValidHeader(buffer.readableBytes())) {
+                pendingMessages.add(buffer.readRetainedSlice(buffer.readableBytes()));
+                return;
+            }
+            int readerIndex = buffer.readerIndex();
+            FirebirdCommandPacketType commandType = FirebirdCommandPacketType.valueOf(buffer.getInt(readerIndex));
+            if (FirebirdCommandPacketType.VOID == commandType) {
+                buffer.skipBytes(MESSAGE_TYPE_LENGTH);
+                continue;
+            }
+            int packetLength = findPacketLength(context, buffer, commandType, charset);
+            if (packetLength < 0) {
+                pendingPacketType = commandType;
+                pendingMessages.add(buffer.readRetainedSlice(buffer.readableBytes()));
+                return;
+            }
+            pendingPacketType = null;
+            out.add(buffer.readRetainedSlice(packetLength));
+        }
+    }
+    
+    private int findPacketLength(final ChannelHandlerContext context, final ByteBuf buffer, final FirebirdCommandPacketType commandType, final Charset charset) {
+        int readerIndex = buffer.readerIndex();
+        int readableBytes = buffer.readableBytes();
+        ByteBuf slice = buffer.retainedSlice(readerIndex, readableBytes);
+        try {
+            FirebirdPacketPayload payload = new FirebirdPacketPayload(slice, charset);
+            int expectedLength = FirebirdCommandPacketFactory.getExpectedLength(commandType, payload,
+                    context.channel().attr(FirebirdConstant.CONNECTION_PROTOCOL_VERSION).get());
+            if (expectedLength <= 0) {
+                return readableBytes;
+            }
+            return readableBytes >= expectedLength ? expectedLength : -1;
+        } catch (final IndexOutOfBoundsException ex) {
+            return -1;
+        } finally {
+            slice.release();
         }
     }
     

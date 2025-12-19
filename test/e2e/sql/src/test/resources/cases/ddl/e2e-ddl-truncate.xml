@@ -17,7 +17,7 @@
   -->
 
 <e2e-test-cases>
-    <test-case sql="TRUNCATE TABLE t_order_details" db-types="H2,MySQL" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
+    <test-case sql="TRUNCATE TABLE t_order_details" db-types="MySQL" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
         <assertion expected-data-file="unchanged_table.xml">
             <initial-sql sql="CREATE TABLE t_order_details(id int, description varchar(10))" affected-table="t_order_details" />
             <destroy-sql sql="DROP TABLE t_order_details" />
@@ -31,7 +31,7 @@
         </assertion>
     </test-case>
 
-    <test-case sql="TRUNCATE TABLE t_broadcast_table_for_ddl" db-types="H2,MySQL" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
+    <test-case sql="TRUNCATE TABLE t_broadcast_table_for_ddl" db-types="MySQL" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
         <assertion expected-data-file="unchanged_broadcast_table.xml">
             <initial-sql sql="CREATE TABLE t_broadcast_table_for_ddl(id int, description varchar(10))" affected-table="t_broadcast_table_for_ddl" />
             <destroy-sql sql="DROP TABLE t_broadcast_table_for_ddl" />

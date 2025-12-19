@@ -276,6 +276,8 @@ public final class SelectStatementContext implements SQLStatementContext, WhereC
     
     @Override
     public void bindParameters(final List<Object> params) {
-        bindingContext = new SelectStatementBindingContext(params, baseContext);
+        if (!params.isEmpty()) {
+            bindingContext = new SelectStatementBindingContext(params, baseContext);
+        }
     }
 }

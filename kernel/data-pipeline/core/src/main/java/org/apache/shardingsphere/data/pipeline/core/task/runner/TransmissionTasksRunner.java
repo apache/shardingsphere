@@ -54,7 +54,7 @@ public final class TransmissionTasksRunner implements PipelineTasksRunner {
     
     private final Collection<PipelineTask> incrementalTasks;
     
-    private final PipelineJobType jobType;
+    private final PipelineJobType<?> jobType;
     
     private final PipelineJobItemManager<TransmissionJobItemProgress> jobItemManager;
     
@@ -63,7 +63,7 @@ public final class TransmissionTasksRunner implements PipelineTasksRunner {
         inventoryTasks = jobItemContext.getInventoryTasks();
         incrementalTasks = jobItemContext.getIncrementalTasks();
         jobType = TypedSPILoader.getService(PipelineJobType.class, PipelineJobIdUtils.parseJobType(jobItemContext.getJobId()).getType());
-        jobItemManager = new PipelineJobItemManager<>(jobType.getYamlJobItemProgressSwapper());
+        jobItemManager = new PipelineJobItemManager<>(jobType.getOption().getYamlJobItemProgressSwapper());
     }
     
     @Override
@@ -128,7 +128,7 @@ public final class TransmissionTasksRunner implements PipelineTasksRunner {
         incrementalTasks.forEach(PipelineTask::stop);
     }
     
-    private final class InventoryTaskExecuteCallback implements ExecuteCallback {
+    private class InventoryTaskExecuteCallback implements ExecuteCallback {
         
         @Override
         public void onSuccess() {

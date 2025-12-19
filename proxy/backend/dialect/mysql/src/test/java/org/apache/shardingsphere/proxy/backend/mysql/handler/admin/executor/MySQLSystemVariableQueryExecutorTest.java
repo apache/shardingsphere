@@ -42,6 +42,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.mock;
 
 class MySQLSystemVariableQueryExecutorTest {
     
@@ -79,7 +80,7 @@ class MySQLSystemVariableQueryExecutorTest {
         Optional<DatabaseAdminExecutor> executor = MySQLSystemVariableQueryExecutor.tryGetSystemVariableQueryExecutor(selectStatement);
         assertTrue(executor.isPresent());
         MySQLSystemVariableQueryExecutor queryExecutor = (MySQLSystemVariableQueryExecutor) executor.get();
-        queryExecutor.execute(null);
+        queryExecutor.execute(null, mock());
         QueryResultMetaData actualMetaData = queryExecutor.getQueryResultMetaData();
         assertThat(actualMetaData.getColumnCount(), is(3));
         assertThat(actualMetaData.getColumnLabel(1), is("@@global.max_connections"));
@@ -101,6 +102,6 @@ class MySQLSystemVariableQueryExecutorTest {
         selectStatement.getProjections().getProjections().add(new ExpressionProjectionSegment(0, 0, "@@session.max_connections", variable));
         Optional<DatabaseAdminExecutor> executor = MySQLSystemVariableQueryExecutor.tryGetSystemVariableQueryExecutor(selectStatement);
         assertTrue(executor.isPresent());
-        assertThrows(IncorrectGlobalLocalVariableException.class, () -> executor.get().execute(null));
+        assertThrows(IncorrectGlobalLocalVariableException.class, () -> executor.get().execute(null, mock()));
     }
 }

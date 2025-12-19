@@ -21,7 +21,7 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.transaction.FirebirdCommitTransactionPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.generic.FirebirdGenericResponsePacket;
 import org.apache.shardingsphere.database.protocol.packet.DatabasePacket;
-import org.apache.shardingsphere.proxy.backend.connector.jdbc.transaction.BackendTransactionManager;
+import org.apache.shardingsphere.proxy.backend.connector.jdbc.transaction.ProxyBackendTransactionManager;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.frontend.command.executor.CommandExecutor;
 
@@ -42,9 +42,9 @@ public final class FirebirdCommitTransactionCommandExecutor implements CommandEx
     @Override
     public Collection<DatabasePacket> execute() throws SQLException {
         if (!connectionSession.isAutoCommit()) {
-            BackendTransactionManager backendTransactionManager = new BackendTransactionManager(connectionSession.getDatabaseConnectionManager());
+            ProxyBackendTransactionManager transactionManager = new ProxyBackendTransactionManager(connectionSession.getDatabaseConnectionManager());
             // TODO add rollback and return exception
-            backendTransactionManager.commit();
+            transactionManager.commit();
         }
         return Collections.singleton(new FirebirdGenericResponsePacket());
     }

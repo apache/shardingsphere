@@ -59,7 +59,7 @@
         <dependency>
             <groupId>org.apache.hive</groupId>
             <artifactId>hive-jdbc</artifactId>
-            <version>4.0.1</version>
+            <version>${hive-jdbc.version}</version>
             <classifier>standalone</classifier>
         </dependency>
         <dependency>

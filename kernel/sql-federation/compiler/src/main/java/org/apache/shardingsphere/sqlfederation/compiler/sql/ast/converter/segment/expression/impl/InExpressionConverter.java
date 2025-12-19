@@ -30,7 +30,6 @@ import org.apache.shardingsphere.sqlfederation.compiler.sql.ast.converter.segmen
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedList;
-import java.util.Optional;
 
 /**
  * In expression converter.
@@ -39,19 +38,16 @@ import java.util.Optional;
 public final class InExpressionConverter {
     
     /**
-     * Convert in expression to sql node.
+     * Convert in expression to SQL node.
      *
      * @param expression in expression
-     * @return sql node
+     * @return SQL node
      */
-    public static Optional<SqlNode> convert(final InExpression expression) {
-        if (null == expression) {
-            return Optional.empty();
-        }
+    public static SqlBasicCall convert(final InExpression expression) {
         Collection<SqlNode> sqlNodes = new LinkedList<>();
         ExpressionConverter.convert(expression.getLeft()).ifPresent(sqlNodes::add);
         ExpressionConverter.convert(expression.getRight())
                 .ifPresent(optional -> sqlNodes.add(optional instanceof SqlBasicCall ? new SqlNodeList(((SqlBasicCall) optional).getOperandList(), SqlParserPos.ZERO) : optional));
-        return Optional.of(new SqlBasicCall(expression.isNot() ? SqlStdOperatorTable.NOT_IN : SqlStdOperatorTable.IN, new ArrayList<>(sqlNodes), SqlParserPos.ZERO));
+        return new SqlBasicCall(expression.isNot() ? SqlStdOperatorTable.NOT_IN : SqlStdOperatorTable.IN, new ArrayList<>(sqlNodes), SqlParserPos.ZERO);
     }
 }

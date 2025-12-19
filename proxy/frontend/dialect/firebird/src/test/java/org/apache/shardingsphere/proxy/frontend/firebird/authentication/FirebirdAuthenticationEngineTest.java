@@ -20,9 +20,10 @@ package org.apache.shardingsphere.proxy.frontend.firebird.authentication;
 import io.netty.channel.ChannelHandlerContext;
 import org.apache.shardingsphere.proxy.frontend.connection.ConnectionIdGenerator;
 import org.apache.shardingsphere.proxy.frontend.firebird.command.query.statement.FirebirdStatementIdGenerator;
+import org.apache.shardingsphere.proxy.frontend.firebird.command.query.statement.fetch.FirebirdFetchStatementCache;
 import org.apache.shardingsphere.proxy.frontend.firebird.command.query.transaction.FirebirdTransactionIdGenerator;
-import org.apache.shardingsphere.test.infra.framework.mock.AutoMockExtension;
-import org.apache.shardingsphere.test.infra.framework.mock.StaticMockSettings;
+import org.apache.shardingsphere.test.infra.framework.extension.mock.AutoMockExtension;
+import org.apache.shardingsphere.test.infra.framework.extension.mock.StaticMockSettings;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Answers;
@@ -34,7 +35,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(AutoMockExtension.class)
-@StaticMockSettings({ConnectionIdGenerator.class, FirebirdTransactionIdGenerator.class, FirebirdStatementIdGenerator.class})
+@StaticMockSettings({ConnectionIdGenerator.class, FirebirdTransactionIdGenerator.class, FirebirdStatementIdGenerator.class, FirebirdFetchStatementCache.class})
 class FirebirdAuthenticationEngineTest {
     
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
@@ -51,6 +52,7 @@ class FirebirdAuthenticationEngineTest {
         assertThat(engine.handshake(context), is(1));
         verify(FirebirdTransactionIdGenerator.getInstance()).registerConnection(1);
         verify(FirebirdStatementIdGenerator.getInstance()).registerConnection(1);
+        verify(FirebirdFetchStatementCache.getInstance()).registerConnection(1);
     }
     
     // TODO Implement tests for authenticate() method for the following cases: CONNECT, ATTACH, Cont_Auth (when implemented), Unknown Option

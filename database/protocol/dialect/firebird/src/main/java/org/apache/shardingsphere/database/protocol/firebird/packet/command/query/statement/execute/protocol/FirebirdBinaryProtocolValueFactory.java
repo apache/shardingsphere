@@ -37,7 +37,7 @@ public final class FirebirdBinaryProtocolValueFactory {
     
     static {
         setStringBinaryProtocolValue();
-        setByteBinaryProtocolValue();
+        // setByteBinaryProtocolValue();
         setInt16BinaryProtocolValue();
         setInt8BinaryProtocolValue();
         setInt4BinaryProtocolValue();
@@ -58,12 +58,13 @@ public final class FirebirdBinaryProtocolValueFactory {
         BINARY_PROTOCOL_VALUES.put(FirebirdBinaryColumnType.TEXT, binaryProtocolValue);
         BINARY_PROTOCOL_VALUES.put(FirebirdBinaryColumnType.LEGACY_VARYING, binaryProtocolValue);
         BINARY_PROTOCOL_VALUES.put(FirebirdBinaryColumnType.LEGACY_TEXT, binaryProtocolValue);
-    }
-    
-    private static void setByteBinaryProtocolValue() {
-        FirebirdByteBinaryProtocolValue binaryProtocolValue = new FirebirdByteBinaryProtocolValue();
         BINARY_PROTOCOL_VALUES.put(FirebirdBinaryColumnType.BLOB, binaryProtocolValue);
     }
+    
+    // TODO Uncomment when a specific handler is required; currently BLOB is handled by StringBinaryProtocolValue
+    // private static void setByteBinaryProtocolValue() {
+    // FirebirdByteBinaryProtocolValue binaryProtocolValue = new FirebirdByteBinaryProtocolValue();
+    // }
     
     private static void setInt16BinaryProtocolValue() {
         FirebirdInt16BinaryProtocolValue binaryProtocolValue = new FirebirdInt16BinaryProtocolValue();

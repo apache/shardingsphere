@@ -23,7 +23,6 @@ import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.util.SystemSchemaUtils;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 
-import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Collections;
 
@@ -33,7 +32,7 @@ import java.util.Collections;
 public final class RefreshDatabaseMetaDataExecutor implements DistSQLUpdateExecutor<RefreshDatabaseMetaDataStatement> {
     
     @Override
-    public void executeUpdate(final RefreshDatabaseMetaDataStatement sqlStatement, final ContextManager contextManager) throws SQLException {
+    public void executeUpdate(final RefreshDatabaseMetaDataStatement sqlStatement, final ContextManager contextManager) {
         Collection<ShardingSphereDatabase> databases = sqlStatement.getDatabaseName().map(optional -> (Collection<ShardingSphereDatabase>) Collections.singleton(contextManager.getDatabase(optional)))
                 .orElseGet(() -> contextManager.getMetaDataContexts().getMetaData().getAllDatabases());
         for (ShardingSphereDatabase each : databases) {

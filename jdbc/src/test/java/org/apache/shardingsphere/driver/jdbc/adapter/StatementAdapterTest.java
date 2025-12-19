@@ -21,10 +21,10 @@ import lombok.SneakyThrows;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.driver.jdbc.core.connection.ShardingSphereConnection;
 import org.apache.shardingsphere.driver.jdbc.core.statement.ShardingSphereStatement;
-import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.rule.attribute.datanode.DataNodeRuleAttribute;
+import org.apache.shardingsphere.infra.session.query.QueryContext;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.parser.rule.SQLParserRule;
 import org.apache.shardingsphere.parser.rule.builder.DefaultSQLParserRuleConfigurationBuilder;
@@ -267,6 +267,6 @@ class StatementAdapterTest {
     
     @SneakyThrows(ReflectiveOperationException.class)
     private void setExecutionContext(final ShardingSphereStatement statement) {
-        Plugins.getMemberAccessor().set(ShardingSphereStatement.class.getDeclaredField("sqlStatementContext"), statement, mock(SQLStatementContext.class));
+        Plugins.getMemberAccessor().set(ShardingSphereStatement.class.getDeclaredField("queryContext"), statement, mock(QueryContext.class));
     }
 }

@@ -36,8 +36,8 @@ use
     ;
 
 createTable
-    : createTableCommonClause createDefinitionClause? commentClause? partitionedBy? clusteredBy? skewedBy? rowFormat? storedClause? storageLocation? tblProperties? (AS select)?
-    | createTableCommonClause LIKE existingTableName storageLocation?
+    : createTableCommonClause createDefinitionClause? commentClause? partitionedBy? clusteredBy? skewedBy? rowFormat? storedByIceberg? storedClause? storageLocation? tblProperties? (AS select)?
+    | createTableCommonClause LIKE existingTableName storedByIceberg? storageLocation?
     ;
 
 dropTable
@@ -77,6 +77,10 @@ alterTable
     | alterTableCommonClause partitionSpec? changeColumn
     | alterTableCommonClause partitionSpec? addColumns
     | alterTableCommonClause partitionSpec? replaceColumns
+    | alterTableCommonClause createBranch
+    | alterTableCommonClause createTag
+    | alterTableCommonClause dropBranch
+    | alterTableCommonClause dropTag
     ;
 
 createView
@@ -354,6 +358,10 @@ tblProperties
     : TBLPROPERTIES propertyListCommonClause
     ;
 
+storedByIceberg
+    : STORED BY ICEBERG
+    ;
+
 addConstraint
     : ADD CONSTRAINT constraintName
     ;
@@ -482,4 +490,47 @@ createFunctionOption
 
 createFunctionOptions
     : USING resourceClause createFunctionOption
+    ;
+
+createBranch
+    : CREATE BRANCH identifier branchCreationTail?
+    ;
+
+branchCreationTail
+    : systemVersionTail branchSnapshotRetentionTail?
+    | systemTimeTail
+    | branchTagTail
+    ;
+
+systemVersionTail
+    : FOR SYSTEM_VERSION AS OF (NUMBER_ | identifier)
+    ;
+
+systemTimeTail
+    : FOR SYSTEM_TIME AS OF string_
+    ;
+
+branchTagTail
+    : FOR TAG AS OF identifier
+    ;
+
+branchSnapshotRetentionTail
+    : WITH SNAPSHOT RETENTION NUMBER_ SNAPSHOTS
+    ;
+
+createTag
+    : CREATE TAG identifier tagCreationTail?
+    ;
+
+tagCreationTail
+    : systemVersionTail
+    | systemTimeTail
+    ;
+
+dropBranch
+    : DROP BRANCH ifExists? identifier
+    ;
+
+dropTag
+    : DROP TAG ifExists? identifier
     ;

@@ -17,8 +17,7 @@
 
 package org.apache.shardingsphere.test.e2e.sql.it;
 
-import org.apache.shardingsphere.test.e2e.env.container.atomic.enums.AdapterMode;
-import org.apache.shardingsphere.test.e2e.env.container.atomic.enums.AdapterType;
+import org.apache.shardingsphere.test.e2e.env.runtime.type.ArtifactEnvironment.Adapter;
 import org.apache.shardingsphere.test.e2e.sql.env.SQLE2EEnvironmentEngine;
 import org.apache.shardingsphere.test.e2e.sql.framework.param.model.E2ETestParameter;
 import org.apache.shardingsphere.test.e2e.sql.it.SQLE2EIT.SQLE2EITEnvironmentExtension;
@@ -64,8 +63,8 @@ public interface SQLE2EIT {
         }
         
         private void setEnvironmentEngine(final ExtensionContext extensionContext, final E2ETestParameter testParam) {
-            SQLE2EEnvironmentEngine environmentEngine = new SQLE2EEnvironmentEngine(testParam.getKey(), testParam.getScenario(), testParam.getDatabaseType(),
-                    AdapterMode.valueOf(testParam.getMode().toUpperCase()), AdapterType.valueOf(testParam.getAdapter().toUpperCase()));
+            SQLE2EEnvironmentEngine environmentEngine = new SQLE2EEnvironmentEngine(
+                    testParam.getKey(), testParam.getScenario(), testParam.getDatabaseType(), testParam.getMode(), Adapter.valueOf(testParam.getAdapter().toUpperCase()));
             ((SQLE2EIT) extensionContext.getRequiredTestInstance()).setEnvironmentEngine(environmentEngine);
         }
     }

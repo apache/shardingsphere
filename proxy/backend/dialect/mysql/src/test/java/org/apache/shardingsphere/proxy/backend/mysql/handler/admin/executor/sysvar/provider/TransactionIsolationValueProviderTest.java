@@ -22,43 +22,34 @@ import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.mysql.handler.admin.executor.sysvar.MySQLSystemVariable;
-import org.apache.shardingsphere.proxy.backend.mysql.handler.admin.executor.sysvar.Scope;
+import org.apache.shardingsphere.proxy.backend.mysql.handler.admin.executor.sysvar.MySQLSystemVariableScope;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.TransactionIsolationLevel;
-import org.apache.shardingsphere.test.infra.framework.mock.AutoMockExtension;
-import org.apache.shardingsphere.test.infra.framework.mock.StaticMockSettings;
-import org.junit.jupiter.api.BeforeEach;
+import org.apache.shardingsphere.test.infra.framework.extension.mock.AutoMockExtension;
+import org.apache.shardingsphere.test.infra.framework.extension.mock.StaticMockSettings;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 @ExtendWith(AutoMockExtension.class)
 @StaticMockSettings(ProxyContext.class)
 class TransactionIsolationValueProviderTest {
     
-    @BeforeEach
-    void setUp() {
-        when(ProxyContext.getInstance()).thenReturn(mock(ProxyContext.class, RETURNS_DEEP_STUBS));
-    }
-    
     @Test
     void assertGetGlobalValue() {
-        assertThat(new TransactionIsolationValueProvider().get(Scope.GLOBAL, null, MySQLSystemVariable.TRANSACTION_ISOLATION), is("REPEATABLE-READ"));
-        assertThat(new TransactionIsolationValueProvider().get(Scope.GLOBAL, null, MySQLSystemVariable.TX_ISOLATION), is("REPEATABLE-READ"));
+        assertThat(new TransactionIsolationValueProvider().get(MySQLSystemVariableScope.GLOBAL, null, MySQLSystemVariable.TRANSACTION_ISOLATION), is("REPEATABLE-READ"));
+        assertThat(new TransactionIsolationValueProvider().get(MySQLSystemVariableScope.GLOBAL, null, MySQLSystemVariable.TX_ISOLATION), is("REPEATABLE-READ"));
     }
     
     @Test
     void assertGetSessionValue() {
         ConnectionSession connectionSession = new ConnectionSession(TypedSPILoader.getService(DatabaseType.class, "MySQL"), new DefaultAttributeMap());
-        assertThat(new TransactionIsolationValueProvider().get(Scope.SESSION, connectionSession, MySQLSystemVariable.TRANSACTION_ISOLATION), is("REPEATABLE-READ"));
-        assertThat(new TransactionIsolationValueProvider().get(Scope.SESSION, connectionSession, MySQLSystemVariable.TX_ISOLATION), is("REPEATABLE-READ"));
+        assertThat(new TransactionIsolationValueProvider().get(MySQLSystemVariableScope.SESSION, connectionSession, MySQLSystemVariable.TRANSACTION_ISOLATION), is("REPEATABLE-READ"));
+        assertThat(new TransactionIsolationValueProvider().get(MySQLSystemVariableScope.SESSION, connectionSession, MySQLSystemVariable.TX_ISOLATION), is("REPEATABLE-READ"));
         connectionSession.setIsolationLevel(TransactionIsolationLevel.READ_COMMITTED);
-        assertThat(new TransactionIsolationValueProvider().get(Scope.SESSION, connectionSession, MySQLSystemVariable.TRANSACTION_ISOLATION), is("READ-COMMITTED"));
-        assertThat(new TransactionIsolationValueProvider().get(Scope.SESSION, connectionSession, MySQLSystemVariable.TX_ISOLATION), is("READ-COMMITTED"));
+        assertThat(new TransactionIsolationValueProvider().get(MySQLSystemVariableScope.SESSION, connectionSession, MySQLSystemVariable.TRANSACTION_ISOLATION), is("READ-COMMITTED"));
+        assertThat(new TransactionIsolationValueProvider().get(MySQLSystemVariableScope.SESSION, connectionSession, MySQLSystemVariable.TX_ISOLATION), is("READ-COMMITTED"));
     }
 }

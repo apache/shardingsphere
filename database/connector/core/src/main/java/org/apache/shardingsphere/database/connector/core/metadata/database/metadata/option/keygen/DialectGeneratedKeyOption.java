@@ -27,5 +27,5 @@ import lombok.RequiredArgsConstructor;
 @Getter
 public final class DialectGeneratedKeyOption {
     
-    private final boolean isSupportReturnGeneratedKeys;
+    private final String columnName;
 }

@@ -1248,6 +1248,7 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
         return result;
     }
     
+    @SuppressWarnings("unchecked")
     private Collection<CommonTableExpressionSegment> getCommonTableExpressionSegmentsUsingCteClauseSet(final CteClauseSetContext ctx) {
         Collection<CommonTableExpressionSegment> result = new LinkedList<>();
         for (CteClauseContext each : ctx.cteClause()) {
@@ -1273,7 +1274,7 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
     private LimitSegment getLimitSegment(final OrderByClauseContext ctx) {
         LimitSegment result = null;
         PaginationValueSegment offset = null;
-        PaginationValueSegment rowcount = null;
+        PaginationValueSegment rowCount = null;
         if (null != ctx.OFFSET()) {
             ASTNode astNode = visit(ctx.expr(0));
             if (astNode instanceof LiteralExpressionSegment && ((LiteralExpressionSegment) astNode).getLiterals() instanceof Number) {
@@ -1286,14 +1287,14 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
         if (null != ctx.FETCH()) {
             ASTNode astNode = visit(ctx.expr(1));
             if (astNode instanceof LiteralExpressionSegment && ((LiteralExpressionSegment) astNode).getLiterals() instanceof Number) {
-                rowcount = new NumberLiteralLimitValueSegment(ctx.expr(1).start.getStartIndex(), ctx.expr(1).stop.getStopIndex(),
+                rowCount = new NumberLiteralLimitValueSegment(ctx.expr(1).start.getStartIndex(), ctx.expr(1).stop.getStopIndex(),
                         ((Number) ((LiteralExpressionSegment) astNode).getLiterals()).longValue());
             } else if (astNode instanceof ParameterMarkerExpressionSegment) {
-                rowcount = new ParameterMarkerLimitValueSegment(ctx.expr(1).start.getStartIndex(), ctx.expr(1).stop.getStopIndex(), parameterMarkerSegments.size() - 1);
+                rowCount = new ParameterMarkerLimitValueSegment(ctx.expr(1).start.getStartIndex(), ctx.expr(1).stop.getStopIndex(), parameterMarkerSegments.size() - 1);
             }
         }
         if (null != offset) {
-            result = new LimitSegment(ctx.OFFSET().getSymbol().getStartIndex(), ctx.stop.getStopIndex(), offset, rowcount);
+            result = new LimitSegment(ctx.OFFSET().getSymbol().getStartIndex(), ctx.stop.getStopIndex(), offset, rowCount);
         }
         return result;
     }
@@ -1571,6 +1572,7 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
         return result;
     }
     
+    @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitOutputClause(final OutputClauseContext ctx) {
         OutputSegment result = new OutputSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex());
@@ -1998,6 +2000,7 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
         return result;
     }
     
+    @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitPivotClause(final PivotClauseContext ctx) {
         String pivotType = null == ctx.PIVOT() ? "UNPIVOT" : "PIVOT";
@@ -2099,6 +2102,7 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
         return visit(ctx.aggregationClause());
     }
     
+    @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitCreateTableAsSelectClause(final CreateTableAsSelectClauseContext ctx) {
         CreateTableStatement result = new CreateTableStatement(databaseType);

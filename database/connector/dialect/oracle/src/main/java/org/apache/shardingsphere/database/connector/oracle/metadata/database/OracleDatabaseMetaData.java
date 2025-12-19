@@ -27,9 +27,12 @@ import org.apache.shardingsphere.database.connector.core.metadata.database.metad
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.index.DialectIndexOption;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.pagination.DialectPaginationOption;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.schema.DialectSchemaOption;
+import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.transaction.DialectTransactionOption;
 import org.apache.shardingsphere.database.connector.oracle.metadata.database.option.OracleDataTypeOption;
 import org.apache.shardingsphere.database.connector.oracle.metadata.database.option.OracleSchemaOption;
 
+import java.sql.Connection;
+import java.util.Collections;
 import java.util.Optional;
 
 /**
@@ -70,6 +73,11 @@ public final class OracleDatabaseMetaData implements DialectDatabaseMetaData {
     @Override
     public DialectConnectionOption getConnectionOption() {
         return new DialectConnectionOption(true, false);
+    }
+    
+    @Override
+    public DialectTransactionOption getTransactionOption() {
+        return new DialectTransactionOption(false, false, false, false, true, Connection.TRANSACTION_READ_COMMITTED, false, false, Collections.singleton("oracle.jdbc.xa.client.OracleXADataSource"));
     }
     
     @Override

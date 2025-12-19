@@ -20,7 +20,6 @@ package org.apache.shardingsphere.proxy.frontend.postgresql.command.query.extend
 import org.apache.shardingsphere.database.protocol.packet.DatabasePacket;
 import org.apache.shardingsphere.proxy.frontend.command.executor.CommandExecutor;
 
-import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Collections;
 
@@ -30,7 +29,7 @@ import java.util.Collections;
 public final class PostgreSQLComFlushExecutor implements CommandExecutor {
     
     @Override
-    public Collection<DatabasePacket> execute() throws SQLException {
+    public Collection<DatabasePacket> execute() {
         return Collections.emptyList();
     }
 }

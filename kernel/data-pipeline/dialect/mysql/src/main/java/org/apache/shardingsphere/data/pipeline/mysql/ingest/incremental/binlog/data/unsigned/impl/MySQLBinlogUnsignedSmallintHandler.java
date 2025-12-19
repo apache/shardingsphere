@@ -28,6 +28,6 @@ public final class MySQLBinlogUnsignedSmallintHandler implements MySQLBinlogUnsi
     
     @Override
     public Number handle(final Short value) {
-        return value < 0 ? SMALLINT_MODULO + value : value;
+        return value < 0 ? SMALLINT_MODULO + value : value.intValue();
     }
 }

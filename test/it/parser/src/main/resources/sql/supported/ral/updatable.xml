@@ -26,6 +26,8 @@
     <sql-case id="refresh-table-metadata-table-with-schema" value="REFRESH TABLE METADATA t_order FROM STORAGE UNIT ds_0 SCHEMA public" db-types="ShardingSphere" />
 
     <sql-case id="alter-sql-parser-rule" value="ALTER SQL_PARSER RULE (PARSE_TREE_CACHE(INITIAL_CAPACITY=10, MAXIMUM_SIZE=11), SQL_STATEMENT_CACHE(INITIAL_CAPACITY=11, MAXIMUM_SIZE=11));" db-types="ShardingSphere" />
+    <sql-case id="alter-sql-translator-rule" value="ALTER SQL_TRANSLATOR RULE (TYPE(NAME='DISTSQL:FIXTURE', PROPERTIES('foo'='bar')), USE_ORIGINAL_SQL_WHEN_TRANSLATING_FAILED=TRUE)" db-types="ShardingSphere" />
+    <sql-case id="alter-sql-translator-rule-without-use-original" value="ALTER SQL_TRANSLATOR RULE (TYPE(NAME='DISTSQL:FIXTURE', PROPERTIES('foo'='bar')))" db-types="ShardingSphere" />
     <sql-case id="alter-local-transaction-rule" value="ALTER TRANSACTION RULE (DEFAULT='LOCAL')" db-types="ShardingSphere" />
     <sql-case id="alter-xa-transaction-rule" value="ALTER TRANSACTION RULE(DEFAULT='XA', TYPE(NAME='Atomikos'))" db-types="ShardingSphere" />
     <sql-case id="alter-xa-transaction-rule-without-quote-on-build-in-default-type-name-and-provider-type-name" value="ALTER TRANSACTION RULE(DEFAULT=XA, TYPE(NAME=Atomikos))" db-types="ShardingSphere" />

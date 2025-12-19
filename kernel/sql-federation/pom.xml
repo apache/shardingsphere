@@ -33,5 +33,6 @@
         <module>distsql</module>
         <module>compiler</module>
         <module>executor</module>
+        <module>dialect</module>
     </modules>
 </project>

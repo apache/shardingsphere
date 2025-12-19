@@ -25,6 +25,7 @@ import org.antlr.v4.runtime.Token;
 import org.antlr.v4.runtime.misc.Interval;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.TerminalNode;
+import org.antlr.v4.runtime.tree.TerminalNodeImpl;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.api.ASTNode;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementBaseVisitor;
@@ -133,6 +134,7 @@ import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.StringL
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.String_Context;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.SubqueryContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.SubstringFunctionContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.SubstringParamContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.SystemVariableContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.TableAliasRefListContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.TableFactorContext;
@@ -253,6 +255,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.value.literal.impl.Nu
 import org.apache.shardingsphere.sql.parser.statement.core.value.literal.impl.NumberLiteralValue;
 import org.apache.shardingsphere.sql.parser.statement.core.value.literal.impl.OtherLiteralValue;
 import org.apache.shardingsphere.sql.parser.statement.core.value.literal.impl.StringLiteralValue;
+import org.apache.shardingsphere.sql.parser.statement.core.value.literal.impl.TemporalLiteralValue;
 import org.apache.shardingsphere.sql.parser.statement.core.value.parametermarker.ParameterMarkerValue;
 
 import java.math.BigDecimal;
@@ -325,8 +328,15 @@ public abstract class MySQLStatementVisitor extends MySQLStatementBaseVisitor<AS
     
     @Override
     public ASTNode visitTemporalLiterals(final TemporalLiteralsContext ctx) {
-        // TODO deal with TemporalLiterals
-        return new OtherLiteralValue(ctx.getText());
+        String temporalType;
+        if (null != ctx.DATE()) {
+            temporalType = "DATE";
+        } else if (null != ctx.TIME()) {
+            temporalType = "TIME";
+        } else {
+            temporalType = "TIMESTAMP";
+        }
+        return new TemporalLiteralValue(temporalType, ctx.textString().getText());
     }
     
     @Override
@@ -872,8 +882,12 @@ public abstract class MySQLStatementVisitor extends MySQLStatementBaseVisitor<AS
     
     private Collection<InsertValuesSegment> createRowConstructorList(final RowConstructorListContext ctx) {
         Collection<InsertValuesSegment> result = new LinkedList<>();
-        for (AssignmentValuesContext each : ctx.assignmentValues()) {
-            result.add((InsertValuesSegment) visit(each));
+        for (int index = 0; index < ctx.getChildCount(); index++) {
+            if (!(ctx.getChild(index) instanceof AssignmentValuesContext)) {
+                continue;
+            }
+            InsertValuesSegment valuesSegment = (InsertValuesSegment) visit(ctx.getChild(index));
+            result.add(new InsertValuesSegment(((TerminalNodeImpl) ctx.getChild(index - 1)).symbol.getStartIndex(), valuesSegment.getStopIndex(), valuesSegment.getValues()));
         }
         return result;
     }
@@ -1181,8 +1195,13 @@ public abstract class MySQLStatementVisitor extends MySQLStatementBaseVisitor<AS
     public final ASTNode visitSubstringFunction(final SubstringFunctionContext ctx) {
         FunctionSegment result = new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), getFunctionName(ctx), getOriginalText(ctx));
         result.getParameters().add((ExpressionSegment) visit(ctx.expr()));
-        for (TerminalNode each : ctx.NUMBER_()) {
-            result.getParameters().add(new LiteralExpressionSegment(each.getSymbol().getStartIndex(), each.getSymbol().getStopIndex(), new NumberLiteralValue(each.getText()).getValue()));
+        for (SubstringParamContext each : ctx.substringParam()) {
+            if (null != each.numberLiterals()) {
+                result.getParameters()
+                        .add(new LiteralExpressionSegment(each.numberLiterals().start.getStartIndex(), each.numberLiterals().stop.getStopIndex(), new NumberLiteralValue(each.getText()).getValue()));
+            } else if (null != each.expr()) {
+                result.getParameters().add((ExpressionSegment) visit(each.expr()));
+            }
         }
         return result;
     }
@@ -1346,7 +1365,7 @@ public abstract class MySQLStatementVisitor extends MySQLStatementBaseVisitor<AS
         }
         ExpressionSegment caseExpr = null == ctx.expr() ? null : (ExpressionSegment) visit(ctx.expr());
         ExpressionSegment elseExpr = null == ctx.caseElse() ? null : (ExpressionSegment) visit(ctx.caseElse().expr());
-        return new CaseWhenExpression(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), caseExpr, whenExprs, thenExprs, elseExpr);
+        return new CaseWhenExpression(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), caseExpr, whenExprs, thenExprs, elseExpr, getOriginalText(ctx));
     }
     
     @Override
@@ -1498,6 +1517,15 @@ public abstract class MySQLStatementVisitor extends MySQLStatementBaseVisitor<AS
                 result.setValueReference(createValueReferenceFromSetRowAlias(ctx.setAssignmentsClause().setRowAlias()));
             }
         }
+        if (null != ctx.onDuplicateKeyClause()) {
+            result.setOnDuplicateKeyColumns((OnDuplicateKeyColumnsSegment) visit(ctx.onDuplicateKeyClause()));
+        }
+        result.setIgnore(null != ctx.insertSpecification().IGNORE());
+        result.setTable((SimpleTableSegment) visit(ctx.tableName()));
+        result.addParameterMarkers(getParameterMarkerSegments());
+        if (null != ctx.returningClause()) {
+            result.setReturning((ReturningSegment) visit(ctx.returningClause()));
+        }
         return result;
     }
     
@@ -1549,11 +1577,13 @@ public abstract class MySQLStatementVisitor extends MySQLStatementBaseVisitor<AS
         } else {
             result.setInsertColumns(new InsertColumnsSegment(ctx.start.getStartIndex() - 1, ctx.start.getStartIndex() - 1, Collections.emptyList()));
         }
-        result.getValues().addAll(createInsertValuesSegments(ctx.assignmentValues()));
         if (null != ctx.valueReference()) {
             ValueReferenceSegment valueRef = (ValueReferenceSegment) visit(ctx.valueReference());
             result.setValueReference(valueRef);
         }
+        Collection<InsertValuesSegment> insertValuesSegments =
+                null == ctx.rowConstructorList() ? createInsertValuesSegments(ctx.assignmentValues()) : createRowConstructorList(ctx.rowConstructorList());
+        result.getValues().addAll(insertValuesSegments);
         return result;
     }
     
@@ -1616,6 +1646,7 @@ public abstract class MySQLStatementVisitor extends MySQLStatementBaseVisitor<AS
             result = new InsertStatement(databaseType);
             result.setSetAssignment((SetAssignmentSegment) visit(ctx.setAssignmentsClause()));
         }
+        result.setReplace(true);
         result.setTable((SimpleTableSegment) visit(ctx.tableName()));
         result.addParameterMarkers(getParameterMarkerSegments());
         if (null != ctx.returningClause()) {

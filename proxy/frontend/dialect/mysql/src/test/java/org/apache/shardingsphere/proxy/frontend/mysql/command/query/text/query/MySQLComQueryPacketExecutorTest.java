@@ -18,12 +18,13 @@
 package org.apache.shardingsphere.proxy.frontend.mysql.command.query.text.query;
 
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
-import org.apache.shardingsphere.database.protocol.mysql.constant.MySQLCharacterSet;
+import org.apache.shardingsphere.database.protocol.mysql.constant.MySQLCharacterSets;
 import org.apache.shardingsphere.database.protocol.mysql.constant.MySQLConstants;
 import org.apache.shardingsphere.database.protocol.mysql.packet.command.query.text.MySQLTextResultSetRowPacket;
 import org.apache.shardingsphere.database.protocol.mysql.packet.command.query.text.query.MySQLComQueryPacket;
 import org.apache.shardingsphere.database.protocol.mysql.packet.generic.MySQLOKPacket;
 import org.apache.shardingsphere.database.protocol.packet.DatabasePacket;
+import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
@@ -47,8 +48,8 @@ import org.apache.shardingsphere.proxy.frontend.command.executor.ResponseType;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
 import org.apache.shardingsphere.sqltranslator.rule.SQLTranslatorRule;
 import org.apache.shardingsphere.sqltranslator.rule.builder.DefaultSQLTranslatorRuleConfigurationBuilder;
-import org.apache.shardingsphere.test.infra.framework.mock.AutoMockExtension;
-import org.apache.shardingsphere.test.infra.framework.mock.StaticMockSettings;
+import org.apache.shardingsphere.test.infra.framework.extension.mock.AutoMockExtension;
+import org.apache.shardingsphere.test.infra.framework.extension.mock.StaticMockSettings;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -65,6 +66,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
+import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -95,7 +97,7 @@ class MySQLComQueryPacketExecutorTest {
     @BeforeEach
     void setUp() {
         when(packet.getSQL()).thenReturn("");
-        when(connectionSession.getAttributeMap().attr(MySQLConstants.CHARACTER_SET_ATTRIBUTE_KEY).get()).thenReturn(MySQLCharacterSet.UTF8MB4_GENERAL_CI);
+        when(connectionSession.getAttributeMap().attr(MySQLConstants.CHARACTER_SET_ATTRIBUTE_KEY).get()).thenReturn(MySQLCharacterSets.UTF8MB4_GENERAL_CI);
     }
     
     @Test
@@ -123,7 +125,7 @@ class MySQLComQueryPacketExecutorTest {
         when(connectionSession.getAttributeMap().hasAttr(MySQLConstants.OPTION_MULTI_STATEMENTS_ATTRIBUTE_KEY)).thenReturn(true);
         when(connectionSession.getAttributeMap().attr(MySQLConstants.OPTION_MULTI_STATEMENTS_ATTRIBUTE_KEY).get()).thenReturn(0);
         when(connectionSession.getCurrentDatabaseName()).thenReturn("foo_db");
-        when(packet.getSQL()).thenReturn("update t set v=v+1 where id=1;update t set v=v+1 where id=2;update t set v=v+1 where id=3");
+        when(packet.getSQL()).thenReturn("UPDATE t SET v=v+1 WHERE id=1;UPDATE t SET v=v+1 WHERE id=2;UPDATE t SET v=v+1 WHERE id=3");
         ContextManager contextManager = mock(ContextManager.class);
         MetaDataContexts metaDataContexts = mockMetaDataContexts();
         when(contextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
@@ -141,7 +143,7 @@ class MySQLComQueryPacketExecutorTest {
         when(connectionSession.getAttributeMap().hasAttr(MySQLConstants.OPTION_MULTI_STATEMENTS_ATTRIBUTE_KEY)).thenReturn(true);
         when(connectionSession.getAttributeMap().attr(MySQLConstants.OPTION_MULTI_STATEMENTS_ATTRIBUTE_KEY).get()).thenReturn(0);
         when(connectionSession.getCurrentDatabaseName()).thenReturn("foo_db");
-        when(packet.getSQL()).thenReturn("insert into t (id, v) values(1,1) on duplicate key update v=2;insert into t (id, v) values(2,1) on duplicate key update v=3");
+        when(packet.getSQL()).thenReturn("INSERT INTO t (id, v) VALUES(1,1) ON DUPLICATE KEY UPDATE v=2;INSERT INTO t (id, v) VALUES(2,1) ON DUPLICATE KEY UPDATE v=3");
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         MetaDataContexts metaDataContexts = mockMetaDataContexts();
         when(contextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
@@ -164,16 +166,19 @@ class MySQLComQueryPacketExecutorTest {
         RuleMetaData globalRuleMetaData = new RuleMetaData(
                 Arrays.asList(new SQLParserRule(new DefaultSQLParserRuleConfigurationBuilder().build()), new SQLTranslatorRule(new DefaultSQLTranslatorRuleConfigurationBuilder().build())));
         when(result.getMetaData().getGlobalRuleMetaData()).thenReturn(globalRuleMetaData);
-        when(result.getMetaData().getProps().<Integer>getValue(ConfigurationPropertyKey.KERNEL_EXECUTOR_SIZE)).thenReturn(1);
-        when(result.getMetaData().getProps().<Boolean>getValue(ConfigurationPropertyKey.SQL_SHOW)).thenReturn(false);
+        Properties props = new Properties();
+        props.setProperty(ConfigurationPropertyKey.KERNEL_EXECUTOR_SIZE.getKey(), "1");
+        when(result.getMetaData().getProps()).thenReturn(new ConfigurationProperties(props));
+        when(result.getMetaData().getDatabase("foo_db")).thenReturn(createDatabase());
+        when(result.getMetaData().containsDatabase("foo_db")).thenReturn(true);
+        return result;
+    }
+    
+    private ShardingSphereDatabase createDatabase() {
         ShardingSphereTable table = new ShardingSphereTable("t", Arrays.asList(new ShardingSphereColumn("id", Types.BIGINT, true, false, false, false, true, false),
                 new ShardingSphereColumn("v", Types.INTEGER, false, false, false, false, true, false)), Collections.emptyList(), Collections.emptyList());
         ShardingSphereSchema schema = new ShardingSphereSchema("foo_db", Collections.singleton(table), Collections.emptyList());
-        ShardingSphereDatabase database = new ShardingSphereDatabase("foo_db",
-                databaseType, new ResourceMetaData(Collections.emptyMap()), new RuleMetaData(Collections.emptyList()), Collections.singleton(schema));
-        when(result.getMetaData().getDatabase("foo_db")).thenReturn(database);
-        when(result.getMetaData().containsDatabase("foo_db")).thenReturn(true);
-        return result;
+        return new ShardingSphereDatabase("foo_db", databaseType, new ResourceMetaData(Collections.emptyMap()), new RuleMetaData(Collections.emptyList()), Collections.singleton(schema));
     }
     
     @Test

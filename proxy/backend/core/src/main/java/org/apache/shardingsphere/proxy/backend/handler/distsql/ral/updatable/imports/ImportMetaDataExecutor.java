@@ -31,7 +31,6 @@ import org.apache.shardingsphere.proxy.backend.util.MetaDataImportExecutor;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
-import java.sql.SQLException;
 
 /**
  * Import meta data executor.
@@ -39,7 +38,7 @@ import java.sql.SQLException;
 public final class ImportMetaDataExecutor implements DistSQLUpdateExecutor<ImportMetaDataStatement> {
     
     @Override
-    public void executeUpdate(final ImportMetaDataStatement sqlStatement, final ContextManager contextManager) throws SQLException {
+    public void executeUpdate(final ImportMetaDataStatement sqlStatement, final ContextManager contextManager) {
         String jsonMetaDataConfig = sqlStatement.getFilePath().isPresent() ? getMetaDataFromFile(sqlStatement) : getMetaDataFromConsole(sqlStatement);
         ExportedClusterInfo exportedClusterInfo = JsonUtils.fromJsonString(jsonMetaDataConfig, ExportedClusterInfo.class);
         ExportedMetaData exportedMetaData = exportedClusterInfo.getMetaData();

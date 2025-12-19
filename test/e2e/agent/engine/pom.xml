@@ -71,7 +71,7 @@
     
     <profiles>
         <profile>
-            <id>it.env.proxy</id>
+            <id>e2e.env.proxy</id>
             <build>
                 <plugins>
                     <plugin>
@@ -130,7 +130,7 @@
         </profile>
         
         <profile>
-            <id>it.env.jdbc</id>
+            <id>e2e.env.jdbc</id>
             <build>
                 <plugins>
                     <plugin>

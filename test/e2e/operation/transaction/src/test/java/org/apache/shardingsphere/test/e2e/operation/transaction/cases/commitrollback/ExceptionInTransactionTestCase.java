@@ -48,10 +48,10 @@ public final class ExceptionInTransactionTestCase extends BaseTransactionTestCas
             connection = getDataSource().getConnection();
             connection.setAutoCommit(false);
             assertAccountRowCount(connection, 0);
-            executeWithLog(connection, "insert into account(id, balance, transaction_id) values(1, 1, 1);");
+            executeWithLog(connection, "INSERT INTO account(id, balance, transaction_id) VALUES(1, 1, 1);");
             int causedExceptionResult = 1 / 0;
             log.info("Caused exception result: {}", causedExceptionResult);
-            executeWithLog(connection, "insert into account(id, balance, transaction_id) values(2, 2, 2);");
+            executeWithLog(connection, "INSERT INTO account(id, balance, transaction_id) VALUES(2, 2, 2);");
             connection.commit();
             fail("It should fail here.");
         } catch (final ArithmeticException ex) {

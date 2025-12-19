@@ -29,11 +29,12 @@ import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUn
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.attribute.RuleAttributes;
+import org.apache.shardingsphere.infra.rule.attribute.datasource.StaticDataSourceRuleAttribute;
 import org.apache.shardingsphere.infra.rule.scope.GlobalRule;
 import org.apache.shardingsphere.infra.rule.scope.GlobalRule.GlobalRuleChangedType;
 import org.apache.shardingsphere.test.infra.fixture.jdbc.MockedDataSource;
-import org.apache.shardingsphere.test.infra.framework.mock.AutoMockExtension;
-import org.apache.shardingsphere.test.infra.framework.mock.StaticMockSettings;
+import org.apache.shardingsphere.test.infra.framework.extension.mock.AutoMockExtension;
+import org.apache.shardingsphere.test.infra.framework.extension.mock.StaticMockSettings;
 import org.awaitility.Awaitility;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -82,8 +83,9 @@ class ShardingSphereMetaDataTest {
         ResourceMetaData resourceMetaData = mock(ResourceMetaData.class, RETURNS_DEEP_STUBS);
         GlobalRule globalRule = mock(GlobalRule.class);
         MockedDataSource dataSource = new MockedDataSource();
+        StaticDataSourceRuleAttribute staticDataSourceRuleAttribute = mock(StaticDataSourceRuleAttribute.class);
         ShardingSphereRule databaseRule1 = mock(ShardingSphereRule.class);
-        when(databaseRule1.getAttributes()).thenReturn(new RuleAttributes());
+        when(databaseRule1.getAttributes()).thenReturn(new RuleAttributes(staticDataSourceRuleAttribute));
         ShardingSphereRule databaseRule2 = mock(ShardingSphereRule.class, withSettings().extraInterfaces(AutoCloseable.class));
         when(databaseRule2.getAttributes()).thenReturn(new RuleAttributes());
         ShardingSphereMetaData metaData = new ShardingSphereMetaData(new LinkedList<>(Collections.singleton(mockDatabase(resourceMetaData, dataSource, databaseRule1, databaseRule2))),
@@ -93,6 +95,7 @@ class ShardingSphereMetaDataTest {
         Awaitility.await().pollDelay(10L, TimeUnit.MILLISECONDS).until(dataSource::isClosed);
         assertTrue(dataSource.isClosed());
         verify(globalRule).refresh(metaData.getAllDatabases(), GlobalRuleChangedType.DATABASE_CHANGED);
+        verify(staticDataSourceRuleAttribute).cleanStorageNodeDataSources();
     }
     
     @SuppressWarnings("resource")
@@ -122,6 +125,25 @@ class ShardingSphereMetaDataTest {
         ConfigurationProperties configProps = new ConfigurationProperties(new Properties());
         ShardingSphereMetaData metaData = new ShardingSphereMetaData(databases, mock(ResourceMetaData.class), new RuleMetaData(Collections.singleton(globalRule)), configProps);
         assertThat(metaData.getDatabase("foo_db"), is(database));
+    }
+    
+    @SuppressWarnings("resource")
+    @Test
+    void assertPutDatabase() {
+        ShardingSphereMetaData metaData = new ShardingSphereMetaData();
+        ShardingSphereDatabase database = mockDatabase(mock(), new MockedDataSource(), mock(ShardingSphereRule.class));
+        metaData.putDatabase(database);
+        assertThat(metaData.getDatabase("foo_db"), is(database));
+    }
+    
+    @Test
+    void assertCloseClosesAllRules() throws Exception {
+        GlobalRule closableGlobalRule = mock(GlobalRule.class, withSettings().extraInterfaces(AutoCloseable.class));
+        ShardingSphereDatabase database = mockDatabase(mock(ResourceMetaData.class), new MockedDataSource(), mock(ShardingSphereRule.class));
+        ShardingSphereMetaData metaData = new ShardingSphereMetaData(new LinkedList<>(Collections.singleton(database)),
+                mock(ResourceMetaData.class), new RuleMetaData(Collections.singleton(closableGlobalRule)), new ConfigurationProperties(new Properties()));
+        metaData.close();
+        verify((AutoCloseable) closableGlobalRule).close();
     }
     
     private ShardingSphereDatabase mockDatabase(final ResourceMetaData resourceMetaData, final DataSource dataSource, final ShardingSphereRule... rules) {

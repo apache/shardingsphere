@@ -45,10 +45,9 @@ public final class EnumerableModifyConverterRule extends ConverterRule {
         ModifiableTable modifiableTable = modify.getTable().unwrap(ModifiableTable.class);
         if (null == modifiableTable) {
             return null;
-        } else {
-            RelTraitSet traitSet = modify.getTraitSet().replace(EnumerableConvention.INSTANCE);
-            return new EnumerableModify(modify.getCluster(), traitSet, modify.getTable(), modify.getCatalogReader(), convert(modify.getInput(), traitSet),
-                    modify.getOperation(), modify.getUpdateColumnList(), modify.getSourceExpressionList(), modify.isFlattened());
         }
+        RelTraitSet traitSet = modify.getTraitSet().replace(EnumerableConvention.INSTANCE);
+        return new EnumerableModify(modify.getCluster(), traitSet, modify.getTable(), modify.getCatalogReader(), convert(modify.getInput(), traitSet),
+                modify.getOperation(), modify.getUpdateColumnList(), modify.getSourceExpressionList(), modify.isFlattened());
     }
 }

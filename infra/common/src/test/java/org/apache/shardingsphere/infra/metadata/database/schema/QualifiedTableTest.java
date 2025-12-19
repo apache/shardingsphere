@@ -34,29 +34,23 @@ class QualifiedTableTest {
     
     @Test
     void assertEqualsTrueWithoutSchema() {
-        QualifiedTable actual = new QualifiedTable(null, "t_order");
-        QualifiedTable expected = new QualifiedTable(null, "T_ORDER");
-        assertThat(actual, is(expected));
+        assertThat(new QualifiedTable(null, "t_order"), is(new QualifiedTable(null, "T_ORDER")));
+        assertThat(new QualifiedTable("schema", "t_order"), is(new QualifiedTable("SCHEMA", "T_ORDER")));
+        assertThat(new QualifiedTable("schema", null), is(new QualifiedTable("SCHEMA", null)));
+        assertThat(new QualifiedTable("schema", "t_order"), not(new QualifiedTable(null, "t_order")));
+        assertThat(new QualifiedTable("schema", "t_order"), not(new QualifiedTable("schema", null)));
+        assertThat(new QualifiedTable("schema", "table"), not(new QualifiedTable("schema", null)));
+        assertThat(new QualifiedTable(null, "table"), not(new QualifiedTable(null, null)));
+        assertThat(new QualifiedTable(null, null), is(new QualifiedTable(null, null)));
+        assertThat(new QualifiedTable("schema", "table"), not((Object) null));
+        assertThat(new QualifiedTable("schema", "table"), not(new Object()));
     }
     
     @Test
-    void assertEqualsTrueWithSchema() {
-        QualifiedTable actual = new QualifiedTable("schema", "t_order");
-        QualifiedTable expected = new QualifiedTable("SCHEMA", "T_ORDER");
-        assertThat(actual, is(expected));
-        actual = new QualifiedTable("schema", null);
-        expected = new QualifiedTable("SCHEMA", null);
-        assertThat(actual, is(expected));
-    }
-    
-    @Test
-    void assertEqualsFalse() {
-        QualifiedTable actual = new QualifiedTable("schema", "t_order");
-        QualifiedTable expected = new QualifiedTable(null, "t_order");
-        assertThat(actual, not(expected));
-        actual = new QualifiedTable("schema", "t_order");
-        expected = new QualifiedTable("schema", null);
-        assertThat(actual, not(expected));
+    void assertHashCode() {
+        assertThat(new QualifiedTable("schema", "table").hashCode(), is(new QualifiedTable("SCHEMA", "TABLE").hashCode()));
+        assertThat(new QualifiedTable(null, "table").hashCode(), is(new QualifiedTable(null, "TABLE").hashCode()));
+        assertThat(new QualifiedTable("schema", null).hashCode(), is(new QualifiedTable("SCHEMA", null).hashCode()));
     }
     
     @Test

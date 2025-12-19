@@ -29,7 +29,6 @@ import org.apache.shardingsphere.proxy.backend.handler.admin.executor.DatabaseAd
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.SetStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.ShowStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.DeleteStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.InsertStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.SelectStatement;
 import org.junit.jupiter.api.Test;
 
@@ -48,23 +47,10 @@ class FirebirdAdminExecutorCreatorTest {
     private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "Firebird");
     
     @Test
-    void assertCreateWithOtherSQLStatementContextOnly() {
-        assertThat(new FirebirdAdminExecutorCreator().create(new CommonSQLStatementContext(new InsertStatement(databaseType))), is(Optional.empty()));
-    }
-    
-    @Test
-    void assertCreateWithShowSQLStatement() {
-        Optional<DatabaseAdminExecutor> actual = new FirebirdAdminExecutorCreator().create(
-                new CommonSQLStatementContext(new ShowStatement(databaseType, "server_version")));
-        assertTrue(actual.isPresent());
-        assertThat(actual.get(), isA(FirebirdShowVariableExecutor.class));
-    }
-    
-    @Test
     void assertCreateWithSelectNonSystem() {
         SelectStatementContext selectStatementContext = mock(SelectStatementContext.class);
         when(selectStatementContext.getSqlStatement()).thenReturn(new SelectStatement(databaseType));
-        assertThat(new FirebirdAdminExecutorCreator().create(selectStatementContext, "select 1", "", Collections.emptyList()), is(Optional.empty()));
+        assertThat(new FirebirdAdminExecutorCreator().create(selectStatementContext, "SELECT 1", "", Collections.emptyList()), is(Optional.empty()));
     }
     
     @Test
@@ -76,8 +62,16 @@ class FirebirdAdminExecutorCreatorTest {
     }
     
     @Test
+    void assertCreateWithShowSQLStatement() {
+        Optional<DatabaseAdminExecutor> actual = new FirebirdAdminExecutorCreator().create(
+                new CommonSQLStatementContext(new ShowStatement(databaseType, "server_version")), "SHOW server_version", "", Collections.emptyList());
+        assertTrue(actual.isPresent());
+        assertThat(actual.get(), isA(FirebirdShowVariableExecutor.class));
+    }
+    
+    @Test
     void assertCreateWithDMLStatement() {
         DeleteStatementContext sqlStatementContext = new DeleteStatementContext(new DeleteStatement(databaseType));
-        assertThat(new FirebirdAdminExecutorCreator().create(sqlStatementContext, "delete from t where id = 1", "", Collections.emptyList()), is(Optional.empty()));
+        assertThat(new FirebirdAdminExecutorCreator().create(sqlStatementContext, "DELETE FROM t WHERE id = 1", "", Collections.emptyList()), is(Optional.empty()));
     }
 }

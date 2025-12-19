@@ -47,6 +47,6 @@ public final class FirebirdSQLResponsePacket extends FirebirdPacket {
     protected void write(final FirebirdPacketPayload payload) {
         payload.writeInt4(FirebirdCommandPacketType.SQL_RESPONSE.getValue());
         payload.writeInt4(messageCount);
-        FirebirdFetchResponsePacket.writeData(payload, data);
+        FirebirdFetchResponsePacket.writeRowData(payload, data);
     }
 }

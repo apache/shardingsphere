@@ -28,7 +28,7 @@ import org.apache.calcite.sql.fun.SqlCastFunction;
 import org.apache.calcite.sql.parser.SqlParserPos;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.TypeCastExpression;
 import org.apache.shardingsphere.sqlfederation.compiler.sql.ast.converter.segment.expression.ExpressionConverter;
-import org.apache.shardingsphere.sqlfederation.compiler.sql.ast.converter.type.DataTypeConverter;
+import org.apache.shardingsphere.sqlfederation.compiler.sql.ast.converter.type.SqlTypeNameConverter;
 
 import java.util.Arrays;
 import java.util.Optional;
@@ -40,17 +40,17 @@ import java.util.Optional;
 public final class TypeCastExpressionConverter {
     
     /**
-     * Convert type cast expression to sql node.
+     * Convert type cast expression to SQL node.
      *
      * @param segment type cast expression
-     * @return sql node
+     * @return SQL node
      */
     public static Optional<SqlNode> convert(final TypeCastExpression segment) {
         Optional<SqlNode> expression = ExpressionConverter.convert(segment.getExpression());
         if (!expression.isPresent()) {
             return Optional.empty();
         }
-        SqlTypeNameSpec sqlTypeName = new SqlBasicTypeNameSpec(DataTypeConverter.convert(segment.getDataType().toUpperCase()), SqlParserPos.ZERO);
+        SqlTypeNameSpec sqlTypeName = new SqlBasicTypeNameSpec(SqlTypeNameConverter.convert(segment.getDataType().toUpperCase()), SqlParserPos.ZERO);
         return Optional.of(new SqlBasicCall(new SqlCastFunction(), Arrays.asList(expression.get(), new SqlDataTypeSpec(sqlTypeName, SqlParserPos.ZERO)), SqlParserPos.ZERO));
     }
 }

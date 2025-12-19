@@ -19,8 +19,8 @@ package org.apache.shardingsphere.test.e2e.sql.framework.param.array;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.test.e2e.env.container.atomic.enums.AdapterMode;
 import org.apache.shardingsphere.test.e2e.env.runtime.E2ETestEnvironment;
+import org.apache.shardingsphere.test.e2e.env.runtime.type.ArtifactEnvironment.Mode;
 import org.apache.shardingsphere.test.e2e.sql.framework.param.model.AssertionTestParameter;
 import org.apache.shardingsphere.test.e2e.sql.framework.param.model.E2ETestParameter;
 import org.apache.shardingsphere.test.e2e.sql.framework.type.SQLCommandType;
@@ -42,8 +42,8 @@ public final class ClusterTestParameterArrayGenerator {
      * @return assertion test parameter
      */
     public static Collection<AssertionTestParameter> getAssertionTestParameter(final SQLCommandType sqlCommandType) {
-        return new E2ETestParameterGenerator(ENV.getClusterEnvironment().getAdapters(), ENV.getScenarios(), AdapterMode.CLUSTER.getValue(),
-                ENV.getClusterEnvironment().getDatabaseTypes(), ENV.isSmoke()).getAssertionTestParameter(sqlCommandType);
+        return new E2ETestParameterGenerator(ENV.getArtifactEnvironment().getAdapters(), ENV.getScenarios(), Mode.CLUSTER,
+                ENV.getArtifactEnvironment().getDatabaseTypes(), ENV.getRunEnvironment().isRunSmokeCases()).getAssertionTestParameter(sqlCommandType);
     }
     
     /**
@@ -53,7 +53,7 @@ public final class ClusterTestParameterArrayGenerator {
      * @return case parameter
      */
     public static Collection<E2ETestParameter> getCaseTestParameter(final SQLCommandType sqlCommandType) {
-        return new E2ETestParameterGenerator(ENV.getClusterEnvironment().getAdapters(), ENV.getScenarios(), AdapterMode.CLUSTER.getValue(),
-                ENV.getClusterEnvironment().getDatabaseTypes(), ENV.isSmoke()).getCaseTestParameter(sqlCommandType);
+        return new E2ETestParameterGenerator(ENV.getArtifactEnvironment().getAdapters(), ENV.getScenarios(), Mode.CLUSTER,
+                ENV.getArtifactEnvironment().getDatabaseTypes(), ENV.getRunEnvironment().isRunSmokeCases()).getCaseTestParameter(sqlCommandType);
     }
 }

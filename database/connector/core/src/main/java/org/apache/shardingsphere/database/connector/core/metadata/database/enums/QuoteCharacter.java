@@ -104,7 +104,7 @@ public enum QuoteCharacter {
      * @return unwrapped text
      */
     public static String unwrapText(final String text) {
-        return QuoteCharacter.getQuoteCharacter(text).unwrap(text);
+        return getQuoteCharacter(text).unwrap(text);
     }
     
     /**

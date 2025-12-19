@@ -47,6 +47,7 @@ import org.apache.shardingsphere.proxy.frontend.authentication.AuthenticationEng
 import org.apache.shardingsphere.proxy.frontend.connection.ConnectionIdGenerator;
 import org.apache.shardingsphere.proxy.frontend.firebird.authentication.authenticator.FirebirdAuthenticatorType;
 import org.apache.shardingsphere.proxy.frontend.firebird.command.query.statement.FirebirdStatementIdGenerator;
+import org.apache.shardingsphere.proxy.frontend.firebird.command.query.statement.fetch.FirebirdFetchStatementCache;
 import org.apache.shardingsphere.proxy.frontend.firebird.command.query.transaction.FirebirdTransactionIdGenerator;
 
 import java.util.Arrays;
@@ -70,6 +71,7 @@ public final class FirebirdAuthenticationEngine implements AuthenticationEngine 
         connectionId = ConnectionIdGenerator.getInstance().nextId();
         FirebirdTransactionIdGenerator.getInstance().registerConnection(connectionId);
         FirebirdStatementIdGenerator.getInstance().registerConnection(connectionId);
+        FirebirdFetchStatementCache.getInstance().registerConnection(connectionId);
         return connectionId;
     }
     
@@ -100,7 +102,9 @@ public final class FirebirdAuthenticationEngine implements AuthenticationEngine 
     }
     
     private void login(final String databaseName, final String username, final FirebirdAttachPacket attachPacket, final AuthorityRule rule) {
-        ShardingSpherePreconditions.checkState(Strings.isNullOrEmpty(databaseName) || ProxyContext.getInstance().databaseExists(databaseName), () -> new UnknownDatabaseException(databaseName));
+        ShardingSpherePreconditions.checkState(
+                Strings.isNullOrEmpty(databaseName) || ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().containsDatabase(databaseName),
+                () -> new UnknownDatabaseException(databaseName));
         Grantee grantee = new Grantee(username, "");
         Optional<ShardingSphereUser> user = rule.findUser(grantee);
         user.ifPresent(shardingSphereUser -> new AuthenticatorFactory<>(FirebirdAuthenticatorType.class, rule)

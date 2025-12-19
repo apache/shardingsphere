@@ -46,7 +46,7 @@ public final class StatementExecutionUnitBuilder implements JDBCExecutionUnitBui
     }
     
     @Override
-    public String getType() {
+    public JDBCDriverType getType() {
         return JDBCDriverType.STATEMENT;
     }
 }

@@ -16,14 +16,14 @@
 --
 
 ALTER USER test_user REPLICATION;
-CREATE DATABASE pipeline_it_0;
-CREATE DATABASE pipeline_it_1;
-CREATE DATABASE pipeline_it_2;
-CREATE DATABASE pipeline_it_3;
-CREATE DATABASE pipeline_it_4;
+CREATE DATABASE pipeline_e2e_0;
+CREATE DATABASE pipeline_e2e_1;
+CREATE DATABASE pipeline_e2e_2;
+CREATE DATABASE pipeline_e2e_3;
+CREATE DATABASE pipeline_e2e_4;
 -- TODO remove unnecessary permissions
-GRANT CREATE, CONNECT ON DATABASE pipeline_it_0 TO test_user;
-GRANT CREATE, CONNECT ON DATABASE pipeline_it_1 TO test_user;
-GRANT CREATE, CONNECT ON DATABASE pipeline_it_2 TO test_user;
-GRANT CREATE, CONNECT ON DATABASE pipeline_it_3 TO test_user;
-GRANT CREATE, CONNECT ON DATABASE pipeline_it_4 TO test_user;
+GRANT CREATE, CONNECT ON DATABASE pipeline_e2e_0 TO test_user;
+GRANT CREATE, CONNECT ON DATABASE pipeline_e2e_1 TO test_user;
+GRANT CREATE, CONNECT ON DATABASE pipeline_e2e_2 TO test_user;
+GRANT CREATE, CONNECT ON DATABASE pipeline_e2e_3 TO test_user;
+GRANT CREATE, CONNECT ON DATABASE pipeline_e2e_4 TO test_user;

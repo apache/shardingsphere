@@ -58,7 +58,7 @@ public final class FirebirdCommandExecuteEngine implements CommandExecuteEngine 
     }
     
     @Override
-    public CommandExecutor getCommandExecutor(final CommandPacketType type, final CommandPacket packet, final ConnectionSession connectionSession) throws SQLException {
+    public CommandExecutor getCommandExecutor(final CommandPacketType type, final CommandPacket packet, final ConnectionSession connectionSession) {
         return FirebirdCommandExecutorFactory.newInstance((FirebirdCommandPacketType) type, packet, connectionSession);
     }
     

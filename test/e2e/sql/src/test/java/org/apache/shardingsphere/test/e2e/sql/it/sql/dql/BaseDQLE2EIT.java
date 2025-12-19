@@ -21,8 +21,9 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.infra.util.datetime.DateTimeFormatterFactory;
-import org.apache.shardingsphere.test.e2e.env.runtime.scenario.path.ScenarioDataPath;
-import org.apache.shardingsphere.test.e2e.env.runtime.scenario.path.ScenarioDataPath.Type;
+import org.apache.shardingsphere.test.e2e.env.runtime.type.ArtifactEnvironment.Mode;
+import org.apache.shardingsphere.test.e2e.env.runtime.type.scenario.path.ScenarioDataPath;
+import org.apache.shardingsphere.test.e2e.env.runtime.type.scenario.path.ScenarioDataPath.Type;
 import org.apache.shardingsphere.test.e2e.sql.cases.dataset.metadata.DataSetColumn;
 import org.apache.shardingsphere.test.e2e.sql.cases.dataset.metadata.DataSetMetaData;
 import org.apache.shardingsphere.test.e2e.sql.cases.dataset.row.DataSetRow;
@@ -69,7 +70,7 @@ public abstract class BaseDQLE2EIT implements SQLE2EIT {
     @Setter
     private SQLE2EEnvironmentEngine environmentEngine;
     
-    protected final void init(final AssertionTestParameter testParam, final SQLE2EITContext context) throws SQLException, IOException, JAXBException {
+    protected final void init(final AssertionTestParameter testParam, final SQLE2EITContext context) throws IOException, JAXBException {
         fillDataOnlyOnce(testParam);
         expectedDataSource = null == context.getAssertion().getExpectedDataSourceName() || 1 == getEnvironmentEngine().getExpectedDataSourceMap().size()
                 ? getFirstExpectedDataSource(getEnvironmentEngine().getExpectedDataSourceMap().values())
@@ -86,9 +87,9 @@ public abstract class BaseDQLE2EIT implements SQLE2EIT {
             synchronized (FILLED_SUITES) {
                 if (!FILLED_SUITES.contains(cacheKey)) {
                     new DataSetEnvironmentManager(
-                            new ScenarioDataPath(testParam.getScenario()).getDataSetFile(Type.ACTUAL), getEnvironmentEngine().getActualDataSourceMap(), testParam.getDatabaseType()).fillData();
+                            new ScenarioDataPath(testParam.getScenario(), Type.ACTUAL).getDataSetFile(), getEnvironmentEngine().getActualDataSourceMap(), testParam.getDatabaseType()).fillData();
                     new DataSetEnvironmentManager(
-                            new ScenarioDataPath(testParam.getScenario()).getDataSetFile(Type.EXPECTED), getEnvironmentEngine().getExpectedDataSourceMap(), testParam.getDatabaseType()).fillData();
+                            new ScenarioDataPath(testParam.getScenario(), Type.EXPECTED).getDataSetFile(), getEnvironmentEngine().getExpectedDataSourceMap(), testParam.getDatabaseType()).fillData();
                     FILLED_SUITES.add(cacheKey);
                 }
             }
@@ -133,7 +134,7 @@ public abstract class BaseDQLE2EIT implements SQLE2EIT {
             if ("db_tbl_sql_federation".equals(testParam.getScenario())) {
                 continue;
             }
-            if ("jdbc".equals(testParam.getAdapter()) && "Cluster".equals(testParam.getMode()) && "encrypt".equals(testParam.getScenario())
+            if ("jdbc".equals(testParam.getAdapter()) && Mode.CLUSTER == testParam.getMode() && "encrypt".equals(testParam.getScenario())
                     || "MySQL".equals(testParam.getDatabaseType().getType()) && "passthrough".equals(testParam.getScenario())) {
                 // FIXME correct columnType with proxy adapter and other jdbc scenario
                 assertThat(actualResultSetMetaData.getColumnType(i + 1), is(expectedResultSetMetaData.getColumnType(i + 1)));
@@ -187,11 +188,11 @@ public abstract class BaseDQLE2EIT implements SQLE2EIT {
                     assertThat(((Timestamp) actualValue).toLocalDateTime(), is(expectedValue));
                 } else if (Types.TIMESTAMP == actualMetaData.getColumnType(i + 1) || Types.TIMESTAMP == expectedMetaData.getColumnType(i + 1)) {
                     Object convertedActualValue = Types.TIMESTAMP == actualMetaData.getColumnType(i + 1)
-                            ? actualResultSet.getTimestamp(i + 1).toLocalDateTime().format(DateTimeFormatterFactory.getDatetimeFormatter())
+                            ? formatTimestamp(actualResultSet.getTimestamp(i + 1))
                             : actualValue;
                     Object convertedExpectedValue = Types.TIMESTAMP == expectedMetaData.getColumnType(i + 1)
-                            ? expectedResultSet.getTimestamp(i + 1).toLocalDateTime().format(DateTimeFormatterFactory.getDatetimeFormatter())
-                            : actualValue;
+                            ? formatTimestamp(expectedResultSet.getTimestamp(i + 1))
+                            : expectedValue;
                     assertThat(String.valueOf(convertedActualValue), is(String.valueOf(convertedExpectedValue)));
                 } else if (expectedValue instanceof Clob) {
                     assertThat(String.valueOf(actualValue), is(((Clob) expectedValue).getSubString(1, (int) ((Clob) expectedValue).length())));
@@ -213,6 +214,10 @@ public abstract class BaseDQLE2EIT implements SQLE2EIT {
             }
             columnIndex++;
         }
+    }
+    
+    private String formatTimestamp(final Timestamp timestamp) {
+        return null == timestamp ? null : timestamp.toLocalDateTime().format(DateTimeFormatterFactory.getDatetimeFormatter());
     }
     
     private void assertObjectValue(final ResultSet actual, final int columnIndex, final String columnLabel, final String expected) throws SQLException {

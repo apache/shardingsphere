@@ -249,7 +249,7 @@ public final class KernelDistSQLStatementVisitor extends KernelDistSQLStatementB
     
     @Override
     public ASTNode visitShowDistVariables(final ShowDistVariablesContext ctx) {
-        return new ShowDistVariablesStatement(null == ctx.showLike() ? null : IdentifierValueUtils.getValue(ctx.showLike().likePattern()));
+        return new ShowDistVariablesStatement(null != ctx.TEMP(), null == ctx.showLike() ? null : IdentifierValueUtils.getValue(ctx.showLike().likePattern()));
     }
     
     @Override

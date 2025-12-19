@@ -43,8 +43,8 @@ import org.apache.shardingsphere.proxy.backend.session.ServerPreparedStatementRe
 import org.apache.shardingsphere.proxy.frontend.postgresql.command.query.extended.PostgreSQLServerPreparedStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.EmptyStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.InsertStatement;
-import org.apache.shardingsphere.test.infra.framework.mock.AutoMockExtension;
-import org.apache.shardingsphere.test.infra.framework.mock.StaticMockSettings;
+import org.apache.shardingsphere.test.infra.framework.extension.mock.AutoMockExtension;
+import org.apache.shardingsphere.test.infra.framework.extension.mock.StaticMockSettings;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -133,8 +133,8 @@ class PostgreSQLComParseExecutorTest {
     
     @Test
     void assertExecuteWithNonOrderedParameterizedSQL() throws ReflectiveOperationException {
-        final String rawSQL = "update t_test set name=$2 where id=$1";
-        final String expectedSQL = "update t_test set name=? where id=?";
+        final String rawSQL = "UPDATE t_test SET name=$2 WHERE id=$1";
+        final String expectedSQL = "UPDATE t_test SET name=? WHERE id=?";
         final String statementId = "S_2";
         when(parsePacket.getSQL()).thenReturn(rawSQL);
         when(parsePacket.getHintValueContext()).thenReturn(new HintValueContext());
@@ -152,8 +152,8 @@ class PostgreSQLComParseExecutorTest {
     
     @Test
     void assertExecuteWithQuestionOperator() throws ReflectiveOperationException {
-        final String rawSQL = "update t_test set enabled = $1 where name ?& $2";
-        final String expectedSQL = "update t_test set enabled = ? where name ??& ?";
+        final String rawSQL = "UPDATE t_test SET enabled = $1 WHERE name ?& $2";
+        final String expectedSQL = "UPDATE t_test SET enabled = ? WHERE name ??& ?";
         final String statementId = "S_2";
         when(parsePacket.getSQL()).thenReturn(rawSQL);
         when(parsePacket.getStatementId()).thenReturn(statementId);
@@ -189,6 +189,14 @@ class PostgreSQLComParseExecutorTest {
         when(result.getMetaDataContexts().getMetaData().getDatabase("foo_db").getProtocolType()).thenReturn(databaseType);
         when(result.getMetaDataContexts().getMetaData().getGlobalRuleMetaData())
                 .thenReturn(new RuleMetaData(Collections.singleton(new SQLParserRule(new DefaultSQLParserRuleConfigurationBuilder().build()))));
+        ShardingSphereDatabase database = new ShardingSphereDatabase("foo_db",
+                databaseType, new ResourceMetaData(Collections.emptyMap()), new RuleMetaData(Collections.emptyList()), Collections.singleton(createSchema()));
+        when(result.getMetaDataContexts().getMetaData().getDatabase("foo_db")).thenReturn(database);
+        when(result.getMetaDataContexts().getMetaData().containsDatabase("foo_db")).thenReturn(true);
+        return result;
+    }
+    
+    private ShardingSphereSchema createSchema() {
         ShardingSphereTable testTable = new ShardingSphereTable("t_test", Arrays.asList(new ShardingSphereColumn("id", Types.BIGINT, true, false, false, false, true, false),
                 new ShardingSphereColumn("name", Types.VARCHAR, false, false, false, false, false, false),
                 new ShardingSphereColumn("age", Types.SMALLINT, false, false, false, false, true, false),
@@ -197,11 +205,6 @@ class PostgreSQLComParseExecutorTest {
                 new ShardingSphereColumn("k", Types.VARCHAR, false, false, false, false, false, false),
                 new ShardingSphereColumn("c", Types.VARCHAR, false, false, false, false, true, false),
                 new ShardingSphereColumn("pad", Types.VARCHAR, false, false, false, false, true, false)), Collections.emptyList(), Collections.emptyList());
-        ShardingSphereSchema schema = new ShardingSphereSchema("public", Arrays.asList(testTable, sbTestTable), Collections.emptyList());
-        ShardingSphereDatabase database = new ShardingSphereDatabase("foo_db",
-                databaseType, new ResourceMetaData(Collections.emptyMap()), new RuleMetaData(Collections.emptyList()), Collections.singleton(schema));
-        when(result.getMetaDataContexts().getMetaData().getDatabase("foo_db")).thenReturn(database);
-        when(result.getMetaDataContexts().getMetaData().containsDatabase("foo_db")).thenReturn(true);
-        return result;
+        return new ShardingSphereSchema("public", Arrays.asList(testTable, sbTestTable), Collections.emptyList());
     }
 }

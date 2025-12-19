@@ -2493,4 +2493,52 @@
             <restrict start-index="161" stop-index="164" />
         </replace-columns>
     </alter-table>
+    
+    <alter-table sql-case-id="alter_create_branch_default">
+        <table name="test" start-index="12" stop-index="15" />
+    </alter-table>
+    
+    <alter-table sql-case-id="alter_create_branch_snapshot_id">
+        <table name="test" start-index="12" stop-index="15" />
+    </alter-table>
+    
+    <alter-table sql-case-id="alter_create_branch_system_time">
+        <table name="test" start-index="12" stop-index="15" />
+    </alter-table>
+    
+    <alter-table sql-case-id="alter_create_branch_snapshot_retention">
+        <table name="test" start-index="12" stop-index="15" />
+    </alter-table>
+    
+    <alter-table sql-case-id="alter_create_branch_tag">
+        <table name="test" start-index="12" stop-index="15" />
+    </alter-table>
+    
+    <alter-table sql-case-id="alter_create_tag_default">
+        <table name="test" start-index="12" stop-index="15" />
+    </alter-table>
+    
+    <alter-table sql-case-id="alter_create_tag_snapshot_id">
+        <table name="test" start-index="12" stop-index="15" />
+    </alter-table>
+    
+    <alter-table sql-case-id="alter_create_tag_system_time">
+        <table name="test" start-index="12" stop-index="15" />
+    </alter-table>
+    
+    <alter-table sql-case-id="alter_drop_branch_basic">
+        <table name="test" start-index="12" stop-index="15" />
+    </alter-table>
+    
+    <alter-table sql-case-id="alter_drop_branch_if_exists">
+        <table name="test" start-index="12" stop-index="15" />
+    </alter-table>
+    
+    <alter-table sql-case-id="alter_drop_tag_basic">
+        <table name="test" start-index="12" stop-index="15" />
+    </alter-table>
+    
+    <alter-table sql-case-id="alter_drop_tag_if_exists">
+        <table name="test" start-index="12" stop-index="15" />
+    </alter-table>
 </sql-parser-test-cases>

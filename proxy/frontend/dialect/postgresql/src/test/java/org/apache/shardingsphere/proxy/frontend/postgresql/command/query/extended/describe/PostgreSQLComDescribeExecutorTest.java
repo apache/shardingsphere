@@ -31,7 +31,7 @@ import org.apache.shardingsphere.database.protocol.postgresql.payload.PostgreSQL
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.dml.InsertStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.dml.SelectStatementContext;
-import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
+import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.exception.generic.UnsupportedSQLOperationException;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.ConnectionMode;
 import org.apache.shardingsphere.infra.hint.HintValueContext;
@@ -57,8 +57,8 @@ import org.apache.shardingsphere.sql.parser.engine.api.CacheOption;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
 import org.apache.shardingsphere.sqltranslator.rule.SQLTranslatorRule;
 import org.apache.shardingsphere.sqltranslator.rule.builder.DefaultSQLTranslatorRuleConfigurationBuilder;
-import org.apache.shardingsphere.test.infra.framework.mock.AutoMockExtension;
-import org.apache.shardingsphere.test.infra.framework.mock.StaticMockSettings;
+import org.apache.shardingsphere.test.infra.framework.extension.mock.AutoMockExtension;
+import org.apache.shardingsphere.test.infra.framework.extension.mock.StaticMockSettings;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -79,6 +79,7 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
+import java.util.Properties;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -138,7 +139,7 @@ class PostgreSQLComDescribeExecutorTest {
         when(packet.getType()).thenReturn('S');
         final String statementId = "S_1";
         when(packet.getName()).thenReturn(statementId);
-        String sql = "insert into t_order values (?, 0, 'char', ?), (2, ?, ?, '')";
+        String sql = "INSERT INTO t_order VALUES (?, 0, 'char', ?), (2, ?, ?, '')";
         SQLStatement sqlStatement = SQL_PARSER_ENGINE.parse(sql, false);
         List<PostgreSQLColumnType> parameterTypes = new ArrayList<>(sqlStatement.getParameterCount());
         for (int i = 0; i < sqlStatement.getParameterCount(); i++) {
@@ -168,7 +169,7 @@ class PostgreSQLComDescribeExecutorTest {
         when(packet.getType()).thenReturn('S');
         final String statementId = "S_2";
         when(packet.getName()).thenReturn(statementId);
-        String sql = "insert into t_order (id, k, c, pad) values (1, ?, ?, ?), (?, 2, ?, '')";
+        String sql = "INSERT INTO t_order (id, k, c, pad) VALUES (1, ?, ?, ?), (?, 2, ?, '')";
         SQLStatement sqlStatement = SQL_PARSER_ENGINE.parse(sql, false);
         List<PostgreSQLColumnType> parameterTypes = new ArrayList<>(sqlStatement.getParameterCount());
         for (int i = 0; i < sqlStatement.getParameterCount(); i++) {
@@ -198,7 +199,7 @@ class PostgreSQLComDescribeExecutorTest {
         when(packet.getType()).thenReturn('S');
         final String statementId = "S_2";
         when(packet.getName()).thenReturn(statementId);
-        String sql = "insert into t_order (iD, k, c, PaD) values (1, ?, ?, ?), (?, 2, ?, '')";
+        String sql = "INSERT INTO t_order (iD, k, c, PaD) VALUES (1, ?, ?, ?), (?, 2, ?, '')";
         SQLStatement sqlStatement = SQL_PARSER_ENGINE.parse(sql, false);
         List<PostgreSQLColumnType> parameterTypes = new ArrayList<>(sqlStatement.getParameterCount());
         for (int i = 0; i < sqlStatement.getParameterCount(); i++) {
@@ -228,7 +229,7 @@ class PostgreSQLComDescribeExecutorTest {
         when(packet.getType()).thenReturn('S');
         final String statementId = "S_2";
         when(packet.getName()).thenReturn(statementId);
-        String sql = "insert into t_order (undefined_column, k, c, pad) values (1, ?, ?, ?), (?, 2, ?, '')";
+        String sql = "INSERT INTO t_order (undefined_column, k, c, pad) VALUES (1, ?, ?, ?), (?, 2, ?, '')";
         SQLStatement sqlStatement = SQL_PARSER_ENGINE.parse(sql, false);
         List<PostgreSQLColumnType> parameterTypes = new ArrayList<>(sqlStatement.getParameterCount());
         for (int i = 0; i < sqlStatement.getParameterCount(); i++) {
@@ -249,8 +250,8 @@ class PostgreSQLComDescribeExecutorTest {
         when(packet.getType()).thenReturn('S');
         final String statementId = "S_2";
         when(packet.getName()).thenReturn(statementId);
-        String sql = "insert into t_order (k, c, pad) values (?, ?, ?) "
-                + "returning id, id alias_id, 'anonymous', 'OK' literal_string, 1 literal_int, 4294967296 literal_bigint, 1.1 literal_numeric, t_order.*, t_order, t_order alias_t_order";
+        String sql = "INSERT INTO t_order (k, c, pad) VALUES (?, ?, ?) "
+                + "RETURNING id, id alias_id, 'anonymous', 'OK' literal_string, 1 literal_int, 4294967296 literal_bigint, 1.1 literal_numeric, t_order.*, t_order, t_order alias_t_order";
         SQLStatement sqlStatement = SQL_PARSER_ENGINE.parse(sql, false);
         List<PostgreSQLColumnType> parameterTypes = new ArrayList<>(sqlStatement.getParameterCount());
         for (int i = 0; i < sqlStatement.getParameterCount(); i++) {
@@ -332,7 +333,7 @@ class PostgreSQLComDescribeExecutorTest {
         when(packet.getType()).thenReturn('S');
         String statementId = "S_3";
         when(packet.getName()).thenReturn(statementId);
-        String sql = "select id, k, c, pad from t_order where id = ?";
+        String sql = "SELECT id, k, c, pad FROM t_order WHERE id = ?";
         SQLStatement sqlStatement = SQL_PARSER_ENGINE.parse(sql, false);
         SQLStatementContext sqlStatementContext = mock(SelectStatementContext.class);
         when(sqlStatementContext.getSqlStatement()).thenReturn(sqlStatement);
@@ -379,7 +380,7 @@ class PostgreSQLComDescribeExecutorTest {
     
     private ContextManager mockContextManager() {
         ContextManager result = mock(ContextManager.class, RETURNS_DEEP_STUBS);
-        when(result.getMetaDataContexts().getMetaData().getProps().getValue(ConfigurationPropertyKey.SQL_SHOW)).thenReturn(false);
+        when(result.getMetaDataContexts().getMetaData().getProps()).thenReturn(new ConfigurationProperties(new Properties()));
         when(connectionSession.getUsedDatabaseName()).thenReturn(DATABASE_NAME);
         when(connectionSession.getCurrentDatabaseName()).thenReturn(DATABASE_NAME);
         when(connectionSession.getServerPreparedStatementRegistry()).thenReturn(new ServerPreparedStatementRegistry());

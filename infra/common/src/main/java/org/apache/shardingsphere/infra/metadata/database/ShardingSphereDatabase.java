@@ -21,12 +21,17 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
+import org.apache.shardingsphere.infra.config.rule.decorator.RuleConfigurationDecorator;
+import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
+import org.apache.shardingsphere.infra.exception.kernel.metadata.resource.storageunit.MissingRequiredStorageUnitsException;
 import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.identifier.ShardingSphereIdentifier;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.attribute.datanode.MutableDataNodeRuleAttribute;
+import org.apache.shardingsphere.infra.rule.attribute.datasource.DataSourceMapperRuleAttribute;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 
 import javax.sql.DataSource;
 import java.util.Collection;
@@ -34,6 +39,7 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
@@ -144,5 +150,35 @@ public final class ShardingSphereDatabase {
         });
         ruleMetaData.getRules().clear();
         ruleMetaData.getRules().addAll(rules);
+    }
+    
+    /**
+     * Check storage units existed.
+     *
+     * @param storageUnitNames storage unit names
+     */
+    public void checkStorageUnitsExisted(final Collection<String> storageUnitNames) {
+        Collection<String> notExistedDataSources = resourceMetaData.getNotExistedDataSources(storageUnitNames);
+        Collection<String> logicDataSources = ruleMetaData.getAttributes(DataSourceMapperRuleAttribute.class).stream()
+                .flatMap(each -> each.getDataSourceMapper().keySet().stream()).collect(Collectors.toSet());
+        notExistedDataSources.removeIf(logicDataSources::contains);
+        ShardingSpherePreconditions.checkMustEmpty(notExistedDataSources, () -> new MissingRequiredStorageUnitsException(name, notExistedDataSources));
+    }
+    
+    /**
+     * Decorate rule configuration.
+     *
+     * @param ruleConfig rule configuration
+     * @return decorated rule configuration
+     */
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    public RuleConfiguration decorateRuleConfiguration(final RuleConfiguration ruleConfig) {
+        Optional<RuleConfigurationDecorator> decorator = TypedSPILoader.findService(RuleConfigurationDecorator.class, ruleConfig.getClass());
+        if (!decorator.isPresent()) {
+            return ruleConfig;
+        }
+        Map<String, DataSource> dataSources = resourceMetaData.getStorageUnits().entrySet().stream()
+                .collect(Collectors.toMap(Entry::getKey, entry -> entry.getValue().getDataSource(), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
+        return decorator.get().decorate(name, dataSources, ruleMetaData.getRules(), ruleConfig);
     }
 }

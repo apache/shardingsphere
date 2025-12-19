@@ -375,4 +375,7 @@
     <sql-case id="select_use_hint" value="SELECT * FROM Person OPTION (RECOMPILE, USE HINT ('ASSUME_MIN_SELECTIVITY_FOR_FILTER_ESTIMATES', 'DISABLE_PARAMETER_SNIFFING'));" db-types="SQLServer"/>
     <sql-case id="select_maxdop_hint" value="SELECT * FROM Person OPTION (MAXDOP 2);" db-types="SQLServer"/>
     <sql-case id="select_for_timestamp_as_of_hint" value="SELECT * FROM Person OPTION (FOR TIMESTAMP AS OF '2024-03-13T19:39:35.28');" db-types="SQLServer"/>
+    <sql-case id="select_force_single_node_plan_hint" value="SELECT * FROM Person OPTION (FORCE SINGLE NODE PLAN);" db-types="SQLServer"/>
+    <sql-case id="select_querytraceon_hint" value="SELECT * FROM Person OPTION (QUERYTRACEON 4199, QUERYTRACEON 4137);" db-types="SQLServer"/>
+    <sql-case id="select_with_sample_clause" value="SELECT 1 AS C1 FROM T_ORDER SAMPLE BLOCK (1.43302, 8) SEED(9) T_ORDER" db-types="Oracle" />
 </sql-cases>

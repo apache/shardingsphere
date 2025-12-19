@@ -42,10 +42,6 @@ public final class DataNodeUtils {
     public static DataNode parseWithSchema(final String text) {
         List<String> segments = Splitter.on(".").splitToList(text);
         ShardingSpherePreconditions.checkState(2 == segments.size() || 3 == segments.size(), () -> new InvalidDataNodeFormatException(text));
-        DataNode result = new DataNode(segments.get(0), segments.get(segments.size() - 1));
-        if (3 == segments.size()) {
-            result.setSchemaName(segments.get(1));
-        }
-        return result;
+        return 3 == segments.size() ? new DataNode(segments.get(0), segments.get(1), segments.get(2)) : new DataNode(segments.get(0), (String) null, segments.get(segments.size() - 1));
     }
 }

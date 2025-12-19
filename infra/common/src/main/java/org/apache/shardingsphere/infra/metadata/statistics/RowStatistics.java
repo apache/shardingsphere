@@ -25,6 +25,7 @@ import lombok.SneakyThrows;
 import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.List;
 
 /**
@@ -48,16 +49,15 @@ public final class RowStatistics {
     private String generateUniqueKey(final List<Object> rows) {
         StringBuilder uniqueKeyText = new StringBuilder();
         for (Object each : rows) {
-            if (null == each) {
-                uniqueKeyText.append('|');
-            } else {
-                uniqueKeyText.append(each).append('|');
+            if (null != each) {
+                uniqueKeyText.append(each);
             }
+            uniqueKeyText.append('|');
         }
         return useMd5GenerateUniqueKey(uniqueKeyText);
     }
     
-    @SneakyThrows
+    @SneakyThrows(NoSuchAlgorithmException.class)
     private String useMd5GenerateUniqueKey(final StringBuilder uniqueKeyText) {
         MessageDigest md5 = MessageDigest.getInstance("MD5");
         md5.update(StandardCharsets.UTF_8.encode(uniqueKeyText.toString()));

@@ -171,7 +171,7 @@ Assuming the contributor is on a fresh Windows 11 Home 24H2 instance with `git-f
 OpenJDK 21 can be installed using `version-fox/vfox` in Powershell 7 using the following command.
 
 ```shell
-winget install version-fox.vfox
+winget install --id version-fox.vfox --source winget --exact
 if (-not (Test-Path -Path $PROFILE)) { New-Item -Type File -Path $PROFILE -Force }; Add-Content -Path $PROFILE -Value 'Invoke-Expression "$(vfox activate pwsh)"'
 # At this time, you need to open a new Powershell 7 terminal
 vfox add java
@@ -377,7 +377,7 @@ ShardingSphere does not provide the build configuration required to build Docker
 
 ### Wasm Module Limitations
 
-Although `Oracle GraalVM Early Access Builds For JDK 25 EA 24` already supports building GraalVM Native Image in the form of `Wasm Module`,
-ShardingSphere is not yet ready to test CI under OpenJDK 25.
+Although `Oracle GraalVM Early Access Builds For JDK 26 EA 3` already supports building GraalVM Native Image in the form of `Wasm Module`,
+ShardingSphere is not yet ready to test CI under OpenJDK 26.
 
 Currently, ShardingSphere Proxy Native does not provide the build configuration required to compile to `Wasm Module`.

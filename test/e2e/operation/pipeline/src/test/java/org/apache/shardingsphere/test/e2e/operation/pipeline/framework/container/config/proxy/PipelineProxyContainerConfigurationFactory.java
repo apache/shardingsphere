@@ -22,9 +22,9 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.database.connector.opengauss.type.OpenGaussDatabaseType;
 import org.apache.shardingsphere.database.connector.postgresql.type.PostgreSQLDatabaseType;
-import org.apache.shardingsphere.test.e2e.env.container.atomic.adapter.config.AdaptorContainerConfiguration;
-import org.apache.shardingsphere.test.e2e.env.container.atomic.constants.ProxyContainerConstants;
-import org.apache.shardingsphere.test.e2e.env.container.atomic.util.AdapterContainerUtils;
+import org.apache.shardingsphere.test.e2e.env.container.adapter.config.AdaptorContainerConfiguration;
+import org.apache.shardingsphere.test.e2e.env.container.constants.ProxyContainerConstants;
+import org.apache.shardingsphere.test.e2e.env.runtime.E2ETestEnvironment;
 
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -43,7 +43,8 @@ public final class PipelineProxyContainerConfigurationFactory {
      * @return created instance
      */
     public static AdaptorContainerConfiguration newInstance(final DatabaseType databaseType) {
-        return new AdaptorContainerConfiguration(getProxyDatasourceName(databaseType), new LinkedList<>(), getMountedResource(databaseType), AdapterContainerUtils.getAdapterContainerImage(), "");
+        String proxyImage = E2ETestEnvironment.getInstance().getDockerEnvironment().getProxyImage();
+        return new AdaptorContainerConfiguration(getProxyDatasourceName(databaseType), new LinkedList<>(), getMountedResource(databaseType), proxyImage, "");
     }
     
     private static String getProxyDatasourceName(final DatabaseType databaseType) {

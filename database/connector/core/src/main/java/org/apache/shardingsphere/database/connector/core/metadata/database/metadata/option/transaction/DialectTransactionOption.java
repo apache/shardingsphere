@@ -20,6 +20,8 @@ package org.apache.shardingsphere.database.connector.core.metadata.database.meta
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
+import java.util.Collection;
+
 /**
  * Dialect transaction option.
  */
@@ -35,10 +37,14 @@ public final class DialectTransactionOption {
     
     private final boolean isSupportDDLInXATransaction;
     
-    // TODO Investgate the reason of some databases cannot support meta data refreshed in transaction. The method should be removed finally after metadata refresh supported for all database.
+    // TODO Investigate the reason of some databases cannot support meta data refreshed in transaction. The method should be removed finally after metadata refresh supported for all database.
     private final boolean isSupportMetaDataRefreshInTransaction;
     
     private final int defaultIsolationLevel;
     
     private final boolean isReturnRollbackStatementWhenCommitFailed;
+    
+    private final boolean isAllowCommitAndRollbackOnlyWhenTransactionFailed;
+    
+    private final Collection<String> xaDriverClassNames;
 }

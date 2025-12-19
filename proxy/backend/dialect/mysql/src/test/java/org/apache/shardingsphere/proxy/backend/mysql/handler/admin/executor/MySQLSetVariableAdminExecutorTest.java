@@ -22,26 +22,23 @@ import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.database.exception.mysql.exception.ErrorGlobalVariableException;
 import org.apache.shardingsphere.database.exception.mysql.exception.UnknownSystemVariableException;
 import org.apache.shardingsphere.database.protocol.constant.CommonConstants;
-import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.session.connection.ConnectionContext;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
-import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.parser.config.SQLParserRuleConfiguration;
 import org.apache.shardingsphere.parser.rule.SQLParserRule;
 import org.apache.shardingsphere.proxy.backend.connector.ProxyDatabaseConnectionManager;
-import org.apache.shardingsphere.proxy.backend.connector.StandardDatabaseConnector;
-import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
+import org.apache.shardingsphere.proxy.backend.connector.StandardDatabaseProxyConnector;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.sql.parser.engine.api.CacheOption;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.VariableAssignSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.VariableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.SetStatement;
-import org.apache.shardingsphere.test.infra.framework.mock.AutoMockExtension;
-import org.apache.shardingsphere.test.infra.framework.mock.StaticMockSettings;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.MockedConstruction;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.nio.charset.StandardCharsets;
 import java.sql.SQLException;
@@ -52,14 +49,12 @@ import java.util.Optional;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockConstruction;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-@ExtendWith(AutoMockExtension.class)
-@StaticMockSettings(ProxyContext.class)
+@ExtendWith(MockitoExtension.class)
 class MySQLSetVariableAdminExecutorTest {
     
     private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "MySQL");
@@ -75,10 +70,8 @@ class MySQLSetVariableAdminExecutorTest {
         when(connectionSession.getConnectionContext()).thenReturn(connectionContext);
         ProxyDatabaseConnectionManager databaseConnectionManager = mock(ProxyDatabaseConnectionManager.class);
         when(connectionSession.getDatabaseConnectionManager()).thenReturn(databaseConnectionManager);
-        ContextManager contextManager = mockContextManager();
-        when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
-        try (MockedConstruction<StandardDatabaseConnector> mockConstruction = mockConstruction(StandardDatabaseConnector.class)) {
-            executor.execute(connectionSession);
+        try (MockedConstruction<StandardDatabaseProxyConnector> mockConstruction = mockConstruction(StandardDatabaseProxyConnector.class)) {
+            executor.execute(connectionSession, mockMetaData());
             verify(mockConstruction.constructed().get(0)).execute();
         }
         assertThat(connectionSession.getAttributeMap().attr(CommonConstants.CHARSET_ATTRIBUTE_KEY).get(), is(StandardCharsets.UTF_8));
@@ -98,11 +91,9 @@ class MySQLSetVariableAdminExecutorTest {
         return new SetStatement(databaseType, Arrays.asList(setGlobalMaxConnectionAssignSegment, setCharacterSetClientVariableSegment));
     }
     
-    private ContextManager mockContextManager() {
-        ContextManager result = mock(ContextManager.class, RETURNS_DEEP_STUBS);
-        when(result.getMetaDataContexts().getMetaData().getDatabase("foo_db")).thenReturn(mock(ShardingSphereDatabase.class));
-        when(result.getMetaDataContexts().getMetaData().getGlobalRuleMetaData())
-                .thenReturn(new RuleMetaData(Collections.singleton(new SQLParserRule(new SQLParserRuleConfiguration(new CacheOption(1, 1L), new CacheOption(1, 1L))))));
+    private ShardingSphereMetaData mockMetaData() {
+        ShardingSphereMetaData result = mock(ShardingSphereMetaData.class);
+        when(result.getGlobalRuleMetaData()).thenReturn(new RuleMetaData(Collections.singleton(new SQLParserRule(new SQLParserRuleConfiguration(new CacheOption(1, 1L), new CacheOption(1, 1L))))));
         return result;
     }
     
@@ -110,13 +101,13 @@ class MySQLSetVariableAdminExecutorTest {
     void assertSetUnknownSystemVariable() {
         SetStatement setStatement = new SetStatement(databaseType, Collections.singletonList(new VariableAssignSegment(0, 0, new VariableSegment(0, 0, "unknown_variable"), "")));
         MySQLSetVariableAdminExecutor executor = new MySQLSetVariableAdminExecutor(setStatement);
-        assertThrows(UnknownSystemVariableException.class, () -> executor.execute(mock(ConnectionSession.class)));
+        assertThrows(UnknownSystemVariableException.class, () -> executor.execute(mock(), mock()));
     }
     
     @Test
     void assertSetVariableWithIncorrectScope() {
         SetStatement setStatement = new SetStatement(databaseType, Collections.singletonList(new VariableAssignSegment(0, 0, new VariableSegment(0, 0, "max_connections"), "")));
         MySQLSetVariableAdminExecutor executor = new MySQLSetVariableAdminExecutor(setStatement);
-        assertThrows(ErrorGlobalVariableException.class, () -> executor.execute(mock(ConnectionSession.class)));
+        assertThrows(ErrorGlobalVariableException.class, () -> executor.execute(mock(), mock()));
     }
 }

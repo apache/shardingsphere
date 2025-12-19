@@ -45,7 +45,7 @@ import static org.mockito.Mockito.mock;
 
 class ConditionValueGeneratorFactoryTest {
     
-    private final HashColumn column = new HashColumn("id", "tbl");
+    private final HashColumn column = new HashColumn("id", "tbl", false);
     
     @Test
     void assertGenerateBinaryOperationExpression() {

@@ -21,6 +21,7 @@ import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.distsql.handler.engine.DistSQLConnectionContext;
 import org.apache.shardingsphere.distsql.statement.type.ral.queryable.show.ShowDistVariablesStatement;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
+import org.apache.shardingsphere.infra.config.props.temporary.TemporaryConfigurationProperties;
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.DatabaseConnectionManager;
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.ExecutorStatementManager;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
@@ -32,6 +33,7 @@ import org.junit.jupiter.api.Test;
 
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -50,7 +52,7 @@ class ShowDistVariablesExecutorTest {
         executor.setConnectionContext(new DistSQLConnectionContext(mock(QueryContext.class), 1,
                 mock(DatabaseType.class), mock(DatabaseConnectionManager.class), mock(ExecutorStatementManager.class)));
         Collection<LocalDataQueryResultRow> actual = executor.getRows(mock(ShowDistVariablesStatement.class), contextManager);
-        assertThat(actual.size(), is(23));
+        assertThat(actual.size(), is(22));
         LocalDataQueryResultRow row = actual.iterator().next();
         assertThat(row.getCell(1), is("agent_plugins_enabled"));
         assertThat(row.getCell(2), is("false"));
@@ -61,10 +63,32 @@ class ShowDistVariablesExecutorTest {
         ShowDistVariablesExecutor executor = new ShowDistVariablesExecutor();
         executor.setConnectionContext(new DistSQLConnectionContext(mock(QueryContext.class), 1,
                 mock(DatabaseType.class), mock(DatabaseConnectionManager.class), mock(ExecutorStatementManager.class)));
-        Collection<LocalDataQueryResultRow> actual = executor.getRows(new ShowDistVariablesStatement("sql_%"), contextManager);
+        Collection<LocalDataQueryResultRow> actual = executor.getRows(new ShowDistVariablesStatement(false, "sql_%"), contextManager);
         assertThat(actual.size(), is(2));
         Iterator<LocalDataQueryResultRow> iterator = actual.iterator();
         assertThat(iterator.next().getCell(1), is("sql_show"));
         assertThat(iterator.next().getCell(1), is("sql_simple"));
+    }
+    
+    @Test
+    void assertExecuteTemporary() {
+        when(contextManager.getMetaDataContexts().getMetaData().getTemporaryProps()).thenReturn(new TemporaryConfigurationProperties(new Properties()));
+        ShowDistVariablesExecutor executor = new ShowDistVariablesExecutor();
+        ShowDistVariablesStatement sqlStatement = new ShowDistVariablesStatement(true, null);
+        Collection<LocalDataQueryResultRow> actual = executor.getRows(sqlStatement, contextManager);
+        assertThat(actual.size(), is(3));
+        LocalDataQueryResultRow row = actual.iterator().next();
+        assertThat(row.getCell(1), is("proxy_meta_data_collector_cron"));
+        assertThat(row.getCell(2), is("0 0/1 * * * ?"));
+    }
+    
+    @Test
+    void assertExecuteTemporaryWithLike() {
+        ShowDistVariablesExecutor executor = new ShowDistVariablesExecutor();
+        Collection<LocalDataQueryResultRow> actual = executor.getRows(new ShowDistVariablesStatement(true, "proxy_%"), contextManager);
+        assertThat(actual.size(), is(2));
+        Iterator<LocalDataQueryResultRow> iterator = actual.iterator();
+        assertThat(iterator.next().getCell(1), is("proxy_meta_data_collector_cron"));
+        assertThat(iterator.next().getCell(1), is("proxy_meta_data_collector_enabled"));
     }
 }

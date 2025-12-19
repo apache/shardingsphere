@@ -37,16 +37,15 @@ import java.util.Optional;
 public final class ListExpressionConverter {
     
     /**
-     * Convert list expression to sql node.
+     * Convert list expression to SQL node.
      *
      * @param segment list expression
-     * @return sql node
+     * @return SQL node
      */
     public static Optional<SqlNode> convert(final ListExpression segment) {
         Collection<SqlNode> sqlNodes = new LinkedList<>();
         for (ExpressionSegment each : segment.getItems()) {
-            Optional<SqlNode> sqlNode = ExpressionConverter.convert(each);
-            sqlNode.ifPresent(sqlNodes::add);
+            ExpressionConverter.convert(each).ifPresent(sqlNodes::add);
         }
         return sqlNodes.isEmpty() ? Optional.empty() : Optional.of(new SqlNodeList(sqlNodes, SqlParserPos.ZERO));
     }

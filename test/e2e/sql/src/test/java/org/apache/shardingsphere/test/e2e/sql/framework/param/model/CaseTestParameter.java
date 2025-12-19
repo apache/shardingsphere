@@ -20,6 +20,7 @@ package org.apache.shardingsphere.test.e2e.sql.framework.param.model;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
+import org.apache.shardingsphere.test.e2e.env.runtime.type.ArtifactEnvironment.Mode;
 import org.apache.shardingsphere.test.e2e.sql.cases.casse.SQLE2ETestCaseContext;
 import org.apache.shardingsphere.test.e2e.sql.framework.type.SQLCommandType;
 
@@ -36,7 +37,7 @@ public final class CaseTestParameter implements E2ETestParameter {
     
     private final String scenario;
     
-    private final String mode;
+    private final Mode mode;
     
     private final DatabaseType databaseType;
     

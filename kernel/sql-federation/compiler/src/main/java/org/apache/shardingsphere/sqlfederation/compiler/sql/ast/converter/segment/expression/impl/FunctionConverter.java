@@ -41,7 +41,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Optional;
 
 /**
  * Function converter.
@@ -50,16 +49,16 @@ import java.util.Optional;
 public final class FunctionConverter {
     
     /**
-     * Convert function segment to sql node.
+     * Convert function segment to SQL node.
      *
      * @param segment function segment
-     * @return sql node
+     * @return SQL node
      */
-    public static Optional<SqlNode> convert(final FunctionSegment segment) {
+    public static SqlNode convert(final FunctionSegment segment) {
         SqlIdentifier functionName = new SqlIdentifier(getQualifiedFunctionNames(segment), SqlParserPos.ZERO);
-        // TODO optimize sql parse logic for select current_user.
+        // TODO optimize SQL parse logic for select current_user
         if ("CURRENT_USER".equalsIgnoreCase(functionName.getSimple())) {
-            return Optional.of(functionName);
+            return functionName;
         }
         if ("TRIM".equalsIgnoreCase(functionName.getSimple())) {
             return TrimFunctionConverter.convert(segment);
@@ -72,12 +71,12 @@ public final class FunctionConverter {
         if (!functions.isEmpty() && segment.getWindow().isPresent()) {
             SqlBasicCall functionCall = new SqlBasicCall(functions.iterator().next(), getFunctionParameters(segment.getParameters()), SqlParserPos.ZERO);
             SqlWindow sqlWindow = WindowConverter.convertWindowItem(segment.getWindow().get());
-            return Optional.of(new SqlBasicCall(SqlStdOperatorTable.OVER, new SqlNode[]{functionCall, sqlWindow}, SqlParserPos.ZERO));
+            return new SqlBasicCall(SqlStdOperatorTable.OVER, new SqlNode[]{functionCall, sqlWindow}, SqlParserPos.ZERO);
         }
-        return Optional.of(functions.isEmpty()
-                ? new SqlBasicCall(new SqlUnresolvedFunction(functionName, null, null, null, null, SqlFunctionCategory.USER_DEFINED_FUNCTION), getFunctionParameters(segment.getParameters()),
-                        SqlParserPos.ZERO)
-                : new SqlBasicCall(functions.iterator().next(), getFunctionParameters(segment.getParameters()), SqlParserPos.ZERO));
+        SqlOperator operator = functions.isEmpty()
+                ? new SqlUnresolvedFunction(functionName, null, null, null, null, SqlFunctionCategory.USER_DEFINED_FUNCTION)
+                : functions.iterator().next();
+        return new SqlBasicCall(operator, getFunctionParameters(segment.getParameters()), SqlParserPos.ZERO);
     }
     
     private static List<String> getQualifiedFunctionNames(final FunctionSegment segment) {

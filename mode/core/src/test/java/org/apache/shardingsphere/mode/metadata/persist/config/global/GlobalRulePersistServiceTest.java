@@ -34,7 +34,7 @@ import java.util.List;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -79,7 +79,7 @@ class GlobalRulePersistServiceTest {
         when(repository.getChildrenKeys("/rules/global_fixture/versions")).thenReturn(Collections.singletonList("10"));
         globalRulePersistService.persist(Collections.singleton(new MockedGlobalRuleConfiguration("foo_value")));
         verify(repository).persist("/rules/global_fixture/versions/11", "name: foo_value" + System.lineSeparator());
-        verify(repository, times(0)).persist("/rules/global_fixture/active_version", "0");
+        verify(repository, never()).persist("/rules/global_fixture/active_version", "0");
     }
     
     @Test

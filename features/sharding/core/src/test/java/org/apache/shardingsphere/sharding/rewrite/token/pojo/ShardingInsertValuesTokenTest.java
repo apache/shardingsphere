@@ -43,7 +43,7 @@ class ShardingInsertValuesTokenTest {
     
     private ShardingInsertValuesToken createInsertValuesToken() {
         ShardingInsertValuesToken result = new ShardingInsertValuesToken(0, 2);
-        Collection<DataNode> dataNodes = Collections.singleton(new DataNode("foo_ds", "tbl_0"));
+        Collection<DataNode> dataNodes = Collections.singleton(new DataNode("foo_ds", (String) null, "tbl_0"));
         List<ExpressionSegment> values = Arrays.asList(new LiteralExpressionSegment(0, 0, "foo"), new LiteralExpressionSegment(0, 0, "bar"));
         result.getInsertValues().add(new ShardingInsertValue(values, dataNodes));
         return result;
@@ -63,7 +63,7 @@ class ShardingInsertValuesTokenTest {
     
     private ShardingInsertValuesToken createMultipleInsertValuesToken() {
         ShardingInsertValuesToken result = new ShardingInsertValuesToken(0, 2);
-        Collection<DataNode> dataNodes = Collections.singleton(new DataNode("foo_ds", "tbl_0"));
+        Collection<DataNode> dataNodes = Collections.singleton(new DataNode("foo_ds", (String) null, "tbl_0"));
         List<ExpressionSegment> values = Arrays.asList(new LiteralExpressionSegment(0, 0, "foo"), new LiteralExpressionSegment(0, 0, "bar"));
         result.getInsertValues().add(new ShardingInsertValue(values, dataNodes));
         result.getInsertValues().add(new ShardingInsertValue(values, dataNodes));
@@ -73,7 +73,7 @@ class ShardingInsertValuesTokenTest {
     @Test
     void assertToStringWithEmptyInsertValues() {
         ShardingInsertValuesToken result = new ShardingInsertValuesToken(0, 2);
-        Collection<DataNode> dataNodes = Collections.singleton(new DataNode("foo_ds", "tbl_0"));
+        Collection<DataNode> dataNodes = Collections.singleton(new DataNode("foo_ds", (String) null, "tbl_0"));
         List<ExpressionSegment> values = Collections.emptyList();
         assertThrows(UnsupportedSQLOperationException.class, () -> result.getInsertValues().add(new ShardingInsertValue(values, dataNodes)));
     }

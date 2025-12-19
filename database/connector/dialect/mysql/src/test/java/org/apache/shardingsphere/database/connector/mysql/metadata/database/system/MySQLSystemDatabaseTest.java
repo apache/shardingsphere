@@ -24,27 +24,17 @@ import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class MySQLSystemDatabaseTest {
     
     private final DialectSystemDatabase systemDatabase = DatabaseTypedSPILoader.getService(DialectSystemDatabase.class, TypedSPILoader.getService(DatabaseType.class, "MySQL"));
     
     @Test
-    void assertGetSystemDatabases() {
-        assertTrue(systemDatabase.getSystemDatabaseSchemaMap().containsKey("information_schema"));
-        assertTrue(systemDatabase.getSystemDatabaseSchemaMap().containsKey("performance_schema"));
-        assertTrue(systemDatabase.getSystemDatabaseSchemaMap().containsKey("mysql"));
-        assertTrue(systemDatabase.getSystemDatabaseSchemaMap().containsKey("sys"));
-        assertTrue(systemDatabase.getSystemDatabaseSchemaMap().containsKey("shardingsphere"));
-    }
-    
-    @Test
     void assertGetSystemSchemas() {
-        assertThat(systemDatabase.getSystemSchemas(), is(new HashSet<>(Arrays.asList("information_schema", "performance_schema", "mysql", "sys", "shardingsphere"))));
+        assertThat(systemDatabase.getSystemSchemas(), is(new LinkedHashSet<>(Arrays.asList("information_schema", "performance_schema", "mysql", "sys", "shardingsphere"))));
     }
 }

@@ -19,21 +19,20 @@ package org.apache.shardingsphere.infra.database;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.database.connector.core.jdbcurl.DialectJdbcUrlFetcher;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeFactory;
 import org.apache.shardingsphere.infra.config.database.DatabaseConfiguration;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.exception.external.sql.type.wrapper.SQLWrapperException;
+import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 
 import javax.sql.DataSource;
-import java.lang.reflect.InvocationTargetException;
 import java.sql.Connection;
-import java.sql.DatabaseMetaData;
 import java.sql.SQLException;
 import java.sql.SQLFeatureNotSupportedException;
-import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -56,12 +55,7 @@ public final class DatabaseTypeEngine {
      * @return protocol type
      */
     public static DatabaseType getProtocolType(final DatabaseConfiguration databaseConfig, final ConfigurationProperties props) {
-        Optional<DatabaseType> configuredDatabaseType = findConfiguredDatabaseType(props);
-        if (configuredDatabaseType.isPresent()) {
-            return configuredDatabaseType.get();
-        }
-        Collection<DataSource> dataSources = getDataSources(databaseConfig).values();
-        return dataSources.isEmpty() ? getDefaultStorageType() : getStorageType(dataSources.iterator().next());
+        return getDatabaseType(getDataSources(databaseConfig), props);
     }
     
     /**
@@ -71,13 +65,12 @@ public final class DatabaseTypeEngine {
      * @param props configuration properties
      * @return protocol type
      */
-    public static DatabaseType getProtocolType(final Map<String, ? extends DatabaseConfiguration> databaseConfigs, final ConfigurationProperties props) {
-        Optional<DatabaseType> configuredDatabaseType = findConfiguredDatabaseType(props);
-        if (configuredDatabaseType.isPresent()) {
-            return configuredDatabaseType.get();
-        }
-        Map<String, DataSource> dataSources = getDataSources(databaseConfigs);
-        return dataSources.isEmpty() ? getDefaultStorageType() : getStorageType(dataSources.values().iterator().next());
+    public static DatabaseType getProtocolType(final Map<String, DatabaseConfiguration> databaseConfigs, final ConfigurationProperties props) {
+        return getDatabaseType(getDataSources(databaseConfigs), props);
+    }
+    
+    private static DatabaseType getDatabaseType(final Map<String, DataSource> dataSources, final ConfigurationProperties props) {
+        return findConfiguredDatabaseType(props).orElseGet(() -> dataSources.isEmpty() ? getDefaultStorageType() : getStorageType(dataSources.values().iterator().next()));
     }
     
     private static Optional<DatabaseType> findConfiguredDatabaseType(final ConfigurationProperties props) {
@@ -85,9 +78,9 @@ public final class DatabaseTypeEngine {
         return null == configuredDatabaseType ? Optional.empty() : Optional.of(configuredDatabaseType.getTrunkDatabaseType().orElse(configuredDatabaseType));
     }
     
-    private static Map<String, DataSource> getDataSources(final Map<String, ? extends DatabaseConfiguration> databaseConfigs) {
+    private static Map<String, DataSource> getDataSources(final Map<String, DatabaseConfiguration> databaseConfigs) {
         Map<String, DataSource> result = new LinkedHashMap<>();
-        for (Entry<String, ? extends DatabaseConfiguration> entry : databaseConfigs.entrySet()) {
+        for (Entry<String, DatabaseConfiguration> entry : databaseConfigs.entrySet()) {
             result.putAll(getDataSources(entry.getValue()));
         }
         return result;
@@ -100,9 +93,6 @@ public final class DatabaseTypeEngine {
     
     /**
      * Get storage type.
-     * Similar to <a href="https://github.com/apache/hive/pull/5554">apache/hive#5554</a>,
-     * apache/hive 4.0.1's `org.apache.hive.jdbc.HiveDatabaseMetaData` does not implement {@link DatabaseMetaData#getURL()}.
-     * So use {@link java.sql.Wrapper#isWrapperFor(Class)} to try fuzzy matching.
      *
      * @param dataSource data source
      * @return storage type
@@ -113,22 +103,23 @@ public final class DatabaseTypeEngine {
         try (Connection connection = dataSource.getConnection()) {
             return DatabaseTypeFactory.get(connection.getMetaData().getURL());
         } catch (final SQLFeatureNotSupportedException sqlFeatureNotSupportedException) {
-            try (Connection connection = dataSource.getConnection()) {
-                Class<?> hiveConnectionClass = Class.forName("org.apache.hive.jdbc.HiveConnection");
-                if (connection.isWrapperFor(hiveConnectionClass)) {
-                    Object hiveConnection = connection.unwrap(hiveConnectionClass);
-                    String connectedUrl = (String) hiveConnectionClass.getMethod("getConnectedUrl").invoke(hiveConnection);
-                    return DatabaseTypeFactory.get(connectedUrl);
+            return findStorageType(dataSource).orElseThrow(() -> new SQLWrapperException(sqlFeatureNotSupportedException));
+        } catch (final SQLException ex) {
+            throw new SQLWrapperException(ex);
+        }
+    }
+    
+    private static Optional<DatabaseType> findStorageType(final DataSource dataSource) {
+        try (Connection connection = dataSource.getConnection()) {
+            for (DialectJdbcUrlFetcher each : ShardingSphereServiceLoader.getServiceInstances(DialectJdbcUrlFetcher.class)) {
+                if (connection.isWrapperFor(each.getConnectionClass())) {
+                    return Optional.of(DatabaseTypeFactory.get(each.fetch(connection)));
                 }
-                throw new SQLWrapperException(sqlFeatureNotSupportedException);
-            } catch (final SQLException ex) {
-                throw new SQLWrapperException(ex);
-            } catch (final ClassNotFoundException | NoSuchMethodException | InvocationTargetException | IllegalAccessException ex) {
-                throw new SQLWrapperException(new SQLException(ex));
             }
         } catch (final SQLException ex) {
             throw new SQLWrapperException(ex);
         }
+        return Optional.empty();
     }
     
     /**

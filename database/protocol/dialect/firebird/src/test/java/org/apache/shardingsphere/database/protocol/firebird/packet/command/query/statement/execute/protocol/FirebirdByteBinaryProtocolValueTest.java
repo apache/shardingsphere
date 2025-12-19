@@ -17,15 +17,14 @@
 
 package org.apache.shardingsphere.database.protocol.firebird.packet.command.query.statement.execute.protocol;
 
-import io.netty.buffer.ByteBuf;
+import io.netty.buffer.Unpooled;
 import org.apache.shardingsphere.database.protocol.firebird.payload.FirebirdPacketPayload;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -35,13 +34,11 @@ class FirebirdByteBinaryProtocolValueTest {
     @Mock
     private FirebirdPacketPayload payload;
     
-    @Mock
-    private ByteBuf byteBuf;
-    
     @Test
     void assertRead() {
-        when(payload.readBuffer()).thenReturn(byteBuf);
-        assertThat(new FirebirdByteBinaryProtocolValue().read(payload), is(byteBuf));
+        byte[] expected = {1, 2};
+        when(payload.readBuffer()).thenReturn(Unpooled.wrappedBuffer(expected));
+        assertArrayEquals(expected, (byte[]) new FirebirdByteBinaryProtocolValue().read(payload));
     }
     
     @Test

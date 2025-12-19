@@ -68,11 +68,9 @@ public final class StandaloneMetaDataManagerPersistService implements MetaDataMa
     
     @Override
     public void createDatabase(final String databaseName) {
-        MetaDataContexts originalMetaDataContexts = new MetaDataContexts(metaDataContextManager.getMetaDataContexts().getMetaData(), metaDataContextManager.getMetaDataContexts().getStatistics());
         metaDataPersistFacade.getDatabaseMetaDataFacade().getDatabase().add(databaseName);
         metaDataContextManager.getDatabaseMetaDataManager().addDatabase(databaseName);
-        metaDataPersistFacade.getDatabaseMetaDataFacade().persistReloadDatabaseByAlter(databaseName, metaDataContextManager.getMetaDataContexts().getMetaData().getDatabase(databaseName),
-                originalMetaDataContexts.getMetaData().getDatabase(databaseName));
+        metaDataPersistFacade.getDatabaseMetaDataFacade().persistCreatedDatabaseSchemas(metaDataContextManager.getMetaDataContexts().getMetaData().getDatabase(databaseName));
         OrderedServicesCache.clearCache();
     }
     
@@ -163,7 +161,7 @@ public final class StandaloneMetaDataManagerPersistService implements MetaDataMa
     private void afterStorageUnitsRegistered(final String databaseName, final MetaDataContexts originalMetaDataContexts,
                                              final Map<String, DataSourcePoolProperties> toBeRegisteredProps) {
         metaDataContextManager.getStorageUnitManager().register(databaseName, toBeRegisteredProps);
-        metaDataPersistFacade.getDatabaseMetaDataFacade().persistReloadDatabaseByAlter(databaseName, metaDataContextManager.getMetaDataContexts().getMetaData().getDatabase(databaseName),
+        metaDataPersistFacade.getDatabaseMetaDataFacade().persistReloadDatabase(databaseName, metaDataContextManager.getMetaDataContexts().getMetaData().getDatabase(databaseName),
                 originalMetaDataContexts.getMetaData().getDatabase(databaseName));
         metaDataContextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getRules()
                 .forEach(each -> ((GlobalRule) each).refresh(metaDataContextManager.getMetaDataContexts().getMetaData().getAllDatabases(), GlobalRuleChangedType.DATABASE_CHANGED));
@@ -179,7 +177,7 @@ public final class StandaloneMetaDataManagerPersistService implements MetaDataMa
     
     private void afterStorageUnitsAltered(final String databaseName, final MetaDataContexts originalMetaDataContexts, final Map<String, DataSourcePoolProperties> toBeRegisteredProps) {
         metaDataContextManager.getStorageUnitManager().alter(databaseName, toBeRegisteredProps);
-        metaDataPersistFacade.getDatabaseMetaDataFacade().persistReloadDatabaseByAlter(databaseName, metaDataContextManager.getMetaDataContexts().getMetaData().getDatabase(databaseName),
+        metaDataPersistFacade.getDatabaseMetaDataFacade().persistReloadDatabase(databaseName, metaDataContextManager.getMetaDataContexts().getMetaData().getDatabase(databaseName),
                 originalMetaDataContexts.getMetaData().getDatabase(databaseName));
         metaDataContextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getRules()
                 .forEach(each -> ((GlobalRule) each).refresh(metaDataContextManager.getMetaDataContexts().getMetaData().getAllDatabases(), GlobalRuleChangedType.DATABASE_CHANGED));

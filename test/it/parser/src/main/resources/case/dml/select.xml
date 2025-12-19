@@ -497,7 +497,7 @@
                 <expr>
                     <function start-index="7" stop-index="59" text="CONVERT(TIMESTAMP &quot;2004-01-22 21:45:33&quot; USING latin1)" function-name="CONVERT">
                         <parameter>
-                            <common-expression start-index="15" stop-index="45" text="TIMESTAMP&quot;2004-01-22 21:45:33&quot;" />
+                            <literal-expression value="2004-01-22 21:45:33" start-index="15" stop-index="45" />
                         </parameter>
                         <parameter start-index="53" stop-index="58">
                             <literal-expression value="latin1" start-index="53" stop-index="58"/>
@@ -514,7 +514,7 @@
                 <expr>
                     <function start-index="7" stop-index="57" text="CONVERT(TIMESTAMP &quot;2004-01-22 21:45:33&quot;, BINARY(4))" function-name="CONVERT" >
                         <parameter>
-                            <common-expression start-index="15" stop-index="45" text="TIMESTAMP&quot;2004-01-22 21:45:33&quot;" function-name="GROUPING(f1)" />
+                            <literal-expression value="2004-01-22 21:45:33" start-index="15" stop-index="45" />
                         </parameter>
                         <parameter start-index="48" stop-index="56">
                             <data-type value="BINARY" start-index="48" stop-index="56"/>
@@ -531,7 +531,7 @@
                 <expr>
                     <function start-index="7" stop-index="55" text="CONVERT(TIMESTAMP &quot;2004-01-22 21:45:33&quot;, CHAR(4))" function-name="CONVERT">
                         <parameter>
-                            <common-expression start-index="15" stop-index="45" text="TIMESTAMP&quot;2004-01-22 21:45:33&quot;" />
+                            <literal-expression value="2004-01-22 21:45:33" start-index="15" stop-index="45" />
                         </parameter>
                         <parameter start-index="48" stop-index="54">
                             <data-type value="CHAR" start-index="48" stop-index="54"/>
@@ -548,7 +548,7 @@
                 <expr>
                     <function start-index="7" stop-index="52" text="CONVERT(TIMESTAMP &quot;2004-01-22 21:45:33&quot;, CHAR)" function-name="CONVERT">
                         <parameter>
-                            <common-expression start-index="15" stop-index="45" text="TIMESTAMP&quot;2004-01-22 21:45:33&quot;" />
+                            <literal-expression value="2004-01-22 21:45:33" start-index="15" stop-index="45" />
                         </parameter>
                         <parameter start-index="48" stop-index="51">
                             <data-type value="CHAR" start-index="48" stop-index="51"/>
@@ -7698,7 +7698,7 @@
             <column-projection name="empid" start-index="75" stop-index="81" literal-start-index="75" literal-stop-index="81">`
                 <owner name="a" start-index="75" stop-index="75" literal-start-index="75" literal-stop-index="75" />
             </column-projection>
-            <expression-projection text="a.enddate - term + term2 + 1) / (last_day(term) - term + 1" alias="cnt" start-index="8" stop-index="72" literal-start-index="8" literal-stop-index="72">
+            <expression-projection text="(a.enddate - term + term2 + 1) / (last_day(term) - term + 1)" alias="cnt" start-index="8" stop-index="72" literal-start-index="8" literal-stop-index="72">
                 <literalText>a.enddate - term + term2 + 1) / (last_day(term) - term + 1</literalText>
                 <expr>
                     <binary-operation-expression start-index="8" stop-index="67" literal-start-index="8" literal-stop-index="67">
@@ -11767,6 +11767,37 @@
         </projections>
         <from>
             <simple-table name="Person" start-index="14" stop-index="19" />
+        </from>
+    </select>
+
+    <select sql-case-id="select_force_single_node_plan_hint">
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" />
+        </projections>
+        <from>
+            <simple-table name="Person" start-index="14" stop-index="19" />
+        </from>
+    </select>
+
+    <select sql-case-id="select_querytraceon_hint">
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" />
+        </projections>
+        <from>
+            <simple-table name="Person" start-index="14" stop-index="19" />
+        </from>
+    </select>
+    
+    <select sql-case-id="select_with_sample_clause">
+        <projections start-index="7" stop-index="13">
+            <expression-projection text="1" alias="C1" start-index="7" stop-index="13">
+                <expr start-index="7" stop-index="7">
+                    <literal-expression value="1" start-index="7" stop-index="7"/>
+                </expr>
+            </expression-projection>
+        </projections>
+        <from start-index="20" stop-index="68">
+            <simple-table alias="T_ORDER" name="T_ORDER" start-index="20" stop-index="68"/>
         </from>
     </select>
 </sql-parser-test-cases>

@@ -57,6 +57,9 @@ public final class SQLE2ETestCase {
     @XmlAttribute
     private boolean smoke;
     
+    @XmlAttribute(name = "skip-batch")
+    private boolean skipBatch;
+    
     @XmlElement(name = "assertion")
     private Collection<SQLE2ETestCaseAssertion> assertions = new LinkedList<>();
 }

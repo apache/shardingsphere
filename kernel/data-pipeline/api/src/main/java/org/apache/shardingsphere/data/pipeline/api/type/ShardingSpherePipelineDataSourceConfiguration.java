@@ -138,7 +138,7 @@ public final class ShardingSpherePipelineDataSourceConfiguration implements Pipe
      */
     @Getter
     @Setter
-    private static class YamlParameterConfiguration implements YamlConfiguration {
+    private static final class YamlParameterConfiguration implements YamlConfiguration {
         
         private String databaseName;
         

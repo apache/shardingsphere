@@ -37,4 +37,4 @@
         <level value="ERROR" />
         <appender-ref ref="console" />
     </root>
-</configuration> 
+</configuration>

@@ -26,6 +26,7 @@ import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaDa
 import org.apache.shardingsphere.infra.metadata.database.resource.node.StorageNode;
 import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnit;
 import org.apache.shardingsphere.infra.rule.scope.GlobalRule.GlobalRuleChangedType;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.UpdateStatement;
 import org.apache.shardingsphere.test.infra.fixture.jdbc.MockedDataSource;
@@ -74,13 +75,13 @@ class TransactionRuleTest {
     @Test
     void assertIsNotImplicitCommitTransactionWhenNotAutoCommit() {
         assertFalse(new TransactionRule(new TransactionRuleConfiguration("XA", "Atomikos", new Properties()), Collections.emptyList())
-                .isImplicitCommitTransaction(mock(ExecutionContext.class), mock(ConnectionTransaction.class), false));
+                .isImplicitCommitTransaction(mock(SQLStatement.class), true, mock(ConnectionTransaction.class), false));
     }
     
     @Test
     void assertIsNotImplicitCommitTransactionWhenDefaultTypeIsNotDistributedTransaction() {
         assertFalse(new TransactionRule(new TransactionRuleConfiguration("LOCAL", null, new Properties()), Collections.emptyList())
-                .isImplicitCommitTransaction(mock(ExecutionContext.class), mock(ConnectionTransaction.class), true));
+                .isImplicitCommitTransaction(mock(SQLStatement.class), true, mock(ConnectionTransaction.class), true));
     }
     
     @Test
@@ -88,7 +89,7 @@ class TransactionRuleTest {
         ConnectionTransaction connectionTransaction = mock(ConnectionTransaction.class);
         when(connectionTransaction.isInDistributedTransaction()).thenReturn(true);
         assertFalse(new TransactionRule(new TransactionRuleConfiguration("XA", null, new Properties()), Collections.emptyList())
-                .isImplicitCommitTransaction(mock(ExecutionContext.class), connectionTransaction, true));
+                .isImplicitCommitTransaction(mock(SQLStatement.class), true, connectionTransaction, true));
     }
     
     @Test
@@ -96,7 +97,7 @@ class TransactionRuleTest {
         ExecutionContext executionContext = mock(ExecutionContext.class, RETURNS_DEEP_STUBS);
         when(executionContext.getSqlStatementContext().getSqlStatement()).thenReturn(mock(SelectStatement.class));
         assertFalse(new TransactionRule(new TransactionRuleConfiguration("XA", null, new Properties()), Collections.emptyList())
-                .isImplicitCommitTransaction(executionContext, mock(ConnectionTransaction.class), true));
+                .isImplicitCommitTransaction(mock(SelectStatement.class), false, mock(ConnectionTransaction.class), true));
     }
     
     @Test
@@ -105,7 +106,7 @@ class TransactionRuleTest {
         when(executionContext.getSqlStatementContext().getSqlStatement()).thenReturn(mock(UpdateStatement.class));
         when(executionContext.getExecutionUnits()).thenReturn(Collections.singleton(mock(ExecutionUnit.class)));
         assertFalse(new TransactionRule(new TransactionRuleConfiguration("XA", null, new Properties()), Collections.emptyList())
-                .isImplicitCommitTransaction(executionContext, mock(ConnectionTransaction.class), true));
+                .isImplicitCommitTransaction(mock(UpdateStatement.class), false, mock(ConnectionTransaction.class), true));
     }
     
     @Test
@@ -114,7 +115,7 @@ class TransactionRuleTest {
         when(executionContext.getSqlStatementContext().getSqlStatement()).thenReturn(mock(UpdateStatement.class));
         when(executionContext.getExecutionUnits()).thenReturn(Arrays.asList(mock(ExecutionUnit.class), mock(ExecutionUnit.class)));
         assertTrue(new TransactionRule(new TransactionRuleConfiguration("XA", null, new Properties()), Collections.emptyList())
-                .isImplicitCommitTransaction(executionContext, mock(ConnectionTransaction.class), true));
+                .isImplicitCommitTransaction(mock(UpdateStatement.class), true, mock(ConnectionTransaction.class), true));
     }
     
     @Test

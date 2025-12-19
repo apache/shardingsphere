@@ -26,22 +26,20 @@ import static org.hamcrest.MatcherAssert.assertThat;
 class HashColumnTest {
     
     @Test
-    void assertEqualsForDifferentObjectType() {
-        assertThat(new HashColumn("col", "tbl"), not(new Object()));
-    }
-    
-    @Test
     void assertEquals() {
-        assertThat(new HashColumn("col", "tbl"), is(new HashColumn("COL", "TBL")));
+        assertThat(new HashColumn("col", "tbl", false), not(new Object()));
+        assertThat(new HashColumn("col", "tbl", false), is(new HashColumn("COL", "TBL", false)));
+        assertThat(new HashColumn("col", "tbl", false), not(new HashColumn("col1", "tbl", false)));
+        assertThat(new HashColumn("col", "tbl", false), not(new HashColumn("col", "tbl1", false)));
+        HashColumn column1 = new HashColumn("col", "tbl", false);
+        HashColumn column2 = new HashColumn("COL", "TBL", false);
+        assertThat(column1.equals(column2), is(true));
+        assertThat(column2.equals(column1), is(true));
     }
     
     @Test
-    void assertNotEqualsWhenColumnNameIsDifferent() {
-        assertThat(new HashColumn("col", "tbl"), not(new HashColumn("col1", "tbl")));
-    }
-    
-    @Test
-    void assertNotEqualsWhenTableNameIsDifferent() {
-        assertThat(new HashColumn("col", "tbl"), not(new HashColumn("col", "tbl1")));
+    void assertHashCode() {
+        assertThat(new HashColumn("col", "tbl", false).hashCode(), is(new HashColumn("COL", "TBL", false).hashCode()));
+        assertThat(new HashColumn("col", "tbl", false).hashCode(), not(new HashColumn("different_col", "tbl", false).hashCode()));
     }
 }

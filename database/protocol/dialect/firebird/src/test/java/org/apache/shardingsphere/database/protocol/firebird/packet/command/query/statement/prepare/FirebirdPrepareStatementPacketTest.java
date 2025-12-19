@@ -47,7 +47,7 @@ class FirebirdPrepareStatementPacketTest {
     void assertPrepareStatementPacket() {
         doNothing().when(payload).skipReserved(anyInt());
         when(payload.readInt4()).thenReturn(1, 2, 3, 10);
-        when(payload.readString()).thenReturn("select 1");
+        when(payload.readString()).thenReturn("SELECT 1");
         when(payload.readBuffer()).thenReturn(byteBuf);
         when(byteBuf.isReadable()).thenReturn(true, true, false);
         when(byteBuf.readByte()).thenReturn((byte) FirebirdSQLInfoPacketType.STMT_TYPE.getCode(), (byte) FirebirdSQLInfoPacketType.DESCRIBE_VARS.getCode());
@@ -56,7 +56,7 @@ class FirebirdPrepareStatementPacketTest {
         assertThat(packet.getTransactionId(), is(1));
         assertThat(packet.getStatementId(), is(2));
         assertThat(packet.getSqlDialect(), is(3));
-        assertThat(packet.getSQL(), is("select 1"));
+        assertThat(packet.getSQL(), is("SELECT 1"));
         assertTrue(packet.isValidStatementHandle());
         assertTrue(packet.nextItem());
         assertThat(packet.getCurrentItem(), is(FirebirdSQLInfoPacketType.STMT_TYPE));
@@ -69,7 +69,7 @@ class FirebirdPrepareStatementPacketTest {
     void assertIsValidStatementHandleWhenInvalid() {
         doNothing().when(payload).skipReserved(anyInt());
         when(payload.readInt4()).thenReturn(1, 0xFFFF, 3, 10);
-        when(payload.readString()).thenReturn("select 1");
+        when(payload.readString()).thenReturn("SELECT 1");
         when(payload.readBuffer()).thenReturn(byteBuf);
         when(byteBuf.isReadable()).thenReturn(false);
         FirebirdPrepareStatementPacket packet = new FirebirdPrepareStatementPacket(payload);

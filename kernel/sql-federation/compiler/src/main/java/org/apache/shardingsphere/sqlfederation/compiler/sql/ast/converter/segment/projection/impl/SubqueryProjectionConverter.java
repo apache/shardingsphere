@@ -26,7 +26,7 @@ import org.apache.calcite.sql.fun.SqlStdOperatorTable;
 import org.apache.calcite.sql.parser.SqlParserPos;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.SubqueryType;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.SubqueryProjectionSegment;
-import org.apache.shardingsphere.sqlfederation.compiler.sql.ast.converter.statement.select.SelectStatementConverter;
+import org.apache.shardingsphere.sqlfederation.compiler.sql.ast.converter.statement.type.SelectStatementConverter;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -41,10 +41,10 @@ import java.util.Optional;
 public final class SubqueryProjectionConverter {
     
     /**
-     * Convert subquery projection segment to sql node.
+     * Convert subquery projection segment to SQL node.
      *
      * @param segment subquery projection segment
-     * @return sql node
+     * @return SQL node
      */
     public static Optional<SqlNode> convert(final SubqueryProjectionSegment segment) {
         if (null == segment) {

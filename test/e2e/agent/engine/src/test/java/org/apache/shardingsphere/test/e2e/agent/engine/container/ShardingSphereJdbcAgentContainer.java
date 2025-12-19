@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.test.e2e.agent.engine.container;
 
 import com.google.common.base.Strings;
-import org.apache.shardingsphere.test.e2e.env.container.atomic.DockerITContainer;
+import org.apache.shardingsphere.test.e2e.env.container.DockerE2EContainer;
 import org.testcontainers.containers.output.OutputFrame;
 import org.testcontainers.containers.wait.strategy.LogMessageWaitStrategy;
 
@@ -30,7 +30,7 @@ import java.util.function.Consumer;
 /**
  * ShardingSphere jdbc container.
  */
-public final class ShardingSphereJdbcAgentContainer extends DockerITContainer {
+public final class ShardingSphereJdbcAgentContainer extends DockerE2EContainer {
     
     private static final String CONFIG_PATH_IN_CONTAINER = "/opt/shardingsphere-jdbc-app/";
     

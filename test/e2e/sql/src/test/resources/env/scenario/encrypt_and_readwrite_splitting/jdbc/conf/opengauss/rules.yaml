@@ -22,7 +22,7 @@ dataSources:
     url: jdbc:opengauss://opengauss.encrypt_and_readwrite_splitting.host:5432/encrypt_write_ds?batchMode=OFF
     dataSourceClassName: com.zaxxer.hikari.HikariDataSource
     username: test_user
-    password: Test@123
+    password: Test@9876
     connectionTimeoutMilliseconds: 30000
     idleTimeoutMilliseconds: 60000
     maxLifetimeMilliseconds: 1800000
@@ -32,7 +32,7 @@ dataSources:
     url: jdbc:opengauss://opengauss.encrypt_and_readwrite_splitting.host:5432/encrypt_read_ds?batchMode=OFF
     dataSourceClassName: com.zaxxer.hikari.HikariDataSource
     username: test_user
-    password: Test@123
+    password: Test@9876
     connectionTimeoutMilliseconds: 30000
     idleTimeoutMilliseconds: 60000
     maxLifetimeMilliseconds: 1800000

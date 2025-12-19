@@ -20,10 +20,11 @@ package org.apache.shardingsphere.data.pipeline.core.consistencycheck.table;
 import com.google.common.base.Strings;
 import org.apache.shardingsphere.data.pipeline.core.consistencycheck.result.TableDataConsistencyCheckIgnoredType;
 import org.apache.shardingsphere.data.pipeline.core.consistencycheck.result.TableDataConsistencyCheckResult;
-import org.apache.shardingsphere.data.pipeline.core.consistencycheck.table.calculator.RecordSingleTableInventoryCalculator;
-import org.apache.shardingsphere.data.pipeline.core.consistencycheck.table.calculator.SingleTableInventoryCalculator;
-import org.apache.shardingsphere.data.pipeline.core.consistencycheck.table.calculator.StreamingRangeType;
+import org.apache.shardingsphere.data.pipeline.core.consistencycheck.result.TableInventoryCheckCalculatedResult;
+import org.apache.shardingsphere.data.pipeline.core.consistencycheck.table.calculator.RecordTableInventoryCheckCalculator;
 import org.apache.shardingsphere.data.pipeline.core.exception.param.PipelineInvalidParameterException;
+import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.inventory.query.StreamingRangeType;
+import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.inventory.query.calculator.TableInventoryCalculator;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.spi.annotation.SPIDescription;
@@ -69,7 +70,7 @@ public final class DataMatchTableDataConsistencyChecker implements TableDataCons
             throw new PipelineInvalidParameterException("'chunk-size' is not a valid number: `" + chunkSizeText + "`");
         }
         if (result <= 0) {
-            throw new PipelineInvalidParameterException("Invalid 'chunk-size': " + result);
+            throw new PipelineInvalidParameterException("Invalid 'chunk-size' value: `" + result + "`, it should be a positive integer.");
         }
         return result;
     }
@@ -82,7 +83,7 @@ public final class DataMatchTableDataConsistencyChecker implements TableDataCons
         try {
             return StreamingRangeType.valueOf(streamingRangeTypeText.toUpperCase());
         } catch (final IllegalArgumentException ex) {
-            throw new PipelineInvalidParameterException("'streaming-range-type' is not a valid value: `" + streamingRangeTypeText
+            throw new PipelineInvalidParameterException("Invalid 'streaming-range-type' value: `" + streamingRangeTypeText
                     + "`, expected values are " + Arrays.toString(StreamingRangeType.values()));
         }
     }
@@ -127,8 +128,8 @@ public final class DataMatchTableDataConsistencyChecker implements TableDataCons
         }
         
         @Override
-        protected SingleTableInventoryCalculator buildSingleTableInventoryCalculator() {
-            return new RecordSingleTableInventoryCalculator(chunkSize, streamingRangeType);
+        protected TableInventoryCalculator<TableInventoryCheckCalculatedResult> buildSingleTableInventoryCalculator() {
+            return new RecordTableInventoryCheckCalculator(chunkSize, streamingRangeType);
         }
     }
 }

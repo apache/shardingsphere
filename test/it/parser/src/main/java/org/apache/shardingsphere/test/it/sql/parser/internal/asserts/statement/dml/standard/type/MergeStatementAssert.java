@@ -131,10 +131,10 @@ public final class MergeStatementAssert {
     
     private static void assertIndexes(final SQLCaseAssertContext assertContext, final MergeStatement actual, final MergeStatementTestCase expected) {
         Collection<IndexSegment> indexes = actual.getIndexes();
-        assertThat(assertContext.getText("index segment assertion error: "), indexes.size(), is(expected.getIndexs().size()));
+        assertThat(assertContext.getText("index segment assertion error: "), indexes.size(), is(expected.getIndexes().size()));
         int count = 0;
         for (IndexSegment each : indexes) {
-            IndexAssert.assertIs(assertContext, each, expected.getIndexs().get(count));
+            IndexAssert.assertIs(assertContext, each, expected.getIndexes().get(count));
             count++;
         }
     }

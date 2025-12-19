@@ -95,6 +95,7 @@ public final class PostgreSQLDMLStatementVisitor extends PostgreSQLStatementVisi
         return visit(ctx.copyWithTableBinary());
     }
     
+    @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitCopyWithTableOrQuery(final CopyWithTableOrQueryContext ctx) {
         return new PostgreSQLCopyStatement(getDatabaseType(), null == ctx.qualifiedName() ? null : (SimpleTableSegment) visit(ctx.qualifiedName()),
@@ -116,6 +117,7 @@ public final class PostgreSQLDMLStatementVisitor extends PostgreSQLStatementVisi
         return result;
     }
     
+    @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitCopyWithTableOrQueryBinaryCsv(final CopyWithTableOrQueryBinaryCsvContext ctx) {
         return new PostgreSQLCopyStatement(getDatabaseType(), null == ctx.qualifiedName() ? null : (SimpleTableSegment) visit(ctx.qualifiedName()),

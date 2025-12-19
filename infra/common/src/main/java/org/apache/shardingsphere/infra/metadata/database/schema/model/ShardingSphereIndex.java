@@ -39,8 +39,6 @@ public final class ShardingSphereIndex {
     private final boolean unique;
     
     public ShardingSphereIndex(final IndexMetaData indexMetaData) {
-        name = indexMetaData.getName();
-        columns = indexMetaData.getColumns();
-        unique = indexMetaData.isUnique();
+        this(indexMetaData.getName(), indexMetaData.getColumns(), indexMetaData.isUnique());
     }
 }

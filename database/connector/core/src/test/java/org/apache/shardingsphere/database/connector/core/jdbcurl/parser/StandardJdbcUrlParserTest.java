@@ -54,7 +54,7 @@ class StandardJdbcUrlParserTest {
         assertThrows(UnrecognizedDatabaseURLException.class, () -> new StandardJdbcUrlParser().parse("jdbc:h2:mem:test;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL", -1));
     }
     
-    private static class TestCaseArgumentsProvider implements ArgumentsProvider {
+    private static final class TestCaseArgumentsProvider implements ArgumentsProvider {
         
         @Override
         public Stream<? extends Arguments> provideArguments(final ParameterDeclarations parameters, final ExtensionContext context) {

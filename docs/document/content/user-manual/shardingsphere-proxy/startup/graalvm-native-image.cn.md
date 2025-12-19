@@ -167,7 +167,7 @@ newgrp docker
 可在 Powershell 7 通过如下命令利用 `version-fox/vfox` 安装 OpenJDK 21。
 
 ```shell
-winget install version-fox.vfox
+winget install --id version-fox.vfox --source winget --exact
 if (-not (Test-Path -Path $PROFILE)) { New-Item -Type File -Path $PROFILE -Force }; Add-Content -Path $PROFILE -Value 'Invoke-Expression "$(vfox activate pwsh)"'
 # 此时需要打开新的 Powershell 7 终端
 vfox add java
@@ -371,7 +371,7 @@ ShardingSphere 暂时不为通过 Windows 编译的 `动态链接的 GraalVM Nat
 
 ### Wasm 模块限制
 
-尽管 `Oracle GraalVM Early Access Builds For JDK 25 EA 24` 已支持构建 `Wasm 模块`形态的 GraalVM Native Image，
-但 ShardingSphere 尚未准备好在 OpenJDK 25 下测试 CI。
+尽管 `Oracle GraalVM Early Access Builds For JDK 26 EA 3` 已支持构建 `Wasm 模块`形态的 GraalVM Native Image，
+但 ShardingSphere 尚未准备好在 OpenJDK 26 下测试 CI。
 
 当前，ShardingSphere Proxy Native 未提供编译为 `Wasm 模块` 所需的构建配置。

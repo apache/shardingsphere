@@ -99,10 +99,7 @@ public final class CDCSchemaTableUtils {
     }
     
     private static Map<String, Set<String>> parseTableExpressionWithAllTable(final ShardingSphereDatabase database, final SchemaTable schemaTable) {
-        DialectDatabaseMetaData dialectDatabaseMetaData = new DatabaseTypeRegistry(database.getProtocolType()).getDialectDatabaseMetaData();
-        String schemaName = schemaTable.getSchema().isEmpty()
-                ? dialectDatabaseMetaData.getSchemaOption().getDefaultSchema().orElseThrow(() -> new IllegalStateException("Default schema should exist."))
-                : schemaTable.getSchema();
+        String schemaName = schemaTable.getSchema();
         ShardingSphereSchema schema = database.getSchema(schemaName);
         ShardingSpherePreconditions.checkNotNull(schema, () -> new SchemaNotFoundException(schemaTable.getSchema()));
         Collection<ShardingSphereTable> tables = schema.getAllTables();

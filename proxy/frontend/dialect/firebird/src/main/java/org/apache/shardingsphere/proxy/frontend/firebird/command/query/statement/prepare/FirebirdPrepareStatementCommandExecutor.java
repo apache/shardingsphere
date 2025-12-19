@@ -20,6 +20,7 @@ package org.apache.shardingsphere.proxy.frontend.firebird.command.query.statemen
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeRegistry;
+import org.apache.shardingsphere.database.connector.firebird.metadata.data.FirebirdSizeRegistry;
 import org.apache.shardingsphere.database.protocol.firebird.exception.FirebirdProtocolException;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.info.type.sql.FirebirdSQLInfoPacketType;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.info.type.sql.FirebirdSQLInfoReturnValue;
@@ -82,12 +83,12 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.type.tcl.Ro
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.tcl.SavepointStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 
-import java.sql.SQLException;
 import java.sql.Types;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.Map;
+import java.util.OptionalInt;
 
 /**
  * Firebird prepare transaction command executor.
@@ -102,7 +103,7 @@ public final class FirebirdPrepareStatementCommandExecutor implements CommandExe
     private ReturningSegment returningSegment;
     
     @Override
-    public Collection<DatabasePacket> execute() throws SQLException {
+    public Collection<DatabasePacket> execute() {
         MetaDataContexts metaDataContexts = ProxyContext.getInstance().getContextManager().getMetaDataContexts();
         SQLParserRule sqlParserRule = metaDataContexts.getMetaData().getGlobalRuleMetaData().getSingleRule(SQLParserRule.class);
         DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "Firebird");
@@ -457,6 +458,15 @@ public final class FirebirdPrepareStatementCommandExecutor implements CommandExe
         String tableAliasString = null == tableAlias ? table.getName() : tableAlias.getValue();
         String columnAliasString = null == columnAlias ? column.getName() : columnAlias.getValue();
         String owner = connectionSession.getConnectionContext().getGrantee().getUsername();
-        describeColumns.add(new FirebirdReturnColumnPacket(requestedItems, idx, table, column, tableAliasString, columnAliasString, owner));
+        Integer columnLength = resolveColumnLength(table, column);
+        describeColumns.add(new FirebirdReturnColumnPacket(requestedItems, idx, table, column, tableAliasString, columnAliasString, owner, columnLength));
+    }
+    
+    private Integer resolveColumnLength(final ShardingSphereTable table, final ShardingSphereColumn column) {
+        if (null == table || null == column) {
+            return null;
+        }
+        OptionalInt columnSize = FirebirdSizeRegistry.findColumnSize(connectionSession.getCurrentDatabaseName(), table.getName(), column.getName());
+        return columnSize.isPresent() ? columnSize.getAsInt() : null;
     }
 }

@@ -83,7 +83,7 @@ public final class Portal {
     public Portal(final String name, final PostgreSQLServerPreparedStatement preparedStatement, final List<Object> params, final List<PostgreSQLValueFormat> resultFormats,
                   final ProxyDatabaseConnectionManager databaseConnectionManager) throws SQLException {
         this.name = name;
-        this.sqlStatement = preparedStatement.getSqlStatementContext().getSqlStatement();
+        sqlStatement = preparedStatement.getSqlStatementContext().getSqlStatement();
         this.resultFormats = resultFormats;
         this.databaseConnectionManager = databaseConnectionManager;
         String databaseName = databaseConnectionManager.getConnectionSession().getCurrentDatabaseName();
@@ -94,7 +94,6 @@ public final class Portal {
         DatabaseType protocolType = ProxyContext.getInstance().getContextManager().getDatabase(databaseName).getProtocolType();
         QueryContext queryContext = new QueryContext(sqlStatementContext, preparedStatement.getSql(), params, preparedStatement.getHintValueContext(),
                 databaseConnectionManager.getConnectionSession().getConnectionContext(), ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData(), true);
-        databaseConnectionManager.getConnectionSession().setQueryContext(queryContext);
         proxyBackendHandler = ProxyBackendHandlerFactory.newInstance(protocolType, queryContext, databaseConnectionManager.getConnectionSession(), true);
     }
     

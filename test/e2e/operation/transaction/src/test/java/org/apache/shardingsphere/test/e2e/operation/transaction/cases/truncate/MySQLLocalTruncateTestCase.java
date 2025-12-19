@@ -47,7 +47,7 @@ public final class MySQLLocalTruncateTestCase extends BaseTransactionTestCase {
         try (Connection connection = getDataSource().getConnection()) {
             connection.setAutoCommit(false);
             assertAccountRowCount(connection, 8);
-            executeWithLog(connection, "truncate account;");
+            executeWithLog(connection, "TRUNCATE account");
             assertAccountRowCount(connection, 0);
             connection.rollback();
             // Expected truncate operation cannot be rolled back in MySQL local transaction
@@ -60,7 +60,7 @@ public final class MySQLLocalTruncateTestCase extends BaseTransactionTestCase {
         try (Connection connection = getDataSource().getConnection()) {
             connection.setAutoCommit(false);
             assertAccountRowCount(connection, 8);
-            executeWithLog(connection, "truncate account;");
+            executeWithLog(connection, "TRUNCATE account");
             assertAccountRowCount(connection, 0);
             connection.commit();
             assertAccountRowCount(connection, 0);
@@ -69,8 +69,8 @@ public final class MySQLLocalTruncateTestCase extends BaseTransactionTestCase {
     
     private void prepare() throws SQLException {
         try (Connection connection = getDataSource().getConnection()) {
-            executeWithLog(connection, "delete from account;");
-            executeWithLog(connection, "insert into account(id, balance, transaction_id) values(1, 1, 1),(2, 2, 2),(3, 3, 3),(4, 4, 4),(5, 5, 5),(6, 6, 6),(7, 7, 7),(8, 8, 8);");
+            executeWithLog(connection, "DELETE FROM account");
+            executeWithLog(connection, "INSERT INTO account(id, balance, transaction_id) VALUES (1, 1, 1),(2, 2, 2),(3, 3, 3),(4, 4, 4),(5, 5, 5),(6, 6, 6),(7, 7, 7),(8, 8, 8)");
         }
     }
 }

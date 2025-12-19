@@ -22,6 +22,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
+import org.apache.shardingsphere.test.e2e.env.runtime.type.ArtifactEnvironment.Mode;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
@@ -48,14 +49,14 @@ public final class DataSetLoader {
      * @return data set
      */
     @SneakyThrows({JAXBException.class, IOException.class})
-    public static DataSet load(final String parentPath, final String scenario, final DatabaseType databaseType, final String mode, final String dataSetFile) {
+    public static DataSet load(final String parentPath, final String scenario, final DatabaseType databaseType, final Mode mode, final String dataSetFile) {
         try (FileReader reader = new FileReader(getFile(parentPath, scenario, databaseType, mode, dataSetFile))) {
             return (DataSet) JAXBContext.newInstance(DataSet.class).createUnmarshaller().unmarshal(reader);
         }
     }
     
-    private static String getFile(final String parentPath, final String scenario, final DatabaseType databaseType, final String mode, final String dataSetFile) {
-        String result = String.join(File.separator, parentPath, DATA_SET_FOLDER_NAME, scenario, mode.toLowerCase(), databaseType.getType().toLowerCase(), dataSetFile);
+    private static String getFile(final String parentPath, final String scenario, final DatabaseType databaseType, final Mode mode, final String dataSetFile) {
+        String result = String.join(File.separator, parentPath, DATA_SET_FOLDER_NAME, scenario, mode.name().toLowerCase(), databaseType.getType().toLowerCase(), dataSetFile);
         if (new File(result).exists()) {
             return result;
         }
@@ -69,7 +70,7 @@ public final class DataSetLoader {
                 return result;
             }
         }
-        result = String.join(File.separator, parentPath, DATA_SET_FOLDER_NAME, scenario, mode.toLowerCase(), dataSetFile);
+        result = String.join(File.separator, parentPath, DATA_SET_FOLDER_NAME, scenario, mode.name().toLowerCase(), dataSetFile);
         if (new File(result).exists()) {
             return result;
         }

@@ -18,23 +18,20 @@
 package org.apache.shardingsphere.proxy.backend.mysql.handler.admin.executor;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.database.exception.mysql.exception.UnknownSystemVariableException;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.engine.SQLBindEngine;
 import org.apache.shardingsphere.infra.hint.HintValueContext;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.session.query.QueryContext;
-import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
-import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.parser.rule.SQLParserRule;
-import org.apache.shardingsphere.proxy.backend.connector.DatabaseConnectorFactory;
-import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
-import org.apache.shardingsphere.proxy.backend.handler.admin.executor.DatabaseAdminExecutor;
+import org.apache.shardingsphere.proxy.backend.connector.DatabaseProxyConnectorFactory;
+import org.apache.shardingsphere.proxy.backend.handler.admin.executor.DatabaseAdminUpdateExecutor;
 import org.apache.shardingsphere.proxy.backend.handler.admin.executor.variable.charset.CharsetSetExecutor;
 import org.apache.shardingsphere.proxy.backend.handler.admin.executor.variable.session.SessionVariableRecordExecutor;
-import org.apache.shardingsphere.proxy.backend.handler.data.DatabaseBackendHandler;
+import org.apache.shardingsphere.proxy.backend.handler.data.DatabaseProxyBackendHandler;
 import org.apache.shardingsphere.proxy.backend.mysql.handler.admin.executor.sysvar.MySQLSystemVariable;
-import org.apache.shardingsphere.proxy.backend.mysql.handler.admin.executor.sysvar.Scope;
+import org.apache.shardingsphere.proxy.backend.mysql.handler.admin.executor.sysvar.MySQLSystemVariableScope;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.VariableAssignSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
@@ -51,34 +48,33 @@ import java.util.stream.Collectors;
  * Set variable admin executor for MySQL.
  */
 @RequiredArgsConstructor
-public final class MySQLSetVariableAdminExecutor implements DatabaseAdminExecutor {
+public final class MySQLSetVariableAdminExecutor implements DatabaseAdminUpdateExecutor {
     
-    private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "MySQL");
-    
-    private final SetStatement setStatement;
+    private final SetStatement sqlStatement;
     
     @Override
-    public void execute(final ConnectionSession connectionSession) throws SQLException {
+    public void execute(final ConnectionSession connectionSession, final ShardingSphereMetaData metaData) throws SQLException {
         Map<String, String> sessionVariables = extractSessionVariables();
         validateSessionVariables(sessionVariables.keySet());
-        new CharsetSetExecutor(databaseType, connectionSession).set(sessionVariables);
-        new SessionVariableRecordExecutor(databaseType, connectionSession).recordVariable(sessionVariables);
-        executeSetGlobalVariablesIfPresent(connectionSession);
+        CharsetSetExecutor charsetSetExecutor = new CharsetSetExecutor(sqlStatement.getDatabaseType(), connectionSession);
+        sessionVariables.forEach(charsetSetExecutor::set);
+        new SessionVariableRecordExecutor(sqlStatement.getDatabaseType(), connectionSession).recordVariable(sessionVariables);
+        executeSetGlobalVariablesIfPresent(connectionSession, metaData);
     }
     
     private Map<String, String> extractSessionVariables() {
-        return setStatement.getVariableAssigns().stream().filter(each -> !"global".equalsIgnoreCase(each.getVariable().getScope().orElse("")))
+        return sqlStatement.getVariableAssigns().stream().filter(each -> !"global".equalsIgnoreCase(each.getVariable().getScope().orElse("")))
                 .collect(Collectors.toMap(each -> each.getVariable().getVariable(), VariableAssignSegment::getAssignValue));
     }
     
     private void validateSessionVariables(final Collection<String> sessionVariables) {
         for (String each : sessionVariables) {
             MySQLSystemVariable systemVariable = MySQLSystemVariable.findSystemVariable(each).orElseThrow(() -> new UnknownSystemVariableException(each));
-            systemVariable.validateSetTargetScope(Scope.SESSION);
+            systemVariable.validateSetTargetScope(MySQLSystemVariableScope.SESSION);
         }
     }
     
-    private void executeSetGlobalVariablesIfPresent(final ConnectionSession connectionSession) throws SQLException {
+    private void executeSetGlobalVariablesIfPresent(final ConnectionSession connectionSession, final ShardingSphereMetaData metaData) throws SQLException {
         if (null == connectionSession.getUsedDatabaseName()) {
             return;
         }
@@ -88,23 +84,22 @@ public final class MySQLSetVariableAdminExecutor implements DatabaseAdminExecuto
             return;
         }
         String sql = "SET " + concatenatedGlobalVariables;
-        MetaDataContexts metaDataContexts = ProxyContext.getInstance().getContextManager().getMetaDataContexts();
-        SQLParserRule sqlParserRule = metaDataContexts.getMetaData().getGlobalRuleMetaData().getSingleRule(SQLParserRule.class);
-        SQLStatement sqlStatement = sqlParserRule.getSQLParserEngine(databaseType).parse(sql, false);
-        SQLStatementContext sqlStatementContext = new SQLBindEngine(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData(),
+        SQLParserRule sqlParserRule = metaData.getGlobalRuleMetaData().getSingleRule(SQLParserRule.class);
+        SQLStatement sqlStatement = sqlParserRule.getSQLParserEngine(this.sqlStatement.getDatabaseType()).parse(sql, false);
+        SQLStatementContext sqlStatementContext = new SQLBindEngine(metaData,
                 connectionSession.getCurrentDatabaseName(), new HintValueContext()).bind(sqlStatement);
-        DatabaseBackendHandler databaseBackendHandler = DatabaseConnectorFactory.getInstance().newInstance(
-                new QueryContext(sqlStatementContext, sql, Collections.emptyList(), new HintValueContext(), connectionSession.getConnectionContext(), metaDataContexts.getMetaData()),
+        DatabaseProxyBackendHandler databaseProxyBackendHandler = DatabaseProxyConnectorFactory.newInstance(
+                new QueryContext(sqlStatementContext, sql, Collections.emptyList(), new HintValueContext(), connectionSession.getConnectionContext(), metaData),
                 connectionSession.getDatabaseConnectionManager(), false);
         try {
-            databaseBackendHandler.execute();
+            databaseProxyBackendHandler.execute();
         } finally {
-            databaseBackendHandler.close();
+            databaseProxyBackendHandler.close();
         }
     }
     
     private Map<String, String> extractGlobalVariables() {
-        return setStatement.getVariableAssigns().stream().filter(each -> "global".equalsIgnoreCase(each.getVariable().getScope().orElse("")))
+        return sqlStatement.getVariableAssigns().stream().filter(each -> "global".equalsIgnoreCase(each.getVariable().getScope().orElse("")))
                 .collect(Collectors.toMap(each -> each.getVariable().getVariable(), VariableAssignSegment::getAssignValue, (oldValue, newValue) -> newValue, LinkedHashMap::new));
     }
 }

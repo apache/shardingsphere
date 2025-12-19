@@ -30,14 +30,16 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class DefaultAESPropertiesProviderTest {
     
+    private static final String DEFAULT_AES = "DEFAULT";
+    
     @Test
     void assertCreateNewInstanceWithoutAESKey() {
-        assertThrows(AlgorithmInitializationException.class, () -> TypedSPILoader.getService(CryptographicPropertiesProvider.class, "DEFAULT"));
+        assertThrows(AlgorithmInitializationException.class, () -> TypedSPILoader.getService(CryptographicPropertiesProvider.class, DEFAULT_AES));
     }
     
     @Test
     void assertCreateNewInstanceWithAESKey() {
-        CryptographicPropertiesProvider provider = TypedSPILoader.getService(CryptographicPropertiesProvider.class, "DEFAULT",
+        CryptographicPropertiesProvider provider = TypedSPILoader.getService(CryptographicPropertiesProvider.class, DEFAULT_AES,
                 PropertiesBuilder.build(new Property("aes-key-value", "test"), new Property("digest-algorithm-name", "SHA-1")));
         assertThat(provider.getSecretKey().length, is(16));
         assertThat(provider.getMode(), is(""));

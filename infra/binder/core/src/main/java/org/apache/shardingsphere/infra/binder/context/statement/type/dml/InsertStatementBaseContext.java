@@ -34,7 +34,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.assignmen
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.assignment.SetAssignmentSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExpressionSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.InsertStatement;
 
 import java.util.ArrayList;
@@ -73,7 +73,8 @@ public final class InsertStatementBaseContext implements SQLStatementContext {
         this.sqlStatement = sqlStatement;
         this.currentDatabaseName = currentDatabaseName;
         valueExpressions = getAllValueExpressions(sqlStatement);
-        tablesContext = new TablesContext(getAllSimpleTableSegments());
+        Collection<TableSegment> tableSegments = getAllSimpleTableSegments();
+        tablesContext = new TablesContext(tableSegments, Collections.emptyMap());
         List<String> insertColumnNames = getInsertColumnNames();
         schema = getSchema(metaData, currentDatabaseName);
         columnNames = containsInsertColumns()
@@ -103,10 +104,10 @@ public final class InsertStatementBaseContext implements SQLStatementContext {
         return tablesContext.getSchemaName().map(database::getSchema).orElseGet(() -> database.getSchema(defaultSchema));
     }
     
-    private Collection<SimpleTableSegment> getAllSimpleTableSegments() {
+    private Collection<TableSegment> getAllSimpleTableSegments() {
         TableExtractor tableExtractor = new TableExtractor();
         tableExtractor.extractTablesFromInsert(sqlStatement);
-        return tableExtractor.getRewriteTables();
+        return new LinkedList<>(tableExtractor.getRewriteTables());
     }
     
     /**

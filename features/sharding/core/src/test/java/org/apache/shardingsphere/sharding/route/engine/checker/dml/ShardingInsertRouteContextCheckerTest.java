@@ -187,10 +187,10 @@ class ShardingInsertRouteContextCheckerTest {
     
     private Collection<Collection<DataNode>> getMultipleRouteDataNodes() {
         Collection<DataNode> value1DataNodes = new LinkedList<>();
-        value1DataNodes.add(new DataNode("ds_0", "user_0"));
+        value1DataNodes.add(new DataNode("ds_0", (String) null, "user_0"));
         Collection<DataNode> value2DataNodes = new LinkedList<>();
-        value2DataNodes.add(new DataNode("ds_0", "user_0"));
-        value2DataNodes.add(new DataNode("ds_0", "user_1"));
+        value2DataNodes.add(new DataNode("ds_0", (String) null, "user_0"));
+        value2DataNodes.add(new DataNode("ds_0", (String) null, "user_1"));
         Collection<Collection<DataNode>> result = new LinkedList<>();
         result.add(value1DataNodes);
         result.add(value2DataNodes);
@@ -199,9 +199,9 @@ class ShardingInsertRouteContextCheckerTest {
     
     private Collection<Collection<DataNode>> getSingleRouteDataNodes() {
         Collection<DataNode> value1DataNodes = new LinkedList<>();
-        value1DataNodes.add(new DataNode("ds_0", "user_0"));
+        value1DataNodes.add(new DataNode("ds_0", (String) null, "user_0"));
         Collection<DataNode> value2DataNodes = new LinkedList<>();
-        value2DataNodes.add(new DataNode("ds_0", "user_0"));
+        value2DataNodes.add(new DataNode("ds_0", (String) null, "user_0"));
         Collection<Collection<DataNode>> result = new LinkedList<>();
         result.add(value1DataNodes);
         result.add(value2DataNodes);

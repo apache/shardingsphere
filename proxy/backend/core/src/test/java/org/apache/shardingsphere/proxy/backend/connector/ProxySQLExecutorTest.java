@@ -50,8 +50,8 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.ta
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.InsertStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 import org.apache.shardingsphere.sqlfederation.rule.SQLFederationRule;
-import org.apache.shardingsphere.test.infra.framework.mock.AutoMockExtension;
-import org.apache.shardingsphere.test.infra.framework.mock.StaticMockSettings;
+import org.apache.shardingsphere.test.infra.framework.extension.mock.AutoMockExtension;
+import org.apache.shardingsphere.test.infra.framework.extension.mock.StaticMockSettings;
 import org.apache.shardingsphere.transaction.api.TransactionType;
 import org.apache.shardingsphere.transaction.rule.TransactionRule;
 import org.junit.jupiter.api.BeforeEach;
@@ -118,8 +118,8 @@ class ProxySQLExecutorTest {
                 new QueryContext(createCreateTableStatementContext(mysqlDatabaseType), "", Collections.emptyList(), new HintValueContext(), mockConnectionContext(),
                         mock(ShardingSphereMetaData.class)),
                 Collections.emptyList(), mock(RouteContext.class));
-        assertThrows(TableModifyInTransactionException.class, () -> new ProxySQLExecutor(
-                JDBCDriverType.STATEMENT, databaseConnectionManager, mock(DatabaseConnector.class), mockQueryContext()).checkExecutePrerequisites(executionContext.getSqlStatementContext()));
+        assertThrows(TableModifyInTransactionException.class, () -> new ProxySQLExecutor(JDBCDriverType.STATEMENT,
+                databaseConnectionManager, mock(DatabaseProxyConnector.class), mockSQLStatementContext()).checkExecutePrerequisites(executionContext.getSqlStatementContext()));
     }
     
     private ConnectionContext mockConnectionContext() {
@@ -133,8 +133,8 @@ class ProxySQLExecutorTest {
         ExecutionContext executionContext = new ExecutionContext(
                 new QueryContext(createTruncateStatementContext(mysqlDatabaseType), "", Collections.emptyList(), new HintValueContext(), mockConnectionContext(), mock(ShardingSphereMetaData.class)),
                 Collections.emptyList(), mock(RouteContext.class));
-        assertThrows(TableModifyInTransactionException.class, () -> new ProxySQLExecutor(
-                JDBCDriverType.STATEMENT, databaseConnectionManager, mock(DatabaseConnector.class), mockQueryContext()).checkExecutePrerequisites(executionContext.getSqlStatementContext()));
+        assertThrows(TableModifyInTransactionException.class, () -> new ProxySQLExecutor(JDBCDriverType.STATEMENT,
+                databaseConnectionManager, mock(DatabaseProxyConnector.class), mockSQLStatementContext()).checkExecutePrerequisites(executionContext.getSqlStatementContext()));
     }
     
     @Test
@@ -144,7 +144,7 @@ class ProxySQLExecutorTest {
                 new QueryContext(createTruncateStatementContext(mysqlDatabaseType), "", Collections.emptyList(), new HintValueContext(), mockConnectionContext(), mock(ShardingSphereMetaData.class)),
                 Collections.emptyList(), mock(RouteContext.class));
         new ProxySQLExecutor(JDBCDriverType.STATEMENT,
-                databaseConnectionManager, mock(DatabaseConnector.class), mockQueryContext()).checkExecutePrerequisites(executionContext.getSqlStatementContext());
+                databaseConnectionManager, mock(DatabaseProxyConnector.class), mockSQLStatementContext()).checkExecutePrerequisites(executionContext.getSqlStatementContext());
     }
     
     @Test
@@ -153,7 +153,7 @@ class ProxySQLExecutorTest {
                 new QueryContext(mockInsertStatementContext(mysqlDatabaseType), "", Collections.emptyList(), new HintValueContext(), mockConnectionContext(), mock(ShardingSphereMetaData.class)),
                 Collections.emptyList(), mock(RouteContext.class));
         new ProxySQLExecutor(JDBCDriverType.STATEMENT,
-                databaseConnectionManager, mock(DatabaseConnector.class), mockQueryContext()).checkExecutePrerequisites(executionContext.getSqlStatementContext());
+                databaseConnectionManager, mock(DatabaseProxyConnector.class), mockSQLStatementContext()).checkExecutePrerequisites(executionContext.getSqlStatementContext());
     }
     
     @Test
@@ -164,7 +164,7 @@ class ProxySQLExecutorTest {
                         mock(ShardingSphereMetaData.class)),
                 Collections.emptyList(), mock(RouteContext.class));
         new ProxySQLExecutor(JDBCDriverType.STATEMENT,
-                databaseConnectionManager, mock(DatabaseConnector.class), mockQueryContext()).checkExecutePrerequisites(executionContext.getSqlStatementContext());
+                databaseConnectionManager, mock(DatabaseProxyConnector.class), mockSQLStatementContext()).checkExecutePrerequisites(executionContext.getSqlStatementContext());
     }
     
     @Test
@@ -175,7 +175,7 @@ class ProxySQLExecutorTest {
                         mock(ShardingSphereMetaData.class)),
                 Collections.emptyList(), mock(RouteContext.class));
         new ProxySQLExecutor(JDBCDriverType.STATEMENT,
-                databaseConnectionManager, mock(DatabaseConnector.class), mockQueryContext()).checkExecutePrerequisites(executionContext.getSqlStatementContext());
+                databaseConnectionManager, mock(DatabaseProxyConnector.class), mockSQLStatementContext()).checkExecutePrerequisites(executionContext.getSqlStatementContext());
     }
     
     @Test
@@ -185,8 +185,8 @@ class ProxySQLExecutorTest {
                 new QueryContext(createCreateTableStatementContext(postgresqlDatabaseType), "", Collections.emptyList(), new HintValueContext(), mockConnectionContext(),
                         mock(ShardingSphereMetaData.class)),
                 Collections.emptyList(), mock(RouteContext.class));
-        assertThrows(TableModifyInTransactionException.class, () -> new ProxySQLExecutor(
-                JDBCDriverType.STATEMENT, databaseConnectionManager, mock(DatabaseConnector.class), mockQueryContext()).checkExecutePrerequisites(executionContext.getSqlStatementContext()));
+        assertThrows(TableModifyInTransactionException.class, () -> new ProxySQLExecutor(JDBCDriverType.STATEMENT,
+                databaseConnectionManager, mock(DatabaseProxyConnector.class), mockSQLStatementContext()).checkExecutePrerequisites(executionContext.getSqlStatementContext()));
     }
     
     @Test
@@ -197,7 +197,7 @@ class ProxySQLExecutorTest {
                         mock(ShardingSphereMetaData.class)),
                 Collections.emptyList(), mock(RouteContext.class));
         new ProxySQLExecutor(JDBCDriverType.STATEMENT,
-                databaseConnectionManager, mock(DatabaseConnector.class), mockQueryContext()).checkExecutePrerequisites(executionContext.getSqlStatementContext());
+                databaseConnectionManager, mock(DatabaseProxyConnector.class), mockSQLStatementContext()).checkExecutePrerequisites(executionContext.getSqlStatementContext());
     }
     
     @Test
@@ -207,7 +207,7 @@ class ProxySQLExecutorTest {
                 new QueryContext(mockCursorStatementContext(), "", Collections.emptyList(), new HintValueContext(), mockConnectionContext(), mock(ShardingSphereMetaData.class)),
                 Collections.emptyList(), mock(RouteContext.class));
         new ProxySQLExecutor(JDBCDriverType.STATEMENT,
-                databaseConnectionManager, mock(DatabaseConnector.class), mockQueryContext()).checkExecutePrerequisites(executionContext.getSqlStatementContext());
+                databaseConnectionManager, mock(DatabaseProxyConnector.class), mockSQLStatementContext()).checkExecutePrerequisites(executionContext.getSqlStatementContext());
     }
     
     @Test
@@ -218,7 +218,7 @@ class ProxySQLExecutorTest {
                         mock(ShardingSphereMetaData.class)),
                 Collections.emptyList(), mock(RouteContext.class));
         new ProxySQLExecutor(JDBCDriverType.STATEMENT,
-                databaseConnectionManager, mock(DatabaseConnector.class), mockQueryContext()).checkExecutePrerequisites(executionContext.getSqlStatementContext());
+                databaseConnectionManager, mock(DatabaseProxyConnector.class), mockSQLStatementContext()).checkExecutePrerequisites(executionContext.getSqlStatementContext());
     }
     
     @Test
@@ -229,15 +229,13 @@ class ProxySQLExecutorTest {
                         mock(ShardingSphereMetaData.class)),
                 Collections.emptyList(), mock(RouteContext.class));
         new ProxySQLExecutor(JDBCDriverType.STATEMENT,
-                databaseConnectionManager, mock(DatabaseConnector.class), mockQueryContext()).checkExecutePrerequisites(executionContext.getSqlStatementContext());
+                databaseConnectionManager, mock(DatabaseProxyConnector.class), mockSQLStatementContext()).checkExecutePrerequisites(executionContext.getSqlStatementContext());
     }
     
-    private QueryContext mockQueryContext() {
-        QueryContext result = mock(QueryContext.class);
-        SQLStatementContext sqlStatementContext = mock(SQLStatementContext.class, RETURNS_DEEP_STUBS);
-        when(sqlStatementContext.getSqlStatement().getDatabaseType()).thenReturn(databaseType);
-        when(sqlStatementContext.getTablesContext().getSchemaName()).thenReturn(Optional.of("foo_db"));
-        when(result.getSqlStatementContext()).thenReturn(sqlStatementContext);
+    private SQLStatementContext mockSQLStatementContext() {
+        SQLStatementContext result = mock(SQLStatementContext.class, RETURNS_DEEP_STUBS);
+        when(result.getSqlStatement().getDatabaseType()).thenReturn(databaseType);
+        when(result.getTablesContext().getSchemaName()).thenReturn(Optional.of("foo_db"));
         return result;
     }
     
@@ -250,7 +248,7 @@ class ProxySQLExecutorTest {
                         mock(ShardingSphereMetaData.class)),
                 Collections.emptyList(), mock(RouteContext.class));
         new ProxySQLExecutor(JDBCDriverType.STATEMENT,
-                databaseConnectionManager, mock(DatabaseConnector.class), mockQueryContext()).checkExecutePrerequisites(executionContext.getSqlStatementContext());
+                databaseConnectionManager, mock(DatabaseProxyConnector.class), mockSQLStatementContext()).checkExecutePrerequisites(executionContext.getSqlStatementContext());
     }
     
     private CommonSQLStatementContext createCreateTableStatementContext(final DatabaseType databaseType) {

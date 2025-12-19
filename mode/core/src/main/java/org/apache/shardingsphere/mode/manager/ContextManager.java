@@ -19,11 +19,13 @@ package org.apache.shardingsphere.mode.manager;
 
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.database.exception.core.exception.syntax.database.NoDatabaseSelectedException;
 import org.apache.shardingsphere.database.exception.core.exception.syntax.database.UnknownDatabaseException;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
+import org.apache.shardingsphere.infra.database.DatabaseTypeEngine;
 import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePoolProperties;
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.executor.kernel.ExecutorEngine;
@@ -39,7 +41,7 @@ import org.apache.shardingsphere.infra.metadata.database.schema.manager.GenericS
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.statistics.builder.ShardingSphereStatisticsFactory;
 import org.apache.shardingsphere.infra.rule.builder.global.GlobalRulesBuilder;
-import org.apache.shardingsphere.mode.lock.LockContext;
+import org.apache.shardingsphere.mode.exclusive.ExclusiveOperatorEngine;
 import org.apache.shardingsphere.mode.manager.listener.ContextManagerLifecycleListenerFactory;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.mode.metadata.factory.MetaDataContextsFactory;
@@ -53,6 +55,7 @@ import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * Context manager.
@@ -65,25 +68,46 @@ public final class ContextManager implements AutoCloseable {
     
     private final ComputeNodeInstanceContext computeNodeInstanceContext;
     
-    private final LockContext lockContext;
-    
-    private final StateContext stateContext;
+    private final ExclusiveOperatorEngine exclusiveOperatorEngine;
     
     private final ExecutorEngine executorEngine;
     
-    private final PersistServiceFacade persistServiceFacade;
-    
     private final MetaDataContextManager metaDataContextManager;
     
-    public ContextManager(final MetaDataContexts metaDataContexts, final ComputeNodeInstanceContext computeNodeInstanceContext, final LockContext lockContext, final PersistRepository repository) {
+    private final PersistServiceFacade persistServiceFacade;
+    
+    private final StateContext stateContext;
+    
+    public ContextManager(final MetaDataContexts metaDataContexts, final ComputeNodeInstanceContext computeNodeInstanceContext, final ExclusiveOperatorEngine exclusiveOperatorEngine,
+                          final PersistRepository repository) {
         this.metaDataContexts = metaDataContexts;
         this.computeNodeInstanceContext = computeNodeInstanceContext;
-        this.lockContext = lockContext;
+        this.exclusiveOperatorEngine = exclusiveOperatorEngine;
         executorEngine = ExecutorEngine.createExecutorEngineWithSize(metaDataContexts.getMetaData().getProps().<Integer>getValue(ConfigurationPropertyKey.KERNEL_EXECUTOR_SIZE));
         metaDataContextManager = new MetaDataContextManager(metaDataContexts, computeNodeInstanceContext, repository);
         persistServiceFacade = new PersistServiceFacade(repository, computeNodeInstanceContext.getModeConfiguration(), metaDataContextManager);
         stateContext = new StateContext(persistServiceFacade.getStateService().load());
         ContextManagerLifecycleListenerFactory.getListeners(this).forEach(each -> each.onInitialized(this));
+    }
+    
+    /**
+     * Get database type.
+     *
+     * @return database type
+     */
+    public DatabaseType getDatabaseType() {
+        Collection<ShardingSphereDatabase> databases = metaDataContexts.getMetaData().getAllDatabases();
+        return databases.stream().flatMap(each -> each.getResourceMetaData().getStorageUnits().values().stream()).findFirst().map(StorageUnit::getStorageType)
+                .orElseGet(DatabaseTypeEngine::getDefaultStorageType);
+    }
+    
+    /**
+     * Get all database names.
+     *
+     * @return all database names
+     */
+    public Collection<String> getAllDatabaseNames() {
+        return metaDataContexts.getMetaData().getAllDatabases().stream().map(ShardingSphereDatabase::getName).collect(Collectors.toList());
     }
     
     /**

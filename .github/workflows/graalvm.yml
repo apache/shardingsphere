@@ -46,17 +46,16 @@ jobs:
       max-parallel: 20
       fail-fast: false
       matrix:
-        os: [ 'ubuntu-latest', 'windows-2025' ]
+        os: [ 'ubuntu-latest', 'windows-latest' ]
         java-version: [ '24.0.2' ]
     steps:
       - uses: actions/checkout@v4
+      - name: Free Disk Space on Ubuntu
+        if: matrix.os == 'ubuntu-latest'
+        run: ./test/native/src/test/resources/test-native/sh/free-disk-space.sh
       - name: Setup Rancher Desktop without GUI on Windows Server
-        if: matrix.os == 'windows-2025'
+        if: matrix.os == 'windows-latest'
         run: |
-          ./test/native/src/test/resources/test-native/ps1/uninstall-docker-engine-for-wcow.ps1
-          winget install --id jazzdelightsme.WingetPathUpdater --source winget
-          winget install --id SUSE.RancherDesktop --source winget --skip-dependencies
-          rdctl start --application.start-in-background --container-engine.name=moby --kubernetes.enabled=false
           ./test/native/src/test/resources/test-native/ps1/wait-for-rancher-desktop-backend.ps1
           "PATH=$env:PATH" >> $env:GITHUB_ENV
       - uses: graalvm/setup-graalvm@v1
@@ -74,7 +73,7 @@ jobs:
             ${{ needs.global-environment.outputs.GLOBAL_CACHE_PREFIX }}-maven-third-party-
       # TODO Remove this workaround after. The graalvm native image built with windows server is missing some GRMs for testcontainers
       - name: Run test with GraalVM CE
-        if: matrix.os == 'windows-2025'
+        if: matrix.os == 'windows-latest'
         run: ./mvnw -PgenerateMetadata -e -T 1C clean verify
       - name: Run nativeTest with GraalVM CE for ${{ matrix.java-version }}
         if: matrix.os == 'ubuntu-latest'

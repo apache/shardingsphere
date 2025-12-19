@@ -34,6 +34,6 @@
         <column name="auditor_types" />
         <column name="allow_hint_disable" />
     </metadata>
-    <row values="t_user_item| | write_ds_${0..9}| | | | |STANDARD| user_id| MOD| {&quot;sharding-count&quot;:40}| user_id| IT.FIXTURE| {&quot;worker-id&quot;:1} | |" />
-    <row values="t_user| | write_ds_${0..9}| | | | | STANDARD| user_id| MOD| {&quot;sharding-count&quot;:40}| user_id| IT.FIXTURE| {&quot;worker-id&quot;:1} | IT.AUDITOR.FIXTURE| true" />
+    <row values="t_user_item| | write_ds_${0..9}| | | | |STANDARD| user_id| MOD| {&quot;sharding-count&quot;:40}| user_id| E2E.KEYGEN.FIXTURE| {&quot;worker-id&quot;:1} | |" />
+    <row values="t_user| | write_ds_${0..9}| | | | | STANDARD| user_id| MOD| {&quot;sharding-count&quot;:40}| user_id| E2E.KEYGEN.FIXTURE| {&quot;worker-id&quot;:1} | E2E.AUDITOR.FIXTURE| true" />
 </dataset>

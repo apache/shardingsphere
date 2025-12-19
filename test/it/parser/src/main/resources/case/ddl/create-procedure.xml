@@ -105,7 +105,7 @@
     <create-procedure sql-case-id="create_procedure_with_charset_parameters_and_insert">
         <procedure-name name="bug18293" />
         <sql-statements>
-            <sql-statement start-index="125" stop-index="172" statement-class-simple-name="InsertStatement" />
+            <sql-statement start-index="111" stop-index="150" statement-class-simple-name="InsertStatement" />
         </sql-statements>
     </create-procedure>
     <create-procedure sql-case-id="create_procedure_with_create_table_and_show_create_table_schema">
@@ -134,13 +134,51 @@
     <create-procedure sql-case-id="create_procedure_with_alter_event">
         <procedure-name name="p1" />
         <sql-statements>
-            <sql-statement start-index="28" stop-index="54" statement-class-simple-name="MySQLAlterEventStatement" />
+            <sql-statement start-index="28" stop-index="55" statement-class-simple-name="MySQLAlterEventStatement" />
         </sql-statements>
     </create-procedure>
     <create-procedure sql-case-id="create_procedure_with_drop_event">
         <procedure-name name="p1" />
         <sql-statements>
-            <sql-statement start-index="28" stop-index="40" statement-class-simple-name="MySQLDropEventStatement" />
+            <sql-statement start-index="28" stop-index="41" statement-class-simple-name="MySQLDropEventStatement" />
+        </sql-statements>
+    </create-procedure>
+    <create-procedure sql-case-id="create_procedure_with_begin_explain">
+        <procedure-name name="sub1" />
+        <sql-statements>
+            <sql-statement start-index="63" stop-index="129" statement-class-simple-name="SelectStatement" />
+            <sql-statement start-index="131" stop-index="205" statement-class-simple-name="ExplainStatement" />
+        </sql-statements>
+    </create-procedure>
+    <create-procedure sql-case-id="create_procedure_with_begin_do">
+        <procedure-name name="t_sysdate" />
+        <sql-statements>
+            <sql-statement start-index="35" stop-index="59" statement-class-simple-name="SelectStatement" />
+            <sql-statement start-index="61" stop-index="72" statement-class-simple-name="DoStatement" />
+        </sql-statements>
+    </create-procedure>
+    <create-procedure sql-case-id="create_procedure_with_describe_table">
+        <procedure-name name="p1" />
+        <sql-statements>
+            <sql-statement start-index="28" stop-index="39" statement-class-simple-name="MySQLDescribeStatement" />
+        </sql-statements>
+    </create-procedure>
+    <create-procedure sql-case-id="create_procedure_with_explain_table">
+        <procedure-name name="p1" />
+        <sql-statements>
+            <sql-statement start-index="28" stop-index="38" statement-class-simple-name="MySQLDescribeStatement" />
+        </sql-statements>
+    </create-procedure>
+    <create-procedure sql-case-id="create_procedure_with_analyze_table_update">
+        <procedure-name name="p" />
+        <sql-statements>
+            <sql-statement start-index="21" stop-index="58" statement-class-simple-name="AnalyzeTableStatement" />
+        </sql-statements>
+    </create-procedure>
+    <create-procedure sql-case-id="create_procedure_with_analyze_table">
+        <procedure-name name="p" />
+        <sql-statements>
+            <sql-statement start-index="27" stop-index="42" statement-class-simple-name="AnalyzeTableStatement" />
         </sql-statements>
     </create-procedure>
 </sql-parser-test-cases>

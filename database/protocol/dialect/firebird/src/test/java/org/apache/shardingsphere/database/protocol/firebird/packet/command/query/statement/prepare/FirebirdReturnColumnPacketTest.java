@@ -41,7 +41,7 @@ class FirebirdReturnColumnPacketTest {
     
     @Test
     void assertWrite() {
-        ShardingSphereColumn column = new ShardingSphereColumn("col", Types.INTEGER, false, false, false, true, false, true);
+        ShardingSphereColumn column = new ShardingSphereColumn("col", Types.VARCHAR, false, false, false, true, false, true);
         ShardingSphereTable table = new ShardingSphereTable("tbl", Collections.singleton(column), Collections.emptyList(), Collections.emptyList());
         FirebirdReturnColumnPacket packet = new FirebirdReturnColumnPacket(Arrays.asList(
                 FirebirdSQLInfoPacketType.SQLDA_SEQ,
@@ -54,10 +54,21 @@ class FirebirdReturnColumnPacketTest {
                 FirebirdSQLInfoPacketType.RELATION,
                 FirebirdSQLInfoPacketType.RELATION_ALIAS,
                 FirebirdSQLInfoPacketType.OWNER,
-                FirebirdSQLInfoPacketType.DESCRIBE_END), 1, table, column, "t", "c", "o");
+                FirebirdSQLInfoPacketType.DESCRIBE_END), 1, table, column, "t", "c", "o", 99);
         when(payload.getCharset()).thenReturn(java.nio.charset.StandardCharsets.UTF_8);
         packet.write(payload);
         verify(payload).writeInt1(FirebirdSQLInfoPacketType.SQLDA_SEQ.getCode());
         verify(payload).writeInt1(FirebirdSQLInfoPacketType.DESCRIBE_END.getCode());
+        verify(payload).writeInt4LE(99);
+    }
+    
+    @Test
+    void assertWriteUsesDefaultColumnLength() {
+        ShardingSphereColumn column = new ShardingSphereColumn("col", Types.INTEGER, false, false, false, true, false, true);
+        ShardingSphereTable table = new ShardingSphereTable("tbl", Collections.singleton(column), Collections.emptyList(), Collections.emptyList());
+        FirebirdReturnColumnPacket packet = new FirebirdReturnColumnPacket(Collections.singletonList(FirebirdSQLInfoPacketType.LENGTH),
+                1, table, column, "t", "c", "o", null);
+        packet.write(payload);
+        verify(payload).writeInt4LE(4);
     }
 }

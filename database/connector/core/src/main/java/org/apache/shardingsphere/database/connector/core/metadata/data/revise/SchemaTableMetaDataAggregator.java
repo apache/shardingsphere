@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.database.connector.core.metadata.data.revise;
 
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.database.connector.core.exception.RuleAndStorageMetaDataMismatchedException;
 import org.apache.shardingsphere.database.connector.core.metadata.data.model.TableMetaData;
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
@@ -30,16 +31,18 @@ import java.util.stream.Collectors;
 /**
  * Schema table meta data aggregator.
  */
+@RequiredArgsConstructor
 public final class SchemaTableMetaDataAggregator {
     
+    private final boolean checkTableMetaDataEnabled;
+    
     /**
-     * Aggregate table metadata.
+     * Aggregate table meta data.
      *
-     * @param checkTableMetaDataEnabled check table metadata enabled
-     * @param tableMetaDataMap table metadata map
-     * @return table metadata
+     * @param tableMetaDataMap table meta data map
+     * @return table meta data
      */
-    public Collection<TableMetaData> aggregate(final boolean checkTableMetaDataEnabled, final Map<String, Collection<TableMetaData>> tableMetaDataMap) {
+    public Collection<TableMetaData> aggregate(final Map<String, Collection<TableMetaData>> tableMetaDataMap) {
         Collection<TableMetaData> result = new LinkedList<>();
         for (Entry<String, Collection<TableMetaData>> entry : tableMetaDataMap.entrySet()) {
             if (checkTableMetaDataEnabled) {

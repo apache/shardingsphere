@@ -22,13 +22,13 @@ import com.google.common.collect.Sets;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.SneakyThrows;
+import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.expr.entry.InlineExpressionParserFactory;
 import org.apache.shardingsphere.infra.util.datetime.DateTimeFormatterFactory;
-import org.apache.shardingsphere.test.e2e.env.runtime.scenario.database.DatabaseEnvironmentManager;
-import org.apache.shardingsphere.test.e2e.env.runtime.scenario.path.ScenarioDataPath;
-import org.apache.shardingsphere.test.e2e.env.runtime.scenario.path.ScenarioDataPath.Type;
+import org.apache.shardingsphere.test.e2e.env.runtime.type.scenario.path.ScenarioDataPath;
+import org.apache.shardingsphere.test.e2e.env.runtime.type.scenario.path.ScenarioDataPath.Type;
 import org.apache.shardingsphere.test.e2e.sql.cases.casse.assertion.SQLE2ETestCaseAssertion;
 import org.apache.shardingsphere.test.e2e.sql.cases.dataset.DataSet;
 import org.apache.shardingsphere.test.e2e.sql.cases.dataset.DataSetLoader;
@@ -38,6 +38,7 @@ import org.apache.shardingsphere.test.e2e.sql.cases.dataset.row.DataSetRow;
 import org.apache.shardingsphere.test.e2e.sql.env.DataSetEnvironmentManager;
 import org.apache.shardingsphere.test.e2e.sql.env.SQLE2EEnvironmentEngine;
 import org.apache.shardingsphere.test.e2e.sql.framework.metadata.DialectDatabaseAssertionMetaDataFactory;
+import org.apache.shardingsphere.test.e2e.sql.framework.metadata.DialectQueryBehaviorProvider;
 import org.apache.shardingsphere.test.e2e.sql.framework.param.model.AssertionTestParameter;
 import org.apache.shardingsphere.test.e2e.sql.framework.param.model.CaseTestParameter;
 import org.apache.shardingsphere.test.e2e.sql.framework.param.model.E2ETestParameter;
@@ -49,8 +50,10 @@ import javax.sql.DataSource;
 import javax.xml.bind.JAXBException;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.sql.Blob;
 import java.sql.Clob;
 import java.sql.Connection;
+import java.sql.NClob;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
@@ -88,13 +91,12 @@ public abstract class BaseDMLE2EIT implements SQLE2EIT {
      * Init.
      *
      * @param testParam test parameter
-     * @throws SQLException SQL exception
      * @throws IOException IO exception
      * @throws JAXBException JAXB exception
      */
-    protected void init(final E2ETestParameter testParam) throws SQLException, IOException, JAXBException {
-        dataSetEnvironmentManager =
-                new DataSetEnvironmentManager(new ScenarioDataPath(testParam.getScenario()).getDataSetFile(Type.ACTUAL), getEnvironmentEngine().getActualDataSourceMap(), testParam.getDatabaseType());
+    protected void init(final E2ETestParameter testParam) throws IOException, JAXBException {
+        dataSetEnvironmentManager = new DataSetEnvironmentManager(
+                new ScenarioDataPath(testParam.getScenario(), Type.ACTUAL).getDataSetFile(), getEnvironmentEngine().getActualDataSourceMap(), testParam.getDatabaseType());
         dataSetEnvironmentManager.fillData();
     }
     
@@ -185,14 +187,14 @@ public abstract class BaseDMLE2EIT implements SQLE2EIT {
     }
     
     private void assertDataSet(final SQLE2EITContext context, final DataSetMetaData expectedDataSetMetaData, final AssertionTestParameter testParam) throws SQLException {
-        Map<String, DatabaseType> databaseTypes = DatabaseEnvironmentManager.getDatabaseTypes(testParam.getScenario(), testParam.getDatabaseType(), Type.ACTUAL);
         for (String each : InlineExpressionParserFactory.newInstance(expectedDataSetMetaData.getDataNodes()).splitAndEvaluate()) {
             DataNode dataNode = new DataNode(each);
             DataSource dataSource = getEnvironmentEngine().getActualDataSourceMap().get(dataNode.getDataSourceName());
-            DatabaseType databaseType = databaseTypes.get(dataNode.getDataSourceName());
+            DatabaseType databaseType = testParam.getDatabaseType();
             try (
                     Connection connection = dataSource.getConnection();
-                    PreparedStatement preparedStatement = connection.prepareStatement(generateFetchActualDataSQL(getEnvironmentEngine().getActualDataSourceMap(), dataNode, databaseType))) {
+                    PreparedStatement preparedStatement = connection.prepareStatement(
+                            generateFetchActualDataSQL(getEnvironmentEngine().getActualDataSourceMap(), dataNode, databaseType))) {
                 assertDataSet(preparedStatement, expectedDataSetMetaData, context.getDataSet().findRows(dataNode), databaseType);
             }
         }
@@ -218,14 +220,14 @@ public abstract class BaseDMLE2EIT implements SQLE2EIT {
     }
     
     private void assertDataSet(final DataSetMetaData expectedDataSetMetaData, final CaseTestParameter testParam, final DataSet dataSet) throws SQLException {
-        Map<String, DatabaseType> databaseTypes = DatabaseEnvironmentManager.getDatabaseTypes(testParam.getScenario(), testParam.getDatabaseType(), Type.ACTUAL);
         for (String each : InlineExpressionParserFactory.newInstance(expectedDataSetMetaData.getDataNodes()).splitAndEvaluate()) {
             DataNode dataNode = new DataNode(each);
-            DatabaseType databaseType = databaseTypes.get(dataNode.getDataSourceName());
             DataSource dataSource = getEnvironmentEngine().getActualDataSourceMap().get(dataNode.getDataSourceName());
+            DatabaseType databaseType = testParam.getDatabaseType();
             try (
                     Connection connection = dataSource.getConnection();
-                    PreparedStatement preparedStatement = connection.prepareStatement(generateFetchActualDataSQL(getEnvironmentEngine().getActualDataSourceMap(), dataNode, databaseType))) {
+                    PreparedStatement preparedStatement = connection.prepareStatement(
+                            generateFetchActualDataSQL(getEnvironmentEngine().getActualDataSourceMap(), dataNode, databaseType))) {
                 assertDataSet(preparedStatement, expectedDataSetMetaData, dataSet.findRows(dataNode), databaseType);
             }
         }
@@ -234,7 +236,10 @@ public abstract class BaseDMLE2EIT implements SQLE2EIT {
     private String generateFetchActualDataSQL(final Map<String, DataSource> actualDataSourceMap, final DataNode dataNode, final DatabaseType databaseType) throws SQLException {
         String tableName = dataNode.getTableName();
         Optional<String> primaryKeyColumnName = DialectDatabaseAssertionMetaDataFactory.getPrimaryKeyColumnName(databaseType, actualDataSourceMap.get(dataNode.getDataSourceName()), tableName);
-        return primaryKeyColumnName.map(optional -> String.format("SELECT * FROM %s ORDER BY %s ASC", tableName, optional)).orElseGet(() -> String.format("SELECT * FROM %s", tableName));
+        return primaryKeyColumnName.map(optional -> String.format("SELECT * FROM %s ORDER BY %s ASC", tableName, optional))
+                .orElseGet(() -> DatabaseTypedSPILoader.findService(DialectQueryBehaviorProvider.class, databaseType)
+                        .flatMap(DialectQueryBehaviorProvider::getFallbackOrderByWhenNoPrimaryKey).map(optional -> String.format("SELECT * FROM %s ORDER BY %s", tableName, optional))
+                        .orElseGet(() -> String.format("SELECT * FROM %s", tableName)));
     }
     
     private void assertMetaData(final ResultSetMetaData actual, final Collection<DataSetColumn> expected) throws SQLException {
@@ -282,10 +287,38 @@ public abstract class BaseDMLE2EIT implements SQLE2EIT {
             assertThat(String.valueOf(actual.getObject(columnIndex)).trim(), is(expected));
         } else if (isPostgreSQLOrOpenGaussMoney(actual.getMetaData().getColumnTypeName(columnIndex), databaseType)) {
             assertThat(actual.getString(columnIndex), is(expected));
-        } else if (Types.BINARY == actual.getMetaData().getColumnType(columnIndex)) {
-            assertThat(actual.getObject(columnIndex), is(expected.getBytes(StandardCharsets.UTF_8)));
+        } else if (Arrays.asList(Types.BINARY, Types.VARBINARY, Types.LONGVARBINARY).contains(actual.getMetaData().getColumnType(columnIndex))) {
+            byte[] actualBytes = actual.getBytes(columnIndex);
+            byte[] expectedBytes = expected.getBytes(StandardCharsets.UTF_8);
+            if (null != actualBytes) {
+                assertThat(actualBytes.length >= expectedBytes.length ? Arrays.copyOf(actualBytes, expectedBytes.length) : actualBytes, is(expectedBytes));
+            }
+        } else if (Types.BLOB == actual.getMetaData().getColumnType(columnIndex)) {
+            Object actualValue = actual.getObject(columnIndex);
+            if (actualValue instanceof Blob) {
+                Blob blob = (Blob) actualValue;
+                assertThat(blob.getBytes(1, (int) blob.length()), is(expected.getBytes(StandardCharsets.UTF_8)));
+            } else if (actualValue instanceof byte[]) {
+                assertThat(actualValue, is(expected.getBytes(StandardCharsets.UTF_8)));
+            } else {
+                assertThat(String.valueOf(actualValue), is(expected));
+            }
         } else if (Types.CLOB == actual.getMetaData().getColumnType(columnIndex)) {
             assertThat(getClobValue((Clob) actual.getObject(columnIndex)), is(expected));
+        } else if (Types.NCLOB == actual.getMetaData().getColumnType(columnIndex)) {
+            Object actualValue = actual.getObject(columnIndex);
+            if (actualValue instanceof NClob) {
+                NClob nclob = (NClob) actualValue;
+                assertThat(nclob.getSubString(1, (int) nclob.length()), is(expected));
+            } else {
+                assertThat(String.valueOf(actualValue), is(expected));
+            }
+        } else if (Arrays.asList(Types.TINYINT, Types.SMALLINT, Types.INTEGER, Types.BIGINT).contains(actual.getMetaData().getColumnType(columnIndex))) {
+            if (isNullValue(expected)) {
+                assertNull(actual.getObject(columnIndex));
+                return;
+            }
+            assertThat(String.valueOf(actual.getObject(columnIndex)), is(expected));
         } else {
             assertThat(String.valueOf(actual.getObject(columnIndex)), is(expected));
         }

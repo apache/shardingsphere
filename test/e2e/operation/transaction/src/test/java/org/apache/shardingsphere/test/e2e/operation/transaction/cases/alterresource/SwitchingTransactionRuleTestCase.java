@@ -71,7 +71,7 @@ public final class SwitchingTransactionRuleTestCase extends BaseTransactionTestC
     }
     
     @Override
-    protected void executeTest(final TransactionContainerComposer containerComposer) throws SQLException {
+    protected void executeTest(final TransactionContainerComposer containerComposer) {
         innerRun(containerComposer);
     }
     
@@ -94,7 +94,7 @@ public final class SwitchingTransactionRuleTestCase extends BaseTransactionTestC
     
     @RequiredArgsConstructor
     @Getter
-    private static class AlterTransactionRuleTask implements Runnable {
+    private static final class AlterTransactionRuleTask implements Runnable {
         
         private final TransactionContainerComposer containerComposer;
         
@@ -181,7 +181,7 @@ public final class SwitchingTransactionRuleTestCase extends BaseTransactionTestC
     
     @RequiredArgsConstructor
     @Getter
-    private static class TransactionOperationsTask implements Runnable {
+    private static final class TransactionOperationsTask implements Runnable {
         
         private static final AtomicInteger ID_COUNTER = new AtomicInteger();
         
@@ -207,18 +207,18 @@ public final class SwitchingTransactionRuleTestCase extends BaseTransactionTestC
             try {
                 connection.setAutoCommit(false);
                 int id = ID_COUNTER.incrementAndGet();
-                PreparedStatement insertStatement = connection.prepareStatement("insert into account(id, balance, transaction_id) values(?, ?, ?)");
+                PreparedStatement insertStatement = connection.prepareStatement("INSERT INTO account(id, balance, transaction_id) VALUES(?, ?, ?)");
                 insertStatement.setObject(1, id);
                 insertStatement.setObject(2, id);
                 insertStatement.setObject(3, id);
                 insertStatement.execute();
-                PreparedStatement updateStatement = connection.prepareStatement("update account set balance = balance - 1 where id = ?");
+                PreparedStatement updateStatement = connection.prepareStatement("UPDATE account SET balance = balance - 1 WHERE id = ?");
                 updateStatement.setObject(1, id);
                 updateStatement.execute();
-                PreparedStatement selectStatement = connection.prepareStatement("select * from account where id = ?");
+                PreparedStatement selectStatement = connection.prepareStatement("SELECT * FROM account WHERE id = ?");
                 selectStatement.setObject(1, id);
                 selectStatement.executeQuery();
-                PreparedStatement deleteStatement = connection.prepareStatement("delete from account where id = ?");
+                PreparedStatement deleteStatement = connection.prepareStatement("DELETE FROM account WHERE id = ?");
                 deleteStatement.setObject(1, id);
                 deleteStatement.execute();
                 long time = random.nextLong(900) + 100;

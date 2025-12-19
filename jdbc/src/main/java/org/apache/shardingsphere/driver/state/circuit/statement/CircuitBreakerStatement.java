@@ -22,7 +22,6 @@ import org.apache.shardingsphere.driver.state.circuit.connection.CircuitBreakerC
 
 import java.sql.Connection;
 import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.sql.SQLWarning;
 import java.sql.Statement;
 
@@ -30,10 +29,6 @@ import java.sql.Statement;
  * Circuit breaker statement.
  */
 public final class CircuitBreakerStatement extends WrapperAdapter implements Statement {
-    
-    @Override
-    public void close() {
-    }
     
     @Override
     public int getMaxFieldSize() {
@@ -130,7 +125,7 @@ public final class CircuitBreakerStatement extends WrapperAdapter implements Sta
     }
     
     @Override
-    public int[] executeBatch() throws SQLException {
+    public int[] executeBatch() {
         return new int[0];
     }
     
@@ -225,5 +220,9 @@ public final class CircuitBreakerStatement extends WrapperAdapter implements Sta
     @Override
     public boolean isCloseOnCompletion() {
         return false;
+    }
+    
+    @Override
+    public void close() {
     }
 }

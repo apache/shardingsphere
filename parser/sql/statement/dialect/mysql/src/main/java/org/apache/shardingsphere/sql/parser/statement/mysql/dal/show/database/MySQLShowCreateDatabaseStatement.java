@@ -19,6 +19,8 @@ package org.apache.shardingsphere.sql.parser.statement.mysql.dal.show.database;
 
 import lombok.Getter;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.SQLStatementAttributes;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.type.AllowNotUseDatabaseSQLStatementAttribute;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.DALStatement;
 
 /**
@@ -32,5 +34,10 @@ public final class MySQLShowCreateDatabaseStatement extends DALStatement {
     public MySQLShowCreateDatabaseStatement(final DatabaseType databaseType, final String databaseName) {
         super(databaseType);
         this.databaseName = databaseName;
+    }
+    
+    @Override
+    public SQLStatementAttributes getAttributes() {
+        return new SQLStatementAttributes(new AllowNotUseDatabaseSQLStatementAttribute(true));
     }
 }

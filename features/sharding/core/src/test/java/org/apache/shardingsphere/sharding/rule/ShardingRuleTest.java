@@ -178,16 +178,6 @@ class ShardingRuleTest {
     }
     
     @Test
-    void assertValidateWrongInlineShardingAlgorithmsInTableRules() {
-        ShardingRuleConfiguration ruleConfig = new ShardingRuleConfiguration();
-        ShardingTableRuleConfiguration tableRuleConfig = new ShardingTableRuleConfiguration("t_order", "ds_${0..1}.t_order_tmp_${0..1}");
-        tableRuleConfig.setTableShardingStrategy(new StandardShardingStrategyConfiguration("order_id", "order_id_inline"));
-        ruleConfig.getTables().add(tableRuleConfig);
-        ruleConfig.getShardingAlgorithms().put("order_id_inline", new AlgorithmConfiguration("INLINE", PropertiesBuilder.build(new Property("algorithm-expression", "t_order_${order_id % 2}"))));
-        assertThrows(AlgorithmInitializationException.class, () -> new ShardingRule(ruleConfig, Collections.emptyMap(), mock(ComputeNodeInstanceContext.class), Collections.emptyList()));
-    }
-    
-    @Test
     void assertValidateInlineShardingAlgorithmsInTableRules() {
         ShardingRuleConfiguration ruleConfig = new ShardingRuleConfiguration();
         ShardingTableRuleConfiguration tableRuleConfig = new ShardingTableRuleConfiguration("t_order", "ds_${0..1}.t_order_${0..1}");
@@ -455,6 +445,23 @@ class ShardingRuleTest {
         shardingRuleConfig.setDefaultShardingColumn("table_id");
         shardingRuleConfig.getShardingAlgorithms().put("table_inline", new AlgorithmConfiguration("INLINE", PropertiesBuilder.build(new Property("algorithm-expression", "table_%{table_id % 3}"))));
         assertThrows(InvalidBindingTablesException.class, () -> new ShardingRule(shardingRuleConfig, createDataSources(), mock(ComputeNodeInstanceContext.class), Collections.emptyList()));
+    }
+    
+    @Test
+    void assertCreateBindingTablesWithAlphabeticalSuffixesFailure() {
+        ShardingTableRuleConfiguration shardingTableRuleConfig = new ShardingTableRuleConfiguration("t_order", "ds_${0..1}.t_order_${['a','b']}");
+        shardingTableRuleConfig.setDatabaseShardingStrategy(new NoneShardingStrategyConfiguration());
+        shardingTableRuleConfig.setTableShardingStrategy(new NoneShardingStrategyConfiguration());
+        ShardingTableRuleConfiguration subTableRuleConfig = new ShardingTableRuleConfiguration("t_order_item", "ds_${0..1}.t_order_item_${['a','b']}");
+        subTableRuleConfig.setDatabaseShardingStrategy(new NoneShardingStrategyConfiguration());
+        subTableRuleConfig.setTableShardingStrategy(new NoneShardingStrategyConfiguration());
+        ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
+        shardingRuleConfig.getTables().add(shardingTableRuleConfig);
+        shardingRuleConfig.getTables().add(subTableRuleConfig);
+        shardingRuleConfig.getBindingTableGroups().add(new ShardingTableReferenceRuleConfiguration("foo", "t_order,t_order_item"));
+        InvalidBindingTablesException actual = assertThrows(InvalidBindingTablesException.class,
+                () -> new ShardingRule(shardingRuleConfig, createDataSources(), mock(ComputeNodeInstanceContext.class), Collections.emptyList()));
+        assertThat(actual.getMessage(), is("Alphabetical table suffixes are not supported in binding tables 't_order,t_order_item'."));
     }
     
     @Test

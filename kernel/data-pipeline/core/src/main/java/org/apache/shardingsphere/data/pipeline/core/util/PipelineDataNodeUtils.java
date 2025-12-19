@@ -47,7 +47,7 @@ public final class PipelineDataNodeUtils {
      * @throws PipelineInvalidParameterException thrown invalid parameter exception when can't get data nodes.
      */
     public static Map<String, List<DataNode>> buildTableAndDataNodesMap(final ShardingSphereDatabase database, final Collection<String> tableNames) {
-        ShardingSpherePreconditions.checkNotEmpty(tableNames, () -> new PipelineInvalidParameterException("Tables can not empty."));
+        ShardingSpherePreconditions.checkNotEmpty(tableNames, () -> new PipelineInvalidParameterException("Table names are empty."));
         Map<String, List<DataNode>> result = new HashMap<>(tableNames.size(), 1F);
         Collection<DataNodeRuleAttribute> attributes = database.getRuleMetaData().getAttributes(DataNodeRuleAttribute.class);
         // TODO support virtual data source name

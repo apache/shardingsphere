@@ -40,7 +40,9 @@ class ConfigurationPropertiesTest {
         assertTrue((Boolean) actual.getValue(ConfigurationPropertyKey.SQL_SIMPLE));
         assertThat(actual.getValue(ConfigurationPropertyKey.KERNEL_EXECUTOR_SIZE), is(20));
         assertThat(actual.getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY), is(20));
+        assertThat(actual.getValue(ConfigurationPropertyKey.MAX_UNION_SIZE_PER_DATASOURCE), is(100));
         assertTrue((Boolean) actual.getValue(ConfigurationPropertyKey.CHECK_TABLE_METADATA_ENABLED));
+        assertThat(actual.getValue(ConfigurationPropertyKey.LOAD_TABLE_METADATA_BATCH_SIZE), is(500));
         assertThat(actual.getValue(ConfigurationPropertyKey.PROXY_FRONTEND_DATABASE_PROTOCOL_TYPE), is(TypedSPILoader.getService(DatabaseType.class, "PostgreSQL")));
         assertThat(actual.getValue(ConfigurationPropertyKey.PROXY_FRONTEND_FLUSH_THRESHOLD), is(20));
         assertThat(actual.getValue(ConfigurationPropertyKey.PROXY_BACKEND_QUERY_FETCH_SIZE), is(20));
@@ -49,6 +51,11 @@ class ConfigurationPropertiesTest {
         assertThat(actual.getValue(ConfigurationPropertyKey.PROXY_DEFAULT_PORT), is(3308));
         assertThat(actual.getValue(ConfigurationPropertyKey.PROXY_NETTY_BACKLOG), is(1024));
         assertThat(actual.getValue(ConfigurationPropertyKey.CDC_SERVER_PORT), is(33071));
+        assertTrue((Boolean) actual.getValue(ConfigurationPropertyKey.PROXY_FRONTEND_SSL_ENABLED));
+        assertThat(actual.getValue(ConfigurationPropertyKey.PROXY_FRONTEND_SSL_VERSION), is("TLSv1.3"));
+        assertThat(actual.getValue(ConfigurationPropertyKey.PROXY_FRONTEND_SSL_CIPHER), is("ECDHE"));
+        assertTrue((Boolean) actual.getValue(ConfigurationPropertyKey.AGENT_PLUGINS_ENABLED));
+        assertTrue((Boolean) actual.getValue(ConfigurationPropertyKey.PERSIST_SCHEMAS_TO_REPOSITORY_ENABLED));
     }
     
     private Properties createProperties() {
@@ -57,7 +64,9 @@ class ConfigurationPropertiesTest {
                 new Property(ConfigurationPropertyKey.SQL_SIMPLE.getKey(), Boolean.TRUE.toString()),
                 new Property(ConfigurationPropertyKey.KERNEL_EXECUTOR_SIZE.getKey(), "20"),
                 new Property(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY.getKey(), "20"),
+                new Property(ConfigurationPropertyKey.MAX_UNION_SIZE_PER_DATASOURCE.getKey(), "100"),
                 new Property(ConfigurationPropertyKey.CHECK_TABLE_METADATA_ENABLED.getKey(), Boolean.TRUE.toString()),
+                new Property(ConfigurationPropertyKey.LOAD_TABLE_METADATA_BATCH_SIZE.getKey(), "500"),
                 new Property(ConfigurationPropertyKey.PROXY_FRONTEND_DATABASE_PROTOCOL_TYPE.getKey(), "PostgreSQL"),
                 new Property(ConfigurationPropertyKey.PROXY_FRONTEND_FLUSH_THRESHOLD.getKey(), "20"),
                 new Property(ConfigurationPropertyKey.PROXY_BACKEND_QUERY_FETCH_SIZE.getKey(), "20"),
@@ -65,7 +74,12 @@ class ConfigurationPropertiesTest {
                 new Property(ConfigurationPropertyKey.PROXY_FRONTEND_MAX_CONNECTIONS.getKey(), "20"),
                 new Property(ConfigurationPropertyKey.PROXY_DEFAULT_PORT.getKey(), "3308"),
                 new Property(ConfigurationPropertyKey.PROXY_NETTY_BACKLOG.getKey(), "1024"),
-                new Property(ConfigurationPropertyKey.CDC_SERVER_PORT.getKey(), "33071"));
+                new Property(ConfigurationPropertyKey.CDC_SERVER_PORT.getKey(), "33071"),
+                new Property(ConfigurationPropertyKey.PROXY_FRONTEND_SSL_ENABLED.getKey(), Boolean.TRUE.toString()),
+                new Property(ConfigurationPropertyKey.PROXY_FRONTEND_SSL_VERSION.getKey(), "TLSv1.3"),
+                new Property(ConfigurationPropertyKey.PROXY_FRONTEND_SSL_CIPHER.getKey(), "ECDHE"),
+                new Property(ConfigurationPropertyKey.AGENT_PLUGINS_ENABLED.getKey(), Boolean.TRUE.toString()),
+                new Property(ConfigurationPropertyKey.PERSIST_SCHEMAS_TO_REPOSITORY_ENABLED.getKey(), Boolean.TRUE.toString()));
     }
     
     @Test
@@ -75,7 +89,9 @@ class ConfigurationPropertiesTest {
         assertFalse((Boolean) actual.getValue(ConfigurationPropertyKey.SQL_SIMPLE));
         assertThat(actual.getValue(ConfigurationPropertyKey.KERNEL_EXECUTOR_SIZE), is(0));
         assertThat(actual.getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY), is(1));
+        assertThat(actual.getValue(ConfigurationPropertyKey.MAX_UNION_SIZE_PER_DATASOURCE), is(Integer.MAX_VALUE));
         assertFalse((Boolean) actual.getValue(ConfigurationPropertyKey.CHECK_TABLE_METADATA_ENABLED));
+        assertThat(actual.getValue(ConfigurationPropertyKey.LOAD_TABLE_METADATA_BATCH_SIZE), is(1000));
         assertNull(actual.getValue(ConfigurationPropertyKey.PROXY_FRONTEND_DATABASE_PROTOCOL_TYPE));
         assertThat(actual.getValue(ConfigurationPropertyKey.PROXY_FRONTEND_FLUSH_THRESHOLD), is(128));
         assertThat(actual.getValue(ConfigurationPropertyKey.PROXY_BACKEND_QUERY_FETCH_SIZE), is(-1));
@@ -84,5 +100,10 @@ class ConfigurationPropertiesTest {
         assertThat(actual.getValue(ConfigurationPropertyKey.PROXY_DEFAULT_PORT), is(3307));
         assertThat(actual.getValue(ConfigurationPropertyKey.PROXY_NETTY_BACKLOG), is(1024));
         assertThat(actual.getValue(ConfigurationPropertyKey.CDC_SERVER_PORT), is(33071));
+        assertFalse((Boolean) actual.getValue(ConfigurationPropertyKey.PROXY_FRONTEND_SSL_ENABLED));
+        assertThat(actual.getValue(ConfigurationPropertyKey.PROXY_FRONTEND_SSL_VERSION), is("TLSv1.2,TLSv1.3"));
+        assertThat(actual.getValue(ConfigurationPropertyKey.PROXY_FRONTEND_SSL_CIPHER), is(""));
+        assertTrue((Boolean) actual.getValue(ConfigurationPropertyKey.AGENT_PLUGINS_ENABLED));
+        assertTrue((Boolean) actual.getValue(ConfigurationPropertyKey.PERSIST_SCHEMAS_TO_REPOSITORY_ENABLED));
     }
 }

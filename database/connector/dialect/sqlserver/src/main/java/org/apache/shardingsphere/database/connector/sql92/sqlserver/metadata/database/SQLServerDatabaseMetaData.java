@@ -25,7 +25,10 @@ import org.apache.shardingsphere.database.connector.core.metadata.database.metad
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.pagination.DialectPaginationOption;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.schema.DefaultSchemaOption;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.schema.DialectSchemaOption;
+import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.transaction.DialectTransactionOption;
 
+import java.sql.Connection;
+import java.util.Collections;
 import java.util.Optional;
 
 /**
@@ -51,6 +54,12 @@ public final class SQLServerDatabaseMetaData implements DialectDatabaseMetaData 
     @Override
     public DialectSchemaOption getSchemaOption() {
         return new DefaultSchemaOption(false, "dbo");
+    }
+    
+    @Override
+    public DialectTransactionOption getTransactionOption() {
+        return new DialectTransactionOption(false, false, false, false, true, Connection.TRANSACTION_READ_COMMITTED, false, false,
+                Collections.singleton("com.microsoft.sqlserver.jdbc.SQLServerXADataSource"));
     }
     
     @Override

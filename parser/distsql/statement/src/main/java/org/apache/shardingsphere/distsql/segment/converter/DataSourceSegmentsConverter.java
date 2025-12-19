@@ -50,7 +50,7 @@ public final class DataSourceSegmentsConverter {
         return result;
     }
     
-    @SuppressWarnings({"unchecked", "rawtypes"})
+    @SuppressWarnings({"unchecked", "rawtypes", "CollectionWithoutInitialCapacity"})
     private static Map<String, Object> createProperties(final DatabaseType databaseType, final DataSourceSegment segment) {
         Map<String, Object> result = new LinkedHashMap<>();
         result.put("jdbcUrl", getURL(databaseType, segment));

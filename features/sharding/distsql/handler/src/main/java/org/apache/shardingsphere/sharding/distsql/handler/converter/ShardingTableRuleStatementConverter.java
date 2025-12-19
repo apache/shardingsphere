@@ -251,7 +251,7 @@ public final class ShardingTableRuleStatementConverter {
                 TypedSPILoader.getService(ShardingAlgorithm.class, ruleSegment.getShardingAlgorithmSegment().getName(), ruleSegment.getShardingAlgorithmSegment().getProps());
         ShardingSpherePreconditions.checkState(shardingAlgorithm instanceof ShardingAutoTableAlgorithm,
                 () -> new AlgorithmInitializationException(shardingAlgorithm, "Auto sharding algorithm is required for table '%s'", ruleSegment.getLogicTable()));
-        List<String> dataNodes = DataNodeUtils.getFormatDataNodes(((ShardingAutoTableAlgorithm) shardingAlgorithm).getAutoTablesAmount(),
+        List<String> dataNodes = DataNodeUtils.getFormattedDataNodes(((ShardingAutoTableAlgorithm) shardingAlgorithm).getAutoTablesAmount(),
                 ruleSegment.getLogicTable(), ruleSegment.getDataSourceNodes());
         return dataNodes.stream().map(DataNode::new).collect(Collectors.toList());
     }

@@ -21,8 +21,6 @@
     <sql-case id="delete_without_sharding_value" value="DELETE FROM t_order WHERE status=?" />
     <sql-case id="delete_with_special_character_without_sharding_value" value="DELETE FROM `t_order` WHERE `status`='init'" db-types="MySQL" />
     <sql-case id="delete_with_order_by_row_count" value="DELETE FROM t_order WHERE order_id = ? AND user_id = ? AND status=? ORDER BY order_id LIMIT ?" db-types="MySQL" />
-    <sql-case id="delete_multi_tables" value="DELETE t_order, t_order_item from t_order, t_order_item where t_order.order_id = t_order_item.order_id and t_order.status = ?" db-types="MySQL" />
-    <sql-case id="delete_multi_tables_with_using" value="DELETE from t_order, t_order_item using t_order left join t_order_item on t_order.order_id = t_order_item.order_id where t_order.status = ?" db-types="MySQL" />
     <sql-case id="delete_with_schema" value="DELETE FROM db1.t_order" />
     <sql-case id="delete_with_alias" value="DELETE FROM t_order AS o WHERE status=?" db-types="MySQL,SQLServer" />
     <sql-case id="delete_with_with_clause" value="WITH cte (order_id, user_id) AS (SELECT order_id, user_id FROM t_order) DELETE t_order FROM cte WHERE t_order.order_id = cte.order_id" db-types="SQLServer" />

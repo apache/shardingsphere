@@ -20,13 +20,14 @@ package org.apache.shardingsphere.data.pipeline.core.ingest.dumper.inventory.col
 import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
-import org.apache.shardingsphere.test.infra.framework.mock.AutoMockExtension;
-import org.apache.shardingsphere.test.infra.framework.mock.StaticMockSettings;
+import org.apache.shardingsphere.test.infra.framework.extension.mock.AutoMockExtension;
+import org.apache.shardingsphere.test.infra.framework.extension.mock.StaticMockSettings;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 
 import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.sql.Array;
 import java.sql.Blob;
 import java.sql.Clob;
@@ -132,7 +133,7 @@ class InventoryColumnValueReaderEngineTest {
     void assertReadWithUnSingedBigIntValue() throws SQLException {
         when(metaData.getColumnType(1)).thenReturn(Types.BIGINT);
         when(resultSet.getBigDecimal(1)).thenReturn(new BigDecimal("1"));
-        assertThat(engine.read(resultSet, metaData, 1), is(new BigDecimal("1")));
+        assertThat(engine.read(resultSet, metaData, 1), is(new BigInteger("1")));
     }
     
     @Test

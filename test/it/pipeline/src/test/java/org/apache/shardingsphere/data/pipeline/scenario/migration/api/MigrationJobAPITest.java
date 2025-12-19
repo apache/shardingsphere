@@ -57,8 +57,8 @@ import org.apache.shardingsphere.infra.datasource.pool.creator.DataSourcePoolCre
 import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePoolProperties;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
-import org.apache.shardingsphere.test.infra.framework.mock.AutoMockExtension;
-import org.apache.shardingsphere.test.infra.framework.mock.StaticMockSettings;
+import org.apache.shardingsphere.test.infra.framework.extension.mock.AutoMockExtension;
+import org.apache.shardingsphere.test.infra.framework.extension.mock.StaticMockSettings;
 import org.apache.shardingsphere.test.it.data.pipeline.core.util.JobConfigurationBuilder;
 import org.apache.shardingsphere.test.it.data.pipeline.core.util.PipelineContextUtils;
 import org.junit.jupiter.api.AfterAll;
@@ -94,7 +94,7 @@ import static org.mockito.Mockito.when;
 @StaticMockSettings(PipelineDistributedBarrier.class)
 class MigrationJobAPITest {
     
-    private static PipelineJobType jobType;
+    private static PipelineJobType<MigrationJobConfiguration> jobType;
     
     private static MigrationJobAPI jobAPI;
     
@@ -113,10 +113,10 @@ class MigrationJobAPITest {
         PipelineContextUtils.initPipelineContextManager();
         jobType = new MigrationJobType();
         jobAPI = (MigrationJobAPI) TypedSPILoader.getService(TransmissionJobAPI.class, "MIGRATION");
-        jobConfigManager = new PipelineJobConfigurationManager(jobType);
+        jobConfigManager = new PipelineJobConfigurationManager(jobType.getOption());
         jobManager = new PipelineJobManager(jobType);
         transmissionJobManager = new TransmissionJobManager(jobType);
-        jobItemManager = new PipelineJobItemManager<>(jobType.getYamlJobItemProgressSwapper());
+        jobItemManager = new PipelineJobItemManager<>(jobType.getOption().getYamlJobItemProgressSwapper());
         String jdbcUrl = "jdbc:h2:mem:test_ds_0;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL";
         databaseType = DatabaseTypeFactory.get(jdbcUrl);
         Map<String, Object> props = new HashMap<>(3, 1F);
@@ -258,20 +258,20 @@ class MigrationJobAPITest {
     @Test
     void assertCreateJobConfigFailedOnMoreThanOneSourceTable() {
         Collection<MigrationSourceTargetEntry> sourceTargetEntries = Stream.of("t_order_0", "t_order_1")
-                .map(each -> new MigrationSourceTargetEntry(new DataNode("ds_0", each), "t_order")).collect(Collectors.toList());
+                .map(each -> new MigrationSourceTargetEntry(new DataNode("ds_0", (String) null, each), "t_order")).collect(Collectors.toList());
         assertThrows(PipelineInvalidParameterException.class, () -> jobAPI.schedule(PipelineContextUtils.getContextKey(), sourceTargetEntries, "logic_db"));
     }
     
     @Test
     void assertCreateJobConfigFailedOnDataSourceNotExist() {
-        Collection<MigrationSourceTargetEntry> sourceTargetEntries = Collections.singleton(new MigrationSourceTargetEntry(new DataNode("ds_not_exists", "t_order"), "t_order"));
+        Collection<MigrationSourceTargetEntry> sourceTargetEntries = Collections.singleton(new MigrationSourceTargetEntry(new DataNode("ds_not_exists", (String) null, "t_order"), "t_order"));
         assertThrows(PipelineInvalidParameterException.class, () -> jobAPI.schedule(PipelineContextUtils.getContextKey(), sourceTargetEntries, "logic_db"));
     }
     
     @Test
     void assertCreateJobConfig() throws SQLException {
         initIntPrimaryEnvironment();
-        MigrationSourceTargetEntry sourceTargetEntry = new MigrationSourceTargetEntry(new DataNode("ds_0", "t_order"), "t_order");
+        MigrationSourceTargetEntry sourceTargetEntry = new MigrationSourceTargetEntry(new DataNode("ds_0", (String) null, "t_order"), "t_order");
         String jobId = jobAPI.schedule(PipelineContextUtils.getContextKey(), Collections.singleton(sourceTargetEntry), "logic_db");
         MigrationJobConfiguration actual = jobConfigManager.getJobConfiguration(jobId);
         assertThat(actual.getTargetDatabaseName(), is("logic_db"));

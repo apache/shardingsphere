@@ -59,7 +59,7 @@ class ConsistencyCheckJobAPITest {
     
     private final ConsistencyCheckJobAPI jobAPI = new ConsistencyCheckJobAPI(jobType);
     
-    private final PipelineJobItemManager<TransmissionJobItemProgress> jobItemManager = new PipelineJobItemManager<>(jobType.getYamlJobItemProgressSwapper());
+    private final PipelineJobItemManager<TransmissionJobItemProgress> jobItemManager = new PipelineJobItemManager<>(jobType.getOption().getYamlJobItemProgressSwapper());
     
     private final YamlMigrationJobConfigurationSwapper jobConfigSwapper = new YamlMigrationJobConfigurationSwapper();
     
@@ -74,7 +74,7 @@ class ConsistencyCheckJobAPITest {
         String parentJobId = parentJobConfig.getJobId();
         String checkJobId = jobAPI.start(new CreateConsistencyCheckJobParameter(parentJobId, null, null,
                 parentJobConfig.getSourceDatabaseType(), parentJobConfig.getTargetDatabaseType()));
-        ConsistencyCheckJobConfiguration checkJobConfig = new PipelineJobConfigurationManager(jobType).getJobConfiguration(checkJobId);
+        ConsistencyCheckJobConfiguration checkJobConfig = new PipelineJobConfigurationManager(jobType.getOption()).getJobConfiguration(checkJobId);
         int expectedSequence = ConsistencyCheckSequence.MIN_SEQUENCE;
         String expectCheckJobId = PipelineJobIdUtils.marshal(new ConsistencyCheckJobId(PipelineJobIdUtils.parseContextKey(parentJobId), parentJobId, expectedSequence));
         assertThat(checkJobConfig.getJobId(), is(expectCheckJobId));
@@ -240,7 +240,7 @@ class ConsistencyCheckJobAPITest {
     }
     
     private void persistCheckJobProgress(final ConsistencyCheckJobItemProgress checkJobItemProgress, final String checkJobId, final JobStatus jobStatus, final int recordCount) {
-        ConsistencyCheckJobConfiguration checkJobConfig = new PipelineJobConfigurationManager(jobType).getJobConfiguration(checkJobId);
+        ConsistencyCheckJobConfiguration checkJobConfig = new PipelineJobConfigurationManager(jobType.getOption()).getJobConfiguration(checkJobId);
         ConsistencyCheckJobItemContext checkJobItemContext = new ConsistencyCheckJobItemContext(checkJobConfig, 0, jobStatus, checkJobItemProgress);
         LocalDateTime checkBeginTime = new Timestamp(checkJobItemContext.getProgressContext().getCheckBeginTimeMillis()).toLocalDateTime();
         checkJobItemContext.getProgressContext().setRecordsCount(recordCount);

@@ -49,7 +49,8 @@ public final class MySQLComInitDbExecutor implements CommandExecutor {
         String databaseName = SQLUtils.getExactlyValue(packet.getSchema());
         AuthorityRule authorityRule = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getSingleRule(AuthorityRule.class);
         AuthorityChecker authorityChecker = new AuthorityChecker(authorityRule, connectionSession.getConnectionContext().getGrantee());
-        ShardingSpherePreconditions.checkState(ProxyContext.getInstance().databaseExists(databaseName) && authorityChecker.isAuthorized(databaseName),
+        ShardingSpherePreconditions.checkState(
+                ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().containsDatabase(databaseName) && authorityChecker.isAuthorized(databaseName),
                 () -> new UnknownDatabaseException(packet.getSchema()));
         connectionSession.setCurrentDatabaseName(packet.getSchema());
         return Collections.singleton(new MySQLOKPacket(ServerStatusFlagCalculator.calculateFor(connectionSession, true)));

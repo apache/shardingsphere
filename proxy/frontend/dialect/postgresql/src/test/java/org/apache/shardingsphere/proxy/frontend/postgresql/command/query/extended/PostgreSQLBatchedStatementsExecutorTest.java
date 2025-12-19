@@ -22,6 +22,7 @@ import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.database.protocol.postgresql.packet.command.query.extended.PostgreSQLColumnType;
 import org.apache.shardingsphere.database.protocol.postgresql.packet.command.query.extended.bind.PostgreSQLTypeUnspecifiedSQLParameter;
 import org.apache.shardingsphere.infra.binder.context.statement.type.dml.InsertStatementContext;
+import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.ConnectionMode;
@@ -44,8 +45,8 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.In
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 import org.apache.shardingsphere.sqltranslator.rule.SQLTranslatorRule;
 import org.apache.shardingsphere.sqltranslator.rule.builder.DefaultSQLTranslatorRuleConfigurationBuilder;
-import org.apache.shardingsphere.test.infra.framework.mock.AutoMockExtension;
-import org.apache.shardingsphere.test.infra.framework.mock.StaticMockSettings;
+import org.apache.shardingsphere.test.infra.framework.extension.mock.AutoMockExtension;
+import org.apache.shardingsphere.test.infra.framework.extension.mock.StaticMockSettings;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InOrder;
@@ -62,6 +63,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -99,7 +101,7 @@ class PostgreSQLBatchedStatementsExecutorTest {
                 .thenReturn(preparedStatement);
         ContextManager contextManager = mockContextManager();
         ConnectionSession connectionSession = mockConnectionSession();
-        PostgreSQLServerPreparedStatement postgresqlPreparedStatement = new PostgreSQLServerPreparedStatement("insert into t (id, col) values (?, ?)", mockInsertStatementContext(),
+        PostgreSQLServerPreparedStatement postgresqlPreparedStatement = new PostgreSQLServerPreparedStatement("INSERT INTO t (id, col) VALUES (?, ?)", mockInsertStatementContext(),
                 new HintValueContext(), Arrays.asList(PostgreSQLColumnType.INT4, PostgreSQLColumnType.VARCHAR), Arrays.asList(0, 1));
         List<List<Object>> parameterSets = Arrays.asList(Arrays.asList(1, new PostgreSQLTypeUnspecifiedSQLParameter("foo")),
                 Arrays.asList(2, new PostgreSQLTypeUnspecifiedSQLParameter("bar")), Arrays.asList(3, new PostgreSQLTypeUnspecifiedSQLParameter("baz")));
@@ -143,11 +145,12 @@ class PostgreSQLBatchedStatementsExecutorTest {
         when(result.getMetaDataContexts().getMetaData().getDatabase("db")).thenReturn(database);
         RuleMetaData globalRuleMetaData = new RuleMetaData(Collections.singleton(new SQLTranslatorRule(new DefaultSQLTranslatorRuleConfigurationBuilder().build())));
         when(result.getMetaDataContexts().getMetaData().getGlobalRuleMetaData()).thenReturn(globalRuleMetaData);
+        when(result.getMetaDataContexts().getMetaData().getProps()).thenReturn(new ConfigurationProperties(new Properties()));
         return result;
     }
     
     private ConnectionSession mockConnectionSession() {
-        ConnectionSession result = mock(ConnectionSession.class);
+        ConnectionSession result = mock(ConnectionSession.class, RETURNS_DEEP_STUBS);
         when(result.getCurrentDatabaseName()).thenReturn("db");
         when(result.getUsedDatabaseName()).thenReturn("db");
         when(result.getDatabaseConnectionManager()).thenReturn(databaseConnectionManager);
@@ -162,6 +165,6 @@ class PostgreSQLBatchedStatementsExecutorTest {
     @SneakyThrows(ReflectiveOperationException.class)
     private void prepareExecutionUnitParameters(final PostgreSQLBatchedStatementsExecutor target, final List<List<Object>> parameterSets) {
         ((Map<ExecutionUnit, List<List<Object>>>) Plugins.getMemberAccessor().get(PostgreSQLBatchedStatementsExecutor.class.getDeclaredField("executionUnitParams"), target))
-                .replaceAll((key, vvalue) -> parameterSets);
+                .replaceAll((key, value) -> parameterSets);
     }
 }

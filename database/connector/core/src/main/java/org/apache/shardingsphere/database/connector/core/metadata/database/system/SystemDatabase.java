@@ -23,7 +23,6 @@ import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Map;
 
 /**
  * System database.
@@ -34,12 +33,22 @@ public final class SystemDatabase {
     private final DatabaseType databaseType;
     
     /**
-     * Get system database schema map.
+     * Get system databases.
      *
-     * @return system database schema map
+     * @return system databases
      */
-    public Map<String, Collection<String>> getSystemDatabaseSchemaMap() {
-        return DatabaseTypedSPILoader.findService(DialectSystemDatabase.class, databaseType).map(DialectSystemDatabase::getSystemDatabaseSchemaMap).orElse(Collections.emptyMap());
+    public Collection<String> getSystemDatabases() {
+        return DatabaseTypedSPILoader.findService(DialectSystemDatabase.class, databaseType).map(DialectSystemDatabase::getSystemDatabases).orElse(Collections.emptyList());
+    }
+    
+    /**
+     * Get system schemas.
+     *
+     * @param databaseName database name
+     * @return system schemas
+     */
+    public Collection<String> getSystemSchemas(final String databaseName) {
+        return DatabaseTypedSPILoader.findService(DialectSystemDatabase.class, databaseType).map(optional -> optional.getSystemSchemas(databaseName)).orElse(Collections.emptyList());
     }
     
     /**

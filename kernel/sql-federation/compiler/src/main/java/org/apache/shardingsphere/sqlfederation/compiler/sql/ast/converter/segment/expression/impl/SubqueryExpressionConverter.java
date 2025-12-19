@@ -21,9 +21,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.calcite.sql.SqlNode;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.subquery.SubqueryExpressionSegment;
-import org.apache.shardingsphere.sqlfederation.compiler.sql.ast.converter.statement.select.SelectStatementConverter;
-
-import java.util.Optional;
+import org.apache.shardingsphere.sqlfederation.compiler.sql.ast.converter.statement.type.SelectStatementConverter;
 
 /**
  * Subquery expression converter.
@@ -32,12 +30,12 @@ import java.util.Optional;
 public final class SubqueryExpressionConverter {
     
     /**
-     * Convert subquery expression segment to sql node.
+     * Convert subquery expression segment to SQL node.
      *
      * @param expression subquery expression segment
-     * @return sql node
+     * @return SQL node
      */
-    public static Optional<SqlNode> convert(final SubqueryExpressionSegment expression) {
-        return null == expression ? Optional.empty() : Optional.of(new SelectStatementConverter().convert(expression.getSubquery().getSelect()));
+    public static SqlNode convert(final SubqueryExpressionSegment expression) {
+        return new SelectStatementConverter().convert(expression.getSubquery().getSelect());
     }
 }

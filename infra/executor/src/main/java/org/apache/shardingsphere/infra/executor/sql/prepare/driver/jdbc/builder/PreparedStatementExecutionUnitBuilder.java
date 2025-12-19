@@ -48,7 +48,7 @@ public final class PreparedStatementExecutionUnitBuilder implements JDBCExecutio
     }
     
     @Override
-    public String getType() {
+    public JDBCDriverType getType() {
         return JDBCDriverType.PREPARED_STATEMENT;
     }
 }

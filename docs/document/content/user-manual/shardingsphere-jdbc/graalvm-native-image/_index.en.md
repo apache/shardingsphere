@@ -53,7 +53,7 @@ and the documentation of GraalVM Native Build Tools shall prevail.
              <plugin>
                  <groupId>org.graalvm.buildtools</groupId>
                  <artifactId>native-maven-plugin</artifactId>
-                 <version>0.11.0</version>
+                 <version>0.11.3</version>
                  <extensions>true</extensions>
                  <configuration>
                     <buildArgs>
@@ -95,12 +95,12 @@ Reference https://github.com/graalvm/native-build-tools/issues/572 .
 
 ```groovy
 plugins {
-   id 'org.graalvm.buildtools.native' version '0.11.0'
+   id 'org.graalvm.buildtools.native' version '0.11.3'
 }
 
 dependencies {
    implementation 'org.apache.shardingsphere:shardingsphere-jdbc:${shardingsphere.version}'
-   implementation(group: 'org.graalvm.buildtools', name: 'graalvm-reachability-metadata', version: '0.11.0', classifier: 'repository', ext: 'zip')
+   implementation(group: 'org.graalvm.buildtools', name: 'graalvm-reachability-metadata', version: '0.11.3', classifier: 'repository', ext: 'zip')
 }
 
 graalvmNative {
@@ -260,7 +260,7 @@ Caused by: java.io.UnsupportedEncodingException: Codepage Cp1252 is not supporte
 5. To discuss the steps required to use XA distributed transactions under the GraalVM Native Image of ShardingSphere JDBC, 
 additional known prerequisites need to be introduced,
    - `org.apache.shardingsphere.transaction.xa.jta.datasource.swapper.DataSourceSwapper#loadXADataSource(String)` will instantiate the `javax.sql.XADataSource` implementation class of each database driver through `java.lang.Class#getDeclaredConstructors`.
-   - The full class name of the `javax.sql.XADataSource` implementation class of each database driver is stored in the metadata of ShardingSphere by implementing the SPI of `org.apache.shardingsphere.transaction.xa.jta.datasource.properties.XADataSourceDefinition`.
+   - The full class name of the `javax.sql.XADataSource` implementation class of each database driver is stored in the metadata of ShardingSphere by implementing the SPI of `org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.transaction.DialectTransactionOption`.
 
 In the GraalVM Native Image, this actually requires the definition of the GraalVM Reachability Metadata of the third-party dependencies,
 while ShardingSphere itself only provides the corresponding GraalVM Reachability Metadata for `com.h2database:h2`.
@@ -291,42 +291,13 @@ Users need to define the following JSON in the `reachability-metadata.json` file
 }
 ```
 
-6. When using the ClickHouse dialect through ShardingSphere JDBC, 
-users need to manually introduce the relevant optional modules and the ClickHouse JDBC driver with the classifier `http`.
-In principle, ShardingSphere's GraalVM Native Image integration does not want to use `com.clickhouse:clickhouse-jdbc` with classifier `all`, 
-because Uber Jar will cause the collection of duplicate GraalVM Reachability Metadata.
-Possible configuration examples are as follows,
-
-```xml
-<project>
-    <dependencies>
-      <dependency>
-         <groupId>org.apache.shardingsphere</groupId>
-         <artifactId>shardingsphere-jdbc</artifactId>
-         <version>${shardingsphere.version}</version>
-      </dependency>
-       <dependency>
-          <groupId>org.apache.shardingsphere</groupId>
-          <artifactId>shardingsphere-jdbc-dialect-clickhouse</artifactId>
-          <version>${shardingsphere.version}</version>
-      </dependency>
-       <dependency>
-          <groupId>com.clickhouse</groupId>
-          <artifactId>clickhouse-jdbc</artifactId>
-          <version>0.6.3</version>
-          <classifier>http</classifier>
-       </dependency>
-    </dependencies>
-</project>
-```
-
-7. ShardingSphere's unit test only uses the Maven module `io.github.linghengqian:hive-server2-jdbc-driver-thin` to verify the availability of HiveServer2 integration under GraalVM Native Image. 
+6. ShardingSphere's unit test only uses the Maven module `io.github.linghengqian:hive-server2-jdbc-driver-thin` to verify the availability of HiveServer2 integration under GraalVM Native Image. 
 If developers use `org.apache.hive:hive-jdbc` directly, they should handle dependency conflicts and provide additional GraalVM Reachability Metadata by themselves.
 
-8. Due to https://github.com/oracle/graal/issues/7979 , 
+7. Due to https://github.com/oracle/graal/issues/7979 , 
 the Oracle JDBC Driver corresponding to the `com.oracle.database.jdbc:ojdbc8` Maven module cannot be used under GraalVM Native Image.
 
-9. Including but not limited to `com.mysql.cj.LocalizedErrorMessages`,
+8. Including but not limited to `com.mysql.cj.LocalizedErrorMessages`,
    `com.microsoft.sqlserver.jdbc.SQLServerResource`,
    `org.postgresql.translation.messages`,
    `org.opengauss.translation.messages` from third-party dependencies. By default, L10N resources are loaded according to the system's default locale,
@@ -351,6 +322,12 @@ without it being registered as reachable. Add it to the resource metadata to sol
   com.mysql.cj.jdbc.NonRegisteringDriver.connect(NonRegisteringDriver.java:186)
 ```
 
-10. Due to the use of `janino-compiler/janino` by `apache/calcite`, 
+9. Due to the use of `janino-compiler/janino` by `apache/calcite`, 
     ShardingSphere's `SQL Federation` feature is unavailable in the GraalVM Native Image.
     This also prevents ShardingSphere Proxy Native from integrating with OpenGauss.
+
+10. Due to the issue at https://github.com/oracle/graal/issues/11280, 
+    Etcd's Cluster mode integration cannot be used on GraalVM Native Images compiled via Windows 11,
+    and Etcd's Cluster mode will conflict with the GraalVM Tracing Agent.
+    If developers need to use Etcd's Cluster mode on GraalVM Native Images compiled via Linux,
+    they need to provide additional GraalVM Reachability Metadata related JSON themselves.

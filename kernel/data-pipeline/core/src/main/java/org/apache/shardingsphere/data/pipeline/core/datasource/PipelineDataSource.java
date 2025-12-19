@@ -110,7 +110,7 @@ public final class PipelineDataSource implements DataSource, AutoCloseable {
     }
     
     @Override
-    public void close() throws SQLException {
+    public void close() {
         if (closed.get()) {
             return;
         }

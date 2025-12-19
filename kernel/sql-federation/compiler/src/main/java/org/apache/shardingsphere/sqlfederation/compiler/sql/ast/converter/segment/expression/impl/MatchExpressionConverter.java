@@ -25,15 +25,14 @@ import org.apache.calcite.sql.SqlLiteral;
 import org.apache.calcite.sql.SqlNode;
 import org.apache.calcite.sql.parser.SqlParserPos;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.match.MatchAgainstExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.OwnerSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.match.MatchAgainstExpression;
 import org.apache.shardingsphere.sqlfederation.compiler.sql.ast.converter.operator.common.SQLExtensionOperatorTable;
 import org.apache.shardingsphere.sqlfederation.compiler.sql.ast.converter.segment.expression.ExpressionConverter;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Optional;
 
 /**
  * Match expression converter.
@@ -42,12 +41,12 @@ import java.util.Optional;
 public final class MatchExpressionConverter {
     
     /**
-     * Convert match against expression to sql node.
+     * Convert match against expression to SQL node.
      *
      * @param segment match against expression
-     * @return sql node
+     * @return SQL node
      */
-    public static Optional<SqlNode> convert(final MatchAgainstExpression segment) {
+    public static SqlBasicCall convert(final MatchAgainstExpression segment) {
         List<SqlNode> sqlNodes = new LinkedList<>();
         List<String> names = new ArrayList<>();
         for (ColumnSegment each : segment.getColumns()) {
@@ -60,7 +59,7 @@ public final class MatchExpressionConverter {
         ExpressionConverter.convert(segment.getExpr()).ifPresent(sqlNodes::add);
         SqlNode searchModifier = SqlLiteral.createCharString(segment.getSearchModifier(), SqlParserPos.ZERO);
         sqlNodes.add(searchModifier);
-        return Optional.of(new SqlBasicCall(SQLExtensionOperatorTable.MATCH_AGAINST, sqlNodes, SqlParserPos.ZERO));
+        return new SqlBasicCall(SQLExtensionOperatorTable.MATCH_AGAINST, sqlNodes, SqlParserPos.ZERO);
     }
     
     private static void addOwnerNames(final List<String> names, final OwnerSegment owner) {

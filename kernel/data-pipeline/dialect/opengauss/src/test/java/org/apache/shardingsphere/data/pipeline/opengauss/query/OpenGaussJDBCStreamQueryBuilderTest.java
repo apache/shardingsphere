@@ -32,7 +32,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -59,6 +59,6 @@ class OpenGaussJDBCStreamQueryBuilderTest {
         when(connection.prepareStatement("SELECT 1", ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY, ResultSet.CLOSE_CURSORS_AT_COMMIT)).thenReturn(preparedStatement);
         assertThat(queryBuilder.build(connection, "SELECT 1", 0), is(preparedStatement));
         verify(connection).setAutoCommit(false);
-        verify(preparedStatement, times(0)).setFetchSize(anyInt());
+        verify(preparedStatement, never()).setFetchSize(anyInt());
     }
 }

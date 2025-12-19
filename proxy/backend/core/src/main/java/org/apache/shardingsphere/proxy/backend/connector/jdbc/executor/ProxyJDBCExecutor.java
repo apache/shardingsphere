@@ -24,11 +24,12 @@ import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroupConte
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutor;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.ExecuteResult;
+import org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.JDBCDriverType;
 import org.apache.shardingsphere.infra.executor.sql.process.ProcessEngine;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.session.query.QueryContext;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
-import org.apache.shardingsphere.proxy.backend.connector.DatabaseConnector;
+import org.apache.shardingsphere.proxy.backend.connector.DatabaseProxyConnector;
 import org.apache.shardingsphere.proxy.backend.connector.jdbc.executor.callback.ProxyJDBCExecutorCallbackFactory;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
@@ -42,11 +43,11 @@ import java.util.List;
 @RequiredArgsConstructor
 public final class ProxyJDBCExecutor {
     
-    private final String type;
+    private final JDBCDriverType type;
     
     private final ConnectionSession connectionSession;
     
-    private final DatabaseConnector databaseConnector;
+    private final DatabaseProxyConnector databaseProxyConnector;
     
     private final JDBCExecutor jdbcExecutor;
     
@@ -71,10 +72,10 @@ public final class ProxyJDBCExecutor {
             processEngine.executeSQL(executionGroupContext, queryContext);
             SQLStatementContext context = queryContext.getSqlStatementContext();
             return jdbcExecutor.execute(executionGroupContext,
-                    ProxyJDBCExecutorCallbackFactory.newInstance(type, protocolType, database.getResourceMetaData(), context.getSqlStatement(), databaseConnector, isReturnGeneratedKeys,
+                    ProxyJDBCExecutorCallbackFactory.newInstance(type, protocolType, database.getResourceMetaData(), context.getSqlStatement(), databaseProxyConnector, isReturnGeneratedKeys,
                             isExceptionThrown,
                             true),
-                    ProxyJDBCExecutorCallbackFactory.newInstance(type, protocolType, database.getResourceMetaData(), context.getSqlStatement(), databaseConnector, isReturnGeneratedKeys,
+                    ProxyJDBCExecutorCallbackFactory.newInstance(type, protocolType, database.getResourceMetaData(), context.getSqlStatement(), databaseProxyConnector, isReturnGeneratedKeys,
                             isExceptionThrown,
                             false));
         } finally {

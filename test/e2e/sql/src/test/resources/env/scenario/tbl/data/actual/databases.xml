@@ -17,5 +17,5 @@
   -->
 
 <databases>
-    <database>tbl</database>
+    <database name="tbl" />
 </databases>

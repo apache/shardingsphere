@@ -18,11 +18,10 @@
 package org.apache.shardingsphere.proxy.backend.postgresql.handler.admin.executor;
 
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
-import org.apache.shardingsphere.infra.autogen.version.ShardingSphereVersion;
+import org.apache.shardingsphere.infra.version.ShardingSphereVersion;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResultMetaData;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
-import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.ShowStatement;
 import org.junit.jupiter.api.Test;
 
@@ -43,15 +42,13 @@ class PostgreSQLShowVariableExecutorTest {
     
     @Test
     void assertExecuteShowAll() throws SQLException {
-        ConnectionSession connectionSession = mock(ConnectionSession.class);
         PostgreSQLShowVariableExecutor executor = new PostgreSQLShowVariableExecutor(new ShowStatement(databaseType, "ALL"));
-        executor.execute(connectionSession);
+        executor.execute(mock(), mock());
         QueryResultMetaData actualMetaData = executor.getQueryResultMetaData();
         assertThat(actualMetaData.getColumnCount(), is(3));
         assertThat(actualMetaData.getColumnLabel(1), is("name"));
         assertThat(actualMetaData.getColumnLabel(2), is("setting"));
         assertThat(actualMetaData.getColumnLabel(3), is("description"));
-        MergedResult actualResult = executor.getMergedResult();
         Map<String, String> expected = new LinkedHashMap<>(7, 1F);
         expected.put("application_name", "PostgreSQL");
         expected.put("client_encoding", "UTF8");
@@ -60,6 +57,7 @@ class PostgreSQLShowVariableExecutorTest {
         expected.put("transaction_isolation", "read committed");
         expected.put("transaction_read_only", "off");
         expected.put("server_version", ShardingSphereVersion.VERSION);
+        MergedResult actualResult = executor.getMergedResult();
         for (Entry<String, String> entry : expected.entrySet()) {
             assertTrue(actualResult.next());
             assertThat(actualResult.getValue(1, String.class), is(entry.getKey()));
@@ -70,9 +68,8 @@ class PostgreSQLShowVariableExecutorTest {
     
     @Test
     void assertExecuteShowOne() throws SQLException {
-        ConnectionSession connectionSession = mock(ConnectionSession.class);
         PostgreSQLShowVariableExecutor executor = new PostgreSQLShowVariableExecutor(new ShowStatement(databaseType, "client_encoding"));
-        executor.execute(connectionSession);
+        executor.execute(mock(), mock());
         QueryResultMetaData actualMetaData = executor.getQueryResultMetaData();
         assertThat(actualMetaData.getColumnCount(), is(1));
         assertThat(actualMetaData.getColumnLabel(1), is("client_encoding"));

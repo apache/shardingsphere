@@ -77,12 +77,12 @@ public final class EncryptPredicateValueTokenGenerator implements CollectionSQLT
                 .orElseGet(() -> new DatabaseTypeRegistry(sqlStatementContext.getSqlStatement().getDatabaseType()).getDefaultSchemaName(database.getName()));
         for (EncryptCondition each : encryptConditions) {
             Optional<EncryptTable> encryptTable = rule.findEncryptTable(each.getTableName());
-            encryptTable.ifPresent(optional -> result.add(generateSQLToken(schemaName, optional, each)));
+            encryptTable.flatMap(optional -> generateSQLToken(schemaName, optional, each)).ifPresent(result::add);
         }
         return result;
     }
     
-    private SQLToken generateSQLToken(final String schemaName, final EncryptTable encryptTable, final EncryptCondition encryptCondition) {
+    private Optional<SQLToken> generateSQLToken(final String schemaName, final EncryptTable encryptTable, final EncryptCondition encryptCondition) {
         int startIndex = encryptCondition.getStartIndex();
         int stopIndex = encryptCondition.getStopIndex();
         Map<Integer, Object> indexValues = getPositionValues(
@@ -90,16 +90,17 @@ public final class EncryptPredicateValueTokenGenerator implements CollectionSQLT
         Collection<Integer> parameterMarkerIndexes = encryptCondition.getPositionIndexMap().keySet();
         if (encryptCondition instanceof EncryptBinaryCondition && ((EncryptBinaryCondition) encryptCondition).getExpressionSegment() instanceof FunctionSegment) {
             FunctionSegment functionSegment = (FunctionSegment) ((EncryptBinaryCondition) encryptCondition).getExpressionSegment();
-            return new EncryptPredicateFunctionRightValueToken(startIndex, stopIndex, functionSegment.getFunctionName(), functionSegment.getParameters(), indexValues, parameterMarkerIndexes);
+            return Optional.of(new EncryptPredicateFunctionRightValueToken(startIndex, stopIndex, functionSegment.getFunctionName(), functionSegment.getParameters(), indexValues,
+                    parameterMarkerIndexes));
         }
         
         return encryptCondition instanceof EncryptInCondition
-                ? new EncryptPredicateInRightValueToken(startIndex, stopIndex, indexValues, parameterMarkerIndexes)
-                : new EncryptPredicateEqualRightValueToken(startIndex, stopIndex, indexValues, parameterMarkerIndexes);
+                ? Optional.of(new EncryptPredicateInRightValueToken(startIndex, stopIndex, indexValues, parameterMarkerIndexes))
+                : Optional.of(new EncryptPredicateEqualRightValueToken(startIndex, stopIndex, indexValues, parameterMarkerIndexes));
     }
     
     private List<Object> getEncryptedValues(final String schemaName, final EncryptTable encryptTable, final EncryptCondition encryptCondition, final List<Object> originalValues) {
-        String columnName = encryptCondition.getColumnSegment().getIdentifier().getValue();
+        String columnName = encryptCondition.getColumnSegment().getColumnBoundInfo().getOriginalColumn().getValue();
         EncryptColumn encryptColumn = encryptTable.getEncryptColumn(columnName);
         if (encryptCondition instanceof EncryptBinaryCondition && ("LIKE".equalsIgnoreCase(((EncryptBinaryCondition) encryptCondition).getOperator())
                 || "NOT LIKE".equalsIgnoreCase(((EncryptBinaryCondition) encryptCondition).getOperator()))) {

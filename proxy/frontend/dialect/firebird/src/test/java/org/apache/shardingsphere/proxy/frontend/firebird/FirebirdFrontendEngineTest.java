@@ -21,9 +21,10 @@ import org.apache.shardingsphere.database.protocol.firebird.constant.protocol.Fi
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.frontend.firebird.command.query.statement.FirebirdStatementIdGenerator;
+import org.apache.shardingsphere.proxy.frontend.firebird.command.query.statement.fetch.FirebirdFetchStatementCache;
 import org.apache.shardingsphere.proxy.frontend.firebird.command.query.transaction.FirebirdTransactionIdGenerator;
-import org.apache.shardingsphere.test.infra.framework.mock.AutoMockExtension;
-import org.apache.shardingsphere.test.infra.framework.mock.StaticMockSettings;
+import org.apache.shardingsphere.test.infra.framework.extension.mock.AutoMockExtension;
+import org.apache.shardingsphere.test.infra.framework.extension.mock.StaticMockSettings;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -33,7 +34,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(AutoMockExtension.class)
-@StaticMockSettings({ProxyContext.class, FirebirdStatementIdGenerator.class, FirebirdTransactionIdGenerator.class, FirebirdConnectionProtocolVersion.class})
+@StaticMockSettings({ProxyContext.class, FirebirdStatementIdGenerator.class, FirebirdTransactionIdGenerator.class, FirebirdConnectionProtocolVersion.class, FirebirdFetchStatementCache.class})
 class FirebirdFrontendEngineTest {
     
     @Mock
@@ -54,5 +55,6 @@ class FirebirdFrontendEngineTest {
         verify(FirebirdStatementIdGenerator.getInstance()).unregisterConnection(connectionId);
         verify(FirebirdTransactionIdGenerator.getInstance()).unregisterConnection(connectionId);
         verify(FirebirdConnectionProtocolVersion.getInstance()).unsetProtocolVersion(connectionId);
+        verify(FirebirdFetchStatementCache.getInstance()).unregisterConnection(connectionId);
     }
 }

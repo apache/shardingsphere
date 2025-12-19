@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.proxy.backend.mysql.handler.admin.executor;
 
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResultMetaData;
+import org.apache.shardingsphere.proxy.backend.mysql.handler.admin.executor.select.ShowConnectionIdExecutor;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ExpressionProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ProjectionSegment;
@@ -41,7 +42,7 @@ class ShowConnectionIdExecutorTest {
     @Test
     void assertExecute() throws SQLException {
         ShowConnectionIdExecutor executor = new ShowConnectionIdExecutor(mockSelectStatement());
-        executor.execute(mockConnectionSession());
+        executor.execute(mockConnectionSession(), mock());
         QueryResultMetaData metaData = executor.getQueryResultMetaData();
         assertThat(metaData.getColumnCount(), is(1));
         assertThat(metaData.getColumnName(1), is(ShowConnectionIdExecutor.FUNCTION_NAME));
@@ -54,7 +55,7 @@ class ShowConnectionIdExecutorTest {
     @Test
     void assertExecuteWithAlias() throws SQLException {
         ShowConnectionIdExecutor executor = new ShowConnectionIdExecutor(mockSelectStatementWithAlias());
-        executor.execute(mockConnectionSession());
+        executor.execute(mockConnectionSession(), mock());
         QueryResultMetaData metaData = executor.getQueryResultMetaData();
         assertThat(metaData.getColumnCount(), is(1));
         assertThat(metaData.getColumnName(1), is(ShowConnectionIdExecutor.FUNCTION_NAME));

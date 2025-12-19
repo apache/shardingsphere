@@ -284,7 +284,27 @@ installComponent
     ;
 
 installPlugin
-    : INSTALL PLUGIN pluginName SONAME shardLibraryName
+    : INSTALL PLUGIN (pluginName SONAME shardLibraryName | FROM pluginSource (PROPERTIES LP_ pluginPropertiesList RP_)?)
+    ;
+
+pluginSource
+    : identifier | string_
+    ;
+
+pluginPropertiesList
+    : pluginProperty (COMMA_ pluginProperty)*
+    ;
+
+pluginProperty
+    : pluginPropertyKey EQ_ pluginPropertyValue
+    ;
+
+pluginPropertyKey
+    : identifier | string_
+    ;
+
+pluginPropertyValue
+    : literals | identifier
     ;
 
 uninstallComponent
@@ -327,6 +347,30 @@ repairTable
 alterResourceGroup
     : ALTER RESOURCE GROUP groupName (VCPU EQ_? vcpuSpec (COMMA_ vcpuSpec)*)? (THREAD_PRIORITY EQ_? NUMBER_)?
     (ENABLE | DISABLE FORCE?)?
+    ;
+
+alterResource
+    : ALTER RESOURCE resourceName PROPERTIES LP_ propertyAssignments RP_
+    ;
+
+resourceName
+    : identifier | string_
+    ;
+
+propertyAssignments
+    : propertyAssignment (COMMA_ propertyAssignment)*
+    ;
+
+propertyAssignment
+    : propertyKey EQ_ propertyValue
+    ;
+
+propertyKey
+    : identifier | string_
+    ;
+
+propertyValue
+    : literals | identifier
     ;
 
 vcpuSpec

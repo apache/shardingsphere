@@ -34,18 +34,19 @@ import java.util.Map;
 @Getter
 public enum FirebirdBinaryColumnType implements BinaryColumnType {
     
-    // TODO add different varying length based on a row length
+    // TODO add support for retrieving length for ARRAY types.
+    // Currently not possible due to existing issues with ARRAY handling in the database itself.
     TEXT(452, 255),
-    VARYING(448, 255),
+    VARYING(448, 0),
     LEGACY_TEXT(452, 255),
-    LEGACY_VARYING(448, 255),
+    LEGACY_VARYING(448, 0),
     SHORT(500, 2),
     LONG(496, 4),
     FLOAT(482, 4),
     DOUBLE(480, 8),
     D_FLOAT(530, 8),
     TIMESTAMP(510, 8),
-    BLOB(520, 255),
+    BLOB(520, 0),
     ARRAY(540, 255),
     QUAD(550, 4),
     TIME(560, 4),
@@ -88,18 +89,15 @@ public enum FirebirdBinaryColumnType implements BinaryColumnType {
         // replace VARYING with TEXT when add proper length
         JDBC_TYPE_AND_COLUMN_TYPE_MAP.put(Types.CHAR, VARYING);
         JDBC_TYPE_AND_COLUMN_TYPE_MAP.put(Types.VARCHAR, VARYING);
-        // temp fix for blobs
-        JDBC_TYPE_AND_COLUMN_TYPE_MAP.put(Types.LONGVARCHAR, VARYING);
+        JDBC_TYPE_AND_COLUMN_TYPE_MAP.put(Types.LONGVARCHAR, BLOB);
         JDBC_TYPE_AND_COLUMN_TYPE_MAP.put(Types.DATE, DATE);
         JDBC_TYPE_AND_COLUMN_TYPE_MAP.put(Types.TIME, TIME);
         JDBC_TYPE_AND_COLUMN_TYPE_MAP.put(Types.TIMESTAMP, TIMESTAMP);
         JDBC_TYPE_AND_COLUMN_TYPE_MAP.put(Types.BINARY, TEXT);
         JDBC_TYPE_AND_COLUMN_TYPE_MAP.put(Types.VARBINARY, VARYING);
-        // temp fix for blobs
-        JDBC_TYPE_AND_COLUMN_TYPE_MAP.put(Types.LONGVARBINARY, VARYING);
+        JDBC_TYPE_AND_COLUMN_TYPE_MAP.put(Types.LONGVARBINARY, BLOB);
         JDBC_TYPE_AND_COLUMN_TYPE_MAP.put(Types.NULL, NULL);
-        // temp fix for blobs
-        JDBC_TYPE_AND_COLUMN_TYPE_MAP.put(Types.BLOB, VARYING);
+        JDBC_TYPE_AND_COLUMN_TYPE_MAP.put(Types.BLOB, BLOB);
         JDBC_TYPE_AND_COLUMN_TYPE_MAP.put(Types.BOOLEAN, BOOLEAN);
         JDBC_TYPE_AND_COLUMN_TYPE_MAP.put(Types.ARRAY, ARRAY);
         JDBC_TYPE_AND_COLUMN_TYPE_MAP.put(Types.TIME_WITH_TIMEZONE, TIME_TZ);

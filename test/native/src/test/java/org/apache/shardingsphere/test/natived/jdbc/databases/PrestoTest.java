@@ -59,7 +59,7 @@ class PrestoTest {
     private String baseJdbcUrl;
     
     @Container
-    private final GenericContainer<?> container = new GenericContainer<>("prestodb/presto:0.292")
+    private final GenericContainer<?> container = new GenericContainer<>("prestodb/presto:0.296")
             .withExposedPorts(8080)
             .withCopyFileToContainer(
                     MountableFile.forHostPath(Paths.get("src/test/resources/test-native/properties/presto-iceberg.properties").toAbsolutePath()),
@@ -126,27 +126,12 @@ class PrestoTest {
         try (
                 Connection con = DriverManager.getConnection(baseJdbcUrl + "/" + schemaName, "test", null);
                 Statement stmt = con.createStatement()) {
-            stmt.execute("CREATE TABLE IF NOT EXISTS t_order (\n"
-                    + "    order_id BIGINT NOT NULL,\n"
-                    + "    order_type INTEGER,\n"
-                    + "    user_id INTEGER NOT NULL,\n"
-                    + "    address_id BIGINT NOT NULL,\n"
-                    + "    status VARCHAR(50)\n"
-                    + ")");
-            stmt.execute("CREATE TABLE IF NOT EXISTS t_order_item (\n"
-                    + "    order_item_id BIGINT NOT NULL,\n"
-                    + "    order_id BIGINT NOT NULL,\n"
-                    + "    user_id INT NOT NULL,\n"
-                    + "    phone VARCHAR(50),\n"
-                    + "    status VARCHAR(50)\n"
-                    + ")");
-            stmt.execute("CREATE TABLE IF NOT EXISTS t_address (\n"
-                    + "    address_id BIGINT NOT NULL,\n"
-                    + "    address_name VARCHAR(100) NOT NULL\n"
-                    + ")");
-            stmt.execute("truncate table t_order");
-            stmt.execute("truncate table t_order_item");
-            stmt.execute("truncate table t_address");
+            stmt.execute("CREATE TABLE IF NOT EXISTS t_order (order_id BIGINT NOT NULL,order_type INTEGER,user_id INTEGER NOT NULL,address_id BIGINT NOT NULL,status VARCHAR(50))");
+            stmt.execute("CREATE TABLE IF NOT EXISTS t_order_item (order_item_id BIGINT NOT NULL,order_id BIGINT NOT NULL,user_id INT NOT NULL,phone VARCHAR(50),status VARCHAR(50))");
+            stmt.execute("CREATE TABLE IF NOT EXISTS t_address (address_id BIGINT NOT NULL,address_name VARCHAR(100) NOT NULL)");
+            stmt.execute("TRUNCATE TABLE t_order");
+            stmt.execute("TRUNCATE TABLE t_order_item");
+            stmt.execute("TRUNCATE TABLE t_address");
         } catch (final SQLException ex) {
             throw new RuntimeException(ex);
         }

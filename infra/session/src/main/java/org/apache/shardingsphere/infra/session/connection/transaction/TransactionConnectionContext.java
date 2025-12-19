@@ -61,8 +61,8 @@ public final class TransactionConnectionContext implements AutoCloseable {
      *
      * @return in distributed transaction or not
      */
-    public boolean isInDistributedTransaction() {
-        return inTransaction && ("XA".equals(transactionType) || "BASE".equals(transactionType));
+    public boolean isDistributedTransactionStarted() {
+        return isTransactionStarted() && ("XA".equals(transactionType) || "BASE".equals(transactionType));
     }
     
     /**
@@ -90,6 +90,15 @@ public final class TransactionConnectionContext implements AutoCloseable {
      */
     public Optional<TransactionManager> getTransactionManager() {
         return null == transactionManager ? Optional.empty() : Optional.ofNullable(transactionManager.get());
+    }
+    
+    /**
+     * Judge transaction is started or not.
+     *
+     * @return whether transaction is started or not
+     */
+    public boolean isTransactionStarted() {
+        return inTransaction;
     }
     
     @Override

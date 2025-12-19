@@ -24,17 +24,17 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAsse
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.mysql.replication.show.MySQLShowSlaveHostsStatementTestCase;
 
 /**
- * Show slave host statement assert for MySQL.
+ * Show replica host statement assert for MySQL.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class MySQLShowSlaveHostsStatementAssert {
     
     /**
-     * Assert show slave host statement is correct with expected show slave host statement test case.
+     * Assert show replica host statement is correct with expected show replica host statement test case.
      *
      * @param assertContext assert context
-     * @param actual actual show slave host statement
-     * @param expected expected show slave host statement test case
+     * @param actual actual show replica host statement
+     * @param expected expected show replica host statement test case
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final MySQLShowSlaveHostsStatement actual, final MySQLShowSlaveHostsStatementTestCase expected) {
     }

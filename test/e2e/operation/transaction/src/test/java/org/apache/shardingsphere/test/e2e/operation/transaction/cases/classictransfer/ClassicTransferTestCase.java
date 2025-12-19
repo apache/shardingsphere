@@ -50,7 +50,7 @@ public final class ClassicTransferTestCase extends BaseTransactionTestCase {
     @Override
     public void executeTest(final TransactionContainerComposer containerComposer) throws SQLException {
         try (Connection connection = getDataSource().getConnection()) {
-            executeUpdateWithLog(connection, "insert into account(transaction_id, balance) values (1,0), (2,100);");
+            executeUpdateWithLog(connection, "INSERT INTO account(transaction_id, balance) VALUES (1,0), (2,100);");
         }
         innerRun();
     }
@@ -79,7 +79,7 @@ public final class ClassicTransferTestCase extends BaseTransactionTestCase {
                 Connection connection = getDataSource().getConnection();
                 Statement statement = connection.createStatement()) {
             connection.setAutoCommit(false);
-            ResultSet resultSet = statement.executeQuery("select sum(balance) as a from account where transaction_id in (1, 2)");
+            ResultSet resultSet = statement.executeQuery("SELECT SUM(balance) AS a FROM account WHERE transaction_id IN (1, 2)");
             if (resultSet.next()) {
                 result = resultSet.getInt(1);
             }
@@ -90,7 +90,7 @@ public final class ClassicTransferTestCase extends BaseTransactionTestCase {
     
     @RequiredArgsConstructor
     @Getter
-    private static class UpdateAccountTask implements Runnable {
+    private static final class UpdateAccountTask implements Runnable {
         
         private final DataSource dataSource;
         

@@ -21,6 +21,10 @@ import org.apache.shardingsphere.database.connector.core.metadata.database.enums
 import org.apache.shardingsphere.database.connector.core.metadata.database.enums.QuoteCharacter;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.DialectDatabaseMetaData;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.IdentifierPatternType;
+import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.transaction.DialectTransactionOption;
+
+import java.sql.Connection;
+import java.util.Collections;
 
 /**
  * Database meta data of H2.
@@ -40,6 +44,11 @@ public final class H2DatabaseMetaData implements DialectDatabaseMetaData {
     @Override
     public NullsOrderType getDefaultNullsOrderType() {
         return NullsOrderType.LOW;
+    }
+    
+    @Override
+    public DialectTransactionOption getTransactionOption() {
+        return new DialectTransactionOption(false, false, false, false, true, Connection.TRANSACTION_READ_COMMITTED, false, false, Collections.singleton("org.h2.jdbcx.JdbcDataSource"));
     }
     
     @Override

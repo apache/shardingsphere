@@ -24,24 +24,17 @@ import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
-import java.util.HashSet;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class OpenGaussSystemDatabaseTest {
     
     private final DialectSystemDatabase systemDatabase = DatabaseTypedSPILoader.getService(DialectSystemDatabase.class, TypedSPILoader.getService(DatabaseType.class, "openGauss"));
     
     @Test
-    void assertGetSystemDatabases() {
-        assertTrue(systemDatabase.getSystemDatabaseSchemaMap().containsKey("postgres"));
-    }
-    
-    @Test
     void assertGetSystemSchemas() {
-        assertThat(systemDatabase.getSystemSchemas(), is(new HashSet<>(Arrays.asList("information_schema", "pg_catalog", "blockchain",
-                "cstore", "db4ai", "dbe_perf", "dbe_pldebugger", "gaussdb", "oracle", "pkg_service", "snapshot", "sqladvisor", "dbe_pldeveloper", "pg_toast", "pkg_util", "shardingsphere"))));
+        assertThat(systemDatabase.getSystemSchemas(), is(Arrays.asList("information_schema", "pg_catalog", "blockchain",
+                "cstore", "db4ai", "dbe_perf", "dbe_pldebugger", "gaussdb", "oracle", "pkg_service", "snapshot", "sqladvisor", "dbe_pldeveloper", "pg_toast", "pkg_util", "shardingsphere")));
     }
 }

@@ -18,11 +18,10 @@
 package org.apache.shardingsphere.proxy.backend.firebird.handler.admin.executor;
 
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
-import org.apache.shardingsphere.infra.autogen.version.ShardingSphereVersion;
+import org.apache.shardingsphere.infra.version.ShardingSphereVersion;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResultMetaData;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
-import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.ShowStatement;
 import org.junit.jupiter.api.Test;
 
@@ -40,9 +39,8 @@ class FirebirdShowVariableExecutorTest {
     
     @Test
     void assertExecuteShowOne() throws SQLException {
-        ConnectionSession connectionSession = mock(ConnectionSession.class);
         FirebirdShowVariableExecutor executor = new FirebirdShowVariableExecutor(new ShowStatement(databaseType, "server_version"));
-        executor.execute(connectionSession);
+        executor.execute(mock(), mock());
         QueryResultMetaData actualMetaData = executor.getQueryResultMetaData();
         assertThat(actualMetaData.getColumnCount(), is(1));
         assertThat(actualMetaData.getColumnLabel(1), is("server_version"));

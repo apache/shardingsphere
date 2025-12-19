@@ -2,58 +2,16 @@
   "reflection": [
     {
       "condition": {
-        "typeReached": "com.oracle.svm.core.code.CodeCacheManagerMXBean"
-      },
-      "type": "com.oracle.svm.core.code.CodeCacheManagerMXBean",
-      "allPublicConstructors": true
-    },
-    {
-      "condition": {
-        "typeReached": "com.oracle.svm.core.genscavenge.CompleteGarbageCollectorMXBean"
-      },
-      "type": "com.oracle.svm.core.genscavenge.CompleteGarbageCollectorMXBean",
-      "allPublicConstructors": true
-    },
-    {
-      "condition": {
-        "typeReached": "com.oracle.svm.core.genscavenge.HeapImplMemoryMXBean"
-      },
-      "type": "com.oracle.svm.core.genscavenge.HeapImplMemoryMXBean",
-      "allPublicConstructors": true
-    },
-    {
-      "condition": {
-        "typeReached": "com.oracle.svm.core.genscavenge.GenScavengeMemoryPoolMXBeans"
-      },
-      "type": "com.oracle.svm.core.genscavenge.GenScavengeMemoryPoolMXBeans$EdenMemoryPoolMXBean",
-      "allPublicConstructors": true
-    },
-    {
-      "condition": {
-        "typeReached": "com.oracle.svm.core.genscavenge.GenScavengeMemoryPoolMXBeans"
-      },
-      "type": "com.oracle.svm.core.genscavenge.GenScavengeMemoryPoolMXBeans$SurvivorMemoryPoolMXBean",
-      "allPublicConstructors": true
-    },
-    {
-      "condition": {
-        "typeReached": "com.oracle.svm.core.genscavenge.GenScavengeMemoryPoolMXBeans"
-      },
-      "type": "com.oracle.svm.core.genscavenge.GenScavengeMemoryPoolMXBeans$OldGenerationMemoryPoolMXBean",
-      "allPublicConstructors": true
-    },
-    {
-      "condition": {
-        "typeReached": "com.oracle.svm.core.genscavenge.IncrementalGarbageCollectorMXBean"
-      },
-      "type": "com.oracle.svm.core.genscavenge.IncrementalGarbageCollectorMXBean",
-      "allPublicConstructors": true
-    },
-    {
-      "condition": {
         "typeReached": "com.oracle.svm.core.jdk.management.SubstrateCompilationMXBean"
       },
       "type": "com.oracle.svm.core.jdk.management.SubstrateCompilationMXBean",
+      "allPublicConstructors": true
+    },
+    {
+      "condition": {
+        "typeReached": "com.oracle.svm.core.jdk.management.SubstrateClassLoadingMXBean"
+      },
+      "type": "com.oracle.svm.core.jdk.management.SubstrateClassLoadingMXBean",
       "allPublicConstructors": true
     },
     {
@@ -72,52 +30,170 @@
     },
     {
       "condition": {
-        "typeReached": "com.oracle.svm.core.jdk.management.SubstrateClassLoadingMXBean"
+        "typeReached": "com.oracle.svm.core.genscavenge.GenScavengeMemoryPoolMXBeans"
       },
-      "type": "com.oracle.svm.core.jdk.management.SubstrateClassLoadingMXBean",
+      "type": "com.oracle.svm.core.genscavenge.GenScavengeMemoryPoolMXBeans$EdenMemoryPoolMXBean",
       "allPublicConstructors": true
     },
     {
       "condition": {
-        "typeReached": "com.sun.management.GarbageCollectorMXBean"
+        "typeReached": "com.oracle.svm.core.genscavenge.CompleteGarbageCollectorMXBean"
       },
-      "type": "com.sun.management.GarbageCollectorMXBean",
-      "allPublicMethods": true
+      "type": "com.oracle.svm.core.genscavenge.CompleteGarbageCollectorMXBean",
+      "allPublicConstructors": true
     },
     {
       "condition": {
-        "typeReached": "com.sun.management.ThreadMXBean"
+        "typeReached": "com.oracle.svm.core.code.CodeCacheManagerMXBean"
       },
-      "type": "com.sun.management.ThreadMXBean",
-      "allPublicMethods": true
+      "type": "com.oracle.svm.core.code.CodeCacheManagerMXBean",
+      "allPublicConstructors": true
     },
     {
       "condition": {
-        "typeReached": "com.sun.management.OperatingSystemMXBean"
+        "typeReached": "com.oracle.svm.core.genscavenge.GenScavengeMemoryPoolMXBeans"
       },
-      "type": "com.sun.management.OperatingSystemMXBean",
-      "allPublicMethods": true
+      "type": "com.oracle.svm.core.genscavenge.GenScavengeMemoryPoolMXBeans$OldGenerationMemoryPoolMXBean",
+      "allPublicConstructors": true
     },
     {
       "condition": {
-        "typeReached": "com.sun.management.UnixOperatingSystemMXBean"
+        "typeReached": "com.oracle.svm.core.genscavenge.HeapImplMemoryMXBean"
       },
-      "type": "com.sun.management.UnixOperatingSystemMXBean",
-      "allPublicMethods": true
+      "type": "com.oracle.svm.core.genscavenge.HeapImplMemoryMXBean",
+      "allPublicConstructors": true
     },
     {
       "condition": {
-        "typeReached": "com.sun.management.internal.OperatingSystemImpl"
+        "typeReached": "com.oracle.svm.core.genscavenge.GenScavengeMemoryPoolMXBeans"
       },
-      "type": "com.sun.management.internal.OperatingSystemImpl",
-      "allPublicMethods": true,
+      "type": "com.oracle.svm.core.genscavenge.GenScavengeMemoryPoolMXBeans$SurvivorMemoryPoolMXBean",
+      "allPublicConstructors": true
+    },
+    {
+      "condition": {
+        "typeReached": "com.oracle.svm.core.genscavenge.IncrementalGarbageCollectorMXBean"
+      },
+      "type": "com.oracle.svm.core.genscavenge.IncrementalGarbageCollectorMXBean",
       "allPublicConstructors": true
     },
     {
       "condition": {
         "typeReached": "com.sun.jmx.mbeanserver.MBeanIntrospector"
       },
+      "type": "com.sun.management.OperatingSystemMXBean",
+      "allPublicMethods": true
+    },
+    {
+      "condition": {
+        "typeReached": "com.sun.jmx.mbeanserver.MBeanIntrospector"
+      },
+      "type": "com.sun.management.internal.OperatingSystemImpl",
+      "allPublicConstructors": true
+    },
+    {
+      "condition": {
+        "typeReached": "com.sun.jmx.mbeanserver.MBeanIntrospector"
+      },
+      "type": "com.sun.management.ThreadMXBean",
+      "allPublicMethods": true
+    },
+    {
+      "condition": {
+        "typeReached": "com.sun.jmx.mbeanserver.DefaultMXBeanMappingFactory"
+      },
+      "type": "com.sun.management.GcInfo",
+      "allPublicMethods": true
+    },
+    {
+      "condition": {
+        "typeReached": "com.sun.jmx.mbeanserver.MBeanIntrospector"
+      },
+      "type": "com.sun.management.GarbageCollectorMXBean",
+      "allPublicMethods": true
+    },
+    {
+      "condition": {
+        "typeReached": "com.sun.jmx.mbeanserver.MBeanIntrospector"
+      },
       "type": "java.lang.Deprecated",
+      "allPublicMethods": true
+    },
+    {
+      "condition": {
+        "typeReached": "sun.net.www.protocol.http.HttpURLConnection"
+      },
+      "type": "java.net.SocketException",
+      "allPublicConstructors": true
+    },
+    {
+      "condition": {
+        "typeReached": "java.util.Collections"
+      },
+      "type": "java.util.Collections$UnmodifiableMap",
+      "allDeclaredFields": true,
+      "allDeclaredMethods": true,
+      "allDeclaredConstructors": true
+    },
+    {
+      "condition": {
+        "typeReached": "java.util.Collections"
+      },
+      "type": "java.util.Collections$SingletonMap",
+      "allDeclaredFields": true,
+      "allDeclaredMethods": true,
+      "allDeclaredConstructors": true
+    },
+    {
+      "condition": {
+        "typeReached": "java.util.AbstractList"
+      },
+      "type": "java.util.AbstractList",
+      "allDeclaredFields": true
+    },
+    {
+      "condition": {
+        "typeReached": "java.util.Arrays"
+      },
+      "type": "java.util.Arrays$ArrayList",
+      "allDeclaredFields": true,
+      "allDeclaredMethods": true,
+      "allDeclaredConstructors": true
+    },
+    {
+      "condition": {
+        "typeReached": "java.util.RandomAccess"
+      },
+      "type": "java.util.RandomAccess",
+      "allDeclaredMethods": true
+    },
+    {
+      "condition": {
+        "typeReached": "java.util.HashSet"
+      },
+      "type": "java.util.HashSet",
+      "allDeclaredMethods": true,
+      "allDeclaredConstructors": true
+    },
+    {
+      "condition": {
+        "typeReached": "com.sun.jmx.mbeanserver.DefaultMXBeanMappingFactory"
+      },
+      "type": "java.lang.StackTraceElement",
+      "allPublicMethods": true
+    },
+    {
+      "condition": {
+        "typeReached": "java.net.HttpURLConnection"
+      },
+      "type": "java.net.SocketTimeoutException",
+      "allPublicConstructors": true
+    },
+    {
+      "condition": {
+        "typeReached": "com.sun.jmx.mbeanserver.MBeanIntrospector"
+      },
+      "type": "java.lang.management.CompilationMXBean",
       "allPublicMethods": true
     },
     {
@@ -131,7 +207,14 @@
       "condition": {
         "typeReached": "com.sun.jmx.mbeanserver.MBeanIntrospector"
       },
-      "type": "java.lang.management.MonitorInfo",
+      "type": "java.lang.management.MemoryPoolMXBean",
+      "allPublicMethods": true
+    },
+    {
+      "condition": {
+        "typeReached": "com.sun.jmx.mbeanserver.MBeanIntrospector"
+      },
+      "type": "java.lang.management.MemoryManagerMXBean",
       "allPublicMethods": true
     },
     {
@@ -143,95 +226,31 @@
     },
     {
       "condition": {
-        "typeReached": "com.sun.jmx.mbeanserver.MBeanIntrospector"
-      },
-      "type": "java.lang.management.MemoryPoolMXBean",
-      "allPublicMethods": true
-    },
-    {
-      "condition": {
-        "typeReached": "com.sun.jmx.mbeanserver.MXBeanIntrospector"
-      },
-      "type": "com.sun.management.GcInfo",
-      "allPublicMethods": true
-    },
-    {
-      "condition": {
-        "typeReached": "java.lang.management.CompilationMXBean"
-      },
-      "type": "java.lang.management.CompilationMXBean",
-      "allPublicMethods": true
-    },
-    {
-      "condition": {
-        "typeReached": "java.lang.management.MemoryManagerMXBean"
-      },
-      "type": "java.lang.management.MemoryManagerMXBean",
-      "allPublicMethods": true
-    },
-    {
-      "condition": {
-        "typeReached": "java.lang.management.LockInfo"
-      },
-      "type": "java.lang.management.LockInfo",
-      "allPublicMethods": true
-    },
-    {
-      "condition": {
-        "typeReached": "com.sun.jmx.mbeanserver.MXBeanIntrospector"
-      },
-      "type": "java.lang.management.MemoryUsage",
-      "allPublicMethods": true
-    },
-    {
-      "condition": {
-        "typeReached": "java.lang.management.ThreadInfo"
+        "typeReached": "com.sun.jmx.mbeanserver.DefaultMXBeanMappingFactory"
       },
       "type": "java.lang.management.ThreadInfo",
       "allPublicMethods": true
     },
     {
       "condition": {
-        "typeReached": "java.lang.StackTraceElement"
+        "typeReached": "com.sun.jmx.mbeanserver.DefaultMXBeanMappingFactory"
       },
-      "type": "java.lang.StackTraceElement",
+      "type": "java.lang.management.LockInfo",
       "allPublicMethods": true
     },
     {
       "condition": {
-        "typeReached": "java.net.SocketException"
+        "typeReached": "com.sun.jmx.mbeanserver.DefaultMXBeanMappingFactory"
       },
-      "type": "java.net.SocketException",
-      "methods": [
-        {
-          "name": "<init>",
-          "parameterTypes": [
-            "java.lang.String"
-          ]
-        }
-      ]
+      "type": "java.lang.management.MonitorInfo",
+      "allPublicMethods": true
     },
     {
       "condition": {
-        "typeReached": "java.net.SocketTimeoutException"
+        "typeReached": "com.sun.jmx.mbeanserver.DefaultMXBeanMappingFactory"
       },
-      "type": "java.net.SocketTimeoutException",
-      "methods": [
-        {
-          "name": "<init>",
-          "parameterTypes": [
-            "java.lang.String"
-          ]
-        }
-      ]
-    },
-    {
-      "condition": {
-        "typeReached": "java.util.HashSet"
-      },
-      "type": "java.util.HashSet",
-      "allDeclaredMethods": true,
-      "allDeclaredConstructors": true
+      "type": "java.lang.management.MemoryUsage",
+      "allPublicMethods": true
     },
     {
       "condition": {
@@ -260,6 +279,18 @@
       },
       "type": "org.apache.shardingsphere.infra.yaml.schema.pojo.YamlShardingSphereIndex",
       "allPublicMethods": true
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.shardingsphere.infra.yaml.schema.pojo.YamlShardingSphereIndex"
+      },
+      "type": "org.apache.shardingsphere.infra.yaml.schema.pojo.YamlShardingSphereIndexBeanInfo"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.shardingsphere.infra.yaml.schema.pojo.YamlShardingSphereIndex"
+      },
+      "type": "org.apache.shardingsphere.infra.yaml.schema.pojo.YamlShardingSphereIndexCustomizer"
     },
     {
       "condition": {
@@ -438,21 +469,21 @@
     },
     {
       "condition": {
-        "typeReached": "org.apache.shardingsphere.sqlfederation.compiler.sql.function.mysql.MySQLFunctionRegister"
+        "typeReached": "org.apache.shardingsphere.sqlfederation.mysql.MySQLSQLFederationFunctionRegister"
       },
       "type": "org.apache.shardingsphere.sqlfederation.compiler.sql.function.mysql.impl.MySQLBinFunction",
       "allPublicMethods": true
     },
     {
       "condition": {
-        "typeReached": "org.apache.shardingsphere.sqlfederation.compiler.sql.function.opengauss.OpenGaussFunctionRegister"
+        "typeReached": "org.apache.shardingsphere.sqlfederation.opengauss.OpenGaussSQLFederationFunctionRegister"
       },
       "type": "org.apache.shardingsphere.sqlfederation.compiler.sql.function.opengauss.impl.OpenGaussSystemFunction",
       "allPublicMethods": true
     },
     {
       "condition": {
-        "typeReached": "org.apache.shardingsphere.sqlfederation.compiler.sql.function.postgresql.PostgreSQLFunctionRegister"
+        "typeReached": "org.apache.shardingsphere.sqlfederation.postgresql.PostgreSQLSQLFederationFunctionRegister"
       },
       "type": "org.apache.shardingsphere.sqlfederation.compiler.sql.function.postgresql.impl.PostgreSQLSystemFunction",
       "allPublicMethods": true
@@ -529,14 +560,7 @@
         "typeReached": "sun.security.provider.SecureRandom"
       },
       "type": "sun.security.provider.SecureRandom",
-      "methods": [
-        {
-          "name": "<init>",
-          "parameterTypes": [
-            "java.security.SecureRandomParameters"
-          ]
-        }
-      ]
+      "allPublicConstructors": true
     },
     {
       "condition": {
@@ -552,7 +576,7 @@
   "resources": [
     {
       "condition": {
-        "typeReached": "org.apache.shardingsphere.infra.spi.type.ordered.OrderedSPILoader"
+        "typeReached": "org.apache.shardingsphere.database.connector.core.metadata.data.loader.MetaDataLoader"
       },
       "glob": "META-INF/services/org.apache.shardingsphere.*"
     },
@@ -573,6 +597,12 @@
         "typeReached": "javax.xml.parsers.FactoryFinder"
       },
       "glob": "META-INF/services/javax.xml.parsers.SAXParserFactory"
+    },
+    {
+      "condition": {
+        "typeReached": "java.net.spi.InetAddressResolverProvider"
+      },
+      "glob": "META-INF/services/java.net.spi.InetAddressResolverProvider"
     }
   ],
   "bundles": [
@@ -581,12 +611,6 @@
         "typeReached": "org.opengauss.util.GT"
       },
       "name": "org.opengauss.translation.messages"
-    },
-    {
-      "condition": {
-        "typeReached": "org.postgresql.util.GT"
-      },
-      "name": "org.postgresql.translation.messages"
     }
   ]
 }

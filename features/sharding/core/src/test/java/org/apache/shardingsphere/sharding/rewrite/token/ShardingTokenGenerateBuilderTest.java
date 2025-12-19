@@ -54,7 +54,7 @@ class ShardingTokenGenerateBuilderTest {
     }
     
     @Test
-    void assertGetSQLTokenGenerators() throws Exception {
+    void assertGetSQLTokenGenerators() throws ReflectiveOperationException {
         when(routeContext.containsTableSharding()).thenReturn(true);
         SelectStatementContext sqlStatementContext = mock(SelectStatementContext.class, RETURNS_DEEP_STUBS);
         when(sqlStatementContext.getProjectionsContext().getAggregationProjections().isEmpty()).thenReturn(false);
@@ -77,13 +77,13 @@ class ShardingTokenGenerateBuilderTest {
         assertSqlTokenGenerator(shardingRemoveTokenGenerator);
     }
     
-    private void assertSqlTokenGenerator(final SQLTokenGenerator sqlTokenGenerator) throws Exception {
+    private void assertSqlTokenGenerator(final SQLTokenGenerator sqlTokenGenerator) throws ReflectiveOperationException {
         if (sqlTokenGenerator instanceof RouteContextAware) {
             assertField(sqlTokenGenerator, routeContext, "routeContext");
         }
     }
     
-    private void assertField(final SQLTokenGenerator sqlTokenGenerator, final Object filedInstance, final String fieldName) throws Exception {
+    private void assertField(final SQLTokenGenerator sqlTokenGenerator, final Object filedInstance, final String fieldName) throws ReflectiveOperationException {
         assertThat(Plugins.getMemberAccessor().get(sqlTokenGenerator.getClass().getDeclaredField(fieldName), sqlTokenGenerator), is(filedInstance));
     }
 }

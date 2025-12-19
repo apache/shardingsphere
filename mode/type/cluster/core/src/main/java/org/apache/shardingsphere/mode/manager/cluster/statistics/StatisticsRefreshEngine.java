@@ -31,9 +31,7 @@ import org.apache.shardingsphere.infra.metadata.statistics.DatabaseStatistics;
 import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereStatistics;
 import org.apache.shardingsphere.infra.metadata.statistics.collector.DialectDatabaseStatisticsCollector;
 import org.apache.shardingsphere.infra.metadata.statistics.collector.shardingsphere.ShardingSphereStatisticsCollector;
-import org.apache.shardingsphere.mode.lock.LockContext;
 import org.apache.shardingsphere.mode.manager.ContextManager;
-import org.apache.shardingsphere.mode.manager.cluster.lock.global.GlobalLockDefinition;
 
 import java.util.Collection;
 import java.util.Map;
@@ -68,15 +66,7 @@ public final class StatisticsRefreshEngine {
     public void refresh() {
         try {
             if (contextManager.getMetaDataContexts().getMetaData().getTemporaryProps().getValue(TemporaryConfigurationPropertyKey.PROXY_META_DATA_COLLECTOR_ENABLED)) {
-                LockContext lockContext = contextManager.getLockContext();
-                GlobalLockDefinition lockDefinition = new GlobalLockDefinition(new StatisticsLock());
-                if (lockContext.tryLock(lockDefinition, 5000L)) {
-                    try {
-                        refreshStatistics();
-                    } finally {
-                        lockContext.unlock(lockDefinition);
-                    }
-                }
+                contextManager.getExclusiveOperatorEngine().operate(new RefreshStatisticsOperation(), 5000L, this::refreshStatistics);
             }
             cleanStatisticsData();
             // CHECKSTYLE:OFF

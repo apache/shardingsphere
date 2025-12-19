@@ -172,4 +172,192 @@ class ResultSetUtilsTest {
         assertThat(ResultSetUtils.convertBigDecimalValue("12.243", true, 2), is(BigDecimal.valueOf(12.24)));
         assertThrows(UnsupportedDataTypeConversionException.class, () -> ResultSetUtils.convertBigDecimalValue(new Date(), true, 2));
     }
+    
+    @Test
+    void assertConvertDateValueToLocalDate() throws SQLException {
+        Date date = new Date(1609459200000L);
+        LocalDate result = (LocalDate) ResultSetUtils.convertValue(date, LocalDate.class);
+        assertThat(result, isA(LocalDate.class));
+        java.sql.Date sqlDate = new java.sql.Date(date.getTime());
+        assertThat(result, is(sqlDate.toLocalDate()));
+    }
+    
+    @Test
+    void assertConvertDateValueToLocalDateWithDifferentTimestamps() throws SQLException {
+        Date epochDate = new Date(0L);
+        LocalDate epochResult = (LocalDate) ResultSetUtils.convertValue(epochDate, LocalDate.class);
+        assertThat(epochResult, is(LocalDate.of(1970, 1, 1)));
+        Date christmasDate = new Date(1703462400000L);
+        LocalDate christmasResult = (LocalDate) ResultSetUtils.convertValue(christmasDate, LocalDate.class);
+        assertThat(christmasResult, is(new java.sql.Date(christmasDate.getTime()).toLocalDate()));
+    }
+    
+    @Test
+    void assertConvertDateValueToLocalDateWithCurrentDate() throws SQLException {
+        Date now = new Date();
+        LocalDate result = (LocalDate) ResultSetUtils.convertValue(now, LocalDate.class);
+        java.sql.Date sqlDate = new java.sql.Date(now.getTime());
+        assertThat(result, is(sqlDate.toLocalDate()));
+    }
+    
+    @Test
+    void assertConvertStringValueToTimestamp() throws SQLException {
+        String dateTimeStr = "2021-12-23 19:30:45";
+        Timestamp result = (Timestamp) ResultSetUtils.convertValue(dateTimeStr, Timestamp.class);
+        assertThat(result, is(Timestamp.valueOf(LocalDateTime.of(2021, 12, 23, 19, 30, 45))));
+    }
+    
+    @Test
+    void assertConvertStringValueToTimestampWithISOFormat() throws SQLException {
+        String dateTimeStr = "2021-12-23T19:30:45";
+        Timestamp result = (Timestamp) ResultSetUtils.convertValue(dateTimeStr, Timestamp.class);
+        assertThat(result, is(Timestamp.valueOf(LocalDateTime.of(2021, 12, 23, 19, 30, 45))));
+    }
+    
+    @Test
+    void assertConvertStringValueToTimestampWithMilliseconds() throws SQLException {
+        String dateTimeStr = "2021-12-23 19:30:45.123";
+        Timestamp result = (Timestamp) ResultSetUtils.convertValue(dateTimeStr, Timestamp.class);
+        Timestamp expected = Timestamp.valueOf(LocalDateTime.of(2021, 12, 23, 19, 30, 45, 123000000));
+        assertThat(result, is(expected));
+    }
+    
+    @Test
+    void assertConvertStringValueToTimestampWithDateOnly() throws SQLException {
+        String dateStr = "2021-12-23";
+        Timestamp result = (Timestamp) ResultSetUtils.convertValue(dateStr, Timestamp.class);
+        assertThat(result, is(Timestamp.valueOf(LocalDateTime.of(2021, 12, 23, 0, 0, 0))));
+    }
+    
+    @Test
+    void assertConvertStringValueToTimestampWithCompactFormat() throws SQLException {
+        String dateTimeStr = "20211223 193045";
+        Timestamp result = (Timestamp) ResultSetUtils.convertValue(dateTimeStr, Timestamp.class);
+        assertThat(result, is(Timestamp.valueOf(LocalDateTime.of(2021, 12, 23, 19, 30, 45))));
+    }
+    
+    @Test
+    void assertConvertStringValueToTimestampWithUnderscoreFormat() throws SQLException {
+        String dateTimeStr = "2021_12_23 19:30:45";
+        Timestamp result = (Timestamp) ResultSetUtils.convertValue(dateTimeStr, Timestamp.class);
+        assertThat(result, is(Timestamp.valueOf(LocalDateTime.of(2021, 12, 23, 19, 30, 45))));
+    }
+    
+    @Test
+    void assertConvertStringValueToSqlDate() throws SQLException {
+        String dateStr = "2021-12-23";
+        java.sql.Date result = (java.sql.Date) ResultSetUtils.convertValue(dateStr, java.sql.Date.class);
+        assertThat(result, is(java.sql.Date.valueOf(LocalDate.of(2021, 12, 23))));
+    }
+    
+    @Test
+    void assertConvertStringValueToSqlDateWithCompactFormat() throws SQLException {
+        String dateStr = "20211223";
+        java.sql.Date result = (java.sql.Date) ResultSetUtils.convertValue(dateStr, java.sql.Date.class);
+        assertThat(result, is(java.sql.Date.valueOf(LocalDate.of(2021, 12, 23))));
+    }
+    
+    @Test
+    void assertConvertStringValueToSqlDateWithUnderscoreFormat() throws SQLException {
+        String dateStr = "2021_12_23";
+        java.sql.Date result = (java.sql.Date) ResultSetUtils.convertValue(dateStr, java.sql.Date.class);
+        assertThat(result, is(java.sql.Date.valueOf(LocalDate.of(2021, 12, 23))));
+    }
+    
+    @Test
+    void assertConvertStringValueToSqlDateWithSlashFormat() throws SQLException {
+        String dateStr = "12/23/21";
+        java.sql.Date result = (java.sql.Date) ResultSetUtils.convertValue(dateStr, java.sql.Date.class);
+        assertThat(result, is(java.sql.Date.valueOf(LocalDate.of(2021, 12, 23))));
+    }
+    
+    @Test
+    void assertConvertStringValueToSqlDateWithSingleDigitMonth() throws SQLException {
+        String dateStr = "2021-1-5";
+        java.sql.Date result = (java.sql.Date) ResultSetUtils.convertValue(dateStr, java.sql.Date.class);
+        assertThat(result, is(java.sql.Date.valueOf(LocalDate.of(2021, 1, 5))));
+    }
+    
+    @Test
+    void assertConvertStringValueToSqlTime() throws SQLException {
+        String timeStr = "19:30:45";
+        Time result = (Time) ResultSetUtils.convertValue(timeStr, Time.class);
+        assertThat(result, is(Time.valueOf(LocalTime.of(19, 30, 45))));
+    }
+    
+    @Test
+    void assertConvertStringValueToSqlTimeWithMilliseconds() throws SQLException {
+        String timeStr = "19:30:45.123";
+        Time result = (Time) ResultSetUtils.convertValue(timeStr, Time.class);
+        LocalTime localTime = LocalTime.of(19, 30, 45, 123000000);
+        assertThat(result, is(Time.valueOf(localTime)));
+    }
+    
+    @Test
+    void assertConvertStringValueToSqlTimeWithShortFormat() throws SQLException {
+        String timeStr = "19:30";
+        Time result = (Time) ResultSetUtils.convertValue(timeStr, Time.class);
+        assertThat(result, is(Time.valueOf(LocalTime.of(19, 30, 0))));
+    }
+    
+    @Test
+    void assertConvertStringValueWithUnsupportedTypeReturnsString() throws SQLException {
+        String value = "test string";
+        String result = (String) ResultSetUtils.convertValue(value, String.class);
+        assertThat(result, is("test string"));
+    }
+    
+    @Test
+    void assertConvertStringValueWithInvalidTimestampFormat() {
+        String invalidDateStr = "invalid-date-time";
+        assertThrows(Exception.class, () -> ResultSetUtils.convertValue(invalidDateStr, Timestamp.class));
+    }
+    
+    @Test
+    void assertConvertStringValueWithInvalidDateFormat() {
+        String invalidDateStr = "not-a-date";
+        assertThrows(Exception.class, () -> ResultSetUtils.convertValue(invalidDateStr, java.sql.Date.class));
+    }
+    
+    @Test
+    void assertConvertStringValueWithInvalidTimeFormat() {
+        String invalidTimeStr = "not-a-time";
+        assertThrows(Exception.class, () -> ResultSetUtils.convertValue(invalidTimeStr, Time.class));
+    }
+    
+    @Test
+    void assertConvertStringValueToTimestampWithEpoch() throws SQLException {
+        String dateTimeStr = "1970-01-01 00:00:00";
+        Timestamp result = (Timestamp) ResultSetUtils.convertValue(dateTimeStr, Timestamp.class);
+        assertThat(result, is(Timestamp.valueOf(LocalDateTime.of(1970, 1, 1, 0, 0, 0))));
+    }
+    
+    @Test
+    void assertConvertStringValueToTimestampWithNanoseconds() throws SQLException {
+        String dateTimeStr = "2021-12-23 19:30:45.123456789";
+        Timestamp result = (Timestamp) ResultSetUtils.convertValue(dateTimeStr, Timestamp.class);
+        Timestamp expected = Timestamp.valueOf(LocalDateTime.of(2021, 12, 23, 19, 30, 45, 123456789));
+        assertThat(result, is(expected));
+    }
+    
+    @Test
+    void assertConvertStringValueToSqlDateWithEpoch() throws SQLException {
+        String dateStr = "1970-01-01";
+        java.sql.Date result = (java.sql.Date) ResultSetUtils.convertValue(dateStr, java.sql.Date.class);
+        assertThat(result, is(java.sql.Date.valueOf(LocalDate.of(1970, 1, 1))));
+    }
+    
+    @Test
+    void assertConvertStringValueToSqlTimeMidnight() throws SQLException {
+        String timeStr = "00:00:00";
+        Time result = (Time) ResultSetUtils.convertValue(timeStr, Time.class);
+        assertThat(result, is(Time.valueOf(LocalTime.of(0, 0, 0))));
+    }
+    
+    @Test
+    void assertConvertStringValueToSqlTimeEndOfDay() throws SQLException {
+        String timeStr = "23:59:59";
+        Time result = (Time) ResultSetUtils.convertValue(timeStr, Time.class);
+        assertThat(result, is(Time.valueOf(LocalTime.of(23, 59, 59))));
+    }
 }

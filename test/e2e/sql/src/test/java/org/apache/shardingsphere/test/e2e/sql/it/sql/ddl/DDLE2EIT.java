@@ -21,13 +21,13 @@ import com.google.common.base.Splitter;
 import lombok.Setter;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.expr.entry.InlineExpressionParserFactory;
+import org.apache.shardingsphere.test.e2e.env.runtime.E2ETestEnvironment;
 import org.apache.shardingsphere.test.e2e.sql.cases.dataset.metadata.DataSetColumn;
 import org.apache.shardingsphere.test.e2e.sql.cases.dataset.metadata.DataSetIndex;
 import org.apache.shardingsphere.test.e2e.sql.cases.dataset.metadata.DataSetMetaData;
 import org.apache.shardingsphere.test.e2e.sql.env.SQLE2EEnvironmentEngine;
 import org.apache.shardingsphere.test.e2e.sql.framework.SQLE2EITArgumentsProvider;
 import org.apache.shardingsphere.test.e2e.sql.framework.SQLE2EITSettings;
-import org.apache.shardingsphere.test.e2e.sql.framework.param.array.E2ETestParameterFactory;
 import org.apache.shardingsphere.test.e2e.sql.framework.param.model.AssertionTestParameter;
 import org.apache.shardingsphere.test.e2e.sql.framework.type.SQLCommandType;
 import org.apache.shardingsphere.test.e2e.sql.framework.type.SQLExecuteType;
@@ -203,6 +203,7 @@ class DDLE2EIT implements SQLE2EIT {
         assertFalse(connection.getMetaData().getTables(null, null, tableName, new String[]{"TABLE"}).next(), String.format("Table `%s` should not existed", tableName));
     }
     
+    @SuppressWarnings("CollectionWithoutInitialCapacity")
     private List<DataSetColumn> getActualColumns(final Collection<DataNode> dataNodes) throws SQLException {
         Set<DataSetColumn> result = new LinkedHashSet<>();
         for (DataNode each : dataNodes) {
@@ -228,6 +229,7 @@ class DDLE2EIT implements SQLE2EIT {
         }
     }
     
+    @SuppressWarnings("CollectionWithoutInitialCapacity")
     private List<DataSetIndex> getActualIndexes(final Collection<DataNode> dataNodes) throws SQLException {
         Set<DataSetIndex> result = new LinkedHashSet<>();
         for (DataNode each : dataNodes) {
@@ -292,6 +294,6 @@ class DDLE2EIT implements SQLE2EIT {
     }
     
     private static boolean isEnabled() {
-        return E2ETestParameterFactory.containsTestParameter();
+        return E2ETestEnvironment.getInstance().isValid();
     }
 }

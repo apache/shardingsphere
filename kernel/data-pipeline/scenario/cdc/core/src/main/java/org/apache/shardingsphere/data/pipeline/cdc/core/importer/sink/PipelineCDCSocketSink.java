@@ -31,7 +31,6 @@ import org.apache.shardingsphere.data.pipeline.core.job.progress.listener.Pipeli
 import org.apache.shardingsphere.infra.exception.external.sql.sqlstate.XOpenSQLState;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 
-import java.io.IOException;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -114,7 +113,7 @@ public final class PipelineCDCSocketSink implements PipelineSink {
     }
     
     @Override
-    public void close() throws IOException {
+    public void close() {
         channel.writeAndFlush(CDCResponseUtils.failed("", XOpenSQLState.GENERAL_ERROR.getValue(), "The socket channel is closed."));
     }
 }

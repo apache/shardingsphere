@@ -48,10 +48,11 @@ class ConditionValueInOperatorGeneratorTest {
     
     private final ConditionValueInOperatorGenerator generator = new ConditionValueInOperatorGenerator();
     
-    private final HashColumn column = new HashColumn("id", "tbl");
+    private final HashColumn column = new HashColumn("id", "tbl", false);
     
     private final TimestampServiceRule timestampServiceRule = new TimestampServiceRule(new TimestampServiceRuleConfiguration("System", new Properties()));
     
+    @SuppressWarnings("UseOfObsoleteDateTimeApi")
     @Test
     void assertNowExpression() {
         ListExpression listExpression = new ListExpression(0, 0);
@@ -71,7 +72,7 @@ class ConditionValueInOperatorGeneratorTest {
         InExpression inExpression = new InExpression(0, 0, null, listExpression, false);
         Optional<ShardingConditionValue> shardingConditionValue = generator.generate(inExpression, column, new LinkedList<>(), timestampServiceRule);
         assertTrue(shardingConditionValue.isPresent());
-        assertThat(((ListShardingConditionValue) shardingConditionValue.get()).getValues(), is(Arrays.asList(null, null)));
+        assertThat(((ListShardingConditionValue<?>) shardingConditionValue.get()).getValues(), is(Arrays.asList(null, null)));
         assertTrue(shardingConditionValue.get().getParameterMarkerIndexes().isEmpty());
         assertThat(shardingConditionValue.get().toString(), is("tbl.id in (,)"));
     }
@@ -86,7 +87,7 @@ class ConditionValueInOperatorGeneratorTest {
         InExpression inExpression = new InExpression(0, 0, null, listExpression, false);
         Optional<ShardingConditionValue> shardingConditionValue = generator.generate(inExpression, column, new LinkedList<>(), timestampServiceRule);
         assertTrue(shardingConditionValue.isPresent());
-        assertThat(((ListShardingConditionValue) shardingConditionValue.get()).getValues(), is(Arrays.asList("test1", null, null, "test2")));
+        assertThat(((ListShardingConditionValue<?>) shardingConditionValue.get()).getValues(), is(Arrays.asList("test1", null, null, "test2")));
         assertTrue(shardingConditionValue.get().getParameterMarkerIndexes().isEmpty());
         assertThat(shardingConditionValue.get().toString(), is("tbl.id in (test1,,,test2)"));
     }

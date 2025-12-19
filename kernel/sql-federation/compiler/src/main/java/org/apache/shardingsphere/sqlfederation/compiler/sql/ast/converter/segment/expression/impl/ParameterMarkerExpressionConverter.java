@@ -20,11 +20,8 @@ package org.apache.shardingsphere.sqlfederation.compiler.sql.ast.converter.segme
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.calcite.sql.SqlDynamicParam;
-import org.apache.calcite.sql.SqlNode;
 import org.apache.calcite.sql.parser.SqlParserPos;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
-
-import java.util.Optional;
 
 /**
  * Parameter marker expression converter.
@@ -33,12 +30,12 @@ import java.util.Optional;
 public final class ParameterMarkerExpressionConverter {
     
     /**
-     * Convert parameter marker expression segment to sql node.
+     * Convert parameter marker expression segment to SQL node.
      *
      * @param segment parameter marker expression segment
-     * @return sql node
+     * @return SQL node
      */
-    public static Optional<SqlNode> convert(final ParameterMarkerExpressionSegment segment) {
-        return Optional.of(new SqlDynamicParam(segment.getParameterMarkerIndex(), SqlParserPos.ZERO));
+    public static SqlDynamicParam convert(final ParameterMarkerExpressionSegment segment) {
+        return new SqlDynamicParam(segment.getParameterMarkerIndex(), SqlParserPos.ZERO);
     }
 }

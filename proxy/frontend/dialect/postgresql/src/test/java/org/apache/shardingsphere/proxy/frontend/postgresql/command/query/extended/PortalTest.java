@@ -57,8 +57,8 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.Em
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.SetStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.InsertStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.SelectStatement;
-import org.apache.shardingsphere.test.infra.framework.mock.AutoMockExtension;
-import org.apache.shardingsphere.test.infra.framework.mock.StaticMockSettings;
+import org.apache.shardingsphere.test.infra.framework.extension.mock.AutoMockExtension;
+import org.apache.shardingsphere.test.infra.framework.extension.mock.StaticMockSettings;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -161,11 +161,7 @@ class PortalTest {
         SelectStatementContext sqlStatementContext = mock(SelectStatementContext.class, RETURNS_DEEP_STUBS);
         when(sqlStatementContext.getSqlStatement()).thenReturn(new SelectStatement(databaseType));
         when(sqlStatementContext.getTablesContext().getDatabaseName()).thenReturn(Optional.empty());
-        PostgreSQLServerPreparedStatement preparedStatement =
-                new PostgreSQLServerPreparedStatement("", sqlStatementContext, new HintValueContext(), Collections.emptyList(), Collections.emptyList());
-        List<PostgreSQLValueFormat> resultFormats = new ArrayList<>(Arrays.asList(PostgreSQLValueFormat.TEXT, PostgreSQLValueFormat.BINARY));
-        Portal portal = new Portal("", preparedStatement, Collections.emptyList(), resultFormats, databaseConnectionManager);
-        portal.bind();
+        Portal portal = createPortal(sqlStatementContext);
         PostgreSQLPacket portalDescription = portal.describe();
         assertThat(portalDescription, isA(PostgreSQLRowDescriptionPacket.class));
         Collection<PostgreSQLColumnDescription> columnDescriptions = (Collection<PostgreSQLColumnDescription>) Plugins.getMemberAccessor()
@@ -196,11 +192,7 @@ class PortalTest {
         SelectStatementContext selectStatementContext = mock(SelectStatementContext.class, RETURNS_DEEP_STUBS);
         when(selectStatementContext.getSqlStatement()).thenReturn(new SelectStatement(databaseType));
         when(selectStatementContext.getTablesContext().getDatabaseName()).thenReturn(Optional.empty());
-        PostgreSQLServerPreparedStatement preparedStatement = new PostgreSQLServerPreparedStatement("", selectStatementContext, new HintValueContext(), Collections.emptyList(),
-                Collections.emptyList());
-        List<PostgreSQLValueFormat> resultFormats = new ArrayList<>(Arrays.asList(PostgreSQLValueFormat.TEXT, PostgreSQLValueFormat.BINARY));
-        Portal portal = new Portal("", preparedStatement, Collections.emptyList(), resultFormats, databaseConnectionManager);
-        portal.bind();
+        Portal portal = createPortal(selectStatementContext);
         assertThat(portal.describe(), isA(PostgreSQLRowDescriptionPacket.class));
         List<DatabasePacket> actualPackets = portal.execute(2);
         assertThat(actualPackets.size(), is(3));
@@ -208,6 +200,15 @@ class PortalTest {
         assertThat(actualPacketsIterator.next(), isA(PostgreSQLDataRowPacket.class));
         assertThat(actualPacketsIterator.next(), isA(PostgreSQLDataRowPacket.class));
         assertThat(actualPacketsIterator.next(), isA(PostgreSQLPortalSuspendedPacket.class));
+    }
+    
+    private Portal createPortal(final SelectStatementContext selectStatementContext) throws SQLException {
+        PostgreSQLServerPreparedStatement preparedStatement = new PostgreSQLServerPreparedStatement(
+                "", selectStatementContext, new HintValueContext(), Collections.emptyList(), Collections.emptyList());
+        List<PostgreSQLValueFormat> resultFormats = new ArrayList<>(Arrays.asList(PostgreSQLValueFormat.TEXT, PostgreSQLValueFormat.BINARY));
+        Portal result = new Portal("", preparedStatement, Collections.emptyList(), resultFormats, databaseConnectionManager);
+        result.bind();
+        return result;
     }
     
     @Test
@@ -219,7 +220,7 @@ class PortalTest {
         when(insertStatementContext.getTablesContext().getDatabaseName()).thenReturn(Optional.empty());
         PostgreSQLServerPreparedStatement preparedStatement = new PostgreSQLServerPreparedStatement("", insertStatementContext, new HintValueContext(), Collections.emptyList(),
                 Collections.emptyList());
-        Portal portal = new Portal("insert into t values (1)", preparedStatement, Collections.emptyList(), Collections.emptyList(), databaseConnectionManager);
+        Portal portal = new Portal("INSERT INTO t VALUES (1)", preparedStatement, Collections.emptyList(), Collections.emptyList(), databaseConnectionManager);
         portal.bind();
         assertThat(portal.describe(), is(PostgreSQLNoDataPacket.getInstance()));
         List<DatabasePacket> actualPackets = portal.execute(0);

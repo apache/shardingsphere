@@ -101,10 +101,10 @@ public final class CDCJob implements PipelineJob {
     public void execute(final ShardingContext shardingContext) {
         String jobId = shardingContext.getJobName();
         log.info("Execute job {}", jobId);
-        PipelineJobType jobType = PipelineJobIdUtils.parseJobType(jobId);
+        PipelineJobType<?> jobType = PipelineJobIdUtils.parseJobType(jobId);
         PipelineContextKey contextKey = PipelineJobIdUtils.parseContextKey(jobId);
-        CDCJobConfiguration jobConfig = (CDCJobConfiguration) jobType.getYamlJobConfigurationSwapper().swapToObject(shardingContext.getJobParameter());
-        PipelineJobItemManager<TransmissionJobItemProgress> jobItemManager = new PipelineJobItemManager<>(jobType.getYamlJobItemProgressSwapper());
+        CDCJobConfiguration jobConfig = (CDCJobConfiguration) jobType.getOption().getYamlJobConfigurationSwapper().swapToObject(shardingContext.getJobParameter());
+        PipelineJobItemManager<TransmissionJobItemProgress> jobItemManager = new PipelineJobItemManager<>(jobType.getOption().getYamlJobItemProgressSwapper());
         TransmissionProcessContext jobProcessContext = new TransmissionProcessContext(
                 jobId, PipelineProcessConfigurationUtils.fillInDefaultValue(new PipelineProcessConfigurationPersistService().load(contextKey, jobType.getType())));
         PipelineGovernanceFacade governanceFacade = PipelineAPIFactory.getPipelineGovernanceFacade(contextKey);
@@ -212,10 +212,6 @@ public final class CDCJob implements PipelineJob {
     private void executeIncrementalTasks(final Collection<CDCJobItemContext> jobItemContexts, final PipelineJobItemManager<TransmissionJobItemProgress> jobItemManager) {
         Collection<CompletableFuture<?>> futures = new LinkedList<>();
         for (CDCJobItemContext each : jobItemContexts) {
-            if (JobStatus.EXECUTE_INCREMENTAL_TASK == each.getStatus()) {
-                log.info("Job status has already EXECUTE_INCREMENTAL_TASK, ignore.");
-                return;
-            }
             updateJobItemStatus(each, JobStatus.EXECUTE_INCREMENTAL_TASK, jobItemManager);
             for (PipelineTask task : each.getIncrementalTasks()) {
                 if (task.getTaskProgress().getPosition() instanceof IngestFinishedPosition) {
@@ -233,7 +229,7 @@ public final class CDCJob implements PipelineJob {
     }
     
     @RequiredArgsConstructor
-    private final class CDCExecuteCallback implements ExecuteCallback {
+    private class CDCExecuteCallback implements ExecuteCallback {
         
         private final String identifier;
         

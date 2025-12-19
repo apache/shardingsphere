@@ -38,7 +38,7 @@ public final class CDCResponseUtils {
     /**
      * Succeed response.
      *
-     * @param requestId request id
+     * @param requestId request ID
      * @return CDC response
      */
     public static CDCResponse succeed(final String requestId) {
@@ -48,7 +48,7 @@ public final class CDCResponseUtils {
     /**
      * Succeed response.
      *
-     * @param requestId request id
+     * @param requestId request ID
      * @param responseCase response case
      * @param response response
      * @return succeed response builder
@@ -69,7 +69,7 @@ public final class CDCResponseUtils {
             case RESPONSE_NOT_SET:
                 break;
             default:
-                throw new PipelineInvalidParameterException(responseCase.name());
+                throw new PipelineInvalidParameterException("Unknown response case: `" + responseCase.name() + "`.");
         }
         return result.build();
     }
@@ -77,7 +77,7 @@ public final class CDCResponseUtils {
     /**
      * Failed response.
      *
-     * @param requestId request id
+     * @param requestId request ID
      * @param errorCode error code
      * @param errorMessage error message
      * @return failed response

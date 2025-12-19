@@ -23,7 +23,6 @@ import org.apache.shardingsphere.infra.binder.context.statement.type.dal.Explain
 import org.apache.shardingsphere.infra.binder.context.statement.type.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.datanode.DataNodes;
-import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.exception.generic.UnsupportedSQLOperationException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
@@ -50,12 +49,9 @@ public final class ShardingSQLFederationDecider implements SQLFederationDecider<
             return decide0((SelectStatementContext) sqlStatementContext, parameters, globalRuleMetaData, database, rule, includedDataNodes);
         } else if (sqlStatementContext instanceof ExplainStatementContext) {
             ExplainStatementContext explainStatementContext = (ExplainStatementContext) sqlStatementContext;
-            ShardingSpherePreconditions.checkState(explainStatementContext.getExplainableSQLStatementContext() instanceof SelectStatementContext,
-                    () -> new UnsupportedSQLOperationException(
-                            String.format("unsupported Explain %s statement in sql federation", explainStatementContext.getSqlStatement().getExplainableSQLStatement())));
-            return decide0((SelectStatementContext) explainStatementContext.getExplainableSQLStatementContext(), parameters, globalRuleMetaData, database, rule, includedDataNodes);
+            return decide(explainStatementContext.getExplainableSQLStatementContext(), parameters, globalRuleMetaData, database, rule, includedDataNodes);
         }
-        throw new UnsupportedSQLOperationException(String.format("unsupported SQL statement %s in sql federation", sqlStatementContext.getSqlStatement()));
+        throw new UnsupportedSQLOperationException(String.format("unsupported SQL statement %s in sql federation", sqlStatementContext.getSqlStatement().getClass().getSimpleName()));
     }
     
     private boolean decide0(final SelectStatementContext selectStatementContext, final List<Object> parameters, final RuleMetaData globalRuleMetaData, final ShardingSphereDatabase database,

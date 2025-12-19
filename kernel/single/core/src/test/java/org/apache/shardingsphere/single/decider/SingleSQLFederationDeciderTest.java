@@ -81,7 +81,7 @@ class SingleSQLFederationDeciderTest {
         Collection<QualifiedTable> qualifiedTables = Arrays.asList(new QualifiedTable("foo_db", "t_order"), new QualifiedTable("foo_db", "t_order_item"));
         SingleRule rule = createSingleRule(qualifiedTables);
         SelectStatementContext select = mockStatementContext();
-        Collection<DataNode> includedDataNodes = new HashSet<>(Collections.singleton(new DataNode("ds_0", "t_user")));
+        Collection<DataNode> includedDataNodes = new HashSet<>(Collections.singleton(new DataNode("ds_0", (String) null, "t_user")));
         when(rule.isAllTablesInSameComputeNode(includedDataNodes, qualifiedTables)).thenReturn(true);
         assertFalse(new SingleSQLFederationDecider().decide(select, Collections.emptyList(), mock(RuleMetaData.class), mockDatabase(), rule, includedDataNodes));
         assertThat(includedDataNodes.size(), is(3));
@@ -92,7 +92,7 @@ class SingleSQLFederationDeciderTest {
         Collection<QualifiedTable> qualifiedTables = Arrays.asList(new QualifiedTable("foo_db", "t_order"), new QualifiedTable("foo_db", "t_order_item"));
         SingleRule rule = createSingleRule(qualifiedTables);
         SelectStatementContext select = mockStatementContext();
-        Collection<DataNode> includedDataNodes = new HashSet<>(Collections.singleton(new DataNode("ds_1", "t_user")));
+        Collection<DataNode> includedDataNodes = new HashSet<>(Collections.singleton(new DataNode("ds_1", (String) null, "t_user")));
         when(rule.isAllTablesInSameComputeNode(includedDataNodes, qualifiedTables)).thenReturn(false);
         assertTrue(new SingleSQLFederationDecider().decide(select, Collections.emptyList(), mock(RuleMetaData.class), mockDatabase(), rule, includedDataNodes));
         assertThat(includedDataNodes.size(), is(3));
@@ -102,8 +102,8 @@ class SingleSQLFederationDeciderTest {
         SingleRule result = mock(SingleRule.class);
         when(result.getSingleTables(any())).thenReturn(qualifiedTables);
         MutableDataNodeRuleAttribute ruleAttribute = mock(MutableDataNodeRuleAttribute.class);
-        when(ruleAttribute.findTableDataNode("foo_db", "t_order")).thenReturn(Optional.of(new DataNode("ds_0", "t_order")));
-        when(ruleAttribute.findTableDataNode("foo_db", "t_order_item")).thenReturn(Optional.of(new DataNode("ds_0", "t_order_item")));
+        when(ruleAttribute.findTableDataNode("foo_db", "t_order")).thenReturn(Optional.of(new DataNode("ds_0", (String) null, "t_order")));
+        when(ruleAttribute.findTableDataNode("foo_db", "t_order_item")).thenReturn(Optional.of(new DataNode("ds_0", (String) null, "t_order_item")));
         when(result.getAttributes()).thenReturn(new RuleAttributes(ruleAttribute));
         return result;
     }

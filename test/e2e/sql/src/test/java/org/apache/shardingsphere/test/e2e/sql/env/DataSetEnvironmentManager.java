@@ -19,6 +19,7 @@ package org.apache.shardingsphere.test.e2e.sql.env;
 
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
+import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.sqlbatch.DialectSQLBatchOption;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeFactory;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeRegistry;
@@ -41,6 +42,7 @@ import javax.xml.bind.JAXBException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.sql.Connection;
+import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.Collection;
@@ -93,11 +95,12 @@ public final class DataSetEnvironmentManager {
                 sqlValueGroups.add(new SQLValueGroup(dataSetMetaData, row.splitValues(DATA_COLUMN_DELIMITER)));
             }
             String insertSQL;
+            DatabaseType databaseType;
             try (Connection connection = dataSourceMap.get(dataNode.getDataSourceName()).getConnection()) {
-                DatabaseType databaseType = DatabaseTypeFactory.get(connection.getMetaData().getURL());
+                databaseType = DatabaseTypeFactory.get(connection.getMetaData());
                 insertSQL = generateInsertSQL(dataNode.getTableName(), dataSetMetaData.getColumns(), databaseType);
             }
-            fillDataTasks.add(new InsertTask(dataSourceMap.get(dataNode.getDataSourceName()), insertSQL, sqlValueGroups));
+            fillDataTasks.add(new InsertTask(dataSourceMap.get(dataNode.getDataSourceName()), insertSQL, sqlValueGroups, databaseType));
         }
         final List<Future<Void>> futures = EXECUTOR_SERVICE_MANAGER.getExecutorService().invokeAll(fillDataTasks);
         for (Future<Void> future : futures) {
@@ -184,7 +187,7 @@ public final class DataSetEnvironmentManager {
     }
     
     @RequiredArgsConstructor
-    private static class InsertTask implements Callable<Void> {
+    private static final class InsertTask implements Callable<Void> {
         
         private final DataSource dataSource;
         
@@ -192,29 +195,51 @@ public final class DataSetEnvironmentManager {
         
         private final Collection<SQLValueGroup> sqlValueGroups;
         
+        private final DatabaseType databaseType;
+        
         @Override
         public Void call() throws SQLException {
             try (
                     Connection connection = dataSource.getConnection();
                     PreparedStatement preparedStatement = connection.prepareStatement(insertSQL)) {
-                for (SQLValueGroup each : sqlValueGroups) {
-                    setParameters(preparedStatement, each);
-                    preparedStatement.addBatch();
+                DialectSQLBatchOption sqlBatchOption = new DatabaseTypeRegistry(databaseType).getDialectDatabaseMetaData().getSQLBatchOption();
+                if (sqlBatchOption.isSupportSQLBatch()) {
+                    executeBatch(preparedStatement);
+                } else {
+                    executeUpdate(preparedStatement);
                 }
-                preparedStatement.executeBatch();
             }
             return null;
         }
         
+        private void executeBatch(final PreparedStatement preparedStatement) throws SQLException {
+            for (SQLValueGroup each : sqlValueGroups) {
+                setParameters(preparedStatement, each);
+                preparedStatement.addBatch();
+            }
+            preparedStatement.executeBatch();
+        }
+        
+        private void executeUpdate(final PreparedStatement preparedStatement) throws SQLException {
+            for (SQLValueGroup each : sqlValueGroups) {
+                setParameters(preparedStatement, each);
+                preparedStatement.executeUpdate();
+            }
+        }
+        
         private void setParameters(final PreparedStatement preparedStatement, final SQLValueGroup sqlValueGroup) throws SQLException {
             for (SQLValue each : sqlValueGroup.getValues()) {
-                preparedStatement.setObject(each.getIndex(), each.getValue());
+                if ("Hive".equalsIgnoreCase(databaseType.getType()) && each.getValue() instanceof Date) {
+                    preparedStatement.setDate(each.getIndex(), (java.sql.Date) each.getValue());
+                } else {
+                    preparedStatement.setObject(each.getIndex(), each.getValue());
+                }
             }
         }
     }
     
     @RequiredArgsConstructor
-    private static class DeleteTask implements Callable<Void> {
+    private static final class DeleteTask implements Callable<Void> {
         
         private final DataSource dataSource;
         
@@ -223,8 +248,8 @@ public final class DataSetEnvironmentManager {
         @Override
         public Void call() throws SQLException {
             try (Connection connection = dataSource.getConnection()) {
+                DatabaseType databaseType = DatabaseTypeFactory.get(connection.getMetaData());
                 for (String each : tableNames) {
-                    DatabaseType databaseType = DatabaseTypeFactory.get(connection.getMetaData().getURL());
                     String quotedTableName = getQuotedTableName(each, databaseType);
                     try (PreparedStatement preparedStatement = connection.prepareStatement(String.format("TRUNCATE TABLE %s", quotedTableName))) {
                         preparedStatement.execute();

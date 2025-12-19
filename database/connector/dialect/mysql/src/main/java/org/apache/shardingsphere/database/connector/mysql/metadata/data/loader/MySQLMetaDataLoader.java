@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.database.connector.mysql.metadata.data.loader;
 
+import com.google.common.base.Strings;
 import org.apache.shardingsphere.database.connector.core.GlobalDataSourceRegistry;
 import org.apache.shardingsphere.database.connector.core.metadata.data.loader.DialectMetaDataLoader;
 import org.apache.shardingsphere.database.connector.core.metadata.data.loader.MetaDataLoaderMaterial;
@@ -180,10 +181,14 @@ public final class MySQLMetaDataLoader implements DialectMetaDataLoader {
                         tableToIndex.put(tableName, new HashMap<>());
                     }
                     Map<String, IndexMetaData> indexMap = tableToIndex.get(tableName);
+                    String columnName = resultSet.getString("COLUMN_NAME");
+                    if (Strings.isNullOrEmpty(columnName)) {
+                        continue;
+                    }
                     if (indexMap.containsKey(indexName)) {
-                        indexMap.get(indexName).getColumns().add(resultSet.getString("COLUMN_NAME"));
+                        indexMap.get(indexName).getColumns().add(columnName);
                     } else {
-                        IndexMetaData indexMetaData = new IndexMetaData(indexName, new LinkedList<>(Collections.singleton(resultSet.getString("COLUMN_NAME"))));
+                        IndexMetaData indexMetaData = new IndexMetaData(indexName, new LinkedList<>(Collections.singleton(columnName)));
                         indexMetaData.setUnique("0".equals(resultSet.getString("NON_UNIQUE")));
                         indexMap.put(indexName, indexMetaData);
                     }

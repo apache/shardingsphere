@@ -34,7 +34,7 @@ import org.apache.shardingsphere.database.exception.mysql.exception.DatabaseAcce
 import org.apache.shardingsphere.database.exception.mysql.exception.HandshakeException;
 import org.apache.shardingsphere.database.protocol.constant.CommonConstants;
 import org.apache.shardingsphere.database.protocol.mysql.constant.MySQLCapabilityFlag;
-import org.apache.shardingsphere.database.protocol.mysql.constant.MySQLCharacterSet;
+import org.apache.shardingsphere.database.protocol.mysql.constant.MySQLCharacterSets;
 import org.apache.shardingsphere.database.protocol.mysql.constant.MySQLConnectionPhase;
 import org.apache.shardingsphere.database.protocol.mysql.constant.MySQLConstants;
 import org.apache.shardingsphere.database.protocol.mysql.constant.MySQLStatusFlag;
@@ -123,7 +123,7 @@ public final class MySQLAuthenticationEngine implements AuthenticationEngine {
         setMultiStatementsOption(context, handshakeResponsePacket);
         setCharacterSet(context, handshakeResponsePacket);
         String database = handshakeResponsePacket.getDatabase();
-        if (!Strings.isNullOrEmpty(database) && !ProxyContext.getInstance().databaseExists(database)) {
+        if (!Strings.isNullOrEmpty(database) && !ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().containsDatabase(database)) {
             throw new UnknownDatabaseException(database);
         }
         String username = handshakeResponsePacket.getUsername();
@@ -143,7 +143,7 @@ public final class MySQLAuthenticationEngine implements AuthenticationEngine {
     }
     
     private void setCharacterSet(final ChannelHandlerContext context, final MySQLHandshakeResponse41Packet handshakeResponsePacket) {
-        MySQLCharacterSet characterSet = MySQLCharacterSet.findById(handshakeResponsePacket.getCharacterSet());
+        MySQLCharacterSets characterSet = MySQLCharacterSets.findById(handshakeResponsePacket.getCharacterSet());
         context.channel().attr(CommonConstants.CHARSET_ATTRIBUTE_KEY).set(characterSet.getCharset());
         context.channel().attr(MySQLConstants.CHARACTER_SET_ATTRIBUTE_KEY).set(characterSet);
     }

@@ -20,7 +20,7 @@ package org.apache.shardingsphere.proxy.frontend.firebird.command.query.transact
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.transaction.FirebirdRollbackTransactionPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.generic.FirebirdGenericResponsePacket;
 import org.apache.shardingsphere.database.protocol.packet.DatabasePacket;
-import org.apache.shardingsphere.proxy.backend.connector.jdbc.transaction.BackendTransactionManager;
+import org.apache.shardingsphere.proxy.backend.connector.jdbc.transaction.ProxyBackendTransactionManager;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -50,7 +50,7 @@ class FirebirdRollbackTransactionCommandExecutorTest {
     @Test
     void assertExecute() throws SQLException {
         when(connectionSession.isAutoCommit()).thenReturn(false);
-        try (MockedConstruction<BackendTransactionManager> mocked = mockConstruction(BackendTransactionManager.class, (mock, context) -> {
+        try (MockedConstruction<ProxyBackendTransactionManager> mocked = mockConstruction(ProxyBackendTransactionManager.class, (mock, context) -> {
         })) {
             FirebirdRollbackTransactionCommandExecutor executor = new FirebirdRollbackTransactionCommandExecutor(packet, connectionSession);
             Collection<DatabasePacket> actual = executor.execute();

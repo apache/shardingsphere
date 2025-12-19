@@ -20,7 +20,7 @@ package org.apache.shardingsphere.proxy.frontend.mysql.command.admin;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.database.protocol.mysql.packet.generic.MySQLOKPacket;
 import org.apache.shardingsphere.database.protocol.packet.DatabasePacket;
-import org.apache.shardingsphere.proxy.backend.connector.jdbc.transaction.BackendTransactionManager;
+import org.apache.shardingsphere.proxy.backend.connector.jdbc.transaction.ProxyBackendTransactionManager;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.frontend.command.executor.CommandExecutor;
 import org.apache.shardingsphere.proxy.frontend.mysql.command.ServerStatusFlagCalculator;
@@ -39,7 +39,8 @@ public final class MySQLComResetConnectionExecutor implements CommandExecutor {
     
     @Override
     public Collection<DatabasePacket> execute() throws SQLException {
-        new BackendTransactionManager(connectionSession.getDatabaseConnectionManager()).rollback();
+        ProxyBackendTransactionManager transactionManager = new ProxyBackendTransactionManager(connectionSession.getDatabaseConnectionManager());
+        transactionManager.rollback();
         connectionSession.setAutoCommit(true);
         connectionSession.setDefaultIsolationLevel(null);
         connectionSession.setIsolationLevel(null);

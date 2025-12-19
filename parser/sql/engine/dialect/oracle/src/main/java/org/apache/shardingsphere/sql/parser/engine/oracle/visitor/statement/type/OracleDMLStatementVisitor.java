@@ -479,6 +479,7 @@ public final class OracleDMLStatementVisitor extends OracleStatementVisitor impl
         return result;
     }
     
+    @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitPivotClause(final PivotClauseContext ctx) {
         Collection<ColumnSegment> pivotInColumns = new LinkedList<>();
@@ -493,6 +494,7 @@ public final class OracleDMLStatementVisitor extends OracleStatementVisitor impl
         return new PivotSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ((CollectionValue<ColumnSegment>) visit(ctx.pivotForClause().columnNames())).getValue(), pivotInColumns);
     }
     
+    @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitUnpivotClause(final UnpivotClauseContext ctx) {
         Collection<ColumnSegment> unpivotInColumns = new LinkedList<>();
@@ -1279,13 +1281,13 @@ public final class OracleDMLStatementVisitor extends OracleStatementVisitor impl
     public ASTNode visitForUpdateClause(final ForUpdateClauseContext ctx) {
         LockSegment result = new LockSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex());
         if (null != ctx.forUpdateClauseList()) {
-            result.getTables().addAll(generateTablesFromforUpdateClauseOption(ctx.forUpdateClauseList()));
-            result.getColumns().addAll(generateColumnsFromforUpdateClauseOption(ctx.forUpdateClauseList()));
+            result.getTables().addAll(generateTablesFromForUpdateClauseOption(ctx.forUpdateClauseList()));
+            result.getColumns().addAll(generateColumnsFromForUpdateClauseOption(ctx.forUpdateClauseList()));
         }
         return result;
     }
     
-    private List<SimpleTableSegment> generateTablesFromforUpdateClauseOption(final ForUpdateClauseListContext ctx) {
+    private List<SimpleTableSegment> generateTablesFromForUpdateClauseOption(final ForUpdateClauseListContext ctx) {
         List<SimpleTableSegment> result = new LinkedList<>();
         for (ForUpdateClauseOptionContext each : ctx.forUpdateClauseOption()) {
             if (null != each.tableName()) {
@@ -1295,7 +1297,7 @@ public final class OracleDMLStatementVisitor extends OracleStatementVisitor impl
         return result;
     }
     
-    private List<ColumnSegment> generateColumnsFromforUpdateClauseOption(final ForUpdateClauseListContext ctx) {
+    private List<ColumnSegment> generateColumnsFromForUpdateClauseOption(final ForUpdateClauseListContext ctx) {
         List<ColumnSegment> result = new LinkedList<>();
         for (ForUpdateClauseOptionContext each : ctx.forUpdateClauseOption()) {
             if (null != each.columnName()) {

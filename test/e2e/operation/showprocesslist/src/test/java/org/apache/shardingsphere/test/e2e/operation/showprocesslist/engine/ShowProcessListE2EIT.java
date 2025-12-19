@@ -20,9 +20,10 @@ package org.apache.shardingsphere.test.e2e.operation.showprocesslist.engine;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.exception.external.sql.type.wrapper.SQLWrapperException;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
+import org.apache.shardingsphere.test.e2e.env.runtime.E2ETestEnvironment;
+import org.apache.shardingsphere.test.e2e.env.runtime.type.ArtifactEnvironment.Mode;
+import org.apache.shardingsphere.test.e2e.env.runtime.type.RunEnvironment.Type;
 import org.apache.shardingsphere.test.e2e.operation.showprocesslist.container.composer.ClusterShowProcessListContainerComposer;
-import org.apache.shardingsphere.test.e2e.operation.showprocesslist.env.ShowProcessListEnvironment;
-import org.apache.shardingsphere.test.e2e.operation.showprocesslist.env.enums.ShowProcessListEnvTypeEnum;
 import org.apache.shardingsphere.test.e2e.operation.showprocesslist.parameter.ShowProcessListTestParameter;
 import org.awaitility.Awaitility;
 import org.junit.jupiter.api.condition.EnabledIf;
@@ -50,9 +51,9 @@ import static org.hamcrest.MatcherAssert.assertThat;
 // TODO add jdbc
 class ShowProcessListE2EIT {
     
-    private static final ShowProcessListEnvironment ENV = ShowProcessListEnvironment.getInstance();
+    private static final E2ETestEnvironment ENV = E2ETestEnvironment.getInstance();
     
-    private static final String SELECT_SLEEP = "select sleep(10)";
+    private static final String SELECT_SLEEP = "SELECT sleep(10)";
     
     @ParameterizedTest(name = "{0}")
     @EnabledIf("isEnabled")
@@ -114,19 +115,17 @@ class ShowProcessListE2EIT {
     }
     
     private static boolean isEnabled() {
-        return ShowProcessListEnvTypeEnum.DOCKER == ENV.getItEnvType();
+        return Type.DOCKER == ENV.getRunEnvironment().getType();
     }
     
-    private static class TestCaseArgumentsProvider implements ArgumentsProvider {
+    private static final class TestCaseArgumentsProvider implements ArgumentsProvider {
         
         @Override
         public Stream<? extends Arguments> provideArguments(final ParameterDeclarations parameters, final ExtensionContext context) {
             Collection<Arguments> result = new LinkedList<>();
             for (String each : ENV.getScenarios()) {
-                for (String runMode : ENV.getRunModes()) {
-                    for (String governanceType : ENV.getGovernanceCenters()) {
-                        result.add(Arguments.of(new ShowProcessListTestParameter(TypedSPILoader.getService(DatabaseType.class, "MySQL"), each, runMode, governanceType)));
-                    }
+                for (Mode mode : ENV.getArtifactEnvironment().getModes()) {
+                    result.add(Arguments.of(new ShowProcessListTestParameter(TypedSPILoader.getService(DatabaseType.class, "MySQL"), each, mode, ENV.getArtifactEnvironment().getRegCenterType())));
                 }
             }
             return result.stream();

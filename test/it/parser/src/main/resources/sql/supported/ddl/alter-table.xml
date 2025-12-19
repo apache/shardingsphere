@@ -359,4 +359,16 @@
     <sql-case id="alter_replace_columns_quoted2" value="ALTER TABLE users PARTITION (region='south_america') REPLACE COLUMNS (`user name` STRING COMMENT 'full name of user', `login count` INT COMMENT 'number of logins') RESTRICT" db-types="Hive" />
     <sql-case id="alter_replace_columns_quoted3" value="ALTER TABLE products PARTITION (cat='clothing') REPLACE COLUMNS (`size info` STRING COMMENT 'size specification', `color code` INT COMMENT 'RGB color value') CASCADE" db-types="Hive" />
     <sql-case id="alter_replace_columns_quoted4" value="ALTER TABLE orders PARTITION (status='shipped') REPLACE COLUMNS (`ship date` DATE COMMENT 'actual shipping date', `tracking id` STRING COMMENT 'logistics tracking number') RESTRICT" db-types="Hive" />
+    <sql-case id="alter_create_branch_default" value="ALTER TABLE test CREATE BRANCH branch1;" db-types="Hive" />
+    <sql-case id="alter_create_branch_snapshot_id" value="ALTER TABLE test CREATE BRANCH branch1 FOR SYSTEM_VERSION AS OF 3369973735913135680;" db-types="Hive" />
+    <sql-case id="alter_create_branch_system_time" value="ALTER TABLE test CREATE BRANCH branch1 FOR SYSTEM_TIME AS OF '2023-09-16 09:46:38.939 Etc/UTC';" db-types="Hive" />
+    <sql-case id="alter_create_branch_snapshot_retention" value="ALTER TABLE test CREATE BRANCH branch1 FOR SYSTEM_VERSION AS OF 3369973735913135680 WITH SNAPSHOT RETENTION 5 SNAPSHOTS;" db-types="Hive" />
+    <sql-case id="alter_create_branch_tag" value="ALTER TABLE test CREATE BRANCH branch1 FOR TAG AS OF tag1;" db-types="Hive" />
+    <sql-case id="alter_create_tag_default" value="ALTER TABLE test CREATE TAG tag1;" db-types="Hive" />
+    <sql-case id="alter_create_tag_snapshot_id" value="ALTER TABLE test CREATE TAG tag1 FOR SYSTEM_VERSION AS OF 3369973735913135680;" db-types="Hive" />
+    <sql-case id="alter_create_tag_system_time" value="ALTER TABLE test CREATE TAG tag1 FOR SYSTEM_TIME AS OF '2023-09-16 09:46:38.939 Etc/UTC';" db-types="Hive" />
+    <sql-case id="alter_drop_branch_basic" value="ALTER TABLE test DROP BRANCH branch1;" db-types="Hive" />
+    <sql-case id="alter_drop_branch_if_exists" value="ALTER TABLE test DROP BRANCH IF EXISTS branch1;" db-types="Hive" />
+    <sql-case id="alter_drop_tag_basic" value="ALTER TABLE test DROP TAG tag1;" db-types="Hive" />
+    <sql-case id="alter_drop_tag_if_exists" value="ALTER TABLE test DROP TAG IF EXISTS tag1;" db-types="Hive" />
 </sql-cases>

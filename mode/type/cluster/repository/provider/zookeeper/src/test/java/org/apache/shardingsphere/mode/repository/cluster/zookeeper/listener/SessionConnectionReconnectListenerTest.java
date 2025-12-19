@@ -34,7 +34,7 @@ import java.util.Properties;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -53,7 +53,7 @@ class SessionConnectionReconnectListenerTest {
     @Test
     void assertChangeToConnectedState() throws InterruptedException {
         new SessionConnectionReconnectListener(computeNodeInstanceContext, repository).stateChanged(client, ConnectionState.CONNECTED);
-        verify(client.getZookeeperClient(), times(0)).blockUntilConnectedOrTimedOut();
+        verify(client.getZookeeperClient(), never()).blockUntilConnectedOrTimedOut();
     }
     
     @Test
@@ -71,7 +71,7 @@ class SessionConnectionReconnectListenerTest {
         when(client.getZookeeperClient().blockUntilConnectedOrTimedOut()).thenReturn(true);
         when(computeNodeInstanceContext.getInstance().getWorkerId()).thenReturn(-1);
         getSessionConnectionReconnectListener(computeNodePersistService).stateChanged(client, ConnectionState.LOST);
-        verify(computeNodeInstanceContext, times(0)).generateWorkerId(new Properties());
+        verify(computeNodeInstanceContext, never()).generateWorkerId(new Properties());
         verify(computeNodePersistService).registerOnline(any());
     }
     

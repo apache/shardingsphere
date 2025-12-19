@@ -23,8 +23,12 @@ import org.apache.shardingsphere.database.connector.core.metadata.data.model.Ind
 import org.apache.shardingsphere.database.connector.core.metadata.data.model.SchemaMetaData;
 import org.apache.shardingsphere.database.connector.core.metadata.data.model.TableMetaData;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
+import org.apache.shardingsphere.infra.metadata.database.schema.reviser.MetaDataReviseEntry;
+import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.builder.fixture.FixtureGlobalRule;
+import org.apache.shardingsphere.infra.spi.type.ordered.OrderedSPILoader;
 import org.junit.jupiter.api.Test;
+import org.mockito.MockedStatic;
 
 import java.sql.Types;
 import java.util.Arrays;
@@ -32,32 +36,49 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
+import java.util.Map;
 import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.mockStatic;
+import static org.mockito.Mockito.when;
 
 class SchemaMetaDataReviseEngineTest {
     
     @Test
     void assertReviseWithoutMetaDataReviseEntry() {
-        SchemaMetaData schemaMetaData = new SchemaMetaData("expected", Collections.singleton(mock(TableMetaData.class)));
-        SchemaMetaData actual = new SchemaMetaDataReviseEngine(
-                Collections.emptyList(), new ConfigurationProperties(new Properties())).revise(schemaMetaData);
+        SchemaMetaData schemaMetaData = new SchemaMetaData("foo_schema", Collections.singleton(mock(TableMetaData.class)));
+        SchemaMetaData actual = new SchemaMetaDataReviseEngine(Collections.emptyList(), new ConfigurationProperties(new Properties())).revise(schemaMetaData);
         assertThat(actual.getName(), is(schemaMetaData.getName()));
         assertThat(actual.getTables(), is(schemaMetaData.getTables()));
     }
     
     @Test
     void assertReviseWithMetaDataReviseEntry() {
-        SchemaMetaData schemaMetaData = new SchemaMetaData("expected", Collections.singletonList(createTableMetaData()));
-        SchemaMetaData actual = new SchemaMetaDataReviseEngine(
-                Collections.singleton(new FixtureGlobalRule()), new ConfigurationProperties(new Properties())).revise(schemaMetaData);
+        SchemaMetaData schemaMetaData = new SchemaMetaData("foo_schema", Collections.singletonList(createTableMetaData()));
+        SchemaMetaData actual = new SchemaMetaDataReviseEngine(Collections.singleton(new FixtureGlobalRule()), new ConfigurationProperties(new Properties())).revise(schemaMetaData);
         assertThat(actual.getName(), is(schemaMetaData.getName()));
         assertThat(actual.getTables().size(), is(schemaMetaData.getTables().size()));
         Iterator<TableMetaData> expectedTableIterator = schemaMetaData.getTables().iterator();
         actual.getTables().forEach(each -> assertTableMetaData(each, expectedTableIterator.next()));
+    }
+    
+    @SuppressWarnings("unchecked")
+    @Test
+    void assertReviseWithoutAggregationReviser() {
+        SchemaMetaData schemaMetaData = new SchemaMetaData("foo_schema", Collections.singleton(createTableMetaData()));
+        MetaDataReviseEntry<FixtureGlobalRule> reviseEntry = mock(MetaDataReviseEntry.class);
+        when(reviseEntry.getTypeClass()).thenReturn(FixtureGlobalRule.class);
+        ShardingSphereRule rule = new FixtureGlobalRule();
+        Map<ShardingSphereRule, MetaDataReviseEntry<?>> entries = Collections.singletonMap(rule, reviseEntry);
+        try (MockedStatic<OrderedSPILoader> mocked = mockStatic(OrderedSPILoader.class)) {
+            mocked.when(() -> OrderedSPILoader.getServices(MetaDataReviseEntry.class, Collections.singleton(rule))).thenReturn(entries);
+            SchemaMetaData actual = new SchemaMetaDataReviseEngine(Collections.singleton(rule), new ConfigurationProperties(new Properties())).revise(schemaMetaData);
+            assertThat(actual.getName(), is(schemaMetaData.getName()));
+            assertThat(actual.getTables().size(), is(schemaMetaData.getTables().size()));
+        }
     }
     
     private TableMetaData createTableMetaData() {

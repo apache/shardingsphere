@@ -59,7 +59,7 @@ ShardingSphere 对 HiveServer2 JDBC Driver 的支持位于可选模块中。
     <dependency>
         <groupId>io.github.linghengqian</groupId>
         <artifactId>hive-server2-jdbc-driver-thin</artifactId>
-        <version>1.7.0</version>
+        <version>1.8.2</version>
         <exclusions>
             <exclusion>
                 <groupId>com.fasterxml.woodstox</groupId>
@@ -109,22 +109,6 @@ snap run dbeaver-ce
 CREATE DATABASE demo_ds_0;
 CREATE DATABASE demo_ds_1;
 CREATE DATABASE demo_ds_2;
-```
-
-分别使用 `jdbc:hive2://localhost:10000/demo_ds_0` ，
-`jdbc:hive2://localhost:10000/demo_ds_1` 和 `jdbc:hive2://localhost:10000/demo_ds_2` 的 `standardJdbcUrl` 连接至 HiveServer2 来执行如下 SQL，
-
-```sql
--- noinspection SqlNoDataSourceInspectionForFile
-CREATE TABLE IF NOT EXISTS t_order
-(
-    order_id   BIGINT NOT NULL,
-    order_type INT,
-    user_id    INT    NOT NULL,
-    address_id BIGINT NOT NULL,
-    status     string,
-    PRIMARY KEY (order_id) disable novalidate
-) STORED BY ICEBERG STORED AS ORC TBLPROPERTIES ('format-version' = '2');
 ```
 
 ### 在业务项目创建 ShardingSphere 数据源
@@ -185,6 +169,7 @@ public class ExampleUtils {
         try (HikariDataSource dataSource = new HikariDataSource(config);
              Connection connection = dataSource.getConnection();
              Statement statement = connection.createStatement()) {
+            statement.execute("CREATE TABLE IF NOT EXISTS t_order (order_id BIGINT NOT NULL, order_type INT, user_id INT NOT NULL, address_id BIGINT NOT NULL, status string, PRIMARY KEY (order_id) disable novalidate) STORED BY ICEBERG STORED AS ORC TBLPROPERTIES ('format-version' = '2')");
             statement.execute("TRUNCATE TABLE t_order");
             statement.execute("INSERT INTO t_order (user_id, order_type, address_id, status) VALUES (1, 1, 1, 'INSERT_TEST')");
             statement.executeQuery("SELECT * FROM t_order");
@@ -207,7 +192,7 @@ ShardingSphere 配置文件中的 `standardJdbcUrl` 可配置连接至开启 Zoo
 name: test-1
 services:
   zookeeper:
-    image: zookeeper:3.9.3-jre-17
+    image: zookeeper:3.9.4-jre-17
     ports:
       - "2181:2181"
   apache-hive-1:
@@ -235,24 +220,6 @@ services:
 CREATE DATABASE demo_ds_0;
 CREATE DATABASE demo_ds_1;
 CREATE DATABASE demo_ds_2;
-```
-
-分别使用 `jdbc:hive2://127.0.0.1:2181/demo_ds_0;serviceDiscoveryMode=zooKeeper;zooKeeperNamespace=hiveserver2` ，
-`jdbc:hive2://127.0.0.1:2181/demo_ds_1;serviceDiscoveryMode=zooKeeper;zooKeeperNamespace=hiveserver2` 和
-`jdbc:hive2://127.0.0.1:2181/demo_ds_2;serviceDiscoveryMode=zooKeeper;zooKeeperNamespace=hiveserver2`
-的 `standardJdbcUrl` 连接至 HiveServer2 来执行如下 SQL，
-
-```sql
--- noinspection SqlNoDataSourceInspectionForFile
-CREATE TABLE IF NOT EXISTS t_order
-(
-    order_id   BIGINT NOT NULL,
-    order_type INT,
-    user_id    INT    NOT NULL,
-    address_id BIGINT NOT NULL,
-    status     string,
-    PRIMARY KEY (order_id) disable novalidate
-) STORED BY ICEBERG STORED AS ORC TBLPROPERTIES ('format-version' = '2');
 ```
 
 在业务项目引入`前提条件`涉及的依赖后，在业务项目的 classpath 上编写 ShardingSphere 数据源的配置文件`demo.yaml`，
@@ -309,6 +276,7 @@ public class ExampleUtils {
         try (HikariDataSource dataSource = new HikariDataSource(config);
              Connection connection = dataSource.getConnection();
              Statement statement = connection.createStatement()) {
+            statement.execute("CREATE TABLE IF NOT EXISTS t_order (order_id BIGINT NOT NULL, order_type INT, user_id INT NOT NULL, address_id BIGINT NOT NULL, status string, PRIMARY KEY (order_id) disable novalidate) STORED BY ICEBERG STORED AS ORC TBLPROPERTIES ('format-version' = '2')");
             statement.execute("TRUNCATE TABLE t_order");
             statement.execute("INSERT INTO t_order (user_id, order_type, address_id, status) VALUES (1, 1, 1, 'INSERT_TEST')");
             statement.executeQuery("SELECT * FROM t_order");
@@ -354,24 +322,6 @@ CREATE DATABASE demo_ds_1;
 CREATE DATABASE demo_ds_2;
 ```
 
-分别使用 `jdbc:hive2://127.0.0.1:2181/demo_ds_0;serviceDiscoveryMode=zooKeeper;zooKeeperNamespace=hiveserver2` ，
-`jdbc:hive2://127.0.0.1:2181/demo_ds_1;serviceDiscoveryMode=zooKeeper;zooKeeperNamespace=hiveserver2` 和
-`jdbc:hive2://127.0.0.1:2181/demo_ds_2;serviceDiscoveryMode=zooKeeper;zooKeeperNamespace=hiveserver2`
-的 `standardJdbcUrl` 连接至 HiveServer2 来执行如下 SQL，
-
-```sql
--- noinspection SqlNoDataSourceInspectionForFile
-CREATE TABLE IF NOT EXISTS t_order
-(
-    order_id   BIGINT NOT NULL,
-    order_type INT,
-    user_id    INT    NOT NULL,
-    address_id BIGINT NOT NULL,
-    status     string,
-    PRIMARY KEY (order_id) disable novalidate
-) STORED BY ICEBERG STORED AS ORC TBLPROPERTIES ('format-version' = '2');
-```
-
 此时，旧的 ShardingSphere JDBC DataSource 仍可在不重新创建 JDBC DataSource 的情况下，
 正常切换到 `service` 名为 `apache-hive-2` 的 HiveServer2 实例执行逻辑 SQL，
 
@@ -384,6 +334,7 @@ public class ExampleUtils {
     void test(HikariDataSource dataSource) throws SQLException {
         try (Connection connection = dataSource.getConnection();
              Statement statement = connection.createStatement()) {
+            statement.execute("CREATE TABLE IF NOT EXISTS t_order (order_id BIGINT NOT NULL, order_type INT, user_id INT NOT NULL, address_id BIGINT NOT NULL, status string, PRIMARY KEY (order_id) disable novalidate) STORED BY ICEBERG STORED AS ORC TBLPROPERTIES ('format-version' = '2')");
             statement.execute("TRUNCATE TABLE t_order");
             statement.execute("INSERT INTO t_order (user_id, order_type, address_id, status) VALUES (1, 1, 1, 'INSERT_TEST')");
             statement.executeQuery("SELECT * FROM t_order");
@@ -415,38 +366,9 @@ ShardingSphere 仅针对 HiveServer2 `4.0.1` 进行集成测试。
 
 ### SQL 限制
 
-HiveServer2 并不能保证每一条 `insert` 相关的 DML SQL 都能成功执行，尽管可能没有任何异常被抛出。
-
 ShardingSphere JDBC DataSource 尚不支持执行 HiveServer2 的 `set` 语句。
-
-ShardingSphere JDBC DataSource 当前支持通过执行 `create table` 语句创建普通表，但不支持通过执行 `create table` 语句创建 Iceberg 表。
-这意味着 ShardingSphere JDBC DataSource 可执行类似如下的语句,
-
-```sql
--- noinspection SqlNoDataSourceInspectionForFile
-create table IF NOT EXISTS t_order (
-    order_id   BIGINT NOT NULL,
-    order_type INT,
-    user_id    INT    NOT NULL,
-    address_id BIGINT NOT NULL,
-    status     VARCHAR(50),
-    PRIMARY KEY (order_id) disable novalidate
-) CLUSTERED BY (order_id) INTO 2 BUCKETS STORED AS ORC TBLPROPERTIES ('transactional' = 'true');
-```
-
-但 ShardingSphere JDBC DataSource 无法执行类似如下的语句,
-
-```sql
--- noinspection SqlNoDataSourceInspectionForFile
-CREATE TABLE IF NOT EXISTS t_order (
-    order_id   BIGINT NOT NULL,
-    order_type INT,
-    user_id    INT    NOT NULL,
-    address_id BIGINT NOT NULL,
-    status     string,
-    PRIMARY KEY (order_id) disable novalidate
-) STORED BY ICEBERG STORED AS ORC TBLPROPERTIES ('format-version' = '2');
-```
+当前 ShardingSphere 对 HiveServer2 的 `INNER JOIN` 语法解析存在不足，
+对 `SELECT i.* FROM t_order o, t_order_item i WHERE o.order_id = i.order_id` 这类 SQL，它可能返回错误的查询结果。
 
 #### 使用 `initFile` 参数部分绕开 SQL 限制
 
@@ -581,7 +503,7 @@ CREATE TABLE IF NOT EXISTS t_order
 ```
 
 Iceberg 表格式支持的 Hive type 相对较少，为 HiveServer2 执行 SQL `set iceberg.mr.schema.auto.conversion=true;`有助于缓解这一问题。
-SQL `set iceberg.mr.schema.auto.conversion=true;` 存在 https://issues.apache.org/jira/browse/HIVE-26507 涉及的弊端。
+但 SQL `set iceberg.mr.schema.auto.conversion=true;` 存在 https://issues.apache.org/jira/browse/HIVE-26507 涉及的弊端。
 
 ### 事务限制
 

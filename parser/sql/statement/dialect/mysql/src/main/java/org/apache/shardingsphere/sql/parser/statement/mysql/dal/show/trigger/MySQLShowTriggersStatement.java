@@ -21,6 +21,8 @@ import lombok.Getter;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.FromDatabaseSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.ShowFilterSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.SQLStatementAttributes;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.type.AllowNotUseDatabaseSQLStatementAttribute;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.DALStatement;
 
 /**
@@ -37,5 +39,11 @@ public final class MySQLShowTriggersStatement extends DALStatement {
         super(databaseType);
         this.fromDatabase = fromDatabase;
         this.filter = filter;
+    }
+    
+    @Override
+    public SQLStatementAttributes getAttributes() {
+        String databaseName = null == fromDatabase ? null : fromDatabase.getDatabase().getIdentifier().getValue();
+        return new SQLStatementAttributes(new AllowNotUseDatabaseSQLStatementAttribute(true, databaseName));
     }
 }

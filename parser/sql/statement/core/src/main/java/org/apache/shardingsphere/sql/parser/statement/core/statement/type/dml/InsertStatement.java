@@ -85,6 +85,10 @@ public final class InsertStatement extends DMLStatement {
     
     private FunctionSegment rowSetFunction;
     
+    private boolean ignore;
+    
+    private boolean replace;
+    
     private final Collection<InsertValuesSegment> values = new LinkedList<>();
     
     private final Collection<ColumnSegment> derivedInsertColumns = new LinkedList<>();

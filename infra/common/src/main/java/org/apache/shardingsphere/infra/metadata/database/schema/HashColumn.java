@@ -33,11 +33,14 @@ public final class HashColumn {
     
     private final String tableName;
     
+    private final boolean caseSensitive;
+    
     private final int hashCode;
     
-    public HashColumn(final String name, final String tableName) {
+    public HashColumn(final String name, final String tableName, final boolean caseSensitive) {
         this.name = name;
         this.tableName = tableName;
+        this.caseSensitive = caseSensitive;
         hashCode = Objects.hash(name.toUpperCase(), tableName.toUpperCase());
     }
     
@@ -45,7 +48,7 @@ public final class HashColumn {
     public boolean equals(final Object obj) {
         if (obj instanceof HashColumn) {
             HashColumn column = (HashColumn) obj;
-            return null != name && name.equalsIgnoreCase(column.name) && null != tableName && tableName.equalsIgnoreCase(column.tableName);
+            return name.equalsIgnoreCase(column.name) && tableName.equalsIgnoreCase(column.tableName) && caseSensitive == column.caseSensitive;
         }
         return false;
     }

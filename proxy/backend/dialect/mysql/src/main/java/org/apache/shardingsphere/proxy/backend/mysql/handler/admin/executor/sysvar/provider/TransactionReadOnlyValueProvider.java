@@ -19,7 +19,7 @@ package org.apache.shardingsphere.proxy.backend.mysql.handler.admin.executor.sys
 
 import org.apache.shardingsphere.proxy.backend.mysql.handler.admin.executor.sysvar.MySQLSystemVariable;
 import org.apache.shardingsphere.proxy.backend.mysql.handler.admin.executor.sysvar.MySQLSystemVariableValueProvider;
-import org.apache.shardingsphere.proxy.backend.mysql.handler.admin.executor.sysvar.Scope;
+import org.apache.shardingsphere.proxy.backend.mysql.handler.admin.executor.sysvar.MySQLSystemVariableScope;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 
 /**
@@ -28,8 +28,8 @@ import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 public final class TransactionReadOnlyValueProvider implements MySQLSystemVariableValueProvider {
     
     @Override
-    public String get(final Scope scope, final ConnectionSession connectionSession, final MySQLSystemVariable variable) {
-        if (Scope.GLOBAL == scope) {
+    public String get(final MySQLSystemVariableScope scope, final ConnectionSession connectionSession, final MySQLSystemVariable variable) {
+        if (MySQLSystemVariableScope.GLOBAL == scope) {
             return variable.getDefaultValue();
         }
         return connectionSession.isReadOnly() ? "1" : "0";

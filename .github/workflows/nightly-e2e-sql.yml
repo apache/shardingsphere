@@ -54,7 +54,7 @@ jobs:
             ${{ needs.global-environment.outputs.GLOBAL_CACHE_PREFIX }}-maven-third-party-e2e-cache-
             ${{ needs.global-environment.outputs.GLOBAL_CACHE_PREFIX }}-maven-third-party-
       - name: Build E2E Image
-        run: ./mvnw -B clean install -am -pl test/e2e/sql -Pit.env.docker -DskipTests -Dspotless.apply.skip=true
+        run: ./mvnw -B clean install -am -pl test/e2e/sql -Pe2e.env.docker -DskipTests -Dspotless.apply.skip=true
       - name: Save E2E Image
         run: docker save -o /tmp/${{ needs.global-environment.outputs.GLOBAL_CACHE_PREFIX }}-proxy-test.tar apache/shardingsphere-proxy-test:latest
       - uses: actions/upload-artifact@v4
@@ -76,7 +76,7 @@ jobs:
         adapter: [ proxy, jdbc ]
         mode: [ Standalone, Cluster ]
         database: [ MySQL, PostgreSQL, openGauss ]
-        scenario: [ empty_rules, distsql_rdl, passthrough, db, tbl, encrypt, readwrite_splitting, shadow, mask, dbtbl_with_readwrite_splitting, dbtbl_with_readwrite_splitting_and_encrypt, sharding_and_encrypt, encrypt_and_readwrite_splitting, encrypt_shadow, readwrite_splitting_and_shadow, sharding_and_shadow, sharding_encrypt_shadow, mask_encrypt, mask_sharding, mask_encrypt_sharding, db_tbl_sql_federation, empty_storage_units ]
+        scenario: [ empty_rules, distsql_rdl, passthrough, db, tbl, encrypt, readwrite_splitting, shadow, mask, dbtbl_with_readwrite_splitting, dbtbl_with_readwrite_splitting_and_encrypt, sharding_and_encrypt, encrypt_and_readwrite_splitting, encrypt_shadow, readwrite_splitting_and_shadow, sharding_and_shadow, sharding_encrypt_shadow, mask_encrypt, mask_sharding, mask_encrypt_sharding, db_tbl_sql_federation ]
         additional-options: [ '' ]
         include:
           - adapter: proxy
@@ -86,6 +86,9 @@ jobs:
           - adapter: jdbc
             database: Hive
             scenario: encrypt
+          - adapter: jdbc
+            database: Hive
+            scenario: mask
         exclude:
           - adapter: jdbc
             scenario: passthrough
@@ -100,8 +103,6 @@ jobs:
           - adapter: proxy
             mode: Standalone
             scenario: passthrough
-          - adapter: proxy
-            scenario: empty_storage_units
     steps:
       - uses: actions/checkout@v4
       - uses: actions/cache@v4
@@ -122,4 +123,4 @@ jobs:
         if: matrix.adapter == 'proxy'
         run: docker load -i /tmp/${{ needs.global-environment.outputs.GLOBAL_CACHE_PREFIX }}-proxy-test.tar
       - name: Run E2E Test
-        run: ./mvnw -nsu -B install -f test/e2e/sql/pom.xml -Dspotless.apply.skip=true -Dit.cluster.env.type=DOCKER -Dit.cluster.adapters=${{ matrix.adapter }} -Dit.run.modes=${{ matrix.mode }} -Dit.run.additional.cases=false -Dit.scenarios=${{ matrix.scenario }} -Dit.cluster.databases=${{ matrix.database }} ${{ matrix.additional-options }}
+        run: ./mvnw -nsu -B install -f test/e2e/sql/pom.xml -Dspotless.apply.skip=true -De2e.run.type=DOCKER -De2e.artifact.modes=${{ matrix.mode }} -De2e.artifact.adapters=${{ matrix.adapter }} -De2e.run.additional.cases=false -De2e.scenarios=${{ matrix.scenario }} -De2e.artifact.databases=${{ matrix.database }} ${{ matrix.additional-options }}

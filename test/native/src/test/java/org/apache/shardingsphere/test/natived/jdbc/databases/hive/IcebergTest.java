@@ -36,7 +36,6 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.time.Duration;
-import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -87,6 +86,9 @@ class IcebergTest {
     }
     
     private void initEnvironment() throws SQLException {
+        testShardingService.getOrderRepository().createIcebergTableInHiveServer2();
+        testShardingService.getOrderItemRepository().createIcebergTableInHiveServer2();
+        testShardingService.getAddressRepository().createIcebergTableInHiveServer2();
         testShardingService.getOrderRepository().truncateTable();
         testShardingService.getOrderItemRepository().truncateTable();
         testShardingService.getAddressRepository().truncateTable();
@@ -104,7 +106,6 @@ class IcebergTest {
             statement.execute("CREATE DATABASE demo_ds_1");
             statement.execute("CREATE DATABASE demo_ds_2");
         }
-        Stream.of("demo_ds_0", "demo_ds_1", "demo_ds_2").parallel().forEach(this::initTable);
         HikariConfig config = new HikariConfig();
         config.setDriverClassName("org.apache.shardingsphere.driver.ShardingSphereDriver");
         config.setJdbcUrl("jdbc:shardingsphere:classpath:test-native/yaml/jdbc/databases/hive/iceberg.yaml?placeholder-type=system_props");
@@ -112,44 +113,5 @@ class IcebergTest {
         System.setProperty(systemPropKeyPrefix + "ds1.jdbc-url", jdbcUrlPrefix + "demo_ds_1");
         System.setProperty(systemPropKeyPrefix + "ds2.jdbc-url", jdbcUrlPrefix + "demo_ds_2");
         return new HikariDataSource(config);
-    }
-    
-    /**
-     * TODO `shardingsphere-parser-sql-engine-hive` module does not support `set`, `create table` statements yet,
-     *  we always need to execute the following Hive Session-level SQL in the current {@link javax.sql.DataSource}.
-     * Hive does not support `AUTO_INCREMENT`,
-     * refer to <a href="https://issues.apache.org/jira/browse/HIVE-6905">HIVE-6905</a>.
-     *
-     * @param databaseName database name
-     * @throws RuntimeException SQL exception
-     */
-    private void initTable(final String databaseName) {
-        try (
-                Connection connection = DriverManager.getConnection(jdbcUrlPrefix + databaseName);
-                Statement statement = connection.createStatement()) {
-            statement.execute("CREATE TABLE IF NOT EXISTS t_order (\n"
-                    + "    order_id   BIGINT NOT NULL,\n"
-                    + "    order_type INT,\n"
-                    + "    user_id    INT    NOT NULL,\n"
-                    + "    address_id BIGINT NOT NULL,\n"
-                    + "    status     string,\n"
-                    + "    PRIMARY KEY (order_id) disable novalidate\n"
-                    + ") STORED BY ICEBERG STORED AS ORC TBLPROPERTIES ('format-version' = '2')");
-            statement.execute("CREATE TABLE IF NOT EXISTS t_order_item (\n"
-                    + "    order_item_id BIGINT NOT NULL,\n"
-                    + "    order_id      BIGINT NOT NULL,\n"
-                    + "    user_id       INT    NOT NULL,\n"
-                    + "    phone         string,\n"
-                    + "    status        string,\n"
-                    + "    PRIMARY KEY (order_item_id) disable novalidate\n"
-                    + ") STORED BY ICEBERG STORED AS ORC TBLPROPERTIES ('format-version' = '2')");
-            statement.execute("CREATE TABLE IF NOT EXISTS t_address (\n"
-                    + "    address_id   BIGINT       NOT NULL,\n"
-                    + "    address_name string NOT NULL,\n"
-                    + "    PRIMARY KEY (address_id) disable novalidate\n"
-                    + ") STORED BY ICEBERG STORED AS ORC TBLPROPERTIES ('format-version' = '2')");
-        } catch (final SQLException exception) {
-            throw new RuntimeException(exception);
-        }
     }
 }

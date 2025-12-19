@@ -18,11 +18,12 @@
 package org.apache.shardingsphere.proxy.backend.opengauss.handler.admin;
 
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
+import org.apache.shardingsphere.infra.binder.context.statement.type.dml.SelectStatementContext;
 import org.apache.shardingsphere.proxy.backend.handler.admin.executor.DatabaseAdminExecutor;
 import org.apache.shardingsphere.proxy.backend.handler.admin.executor.DatabaseAdminExecutorCreator;
 import org.apache.shardingsphere.proxy.backend.opengauss.handler.admin.executor.OpenGaussShowVariableExecutor;
+import org.apache.shardingsphere.proxy.backend.opengauss.handler.admin.factory.OpenGaussSelectAdminExecutorFactory;
 import org.apache.shardingsphere.proxy.backend.postgresql.handler.admin.PostgreSQLAdminExecutorCreator;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.ShowStatement;
 
 import java.util.List;
@@ -33,25 +34,17 @@ import java.util.Optional;
  */
 public final class OpenGaussAdminExecutorCreator implements DatabaseAdminExecutorCreator {
     
-    private final PostgreSQLAdminExecutorCreator delegated = new PostgreSQLAdminExecutorCreator();
-    
-    @Override
-    public Optional<DatabaseAdminExecutor> create(final SQLStatementContext sqlStatementContext) {
-        SQLStatement sqlStatement = sqlStatementContext.getSqlStatement();
-        return sqlStatement instanceof ShowStatement ? Optional.of(new OpenGaussShowVariableExecutor((ShowStatement) sqlStatement)) : Optional.empty();
-    }
+    private final PostgreSQLAdminExecutorCreator delegate = new PostgreSQLAdminExecutorCreator();
     
     @Override
     public Optional<DatabaseAdminExecutor> create(final SQLStatementContext sqlStatementContext, final String sql, final String databaseName, final List<Object> parameters) {
-        OpenGaussSystemTableQueryExecutorCreator systemTableQueryExecutorCreator = new OpenGaussSystemTableQueryExecutorCreator(sqlStatementContext, sql, parameters);
-        if (systemTableQueryExecutorCreator.accept()) {
-            return systemTableQueryExecutorCreator.create();
+        if (sqlStatementContext instanceof SelectStatementContext) {
+            return OpenGaussSelectAdminExecutorFactory.newInstance((SelectStatementContext) sqlStatementContext, sql, parameters);
         }
-        OpenGaussSystemFunctionQueryExecutorCreator functionQueryExecutorCreator = new OpenGaussSystemFunctionQueryExecutorCreator(sqlStatementContext);
-        if (functionQueryExecutorCreator.accept()) {
-            return functionQueryExecutorCreator.create();
+        if (sqlStatementContext.getSqlStatement() instanceof ShowStatement) {
+            return Optional.of(new OpenGaussShowVariableExecutor((ShowStatement) sqlStatementContext.getSqlStatement()));
         }
-        return delegated.create(sqlStatementContext, sql, databaseName, parameters);
+        return delegate.create(sqlStatementContext, sql, databaseName, parameters);
     }
     
     @Override

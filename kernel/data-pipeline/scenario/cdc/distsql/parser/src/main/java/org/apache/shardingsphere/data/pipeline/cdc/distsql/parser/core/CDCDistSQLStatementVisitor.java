@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.data.pipeline.cdc.distsql.parser.core;
 
-import org.antlr.v4.runtime.tree.ParseTree;
 import org.apache.shardingsphere.data.pipeline.cdc.distsql.statement.queryable.ShowStreamingListStatement;
 import org.apache.shardingsphere.data.pipeline.cdc.distsql.statement.queryable.ShowStreamingRuleStatement;
 import org.apache.shardingsphere.data.pipeline.cdc.distsql.statement.queryable.ShowStreamingStatusStatement;
@@ -62,16 +61,12 @@ public final class CDCDistSQLStatementVisitor extends CDCDistSQLStatementBaseVis
     
     @Override
     public ASTNode visitShowStreamingStatus(final ShowStreamingStatusContext ctx) {
-        return new ShowStreamingStatusStatement(getIdentifierValue(ctx.jobId()));
+        return new ShowStreamingStatusStatement(new IdentifierValue(ctx.jobId().getText()).getValue());
     }
     
     @Override
     public ASTNode visitDropStreaming(final DropStreamingContext ctx) {
-        return new DropStreamingStatement(getIdentifierValue(ctx.jobId()));
-    }
-    
-    private String getIdentifierValue(final ParseTree ctx) {
-        return null == ctx ? null : new IdentifierValue(ctx.getText()).getValue();
+        return new DropStreamingStatement(new IdentifierValue(ctx.jobId().getText()).getValue());
     }
     
     @Override
@@ -137,7 +132,7 @@ public final class CDCDistSQLStatementVisitor extends CDCDistSQLStatementBaseVis
     
     @Override
     public ASTNode visitAlgorithmDefinition(final AlgorithmDefinitionContext ctx) {
-        return new AlgorithmSegment(getIdentifierValue(ctx.algorithmTypeName()), buildProperties(ctx.propertiesDefinition()));
+        return new AlgorithmSegment(new IdentifierValue(ctx.algorithmTypeName().getText()).getValue(), buildProperties(ctx.propertiesDefinition()));
     }
     
     private Properties buildProperties(final PropertiesDefinitionContext ctx) {

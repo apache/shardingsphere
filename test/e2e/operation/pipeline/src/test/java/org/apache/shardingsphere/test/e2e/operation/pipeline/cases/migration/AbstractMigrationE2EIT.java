@@ -22,10 +22,10 @@ import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.database.connector.opengauss.type.OpenGaussDatabaseType;
 import org.apache.shardingsphere.database.connector.postgresql.type.PostgreSQLDatabaseType;
+import org.apache.shardingsphere.test.e2e.env.runtime.E2ETestEnvironment;
+import org.apache.shardingsphere.test.e2e.env.runtime.type.RunEnvironment.Type;
 import org.apache.shardingsphere.test.e2e.operation.pipeline.cases.PipelineContainerComposer;
 import org.apache.shardingsphere.test.e2e.operation.pipeline.command.MigrationDistSQLCommand;
-import org.apache.shardingsphere.test.e2e.operation.pipeline.env.PipelineE2EEnvironment;
-import org.apache.shardingsphere.test.e2e.operation.pipeline.env.enums.PipelineEnvTypeEnum;
 import org.awaitility.Awaitility;
 import org.opengauss.util.PSQLException;
 
@@ -56,7 +56,7 @@ public abstract class AbstractMigrationE2EIT {
     }
     
     protected void addMigrationSourceResource(final PipelineContainerComposer containerComposer) throws SQLException {
-        if (PipelineEnvTypeEnum.NATIVE == PipelineE2EEnvironment.getInstance().getItEnvType()) {
+        if (Type.NATIVE == E2ETestEnvironment.getInstance().getRunEnvironment().getType()) {
             try {
                 containerComposer.proxyExecuteWithLog("UNREGISTER MIGRATION SOURCE STORAGE UNIT ds_0", 2);
             } catch (final SQLException ex) {

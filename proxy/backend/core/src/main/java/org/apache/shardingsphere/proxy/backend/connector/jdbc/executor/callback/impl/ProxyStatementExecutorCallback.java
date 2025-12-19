@@ -19,7 +19,7 @@ package org.apache.shardingsphere.proxy.backend.connector.jdbc.executor.callback
 
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
-import org.apache.shardingsphere.proxy.backend.connector.DatabaseConnector;
+import org.apache.shardingsphere.proxy.backend.connector.DatabaseProxyConnector;
 import org.apache.shardingsphere.proxy.backend.connector.jdbc.executor.callback.ProxyJDBCExecutorCallback;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
 
@@ -33,9 +33,9 @@ import java.sql.Statement;
 public final class ProxyStatementExecutorCallback extends ProxyJDBCExecutorCallback {
     
     public ProxyStatementExecutorCallback(final DatabaseType protocolType, final ResourceMetaData resourceMetaData, final SQLStatement sqlStatement,
-                                          final DatabaseConnector databaseConnector, final boolean isReturnGeneratedKeys,
+                                          final DatabaseProxyConnector databaseProxyConnector, final boolean isReturnGeneratedKeys,
                                           final boolean isExceptionThrown, final boolean fetchMetaData) {
-        super(protocolType, resourceMetaData, sqlStatement, databaseConnector, isReturnGeneratedKeys, isExceptionThrown, fetchMetaData);
+        super(protocolType, resourceMetaData, sqlStatement, databaseProxyConnector, isReturnGeneratedKeys, isExceptionThrown, fetchMetaData);
     }
     
     @Override
