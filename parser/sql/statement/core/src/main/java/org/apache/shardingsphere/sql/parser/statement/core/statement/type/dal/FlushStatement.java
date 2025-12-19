@@ -15,35 +15,33 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.statement.mysql.dal;
+package org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal;
 
-import lombok.Getter;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.SQLStatementAttributes;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.type.TableSQLStatementAttribute;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.FlushStatement;
 
 import java.util.Collection;
 
 /**
- * Flush statement for MySQL.
+ * Flush statement.
  */
-@Getter
-public final class MySQLFlushStatement extends FlushStatement {
+public abstract class FlushStatement extends DALStatement {
     
-    private final Collection<SimpleTableSegment> tables;
-    
-    private final boolean flushTable;
-    
-    public MySQLFlushStatement(final DatabaseType databaseType, final Collection<SimpleTableSegment> tables, final boolean flushTable) {
+    public FlushStatement(final DatabaseType databaseType) {
         super(databaseType);
-        this.tables = tables;
-        this.flushTable = flushTable;
     }
     
-    @Override
-    public SQLStatementAttributes getAttributes() {
-        return new SQLStatementAttributes(new TableSQLStatementAttribute(tables));
-    }
+    /**
+     * Get tables.
+     *
+     * @return tables
+     */
+    public abstract Collection<SimpleTableSegment> getTables();
+    
+    /**
+     * Is flush table.
+     *
+     * @return true if flush table, false otherwise
+     */
+    public abstract boolean isFlushTable();
 }
