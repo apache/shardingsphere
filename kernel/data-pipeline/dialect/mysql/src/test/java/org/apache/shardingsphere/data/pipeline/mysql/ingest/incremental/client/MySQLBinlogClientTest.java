@@ -34,6 +34,7 @@ import lombok.SneakyThrows;
 import org.apache.shardingsphere.data.pipeline.core.exception.PipelineInternalException;
 import org.apache.shardingsphere.data.pipeline.mysql.ingest.incremental.binlog.event.MySQLBaseBinlogEvent;
 import org.apache.shardingsphere.data.pipeline.mysql.ingest.incremental.binlog.event.PlaceholderBinlogEvent;
+import org.apache.shardingsphere.data.pipeline.mysql.ingest.incremental.binlog.MySQLBinlogContext;
 import org.apache.shardingsphere.data.pipeline.mysql.ingest.incremental.client.netty.MySQLBinlogEventPacketDecoder;
 import org.apache.shardingsphere.database.protocol.mysql.constant.MySQLConstants;
 import org.apache.shardingsphere.database.protocol.mysql.packet.command.binlog.MySQLComBinlogDumpCommandPacket;
@@ -68,6 +69,7 @@ import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.stream.Collectors;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -75,6 +77,7 @@ import static org.hamcrest.Matchers.isA;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Answers.CALLS_REAL_METHODS;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyLong;
@@ -84,10 +87,10 @@ import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockConstruction;
-import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.withSettings;
 
 @SuppressWarnings("ProhibitedExceptionDeclared")
 @ExtendWith(MockitoExtension.class)
@@ -103,13 +106,15 @@ class MySQLBinlogClientTest {
     @Mock
     private ChannelFuture channelFuture;
     
+    private final ConnectInfo connectInfo = new ConnectInfo(1, "host", 3306, "username", "password");
+    
     private MySQLBinlogClient client;
     
     private final NioEventLoopGroup eventLoopGroup = new NioEventLoopGroup(1);
     
     @BeforeEach
     void setUp() {
-        client = new MySQLBinlogClient(new ConnectInfo(1, "host", 3306, "username", "password"), false);
+        client = new MySQLBinlogClient(connectInfo, false);
         when(channel.pipeline()).thenReturn(pipeline);
         when(channel.isOpen()).thenReturn(true);
         when(channel.close()).thenReturn(channelFuture);
@@ -240,7 +245,7 @@ class MySQLBinlogClientTest {
     
     @Test
     void assertSubscribeChecksumLengthBranches() {
-        client = spy(client);
+        client = createClientMock();
         prepareClientChannel();
         setServerVersion("5.6.0");
         doReturn(true).when(client).execute(anyString());
@@ -254,11 +259,18 @@ class MySQLBinlogClientTest {
         doAnswer(invocation -> null).when(channel).writeAndFlush(any(MySQLComBinlogDumpCommandPacket.class));
         client.subscribe("binlog-000001", 4L);
         client.subscribe("binlog-000002", 8L);
+        ArgumentCaptor<ChannelHandler> captor = ArgumentCaptor.forClass(ChannelHandler.class);
+        verify(pipeline, times(4)).addLast(captor.capture());
+        List<Integer> checksumLengths = captor.getAllValues().stream()
+                .filter(each -> each instanceof MySQLBinlogEventPacketDecoder)
+                .map(each -> getChecksumLength((MySQLBinlogEventPacketDecoder) each))
+                .collect(Collectors.toList());
+        assertThat(checksumLengths, is(Arrays.asList(0, 4)));
     }
     
     @Test
     void assertSubscribeUnsupportedChecksumThrows() {
-        client = spy(client);
+        client = createClientMock();
         prepareClientChannel();
         setServerVersion("5.6.0");
         doReturn(true).when(client).execute(anyString());
@@ -273,8 +285,8 @@ class MySQLBinlogClientTest {
     }
     
     @Test
-    void assertSubscribeBelow56UsesZeroChecksum() throws Exception {
-        client = spy(client);
+    void assertSubscribeBelow56UsesZeroChecksum() {
+        client = createClientMock();
         prepareClientChannel();
         setServerVersion("5.5.0");
         doReturn(true).when(client).execute(anyString());
@@ -290,10 +302,8 @@ class MySQLBinlogClientTest {
         verify(pipeline, times(2)).addLast(captor.capture());
         MySQLBinlogEventPacketDecoder decoder = captor.getAllValues().stream()
                 .filter(each -> each instanceof MySQLBinlogEventPacketDecoder)
-                .map(each -> (MySQLBinlogEventPacketDecoder) each).findFirst().orElseThrow(IllegalStateException::new);
-        Object binlogContext = Plugins.getMemberAccessor().get(MySQLBinlogEventPacketDecoder.class.getDeclaredField("binlogContext"), decoder);
-        int checksumLength = (int) Plugins.getMemberAccessor().get(binlogContext.getClass().getDeclaredField("checksumLength"), binlogContext);
-        assertThat(checksumLength, is(0));
+                .map(MySQLBinlogEventPacketDecoder.class::cast).findFirst().orElseThrow(IllegalStateException::new);
+        assertThat(getChecksumLength(decoder), is(0));
     }
     
     @SuppressWarnings("unchecked")
@@ -369,7 +379,7 @@ class MySQLBinlogClientTest {
     
     @Test
     void assertMySQLBinlogEventHandlerBranches() throws Exception {
-        client = spy(client);
+        client = createClientMock();
         prepareClientChannel();
         setServerVersion("5.6.0");
         doReturn(true).when(client).execute(anyString());
@@ -425,6 +435,10 @@ class MySQLBinlogClientTest {
         return result;
     }
     
+    private MySQLBinlogClient createClientMock() {
+        return mock(MySQLBinlogClient.class, withSettings().useConstructor(connectInfo, false).defaultAnswer(CALLS_REAL_METHODS));
+    }
+    
     @SneakyThrows(ReflectiveOperationException.class)
     private void prepareClientChannel() {
         Plugins.getMemberAccessor().set(MySQLBinlogClient.class.getDeclaredField("channel"), client, channel);
@@ -444,6 +458,12 @@ class MySQLBinlogClientTest {
     @SneakyThrows(ReflectiveOperationException.class)
     private void setRunning(final boolean value) {
         Plugins.getMemberAccessor().set(MySQLBinlogClient.class.getDeclaredField("running"), client, value);
+    }
+    
+    @SneakyThrows(ReflectiveOperationException.class)
+    private int getChecksumLength(final MySQLBinlogEventPacketDecoder decoder) {
+        MySQLBinlogContext binlogContext = (MySQLBinlogContext) Plugins.getMemberAccessor().get(MySQLBinlogEventPacketDecoder.class.getDeclaredField("binlogContext"), decoder);
+        return binlogContext.getChecksumLength();
     }
     
     private void mockChannelResponse(final Object response) {
