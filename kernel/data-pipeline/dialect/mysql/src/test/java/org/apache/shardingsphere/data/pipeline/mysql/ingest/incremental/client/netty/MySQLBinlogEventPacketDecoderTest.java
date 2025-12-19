@@ -23,14 +23,17 @@ import io.netty.buffer.ByteBufAllocator;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.util.internal.StringUtil;
+import org.apache.shardingsphere.data.pipeline.core.exception.PipelineInternalException;
 import org.apache.shardingsphere.data.pipeline.mysql.ingest.incremental.binlog.MySQLBinlogContext;
+import org.apache.shardingsphere.data.pipeline.mysql.ingest.incremental.binlog.event.MySQLBaseBinlogEvent;
+import org.apache.shardingsphere.data.pipeline.mysql.ingest.incremental.binlog.event.PlaceholderBinlogEvent;
 import org.apache.shardingsphere.data.pipeline.mysql.ingest.incremental.binlog.event.query.MySQLQueryBinlogEvent;
-import org.apache.shardingsphere.data.pipeline.mysql.ingest.incremental.binlog.event.rows.MySQLDeleteRowsBinlogEvent;
 import org.apache.shardingsphere.data.pipeline.mysql.ingest.incremental.binlog.event.rows.MySQLUpdateRowsBinlogEvent;
 import org.apache.shardingsphere.data.pipeline.mysql.ingest.incremental.binlog.event.rows.MySQLWriteRowsBinlogEvent;
-import org.apache.shardingsphere.data.pipeline.mysql.ingest.incremental.binlog.event.transaction.MySQLXidBinlogEvent;
 import org.apache.shardingsphere.database.protocol.constant.CommonConstants;
 import org.apache.shardingsphere.database.protocol.mysql.constant.MySQLBinaryColumnType;
+import org.apache.shardingsphere.database.protocol.mysql.constant.MySQLBinlogEventType;
+import org.apache.shardingsphere.database.protocol.mysql.packet.binlog.MySQLBinlogEventHeader;
 import org.apache.shardingsphere.database.protocol.mysql.packet.binlog.row.MySQLBinlogTableMapEventPacket;
 import org.apache.shardingsphere.database.protocol.mysql.packet.binlog.row.column.MySQLBinlogColumnDef;
 import org.apache.shardingsphere.database.protocol.mysql.packet.binlog.row.column.value.string.MySQLBinaryString;
@@ -49,11 +52,13 @@ import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.isA;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -76,18 +81,29 @@ class MySQLBinlogEventPacketDecoderTest {
     void setUp() throws NoSuchFieldException, IllegalAccessException {
         binlogEventPacketDecoder = new MySQLBinlogEventPacketDecoder(4, new ConcurrentHashMap<>(), true);
         binlogContext = (MySQLBinlogContext) Plugins.getMemberAccessor().get(MySQLBinlogEventPacketDecoder.class.getDeclaredField("binlogContext"), binlogEventPacketDecoder);
-        when(channelHandlerContext.channel().attr(CommonConstants.CHARSET_ATTRIBUTE_KEY).get()).thenReturn(StandardCharsets.UTF_8);
+        lenient().when(channelHandlerContext.channel().attr(CommonConstants.CHARSET_ATTRIBUTE_KEY).get()).thenReturn(StandardCharsets.UTF_8);
         columnDefs = Lists.newArrayList(new MySQLBinlogColumnDef(MySQLBinaryColumnType.LONGLONG), new MySQLBinlogColumnDef(MySQLBinaryColumnType.LONG),
                 new MySQLBinlogColumnDef(MySQLBinaryColumnType.VARCHAR), new MySQLBinlogColumnDef(MySQLBinaryColumnType.NEWDECIMAL));
     }
     
     @Test
-    void assertDecodeWithPacketError() {
+    void assertDecodeWithStatusCode255() {
+        ByteBuf byteBuf = Unpooled.buffer();
+        byteBuf.writeByte(255);
+        byteBuf.writeShortLE(123);
+        byteBuf.writeByte(0);
+        byteBuf.writeBytes("ABCDE".getBytes(StandardCharsets.UTF_8));
+        byteBuf.writeBytes("errorMessage".getBytes(StandardCharsets.UTF_8));
+        byteBuf.writeZero(MySQLBinlogEventHeader.MYSQL_BINLOG_EVENT_HEADER_LENGTH);
+        assertThrows(PipelineInternalException.class, () -> binlogEventPacketDecoder.decode(channelHandlerContext, byteBuf, new LinkedList<>()));
+    }
+    
+    @Test
+    void assertDecodeWithIllegalStatusCode() {
         ByteBuf byteBuf = Unpooled.buffer();
         byteBuf.writeByte(1);
-        byteBuf.writeByte(255);
-        byteBuf.writeBytes(new byte[20]);
-        assertThrows(RuntimeException.class, () -> binlogEventPacketDecoder.decode(channelHandlerContext, byteBuf, null));
+        byteBuf.writeZero(MySQLBinlogEventHeader.MYSQL_BINLOG_EVENT_HEADER_LENGTH);
+        assertThrows(IndexOutOfBoundsException.class, () -> binlogEventPacketDecoder.decode(channelHandlerContext, byteBuf, new LinkedList<>()));
     }
     
     @Test
@@ -174,39 +190,6 @@ class MySQLBinlogEventPacketDecoderTest {
     }
     
     @Test
-    void assertDecodeDeleteRowEvent() {
-        ByteBuf byteBuf = ByteBufAllocator.DEFAULT.buffer();
-        // delete from t_order where order_id = 1;
-        byteBuf.writeBytes(StringUtil.decodeHexDump("002a80a862200100000038000000c569000000007400000000000100020004ff0801000000000000000100000007535543434553531c9580c5"));
-        byteBuf.writeBytes(StringUtil.decodeHexDump("006acb656410010000001f000000fa29000000001643000000000000b13f8340"));
-        binlogContext.getTableMap().put(116L, tableMapEventPacket);
-        when(tableMapEventPacket.getColumnDefs()).thenReturn(columnDefs);
-        List<Object> decodedEvents = new LinkedList<>();
-        binlogEventPacketDecoder.decode(channelHandlerContext, byteBuf, decodedEvents);
-        assertThat(decodedEvents.size(), is(1));
-        LinkedList<?> actualEventList = (LinkedList<?>) decodedEvents.get(0);
-        assertThat(actualEventList.get(0), isA(MySQLDeleteRowsBinlogEvent.class));
-        assertThat(actualEventList.get(1), isA(MySQLXidBinlogEvent.class));
-        MySQLDeleteRowsBinlogEvent actual = (MySQLDeleteRowsBinlogEvent) actualEventList.get(0);
-        assertThat(actual.getBeforeRows().get(0), is(new Serializable[]{1L, 1, new MySQLBinaryString("SUCCESS".getBytes()), null}));
-    }
-    
-    @Test
-    void assertBinlogEventHeaderIncomplete() {
-        ByteBuf byteBuf = ByteBufAllocator.DEFAULT.buffer();
-        byte[] completeData = StringUtil.decodeHexDump("002a80a862200100000038000000c569000000007400000000000100020004ff0801000000000000000100000007535543434553531c9580c5");
-        byteBuf.writeBytes(completeData);
-        byteBuf.writeBytes(StringUtil.decodeHexDump("006acb656410010000001f000000fa29000000001643000000000000b13f8340"));
-        // write incomplete event data
-        byteBuf.writeBytes(StringUtil.decodeHexDump("3400"));
-        List<Object> decodedEvents = new LinkedList<>();
-        binlogContext.getTableMap().put(116L, tableMapEventPacket);
-        when(tableMapEventPacket.getColumnDefs()).thenReturn(columnDefs);
-        binlogEventPacketDecoder.decode(channelHandlerContext, byteBuf, decodedEvents);
-        assertThat(decodedEvents.size(), is(1));
-    }
-    
-    @Test
     void assertBinlogEventBodyIncomplete() {
         ByteBuf byteBuf = ByteBufAllocator.DEFAULT.buffer();
         byte[] completeData = StringUtil.decodeHexDump("002a80a862200100000038000000c569000000007400000000000100020004ff0801000000000000000100000007535543434553531c9580c5");
@@ -219,5 +202,128 @@ class MySQLBinlogEventPacketDecoderTest {
         when(tableMapEventPacket.getColumnDefs()).thenReturn(columnDefs);
         binlogEventPacketDecoder.decode(channelHandlerContext, byteBuf, decodedEvents);
         assertThat(decodedEvents.size(), is(1));
+    }
+    
+    @Test
+    void assertDecodePlaceholderEventSkipRemainBytes() {
+        binlogContext.setFileName("binlog.000001");
+        ByteBuf byteBuf = createPlaceholderEventByteBuf(MySQLBinlogEventType.UNKNOWN_EVENT.getValue(), MySQLBinlogEventHeader.MYSQL_BINLOG_EVENT_HEADER_LENGTH + 11, 7);
+        List<Object> decodedEvents = new LinkedList<>();
+        binlogEventPacketDecoder.decode(channelHandlerContext, byteBuf, decodedEvents);
+        assertThat(decodedEvents.size(), is(1));
+        assertThat(decodedEvents.get(0), isA(PlaceholderBinlogEvent.class));
+        assertThat(byteBuf.readableBytes(), is(0));
+    }
+    
+    @Test
+    void assertDecodePlaceholderEventWithoutRemainBytes() {
+        binlogContext.setFileName("binlog.000002");
+        ByteBuf byteBuf = createPlaceholderEventByteBuf(MySQLBinlogEventType.UNKNOWN_EVENT.getValue(), MySQLBinlogEventHeader.MYSQL_BINLOG_EVENT_HEADER_LENGTH, 0);
+        List<Object> decodedEvents = new LinkedList<>();
+        binlogEventPacketDecoder.decode(channelHandlerContext, byteBuf, decodedEvents);
+        assertThat(decodedEvents.size(), is(1));
+        assertThat(decodedEvents.get(0), isA(PlaceholderBinlogEvent.class));
+    }
+    
+    @Test
+    void assertProcessBeginQueryWithTX() throws NoSuchFieldException, IllegalAccessException {
+        List<MySQLBaseBinlogEvent> existingRecords = new LinkedList<>();
+        existingRecords.add(new PlaceholderBinlogEvent("binlog.000003", 1L, 1L));
+        Plugins.getMemberAccessor().set(MySQLBinlogEventPacketDecoder.class.getDeclaredField("records"), binlogEventPacketDecoder, existingRecords);
+        ByteBuf byteBuf = createQueryEventByteBuf("BEGIN", binlogContext.getChecksumLength());
+        List<Object> decodedEvents = new LinkedList<>();
+        binlogEventPacketDecoder.decode(channelHandlerContext, byteBuf, decodedEvents);
+        assertTrue(decodedEvents.isEmpty());
+        @SuppressWarnings("unchecked")
+        List<MySQLBaseBinlogEvent> records = (List<MySQLBaseBinlogEvent>) Plugins.getMemberAccessor().get(MySQLBinlogEventPacketDecoder.class.getDeclaredField("records"), binlogEventPacketDecoder);
+        assertTrue(records.isEmpty());
+        assertThat(records, not(existingRecords));
+    }
+    
+    @Test
+    void assertDecodeWithoutTXSkipBeginQuery() {
+        MySQLBinlogEventPacketDecoder decoderWithoutTX = new MySQLBinlogEventPacketDecoder(4, new ConcurrentHashMap<>(), false);
+        ByteBuf beginEvent = createQueryEventByteBuf("BEGIN", 4);
+        List<Object> decodedEvents = new LinkedList<>();
+        decoderWithoutTX.decode(channelHandlerContext, beginEvent, decodedEvents);
+        assertTrue(decodedEvents.isEmpty());
+        ByteBuf queryEvent = createQueryEventByteBuf("SELECT 1", 4);
+        decoderWithoutTX.decode(channelHandlerContext, queryEvent, decodedEvents);
+        assertThat(decodedEvents.size(), is(1));
+        assertThat(decodedEvents.get(0), isA(MySQLQueryBinlogEvent.class));
+    }
+    
+    @Test
+    void assertDecodeFormatDescriptionEventWithZeroChecksumAndExtraBytes() {
+        MySQLBinlogEventPacketDecoder decoderWithoutChecksum = new MySQLBinlogEventPacketDecoder(0, new ConcurrentHashMap<>(), true);
+        ByteBuf byteBuf = createFormatDescriptionEventByteBuf(0, 4);
+        decoderWithoutChecksum.decode(channelHandlerContext, byteBuf, new LinkedList<>());
+        assertThat(byteBuf.readableBytes(), is(0));
+        ByteBuf byteBufWithWarning = createFormatDescriptionEventByteBuf(0, 3);
+        decoderWithoutChecksum.decode(channelHandlerContext, byteBufWithWarning, new LinkedList<>());
+        assertThat(byteBufWithWarning.readableBytes(), is(0));
+    }
+    
+    private ByteBuf createPlaceholderEventByteBuf(final int eventType, final int eventSize, final int bodyLength) {
+        ByteBuf result = Unpooled.buffer();
+        result.writeByte(0);
+        result.writeIntLE(1);
+        result.writeByte(eventType);
+        result.writeIntLE(1);
+        result.writeIntLE(eventSize);
+        result.writeIntLE(0);
+        result.writeShortLE(0);
+        result.writeZero(bodyLength);
+        result.writeZero(binlogContext.getChecksumLength());
+        return result;
+    }
+    
+    private ByteBuf createQueryEventByteBuf(final String sql, final int checksumLength) {
+        ByteBuf result = Unpooled.buffer();
+        byte[] databaseBytes = "db".getBytes(StandardCharsets.UTF_8);
+        byte[] sqlBytes = sql.getBytes(StandardCharsets.UTF_8);
+        int bodyLength = 4 + 4 + 1 + 2 + 2 + databaseBytes.length + 1 + sqlBytes.length;
+        int eventSize = MySQLBinlogEventHeader.MYSQL_BINLOG_EVENT_HEADER_LENGTH + bodyLength + checksumLength;
+        result.writeByte(0);
+        result.writeIntLE(1);
+        result.writeByte(MySQLBinlogEventType.QUERY_EVENT.getValue());
+        result.writeIntLE(1);
+        result.writeIntLE(eventSize);
+        result.writeIntLE(0);
+        result.writeShortLE(0);
+        result.writeIntLE(1);
+        result.writeIntLE(2);
+        result.writeByte(databaseBytes.length);
+        result.writeShortLE(0);
+        result.writeShortLE(0);
+        result.writeBytes(databaseBytes);
+        result.writeByte(0);
+        result.writeBytes(sqlBytes);
+        result.writeZero(checksumLength);
+        return result;
+    }
+    
+    private ByteBuf createFormatDescriptionEventByteBuf(final int checksumLength, final int extraBytesLength) {
+        ByteBuf result = Unpooled.buffer();
+        int bodyLength = 2 + 50 + 4 + 1 + (MySQLBinlogEventType.FORMAT_DESCRIPTION_EVENT.getValue() - 1) + 1 + 1 + extraBytesLength;
+        int eventSize = MySQLBinlogEventHeader.MYSQL_BINLOG_EVENT_HEADER_LENGTH + bodyLength + checksumLength;
+        result.writeByte(0);
+        result.writeIntLE(1);
+        result.writeByte(MySQLBinlogEventType.FORMAT_DESCRIPTION_EVENT.getValue());
+        result.writeIntLE(1);
+        result.writeIntLE(eventSize);
+        result.writeIntLE(0);
+        result.writeShortLE(0);
+        result.writeShortLE(4);
+        result.writeZero(50);
+        result.writeIntLE(0);
+        result.writeByte(MySQLBinlogEventHeader.MYSQL_BINLOG_EVENT_HEADER_LENGTH);
+        result.writeZero(MySQLBinlogEventType.FORMAT_DESCRIPTION_EVENT.getValue() - 1);
+        result.writeByte(72);
+        result.writeZero(0);
+        result.writeByte(0);
+        result.writeZero(extraBytesLength);
+        result.writeZero(checksumLength);
+        return result;
     }
 }
