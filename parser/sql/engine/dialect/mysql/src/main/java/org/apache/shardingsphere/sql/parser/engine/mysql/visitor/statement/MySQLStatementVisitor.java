@@ -1489,6 +1489,7 @@ public abstract class MySQLStatementVisitor extends MySQLStatementBaseVisitor<AS
         if (null != ctx.onDuplicateKeyClause()) {
             result.setOnDuplicateKeyColumns((OnDuplicateKeyColumnsSegment) visit(ctx.onDuplicateKeyClause()));
         }
+        result.setIgnore(null != ctx.insertSpecification().IGNORE());
         result.setTable((SimpleTableSegment) visit(ctx.tableName()));
         result.addParameterMarkers(getParameterMarkerSegments());
         if (null != ctx.returningClause()) {
@@ -1516,15 +1517,6 @@ public abstract class MySQLStatementVisitor extends MySQLStatementBaseVisitor<AS
             if (null == ctx.valueReference() && null != ctx.setAssignmentsClause().setRowAlias()) {
                 result.setValueReference(createValueReferenceFromSetRowAlias(ctx.setAssignmentsClause().setRowAlias()));
             }
-        }
-        if (null != ctx.onDuplicateKeyClause()) {
-            result.setOnDuplicateKeyColumns((OnDuplicateKeyColumnsSegment) visit(ctx.onDuplicateKeyClause()));
-        }
-        result.setIgnore(null != ctx.insertSpecification().IGNORE());
-        result.setTable((SimpleTableSegment) visit(ctx.tableName()));
-        result.addParameterMarkers(getParameterMarkerSegments());
-        if (null != ctx.returningClause()) {
-            result.setReturning((ReturningSegment) visit(ctx.returningClause()));
         }
         return result;
     }
