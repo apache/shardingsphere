@@ -49,6 +49,7 @@ import org.apache.shardingsphere.database.protocol.mysql.packet.command.binlog.M
 import org.apache.shardingsphere.database.protocol.mysql.packet.command.query.text.query.MySQLComQueryPacket;
 import org.apache.shardingsphere.database.protocol.mysql.packet.generic.MySQLErrPacket;
 import org.apache.shardingsphere.database.protocol.mysql.packet.generic.MySQLOKPacket;
+import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.exception.generic.UnsupportedSQLOperationException;
 import org.apache.shardingsphere.infra.util.json.JsonUtils;
 import org.apache.shardingsphere.proxy.frontend.netty.ChannelAttrInitializer;
@@ -143,9 +144,7 @@ public final class MySQLBinlogClient {
         resetSequenceID();
         channel.writeAndFlush(comQueryPacket);
         Optional<MySQLOKPacket> packet = waitExpectedResponse(MySQLOKPacket.class);
-        if (!packet.isPresent()) {
-            throw new PipelineInternalException("Could not get MySQL OK packet");
-        }
+        ShardingSpherePreconditions.checkState(packet.isPresent(), () -> new PipelineInternalException("Could not get MySQL OK packet"));
         return (int) packet.get().getAffectedRows();
     }
     
@@ -162,9 +161,7 @@ public final class MySQLBinlogClient {
         resetSequenceID();
         channel.writeAndFlush(comQueryPacket);
         Optional<InternalResultSet> result = waitExpectedResponse(InternalResultSet.class);
-        if (!result.isPresent()) {
-            throw new PipelineInternalException("Could not get MySQL FieldCount/ColumnDefinition/TextResultSetRow packet");
-        }
+        ShardingSpherePreconditions.checkState(result.isPresent(), () -> new PipelineInternalException("Could not get MySQL FieldCount/ColumnDefinition/TextResultSetRow packet"));
         return result.get();
     }
     
