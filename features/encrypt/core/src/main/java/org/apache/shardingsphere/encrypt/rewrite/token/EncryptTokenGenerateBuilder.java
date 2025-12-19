@@ -65,14 +65,16 @@ public final class EncryptTokenGenerateBuilder implements SQLTokenGeneratorBuild
     public Collection<SQLTokenGenerator> getSQLTokenGenerators() {
         Collection<SQLTokenGenerator> result = new LinkedList<>();
         ShardingSphereDatabase database = sqlRewriteContext.getDatabase();
+        addSQLTokenGenerator(result, new EncryptPredicateValueTokenGenerator(rule, database));
+        addSQLTokenGenerator(result, new EncryptInsertPredicateValueTokenGenerator(rule, database));
+        addSQLTokenGenerator(result, new EncryptCreateTableTokenGenerator(rule));
+        addSQLTokenGenerator(result, new EncryptAlterTableTokenGenerator(rule));
         addSQLTokenGenerator(result, new EncryptSelectProjectionTokenGenerator(rule));
         addSQLTokenGenerator(result, new EncryptInsertSelectProjectionTokenGenerator(rule));
         addSQLTokenGenerator(result, new EncryptInsertAssignmentTokenGenerator(rule, database));
         addSQLTokenGenerator(result, new EncryptUpdateAssignmentTokenGenerator(rule, database));
         addSQLTokenGenerator(result, new EncryptPredicateColumnTokenGenerator(rule));
         addSQLTokenGenerator(result, new EncryptInsertPredicateColumnTokenGenerator(rule));
-        addSQLTokenGenerator(result, new EncryptPredicateValueTokenGenerator(rule, database));
-        addSQLTokenGenerator(result, new EncryptInsertPredicateValueTokenGenerator(rule, database));
         addSQLTokenGenerator(result, new EncryptInsertValuesTokenGenerator(rule, database));
         addSQLTokenGenerator(result, new EncryptInsertDefaultColumnsTokenGenerator(rule));
         addSQLTokenGenerator(result, new EncryptInsertCipherNameTokenGenerator(rule));
@@ -80,8 +82,6 @@ public final class EncryptTokenGenerateBuilder implements SQLTokenGeneratorBuild
         addSQLTokenGenerator(result, new EncryptInsertOnUpdateTokenGenerator(rule, database));
         addSQLTokenGenerator(result, new EncryptGroupByItemTokenGenerator(rule));
         addSQLTokenGenerator(result, new EncryptIndexColumnTokenGenerator(rule));
-        addSQLTokenGenerator(result, new EncryptCreateTableTokenGenerator(rule));
-        addSQLTokenGenerator(result, new EncryptAlterTableTokenGenerator(rule));
         return result;
     }
     

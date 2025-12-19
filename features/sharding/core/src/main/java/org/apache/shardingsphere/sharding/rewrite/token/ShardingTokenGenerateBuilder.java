@@ -62,8 +62,10 @@ public final class ShardingTokenGenerateBuilder implements SQLTokenGeneratorBuil
     public Collection<SQLTokenGenerator> getSQLTokenGenerators() {
         Collection<SQLTokenGenerator> result = new LinkedList<>();
         addSQLTokenGenerator(result, new ShardingTableTokenGenerator(rule));
-        addSQLTokenGenerator(result, new ShardingDistinctProjectionPrefixTokenGenerator());
         addSQLTokenGenerator(result, new ShardingProjectionsTokenGenerator());
+        addSQLTokenGenerator(result, new GeneratedKeyAssignmentTokenGenerator());
+        addSQLTokenGenerator(result, new GeneratedKeyInsertValuesTokenGenerator());
+        addSQLTokenGenerator(result, new ShardingDistinctProjectionPrefixTokenGenerator());
         addSQLTokenGenerator(result, new ShardingOrderByTokenGenerator());
         addSQLTokenGenerator(result, new ShardingAggregationDistinctTokenGenerator());
         addSQLTokenGenerator(result, new ShardingIndexTokenGenerator(rule));
@@ -72,9 +74,7 @@ public final class ShardingTokenGenerateBuilder implements SQLTokenGeneratorBuil
         addSQLTokenGenerator(result, new ShardingRowCountTokenGenerator());
         addSQLTokenGenerator(result, new GeneratedKeyInsertColumnTokenGenerator());
         addSQLTokenGenerator(result, new GeneratedKeyForUseDefaultInsertColumnsTokenGenerator());
-        addSQLTokenGenerator(result, new GeneratedKeyAssignmentTokenGenerator());
         addSQLTokenGenerator(result, new ShardingInsertValuesTokenGenerator());
-        addSQLTokenGenerator(result, new GeneratedKeyInsertValuesTokenGenerator());
         addSQLTokenGenerator(result, new ShardingRemoveTokenGenerator());
         addSQLTokenGenerator(result, new ShardingCursorTokenGenerator(rule));
         addSQLTokenGenerator(result, new ShardingFetchDirectionTokenGenerator());
