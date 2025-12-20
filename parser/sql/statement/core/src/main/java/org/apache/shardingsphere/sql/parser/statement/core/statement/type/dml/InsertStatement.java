@@ -23,6 +23,7 @@ import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.ReturningSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.assignment.InsertValuesSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.assignment.SetAssignmentSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.assignment.ValueReferenceSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.InsertColumnsSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.OnDuplicateKeyColumnsSegment;
@@ -61,6 +62,8 @@ public final class InsertStatement extends DMLStatement {
     private SetAssignmentSegment setAssignment;
     
     private OnDuplicateKeyColumnsSegment onDuplicateKeyColumns;
+    
+    private ValueReferenceSegment valueReference;
     
     private ReturningSegment returning;
     
@@ -137,6 +140,15 @@ public final class InsertStatement extends DMLStatement {
      */
     public Optional<OnDuplicateKeyColumnsSegment> getOnDuplicateKeyColumns() {
         return Optional.ofNullable(onDuplicateKeyColumns);
+    }
+    
+    /**
+     * Get value reference.
+     *
+     * @return value reference
+     */
+    public Optional<ValueReferenceSegment> getValueReference() {
+        return Optional.ofNullable(valueReference);
     }
     
     /**
