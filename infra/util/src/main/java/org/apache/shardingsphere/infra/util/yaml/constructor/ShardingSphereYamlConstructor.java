@@ -35,6 +35,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Properties;
 import java.util.Set;
 
 /**
@@ -91,7 +92,9 @@ public final class ShardingSphereYamlConstructor extends Constructor {
                 return;
             }
             Class<?> propertyType = property.getType();
-            if (Map.class.isAssignableFrom(propertyType)) {
+            if (Properties.class.isAssignableFrom(propertyType)) {
+                property.set(target, new Properties());
+            } else if (Map.class.isAssignableFrom(propertyType)) {
                 property.set(target, Collections.emptyMap());
             } else if (Set.class.isAssignableFrom(propertyType)) {
                 property.set(target, Collections.emptySet());
