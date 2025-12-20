@@ -2495,12 +2495,6 @@
     },
     {
       "condition": {
-        "typeReached": "org.apache.shardingsphere.proxy.backend.connector.jdbc.datasource.JDBCBackendDataSource"
-      },
-      "type": "org.apache.shardingsphere.driver.ShardingSphereDriver"
-    },
-    {
-      "condition": {
         "typeReached": "org.apache.shardingsphere.proxy.backend.handler.distsql.DistSQLUpdateProxyBackendHandler"
       },
       "type": "org.apache.shardingsphere.driver.ShardingSphereDriver"
