@@ -1316,8 +1316,17 @@ public abstract class MySQLStatementVisitor extends MySQLStatementBaseVisitor<AS
         if (null != ctx.BINARY()) {
             return new UnaryOperationExpression(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), (ExpressionSegment) visit(ctx.simpleExpr(0)), ctx.BINARY().getText(), ctx.getText());
         }
+        if (null != ctx.PLUS_() || null != ctx.MINUS_()) {
+            ExpressionSegment expressionSegment = (ExpressionSegment) visit(ctx.simpleExpr(0));
+            String operator = null == ctx.PLUS_() ? ctx.MINUS_().getText() : ctx.PLUS_().getText();
+            return new UnaryOperationExpression(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), expressionSegment, operator, ctx.getText());
+        }
         if (null != ctx.TILDE_()) {
             return new UnaryOperationExpression(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), (ExpressionSegment) visit(ctx.simpleExpr(0)), "~", ctx.getText());
+        }
+        if (null != ctx.implicitConcat()) {
+            Collection<StringLiteralValue> stringLiteralValues = ctx.implicitConcat().string_().stream().map(each -> (StringLiteralValue) visit(each)).collect(Collectors.toList());
+            return new LiteralExpressionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), new StringLiteralValue(stringLiteralValues).getValue());
         }
         if (null != ctx.variable()) {
             return visit(ctx.variable());
@@ -1678,7 +1687,10 @@ public abstract class MySQLStatementVisitor extends MySQLStatementBaseVisitor<AS
         if (null != expr) {
             return visit(expr);
         }
-        return new CommonExpressionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.getText());
+        if (null != ctx.blobValue()) {
+            return SQLUtils.createLiteralExpression(visit(ctx.blobValue()), ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.blobValue().getText());
+        }
+        return new LiteralExpressionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.getText());
     }
     
     @Override
