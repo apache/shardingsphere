@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.infra.util.yaml.constructor;
 
 import com.google.common.base.Preconditions;
+import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.infra.util.yaml.shortcuts.ShardingSphereYamlShortcuts;
@@ -85,27 +86,30 @@ public final class ShardingSphereYamlConstructor extends Constructor {
         return null != target && node instanceof MappingNode && !(target instanceof Map) && !(target instanceof Collection);
     }
     
+    @SneakyThrows(Exception.class)
     private void setEmptyCollectionIfNull(final Object target, final Property property) {
-        try {
-            Object value = property.get(target);
-            if (null != value) {
-                return;
-            }
-            Class<?> propertyType = property.getType();
-            if (Properties.class.isAssignableFrom(propertyType)) {
-                property.set(target, new Properties());
-            } else if (Map.class.isAssignableFrom(propertyType)) {
-                property.set(target, Collections.emptyMap());
-            } else if (Set.class.isAssignableFrom(propertyType)) {
-                property.set(target, Collections.emptySet());
-            } else if (List.class.isAssignableFrom(propertyType)) {
-                property.set(target, Collections.emptyList());
-            } else if (Collection.class.isAssignableFrom(propertyType)) {
-                property.set(target, Collections.emptyList());
-            }
-        } catch (final Exception ex) {
-            throw new IllegalStateException(ex);
+        if (null == property.get(target)) {
+            property.set(target, getEmptyCollection(property.getType()));
         }
+    }
+    
+    private Object getEmptyCollection(final Class<?> propertyType) {
+        if (Properties.class.isAssignableFrom(propertyType)) {
+            return new Properties();
+        }
+        if (Map.class.isAssignableFrom(propertyType)) {
+            return Collections.emptyMap();
+        }
+        if (Set.class.isAssignableFrom(propertyType)) {
+            return Collections.emptySet();
+        }
+        if (List.class.isAssignableFrom(propertyType)) {
+            return Collections.emptyList();
+        }
+        if (Collection.class.isAssignableFrom(propertyType)) {
+            return Collections.emptyList();
+        }
+        return null;
     }
     
     @Override
