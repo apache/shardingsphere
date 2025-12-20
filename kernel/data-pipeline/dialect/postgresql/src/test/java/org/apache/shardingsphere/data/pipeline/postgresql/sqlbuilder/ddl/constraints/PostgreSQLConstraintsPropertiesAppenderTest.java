@@ -17,10 +17,11 @@
 
 package org.apache.shardingsphere.data.pipeline.postgresql.sqlbuilder.ddl.constraints;
 
+import lombok.SneakyThrows;
 import org.apache.shardingsphere.data.pipeline.postgresql.sqlbuilder.ddl.PostgreSQLDDLTemplateExecutor;
 import org.junit.jupiter.api.Test;
+import org.mockito.internal.configuration.plugins.Plugins;
 
-import java.lang.reflect.Field;
 import java.sql.Connection;
 import java.util.Arrays;
 import java.util.Collection;
@@ -29,6 +30,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -42,8 +44,11 @@ import static org.mockito.Mockito.when;
 
 class PostgreSQLConstraintsPropertiesAppenderTest {
     
+    private final AtomicInteger constraintsCallCounter = new AtomicInteger();
+    
     @Test
-    void assertAppendWithFullCoverage() throws Exception {
+    void assertAppendWithFullCoverage() {
+        constraintsCallCounter.set(0);
         PostgreSQLDDLTemplateExecutor templateExecutor = mock(PostgreSQLDDLTemplateExecutor.class);
         when(templateExecutor.getMajorVersion()).thenReturn(11);
         when(templateExecutor.executeByTemplate(anyMap(), anyString())).thenAnswer(invocation -> mockExecuteByTemplateFullCoverage(invocation.getArgument(0), invocation.getArgument(1)));
@@ -62,18 +67,22 @@ class PostgreSQLConstraintsPropertiesAppenderTest {
         Collection<Map<String, Object>> checkConstraints = (Collection<Map<String, Object>>) context.get("check_constraint");
         assertThat(checkConstraints.size(), is(1));
         assertFalse((boolean) checkConstraints.iterator().next().get("conislocal"));
-        Collection<Map<String, Object>> foreignKeys = (Collection<Map<String, Object>>) context.get("foreign_key");
-        assertThat(foreignKeys.size(), is(1));
-        Map<String, Object> foreignKey = foreignKeys.iterator().next();
-        assertThat(foreignKey.get("coveringindex"), is("idx_fk_col1"));
-        assertFalse((boolean) foreignKey.get("autoindex"));
-        assertTrue((boolean) foreignKey.get("hasindex"));
-        assertThat(foreignKey.get("remote_schema"), is("remote_schema"));
-        assertThat(foreignKey.get("remote_table"), is("remote_table"));
-        Map<String, Object> foreignKeyColumn = ((Collection<Map<String, Object>>) foreignKey.get("columns")).iterator().next();
+        List<Map<String, Object>> foreignKeys = new LinkedList<>((Collection<Map<String, Object>>) context.get("foreign_key"));
+        assertThat(foreignKeys.size(), is(2));
+        Map<String, Object> foreignKeyWithIndex = foreignKeys.get(0);
+        assertThat(foreignKeyWithIndex.get("coveringindex"), is("idx_fk_col1"));
+        assertFalse((boolean) foreignKeyWithIndex.get("autoindex"));
+        assertTrue((boolean) foreignKeyWithIndex.get("hasindex"));
+        assertThat(foreignKeyWithIndex.get("remote_schema"), is("remote_schema"));
+        assertThat(foreignKeyWithIndex.get("remote_table"), is("remote_table"));
+        Map<String, Object> foreignKeyColumn = ((Collection<Map<String, Object>>) foreignKeyWithIndex.get("columns")).iterator().next();
         assertThat(foreignKeyColumn.get("local_column"), is("fk_col1"));
         assertThat(foreignKeyColumn.get("referenced"), is("ref_col1"));
         assertThat(foreignKeyColumn.get("references_table_name"), is("public.ref_table"));
+        Map<String, Object> foreignKeyWithoutIndex = foreignKeys.get(1);
+        assertThat(foreignKeyWithoutIndex.get("coveringindex"), is((Object) null));
+        assertTrue((boolean) foreignKeyWithoutIndex.get("autoindex"));
+        assertFalse((boolean) foreignKeyWithoutIndex.get("hasindex"));
         Collection<Map<String, Object>> exclusionConstraints = (Collection<Map<String, Object>>) context.get("exclude_constraint");
         assertThat(exclusionConstraints.size(), is(1));
         Map<String, Object> exclusionConstraint = exclusionConstraints.iterator().next();
@@ -85,7 +94,7 @@ class PostgreSQLConstraintsPropertiesAppenderTest {
     }
     
     @Test
-    void assertAppendWithoutIncludeWhenVersionLowerThan11() throws Exception {
+    void assertAppendWithoutIncludeWhenVersionLowerThan11() {
         PostgreSQLDDLTemplateExecutor templateExecutor = mock(PostgreSQLDDLTemplateExecutor.class);
         when(templateExecutor.getMajorVersion()).thenReturn(10);
         when(templateExecutor.executeByTemplate(anyMap(), anyString())).thenAnswer(invocation -> mockExecuteByTemplateWithoutInclude(invocation.getArgument(1)));
@@ -103,16 +112,15 @@ class PostgreSQLConstraintsPropertiesAppenderTest {
         assertThat(exclusionConstraints.iterator().next().get("include"), is(Collections.emptyList()));
     }
     
-    private PostgreSQLConstraintsPropertiesAppender createAppender(final PostgreSQLDDLTemplateExecutor templateExecutor) throws Exception {
-        PostgreSQLConstraintsPropertiesAppender result = new PostgreSQLConstraintsPropertiesAppender(mock(Connection.class), 0, 0);
-        Field field = PostgreSQLConstraintsPropertiesAppender.class.getDeclaredField("templateExecutor");
-        field.setAccessible(true);
-        field.set(result, templateExecutor);
-        return result;
+    @SneakyThrows(ReflectiveOperationException.class)
+    private PostgreSQLConstraintsPropertiesAppender createAppender(final PostgreSQLDDLTemplateExecutor templateExecutor) {
+        PostgreSQLConstraintsPropertiesAppender appender = new PostgreSQLConstraintsPropertiesAppender(mock(Connection.class), 0, 0);
+        Plugins.getMemberAccessor().set(PostgreSQLConstraintsPropertiesAppender.class.getDeclaredField("templateExecutor"), appender, templateExecutor);
+        return appender;
     }
     
     private Map<String, Object> createContext(final boolean relispartition) {
-        Map<String, Object> result = new HashMap<>();
+        Map<String, Object> result = new HashMap<>(4, 1F);
         result.put("did", 2L);
         result.put("tid", 1L);
         result.put("cid", 3L);
@@ -121,11 +129,11 @@ class PostgreSQLConstraintsPropertiesAppenderTest {
     }
     
     private Collection<Map<String, Object>> createIndexConstraintsProps() {
-        Map<String, Object> filtered = new HashMap<>();
+        Map<String, Object> filtered = new HashMap<>(3, 1F);
         filtered.put("oid", 1L);
         filtered.put("col_count", 2);
         filtered.put("conislocal", true);
-        Map<String, Object> remained = new HashMap<>();
+        Map<String, Object> remained = new HashMap<>(3, 1F);
         remained.put("oid", 2L);
         remained.put("col_count", 1);
         remained.put("conislocal", false);
@@ -140,7 +148,7 @@ class PostgreSQLConstraintsPropertiesAppenderTest {
     }
     
     private Collection<Map<String, Object>> createSingleConstraintProps() {
-        Map<String, Object> remained = new HashMap<>();
+        Map<String, Object> remained = new HashMap<>(3, 1F);
         remained.put("oid", 5L);
         remained.put("col_count", 1);
         remained.put("conislocal", false);
@@ -148,21 +156,21 @@ class PostgreSQLConstraintsPropertiesAppenderTest {
     }
     
     private Map<String, Object> createExclusionConstraintProps() {
-        Map<String, Object> result = new HashMap<>();
+        Map<String, Object> result = new HashMap<>(2, 1F);
         result.put("oid", 3L);
         result.put("col_count", 2);
         return result;
     }
     
     private Collection<Map<String, Object>> createExclusionConstraintColumns() {
-        Map<String, Object> first = new HashMap<>();
+        Map<String, Object> first = new HashMap<>(6, 1F);
         first.put("options", 0);
         first.put("coldef", "\"colA\"");
         first.put("opcname", "opc1");
         first.put("oprname", "opr1");
         first.put("datatype", "int");
         first.put("is_exp", false);
-        Map<String, Object> second = new HashMap<>();
+        Map<String, Object> second = new HashMap<>(6, 1F);
         second.put("options", 3);
         second.put("coldef", "colB\"");
         second.put("opcname", "opc2");
@@ -173,7 +181,7 @@ class PostgreSQLConstraintsPropertiesAppenderTest {
     }
     
     private Map<String, Object> createSimpleExclusionColumn() {
-        Map<String, Object> result = new HashMap<>();
+        Map<String, Object> result = new HashMap<>(6, 1F);
         result.put("options", 0);
         result.put("coldef", "colC");
         result.put("opcname", "opc");
@@ -184,30 +192,40 @@ class PostgreSQLConstraintsPropertiesAppenderTest {
     }
     
     private Collection<Map<String, Object>> createForeignKeyProps() {
-        Map<String, Object> retained = new HashMap<>();
+        Map<String, Object> retained = new HashMap<>(6, 1F);
         retained.put("confrelid", 10L);
         retained.put("refnsp", "public");
         retained.put("reftab", "ref_table");
         retained.put("confkey", 1);
         retained.put("conkey", 1);
         retained.put("conislocal", false);
-        Map<String, Object> filtered = new HashMap<>();
+        Map<String, Object> second = new HashMap<>(6, 1F);
+        second.put("confrelid", 30L);
+        second.put("refnsp", "public");
+        second.put("reftab", "ref_table2");
+        second.put("confkey", 3);
+        second.put("conkey", 3);
+        second.put("conislocal", false);
+        Map<String, Object> filtered = new HashMap<>(6, 1F);
         filtered.put("confrelid", 20L);
         filtered.put("refnsp", "public");
         filtered.put("reftab", "ignored");
         filtered.put("confkey", 2);
         filtered.put("conkey", 2);
         filtered.put("conislocal", true);
-        return new LinkedList<>(Arrays.asList(retained, filtered));
+        return new LinkedList<>(Arrays.asList(retained, second, filtered));
     }
     
     private Collection<Map<String, Object>> createForeignKeyColumns(final Map<String, Object> params) {
         Collection<Map<String, Object>> keys = (Collection<Map<String, Object>>) params.get("keys");
         String confKey = keys.iterator().next().get("confkey").toString();
-        Map<String, Object> column = new HashMap<>();
+        Map<String, Object> column = new HashMap<>(2, 1F);
         if ("1".equals(confKey)) {
             column.put("conattname", "fk_col1");
             column.put("confattname", "ref_col1");
+        } else if ("3".equals(confKey)) {
+            column.put("conattname", "fk_col3");
+            column.put("confattname", "ref_col3");
         } else {
             column.put("conattname", "fk_col2");
             column.put("confattname", "ref_col2");
@@ -215,26 +233,28 @@ class PostgreSQLConstraintsPropertiesAppenderTest {
         return Collections.singletonList(column);
     }
     
-    private Map<String, Object> createCoveringIndex() {
-        Map<String, Object> result = new HashMap<>();
-        result.put("oid", 6L);
+    private Map<String, Object> createCoveringIndex(final long oid, final String idxName) {
+        Map<String, Object> result = new HashMap<>(3, 1F);
+        result.put("oid", oid);
         result.put("col_count", 1);
-        result.put("idxname", "idx_fk_col1");
+        result.put("idxname", idxName);
         return result;
     }
     
     private Collection<Map<String, Object>> createCoveringIndexColumns(final Map<String, Object> params) {
-        Map<String, Object> column = new HashMap<>();
+        Map<String, Object> column = new HashMap<>(1, 1F);
         if (6L == (long) params.get("cid")) {
             column.put("column", "fk_col1");
-        } else {
+        } else if (7L == (long) params.get("cid")) {
             column.put("column", "other_col");
+        } else {
+            column.put("column", "another_col");
         }
         return Collections.singletonList(column);
     }
     
     private Map<String, Object> createParentTable() {
-        Map<String, Object> result = new HashMap<>();
+        Map<String, Object> result = new HashMap<>(2, 1F);
         result.put("schema", "remote_schema");
         result.put("table", "remote_table");
         return result;
@@ -242,9 +262,9 @@ class PostgreSQLConstraintsPropertiesAppenderTest {
     
     private Collection<Map<String, Object>> createCheckConstraints() {
         Collection<Map<String, Object>> result = new LinkedList<>();
-        Map<String, Object> filtered = new HashMap<>();
+        Map<String, Object> filtered = new HashMap<>(1, 1F);
         filtered.put("conislocal", true);
-        Map<String, Object> remained = new HashMap<>();
+        Map<String, Object> remained = new HashMap<>(1, 1F);
         remained.put("conislocal", false);
         result.add(filtered);
         result.add(remained);
@@ -270,7 +290,14 @@ class PostgreSQLConstraintsPropertiesAppenderTest {
             case "component/foreign_key/%s/get_constraint_cols.ftl":
                 return createForeignKeyColumns(params);
             case "component/foreign_key/%s/get_constraints.ftl":
-                return Collections.singletonList(createCoveringIndex());
+                int callCount = constraintsCallCounter.incrementAndGet();
+                if (1 == callCount) {
+                    return Arrays.asList(createCoveringIndex(7L, "idx_other"), createCoveringIndex(6L, "idx_fk_col1"));
+                }
+                if (2 == callCount) {
+                    return Collections.singletonList(createCoveringIndex(8L, "idx_not_match"));
+                }
+                return Collections.emptyList();
             case "component/foreign_key/%s/get_cols.ftl":
                 return createCoveringIndexColumns(params);
             case "component/check_constraint/%s/properties.ftl":
