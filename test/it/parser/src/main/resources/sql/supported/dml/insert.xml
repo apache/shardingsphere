@@ -150,7 +150,12 @@
     <sql-case id="insert_into_with_multi_nchar" value="INSERT INTO Production.UnitMeasure VALUES (N'FT2', N'Square Feet ', '20080923'), (N'Y', N'Yards', '20080923'), (N'Y3', N'Cubic Yards', '20080923')" db-types="SQLServer"/>
     <sql-case id="insert_into_with_select_with_merge" value="INSERT INTO Production.ZeroInventory (DeletedProductID, RemovedOnDate) SELECT ProductID, GETDATE() FROM (MERGE Production.ProductInventory AS pi USING (SELECT ProductID, SUM(OrderQty) FROM Sales.SalesOrderDetail AS sod JOIN Sales.SalesOrderHeader AS soh ON sod.SalesOrderID = soh.SalesOrderID AND soh.OrderDate = '20070401' GROUP BY ProductID) AS src (ProductID, OrderQty) ON (pi.ProductID = src.ProductID) WHEN MATCHED AND pi.Quantity - src.OrderQty &lt;= 0 THEN DELETE WHEN MATCHED THEN UPDATE SET pi.Quantity = pi.Quantity - src.OrderQty OUTPUT $action, deleted.ProductID) AS Changes (Action, ProductID) WHERE Action = 'DELETE'" db-types="SQLServer"/>
     <sql-case id="insert_into_with_conflict_action_do_nothing" value="INSERT INTO sj_event(event_id) VALUES (?) ON CONFLICT(event_id) DO NOTHING" db-types="PostgreSQL"/>
-    <sql-case id="insert_on_duplicate_key_with_column_aliases" value="INSERT INTO t SET a=9,b=5 AS new(m,n) ON DUPLICATE KEY UPDATE a=m+n" db-types="MySQL"/>
+    <sql-case id="insert_values_with_value_reference" value="INSERT INTO t VALUES (1,2) AS new_alias" db-types="MySQL"/>
+    <sql-case id="insert_values_with_column_aliases" value="INSERT INTO t VALUES (1,2) AS new_alias(a,b)" db-types="MySQL"/>
+    <sql-case id="insert_values_as_on_duplicate_key" value="INSERT INTO t VALUES (1,2) AS new_alias ON DUPLICATE KEY UPDATE a=new_alias.a" db-types="MySQL"/>
+    <sql-case id="insert_values_as_with_columns_duplicate" value="INSERT INTO t VALUES (1,2) AS new_alias(a,b) ON DUPLICATE KEY UPDATE a=new_alias.a, b=new_alias.b" db-types="MySQL"/>
+    <sql-case id="insert_set_as_on_duplicate_key" value="INSERT INTO t SET a=1, b=2 AS new_alias ON DUPLICATE KEY UPDATE a=new_alias.a" db-types="MySQL"/>
+    <sql-case id="insert_set_as_with_columns_duplicate" value="INSERT INTO t SET a=1, b=2 AS new_alias(a,b) ON DUPLICATE KEY UPDATE a=new_alias.a, b=new_alias.b" db-types="MySQL"/>
     <sql-case id="insert_with_aes_encrypt" value="INSERT INTO t_order_item(item_id,encrypt) VALUES (1,AES_ENCRYPT('text','key_str'))" db-types="MySQL" />
     <sql-case id="insert_on_duplicate_key_update_with_values" value="INSERT INTO table (a,b,c) VALUES (1,2,3),(4,5,6) ON DUPLICATE KEY UPDATE c=VALUES(a)+VALUES(b);" db-types="MySQL" />
     <sql-case id="insert_returning_expressions" value="INSERT INTO t2 (id) VALUES (2),(3) RETURNING id,t&amp;t" db-types="MySQL,Firebird" />

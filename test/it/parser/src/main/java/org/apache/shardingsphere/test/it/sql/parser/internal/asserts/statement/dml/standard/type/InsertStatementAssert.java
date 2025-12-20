@@ -21,6 +21,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.ReturningSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.assignment.SetAssignmentSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.assignment.ValueReferenceSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.OnDuplicateKeyColumnsSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.exec.ExecSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.FunctionSegment;
@@ -41,6 +42,7 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.ins
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.insert.MultiTableConditionalIntoClauseAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.insert.MultiTableInsertIntoClauseAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.insert.OnDuplicateKeyColumnsAssert;
+import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.assignment.ValueReferenceSegmentAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.output.OutputClauseAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.parameter.ParameterMarkerAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.returning.ReturningClauseAssert;
@@ -77,6 +79,7 @@ public final class InsertStatementAssert {
         assertSetClause(assertContext, actual, expected);
         assertInsertSelectClause(assertContext, actual, expected);
         assertOnDuplicateKeyColumns(assertContext, actual, expected);
+        assertValueReference(assertContext, actual, expected);
         assertWithClause(assertContext, actual, expected);
         assertOutputClause(assertContext, actual, expected);
         assertMultiTableInsertType(assertContext, actual, expected);
@@ -151,6 +154,16 @@ public final class InsertStatementAssert {
         } else {
             assertTrue(onDuplicateKeyColumnsSegment.isPresent(), assertContext.getText("Actual on duplicate key columns segment should exist."));
             OnDuplicateKeyColumnsAssert.assertIs(assertContext, onDuplicateKeyColumnsSegment.get(), expected.getOnDuplicateKeyColumns());
+        }
+    }
+    
+    private static void assertValueReference(final SQLCaseAssertContext assertContext, final InsertStatement actual, final InsertStatementTestCase expected) {
+        Optional<ValueReferenceSegment> valueReferenceSegment = actual.getValueReference();
+        if (null == expected.getValueReference()) {
+            assertFalse(valueReferenceSegment.isPresent(), assertContext.getText("Actual value reference segment should not exist."));
+        } else {
+            assertTrue(valueReferenceSegment.isPresent(), assertContext.getText("Actual value reference segment should exist."));
+            ValueReferenceSegmentAssert.assertIs(assertContext, valueReferenceSegment.get(), expected.getValueReference());
         }
     }
     
