@@ -144,11 +144,14 @@ class PostgreSQLPipelineSQLBuilderTest {
         columnWithoutType.put("name", "no_type");
         columns.add(columnWithoutType);
         materials.put("columns", columns);
-        try (MockedStatic<PostgreSQLPipelineFreemarkerManager> freemarkerManager = mockStatic(PostgreSQLPipelineFreemarkerManager.class);
-             MockedConstruction<PostgreSQLTablePropertiesLoader> ignoredLoader = mockConstruction(PostgreSQLTablePropertiesLoader.class, (mocked, mockContext) -> when(mocked.load()).thenReturn(materials));
-             MockedConstruction<PostgreSQLColumnPropertiesAppender> ignoredColumnAppender = mockConstruction(PostgreSQLColumnPropertiesAppender.class);
-             MockedConstruction<PostgreSQLConstraintsPropertiesAppender> ignoredConstraintsAppender = mockConstruction(PostgreSQLConstraintsPropertiesAppender.class);
-             MockedConstruction<PostgreSQLIndexSQLGenerator> ignoredIndexGenerator = mockConstruction(PostgreSQLIndexSQLGenerator.class, (mocked, mockContext) -> when(mocked.generate(materials)).thenReturn("CREATE INDEX foo_index"))) {
+        try (
+                MockedStatic<PostgreSQLPipelineFreemarkerManager> freemarkerManager = mockStatic(PostgreSQLPipelineFreemarkerManager.class);
+                MockedConstruction<PostgreSQLTablePropertiesLoader> ignoredLoader =
+                        mockConstruction(PostgreSQLTablePropertiesLoader.class, (mocked, mockContext) -> when(mocked.load()).thenReturn(materials));
+                MockedConstruction<PostgreSQLColumnPropertiesAppender> ignoredColumnAppender = mockConstruction(PostgreSQLColumnPropertiesAppender.class);
+                MockedConstruction<PostgreSQLConstraintsPropertiesAppender> ignoredConstraintsAppender = mockConstruction(PostgreSQLConstraintsPropertiesAppender.class);
+                MockedConstruction<PostgreSQLIndexSQLGenerator> ignoredIndexGenerator =
+                        mockConstruction(PostgreSQLIndexSQLGenerator.class, (mocked, mockContext) -> when(mocked.generate(materials)).thenReturn("CREATE INDEX foo_index"))) {
             freemarkerManager.when(() -> PostgreSQLPipelineFreemarkerManager.getSQLByVersion(materials, "component/table/%s/create.ftl", 10, 1)).thenReturn("CREATE TABLE foo;");
             Collection<String> actual = sqlBuilder.buildCreateTableSQLs(dataSource, "public", "foo_tbl");
             List<String> actualList = actual.stream().map(String::trim).collect(Collectors.toList());
