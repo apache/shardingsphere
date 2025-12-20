@@ -15,23 +15,26 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.yaml.data.pojo;
+package org.apache.shardingsphere.infra.util.yaml.fixture;
 
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.infra.util.yaml.YamlConfiguration;
 
-import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
-/**
- * YAML row statistics.
- */
 @Getter
 @Setter
-public final class YamlRowStatistics implements YamlConfiguration {
+public final class YamlNullCollectionConfigurationFixture implements YamlConfiguration {
     
-    private String uniqueKey;
+    private Map<String, String> map;
     
-    private List<Object> rows = new ArrayList<>();
+    private Set<String> set;
+    
+    private List<String> list;
+    
+    private Collection<String> collection;
 }

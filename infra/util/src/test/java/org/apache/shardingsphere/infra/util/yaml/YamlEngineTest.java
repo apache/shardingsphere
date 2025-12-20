@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.infra.util.yaml;
 
 import org.apache.shardingsphere.infra.util.file.SystemResourceFileUtils;
+import org.apache.shardingsphere.infra.util.yaml.fixture.YamlNullCollectionConfigurationFixture;
 import org.apache.shardingsphere.infra.util.yaml.fixture.shortcuts.YamlShortcutsConfigurationFixture;
 import org.junit.jupiter.api.Test;
 import org.yaml.snakeyaml.composer.ComposerException;
@@ -93,6 +94,20 @@ class YamlEngineTest {
         Properties actual = YamlEngine.unmarshal("", Properties.class);
         assertNotNull(actual);
         assertTrue(actual.isEmpty());
+    }
+    
+    @Test
+    void assertUnmarshalWithNullCollections() {
+        String yamlContent = SystemResourceFileUtils.readFile("yaml/null-collections.yaml");
+        YamlNullCollectionConfigurationFixture actual = YamlEngine.unmarshal(yamlContent, YamlNullCollectionConfigurationFixture.class);
+        assertNotNull(actual.getMap());
+        assertTrue(actual.getMap().isEmpty());
+        assertNotNull(actual.getSet());
+        assertTrue(actual.getSet().isEmpty());
+        assertNotNull(actual.getList());
+        assertTrue(actual.getList().isEmpty());
+        assertNotNull(actual.getCollection());
+        assertTrue(actual.getCollection().isEmpty());
     }
     
     @Test
