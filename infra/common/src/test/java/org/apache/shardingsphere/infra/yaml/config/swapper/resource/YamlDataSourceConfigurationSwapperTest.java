@@ -23,6 +23,7 @@ import org.apache.shardingsphere.test.infra.fixture.jdbc.MockedDataSource;
 import org.junit.jupiter.api.Test;
 
 import javax.sql.DataSource;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -30,6 +31,7 @@ import java.util.Map;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class YamlDataSourceConfigurationSwapperTest {
     
@@ -47,6 +49,18 @@ class YamlDataSourceConfigurationSwapperTest {
         assertThat(actual1.getUrl(), is("jdbc:mock://127.0.0.1/ds_1"));
         assertThat(actual1.getUsername(), is("root"));
         assertThat(actual1.getPassword(), is("root"));
+    }
+    
+    @Test
+    void assertSwapToDataSourcesWithNullConfig() {
+        IllegalArgumentException actual = assertThrows(IllegalArgumentException.class, () -> swapper.swapToDataSources(null));
+        assertThat(actual.getMessage(), is("Data sources can not be empty."));
+    }
+    
+    @Test
+    void assertSwapToDataSourcesWithEmptyConfig() {
+        IllegalArgumentException actual = assertThrows(IllegalArgumentException.class, () -> swapper.swapToDataSources(Collections.emptyMap()));
+        assertThat(actual.getMessage(), is("Data sources can not be empty."));
     }
     
     @Test
