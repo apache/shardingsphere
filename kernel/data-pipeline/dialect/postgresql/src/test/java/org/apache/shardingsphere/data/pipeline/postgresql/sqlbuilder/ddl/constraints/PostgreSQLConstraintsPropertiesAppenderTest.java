@@ -42,6 +42,7 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+@SuppressWarnings("unchecked")
 class PostgreSQLConstraintsPropertiesAppenderTest {
     
     private final AtomicInteger constraintsCallCounter = new AtomicInteger();
@@ -53,9 +54,8 @@ class PostgreSQLConstraintsPropertiesAppenderTest {
         when(templateExecutor.getMajorVersion()).thenReturn(11);
         when(templateExecutor.executeByTemplate(anyMap(), anyString())).thenAnswer(invocation -> mockExecuteByTemplateFullCoverage(invocation.getArgument(0), invocation.getArgument(1)));
         when(templateExecutor.executeByTemplateForSingleRow(anyMap(), anyString())).thenReturn(createParentTable());
-        PostgreSQLConstraintsPropertiesAppender appender = createAppender(templateExecutor);
         Map<String, Object> context = createContext(true);
-        appender.append(context);
+        createAppender(templateExecutor).append(context);
         Collection<Map<String, Object>> primaryKeys = (Collection<Map<String, Object>>) context.get("primary_key");
         assertThat(primaryKeys.size(), is(1));
         Map<String, Object> primaryKey = primaryKeys.iterator().next();
@@ -98,7 +98,6 @@ class PostgreSQLConstraintsPropertiesAppenderTest {
         PostgreSQLDDLTemplateExecutor templateExecutor = mock(PostgreSQLDDLTemplateExecutor.class);
         when(templateExecutor.getMajorVersion()).thenReturn(10);
         when(templateExecutor.executeByTemplate(anyMap(), anyString())).thenAnswer(invocation -> mockExecuteByTemplateWithoutInclude(invocation.getArgument(1)));
-        when(templateExecutor.executeByTemplateForSingleRow(anyMap(), anyString())).thenReturn(Collections.emptyMap());
         PostgreSQLConstraintsPropertiesAppender appender = createAppender(templateExecutor);
         Map<String, Object> context = createContext(false);
         appender.append(context);
@@ -114,9 +113,9 @@ class PostgreSQLConstraintsPropertiesAppenderTest {
     
     @SneakyThrows(ReflectiveOperationException.class)
     private PostgreSQLConstraintsPropertiesAppender createAppender(final PostgreSQLDDLTemplateExecutor templateExecutor) {
-        PostgreSQLConstraintsPropertiesAppender appender = new PostgreSQLConstraintsPropertiesAppender(mock(Connection.class), 0, 0);
-        Plugins.getMemberAccessor().set(PostgreSQLConstraintsPropertiesAppender.class.getDeclaredField("templateExecutor"), appender, templateExecutor);
-        return appender;
+        PostgreSQLConstraintsPropertiesAppender result = new PostgreSQLConstraintsPropertiesAppender(mock(Connection.class), 0, 0);
+        Plugins.getMemberAccessor().set(PostgreSQLConstraintsPropertiesAppender.class.getDeclaredField("templateExecutor"), result, templateExecutor);
+        return result;
     }
     
     private Map<String, Object> createContext(final boolean relispartition) {

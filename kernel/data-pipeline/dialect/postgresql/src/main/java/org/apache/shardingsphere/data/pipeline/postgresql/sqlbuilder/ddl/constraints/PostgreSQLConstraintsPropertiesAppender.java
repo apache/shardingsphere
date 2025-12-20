@@ -82,7 +82,7 @@ public final class PostgreSQLConstraintsPropertiesAppender {
     private void appendConstraintsInclude(final Map<String, Object> constraintsProp) {
         Collection<Object> includes = templateExecutor.getMajorVersion() >= PG_CONSTRAINTS_INCLUDE_VERSION
                 ? templateExecutor.executeByTemplate(Collections.singletonMap("cid", constraintsProp.get("oid")),
-                "component/index_constraint/%s/get_constraint_include.ftl").stream().map(each -> each.get("colname")).collect(Collectors.toList())
+                        "component/index_constraint/%s/get_constraint_include.ftl").stream().map(each -> each.get("colname")).collect(Collectors.toList())
                 : Collections.emptyList();
         constraintsProp.put("include", includes);
     }
