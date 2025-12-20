@@ -31,6 +31,7 @@ import org.apache.shardingsphere.data.pipeline.postgresql.sqlbuilder.template.Po
 import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
+import org.apache.shardingsphere.test.infra.fixture.jdbc.MockedDataSource;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockedConstruction;
 import org.mockito.MockedStatic;
@@ -38,10 +39,10 @@ import org.postgresql.replication.LogSequenceNumber;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
-import java.sql.DatabaseMetaData;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -52,6 +53,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockConstruction;
 import static org.mockito.Mockito.mockStatic;
@@ -125,14 +127,10 @@ class PostgreSQLPipelineSQLBuilderTest {
     
     @Test
     void assertBuildCreateTableSQLs() throws SQLException {
-        DataSource dataSource = mock(DataSource.class);
-        Connection connection = mock(Connection.class);
-        DatabaseMetaData metaData = mock(DatabaseMetaData.class);
-        when(dataSource.getConnection()).thenReturn(connection);
-        when(connection.getMetaData()).thenReturn(metaData);
-        when(metaData.getDatabaseMajorVersion()).thenReturn(10);
-        when(metaData.getDatabaseMinorVersion()).thenReturn(1);
-        Map<String, Object> materials = new HashMap<>(1, 1F);
+        Connection connection = mock(Connection.class, RETURNS_DEEP_STUBS);
+        when(connection.getMetaData().getDatabaseMajorVersion()).thenReturn(10);
+        when(connection.getMetaData().getDatabaseMinorVersion()).thenReturn(1);
+        DataSource dataSource = new MockedDataSource(connection);
         Collection<Map<String, Object>> columns = new ArrayList<>(3);
         Map<String, Object> arrayColumn = new HashMap<>(2, 1F);
         arrayColumn.put("cltype", "int4[]");
@@ -140,10 +138,9 @@ class PostgreSQLPipelineSQLBuilderTest {
         Map<String, Object> normalColumn = new HashMap<>(2, 1F);
         normalColumn.put("cltype", "text");
         columns.add(normalColumn);
-        Map<String, Object> columnWithoutType = new HashMap<>(1, 1F);
-        columnWithoutType.put("name", "no_type");
+        Map<String, Object> columnWithoutType = Collections.singletonMap("name", "no_type");
         columns.add(columnWithoutType);
-        materials.put("columns", columns);
+        Map<String, Object> materials = Collections.singletonMap("columns", columns);
         try (
                 MockedStatic<PostgreSQLPipelineFreemarkerManager> freemarkerManager = mockStatic(PostgreSQLPipelineFreemarkerManager.class);
                 MockedConstruction<PostgreSQLTablePropertiesLoader> ignoredLoader =
