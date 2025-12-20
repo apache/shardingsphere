@@ -56,7 +56,6 @@ public final class YamlDataSourceConfigurationSwapper {
      * @return data sources
      */
     public Map<String, DataSource> swapToDataSources(final Map<String, Map<String, Object>> yamlDataSources, final boolean cacheEnabled) {
-        Preconditions.checkArgument(null != yamlDataSources && !yamlDataSources.isEmpty(), "Data sources can not be empty.");
         return DataSourcePoolCreator.create(yamlDataSources.entrySet().stream().collect(Collectors.toMap(Entry::getKey, entry -> swapToDataSourcePoolProperties(entry.getValue()))), cacheEnabled);
     }
     
