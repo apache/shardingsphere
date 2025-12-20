@@ -23,22 +23,45 @@ import org.apache.shardingsphere.data.pipeline.core.ingest.record.NormalColumn;
 import org.apache.shardingsphere.data.pipeline.core.sqlbuilder.dialect.DialectPipelineSQLBuilder;
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.incremental.wal.WALPosition;
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.incremental.wal.decode.PostgreSQLLogSequenceNumber;
+import org.apache.shardingsphere.data.pipeline.postgresql.sqlbuilder.ddl.column.PostgreSQLColumnPropertiesAppender;
+import org.apache.shardingsphere.data.pipeline.postgresql.sqlbuilder.ddl.constraints.PostgreSQLConstraintsPropertiesAppender;
+import org.apache.shardingsphere.data.pipeline.postgresql.sqlbuilder.ddl.index.PostgreSQLIndexSQLGenerator;
+import org.apache.shardingsphere.data.pipeline.postgresql.sqlbuilder.ddl.table.PostgreSQLTablePropertiesLoader;
+import org.apache.shardingsphere.data.pipeline.postgresql.sqlbuilder.template.PostgreSQLPipelineFreemarkerManager;
 import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.junit.jupiter.api.Test;
+import org.mockito.MockedConstruction;
+import org.mockito.MockedStatic;
 import org.postgresql.replication.LogSequenceNumber;
 
+import javax.sql.DataSource;
+import java.sql.Connection;
+import java.sql.DatabaseMetaData;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.mockConstruction;
+import static org.mockito.Mockito.mockStatic;
+import static org.mockito.Mockito.when;
 
 class PostgreSQLPipelineSQLBuilderTest {
     
-    private final DialectPipelineSQLBuilder sqlBuilder = DatabaseTypedSPILoader.getService(DialectPipelineSQLBuilder.class, TypedSPILoader.getService(DatabaseType.class, "PostgreSQL"));
+    private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "PostgreSQL");
+    
+    private final DialectPipelineSQLBuilder sqlBuilder = DatabaseTypedSPILoader.getService(DialectPipelineSQLBuilder.class, databaseType);
     
     @Test
     void assertBuildCreateSchemaSQL() {
@@ -98,5 +121,44 @@ class PostgreSQLPipelineSQLBuilderTest {
     @Test
     void assertWrapWithPageQuery() {
         assertThat(sqlBuilder.wrapWithPageQuery("SELECT * FROM foo_tbl"), is("SELECT * FROM foo_tbl LIMIT ?"));
+    }
+    
+    @Test
+    void assertBuildCreateTableSQLs() throws SQLException {
+        DataSource dataSource = mock(DataSource.class);
+        Connection connection = mock(Connection.class);
+        DatabaseMetaData metaData = mock(DatabaseMetaData.class);
+        when(dataSource.getConnection()).thenReturn(connection);
+        when(connection.getMetaData()).thenReturn(metaData);
+        when(metaData.getDatabaseMajorVersion()).thenReturn(10);
+        when(metaData.getDatabaseMinorVersion()).thenReturn(1);
+        Map<String, Object> materials = new HashMap<>(1, 1F);
+        Collection<Map<String, Object>> columns = new ArrayList<>(3);
+        Map<String, Object> arrayColumn = new HashMap<>(2, 1F);
+        arrayColumn.put("cltype", "int4[]");
+        columns.add(arrayColumn);
+        Map<String, Object> normalColumn = new HashMap<>(2, 1F);
+        normalColumn.put("cltype", "text");
+        columns.add(normalColumn);
+        Map<String, Object> columnWithoutType = new HashMap<>(1, 1F);
+        columnWithoutType.put("name", "no_type");
+        columns.add(columnWithoutType);
+        materials.put("columns", columns);
+        try (MockedStatic<PostgreSQLPipelineFreemarkerManager> freemarkerManager = mockStatic(PostgreSQLPipelineFreemarkerManager.class);
+             MockedConstruction<PostgreSQLTablePropertiesLoader> ignoredLoader = mockConstruction(PostgreSQLTablePropertiesLoader.class, (mocked, mockContext) -> when(mocked.load()).thenReturn(materials));
+             MockedConstruction<PostgreSQLColumnPropertiesAppender> ignoredColumnAppender = mockConstruction(PostgreSQLColumnPropertiesAppender.class);
+             MockedConstruction<PostgreSQLConstraintsPropertiesAppender> ignoredConstraintsAppender = mockConstruction(PostgreSQLConstraintsPropertiesAppender.class);
+             MockedConstruction<PostgreSQLIndexSQLGenerator> ignoredIndexGenerator = mockConstruction(PostgreSQLIndexSQLGenerator.class, (mocked, mockContext) -> when(mocked.generate(materials)).thenReturn("CREATE INDEX foo_index"))) {
+            freemarkerManager.when(() -> PostgreSQLPipelineFreemarkerManager.getSQLByVersion(materials, "component/table/%s/create.ftl", 10, 1)).thenReturn("CREATE TABLE foo;");
+            Collection<String> actual = sqlBuilder.buildCreateTableSQLs(dataSource, "public", "foo_tbl");
+            List<String> actualList = actual.stream().map(String::trim).collect(Collectors.toList());
+            assertThat(actualList.size(), is(2));
+            assertThat(actualList.get(0), is("CREATE TABLE foo"));
+            assertThat(actualList.get(1), is("CREATE INDEX foo_index"));
+            assertThat(arrayColumn.get("cltype"), is("int4"));
+            assertTrue((boolean) arrayColumn.get("hasSqrBracket"));
+            assertFalse((boolean) normalColumn.get("hasSqrBracket"));
+            assertFalse(columnWithoutType.containsKey("hasSqrBracket"));
+        }
     }
 }
