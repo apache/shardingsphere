@@ -193,8 +193,7 @@ class MySQLNegotiateHandlerTest {
         return Stream.of(
                 Arguments.of(MySQLAuthenticationPlugin.NATIVE.getPluginName(), PasswordEncryption.encryptWithMySQL41(PASSWORD.getBytes(), authenticationPluginSeed())),
                 Arguments.of(MySQLAuthenticationPlugin.CACHING_SHA2.getPluginName(), PasswordEncryption.encryptWithSha2(PASSWORD.getBytes(), authenticationPluginSeed())),
-                Arguments.of(MySQLAuthenticationPlugin.SHA256.getPluginName(), PASSWORD.getBytes())
-        );
+                Arguments.of(MySQLAuthenticationPlugin.SHA256.getPluginName(), PASSWORD.getBytes()));
     }
     
     private static byte[] authenticationPluginSeed() {
