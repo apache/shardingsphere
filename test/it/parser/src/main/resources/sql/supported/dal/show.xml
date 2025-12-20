@@ -235,6 +235,8 @@
     <sql-case id="show_compactions_with_limit" value="SHOW COMPACTIONS LIMIT 10;" db-types="Hive" />
     <sql-case id="show_compactions_with_compaction_ID" value="SHOW COMPACTIONS compactionid=1;" db-types="Hive" />
     <sql-case id="show_compactions_all_options" value="SHOW COMPACTIONS db1.tbl0 PARTITION (p=101, day='Monday') POOL 'pool0' TYPE 'minor' STATE 'ready for cleaning' ORDER BY `start` DESC LIMIT 5;" db-types="Hive" />
+    <sql-case id="show_transaction" value="SHOW TRANSACTION" db-types="Doris" />
+    <sql-case id="show_transaction_from_db" value="SHOW TRANSACTION FROM test_db" db-types="Doris" />
     <sql-case id="show_transaction_with_id" value="SHOW TRANSACTION WHERE ID=4005" db-types="Doris" />
     <sql-case id="show_transaction_with_label" value="SHOW TRANSACTION WHERE label='test_label'" db-types="Doris" />
     <sql-case id="show_transaction_from_db_with_id" value="SHOW TRANSACTION FROM test_db WHERE ID=4005" db-types="Doris" />

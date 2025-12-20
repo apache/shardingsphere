@@ -26,12 +26,14 @@ import org.apache.shardingsphere.proxy.backend.mysql.handler.admin.executor.show
 import org.apache.shardingsphere.proxy.backend.mysql.handler.admin.executor.show.MySQLShowProcedureStatusExecutor;
 import org.apache.shardingsphere.proxy.backend.mysql.handler.admin.executor.show.MySQLShowProcessListExecutor;
 import org.apache.shardingsphere.proxy.backend.mysql.handler.admin.executor.show.MySQLShowTablesExecutor;
+import org.apache.shardingsphere.proxy.backend.mysql.handler.admin.executor.show.MySQLShowTransactionExecutor;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.dal.show.database.MySQLShowCreateDatabaseStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.dal.show.database.MySQLShowDatabasesStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.dal.show.function.MySQLShowFunctionStatusStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.dal.show.procedure.MySQLShowProcedureStatusStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.dal.show.process.MySQLShowProcessListStatement;
+import org.apache.shardingsphere.sql.parser.statement.mysql.dal.show.MySQLShowTransactionStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.dal.show.table.MySQLShowTablesStatement;
 
 import java.util.Optional;
@@ -66,6 +68,9 @@ public final class MySQLShowAdminExecutorFactory {
         }
         if (sqlStatement instanceof MySQLShowProcessListStatement) {
             return Optional.of(new MySQLShowProcessListExecutor((MySQLShowProcessListStatement) sqlStatement));
+        }
+        if (sqlStatement instanceof MySQLShowTransactionStatement) {
+            return Optional.of(new MySQLShowTransactionExecutor((MySQLShowTransactionStatement) sqlStatement));
         }
         return Optional.empty();
     }

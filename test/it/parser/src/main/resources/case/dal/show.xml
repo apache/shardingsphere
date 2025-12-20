@@ -1099,6 +1099,14 @@
     <show sql-case-id="show_compactions_with_compaction_ID" />
     <show sql-case-id="show_compactions_all_options" />
 
+    <show-transaction sql-case-id="show_transaction" />
+
+    <show-transaction sql-case-id="show_transaction_from_db">
+        <from start-index="17" stop-index="28">
+            <database name="test_db" start-index="22" stop-index="28" />
+        </from>
+    </show-transaction>
+
     <show-transaction sql-case-id="show_transaction_with_id">
         <where start-index="17" stop-index="29">
             <expr>

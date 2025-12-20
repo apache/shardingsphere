@@ -255,7 +255,7 @@ showCharset
     ;
 
 showTransaction
-    : SHOW TRANSACTION fromDatabase? showWhereClause
+    : SHOW TRANSACTION fromDatabase? showWhereClause?
     ;
 
 setCharacter
