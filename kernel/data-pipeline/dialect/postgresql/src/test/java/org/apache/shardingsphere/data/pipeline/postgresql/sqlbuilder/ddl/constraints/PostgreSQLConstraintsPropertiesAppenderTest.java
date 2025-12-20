@@ -48,7 +48,7 @@ class PostgreSQLConstraintsPropertiesAppenderTest {
     private final AtomicInteger constraintsCallCounter = new AtomicInteger();
     
     @Test
-    void assertAppendWithFullCoverage() {
+    void assertAppend() {
         constraintsCallCounter.set(0);
         PostgreSQLDDLTemplateExecutor templateExecutor = mock(PostgreSQLDDLTemplateExecutor.class);
         when(templateExecutor.getMajorVersion()).thenReturn(11);
@@ -98,9 +98,8 @@ class PostgreSQLConstraintsPropertiesAppenderTest {
         PostgreSQLDDLTemplateExecutor templateExecutor = mock(PostgreSQLDDLTemplateExecutor.class);
         when(templateExecutor.getMajorVersion()).thenReturn(10);
         when(templateExecutor.executeByTemplate(anyMap(), anyString())).thenAnswer(invocation -> mockExecuteByTemplateWithoutInclude(invocation.getArgument(1)));
-        PostgreSQLConstraintsPropertiesAppender appender = createAppender(templateExecutor);
         Map<String, Object> context = createContext(false);
-        appender.append(context);
+        createAppender(templateExecutor).append(context);
         Collection<Map<String, Object>> primaryKeys = (Collection<Map<String, Object>>) context.get("primary_key");
         assertThat(primaryKeys.size(), is(1));
         assertThat(primaryKeys.iterator().next().get("include"), is(Collections.emptyList()));
@@ -111,10 +110,10 @@ class PostgreSQLConstraintsPropertiesAppenderTest {
         assertThat(exclusionConstraints.iterator().next().get("include"), is(Collections.emptyList()));
     }
     
-    @SneakyThrows(ReflectiveOperationException.class)
-    private PostgreSQLConstraintsPropertiesAppender createAppender(final PostgreSQLDDLTemplateExecutor templateExecutor) {
-        PostgreSQLConstraintsPropertiesAppender result = new PostgreSQLConstraintsPropertiesAppender(mock(Connection.class), 0, 0);
-        Plugins.getMemberAccessor().set(PostgreSQLConstraintsPropertiesAppender.class.getDeclaredField("templateExecutor"), result, templateExecutor);
+    private Map<String, Object> createParentTable() {
+        Map<String, Object> result = new HashMap<>(2, 1F);
+        result.put("schema", "remote_schema");
+        result.put("table", "remote_table");
         return result;
     }
     
@@ -127,146 +126,10 @@ class PostgreSQLConstraintsPropertiesAppenderTest {
         return result;
     }
     
-    private Collection<Map<String, Object>> createIndexConstraintsProps() {
-        Map<String, Object> filtered = new HashMap<>(3, 1F);
-        filtered.put("oid", 1L);
-        filtered.put("col_count", 2);
-        filtered.put("conislocal", true);
-        Map<String, Object> remained = new HashMap<>(3, 1F);
-        remained.put("oid", 2L);
-        remained.put("col_count", 1);
-        remained.put("conislocal", false);
-        return new LinkedList<>(Arrays.asList(filtered, remained));
-    }
-    
-    private Collection<Map<String, Object>> createIndexConstraintColumns() {
-        Collection<Map<String, Object>> result = new LinkedList<>();
-        result.add(Collections.singletonMap("column", "\"id\""));
-        result.add(Collections.singletonMap("column", "name"));
-        return result;
-    }
-    
-    private Collection<Map<String, Object>> createSingleConstraintProps() {
-        Map<String, Object> remained = new HashMap<>(3, 1F);
-        remained.put("oid", 5L);
-        remained.put("col_count", 1);
-        remained.put("conislocal", false);
-        return Collections.singletonList(remained);
-    }
-    
-    private Map<String, Object> createExclusionConstraintProps() {
-        Map<String, Object> result = new HashMap<>(2, 1F);
-        result.put("oid", 3L);
-        result.put("col_count", 2);
-        return result;
-    }
-    
-    private Collection<Map<String, Object>> createExclusionConstraintColumns() {
-        Map<String, Object> first = new HashMap<>(6, 1F);
-        first.put("options", 0);
-        first.put("coldef", "\"colA\"");
-        first.put("opcname", "opc1");
-        first.put("oprname", "opr1");
-        first.put("datatype", "int");
-        first.put("is_exp", false);
-        Map<String, Object> second = new HashMap<>(6, 1F);
-        second.put("options", 3);
-        second.put("coldef", "colB\"");
-        second.put("opcname", "opc2");
-        second.put("oprname", "opr2");
-        second.put("datatype", "text");
-        second.put("is_exp", true);
-        return new LinkedList<>(Arrays.asList(first, second));
-    }
-    
-    private Map<String, Object> createSimpleExclusionColumn() {
-        Map<String, Object> result = new HashMap<>(6, 1F);
-        result.put("options", 0);
-        result.put("coldef", "colC");
-        result.put("opcname", "opc");
-        result.put("oprname", "opr");
-        result.put("datatype", "text");
-        result.put("is_exp", false);
-        return result;
-    }
-    
-    private Collection<Map<String, Object>> createForeignKeyProps() {
-        Map<String, Object> retained = new HashMap<>(6, 1F);
-        retained.put("confrelid", 10L);
-        retained.put("refnsp", "public");
-        retained.put("reftab", "ref_table");
-        retained.put("confkey", 1);
-        retained.put("conkey", 1);
-        retained.put("conislocal", false);
-        Map<String, Object> second = new HashMap<>(6, 1F);
-        second.put("confrelid", 30L);
-        second.put("refnsp", "public");
-        second.put("reftab", "ref_table2");
-        second.put("confkey", 3);
-        second.put("conkey", 3);
-        second.put("conislocal", false);
-        Map<String, Object> filtered = new HashMap<>(6, 1F);
-        filtered.put("confrelid", 20L);
-        filtered.put("refnsp", "public");
-        filtered.put("reftab", "ignored");
-        filtered.put("confkey", 2);
-        filtered.put("conkey", 2);
-        filtered.put("conislocal", true);
-        return new LinkedList<>(Arrays.asList(retained, second, filtered));
-    }
-    
-    private Collection<Map<String, Object>> createForeignKeyColumns(final Map<String, Object> params) {
-        Collection<Map<String, Object>> keys = (Collection<Map<String, Object>>) params.get("keys");
-        String confKey = keys.iterator().next().get("confkey").toString();
-        Map<String, Object> column = new HashMap<>(2, 1F);
-        if ("1".equals(confKey)) {
-            column.put("conattname", "fk_col1");
-            column.put("confattname", "ref_col1");
-        } else if ("3".equals(confKey)) {
-            column.put("conattname", "fk_col3");
-            column.put("confattname", "ref_col3");
-        } else {
-            column.put("conattname", "fk_col2");
-            column.put("confattname", "ref_col2");
-        }
-        return Collections.singletonList(column);
-    }
-    
-    private Map<String, Object> createCoveringIndex(final long oid, final String idxName) {
-        Map<String, Object> result = new HashMap<>(3, 1F);
-        result.put("oid", oid);
-        result.put("col_count", 1);
-        result.put("idxname", idxName);
-        return result;
-    }
-    
-    private Collection<Map<String, Object>> createCoveringIndexColumns(final Map<String, Object> params) {
-        Map<String, Object> column = new HashMap<>(1, 1F);
-        if (6L == (long) params.get("cid")) {
-            column.put("column", "fk_col1");
-        } else if (7L == (long) params.get("cid")) {
-            column.put("column", "other_col");
-        } else {
-            column.put("column", "another_col");
-        }
-        return Collections.singletonList(column);
-    }
-    
-    private Map<String, Object> createParentTable() {
-        Map<String, Object> result = new HashMap<>(2, 1F);
-        result.put("schema", "remote_schema");
-        result.put("table", "remote_table");
-        return result;
-    }
-    
-    private Collection<Map<String, Object>> createCheckConstraints() {
-        Collection<Map<String, Object>> result = new LinkedList<>();
-        Map<String, Object> filtered = new HashMap<>(1, 1F);
-        filtered.put("conislocal", true);
-        Map<String, Object> remained = new HashMap<>(1, 1F);
-        remained.put("conislocal", false);
-        result.add(filtered);
-        result.add(remained);
+    @SneakyThrows(ReflectiveOperationException.class)
+    private PostgreSQLConstraintsPropertiesAppender createAppender(final PostgreSQLDDLTemplateExecutor templateExecutor) {
+        PostgreSQLConstraintsPropertiesAppender result = new PostgreSQLConstraintsPropertiesAppender(mock(Connection.class), 0, 0);
+        Plugins.getMemberAccessor().set(PostgreSQLConstraintsPropertiesAppender.class.getDeclaredField("templateExecutor"), result, templateExecutor);
         return result;
     }
     
@@ -275,7 +138,7 @@ class PostgreSQLConstraintsPropertiesAppenderTest {
             case "component/index_constraint/%s/properties.ftl":
                 return createIndexConstraintsProps();
             case "component/index_constraint/%s/get_costraint_cols.ftl":
-                return createIndexConstraintColumns();
+                return Arrays.asList(Collections.singletonMap("column", "\"id\""), Collections.singletonMap("column", "name"));
             case "component/index_constraint/%s/get_constraint_include.ftl":
                 return Collections.singletonList(Collections.singletonMap("colname", "include_col"));
             case "component/exclusion_constraint/%s/properties.ftl":
@@ -300,10 +163,109 @@ class PostgreSQLConstraintsPropertiesAppenderTest {
             case "component/foreign_key/%s/get_cols.ftl":
                 return createCoveringIndexColumns(params);
             case "component/check_constraint/%s/properties.ftl":
-                return createCheckConstraints();
+                return Arrays.asList(Collections.singletonMap("conislocal", true), Collections.singletonMap("conislocal", false));
             default:
                 return Collections.emptyList();
         }
+    }
+    
+    private Collection<Map<String, Object>> createIndexConstraintsProps() {
+        Map<String, Object> filtered = new HashMap<>(3, 1F);
+        filtered.put("oid", 1L);
+        filtered.put("col_count", 2);
+        filtered.put("conislocal", true);
+        Map<String, Object> remained = new HashMap<>(3, 1F);
+        remained.put("oid", 2L);
+        remained.put("col_count", 1);
+        remained.put("conislocal", false);
+        return Arrays.asList(filtered, remained);
+    }
+    
+    private Map<String, Object> createExclusionConstraintProps() {
+        Map<String, Object> result = new HashMap<>(2, 1F);
+        result.put("oid", 3L);
+        result.put("col_count", 2);
+        return result;
+    }
+    
+    private Collection<Map<String, Object>> createExclusionConstraintColumns() {
+        Map<String, Object> first = new HashMap<>(6, 1F);
+        first.put("options", 0);
+        first.put("coldef", "\"colA\"");
+        first.put("opcname", "opc1");
+        first.put("oprname", "opr1");
+        first.put("datatype", "int");
+        first.put("is_exp", false);
+        Map<String, Object> second = new HashMap<>(6, 1F);
+        second.put("options", 3);
+        second.put("coldef", "colB\"");
+        second.put("opcname", "opc2");
+        second.put("oprname", "opr2");
+        second.put("datatype", "text");
+        second.put("is_exp", true);
+        return Arrays.asList(first, second);
+    }
+    
+    private Collection<Map<String, Object>> createForeignKeyProps() {
+        Map<String, Object> retained = new HashMap<>(6, 1F);
+        retained.put("confrelid", 10L);
+        retained.put("refnsp", "public");
+        retained.put("reftab", "ref_table");
+        retained.put("confkey", 1);
+        retained.put("conkey", 1);
+        retained.put("conislocal", false);
+        Map<String, Object> second = new HashMap<>(6, 1F);
+        second.put("confrelid", 30L);
+        second.put("refnsp", "public");
+        second.put("reftab", "ref_table2");
+        second.put("confkey", 3);
+        second.put("conkey", 3);
+        second.put("conislocal", false);
+        Map<String, Object> filtered = new HashMap<>(6, 1F);
+        filtered.put("confrelid", 20L);
+        filtered.put("refnsp", "public");
+        filtered.put("reftab", "ignored");
+        filtered.put("confkey", 2);
+        filtered.put("conkey", 2);
+        filtered.put("conislocal", true);
+        return Arrays.asList(retained, second, filtered);
+    }
+    
+    private Collection<Map<String, Object>> createForeignKeyColumns(final Map<String, Object> params) {
+        Collection<Map<String, Object>> keys = (Collection<Map<String, Object>>) params.get("keys");
+        String confKey = keys.iterator().next().get("confkey").toString();
+        Map<String, Object> column = new HashMap<>(2, 1F);
+        if ("1".equals(confKey)) {
+            column.put("conattname", "fk_col1");
+            column.put("confattname", "ref_col1");
+        } else if ("3".equals(confKey)) {
+            column.put("conattname", "fk_col3");
+            column.put("confattname", "ref_col3");
+        } else {
+            column.put("conattname", "fk_col2");
+            column.put("confattname", "ref_col2");
+        }
+        return Collections.singleton(column);
+    }
+    
+    private Map<String, Object> createCoveringIndex(final long oid, final String idxName) {
+        Map<String, Object> result = new HashMap<>(3, 1F);
+        result.put("oid", oid);
+        result.put("col_count", 1);
+        result.put("idxname", idxName);
+        return result;
+    }
+    
+    private Collection<Map<String, Object>> createCoveringIndexColumns(final Map<String, Object> params) {
+        Map<String, Object> column = new HashMap<>(1, 1F);
+        if (6L == (long) params.get("cid")) {
+            column.put("column", "fk_col1");
+        } else if (7L == (long) params.get("cid")) {
+            column.put("column", "other_col");
+        } else {
+            column.put("column", "another_col");
+        }
+        return Collections.singletonList(column);
     }
     
     private Collection<Map<String, Object>> mockExecuteByTemplateWithoutInclude(final String path) {
@@ -319,5 +281,24 @@ class PostgreSQLConstraintsPropertiesAppenderTest {
             default:
                 return Collections.emptyList();
         }
+    }
+    
+    private Collection<Map<String, Object>> createSingleConstraintProps() {
+        Map<String, Object> remained = new HashMap<>(3, 1F);
+        remained.put("oid", 5L);
+        remained.put("col_count", 1);
+        remained.put("conislocal", false);
+        return Collections.singletonList(remained);
+    }
+    
+    private Map<String, Object> createSimpleExclusionColumn() {
+        Map<String, Object> result = new HashMap<>(6, 1F);
+        result.put("options", 0);
+        result.put("coldef", "colC");
+        result.put("opcname", "opc");
+        result.put("oprname", "opr");
+        result.put("datatype", "text");
+        result.put("is_exp", false);
+        return result;
     }
 }
