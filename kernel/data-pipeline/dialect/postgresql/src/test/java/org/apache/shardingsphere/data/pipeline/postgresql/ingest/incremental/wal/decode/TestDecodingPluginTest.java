@@ -249,22 +249,19 @@ class TestDecodingPluginTest {
     private static Stream<String> provideIllegalByteaWal() {
         return Stream.of(
                 "table public.test: INSERT: data[bytea]:'\\xff0'",
-                "table public.test: INSERT: data[bytea]:'\\xzz'"
-        );
+                "table public.test: INSERT: data[bytea]:'\\xzz'");
     }
     
     private static Stream<String> provideIngestExceptionWal() {
         return Stream.of(
                 "table public.test: UNKNOWN: data[character varying]:'1 2 3'''",
                 "table public.test: SELECT: id[integer]:1",
-                "table public.test: INSERT: data[json]:'{}x'"
-        );
+                "table public.test: INSERT: data[json]:'{}x'");
     }
     
     private static Stream<Arguments> provideNullValueWal() {
         return Stream.of(
                 Arguments.of("table public.test: INSERT: col_null[integer]:null col_int[integer]:1", 2, 1),
-                Arguments.of("table public.test: INSERT: col_null[integer]:null", 1, null)
-        );
+                Arguments.of("table public.test: INSERT: col_null[integer]:null", 1, null));
     }
 }
