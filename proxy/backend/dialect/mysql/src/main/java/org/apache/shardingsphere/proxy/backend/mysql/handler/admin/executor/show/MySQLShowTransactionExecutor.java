@@ -48,7 +48,7 @@ import java.util.stream.Collectors;
  * Show transaction executor for MySQL.
  */
 @RequiredArgsConstructor
-public final class MySQLShowTransactionExecutor implements DatabaseAdminQueryExecutor {
+public class MySQLShowTransactionExecutor implements DatabaseAdminQueryExecutor {
     
     private final MySQLShowTransactionStatement sqlStatement;
     
@@ -120,16 +120,32 @@ public final class MySQLShowTransactionExecutor implements DatabaseAdminQueryExe
     }
     
     private void extractFilterFromBinaryExpression(final BinaryOperationExpression expression) {
-        if (expression.getLeft() instanceof ColumnSegment && expression.getRight() instanceof LiteralExpressionSegment) {
-            ColumnSegment column = (ColumnSegment) expression.getLeft();
-            LiteralExpressionSegment literal = (LiteralExpressionSegment) expression.getRight();
-            String columnName = column.getIdentifier().getValue().toLowerCase();
-            if ("id".equals(columnName)) {
-                filterTransactionId = Optional.of(((Number) literal.getLiterals()).longValue());
-            } else if ("label".equals(columnName)) {
-                filterLabel = Optional.of(String.valueOf(literal.getLiterals()));
+        if (!(expression.getLeft() instanceof ColumnSegment) || !(expression.getRight() instanceof LiteralExpressionSegment)) {
+            return;
+        }
+        ColumnSegment column = (ColumnSegment) expression.getLeft();
+        LiteralExpressionSegment literal = (LiteralExpressionSegment) expression.getRight();
+        String columnName = column.getIdentifier().getValue().toLowerCase();
+        Object literalValue = literal.getLiterals();
+        if ("id".equalsIgnoreCase(columnName)) {
+            filterTransactionId = extractLongValue(literalValue);
+        } else if ("label".equalsIgnoreCase(columnName)) {
+            filterLabel = Optional.of(String.valueOf(literalValue));
+        }
+    }
+    
+    private Optional<Long> extractLongValue(final Object value) {
+        if (value instanceof Number) {
+            return Optional.of(((Number) value).longValue());
+        }
+        if (value instanceof String) {
+            try {
+                return Optional.of(Long.parseLong((String) value));
+            } catch (final NumberFormatException ignored) {
+                return Optional.empty();
             }
         }
+        return Optional.empty();
     }
     
     private boolean matchesFilter(final TransactionInfo transaction) {
@@ -158,8 +174,8 @@ public final class MySQLShowTransactionExecutor implements DatabaseAdminQueryExe
                 transaction.getTimeoutMs());
     }
     
-    private Collection<TransactionInfo> loadTransactions() {
-        return Collections.emptyList();
+    protected Collection<TransactionInfo> loadTransactions() {
+        throw new UnsupportedOperationException("SHOW TRANSACTION is not supported for the moment. ");
     }
     
     /**

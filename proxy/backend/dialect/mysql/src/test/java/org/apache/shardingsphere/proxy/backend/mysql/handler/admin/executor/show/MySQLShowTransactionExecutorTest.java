@@ -22,6 +22,7 @@ import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.database.exception.core.exception.syntax.database.UnknownDatabaseException;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResultMetaData;
+import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
@@ -44,15 +45,18 @@ import org.mockito.quality.Strictness;
 
 import java.sql.SQLException;
 import java.sql.Types;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -66,71 +70,66 @@ class MySQLShowTransactionExecutorTest {
     private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "MySQL");
     
     @Test
-    void assertExecuteWithoutFromAndWhere() throws SQLException {
+    void assertExecuteWithoutFromAndWhere() {
         MySQLShowTransactionStatement sqlStatement = new MySQLShowTransactionStatement(databaseType);
         MySQLShowTransactionExecutor executor = new MySQLShowTransactionExecutor(sqlStatement);
-        executor.execute(mockConnectionSession(DATABASE_NAME), mockMetaData(createDatabases()));
-        assertQueryResultMetaData(executor.getQueryResultMetaData());
-        assertFalse(executor.getMergedResult().next());
+        UnsupportedOperationException exception = assertThrows(UnsupportedOperationException.class,
+                () -> executor.execute(mockConnectionSession(DATABASE_NAME), mockMetaData(createDatabases())));
+        assertThat(exception.getMessage(), is("SHOW TRANSACTION is not supported for the moment. "));
     }
     
     @Test
-    void assertExecuteWithFromDatabase() throws SQLException {
+    void assertExecuteWithFromDatabase() {
         MySQLShowTransactionStatement sqlStatement = new MySQLShowTransactionStatement(databaseType);
         FromDatabaseSegment fromDatabaseSegment = new FromDatabaseSegment(0, new DatabaseSegment(0, 0, new IdentifierValue(DATABASE_NAME)));
         sqlStatement.setFromDatabase(fromDatabaseSegment);
         MySQLShowTransactionExecutor executor = new MySQLShowTransactionExecutor(sqlStatement);
-        executor.execute(mockConnectionSession("other_db"), mockMetaData(createDatabases()));
-        assertQueryResultMetaData(executor.getQueryResultMetaData());
-        assertFalse(executor.getMergedResult().next());
+        assertThrows(UnsupportedOperationException.class,
+                () -> executor.execute(mockConnectionSession("other_db"), mockMetaData(createDatabases())));
     }
     
     @Test
-    void assertExecuteWithWhereId() throws SQLException {
+    void assertExecuteWithWhereId() {
         MySQLShowTransactionStatement sqlStatement = new MySQLShowTransactionStatement(databaseType);
         WhereSegment whereSegment = createWhereSegment("ID", 4005);
         sqlStatement.setWhere(whereSegment);
         MySQLShowTransactionExecutor executor = new MySQLShowTransactionExecutor(sqlStatement);
-        executor.execute(mockConnectionSession(DATABASE_NAME), mockMetaData(createDatabases()));
-        assertQueryResultMetaData(executor.getQueryResultMetaData());
-        assertFalse(executor.getMergedResult().next());
+        assertThrows(UnsupportedOperationException.class,
+                () -> executor.execute(mockConnectionSession(DATABASE_NAME), mockMetaData(createDatabases())));
     }
     
     @Test
-    void assertExecuteWithWhereLabel() throws SQLException {
+    void assertExecuteWithWhereLabel() {
         MySQLShowTransactionStatement sqlStatement = new MySQLShowTransactionStatement(databaseType);
         WhereSegment whereSegment = createWhereSegment("label", "test_label");
         sqlStatement.setWhere(whereSegment);
         MySQLShowTransactionExecutor executor = new MySQLShowTransactionExecutor(sqlStatement);
-        executor.execute(mockConnectionSession(DATABASE_NAME), mockMetaData(createDatabases()));
-        assertQueryResultMetaData(executor.getQueryResultMetaData());
-        assertFalse(executor.getMergedResult().next());
+        assertThrows(UnsupportedOperationException.class,
+                () -> executor.execute(mockConnectionSession(DATABASE_NAME), mockMetaData(createDatabases())));
     }
     
     @Test
-    void assertExecuteWithFromAndWhereId() throws SQLException {
+    void assertExecuteWithFromAndWhereId() {
         MySQLShowTransactionStatement sqlStatement = new MySQLShowTransactionStatement(databaseType);
         FromDatabaseSegment fromDatabaseSegment = new FromDatabaseSegment(0, new DatabaseSegment(0, 0, new IdentifierValue(DATABASE_NAME)));
         sqlStatement.setFromDatabase(fromDatabaseSegment);
         WhereSegment whereSegment = createWhereSegment("ID", 4005);
         sqlStatement.setWhere(whereSegment);
         MySQLShowTransactionExecutor executor = new MySQLShowTransactionExecutor(sqlStatement);
-        executor.execute(mockConnectionSession("other_db"), mockMetaData(createDatabases()));
-        assertQueryResultMetaData(executor.getQueryResultMetaData());
-        assertFalse(executor.getMergedResult().next());
+        assertThrows(UnsupportedOperationException.class,
+                () -> executor.execute(mockConnectionSession("other_db"), mockMetaData(createDatabases())));
     }
     
     @Test
-    void assertExecuteWithFromAndWhereLabel() throws SQLException {
+    void assertExecuteWithFromAndWhereLabel() {
         MySQLShowTransactionStatement sqlStatement = new MySQLShowTransactionStatement(databaseType);
         FromDatabaseSegment fromDatabaseSegment = new FromDatabaseSegment(0, new DatabaseSegment(0, 0, new IdentifierValue(DATABASE_NAME)));
         sqlStatement.setFromDatabase(fromDatabaseSegment);
         WhereSegment whereSegment = createWhereSegment("label", "test_label");
         sqlStatement.setWhere(whereSegment);
         MySQLShowTransactionExecutor executor = new MySQLShowTransactionExecutor(sqlStatement);
-        executor.execute(mockConnectionSession("other_db"), mockMetaData(createDatabases()));
-        assertQueryResultMetaData(executor.getQueryResultMetaData());
-        assertFalse(executor.getMergedResult().next());
+        assertThrows(UnsupportedOperationException.class,
+                () -> executor.execute(mockConnectionSession("other_db"), mockMetaData(createDatabases())));
     }
     
     @Test
@@ -143,45 +142,69 @@ class MySQLShowTransactionExecutorTest {
     }
     
     @Test
-    void assertExecuteWithUncompletedDatabase() throws SQLException {
+    void assertExecuteWithUncompletedDatabase() {
         MySQLShowTransactionStatement sqlStatement = new MySQLShowTransactionStatement(databaseType);
         FromDatabaseSegment fromDatabaseSegment = new FromDatabaseSegment(0, new DatabaseSegment(0, 0, new IdentifierValue("uncompleted")));
         sqlStatement.setFromDatabase(fromDatabaseSegment);
         MySQLShowTransactionExecutor executor = new MySQLShowTransactionExecutor(sqlStatement);
         executor.execute(mockConnectionSession("uncompleted"), mockMetaData(createDatabases()));
-        assertQueryResultMetaData(executor.getQueryResultMetaData());
-        assertFalse(executor.getMergedResult().next());
     }
     
     @Test
-    void assertTransactionStatusConstants() throws SQLException {
+    void assertTransactionStatusConstants() {
         MySQLShowTransactionStatement sqlStatement = new MySQLShowTransactionStatement(databaseType);
         MySQLShowTransactionExecutor executor = new MySQLShowTransactionExecutor(sqlStatement);
-        executor.execute(mockConnectionSession(DATABASE_NAME), mockMetaData(createDatabases()));
-        assertQueryResultMetaData(executor.getQueryResultMetaData());
+        assertThrows(UnsupportedOperationException.class,
+                () -> executor.execute(mockConnectionSession(DATABASE_NAME), mockMetaData(createDatabases())));
     }
     
     @Test
-    void assertBuildTransactionRowWithAllColumns() {
-        MySQLShowTransactionExecutor.TransactionInfo transactionInfo = new MySQLShowTransactionExecutor.TransactionInfo(
-                4005L, "test_label", "coordinator_node", "VISIBLE", "ROUTINE_LOAD",
-                "2025-01-01 10:00:00", "2025-01-01 10:01:00", "2025-01-01 10:02:00",
-                "", 0, 12345L, 60000L);
-        assertThat(transactionInfo.getTransactionId(), is(4005L));
-        assertThat(transactionInfo.getLabel(), is("test_label"));
-        assertThat(transactionInfo.getCoordinator(), is("coordinator_node"));
-        assertThat(transactionInfo.getTransactionStatus(), is("VISIBLE"));
-        assertThat(transactionInfo.getLoadJobSourceType(), is("ROUTINE_LOAD"));
-        assertThat(transactionInfo.getPrepareTime(), is("2025-01-01 10:00:00"));
-        assertThat(transactionInfo.getCommitTime(), is("2025-01-01 10:01:00"));
-        assertThat(transactionInfo.getFinishTime(), is("2025-01-01 10:02:00"));
-        assertThat(transactionInfo.getReason(), is(""));
-        assertThat(transactionInfo.getErrorReplicasCount(), is(0));
-        assertThat(transactionInfo.getListenerId(), is(12345L));
-        assertThat(transactionInfo.getTimeoutMs(), is(60000L));
+    void assertWhereIdFilterWithNumberLiteral() {
+        MySQLShowTransactionStatement sqlStatement = new MySQLShowTransactionStatement(databaseType);
+        WhereSegment whereSegment = createWhereSegment("id", 1001L);
+        sqlStatement.setWhere(whereSegment);
+        MySQLShowTransactionExecutor executor = new MySQLShowTransactionExecutor(sqlStatement);
+        assertThrows(UnsupportedOperationException.class,
+                () -> executor.execute(mockConnectionSession(DATABASE_NAME), mockMetaData(createDatabases())));
     }
     
-    private void assertQueryResultMetaData(final QueryResultMetaData metaData) throws SQLException {
+    @Test
+    void assertWhereIdFilterWithStringLiteral() {
+        MySQLShowTransactionStatement sqlStatement = new MySQLShowTransactionStatement(databaseType);
+        WhereSegment whereSegment = createWhereSegment("id", "1001");
+        sqlStatement.setWhere(whereSegment);
+        MySQLShowTransactionExecutor executor = new MySQLShowTransactionExecutor(sqlStatement);
+        assertThrows(UnsupportedOperationException.class,
+                () -> executor.execute(mockConnectionSession(DATABASE_NAME), mockMetaData(createDatabases())));
+    }
+    
+    @Test
+    void assertWhereIdFilterCaseInsensitive() {
+        MySQLShowTransactionStatement sqlStatement = new MySQLShowTransactionStatement(databaseType);
+        WhereSegment whereSegment = createWhereSegment("ID", 1001L);
+        sqlStatement.setWhere(whereSegment);
+        MySQLShowTransactionExecutor executor = new MySQLShowTransactionExecutor(sqlStatement);
+        assertThrows(UnsupportedOperationException.class,
+                () -> executor.execute(mockConnectionSession(DATABASE_NAME), mockMetaData(createDatabases())));
+    }
+    
+    @Test
+    void assertWhereLabelFilterCaseInsensitive() {
+        MySQLShowTransactionStatement sqlStatement = new MySQLShowTransactionStatement(databaseType);
+        WhereSegment whereSegment = createWhereSegment("LABEL", "test_label");
+        sqlStatement.setWhere(whereSegment);
+        MySQLShowTransactionExecutor executor = new MySQLShowTransactionExecutor(sqlStatement);
+        assertThrows(UnsupportedOperationException.class,
+                () -> executor.execute(mockConnectionSession(DATABASE_NAME), mockMetaData(createDatabases())));
+    }
+    
+    @Test
+    void assertQueryResultMetaDataWithFullColumnSet() throws SQLException {
+        MySQLShowTransactionStatement sqlStatement = new MySQLShowTransactionStatement(databaseType);
+        TestableShowTransactionExecutor executor = new TestableShowTransactionExecutor(sqlStatement);
+        executor.setTestData(Collections.emptyList());
+        executor.execute(mockConnectionSession(DATABASE_NAME), mockMetaData(createDatabases()));
+        QueryResultMetaData metaData = executor.getQueryResultMetaData();
         assertThat(metaData.getColumnCount(), is(12));
         assertThat(metaData.getColumnLabel(1), is("TransactionId"));
         assertThat(metaData.getColumnType(1), is(Types.BIGINT));
@@ -209,6 +232,131 @@ class MySQLShowTransactionExecutorTest {
         assertThat(metaData.getColumnType(12), is(Types.BIGINT));
     }
     
+    @Test
+    void assertExecuteWithDataPresent() throws SQLException {
+        MySQLShowTransactionStatement sqlStatement = new MySQLShowTransactionStatement(databaseType);
+        TestableShowTransactionExecutor executor = new TestableShowTransactionExecutor(sqlStatement);
+        executor.setTestData(createMockTransactions());
+        executor.execute(mockConnectionSession(DATABASE_NAME), mockMetaData(createDatabases()));
+        MergedResult mergedResult = executor.getMergedResult();
+        assertTrue(mergedResult.next());
+        assertThat(mergedResult.getValue(1, String.class), is("1001"));
+        assertThat(mergedResult.getValue(2, String.class), is("load_job_1"));
+        assertThat(mergedResult.getValue(3, String.class), is("coordinator_node_1"));
+        assertThat(mergedResult.getValue(4, String.class), is("VISIBLE"));
+        assertTrue(mergedResult.next());
+        assertThat(mergedResult.getValue(1, String.class), is("1002"));
+        assertThat(mergedResult.getValue(2, String.class), is("load_job_2"));
+        assertFalse(mergedResult.next());
+    }
+    
+    @Test
+    void assertExecuteWithDataAbsent() throws SQLException {
+        MySQLShowTransactionStatement sqlStatement = new MySQLShowTransactionStatement(databaseType);
+        TestableShowTransactionExecutor executor = new TestableShowTransactionExecutor(sqlStatement);
+        executor.setTestData(Collections.emptyList());
+        executor.execute(mockConnectionSession(DATABASE_NAME), mockMetaData(createDatabases()));
+        MergedResult mergedResult = executor.getMergedResult();
+        assertFalse(mergedResult.next());
+    }
+    
+    @Test
+    void assertWhereIdFilterHit() throws SQLException {
+        MySQLShowTransactionStatement sqlStatement = new MySQLShowTransactionStatement(databaseType);
+        WhereSegment whereSegment = createWhereSegment("id", 1001L);
+        sqlStatement.setWhere(whereSegment);
+        TestableShowTransactionExecutor executor = new TestableShowTransactionExecutor(sqlStatement);
+        executor.setTestData(createMockTransactions());
+        executor.execute(mockConnectionSession(DATABASE_NAME), mockMetaData(createDatabases()));
+        MergedResult mergedResult = executor.getMergedResult();
+        assertTrue(mergedResult.next());
+        assertThat(mergedResult.getValue(1, String.class), is("1001"));
+        assertThat(mergedResult.getValue(2, String.class), is("load_job_1"));
+        assertFalse(mergedResult.next());
+    }
+    
+    @Test
+    void assertWhereIdFilterMiss() throws SQLException {
+        MySQLShowTransactionStatement sqlStatement = new MySQLShowTransactionStatement(databaseType);
+        WhereSegment whereSegment = createWhereSegment("id", 9999L);
+        sqlStatement.setWhere(whereSegment);
+        TestableShowTransactionExecutor executor = new TestableShowTransactionExecutor(sqlStatement);
+        executor.setTestData(createMockTransactions());
+        executor.execute(mockConnectionSession(DATABASE_NAME), mockMetaData(createDatabases()));
+        MergedResult mergedResult = executor.getMergedResult();
+        assertFalse(mergedResult.next());
+    }
+    
+    @Test
+    void assertWhereLabelFilterHit() throws SQLException {
+        MySQLShowTransactionStatement sqlStatement = new MySQLShowTransactionStatement(databaseType);
+        WhereSegment whereSegment = createWhereSegment("label", "load_job_2");
+        sqlStatement.setWhere(whereSegment);
+        TestableShowTransactionExecutor executor = new TestableShowTransactionExecutor(sqlStatement);
+        executor.setTestData(createMockTransactions());
+        executor.execute(mockConnectionSession(DATABASE_NAME), mockMetaData(createDatabases()));
+        MergedResult mergedResult = executor.getMergedResult();
+        assertTrue(mergedResult.next());
+        assertThat(mergedResult.getValue(1, String.class), is("1002"));
+        assertThat(mergedResult.getValue(2, String.class), is("load_job_2"));
+        assertFalse(mergedResult.next());
+    }
+    
+    @Test
+    void assertWhereLabelFilterMiss() throws SQLException {
+        MySQLShowTransactionStatement sqlStatement = new MySQLShowTransactionStatement(databaseType);
+        WhereSegment whereSegment = createWhereSegment("label", "non_existent_label");
+        sqlStatement.setWhere(whereSegment);
+        TestableShowTransactionExecutor executor = new TestableShowTransactionExecutor(sqlStatement);
+        executor.setTestData(createMockTransactions());
+        executor.execute(mockConnectionSession(DATABASE_NAME), mockMetaData(createDatabases()));
+        MergedResult mergedResult = executor.getMergedResult();
+        assertFalse(mergedResult.next());
+    }
+    
+    @Test
+    void assertWhereIdWithStringLiteralFilterHit() throws SQLException {
+        MySQLShowTransactionStatement sqlStatement = new MySQLShowTransactionStatement(databaseType);
+        WhereSegment whereSegment = createWhereSegment("id", "1002");
+        sqlStatement.setWhere(whereSegment);
+        TestableShowTransactionExecutor executor = new TestableShowTransactionExecutor(sqlStatement);
+        executor.setTestData(createMockTransactions());
+        executor.execute(mockConnectionSession(DATABASE_NAME), mockMetaData(createDatabases()));
+        MergedResult mergedResult = executor.getMergedResult();
+        assertTrue(mergedResult.next());
+        assertThat(mergedResult.getValue(1, String.class), is("1002"));
+        assertFalse(mergedResult.next());
+    }
+    
+    @Test
+    void assertWhereIdCaseInsensitiveFilterHit() throws SQLException {
+        MySQLShowTransactionStatement sqlStatement = new MySQLShowTransactionStatement(databaseType);
+        WhereSegment whereSegment = createWhereSegment("ID", 1001L);
+        sqlStatement.setWhere(whereSegment);
+        TestableShowTransactionExecutor executor = new TestableShowTransactionExecutor(sqlStatement);
+        executor.setTestData(createMockTransactions());
+        executor.execute(mockConnectionSession(DATABASE_NAME), mockMetaData(createDatabases()));
+        MergedResult mergedResult = executor.getMergedResult();
+        assertTrue(mergedResult.next());
+        assertThat(mergedResult.getValue(1, String.class), is("1001"));
+        assertFalse(mergedResult.next());
+    }
+    
+    @Test
+    void assertWhereLabelCaseInsensitiveFilterHit() throws SQLException {
+        MySQLShowTransactionStatement sqlStatement = new MySQLShowTransactionStatement(databaseType);
+        WhereSegment whereSegment = createWhereSegment("LABEL", "load_job_1");
+        sqlStatement.setWhere(whereSegment);
+        TestableShowTransactionExecutor executor = new TestableShowTransactionExecutor(sqlStatement);
+        executor.setTestData(createMockTransactions());
+        executor.execute(mockConnectionSession(DATABASE_NAME), mockMetaData(createDatabases()));
+        MergedResult mergedResult = executor.getMergedResult();
+        assertTrue(mergedResult.next());
+        assertThat(mergedResult.getValue(1, String.class), is("1001"));
+        assertThat(mergedResult.getValue(2, String.class), is("load_job_1"));
+        assertFalse(mergedResult.next());
+    }
+    
     private WhereSegment createWhereSegment(final String columnName, final Object value) {
         ColumnSegment columnSegment = new ColumnSegment(0, 0, new IdentifierValue(columnName));
         LiteralExpressionSegment literalSegment = new LiteralExpressionSegment(0, 0, value);
@@ -233,5 +381,42 @@ class MySQLShowTransactionExecutorTest {
         ConnectionSession result = mock(ConnectionSession.class, RETURNS_DEEP_STUBS);
         when(result.getUsedDatabaseName()).thenReturn(usedDatabaseName);
         return result;
+    }
+    
+    private Collection<MySQLShowTransactionExecutor.TransactionInfo> createMockTransactions() {
+        List<MySQLShowTransactionExecutor.TransactionInfo> mockTransactions = new ArrayList<>(2);
+        mockTransactions.add(new MySQLShowTransactionExecutor.TransactionInfo(
+                1001L, "load_job_1", "coordinator_node_1", "VISIBLE", "ROUTINE_LOAD",
+                "2025-01-01 10:00:00", "2025-01-01 10:01:00", "2025-01-01 10:02:00",
+                "", 0, 10001L, 60000L));
+        mockTransactions.add(new MySQLShowTransactionExecutor.TransactionInfo(
+                1002L, "load_job_2", "coordinator_node_2", "COMMITTED", "BROKER_LOAD",
+                "2025-01-01 11:00:00", "2025-01-01 11:01:00", "",
+                "", 0, 10002L, 120000L));
+        return mockTransactions;
+    }
+    
+    /**
+     * Testable executor for testing data flow and filtering logic.
+     */
+    static class TestableShowTransactionExecutor extends MySQLShowTransactionExecutor {
+        
+        private Collection<MySQLShowTransactionExecutor.TransactionInfo> testData;
+        
+        TestableShowTransactionExecutor(final MySQLShowTransactionStatement sqlStatement) {
+            super(sqlStatement);
+        }
+        
+        void setTestData(final Collection<MySQLShowTransactionExecutor.TransactionInfo> data) {
+            this.testData = data;
+        }
+        
+        @Override
+        protected Collection<MySQLShowTransactionExecutor.TransactionInfo> loadTransactions() {
+            if (null != testData) {
+                return testData;
+            }
+            return super.loadTransactions();
+        }
     }
 }
