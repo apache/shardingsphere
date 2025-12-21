@@ -36,15 +36,12 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockStatic;
-import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
 
 class PostgreSQLIndexSQLGeneratorTest {
@@ -85,7 +82,6 @@ class PostgreSQLIndexSQLGeneratorTest {
             assertThat(actual, is(String.join(System.lineSeparator(), "create-non-btree", "alter-non-btree")));
         }
         Map<String, Object> createData = capturedCreateData.get();
-        assertNotNull(createData);
         Collection<Map<String, Object>> columns = (Collection<Map<String, Object>>) createData.get("columns");
         assertThat(columns.size(), is(1));
         Map<String, Object> column = columns.iterator().next();
@@ -96,12 +92,29 @@ class PostgreSQLIndexSQLGeneratorTest {
         assertThat(columnsCsv, is("foo_col COLLATE foo_collation foo_op_class"));
     }
     
+    private Map<String, Object> createIndexNode(final long oid, final boolean isInherited) {
+        Map<String, Object> result = new HashMap<>(2, 1F);
+        result.put("oid", oid);
+        result.put("is_inherited", isInherited);
+        return result;
+    }
+    
+    private Map<String, Object> createNonBtreeIndexProps() {
+        Map<String, Object> result = new HashMap<>(6, 1F);
+        result.put("name", "foo_idx");
+        result.put("amname", "hash");
+        result.put("indisclustered", true);
+        result.put("description", "non btree description");
+        result.put("spcname", "default_spc");
+        result.put("fillfactor", 80);
+        return result;
+    }
+    
     @SuppressWarnings("unchecked")
     @Test
     void assertGenerateWithIncludeAndBtreeOptions() throws SQLException, ReflectiveOperationException {
         PostgreSQLDDLTemplateExecutor templateExecutor = mock(PostgreSQLDDLTemplateExecutor.class);
         when(templateExecutor.getMajorVersion()).thenReturn(11);
-        when(templateExecutor.getMinorVersion()).thenReturn(0);
         when(templateExecutor.executeByTemplate(anyMap(), eq("component/indexes/%s/nodes.ftl"))).thenReturn(Collections.singletonList(Collections.singletonMap("oid", 3L)));
         when(templateExecutor.executeByTemplate(anyMap(), eq("component/indexes/%s/properties.ftl"))).thenReturn(Collections.singletonList(createBtreeIndexProps()));
         PgArray emptyOptions = mock(PgArray.class);
@@ -116,12 +129,12 @@ class PostgreSQLIndexSQLGeneratorTest {
         when(nullsWithoutSpaceOptions.getArray()).thenReturn(new String[]{"ASC", "NULLS"});
         PgArray emptyArrayOptions = mock(PgArray.class);
         when(emptyArrayOptions.getArray()).thenReturn(new String[0]);
-        Collection<Map<String, Object>> columnDetails = Arrays.asList(createStatefulColumnDetail(emptyOptions),
+        Collection<Map<String, Object>> columnDetails = Arrays.asList(createColumnDetailWithNullOptions(emptyOptions),
                 createColumnDetail("desc_col", null, null, descOptions), createColumnDetail("nulls_first_col", null, null, nullsFirstOptions),
                 createColumnDetail("nulls_last_col", null, null, nullsLastOptions), createColumnDetail("nulls_no_space_col", null, null, nullsWithoutSpaceOptions),
                 createColumnDetail("empty_array_col", null, null, emptyArrayOptions));
-        when(templateExecutor.executeByTemplate(eq(Collections.singletonMap("idx", 3L)), eq("component/indexes/%s/column_details.ftl"))).thenReturn(columnDetails);
-        when(templateExecutor.executeByTemplate(eq(Collections.singletonMap("idx", 3L)), eq("component/indexes/%s/include_details.ftl")))
+        when(templateExecutor.executeByTemplate(Collections.singletonMap("idx", 3L), "component/indexes/%s/column_details.ftl")).thenReturn(columnDetails);
+        when(templateExecutor.executeByTemplate(Collections.singletonMap("idx", 3L), "component/indexes/%s/include_details.ftl"))
                 .thenReturn(Arrays.asList(Collections.singletonMap("colname", "include_col_one"), Collections.singletonMap("colname", "include_col_two")));
         PostgreSQLIndexSQLGenerator generator = new PostgreSQLIndexSQLGenerator(mock(Connection.class), 11, 0);
         Plugins.getMemberAccessor().set(PostgreSQLIndexSQLGenerator.class.getDeclaredField("templateExecutor"), generator, templateExecutor);
@@ -141,7 +154,6 @@ class PostgreSQLIndexSQLGeneratorTest {
             assertThat(actual, is(String.join(System.lineSeparator(), "create-btree", "alter-btree")));
         }
         Map<String, Object> createData = capturedCreateData.get();
-        assertNotNull(createData);
         assertThat(createData.get("include"), is(Arrays.asList("include_col_one", "include_col_two")));
         Collection<Map<String, Object>> columns = (Collection<Map<String, Object>>) createData.get("columns");
         assertThat(columns.size(), is(6));
@@ -167,6 +179,24 @@ class PostgreSQLIndexSQLGeneratorTest {
         assertThat(columnsCsv, is("col_with_null_options, desc_col DESC, nulls_first_col ASC NULLS FIRST, nulls_last_col ASC NULLS LAST, nulls_no_space_col ASC NULLS, empty_array_col"));
     }
     
+    private Map<String, Object> createBtreeIndexProps() {
+        Map<String, Object> result = new HashMap<>(4, 1F);
+        result.put("name", "bar_idx");
+        result.put("amname", "btree");
+        result.put("indisclustered", false);
+        result.put("description", "");
+        return result;
+    }
+    
+    private Map<String, Object> createColumnDetailWithNullOptions(final PgArray fallbackOptions) {
+        Map<String, Object> result = mock(Map.class);
+        when(result.get("attdef")).thenReturn("col_with_null_options");
+        when(result.get("collnspname")).thenReturn(null);
+        when(result.get("opcname")).thenReturn(null);
+        when(result.get("options")).thenReturn(null, null, fallbackOptions);
+        return result;
+    }
+    
     private Map<String, Object> createContext(final String schema, final String table) {
         Map<String, Object> result = new HashMap<>(5, 1F);
         result.put("did", 1);
@@ -174,33 +204,6 @@ class PostgreSQLIndexSQLGeneratorTest {
         result.put("tid", 20);
         result.put("schema", schema);
         result.put("name", table);
-        return result;
-    }
-    
-    private Map<String, Object> createIndexNode(final long oid, final boolean isInherited) {
-        Map<String, Object> result = new HashMap<>(2, 1F);
-        result.put("oid", oid);
-        result.put("is_inherited", isInherited);
-        return result;
-    }
-    
-    private Map<String, Object> createNonBtreeIndexProps() {
-        Map<String, Object> result = new HashMap<>(6, 1F);
-        result.put("name", "foo_idx");
-        result.put("amname", "hash");
-        result.put("indisclustered", true);
-        result.put("description", "non btree description");
-        result.put("spcname", "default_spc");
-        result.put("fillfactor", 80);
-        return result;
-    }
-    
-    private Map<String, Object> createBtreeIndexProps() {
-        Map<String, Object> result = new HashMap<>(4, 1F);
-        result.put("name", "bar_idx");
-        result.put("amname", "btree");
-        result.put("indisclustered", false);
-        result.put("description", "");
         return result;
     }
     
@@ -212,16 +215,6 @@ class PostgreSQLIndexSQLGeneratorTest {
         if (null != options) {
             result.put("options", options);
         }
-        return result;
-    }
-    
-    private Map<String, Object> createStatefulColumnDetail(final PgArray fallbackOptions) {
-        Map<String, Object> result = spy(new LinkedHashMap<>(4, 1F));
-        result.put("attdef", "col_with_null_options");
-        result.put("collnspname", null);
-        result.put("opcname", null);
-        result.put("options", fallbackOptions);
-        doReturn(null, null, fallbackOptions).when(result).get("options");
         return result;
     }
 }
