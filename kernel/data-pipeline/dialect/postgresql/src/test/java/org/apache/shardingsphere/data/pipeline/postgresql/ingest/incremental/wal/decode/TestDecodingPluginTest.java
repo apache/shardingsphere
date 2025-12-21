@@ -26,18 +26,22 @@ import org.apache.shardingsphere.data.pipeline.postgresql.ingest.incremental.wal
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.incremental.wal.event.UpdateRowEvent;
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.incremental.wal.event.WriteRowEvent;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.postgresql.jdbc.TimestampUtils;
 import org.postgresql.replication.LogSequenceNumber;
 
 import java.math.BigDecimal;
-import java.nio.ByteBuffer;
 import java.nio.BufferUnderflowException;
+import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.sql.Date;
 import java.sql.SQLException;
 import java.sql.Time;
 import java.sql.Timestamp;
 import java.util.Calendar;
+import java.util.stream.Stream;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -84,8 +88,8 @@ class TestDecodingPluginTest {
     
     @Test
     void assertDecodeUpdateRowEvent() {
-        ByteBuffer data = ByteBuffer.wrap("table public.test: UPDATE: unicode[character varying]:' 1 2 3'' 😊中 ' t_json_empty[json]:'{}' t_json[json]:'{\"test\":\"中中{中中}' 中\"}'"
-                .getBytes(StandardCharsets.UTF_8));
+        ByteBuffer data = ByteBuffer.wrap(
+                "table public.test: UPDATE: unicode[character varying]:' 1 2 3'' 😊中 ' t_json_empty[json]:'{}' t_json[json]:'{\"test\":\"中中{中中}' 中\"}'".getBytes(StandardCharsets.UTF_8));
         UpdateRowEvent actual = (UpdateRowEvent) new TestDecodingPlugin(null).decode(data, logSequenceNumber);
         assertThat(actual.getLogSequenceNumber(), is(logSequenceNumber));
         assertThat(actual.getTableName(), is("test"));
@@ -116,12 +120,6 @@ class TestDecodingPluginTest {
     void assertDecodeUnknownTableType() {
         ByteBuffer data = ByteBuffer.wrap("unknown".getBytes(StandardCharsets.UTF_8));
         assertThat(new TestDecodingPlugin(null).decode(data, logSequenceNumber), isA(PlaceholderEvent.class));
-    }
-    
-    @Test
-    void assertDecodeUnknownRowEventType() {
-        ByteBuffer data = ByteBuffer.wrap("table public.test: UNKNOWN: data[character varying]:'1 2 3'''".getBytes(StandardCharsets.UTF_8));
-        assertThrows(IngestException.class, () -> new TestDecodingPlugin(null).decode(data, logSequenceNumber));
     }
     
     @Test
@@ -167,28 +165,6 @@ class TestDecodingPluginTest {
     }
     
     @Test
-    void assertDecodeNullValueWithTrailingSpace() {
-        ByteBuffer data = ByteBuffer.wrap("table public.test: INSERT: col_null[integer]:null col_int[integer]:1".getBytes(StandardCharsets.UTF_8));
-        WriteRowEvent actual = (WriteRowEvent) new TestDecodingPlugin(null).decode(data, logSequenceNumber);
-        assertNull(actual.getAfterRow().get(0));
-        assertThat(actual.getAfterRow().get(1), is(1));
-    }
-    
-    @Test
-    void assertDecodeNullValueWithoutTrailingChar() {
-        ByteBuffer data = ByteBuffer.wrap("table public.test: INSERT: col_null[integer]:null".getBytes(StandardCharsets.UTF_8));
-        WriteRowEvent actual = (WriteRowEvent) new TestDecodingPlugin(null).decode(data, logSequenceNumber);
-        assertThat(actual.getAfterRow().size(), is(1));
-        assertNull(actual.getAfterRow().get(0));
-    }
-    
-    @Test
-    void assertDecodeSelectRowEventType() {
-        ByteBuffer data = ByteBuffer.wrap("table public.test: SELECT: id[integer]:1".getBytes(StandardCharsets.UTF_8));
-        assertThrows(IngestException.class, () -> new TestDecodingPlugin(null).decode(data, logSequenceNumber));
-    }
-    
-    @Test
     void assertDecodeVariousColumnTypes() {
         BaseTimestampUtils timestampUtils = new BaseTimestampUtils() {
             
@@ -231,24 +207,6 @@ class TestDecodingPluginTest {
     }
     
     @Test
-    void assertDecodeByteaWithOddLength() {
-        ByteBuffer data = ByteBuffer.wrap("table public.test: INSERT: data[bytea]:'\\xff0'".getBytes(StandardCharsets.UTF_8));
-        assertThrows(IllegalArgumentException.class, () -> new TestDecodingPlugin(null).decode(data, logSequenceNumber));
-    }
-    
-    @Test
-    void assertDecodeByteaWithInvalidCharacter() {
-        ByteBuffer data = ByteBuffer.wrap("table public.test: INSERT: data[bytea]:'\\xzz'".getBytes(StandardCharsets.UTF_8));
-        assertThrows(IllegalArgumentException.class, () -> new TestDecodingPlugin(null).decode(data, logSequenceNumber));
-    }
-    
-    @Test
-    void assertDecodeJsonWithUnexpectedQuote() {
-        ByteBuffer data = ByteBuffer.wrap("table public.test: INSERT: data[json]:'{}x'".getBytes(StandardCharsets.UTF_8));
-        assertThrows(IngestException.class, () -> new TestDecodingPlugin(null).decode(data, logSequenceNumber));
-    }
-    
-    @Test
     void assertDecodeJsonWithNoClosingBrace() {
         ByteBuffer data = ByteBuffer.wrap("table public.test: INSERT: data[json]:'{'".getBytes(StandardCharsets.UTF_8));
         WriteRowEvent actual = (WriteRowEvent) new TestDecodingPlugin(null).decode(data, logSequenceNumber);
@@ -261,5 +219,52 @@ class TestDecodingPluginTest {
         when(timestampUtils.toTimestamp(null, "2020-01-02 03:04:05")).thenThrow(new SQLException(""));
         ByteBuffer data = ByteBuffer.wrap("table public.test: INSERT: data[timestamp without time zone]:'2020-01-02 03:04:05'".getBytes(StandardCharsets.UTF_8));
         assertThrows(DecodingException.class, () -> new TestDecodingPlugin(new PostgreSQLTimestampUtils(timestampUtils)).decode(data, logSequenceNumber));
+    }
+    
+    @ParameterizedTest
+    @MethodSource("provideNullValueWal")
+    void assertDecodeNullValue(final String wal, final int expectedSize, final Integer expectedSecond) {
+        WriteRowEvent actual = (WriteRowEvent) new TestDecodingPlugin(null).decode(ByteBuffer.wrap(wal.getBytes(StandardCharsets.UTF_8)), logSequenceNumber);
+        assertThat(actual.getAfterRow().size(), is(expectedSize));
+        assertNull(actual.getAfterRow().get(0));
+        if (null != expectedSecond) {
+            assertThat(actual.getAfterRow().get(1), is(expectedSecond));
+        }
+    }
+    
+    @ParameterizedTest
+    @MethodSource("provideIllegalByteaWal")
+    void assertDecodeByteaIllegalArgument(final String wal) {
+        ByteBuffer data = ByteBuffer.wrap(wal.getBytes(StandardCharsets.UTF_8));
+        assertThrows(IllegalArgumentException.class, () -> new TestDecodingPlugin(null).decode(data, logSequenceNumber));
+    }
+    
+    @ParameterizedTest
+    @MethodSource("provideIngestExceptionWal")
+    void assertDecodeIngestException(final String wal) {
+        ByteBuffer data = ByteBuffer.wrap(wal.getBytes(StandardCharsets.UTF_8));
+        assertThrows(IngestException.class, () -> new TestDecodingPlugin(null).decode(data, logSequenceNumber));
+    }
+    
+    private static Stream<String> provideIllegalByteaWal() {
+        return Stream.of(
+                "table public.test: INSERT: data[bytea]:'\\xff0'",
+                "table public.test: INSERT: data[bytea]:'\\xzz'"
+        );
+    }
+    
+    private static Stream<String> provideIngestExceptionWal() {
+        return Stream.of(
+                "table public.test: UNKNOWN: data[character varying]:'1 2 3'''",
+                "table public.test: SELECT: id[integer]:1",
+                "table public.test: INSERT: data[json]:'{}x'"
+        );
+    }
+    
+    private static Stream<Arguments> provideNullValueWal() {
+        return Stream.of(
+                Arguments.of("table public.test: INSERT: col_null[integer]:null col_int[integer]:1", 2, 1),
+                Arguments.of("table public.test: INSERT: col_null[integer]:null", 1, null)
+        );
     }
 }
