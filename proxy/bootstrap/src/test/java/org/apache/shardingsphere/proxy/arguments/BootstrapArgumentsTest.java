@@ -17,11 +17,17 @@
 
 package org.apache.shardingsphere.proxy.arguments;
 
-import org.junit.jupiter.api.Test;
+import lombok.SneakyThrows;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
+import org.mockito.internal.configuration.plugins.Plugins;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -31,86 +37,68 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class BootstrapArgumentsTest {
     
-    @Test
-    void assertGetPortWithEmptyArgument() {
-        assertFalse(new BootstrapArguments(new String[]{}).getPort().isPresent());
+    @SuppressWarnings("OptionalUsedAsFieldOrParameterType")
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("provideBootstrapArguments")
+    void assertBootstrapArguments(final String scenario, final String[] args, final Optional<Integer> expectedPort, final Optional<String> expectedPortErrorMessage,
+                                  final String expectedConfigPath, final List<String> expectedAddresses, final Optional<String> expectedSocketPath,
+                                  final Optional<String> expectedSocketPathErrorMessage) {
+        BootstrapArguments arguments = new BootstrapArguments(args);
+        if (expectedPortErrorMessage.isPresent()) {
+            IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, arguments::getPort);
+            assertThat(scenario + ": port error message", ex.getMessage(), is(expectedPortErrorMessage.get()));
+        } else {
+            Optional<Integer> actualPort = arguments.getPort();
+            if (expectedPort.isPresent()) {
+                assertTrue(actualPort.isPresent());
+                assertThat(scenario + ": port value", actualPort.get(), is(expectedPort.get()));
+            } else {
+                assertFalse(actualPort.isPresent());
+            }
+        }
+        assertThat(scenario + ": configuration path", arguments.getConfigurationPath(), is(expectedConfigPath));
+        assertThat(scenario + ": addresses", arguments.getAddresses(), is(expectedAddresses));
+        if (expectedSocketPathErrorMessage.isPresent()) {
+            IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, arguments::getSocketPath);
+            assertThat(scenario + ": socket path error message", ex.getMessage(), is(expectedSocketPathErrorMessage.get()));
+        } else {
+            Optional<String> actualSocketPath = arguments.getSocketPath();
+            if (expectedSocketPath.isPresent()) {
+                assertTrue(actualSocketPath.isPresent());
+                assertThat(scenario + ": socket path", actualSocketPath.get(), is(expectedSocketPath.get()));
+            } else {
+                assertFalse(actualSocketPath.isPresent());
+            }
+        }
     }
     
-    @Test
-    void assertGetPortWithWrongArgument() {
-        assertThrows(IllegalArgumentException.class, () -> new BootstrapArguments(new String[]{"WrongArgument"}).getPort());
+    private static Stream<Arguments> provideBootstrapArguments() {
+        String defaultConfigPath = getDefaultConfigPath();
+        return Stream.of(
+                Arguments.of("without arguments", new String[]{}, Optional.empty(), Optional.empty(), defaultConfigPath,
+                        Collections.singletonList("0.0.0.0"), Optional.empty(), Optional.empty()),
+                Arguments.of("negative port", new String[]{"-1"}, Optional.empty(), Optional.empty(), defaultConfigPath,
+                        Collections.singletonList("0.0.0.0"), Optional.empty(), Optional.empty()),
+                Arguments.of("non numeric port", new String[]{"WrongArgument"}, Optional.empty(), Optional.of("Invalid port `WrongArgument`."),
+                        defaultConfigPath, Collections.singletonList("0.0.0.0"), Optional.empty(), Optional.empty()),
+                Arguments.of("valid port uses default configuration path", new String[]{"3306"}, Optional.of(3306), Optional.empty(),
+                        defaultConfigPath, Collections.singletonList("0.0.0.0"), Optional.empty(), Optional.empty()),
+                Arguments.of("pad leading slash", new String[]{"0", "test/"}, Optional.of(0), Optional.empty(), "/test/",
+                        Collections.singletonList("0.0.0.0"), Optional.empty(), Optional.empty()),
+                Arguments.of("pad trailing slash", new String[]{"0", "/test"}, Optional.of(0), Optional.empty(), "/test/",
+                        Collections.singletonList("0.0.0.0"), Optional.empty(), Optional.empty()),
+                Arguments.of("default addresses when arguments less than three", new String[]{"0", "conf"}, Optional.of(0), Optional.empty(),
+                        "/conf/", Collections.singletonList("0.0.0.0"), Optional.empty(), Optional.empty()),
+                Arguments.of("filter non inet address", new String[]{"0", "conf", "127.0.0.1,/tmp/shardingsphere.sock"}, Optional.of(0), Optional.empty(),
+                        "/conf/", Collections.singletonList("127.0.0.1"), Optional.of("/tmp/shardingsphere.sock"), Optional.empty()),
+                Arguments.of("socket path empty when only inet addresses", new String[]{"0", "conf", "127.0.0.1,1.1.1.1"}, Optional.of(0), Optional.empty(),
+                        "/conf/", Arrays.asList("127.0.0.1", "1.1.1.1"), Optional.empty(), Optional.empty()),
+                Arguments.of("invalid socket path", new String[]{"0", "conf", "127.0.0.1,\0"}, Optional.of(0), Optional.empty(),
+                        "/conf/", Collections.singletonList("127.0.0.1"), Optional.empty(), Optional.of("Invalid path `\0`.")));
     }
     
-    @Test
-    void assertGetPortWithDefaultArgument() {
-        assertFalse(new BootstrapArguments(new String[]{"-1"}).getPort().isPresent());
-    }
-    
-    @Test
-    void assertGetPortWithSingleArgument() {
-        Optional<Integer> actual = new BootstrapArguments(new String[]{"3306"}).getPort();
-        assertTrue(actual.isPresent());
-        assertThat(actual.get(), is(3306));
-    }
-    
-    @Test
-    void assertGetPortWithTwoArgument() {
-        Optional<Integer> actual = new BootstrapArguments(new String[]{"3306", "/test_conf/"}).getPort();
-        assertTrue(actual.isPresent());
-        assertThat(actual.get(), is(3306));
-    }
-    
-    @Test
-    void assertGetPortWithThreeArgument() {
-        Optional<Integer> actual = new BootstrapArguments(new String[]{"3306", "/test_conf/", "127.0.0.1"}).getPort();
-        assertTrue(actual.isPresent());
-        assertThat(actual.get(), is(3306));
-    }
-    
-    @Test
-    void assertGetConfigurationPathWithEmptyArgument() {
-        assertThat(new BootstrapArguments(new String[]{}).getConfigurationPath(), is("/conf/"));
-    }
-    
-    @Test
-    void assertGetConfigurationPathWithSingleArgument() {
-        assertThat(new BootstrapArguments(new String[]{"3306"}).getConfigurationPath(), is("/conf/"));
-    }
-    
-    @Test
-    void assertGetConfigurationPathWithTwoArguments() {
-        assertThat(new BootstrapArguments(new String[]{"3306", "test_conf"}).getConfigurationPath(), is("/test_conf/"));
-        assertThat(new BootstrapArguments(new String[]{"3306", "/test_conf"}).getConfigurationPath(), is("/test_conf/"));
-        assertThat(new BootstrapArguments(new String[]{"3306", "test_conf/"}).getConfigurationPath(), is("/test_conf/"));
-        assertThat(new BootstrapArguments(new String[]{"3306", "/test_conf/"}).getConfigurationPath(), is("/test_conf/"));
-    }
-    
-    @Test
-    void assertGetAddressesWithEmptyArgument() {
-        assertThat(new BootstrapArguments(new String[]{}).getAddresses(), is(Collections.singletonList("0.0.0.0")));
-    }
-    
-    @Test
-    void assertGetAddressesWithSingleArgument() {
-        assertThat(new BootstrapArguments(new String[]{"3306"}).getAddresses(), is(Collections.singletonList("0.0.0.0")));
-    }
-    
-    @Test
-    void assertGetAddressesWithTwoArgument() {
-        assertThat(new BootstrapArguments(new String[]{"3306", "test_conf"}).getAddresses(), is(Collections.singletonList("0.0.0.0")));
-    }
-    
-    @Test
-    void assertGetAddressesWithThreeArguments() {
-        assertThat(new BootstrapArguments(new String[]{"3306", "test_conf", "127.0.0.1"}).getAddresses(), is(Collections.singletonList("127.0.0.1")));
-        assertThat(new BootstrapArguments(new String[]{"3306", "test_conf", "1.1.1.1,127.0.0.1"}).getAddresses(), is(Arrays.asList("1.1.1.1", "127.0.0.1")));
-    }
-    
-    @Test
-    void assertGetSocketPath() {
-        assertThat(new BootstrapArguments(new String[]{"3306", "test_conf", "127.0.0.1,/tmp/shardingsphere.sock"}).getSocketPath(), is(Optional.of("/tmp/shardingsphere.sock")));
-        assertThat(new BootstrapArguments(new String[]{"3306", "test_conf", "1.1.1.1,127.0.0.1,/tmp/shardingsphere.sock"}).getSocketPath(), is(Optional.of("/tmp/shardingsphere.sock")));
-        assertThat(new BootstrapArguments(new String[]{"3306", "test_conf", "127.0.0.1,/tmp/shardingsphere.sock"}).getAddresses(), is(Collections.singletonList("127.0.0.1")));
-        assertThat(new BootstrapArguments(new String[]{"3306", "test_conf", "1.1.1.1,127.0.0.1,/tmp/shardingsphere.sock"}).getAddresses(), is(Arrays.asList("1.1.1.1", "127.0.0.1")));
+    @SneakyThrows(ReflectiveOperationException.class)
+    private static String getDefaultConfigPath() {
+        return (String) Plugins.getMemberAccessor().get(BootstrapArguments.class.getDeclaredField("DEFAULT_CONFIG_PATH"), null);
     }
 }
