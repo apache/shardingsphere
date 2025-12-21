@@ -153,20 +153,60 @@ class MySQLShowTransactionExecutorTest {
         assertFalse(executor.getMergedResult().next());
     }
     
+    @Test
+    void assertTransactionStatusConstants() throws SQLException {
+        MySQLShowTransactionStatement sqlStatement = new MySQLShowTransactionStatement(databaseType);
+        MySQLShowTransactionExecutor executor = new MySQLShowTransactionExecutor(sqlStatement);
+        executor.execute(mockConnectionSession(DATABASE_NAME), mockMetaData(createDatabases()));
+        assertQueryResultMetaData(executor.getQueryResultMetaData());
+    }
+    
+    @Test
+    void assertBuildTransactionRowWithAllColumns() {
+        MySQLShowTransactionExecutor.TransactionInfo transactionInfo = new MySQLShowTransactionExecutor.TransactionInfo(
+                4005L, "test_label", "coordinator_node", "VISIBLE", "ROUTINE_LOAD",
+                "2025-01-01 10:00:00", "2025-01-01 10:01:00", "2025-01-01 10:02:00",
+                "", 0, 12345L, 60000L);
+        assertThat(transactionInfo.getTransactionId(), is(4005L));
+        assertThat(transactionInfo.getLabel(), is("test_label"));
+        assertThat(transactionInfo.getCoordinator(), is("coordinator_node"));
+        assertThat(transactionInfo.getTransactionStatus(), is("VISIBLE"));
+        assertThat(transactionInfo.getLoadJobSourceType(), is("ROUTINE_LOAD"));
+        assertThat(transactionInfo.getPrepareTime(), is("2025-01-01 10:00:00"));
+        assertThat(transactionInfo.getCommitTime(), is("2025-01-01 10:01:00"));
+        assertThat(transactionInfo.getFinishTime(), is("2025-01-01 10:02:00"));
+        assertThat(transactionInfo.getReason(), is(""));
+        assertThat(transactionInfo.getErrorReplicasCount(), is(0));
+        assertThat(transactionInfo.getListenerId(), is(12345L));
+        assertThat(transactionInfo.getTimeoutMs(), is(60000L));
+    }
+    
     private void assertQueryResultMetaData(final QueryResultMetaData metaData) throws SQLException {
-        assertThat(metaData.getColumnCount(), is(6));
+        assertThat(metaData.getColumnCount(), is(12));
         assertThat(metaData.getColumnLabel(1), is("TransactionId"));
         assertThat(metaData.getColumnType(1), is(Types.BIGINT));
         assertThat(metaData.getColumnLabel(2), is("Label"));
         assertThat(metaData.getColumnType(2), is(Types.VARCHAR));
-        assertThat(metaData.getColumnLabel(3), is("Database"));
+        assertThat(metaData.getColumnLabel(3), is("Coordinator"));
         assertThat(metaData.getColumnType(3), is(Types.VARCHAR));
         assertThat(metaData.getColumnLabel(4), is("TransactionStatus"));
         assertThat(metaData.getColumnType(4), is(Types.VARCHAR));
-        assertThat(metaData.getColumnLabel(5), is("LoadStartTime"));
+        assertThat(metaData.getColumnLabel(5), is("LoadJobSourceType"));
         assertThat(metaData.getColumnType(5), is(Types.VARCHAR));
-        assertThat(metaData.getColumnLabel(6), is("LoadFinishTime"));
+        assertThat(metaData.getColumnLabel(6), is("PrepareTime"));
         assertThat(metaData.getColumnType(6), is(Types.VARCHAR));
+        assertThat(metaData.getColumnLabel(7), is("CommitTime"));
+        assertThat(metaData.getColumnType(7), is(Types.VARCHAR));
+        assertThat(metaData.getColumnLabel(8), is("FinishTime"));
+        assertThat(metaData.getColumnType(8), is(Types.VARCHAR));
+        assertThat(metaData.getColumnLabel(9), is("Reason"));
+        assertThat(metaData.getColumnType(9), is(Types.VARCHAR));
+        assertThat(metaData.getColumnLabel(10), is("ErrorReplicasCount"));
+        assertThat(metaData.getColumnType(10), is(Types.INTEGER));
+        assertThat(metaData.getColumnLabel(11), is("ListenerId"));
+        assertThat(metaData.getColumnType(11), is(Types.BIGINT));
+        assertThat(metaData.getColumnLabel(12), is("TimeoutMs"));
+        assertThat(metaData.getColumnType(12), is(Types.BIGINT));
     }
     
     private WhereSegment createWhereSegment(final String columnName, final Object value) {
