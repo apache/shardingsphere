@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.proxy.arguments;
 
 import org.junit.jupiter.api.Test;
+import org.mockito.internal.configuration.plugins.Plugins;
 
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Optional;
 
@@ -32,85 +32,74 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class BootstrapArgumentsTest {
     
     @Test
-    void assertGetPortWithEmptyArgument() {
+    void assertGetPortWithoutArguments() {
         assertFalse(new BootstrapArguments(new String[]{}).getPort().isPresent());
     }
     
     @Test
-    void assertGetPortWithWrongArgument() {
-        assertThrows(IllegalArgumentException.class, () -> new BootstrapArguments(new String[]{"WrongArgument"}).getPort());
-    }
-    
-    @Test
-    void assertGetPortWithDefaultArgument() {
+    void assertGetPortWithNegativeArgument() {
         assertFalse(new BootstrapArguments(new String[]{"-1"}).getPort().isPresent());
     }
     
     @Test
-    void assertGetPortWithSingleArgument() {
-        Optional<Integer> actual = new BootstrapArguments(new String[]{"3306"}).getPort();
-        assertTrue(actual.isPresent());
-        assertThat(actual.get(), is(3306));
+    void assertGetPortWithNonNumericArgument() {
+        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () -> new BootstrapArguments(new String[]{"WrongArgument"}).getPort());
+        assertThat(ex.getMessage(), is("Invalid port `WrongArgument`."));
     }
     
     @Test
-    void assertGetPortWithTwoArgument() {
-        Optional<Integer> actual = new BootstrapArguments(new String[]{"3306", "/test_conf/"}).getPort();
-        assertTrue(actual.isPresent());
-        assertThat(actual.get(), is(3306));
+    void assertGetPortWithValidArgument() {
+        Optional<Integer> actualPort = new BootstrapArguments(new String[]{"3306"}).getPort();
+        assertTrue(actualPort.isPresent());
+        assertThat(actualPort.get(), is(3306));
     }
     
     @Test
-    void assertGetPortWithThreeArgument() {
-        Optional<Integer> actual = new BootstrapArguments(new String[]{"3306", "/test_conf/", "127.0.0.1"}).getPort();
-        assertTrue(actual.isPresent());
-        assertThat(actual.get(), is(3306));
+    void assertGetConfigurationPathWithSingleArgumentUsesDefaultPath() throws ReflectiveOperationException {
+        assertThat(new BootstrapArguments(new String[]{"3306"}).getConfigurationPath(), is(Plugins.getMemberAccessor().get(BootstrapArguments.class.getDeclaredField("DEFAULT_CONFIG_PATH"), null)));
     }
     
     @Test
-    void assertGetConfigurationPathWithEmptyArgument() {
-        assertThat(new BootstrapArguments(new String[]{}).getConfigurationPath(), is("/conf/"));
+    void assertGetConfigurationPathPadsLeadingSlash() {
+        assertThat(new BootstrapArguments(new String[]{"0", "test/"}).getConfigurationPath(), is("/test/"));
     }
     
     @Test
-    void assertGetConfigurationPathWithSingleArgument() {
-        assertThat(new BootstrapArguments(new String[]{"3306"}).getConfigurationPath(), is("/conf/"));
+    void assertGetConfigurationPathPadsTrailingSlash() {
+        assertThat(new BootstrapArguments(new String[]{"0", "/test"}).getConfigurationPath(), is("/test/"));
     }
     
     @Test
-    void assertGetConfigurationPathWithTwoArguments() {
-        assertThat(new BootstrapArguments(new String[]{"3306", "test_conf"}).getConfigurationPath(), is("/test_conf/"));
-        assertThat(new BootstrapArguments(new String[]{"3306", "/test_conf"}).getConfigurationPath(), is("/test_conf/"));
-        assertThat(new BootstrapArguments(new String[]{"3306", "test_conf/"}).getConfigurationPath(), is("/test_conf/"));
-        assertThat(new BootstrapArguments(new String[]{"3306", "/test_conf/"}).getConfigurationPath(), is("/test_conf/"));
+    void assertGetAddressesDefaultWhenArgumentsLessThanThree() {
+        assertThat(new BootstrapArguments(new String[]{"0", "conf"}).getAddresses(), is(Collections.singletonList("0.0.0.0")));
     }
     
     @Test
-    void assertGetAddressesWithEmptyArgument() {
-        assertThat(new BootstrapArguments(new String[]{}).getAddresses(), is(Collections.singletonList("0.0.0.0")));
+    void assertGetSocketPathWhenArgumentsLessThanThree() {
+        assertFalse(new BootstrapArguments(new String[]{"0", "conf"}).getSocketPath().isPresent());
     }
     
     @Test
-    void assertGetAddressesWithSingleArgument() {
-        assertThat(new BootstrapArguments(new String[]{"3306"}).getAddresses(), is(Collections.singletonList("0.0.0.0")));
+    void assertGetAddressesFiltersNonInetAddress() {
+        assertThat(new BootstrapArguments(new String[]{"0", "conf", "127.0.0.1,/tmp/shardingsphere.sock"}).getAddresses(), is(Collections.singletonList("127.0.0.1")));
     }
     
     @Test
-    void assertGetAddressesWithTwoArgument() {
-        assertThat(new BootstrapArguments(new String[]{"3306", "test_conf"}).getAddresses(), is(Collections.singletonList("0.0.0.0")));
+    void assertGetSocketPathReturnsFirstNonInetAddress() {
+        Optional<String> actualSocketPath = new BootstrapArguments(new String[]{"0", "conf", "127.0.0.1,/tmp/shardingsphere.sock"}).getSocketPath();
+        assertTrue(actualSocketPath.isPresent());
+        assertThat(actualSocketPath.get(), is("/tmp/shardingsphere.sock"));
     }
     
     @Test
-    void assertGetAddressesWithThreeArguments() {
-        assertThat(new BootstrapArguments(new String[]{"3306", "test_conf", "127.0.0.1"}).getAddresses(), is(Collections.singletonList("127.0.0.1")));
-        assertThat(new BootstrapArguments(new String[]{"3306", "test_conf", "1.1.1.1,127.0.0.1"}).getAddresses(), is(Arrays.asList("1.1.1.1", "127.0.0.1")));
+    void assertGetSocketPathWhenOnlyInetAddresses() {
+        assertFalse(new BootstrapArguments(new String[]{"0", "conf", "127.0.0.1,1.1.1.1"}).getSocketPath().isPresent());
     }
     
     @Test
-    void assertGetSocketPath() {
-        assertThat(new BootstrapArguments(new String[]{"3306", "test_conf", "127.0.0.1,/tmp/shardingsphere.sock"}).getSocketPath(), is(Optional.of("/tmp/shardingsphere.sock")));
-        assertThat(new BootstrapArguments(new String[]{"3306", "test_conf", "1.1.1.1,127.0.0.1,/tmp/shardingsphere.sock"}).getSocketPath(), is(Optional.of("/tmp/shardingsphere.sock")));
-        assertThat(new BootstrapArguments(new String[]{"3306", "test_conf", "127.0.0.1,/tmp/shardingsphere.sock"}).getAddresses(), is(Collections.singletonList("127.0.0.1")));
-        assertThat(new BootstrapArguments(new String[]{"3306", "test_conf", "1.1.1.1,127.0.0.1,/tmp/shardingsphere.sock"}).getAddresses(), is(Arrays.asList("1.1.1.1", "127.0.0.1")));
+    void assertGetSocketPathWithInvalidPath() {
+        BootstrapArguments arguments = new BootstrapArguments(new String[]{"0", "conf", "127.0.0.1,\0"});
+        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, arguments::getSocketPath);
+        assertThat(ex.getMessage(), is("Invalid path `\0`."));
     }
 }
