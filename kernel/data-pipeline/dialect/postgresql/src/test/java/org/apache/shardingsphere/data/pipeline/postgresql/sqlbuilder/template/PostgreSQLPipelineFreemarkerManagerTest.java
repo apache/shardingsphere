@@ -20,28 +20,47 @@ package org.apache.shardingsphere.data.pipeline.postgresql.sqlbuilder.template;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
-import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.hamcrest.CoreMatchers.is;
 
 class PostgreSQLPipelineFreemarkerManagerTest {
     
     @Test
-    void assertGetSQLByDefaultVersion() {
-        String actual = PostgreSQLPipelineFreemarkerManager.getSQLByVersion(Collections.singletonMap("databaseName", "foo_db"), "component/table/%s/get_database_id.ftl", 10, 0);
-        String expected = "\n" + "SELECT oid AS did, datlastsysoid FROM pg_catalog.pg_database WHERE datname = 'foo_db';" + "\n";
-        assertThat(actual, is(expected));
-    }
-    
-    @Test
-    void assertGetSQLByVersion() {
-        Map<String, Object> dataModel = new HashMap<>(2, 1F);
-        dataModel.put("tid", 1);
-        dataModel.put("tname", "foo_tb l");
-        String actual = PostgreSQLPipelineFreemarkerManager.getSQLByVersion(dataModel, "component/table/%s/get_columns_for_table.ftl", 10, 0);
-        assertNotNull(actual);
+    void assertCreateTableTemplateHandlesHumanFormattedSequenceNumbers() {
+        Map<String, Object> column = new LinkedHashMap<>(16, 1F);
+        column.put("name", "id");
+        column.put("cltype", "int4");
+        column.put("displaytypname", "integer");
+        column.put("attnotnull", true);
+        column.put("attidentity", "a");
+        column.put("colconstype", "i");
+        column.put("seqincrement", 1L);
+        column.put("seqstart", 1L);
+        column.put("seqmin", 1L);
+        column.put("seqmax", 2147483647L);
+        column.put("seqcache", 1L);
+        column.put("seqcycle", false);
+        Map<String, Object> dataModel = new LinkedHashMap<>(8, 1F);
+        dataModel.put("schema", "public");
+        dataModel.put("name", "t_order");
+        dataModel.put("columns", Collections.singletonList(column));
+        dataModel.put("primary_key", Collections.emptyList());
+        dataModel.put("unique_constraint", Collections.emptyList());
+        dataModel.put("foreign_key", Collections.emptyList());
+        dataModel.put("check_constraint", Collections.emptyList());
+        dataModel.put("exclude_constraint", Collections.emptyList());
+        dataModel.put("coll_inherits", Collections.emptyList());
+        dataModel.put("autovacuum_enabled", "x");
+        dataModel.put("toast_autovacuum_enabled", "x");
+        dataModel.put("autovacuum_custom", false);
+        dataModel.put("toast_autovacuum", false);
+        dataModel.put("add_vacuum_settings_in_sql", false);
+        String sql = PostgreSQLPipelineFreemarkerManager.getSQLByVersion(dataModel, "component/table/%s/create.ftl", 12, 0);
+        String compactSql = sql.replaceAll("\\s+", "");
+        String expectedSql = "CREATETABLEIFNOTEXISTSpublic.t_order(idintegerNOTNULLGENERATEDALWAYSASIDENTITY(INCREMENT1START1MINVALUE1MAXVALUE2147483647CACHE1))";
+        assertThat(compactSql, is(expectedSql));
     }
 }

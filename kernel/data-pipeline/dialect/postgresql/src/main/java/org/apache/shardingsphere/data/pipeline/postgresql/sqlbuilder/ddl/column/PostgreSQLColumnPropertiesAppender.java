@@ -49,6 +49,8 @@ public final class PostgreSQLColumnPropertiesAppender {
     private static final Pattern LENGTH_PATTERN = Pattern.compile("(\\d+)");
     
     private static final Pattern BRACKETS_PATTERN = Pattern.compile("(\\(\\d+\\))");
+
+    private static final Pattern NON_DIGIT_WITH_SIGN_PATTERN = Pattern.compile("[^0-9+-]");
     
     private static final String ATT_OPTION_SPLIT = "=";
     
@@ -138,6 +140,7 @@ public final class PostgreSQLColumnPropertiesAppender {
     }
     
     private void columnFormatter(final Map<String, Object> column, final Collection<String> editTypes) throws SQLException {
+        normalizeSequenceValues(column);
         handlePrimaryColumn(column);
         fetchLengthPrecision(column);
         formatColumnVariables(column);
@@ -145,6 +148,33 @@ public final class PostgreSQLColumnPropertiesAppender {
         editTypes.add(column.get("cltype").toString());
         column.put("edit_types", editTypes.stream().sorted().collect(Collectors.toList()));
         column.put("cltype", parseTypeName(column.get("cltype").toString()));
+    }
+    
+    private void normalizeSequenceValues(final Map<String, Object> column) {
+        normalizeSequenceValue(column, "seqincrement");
+        normalizeSequenceValue(column, "seqstart");
+        normalizeSequenceValue(column, "seqmin");
+        normalizeSequenceValue(column, "seqmax");
+        normalizeSequenceValue(column, "seqcache");
+    }
+    
+    private void normalizeSequenceValue(final Map<String, Object> column, final String key) {
+        if (!column.containsKey(key)) {
+            return;
+        }
+        Object value = column.get(key);
+        if (null == value || value instanceof Number) {
+            return;
+        }
+        String sanitized = NON_DIGIT_WITH_SIGN_PATTERN.matcher(value.toString()).replaceAll("");
+        if (sanitized.isEmpty()) {
+            return;
+        }
+        try {
+            column.put(key, Long.parseLong(sanitized));
+        } catch (final NumberFormatException ignored) {
+            column.put(key, sanitized);
+        }
     }
     
     private void handlePrimaryColumn(final Map<String, Object> column) {

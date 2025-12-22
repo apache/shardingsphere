@@ -238,6 +238,29 @@ class PostgreSQLColumnPropertiesAppenderTest {
     }
     
     @Test
+    void assertNormalizeSequenceValuesRemovesGroupingSeparator() {
+        Map<String, Object> context = new LinkedHashMap<>();
+        Map<String, Object> column = createTextColumnWithName("id");
+        column.put("attidentity", "a");
+        column.put("colconstype", "i");
+        column.put("seqincrement", "1");
+        column.put("seqstart", "1");
+        column.put("seqmin", "1");
+        column.put("seqmax", "2,147,483,647");
+        column.put("seqcache", "1");
+        when(templateExecutor.executeByTemplate(context, "component/table/%s/get_columns_for_table.ftl")).thenReturn(Collections.emptyList());
+        when(templateExecutor.executeByTemplate(context, "component/columns/%s/properties.ftl")).thenReturn(Collections.singletonList(column));
+        when(templateExecutor.executeByTemplate(anyMap(), eq("component/columns/%s/edit_mode_types_multi.ftl"))).thenReturn(Collections.emptyList());
+        appender.append(context);
+        Map<String, Object> singleColumn = getSingleColumn(context);
+        assertThat(singleColumn.get("seqincrement"), is(1L));
+        assertThat(singleColumn.get("seqstart"), is(1L));
+        assertThat(singleColumn.get("seqmin"), is(1L));
+        assertThat(singleColumn.get("seqmax"), is(2147483647L));
+        assertThat(singleColumn.get("seqcache"), is(1L));
+    }
+    
+    @Test
     void assertCheckTypmodInterval() {
         Map<String, Object> context = new LinkedHashMap<>();
         context.put("typoid", 1L);
