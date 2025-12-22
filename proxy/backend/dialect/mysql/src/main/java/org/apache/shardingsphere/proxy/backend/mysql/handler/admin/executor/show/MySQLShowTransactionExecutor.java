@@ -110,27 +110,33 @@ public class MySQLShowTransactionExecutor implements DatabaseAdminQueryExecutor 
     }
     
     private void extractWhereFilter() {
-        if (null == sqlStatement.getWhere()) {
-            return;
-        }
-        if (sqlStatement.getWhere().getExpr() instanceof BinaryOperationExpression) {
-            BinaryOperationExpression binaryExpr = (BinaryOperationExpression) sqlStatement.getWhere().getExpr();
-            extractFilterFromBinaryExpression(binaryExpr);
-        }
+        ShardingSpherePreconditions.checkState(null != sqlStatement.getWhere(),
+                () -> new IllegalArgumentException("SHOW TRANSACTION requires WHERE clause with 'id = <transaction_id>' or 'label = <label_name>'"));
+        ShardingSpherePreconditions.checkState(sqlStatement.getWhere().getExpr() instanceof BinaryOperationExpression,
+                () -> new IllegalArgumentException("WHERE clause must be in the form: id = <value> or label = <value>"));
+        BinaryOperationExpression binaryExpr = (BinaryOperationExpression) sqlStatement.getWhere().getExpr();
+        extractFilterFromBinaryExpression(binaryExpr);
+        ShardingSpherePreconditions.checkState(filterTransactionId.isPresent() || filterLabel.isPresent(),
+                () -> new IllegalArgumentException("WHERE clause must specify either 'id = <transaction_id>' or 'label = <label_name>'"));
     }
     
     private void extractFilterFromBinaryExpression(final BinaryOperationExpression expression) {
-        if (!(expression.getLeft() instanceof ColumnSegment) || !(expression.getRight() instanceof LiteralExpressionSegment)) {
-            return;
-        }
+        ShardingSpherePreconditions.checkState(expression.getLeft() instanceof ColumnSegment && expression.getRight() instanceof LiteralExpressionSegment,
+                () -> new IllegalArgumentException("WHERE clause must be in the form: column = literal"));
+        ShardingSpherePreconditions.checkState("=".equals(expression.getOperator()),
+                () -> new IllegalArgumentException("WHERE clause only supports '=' operator, got: " + expression.getOperator()));
         ColumnSegment column = (ColumnSegment) expression.getLeft();
         LiteralExpressionSegment literal = (LiteralExpressionSegment) expression.getRight();
         String columnName = column.getIdentifier().getValue().toLowerCase();
         Object literalValue = literal.getLiterals();
         if ("id".equalsIgnoreCase(columnName)) {
             filterTransactionId = extractLongValue(literalValue);
+            ShardingSpherePreconditions.checkState(filterTransactionId.isPresent(),
+                    () -> new IllegalArgumentException("Invalid transaction id value: " + literalValue));
         } else if ("label".equalsIgnoreCase(columnName)) {
             filterLabel = Optional.of(String.valueOf(literalValue));
+        } else {
+            throw new IllegalArgumentException("WHERE clause only supports 'id' or 'label' columns, got: " + columnName);
         }
     }
     

@@ -73,9 +73,9 @@ class MySQLShowTransactionExecutorTest {
     void assertExecuteWithoutFromAndWhere() {
         MySQLShowTransactionStatement sqlStatement = new MySQLShowTransactionStatement(databaseType);
         MySQLShowTransactionExecutor executor = new MySQLShowTransactionExecutor(sqlStatement);
-        UnsupportedOperationException exception = assertThrows(UnsupportedOperationException.class,
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
                 () -> executor.execute(mockConnectionSession(DATABASE_NAME), mockMetaData(createDatabases())));
-        assertThat(exception.getMessage(), is("SHOW TRANSACTION is not supported for the moment. "));
+        assertThat(exception.getMessage(), is("SHOW TRANSACTION requires WHERE clause with 'id = <transaction_id>' or 'label = <label_name>'"));
     }
     
     @Test
@@ -84,7 +84,7 @@ class MySQLShowTransactionExecutorTest {
         FromDatabaseSegment fromDatabaseSegment = new FromDatabaseSegment(0, new DatabaseSegment(0, 0, new IdentifierValue(DATABASE_NAME)));
         sqlStatement.setFromDatabase(fromDatabaseSegment);
         MySQLShowTransactionExecutor executor = new MySQLShowTransactionExecutor(sqlStatement);
-        assertThrows(UnsupportedOperationException.class,
+        assertThrows(IllegalArgumentException.class,
                 () -> executor.execute(mockConnectionSession("other_db"), mockMetaData(createDatabases())));
     }
     
@@ -137,6 +137,8 @@ class MySQLShowTransactionExecutorTest {
         MySQLShowTransactionStatement sqlStatement = new MySQLShowTransactionStatement(databaseType);
         FromDatabaseSegment fromDatabaseSegment = new FromDatabaseSegment(0, new DatabaseSegment(0, 0, new IdentifierValue("unknown_db")));
         sqlStatement.setFromDatabase(fromDatabaseSegment);
+        WhereSegment whereSegment = createWhereSegment("id", 1001L);
+        sqlStatement.setWhere(whereSegment);
         MySQLShowTransactionExecutor executor = new MySQLShowTransactionExecutor(sqlStatement);
         assertThrows(UnknownDatabaseException.class, () -> executor.execute(mockConnectionSession("other_db"), mockMetaData(createDatabases())));
     }
@@ -146,6 +148,8 @@ class MySQLShowTransactionExecutorTest {
         MySQLShowTransactionStatement sqlStatement = new MySQLShowTransactionStatement(databaseType);
         FromDatabaseSegment fromDatabaseSegment = new FromDatabaseSegment(0, new DatabaseSegment(0, 0, new IdentifierValue("uncompleted")));
         sqlStatement.setFromDatabase(fromDatabaseSegment);
+        WhereSegment whereSegment = createWhereSegment("id", 1001L);
+        sqlStatement.setWhere(whereSegment);
         MySQLShowTransactionExecutor executor = new MySQLShowTransactionExecutor(sqlStatement);
         executor.execute(mockConnectionSession("uncompleted"), mockMetaData(createDatabases()));
     }
@@ -154,7 +158,7 @@ class MySQLShowTransactionExecutorTest {
     void assertTransactionStatusConstants() {
         MySQLShowTransactionStatement sqlStatement = new MySQLShowTransactionStatement(databaseType);
         MySQLShowTransactionExecutor executor = new MySQLShowTransactionExecutor(sqlStatement);
-        assertThrows(UnsupportedOperationException.class,
+        assertThrows(IllegalArgumentException.class,
                 () -> executor.execute(mockConnectionSession(DATABASE_NAME), mockMetaData(createDatabases())));
     }
     
@@ -201,6 +205,8 @@ class MySQLShowTransactionExecutorTest {
     @Test
     void assertQueryResultMetaDataWithFullColumnSet() throws SQLException {
         MySQLShowTransactionStatement sqlStatement = new MySQLShowTransactionStatement(databaseType);
+        WhereSegment whereSegment = createWhereSegment("id", 1001L);
+        sqlStatement.setWhere(whereSegment);
         TestableShowTransactionExecutor executor = new TestableShowTransactionExecutor(sqlStatement);
         executor.setTestData(Collections.emptyList());
         executor.execute(mockConnectionSession(DATABASE_NAME), mockMetaData(createDatabases()));
@@ -235,6 +241,8 @@ class MySQLShowTransactionExecutorTest {
     @Test
     void assertExecuteWithDataPresent() throws SQLException {
         MySQLShowTransactionStatement sqlStatement = new MySQLShowTransactionStatement(databaseType);
+        WhereSegment whereSegment = createWhereSegment("id", 1001L);
+        sqlStatement.setWhere(whereSegment);
         TestableShowTransactionExecutor executor = new TestableShowTransactionExecutor(sqlStatement);
         executor.setTestData(createMockTransactions());
         executor.execute(mockConnectionSession(DATABASE_NAME), mockMetaData(createDatabases()));
@@ -244,15 +252,14 @@ class MySQLShowTransactionExecutorTest {
         assertThat(mergedResult.getValue(2, String.class), is("load_job_1"));
         assertThat(mergedResult.getValue(3, String.class), is("coordinator_node_1"));
         assertThat(mergedResult.getValue(4, String.class), is("VISIBLE"));
-        assertTrue(mergedResult.next());
-        assertThat(mergedResult.getValue(1, String.class), is("1002"));
-        assertThat(mergedResult.getValue(2, String.class), is("load_job_2"));
         assertFalse(mergedResult.next());
     }
     
     @Test
     void assertExecuteWithDataAbsent() throws SQLException {
         MySQLShowTransactionStatement sqlStatement = new MySQLShowTransactionStatement(databaseType);
+        WhereSegment whereSegment = createWhereSegment("id", 1001L);
+        sqlStatement.setWhere(whereSegment);
         TestableShowTransactionExecutor executor = new TestableShowTransactionExecutor(sqlStatement);
         executor.setTestData(Collections.emptyList());
         executor.execute(mockConnectionSession(DATABASE_NAME), mockMetaData(createDatabases()));
@@ -355,6 +362,55 @@ class MySQLShowTransactionExecutorTest {
         assertThat(mergedResult.getValue(1, String.class), is("1001"));
         assertThat(mergedResult.getValue(2, String.class), is("load_job_1"));
         assertFalse(mergedResult.next());
+    }
+    
+    @Test
+    void assertMissingWhereClause() {
+        MySQLShowTransactionStatement sqlStatement = new MySQLShowTransactionStatement(databaseType);
+        TestableShowTransactionExecutor executor = new TestableShowTransactionExecutor(sqlStatement);
+        executor.setTestData(createMockTransactions());
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
+                () -> executor.execute(mockConnectionSession(DATABASE_NAME), mockMetaData(createDatabases())));
+        assertThat(exception.getMessage(), is("SHOW TRANSACTION requires WHERE clause with 'id = <transaction_id>' or 'label = <label_name>'"));
+    }
+    
+    @Test
+    void assertWhereWithUnsupportedColumn() {
+        MySQLShowTransactionStatement sqlStatement = new MySQLShowTransactionStatement(databaseType);
+        WhereSegment whereSegment = createWhereSegment("status", "VISIBLE");
+        sqlStatement.setWhere(whereSegment);
+        TestableShowTransactionExecutor executor = new TestableShowTransactionExecutor(sqlStatement);
+        executor.setTestData(createMockTransactions());
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
+                () -> executor.execute(mockConnectionSession(DATABASE_NAME), mockMetaData(createDatabases())));
+        assertThat(exception.getMessage(), is("WHERE clause only supports 'id' or 'label' columns, got: status"));
+    }
+    
+    @Test
+    void assertWhereWithInvalidIdValue() {
+        MySQLShowTransactionStatement sqlStatement = new MySQLShowTransactionStatement(databaseType);
+        WhereSegment whereSegment = createWhereSegment("id", "not_a_number");
+        sqlStatement.setWhere(whereSegment);
+        TestableShowTransactionExecutor executor = new TestableShowTransactionExecutor(sqlStatement);
+        executor.setTestData(createMockTransactions());
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
+                () -> executor.execute(mockConnectionSession(DATABASE_NAME), mockMetaData(createDatabases())));
+        assertThat(exception.getMessage(), is("Invalid transaction id value: not_a_number"));
+    }
+    
+    @Test
+    void assertWhereWithNonEqualityOperator() {
+        MySQLShowTransactionStatement sqlStatement = new MySQLShowTransactionStatement(databaseType);
+        ColumnSegment columnSegment = new ColumnSegment(0, 0, new IdentifierValue("id"));
+        LiteralExpressionSegment literalSegment = new LiteralExpressionSegment(0, 0, 1000L);
+        BinaryOperationExpression expression = new BinaryOperationExpression(0, 0, columnSegment, literalSegment, ">", "");
+        WhereSegment whereSegment = new WhereSegment(0, 0, expression);
+        sqlStatement.setWhere(whereSegment);
+        TestableShowTransactionExecutor executor = new TestableShowTransactionExecutor(sqlStatement);
+        executor.setTestData(createMockTransactions());
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
+                () -> executor.execute(mockConnectionSession(DATABASE_NAME), mockMetaData(createDatabases())));
+        assertThat(exception.getMessage(), is("WHERE clause only supports '=' operator, got: >"));
     }
     
     private WhereSegment createWhereSegment(final String columnName, final Object value) {
