@@ -49,7 +49,7 @@ public final class PostgreSQLColumnPropertiesAppender {
     private static final Pattern LENGTH_PATTERN = Pattern.compile("(\\d+)");
     
     private static final Pattern BRACKETS_PATTERN = Pattern.compile("(\\(\\d+\\))");
-
+    
     private static final Pattern NON_DIGIT_WITH_SIGN_PATTERN = Pattern.compile("[^0-9+-]");
     
     private static final String ATT_OPTION_SPLIT = "=";
