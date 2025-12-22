@@ -22,12 +22,12 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Enumeration;
@@ -42,35 +42,37 @@ import java.util.jar.Manifest;
 import java.util.zip.ZipEntry;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 class AgentPluginClassLoaderTest {
     
     @TempDir
-    Path tempDir;
+    private Path tempDir;
     
     @Test
-    void assertLoadClassWithManifestAndResources() throws Exception {
-        Map<String, byte[]> pluginEntries = new HashMap<>();
+    void assertLoadClassWithManifestAndResources() throws IOException, ClassNotFoundException {
+        Map<String, byte[]> pluginEntries = new HashMap<>(3, 1F);
         pluginEntries.put("org/apache/shardingsphere/agent/core/plugin/fixture/PluginFixture.class",
                 createClassBytes("org.apache.shardingsphere.agent.core.plugin.fixture.PluginFixture"));
         pluginEntries.put("org/apache/shardingsphere/agent/core/plugin/fixture/AnotherPluginFixture.class",
                 createClassBytes("org.apache.shardingsphere.agent.core.plugin.fixture.AnotherPluginFixture"));
         pluginEntries.put("fixture-resource.txt", "foo_resource".getBytes(StandardCharsets.UTF_8));
-        Manifest manifest = createManifest("spec_title", "1.0", "spec_vendor", "impl_title", "2.0", "impl_vendor");
-        try (JarFile emptyJar = createJar("foo-empty.jar", new HashMap<>(), createBasicManifest());
-             JarFile pluginJar = createJar("foo-plugin.jar", pluginEntries, manifest)) {
-            Collection<JarFile> jars = new LinkedList<>();
-            jars.add(emptyJar);
-            jars.add(pluginJar);
-            AgentPluginClassLoader classLoader = createClassLoader(jars);
+        Manifest manifest = createManifest();
+        try (
+                JarFile emptyJar = createJar("foo-empty.jar", new HashMap<>(1, 1F), createBasicManifest());
+                JarFile pluginJar = createJar("foo-plugin.jar", pluginEntries, manifest)) {
+            AgentPluginClassLoader classLoader = new AgentPluginClassLoader(new URLClassLoader(new URL[0], null), Arrays.asList(pluginJar, emptyJar));
             Class<?> loadedClass = classLoader.loadClass("org.apache.shardingsphere.agent.core.plugin.fixture.PluginFixture");
             Package loadedPackage = loadedClass.getPackage();
-            assertNotNull(loadedPackage);
             assertThat(loadedPackage.getSpecificationTitle(), is("spec_title"));
             assertThat(loadedPackage.getSpecificationVersion(), is("1.0"));
             assertThat(loadedPackage.getSpecificationVendor(), is("spec_vendor"));
@@ -83,21 +85,18 @@ class AgentPluginClassLoaderTest {
             assertTrue(resources.hasMoreElements());
             URL resourceUrl = resources.nextElement();
             assertThat(resourceUrl.toString(), is(String.format("jar:file:%s!/fixture-resource.txt", pluginJar.getName())));
-            assertThat(resources.hasMoreElements(), is(false));
+            assertFalse(resources.hasMoreElements());
             URL directResource = classLoader.findResource("fixture-resource.txt");
-            assertNotNull(directResource);
             assertThat(directResource.toString(), is(String.format("jar:file:%s!/fixture-resource.txt", pluginJar.getName())));
         }
     }
     
     @Test
-    void assertLoadClassWithoutPackage() throws Exception {
-        Map<String, byte[]> entries = new HashMap<>();
-        entries.put("DefaultFixture.class", createClassBytes("DefaultFixture"));
+    void assertLoadClassWithoutPackage() throws IOException, ClassNotFoundException {
+        Map<String, byte[]> entries = Collections.singletonMap("DefaultFixture.class", createClassBytes("DefaultFixture"));
         try (JarFile defaultJar = createJar("foo-default.jar", entries, createBasicManifest())) {
-            AgentPluginClassLoader classLoader = createClassLoader(new LinkedList<>(Collections.singleton(defaultJar)));
-            Class<?> loadedClass = classLoader.loadClass("DefaultFixture");
-            assertThat(loadedClass.getSimpleName(), is("DefaultFixture"));
+            AgentPluginClassLoader classLoader = new AgentPluginClassLoader(new URLClassLoader(new URL[0], null), Collections.singletonList(defaultJar));
+            assertThat(classLoader.loadClass("DefaultFixture").getSimpleName(), is("DefaultFixture"));
         }
     }
     
@@ -108,54 +107,48 @@ class AgentPluginClassLoaderTest {
     }
     
     @Test
-    void assertClassNotFoundWhenInputStreamBroken() throws Exception {
-        Path jarPath = tempDir.resolve("foo-broken.jar");
-        try (JarFile ignored = createJar("foo-broken.jar", new HashMap<>(), createBasicManifest());
-             JarFile brokenJar = new BrokenJarFile(jarPath.toFile())) {
-            Collection<JarFile> jars = new LinkedList<>();
-            jars.add(brokenJar);
-            AgentPluginClassLoader classLoader = createClassLoader(jars);
+    void assertClassNotFoundWhenInputStreamBroken() throws IOException {
+        try (JarFile ignored = createJar("foo-broken.jar", new HashMap<>(1, 1F), createBasicManifest())) {
+            JarFile brokenJar = mock(JarFile.class);
+            when(brokenJar.getEntry(anyString())).thenReturn(new ZipEntry("BrokenClass.class"));
+            when(brokenJar.getManifest()).thenReturn(createBasicManifest());
+            when(brokenJar.getInputStream(any(ZipEntry.class))).thenThrow(new IOException("broken"));
+            AgentPluginClassLoader classLoader = new AgentPluginClassLoader(new URLClassLoader(new URL[0], null), Collections.singletonList(brokenJar));
             assertThrows(ClassNotFoundException.class, () -> classLoader.loadClass("BrokenClass"));
         }
     }
     
     @Test
-    void assertFindResourceReturnsNullWhenUrlMalformed() throws Exception {
-        Map<String, byte[]> entries = new HashMap<>();
+    void assertFindResourceReturnsNullWhenUrlMalformed() throws IOException {
+        Map<String, byte[]> entries = new HashMap<>(1, 1F);
         entries.put("malformed.txt", "bar_resource".getBytes(StandardCharsets.UTF_8));
         try (JarFile malformedJar = createJar("foo#malformed.jar", entries, createBasicManifest())) {
             Collection<JarFile> jars = new LinkedList<>();
             jars.add(malformedJar);
-            AgentPluginClassLoader classLoader = createClassLoader(jars);
+            AgentPluginClassLoader classLoader = new AgentPluginClassLoader(new URLClassLoader(new URL[0], null), jars);
             URL resourceUrl = classLoader.findResource("malformed.txt");
-            assertThat(resourceUrl, is(nullValue()));
-            Enumeration<URL> resources = classLoader.findResources("malformed.txt");
-            assertThat(resources.hasMoreElements(), is(false));
+            assertNull(resourceUrl);
+            assertFalse(classLoader.findResources("malformed.txt").hasMoreElements());
         }
     }
     
-    private AgentPluginClassLoader createClassLoader(final Collection<JarFile> jars) {
-        return new AgentPluginClassLoader(new URLClassLoader(new URL[0], null), jars);
-    }
-    
-    private Manifest createManifest(final String specTitle, final String specVersion, final String specVendor,
-                                    final String implTitle, final String implVersion, final String implVendor) {
-        Manifest manifest = new Manifest();
-        Attributes attributes = manifest.getMainAttributes();
+    private Manifest createManifest() {
+        Manifest result = new Manifest();
+        Attributes attributes = result.getMainAttributes();
         attributes.put(Attributes.Name.MANIFEST_VERSION, "1.0");
-        attributes.put(Attributes.Name.SPECIFICATION_TITLE, specTitle);
-        attributes.put(Attributes.Name.SPECIFICATION_VERSION, specVersion);
-        attributes.put(Attributes.Name.SPECIFICATION_VENDOR, specVendor);
-        attributes.put(Attributes.Name.IMPLEMENTATION_TITLE, implTitle);
-        attributes.put(Attributes.Name.IMPLEMENTATION_VERSION, implVersion);
-        attributes.put(Attributes.Name.IMPLEMENTATION_VENDOR, implVendor);
-        return manifest;
+        attributes.put(Attributes.Name.SPECIFICATION_TITLE, "spec_title");
+        attributes.put(Attributes.Name.SPECIFICATION_VERSION, "1.0");
+        attributes.put(Attributes.Name.SPECIFICATION_VENDOR, "spec_vendor");
+        attributes.put(Attributes.Name.IMPLEMENTATION_TITLE, "impl_title");
+        attributes.put(Attributes.Name.IMPLEMENTATION_VERSION, "2.0");
+        attributes.put(Attributes.Name.IMPLEMENTATION_VENDOR, "impl_vendor");
+        return result;
     }
     
     private Manifest createBasicManifest() {
-        Manifest manifest = new Manifest();
-        manifest.getMainAttributes().put(Attributes.Name.MANIFEST_VERSION, "1.0");
-        return manifest;
+        Manifest result = new Manifest();
+        result.getMainAttributes().put(Attributes.Name.MANIFEST_VERSION, "1.0");
+        return result;
     }
     
     private JarFile createJar(final String fileName, final Map<String, byte[]> entries, final Manifest manifest) throws IOException {
@@ -172,22 +165,5 @@ class AgentPluginClassLoaderTest {
     
     private byte[] createClassBytes(final String className) {
         return new ByteBuddy().subclass(Object.class).name(className).make().getBytes();
-    }
-    
-    private static final class BrokenJarFile extends JarFile {
-        
-        BrokenJarFile(final java.io.File file) throws IOException {
-            super(file);
-        }
-        
-        @Override
-        public ZipEntry getEntry(final String name) {
-            return new ZipEntry(name);
-        }
-        
-        @Override
-        public InputStream getInputStream(final ZipEntry ze) throws IOException {
-            throw new IOException("broken");
-        }
     }
 }
