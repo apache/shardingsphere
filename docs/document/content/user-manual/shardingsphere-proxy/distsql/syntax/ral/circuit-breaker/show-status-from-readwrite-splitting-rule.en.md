@@ -33,10 +33,11 @@ databaseName ::=
 
 ### Return Value Description
 
-| Columns        | Description         |
-|----------------|---------------------|
-| storage_unit   | storage unit name   |
-| status         | storage unit status |
+| Columns      | Description                     |
+|--------------|---------------------------------|
+| name         | readwrite-splitting rule name   |
+| storage_unit | storage unit name               |
+| status       | storage unit status             |
 
 ### Example
 
@@ -48,11 +49,11 @@ SHOW STATUS FROM READWRITE_SPLITTING RULE ms_group_0 FROM sharding_db;
 
 ```sql
 mysql> SHOW STATUS FROM READWRITE_SPLITTING RULE ms_group_0 FROM sharding_db;
-+--------------+----------+
-| storage_unit | status   |
-+--------------+----------+
-| ds_0         | disabled |
-+--------------+----------+
++-------------+--------------+----------+
+| name        | storage_unit | status   |
++-------------+--------------+----------+
+| ms_group_0  | ds_0         | disabled |
++-------------+--------------+----------+
 1 rows in set (0.01 sec)
 ```
 
@@ -64,11 +65,11 @@ SHOW STATUS FROM READWRITE_SPLITTING RULES FROM sharding_db;
 
 ```sql
 mysql> SHOW STATUS FROM READWRITE_SPLITTING RULES FROM sharding_db;
-+--------------+----------+
-| storage_unit | status   |
-+--------------+----------+
-| ds_0         | disabled |
-+--------------+----------+
++-------------+--------------+----------+
+| name        | storage_unit | status   |
++-------------+--------------+----------+
+| ms_group_0  | ds_0         | disabled |
++-------------+--------------+----------+
 1 rows in set (0.01 sec)
 ```
 
@@ -80,11 +81,11 @@ SHOW STATUS FROM READWRITE_SPLITTING RULE ms_group_0;
 
 ```sql
 mysql> SHOW STATUS FROM READWRITE_SPLITTING RULE ms_group_0;
-+--------------+----------+
-| storage_unit | status   |
-+--------------+----------+
-| ds_0         | disabled |
-+--------------+----------+
++-------------+--------------+----------+
+| name        | storage_unit | status   |
++-------------+--------------+----------+
+| ms_group_0  | ds_0         | disabled |
++-------------+--------------+----------+
 1 rows in set (0.01 sec)
 ```
 
@@ -96,11 +97,11 @@ mysql> SHOW STATUS FROM READWRITE_SPLITTING RULES;
 
 ```sql
 mysql> SHOW STATUS FROM READWRITE_SPLITTING RULES;
-+--------------+----------+
-| storage_unit | status   |
-+--------------+----------+
-| ds_0         | disabled |
-+--------------+----------+
++-------------+--------------+----------+
+| name        | storage_unit | status   |
++-------------+--------------+----------+
+| ms_group_0  | ds_0         | disabled |
++-------------+--------------+----------+
 1 rows in set (0.01 sec)
 ```
 

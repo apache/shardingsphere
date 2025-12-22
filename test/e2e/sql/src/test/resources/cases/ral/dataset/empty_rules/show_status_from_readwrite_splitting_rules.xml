@@ -17,8 +17,9 @@
 
 <dataset>
     <metadata>
+        <column name="name" />
         <column name="storage_unit" />
         <column name="status" />
     </metadata>
-    <row values="read_ds_0| ENABLED" />
+    <row values="readwrite_ds_0| read_ds_0| ENABLED" />
 </dataset>
