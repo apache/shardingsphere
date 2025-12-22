@@ -239,7 +239,6 @@ class PostgreSQLColumnPropertiesAppenderTest {
     
     @Test
     void assertNormalizeSequenceValuesRemovesGroupingSeparator() {
-        Map<String, Object> context = new LinkedHashMap<>();
         Map<String, Object> column = createTextColumnWithName("id");
         column.put("attidentity", "a");
         column.put("colconstype", "i");
@@ -248,6 +247,7 @@ class PostgreSQLColumnPropertiesAppenderTest {
         column.put("seqmin", "1");
         column.put("seqmax", "2,147,483,647");
         column.put("seqcache", "1");
+        Map<String, Object> context = new LinkedHashMap<>();
         when(templateExecutor.executeByTemplate(context, "component/table/%s/get_columns_for_table.ftl")).thenReturn(Collections.emptyList());
         when(templateExecutor.executeByTemplate(context, "component/columns/%s/properties.ftl")).thenReturn(Collections.singletonList(column));
         when(templateExecutor.executeByTemplate(anyMap(), eq("component/columns/%s/edit_mode_types_multi.ftl"))).thenReturn(Collections.emptyList());
