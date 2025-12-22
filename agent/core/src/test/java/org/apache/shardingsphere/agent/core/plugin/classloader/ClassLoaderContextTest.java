@@ -58,7 +58,7 @@ class ClassLoaderContextTest {
     
     @SuppressWarnings("unchecked")
     @SneakyThrows(ReflectiveOperationException.class)
-    private Map<ClassLoader, AgentPluginClassLoader> getAgentClassLoaders()  {
+    private Map<ClassLoader, AgentPluginClassLoader> getAgentClassLoaders() {
         return (Map<ClassLoader, AgentPluginClassLoader>) Plugins.getMemberAccessor().get(ClassLoaderContext.class.getDeclaredField("AGENT_CLASS_LOADERS"), null);
     }
 }
