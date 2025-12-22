@@ -257,13 +257,13 @@ public final class TestShardingService {
     }
     
     /**
-     * Clean environment in Firebird. See <a href="https://github.com/FirebirdSQL/firebird/issues/4203">FirebirdSQL/firebird#4203</a>.
+     * Clean environment without verify. See <a href="https://github.com/FirebirdSQL/firebird/issues/4203">FirebirdSQL/firebird#4203</a>.
      *
      * @throws SQLException An exception that provides information on a database access error or other errors
      */
-    public void cleanEnvironmentInFirebird() throws SQLException {
-        orderRepository.dropTableInFirebird();
-        orderItemRepository.dropTableInFirebird();
-        addressRepository.dropTableInFirebird();
+    public void cleanEnvironmentWithoutVerify() throws SQLException {
+        orderRepository.dropTableWithoutVerify();
+        orderItemRepository.dropTableWithoutVerify();
+        addressRepository.dropTableWithoutVerify();
     }
 }

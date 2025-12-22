@@ -18,6 +18,7 @@
     {"includeClasses": "com.oracle.svm.core.**"},
     {"includeClasses": "com.sun.management.**"},
     {"includeClasses": "org.apache.shardingsphere.**"},
+    {"includeClasses": "sun.nio.ch.SelectorImpl"},
     {"includeClasses": "sun.security.provider.SecureRandom"},
 
     {"excludeClasses": "org.apache.shardingsphere.test.natived.**"}

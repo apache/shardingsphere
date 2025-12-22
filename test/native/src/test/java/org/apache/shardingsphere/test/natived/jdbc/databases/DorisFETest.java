@@ -50,7 +50,7 @@ class DorisFETest {
     
     @SuppressWarnings("resource")
     @Container
-    private final GenericContainer<?> container = new GenericContainer<>("dyrnq/doris:3.1.0")
+    private final GenericContainer<?> container = new GenericContainer<>("dyrnq/doris:4.0.0")
             .withEnv("RUN_MODE", "standalone")
             .withEnv("SKIP_CHECK_ULIMIT", "true")
             .withExposedPorts(9030)
