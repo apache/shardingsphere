@@ -20,10 +20,10 @@
     <test-case dist-sql="SHOW STATUS FROM READWRITE_SPLITTING RULES" current-rule-config-yaml-file="cases/show-status-from-readwrite-splitting-rules-current-config.yaml">
         <expected-query-result-rows>
             <expected-query-result-row>
-                read_ds_0|ENABLED
+                foo_rule|read_ds_0|ENABLED
             </expected-query-result-row>
             <expected-query-result-row>
-                read_ds_1|DISABLED
+                foo_rule|read_ds_1|DISABLED
             </expected-query-result-row>
         </expected-query-result-rows>
     </test-case>
