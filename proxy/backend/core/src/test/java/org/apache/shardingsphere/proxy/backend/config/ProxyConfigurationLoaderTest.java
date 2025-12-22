@@ -17,28 +17,49 @@
 
 package org.apache.shardingsphere.proxy.backend.config;
 
+import org.apache.shardingsphere.authority.yaml.config.YamlAuthorityRuleConfiguration;
 import org.apache.shardingsphere.encrypt.yaml.config.YamlEncryptRuleConfiguration;
+import org.apache.shardingsphere.globalclock.yaml.config.YamlGlobalClockRuleConfiguration;
 import org.apache.shardingsphere.infra.algorithm.core.yaml.YamlAlgorithmConfiguration;
+import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlRuleConfiguration;
+import org.apache.shardingsphere.infra.yaml.config.swapper.rule.YamlRuleConfigurationSwapper;
+import org.apache.shardingsphere.parser.yaml.config.YamlSQLParserRuleConfiguration;
 import org.apache.shardingsphere.proxy.backend.config.yaml.YamlProxyDataSourceConfiguration;
 import org.apache.shardingsphere.proxy.backend.config.yaml.YamlProxyDatabaseConfiguration;
 import org.apache.shardingsphere.proxy.backend.config.yaml.YamlProxyServerConfiguration;
 import org.apache.shardingsphere.readwritesplitting.yaml.config.YamlReadwriteSplittingRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.yaml.config.rule.YamlReadwriteSplittingDataSourceGroupRuleConfiguration;
 import org.apache.shardingsphere.sharding.yaml.config.YamlShardingRuleConfiguration;
+import org.apache.shardingsphere.sqlfederation.yaml.config.YamlSQLFederationRuleConfiguration;
+import org.apache.shardingsphere.sqltranslator.yaml.config.YamlSQLTranslatorRuleConfiguration;
+import org.apache.shardingsphere.test.infra.fixture.rule.MockedRuleConfiguration;
+import org.apache.shardingsphere.transaction.yaml.config.YamlTransactionRuleConfiguration;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
+import org.mockito.MockedStatic;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.isA;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.CALLS_REAL_METHODS;
+import static org.mockito.Mockito.mockStatic;
 
 class ProxyConfigurationLoaderTest {
     
@@ -65,6 +86,70 @@ class ProxyConfigurationLoaderTest {
         assertShardingRuleConfiguration(actual.getDatabaseConfigurations().get("sharding_db"));
         assertReadwriteSplittingRuleConfiguration(actual.getDatabaseConfigurations().get("readwrite_splitting_db"));
         assertEncryptRuleConfiguration(actual.getDatabaseConfigurations().get("encrypt_db"));
+    }
+    
+    @Test
+    void assertLoadWithCompatibleConfigAndAllGlobalRules(@TempDir final Path tempDir) throws IOException {
+        writeConfigurationFile(tempDir, "server.yaml", "rules:\n"
+                + "  - !GLOBAL_CLOCK\n"
+                + "    type: REMOVED\n"
+                + "    provider: REMOVED\n"
+                + "authority:\n"
+                + "  users:\n"
+                + "    - user: root\n"
+                + "      password: root\n"
+                + "transaction:\n"
+                + "  providerType: Atomikos\n"
+                + "globalClock:\n"
+                + "  type: FIXTURE\n"
+                + "  provider: LOCAL\n"
+                + "  enabled: true\n"
+                + "sqlParser: {}\n"
+                + "sqlTranslator:\n"
+                + "  type: TRANSLATOR\n"
+                + "sqlFederation:\n"
+                + "  sqlFederationEnabled: true\n"
+                + "  allQueryUseSQLFederation: true\n");
+        writeConfigurationFile(tempDir, "config-compatible.yaml", "databaseName: compatible_db\n"
+                + "dataSources:\n"
+                + "  ds_0:\n"
+                + "    url: jdbc:mock://127.0.0.1/compatible\n");
+        YamlProxyConfiguration actual = ProxyConfigurationLoader.load(tempDir.toString());
+        YamlProxyServerConfiguration serverConfig = actual.getServerConfiguration();
+        assertThat(serverConfig.getRules().size(), is(6));
+        Iterator<YamlRuleConfiguration> rules = serverConfig.getRules().iterator();
+        assertThat(rules.next(), isA(YamlAuthorityRuleConfiguration.class));
+        assertThat(rules.next(), isA(YamlTransactionRuleConfiguration.class));
+        YamlRuleConfiguration globalClockRule = rules.next();
+        assertThat(globalClockRule, isA(YamlGlobalClockRuleConfiguration.class));
+        assertThat(((YamlGlobalClockRuleConfiguration) globalClockRule).getProvider(), is("LOCAL"));
+        assertThat(rules.next(), isA(YamlSQLParserRuleConfiguration.class));
+        assertThat(rules.next(), isA(YamlSQLTranslatorRuleConfiguration.class));
+        assertThat(rules.next(), isA(YamlSQLFederationRuleConfiguration.class));
+        assertNotNull(actual.getDatabaseConfigurations().get("compatible_db").getDataSources());
+    }
+    
+    @SuppressWarnings("rawtypes")
+    @Test
+    void assertLoadWithUnknownRuleTagName(@TempDir final Path tempDir) throws IOException {
+        Collection<YamlRuleConfigurationSwapper> originalSwappers = ShardingSphereServiceLoader.getServiceInstances(YamlRuleConfigurationSwapper.class);
+        AtomicInteger yamlRuleConfigurationSwapperCallTimes = new AtomicInteger();
+        try (MockedStatic<ShardingSphereServiceLoader> mockedStatic = mockStatic(ShardingSphereServiceLoader.class, CALLS_REAL_METHODS)) {
+            mockedStatic.when(() -> ShardingSphereServiceLoader.getServiceInstances(YamlRuleConfigurationSwapper.class))
+                    .thenAnswer(invocation -> yamlRuleConfigurationSwapperCallTimes.getAndIncrement() < 2 ? originalSwappers : Collections.emptyList());
+            writeConfigurationFile(tempDir, "global.yaml", "");
+            writeConfigurationFile(tempDir, "database-unknown-rule-tag.yaml", "databaseName: unknown_rule_tag_db\n"
+                    + "dataSources:\n"
+                    + "  ds_0:\n"
+                    + "    url: jdbc:mock://127.0.0.1/unknown\n"
+                    + "rules:\n"
+                    + "  - !FIXTURE\n"
+                    + "    unique: duplicated\n"
+                    + "  - !FIXTURE\n"
+                    + "    unique: duplicated\n");
+            IllegalStateException actual = assertThrows(IllegalStateException.class, () -> ProxyConfigurationLoader.load(tempDir.toString()));
+            assertThat(actual.getMessage(), is("Not find rule tag name of class class " + MockedRuleConfiguration.class.getName()));
+        }
     }
     
     private void assertShardingRuleConfiguration(final YamlProxyDatabaseConfiguration actual) {
@@ -141,5 +226,9 @@ class ProxyConfigurationLoaderTest {
         assertThat(actual.getIdleTimeoutMilliseconds(), is(60000L));
         assertThat(actual.getMaxLifetimeMilliseconds(), is(1800000L));
         assertThat(actual.getMaxPoolSize(), is(50));
+    }
+    
+    private void writeConfigurationFile(final Path directory, final String fileName, final String content) throws IOException {
+        Files.write(directory.resolve(fileName), content.getBytes(StandardCharsets.UTF_8));
     }
 }
