@@ -47,7 +47,7 @@ public final class PostgreSQLColumnPropertiesAppender {
     private static final Pattern LENGTH_PRECISION_PATTERN = Pattern.compile("(\\d+),(\\d+)");
     
     private static final Pattern LENGTH_PATTERN = Pattern.compile("(\\d+)");
-
+    
     private static final Pattern BRACKETS_PATTERN = Pattern.compile("(\\(\\d+\\))");
     
     private static final Pattern SIGNED_NUMBER_WITH_GROUPING_PATTERN = Pattern.compile("^([+-])?\\s*[0-9][0-9,\\s]*$");
