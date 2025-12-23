@@ -17,8 +17,10 @@
 
 package org.apache.shardingsphere.proxy.backend.handler.distsql;
 
+import org.apache.shardingsphere.distsql.handler.engine.DistSQLConnectionContext;
 import org.apache.shardingsphere.distsql.handler.engine.update.DistSQLUpdateExecuteEngine;
 import org.apache.shardingsphere.distsql.statement.DistSQLStatement;
+import org.apache.shardingsphere.infra.session.query.QueryContext;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
@@ -35,9 +37,12 @@ public final class DistSQLUpdateProxyBackendHandler implements DistSQLProxyBacke
     
     private final DistSQLUpdateExecuteEngine engine;
     
-    public DistSQLUpdateProxyBackendHandler(final DistSQLStatement sqlStatement, final ConnectionSession connectionSession, final ContextManager contextManager) {
+    public DistSQLUpdateProxyBackendHandler(final DistSQLStatement sqlStatement, final QueryContext queryContext, final ConnectionSession connectionSession, final ContextManager contextManager) {
         this.sqlStatement = sqlStatement;
-        engine = new DistSQLUpdateExecuteEngine(sqlStatement, connectionSession.getUsedDatabaseName(), contextManager, connectionSession.getConnectionContext());
+        DistSQLConnectionContext distsqlConnectionContext = new DistSQLConnectionContext(queryContext,
+                connectionSession.getDatabaseConnectionManager().getConnectionSize(), connectionSession.getProtocolType(),
+                connectionSession.getDatabaseConnectionManager(), connectionSession.getStatementManager());
+        engine = new DistSQLUpdateExecuteEngine(sqlStatement, connectionSession.getUsedDatabaseName(), contextManager, distsqlConnectionContext);
     }
     
     @Override

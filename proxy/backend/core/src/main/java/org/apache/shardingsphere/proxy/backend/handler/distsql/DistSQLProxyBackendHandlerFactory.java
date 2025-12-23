@@ -53,12 +53,12 @@ public final class DistSQLProxyBackendHandlerFactory {
             return new DistSQLQueryProxyBackendHandler(sqlStatement, queryContext, connectionSession, contextManager);
         }
         if (sqlStatement instanceof RDLStatement) {
-            return new DistSQLUpdateProxyBackendHandler(sqlStatement, connectionSession, contextManager);
+            return new DistSQLUpdateProxyBackendHandler(sqlStatement, queryContext, connectionSession, contextManager);
         }
         if (sqlStatement instanceof RALStatement) {
             return sqlStatement instanceof QueryableRALStatement
                     ? new DistSQLQueryProxyBackendHandler(sqlStatement, queryContext, connectionSession, contextManager)
-                    : new DistSQLUpdateProxyBackendHandler(sqlStatement, connectionSession, contextManager);
+                    : new DistSQLUpdateProxyBackendHandler(sqlStatement, queryContext, connectionSession, contextManager);
         }
         throw new UnsupportedSQLOperationException(sqlStatement.getClass().getName());
     }
