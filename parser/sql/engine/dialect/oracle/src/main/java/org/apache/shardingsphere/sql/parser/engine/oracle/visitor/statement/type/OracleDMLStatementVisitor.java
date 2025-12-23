@@ -666,8 +666,9 @@ public final class OracleDMLStatementVisitor extends OracleStatementVisitor impl
         }
         return result;
     }
+
     @Override
-    public ASTNode visitHierarchicalQueryClause(final HierarchicalQueryClauseContext ctx){
+    public ASTNode visitHierarchicalQueryClause(final HierarchicalQueryClauseContext ctx) {
         if (null != ctx && null != ctx.expr()) {
             for (ExprContext each : ctx.expr()) {
                 visit(each);
