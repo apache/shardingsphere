@@ -42,7 +42,6 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 
@@ -82,8 +81,7 @@ class ShowShardingTableNodesExecutorTest {
         engine.executeQuery();
         Collection<LocalDataQueryResultRow> actual = engine.getRows();
         assertThat(actual.size(), is(1));
-        Iterator<LocalDataQueryResultRow> iterator = actual.iterator();
-        LocalDataQueryResultRow row = iterator.next();
+        LocalDataQueryResultRow row = actual.iterator().next();
         assertThat(row.getCell(1), is("t_order"));
         assertThat(row.getCell(2), is("ds_1.t_order_0, ds_2.t_order_1, ds_1.t_order_2, ds_2.t_order_3, ds_1.t_order_4, ds_2.t_order_5"));
     }
