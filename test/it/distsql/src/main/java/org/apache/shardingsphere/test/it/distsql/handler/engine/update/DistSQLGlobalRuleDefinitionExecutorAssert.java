@@ -58,7 +58,7 @@ public final class DistSQLGlobalRuleDefinitionExecutorAssert {
     public void assertExecuteUpdate(final GlobalRuleConfiguration ruleConfig,
                                     final DistSQLStatement sqlStatement, final RuleConfiguration matchedRuleConfig, final Class<? extends Exception> expectedException) throws SQLException {
         ContextManager contextManager = mockContextManager(ruleConfig);
-        DistSQLUpdateExecuteEngine engine = new DistSQLUpdateExecuteEngine(sqlStatement, null, contextManager, mock(DistSQLConnectionContext.class));
+        DistSQLUpdateExecuteEngine engine = new DistSQLUpdateExecuteEngine(sqlStatement, null, contextManager, mock(DistSQLConnectionContext.class, RETURNS_DEEP_STUBS));
         if (null != expectedException) {
             assertThrows(expectedException, engine::executeUpdate);
             return;
