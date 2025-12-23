@@ -17,17 +17,22 @@
 
 package org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.database.metadata;
 
+import org.apache.shardingsphere.infra.instance.ComputeNodeInstance;
+import org.apache.shardingsphere.infra.instance.ComputeNodeInstanceContext;
+import org.apache.shardingsphere.infra.instance.metadata.InstanceMetaData;
 import org.apache.shardingsphere.infra.instance.metadata.InstanceType;
 import org.apache.shardingsphere.mode.event.DataChangedEvent;
 import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
 import org.apache.shardingsphere.mode.manager.ContextManager;
+import org.apache.shardingsphere.mode.metadata.manager.MetaDataContextManager;
+import org.apache.shardingsphere.mode.metadata.manager.database.DatabaseMetaDataManager;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Answers;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -36,12 +41,47 @@ class SchemaChangedHandlerTest {
     
     private SchemaChangedHandler handler;
     
-    @Mock(answer = Answers.RETURNS_DEEP_STUBS)
+    @Mock
     private ContextManager contextManager;
+    
+    @Mock
+    private DatabaseMetaDataManager databaseMetaDataManager;
     
     @BeforeEach
     void setUp() {
-        when(contextManager.getComputeNodeInstanceContext().getInstance().getMetaData().getType()).thenReturn(InstanceType.PROXY);
+        MetaDataContextManager metaDataContextManager = mock(MetaDataContextManager.class);
+        when(metaDataContextManager.getDatabaseMetaDataManager()).thenReturn(databaseMetaDataManager);
+        when(contextManager.getMetaDataContextManager()).thenReturn(metaDataContextManager);
+        ComputeNodeInstanceContext computeNodeInstanceContext = mock(ComputeNodeInstanceContext.class);
+        when(contextManager.getComputeNodeInstanceContext()).thenReturn(computeNodeInstanceContext);
+        InstanceMetaData instanceMetaData = new InstanceMetaData() {
+            
+            @Override
+            public String getId() {
+                return "id";
+            }
+            
+            @Override
+            public InstanceType getType() {
+                return InstanceType.JDBC;
+            }
+            
+            @Override
+            public String getIp() {
+                return "127.0.0.1";
+            }
+            
+            @Override
+            public String getAttributes() {
+                return "";
+            }
+            
+            @Override
+            public String getVersion() {
+                return "version";
+            }
+        };
+        when(computeNodeInstanceContext.getInstance()).thenReturn(new ComputeNodeInstance(instanceMetaData));
         handler = new SchemaChangedHandler(contextManager);
     }
     

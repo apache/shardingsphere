@@ -31,9 +31,6 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.predicate
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.WindowSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.SelectStatement;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -48,7 +45,6 @@ import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-@ExtendWith(MockitoExtension.class)
 class ShardingOrderByTokenGeneratorTest {
     
     private static final String TEST_COLUMN_ORDER_BY_ITEM_SEGMENT_COLUMN_LABEL = "TEST_COLUMN_ORDER_BY_ITEM_SEGMENT_COLUMN_LABEL";
@@ -58,9 +54,6 @@ class ShardingOrderByTokenGeneratorTest {
     private static final int TEST_OTHER_CLASS_ORDER_BY_ITEM_INDEX = 5;
     
     private final ShardingOrderByTokenGenerator generator = new ShardingOrderByTokenGenerator();
-    
-    @Mock
-    private OrderDirection orderDirection;
     
     @Test
     void assertIsNotGenerateSQLTokenWithNotSelectStatementContext() {
@@ -88,7 +81,7 @@ class ShardingOrderByTokenGeneratorTest {
         assertThat(actual.getColumnLabels().get(0), is(TEST_COLUMN_ORDER_BY_ITEM_SEGMENT_COLUMN_LABEL));
         assertThat(actual.getColumnLabels().get(1), is(TEST_EXPRESSION_ORDER_BY_ITEM_SEGMENT_COLUMN_LABEL));
         assertThat(actual.getColumnLabels().get(2), is(String.valueOf(TEST_OTHER_CLASS_ORDER_BY_ITEM_INDEX)));
-        assertThat(actual.getOrderDirections().get(0), is(orderDirection));
+        assertThat(actual.getOrderDirections().get(0), is(OrderDirection.ASC));
         assertThat(actual.getStopIndex(), is(11));
     }
     
@@ -101,7 +94,7 @@ class ShardingOrderByTokenGeneratorTest {
         assertThat(actual.getColumnLabels().get(0), is(TEST_COLUMN_ORDER_BY_ITEM_SEGMENT_COLUMN_LABEL));
         assertThat(actual.getColumnLabels().get(1), is(TEST_EXPRESSION_ORDER_BY_ITEM_SEGMENT_COLUMN_LABEL));
         assertThat(actual.getColumnLabels().get(2), is(String.valueOf(TEST_OTHER_CLASS_ORDER_BY_ITEM_INDEX)));
-        assertThat(actual.getOrderDirections().get(0), is(orderDirection));
+        assertThat(actual.getOrderDirections().get(0), is(OrderDirection.ASC));
         assertThat(actual.getStopIndex(), is(11));
     }
     
@@ -114,7 +107,7 @@ class ShardingOrderByTokenGeneratorTest {
         assertThat(actual.getColumnLabels().get(0), is(TEST_COLUMN_ORDER_BY_ITEM_SEGMENT_COLUMN_LABEL));
         assertThat(actual.getColumnLabels().get(1), is(TEST_EXPRESSION_ORDER_BY_ITEM_SEGMENT_COLUMN_LABEL));
         assertThat(actual.getColumnLabels().get(2), is(String.valueOf(TEST_OTHER_CLASS_ORDER_BY_ITEM_INDEX)));
-        assertThat(actual.getOrderDirections().get(0), is(orderDirection));
+        assertThat(actual.getOrderDirections().get(0), is(OrderDirection.ASC));
         assertThat(actual.getStopIndex(), is(11));
     }
     
@@ -127,7 +120,7 @@ class ShardingOrderByTokenGeneratorTest {
         assertThat(actual.getColumnLabels().get(0), is(TEST_COLUMN_ORDER_BY_ITEM_SEGMENT_COLUMN_LABEL));
         assertThat(actual.getColumnLabels().get(1), is(TEST_EXPRESSION_ORDER_BY_ITEM_SEGMENT_COLUMN_LABEL));
         assertThat(actual.getColumnLabels().get(2), is(String.valueOf(TEST_OTHER_CLASS_ORDER_BY_ITEM_INDEX)));
-        assertThat(actual.getOrderDirections().get(0), is(orderDirection));
+        assertThat(actual.getOrderDirections().get(0), is(OrderDirection.ASC));
         assertThat(actual.getStopIndex(), is(11));
     }
     
@@ -139,7 +132,7 @@ class ShardingOrderByTokenGeneratorTest {
         assertThat(actual.getColumnLabels().get(0), is(TEST_COLUMN_ORDER_BY_ITEM_SEGMENT_COLUMN_LABEL));
         assertThat(actual.getColumnLabels().get(1), is(TEST_EXPRESSION_ORDER_BY_ITEM_SEGMENT_COLUMN_LABEL));
         assertThat(actual.getColumnLabels().get(2), is(String.valueOf(TEST_OTHER_CLASS_ORDER_BY_ITEM_INDEX)));
-        assertThat(actual.getOrderDirections().get(0), is(orderDirection));
+        assertThat(actual.getOrderDirections().get(0), is(OrderDirection.ASC));
         assertThat(actual.getStopIndex(), is(1));
     }
     
@@ -154,16 +147,16 @@ class ShardingOrderByTokenGeneratorTest {
     private Collection<OrderByItem> createOrderByItems() {
         ColumnOrderByItemSegment columnOrderByItemSegment = mock(ColumnOrderByItemSegment.class);
         when(columnOrderByItemSegment.getText()).thenReturn(TEST_COLUMN_ORDER_BY_ITEM_SEGMENT_COLUMN_LABEL);
-        when(columnOrderByItemSegment.getOrderDirection()).thenReturn(orderDirection);
+        when(columnOrderByItemSegment.getOrderDirection()).thenReturn(OrderDirection.ASC);
         OrderByItem columnOrderByItem = mock(OrderByItem.class);
         when(columnOrderByItem.getSegment()).thenReturn(columnOrderByItemSegment);
         ExpressionOrderByItemSegment expressionOrderByItemSegment = mock(ExpressionOrderByItemSegment.class);
         when(expressionOrderByItemSegment.getText()).thenReturn(TEST_EXPRESSION_ORDER_BY_ITEM_SEGMENT_COLUMN_LABEL);
-        when(expressionOrderByItemSegment.getOrderDirection()).thenReturn(orderDirection);
+        when(expressionOrderByItemSegment.getOrderDirection()).thenReturn(OrderDirection.ASC);
         OrderByItem expressionOrderByItem = mock(OrderByItem.class);
         when(expressionOrderByItem.getSegment()).thenReturn(expressionOrderByItemSegment);
         OrderByItemSegment orderByItemSegment = mock(OrderByItemSegment.class);
-        when(orderByItemSegment.getOrderDirection()).thenReturn(orderDirection);
+        when(orderByItemSegment.getOrderDirection()).thenReturn(OrderDirection.ASC);
         OrderByItem otherClassOrderByItem = mock(OrderByItem.class);
         when(otherClassOrderByItem.getSegment()).thenReturn(orderByItemSegment);
         when(otherClassOrderByItem.getIndex()).thenReturn(TEST_OTHER_CLASS_ORDER_BY_ITEM_INDEX);
