@@ -90,7 +90,7 @@ public final class DistSQLUpdateExecuteEngine {
         Optional<AdvancedDistSQLUpdateExecutor> advancedExecutor = TypedSPILoader.findService(AdvancedDistSQLUpdateExecutor.class, sqlStatement.getClass());
         DistSQLUpdateExecutor executor = advancedExecutor.isPresent() ? advancedExecutor.get() : TypedSPILoader.getService(DistSQLUpdateExecutor.class, sqlStatement.getClass());
         ShardingSphereDatabase database = null == databaseName ? null : contextManager.getDatabase(databaseName);
-        new DistSQLExecutorAwareSetter(executor).set(contextManager, database, null, sqlStatement);
+        new DistSQLExecutorAwareSetter(executor).set(contextManager, database, null, connectionContext, sqlStatement);
         new DistSQLExecutorRequiredChecker(executor).check(sqlStatement, contextManager, database);
         executor.executeUpdate(sqlStatement, contextManager);
     }

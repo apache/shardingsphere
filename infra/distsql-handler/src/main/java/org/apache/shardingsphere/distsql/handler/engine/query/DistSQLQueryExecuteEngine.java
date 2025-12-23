@@ -67,7 +67,8 @@ public final class DistSQLQueryExecuteEngine {
     public void executeQuery() throws SQLException {
         DistSQLQueryExecutor<DistSQLStatement> executor = TypedSPILoader.getService(DistSQLQueryExecutor.class, sqlStatement.getClass());
         try {
-            new DistSQLExecutorAwareSetter(executor).set(contextManager, null == databaseName ? null : contextManager.getDatabase(databaseName), distsqlConnectionContext, sqlStatement);
+            new DistSQLExecutorAwareSetter(executor).set(contextManager, null == databaseName ? null : contextManager.getDatabase(databaseName),
+                    distsqlConnectionContext, distsqlConnectionContext.getQueryContext().getConnectionContext(), sqlStatement);
         } catch (final UnsupportedSQLOperationException ignored) {
             columnNames = executor.getColumnNames(sqlStatement);
             rows = Collections.emptyList();
