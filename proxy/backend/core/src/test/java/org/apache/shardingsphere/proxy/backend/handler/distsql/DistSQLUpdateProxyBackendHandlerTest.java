@@ -45,6 +45,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.isA;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -112,8 +113,9 @@ class DistSQLUpdateProxyBackendHandlerTest {
     }
     
     private ConnectionSession mockConnectionSession(final String databaseName) {
-        ConnectionSession result = mock(ConnectionSession.class);
+        ConnectionSession result = mock(ConnectionSession.class, RETURNS_DEEP_STUBS);
         when(result.getUsedDatabaseName()).thenReturn(databaseName);
+        when(result.getDatabaseConnectionManager().getConnectionSize()).thenReturn(1);
         return result;
     }
 }
