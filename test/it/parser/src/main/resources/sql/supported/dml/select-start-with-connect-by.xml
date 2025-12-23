@@ -18,4 +18,9 @@
 
 <sql-cases>
     <sql-case id="select_start_with_connect_by" value="SELECT * FROM (SELECT level, o.* FROM t_order o WHERE o.order_id = 1 START WITH o.user_id = 1 CONNECT BY PRIOR user_id = user_id ORDER BY level) temp WHERE ROWNUM = 1" db-types="Oracle" />
+    <sql-case id="oracle_hier_start_with_param" value="SELECT * FROM (SELECT level FROM dual START WITH level = ? CONNECT BY PRIOR level = level) temp WHERE ROWNUM &lt;= ?" db-types="Oracle" />
+    <sql-case id="oracle_hier_connect_by_param" value="SELECT * FROM (SELECT level FROM dual CONNECT BY PRIOR level = ?) temp WHERE ROWNUM &lt;= ?" db-types="Oracle" />
+    <sql-case id="oracle_hier_both_start_and_connect_param" value="SELECT * FROM (SELECT level FROM dual START WITH level = ? CONNECT BY PRIOR level = ?) temp WHERE ROWNUM &lt;= ?" db-types="Oracle" />
+    <sql-case id="oracle_hier_param_in_function" value="SELECT * FROM (SELECT level FROM dual CONNECT BY REGEXP_SUBSTR(?, 1, level) IS NOT NULL) temp WHERE ROWNUM &lt;= ?" db-types="Oracle" />
+    <sql-case id="oracle_hier_question_in_string_not_param" value="SELECT * FROM (SELECT level FROM dual CONNECT BY REGEXP_SUBSTR('abc ? def', 1, level) IS NOT NULL) temp WHERE ROWNUM &lt;= 1" db-types="Oracle" />
 </sql-cases>
