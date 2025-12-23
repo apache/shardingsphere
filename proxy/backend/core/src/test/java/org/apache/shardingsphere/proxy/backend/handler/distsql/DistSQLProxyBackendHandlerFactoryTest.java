@@ -114,7 +114,7 @@ class DistSQLProxyBackendHandlerFactoryTest {
     void assertExecuteDataSourcesContext() throws SQLException {
         RegisterStorageUnitStatement sqlStatement = mock(RegisterStorageUnitStatement.class);
         when(sqlStatement.getAttributes()).thenReturn(new SQLStatementAttributes());
-        assertThat(new DistSQLUpdateProxyBackendHandler(sqlStatement, connectionSession, contextManager).execute(), isA(UpdateResponseHeader.class));
+        assertThat(new DistSQLUpdateProxyBackendHandler(sqlStatement, mock(), connectionSession, contextManager).execute(), isA(UpdateResponseHeader.class));
     }
     
     @Test
@@ -122,21 +122,21 @@ class DistSQLProxyBackendHandlerFactoryTest {
         when(contextManager.getDatabase("foo_db").getRuleMetaData()).thenReturn(new RuleMetaData(Collections.emptyList()));
         CreateShardingTableRuleStatement sqlStatement = mock(CreateShardingTableRuleStatement.class);
         when(sqlStatement.getAttributes()).thenReturn(new SQLStatementAttributes());
-        assertThat(new DistSQLUpdateProxyBackendHandler(sqlStatement, connectionSession, contextManager).execute(), isA(UpdateResponseHeader.class));
+        assertThat(new DistSQLUpdateProxyBackendHandler(sqlStatement, mock(), connectionSession, contextManager).execute(), isA(UpdateResponseHeader.class));
     }
     
     @Test
     void assertExecuteAddResourceContext() throws SQLException {
         RegisterStorageUnitStatement sqlStatement = mock(RegisterStorageUnitStatement.class);
         when(sqlStatement.getAttributes()).thenReturn(new SQLStatementAttributes());
-        assertThat(new DistSQLUpdateProxyBackendHandler(sqlStatement, connectionSession, contextManager).execute(), isA(UpdateResponseHeader.class));
+        assertThat(new DistSQLUpdateProxyBackendHandler(sqlStatement, mock(), connectionSession, contextManager).execute(), isA(UpdateResponseHeader.class));
     }
     
     @Test
     void assertExecuteAlterResourceContext() throws SQLException {
         AlterStorageUnitStatement sqlStatement = mock(AlterStorageUnitStatement.class);
         when(sqlStatement.getAttributes()).thenReturn(new SQLStatementAttributes());
-        assertThat(new DistSQLUpdateProxyBackendHandler(sqlStatement, connectionSession, contextManager).execute(), isA(UpdateResponseHeader.class));
+        assertThat(new DistSQLUpdateProxyBackendHandler(sqlStatement, mock(), connectionSession, contextManager).execute(), isA(UpdateResponseHeader.class));
     }
     
     @Test
@@ -145,7 +145,7 @@ class DistSQLProxyBackendHandlerFactoryTest {
         when(contextManager.getDatabase("foo_db")).thenReturn(database);
         AlterShadowRuleStatement sqlStatement = mock(AlterShadowRuleStatement.class);
         when(sqlStatement.getAttributes()).thenReturn(new SQLStatementAttributes());
-        assertThat(new DistSQLUpdateProxyBackendHandler(sqlStatement, connectionSession, contextManager).execute(), isA(UpdateResponseHeader.class));
+        assertThat(new DistSQLUpdateProxyBackendHandler(sqlStatement, mock(), connectionSession, contextManager).execute(), isA(UpdateResponseHeader.class));
     }
     
     @Test
@@ -154,7 +154,7 @@ class DistSQLProxyBackendHandlerFactoryTest {
         when(contextManager.getDatabase("foo_db")).thenReturn(database);
         CreateShadowRuleStatement sqlStatement = mock(CreateShadowRuleStatement.class);
         when(sqlStatement.getAttributes()).thenReturn(new SQLStatementAttributes());
-        assertThat(new DistSQLUpdateProxyBackendHandler(sqlStatement, connectionSession, contextManager).execute(), isA(UpdateResponseHeader.class));
+        assertThat(new DistSQLUpdateProxyBackendHandler(sqlStatement, mock(), connectionSession, contextManager).execute(), isA(UpdateResponseHeader.class));
     }
     
     @Test
@@ -163,7 +163,7 @@ class DistSQLProxyBackendHandlerFactoryTest {
         when(contextManager.getDatabase("foo_db")).thenReturn(database);
         DropShadowRuleStatement sqlStatement = mock(DropShadowRuleStatement.class);
         when(sqlStatement.getAttributes()).thenReturn(new SQLStatementAttributes());
-        assertThat(new DistSQLUpdateProxyBackendHandler(sqlStatement, connectionSession, contextManager).execute(), isA(UpdateResponseHeader.class));
+        assertThat(new DistSQLUpdateProxyBackendHandler(sqlStatement, mock(), connectionSession, contextManager).execute(), isA(UpdateResponseHeader.class));
     }
     
     @Test
@@ -172,7 +172,7 @@ class DistSQLProxyBackendHandlerFactoryTest {
         when(contextManager.getDatabase("foo_db")).thenReturn(database);
         AlterDefaultShadowAlgorithmStatement statement = new AlterDefaultShadowAlgorithmStatement(
                 new ShadowAlgorithmSegment("foo", new AlgorithmSegment("SQL_HINT", PropertiesBuilder.build(new Property("type", "value")))));
-        assertThat(new DistSQLUpdateProxyBackendHandler(statement, connectionSession, contextManager).execute(), isA(UpdateResponseHeader.class));
+        assertThat(new DistSQLUpdateProxyBackendHandler(statement, mock(), connectionSession, contextManager).execute(), isA(UpdateResponseHeader.class));
     }
     
     @Test
@@ -205,33 +205,33 @@ class DistSQLProxyBackendHandlerFactoryTest {
         when(contextManager.getDatabase("foo_db")).thenReturn(database);
         DropShadowAlgorithmStatement sqlStatement = mock(DropShadowAlgorithmStatement.class);
         when(sqlStatement.getAttributes()).thenReturn(new SQLStatementAttributes());
-        assertThat(new DistSQLUpdateProxyBackendHandler(sqlStatement, connectionSession, contextManager).execute(), isA(UpdateResponseHeader.class));
+        assertThat(new DistSQLUpdateProxyBackendHandler(sqlStatement, mock(), connectionSession, contextManager).execute(), isA(UpdateResponseHeader.class));
     }
     
     @Test
     void assertExecuteDropResourceContext() throws SQLException {
         UnregisterStorageUnitStatement sqlStatement = mock(UnregisterStorageUnitStatement.class);
         when(sqlStatement.getAttributes()).thenReturn(new SQLStatementAttributes());
-        assertThat(new DistSQLUpdateProxyBackendHandler(sqlStatement, connectionSession, contextManager).execute(), isA(UpdateResponseHeader.class));
+        assertThat(new DistSQLUpdateProxyBackendHandler(sqlStatement, mock(), connectionSession, contextManager).execute(), isA(UpdateResponseHeader.class));
     }
     
     @Test
     void assertExecuteDropReadwriteSplittingRuleContext() {
         assertThrows(MissingRequiredRuleException.class,
-                () -> new DistSQLUpdateProxyBackendHandler(mock(DropReadwriteSplittingRuleStatement.class, RETURNS_DEEP_STUBS), connectionSession, contextManager).execute());
+                () -> new DistSQLUpdateProxyBackendHandler(mock(DropReadwriteSplittingRuleStatement.class, RETURNS_DEEP_STUBS), mock(), connectionSession, contextManager).execute());
     }
     
     @Test
     void assertExecuteCreateReadwriteSplittingRuleContext() throws SQLException {
         CreateReadwriteSplittingRuleStatement sqlStatement = mock(CreateReadwriteSplittingRuleStatement.class);
         when(sqlStatement.getAttributes()).thenReturn(new SQLStatementAttributes());
-        assertThat(new DistSQLUpdateProxyBackendHandler(sqlStatement, connectionSession, contextManager).execute(), isA(UpdateResponseHeader.class));
+        assertThat(new DistSQLUpdateProxyBackendHandler(sqlStatement, mock(), connectionSession, contextManager).execute(), isA(UpdateResponseHeader.class));
     }
     
     @Test
     void assertExecuteAlterReadwriteSplittingRuleContext() {
         assertThrows(MissingRequiredRuleException.class,
-                () -> new DistSQLUpdateProxyBackendHandler(mock(AlterReadwriteSplittingRuleStatement.class, RETURNS_DEEP_STUBS), connectionSession, contextManager).execute());
+                () -> new DistSQLUpdateProxyBackendHandler(mock(AlterReadwriteSplittingRuleStatement.class, RETURNS_DEEP_STUBS), mock(), connectionSession, contextManager).execute());
     }
     
     private ShardingSphereDatabase mockDatabaseWithRule() {
