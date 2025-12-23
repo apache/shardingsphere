@@ -45,7 +45,6 @@ class UnlabelComputeNodeExecutorTest {
     
     @Test
     void assertDoNothingWhenInstanceAbsent() {
-        UnlabelComputeNodeStatement sqlStatement = new UnlabelComputeNodeStatement("instance-id", Collections.singletonList("label_a"));
         ContextManager contextManager = mock(ContextManager.class);
         ComputeNodeInstanceContext instanceContext = mock(ComputeNodeInstanceContext.class);
         ClusterInstanceRegistry clusterInstanceRegistry = mock(ClusterInstanceRegistry.class);
@@ -54,32 +53,30 @@ class UnlabelComputeNodeExecutorTest {
         when(clusterInstanceRegistry.find("instance-id")).thenReturn(Optional.empty());
         PersistServiceFacade persistServiceFacade = mock(PersistServiceFacade.class);
         when(contextManager.getPersistServiceFacade()).thenReturn(persistServiceFacade);
-        executor.executeUpdate(sqlStatement, contextManager);
+        executor.executeUpdate(new UnlabelComputeNodeStatement("instance-id", Collections.singletonList("label_a")), contextManager);
         verifyNoInteractions(persistServiceFacade);
     }
     
     @Test
     void assertClearLabelsWhenStatementLabelsEmpty() {
-        UnlabelComputeNodeStatement sqlStatement = new UnlabelComputeNodeStatement("instance-id", Collections.emptyList());
         ContextManager contextManager = mock(ContextManager.class);
         ComputeNodeInstance computeNodeInstance = mock(ComputeNodeInstance.class);
         ClusterComputeNodePersistService computeNodeService = mockContextManager(contextManager, computeNodeInstance);
         ComputeNodeInstanceContext instanceContext = contextManager.getComputeNodeInstanceContext();
         when(instanceContext.getClusterInstanceRegistry().find("instance-id")).thenReturn(Optional.of(computeNodeInstance));
-        executor.executeUpdate(sqlStatement, contextManager);
+        executor.executeUpdate(new UnlabelComputeNodeStatement("instance-id", Collections.emptyList()), contextManager);
         verify(computeNodeService).persistLabels("instance-id", Collections.emptyList());
     }
     
     @Test
     void assertRemoveSpecifiedLabels() {
-        UnlabelComputeNodeStatement sqlStatement = new UnlabelComputeNodeStatement("instance-id", Collections.singletonList("label_b"));
         ContextManager contextManager = mock(ContextManager.class);
         ComputeNodeInstance computeNodeInstance = mock(ComputeNodeInstance.class);
         when(computeNodeInstance.getLabels()).thenReturn(Arrays.asList("label_a", "label_b"));
         ClusterComputeNodePersistService computeNodeService = mockContextManager(contextManager, computeNodeInstance);
         ComputeNodeInstanceContext instanceContext = contextManager.getComputeNodeInstanceContext();
         when(instanceContext.getClusterInstanceRegistry().find("instance-id")).thenReturn(Optional.of(computeNodeInstance));
-        executor.executeUpdate(sqlStatement, contextManager);
+        executor.executeUpdate(new UnlabelComputeNodeStatement("instance-id", Collections.singletonList("label_b")), contextManager);
         verify(computeNodeService).persistLabels("instance-id", Collections.singletonList("label_a"));
     }
     

@@ -55,14 +55,13 @@ class RefreshTableMetaDataExecutorTest {
     
     @Test
     void assertExecuteUpdateWithReloadTableWithStorageUnit() {
-        RefreshTableMetaDataStatement sqlStatement = new RefreshTableMetaDataStatement("t_order", "ds_0", "logic_schema");
         ShardingSphereDatabase database = mockDatabase(true);
         ShardingSphereSchema schema = mock(ShardingSphereSchema.class);
         when(schema.containsTable("t_order")).thenReturn(true);
         when(database.getSchema("logic_schema")).thenReturn(schema);
         ContextManager contextManager = mock(ContextManager.class);
         executor.setDatabase(database);
-        executor.executeUpdate(sqlStatement, contextManager);
+        executor.executeUpdate(new RefreshTableMetaDataStatement("t_order", "ds_0", "logic_schema"), contextManager);
         verify(contextManager).reloadTable(database, "logic_schema", "ds_0", "t_order");
     }
     
@@ -148,13 +147,12 @@ class RefreshTableMetaDataExecutorTest {
     
     @Test
     void assertThrowWhenTableMissing() {
-        RefreshTableMetaDataStatement sqlStatement = new RefreshTableMetaDataStatement("missing_table", null, "logic_schema");
         ShardingSphereDatabase database = mockDatabase(true);
         ShardingSphereSchema schema = mock(ShardingSphereSchema.class);
         when(schema.containsTable("missing_table")).thenReturn(false);
         when(database.getSchema("logic_schema")).thenReturn(schema);
         executor.setDatabase(database);
-        assertThrows(TableNotFoundException.class, () -> executor.executeUpdate(sqlStatement, mock(ContextManager.class)));
+        assertThrows(TableNotFoundException.class, () -> executor.executeUpdate(new RefreshTableMetaDataStatement("missing_table", null, "logic_schema"), mock(ContextManager.class)));
     }
     
     private ShardingSphereDatabase mockDatabase(final boolean schemaExists) {
