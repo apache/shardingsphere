@@ -18,13 +18,13 @@
 package org.apache.shardingsphere.test.it.distsql.handler.engine.update;
 
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.distsql.handler.engine.DistSQLConnectionContext;
 import org.apache.shardingsphere.distsql.handler.engine.update.DistSQLUpdateExecuteEngine;
 import org.apache.shardingsphere.distsql.statement.DistSQLStatement;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.rule.scope.GlobalRuleConfiguration;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.rule.scope.GlobalRule;
-import org.apache.shardingsphere.infra.session.connection.ConnectionContext;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.persist.service.MetaDataManagerPersistService;
 
@@ -58,7 +58,7 @@ public final class DistSQLGlobalRuleDefinitionExecutorAssert {
     public void assertExecuteUpdate(final GlobalRuleConfiguration ruleConfig,
                                     final DistSQLStatement sqlStatement, final RuleConfiguration matchedRuleConfig, final Class<? extends Exception> expectedException) throws SQLException {
         ContextManager contextManager = mockContextManager(ruleConfig);
-        DistSQLUpdateExecuteEngine engine = new DistSQLUpdateExecuteEngine(sqlStatement, null, contextManager, mock(ConnectionContext.class));
+        DistSQLUpdateExecuteEngine engine = new DistSQLUpdateExecuteEngine(sqlStatement, null, contextManager, mock(DistSQLConnectionContext.class));
         if (null != expectedException) {
             assertThrows(expectedException, engine::executeUpdate);
             return;
