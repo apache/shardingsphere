@@ -48,7 +48,7 @@ class DropBroadcastTableRuleExecutorTest {
         DropBroadcastTableRuleStatement sqlStatement = new DropBroadcastTableRuleStatement(false, Collections.singleton("foo_tbl"));
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         BroadcastRule rule = mock(BroadcastRule.class, RETURNS_DEEP_STUBS);
-        assertThrows(MissingRequiredRuleException.class, () -> new DistSQLUpdateExecuteEngine(sqlStatement, "foo_db", mockContextManager(database, rule)).executeUpdate());
+        assertThrows(MissingRequiredRuleException.class, () -> new DistSQLUpdateExecuteEngine(sqlStatement, "foo_db", mockContextManager(database, rule), null).executeUpdate());
     }
     
     @Test
@@ -59,7 +59,7 @@ class DropBroadcastTableRuleExecutorTest {
         BroadcastRule rule = mock(BroadcastRule.class, RETURNS_DEEP_STUBS);
         when(rule.getConfiguration().getTables()).thenReturn(Collections.singleton("foo_tbl"));
         ContextManager contextManager = mockContextManager(database, rule);
-        new DistSQLUpdateExecuteEngine(sqlStatement, "foo_db", contextManager).executeUpdate();
+        new DistSQLUpdateExecuteEngine(sqlStatement, "foo_db", contextManager, null).executeUpdate();
         MetaDataManagerPersistService metaDataManagerPersistService = contextManager.getPersistServiceFacade().getModeFacade().getMetaDataManagerService();
         verify(metaDataManagerPersistService).removeRuleConfiguration(eq(database), any(RuleConfiguration.class), eq("broadcast"));
     }

@@ -26,7 +26,9 @@ import org.apache.shardingsphere.distsql.statement.type.rql.rule.global.ShowGlob
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.exception.generic.UnsupportedSQLOperationException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.rewrite.sql.token.common.generator.aware.ConnectionContextAware;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
+import org.apache.shardingsphere.infra.session.connection.ConnectionContext;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 
 import java.util.Optional;
@@ -44,11 +46,13 @@ public final class DistSQLExecutorAwareSetter {
      *
      * @param contextManager context manager
      * @param database database
+     * @param distSQLConnectionContext DistSQL connection context
      * @param connectionContext connection context
      * @param sqlStatement DistSQL statement
      */
     @SuppressWarnings("rawtypes")
-    public void set(final ContextManager contextManager, final ShardingSphereDatabase database, final DistSQLConnectionContext connectionContext, final DistSQLStatement sqlStatement) {
+    public void set(final ContextManager contextManager, final ShardingSphereDatabase database, final DistSQLConnectionContext distSQLConnectionContext,
+                    final ConnectionContext connectionContext, final DistSQLStatement sqlStatement) {
         if (executor instanceof DistSQLExecutorDatabaseAware) {
             ShardingSpherePreconditions.checkNotNull(database, NoDatabaseSelectedException::new);
             ((DistSQLExecutorDatabaseAware) executor).setDatabase(database);
@@ -60,7 +64,10 @@ public final class DistSQLExecutorAwareSetter {
             setRule((DistSQLExecutorRuleAware) executor, contextManager, database);
         }
         if (executor instanceof DistSQLExecutorConnectionContextAware) {
-            ((DistSQLExecutorConnectionContextAware) executor).setConnectionContext(connectionContext);
+            ((DistSQLExecutorConnectionContextAware) executor).setConnectionContext(distSQLConnectionContext);
+        }
+        if (executor instanceof ConnectionContextAware) {
+            ((ConnectionContextAware) executor).setConnectionContext(connectionContext);
         }
     }
     

@@ -52,7 +52,7 @@ class SetDefaultSingleTableStorageUnitExecutorTest {
         when(database.getRuleMetaData().getAttributes(DataSourceMapperRuleAttribute.class)).thenReturn(Collections.emptyList());
         SingleRule rule = mock(SingleRule.class, RETURNS_DEEP_STUBS);
         when(rule.getAttributes().findAttribute(DataSourceMapperRuleAttribute.class)).thenReturn(Optional.empty());
-        DistSQLUpdateExecuteEngine engine = new DistSQLUpdateExecuteEngine(new SetDefaultSingleTableStorageUnitStatement("foo_ds"), "foo_db", mockContextManager(database, rule, "foo_ds"));
+        DistSQLUpdateExecuteEngine engine = new DistSQLUpdateExecuteEngine(new SetDefaultSingleTableStorageUnitStatement("foo_ds"), "foo_db", mockContextManager(database, rule, "foo_ds"), null);
         assertThrows(MissingRequiredStorageUnitsException.class, engine::executeUpdate);
     }
     
@@ -62,7 +62,7 @@ class SetDefaultSingleTableStorageUnitExecutorTest {
         SingleRule rule = mock(SingleRule.class);
         when(rule.getConfiguration()).thenReturn(new SingleRuleConfiguration(Collections.emptyList(), "foo_ds"));
         ContextManager contextManager = mockContextManager(database, rule, null);
-        new DistSQLUpdateExecuteEngine(new SetDefaultSingleTableStorageUnitStatement(null), "foo_db", contextManager).executeUpdate();
+        new DistSQLUpdateExecuteEngine(new SetDefaultSingleTableStorageUnitStatement(null), "foo_db", contextManager, null).executeUpdate();
         MetaDataManagerPersistService metaDataManagerPersistService = contextManager.getPersistServiceFacade().getModeFacade().getMetaDataManagerService();
         verify(metaDataManagerPersistService).removeRuleConfigurationItem(any(), ArgumentMatchers.<SingleRuleConfiguration>argThat(x -> x.getDefaultDataSource().equals(Optional.of("foo_ds"))));
         verify(metaDataManagerPersistService).alterRuleConfiguration(any(), ArgumentMatchers.<SingleRuleConfiguration>argThat(x -> !x.getDefaultDataSource().isPresent()));
@@ -78,7 +78,7 @@ class SetDefaultSingleTableStorageUnitExecutorTest {
         when(rule.getConfiguration()).thenReturn(new SingleRuleConfiguration(Collections.emptyList(), "foo_ds"));
         when(rule.getAttributes().findAttribute(DataSourceMapperRuleAttribute.class)).thenReturn(Optional.empty());
         ContextManager contextManager = mockContextManager(database, rule, "bar_ds");
-        new DistSQLUpdateExecuteEngine(new SetDefaultSingleTableStorageUnitStatement("bar_ds"), "foo_db", contextManager).executeUpdate();
+        new DistSQLUpdateExecuteEngine(new SetDefaultSingleTableStorageUnitStatement("bar_ds"), "foo_db", contextManager, null).executeUpdate();
         MetaDataManagerPersistService metaDataManagerPersistService = contextManager.getPersistServiceFacade().getModeFacade().getMetaDataManagerService();
         verify(metaDataManagerPersistService).alterRuleConfiguration(any(), ArgumentMatchers.<SingleRuleConfiguration>argThat(x -> x.getDefaultDataSource().equals(Optional.of("bar_ds"))));
     }

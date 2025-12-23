@@ -54,7 +54,7 @@ class AlterMaskRuleExecutorTest {
     void assertExecuteUpdateWithoutToBeAlteredRules() {
         MaskRule rule = mock(MaskRule.class);
         when(rule.getConfiguration()).thenReturn(new MaskRuleConfiguration(Collections.emptyList(), Collections.emptyMap()));
-        assertThrows(MissingRequiredRuleException.class, () -> new DistSQLUpdateExecuteEngine(createSQLStatement(), "foo_db", mockContextManager(rule)).executeUpdate());
+        assertThrows(MissingRequiredRuleException.class, () -> new DistSQLUpdateExecuteEngine(createSQLStatement(), "foo_db", mockContextManager(rule), null).executeUpdate());
     }
     
     @Test
@@ -66,7 +66,7 @@ class AlterMaskRuleExecutorTest {
         MaskRule rule = mock(MaskRule.class);
         when(rule.getConfiguration()).thenReturn(currentRuleConfig);
         ContextManager contextManager = mockContextManager(rule);
-        new DistSQLUpdateExecuteEngine(sqlStatement, "foo_db", contextManager).executeUpdate();
+        new DistSQLUpdateExecuteEngine(sqlStatement, "foo_db", contextManager, null).executeUpdate();
         MetaDataManagerPersistService metaDataManagerPersistService = contextManager.getPersistServiceFacade().getModeFacade().getMetaDataManagerService();
         metaDataManagerPersistService.removeRuleConfigurationItem(any(), ArgumentMatchers.argThat(this::assertToBeDroppedRuleConfiguration));
         metaDataManagerPersistService.alterRuleConfiguration(any(), ArgumentMatchers.argThat(this::assertToBeAlteredRuleConfiguration));
