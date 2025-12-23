@@ -20,10 +20,10 @@ package org.apache.shardingsphere.agent.core.plugin.classloader;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.internal.configuration.plugins.Plugins;
 
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.lang.reflect.Field;
 import java.util.Collections;
 import java.util.Map;
 
@@ -59,6 +59,8 @@ class ClassLoaderContextTest {
     @SuppressWarnings("unchecked")
     @SneakyThrows(ReflectiveOperationException.class)
     private Map<ClassLoader, AgentPluginClassLoader> getAgentClassLoaders() {
-        return (Map<ClassLoader, AgentPluginClassLoader>) Plugins.getMemberAccessor().get(ClassLoaderContext.class.getDeclaredField("AGENT_CLASS_LOADERS"), null);
+        Field agentClassLoaders = ClassLoaderContext.class.getDeclaredField("AGENT_CLASS_LOADERS");
+        agentClassLoaders.setAccessible(true);
+        return (Map<ClassLoader, AgentPluginClassLoader>) agentClassLoaders.get(null);
     }
 }
