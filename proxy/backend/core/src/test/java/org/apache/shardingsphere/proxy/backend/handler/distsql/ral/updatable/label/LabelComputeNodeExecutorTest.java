@@ -45,38 +45,35 @@ class LabelComputeNodeExecutorTest {
     
     @Test
     void assertExecuteUpdateWhenInstanceAbsent() {
-        LabelComputeNodeStatement sqlStatement = new LabelComputeNodeStatement(true, "instance-id", Collections.singletonList("label_a"));
         ContextManager contextManager = mock(ContextManager.class);
         ComputeNodeInstanceContext instanceContext = mock(ComputeNodeInstanceContext.class);
         ClusterInstanceRegistry clusterInstanceRegistry = mock(ClusterInstanceRegistry.class);
         when(contextManager.getComputeNodeInstanceContext()).thenReturn(instanceContext);
         when(instanceContext.getClusterInstanceRegistry()).thenReturn(clusterInstanceRegistry);
         when(clusterInstanceRegistry.find("instance-id")).thenReturn(Optional.empty());
-        assertDoesNotThrow(() -> executor.executeUpdate(sqlStatement, contextManager));
+        assertDoesNotThrow(() -> executor.executeUpdate(new LabelComputeNodeStatement(true, "instance-id", Collections.singletonList("label_a")), contextManager));
     }
     
     @Test
     void assertExecuteUpdateWhenOverwriteLabels() {
-        LabelComputeNodeStatement sqlStatement = new LabelComputeNodeStatement(true, "instance-id", Arrays.asList("label_a", "label_b"));
         ContextManager contextManager = mock(ContextManager.class);
         ComputeNodeInstance computeNodeInstance = mock(ComputeNodeInstance.class);
         ClusterComputeNodePersistService computeNodeService = mockContextManager(contextManager, computeNodeInstance);
         ComputeNodeInstanceContext instanceContext = contextManager.getComputeNodeInstanceContext();
         when(instanceContext.getClusterInstanceRegistry().find("instance-id")).thenReturn(Optional.of(computeNodeInstance));
-        executor.executeUpdate(sqlStatement, contextManager);
+        executor.executeUpdate(new LabelComputeNodeStatement(true, "instance-id", Arrays.asList("label_a", "label_b")), contextManager);
         verify(computeNodeService).persistLabels("instance-id", Arrays.asList("label_a", "label_b"));
     }
     
     @Test
     void assertExecuteUpdateWhenNotOverwriteLabels() {
-        LabelComputeNodeStatement sqlStatement = new LabelComputeNodeStatement(false, "instance-id", Collections.singletonList("new_label"));
         ContextManager contextManager = mock(ContextManager.class);
         ComputeNodeInstance computeNodeInstance = mock(ComputeNodeInstance.class);
         when(computeNodeInstance.getLabels()).thenReturn(Collections.singletonList("origin_label"));
         ClusterComputeNodePersistService computeNodeService = mockContextManager(contextManager, computeNodeInstance);
         ComputeNodeInstanceContext instanceContext = contextManager.getComputeNodeInstanceContext();
         when(instanceContext.getClusterInstanceRegistry().find("instance-id")).thenReturn(Optional.of(computeNodeInstance));
-        executor.executeUpdate(sqlStatement, contextManager);
+        executor.executeUpdate(new LabelComputeNodeStatement(false, "instance-id", Collections.singletonList("new_label")), contextManager);
         verify(computeNodeService).persistLabels("instance-id", Arrays.asList("new_label", "origin_label"));
     }
     
