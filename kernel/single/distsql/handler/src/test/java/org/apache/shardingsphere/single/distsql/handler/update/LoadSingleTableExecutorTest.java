@@ -100,7 +100,7 @@ class LoadSingleTableExecutorTest {
         when(schema.containsTable("foo_tbl")).thenReturn(true);
         when(database.getResourceMetaData().getNotExistedDataSources(any())).thenReturn(Collections.emptyList());
         LoadSingleTableStatement sqlStatement = new LoadSingleTableStatement(Collections.singleton(new SingleTableSegment("foo_ds", "foo_schema", "foo_tbl")));
-        assertThrows(InvalidDataNodeFormatException.class, () -> new DistSQLUpdateExecuteEngine(sqlStatement, "foo_db", mockContextManager(mock(SingleRule.class))).executeUpdate());
+        assertThrows(InvalidDataNodeFormatException.class, () -> new DistSQLUpdateExecuteEngine(sqlStatement, "foo_db", mockContextManager(mock(SingleRule.class)), null).executeUpdate());
     }
     
     @Test
@@ -109,7 +109,7 @@ class LoadSingleTableExecutorTest {
         when(database.getResourceMetaData().getNotExistedDataSources(any())).thenReturn(Collections.emptyList());
         LoadSingleTableStatement sqlStatement = new LoadSingleTableStatement(Arrays.asList(
                 new SingleTableSegment("*", "*"), new SingleTableSegment("*", "*", "*"), new SingleTableSegment("foo_ds", "*"), new SingleTableSegment("foo_ds", "foo_tbl")));
-        assertThrows(TableExistsException.class, () -> new DistSQLUpdateExecuteEngine(sqlStatement, "foo_db", mockContextManager(mock(SingleRule.class))).executeUpdate());
+        assertThrows(TableExistsException.class, () -> new DistSQLUpdateExecuteEngine(sqlStatement, "foo_db", mockContextManager(mock(SingleRule.class)), null).executeUpdate());
     }
     
     @Test
@@ -120,7 +120,7 @@ class LoadSingleTableExecutorTest {
         when(database.getResourceMetaData().getStorageUnits()).thenReturn(Collections.singletonMap("foo_ds", storageUnit));
         when(PhysicalDataSourceAggregator.getAggregatedDataSources(any(), any())).thenReturn(Collections.singletonMap("foo_ds", new MockedDataSource()));
         LoadSingleTableStatement sqlStatement = new LoadSingleTableStatement(Collections.singleton(new SingleTableSegment("foo_ds", "foo_tbl")));
-        assertThrows(TableNotFoundException.class, () -> new DistSQLUpdateExecuteEngine(sqlStatement, "foo_db", mockContextManager(mock(SingleRule.class))).executeUpdate());
+        assertThrows(TableNotFoundException.class, () -> new DistSQLUpdateExecuteEngine(sqlStatement, "foo_db", mockContextManager(mock(SingleRule.class)), null).executeUpdate());
     }
     
     @Test
@@ -137,7 +137,7 @@ class LoadSingleTableExecutorTest {
         SingleRule rule = mock(SingleRule.class);
         when(rule.getConfiguration()).thenReturn(currentConfig);
         ContextManager contextManager = mockContextManager(rule);
-        new DistSQLUpdateExecuteEngine(sqlStatement, "foo_db", contextManager).executeUpdate();
+        new DistSQLUpdateExecuteEngine(sqlStatement, "foo_db", contextManager, null).executeUpdate();
         MetaDataManagerPersistService metaDataManagerPersistService = contextManager.getPersistServiceFacade().getModeFacade().getMetaDataManagerService();
         verify(metaDataManagerPersistService).alterRuleConfiguration(any(), any());
     }
@@ -156,7 +156,7 @@ class LoadSingleTableExecutorTest {
         SingleRule rule = mock(SingleRule.class);
         when(rule.getConfiguration()).thenReturn(currentConfig);
         ContextManager contextManager = mockContextManager(null);
-        new DistSQLUpdateExecuteEngine(sqlStatement, "foo_db", contextManager).executeUpdate();
+        new DistSQLUpdateExecuteEngine(sqlStatement, "foo_db", contextManager, null).executeUpdate();
         MetaDataManagerPersistService metaDataManagerPersistService = contextManager.getPersistServiceFacade().getModeFacade().getMetaDataManagerService();
         verify(metaDataManagerPersistService).alterRuleConfiguration(any(), any());
     }

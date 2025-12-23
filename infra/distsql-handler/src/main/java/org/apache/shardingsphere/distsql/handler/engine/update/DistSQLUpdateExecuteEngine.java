@@ -31,6 +31,7 @@ import org.apache.shardingsphere.distsql.statement.type.rdl.rule.RuleDefinitionS
 import org.apache.shardingsphere.distsql.statement.type.rdl.rule.database.DatabaseRuleDefinitionStatement;
 import org.apache.shardingsphere.distsql.statement.type.rdl.rule.global.GlobalRuleDefinitionStatement;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.session.connection.ConnectionContext;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 
@@ -48,10 +49,13 @@ public final class DistSQLUpdateExecuteEngine {
     
     private final String databaseName;
     
-    public DistSQLUpdateExecuteEngine(final DistSQLStatement sqlStatement, final String currentDatabaseName, final ContextManager contextManager) {
+    private final ConnectionContext connectionContext;
+    
+    public DistSQLUpdateExecuteEngine(final DistSQLStatement sqlStatement, final String currentDatabaseName, final ContextManager contextManager, final ConnectionContext connectionContext) {
         this.sqlStatement = sqlStatement;
         this.contextManager = contextManager;
         databaseName = DatabaseNameUtils.getDatabaseName(sqlStatement, currentDatabaseName);
+        this.connectionContext = connectionContext;
     }
     
     /**
