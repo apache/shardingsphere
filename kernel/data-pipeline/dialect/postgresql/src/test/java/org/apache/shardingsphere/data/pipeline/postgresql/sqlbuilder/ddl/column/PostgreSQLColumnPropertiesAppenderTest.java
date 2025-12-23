@@ -931,10 +931,11 @@ class PostgreSQLColumnPropertiesAppenderTest {
     }
     
     private Map<String, Object> appendWithSingleColumn(final Map<String, Object> column) {
-        Map<String, Object> context = new LinkedHashMap<>();
         when(templateExecutor.executeByTemplate(anyMap(), eq("component/table/%s/get_columns_for_table.ftl"))).thenReturn(Collections.emptyList());
         when(templateExecutor.executeByTemplate(anyMap(), eq("component/columns/%s/properties.ftl"))).thenReturn(Collections.singletonList(column));
         when(templateExecutor.executeByTemplate(anyMap(), eq("component/columns/%s/edit_mode_types_multi.ftl"))).thenReturn(Collections.emptyList());
+        Map<String, Object> context = new LinkedHashMap<>();
+        
         appender.append(context);
         return getSingleColumn(context);
     }
