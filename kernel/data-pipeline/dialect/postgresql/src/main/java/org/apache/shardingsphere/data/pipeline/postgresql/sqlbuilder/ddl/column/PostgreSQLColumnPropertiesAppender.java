@@ -47,10 +47,12 @@ public final class PostgreSQLColumnPropertiesAppender {
     private static final Pattern LENGTH_PRECISION_PATTERN = Pattern.compile("(\\d+),(\\d+)");
     
     private static final Pattern LENGTH_PATTERN = Pattern.compile("(\\d+)");
-    
+
     private static final Pattern BRACKETS_PATTERN = Pattern.compile("(\\(\\d+\\))");
     
-    private static final Pattern NON_DIGIT_WITH_SIGN_PATTERN = Pattern.compile("[^0-9+-]");
+    private static final Pattern SIGNED_NUMBER_WITH_GROUPING_PATTERN = Pattern.compile("^([+-])?\\s*[0-9][0-9,\\s]*$");
+    
+    private static final Pattern NON_DIGIT_PATTERN = Pattern.compile("[^0-9]");
     
     private static final String ATT_OPTION_SPLIT = "=";
     
@@ -166,14 +168,23 @@ public final class PostgreSQLColumnPropertiesAppender {
         if (null == value || value instanceof Number) {
             return;
         }
-        String sanitized = NON_DIGIT_WITH_SIGN_PATTERN.matcher(value.toString()).replaceAll("");
-        if (sanitized.isEmpty()) {
+        String rawValue = value.toString().trim();
+        Matcher matcher = SIGNED_NUMBER_WITH_GROUPING_PATTERN.matcher(rawValue);
+        if (!matcher.matches()) {
+            column.remove(key);
             return;
         }
+        String digits = NON_DIGIT_PATTERN.matcher(rawValue).replaceAll("");
+        if (digits.isEmpty()) {
+            column.remove(key);
+            return;
+        }
+        String sign = null == matcher.group(1) ? "" : matcher.group(1);
+        String sanitized = sign + digits;
         try {
             column.put(key, Long.parseLong(sanitized));
         } catch (final NumberFormatException ignored) {
-            column.put(key, sanitized);
+            column.remove(key);
         }
     }
     

@@ -20,16 +20,37 @@ package org.apache.shardingsphere.data.pipeline.postgresql.sqlbuilder.template;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.regex.Pattern;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.notNullValue;
 
 class PostgreSQLPipelineFreemarkerManagerTest {
     
+    private static final Pattern PATTERN = Pattern.compile("\\s+");
+    
     @Test
-    void assertCreateTableTemplateHandlesHumanFormattedSequenceNumbers() {
+    void assertGetSQLByDefaultVersion() {
+        String actual = PostgreSQLPipelineFreemarkerManager.getSQLByVersion(Collections.singletonMap("databaseName", "foo_db"), "component/table/%s/get_database_id.ftl", 10, 0);
+        String expected = "\n" + "SELECT oid AS did, datlastsysoid FROM pg_catalog.pg_database WHERE datname = 'foo_db';" + "\n";
+        assertThat(actual, is(expected));
+    }
+    
+    @Test
+    void assertGetSQLByVersion() {
+        Map<String, Object> dataModel = new HashMap<>(2, 1F);
+        dataModel.put("tid", 1);
+        dataModel.put("tname", "foo_tb l");
+        String actual = PostgreSQLPipelineFreemarkerManager.getSQLByVersion(dataModel, "component/table/%s/get_columns_for_table.ftl", 10, 0);
+        assertThat(actual, notNullValue());
+    }
+    
+    @Test
+    void assertCreateTableTemplateRendersNormalizedSequenceNumbers() {
         Map<String, Object> column = new LinkedHashMap<>(16, 1F);
         column.put("name", "id");
         column.put("cltype", "int4");
@@ -59,7 +80,7 @@ class PostgreSQLPipelineFreemarkerManagerTest {
         dataModel.put("toast_autovacuum", false);
         dataModel.put("add_vacuum_settings_in_sql", false);
         String sql = PostgreSQLPipelineFreemarkerManager.getSQLByVersion(dataModel, "component/table/%s/create.ftl", 12, 0);
-        String compactSql = sql.replaceAll("\\s+", "");
+        String compactSql = PATTERN.matcher(sql).replaceAll("");
         String expectedSql = "CREATETABLEIFNOTEXISTSpublic.t_order(idintegerNOTNULLGENERATEDALWAYSASIDENTITY(INCREMENT1START1MINVALUE1MAXVALUE2147483647CACHE1))";
         assertThat(compactSql, is(expectedSql));
     }
