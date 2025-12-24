@@ -98,11 +98,11 @@ class DatabaseExportMetaDataGeneratorTest {
     }
     
     private DataSourcePoolProperties createDataSourcePoolProperties() {
-        ConnectionPropertySynonyms connectionSynonyms = mock(ConnectionPropertySynonyms.class);
         Map<String, Object> connectionProps = new LinkedHashMap<>(2, 1F);
         connectionProps.put("url", "jdbc:h2:mem:ds_0");
         connectionProps.put("username", "sa");
         connectionProps.put("password", "pwd");
+        ConnectionPropertySynonyms connectionSynonyms = mock(ConnectionPropertySynonyms.class);
         when(connectionSynonyms.getStandardProperties()).thenReturn(connectionProps);
         PoolPropertySynonyms poolSynonyms = mock(PoolPropertySynonyms.class);
         Map<String, Object> poolProps = new LinkedHashMap<>(2, 1F);
