@@ -268,23 +268,15 @@ public final class DorisDDLStatementVisitor extends DorisStatementVisitor implem
         }
         if (null != ctx.PROPERTIES()) {
             for (int i = 0; i < ctx.properties().property().size(); i++) {
-                String key = ctx.properties().property(i).getChild(0).getText();
-                String value = ctx.properties().property(i).literals().getText();
-                if (key.startsWith("'") && key.endsWith("'") || key.startsWith("\"") && key.endsWith("\"")) {
-                    key = key.substring(1, key.length() - 1);
-                }
-                if (value.startsWith("'") && value.endsWith("'") || value.startsWith("\"") && value.endsWith("\"")) {
-                    value = value.substring(1, value.length() - 1);
-                }
+                String key = null != ctx.properties().property(i).SINGLE_QUOTED_TEXT()
+                        ? SQLUtils.getExactlyValue(ctx.properties().property(i).SINGLE_QUOTED_TEXT().getText())
+                        : SQLUtils.getExactlyValue(ctx.properties().property(i).identifier().getText());
+                String value = SQLUtils.getExactlyValue(ctx.properties().property(i).literals().getText());
                 result.getProperties().put(key, value);
             }
         }
         if (null != ctx.COMMENT()) {
-            String comment = ctx.string_().getText();
-            if (comment.startsWith("'") && comment.endsWith("'") || comment.startsWith("\"") && comment.endsWith("\"")) {
-                comment = comment.substring(1, comment.length() - 1);
-            }
-            result.setComment(comment);
+            result.setComment(SQLUtils.getExactlyValue(ctx.string_().getText()));
         }
         return result;
     }

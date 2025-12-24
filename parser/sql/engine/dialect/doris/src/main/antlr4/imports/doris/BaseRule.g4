@@ -585,6 +585,7 @@ identifierKeywordsAmbiguous2Labels
 identifierKeywordsAmbiguous3Roles
     : EVENT
     | FILE
+    | JOB
     | NONE
     | PROCESS
     | PROXY

@@ -24,6 +24,8 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAsse
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.catalog.CatalogAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.standard.catalog.AlterCatalogStatementTestCase;
 
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 /**
  * Alter catalog statement assert.
  */
@@ -51,7 +53,8 @@ public final class AlterCatalogStatementAssert {
     }
     
     private static void assertRenameCatalog(final SQLCaseAssertContext assertContext, final AlterCatalogStatement actual, final AlterCatalogStatementTestCase expected) {
-        if (null != expected.getRenameCatalog() && actual.getNewCatalogName().isPresent()) {
+        if (null != expected.getRenameCatalog()) {
+            assertTrue(actual.getNewCatalogName().isPresent(), assertContext.getText("Actual new catalog name should exist."));
             CatalogAssert.assertRenameCatalog(assertContext, actual.getNewCatalogName().get(), expected.getRenameCatalog());
         }
     }
@@ -63,7 +66,8 @@ public final class AlterCatalogStatementAssert {
     }
     
     private static void assertCatalogComment(final SQLCaseAssertContext assertContext, final AlterCatalogStatement actual, final AlterCatalogStatementTestCase expected) {
-        if (null != expected.getCatalogComment() && actual.getComment().isPresent()) {
+        if (null != expected.getCatalogComment()) {
+            assertTrue(actual.getComment().isPresent(), assertContext.getText("Actual catalog comment should exist."));
             CatalogAssert.assertCatalogComment(assertContext, actual.getComment().get(), expected.getCatalogComment());
         }
     }
