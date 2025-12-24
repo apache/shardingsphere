@@ -82,7 +82,25 @@ public final class ProcessRegistry {
      * @return process
      */
     public Process get(final String id) {
-        return processes.get(id);
+        Process result = processes.get(id);
+        if (null != result) {
+            return result;
+        }
+        // Support lookup by MySQL thread id (numeric 32-bit id provided by client handshake).
+        if (id != null) {
+            try {
+                long threadId = Long.parseLong(id);
+                for (Process each : processes.values()) {
+                    Long mysqlThreadId = each.getMySQLThreadId();
+                    if (null != mysqlThreadId && mysqlThreadId.longValue() == threadId) {
+                        return each;
+                    }
+                }
+            } catch (final NumberFormatException ignored) {
+                // not numeric, ignore
+            }
+        }
+        return null;
     }
     
     /**

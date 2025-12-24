@@ -43,8 +43,9 @@ import java.util.concurrent.atomic.AtomicInteger;
 @RequiredArgsConstructor
 @Getter
 public final class Process {
+    
     private volatile Long mysqlThreadId;
-
+    
     private final Map<Integer, Statement> processStatements = new ConcurrentHashMap<>();
     
     private final String id;
@@ -110,15 +111,15 @@ public final class Process {
         }
         return result;
     }
+    
     public void setMySQLThreadId(final long threadId) {
         this.mysqlThreadId = threadId;
     }
-
-    public Optional<Long> getMySQLThreadId() {
-        return Optional.ofNullable(mysqlThreadId);
+    
+    public Long getMySQLThreadId() {
+        return mysqlThreadId;
     }
-
-
+    
     /**
      * Complete execution unit.
      */

@@ -84,14 +84,23 @@ public final class ConnectionSession {
         databaseConnectionManager = new ProxyDatabaseConnectionManager(this);
         statementManager = new JDBCBackendStatement();
     }
-
+    
     /**
-     * Set ProcessId
+     * Set ProcessId.
      * @param  processId current processId
      */
     public void setProcessId(final String processId) {
         this.processId = processId;
     }
+    
+    /**
+     * Bind process to current connection.
+     *
+     * <p>
+     * Only works for MySQL protocol.
+     * Sets MySQL thread ID on {@link Process} using current connection ID.
+     * </p>
+     */
     public void bindProcessToConnection() {
         if (!"MySQL".equals(protocolType.getType())) {
             return;
@@ -104,7 +113,7 @@ public final class ConnectionSession {
             process.setMySQLThreadId((long) connectionId);
         }
     }
-
+    
     /**
      * Set grantee.
      *
