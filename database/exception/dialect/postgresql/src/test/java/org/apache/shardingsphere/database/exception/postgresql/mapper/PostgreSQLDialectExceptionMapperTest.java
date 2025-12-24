@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.database.exception.postgresql;
+package org.apache.shardingsphere.database.exception.postgresql.mapper;
 
 import org.apache.shardingsphere.database.exception.core.exception.SQLDialectException;
 import org.apache.shardingsphere.database.exception.core.exception.connection.TooManyConnectionsException;
@@ -23,7 +23,6 @@ import org.apache.shardingsphere.database.exception.core.exception.data.InsertCo
 import org.apache.shardingsphere.database.exception.core.exception.data.InvalidParameterValueException;
 import org.apache.shardingsphere.database.exception.core.exception.syntax.database.DatabaseCreateExistsException;
 import org.apache.shardingsphere.database.exception.core.exception.transaction.InTransactionException;
-import org.apache.shardingsphere.database.exception.postgresql.mapper.PostgreSQLDialectExceptionMapper;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;

@@ -15,11 +15,9 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.database.protocol.opengauss.packet.command.packet.authentication;
+package org.apache.shardingsphere.database.protocol.opengauss.packet.authentication;
 
 import org.apache.shardingsphere.database.protocol.opengauss.constant.OpenGaussProtocolVersion;
-import org.apache.shardingsphere.database.protocol.opengauss.packet.authentication.OpenGaussAuthenticationHexData;
-import org.apache.shardingsphere.database.protocol.opengauss.packet.authentication.OpenGaussAuthenticationSCRAMSha256Packet;
 import org.apache.shardingsphere.database.protocol.postgresql.payload.PostgreSQLPacketPayload;
 import org.junit.jupiter.api.Test;
 

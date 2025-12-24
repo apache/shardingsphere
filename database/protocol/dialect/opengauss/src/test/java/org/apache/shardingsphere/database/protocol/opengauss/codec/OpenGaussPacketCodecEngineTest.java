@@ -15,12 +15,11 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.database.protocol.opengauss.packet.command.codec;
+package org.apache.shardingsphere.database.protocol.opengauss.codec;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.util.AttributeKey;
-import org.apache.shardingsphere.database.protocol.opengauss.codec.OpenGaussPacketCodecEngine;
 import org.apache.shardingsphere.database.protocol.postgresql.packet.PostgreSQLPacket;
 import org.apache.shardingsphere.database.protocol.postgresql.packet.identifier.PostgreSQLIdentifierPacket;
 import org.apache.shardingsphere.database.protocol.postgresql.packet.identifier.PostgreSQLMessagePacketType;
