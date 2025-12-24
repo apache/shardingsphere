@@ -77,7 +77,6 @@ class XATCLProxyBackendHandlerFactoryTest {
                 Arguments.of("begin", new XABeginStatement(DATABASE_TYPE, "xid"), XABeginProxyBackendHandler.class),
                 Arguments.of("commit", new XACommitStatement(DATABASE_TYPE, "xid"), XACommitProxyBackendHandler.class),
                 Arguments.of("rollback", new XARollbackStatement(DATABASE_TYPE, "xid"), XARollbackProxyBackendHandler.class),
-                Arguments.of("other", new XAPrepareStatement(DATABASE_TYPE, "xid"), XAOtherOperationProxyBackendHandler.class)
-        );
+                Arguments.of("other", new XAPrepareStatement(DATABASE_TYPE, "xid"), XAOtherOperationProxyBackendHandler.class));
     }
 }
