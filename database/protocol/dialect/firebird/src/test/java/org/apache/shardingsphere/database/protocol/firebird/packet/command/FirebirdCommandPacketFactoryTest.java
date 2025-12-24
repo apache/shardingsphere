@@ -17,15 +17,16 @@
 
 package org.apache.shardingsphere.database.protocol.firebird.packet.command;
 
+import io.netty.buffer.ByteBuf;
 import org.apache.shardingsphere.database.protocol.firebird.constant.protocol.FirebirdProtocolVersion;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.admin.FirebirdUnsupportedCommandPacket;
+import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.blob.FirebirdCancelBlobCommandPacket;
+import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.blob.FirebirdCloseBlobCommandPacket;
+import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.blob.FirebirdCreateBlobCommandPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.blob.FirebirdGetBlobSegmentCommandPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.blob.FirebirdOpenBlobCommandPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.blob.FirebirdPutBlobSegmentCommandPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.blob.FirebirdSeekBlobCommandPacket;
-import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.blob.FirebirdCreateBlobCommandPacket;
-import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.blob.FirebirdCloseBlobCommandPacket;
-import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.blob.FirebirdCancelBlobCommandPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.info.FirebirdInfoPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.statement.FirebirdAllocateStatementPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.statement.FirebirdFetchStatementPacket;
@@ -42,10 +43,11 @@ import org.mockito.Answers;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.isA;
-import static org.hamcrest.CoreMatchers.is;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -83,7 +85,7 @@ class FirebirdCommandPacketFactoryTest {
     @Test
     void assertNewInstanceWithGetBlobSegment() {
         when(payload.readInt4()).thenReturn(0, 0);
-        when(payload.readBuffer()).thenReturn(org.mockito.Mockito.mock(io.netty.buffer.ByteBuf.class));
+        when(payload.readBuffer()).thenReturn(mock(ByteBuf.class));
         assertThat(FirebirdCommandPacketFactory.newInstance(FirebirdCommandPacketType.GET_SEGMENT, payload, FirebirdProtocolVersion.PROTOCOL_VERSION13),
                 isA(FirebirdGetBlobSegmentCommandPacket.class));
     }
@@ -91,7 +93,7 @@ class FirebirdCommandPacketFactoryTest {
     @Test
     void assertNewInstanceWithPutBlobSegment() {
         when(payload.readInt4()).thenReturn(0, 0);
-        when(payload.readBuffer()).thenReturn(org.mockito.Mockito.mock(io.netty.buffer.ByteBuf.class));
+        when(payload.readBuffer()).thenReturn(mock(ByteBuf.class));
         assertThat(FirebirdCommandPacketFactory.newInstance(FirebirdCommandPacketType.PUT_SEGMENT, payload, FirebirdProtocolVersion.PROTOCOL_VERSION13),
                 isA(FirebirdPutBlobSegmentCommandPacket.class));
     }
@@ -127,7 +129,7 @@ class FirebirdCommandPacketFactoryTest {
     void assertNewInstanceWithPrepareStatement() {
         when(payload.readInt4()).thenReturn(0, 0, 0, 0);
         when(payload.readString()).thenReturn("");
-        when(payload.readBuffer()).thenReturn(org.mockito.Mockito.mock(io.netty.buffer.ByteBuf.class));
+        when(payload.readBuffer()).thenReturn(mock(ByteBuf.class));
         assertThat(FirebirdCommandPacketFactory.newInstance(FirebirdCommandPacketType.PREPARE_STATEMENT, payload, FirebirdProtocolVersion.PROTOCOL_VERSION13),
                 isA(FirebirdPrepareStatementPacket.class));
     }
