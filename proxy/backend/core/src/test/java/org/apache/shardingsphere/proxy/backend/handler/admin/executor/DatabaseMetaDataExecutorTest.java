@@ -141,7 +141,8 @@ class DatabaseMetaDataExecutorTest {
     
     @Test
     void assertExecuteSkipLoadMetaDataWithoutStorageUnit() throws SQLException {
-        ShardingSphereDatabase database = new ShardingSphereDatabase("empty_db", databaseType, new ResourceMetaData(Collections.emptyMap(), Collections.emptyMap()), mock(RuleMetaData.class), Collections.emptyList());
+        ShardingSphereDatabase database =
+                new ShardingSphereDatabase("empty_db", databaseType, new ResourceMetaData(Collections.emptyMap(), Collections.emptyMap()), mock(RuleMetaData.class), Collections.emptyList());
         DatabaseMetaDataExecutor executor = mock(DatabaseMetaDataExecutor.class, withSettings().useConstructor("SELECT 1", Collections.emptyList()).defaultAnswer(CALLS_REAL_METHODS));
         doReturn(Collections.singleton(database)).when(executor).getDatabases(any(ConnectionSession.class), any(ShardingSphereMetaData.class));
         assertThat(connectionSession.getCurrentDatabaseName(), is("auth_db"));
