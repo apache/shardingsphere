@@ -109,7 +109,7 @@ class MetaDataImportExecutorTest {
     }
     
     @SneakyThrows(ReflectiveOperationException.class)
-    private void setField(Object target, String fieldName, Object value) {
+    private void setField(final Object target, final String fieldName, final Object value) {
         Plugins.getMemberAccessor().set(MetaDataImportExecutor.class.getDeclaredField(fieldName), target, value);
     }
 }
