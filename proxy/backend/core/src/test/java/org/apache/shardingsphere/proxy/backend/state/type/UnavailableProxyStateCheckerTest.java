@@ -15,15 +15,16 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.state.impl;
+package org.apache.shardingsphere.proxy.backend.state.type;
 
 import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.distsql.statement.type.ral.updatable.ImportMetaDataStatement;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.mode.exception.ShardingSphereStateException;
+import org.apache.shardingsphere.mode.state.ShardingSphereState;
 import org.apache.shardingsphere.proxy.backend.state.DialectProxyStateSupportedSQLProvider;
-import org.apache.shardingsphere.proxy.backend.state.type.UnavailableProxyStateChecker;
+import org.apache.shardingsphere.proxy.backend.state.ProxyClusterStateChecker;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.DMLStatement;
 import org.apache.shardingsphere.test.infra.framework.extension.mock.AutoMockExtension;
 import org.apache.shardingsphere.test.infra.framework.extension.mock.StaticMockSettings;
@@ -40,20 +41,22 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(AutoMockExtension.class)
 @StaticMockSettings(DatabaseTypedSPILoader.class)
-class UnavailableProxyStateTest {
+class UnavailableProxyStateCheckerTest {
     
     private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "FIXTURE");
+    
+    private final ProxyClusterStateChecker stateChecker = TypedSPILoader.getService(ProxyClusterStateChecker.class, ShardingSphereState.UNAVAILABLE);
     
     @Test
     void assertExecuteWithUnsupportedSQL() {
         when(DatabaseTypedSPILoader.findService(DialectProxyStateSupportedSQLProvider.class, databaseType)).thenReturn(Optional.empty());
-        assertThrows(ShardingSphereStateException.class, () -> new UnavailableProxyStateChecker().check(mock(DMLStatement.class), databaseType));
+        assertThrows(ShardingSphereStateException.class, () -> stateChecker.check(mock(DMLStatement.class), databaseType));
     }
     
     @Test
     void assertExecuteWithSupportedSQL() {
         when(DatabaseTypedSPILoader.findService(DialectProxyStateSupportedSQLProvider.class, databaseType)).thenReturn(Optional.empty());
-        assertDoesNotThrow(() -> new UnavailableProxyStateChecker().check(mock(ImportMetaDataStatement.class), databaseType));
+        assertDoesNotThrow(() -> stateChecker.check(mock(ImportMetaDataStatement.class), databaseType));
     }
     
     @Test
@@ -61,6 +64,6 @@ class UnavailableProxyStateTest {
         DialectProxyStateSupportedSQLProvider supportedSQLProvider = mock(DialectProxyStateSupportedSQLProvider.class);
         when(supportedSQLProvider.getSupportedSQLStatementTypesOnUnavailableState()).thenReturn(Collections.singleton(DMLStatement.class));
         when(DatabaseTypedSPILoader.findService(DialectProxyStateSupportedSQLProvider.class, databaseType)).thenReturn(Optional.of(supportedSQLProvider));
-        assertDoesNotThrow(() -> new UnavailableProxyStateChecker().check(mock(DMLStatement.class), databaseType));
+        assertDoesNotThrow(() -> stateChecker.check(mock(DMLStatement.class), databaseType));
     }
 }

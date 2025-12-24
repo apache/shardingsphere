@@ -30,10 +30,10 @@ import org.apache.shardingsphere.test.infra.framework.extension.mock.StaticMockS
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.MockedStatic;
-import org.mockito.Mockito;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.mockito.Mockito.mockStatic;
 
 @ExtendWith(AutoMockExtension.class)
 @StaticMockSettings(ProxyContext.class)
@@ -42,7 +42,7 @@ class VersionValueProviderTest {
     @Test
     void assertGetValue() {
         DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "MySQL");
-        try (MockedStatic<DatabaseProtocolServerInfo> mockedStatic = Mockito.mockStatic(DatabaseProtocolServerInfo.class)) {
+        try (MockedStatic<DatabaseProtocolServerInfo> mockedStatic = mockStatic(DatabaseProtocolServerInfo.class)) {
             mockedStatic.when(() -> DatabaseProtocolServerInfo.getProtocolVersion(null, databaseType)).thenReturn("8.0");
             ConnectionSession connectionSession = new ConnectionSession(databaseType, new DefaultAttributeMap());
             assertThat(new VersionValueProvider().get(MySQLSystemVariableScope.GLOBAL, connectionSession, MySQLSystemVariable.VERSION), is("8.0"));

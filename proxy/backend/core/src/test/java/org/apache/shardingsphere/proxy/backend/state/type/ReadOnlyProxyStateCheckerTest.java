@@ -15,26 +15,34 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.state.impl;
+package org.apache.shardingsphere.proxy.backend.state.type;
 
+import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
+import org.apache.shardingsphere.distsql.statement.type.ral.updatable.UnlockClusterStatement;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.mode.exception.ShardingSphereStateException;
-import org.apache.shardingsphere.proxy.backend.state.type.ReadOnlyProxyStateChecker;
+import org.apache.shardingsphere.mode.state.ShardingSphereState;
+import org.apache.shardingsphere.proxy.backend.state.ProxyClusterStateChecker;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.InsertStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.SelectStatement;
 import org.junit.jupiter.api.Test;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
 
-class ReadOnlyProxyStateTest {
+class ReadOnlyProxyStateCheckerTest {
+    
+    private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "FIXTURE");
+    
+    private final ProxyClusterStateChecker stateChecker = TypedSPILoader.getService(ProxyClusterStateChecker.class, ShardingSphereState.READ_ONLY);
     
     @Test
-    void assertExecuteWithUnsupportedSQL() {
-        assertThrows(ShardingSphereStateException.class, () -> new ReadOnlyProxyStateChecker().check(mock(InsertStatement.class), mock()));
+    void assertCheckUnsupportedSQL() {
+        assertThrows(ShardingSphereStateException.class, () -> stateChecker.check(mock(InsertStatement.class), databaseType));
     }
     
     @Test
-    void assertExecuteWithSupportedSQL() {
-        new ReadOnlyProxyStateChecker().check(mock(SelectStatement.class), mock());
+    void assertCheckSupportedSQL() {
+        assertDoesNotThrow(() -> stateChecker.check(mock(UnlockClusterStatement.class), databaseType));
     }
 }
