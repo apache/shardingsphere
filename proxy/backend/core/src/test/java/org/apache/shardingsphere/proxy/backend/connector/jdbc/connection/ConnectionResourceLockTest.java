@@ -19,62 +19,67 @@ package org.apache.shardingsphere.proxy.backend.connector.jdbc.connection;
 
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
-import org.apache.shardingsphere.test.infra.framework.extension.mock.AutoMockExtension;
-import org.awaitility.Awaitility;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.internal.configuration.plugins.Plugins;
-import org.mockito.junit.jupiter.MockitoSettings;
-import org.mockito.quality.Strictness;
+import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.locks.ReentrantLock;
+import java.util.concurrent.atomic.AtomicBoolean;
 
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.atLeast;
+import static org.mockito.Mockito.atLeastOnce;
+import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-@ExtendWith(AutoMockExtension.class)
-@MockitoSettings(strictness = Strictness.LENIENT)
+@ExtendWith(MockitoExtension.class)
 class ConnectionResourceLockTest {
     
     @Mock
-    private ChannelHandlerContext channelHandlerContext;
+    private ChannelHandlerContext context;
     
     @Mock
     private Channel channel;
     
-    @Mock
-    private ConnectionResourceLock connectionResourceLock;
-    
-    @Test
-    void assertDoAwait() throws NoSuchFieldException, IllegalAccessException {
-        when(channel.isWritable()).thenReturn(false);
-        when(channel.isActive()).thenReturn(true);
-        when(channelHandlerContext.channel()).thenReturn(channel);
-        ExecutorService executorService = Executors.newFixedThreadPool(1);
-        executorService.submit(() -> connectionResourceLock.doAwait(channelHandlerContext));
-        Awaitility.await().pollDelay(200L, TimeUnit.MILLISECONDS).until(() -> true);
-        Plugins.getMemberAccessor().set(ConnectionResourceLock.class.getDeclaredField("condition"), connectionResourceLock, new ReentrantLock().newCondition());
-        verify(connectionResourceLock, times(1)).doAwait(channelHandlerContext);
+    @BeforeEach
+    void setUp() {
+        when(context.channel()).thenReturn(channel);
     }
     
     @Test
-    void assertDoNotify() {
+    void assertDoAwaitWhenChannelIsWritable() {
         when(channel.isWritable()).thenReturn(true);
+        new ConnectionResourceLock().doAwait(context);
+        verify(channel).isWritable();
+        verify(context, never()).flush();
+    }
+    
+    @Test
+    void assertDoAwaitWhenChannelBecomesWritableAfterAwait() throws InterruptedException {
+        AtomicBoolean writable = new AtomicBoolean(false);
+        when(channel.isWritable()).thenAnswer(invocation -> writable.get());
         when(channel.isActive()).thenReturn(true);
-        when(channelHandlerContext.channel()).thenReturn(channel);
-        long startTime = System.currentTimeMillis();
-        ExecutorService executorService = Executors.newFixedThreadPool(1);
-        executorService.submit(() -> {
-            Awaitility.await().pollDelay(50L, TimeUnit.MILLISECONDS).until(() -> true);
-            connectionResourceLock.doNotify();
-        });
-        connectionResourceLock.doAwait(channelHandlerContext);
-        assertTrue(System.currentTimeMillis() >= startTime);
+        CountDownLatch flushLatch = new CountDownLatch(1);
+        doAnswer(invocation -> {
+            flushLatch.countDown();
+            return null;
+        }).when(context).flush();
+        ConnectionResourceLock connectionResourceLock = new ConnectionResourceLock();
+        Thread awaitThread = new Thread(() -> connectionResourceLock.doAwait(context));
+        awaitThread.start();
+        assertTrue(flushLatch.await(1, TimeUnit.SECONDS));
+        writable.set(true);
+        connectionResourceLock.doNotify();
+        awaitThread.join(1000L);
+        assertFalse(awaitThread.isAlive());
+        verify(context, atLeastOnce()).flush();
+        verify(channel, atLeast(2)).isWritable();
+        assertTrue(channel.isActive());
     }
 }
