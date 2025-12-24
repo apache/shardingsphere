@@ -127,13 +127,13 @@ public final class AddressRepository {
     }
     
     /**
-     * Drop table in Firebird.
+     * Drop table without verify.
      * Docker Image `firebirdsql/firebird` does not work with `DROP TABLE IF EXISTS`.
      * See <a href="https://github.com/FirebirdSQL/firebird/issues/4203">FirebirdSQL/firebird#4203</a> .
      *
      * @throws SQLException SQL exception
      */
-    public void dropTableInFirebird() throws SQLException {
+    public void dropTableWithoutVerify() throws SQLException {
         String sql = "DROP TABLE t_address";
         try (
                 Connection connection = dataSource.getConnection();

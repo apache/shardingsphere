@@ -150,13 +150,13 @@ public final class OrderItemRepository {
     }
     
     /**
-     * drop table in Firebird.
+     * drop table without verify.
      * Docker Image `firebirdsql/firebird` does not work with `DROP TABLE IF EXISTS`.
      * See <a href="https://github.com/FirebirdSQL/firebird/issues/4203">FirebirdSQL/firebird#4203</a> .
      *
      * @throws SQLException SQL exception
      */
-    public void dropTableInFirebird() throws SQLException {
+    public void dropTableWithoutVerify() throws SQLException {
         String sql = "DROP TABLE t_order_item";
         try (
                 Connection connection = dataSource.getConnection();
