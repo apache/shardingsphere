@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Licensed to the Apache Software Foundation (ASF) under one or more
+  ~ contributor license agreements.  See the NOTICE file distributed with
+  ~ this work for additional information regarding copyright ownership.
+  ~ The ASF licenses this file to You under the Apache License, Version 2.0
+  ~ (the "License"); you may not use this file except in compliance with
+  ~ the License.  You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<sql-parser-test-cases>
+    <alter-catalog sql-case-id="alter_catalog_rename">
+        <catalog-name start-index="14" stop-index="22" name="ctlg_hive" />
+        <rename-catalog start-index="31" stop-index="34" value="hive" />
+    </alter-catalog>
+    <alter-catalog sql-case-id="alter_catalog_set_properties">
+        <catalog-name start-index="14" stop-index="18" name="hive" />
+        <properties>
+            <property key="hive.metastore.uris" value="thrift://172.21.0.1:9083" start-index="34" stop-index="79" />
+        </properties>
+    </alter-catalog>
+    <alter-catalog sql-case-id="alter_catalog_modify_comment">
+        <catalog-name start-index="14" stop-index="18" name="hive" />
+        <catalog-comment start-index="34" stop-index="54" value="new catalog comment" />
+    </alter-catalog>
+    <alter-catalog sql-case-id="alter_catalog_set_properties_multiple">
+        <catalog-name start-index="14" stop-index="18" name="hive" />
+        <properties>
+            <property key="hive.metastore.uris" value="thrift://172.21.0.1:9083" start-index="34" stop-index="79" />
+            <property key="hive.metastore" value="thrift" start-index="84" stop-index="109" />
+        </properties>
+    </alter-catalog>
+</sql-parser-test-cases>

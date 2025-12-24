@@ -671,6 +671,14 @@ databaseNames
     : databaseName (COMMA_ databaseName)*
     ;
 
+jobName
+    : identifier
+    ;
+
+catalogName
+    : identifier
+    ;
+
 charsetName
     : textOrIdentifier | BINARY | DEFAULT
     ;
