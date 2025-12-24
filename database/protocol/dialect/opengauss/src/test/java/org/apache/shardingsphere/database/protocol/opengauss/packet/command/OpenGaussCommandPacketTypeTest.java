@@ -15,9 +15,8 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.database.protocol.opengauss.packet.command.packet.command;
+package org.apache.shardingsphere.database.protocol.opengauss.packet.command;
 
-import org.apache.shardingsphere.database.protocol.opengauss.packet.command.OpenGaussCommandPacketType;
 import org.apache.shardingsphere.database.protocol.packet.command.CommandPacketType;
 import org.apache.shardingsphere.database.protocol.postgresql.packet.command.PostgreSQLCommandPacketType;
 import org.junit.jupiter.api.Test;

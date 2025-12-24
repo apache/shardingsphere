@@ -15,9 +15,8 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.database.protocol.opengauss.packet.command.packet.authentication;
+package org.apache.shardingsphere.database.protocol.opengauss.packet.authentication;
 
-import org.apache.shardingsphere.database.protocol.opengauss.packet.authentication.OpenGaussAuthenticationHexData;
 import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.CoreMatchers.is;

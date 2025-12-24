@@ -15,11 +15,9 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.database.protocol.opengauss.packet.command.packet.command;
+package org.apache.shardingsphere.database.protocol.opengauss.packet.command;
 
 import io.netty.buffer.ByteBuf;
-import org.apache.shardingsphere.database.protocol.opengauss.packet.command.OpenGaussCommandPacketFactory;
-import org.apache.shardingsphere.database.protocol.opengauss.packet.command.OpenGaussCommandPacketType;
 import org.apache.shardingsphere.database.protocol.postgresql.packet.command.PostgreSQLCommandPacket;
 import org.apache.shardingsphere.database.protocol.postgresql.packet.command.PostgreSQLCommandPacketType;
 import org.apache.shardingsphere.database.protocol.postgresql.packet.command.query.extended.PostgreSQLAggregatedCommandPacket;
