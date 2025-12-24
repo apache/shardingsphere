@@ -48,6 +48,10 @@
         
         <dependency>
             <groupId>io.netty</groupId>
+            <artifactId>netty-codec-protobuf</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.netty</groupId>
             <artifactId>netty-handler</artifactId>
         </dependency>
         <dependency>

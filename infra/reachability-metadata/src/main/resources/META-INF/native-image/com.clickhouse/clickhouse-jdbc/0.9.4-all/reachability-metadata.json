@@ -140,15 +140,9 @@
     },
     {
       "condition": {
-        "typeReached": "com.clickhouse.client.api.internal.HttpAPIClientHelper"
-      },
-      "glob": "client-v2-version.properties"
-    },
-    {
-      "condition": {
         "typeReached": "com.clickhouse.client.internal.net.jpountz.util.Native"
       },
-      "glob": "com/clickhouse/client/internal/net/jpountz/util/win32/amd64/liblz4-java.so"
+      "glob": "com/clickhouse/client/internal/net/jpountz/util/**/amd64/liblz4-java.so"
     },
     {
       "condition": {
@@ -162,6 +156,5 @@
       },
       "glob": "jdbc-v2-version.properties"
     }
-  ],
-  "bundles": []
+  ]
 }

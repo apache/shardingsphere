@@ -56,6 +56,7 @@ class SQLServerTest {
         testShardingService = new TestShardingService(logicDataSource);
         initEnvironment();
         testShardingService.processSuccess();
+        testShardingService.cleanEnvironmentWithoutVerify();
     }
     
     private void initEnvironment() throws SQLException {
