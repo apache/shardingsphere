@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.proxy.backend.util;
 
-import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.infra.yaml.config.swapper.rule.YamlRuleConfigurationSwapperEngine;
@@ -35,7 +34,6 @@ import java.util.stream.Collectors;
 /**
  * Metadata import executor.
  */
-@RequiredArgsConstructor
 public final class MetaDataImportExecutor {
     
     private final YamlRuleConfigurationSwapperEngine ruleConfigSwapperEngine = new YamlRuleConfigurationSwapperEngine();
