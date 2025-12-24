@@ -138,7 +138,7 @@ class RefreshTableMetaDataExecutorTest {
     }
     
     @Test
-    void assertThrowWhenSchemaMissing() {
+    void assertExecuteUpdateWhenSchemaMissing() {
         RefreshTableMetaDataStatement sqlStatement = new RefreshTableMetaDataStatement(null, null, "absent_schema");
         ShardingSphereDatabase database = mockDatabase(false);
         executor.setDatabase(database);
@@ -146,7 +146,7 @@ class RefreshTableMetaDataExecutorTest {
     }
     
     @Test
-    void assertThrowWhenTableMissing() {
+    void assertExecuteUpdateWhenTableMissing() {
         ShardingSphereDatabase database = mockDatabase(true);
         ShardingSphereSchema schema = mock(ShardingSphereSchema.class);
         when(schema.containsTable("missing_table")).thenReturn(false);
