@@ -81,6 +81,14 @@ class OpenGaussPipelineSQLBuilderTest {
         assertThat(actual.get(), is("SELECT reltuples::integer FROM pg_class WHERE oid='foo_tbl'::regclass::oid;"));
     }
     
+    @Test
+    void assertBuildSplitByUniqueKeyRangedSubqueryClause() {
+        assertThat(sqlBuilder.buildSplitByUniqueKeyRangedSubqueryClause("foo_tbl", "id", true),
+                is("SELECT id FROM foo_tbl WHERE id>? ORDER BY id LIMIT ?"));
+        assertThat(sqlBuilder.buildSplitByUniqueKeyRangedSubqueryClause("foo_tbl", "id", false),
+                is("SELECT id FROM foo_tbl ORDER BY id LIMIT ?"));
+    }
+    
     @SuppressWarnings("JDBCResourceOpenedButNotSafelyClosed")
     @Test
     void assertBuildCreateTableSQLs() throws SQLException {

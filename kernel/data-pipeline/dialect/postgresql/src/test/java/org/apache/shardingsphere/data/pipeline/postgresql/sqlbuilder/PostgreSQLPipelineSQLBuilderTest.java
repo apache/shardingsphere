@@ -114,6 +114,14 @@ class PostgreSQLPipelineSQLBuilderTest {
     }
     
     @Test
+    void assertBuildSplitByUniqueKeyRangedSubqueryClause() {
+        assertThat(sqlBuilder.buildSplitByUniqueKeyRangedSubqueryClause("foo_tbl", "id", true),
+                is("SELECT id FROM foo_tbl WHERE id>? ORDER BY id LIMIT ?"));
+        assertThat(sqlBuilder.buildSplitByUniqueKeyRangedSubqueryClause("foo_tbl", "id", false),
+                is("SELECT id FROM foo_tbl ORDER BY id LIMIT ?"));
+    }
+    
+    @Test
     void assertBuildQueryCurrentPositionSQL() {
         Optional<String> actual = sqlBuilder.buildQueryCurrentPositionSQL();
         assertTrue(actual.isPresent());
