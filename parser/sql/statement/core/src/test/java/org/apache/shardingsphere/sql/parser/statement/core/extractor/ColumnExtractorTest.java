@@ -96,11 +96,34 @@ class ColumnExtractorTest {
     private static Stream<Arguments> provideSelectStatements() {
         return Stream.of(
                 Arguments.of("FullSegments", createSelectStatementForExtraction(), true, Arrays.asList(
-                        "foo_projection_column", "foo_projection_agg_param", "foo_datetime_left", "foo_datetime_right", "foo_expression_projection", "foo_interval_left",
-                        "foo_interval_right", "foo_interval_minus", "foo_subquery_projection_column", "foo_collection_expr", "foo_cte_subquery_column", "foo_inner_join_left",
-                        "bar_inner_join_right", "foo_subquery_table_column", "foo_join_left", "bar_join_right", "foo_using_column", "bar_derived_using_column", "foo_where_left",
-                        "bar_where_right", "foo_group_by_column", "foo_group_by_expr_column", "foo_having_left", "bar_having_right", "foo_order_by_column", "bar_order_by_expr_column",
-                        "foo_combine_left_column", "bar_combine_right_column")),
+                        "foo_projection_column",
+                        "foo_projection_agg_param",
+                        "foo_datetime_left",
+                        "foo_datetime_right",
+                        "foo_expression_projection",
+                        "foo_interval_left",
+                        "foo_interval_right",
+                        "foo_interval_minus",
+                        "foo_subquery_projection_column",
+                        "foo_collection_expr",
+                        "foo_cte_subquery_column",
+                        "foo_inner_join_left",
+                        "bar_inner_join_right",
+                        "foo_subquery_table_column",
+                        "foo_join_left",
+                        "bar_join_right",
+                        "foo_using_column",
+                        "bar_derived_using_column",
+                        "foo_where_left",
+                        "bar_where_right",
+                        "foo_group_by_column",
+                        "foo_group_by_expr_column",
+                        "foo_having_left",
+                        "bar_having_right",
+                        "foo_order_by_column",
+                        "bar_order_by_expr_column",
+                        "foo_combine_left_column",
+                        "bar_combine_right_column")),
                 Arguments.of("SkipSubqueryFlagFalse", createSelectStatementSkippingSubquery(), false, Collections.emptyList()),
                 Arguments.of("NoOptionalSegments", createSelectStatementWithoutOptionalSegments(), true, Collections.emptyList()));
     }
@@ -114,14 +137,14 @@ class ColumnExtractorTest {
                 Arguments.of("InExpressionWithRowLeft", createInExpression(createRowExpression(),
                         createBinaryOperation("foo_row_right_left", "bar_row_right_right")), Arrays.asList("foo_row_item", "foo_row_right_left", "bar_row_right_right")),
                 Arguments.of("InExpressionWithFunctionLeft",
-                        createInExpression(createFunctionWithColumns("foo_function_left_column"), createBinaryOperation("foo_function_right_left", "bar_function_right_right")),
+                        createInExpression(createFunctionWithSingleColumnParameter("foo_function_left_column"), createBinaryOperation("foo_function_right_left", "bar_function_right_right")),
                         Arrays.asList("foo_function_left_column", "foo_function_right_left", "bar_function_right_right")),
                 Arguments.of("BetweenExpressionWithColumns", createBetweenExpressionWithColumns(), Arrays.asList("foo_between_left", "foo_between_between", "foo_between_and")),
                 Arguments.of("BetweenExpressionWithNonColumnOperands", createBetweenExpressionWithMixedOperands(),
                         Arrays.asList("foo_between_function_column", "foo_between_binary_left", "bar_between_binary_right")),
                 Arguments.of("AggregationProjectionWithFunctionParameters", createAggregationProjectionExpression(),
                         Arrays.asList("foo_agg_direct", "foo_agg_func_direct", "foo_agg_func_binary_left", "bar_agg_func_binary_right")),
-                Arguments.of("FunctionSegmentWithNestedBinary", createFunctionSegmentWithBinary(),
+                Arguments.of("FunctionSegmentWithNestedBinary", createFunctionWithColumnAndBinaryParameter(),
                         Arrays.asList("foo_function_direct", "foo_function_binary_left", "bar_function_binary_right")));
     }
     
@@ -241,7 +264,8 @@ class ColumnExtractorTest {
     
     private static BetweenExpression createBetweenExpressionWithMixedOperands() {
         return new BetweenExpression(0, 0,
-                new LiteralExpressionSegment(0, 0, 1), createFunctionWithColumns("foo_between_function_column"), createBinaryOperation("foo_between_binary_left", "bar_between_binary_right"), false);
+                new LiteralExpressionSegment(0, 0, 1), createFunctionWithSingleColumnParameter("foo_between_function_column"),
+                createBinaryOperation("foo_between_binary_left", "bar_between_binary_right"), false);
     }
     
     private static AggregationProjectionSegment createAggregationProjectionExpression() {
@@ -254,13 +278,13 @@ class ColumnExtractorTest {
         return result;
     }
     
-    private static FunctionSegment createFunctionWithColumns(final String columnName) {
+    private static FunctionSegment createFunctionWithSingleColumnParameter(final String columnName) {
         FunctionSegment result = new FunctionSegment(0, 0, "FUNC", "func");
         result.getParameters().add(createColumnSegment(columnName));
         return result;
     }
     
-    private static FunctionSegment createFunctionSegmentWithBinary() {
+    private static FunctionSegment createFunctionWithColumnAndBinaryParameter() {
         FunctionSegment result = new FunctionSegment(0, 0, "FUNC", "func");
         result.getParameters().add(createColumnSegment("foo_function_direct"));
         result.getParameters().add(createBinaryOperation("foo_function_binary_left", "bar_function_binary_right"));
