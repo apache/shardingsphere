@@ -22,6 +22,7 @@ import lombok.NoArgsConstructor;
 import org.apache.commons.lang3.Range;
 import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSource;
 import org.apache.shardingsphere.data.pipeline.core.exception.job.SplitPipelineJobByUniqueKeyException;
+import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.inventory.query.QueryRange;
 import org.apache.shardingsphere.data.pipeline.core.ingest.position.IngestPosition;
 import org.apache.shardingsphere.data.pipeline.core.ingest.position.type.pk.type.IntegerPrimaryKeyIngestPosition;
 import org.apache.shardingsphere.data.pipeline.core.sqlbuilder.sql.PipelinePrepareSQLBuilder;
@@ -52,7 +53,7 @@ public final class InventoryPositionEstimatedCalculator {
      * @return unique key values range
      * @throws SplitPipelineJobByUniqueKeyException if an error occurs while getting unique key values range
      */
-    public static Range<Long> getIntegerUniqueKeyValuesRange(final PipelineDataSource dataSource, final String schemaName, final String tableName, final String uniqueKey) {
+    public static QueryRange getIntegerUniqueKeyValuesRange(final PipelineDataSource dataSource, final String schemaName, final String tableName, final String uniqueKey) {
         PipelinePrepareSQLBuilder pipelineSQLBuilder = new PipelinePrepareSQLBuilder(dataSource.getDatabaseType());
         String sql = pipelineSQLBuilder.buildUniqueKeyMinMaxValuesSQL(schemaName, tableName, uniqueKey);
         try (
@@ -60,7 +61,7 @@ public final class InventoryPositionEstimatedCalculator {
                 Statement statement = connection.createStatement();
                 ResultSet resultSet = statement.executeQuery(sql)) {
             resultSet.next();
-            return Range.of(resultSet.getLong(1), resultSet.getLong(2));
+            return QueryRange.closed(resultSet.getLong(1), resultSet.getLong(2));
         } catch (final SQLException ex) {
             throw new SplitPipelineJobByUniqueKeyException(tableName, uniqueKey, ex);
         }
@@ -74,14 +75,16 @@ public final class InventoryPositionEstimatedCalculator {
      * @param shardingSize sharding size
      * @return positions
      */
-    public static List<IngestPosition> getIntegerPositions(final long tableRecordsCount, final Range<Long> uniqueKeyValuesRange, final long shardingSize) {
+    public static List<IngestPosition> getIntegerPositions(final long tableRecordsCount, final QueryRange uniqueKeyValuesRange, final long shardingSize) {
         if (0 == tableRecordsCount) {
             return Collections.singletonList(new IntegerPrimaryKeyIngestPosition(0L, 0L));
         }
+        Long minimum = (Long) uniqueKeyValuesRange.getLower();
+        Long maximum = (Long) uniqueKeyValuesRange.getUpper();
         List<IngestPosition> result = new LinkedList<>();
         long splitCount = tableRecordsCount / shardingSize + (tableRecordsCount % shardingSize > 0 ? 1 : 0);
-        long interval = BigInteger.valueOf(uniqueKeyValuesRange.getMaximum()).subtract(BigInteger.valueOf(uniqueKeyValuesRange.getMinimum())).divide(BigInteger.valueOf(splitCount)).longValue();
-        IntervalToRangeIterator rangeIterator = new IntervalToRangeIterator(uniqueKeyValuesRange.getMinimum(), uniqueKeyValuesRange.getMaximum(), interval);
+        long interval = BigInteger.valueOf(maximum).subtract(BigInteger.valueOf(minimum)).divide(BigInteger.valueOf(splitCount)).longValue();
+        IntervalToRangeIterator rangeIterator = new IntervalToRangeIterator(minimum, maximum, interval);
         while (rangeIterator.hasNext()) {
             Range<Long> range = rangeIterator.next();
             result.add(new IntegerPrimaryKeyIngestPosition(range.getMinimum(), range.getMaximum()));
