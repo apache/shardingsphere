@@ -28,4 +28,11 @@ class IntegerPrimaryKeyIngestPositionTest {
     void assertToString() {
         assertThat(new IntegerPrimaryKeyIngestPosition(1L, 100L).toString(), is("i,1,100"));
     }
+    
+    @Test
+    void assertToStringWithNullValue() {
+        assertThat(new IntegerPrimaryKeyIngestPosition(1L, null).toString(), is("i,1,"));
+        assertThat(new IntegerPrimaryKeyIngestPosition(null, 100L).toString(), is("i,,100"));
+        assertThat(new IntegerPrimaryKeyIngestPosition(null, null).toString(), is("i,,"));
+    }
 }
