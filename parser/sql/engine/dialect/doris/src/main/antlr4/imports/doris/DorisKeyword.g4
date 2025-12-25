@@ -2782,10 +2782,6 @@ SOURCE_PUBLIC_KEY_PATH
     : S O U R C E UL_ P U B L I C UL_ K E Y UL_ P A T H
     ;
 
-SYMBOL
-    : S Y M B O L
-    ;
-
 TABLE
     : T A B L E
     ;

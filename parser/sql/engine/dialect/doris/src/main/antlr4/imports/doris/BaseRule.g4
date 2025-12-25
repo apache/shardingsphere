@@ -137,6 +137,9 @@ identifierKeywordsUnambiguous
     | AGAINST
     | AGGREGATE
     | ALGORITHM
+    // DORIS ADDED BEGIN
+    | ALIAS
+    // DORIS ADDED END
     | ALWAYS
     | ANY
     | ARRAY
@@ -370,6 +373,9 @@ identifierKeywordsUnambiguous
     | OWNER
     | PACK_KEYS
     | PAGE
+    // DORIS ADDED BEGIN
+    | PARAMETER
+    // DORIS ADDED END
     | PARSER
     | PARTIAL
     | PARTITIONING
