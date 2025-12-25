@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.core.preparer.inventory.calculator;
+package org.apache.shardingsphere.data.pipeline.core.preparer.inventory.calculator.position.estimated;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -30,10 +30,10 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * Inventory position calculator.
+ * Inventory position estimated calculator.
  */
 @NoArgsConstructor(access = AccessLevel.NONE)
-public final class InventoryPositionCalculator {
+public final class InventoryPositionEstimatedCalculator {
     
     /**
      * Get position by integer unique key range.

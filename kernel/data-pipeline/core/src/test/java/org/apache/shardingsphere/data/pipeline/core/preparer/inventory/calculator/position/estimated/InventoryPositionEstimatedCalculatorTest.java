@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.core.preparer.inventory.calculator;
+package org.apache.shardingsphere.data.pipeline.core.preparer.inventory.calculator.position.estimated;
 
 import org.apache.commons.lang3.Range;
 import org.apache.shardingsphere.data.pipeline.core.ingest.position.IngestPosition;
@@ -28,11 +28,11 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.isA;
 
-class InventoryPositionCalculatorTest {
+class InventoryPositionEstimatedCalculatorTest {
     
     @Test
     void assertGetPositionByIntegerUniqueKeyRange() {
-        List<IngestPosition> actualPositions = InventoryPositionCalculator.getPositionByIntegerUniqueKeyRange(200L, Range.of(1L, 600L), 100L);
+        List<IngestPosition> actualPositions = InventoryPositionEstimatedCalculator.getPositionByIntegerUniqueKeyRange(200L, Range.of(1L, 600L), 100L);
         assertThat(actualPositions.size(), is(2));
         for (IngestPosition each : actualPositions) {
             assertThat(each, isA(IntegerPrimaryKeyIngestPosition.class));
@@ -48,7 +48,7 @@ class InventoryPositionCalculatorTest {
     
     @Test
     void assertGetPositionByIntegerUniqueKeyRangeWithZeroTotalRecordsCount() {
-        List<IngestPosition> actualPositions = InventoryPositionCalculator.getPositionByIntegerUniqueKeyRange(0L, Range.of(0L, 0L), 1L);
+        List<IngestPosition> actualPositions = InventoryPositionEstimatedCalculator.getPositionByIntegerUniqueKeyRange(0L, Range.of(0L, 0L), 1L);
         assertThat(actualPositions.size(), is(1));
         assertThat(actualPositions.get(0), isA(IntegerPrimaryKeyIngestPosition.class));
         assertPosition(new IntegerPrimaryKeyIngestPosition(0L, 0L), (IntegerPrimaryKeyIngestPosition) actualPositions.get(0));
@@ -56,7 +56,7 @@ class InventoryPositionCalculatorTest {
     
     @Test
     void assertGetPositionByIntegerUniqueKeyRangeWithTheSameMinMax() {
-        List<IngestPosition> actualPositions = InventoryPositionCalculator.getPositionByIntegerUniqueKeyRange(200L, Range.of(5L, 5L), 100L);
+        List<IngestPosition> actualPositions = InventoryPositionEstimatedCalculator.getPositionByIntegerUniqueKeyRange(200L, Range.of(5L, 5L), 100L);
         assertThat(actualPositions.size(), is(1));
         assertThat(actualPositions.get(0), isA(IntegerPrimaryKeyIngestPosition.class));
         assertPosition(new IntegerPrimaryKeyIngestPosition(5L, 5L), (IntegerPrimaryKeyIngestPosition) actualPositions.get(0));
@@ -68,7 +68,7 @@ class InventoryPositionCalculatorTest {
         long shardingSize = tableRecordsCount / 2L;
         long minimum = Long.MIN_VALUE + 1L;
         long maximum = Long.MAX_VALUE;
-        List<IngestPosition> actualPositions = InventoryPositionCalculator.getPositionByIntegerUniqueKeyRange(tableRecordsCount, Range.of(minimum, maximum), shardingSize);
+        List<IngestPosition> actualPositions = InventoryPositionEstimatedCalculator.getPositionByIntegerUniqueKeyRange(tableRecordsCount, Range.of(minimum, maximum), shardingSize);
         assertThat(actualPositions.size(), is(2));
         for (IngestPosition each : actualPositions) {
             assertThat(each, isA(IntegerPrimaryKeyIngestPosition.class));
