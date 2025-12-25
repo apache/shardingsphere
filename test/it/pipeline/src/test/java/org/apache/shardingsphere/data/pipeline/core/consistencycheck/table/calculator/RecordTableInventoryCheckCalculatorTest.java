@@ -17,8 +17,7 @@
 
 package org.apache.shardingsphere.data.pipeline.core.consistencycheck.table.calculator;
 
-import com.zaxxer.hikari.HikariDataSource;
-import org.apache.commons.lang3.RandomStringUtils;
+import org.apache.commons.text.RandomStringGenerator;
 import org.apache.shardingsphere.data.pipeline.core.consistencycheck.result.RecordTableInventoryCheckCalculatedResult;
 import org.apache.shardingsphere.data.pipeline.core.consistencycheck.result.TableInventoryCheckCalculatedResult;
 import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSource;
@@ -27,6 +26,7 @@ import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.inventory.quer
 import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.inventory.query.StreamingRangeType;
 import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.inventory.query.calculator.TableInventoryCalculateParameter;
 import org.apache.shardingsphere.data.pipeline.core.metadata.model.PipelineColumnMetaData;
+import org.apache.shardingsphere.data.pipeline.core.util.DataSourceTestUtils;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.database.schema.QualifiedTable;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
@@ -58,25 +58,14 @@ class RecordTableInventoryCheckCalculatorTest {
     
     @BeforeAll
     static void setUp() throws Exception {
-        dataSource = new PipelineDataSource(createHikariDataSource("calc_" + RandomStringUtils.randomAlphanumeric(9)), TypedSPILoader.getService(DatabaseType.class, "H2"));
+        String databaseName = "check_calc_" + RandomStringGenerator.builder().withinRange('a', 'z').build().generate(9);
+        dataSource = new PipelineDataSource(DataSourceTestUtils.createHikariDataSource(databaseName), TypedSPILoader.getService(DatabaseType.class, "H2"));
         createTableAndInitData(dataSource);
     }
     
     @AfterAll
     static void tearDown() {
         dataSource.close();
-    }
-    
-    private static HikariDataSource createHikariDataSource(final String databaseName) {
-        HikariDataSource result = new HikariDataSource();
-        result.setJdbcUrl(String.format("jdbc:h2:mem:%s;DATABASE_TO_UPPER=false;MODE=MySQL", databaseName));
-        result.setUsername("root");
-        result.setPassword("root");
-        result.setMaximumPoolSize(10);
-        result.setMinimumIdle(2);
-        result.setConnectionTimeout(15L * 1000L);
-        result.setIdleTimeout(40L * 1000L);
-        return result;
     }
     
     private static void createTableAndInitData(final PipelineDataSource dataSource) throws SQLException {
