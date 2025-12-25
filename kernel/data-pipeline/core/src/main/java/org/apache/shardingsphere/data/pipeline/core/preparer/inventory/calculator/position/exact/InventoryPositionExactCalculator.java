@@ -76,12 +76,12 @@ public final class InventoryPositionExactCalculator {
                     return positionHandler.createIngestPosition(null, null);
                 }
                 long count = resultSet.getLong(2);
-                log.info("First records count is 0, return. First query SQL: {}", firstQuerySQL);
+                T minValue = positionHandler.readColumnValue(resultSet, 3);
+                T maxValue = positionHandler.readColumnValue(resultSet, 1);
+                log.info("First records count: {}, min value: {}, max value: {}, sharding size: {}, first query SQL: {}", count, minValue, maxValue, shardingSize, firstQuerySQL);
                 if (0 == count) {
                     return positionHandler.createIngestPosition(null, null);
                 }
-                T minValue = positionHandler.readColumnValue(resultSet, 3);
-                T maxValue = positionHandler.readColumnValue(resultSet, 1);
                 return positionHandler.createIngestPosition(minValue, maxValue);
             }
         } catch (final SQLException ex) {
@@ -107,14 +107,14 @@ public final class InventoryPositionExactCalculator {
                     if (!resultSet.next()) {
                         break;
                     }
-                    T maxValue = positionHandler.readColumnValue(resultSet, 1);
                     int count = resultSet.getInt(2);
                     if (0 == count) {
-                        log.info("Done. Later records count: {}, later query SQL: {}, last lower value: {}", recordsCount, laterQuerySQL, lowerValue);
+                        log.info("Done. Later records count: {}, last lower value: {}, sharding size: {}, later query SQL: {}", recordsCount, lowerValue, shardingSize, laterQuerySQL);
                         break;
                     }
                     recordsCount += count;
                     T minValue = positionHandler.readColumnValue(resultSet, 3);
+                    T maxValue = positionHandler.readColumnValue(resultSet, 1);
                     result.add(positionHandler.createIngestPosition(minValue, maxValue));
                     lowerValue = maxValue;
                 }
