@@ -61,15 +61,24 @@ jobs:
       - name: Build Project
         run: |
           ./mvnw -B clean install -Prelease,default-dep
-      - uses: burnett01/rsync-deployments@5.2
-        with:
-          switches: -avzr
-          path: distribution/proxy/target/apache-shardingsphere-*.tar.gz
-          remote_path: ${{ secrets.NIGHTLIES_RSYNC_PATH }}/shardingsphere
-          remote_host: ${{ secrets.NIGHTLIES_RSYNC_HOST }}
-          remote_port: ${{ secrets.NIGHTLIES_RSYNC_PORT }}
-          remote_user: ${{ secrets.NIGHTLIES_RSYNC_USER }}
-          remote_key: ${{ secrets.NIGHTLIES_RSYNC_KEY }}
+      - name: Upload Proxy Tarball
+        env:
+          NIGHTLIES_RSYNC_PATH: ${{ secrets.NIGHTLIES_RSYNC_PATH }}/shardingsphere
+          NIGHTLIES_RSYNC_HOST: ${{ secrets.NIGHTLIES_RSYNC_HOST }}
+          NIGHTLIES_RSYNC_PORT: ${{ secrets.NIGHTLIES_RSYNC_PORT }}
+          NIGHTLIES_RSYNC_USER: ${{ secrets.NIGHTLIES_RSYNC_USER }}
+          NIGHTLIES_RSYNC_KEY: ${{ secrets.NIGHTLIES_RSYNC_KEY }}
+        run: |
+          set -eo pipefail
+          KEY_FILE=$(mktemp)
+          trap 'rm -f ${KEY_FILE}' EXIT
+          printf '%s' "${NIGHTLIES_RSYNC_KEY}" > "${KEY_FILE}"
+          chmod 600 "${KEY_FILE}"
+          SSH_OPTS="-i ${KEY_FILE} -o StrictHostKeyChecking=no"
+          if [ -n "${NIGHTLIES_RSYNC_PORT}" ]; then
+            SSH_OPTS="${SSH_OPTS} -p ${NIGHTLIES_RSYNC_PORT}"
+          fi
+          rsync -avzr -e "ssh ${SSH_OPTS}" distribution/proxy/target/apache-shardingsphere-*.tar.gz "${NIGHTLIES_RSYNC_USER}@${NIGHTLIES_RSYNC_HOST}:${NIGHTLIES_RSYNC_PATH}/"
   
   build-proxy-image:
     if: github.repository == 'apache/shardingsphere'
@@ -269,12 +278,22 @@ jobs:
         run: |
           cd examples/shardingsphere-jdbc-example-generator/target/generated-sources/shardingsphere-jdbc-sample/
           tar -czvf ${{ matrix.feature }}--${{ matrix.framework }}--${{ matrix.mode }}--${{ matrix.transaction }}.tar.gz ${{ matrix.feature }}--${{ matrix.framework }}--${{ matrix.mode }}--${{ matrix.transaction }}
-      - uses: burnett01/rsync-deployments@5.2
-        with:
-          switches: -avzr
-          path: examples/shardingsphere-jdbc-example-generator/target/generated-sources/shardingsphere-jdbc-sample/${{ matrix.feature }}--${{ matrix.framework }}--${{ matrix.mode }}--${{ matrix.transaction }}.tar.gz
-          remote_path: ${{ secrets.NIGHTLIES_RSYNC_PATH }}/shardingsphere/examples
-          remote_host: ${{ secrets.NIGHTLIES_RSYNC_HOST }}
-          remote_port: ${{ secrets.NIGHTLIES_RSYNC_PORT }}
-          remote_user: ${{ secrets.NIGHTLIES_RSYNC_USER }}
-          remote_key: ${{ secrets.NIGHTLIES_RSYNC_KEY }}
+      - name: Upload Generated Example
+        env:
+          NIGHTLIES_RSYNC_PATH: ${{ secrets.NIGHTLIES_RSYNC_PATH }}/shardingsphere/examples
+          NIGHTLIES_RSYNC_HOST: ${{ secrets.NIGHTLIES_RSYNC_HOST }}
+          NIGHTLIES_RSYNC_PORT: ${{ secrets.NIGHTLIES_RSYNC_PORT }}
+          NIGHTLIES_RSYNC_USER: ${{ secrets.NIGHTLIES_RSYNC_USER }}
+          NIGHTLIES_RSYNC_KEY: ${{ secrets.NIGHTLIES_RSYNC_KEY }}
+          TAR_PATH: examples/shardingsphere-jdbc-example-generator/target/generated-sources/shardingsphere-jdbc-sample/${{ matrix.feature }}--${{ matrix.framework }}--${{ matrix.mode }}--${{ matrix.transaction }}.tar.gz
+        run: |
+          set -eo pipefail
+          KEY_FILE=$(mktemp)
+          trap 'rm -f ${KEY_FILE}' EXIT
+          printf '%s' "${NIGHTLIES_RSYNC_KEY}" > "${KEY_FILE}"
+          chmod 600 "${KEY_FILE}"
+          SSH_OPTS="-i ${KEY_FILE} -o StrictHostKeyChecking=no"
+          if [ -n "${NIGHTLIES_RSYNC_PORT}" ]; then
+            SSH_OPTS="${SSH_OPTS} -p ${NIGHTLIES_RSYNC_PORT}"
+          fi
+          rsync -avzr -e "ssh ${SSH_OPTS}" "${TAR_PATH}" "${NIGHTLIES_RSYNC_USER}@${NIGHTLIES_RSYNC_HOST}:${NIGHTLIES_RSYNC_PATH}/"
