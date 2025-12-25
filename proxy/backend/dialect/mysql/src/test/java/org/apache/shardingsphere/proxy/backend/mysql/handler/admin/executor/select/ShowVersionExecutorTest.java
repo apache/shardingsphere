@@ -14,6 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.apache.shardingsphere.proxy.backend.mysql.handler.admin.executor.select;
 
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;

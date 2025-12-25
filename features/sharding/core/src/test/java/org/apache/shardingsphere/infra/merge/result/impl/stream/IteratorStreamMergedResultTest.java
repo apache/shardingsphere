@@ -14,6 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.apache.shardingsphere.infra.merge.result.impl.stream;
 
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;

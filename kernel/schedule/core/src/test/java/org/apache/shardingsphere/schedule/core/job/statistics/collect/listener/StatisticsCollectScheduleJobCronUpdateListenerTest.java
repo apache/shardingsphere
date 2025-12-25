@@ -14,6 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.apache.shardingsphere.schedule.core.job.statistics.collect.listener;
 
 import org.apache.shardingsphere.schedule.core.job.statistics.collect.StatisticsCollectJobWorker;

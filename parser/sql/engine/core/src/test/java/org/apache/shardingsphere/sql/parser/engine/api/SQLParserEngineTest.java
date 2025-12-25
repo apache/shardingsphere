@@ -14,6 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.apache.shardingsphere.sql.parser.engine.api;
 
 import com.github.benmanes.caffeine.cache.Caffeine;

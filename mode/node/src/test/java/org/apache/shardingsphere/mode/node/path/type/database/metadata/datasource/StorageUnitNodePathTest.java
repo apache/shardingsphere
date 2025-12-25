@@ -14,6 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.apache.shardingsphere.mode.node.path.type.database.metadata.datasource;
 
 import org.apache.shardingsphere.mode.node.path.engine.generator.NodePathGenerator;

@@ -14,6 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.apache.shardingsphere.single.checker.sql.table;
 
 import org.apache.shardingsphere.database.connector.core.metadata.database.enums.TableType;
