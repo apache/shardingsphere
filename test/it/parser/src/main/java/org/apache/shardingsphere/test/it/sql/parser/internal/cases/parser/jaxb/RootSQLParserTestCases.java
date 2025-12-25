@@ -21,6 +21,8 @@ import com.google.common.base.Preconditions;
 import lombok.Getter;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.CommonStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.dialect.doris.DorisResumeJobStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.standard.catalog.AlterCatalogStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.tcl.HiveAbortStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.mysql.MySQLCloneStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.mysql.MySQLCreateLoadableFunctionTestCase;
@@ -505,6 +507,12 @@ public final class RootSQLParserTestCases {
     
     @XmlElement(name = "rename-table")
     private final List<RenameTableStatementTestCase> renameTableTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "resume-job")
+    private final List<DorisResumeJobStatementTestCase> resumeJobTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "alter-catalog")
+    private final List<AlterCatalogStatementTestCase> alterCatalogTestCases = new LinkedList<>();
     
     @XmlElement(name = "drop-table")
     private final List<DropTableStatementTestCase> dropTableTestCases = new LinkedList<>();

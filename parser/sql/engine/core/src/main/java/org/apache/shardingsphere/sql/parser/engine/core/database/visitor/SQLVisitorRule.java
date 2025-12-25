@@ -275,6 +275,10 @@ public enum SQLVisitorRule {
     
     UNLISTEN("Unlisten", SQLStatementType.DDL),
     
+    RESUME_JOB("ResumeJob", SQLStatementType.DDL),
+    
+    ALTER_CATALOG("AlterCatalog", SQLStatementType.DDL),
+    
     SET_CONSTRAINTS("SetConstraints", SQLStatementType.TCL),
     
     SET_TRANSACTION("SetTransaction", SQLStatementType.TCL),

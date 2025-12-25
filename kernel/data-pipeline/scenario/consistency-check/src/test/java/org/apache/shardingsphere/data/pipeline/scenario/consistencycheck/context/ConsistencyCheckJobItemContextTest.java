@@ -50,17 +50,17 @@ class ConsistencyCheckJobItemContextTest {
     @Test
     void assertConstructWithNonEmptyValues() {
         ConsistencyCheckJobItemProgress jobItemProgress = new ConsistencyCheckJobItemProgress(TABLE, null, 0L, 10L, null, null, "H2");
-        jobItemProgress.getTableCheckRangePositions().add(new TableCheckRangePosition(0, DATA_NODE, TABLE, new IntegerPrimaryKeyIngestPosition(1, 100),
-                new IntegerPrimaryKeyIngestPosition(1, 101), null, 11, 11, false, null));
-        jobItemProgress.getTableCheckRangePositions().add(new TableCheckRangePosition(1, DATA_NODE, TABLE, new IntegerPrimaryKeyIngestPosition(101, 200),
-                new IntegerPrimaryKeyIngestPosition(101, 203), null, 132, 132, false, null));
+        jobItemProgress.getTableCheckRangePositions().add(new TableCheckRangePosition(0, DATA_NODE, TABLE, new IntegerPrimaryKeyIngestPosition(1L, 100L),
+                new IntegerPrimaryKeyIngestPosition(1L, 101L), null, 11, 11, false, null));
+        jobItemProgress.getTableCheckRangePositions().add(new TableCheckRangePosition(1, DATA_NODE, TABLE, new IntegerPrimaryKeyIngestPosition(101L, 200L),
+                new IntegerPrimaryKeyIngestPosition(101L, 203L), null, 132, 132, false, null));
         ConsistencyCheckJobItemContext actual = new ConsistencyCheckJobItemContext(new ConsistencyCheckJobConfiguration("", "", "DATA_MATCH", null, databaseType),
                 0, JobStatus.RUNNING, jobItemProgress);
         assertThat(actual.getProgressContext().getTableCheckRangePositions().size(), is(2));
         assertTableCheckRangePosition(actual.getProgressContext().getTableCheckRangePositions().get(0),
-                new TableCheckRangePosition(0, DATA_NODE, TABLE, new IntegerPrimaryKeyIngestPosition(1, 100), new IntegerPrimaryKeyIngestPosition(1, 101), null, 11, 11, false, null));
+                new TableCheckRangePosition(0, DATA_NODE, TABLE, new IntegerPrimaryKeyIngestPosition(1L, 100L), new IntegerPrimaryKeyIngestPosition(1L, 101L), null, 11, 11, false, null));
         assertTableCheckRangePosition(actual.getProgressContext().getTableCheckRangePositions().get(1),
-                new TableCheckRangePosition(1, DATA_NODE, TABLE, new IntegerPrimaryKeyIngestPosition(101, 200), new IntegerPrimaryKeyIngestPosition(101, 203), null, 132, 132, false, null));
+                new TableCheckRangePosition(1, DATA_NODE, TABLE, new IntegerPrimaryKeyIngestPosition(101L, 200L), new IntegerPrimaryKeyIngestPosition(101L, 203L), null, 132, 132, false, null));
     }
     
     private void assertTableCheckRangePosition(final TableCheckRangePosition actual, final TableCheckRangePosition expected) {

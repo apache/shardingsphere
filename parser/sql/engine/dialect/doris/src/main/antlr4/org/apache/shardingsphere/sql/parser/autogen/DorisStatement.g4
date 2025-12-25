@@ -132,6 +132,7 @@ execute
     | delimiter
     | startReplica
     | createMaterializedView
+    | resumeJob
     // TODO consider refactor following sytax to SEMI_? EOF
     ) (SEMI_ EOF? | EOF)
     | EOF

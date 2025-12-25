@@ -1220,6 +1220,10 @@ JSON_VALUE
     : J S O N UL_ V A L U E
     ;
 
+JOB
+    : J O B
+    ;
+
 KEY
     : K E Y
     ;

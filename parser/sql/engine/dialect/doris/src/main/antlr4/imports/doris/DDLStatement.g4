@@ -29,6 +29,7 @@ alterStatement
     | alterLogfileGroup
     | alterInstance
     | alterServer
+    | alterCatalog
     ;
 
 createTable
@@ -264,6 +265,10 @@ alterDatabaseSpecification_
 
 dropDatabase
     : DROP (DATABASE | SCHEMA) ifExists? databaseName
+    ;
+
+alterCatalog
+    : ALTER CATALOG catalogName (RENAME identifier | SET PROPERTIES LP_ properties RP_ | MODIFY COMMENT string_)
     ;
 
 alterInstance
@@ -897,6 +902,10 @@ signalStatement
 
 signalInformationItem
     : conditionInformationItemName EQ_ expr
+    ;
+
+resumeJob
+    : RESUME JOB WHERE jobName EQ_ stringLiterals
     ;
 
 prepare

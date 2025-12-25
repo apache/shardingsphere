@@ -24,11 +24,11 @@ import org.apache.shardingsphere.data.pipeline.core.ingest.position.type.pk.Prim
  */
 public final class IntegerPrimaryKeyIngestPosition implements PrimaryKeyIngestPosition<Long> {
     
-    private final long beginValue;
+    private final Long beginValue;
     
-    private final long endValue;
+    private final Long endValue;
     
-    public IntegerPrimaryKeyIngestPosition(final long beginValue, final long endValue) {
+    public IntegerPrimaryKeyIngestPosition(final Long beginValue, final Long endValue) {
         this.beginValue = beginValue;
         this.endValue = endValue;
     }
@@ -50,6 +50,6 @@ public final class IntegerPrimaryKeyIngestPosition implements PrimaryKeyIngestPo
     
     @Override
     public String toString() {
-        return String.format("%s,%s,%s", getType(), beginValue, endValue);
+        return String.format("%s,%s,%s", getType(), null == beginValue ? "" : beginValue, null == endValue ? "" : endValue);
     }
 }

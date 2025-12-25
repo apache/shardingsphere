@@ -19,6 +19,7 @@ package org.apache.shardingsphere.data.pipeline.core.ingest.position.type.pk;
 
 import com.google.common.base.Preconditions;
 import com.google.common.base.Splitter;
+import com.google.common.base.Strings;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.data.pipeline.core.ingest.position.type.pk.type.IntegerPrimaryKeyIngestPosition;
@@ -49,7 +50,7 @@ public final class PrimaryKeyIngestPositionFactory {
         String endValue = parts.get(2);
         switch (type) {
             case 'i':
-                return new IntegerPrimaryKeyIngestPosition(Long.parseLong(beginValue), Long.parseLong(endValue));
+                return new IntegerPrimaryKeyIngestPosition(Strings.isNullOrEmpty(beginValue) ? null : Long.parseLong(beginValue), Strings.isNullOrEmpty(endValue) ? null : Long.parseLong(endValue));
             case 's':
                 return new StringPrimaryKeyIngestPosition(beginValue, endValue);
             case 'u':

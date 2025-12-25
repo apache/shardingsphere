@@ -24,6 +24,7 @@ import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
 
+import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertNull;
@@ -33,10 +34,17 @@ class PrimaryKeyIngestPositionFactoryTest {
     
     @Test
     void assertNewInstanceWithIntegerPrimaryKeyIngestPosition() {
-        IntegerPrimaryKeyIngestPosition actual = (IntegerPrimaryKeyIngestPosition) PrimaryKeyIngestPositionFactory.newInstance("i,100,200");
-        assertThat(actual.getType(), is('i'));
-        assertThat(actual.getBeginValue(), is(100L));
-        assertThat(actual.getEndValue(), is(200L));
+        assertIntegerPrimaryKeyIngestPosition0(PrimaryKeyIngestPositionFactory.newInstance("i,100,200"), new IntegerPrimaryKeyIngestPosition(100L, 200L));
+        assertIntegerPrimaryKeyIngestPosition0(PrimaryKeyIngestPositionFactory.newInstance("i,100,"), new IntegerPrimaryKeyIngestPosition(100L, null));
+        assertIntegerPrimaryKeyIngestPosition0(PrimaryKeyIngestPositionFactory.newInstance("i,,200"), new IntegerPrimaryKeyIngestPosition(null, 200L));
+        assertIntegerPrimaryKeyIngestPosition0(PrimaryKeyIngestPositionFactory.newInstance("i,,"), new IntegerPrimaryKeyIngestPosition(null, null));
+    }
+    
+    private void assertIntegerPrimaryKeyIngestPosition0(final PrimaryKeyIngestPosition<?> actual, final IntegerPrimaryKeyIngestPosition expected) {
+        assertThat(actual, instanceOf(IntegerPrimaryKeyIngestPosition.class));
+        assertThat(actual.getType(), is(expected.getType()));
+        assertThat(actual.getBeginValue(), is(expected.getBeginValue()));
+        assertThat(actual.getEndValue(), is(expected.getEndValue()));
     }
     
     @Test

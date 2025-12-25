@@ -585,6 +585,7 @@ identifierKeywordsAmbiguous2Labels
 identifierKeywordsAmbiguous3Roles
     : EVENT
     | FILE
+    | JOB
     | NONE
     | PROCESS
     | PROXY
@@ -669,6 +670,14 @@ databaseName
 
 databaseNames
     : databaseName (COMMA_ databaseName)*
+    ;
+
+jobName
+    : identifier
+    ;
+
+catalogName
+    : identifier
     ;
 
 charsetName

@@ -21,6 +21,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.DDLStatement;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAssertContext;
+import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.ddl.dialect.doris.DorisDDLStatementAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.ddl.dialect.oracle.OracleDDLStatementAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.ddl.dialect.postgresql.PostgreSQLDDLStatementAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.ddl.dialect.sqlserver.SQLServerDDLStatementAssert;
@@ -45,5 +46,6 @@ public final class DDLStatementAssert {
         PostgreSQLDDLStatementAssert.assertIs(assertContext, actual, expected);
         OracleDDLStatementAssert.assertIs(assertContext, actual, expected);
         SQLServerDDLStatementAssert.assertIs(assertContext, actual, expected);
+        DorisDDLStatementAssert.assertIs(assertContext, actual, expected);
     }
 }
