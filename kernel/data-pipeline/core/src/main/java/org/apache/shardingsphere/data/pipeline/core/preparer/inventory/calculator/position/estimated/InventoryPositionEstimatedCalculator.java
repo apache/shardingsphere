@@ -20,11 +20,18 @@ package org.apache.shardingsphere.data.pipeline.core.preparer.inventory.calculat
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.commons.lang3.Range;
+import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSource;
+import org.apache.shardingsphere.data.pipeline.core.exception.job.SplitPipelineJobByUniqueKeyException;
 import org.apache.shardingsphere.data.pipeline.core.ingest.position.IngestPosition;
 import org.apache.shardingsphere.data.pipeline.core.ingest.position.type.pk.type.IntegerPrimaryKeyIngestPosition;
+import org.apache.shardingsphere.data.pipeline.core.sqlbuilder.sql.PipelinePrepareSQLBuilder;
 import org.apache.shardingsphere.data.pipeline.core.util.IntervalToRangeIterator;
 
 import java.math.BigInteger;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
@@ -34,6 +41,30 @@ import java.util.List;
  */
 @NoArgsConstructor(access = AccessLevel.NONE)
 public final class InventoryPositionEstimatedCalculator {
+    
+    /**
+     * Get integer unique key values range.
+     *
+     * @param dataSource data source
+     * @param schemaName schema name
+     * @param tableName table name
+     * @param uniqueKey unique key
+     * @return unique key values range
+     * @throws SplitPipelineJobByUniqueKeyException if an error occurs while getting unique key values range
+     */
+    public static Range<Long> getIntegerUniqueKeyValuesRange(final PipelineDataSource dataSource, final String schemaName, final String tableName, final String uniqueKey) {
+        PipelinePrepareSQLBuilder pipelineSQLBuilder = new PipelinePrepareSQLBuilder(dataSource.getDatabaseType());
+        String sql = pipelineSQLBuilder.buildUniqueKeyMinMaxValuesSQL(schemaName, tableName, uniqueKey);
+        try (
+                Connection connection = dataSource.getConnection();
+                Statement statement = connection.createStatement();
+                ResultSet resultSet = statement.executeQuery(sql)) {
+            resultSet.next();
+            return Range.of(resultSet.getLong(1), resultSet.getLong(2));
+        } catch (final SQLException ex) {
+            throw new SplitPipelineJobByUniqueKeyException(tableName, uniqueKey, ex);
+        }
+    }
     
     /**
      * Get positions by integer unique key range.
