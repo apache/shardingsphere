@@ -46,9 +46,16 @@ class InventoryPositionEstimatedCalculatorTest {
     
     @Test
     void assertGetIntegerPositionsWithZeroTotalRecordsCount() {
-        List<IngestPosition> actualPositions = InventoryPositionEstimatedCalculator.getIntegerPositions(0L, QueryRange.closed(0L, 0L), 1L);
+        List<IngestPosition> actualPositions = InventoryPositionEstimatedCalculator.getIntegerPositions(0L, QueryRange.closed(0L, 1L), 1L);
         assertThat(actualPositions.size(), is(1));
-        assertPosition(actualPositions.get(0), new IntegerPrimaryKeyIngestPosition(0L, 0L));
+        assertPosition(actualPositions.get(0), new IntegerPrimaryKeyIngestPosition(null, null));
+    }
+    
+    @Test
+    void assertGetIntegerPositionsWithNullValue() {
+        List<IngestPosition> actualPositions = InventoryPositionEstimatedCalculator.getIntegerPositions(200L, QueryRange.closed(null, null), 1L);
+        assertThat(actualPositions.size(), is(1));
+        assertPosition(actualPositions.get(0), new IntegerPrimaryKeyIngestPosition(null, null));
     }
     
     @Test

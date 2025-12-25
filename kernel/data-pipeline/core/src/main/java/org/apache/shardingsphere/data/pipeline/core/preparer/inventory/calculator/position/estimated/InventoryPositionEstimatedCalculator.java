@@ -76,11 +76,11 @@ public final class InventoryPositionEstimatedCalculator {
      * @return positions
      */
     public static List<IngestPosition> getIntegerPositions(final long tableRecordsCount, final QueryRange uniqueKeyValuesRange, final long shardingSize) {
-        if (0 == tableRecordsCount) {
-            return Collections.singletonList(new IntegerPrimaryKeyIngestPosition(0L, 0L));
-        }
         Long minimum = (Long) uniqueKeyValuesRange.getLower();
         Long maximum = (Long) uniqueKeyValuesRange.getUpper();
+        if (0 == tableRecordsCount || null == minimum || null == maximum) {
+            return Collections.singletonList(new IntegerPrimaryKeyIngestPosition(null, null));
+        }
         List<IngestPosition> result = new LinkedList<>();
         long splitCount = tableRecordsCount / shardingSize + (tableRecordsCount % shardingSize > 0 ? 1 : 0);
         long interval = BigInteger.valueOf(maximum).subtract(BigInteger.valueOf(minimum)).divide(BigInteger.valueOf(splitCount)).longValue();
