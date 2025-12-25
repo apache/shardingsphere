@@ -78,6 +78,8 @@ import java.util.Properties;
 
 public final class Configuration {
     
+    <#assign repository = repository!'JDBC'>
+    
     private static final String HOST = "${host}";
     
     private static final int PORT = ${port};
@@ -98,7 +100,7 @@ public final class Configuration {
         return new ModeConfiguration("Cluster", new ClusterPersistRepositoryConfiguration("etcd", "governance-sharding-data-source", "localhost:2379", new Properties()));
     </#if>
     <#if mode=="standalone">
-        return new ModeConfiguration("Standalone", new StandalonePersistRepositoryConfiguration("JDBC", new Properties()));
+        return new ModeConfiguration("Standalone", new StandalonePersistRepositoryConfiguration("${repository}", new Properties()));
     </#if> 
     }
     

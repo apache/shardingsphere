@@ -24,6 +24,7 @@
     <artifactId>${feature?replace(',', '-')}--${framework}--${mode}--${transaction}</artifactId>
     <version>${shardingsphereVersion}</version>
     <name>${r'${project.artifactId}'}</name>
+    <#assign repository = repository!'JDBC'>
     
     <dependencies>
         <dependency>
@@ -31,6 +32,76 @@
             <artifactId>shardingsphere-jdbc</artifactId>
             <version>${r'${project.version}'}</version>
         </dependency>
+        <dependency>
+            <groupId>org.apache.shardingsphere</groupId>
+            <artifactId>shardingsphere-infra-data-source-pool-hikari</artifactId>
+            <version>${r'${project.version}'}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.shardingsphere</groupId>
+            <artifactId>shardingsphere-database-connector-mysql</artifactId>
+            <version>${r'${project.version}'}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.shardingsphere</groupId>
+            <artifactId>shardingsphere-authority-simple</artifactId>
+            <version>${r'${project.version}'}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.shardingsphere</groupId>
+            <artifactId>shardingsphere-parser-sql-engine-mysql</artifactId>
+            <version>${r'${project.version}'}</version>
+        </dependency>
+    <#if feature?contains("sharding")>
+        <dependency>
+            <groupId>org.apache.shardingsphere</groupId>
+            <artifactId>shardingsphere-sharding-core</artifactId>
+            <version>${r'${project.version}'}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.shardingsphere</groupId>
+            <artifactId>shardingsphere-broadcast-core</artifactId>
+            <version>${r'${project.version}'}</version>
+        </dependency>
+    </#if>
+    <#if feature?contains("readwrite-splitting")>
+        <dependency>
+            <groupId>org.apache.shardingsphere</groupId>
+            <artifactId>shardingsphere-readwrite-splitting-core</artifactId>
+            <version>${r'${project.version}'}</version>
+        </dependency>
+    </#if>
+    <#if feature?contains("encrypt")>
+        <dependency>
+            <groupId>org.apache.shardingsphere</groupId>
+            <artifactId>shardingsphere-encrypt-core</artifactId>
+            <version>${r'${project.version}'}</version>
+        </dependency>
+    </#if>
+    <#if feature?contains("shadow")>
+        <dependency>
+            <groupId>org.apache.shardingsphere</groupId>
+            <artifactId>shardingsphere-shadow-core</artifactId>
+            <version>${r'${project.version}'}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.shardingsphere</groupId>
+            <artifactId>shardingsphere-sql-parser-api</artifactId>
+            <version>${r'${project.version}'}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.shardingsphere</groupId>
+            <artifactId>shardingsphere-parser-sql-engine-core</artifactId>
+            <version>${r'${project.version}'}</version>
+        </dependency>
+    </#if>
+    <#if feature?contains("mask")>
+        <dependency>
+            <groupId>org.apache.shardingsphere</groupId>
+            <artifactId>shardingsphere-mask-core</artifactId>
+            <version>${r'${project.version}'}</version>
+        </dependency>
+    </#if>
     <#if mode=="cluster-zookeeper">
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
@@ -38,7 +109,7 @@
             <version>${r'${project.version}'}</version>
         </dependency>
     </#if>
-    <#if mode?contains("standalone") && (repository?? && repository == "JDBC")>
+    <#if mode?contains("standalone") && repository == "JDBC">
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
             <artifactId>shardingsphere-standalone-mode-repository-jdbc</artifactId>
@@ -49,6 +120,13 @@
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
             <artifactId>shardingsphere-transaction-xa-core</artifactId>
+            <version>${r'${project.version}'}</version>
+        </dependency>
+    </#if>
+    <#if transaction=="xa-atomikos">
+        <dependency>
+            <groupId>org.apache.shardingsphere</groupId>
+            <artifactId>shardingsphere-transaction-xa-atomikos</artifactId>
             <version>${r'${project.version}'}</version>
         </dependency>
     </#if>
