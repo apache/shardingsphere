@@ -26,7 +26,7 @@ import java.util.Properties;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-class ClassPathURLLoaderTest {
+class ClassPathLocalFileURLLoaderTest {
     
     @Test
     @EnabledOnOs({OS.LINUX, OS.MAC})

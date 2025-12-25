@@ -24,7 +24,7 @@ import java.util.Arrays;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-class TypedPropertiesExceptionTest {
+class TypedPropertiesServerExceptionTest {
     
     @Test
     void assertGetMessage() {
