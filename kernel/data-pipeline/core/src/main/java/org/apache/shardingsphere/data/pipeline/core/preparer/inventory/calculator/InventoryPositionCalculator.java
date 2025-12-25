@@ -45,7 +45,7 @@ public final class InventoryPositionCalculator {
      */
     public static List<IngestPosition> getPositionByIntegerUniqueKeyRange(final long tableRecordsCount, final Range<Long> uniqueKeyValuesRange, final long shardingSize) {
         if (0 == tableRecordsCount) {
-            return Collections.singletonList(new IntegerPrimaryKeyIngestPosition(0, 0));
+            return Collections.singletonList(new IntegerPrimaryKeyIngestPosition(0L, 0L));
         }
         List<IngestPosition> result = new LinkedList<>();
         long splitCount = tableRecordsCount / shardingSize + (tableRecordsCount % shardingSize > 0 ? 1 : 0);
