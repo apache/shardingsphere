@@ -23,6 +23,8 @@ import org.antlr.v4.runtime.misc.Interval;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.api.ASTNode;
 import org.apache.shardingsphere.sql.parser.api.visitor.statement.type.DDLStatementVisitor;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.AlterCatalogContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ResumeJobContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.AddColumnContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.AddTableConstraintContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.AlterAlgorithmOptionContext;
@@ -154,6 +156,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.De
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.ExecuteStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.PrepareStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.TruncateStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.catalog.AlterCatalogStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.database.AlterDatabaseStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.database.CreateDatabaseStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.database.DropDatabaseStatement;
@@ -186,8 +189,10 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.De
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.InsertStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.UpdateStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.util.SQLUtils;
 import org.apache.shardingsphere.sql.parser.statement.core.value.collection.CollectionValue;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
+import org.apache.shardingsphere.sql.parser.statement.doris.ddl.DorisResumeJobStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.ddl.event.MySQLAlterEventStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.ddl.event.MySQLCreateEventStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.ddl.event.MySQLDropEventStatement;
@@ -252,6 +257,34 @@ public final class DorisDDLStatementVisitor extends DorisStatementVisitor implem
     @Override
     public ASTNode visitDropDatabase(final DropDatabaseContext ctx) {
         return new DropDatabaseStatement(getDatabaseType(), new IdentifierValue(ctx.databaseName().getText()).getValue(), null != ctx.ifExists());
+    }
+    
+    @Override
+    public ASTNode visitAlterCatalog(final AlterCatalogContext ctx) {
+        AlterCatalogStatement result = new AlterCatalogStatement(getDatabaseType());
+        result.setCatalogName(new IdentifierValue(ctx.catalogName().getText()).getValue());
+        if (null != ctx.RENAME()) {
+            result.setNewCatalogName(new IdentifierValue(ctx.identifier().getText()).getValue());
+        }
+        if (null != ctx.PROPERTIES()) {
+            for (int i = 0; i < ctx.properties().property().size(); i++) {
+                String key = null != ctx.properties().property(i).SINGLE_QUOTED_TEXT()
+                        ? SQLUtils.getExactlyValue(ctx.properties().property(i).SINGLE_QUOTED_TEXT().getText())
+                        : SQLUtils.getExactlyValue(ctx.properties().property(i).identifier().getText());
+                String value = SQLUtils.getExactlyValue(ctx.properties().property(i).literals().getText());
+                result.getProperties().put(key, value);
+            }
+        }
+        if (null != ctx.COMMENT()) {
+            result.setComment(SQLUtils.getExactlyValue(ctx.string_().getText()));
+        }
+        return result;
+    }
+    
+    @Override
+    public ASTNode visitResumeJob(final ResumeJobContext ctx) {
+        String jobName = SQLUtils.getExactlyValue(ctx.stringLiterals().getText());
+        return new DorisResumeJobStatement(getDatabaseType(), jobName);
     }
     
     @SuppressWarnings("unchecked")

@@ -15,37 +15,32 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.ddl;
+package org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.ddl.dialect.doris;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.DDLStatement;
+import org.apache.shardingsphere.sql.parser.statement.doris.ddl.DorisResumeJobStatement;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAssertContext;
-import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.ddl.dialect.doris.DorisDDLStatementAssert;
-import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.ddl.dialect.oracle.OracleDDLStatementAssert;
-import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.ddl.dialect.postgresql.PostgreSQLDDLStatementAssert;
-import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.ddl.dialect.sqlserver.SQLServerDDLStatementAssert;
-import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.ddl.standard.StandardDDLStatementAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.SQLParserTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.dialect.doris.DorisResumeJobStatementTestCase;
 
 /**
- * DDL statement assert.
+ * DDL statement assert for Doris.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class DDLStatementAssert {
+public final class DorisDDLStatementAssert {
     
     /**
      * Assert DDL statement is correct with expected parser result.
      *
      * @param assertContext assert context
      * @param actual actual DDL statement
-     * @param expected expected parser result
+     * @param expected expected DDL statement test case
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final DDLStatement actual, final SQLParserTestCase expected) {
-        StandardDDLStatementAssert.assertIs(assertContext, actual, expected);
-        PostgreSQLDDLStatementAssert.assertIs(assertContext, actual, expected);
-        OracleDDLStatementAssert.assertIs(assertContext, actual, expected);
-        SQLServerDDLStatementAssert.assertIs(assertContext, actual, expected);
-        DorisDDLStatementAssert.assertIs(assertContext, actual, expected);
+        if (actual instanceof DorisResumeJobStatement) {
+            DorisResumeJobStatementAssert.assertIs(assertContext, (DorisResumeJobStatement) actual, (DorisResumeJobStatementTestCase) expected);
+        }
     }
 }
