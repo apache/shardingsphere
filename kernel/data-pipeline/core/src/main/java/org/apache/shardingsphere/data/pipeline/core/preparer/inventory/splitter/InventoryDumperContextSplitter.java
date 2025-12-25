@@ -124,7 +124,7 @@ public final class InventoryDumperContextSplitter {
         if (dataTypeOption.isIntegerDataType(firstColumnDataType)) {
             Range<Long> uniqueKeyValuesRange = getUniqueKeyValuesRange(jobItemContext, dumperContext);
             int shardingSize = jobItemContext.getJobProcessContext().getProcessConfiguration().getRead().getShardingSize();
-            return InventoryPositionEstimatedCalculator.getPositionByIntegerUniqueKeyRange(tableRecordsCount, uniqueKeyValuesRange, shardingSize);
+            return InventoryPositionEstimatedCalculator.getIntegerPositions(tableRecordsCount, uniqueKeyValuesRange, shardingSize);
         }
         if (1 == uniqueKeyColumns.size() && dataTypeOption.isStringDataType(firstColumnDataType)) {
             return Collections.singleton(new StringPrimaryKeyIngestPosition(null, null));

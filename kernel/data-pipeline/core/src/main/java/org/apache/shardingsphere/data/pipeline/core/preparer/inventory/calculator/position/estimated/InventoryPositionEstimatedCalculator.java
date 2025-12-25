@@ -36,14 +36,14 @@ import java.util.List;
 public final class InventoryPositionEstimatedCalculator {
     
     /**
-     * Get position by integer unique key range.
+     * Get positions by integer unique key range.
      *
      * @param tableRecordsCount table records count
      * @param uniqueKeyValuesRange unique key values range
      * @param shardingSize sharding size
-     * @return position collection
+     * @return positions
      */
-    public static List<IngestPosition> getPositionByIntegerUniqueKeyRange(final long tableRecordsCount, final Range<Long> uniqueKeyValuesRange, final long shardingSize) {
+    public static List<IngestPosition> getIntegerPositions(final long tableRecordsCount, final Range<Long> uniqueKeyValuesRange, final long shardingSize) {
         if (0 == tableRecordsCount) {
             return Collections.singletonList(new IntegerPrimaryKeyIngestPosition(0L, 0L));
         }
