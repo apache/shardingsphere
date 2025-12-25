@@ -68,7 +68,6 @@ class SQLStatementUtilsTest {
                 Arguments.of("ral", mock(RALStatement.class), SQLStatementType.RAL),
                 Arguments.of("rul", mock(RULStatement.class), SQLStatementType.RUL),
                 Arguments.of("distsql-other", mock(DistSQLStatement.class), SQLStatementType.OTHER),
-                Arguments.of("other", mock(SQLStatement.class), SQLStatementType.OTHER)
-        );
+                Arguments.of("other", mock(SQLStatement.class), SQLStatementType.OTHER));
     }
 }
