@@ -89,6 +89,7 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.OptionalInt;
+import java.util.Locale;
 
 /**
  * Firebird prepare transaction command executor.
@@ -413,13 +414,14 @@ public final class FirebirdPrepareStatementCommandExecutor implements CommandExe
     
     private int getFunctionType(final String functionName) {
         // TODO add proper coalesce and other conditional functions return types
-        switch (functionName) {
+        switch (functionName.toLowerCase(Locale.ENGLISH)) {
             case "substring":
             case "current_role":
             case "current_user":
             case "coalesce":
                 return Types.VARCHAR;
             case "gen_id":
+            case "count":
                 return Types.BIGINT;
             case "current_timestamp":
                 return Types.TIMESTAMP;
