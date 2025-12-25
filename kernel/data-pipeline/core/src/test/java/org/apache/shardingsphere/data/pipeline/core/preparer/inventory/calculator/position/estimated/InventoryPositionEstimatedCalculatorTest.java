@@ -34,32 +34,28 @@ class InventoryPositionEstimatedCalculatorTest {
     void assertGetIntegerPositions() {
         List<IngestPosition> actualPositions = InventoryPositionEstimatedCalculator.getIntegerPositions(200L, Range.of(1L, 600L), 100L);
         assertThat(actualPositions.size(), is(2));
-        for (IngestPosition each : actualPositions) {
-            assertThat(each, isA(IntegerPrimaryKeyIngestPosition.class));
-        }
-        assertPosition(new IntegerPrimaryKeyIngestPosition(1L, 300L), (IntegerPrimaryKeyIngestPosition) actualPositions.get(0));
-        assertPosition(new IntegerPrimaryKeyIngestPosition(301L, 600L), (IntegerPrimaryKeyIngestPosition) actualPositions.get(1));
+        assertPosition(actualPositions.get(0), new IntegerPrimaryKeyIngestPosition(1L, 300L));
+        assertPosition(actualPositions.get(1), new IntegerPrimaryKeyIngestPosition(301L, 600L));
     }
     
-    private void assertPosition(final IntegerPrimaryKeyIngestPosition expected, final IntegerPrimaryKeyIngestPosition actual) {
-        assertThat(actual.getBeginValue(), is(expected.getBeginValue()));
-        assertThat(actual.getEndValue(), is(expected.getEndValue()));
+    private void assertPosition(final IngestPosition actual, final IntegerPrimaryKeyIngestPosition expected) {
+        assertThat(actual, isA(IntegerPrimaryKeyIngestPosition.class));
+        assertThat(((IntegerPrimaryKeyIngestPosition) actual).getBeginValue(), is(expected.getBeginValue()));
+        assertThat(((IntegerPrimaryKeyIngestPosition) actual).getEndValue(), is(expected.getEndValue()));
     }
     
     @Test
     void assertGetIntegerPositionsWithZeroTotalRecordsCount() {
         List<IngestPosition> actualPositions = InventoryPositionEstimatedCalculator.getIntegerPositions(0L, Range.of(0L, 0L), 1L);
         assertThat(actualPositions.size(), is(1));
-        assertThat(actualPositions.get(0), isA(IntegerPrimaryKeyIngestPosition.class));
-        assertPosition(new IntegerPrimaryKeyIngestPosition(0L, 0L), (IntegerPrimaryKeyIngestPosition) actualPositions.get(0));
+        assertPosition(actualPositions.get(0), new IntegerPrimaryKeyIngestPosition(0L, 0L));
     }
     
     @Test
     void assertGetIntegerPositionsWithTheSameMinMax() {
         List<IngestPosition> actualPositions = InventoryPositionEstimatedCalculator.getIntegerPositions(200L, Range.of(5L, 5L), 100L);
         assertThat(actualPositions.size(), is(1));
-        assertThat(actualPositions.get(0), isA(IntegerPrimaryKeyIngestPosition.class));
-        assertPosition(new IntegerPrimaryKeyIngestPosition(5L, 5L), (IntegerPrimaryKeyIngestPosition) actualPositions.get(0));
+        assertPosition(actualPositions.get(0), new IntegerPrimaryKeyIngestPosition(5L, 5L));
     }
     
     @Test
@@ -70,10 +66,7 @@ class InventoryPositionEstimatedCalculatorTest {
         long maximum = Long.MAX_VALUE;
         List<IngestPosition> actualPositions = InventoryPositionEstimatedCalculator.getIntegerPositions(tableRecordsCount, Range.of(minimum, maximum), shardingSize);
         assertThat(actualPositions.size(), is(2));
-        for (IngestPosition each : actualPositions) {
-            assertThat(each, isA(IntegerPrimaryKeyIngestPosition.class));
-        }
-        assertPosition(new IntegerPrimaryKeyIngestPosition(minimum, 0L), (IntegerPrimaryKeyIngestPosition) actualPositions.get(0));
-        assertPosition(new IntegerPrimaryKeyIngestPosition(1L, maximum), (IntegerPrimaryKeyIngestPosition) actualPositions.get(1));
+        assertPosition(actualPositions.get(0), new IntegerPrimaryKeyIngestPosition(minimum, 0L));
+        assertPosition(actualPositions.get(1), new IntegerPrimaryKeyIngestPosition(1L, maximum));
     }
 }
