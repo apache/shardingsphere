@@ -25,6 +25,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.paginatio
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.pagination.limit.LimitValueSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.pagination.rownum.ExpressionRowNumberValueSegment;
 
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Optional;
 
@@ -57,6 +58,10 @@ public final class PaginationContext {
             Object obj = null == params || params.isEmpty() ? 0L : params.get(((ParameterMarkerPaginationValueSegment) paginationValueSegment).getParameterIndex());
             if (null == obj) {
                 return null;
+            }
+            // Special handling of byte arrays
+            if (obj instanceof byte[]) {
+                return Long.parseLong(new String((byte[]) obj, StandardCharsets.US_ASCII));
             }
             return obj instanceof Long ? (long) obj : (int) obj;
         }
