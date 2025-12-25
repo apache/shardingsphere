@@ -40,4 +40,9 @@
     <create-function sql-case-id="create_function_with_two_resources" />
     <create-function sql-case-id="create_function_with_three_resource_types" />
     <create-function sql-case-id="create_function_with_three_resource_types_and_db" />
+    <create-function sql-case-id="create_function_doris_udf_basic" />
+    <create-function sql-case-id="create_function_doris_aggregate" />
+    <create-function sql-case-id="create_function_doris_table_function" />
+    <create-function sql-case-id="create_function_doris_alias" />
+    <create-function sql-case-id="create_function_doris_global_alias" />
 </sql-parser-test-cases>

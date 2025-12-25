@@ -798,7 +798,9 @@ public final class DorisDDLStatementVisitor extends DorisStatementVisitor implem
     public ASTNode visitCreateFunction(final CreateFunctionContext ctx) {
         CreateFunctionStatement result = new CreateFunctionStatement(getDatabaseType());
         result.setFunctionName((FunctionNameSegment) visit(ctx.functionName()));
-        result.setRoutineBody((RoutineBodySegment) visit(ctx.routineBody()));
+        if (null != ctx.routineBody()) {
+            result.setRoutineBody((RoutineBodySegment) visit(ctx.routineBody()));
+        }
         return result;
     }
     

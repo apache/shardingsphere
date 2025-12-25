@@ -99,6 +99,8 @@ import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.OnDupli
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.OrderByClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.OrderByItemContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.OwnerContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.OutfilePropertyContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.SelectIntoExpressionContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ParameterMarkerContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.PositionFunctionContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.PrecisionContext;
@@ -152,6 +154,7 @@ import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ViewNam
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.WeightStringFunctionContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.WhereClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.WithClauseContext;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.outfile.OutfileSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.AggregationType;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.CombineType;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.JoinType;
@@ -250,6 +253,8 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.Map;
+import java.util.LinkedHashMap;
 
 /**
  * Statement visitor for Doris.
@@ -738,10 +743,41 @@ public abstract class DorisStatementVisitor extends DorisStatementBaseVisitor<AS
             return visit(ctx.selectWithInto());
         }
         SelectStatement result = (SelectStatement) visit(ctx.queryExpression());
+        if (null != ctx.selectIntoExpression()) {
+            ASTNode intoSegment = visit(ctx.selectIntoExpression());
+            if (intoSegment instanceof OutfileSegment) {
+                result.setOutfile((OutfileSegment) intoSegment);
+            } else if (intoSegment instanceof TableSegment) {
+                result.setInto((TableSegment) intoSegment);
+            }
+        }
         if (null != ctx.lockClauseList()) {
             result.setLock((LockSegment) visit(ctx.lockClauseList()));
         }
         return result;
+    }
+    
+    @Override
+    public ASTNode visitSelectIntoExpression(final SelectIntoExpressionContext ctx) {
+        if (null != ctx.OUTFILE()) {
+            String filePath = ctx.string_().getText();
+            filePath = SQLUtils.getExactlyValue(filePath);
+            String format = null;
+            if (null != ctx.formatName()) {
+                format = ctx.formatName().identifier().getText();
+            }
+            Map<String, String> properties = null;
+            if (null != ctx.outfileProperties()) {
+                properties = new LinkedHashMap<>();
+                for (OutfilePropertyContext each : ctx.outfileProperties().outfileProperty()) {
+                    String key = SQLUtils.getExactlyValue(each.string_(0).getText());
+                    String value = SQLUtils.getExactlyValue(each.string_(1).getText());
+                    properties.put(key, value);
+                }
+            }
+            return new OutfileSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), filePath, format, properties);
+        }
+        return visitChildren(ctx);
     }
     
     @Override
@@ -825,6 +861,14 @@ public abstract class DorisStatementVisitor extends DorisStatementBaseVisitor<AS
         }
         if (null != ctx.windowClause()) {
             result.setWindow((WindowSegment) visit(ctx.windowClause()));
+        }
+        if (null != ctx.selectIntoExpression()) {
+            ASTNode intoSegment = visit(ctx.selectIntoExpression());
+            if (intoSegment instanceof OutfileSegment) {
+                result.setOutfile((OutfileSegment) intoSegment);
+            } else if (intoSegment instanceof TableSegment) {
+                result.setInto((TableSegment) intoSegment);
+            }
         }
         return result;
     }

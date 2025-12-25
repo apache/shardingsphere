@@ -5304,4 +5304,38 @@
             <simple-table name="DUAL" start-index="74" stop-index="77"/>
         </from>
     </select>
+
+    <select sql-case-id="select_regexp_function" db-types="Doris">
+        <projections start-index="7" stop-index="41">
+            <expression-projection text="REGEXP('billie eillish', '^billie')" start-index="7" stop-index="41">
+                <expr>
+                    <function function-name="REGEXP" start-index="7" stop-index="41" text="REGEXP('billie eillish', '^billie')">
+                        <parameter>
+                            <literal-expression value="billie eillish" start-index="14" stop-index="29" />
+                        </parameter>
+                        <parameter>
+                            <literal-expression value="^billie" start-index="32" stop-index="40" />
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="select_regexp_function_with_null" db-types="Doris">
+        <projections start-index="7" stop-index="29">
+            <expression-projection text="REGEXP(NULL, '^billie')" start-index="7" stop-index="29">
+                <expr>
+                    <function function-name="REGEXP" start-index="7" stop-index="29" text="REGEXP(NULL, '^billie')">
+                        <parameter>
+                            <literal-expression value="null" start-index="14" stop-index="17" />
+                        </parameter>
+                        <parameter>
+                            <literal-expression value="^billie" start-index="20" stop-index="28" />
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
 </sql-parser-test-cases>
