@@ -69,45 +69,40 @@ import java.util.stream.Stream;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 
 class ColumnExtractorTest {
     
     @Test
     void assertExtractColumnSegments() {
-        Collection<ColumnSegment> columnSegments = ColumnExtractor.extractColumnSegments(createWhereSegments());
-        assertThat(toColumnNames(columnSegments), is(Arrays.asList("foo_name", "bar_pwd")));
+        assertThat(toColumnNames(ColumnExtractor.extractColumnSegments(createWhereSegments())), is(Arrays.asList("foo_name", "bar_pwd")));
     }
     
-    @Test
-    void assertExtractFromSelectStatementWithSegments() {
+    @ParameterizedTest(name = "SelectStatement: {0}")
+    @MethodSource("provideSelectStatements")
+    void assertExtractFromSelectStatement(final String name, final SelectStatement selectStatement, final boolean containsSubQuery,
+                                          final List<String> expectedColumnNames) {
         Collection<ColumnSegment> columnSegments = new LinkedList<>();
-        ColumnExtractor.extractFromSelectStatement(columnSegments, createSelectStatementForExtraction(), true);
-        List<String> expectedColumnNames = Arrays.asList("foo_projection_column", "foo_projection_agg_param", "foo_datetime_left", "foo_datetime_right", "foo_expression_projection",
-                "foo_interval_left", "foo_interval_right", "foo_interval_minus", "foo_subquery_projection_column", "foo_collection_expr", "foo_cte_subquery_column", "foo_inner_join_left",
-                "bar_inner_join_right", "foo_subquery_table_column", "foo_join_left", "bar_join_right", "foo_using_column", "bar_derived_using_column", "foo_where_left", "bar_where_right",
-                "foo_group_by_column", "foo_group_by_expr_column", "foo_having_left", "bar_having_right", "foo_order_by_column", "bar_order_by_expr_column", "foo_combine_left_column",
-                "bar_combine_right_column");
+        ColumnExtractor.extractFromSelectStatement(columnSegments, selectStatement, containsSubQuery);
         assertThat(toColumnNames(columnSegments), is(expectedColumnNames));
-    }
-    
-    @Test
-    void assertExtractFromSelectStatementWithoutSubqueryExtraction() {
-        SelectStatement selectStatement = new SelectStatement(mock(DatabaseType.class));
-        ProjectionsSegment projectionsSegment = new ProjectionsSegment(0, 0);
-        projectionsSegment.getProjections().add(new SubqueryProjectionSegment(new SubquerySegment(0, 0, createSelectStatementWithProjection("foo_skip_projection"), ""), "sub"));
-        selectStatement.setProjections(projectionsSegment);
-        selectStatement.setFrom(new SubqueryTableSegment(0, 0, new SubquerySegment(0, 0, createSelectStatementWithProjection("bar_skip_from"), "")));
-        Collection<ColumnSegment> columnSegments = new LinkedList<>();
-        ColumnExtractor.extractFromSelectStatement(columnSegments, selectStatement, false);
-        assertTrue(columnSegments.isEmpty());
     }
     
     @ParameterizedTest(name = "{0}")
     @MethodSource("provideExpressions")
-    void assertExtract(final String testCaseName, final ExpressionSegment expression, final List<String> expectedColumnNames) {
+    void assertExtract(final String name, final ExpressionSegment expression, final List<String> expectedColumnNames) {
         assertThat(toColumnNames(ColumnExtractor.extract(expression)), is(expectedColumnNames));
+    }
+    
+    private static Stream<Arguments> provideSelectStatements() {
+        return Stream.of(
+                Arguments.of("FullSegments", createSelectStatementForExtraction(), true, Arrays.asList(
+                        "foo_projection_column", "foo_projection_agg_param", "foo_datetime_left", "foo_datetime_right", "foo_expression_projection", "foo_interval_left",
+                        "foo_interval_right", "foo_interval_minus", "foo_subquery_projection_column", "foo_collection_expr", "foo_cte_subquery_column", "foo_inner_join_left",
+                        "bar_inner_join_right", "foo_subquery_table_column", "foo_join_left", "bar_join_right", "foo_using_column", "bar_derived_using_column", "foo_where_left",
+                        "bar_where_right", "foo_group_by_column", "foo_group_by_expr_column", "foo_having_left", "bar_having_right", "foo_order_by_column", "bar_order_by_expr_column",
+                        "foo_combine_left_column", "bar_combine_right_column")),
+                Arguments.of("SkipSubqueryFlagFalse", createSelectStatementSkippingSubquery(), false, Collections.emptyList()),
+                Arguments.of("NoOptionalSegments", createSelectStatementWithoutOptionalSegments(), true, Collections.emptyList()));
     }
     
     private static Stream<Arguments> provideExpressions() {
@@ -127,8 +122,7 @@ class ColumnExtractorTest {
                 Arguments.of("AggregationProjectionWithFunctionParameters", createAggregationProjectionExpression(),
                         Arrays.asList("foo_agg_direct", "foo_agg_func_direct", "foo_agg_func_binary_left", "bar_agg_func_binary_right")),
                 Arguments.of("FunctionSegmentWithNestedBinary", createFunctionSegmentWithBinary(),
-                        Arrays.asList("foo_function_direct", "foo_function_binary_left", "bar_function_binary_right"))
-        );
+                        Arrays.asList("foo_function_direct", "foo_function_binary_left", "bar_function_binary_right")));
     }
     
     private static Collection<WhereSegment> createWhereSegments() {
@@ -158,6 +152,21 @@ class ColumnExtractorTest {
         result.setHaving(new HavingSegment(0, 0, createBinaryOperation("foo_having_left", "bar_having_right")));
         result.setOrderBy(createOrderBySegment());
         result.setCombine(createCombineSegment());
+        return result;
+    }
+    
+    private static SelectStatement createSelectStatementWithoutOptionalSegments() {
+        SelectStatement result = new SelectStatement(mock(DatabaseType.class));
+        result.setProjections(new ProjectionsSegment(0, 0));
+        return result;
+    }
+    
+    private static SelectStatement createSelectStatementSkippingSubquery() {
+        ProjectionsSegment projectionsSegment = new ProjectionsSegment(0, 0);
+        projectionsSegment.getProjections().add(new SubqueryProjectionSegment(new SubquerySegment(0, 0, createSelectStatementWithProjection("foo_skip_projection"), ""), "sub"));
+        SelectStatement result = new SelectStatement(mock(DatabaseType.class));
+        result.setProjections(projectionsSegment);
+        result.setFrom(new SubqueryTableSegment(0, 0, new SubquerySegment(0, 0, createSelectStatementWithProjection("bar_skip_from"), "")));
         return result;
     }
     
