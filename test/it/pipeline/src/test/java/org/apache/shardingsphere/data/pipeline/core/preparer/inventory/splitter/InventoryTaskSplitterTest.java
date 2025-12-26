@@ -45,6 +45,7 @@ import java.util.List;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class InventoryTaskSplitterTest {
@@ -88,8 +89,8 @@ class InventoryTaskSplitterTest {
         List<InventoryTask> actual = inventoryTaskSplitter.split(jobItemContext);
         assertThat(actual.size(), is(1));
         InventoryTask task = actual.get(0);
-        assertThat(((IntegerPrimaryKeyIngestPosition) task.getTaskProgress().getPosition()).getBeginValue(), is(0L));
-        assertThat(((IntegerPrimaryKeyIngestPosition) task.getTaskProgress().getPosition()).getEndValue(), is(0L));
+        assertNull(((IntegerPrimaryKeyIngestPosition) task.getTaskProgress().getPosition()).getBeginValue());
+        assertNull(((IntegerPrimaryKeyIngestPosition) task.getTaskProgress().getPosition()).getEndValue());
     }
     
     @Test

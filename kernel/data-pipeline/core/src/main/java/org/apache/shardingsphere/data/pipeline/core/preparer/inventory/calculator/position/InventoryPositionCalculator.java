@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.data.pipeline.core.preparer.inventory.calculator.position;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.commons.lang3.Range;
 import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSource;
+import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.inventory.query.QueryRange;
 import org.apache.shardingsphere.data.pipeline.core.ingest.position.IngestPosition;
 import org.apache.shardingsphere.data.pipeline.core.ingest.position.type.pk.type.StringPrimaryKeyIngestPosition;
 import org.apache.shardingsphere.data.pipeline.core.ingest.position.type.pk.type.UnsupportedKeyIngestPosition;
@@ -59,7 +59,7 @@ public final class InventoryPositionCalculator {
         int firstColumnDataType = uniqueKeyColumns.get(0).getDataType();
         if (dataTypeOption.isIntegerDataType(firstColumnDataType)) {
             String uniqueKey = uniqueKeyColumns.get(0).getName();
-            Range<Long> uniqueKeyValuesRange = InventoryPositionEstimatedCalculator.getIntegerUniqueKeyValuesRange(sourceDataSource, schemaName, tableName, uniqueKey);
+            QueryRange uniqueKeyValuesRange = InventoryPositionEstimatedCalculator.getIntegerUniqueKeyValuesRange(sourceDataSource, schemaName, tableName, uniqueKey);
             return InventoryPositionEstimatedCalculator.getIntegerPositions(tableRecordsCount, uniqueKeyValuesRange, shardingSize);
         }
         if (1 == uniqueKeyColumns.size() && dataTypeOption.isStringDataType(firstColumnDataType)) {
