@@ -93,9 +93,10 @@ public final class ProcessEngine {
         String processId = executionGroupContext.getReportContext().getProcessId();
         Process process = ProcessRegistry.getInstance().get(processId);
         
+        // ✅ FIX: lazy create process if missing
         if (null == process) {
-            throw new IllegalStateException(
-                    "Process not found for processId=" + processId + ", connect() must be called first");
+            process = new Process("", executionGroupContext);
+            ProcessRegistry.getInstance().add(process);
         }
         
         process.mergeExecutionGroupContext(executionGroupContext, queryContext.getSql());
