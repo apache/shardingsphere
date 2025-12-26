@@ -20,13 +20,13 @@ package org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.po
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.policy.PolicyNameSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.property.PropertiesSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.property.PropertySegment;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.SQLSegmentAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.catalog.ExpectedCatalogProperties;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.catalog.ExpectedCatalogProperty;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.policy.ExpectedPolicyName;
-
-import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -53,18 +53,20 @@ public final class PolicyAssert {
      * Assert properties are correct with expected properties.
      *
      * @param assertContext assert context
-     * @param actual actual properties
+     * @param actual actual properties segment
      * @param expected expected properties
      */
-    public static void assertProperties(final SQLCaseAssertContext assertContext, final Properties actual, final ExpectedCatalogProperties expected) {
-        assertThat(assertContext.getText("Properties size assertion error: "), actual.size(), is(expected.getProperties().size()));
-        for (ExpectedCatalogProperty each : expected.getProperties()) {
-            assertProperty(assertContext, actual, each);
+    public static void assertProperties(final SQLCaseAssertContext assertContext, final PropertiesSegment actual, final ExpectedCatalogProperties expected) {
+        SQLSegmentAssert.assertIs(assertContext, actual, expected);
+        assertThat(assertContext.getText("Properties size assertion error: "), actual.getProperties().size(), is(expected.getProperties().size()));
+        for (int i = 0; i < expected.getProperties().size(); i++) {
+            assertProperty(assertContext, actual.getProperties().get(i), expected.getProperties().get(i));
         }
     }
     
-    private static void assertProperty(final SQLCaseAssertContext assertContext, final Properties actual, final ExpectedCatalogProperty expected) {
-        assertThat(assertContext.getText(String.format("Property key '%s' assertion error: ", expected.getKey())), actual.containsKey(expected.getKey()), is(true));
-        assertThat(assertContext.getText(String.format("Property value '%s' assertion error: ", expected.getKey())), actual.getProperty(expected.getKey()), is(expected.getValue()));
+    private static void assertProperty(final SQLCaseAssertContext assertContext, final PropertySegment actual, final ExpectedCatalogProperty expected) {
+        assertThat(assertContext.getText(String.format("Property key '%s' assertion error: ", expected.getKey())), actual.getKey(), is(expected.getKey()));
+        assertThat(assertContext.getText(String.format("Property value for key '%s' assertion error: ", expected.getKey())), actual.getValue(), is(expected.getValue()));
+        SQLSegmentAssert.assertIs(assertContext, actual, expected);
     }
 }

@@ -20,9 +20,8 @@ package org.apache.shardingsphere.sql.parser.statement.doris.ddl;
 import lombok.Getter;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.policy.PolicyNameSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.property.PropertiesSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.DDLStatement;
-
-import java.util.Properties;
 
 /**
  * Alter storage policy statement for Doris.
@@ -32,9 +31,9 @@ public final class DorisAlterStoragePolicyStatement extends DDLStatement {
     
     private final PolicyNameSegment policyName;
     
-    private final Properties properties;
+    private final PropertiesSegment properties;
     
-    public DorisAlterStoragePolicyStatement(final DatabaseType databaseType, final PolicyNameSegment policyName, final Properties properties) {
+    public DorisAlterStoragePolicyStatement(final DatabaseType databaseType, final PolicyNameSegment policyName, final PropertiesSegment properties) {
         super(databaseType);
         this.policyName = policyName;
         this.properties = properties;

@@ -144,6 +144,8 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.index.Ind
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.index.RenameIndexDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.partition.RenamePartitionDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.policy.PolicyNameSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.property.PropertiesSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.property.PropertySegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.rollup.RenameRollupDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.rollup.RollupSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.routine.FunctionNameSegment;
@@ -202,8 +204,6 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.Up
 import org.apache.shardingsphere.sql.parser.statement.core.util.SQLUtils;
 import org.apache.shardingsphere.sql.parser.statement.core.value.collection.CollectionValue;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
-import org.apache.shardingsphere.sql.parser.statement.core.value.literal.impl.NumberLiteralValue;
-import org.apache.shardingsphere.sql.parser.statement.core.value.literal.impl.StringLiteralValue;
 import org.apache.shardingsphere.sql.parser.statement.doris.ddl.DorisAlterStoragePolicyStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.ddl.DorisCreateFunctionStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.ddl.DorisResumeJobStatement;
@@ -215,7 +215,6 @@ import org.apache.shardingsphere.sql.parser.statement.mysql.ddl.logfile.MySQLAlt
 import org.apache.shardingsphere.sql.parser.statement.mysql.ddl.logfile.MySQLCreateLogfileGroupStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.ddl.logfile.MySQLDropLogfileGroupStatement;
 
-import java.util.Properties;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
@@ -802,32 +801,23 @@ public final class DorisDDLStatementVisitor extends DorisStatementVisitor implem
     public ASTNode visitAlterStoragePolicy(final AlterStoragePolicyContext ctx) {
         IdentifierValue identifier = (IdentifierValue) visit(ctx.identifier());
         PolicyNameSegment policyNameSegment = new PolicyNameSegment(ctx.identifier().getStart().getStartIndex(), ctx.identifier().getStop().getStopIndex(), identifier);
-        Properties properties = extractProperties(ctx.propertiesClause());
-        return new DorisAlterStoragePolicyStatement(getDatabaseType(), policyNameSegment, properties);
+        PropertiesSegment propertiesSegment = extractPropertiesSegment(ctx.propertiesClause());
+        return new DorisAlterStoragePolicyStatement(getDatabaseType(), policyNameSegment, propertiesSegment);
     }
     
-    private Properties extractProperties(final PropertiesClauseContext ctx) {
-        Properties result = new Properties();
+    private PropertiesSegment extractPropertiesSegment(final PropertiesClauseContext ctx) {
+        PropertiesSegment result = new PropertiesSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex());
         for (PropertyContext each : ctx.properties().property()) {
             String key = getPropertyKey(each);
             String value = getPropertyValue(each);
-            result.setProperty(key, value);
+            PropertySegment propertySegment = new PropertySegment(each.getStart().getStartIndex(), each.getStop().getStopIndex(), key, value);
+            result.getProperties().add(propertySegment);
         }
         return result;
     }
     
     private String getPropertyValue(final PropertyContext ctx) {
-        ASTNode literalNode = visit(ctx.literals());
-        if (literalNode instanceof IdentifierValue) {
-            return ((IdentifierValue) literalNode).getValue();
-        }
-        if (literalNode instanceof StringLiteralValue) {
-            return ((StringLiteralValue) literalNode).getValue();
-        }
-        if (literalNode instanceof NumberLiteralValue) {
-            return ((NumberLiteralValue) literalNode).getValue().toString();
-        }
-        return literalNode.toString();
+        return SQLUtils.getExactlyValue(ctx.literals().getText());
     }
     
     @Override
