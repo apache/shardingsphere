@@ -82,8 +82,8 @@ public final class InventoryPositionEstimatedCalculator {
         }
         List<IngestPosition> result = new LinkedList<>();
         long splitCount = tableRecordsCount / shardingSize + (tableRecordsCount % shardingSize > 0 ? 1 : 0);
-        long interval = BigInteger.valueOf(maximum).subtract(BigInteger.valueOf(minimum)).divide(BigInteger.valueOf(splitCount)).longValue();
-        IntegerRangeSplittingIterator rangeIterator = new IntegerRangeSplittingIterator(minimum, maximum, interval);
+        long stepSize = BigInteger.valueOf(maximum).subtract(BigInteger.valueOf(minimum)).add(BigInteger.ONE).divide(BigInteger.valueOf(splitCount)).longValue();
+        IntegerRangeSplittingIterator rangeIterator = new IntegerRangeSplittingIterator(minimum, maximum, stepSize);
         while (rangeIterator.hasNext()) {
             org.apache.commons.lang3.Range<Long> range = rangeIterator.next();
             result.add(new IntegerPrimaryKeyIngestPosition(range.getMinimum(), range.getMaximum()));

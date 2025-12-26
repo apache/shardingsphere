@@ -32,19 +32,19 @@ public final class IntegerRangeSplittingIterator implements Iterator<Range<Long>
     
     private final BigInteger maximum;
     
-    private final BigInteger interval;
+    private final BigInteger stepSize;
     
     private BigInteger current;
     
-    public IntegerRangeSplittingIterator(final long minimum, final long maximum, final long interval) {
+    public IntegerRangeSplittingIterator(final long minimum, final long maximum, final long stepSize) {
         if (minimum > maximum) {
             throw new IllegalArgumentException("minimum greater than maximum");
         }
-        if (interval < 0L) {
-            throw new IllegalArgumentException("interval is less than zero");
+        if (stepSize < 0L) {
+            throw new IllegalArgumentException("step size is less than zero");
         }
         this.maximum = BigInteger.valueOf(maximum);
-        this.interval = BigInteger.valueOf(interval);
+        this.stepSize = BigInteger.valueOf(stepSize);
         current = BigInteger.valueOf(minimum);
     }
     
@@ -58,13 +58,13 @@ public final class IntegerRangeSplittingIterator implements Iterator<Range<Long>
         if (!hasNext()) {
             throw new NoSuchElementException("");
         }
-        BigInteger upperLimit = min(maximum, current.add(interval));
+        BigInteger upperLimit = min(maximum, current.add(stepSize));
         Range<Long> result = Range.of(current.longValue(), upperLimit.longValue());
         current = upperLimit.add(BigInteger.ONE);
         return result;
     }
     
-    private BigInteger min(final BigInteger integer1, final BigInteger integer2) {
-        return integer1.compareTo(integer2) < 0 ? integer1 : integer2;
+    private BigInteger min(final BigInteger one, final BigInteger another) {
+        return one.compareTo(another) < 0 ? one : another;
     }
 }
