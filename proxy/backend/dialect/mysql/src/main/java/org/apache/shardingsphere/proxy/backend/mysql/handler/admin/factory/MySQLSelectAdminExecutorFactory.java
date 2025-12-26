@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.proxy.backend.mysql.handler.admin.factory;
 
+import com.cedarsoftware.util.CaseInsensitiveSet;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.binder.context.statement.type.dml.SelectStatementContext;
@@ -25,6 +26,8 @@ import org.apache.shardingsphere.proxy.backend.handler.admin.executor.DatabaseAd
 import org.apache.shardingsphere.proxy.backend.mysql.handler.admin.factory.schema.MySQLSystemSchemaQueryExecutorFactory;
 import org.apache.shardingsphere.proxy.backend.mysql.handler.admin.factory.withoutfrom.MySQLSelectWithoutFromAdminExecutorFactory;
 
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
@@ -34,13 +37,7 @@ import java.util.Optional;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class MySQLSelectAdminExecutorFactory {
     
-    private static final String INFORMATION_SCHEMA = "information_schema";
-    
-    private static final String PERFORMANCE_SCHEMA = "performance_schema";
-    
-    private static final String MYSQL_SCHEMA = "mysql";
-    
-    private static final String SYS_SCHEMA = "sys";
+    private static final Collection<String> SYSTEM_SCHEMAS = new CaseInsensitiveSet<>(Arrays.asList("information_schema", "performance_schema", "mysql", "sys"));
     
     /**
      * New instance of select admin executor for MySQL.
@@ -57,18 +54,10 @@ public final class MySQLSelectAdminExecutorFactory {
         if (!selectStatementContext.getSqlStatement().getFrom().isPresent()) {
             return MySQLSelectWithoutFromAdminExecutorFactory.newInstance(selectStatementContext, sql, databaseName, metaData);
         }
-        if (INFORMATION_SCHEMA.equalsIgnoreCase(databaseName) && !metaData.getDatabase(databaseName).isComplete()) {
-            return MySQLSystemSchemaQueryExecutorFactory.newInstance(selectStatementContext, sql, parameters, INFORMATION_SCHEMA);
-        }
-        if (PERFORMANCE_SCHEMA.equalsIgnoreCase(databaseName) && !metaData.getDatabase(databaseName).isComplete()) {
-            return MySQLSystemSchemaQueryExecutorFactory.newInstance(selectStatementContext, sql, parameters, PERFORMANCE_SCHEMA);
-        }
-        if (MYSQL_SCHEMA.equalsIgnoreCase(databaseName) && !metaData.getDatabase(databaseName).isComplete()) {
-            return MySQLSystemSchemaQueryExecutorFactory.newInstance(selectStatementContext, sql, parameters, MYSQL_SCHEMA);
-        }
-        if (SYS_SCHEMA.equalsIgnoreCase(databaseName) && !metaData.getDatabase(databaseName).isComplete()) {
-            return MySQLSystemSchemaQueryExecutorFactory.newInstance(selectStatementContext, sql, parameters, SYS_SCHEMA);
-        }
-        return Optional.empty();
+        return getSchemaName(databaseName, metaData).flatMap(optional -> MySQLSystemSchemaQueryExecutorFactory.newInstance(selectStatementContext, sql, parameters, optional));
+    }
+    
+    private static Optional<String> getSchemaName(final String databaseName, final ShardingSphereMetaData metaData) {
+        return SYSTEM_SCHEMAS.contains(databaseName) && !metaData.getDatabase(databaseName).isComplete() ? Optional.of(databaseName) : Optional.empty();
     }
 }
