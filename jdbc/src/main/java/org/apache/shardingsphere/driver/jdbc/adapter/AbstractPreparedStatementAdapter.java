@@ -22,6 +22,7 @@ import lombok.Getter;
 import org.apache.shardingsphere.driver.jdbc.unsupported.AbstractUnsupportedOperationPreparedStatement;
 import org.apache.shardingsphere.infra.exception.generic.UnknownSQLException;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Reader;
@@ -276,21 +277,41 @@ public abstract class AbstractPreparedStatementAdapter extends AbstractUnsupport
     
     protected final void replaySetParameter(final PreparedStatement preparedStatement, final List<Object> params) throws SQLException {
         setParameterMethodInvocations.clear();
-        addParameters(params);
+        String dbProductName = null;
+        try {
+            dbProductName = preparedStatement.getConnection().getMetaData().getDatabaseProductName();
+        } catch (SQLException e) {
+            dbProductName = null;
+        }
+        addParameters(params,dbProductName);
         for (PreparedStatementInvocationReplayer each : setParameterMethodInvocations) {
             each.replayOn(preparedStatement);
         }
     }
     
-    private void addParameters(final List<Object> params) {
+    private void addParameters(final List<Object> params,String dbProductName) throws SQLException {
         int i = 0;
         for (Object each : params) {
             int index = ++i;
-            if (each instanceof InputStream) {
-                setParameterMethodInvocations.add(preparedStatement -> preparedStatement.setBlob(index, (InputStream) each));
-                continue;
+            if("Oracle".equals(dbProductName) && each instanceof InputStream){
+                setParameterMethodInvocations.add(preparedStatement -> {
+                    try {
+                        long length = -1;
+                        if (each instanceof ByteArrayInputStream) {
+                            length = ((ByteArrayInputStream) each).available();
+                        }
+                        if (length > 0) {
+                            preparedStatement.setBlob(index, (InputStream) each, length);
+                        } else {
+                            preparedStatement.setBlob(index, (InputStream) each);
+                        }
+                    } catch (SQLException e) {
+                        preparedStatement.setObject(index, each);
+                    }
+                });
+            }else{
+                setParameterMethodInvocations.add(preparedStatement -> preparedStatement.setObject(index, each));
             }
-            setParameterMethodInvocations.add(preparedStatement -> preparedStatement.setObject(index, each));
         }
     }
     
