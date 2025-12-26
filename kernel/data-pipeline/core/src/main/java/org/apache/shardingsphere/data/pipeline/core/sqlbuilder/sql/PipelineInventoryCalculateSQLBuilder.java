@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.data.pipeline.core.sqlbuilder.sql;
 
-import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.inventory.query.QueryRange;
+import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.inventory.query.Range;
 import org.apache.shardingsphere.data.pipeline.core.sqlbuilder.dialect.DialectPipelineSQLBuilder;
 import org.apache.shardingsphere.data.pipeline.core.sqlbuilder.segment.PipelineSQLSegmentBuilder;
 import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoader;
@@ -44,36 +44,36 @@ public final class PipelineInventoryCalculateSQLBuilder {
     }
     
     /**
-     * Build query range ordering SQL.
+     * Build range ordering SQL.
      *
      * @param qualifiedTable qualified table
      * @param columnNames column names
      * @param uniqueKeys unique keys, it may be primary key, not null
-     * @param queryRange query range
+     * @param range range
      * @param pageQuery whether it is page query
      * @param shardingColumnsNames sharding columns names
      * @return built SQL
      */
-    public String buildQueryRangeOrderingSQL(final QualifiedTable qualifiedTable, final Collection<String> columnNames, final List<String> uniqueKeys, final QueryRange queryRange,
+    public String buildQueryRangeOrderingSQL(final QualifiedTable qualifiedTable, final Collection<String> columnNames, final List<String> uniqueKeys, final Range range,
                                              final boolean pageQuery, final List<String> shardingColumnsNames) {
-        String result = buildQueryRangeOrderingSQL0(qualifiedTable, columnNames, uniqueKeys, queryRange, shardingColumnsNames);
+        String result = buildQueryRangeOrderingSQL0(qualifiedTable, columnNames, uniqueKeys, range, shardingColumnsNames);
         return pageQuery ? dialectSQLBuilder.wrapWithPageQuery(result) : result;
     }
     
-    private String buildQueryRangeOrderingSQL0(final QualifiedTable qualifiedTable, final Collection<String> columnNames, final List<String> uniqueKeys, final QueryRange queryRange,
+    private String buildQueryRangeOrderingSQL0(final QualifiedTable qualifiedTable, final Collection<String> columnNames, final List<String> uniqueKeys, final Range range,
                                                final List<String> shardingColumnsNames) {
         String qualifiedTableName = sqlSegmentBuilder.getQualifiedTableName(qualifiedTable);
         String queryColumns = columnNames.stream().map(sqlSegmentBuilder::getEscapedIdentifier).collect(Collectors.joining(","));
         String firstUniqueKey = uniqueKeys.get(0);
         String orderByColumns = joinColumns(uniqueKeys, shardingColumnsNames).stream().map(each -> sqlSegmentBuilder.getEscapedIdentifier(each) + " ASC").collect(Collectors.joining(", "));
-        if (null != queryRange.getLower() && null != queryRange.getUpper()) {
+        if (null != range.getLower() && null != range.getUpper()) {
             return String.format("SELECT %s FROM %s WHERE %s AND %s ORDER BY %s", queryColumns, qualifiedTableName,
-                    buildLowerQueryRangeCondition(queryRange.isLowerInclusive(), firstUniqueKey),
+                    buildLowerQueryRangeCondition(range.isLowerInclusive(), firstUniqueKey),
                     buildUpperQueryRangeCondition(firstUniqueKey), orderByColumns);
-        } else if (null != queryRange.getLower()) {
+        } else if (null != range.getLower()) {
             return String.format("SELECT %s FROM %s WHERE %s ORDER BY %s", queryColumns, qualifiedTableName,
-                    buildLowerQueryRangeCondition(queryRange.isLowerInclusive(), firstUniqueKey), orderByColumns);
-        } else if (null != queryRange.getUpper()) {
+                    buildLowerQueryRangeCondition(range.isLowerInclusive(), firstUniqueKey), orderByColumns);
+        } else if (null != range.getUpper()) {
             return String.format("SELECT %s FROM %s WHERE %s ORDER BY %s", queryColumns, qualifiedTableName,
                     buildUpperQueryRangeCondition(firstUniqueKey), orderByColumns);
         } else {

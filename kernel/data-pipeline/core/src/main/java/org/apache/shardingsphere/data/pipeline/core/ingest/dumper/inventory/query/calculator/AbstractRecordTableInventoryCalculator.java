@@ -24,7 +24,7 @@ import org.apache.shardingsphere.data.pipeline.core.exception.PipelineJobCanceli
 import org.apache.shardingsphere.data.pipeline.core.exception.data.PipelineTableDataConsistencyCheckLoadingFailedException;
 import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.inventory.column.InventoryColumnValueReaderEngine;
 import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.inventory.query.PipelineDatabaseResources;
-import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.inventory.query.QueryRange;
+import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.inventory.query.Range;
 import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.inventory.query.QueryType;
 import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.inventory.query.StreamingRangeType;
 import org.apache.shardingsphere.data.pipeline.core.query.JDBCStreamQueryBuilder;
@@ -76,7 +76,7 @@ public abstract class AbstractRecordTableInventoryCalculator<S, C> extends Abstr
         }
         Object maxUniqueKeyValue = getFirstUniqueKeyValue(records.get(records.size() - 1), param.getFirstUniqueKey().getName());
         if (QueryType.RANGE_QUERY == param.getQueryType()) {
-            param.setQueryRange(new QueryRange(maxUniqueKeyValue, false, param.getQueryRange().getUpper()));
+            param.setQueryRange(new Range(maxUniqueKeyValue, false, param.getQueryRange().getUpper()));
         }
         return Optional.of(convertRecordsToResult(records, maxUniqueKeyValue));
     }
@@ -278,15 +278,15 @@ public abstract class AbstractRecordTableInventoryCalculator<S, C> extends Abstr
     private void setParameters(final PreparedStatement preparedStatement, final TableInventoryCalculateParameter param) throws SQLException {
         QueryType queryType = param.getQueryType();
         if (queryType == QueryType.RANGE_QUERY) {
-            QueryRange queryRange = param.getQueryRange();
-            ShardingSpherePreconditions.checkNotNull(queryRange,
+            Range range = param.getQueryRange();
+            ShardingSpherePreconditions.checkNotNull(range,
                     () -> new PipelineTableDataConsistencyCheckLoadingFailedException(param.getTable(), new RuntimeException("Unique keys values range is null.")));
             int parameterIndex = 1;
-            if (null != queryRange.getLower()) {
-                preparedStatement.setObject(parameterIndex++, queryRange.getLower());
+            if (null != range.getLower()) {
+                preparedStatement.setObject(parameterIndex++, range.getLower());
             }
-            if (null != queryRange.getUpper()) {
-                preparedStatement.setObject(parameterIndex++, queryRange.getUpper());
+            if (null != range.getUpper()) {
+                preparedStatement.setObject(parameterIndex++, range.getUpper());
             }
             if (StreamingRangeType.SMALL == streamingRangeType) {
                 preparedStatement.setObject(parameterIndex, chunkSize * streamingChunkCount);

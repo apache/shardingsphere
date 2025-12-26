@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.data.pipeline.core.sqlbuilder.sql;
 
-import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.inventory.query.QueryRange;
+import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.inventory.query.Range;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.database.schema.QualifiedTable;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
@@ -44,38 +44,38 @@ class PipelineInventoryCalculateSQLBuilderTest {
     @Test
     void assertBuildQueryRangeOrderingSQLPageQuery() {
         String actual = sqlBuilder.buildQueryRangeOrderingSQL(new QualifiedTable(null, "t_order"), COLUMN_NAMES, UNIQUE_KEYS,
-                new QueryRange(1, true, 5), true, SHARDING_COLUMNS_NAMES);
+                new Range(1, true, 5), true, SHARDING_COLUMNS_NAMES);
         assertThat(actual, is("SELECT order_id,user_id,status FROM t_order WHERE order_id>=? AND order_id<=? ORDER BY order_id ASC, status ASC, user_id ASC LIMIT ?"));
         actual = sqlBuilder.buildQueryRangeOrderingSQL(new QualifiedTable(null, "t_order"), COLUMN_NAMES, UNIQUE_KEYS,
-                new QueryRange(1, false, 5), true, SHARDING_COLUMNS_NAMES);
+                new Range(1, false, 5), true, SHARDING_COLUMNS_NAMES);
         assertThat(actual, is("SELECT order_id,user_id,status FROM t_order WHERE order_id>? AND order_id<=? ORDER BY order_id ASC, status ASC, user_id ASC LIMIT ?"));
         actual = sqlBuilder.buildQueryRangeOrderingSQL(new QualifiedTable(null, "t_order"), COLUMN_NAMES, UNIQUE_KEYS,
-                new QueryRange(1, false, null), true, SHARDING_COLUMNS_NAMES);
+                new Range(1, false, null), true, SHARDING_COLUMNS_NAMES);
         assertThat(actual, is("SELECT order_id,user_id,status FROM t_order WHERE order_id>? ORDER BY order_id ASC, status ASC, user_id ASC LIMIT ?"));
         actual = sqlBuilder.buildQueryRangeOrderingSQL(new QualifiedTable(null, "t_order"), COLUMN_NAMES, UNIQUE_KEYS,
-                new QueryRange(null, false, 5), true, SHARDING_COLUMNS_NAMES);
+                new Range(null, false, 5), true, SHARDING_COLUMNS_NAMES);
         assertThat(actual, is("SELECT order_id,user_id,status FROM t_order WHERE order_id<=? ORDER BY order_id ASC, status ASC, user_id ASC LIMIT ?"));
         actual = sqlBuilder.buildQueryRangeOrderingSQL(new QualifiedTable(null, "t_order"), COLUMN_NAMES, UNIQUE_KEYS,
-                new QueryRange(null, false, null), true, SHARDING_COLUMNS_NAMES);
+                new Range(null, false, null), true, SHARDING_COLUMNS_NAMES);
         assertThat(actual, is("SELECT order_id,user_id,status FROM t_order ORDER BY order_id ASC, status ASC, user_id ASC LIMIT ?"));
     }
     
     @Test
     void assertBuildQueryRangeOrderingSQLNotPageQuery() {
         String actual = sqlBuilder.buildQueryRangeOrderingSQL(new QualifiedTable(null, "t_order"), COLUMN_NAMES, UNIQUE_KEYS,
-                new QueryRange(1, true, 5), false, SHARDING_COLUMNS_NAMES);
+                new Range(1, true, 5), false, SHARDING_COLUMNS_NAMES);
         assertThat(actual, is("SELECT order_id,user_id,status FROM t_order WHERE order_id>=? AND order_id<=? ORDER BY order_id ASC, status ASC, user_id ASC"));
         actual = sqlBuilder.buildQueryRangeOrderingSQL(new QualifiedTable(null, "t_order"), COLUMN_NAMES, UNIQUE_KEYS,
-                new QueryRange(1, false, 5), false, SHARDING_COLUMNS_NAMES);
+                new Range(1, false, 5), false, SHARDING_COLUMNS_NAMES);
         assertThat(actual, is("SELECT order_id,user_id,status FROM t_order WHERE order_id>? AND order_id<=? ORDER BY order_id ASC, status ASC, user_id ASC"));
         actual = sqlBuilder.buildQueryRangeOrderingSQL(new QualifiedTable(null, "t_order"), COLUMN_NAMES, UNIQUE_KEYS,
-                new QueryRange(1, false, null), false, SHARDING_COLUMNS_NAMES);
+                new Range(1, false, null), false, SHARDING_COLUMNS_NAMES);
         assertThat(actual, is("SELECT order_id,user_id,status FROM t_order WHERE order_id>? ORDER BY order_id ASC, status ASC, user_id ASC"));
         actual = sqlBuilder.buildQueryRangeOrderingSQL(new QualifiedTable(null, "t_order"), COLUMN_NAMES, UNIQUE_KEYS,
-                new QueryRange(null, false, 5), false, SHARDING_COLUMNS_NAMES);
+                new Range(null, false, 5), false, SHARDING_COLUMNS_NAMES);
         assertThat(actual, is("SELECT order_id,user_id,status FROM t_order WHERE order_id<=? ORDER BY order_id ASC, status ASC, user_id ASC"));
         actual = sqlBuilder.buildQueryRangeOrderingSQL(new QualifiedTable(null, "t_order"), COLUMN_NAMES, UNIQUE_KEYS,
-                new QueryRange(null, false, null), false, SHARDING_COLUMNS_NAMES);
+                new Range(null, false, null), false, SHARDING_COLUMNS_NAMES);
         assertThat(actual, is("SELECT order_id,user_id,status FROM t_order ORDER BY order_id ASC, status ASC, user_id ASC"));
     }
     
