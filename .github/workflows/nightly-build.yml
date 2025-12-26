@@ -70,9 +70,26 @@ jobs:
           NIGHTLIES_RSYNC_KEY: ${{ secrets.NIGHTLIES_RSYNC_KEY }}
         run: |
           set -eo pipefail
+          for required in NIGHTLIES_RSYNC_HOST NIGHTLIES_RSYNC_USER NIGHTLIES_RSYNC_KEY NIGHTLIES_RSYNC_PATH; do
+            if [ -z "${!required}" ]; then
+              echo "Required variable ${required} is empty; aborting upload." >&2
+              exit 1
+            fi
+          done
+          RAW_KEY="${NIGHTLIES_RSYNC_KEY}"
+          if printf '%s' "${RAW_KEY}" | grep -q '\\n'; then
+            RAW_KEY=$(printf '%s' "${RAW_KEY}" | sed 's/\\n/\n/g')
+          fi
+          KEY_CONTENT="${RAW_KEY}"
+          if ! printf '%s' "${KEY_CONTENT}" | grep -q '-----BEGIN '; then
+            DECODED_KEY=$(printf '%s' "${KEY_CONTENT}" | base64 -d 2>/dev/null || true)
+            if [ -n "${DECODED_KEY}" ]; then
+              KEY_CONTENT="${DECODED_KEY}"
+            fi
+          fi
           KEY_FILE=$(mktemp)
           trap 'rm -f ${KEY_FILE}' EXIT
-          printf '%s' "${NIGHTLIES_RSYNC_KEY}" > "${KEY_FILE}"
+          printf '%s' "${KEY_CONTENT}" > "${KEY_FILE}"
           chmod 600 "${KEY_FILE}"
           SSH_OPTS="-i ${KEY_FILE} -o StrictHostKeyChecking=no"
           if [ -n "${NIGHTLIES_RSYNC_PORT}" ]; then
@@ -288,9 +305,26 @@ jobs:
           TAR_PATH: examples/shardingsphere-jdbc-example-generator/target/generated-sources/shardingsphere-jdbc-sample/${{ matrix.feature }}--${{ matrix.framework }}--${{ matrix.mode }}--${{ matrix.transaction }}.tar.gz
         run: |
           set -eo pipefail
+          for required in NIGHTLIES_RSYNC_HOST NIGHTLIES_RSYNC_USER NIGHTLIES_RSYNC_KEY NIGHTLIES_RSYNC_PATH; do
+            if [ -z "${!required}" ]; then
+              echo "Required variable ${required} is empty; aborting upload." >&2
+              exit 1
+            fi
+          done
+          RAW_KEY="${NIGHTLIES_RSYNC_KEY}"
+          if printf '%s' "${RAW_KEY}" | grep -q '\\n'; then
+            RAW_KEY=$(printf '%s' "${RAW_KEY}" | sed 's/\\n/\n/g')
+          fi
+          KEY_CONTENT="${RAW_KEY}"
+          if ! printf '%s' "${KEY_CONTENT}" | grep -q '-----BEGIN '; then
+            DECODED_KEY=$(printf '%s' "${KEY_CONTENT}" | base64 -d 2>/dev/null || true)
+            if [ -n "${DECODED_KEY}" ]; then
+              KEY_CONTENT="${DECODED_KEY}"
+            fi
+          fi
           KEY_FILE=$(mktemp)
           trap 'rm -f ${KEY_FILE}' EXIT
-          printf '%s' "${NIGHTLIES_RSYNC_KEY}" > "${KEY_FILE}"
+          printf '%s' "${KEY_CONTENT}" > "${KEY_FILE}"
           chmod 600 "${KEY_FILE}"
           SSH_OPTS="-i ${KEY_FILE} -o StrictHostKeyChecking=no"
           if [ -n "${NIGHTLIES_RSYNC_PORT}" ]; then

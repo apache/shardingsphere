@@ -98,6 +98,7 @@ import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.LoopSta
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ModifyColumnContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.PlaceContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.PrepareContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.PropertyContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ReferenceDefinitionContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.RenameColumnContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.RenameIndexContext;
@@ -146,6 +147,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.table.Loc
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.table.RenameTableDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.tablespace.TablespaceSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simple.SimpleExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.CommentSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.DataTypeSegment;
@@ -161,7 +163,6 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.da
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.database.CreateDatabaseStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.database.DropDatabaseStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.function.AlterFunctionStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.function.CreateFunctionStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.function.DropFunctionStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.index.CreateIndexStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.index.DropIndexStatement;
@@ -192,6 +193,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.Up
 import org.apache.shardingsphere.sql.parser.statement.core.util.SQLUtils;
 import org.apache.shardingsphere.sql.parser.statement.core.value.collection.CollectionValue;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
+import org.apache.shardingsphere.sql.parser.statement.doris.ddl.DorisCreateFunctionStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.ddl.DorisResumeJobStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.ddl.event.MySQLAlterEventStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.ddl.event.MySQLCreateEventStatement;
@@ -796,10 +798,81 @@ public final class DorisDDLStatementVisitor extends DorisStatementVisitor implem
     
     @Override
     public ASTNode visitCreateFunction(final CreateFunctionContext ctx) {
-        CreateFunctionStatement result = new CreateFunctionStatement(getDatabaseType());
+        DorisCreateFunctionStatement result = new DorisCreateFunctionStatement(getDatabaseType());
         result.setFunctionName((FunctionNameSegment) visit(ctx.functionName()));
-        result.setRoutineBody((RoutineBodySegment) visit(ctx.routineBody()));
+        if (null != ctx.routineBody()) {
+            int paramIndex = 0;
+            for (int i = 0; i < ctx.dataType().size(); i++) {
+                DataTypeSegment dataType = (DataTypeSegment) visit(ctx.dataType(i));
+                if (i == ctx.dataType().size() - 1 && null != ctx.RETURNS()) {
+                    result.setReturnType(dataType);
+                } else if (paramIndex < ctx.identifier().size()) {
+                    IdentifierValue paramName = (IdentifierValue) visit(ctx.identifier(paramIndex));
+                    result.getNamedParameters().put(paramName, dataType);
+                    paramIndex++;
+                }
+            }
+            result.setRoutineBody((RoutineBodySegment) visit(ctx.routineBody()));
+        } else {
+            if (null != ctx.GLOBAL()) {
+                result.setGlobal(true);
+            }
+            if (null != ctx.AGGREGATE()) {
+                result.setFunctionType(DorisCreateFunctionStatement.FunctionType.AGGREGATE);
+            } else if (null != ctx.TABLES()) {
+                result.setFunctionType(DorisCreateFunctionStatement.FunctionType.TABLES);
+            } else if (null != ctx.ALIAS()) {
+                result.setFunctionType(DorisCreateFunctionStatement.FunctionType.ALIAS);
+            }
+            int dataTypeCount = ctx.dataType().size();
+            int parameterCount = dataTypeCount;
+            if (null != ctx.INTERMEDIATE()) {
+                parameterCount--;
+            }
+            if (null != ctx.RETURNS()) {
+                parameterCount--;
+            }
+            for (int i = 0; i < parameterCount; i++) {
+                result.getParameterDataTypes().add((DataTypeSegment) visit(ctx.dataType(i)));
+            }
+            if (null != ctx.RETURNS()) {
+                result.setReturnType((DataTypeSegment) visit(ctx.dataType(parameterCount)));
+            }
+            if (null != ctx.INTERMEDIATE()) {
+                int intermediateTypeIndex = dataTypeCount - 1;
+                result.setIntermediateType((DataTypeSegment) visit(ctx.dataType(intermediateTypeIndex)));
+            }
+            if (null != ctx.PARAMETER()) {
+                for (int i = 0; i < ctx.identifier().size(); i++) {
+                    result.getWithParameters().add((IdentifierValue) visit(ctx.identifier(i)));
+                }
+            }
+            if (null != ctx.expr()) {
+                result.setAliasExpression((ExpressionSegment) visit(ctx.expr()));
+            }
+            if (null != ctx.PROPERTIES()) {
+                fillCreateFunctionProperties(ctx, result);
+            }
+        }
         return result;
+    }
+    
+    private void fillCreateFunctionProperties(final CreateFunctionContext ctx, final DorisCreateFunctionStatement statement) {
+        for (int i = 0; i < ctx.properties().property().size(); i++) {
+            String key = getPropertyKey(ctx.properties().property(i));
+            String value = SQLUtils.getExactlyValue(ctx.properties().property(i).literals().getText());
+            statement.getProperties().put(key, value);
+        }
+    }
+    
+    private String getPropertyKey(final PropertyContext property) {
+        if (null != property.SINGLE_QUOTED_TEXT()) {
+            return SQLUtils.getExactlyValue(property.SINGLE_QUOTED_TEXT().getText());
+        }
+        if (null != property.DOUBLE_QUOTED_TEXT()) {
+            return SQLUtils.getExactlyValue(property.DOUBLE_QUOTED_TEXT().getText());
+        }
+        return SQLUtils.getExactlyValue(property.identifier().getText());
     }
     
     @SuppressWarnings("unchecked")

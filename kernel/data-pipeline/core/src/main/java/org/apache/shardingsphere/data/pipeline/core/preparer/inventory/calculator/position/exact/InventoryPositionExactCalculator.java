@@ -48,26 +48,26 @@ public final class InventoryPositionExactCalculator {
      * @param qualifiedTable qualified table
      * @param uniqueKey unique key
      * @param shardingSize sharding size
-     * @param sourceDataSource source data source
+     * @param dataSource data source
      * @param positionHandler position handler
      * @return positions
      * @throws SplitPipelineJobByUniqueKeyException if an error occurs while splitting table by unique key
      */
     public static <T> List<IngestPosition> getPositions(final QualifiedTable qualifiedTable, final String uniqueKey, final int shardingSize,
-                                                        final PipelineDataSource sourceDataSource, final DataTypePositionHandler<T> positionHandler) {
+                                                        final PipelineDataSource dataSource, final DataTypePositionHandler<T> positionHandler) {
         List<IngestPosition> result = new LinkedList<>();
-        PrimaryKeyIngestPosition<T> firstPosition = getFirstPosition(qualifiedTable, uniqueKey, shardingSize, sourceDataSource, positionHandler);
+        PrimaryKeyIngestPosition<T> firstPosition = getFirstPosition(qualifiedTable, uniqueKey, shardingSize, dataSource, positionHandler);
         result.add(firstPosition);
-        result.addAll(getLeftPositions(qualifiedTable, uniqueKey, shardingSize, firstPosition, sourceDataSource, positionHandler));
+        result.addAll(getLeftPositions(qualifiedTable, uniqueKey, shardingSize, firstPosition, dataSource, positionHandler));
         return result;
     }
     
     private static <T> PrimaryKeyIngestPosition<T> getFirstPosition(final QualifiedTable qualifiedTable, final String uniqueKey, final int shardingSize,
-                                                                    final PipelineDataSource sourceDataSource, final DataTypePositionHandler<T> positionHandler) {
-        String firstQuerySQL = new PipelinePrepareSQLBuilder(sourceDataSource.getDatabaseType())
+                                                                    final PipelineDataSource dataSource, final DataTypePositionHandler<T> positionHandler) {
+        String firstQuerySQL = new PipelinePrepareSQLBuilder(dataSource.getDatabaseType())
                 .buildSplitByUniqueKeyRangedSQL(qualifiedTable.getSchemaName(), qualifiedTable.getTableName(), uniqueKey, false);
         try (
-                Connection connection = sourceDataSource.getConnection();
+                Connection connection = dataSource.getConnection();
                 PreparedStatement preparedStatement = connection.prepareStatement(firstQuerySQL)) {
             preparedStatement.setLong(1, shardingSize);
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
@@ -91,14 +91,14 @@ public final class InventoryPositionExactCalculator {
     
     private static <T> List<IngestPosition> getLeftPositions(final QualifiedTable qualifiedTable, final String uniqueKey,
                                                              final int shardingSize, final PrimaryKeyIngestPosition<T> firstPosition,
-                                                             final PipelineDataSource sourceDataSource, final DataTypePositionHandler<T> positionHandler) {
+                                                             final PipelineDataSource dataSource, final DataTypePositionHandler<T> positionHandler) {
         List<IngestPosition> result = new LinkedList<>();
         T lowerValue = firstPosition.getEndValue();
         long recordsCount = 0;
-        String laterQuerySQL = new PipelinePrepareSQLBuilder(sourceDataSource.getDatabaseType())
+        String laterQuerySQL = new PipelinePrepareSQLBuilder(dataSource.getDatabaseType())
                 .buildSplitByUniqueKeyRangedSQL(qualifiedTable.getSchemaName(), qualifiedTable.getTableName(), uniqueKey, true);
         try (
-                Connection connection = sourceDataSource.getConnection();
+                Connection connection = dataSource.getConnection();
                 PreparedStatement preparedStatement = connection.prepareStatement(laterQuerySQL)) {
             for (int i = 0; i < Integer.MAX_VALUE; i++) {
                 positionHandler.setPreparedStatementValue(preparedStatement, 1, lowerValue);

@@ -52,6 +52,11 @@
             <artifactId>shardingsphere-parser-sql-engine-mysql</artifactId>
             <version>${r'${project.version}'}</version>
         </dependency>
+        <dependency>
+            <groupId>org.apache.shardingsphere</groupId>
+            <artifactId>shardingsphere-infra-url-classpath</artifactId>
+            <version>${r'${project.version}'}</version>
+        </dependency>
     <#if feature?contains("sharding")>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>

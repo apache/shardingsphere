@@ -27,7 +27,7 @@ import org.apache.shardingsphere.data.pipeline.core.execute.AbstractPipelineLife
 import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.Dumper;
 import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.inventory.column.InventoryColumnValueReaderEngine;
 import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.inventory.position.InventoryDataRecordPositionCreator;
-import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.inventory.query.QueryRange;
+import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.inventory.query.Range;
 import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.inventory.query.QueryType;
 import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.inventory.query.StreamingRangeType;
 import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.inventory.query.calculator.AbstractRecordTableInventoryCalculator;
@@ -124,15 +124,15 @@ public final class InventoryDumper extends AbstractPipelineLifecycleRunnable imp
         List<String> columnNames = dumperContext.getQueryColumnNames();
         TableInventoryCalculateParameter calculateParam = new TableInventoryCalculateParameter(dataSource, table,
                 columnNames, dumperContext.getUniqueKeyColumns(), QueryType.RANGE_QUERY, null);
-        QueryRange queryRange = new QueryRange(((PrimaryKeyIngestPosition<?>) initialPosition).getBeginValue(), true, ((PrimaryKeyIngestPosition<?>) initialPosition).getEndValue());
-        calculateParam.setQueryRange(queryRange);
+        Range<?> range = Range.closed(((PrimaryKeyIngestPosition<?>) initialPosition).getBeginValue(), ((PrimaryKeyIngestPosition<?>) initialPosition).getEndValue());
+        calculateParam.setRange(range);
         RecordTableInventoryDumpCalculator dumpCalculator = new RecordTableInventoryDumpCalculator(dumperContext.getBatchSize(), StreamingRangeType.SMALL);
         long rowCount = 0L;
         try {
             String firstUniqueKey = calculateParam.getFirstUniqueKey().getName();
             for (List<DataRecord> each : dumpCalculator.calculate(calculateParam)) {
                 channel.push(Collections.unmodifiableList(each));
-                IngestPosition position = PrimaryKeyIngestPositionFactory.newInstance(dumpCalculator.getFirstUniqueKeyValue(each.get(each.size() - 1), firstUniqueKey), queryRange.getUpper());
+                IngestPosition position = PrimaryKeyIngestPositionFactory.newInstance(dumpCalculator.getFirstUniqueKeyValue(each.get(each.size() - 1), firstUniqueKey), range.getUpperBound());
                 dumperContext.getCommonContext().setPosition(position);
                 rowCount += each.size();
             }

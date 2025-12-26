@@ -81,13 +81,13 @@ public final class SQLRewriteEntry {
             return result;
         }
         result.addSQLTokenGenerators(new DefaultTokenGeneratorBuilder(queryContext.getSqlStatementContext()).getSQLTokenGenerators());
-        decorate(result, routeContext, hintValueContext);
+        decorate(result, routeContext);
         result.generateSQLTokens();
         return result;
     }
     
     @SuppressWarnings({"unchecked", "rawtypes"})
-    private void decorate(final SQLRewriteContext sqlRewriteContext, final RouteContext routeContext, final HintValueContext hintValueContext) {
+    private void decorate(final SQLRewriteContext sqlRewriteContext, final RouteContext routeContext) {
         for (Entry<ShardingSphereRule, SQLRewriteContextDecorator> entry : decorators.entrySet()) {
             entry.getValue().decorate(entry.getKey(), props, sqlRewriteContext, routeContext);
         }

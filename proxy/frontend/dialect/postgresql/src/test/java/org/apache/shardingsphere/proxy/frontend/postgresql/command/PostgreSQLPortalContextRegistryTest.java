@@ -15,32 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.core.ingest.dumper.inventory.query;
+package org.apache.shardingsphere.proxy.frontend.postgresql.command;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import org.junit.jupiter.api.Test;
 
-/**
- * Query range.
- */
-@RequiredArgsConstructor
-@Getter
-public final class QueryRange {
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
+
+class PostgreSQLPortalContextRegistryTest {
     
-    private final Object lower;
-    
-    private final boolean lowerInclusive;
-    
-    private final Object upper;
-    
-    /**
-     * Create closed query range.
-     *
-     * @param lower lower value
-     * @param upper upper value
-     * @return query range
-     */
-    public static QueryRange closed(final Object lower, final Object upper) {
-        return new QueryRange(lower, true, upper);
+    @Test
+    void assertGetAndRemove() {
+        PostgreSQLPortalContextRegistry registry = PostgreSQLPortalContextRegistry.getInstance();
+        PortalContext first = registry.get(1);
+        PortalContext second = registry.get(1);
+        assertSame(first, second);
+        assertThat(registry.remove(1), is(first));
+        assertNull(registry.remove(2));
     }
 }
