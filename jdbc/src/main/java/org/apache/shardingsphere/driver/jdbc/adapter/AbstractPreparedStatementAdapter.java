@@ -286,8 +286,8 @@ public abstract class AbstractPreparedStatementAdapter extends AbstractUnsupport
         int i = 0;
         for (Object each : params) {
             int index = ++i;
-            if(each instanceof InputStream) {
-                setParameterMethodInvocations.add(preparedStatement -> preparedStatement.setBlob(index,(InputStream) each));
+            if (each instanceof InputStream) {
+                setParameterMethodInvocations.add(preparedStatement -> preparedStatement.setBlob(index, (InputStream) each));
                 continue;
             }
             setParameterMethodInvocations.add(preparedStatement -> preparedStatement.setObject(index, each));
