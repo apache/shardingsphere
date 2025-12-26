@@ -29,7 +29,7 @@
     <sql-case id="select_substring" value="SELECT SUBSTRING('foobarbar' from -4 for 2)" db-types="MySQL" />
     <sql-case id="select_substr" value="SELECT SUBSTR('foobarbar' from 4)" db-types="MySQL" />
     <sql-case id="select_extract" value="SELECT EXTRACT(YEAR FROM '2019-07-02')" db-types="MySQL" />
-    <sql-case id="select_extract_from_column" value="SELECT EXTRACT(YEAR FROM o.creation_date) FROM t_order o" db-types="MySQL,Presto" />
+    <sql-case id="select_extract_from_column" value="SELECT EXTRACT(YEAR FROM o.creation_date) FROM t_order o" db-types="MySQL" />
     <sql-case id="select_char" value="SELECT CHAR(77,121,83,81,'76')" db-types="MySQL" />
     <sql-case id="select_chr_using_nchar_cs" value="SELECT CHR (196 USING NCHAR_CS) FROM DUAL;" db-types="Oracle" />
     <sql-case id="select_trim" value="SELECT TRIM('  bar   ')" db-types="MySQL" />

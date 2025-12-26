@@ -116,6 +116,9 @@ public final class ExpectedExpression extends AbstractExpectedSQLSegment {
     @XmlElement(name = "interval-expression")
     private ExpectedIntervalExpression intervalExpression;
     
+    @XmlElement(name = "interval-unit-expression")
+    private ExpectedIntervalUnitExpression intervalUnitExpression;
+    
     @XmlElement(name = "quantify-subquery-expression")
     private ExpectedQuantifySubqueryExpression quantifySubqueryExpression;
     

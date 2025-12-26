@@ -18,7 +18,9 @@
 package org.apache.shardingsphere.sqlfederation.compiler.sql.ast.converter.segment.expression.impl;
 
 import org.apache.calcite.sql.SqlDynamicParam;
+import org.apache.calcite.sql.SqlNode;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -28,7 +30,8 @@ class ParameterMarkerExpressionConverterTest {
     
     @Test
     void assertConvertParameterMarker() {
-        SqlDynamicParam actual = ParameterMarkerExpressionConverter.convert(new ParameterMarkerExpressionSegment(0, 0, 5));
-        assertThat(actual.getIndex(), is(5));
+        SqlNode actual = ParameterMarkerExpressionConverter.convert(new ParameterMarkerExpressionSegment(0, 0, 5));
+        Assertions.assertInstanceOf(SqlDynamicParam.class, actual);
+        assertThat(((SqlDynamicParam) actual).getIndex(), is(5));
     }
 }

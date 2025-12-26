@@ -284,10 +284,11 @@ public final class ColumnSegmentBinder {
         List<ColumnSegmentInfo> result = new ArrayList<>(tableBinderContexts.size());
         for (TableSegmentBinderContext each : tableBinderContexts) {
             Optional<ProjectionSegment> projectionSegment = each.findProjectionSegmentByColumnLabel(columnName);
-            if (projectionSegment.isPresent() && projectionSegment.get() instanceof ColumnProjectionSegment) {
-                ColumnSegment columnSegment = ((ColumnProjectionSegment) projectionSegment.get()).getColumn();
-                result.add(new ColumnSegmentInfo(columnSegment, each.getTableSourceType()));
+            if (!projectionSegment.isPresent()) {
+                continue;
             }
+            ColumnSegment columnSegment = projectionSegment.get() instanceof ColumnProjectionSegment ? ((ColumnProjectionSegment) projectionSegment.get()).getColumn() : null;
+            result.add(new ColumnSegmentInfo(columnSegment, each.getTableSourceType()));
         }
         return result;
     }
