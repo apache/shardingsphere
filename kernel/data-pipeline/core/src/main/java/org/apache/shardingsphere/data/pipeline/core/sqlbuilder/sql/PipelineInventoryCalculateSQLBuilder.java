@@ -54,13 +54,13 @@ public final class PipelineInventoryCalculateSQLBuilder {
      * @param shardingColumnsNames sharding columns names
      * @return built SQL
      */
-    public String buildRangeQueryOrderingSQL(final QualifiedTable qualifiedTable, final Collection<String> columnNames, final List<String> uniqueKeys, final Range range,
+    public String buildRangeQueryOrderingSQL(final QualifiedTable qualifiedTable, final Collection<String> columnNames, final List<String> uniqueKeys, final Range<?> range,
                                              final boolean pageQuery, final List<String> shardingColumnsNames) {
         String result = buildRangeQueryOrderingSQL0(qualifiedTable, columnNames, uniqueKeys, range, shardingColumnsNames);
         return pageQuery ? dialectSQLBuilder.wrapWithPageQuery(result) : result;
     }
     
-    private String buildRangeQueryOrderingSQL0(final QualifiedTable qualifiedTable, final Collection<String> columnNames, final List<String> uniqueKeys, final Range range,
+    private String buildRangeQueryOrderingSQL0(final QualifiedTable qualifiedTable, final Collection<String> columnNames, final List<String> uniqueKeys, final Range<?> range,
                                                final List<String> shardingColumnsNames) {
         String qualifiedTableName = sqlSegmentBuilder.getQualifiedTableName(qualifiedTable);
         String queryColumns = columnNames.stream().map(sqlSegmentBuilder::getEscapedIdentifier).collect(Collectors.joining(","));

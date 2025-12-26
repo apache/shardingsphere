@@ -121,7 +121,7 @@ class RecordTableInventoryCheckCalculatorTest {
         assertRangeQueryCalculatedResult(calculator, param, Range.openClosed(3, 6), 3, 6);
     }
     
-    private void assertRangeQueryCalculatedResult(final RecordTableInventoryCheckCalculator calculator, final TableInventoryCalculateParameter param, final Range range,
+    private void assertRangeQueryCalculatedResult(final RecordTableInventoryCheckCalculator calculator, final TableInventoryCalculateParameter param, final Range<Integer> range,
                                                   final int expectedRecordsCount, final int expectedMaxUniqueKeyValue) {
         param.setRange(range);
         Optional<TableInventoryCheckCalculatedResult> calculatedResult = calculator.calculateChunk(param);

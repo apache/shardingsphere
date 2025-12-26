@@ -60,7 +60,7 @@ public final class TableInventoryCalculateParameter {
     
     private final AtomicReference<Collection<Object>> uniqueKeysValues = new AtomicReference<>();
     
-    private final AtomicReference<Range> uniqueKeysValuesRange = new AtomicReference<>();
+    private final AtomicReference<Range<?>> uniqueKeysValuesRange = new AtomicReference<>();
     
     private final AtomicReference<List<String>> shardingColumnsNames = new AtomicReference<>();
     
@@ -138,7 +138,7 @@ public final class TableInventoryCalculateParameter {
      *
      * @return range
      */
-    public Range getRange() {
+    public Range<?> getRange() {
         return uniqueKeysValuesRange.get();
     }
     
@@ -147,7 +147,7 @@ public final class TableInventoryCalculateParameter {
      *
      * @param range range
      */
-    public void setRange(final Range range) {
+    public void setRange(final Range<?> range) {
         uniqueKeysValuesRange.set(range);
     }
     
