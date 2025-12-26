@@ -42,7 +42,7 @@ public final class ProcessEngine {
      * @return process ID
      */
     public String connect(final String databaseName) {
-        return connect(new ExecutionGroupReportContext(getProcessId(), databaseName));
+        return connect(new ExecutionGroupReportContext(generateProcessId(), databaseName));
     }
     
     /**
@@ -53,18 +53,18 @@ public final class ProcessEngine {
      * @return process ID
      */
     public String connect(final String databaseName, final Grantee grantee) {
-        return connect(new ExecutionGroupReportContext(getProcessId(), databaseName, grantee));
+        return connect(new ExecutionGroupReportContext(generateProcessId(), databaseName, grantee));
     }
     
     private String connect(final ExecutionGroupReportContext reportContext) {
         ExecutionGroupContext<? extends SQLExecutionUnit> executionGroupContext =
                 new ExecutionGroupContext<>(Collections.emptyList(), reportContext);
-        // Create Process ONCE at connect time (idle state)
+        // Create process once at connect time (idle state)
         ProcessRegistry.getInstance().add(new Process(executionGroupContext));
         return reportContext.getProcessId();
     }
     
-    private String getProcessId() {
+    private String generateProcessId() {
         return new UUID(
                 ThreadLocalRandom.current().nextLong(),
                 ThreadLocalRandom.current().nextLong()).toString().replace("-", "");
@@ -82,9 +82,13 @@ public final class ProcessEngine {
     /**
      * Execute SQL.
      *
+     * <p>
+     * Lazily initializes process if {@code connect()} was not explicitly called,
+     * to keep backward compatibility.
+     * </p>
+     *
      * @param executionGroupContext execution group context
      * @param queryContext query context
-     * @throws IllegalStateException if process does not exist and connect() was not called
      */
     public void executeSQL(
                            final ExecutionGroupContext<? extends SQLExecutionUnit> executionGroupContext,
@@ -93,10 +97,10 @@ public final class ProcessEngine {
         String processId = executionGroupContext.getReportContext().getProcessId();
         Process process = ProcessRegistry.getInstance().get(processId);
         
-        // ✅ FIX: lazy create process if missing
+        // Lazy process initialization (backward compatible behavior)
         if (null == process) {
-            process = new Process("", executionGroupContext);
-            ProcessRegistry.getInstance().add(process);
+            ProcessRegistry.getInstance().add(new Process(executionGroupContext));
+            process = ProcessRegistry.getInstance().get(processId);
         }
         
         process.mergeExecutionGroupContext(executionGroupContext, queryContext.getSql());
