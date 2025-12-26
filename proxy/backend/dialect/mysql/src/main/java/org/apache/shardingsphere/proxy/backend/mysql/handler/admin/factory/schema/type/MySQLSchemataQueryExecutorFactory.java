@@ -26,7 +26,7 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- * MySQL Schemata query executor factory.
+ * Schemata table query executor factory for MySQL.
  */
 public final class MySQLSchemataQueryExecutorFactory implements MySQLSpecialTableQueryExecutorFactory {
     

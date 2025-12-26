@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.proxy.backend.mysql.handler.admin.factory.schema;
 
-import com.cedarsoftware.util.CaseInsensitiveSet;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.binder.context.statement.type.dml.SelectStatementContext;
@@ -29,6 +28,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.SelectStatement;
 
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 
@@ -38,7 +38,7 @@ import java.util.Optional;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class MySQLSystemSchemaQueryExecutorFactory {
     
-    private static final Collection<MySQLSpecialTableQueryExecutorFactory> SPECIAL_TABLE_EXECUTOR_FACTORIES = new CaseInsensitiveSet<>();
+    private static final Collection<MySQLSpecialTableQueryExecutorFactory> SPECIAL_TABLE_EXECUTOR_FACTORIES = new HashSet<>();
     
     static {
         SPECIAL_TABLE_EXECUTOR_FACTORIES.add(new MySQLSchemataQueryExecutorFactory());
