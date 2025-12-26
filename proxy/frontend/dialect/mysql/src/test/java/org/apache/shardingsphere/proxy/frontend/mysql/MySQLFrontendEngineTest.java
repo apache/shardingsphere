@@ -86,6 +86,7 @@ class MySQLFrontendEngineTest {
     void assertRelease() {
         ConnectionSession connectionSession = mock(ConnectionSession.class);
         AttributeMap attributeMap = mock(AttributeMap.class);
+        @SuppressWarnings("unchecked")
         Attribute<Long> attribute = mock(Attribute.class);
         
         when(connectionSession.getConnectionId()).thenReturn(1);
@@ -109,6 +110,7 @@ class MySQLFrontendEngineTest {
         
         ConnectionSession connectionSession = mock(ConnectionSession.class);
         AttributeMap attributeMap = mock(AttributeMap.class);
+        @SuppressWarnings("unchecked")
         Attribute<Long> attribute = mock(Attribute.class);
         
         when(connectionSession.getConnectionId()).thenReturn(mysqlConnectionId);

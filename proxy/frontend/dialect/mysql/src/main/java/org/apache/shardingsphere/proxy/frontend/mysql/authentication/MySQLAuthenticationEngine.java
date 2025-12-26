@@ -82,7 +82,9 @@ public final class MySQLAuthenticationEngine implements AuthenticationEngine {
         
         connectionPhase = MySQLConnectionPhase.AUTH_PHASE_FAST_PATH;
         
-        boolean sslEnabled = ProxySSLContext.getInstance().isSSLEnabled();
+        ProxySSLContext sslContext = ProxySSLContext.getInstance();
+        boolean sslEnabled = null != sslContext && sslContext.isSSLEnabled();
+        
         if (sslEnabled) {
             context.pipeline().addFirst(
                     MySQLSSLRequestHandler.class.getSimpleName(),
