@@ -30,10 +30,10 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- * MySQL common schema executor factory.
+ * MySQL system schema executor factory.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class MySQLCommonSchemaExecutorFactory {
+public final class MySQLSystemSchemaExecutorFactory {
     
     /**
      * Create executor.

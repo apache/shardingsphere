@@ -22,7 +22,7 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.binder.context.statement.type.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.proxy.backend.handler.admin.executor.DatabaseAdminExecutor;
-import org.apache.shardingsphere.proxy.backend.mysql.handler.admin.factory.schema.MySQLCommonSchemaExecutorFactory;
+import org.apache.shardingsphere.proxy.backend.mysql.handler.admin.factory.schema.MySQLSystemSchemaExecutorFactory;
 import org.apache.shardingsphere.proxy.backend.mysql.handler.admin.factory.schema.MySQLInformationSchemaExecutorFactory;
 import org.apache.shardingsphere.proxy.backend.mysql.handler.admin.factory.withoutfrom.MySQLSelectWithoutFromAdminExecutorFactory;
 
@@ -62,13 +62,13 @@ public final class MySQLSelectAdminExecutorFactory {
             return MySQLInformationSchemaExecutorFactory.newInstance(selectStatementContext, sql, parameters);
         }
         if (PERFORMANCE_SCHEMA.equalsIgnoreCase(databaseName) && !metaData.getDatabase(databaseName).isComplete()) {
-            return MySQLCommonSchemaExecutorFactory.newInstance(selectStatementContext, sql, parameters, "performance_schema");
+            return MySQLSystemSchemaExecutorFactory.newInstance(selectStatementContext, sql, parameters, "performance_schema");
         }
         if (MYSQL_SCHEMA.equalsIgnoreCase(databaseName) && !metaData.getDatabase(databaseName).isComplete()) {
-            return MySQLCommonSchemaExecutorFactory.newInstance(selectStatementContext, sql, parameters, "mysql");
+            return MySQLSystemSchemaExecutorFactory.newInstance(selectStatementContext, sql, parameters, "mysql");
         }
         if (SYS_SCHEMA.equalsIgnoreCase(databaseName) && !metaData.getDatabase(databaseName).isComplete()) {
-            return MySQLCommonSchemaExecutorFactory.newInstance(selectStatementContext, sql, parameters, "sys");
+            return MySQLSystemSchemaExecutorFactory.newInstance(selectStatementContext, sql, parameters, "sys");
         }
         return Optional.empty();
     }
