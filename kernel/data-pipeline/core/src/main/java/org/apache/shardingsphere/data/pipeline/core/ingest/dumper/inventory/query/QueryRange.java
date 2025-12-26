@@ -32,4 +32,15 @@ public final class QueryRange {
     private final boolean lowerInclusive;
     
     private final Object upper;
+    
+    /**
+     * Create closed query range.
+     *
+     * @param lower lower value
+     * @param upper upper value
+     * @return query range
+     */
+    public static QueryRange closed(final Object lower, final Object upper) {
+        return new QueryRange(lower, true, upper);
+    }
 }

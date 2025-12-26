@@ -137,6 +137,9 @@ identifierKeywordsUnambiguous
     | AGAINST
     | AGGREGATE
     | ALGORITHM
+    // DORIS ADDED BEGIN
+    | ALIAS
+    // DORIS ADDED END
     | ALWAYS
     | ANY
     | ARRAY
@@ -370,6 +373,9 @@ identifierKeywordsUnambiguous
     | OWNER
     | PACK_KEYS
     | PAGE
+    // DORIS ADDED BEGIN
+    | PARAMETER
+    // DORIS ADDED END
     | PARSER
     | PARTIAL
     | PARTITIONING
@@ -585,6 +591,7 @@ identifierKeywordsAmbiguous2Labels
 identifierKeywordsAmbiguous3Roles
     : EVENT
     | FILE
+    | JOB
     | NONE
     | PROCESS
     | PROXY
@@ -669,6 +676,14 @@ databaseName
 
 databaseNames
     : databaseName (COMMA_ databaseName)*
+    ;
+
+jobName
+    : identifier
+    ;
+
+catalogName
+    : identifier
     ;
 
 charsetName
@@ -1226,7 +1241,7 @@ indexAlias
 // DORIS ADDED END
 
 regularFunctionName
-    : IF | LOCALTIME | LOCALTIMESTAMP | REPLACE | INSERT | INTERVAL | MOD
+    : IF | LOCALTIME | LOCALTIMESTAMP | REPLACE | REGEXP | INSERT | INTERVAL | MOD
     | DATABASE | SCHEMA | LEFT | RIGHT | DATE | DAY | GEOMETRYCOLLECTION | REPEAT
     | LINESTRING | MULTILINESTRING | MULTIPOINT | MULTIPOLYGON | POINT | POLYGON
     | TIME | TIMESTAMP | TIMESTAMP_ADD | TIMESTAMP_DIFF | DATE | CURRENT_TIMESTAMP 
@@ -1325,6 +1340,8 @@ dataType
     | dataTypeName = ENUM stringList charsetWithOptBinary?
     | dataTypeName = SET stringList charsetWithOptBinary?
     | dataTypeName = (SERIAL | JSON | GEOMETRY | GEOMCOLLECTION | GEOMETRYCOLLECTION | POINT | MULTIPOINT | LINESTRING | MULTILINESTRING | POLYGON | MULTIPOLYGON)
+    | dataTypeName = STRING
+    | dataTypeName = ARRAY
     ;
 
 stringList

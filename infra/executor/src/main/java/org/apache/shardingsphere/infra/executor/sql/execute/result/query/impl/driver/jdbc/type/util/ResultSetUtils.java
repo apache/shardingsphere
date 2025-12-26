@@ -121,8 +121,8 @@ public final class ResultSetUtils {
         if (java.sql.Date.class.equals(convertType)) {
             return Optional.of(java.sql.Date.valueOf(LocalDate.from(LOOSE_DATE_TIME_FORMATTER.parse(value))));
         }
-        if (java.sql.Time.class.equals(convertType)) {
-            return Optional.of(java.sql.Time.valueOf(LocalTime.from(LOOSE_DATE_TIME_FORMATTER.parse(value))));
+        if (Time.class.equals(convertType)) {
+            return Optional.of(Time.valueOf(LocalTime.from(LOOSE_DATE_TIME_FORMATTER.parse(value))));
         }
         return Optional.empty();
     }

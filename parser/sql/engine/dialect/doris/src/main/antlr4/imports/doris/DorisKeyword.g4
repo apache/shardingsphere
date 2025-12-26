@@ -131,6 +131,10 @@ ASSIGN_GTIDS_TO_ANONYMOUS_TRANSACTIONS
     : A S S I G N UL_ G T I D S UL_ T O UL_ A N O N Y M O U S UL_ T R A N S A C T I O N S
     ;
 
+ALIAS
+    : A L I A S
+    ;
+
 // DORIS ADDED BEGIN
 BITXOR
     : B I T X O R
@@ -1204,6 +1208,10 @@ ITERATE
     : I T E R A T E
     ;
 
+INTERMEDIATE
+    : I N T E R M E D I A T E
+    ;
+
 JOIN
     : J O I N
     ;
@@ -1218,6 +1226,10 @@ JSON_TABLE
 
 JSON_VALUE
     : J S O N UL_ V A L U E
+    ;
+
+JOB
+    : J O B
     ;
 
 KEY
@@ -1998,6 +2010,10 @@ PROXY
 
 PURGE
     : P U R G E
+    ;
+
+PARAMETER
+    : P A R A M E T E R
     ;
 
 QUARTER

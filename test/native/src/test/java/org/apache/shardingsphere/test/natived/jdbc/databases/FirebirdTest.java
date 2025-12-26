@@ -51,7 +51,7 @@ class FirebirdTest {
         testShardingService = new TestShardingService(logicDataSource);
         initEnvironment();
         testShardingService.processSuccess();
-        testShardingService.cleanEnvironmentInFirebird();
+        testShardingService.cleanEnvironmentWithoutVerify();
     }
     
     /**

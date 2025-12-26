@@ -18,31 +18,22 @@
 package org.apache.shardingsphere.data.pipeline.core.preparer.inventory.splitter;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.commons.lang3.Range;
 import org.apache.shardingsphere.data.pipeline.core.context.TransmissionJobItemContext;
 import org.apache.shardingsphere.data.pipeline.core.context.TransmissionProcessContext;
 import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSource;
-import org.apache.shardingsphere.data.pipeline.core.exception.job.SplitPipelineJobByUniqueKeyException;
 import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.inventory.InventoryDumperContext;
 import org.apache.shardingsphere.data.pipeline.core.ingest.position.IngestPosition;
-import org.apache.shardingsphere.data.pipeline.core.ingest.position.type.pk.type.StringPrimaryKeyIngestPosition;
 import org.apache.shardingsphere.data.pipeline.core.ingest.position.type.pk.type.UnsupportedKeyIngestPosition;
 import org.apache.shardingsphere.data.pipeline.core.ingest.position.type.placeholder.IngestPlaceholderPosition;
 import org.apache.shardingsphere.data.pipeline.core.job.progress.TransmissionJobItemProgress;
 import org.apache.shardingsphere.data.pipeline.core.metadata.loader.PipelineTableMetaDataUtils;
 import org.apache.shardingsphere.data.pipeline.core.metadata.model.PipelineColumnMetaData;
-import org.apache.shardingsphere.data.pipeline.core.preparer.inventory.calculator.InventoryPositionCalculator;
 import org.apache.shardingsphere.data.pipeline.core.preparer.inventory.calculator.InventoryRecordsCountCalculator;
+import org.apache.shardingsphere.data.pipeline.core.preparer.inventory.calculator.position.InventoryPositionCalculator;
 import org.apache.shardingsphere.data.pipeline.core.ratelimit.JobRateLimitAlgorithm;
-import org.apache.shardingsphere.data.pipeline.core.sqlbuilder.sql.PipelinePrepareSQLBuilder;
-import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.datatype.DialectDataTypeOption;
-import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeRegistry;
+import org.apache.shardingsphere.infra.metadata.database.schema.QualifiedTable;
 import org.apache.shardingsphere.infra.metadata.identifier.ShardingSphereIdentifier;
 
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
@@ -55,7 +46,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public final class InventoryDumperContextSplitter {
     
-    private final PipelineDataSource sourceDataSource;
+    private final PipelineDataSource dataSource;
     
     private final InventoryDumperContext dumperContext;
     
@@ -93,7 +84,7 @@ public final class InventoryDumperContextSplitter {
         int batchSize = jobProcessContext.getProcessConfiguration().getRead().getBatchSize();
         JobRateLimitAlgorithm rateLimitAlgorithm = jobProcessContext.getReadRateLimitAlgorithm();
         int i = 0;
-        for (IngestPosition each : getInventoryPositions(dumperContext, jobItemContext)) {
+        for (IngestPosition each : getPositions(dumperContext, jobItemContext)) {
             result.add(createPrimaryKeySplitDumperContext(dumperContext, each, i++, batchSize, rateLimitAlgorithm));
         }
         return result;
@@ -104,7 +95,7 @@ public final class InventoryDumperContextSplitter {
         return PipelineTableMetaDataUtils.getUniqueKeyColumns(schemaName, dumperContext.getActualTableName(), jobItemContext.getSourceMetaDataLoader());
     }
     
-    private Collection<IngestPosition> getInventoryPositions(final InventoryDumperContext dumperContext, final TransmissionJobItemContext jobItemContext) {
+    private Collection<IngestPosition> getPositions(final InventoryDumperContext dumperContext, final TransmissionJobItemContext jobItemContext) {
         TransmissionJobItemProgress initProgress = jobItemContext.getInitProgress();
         if (null != initProgress) {
             // Do NOT filter FinishedPosition here, since whole inventory tasks are required in job progress when persisting to register center.
@@ -113,39 +104,15 @@ public final class InventoryDumperContextSplitter {
                 return result;
             }
         }
-        long tableRecordsCount = InventoryRecordsCountCalculator.getTableRecordsCount(dumperContext, sourceDataSource);
+        long tableRecordsCount = InventoryRecordsCountCalculator.getTableRecordsCount(dumperContext, dataSource);
         jobItemContext.updateInventoryRecordsCount(tableRecordsCount);
         if (!dumperContext.hasUniqueKey()) {
             return Collections.singleton(new UnsupportedKeyIngestPosition());
         }
-        DialectDataTypeOption dataTypeOption = new DatabaseTypeRegistry(sourceDataSource.getDatabaseType()).getDialectDatabaseMetaData().getDataTypeOption();
-        List<PipelineColumnMetaData> uniqueKeyColumns = dumperContext.getUniqueKeyColumns();
-        int firstColumnDataType = uniqueKeyColumns.get(0).getDataType();
-        if (dataTypeOption.isIntegerDataType(firstColumnDataType)) {
-            Range<Long> uniqueKeyValuesRange = getUniqueKeyValuesRange(jobItemContext, dumperContext);
-            int shardingSize = jobItemContext.getJobProcessContext().getProcessConfiguration().getRead().getShardingSize();
-            return InventoryPositionCalculator.getPositionByIntegerUniqueKeyRange(tableRecordsCount, uniqueKeyValuesRange, shardingSize);
-        }
-        if (1 == uniqueKeyColumns.size() && dataTypeOption.isStringDataType(firstColumnDataType)) {
-            return Collections.singleton(new StringPrimaryKeyIngestPosition(null, null));
-        }
-        return Collections.singleton(new UnsupportedKeyIngestPosition());
-    }
-    
-    private Range<Long> getUniqueKeyValuesRange(final TransmissionJobItemContext jobItemContext, final InventoryDumperContext dumperContext) {
-        String uniqueKey = dumperContext.getUniqueKeyColumns().get(0).getName();
-        PipelinePrepareSQLBuilder pipelineSQLBuilder = new PipelinePrepareSQLBuilder(jobItemContext.getJobConfig().getSourceDatabaseType());
-        String sql = pipelineSQLBuilder.buildUniqueKeyMinMaxValuesSQL(
-                dumperContext.getCommonContext().getTableAndSchemaNameMapper().getSchemaName(dumperContext.getLogicTableName()), dumperContext.getActualTableName(), uniqueKey);
-        try (
-                Connection connection = sourceDataSource.getConnection();
-                Statement statement = connection.createStatement();
-                ResultSet resultSet = statement.executeQuery(sql)) {
-            resultSet.next();
-            return Range.of(resultSet.getLong(1), resultSet.getLong(2));
-        } catch (final SQLException ex) {
-            throw new SplitPipelineJobByUniqueKeyException(dumperContext.getActualTableName(), uniqueKey, ex);
-        }
+        String schemaName = dumperContext.getCommonContext().getTableAndSchemaNameMapper().getSchemaName(dumperContext.getLogicTableName());
+        int shardingSize = jobItemContext.getJobProcessContext().getProcessConfiguration().getRead().getShardingSize();
+        return new InventoryPositionCalculator(dataSource, new QualifiedTable(schemaName, dumperContext.getActualTableName()),
+                dumperContext.getUniqueKeyColumns(), tableRecordsCount, shardingSize).getPositions();
     }
     
     private InventoryDumperContext createPrimaryKeySplitDumperContext(final InventoryDumperContext dumperContext, final IngestPosition position,

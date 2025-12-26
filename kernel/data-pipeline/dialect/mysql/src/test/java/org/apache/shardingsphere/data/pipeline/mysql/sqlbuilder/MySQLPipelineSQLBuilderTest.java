@@ -84,6 +84,14 @@ class MySQLPipelineSQLBuilderTest {
     }
     
     @Test
+    void assertBuildSplitByUniqueKeyRangedSubqueryClause() {
+        assertThat(sqlBuilder.buildSplitByUniqueKeyRangedSubqueryClause("foo_tbl", "id", true),
+                is("SELECT id FROM foo_tbl WHERE id>? ORDER BY id LIMIT ?"));
+        assertThat(sqlBuilder.buildSplitByUniqueKeyRangedSubqueryClause("foo_tbl", "id", false),
+                is("SELECT id FROM foo_tbl ORDER BY id LIMIT ?"));
+    }
+    
+    @Test
     void assertBuildCreateTableSQLs() throws SQLException {
         Connection connection = mock(Connection.class, RETURNS_DEEP_STUBS);
         ResultSet resultSet = mock(ResultSet.class);

@@ -66,6 +66,8 @@
 1. Pipeline: InventoryDumper reuse table inventory calculator for better function and performance - [#36830](https://github.com/apache/shardingsphere/pull/36830)
 1. Pipeline: Improve "alter transmission rule": verify STREAM_CHANNEL TYPE NAME - [#36864](https://github.com/apache/shardingsphere/pull/36864)
 1. Pipeline: InventoryDumperContextSplitter supports multi-columns unique key first integer column splitting - [#36935](https://github.com/apache/shardingsphere/pull/36935)
+1. Pipeline: Support unique key first integer column exact splitting - [#37517](https://github.com/apache/shardingsphere/pull/37517)
+1. Pipeline: Improve InventoryPositionEstimatedCalculator: support possible null unique key value - [#37522](https://github.com/apache/shardingsphere/pull/37522)
 1. Encrypt: Support handling show create view result decoration in encrypt - [#37299](https://github.com/apache/shardingsphere/pull/37299)
 1. JDBC: Enhance ResultSetUtils to support flexible string date/time conversions - [37424](https://github.com/apache/shardingsphere/pull/37424)
 
@@ -108,6 +110,7 @@
 1. Sharding: Fix mod sharding algorithm judgement -[#36386](https://github.com/apache/shardingsphere/pull/36386)
 1. Sharding: Fix check inline sharding algorithms in table rules - [#36999](https://github.com/apache/shardingsphere/pull/36999)
 1. Sharding: Fix wrong sharding condition merge when sharding column in case-sensitive - [#37389](https://github.com/apache/shardingsphere/pull/37389)
+1. Sharding: Fix wrong merge sharding condition logic caused by different type sharding value - [#37528](https://github.com/apache/shardingsphere/pull/37528)
 1. Pipeline: Recover value of migration incremental importer batch size - [#34670](https://github.com/apache/shardingsphere/pull/34670)
 1. Pipeline: Fix InventoryDumper first time dump SQL without ORDER BY on multiple columns unique key table - [#34736](https://github.com/apache/shardingsphere/pull/34736)
 1. Pipeline: Fix MySQL JDBC query properties extension when SSL is required on server - [#36581](https://github.com/apache/shardingsphere/pull/36581)
