@@ -70,6 +70,12 @@ jobs:
           NIGHTLIES_RSYNC_KEY: ${{ secrets.NIGHTLIES_RSYNC_KEY }}
         run: |
           set -eo pipefail
+          for required in NIGHTLIES_RSYNC_HOST NIGHTLIES_RSYNC_USER NIGHTLIES_RSYNC_KEY NIGHTLIES_RSYNC_PATH; do
+            if [ -z "${!required}" ]; then
+              echo "Required variable ${required} is empty; aborting upload." >&2
+              exit 1
+            fi
+          done
           KEY_FILE=$(mktemp)
           trap 'rm -f ${KEY_FILE}' EXIT
           printf '%s' "${NIGHTLIES_RSYNC_KEY}" > "${KEY_FILE}"
@@ -288,6 +294,12 @@ jobs:
           TAR_PATH: examples/shardingsphere-jdbc-example-generator/target/generated-sources/shardingsphere-jdbc-sample/${{ matrix.feature }}--${{ matrix.framework }}--${{ matrix.mode }}--${{ matrix.transaction }}.tar.gz
         run: |
           set -eo pipefail
+          for required in NIGHTLIES_RSYNC_HOST NIGHTLIES_RSYNC_USER NIGHTLIES_RSYNC_KEY NIGHTLIES_RSYNC_PATH; do
+            if [ -z "${!required}" ]; then
+              echo "Required variable ${required} is empty; aborting upload." >&2
+              exit 1
+            fi
+          done
           KEY_FILE=$(mktemp)
           trap 'rm -f ${KEY_FILE}' EXIT
           printf '%s' "${NIGHTLIES_RSYNC_KEY}" > "${KEY_FILE}"
