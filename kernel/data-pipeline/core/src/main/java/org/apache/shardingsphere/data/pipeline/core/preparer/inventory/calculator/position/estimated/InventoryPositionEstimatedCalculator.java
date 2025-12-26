@@ -52,7 +52,7 @@ public final class InventoryPositionEstimatedCalculator {
      * @return unique key values range
      * @throws SplitPipelineJobByUniqueKeyException if an error occurs while getting unique key values range
      */
-    public static Range getIntegerUniqueKeyValuesRange(final QualifiedTable qualifiedTable, final String uniqueKey, final PipelineDataSource dataSource) {
+    public static Range<Long> getIntegerUniqueKeyValuesRange(final QualifiedTable qualifiedTable, final String uniqueKey, final PipelineDataSource dataSource) {
         PipelinePrepareSQLBuilder pipelineSQLBuilder = new PipelinePrepareSQLBuilder(dataSource.getDatabaseType());
         String sql = pipelineSQLBuilder.buildUniqueKeyMinMaxValuesSQL(qualifiedTable.getSchemaName(), qualifiedTable.getTableName(), uniqueKey);
         try (
@@ -74,9 +74,9 @@ public final class InventoryPositionEstimatedCalculator {
      * @param shardingSize sharding size
      * @return positions
      */
-    public static List<IngestPosition> getIntegerPositions(final long tableRecordsCount, final Range uniqueKeyValuesRange, final long shardingSize) {
-        Long minimum = (Long) uniqueKeyValuesRange.getLowerBound();
-        Long maximum = (Long) uniqueKeyValuesRange.getUpperBound();
+    public static List<IngestPosition> getIntegerPositions(final long tableRecordsCount, final Range<Long> uniqueKeyValuesRange, final long shardingSize) {
+        Long minimum = uniqueKeyValuesRange.getLowerBound();
+        Long maximum = uniqueKeyValuesRange.getUpperBound();
         if (0 == tableRecordsCount || null == minimum || null == maximum) {
             return Collections.singletonList(new IntegerPrimaryKeyIngestPosition(null, null));
         }

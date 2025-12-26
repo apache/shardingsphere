@@ -23,36 +23,40 @@ import lombok.RequiredArgsConstructor;
 
 /**
  * Range.
+ *
+ * @param <T> type of range bound
  */
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 @Getter
-public final class Range {
+public final class Range<T> {
     
-    private final Object lowerBound;
+    private final T lowerBound;
     
     private final boolean lowerInclusive;
     
-    private final Object upperBound;
+    private final T upperBound;
     
     /**
      * Create closed range.
      *
+     * @param <T> type of range bound
      * @param lowerBound lower bound
      * @param upperBound upper bound
      * @return closed range
      */
-    public static Range closed(final Object lowerBound, final Object upperBound) {
-        return new Range(lowerBound, true, upperBound);
+    public static <T> Range<T> closed(final T lowerBound, final T upperBound) {
+        return new Range<T>(lowerBound, true, upperBound);
     }
     
     /**
      * Create open-closed range.
      *
+     * @param <T> type of range bound
      * @param lowerBound lower bound
      * @param upperBound upper bound
      * @return open-closed range
      */
-    public static Range openClosed(final Object lowerBound, final Object upperBound) {
-        return new Range(lowerBound, false, upperBound);
+    public static <T> Range<T> openClosed(final T lowerBound, final T upperBound) {
+        return new Range<T>(lowerBound, false, upperBound);
     }
 }
