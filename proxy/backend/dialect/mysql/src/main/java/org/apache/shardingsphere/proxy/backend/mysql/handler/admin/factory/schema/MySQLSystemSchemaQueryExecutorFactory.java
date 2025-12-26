@@ -58,9 +58,9 @@ public final class MySQLSystemSchemaQueryExecutorFactory {
             return Optional.empty();
         }
         String tableName = ((SimpleTableSegment) sqlStatement.getFrom().get()).getTableName().getIdentifier().getValue();
-        Optional<DatabaseAdminExecutor> specialTableExecutor = findSpecialSchemaExecutor(selectStatementContext, sql, parameters, schemaName, tableName);
-        if (specialTableExecutor.isPresent()) {
-            return specialTableExecutor;
+        Optional<DatabaseAdminExecutor> specialSchemaExecutor = findSpecialSchemaExecutor(selectStatementContext, sql, parameters, schemaName, tableName);
+        if (specialSchemaExecutor.isPresent()) {
+            return specialSchemaExecutor;
         }
         if (SystemSchemaManager.isSystemTable("mysql", schemaName, tableName)) {
             return Optional.of(new DatabaseMetaDataExecutor(sql, parameters));
