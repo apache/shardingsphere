@@ -44,38 +44,38 @@ class PipelineInventoryCalculateSQLBuilderTest {
     @Test
     void assertBuildRangeQueryOrderingSQLPageQuery() {
         String actual = sqlBuilder.buildRangeQueryOrderingSQL(new QualifiedTable(null, "t_order"), COLUMN_NAMES, UNIQUE_KEYS,
-                new Range(1, true, 5), true, SHARDING_COLUMNS_NAMES);
+                Range.closed(1, 5), true, SHARDING_COLUMNS_NAMES);
         assertThat(actual, is("SELECT order_id,user_id,status FROM t_order WHERE order_id>=? AND order_id<=? ORDER BY order_id ASC, status ASC, user_id ASC LIMIT ?"));
         actual = sqlBuilder.buildRangeQueryOrderingSQL(new QualifiedTable(null, "t_order"), COLUMN_NAMES, UNIQUE_KEYS,
-                new Range(1, false, 5), true, SHARDING_COLUMNS_NAMES);
+                Range.openClosed(1, 5), true, SHARDING_COLUMNS_NAMES);
         assertThat(actual, is("SELECT order_id,user_id,status FROM t_order WHERE order_id>? AND order_id<=? ORDER BY order_id ASC, status ASC, user_id ASC LIMIT ?"));
         actual = sqlBuilder.buildRangeQueryOrderingSQL(new QualifiedTable(null, "t_order"), COLUMN_NAMES, UNIQUE_KEYS,
-                new Range(1, false, null), true, SHARDING_COLUMNS_NAMES);
+                Range.openClosed(1, null), true, SHARDING_COLUMNS_NAMES);
         assertThat(actual, is("SELECT order_id,user_id,status FROM t_order WHERE order_id>? ORDER BY order_id ASC, status ASC, user_id ASC LIMIT ?"));
         actual = sqlBuilder.buildRangeQueryOrderingSQL(new QualifiedTable(null, "t_order"), COLUMN_NAMES, UNIQUE_KEYS,
-                new Range(null, false, 5), true, SHARDING_COLUMNS_NAMES);
+                Range.openClosed(null, 5), true, SHARDING_COLUMNS_NAMES);
         assertThat(actual, is("SELECT order_id,user_id,status FROM t_order WHERE order_id<=? ORDER BY order_id ASC, status ASC, user_id ASC LIMIT ?"));
         actual = sqlBuilder.buildRangeQueryOrderingSQL(new QualifiedTable(null, "t_order"), COLUMN_NAMES, UNIQUE_KEYS,
-                new Range(null, false, null), true, SHARDING_COLUMNS_NAMES);
+                Range.openClosed(null, null), true, SHARDING_COLUMNS_NAMES);
         assertThat(actual, is("SELECT order_id,user_id,status FROM t_order ORDER BY order_id ASC, status ASC, user_id ASC LIMIT ?"));
     }
     
     @Test
     void assertBuildRangeQueryOrderingSQLNotPageQuery() {
         String actual = sqlBuilder.buildRangeQueryOrderingSQL(new QualifiedTable(null, "t_order"), COLUMN_NAMES, UNIQUE_KEYS,
-                new Range(1, true, 5), false, SHARDING_COLUMNS_NAMES);
+                Range.closed(1, 5), false, SHARDING_COLUMNS_NAMES);
         assertThat(actual, is("SELECT order_id,user_id,status FROM t_order WHERE order_id>=? AND order_id<=? ORDER BY order_id ASC, status ASC, user_id ASC"));
         actual = sqlBuilder.buildRangeQueryOrderingSQL(new QualifiedTable(null, "t_order"), COLUMN_NAMES, UNIQUE_KEYS,
-                new Range(1, false, 5), false, SHARDING_COLUMNS_NAMES);
+                Range.openClosed(1, 5), false, SHARDING_COLUMNS_NAMES);
         assertThat(actual, is("SELECT order_id,user_id,status FROM t_order WHERE order_id>? AND order_id<=? ORDER BY order_id ASC, status ASC, user_id ASC"));
         actual = sqlBuilder.buildRangeQueryOrderingSQL(new QualifiedTable(null, "t_order"), COLUMN_NAMES, UNIQUE_KEYS,
-                new Range(1, false, null), false, SHARDING_COLUMNS_NAMES);
+                Range.openClosed(1, null), false, SHARDING_COLUMNS_NAMES);
         assertThat(actual, is("SELECT order_id,user_id,status FROM t_order WHERE order_id>? ORDER BY order_id ASC, status ASC, user_id ASC"));
         actual = sqlBuilder.buildRangeQueryOrderingSQL(new QualifiedTable(null, "t_order"), COLUMN_NAMES, UNIQUE_KEYS,
-                new Range(null, false, 5), false, SHARDING_COLUMNS_NAMES);
+                Range.openClosed(null, 5), false, SHARDING_COLUMNS_NAMES);
         assertThat(actual, is("SELECT order_id,user_id,status FROM t_order WHERE order_id<=? ORDER BY order_id ASC, status ASC, user_id ASC"));
         actual = sqlBuilder.buildRangeQueryOrderingSQL(new QualifiedTable(null, "t_order"), COLUMN_NAMES, UNIQUE_KEYS,
-                new Range(null, false, null), false, SHARDING_COLUMNS_NAMES);
+                Range.openClosed(null, null), false, SHARDING_COLUMNS_NAMES);
         assertThat(actual, is("SELECT order_id,user_id,status FROM t_order ORDER BY order_id ASC, status ASC, user_id ASC"));
     }
     

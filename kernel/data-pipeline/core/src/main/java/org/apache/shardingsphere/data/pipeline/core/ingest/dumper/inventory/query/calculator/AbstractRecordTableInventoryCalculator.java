@@ -76,7 +76,7 @@ public abstract class AbstractRecordTableInventoryCalculator<S, C> extends Abstr
         }
         Object maxUniqueKeyValue = getFirstUniqueKeyValue(records.get(records.size() - 1), param.getFirstUniqueKey().getName());
         if (QueryType.RANGE_QUERY == param.getQueryType()) {
-            param.setRange(new Range(maxUniqueKeyValue, false, param.getRange().getUpperBound()));
+            param.setRange(Range.openClosed(maxUniqueKeyValue, param.getRange().getUpperBound()));
         }
         return Optional.of(convertRecordsToResult(records, maxUniqueKeyValue));
     }
