@@ -17,13 +17,14 @@
 
 package org.apache.shardingsphere.data.pipeline.core.ingest.dumper.inventory.query;
 
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 /**
  * Range.
  */
-@RequiredArgsConstructor
+@RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 @Getter
 public final class Range {
     
@@ -42,5 +43,16 @@ public final class Range {
      */
     public static Range closed(final Object lowerBound, final Object upperBound) {
         return new Range(lowerBound, true, upperBound);
+    }
+    
+    /**
+     * Create open-closed range.
+     *
+     * @param lowerBound lower bound
+     * @param upperBound upper bound
+     * @return open-closed range
+     */
+    public static Range openClosed(final Object lowerBound, final Object upperBound) {
+        return new Range(lowerBound, false, upperBound);
     }
 }
