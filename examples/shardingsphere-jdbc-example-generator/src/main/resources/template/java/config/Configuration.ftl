@@ -54,7 +54,7 @@ import org.apache.shardingsphere.shadow.config.ShadowRuleConfiguration;
 import org.apache.shardingsphere.shadow.config.datasource.ShadowDataSourceConfiguration;
 import org.apache.shardingsphere.shadow.config.table.ShadowTableConfiguration;
 import org.apache.shardingsphere.parser.config.SQLParserRuleConfiguration;
-import org.apache.shardingsphere.sql.parser.api.CacheOption;
+import org.apache.shardingsphere.sql.parser.engine.api.CacheOption;
 </#if>
 <#if feature?contains("mask")>
 import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration;
