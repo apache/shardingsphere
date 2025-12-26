@@ -50,6 +50,7 @@ public final class MySQLSystemSchemaQueryExecutorFactory {
      * @param selectStatementContext select statement context
      * @param sql SQL being executed
      * @param parameters parameters
+     * @param schemaName schema name
      * @return executor
      */
     public static Optional<DatabaseAdminExecutor> newInstance(final SelectStatementContext selectStatementContext, final String sql, final List<Object> parameters, final String schemaName) {
