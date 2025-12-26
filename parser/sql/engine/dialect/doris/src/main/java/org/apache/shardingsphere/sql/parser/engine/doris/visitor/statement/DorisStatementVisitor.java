@@ -100,7 +100,9 @@ import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.OrderBy
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.OrderByItemContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.OwnerContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.OutfilePropertyContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.SelectFieldsIntoContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.SelectIntoExpressionContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.SelectLinesIntoContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ParameterMarkerContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.PositionFunctionContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.PrecisionContext;
@@ -154,6 +156,8 @@ import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ViewNam
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.WeightStringFunctionContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.WhereClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.WithClauseContext;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.outfile.OutfileColumnsSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.outfile.OutfileLinesSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.outfile.OutfileSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.AggregationType;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.CombineType;
@@ -762,6 +766,18 @@ public abstract class DorisStatementVisitor extends DorisStatementBaseVisitor<AS
         if (null != ctx.OUTFILE()) {
             String filePath = ctx.string_().getText();
             filePath = SQLUtils.getExactlyValue(filePath);
+            String characterSet = null;
+            if (null != ctx.charsetName()) {
+                characterSet = ctx.charsetName().getText();
+            }
+            OutfileColumnsSegment columns = null;
+            if (null != ctx.selectFieldsInto() && !ctx.selectFieldsInto().isEmpty()) {
+                columns = createOutfileColumnsSegment(ctx);
+            }
+            OutfileLinesSegment lines = null;
+            if (null != ctx.selectLinesInto() && !ctx.selectLinesInto().isEmpty()) {
+                lines = createOutfileLinesSegment(ctx);
+            }
             String format = null;
             if (null != ctx.formatName()) {
                 format = ctx.formatName().identifier().getText();
@@ -775,9 +791,47 @@ public abstract class DorisStatementVisitor extends DorisStatementBaseVisitor<AS
                     properties.put(key, value);
                 }
             }
-            return new OutfileSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), filePath, format, properties);
+            return new OutfileSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), filePath, format, properties, characterSet, columns, lines);
         }
         return visitChildren(ctx);
+    }
+    
+    private OutfileColumnsSegment createOutfileColumnsSegment(final SelectIntoExpressionContext ctx) {
+        int startIndex = ctx.selectFieldsInto(0).getStart().getStartIndex();
+        int stopIndex = ctx.selectFieldsInto(ctx.selectFieldsInto().size() - 1).getStop().getStopIndex();
+        String terminatedBy = null;
+        String enclosedBy = null;
+        String escapedBy = null;
+        boolean optionallyEnclosed = false;
+        for (SelectFieldsIntoContext each : ctx.selectFieldsInto()) {
+            if (null != each.TERMINATED()) {
+                terminatedBy = SQLUtils.getExactlyValue(each.string_().getText());
+            }
+            if (null != each.ENCLOSED()) {
+                enclosedBy = SQLUtils.getExactlyValue(each.string_().getText());
+                optionallyEnclosed = null != each.OPTIONALLY();
+            }
+            if (null != each.ESCAPED()) {
+                escapedBy = SQLUtils.getExactlyValue(each.string_().getText());
+            }
+        }
+        return new OutfileColumnsSegment(startIndex, stopIndex, terminatedBy, enclosedBy, escapedBy, optionallyEnclosed);
+    }
+    
+    private OutfileLinesSegment createOutfileLinesSegment(final SelectIntoExpressionContext ctx) {
+        int startIndex = ctx.selectLinesInto(0).getStart().getStartIndex();
+        int stopIndex = ctx.selectLinesInto(ctx.selectLinesInto().size() - 1).getStop().getStopIndex();
+        String startingBy = null;
+        String terminatedBy = null;
+        for (SelectLinesIntoContext each : ctx.selectLinesInto()) {
+            if (null != each.STARTING()) {
+                startingBy = SQLUtils.getExactlyValue(each.string_().getText());
+            }
+            if (null != each.TERMINATED()) {
+                terminatedBy = SQLUtils.getExactlyValue(each.string_().getText());
+            }
+        }
+        return new OutfileLinesSegment(startIndex, stopIndex, startingBy, terminatedBy);
     }
     
     @Override

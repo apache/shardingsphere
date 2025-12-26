@@ -25,7 +25,7 @@ import org.apache.shardingsphere.sql.parser.statement.doris.ddl.DorisCreateFunct
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.SQLSegmentAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.expression.ExpressionAssert;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.function.ExpectedFunctionProperty;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.distsql.ExpectedProperty;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.type.ExpectedDataTypeSegment;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.standard.function.CreateFunctionStatementTestCase;
 
@@ -139,9 +139,9 @@ public final class DorisCreateFunctionStatementAssert {
     private static void assertProperties(final SQLCaseAssertContext assertContext, final DorisCreateFunctionStatement actual, final CreateFunctionStatementTestCase expected) {
         if (!expected.getProperties().isEmpty()) {
             Map<String, String> actualProps = actual.getProperties();
-            List<ExpectedFunctionProperty> expectedProps = expected.getProperties();
+            List<ExpectedProperty> expectedProps = expected.getProperties();
             assertFalse(actualProps.isEmpty(), assertContext.getText("Properties should not be empty"));
-            for (ExpectedFunctionProperty expectedProp : expectedProps) {
+            for (ExpectedProperty expectedProp : expectedProps) {
                 assertTrue(actualProps.containsKey(expectedProp.getKey()),
                         assertContext.getText(String.format("Property key '%s' not found", expectedProp.getKey())));
                 assertThat(assertContext.getText(String.format("Property '%s' value assertion error: ", expectedProp.getKey())),

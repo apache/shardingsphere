@@ -21,74 +21,38 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.SQLSegment;
 
-import java.util.Map;
 import java.util.Optional;
 
 /**
- * Outfile segment.
+ * Outfile lines segment.
  */
 @RequiredArgsConstructor
 @Getter
-public final class OutfileSegment implements SQLSegment {
+public final class OutfileLinesSegment implements SQLSegment {
     
     private final int startIndex;
     
     private final int stopIndex;
     
-    private final String filePath;
+    private final String startingBy;
     
-    private final String format;
-    
-    private final Map<String, String> properties;
-    
-    private final String characterSet;
-    
-    private final OutfileColumnsSegment columns;
-    
-    private final OutfileLinesSegment lines;
+    private final String terminatedBy;
     
     /**
-     * Get character set.
+     * Get starting by.
      *
-     * @return character set
+     * @return starting by
      */
-    public Optional<String> getCharacterSet() {
-        return Optional.ofNullable(characterSet);
+    public Optional<String> getStartingBy() {
+        return Optional.ofNullable(startingBy);
     }
     
     /**
-     * Get columns.
+     * Get terminated by.
      *
-     * @return columns
+     * @return terminated by
      */
-    public Optional<OutfileColumnsSegment> getColumns() {
-        return Optional.ofNullable(columns);
-    }
-    
-    /**
-     * Get lines.
-     *
-     * @return lines
-     */
-    public Optional<OutfileLinesSegment> getLines() {
-        return Optional.ofNullable(lines);
-    }
-    
-    /**
-     * Get format.
-     *
-     * @return format
-     */
-    public Optional<String> getFormat() {
-        return Optional.ofNullable(format);
-    }
-    
-    /**
-     * Get properties.
-     *
-     * @return properties
-     */
-    public Optional<Map<String, String>> getProperties() {
-        return Optional.ofNullable(properties);
+    public Optional<String> getTerminatedBy() {
+        return Optional.ofNullable(terminatedBy);
     }
 }

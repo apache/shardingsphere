@@ -21,74 +21,51 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.SQLSegment;
 
-import java.util.Map;
 import java.util.Optional;
 
 /**
- * Outfile segment.
+ * Outfile columns segment.
  */
 @RequiredArgsConstructor
 @Getter
-public final class OutfileSegment implements SQLSegment {
+public final class OutfileColumnsSegment implements SQLSegment {
     
     private final int startIndex;
     
     private final int stopIndex;
     
-    private final String filePath;
+    private final String terminatedBy;
     
-    private final String format;
+    private final String enclosedBy;
     
-    private final Map<String, String> properties;
+    private final String escapedBy;
     
-    private final String characterSet;
-    
-    private final OutfileColumnsSegment columns;
-    
-    private final OutfileLinesSegment lines;
+    private final boolean optionallyEnclosed;
     
     /**
-     * Get character set.
+     * Get terminated by.
      *
-     * @return character set
+     * @return terminated by
      */
-    public Optional<String> getCharacterSet() {
-        return Optional.ofNullable(characterSet);
+    public Optional<String> getTerminatedBy() {
+        return Optional.ofNullable(terminatedBy);
     }
     
     /**
-     * Get columns.
+     * Get enclosed by.
      *
-     * @return columns
+     * @return enclosed by
      */
-    public Optional<OutfileColumnsSegment> getColumns() {
-        return Optional.ofNullable(columns);
+    public Optional<String> getEnclosedBy() {
+        return Optional.ofNullable(enclosedBy);
     }
     
     /**
-     * Get lines.
+     * Get escaped by.
      *
-     * @return lines
+     * @return escaped by
      */
-    public Optional<OutfileLinesSegment> getLines() {
-        return Optional.ofNullable(lines);
-    }
-    
-    /**
-     * Get format.
-     *
-     * @return format
-     */
-    public Optional<String> getFormat() {
-        return Optional.ofNullable(format);
-    }
-    
-    /**
-     * Get properties.
-     *
-     * @return properties
-     */
-    public Optional<Map<String, String>> getProperties() {
-        return Optional.ofNullable(properties);
+    public Optional<String> getEscapedBy() {
+        return Optional.ofNullable(escapedBy);
     }
 }
