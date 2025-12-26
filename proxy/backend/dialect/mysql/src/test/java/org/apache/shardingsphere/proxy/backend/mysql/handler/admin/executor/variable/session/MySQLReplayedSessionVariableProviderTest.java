@@ -19,6 +19,7 @@ package org.apache.shardingsphere.proxy.backend.mysql.handler.admin.executor.var
 
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
+import org.apache.shardingsphere.proxy.backend.handler.admin.executor.variable.session.ReplayedSessionVariableProvider;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -28,7 +29,7 @@ class MySQLReplayedSessionVariableProviderTest {
     
     private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "MySQL");
     
-    private final MySQLReplayedSessionVariableProvider provider = TypedSPILoader.getService(MySQLReplayedSessionVariableProvider.class, databaseType);
+    private final ReplayedSessionVariableProvider provider = TypedSPILoader.getService(ReplayedSessionVariableProvider.class, databaseType);
     
     @Test
     void assertIsNeedToReplay() {
