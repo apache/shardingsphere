@@ -36,7 +36,6 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.params.provider.Arguments.arguments;
 
 class MySQLCharsetVariableProviderTest {
     
@@ -62,9 +61,9 @@ class MySQLCharsetVariableProviderTest {
     
     private static Stream<Arguments> successArguments() {
         return Stream.of(
-                arguments(" default ", MySQLConstants.DEFAULT_CHARSET.getCharset()),
-                arguments("latin1 ", Charset.forName("latin1")),
-                arguments("'utf8mb4'", StandardCharsets.UTF_8),
-                arguments("\"utf8mb4\"", StandardCharsets.UTF_8));
+                Arguments.arguments(" default ", MySQLConstants.DEFAULT_CHARSET.getCharset()),
+                Arguments.arguments("latin1 ", Charset.forName("latin1")),
+                Arguments.arguments("'utf8mb4'", StandardCharsets.UTF_8),
+                Arguments.arguments("\"utf8mb4\"", StandardCharsets.UTF_8));
     }
 }
