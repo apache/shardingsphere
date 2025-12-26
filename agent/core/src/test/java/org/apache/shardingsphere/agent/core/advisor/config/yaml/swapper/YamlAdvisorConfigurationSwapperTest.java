@@ -51,6 +51,7 @@ class YamlAdvisorConfigurationSwapperTest {
         assertThat(advisorConfig.getPluginType(), is("PLUGIN"));
     }
     
+    @SuppressWarnings("unused")
     private String call(final String input) {
         return input;
     }
