@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Licensed to the Apache Software Foundation (ASF) under one or more
+  ~ contributor license agreements.  See the NOTICE file distributed with
+  ~ this work for additional information regarding copyright ownership.
+  ~ The ASF licenses this file to You under the Apache License, Version 2.0
+  ~ (the "License"); you may not use this file except in compliance with
+  ~ the License.  You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<sql-parser-test-cases>
+    <alter-storage-policy sql-case-id="alter_storage_policy_with_cooldown_datetime">
+        <policy-name name="test_policy" start-index="21" stop-index="31" />
+        <properties start-index="34" stop-index="85">
+            <property key="cooldown_datetime" value="2023-06-08 00:00:00" start-index="46" stop-index="84" />
+        </properties>
+    </alter-storage-policy>
+
+    <alter-storage-policy sql-case-id="alter_storage_policy_with_cooldown_ttl_number">
+        <policy-name name="test_policy" start-index="21" stop-index="31" />
+        <properties start-index="34" stop-index="67">
+            <property key="cooldown_ttl" value="10000" start-index="46" stop-index="66" />
+        </properties>
+    </alter-storage-policy>
+
+    <alter-storage-policy sql-case-id="alter_storage_policy_with_cooldown_ttl_hours">
+        <policy-name name="test_policy" start-index="21" stop-index="31" />
+        <properties start-index="34" stop-index="64">
+            <property key="cooldown_ttl" value="1h" start-index="46" stop-index="63" />
+        </properties>
+    </alter-storage-policy>
+
+    <alter-storage-policy sql-case-id="alter_storage_policy_with_cooldown_ttl_days">
+        <policy-name name="test_policy" start-index="21" stop-index="31" />
+        <properties start-index="34" stop-index="64">
+            <property key="cooldown_ttl" value="3d" start-index="46" stop-index="63" />
+        </properties>
+    </alter-storage-policy>
+
+    <alter-storage-policy sql-case-id="alter_storage_policy_with_retention_days">
+        <policy-name name="prod_policy" start-index="21" stop-index="31" />
+        <properties start-index="34" stop-index="66">
+            <property key="retention_days" value="30" start-index="46" stop-index="65" />
+        </properties>
+    </alter-storage-policy>
+
+    <alter-storage-policy sql-case-id="alter_storage_policy_with_redundancy_level">
+        <policy-name name="backup_policy" start-index="21" stop-index="33" />
+        <properties start-index="36" stop-index="69">
+            <property key="redundancy_level" value="2" start-index="48" stop-index="68" />
+        </properties>
+    </alter-storage-policy>
+
+    <alter-storage-policy sql-case-id="alter_storage_policy_with_storage_type">
+        <policy-name name="archive_policy" start-index="21" stop-index="34" />
+        <properties start-index="37" stop-index="67">
+            <property key="storage_type" value="S3" start-index="49" stop-index="66" />
+        </properties>
+    </alter-storage-policy>
+
+    <alter-storage-policy sql-case-id="alter_storage_policy_with_location_policy">
+        <policy-name name="geo_policy" start-index="21" stop-index="30" />
+        <properties start-index="33" stop-index="68">
+            <property key="location_policy" value="us-west" start-index="45" stop-index="67" />
+        </properties>
+    </alter-storage-policy>
+
+    <alter-storage-policy sql-case-id="alter_storage_policy_with_multiple_properties">
+        <policy-name name="comprehensive_policy" start-index="21" stop-index="40" />
+        <properties start-index="44" stop-index="129">
+            <property key="cooldown_ttl" value="7d" start-index="56" stop-index="75" />
+            <property key="retention_days" value="90" start-index="78" stop-index="100" />
+            <property key="redundancy_level" value="3" start-index="103" stop-index="128" />
+        </properties>
+    </alter-storage-policy>
+</sql-parser-test-cases>
