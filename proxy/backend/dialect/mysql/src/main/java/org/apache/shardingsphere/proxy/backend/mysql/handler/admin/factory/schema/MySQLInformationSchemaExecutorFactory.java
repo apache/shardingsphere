@@ -31,7 +31,7 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- * Construct the information schema executor's factory.
+ * MySQL information schema executor factory.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class MySQLInformationSchemaExecutorFactory {

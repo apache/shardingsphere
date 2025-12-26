@@ -22,10 +22,8 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.binder.context.statement.type.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.proxy.backend.handler.admin.executor.DatabaseAdminExecutor;
+import org.apache.shardingsphere.proxy.backend.mysql.handler.admin.factory.schema.MySQLCommonSchemaExecutorFactory;
 import org.apache.shardingsphere.proxy.backend.mysql.handler.admin.factory.schema.MySQLInformationSchemaExecutorFactory;
-import org.apache.shardingsphere.proxy.backend.mysql.handler.admin.factory.schema.MySQLMySQLSchemaExecutorFactory;
-import org.apache.shardingsphere.proxy.backend.mysql.handler.admin.factory.schema.MySQLPerformanceSchemaExecutorFactory;
-import org.apache.shardingsphere.proxy.backend.mysql.handler.admin.factory.schema.MySQLSysSchemaExecutorFactory;
 import org.apache.shardingsphere.proxy.backend.mysql.handler.admin.factory.withoutfrom.MySQLSelectWithoutFromAdminExecutorFactory;
 
 import java.util.List;
@@ -64,13 +62,13 @@ public final class MySQLSelectAdminExecutorFactory {
             return MySQLInformationSchemaExecutorFactory.newInstance(selectStatementContext, sql, parameters);
         }
         if (PERFORMANCE_SCHEMA.equalsIgnoreCase(databaseName) && !metaData.getDatabase(databaseName).isComplete()) {
-            return MySQLPerformanceSchemaExecutorFactory.newInstance(selectStatementContext, sql, parameters);
+            return MySQLCommonSchemaExecutorFactory.newInstance(selectStatementContext, sql, parameters, "performance_schema");
         }
         if (MYSQL_SCHEMA.equalsIgnoreCase(databaseName) && !metaData.getDatabase(databaseName).isComplete()) {
-            return MySQLMySQLSchemaExecutorFactory.newInstance(selectStatementContext, sql, parameters);
+            return MySQLCommonSchemaExecutorFactory.newInstance(selectStatementContext, sql, parameters, "mysql");
         }
         if (SYS_SCHEMA.equalsIgnoreCase(databaseName) && !metaData.getDatabase(databaseName).isComplete()) {
-            return MySQLSysSchemaExecutorFactory.newInstance(selectStatementContext, sql, parameters);
+            return MySQLCommonSchemaExecutorFactory.newInstance(selectStatementContext, sql, parameters, "sys");
         }
         return Optional.empty();
     }

@@ -30,10 +30,10 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- * Construct the performance schema executor's factory.
+ * MySQL common schema executor factory.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class MySQLPerformanceSchemaExecutorFactory {
+public final class MySQLCommonSchemaExecutorFactory {
     
     /**
      * Create executor.
@@ -43,13 +43,13 @@ public final class MySQLPerformanceSchemaExecutorFactory {
      * @param parameters parameters
      * @return executor
      */
-    public static Optional<DatabaseAdminExecutor> newInstance(final SelectStatementContext selectStatementContext, final String sql, final List<Object> parameters) {
+    public static Optional<DatabaseAdminExecutor> newInstance(final SelectStatementContext selectStatementContext, final String sql, final List<Object> parameters, final String schemaName) {
         SelectStatement sqlStatement = selectStatementContext.getSqlStatement();
         if (!sqlStatement.getFrom().isPresent() || !(sqlStatement.getFrom().get() instanceof SimpleTableSegment)) {
             return Optional.empty();
         }
         String tableName = ((SimpleTableSegment) sqlStatement.getFrom().get()).getTableName().getIdentifier().getValue();
-        if (SystemSchemaManager.isSystemTable("mysql", "performance_schema", tableName)) {
+        if (SystemSchemaManager.isSystemTable("mysql", schemaName, tableName)) {
             return Optional.of(new DatabaseMetaDataExecutor(sql, parameters));
         }
         return Optional.empty();
