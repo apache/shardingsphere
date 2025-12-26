@@ -58,7 +58,7 @@ public final class InventoryPositionCalculator {
         int firstColumnDataType = uniqueKeyColumns.get(0).getDataType();
         if (dataTypeOption.isIntegerDataType(firstColumnDataType)) {
             String uniqueKey = uniqueKeyColumns.get(0).getName();
-            Range uniqueKeyValuesRange = InventoryPositionEstimatedCalculator.getIntegerUniqueKeyValuesRange(qualifiedTable, uniqueKey, dataSource);
+            Range<Long> uniqueKeyValuesRange = InventoryPositionEstimatedCalculator.getIntegerUniqueKeyValuesRange(qualifiedTable, uniqueKey, dataSource);
             return InventoryPositionEstimatedCalculator.getIntegerPositions(tableRecordsCount, uniqueKeyValuesRange, shardingSize);
         }
         if (1 == uniqueKeyColumns.size() && dataTypeOption.isStringDataType(firstColumnDataType)) {

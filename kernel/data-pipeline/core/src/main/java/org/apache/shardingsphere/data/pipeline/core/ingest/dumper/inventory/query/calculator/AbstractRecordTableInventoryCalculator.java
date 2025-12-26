@@ -278,7 +278,7 @@ public abstract class AbstractRecordTableInventoryCalculator<S, C> extends Abstr
     private void setParameters(final PreparedStatement preparedStatement, final TableInventoryCalculateParameter param) throws SQLException {
         QueryType queryType = param.getQueryType();
         if (queryType == QueryType.RANGE_QUERY) {
-            Range range = param.getRange();
+            Range<?> range = param.getRange();
             ShardingSpherePreconditions.checkNotNull(range,
                     () -> new PipelineTableDataConsistencyCheckLoadingFailedException(param.getTable(), new RuntimeException("Unique keys values range is null.")));
             int parameterIndex = 1;
