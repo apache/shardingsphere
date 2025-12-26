@@ -398,6 +398,7 @@ identifierKeywordsUnambiguous
     | PROCESSLIST
     | PROFILES
     | PROFILE
+    | POLICY
     | QUARTER
     | QUERY
     | QUICK

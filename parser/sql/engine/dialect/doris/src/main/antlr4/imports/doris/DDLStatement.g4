@@ -30,6 +30,7 @@ alterStatement
     | alterInstance
     | alterServer
     | alterCatalog
+    | alterStoragePolicy
     ;
 
 createTable
@@ -133,9 +134,11 @@ alterListItem
     | ALTER INDEX indexName visibility  # alterIndex
     | ALTER CHECK constraintName constraintEnforcement  # alterCheck
     | ALTER CONSTRAINT constraintName constraintEnforcement # alterConstraint
-    | RENAME COLUMN oldColumn TO newColumn  # renameColumn
+    | RENAME COLUMN oldColumn TO? newColumn  # renameColumn
     | RENAME (TO | AS)? tableName # alterRenameTable
     | RENAME keyOrIndex indexName TO indexName  # renameIndex
+    | RENAME ROLLUP oldRollupName=identifier newRollupName=identifier  # renameRollup
+    | RENAME PARTITION oldPartitionName=identifier newPartitionName=identifier  # renamePartition
     | CONVERT TO charset charsetName collateClause?  # alterConvert
     | FORCE  # alterTableForce
     | ORDER BY alterOrderList  # alterTableOrder
@@ -143,6 +146,10 @@ alterListItem
 
 alterOrderList
     : columnRef direction? (COMMA_ columnRef direction?)*
+    ;
+
+alterStoragePolicy
+    : ALTER STORAGE POLICY identifier propertiesClause
     ;
 
 tableConstraintDef

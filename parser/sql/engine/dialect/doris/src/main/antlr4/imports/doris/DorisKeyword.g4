@@ -2016,6 +2016,10 @@ PARAMETER
     : P A R A M E T E R
     ;
 
+POLICY
+    : P O L I C Y
+    ;
+
 QUARTER
     : Q U A R T E R
     ;
