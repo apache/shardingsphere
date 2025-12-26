@@ -363,4 +363,65 @@
             <column-item name="title" start-index="94" stop-index="98" order-direction="ASC"/>
         </order-by>
     </select>
+
+    <select sql-case-id="select_into_outfile_doris_basic">
+        <from start-index="14" stop-index="20">
+            <simple-table name="t_order" start-index="14" stop-index="20" />
+        </from>
+        <projections distinct-row="false" start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" />
+        </projections>
+        <outfile start-index="22" stop-index="58" file-path="hdfs://path/to/result_" />
+    </select>
+
+    <select sql-case-id="select_into_outfile_doris_with_format">
+        <from start-index="14" stop-index="20">
+            <simple-table name="t_order" start-index="14" stop-index="20" />
+        </from>
+        <projections distinct-row="false" start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" />
+        </projections>
+        <outfile start-index="22" stop-index="72" file-path="hdfs://path/to/result_" format="CSV" />
+    </select>
+
+    <select sql-case-id="select_into_outfile_doris_with_properties">
+        <from start-index="14" stop-index="20">
+            <simple-table name="t_order" start-index="14" stop-index="20" />
+        </from>
+        <projections distinct-row="false" start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" />
+        </projections>
+        <outfile start-index="22" stop-index="121" file-path="hdfs://path/to/result_">
+            <property key="column_separator" value="," />
+            <property key="line_delimiter" value="\n" />
+        </outfile>
+    </select>
+
+    <select sql-case-id="select_into_outfile_doris_full">
+        <from start-index="14" stop-index="20">
+            <simple-table name="t_order" start-index="14" stop-index="20" />
+        </from>
+        <projections distinct-row="false" start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" />
+        </projections>
+        <outfile start-index="22" stop-index="166" file-path="hdfs://path/to/result_" format="CSV">
+            <property key="broker.name" value="my_broker" />
+            <property key="column_separator" value="," />
+            <property key="max_file_size" value="100MB" />
+        </outfile>
+    </select>
+
+    <select sql-case-id="select_into_outfile_doris_with_parquet">
+        <from start-index="14" stop-index="20">
+            <simple-table name="t_order" start-index="14" stop-index="20" />
+        </from>
+        <projections distinct-row="false" start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" />
+        </projections>
+        <outfile start-index="22" stop-index="178" file-path="s3://bucket/result_" format="PARQUET">
+            <property key="s3.endpoint" value="http://s3.amazonaws.com" />
+            <property key="s3.access_key" value="xxx" />
+            <property key="s3.secret_key" value="yyy" />
+        </outfile>
+    </select>
 </sql-parser-test-cases>

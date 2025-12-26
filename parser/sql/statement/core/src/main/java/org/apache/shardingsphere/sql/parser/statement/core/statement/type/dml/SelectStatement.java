@@ -34,6 +34,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.Model
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.WindowSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.WithSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.outfile.OutfileSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.SQLStatementAttributes;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.type.AllowNotUseDatabaseSQLStatementAttribute;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.type.WithSQLStatementAttribute;
@@ -74,6 +75,8 @@ public final class SelectStatement extends DMLStatement {
     private TableSegment into;
     
     private ModelSegment model;
+    
+    private OutfileSegment outfile;
     
     private WithTableHintSegment withTableHint;
     
@@ -196,6 +199,15 @@ public final class SelectStatement extends DMLStatement {
      */
     public Optional<ModelSegment> getModel() {
         return Optional.ofNullable(model);
+    }
+    
+    /**
+     * Get outfile.
+     *
+     * @return outfile segment
+     */
+    public Optional<OutfileSegment> getOutfile() {
+        return Optional.ofNullable(outfile);
     }
     
     /**

@@ -60,7 +60,7 @@ properties
     ;
 
 property
-    : (identifier | SINGLE_QUOTED_TEXT) EQ_? literals
+    : (identifier | SINGLE_QUOTED_TEXT | DOUBLE_QUOTED_TEXT) EQ_? literals
     ;
 // DORIS ADDED END
 
@@ -309,7 +309,13 @@ dropEvent
     ;
 
 createFunction
-    : CREATE ownerStatement?
+    : CREATE GLOBAL? (AGGREGATE | TABLES | ALIAS)? FUNCTION functionName
+      LP_ (dataType (COMMA_ dataType)*)? RP_
+      (RETURNS dataType)?
+      (INTERMEDIATE dataType)?
+      (WITH PARAMETER LP_ identifier (COMMA_ identifier)* RP_ AS expr)?
+      (PROPERTIES LP_ properties RP_)?
+    | CREATE ownerStatement?
       FUNCTION functionName LP_ (identifier dataType)? (COMMA_ identifier dataType)* RP_
       RETURNS dataType
       routineOption*

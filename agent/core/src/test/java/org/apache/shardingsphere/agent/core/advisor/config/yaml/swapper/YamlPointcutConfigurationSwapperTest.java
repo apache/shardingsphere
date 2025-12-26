@@ -87,6 +87,7 @@ class YamlPointcutConfigurationSwapperTest {
     
     private static final class MethodFixture {
         
+        @SuppressWarnings("unused")
         private void execute() {
         }
     }

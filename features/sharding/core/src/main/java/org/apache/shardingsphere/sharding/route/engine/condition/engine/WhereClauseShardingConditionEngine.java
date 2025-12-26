@@ -38,6 +38,7 @@ import org.apache.shardingsphere.sharding.route.engine.condition.value.ListShard
 import org.apache.shardingsphere.sharding.route.engine.condition.value.RangeShardingConditionValue;
 import org.apache.shardingsphere.sharding.route.engine.condition.value.ShardingConditionValue;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
+import org.apache.shardingsphere.sharding.util.ShardingValueTypeConvertUtils;
 import org.apache.shardingsphere.sql.parser.statement.core.extractor.ColumnExtractor;
 import org.apache.shardingsphere.sql.parser.statement.core.extractor.ExpressionExtractor;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
@@ -180,14 +181,22 @@ public final class WhereClauseShardingConditionEngine {
         if (null == value2) {
             return value1;
         }
+        Collection<Comparable<?>> convertedValue2 = value2;
+        if (!value1.isEmpty() && !value2.isEmpty() && isDifferentType(value1, value2)) {
+            convertedValue2 = ShardingValueTypeConvertUtils.convertCollectionType(value2, value1.iterator().next().getClass());
+        }
         if (column.isCaseSensitive()) {
-            value1.retainAll(value2);
+            value1.retainAll(convertedValue2);
             return value1;
         }
         Collection<Comparable<?>> caseInSensitiveValue1 = new CaseInsensitiveSet<>(value1);
-        Collection<Comparable<?>> caseInSensitiveValue2 = new CaseInsensitiveSet<>(value2);
+        Collection<Comparable<?>> caseInSensitiveValue2 = new CaseInsensitiveSet<>(convertedValue2);
         caseInSensitiveValue1.retainAll(caseInSensitiveValue2);
         return caseInSensitiveValue1;
+    }
+    
+    private boolean isDifferentType(final Collection<Comparable<?>> value1, final Collection<Comparable<?>> value2) {
+        return value1.iterator().next().getClass() != value2.iterator().next().getClass();
     }
     
     private Range<Comparable<?>> mergeRangeShardingValues(final Range<Comparable<?>> value1, final Range<Comparable<?>> value2) {

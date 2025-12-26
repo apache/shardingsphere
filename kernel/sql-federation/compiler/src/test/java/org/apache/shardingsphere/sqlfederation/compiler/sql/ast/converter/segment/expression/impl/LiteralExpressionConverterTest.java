@@ -17,17 +17,14 @@
 
 package org.apache.shardingsphere.sqlfederation.compiler.sql.ast.converter.segment.expression.impl;
 
-import org.apache.calcite.sql.SqlIntervalQualifier;
+import org.apache.calcite.runtime.CalciteException;
 import org.apache.calcite.sql.SqlLiteral;
 import org.apache.calcite.sql.SqlNumericLiteral;
 import org.apache.calcite.sql.type.SqlTypeName;
 import org.apache.calcite.util.TimeString;
-import org.apache.calcite.runtime.CalciteException;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simple.LiteralExpressionSegment;
 import org.junit.jupiter.api.Test;
 
-import java.math.BigDecimal;
-import java.math.BigInteger;
 import java.sql.Time;
 import java.sql.Timestamp;
 import java.time.LocalDate;
@@ -42,8 +39,8 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class LiteralExpressionConverterTest {
     
@@ -62,25 +59,25 @@ class LiteralExpressionConverterTest {
     void assertConvertTrimFlags() {
         SqlLiteral actual = (SqlLiteral) LiteralExpressionConverter.convert(new LiteralExpressionSegment(0, 0, "both")).orElse(null);
         assertNotNull(actual);
-        assertThat(actual.getValueAs(Enum.class).toString(), is("BOTH"));
+        assertThat(actual.getValueAs(String.class), is("both"));
         SqlLiteral leading = (SqlLiteral) LiteralExpressionConverter.convert(new LiteralExpressionSegment(0, 0, "LEADING")).orElse(null);
         assertNotNull(leading);
-        assertThat(leading.getValueAs(Enum.class).toString(), is("LEADING"));
+        assertThat(leading.getValueAs(String.class), is("LEADING"));
         SqlLiteral trailing = (SqlLiteral) LiteralExpressionConverter.convert(new LiteralExpressionSegment(0, 0, "trailing")).orElse(null);
         assertNotNull(trailing);
-        assertThat(trailing.getValueAs(Enum.class).toString(), is("TRAILING"));
+        assertThat(trailing.getValueAs(String.class), is("trailing"));
     }
     
     @Test
     void assertConvertTimeUnitName() {
-        SqlIntervalQualifier actual = (SqlIntervalQualifier) LiteralExpressionConverter.convert(new LiteralExpressionSegment(0, 0, "year")).orElse(null);
+        SqlLiteral actual = (SqlLiteral) LiteralExpressionConverter.convert(new LiteralExpressionSegment(0, 0, "year")).orElse(null);
         assertNotNull(actual);
-        assertThat(actual.getStartUnit().name(), is("YEAR"));
+        assertThat(actual.getValueAs(String.class), is("year"));
     }
     
     @Test
     void assertConvertApproximateNumber() {
-        SqlNumericLiteral actual = (SqlNumericLiteral) LiteralExpressionConverter.convert(new LiteralExpressionSegment(0, 0, new BigDecimal("1.5"))).orElse(null);
+        SqlNumericLiteral actual = (SqlNumericLiteral) LiteralExpressionConverter.convert(new LiteralExpressionSegment(0, 0, new Float("1.5"))).orElse(null);
         assertNotNull(actual);
         assertFalse(actual.isExact());
     }
@@ -166,7 +163,9 @@ class LiteralExpressionConverterTest {
     
     @Test
     void assertConvertLocalDateTime() {
-        assertThrows(IllegalArgumentException.class, () -> LiteralExpressionConverter.convert(new LiteralExpressionSegment(0, 0, LocalDateTime.of(2020, 1, 1, 1, 1, 1))));
+        SqlLiteral actual = (SqlLiteral) LiteralExpressionConverter.convert(new LiteralExpressionSegment(0, 0, LocalDateTime.of(2020, 1, 1, 1, 1, 1))).orElse(null);
+        assertNotNull(actual);
+        assertThat(actual.getTypeName(), is(SqlTypeName.TIMESTAMP));
     }
     
     @Test
@@ -193,12 +192,5 @@ class LiteralExpressionConverterTest {
     void assertConvertReturnsEmptyForUnsupportedType() {
         Optional<?> actual = LiteralExpressionConverter.convert(new LiteralExpressionSegment(0, 0, new Object()));
         assertFalse(actual.isPresent());
-    }
-    
-    @Test
-    void assertConvertBigIntegerUsesApproximateNumeric() {
-        SqlNumericLiteral actual = (SqlNumericLiteral) LiteralExpressionConverter.convert(new LiteralExpressionSegment(0, 0, new BigInteger("12345678901234567890"))).orElse(null);
-        assertNotNull(actual);
-        assertFalse(actual.isExact());
     }
 }

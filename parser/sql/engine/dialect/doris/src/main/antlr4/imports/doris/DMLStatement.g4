@@ -383,7 +383,19 @@ selectFieldsInto
 
 selectIntoExpression
     : INTO variable (COMMA_ variable )* | INTO DUMPFILE string_
-    | (INTO OUTFILE string_ (CHARACTER SET charsetName)?(COLUMNS selectFieldsInto+)? (LINES selectLinesInto+)?)
+    | INTO OUTFILE string_ (CHARACTER SET charsetName)?(COLUMNS selectFieldsInto+)? (LINES selectLinesInto+)? (FORMAT AS formatName)? outfileProperties?
+    ;
+
+formatName
+    : identifier
+    ;
+
+outfileProperties
+    : PROPERTIES LP_ outfileProperty (COMMA_ outfileProperty)* RP_
+    ;
+
+outfileProperty
+    : string_ EQ_ string_
     ;
 
 lockClause

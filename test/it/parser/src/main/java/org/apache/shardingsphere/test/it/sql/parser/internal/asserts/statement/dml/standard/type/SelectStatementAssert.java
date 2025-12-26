@@ -20,6 +20,7 @@ package org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.combine.CombineSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.outfile.OutfileSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.pagination.limit.LimitSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.predicate.LockSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.ModelSegment;
@@ -35,6 +36,7 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.lim
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.lock.LockClauseAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.model.ModelClauseAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.orderby.OrderByClauseAssert;
+import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.outfile.OutfileClauseAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.projection.ProjectionAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.table.TableAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.where.WhereClauseAssert;
@@ -76,6 +78,7 @@ public final class SelectStatementAssert {
         assertCombineClause(assertContext, actual, expected);
         assertModelClause(assertContext, actual, expected);
         assertIntoClause(assertContext, actual, expected);
+        assertOutfileClause(assertContext, actual, expected);
     }
     
     private static void assertWindowClause(final SQLCaseAssertContext assertContext, final SelectStatement actual, final SelectStatementTestCase expected) {
@@ -202,6 +205,16 @@ public final class SelectStatementAssert {
         } else {
             assertTrue(intoSegment.isPresent(), assertContext.getText("Actual into segment should exist."));
             TableAssert.assertIs(assertContext, intoSegment.get(), expected.getIntoClause());
+        }
+    }
+    
+    private static void assertOutfileClause(final SQLCaseAssertContext assertContext, final SelectStatement actual, final SelectStatementTestCase expected) {
+        Optional<OutfileSegment> outfileSegment = actual.getOutfile();
+        if (null == expected.getOutfileClause()) {
+            assertFalse(outfileSegment.isPresent(), assertContext.getText("Actual outfile segment should not exist."));
+        } else {
+            assertTrue(outfileSegment.isPresent(), assertContext.getText("Actual outfile segment should exist."));
+            OutfileClauseAssert.assertIs(assertContext, outfileSegment.get(), expected.getOutfileClause());
         }
     }
 }

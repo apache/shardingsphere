@@ -103,7 +103,9 @@
                 <expr>
                     <function start-index="7" stop-index="50" text="extract(DAY_HOUR FROM &quot;1999-01-02 10:11:12&quot;)" function-name="extract">
                         <parameter>
-                            <literal-expression start-index="15" stop-index="22" value="DAY_HOUR" />
+                            <interval-unit-expression start-index="15" stop-index="22" value="DAY_HOUR">
+                                <interval-unit>DAY_HOUR</interval-unit>
+                            </interval-unit-expression>
                         </parameter>
                         <parameter>
                             <literal-expression start-index="29" stop-index="49" value="1999-01-02 10:11:12" />
