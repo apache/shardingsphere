@@ -31,6 +31,7 @@ import org.apache.shardingsphere.data.pipeline.core.metadata.model.PipelineColum
 import org.apache.shardingsphere.data.pipeline.core.preparer.inventory.calculator.InventoryRecordsCountCalculator;
 import org.apache.shardingsphere.data.pipeline.core.preparer.inventory.calculator.position.InventoryPositionCalculator;
 import org.apache.shardingsphere.data.pipeline.core.ratelimit.JobRateLimitAlgorithm;
+import org.apache.shardingsphere.infra.metadata.database.schema.QualifiedTable;
 import org.apache.shardingsphere.infra.metadata.identifier.ShardingSphereIdentifier;
 
 import java.util.Collection;
@@ -110,7 +111,7 @@ public final class InventoryDumperContextSplitter {
         }
         String schemaName = dumperContext.getCommonContext().getTableAndSchemaNameMapper().getSchemaName(dumperContext.getLogicTableName());
         int shardingSize = jobItemContext.getJobProcessContext().getProcessConfiguration().getRead().getShardingSize();
-        return new InventoryPositionCalculator(sourceDataSource, schemaName, dumperContext.getActualTableName(),
+        return new InventoryPositionCalculator(sourceDataSource, new QualifiedTable(schemaName, dumperContext.getActualTableName()),
                 dumperContext.getUniqueKeyColumns(), tableRecordsCount, shardingSize).getPositions();
     }
     

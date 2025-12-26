@@ -27,6 +27,7 @@ import org.apache.shardingsphere.data.pipeline.core.ingest.position.IngestPositi
 import org.apache.shardingsphere.data.pipeline.core.ingest.position.type.pk.type.IntegerPrimaryKeyIngestPosition;
 import org.apache.shardingsphere.data.pipeline.core.sqlbuilder.sql.PipelinePrepareSQLBuilder;
 import org.apache.shardingsphere.data.pipeline.core.util.IntervalToRangeIterator;
+import org.apache.shardingsphere.infra.metadata.database.schema.QualifiedTable;
 
 import java.math.BigInteger;
 import java.sql.Connection;
@@ -46,16 +47,15 @@ public final class InventoryPositionEstimatedCalculator {
     /**
      * Get integer unique key values range.
      *
-     * @param schemaName schema name
-     * @param tableName table name
+     * @param qualifiedTable qualified table
      * @param uniqueKey unique key
      * @param dataSource data source
      * @return unique key values range
      * @throws SplitPipelineJobByUniqueKeyException if an error occurs while getting unique key values range
      */
-    public static QueryRange getIntegerUniqueKeyValuesRange(final String schemaName, final String tableName, final String uniqueKey, final PipelineDataSource dataSource) {
+    public static QueryRange getIntegerUniqueKeyValuesRange(final QualifiedTable qualifiedTable, final String uniqueKey, final PipelineDataSource dataSource) {
         PipelinePrepareSQLBuilder pipelineSQLBuilder = new PipelinePrepareSQLBuilder(dataSource.getDatabaseType());
-        String sql = pipelineSQLBuilder.buildUniqueKeyMinMaxValuesSQL(schemaName, tableName, uniqueKey);
+        String sql = pipelineSQLBuilder.buildUniqueKeyMinMaxValuesSQL(qualifiedTable.getSchemaName(), qualifiedTable.getTableName(), uniqueKey);
         try (
                 Connection connection = dataSource.getConnection();
                 Statement statement = connection.createStatement();
@@ -63,7 +63,7 @@ public final class InventoryPositionEstimatedCalculator {
             resultSet.next();
             return QueryRange.closed(resultSet.getLong(1), resultSet.getLong(2));
         } catch (final SQLException ex) {
-            throw new SplitPipelineJobByUniqueKeyException(tableName, uniqueKey, ex);
+            throw new SplitPipelineJobByUniqueKeyException(qualifiedTable.getTableName(), uniqueKey, ex);
         }
     }
     

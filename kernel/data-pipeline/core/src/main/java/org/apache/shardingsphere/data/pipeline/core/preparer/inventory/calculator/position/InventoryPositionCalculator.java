@@ -27,6 +27,7 @@ import org.apache.shardingsphere.data.pipeline.core.metadata.model.PipelineColum
 import org.apache.shardingsphere.data.pipeline.core.preparer.inventory.calculator.position.estimated.InventoryPositionEstimatedCalculator;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.datatype.DialectDataTypeOption;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeRegistry;
+import org.apache.shardingsphere.infra.metadata.database.schema.QualifiedTable;
 
 import java.util.Collections;
 import java.util.List;
@@ -39,9 +40,7 @@ public final class InventoryPositionCalculator {
     
     private final PipelineDataSource dataSource;
     
-    private final String schemaName;
-    
-    private final String tableName;
+    private final QualifiedTable qualifiedTable;
     
     private final List<PipelineColumnMetaData> uniqueKeyColumns;
     
@@ -59,7 +58,7 @@ public final class InventoryPositionCalculator {
         int firstColumnDataType = uniqueKeyColumns.get(0).getDataType();
         if (dataTypeOption.isIntegerDataType(firstColumnDataType)) {
             String uniqueKey = uniqueKeyColumns.get(0).getName();
-            QueryRange uniqueKeyValuesRange = InventoryPositionEstimatedCalculator.getIntegerUniqueKeyValuesRange(schemaName, tableName, uniqueKey, dataSource);
+            QueryRange uniqueKeyValuesRange = InventoryPositionEstimatedCalculator.getIntegerUniqueKeyValuesRange(qualifiedTable, uniqueKey, dataSource);
             return InventoryPositionEstimatedCalculator.getIntegerPositions(tableRecordsCount, uniqueKeyValuesRange, shardingSize);
         }
         if (1 == uniqueKeyColumns.size() && dataTypeOption.isStringDataType(firstColumnDataType)) {
