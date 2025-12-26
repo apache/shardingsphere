@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.core.util;
+package org.apache.shardingsphere.data.pipeline.core.ingest.dumper.inventory.query;
 
 import org.apache.commons.lang3.Range;
 
