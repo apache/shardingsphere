@@ -17,23 +17,32 @@
 
 package org.apache.shardingsphere.proxy.backend.mysql.handler.admin.factory.schema;
 
+import com.cedarsoftware.util.CaseInsensitiveSet;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.binder.context.statement.type.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager;
 import org.apache.shardingsphere.proxy.backend.handler.admin.executor.DatabaseAdminExecutor;
 import org.apache.shardingsphere.proxy.backend.handler.admin.executor.DatabaseMetaDataExecutor;
+import org.apache.shardingsphere.proxy.backend.mysql.handler.admin.factory.schema.type.MySQLInformationQueryExecutorFactory;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.SelectStatement;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
 /**
- * MySQL system schema executor factory.
+ * MySQL system schema query executor factory.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class MySQLSystemSchemaExecutorFactory {
+public final class MySQLSystemSchemaQueryExecutorFactory {
+    
+    private static final Collection<MySQLSpecialSchemaQueryExecutorFactory> SPECIAL_TABLE_EXECUTOR_FACTORIES = new CaseInsensitiveSet<>();
+    
+    static {
+        SPECIAL_TABLE_EXECUTOR_FACTORIES.add(new MySQLInformationQueryExecutorFactory());
+    }
     
     /**
      * Create executor.
@@ -49,8 +58,26 @@ public final class MySQLSystemSchemaExecutorFactory {
             return Optional.empty();
         }
         String tableName = ((SimpleTableSegment) sqlStatement.getFrom().get()).getTableName().getIdentifier().getValue();
+        Optional<DatabaseAdminExecutor> specialTableExecutor = findSpecialSchemaExecutor(selectStatementContext, sql, parameters, schemaName, tableName);
+        if (specialTableExecutor.isPresent()) {
+            return specialTableExecutor;
+        }
         if (SystemSchemaManager.isSystemTable("mysql", schemaName, tableName)) {
             return Optional.of(new DatabaseMetaDataExecutor(sql, parameters));
+        }
+        return Optional.empty();
+    }
+    
+    private static Optional<DatabaseAdminExecutor> findSpecialSchemaExecutor(final SelectStatementContext selectStatementContext,
+                                                                             final String sql, final List<Object> parameters, final String schemaName, final String tableName) {
+        for (MySQLSpecialSchemaQueryExecutorFactory each : SPECIAL_TABLE_EXECUTOR_FACTORIES) {
+            if (!each.accept(schemaName, tableName)) {
+                continue;
+            }
+            Optional<DatabaseAdminExecutor> specialTableExecutor = each.newInstance(selectStatementContext, sql, parameters, tableName);
+            if (specialTableExecutor.isPresent()) {
+                return specialTableExecutor;
+            }
         }
         return Optional.empty();
     }

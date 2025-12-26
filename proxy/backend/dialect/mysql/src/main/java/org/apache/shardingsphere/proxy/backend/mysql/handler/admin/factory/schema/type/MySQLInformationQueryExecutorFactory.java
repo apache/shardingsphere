@@ -15,49 +15,36 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.mysql.handler.admin.factory.schema;
+package org.apache.shardingsphere.proxy.backend.mysql.handler.admin.factory.schema.type;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.binder.context.statement.type.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager;
 import org.apache.shardingsphere.proxy.backend.handler.admin.executor.DatabaseAdminExecutor;
 import org.apache.shardingsphere.proxy.backend.handler.admin.executor.DatabaseMetaDataExecutor;
 import org.apache.shardingsphere.proxy.backend.mysql.handler.admin.executor.select.SelectInformationSchemataExecutor;
-import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.SelectStatement;
+import org.apache.shardingsphere.proxy.backend.mysql.handler.admin.factory.schema.MySQLSpecialSchemaQueryExecutorFactory;
 
 import java.util.List;
 import java.util.Optional;
 
 /**
- * MySQL information schema executor factory.
+ * MySQL information query executor factory.
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class MySQLInformationSchemaExecutorFactory {
+public final class MySQLInformationQueryExecutorFactory implements MySQLSpecialSchemaQueryExecutorFactory {
     
-    private static final String SCHEMATA_TABLE = "SCHEMATA";
+    @Override
+    public boolean accept(final String schemaName, final String tableName) {
+        return "information_schema".equalsIgnoreCase(schemaName) && SystemSchemaManager.isSystemTable("mysql", "information_schema", tableName);
+    }
     
-    /**
-     * Create executor.
-     *
-     * @param selectStatementContext select statement context
-     * @param sql SQL being executed
-     * @param parameters parameters
-     * @return executor
-     */
-    public static Optional<DatabaseAdminExecutor> newInstance(final SelectStatementContext selectStatementContext, final String sql, final List<Object> parameters) {
-        SelectStatement sqlStatement = selectStatementContext.getSqlStatement();
-        if (!sqlStatement.getFrom().isPresent() || !(sqlStatement.getFrom().get() instanceof SimpleTableSegment)) {
-            return Optional.empty();
-        }
-        String tableName = ((SimpleTableSegment) sqlStatement.getFrom().get()).getTableName().getIdentifier().getValue();
-        if (SCHEMATA_TABLE.equalsIgnoreCase(tableName)) {
-            return Optional.of(new SelectInformationSchemataExecutor(sqlStatement, sql, parameters));
+    @Override
+    public Optional<DatabaseAdminExecutor> newInstance(final SelectStatementContext selectStatementContext, final String sql, final List<Object> parameters, final String tableName) {
+        if ("SCHEMATA".equalsIgnoreCase(tableName)) {
+            return Optional.of(new SelectInformationSchemataExecutor(selectStatementContext.getSqlStatement(), sql, parameters));
         }
         if (SystemSchemaManager.isSystemTable("mysql", "information_schema", tableName)) {
             return Optional.of(new DatabaseMetaDataExecutor(sql, parameters));
         }
-        return Optional.empty();
+        return  Optional.empty();
     }
 }
