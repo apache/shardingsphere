@@ -138,7 +138,7 @@ public final class TableInventoryCalculateParameter {
      *
      * @return range
      */
-    public Range getQueryRange() {
+    public Range getRange() {
         return uniqueKeysValuesRange.get();
     }
     
@@ -147,7 +147,7 @@ public final class TableInventoryCalculateParameter {
      *
      * @param range range
      */
-    public void setQueryRange(final Range range) {
+    public void setRange(final Range range) {
         uniqueKeysValuesRange.set(range);
     }
     

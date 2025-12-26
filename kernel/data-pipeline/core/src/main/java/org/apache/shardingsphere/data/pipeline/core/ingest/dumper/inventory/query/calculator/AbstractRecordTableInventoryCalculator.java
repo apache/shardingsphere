@@ -76,7 +76,7 @@ public abstract class AbstractRecordTableInventoryCalculator<S, C> extends Abstr
         }
         Object maxUniqueKeyValue = getFirstUniqueKeyValue(records.get(records.size() - 1), param.getFirstUniqueKey().getName());
         if (QueryType.RANGE_QUERY == param.getQueryType()) {
-            param.setQueryRange(new Range(maxUniqueKeyValue, false, param.getQueryRange().getUpper()));
+            param.setRange(new Range(maxUniqueKeyValue, false, param.getRange().getUpper()));
         }
         return Optional.of(convertRecordsToResult(records, maxUniqueKeyValue));
     }
@@ -266,7 +266,7 @@ public abstract class AbstractRecordTableInventoryCalculator<S, C> extends Abstr
         Collection<String> columnNames = param.getColumnNames().isEmpty() ? Collections.singleton("*") : param.getColumnNames();
         switch (param.getQueryType()) {
             case RANGE_QUERY:
-                return pipelineSQLBuilder.buildQueryRangeOrderingSQL(param.getTable(), columnNames, param.getUniqueKeysNames(), param.getQueryRange(),
+                return pipelineSQLBuilder.buildRangeQueryOrderingSQL(param.getTable(), columnNames, param.getUniqueKeysNames(), param.getRange(),
                         StreamingRangeType.SMALL == streamingRangeType, param.getShardingColumnsNames());
             case POINT_QUERY:
                 return pipelineSQLBuilder.buildPointQuerySQL(param.getTable(), columnNames, param.getUniqueKeysNames(), param.getShardingColumnsNames());
@@ -278,7 +278,7 @@ public abstract class AbstractRecordTableInventoryCalculator<S, C> extends Abstr
     private void setParameters(final PreparedStatement preparedStatement, final TableInventoryCalculateParameter param) throws SQLException {
         QueryType queryType = param.getQueryType();
         if (queryType == QueryType.RANGE_QUERY) {
-            Range range = param.getQueryRange();
+            Range range = param.getRange();
             ShardingSpherePreconditions.checkNotNull(range,
                     () -> new PipelineTableDataConsistencyCheckLoadingFailedException(param.getTable(), new RuntimeException("Unique keys values range is null.")));
             int parameterIndex = 1;

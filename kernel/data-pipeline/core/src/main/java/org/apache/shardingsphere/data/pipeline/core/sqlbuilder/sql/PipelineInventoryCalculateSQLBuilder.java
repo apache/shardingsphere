@@ -44,7 +44,7 @@ public final class PipelineInventoryCalculateSQLBuilder {
     }
     
     /**
-     * Build range ordering SQL.
+     * Build range query ordering SQL.
      *
      * @param qualifiedTable qualified table
      * @param columnNames column names
@@ -54,13 +54,13 @@ public final class PipelineInventoryCalculateSQLBuilder {
      * @param shardingColumnsNames sharding columns names
      * @return built SQL
      */
-    public String buildQueryRangeOrderingSQL(final QualifiedTable qualifiedTable, final Collection<String> columnNames, final List<String> uniqueKeys, final Range range,
+    public String buildRangeQueryOrderingSQL(final QualifiedTable qualifiedTable, final Collection<String> columnNames, final List<String> uniqueKeys, final Range range,
                                              final boolean pageQuery, final List<String> shardingColumnsNames) {
-        String result = buildQueryRangeOrderingSQL0(qualifiedTable, columnNames, uniqueKeys, range, shardingColumnsNames);
+        String result = buildRangeQueryOrderingSQL0(qualifiedTable, columnNames, uniqueKeys, range, shardingColumnsNames);
         return pageQuery ? dialectSQLBuilder.wrapWithPageQuery(result) : result;
     }
     
-    private String buildQueryRangeOrderingSQL0(final QualifiedTable qualifiedTable, final Collection<String> columnNames, final List<String> uniqueKeys, final Range range,
+    private String buildRangeQueryOrderingSQL0(final QualifiedTable qualifiedTable, final Collection<String> columnNames, final List<String> uniqueKeys, final Range range,
                                                final List<String> shardingColumnsNames) {
         String qualifiedTableName = sqlSegmentBuilder.getQualifiedTableName(qualifiedTable);
         String queryColumns = columnNames.stream().map(sqlSegmentBuilder::getEscapedIdentifier).collect(Collectors.joining(","));
@@ -68,25 +68,25 @@ public final class PipelineInventoryCalculateSQLBuilder {
         String orderByColumns = joinColumns(uniqueKeys, shardingColumnsNames).stream().map(each -> sqlSegmentBuilder.getEscapedIdentifier(each) + " ASC").collect(Collectors.joining(", "));
         if (null != range.getLower() && null != range.getUpper()) {
             return String.format("SELECT %s FROM %s WHERE %s AND %s ORDER BY %s", queryColumns, qualifiedTableName,
-                    buildLowerQueryRangeCondition(range.isLowerInclusive(), firstUniqueKey),
-                    buildUpperQueryRangeCondition(firstUniqueKey), orderByColumns);
+                    buildRangeQueryLowerCondition(range.isLowerInclusive(), firstUniqueKey),
+                    buildRangeQueryUpperCondition(firstUniqueKey), orderByColumns);
         } else if (null != range.getLower()) {
             return String.format("SELECT %s FROM %s WHERE %s ORDER BY %s", queryColumns, qualifiedTableName,
-                    buildLowerQueryRangeCondition(range.isLowerInclusive(), firstUniqueKey), orderByColumns);
+                    buildRangeQueryLowerCondition(range.isLowerInclusive(), firstUniqueKey), orderByColumns);
         } else if (null != range.getUpper()) {
             return String.format("SELECT %s FROM %s WHERE %s ORDER BY %s", queryColumns, qualifiedTableName,
-                    buildUpperQueryRangeCondition(firstUniqueKey), orderByColumns);
+                    buildRangeQueryUpperCondition(firstUniqueKey), orderByColumns);
         } else {
             return String.format("SELECT %s FROM %s ORDER BY %s", queryColumns, qualifiedTableName, orderByColumns);
         }
     }
     
-    private String buildLowerQueryRangeCondition(final boolean inclusive, final String firstUniqueKey) {
+    private String buildRangeQueryLowerCondition(final boolean inclusive, final String firstUniqueKey) {
         String delimiter = inclusive ? ">=?" : ">?";
         return sqlSegmentBuilder.getEscapedIdentifier(firstUniqueKey) + delimiter;
     }
     
-    private String buildUpperQueryRangeCondition(final String firstUniqueKey) {
+    private String buildRangeQueryUpperCondition(final String firstUniqueKey) {
         return sqlSegmentBuilder.getEscapedIdentifier(firstUniqueKey) + "<=?";
     }
     
