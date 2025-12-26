@@ -91,7 +91,8 @@ class MySQLSystemSchemaQueryExecutorFactoryTest {
         when(selectStatement.getFrom()).thenReturn(Optional.of(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("SCHEMATA")))));
         SelectStatementContext selectStatementContext = mock(SelectStatementContext.class);
         when(selectStatementContext.getSqlStatement()).thenReturn(selectStatement);
-        Optional<DatabaseAdminExecutor> actual = MySQLSystemSchemaQueryExecutorFactory.newInstance(selectStatementContext, "SELECT * FROM information_schema.schemata", Collections.emptyList(), "information_schema");
+        Optional<DatabaseAdminExecutor> actual =
+                MySQLSystemSchemaQueryExecutorFactory.newInstance(selectStatementContext, "SELECT * FROM information_schema.schemata", Collections.emptyList(), "information_schema");
         assertTrue(actual.isPresent());
         assertThat(actual.get(), isA(SelectInformationSchemataExecutor.class));
     }
