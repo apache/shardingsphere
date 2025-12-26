@@ -66,14 +66,14 @@ public final class PipelineInventoryCalculateSQLBuilder {
         String queryColumns = columnNames.stream().map(sqlSegmentBuilder::getEscapedIdentifier).collect(Collectors.joining(","));
         String firstUniqueKey = uniqueKeys.get(0);
         String orderByColumns = joinColumns(uniqueKeys, shardingColumnsNames).stream().map(each -> sqlSegmentBuilder.getEscapedIdentifier(each) + " ASC").collect(Collectors.joining(", "));
-        if (null != range.getLower() && null != range.getUpper()) {
+        if (null != range.getLowerBound() && null != range.getUpperBound()) {
             return String.format("SELECT %s FROM %s WHERE %s AND %s ORDER BY %s", queryColumns, qualifiedTableName,
                     buildRangeQueryLowerCondition(range.isLowerInclusive(), firstUniqueKey),
                     buildRangeQueryUpperCondition(firstUniqueKey), orderByColumns);
-        } else if (null != range.getLower()) {
+        } else if (null != range.getLowerBound()) {
             return String.format("SELECT %s FROM %s WHERE %s ORDER BY %s", queryColumns, qualifiedTableName,
                     buildRangeQueryLowerCondition(range.isLowerInclusive(), firstUniqueKey), orderByColumns);
-        } else if (null != range.getUpper()) {
+        } else if (null != range.getUpperBound()) {
             return String.format("SELECT %s FROM %s WHERE %s ORDER BY %s", queryColumns, qualifiedTableName,
                     buildRangeQueryUpperCondition(firstUniqueKey), orderByColumns);
         } else {

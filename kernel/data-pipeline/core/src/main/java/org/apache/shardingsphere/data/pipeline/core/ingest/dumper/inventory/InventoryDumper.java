@@ -132,7 +132,7 @@ public final class InventoryDumper extends AbstractPipelineLifecycleRunnable imp
             String firstUniqueKey = calculateParam.getFirstUniqueKey().getName();
             for (List<DataRecord> each : dumpCalculator.calculate(calculateParam)) {
                 channel.push(Collections.unmodifiableList(each));
-                IngestPosition position = PrimaryKeyIngestPositionFactory.newInstance(dumpCalculator.getFirstUniqueKeyValue(each.get(each.size() - 1), firstUniqueKey), range.getUpper());
+                IngestPosition position = PrimaryKeyIngestPositionFactory.newInstance(dumpCalculator.getFirstUniqueKeyValue(each.get(each.size() - 1), firstUniqueKey), range.getUpperBound());
                 dumperContext.getCommonContext().setPosition(position);
                 rowCount += each.size();
             }

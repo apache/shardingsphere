@@ -75,8 +75,8 @@ public final class InventoryPositionEstimatedCalculator {
      * @return positions
      */
     public static List<IngestPosition> getIntegerPositions(final long tableRecordsCount, final Range uniqueKeyValuesRange, final long shardingSize) {
-        Long minimum = (Long) uniqueKeyValuesRange.getLower();
-        Long maximum = (Long) uniqueKeyValuesRange.getUpper();
+        Long minimum = (Long) uniqueKeyValuesRange.getLowerBound();
+        Long maximum = (Long) uniqueKeyValuesRange.getUpperBound();
         if (0 == tableRecordsCount || null == minimum || null == maximum) {
             return Collections.singletonList(new IntegerPrimaryKeyIngestPosition(null, null));
         }

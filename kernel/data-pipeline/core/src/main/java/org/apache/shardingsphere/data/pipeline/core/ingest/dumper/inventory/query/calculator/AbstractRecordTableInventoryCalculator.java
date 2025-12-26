@@ -76,7 +76,7 @@ public abstract class AbstractRecordTableInventoryCalculator<S, C> extends Abstr
         }
         Object maxUniqueKeyValue = getFirstUniqueKeyValue(records.get(records.size() - 1), param.getFirstUniqueKey().getName());
         if (QueryType.RANGE_QUERY == param.getQueryType()) {
-            param.setRange(new Range(maxUniqueKeyValue, false, param.getRange().getUpper()));
+            param.setRange(new Range(maxUniqueKeyValue, false, param.getRange().getUpperBound()));
         }
         return Optional.of(convertRecordsToResult(records, maxUniqueKeyValue));
     }
@@ -282,11 +282,11 @@ public abstract class AbstractRecordTableInventoryCalculator<S, C> extends Abstr
             ShardingSpherePreconditions.checkNotNull(range,
                     () -> new PipelineTableDataConsistencyCheckLoadingFailedException(param.getTable(), new RuntimeException("Unique keys values range is null.")));
             int parameterIndex = 1;
-            if (null != range.getLower()) {
-                preparedStatement.setObject(parameterIndex++, range.getLower());
+            if (null != range.getLowerBound()) {
+                preparedStatement.setObject(parameterIndex++, range.getLowerBound());
             }
-            if (null != range.getUpper()) {
-                preparedStatement.setObject(parameterIndex++, range.getUpper());
+            if (null != range.getUpperBound()) {
+                preparedStatement.setObject(parameterIndex++, range.getUpperBound());
             }
             if (StreamingRangeType.SMALL == streamingRangeType) {
                 preparedStatement.setObject(parameterIndex, chunkSize * streamingChunkCount);

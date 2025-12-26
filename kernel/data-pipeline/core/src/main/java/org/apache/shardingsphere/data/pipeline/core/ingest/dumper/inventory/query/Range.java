@@ -27,20 +27,20 @@ import lombok.RequiredArgsConstructor;
 @Getter
 public final class Range {
     
-    private final Object lower;
+    private final Object lowerBound;
     
     private final boolean lowerInclusive;
     
-    private final Object upper;
+    private final Object upperBound;
     
     /**
      * Create closed range.
      *
-     * @param lower lower value
-     * @param upper upper value
-     * @return range
+     * @param lowerBound lower bound
+     * @param upperBound upper bound
+     * @return closed range
      */
-    public static Range closed(final Object lower, final Object upper) {
-        return new Range(lower, true, upper);
+    public static Range closed(final Object lowerBound, final Object upperBound) {
+        return new Range(lowerBound, true, upperBound);
     }
 }
