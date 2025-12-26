@@ -18,7 +18,9 @@
 package org.apache.shardingsphere.sharding.algorithm.audit;
 
 import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
+import org.apache.shardingsphere.infra.binder.context.segment.insert.keygen.GeneratedKeyContext;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
+import org.apache.shardingsphere.infra.binder.context.statement.type.dml.InsertStatementContext;
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
@@ -28,6 +30,8 @@ import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sharding.spi.ShardingAuditAlgorithm;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.DMLStatement;
 
+import java.util.Collection;
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -41,8 +45,19 @@ public final class DMLShardingConditionsShardingAuditAlgorithm implements Shardi
         if (sqlStatementContext.getSqlStatement() instanceof DMLStatement) {
             ShardingRule rule = database.getRuleMetaData().getSingleRule(ShardingRule.class);
             if (sqlStatementContext.getTablesContext().getTableNames().stream().anyMatch(rule::isShardingTable)) {
-                ShardingSpherePreconditions.checkNotEmpty(
-                        new ShardingConditionEngine(globalRuleMetaData, database, rule).createShardingConditions(sqlStatementContext, params), DMLWithoutShardingKeyException::new);
+                if (sqlStatementContext instanceof InsertStatementContext) {
+                    InsertStatementContext context = (InsertStatementContext) sqlStatementContext;
+                    Collection<Comparable<?>> savedGeneratedValues = context.getGeneratedKeyContext().map(GeneratedKeyContext::getGeneratedValues).orElse(new LinkedList<>());
+                    ShardingSpherePreconditions.checkNotEmpty(
+                            new ShardingConditionEngine(globalRuleMetaData, database, rule).createShardingConditions(sqlStatementContext, params), DMLWithoutShardingKeyException::new);
+                    context.getGeneratedKeyContext().ifPresent(generatedKeyContext -> {
+                        generatedKeyContext.getGeneratedValues().clear();
+                        generatedKeyContext.getGeneratedValues().addAll(savedGeneratedValues);
+                    });
+                } else {
+                    ShardingSpherePreconditions.checkNotEmpty(
+                            new ShardingConditionEngine(globalRuleMetaData, database, rule).createShardingConditions(sqlStatementContext, params), DMLWithoutShardingKeyException::new);
+                }
             }
         }
     }
