@@ -61,41 +61,13 @@ jobs:
       - name: Build Project
         run: |
           ./mvnw -B clean install -Prelease,default-dep
-      - name: Upload Proxy Tarball
-        env:
-          NIGHTLIES_RSYNC_PATH: ${{ secrets.NIGHTLIES_RSYNC_PATH }}/shardingsphere
-          NIGHTLIES_RSYNC_HOST: ${{ secrets.NIGHTLIES_RSYNC_HOST }}
-          NIGHTLIES_RSYNC_PORT: ${{ secrets.NIGHTLIES_RSYNC_PORT }}
-          NIGHTLIES_RSYNC_USER: ${{ secrets.NIGHTLIES_RSYNC_USER }}
-          NIGHTLIES_RSYNC_KEY: ${{ secrets.NIGHTLIES_RSYNC_KEY }}
-        run: |
-          set -eo pipefail
-          for required in NIGHTLIES_RSYNC_HOST NIGHTLIES_RSYNC_USER NIGHTLIES_RSYNC_KEY NIGHTLIES_RSYNC_PATH; do
-            if [ -z "${!required}" ]; then
-              echo "Required variable ${required} is empty; aborting upload." >&2
-              exit 1
-            fi
-          done
-          RAW_KEY="${NIGHTLIES_RSYNC_KEY}"
-          if printf '%s' "${RAW_KEY}" | grep -q '\\n'; then
-            RAW_KEY=$(printf '%s' "${RAW_KEY}" | sed 's/\\n/\n/g')
-          fi
-          KEY_CONTENT="${RAW_KEY}"
-          if ! printf '%s' "${KEY_CONTENT}" | grep -q '-----BEGIN '; then
-            DECODED_KEY=$(printf '%s' "${KEY_CONTENT}" | base64 -d 2>/dev/null || true)
-            if [ -n "${DECODED_KEY}" ]; then
-              KEY_CONTENT="${DECODED_KEY}"
-            fi
-          fi
-          KEY_FILE=$(mktemp)
-          trap 'rm -f ${KEY_FILE}' EXIT
-          printf '%s' "${KEY_CONTENT}" > "${KEY_FILE}"
-          chmod 600 "${KEY_FILE}"
-          SSH_OPTS="-i ${KEY_FILE} -o StrictHostKeyChecking=no"
-          if [ -n "${NIGHTLIES_RSYNC_PORT}" ]; then
-            SSH_OPTS="${SSH_OPTS} -p ${NIGHTLIES_RSYNC_PORT}"
-          fi
-          rsync -avzr -e "ssh ${SSH_OPTS}" distribution/proxy/target/apache-shardingsphere-*.tar.gz "${NIGHTLIES_RSYNC_USER}@${NIGHTLIES_RSYNC_HOST}:${NIGHTLIES_RSYNC_PATH}/"
+      - name: Upload Proxy Tarball Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: proxy-tarball-${{ github.sha }}
+          path: distribution/proxy/target/apache-shardingsphere-*.tar.gz
+          if-no-files-found: error
+          retention-days: 7
   
   build-proxy-image:
     if: github.repository == 'apache/shardingsphere'
@@ -295,39 +267,10 @@ jobs:
         run: |
           cd examples/shardingsphere-jdbc-example-generator/target/generated-sources/shardingsphere-jdbc-sample/
           tar -czvf ${{ matrix.feature }}--${{ matrix.framework }}--${{ matrix.mode }}--${{ matrix.transaction }}.tar.gz ${{ matrix.feature }}--${{ matrix.framework }}--${{ matrix.mode }}--${{ matrix.transaction }}
-      - name: Upload Generated Example
-        env:
-          NIGHTLIES_RSYNC_PATH: ${{ secrets.NIGHTLIES_RSYNC_PATH }}/shardingsphere/examples
-          NIGHTLIES_RSYNC_HOST: ${{ secrets.NIGHTLIES_RSYNC_HOST }}
-          NIGHTLIES_RSYNC_PORT: ${{ secrets.NIGHTLIES_RSYNC_PORT }}
-          NIGHTLIES_RSYNC_USER: ${{ secrets.NIGHTLIES_RSYNC_USER }}
-          NIGHTLIES_RSYNC_KEY: ${{ secrets.NIGHTLIES_RSYNC_KEY }}
-          TAR_PATH: examples/shardingsphere-jdbc-example-generator/target/generated-sources/shardingsphere-jdbc-sample/${{ matrix.feature }}--${{ matrix.framework }}--${{ matrix.mode }}--${{ matrix.transaction }}.tar.gz
-        run: |
-          set -eo pipefail
-          for required in NIGHTLIES_RSYNC_HOST NIGHTLIES_RSYNC_USER NIGHTLIES_RSYNC_KEY NIGHTLIES_RSYNC_PATH; do
-            if [ -z "${!required}" ]; then
-              echo "Required variable ${required} is empty; aborting upload." >&2
-              exit 1
-            fi
-          done
-          RAW_KEY="${NIGHTLIES_RSYNC_KEY}"
-          if printf '%s' "${RAW_KEY}" | grep -q '\\n'; then
-            RAW_KEY=$(printf '%s' "${RAW_KEY}" | sed 's/\\n/\n/g')
-          fi
-          KEY_CONTENT="${RAW_KEY}"
-          if ! printf '%s' "${KEY_CONTENT}" | grep -q '-----BEGIN '; then
-            DECODED_KEY=$(printf '%s' "${KEY_CONTENT}" | base64 -d 2>/dev/null || true)
-            if [ -n "${DECODED_KEY}" ]; then
-              KEY_CONTENT="${DECODED_KEY}"
-            fi
-          fi
-          KEY_FILE=$(mktemp)
-          trap 'rm -f ${KEY_FILE}' EXIT
-          printf '%s' "${KEY_CONTENT}" > "${KEY_FILE}"
-          chmod 600 "${KEY_FILE}"
-          SSH_OPTS="-i ${KEY_FILE} -o StrictHostKeyChecking=no"
-          if [ -n "${NIGHTLIES_RSYNC_PORT}" ]; then
-            SSH_OPTS="${SSH_OPTS} -p ${NIGHTLIES_RSYNC_PORT}"
-          fi
-          rsync -avzr -e "ssh ${SSH_OPTS}" "${TAR_PATH}" "${NIGHTLIES_RSYNC_USER}@${NIGHTLIES_RSYNC_HOST}:${NIGHTLIES_RSYNC_PATH}/"
+      - name: Upload Generated Example Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: example-${{ matrix.feature }}--${{ matrix.framework }}--${{ matrix.mode }}--${{ matrix.transaction }}--${{ github.sha }}
+          path: examples/shardingsphere-jdbc-example-generator/target/generated-sources/shardingsphere-jdbc-sample/${{ matrix.feature }}--${{ matrix.framework }}--${{ matrix.mode }}--${{ matrix.transaction }}.tar.gz
+          if-no-files-found: error
+          retention-days: 7
