@@ -62,9 +62,9 @@ public final class FirebirdBinaryProtocolValueFactory {
     }
     
     // TODO Uncomment when a specific handler is required; currently BLOB is handled by StringBinaryProtocolValue
-    // private static void setByteBinaryProtocolValue() {
-    // FirebirdByteBinaryProtocolValue binaryProtocolValue = new FirebirdByteBinaryProtocolValue();
-    // }
+    private static void setByteBinaryProtocolValue() {
+        FirebirdByteBinaryProtocolValue binaryProtocolValue = new FirebirdByteBinaryProtocolValue();
+    }
     
     private static void setInt16BinaryProtocolValue() {
         FirebirdInt16BinaryProtocolValue binaryProtocolValue = new FirebirdInt16BinaryProtocolValue();
