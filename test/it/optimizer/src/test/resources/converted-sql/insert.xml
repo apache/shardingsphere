@@ -49,7 +49,7 @@
     <test-cases sql-case-id="insert_with_batch_and_without_generate_key_column" expected-sql="INSERT INTO [t_order_item] ([order_id], [user_id], [status], [creation_date]) VALUES (?, ?, 'insert', '2017-08-08', ?, ?, 'insert', '2017-08-08')" db-types="SQLServer" sql-case-types="PLACEHOLDER" />
     <test-cases sql-case-id="insert_with_multiple_values" expected-sql="INSERT INTO `t_order` (`order_id`, `user_id`, `status`) VALUES (1, 1, 'insert'), (2, 2, 'insert2')" db-types="MySQL" sql-case-types="LITERAL" />
     <test-cases sql-case-id="insert_with_one_auto_increment_column" expected-sql="INSERT INTO `t_auto_increment_table` VALUES ()" db-types="MySQL" sql-case-types="LITERAL" />
-    <test-cases sql-case-id="insert_with_double_value" expected-sql="INSERT INTO `t_double_test` (`col1`) VALUES (1.22E0)" db-types="MySQL" sql-case-types="LITERAL" />
+    <test-cases sql-case-id="insert_with_double_value" expected-sql="INSERT INTO `t_double_test` (`col1`) VALUES (1.22)" db-types="MySQL" sql-case-types="LITERAL" />
     <test-cases sql-case-id="insert_with_null_value" expected-sql="INSERT INTO `t_null_value_test` (`col1`) VALUES (NULL)" db-types="MySQL" sql-case-types="LITERAL" />
     <test-cases sql-case-id="insert_with_function" expected-sql="INSERT INTO `t_order` (`present_date`, `order_id`, `user_id`) VALUES (`curdate`(), ?, ?)" db-types="MySQL" sql-case-types="PLACEHOLDER" />
     <test-cases sql-case-id="insert_with_unix_timestamp_function" expected-sql="INSERT INTO `t_order` (`status`, `order_id`, `user_id`) VALUES (`unix_timestamp`(?), ?, ?)" db-types="MySQL" sql-case-types="PLACEHOLDER" />
@@ -65,7 +65,7 @@
     <test-cases sql-case-id="insert_without_into_keyword" expected-sql="INSERT INTO `t_order` (`order_id`, `user_id`, `status`) VALUES (?, ?, ?)" db-types="MySQL" sql-case-types="PLACEHOLDER" />
     <test-cases sql-case-id="insert_with_uuid_column" expected-sql="INSERT INTO &quot;t_order&quot; (&quot;id&quot;, &quot;uuid&quot;) VALUES (?, ?)" db-types="PostgreSQL,openGauss" sql-case-types="PLACEHOLDER" />
     <test-cases sql-case-id="insert_without_columns" expected-sql="INSERT INTO &quot;departments&quot; VALUES (280, 'Recreation', 121, 1700)" db-types="Oracle" sql-case-types="LITERAL" />
-    <test-cases sql-case-id="insert_with_select_subquery" expected-sql="INSERT INTO &quot;bonuses&quot; SELECT &quot;employee_id&quot;, &quot;salary&quot; * 1.1E0 FROM &quot;employees&quot; WHERE &quot;commission_pct&quot; > 2.5E-1" db-types="Oracle" sql-case-types="LITERAL" />
+    <test-cases sql-case-id="insert_with_select_subquery" expected-sql="INSERT INTO &quot;bonuses&quot; SELECT &quot;employee_id&quot;, &quot;salary&quot; * 1.1 FROM &quot;employees&quot; WHERE &quot;commission_pct&quot; > 0.25" db-types="Oracle" sql-case-types="LITERAL" />
     <test-cases sql-case-id="insert_with_rank_column" expected-sql="INSERT INTO &quot;sales&quot; (&quot;rank&quot;) VALUES (1)" db-types="Oracle" sql-case-types="LITERAL" />
     <test-cases sql-case-id="insert_with_schema" expected-sql="INSERT INTO `db1`.`t_order` VALUES (1, 2, 3)" db-types="MySQL" sql-case-types="LITERAL" />
     <test-cases sql-case-id="insert_with_schema" expected-sql="INSERT INTO &quot;db1&quot;.&quot;t_order&quot; VALUES (1, 2, 3)" db-types="PostgreSQL,openGauss,Oracle" sql-case-types="LITERAL" />
