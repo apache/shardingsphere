@@ -34,6 +34,7 @@ This guide is written **for AI coding agents only**. Follow it literally; improv
 - **Continuous Verification**: rely on automated tests and integration validation.
 - **Public-Only Tests**: unit tests must exercise behavior via public APIs only; never use reflection to access private members.
 - **Single-Test Naming**: when a production method is covered by only one test case, name that test method `assert<MethodName>` without extra suffixes.
+- **Public Method Isolation**: aim for one public production method per dedicated test method rather than combining multiple public behaviors in a single test.
 - **Coverage Pledge**: when 100% coverage is required, enumerate every branch/path and its planned test before coding, then implement once to reach 100% without post-hoc fixes.
 - **Mock/Spy Specification**: Use mock by default; consider spy only when the scenario cannot be adequately represented using a mock. Avoid spy entirely when standard `mock + when` can express behavior, and do not introduce inner classes for testing purposes—prefer plain test classes with mocks.
 - **Strictness and Stub Control**: Enable @MockitoSettings(strictness = Strictness.LENIENT) in the Mockito scenario or apply lenient() to specific stubs to ensure there are no unmatched or redundant stubs; clean up any unused stubs, imports, or local variables before committing.
@@ -265,3 +266,6 @@ Always state which topology, registry, and engine versions (e.g., MySQL 5.7 vs 8
 - Prefer tables/bullets over prose walls; cite file paths (`kernel/src/...`) directly.
 - Eliminate repeated wording; reference prior sections instead of restating.
 - Default to ASCII; only mirror existing non-ASCII content when necessary.
+
+## Session Notes
+- MySQLSchemataQueryExecutorFactoryTest：public 方法分别测试，`accept` 与 `newInstance` 各自使用独立测试方法。
