@@ -105,15 +105,24 @@ public final class FrontendChannelInboundHandler extends ChannelInboundHandlerAd
         }
     }
     
-    private void handleAuthenticationException(final ChannelHandlerContext context, final Exception ex) {
-        if (ExpectedExceptions.isExpected(ex.getClass())) {
-            log.debug("Exception occur: ", ex);
+    @Override
+    public void exceptionCaught(final ChannelHandlerContext context, final Throwable cause) {
+        handleAuthenticationException(context, cause);
+    }
+    
+    private void handleAuthenticationException(final ChannelHandlerContext context, final Throwable cause) {
+        final Exception exception = cause instanceof Exception
+                ? (Exception) cause
+                : new SQLException(cause);
+        
+        if (ExpectedExceptions.isExpected(exception.getClass())) {
+            log.debug("Exception occur: ", exception);
         } else {
-            log.error("Exception occur: ", ex);
+            log.error("Exception occur: ", exception);
         }
         context.writeAndFlush(
                 databaseProtocolFrontendEngine.getCommandExecuteEngine()
-                        .getErrorPacket(ex));
+                        .getErrorPacket(exception));
         context.close();
     }
     
@@ -124,7 +133,8 @@ public final class FrontendChannelInboundHandler extends ChannelInboundHandlerAd
     }
     
     private void closeAllResources() {
-        ConnectionThreadExecutorGroup.getInstance().unregisterAndAwaitTermination(connectionSession.getConnectionId());
+        ConnectionThreadExecutorGroup.getInstance()
+                .unregisterAndAwaitTermination(connectionSession.getConnectionId());
         processCloseExceptions(connectionSession.getDatabaseConnectionManager().closeAllResources());
         Optional.ofNullable(connectionSession.getProcessId()).ifPresent(processEngine::disconnect);
         databaseProtocolFrontendEngine.release(connectionSession);
