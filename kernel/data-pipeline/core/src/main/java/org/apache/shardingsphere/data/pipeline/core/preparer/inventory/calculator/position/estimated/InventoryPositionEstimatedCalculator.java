@@ -21,7 +21,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSource;
 import org.apache.shardingsphere.data.pipeline.core.exception.job.SplitPipelineJobByUniqueKeyException;
-import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.inventory.query.IntervalToRangeIterator;
+import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.inventory.query.IntegerRangeSplittingIterator;
 import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.inventory.query.Range;
 import org.apache.shardingsphere.data.pipeline.core.ingest.position.IngestPosition;
 import org.apache.shardingsphere.data.pipeline.core.ingest.position.type.pk.type.IntegerPrimaryKeyIngestPosition;
@@ -83,7 +83,7 @@ public final class InventoryPositionEstimatedCalculator {
         List<IngestPosition> result = new LinkedList<>();
         long splitCount = tableRecordsCount / shardingSize + (tableRecordsCount % shardingSize > 0 ? 1 : 0);
         long interval = BigInteger.valueOf(maximum).subtract(BigInteger.valueOf(minimum)).divide(BigInteger.valueOf(splitCount)).longValue();
-        IntervalToRangeIterator rangeIterator = new IntervalToRangeIterator(minimum, maximum, interval);
+        IntegerRangeSplittingIterator rangeIterator = new IntegerRangeSplittingIterator(minimum, maximum, interval);
         while (rangeIterator.hasNext()) {
             org.apache.commons.lang3.Range<Long> range = rangeIterator.next();
             result.add(new IntegerPrimaryKeyIngestPosition(range.getMinimum(), range.getMaximum()));

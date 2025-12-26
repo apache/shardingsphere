@@ -24,12 +24,11 @@ import java.util.Iterator;
 import java.util.NoSuchElementException;
 
 /**
- * Interval to range iterator.
- * <p>
- * It's not thread-safe.
- * </p>
+ * Integer range splitting iterator.
+ *
+ * <p>It's not thread-safe.</p>
  */
-public final class IntervalToRangeIterator implements Iterator<Range<Long>> {
+public final class IntegerRangeSplittingIterator implements Iterator<Range<Long>> {
     
     private final BigInteger maximum;
     
@@ -37,7 +36,7 @@ public final class IntervalToRangeIterator implements Iterator<Range<Long>> {
     
     private BigInteger current;
     
-    public IntervalToRangeIterator(final long minimum, final long maximum, final long interval) {
+    public IntegerRangeSplittingIterator(final long minimum, final long maximum, final long interval) {
         if (minimum > maximum) {
             throw new IllegalArgumentException("minimum greater than maximum");
         }

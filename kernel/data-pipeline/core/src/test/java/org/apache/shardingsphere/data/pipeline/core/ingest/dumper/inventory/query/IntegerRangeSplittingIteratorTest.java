@@ -28,21 +28,21 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-class IntervalToRangeIteratorTest {
+class IntegerRangeSplittingIteratorTest {
     
     @Test
     void assertMinimumGreaterThanMaximum() {
-        assertThrows(IllegalArgumentException.class, () -> new IntervalToRangeIterator(200L, 100L, 10L));
+        assertThrows(IllegalArgumentException.class, () -> new IntegerRangeSplittingIterator(200L, 100L, 10L));
     }
     
     @Test
     void assertIntervalLessThanZero() {
-        assertThrows(IllegalArgumentException.class, () -> new IntervalToRangeIterator(100L, 200L, -10L));
+        assertThrows(IllegalArgumentException.class, () -> new IntegerRangeSplittingIterator(100L, 200L, -10L));
     }
     
     @Test
     void assertInvalidNext() {
-        IntervalToRangeIterator iterator = new IntervalToRangeIterator(200L, 200L, 0L);
+        IntegerRangeSplittingIterator iterator = new IntegerRangeSplittingIterator(200L, 200L, 0L);
         if (iterator.hasNext()) {
             iterator.next();
         }
@@ -51,7 +51,7 @@ class IntervalToRangeIteratorTest {
     
     @Test
     void assertSmallRangeCorrect() {
-        IntervalToRangeIterator iterator = new IntervalToRangeIterator(200L, 200L, 0L);
+        IntegerRangeSplittingIterator iterator = new IntegerRangeSplittingIterator(200L, 200L, 0L);
         List<Range<Long>> actual = new LinkedList<>();
         while (iterator.hasNext()) {
             actual.add(iterator.next());
@@ -63,7 +63,7 @@ class IntervalToRangeIteratorTest {
     
     @Test
     void assertLargeRangeCorrect() {
-        IntervalToRangeIterator iterator = new IntervalToRangeIterator(200L, 400L, 100L);
+        IntegerRangeSplittingIterator iterator = new IntegerRangeSplittingIterator(200L, 400L, 100L);
         List<Range<Long>> actual = new LinkedList<>();
         while (iterator.hasNext()) {
             actual.add(iterator.next());
