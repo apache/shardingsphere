@@ -21,26 +21,26 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 /**
- * Query range.
+ * Range.
  */
 @RequiredArgsConstructor
 @Getter
-public final class QueryRange {
+public final class Range {
     
-    private final Object lower;
+    private final Object lowerBound;
     
     private final boolean lowerInclusive;
     
-    private final Object upper;
+    private final Object upperBound;
     
     /**
-     * Create closed query range.
+     * Create closed range.
      *
-     * @param lower lower value
-     * @param upper upper value
-     * @return query range
+     * @param lowerBound lower bound
+     * @param upperBound upper bound
+     * @return closed range
      */
-    public static QueryRange closed(final Object lower, final Object upper) {
-        return new QueryRange(lower, true, upper);
+    public static Range closed(final Object lowerBound, final Object upperBound) {
+        return new Range(lowerBound, true, upperBound);
     }
 }
