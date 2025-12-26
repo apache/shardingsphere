@@ -17,8 +17,6 @@
 
 package org.apache.shardingsphere.data.pipeline.core.ingest.dumper.inventory.query;
 
-import org.apache.commons.lang3.Range;
-
 import java.math.BigInteger;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
@@ -59,7 +57,7 @@ public final class IntegerRangeSplittingIterator implements Iterator<Range<Long>
             throw new NoSuchElementException("");
         }
         BigInteger upperLimit = min(maximum, current.add(stepSize));
-        Range<Long> result = Range.of(current.longValue(), upperLimit.longValue());
+        Range<Long> result = Range.closed(current.longValue(), upperLimit.longValue());
         current = upperLimit.add(BigInteger.ONE);
         return result;
     }

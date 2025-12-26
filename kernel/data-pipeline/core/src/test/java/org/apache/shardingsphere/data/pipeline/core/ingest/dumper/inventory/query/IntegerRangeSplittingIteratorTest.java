@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.data.pipeline.core.ingest.dumper.inventory.query;
 
-import org.apache.commons.lang3.Range;
 import org.junit.jupiter.api.Test;
 
 import java.util.LinkedList;
@@ -57,8 +56,8 @@ class IntegerRangeSplittingIteratorTest {
             actual.add(iterator.next());
         }
         assertThat(actual.size(), is(1));
-        assertThat(actual.get(0).getMinimum(), is(200L));
-        assertThat(actual.get(0).getMaximum(), is(200L));
+        assertThat(actual.get(0).getLowerBound(), is(200L));
+        assertThat(actual.get(0).getUpperBound(), is(200L));
     }
     
     @Test
@@ -69,9 +68,9 @@ class IntegerRangeSplittingIteratorTest {
             actual.add(iterator.next());
         }
         assertThat(actual.size(), is(2));
-        assertThat(actual.get(0).getMinimum(), is(200L));
-        assertThat(actual.get(0).getMaximum(), is(300L));
-        assertThat(actual.get(1).getMinimum(), is(301L));
-        assertThat(actual.get(1).getMaximum(), is(400L));
+        assertThat(actual.get(0).getLowerBound(), is(200L));
+        assertThat(actual.get(0).getUpperBound(), is(300L));
+        assertThat(actual.get(1).getLowerBound(), is(301L));
+        assertThat(actual.get(1).getUpperBound(), is(400L));
     }
 }
