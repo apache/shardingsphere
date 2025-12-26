@@ -21,6 +21,7 @@ import com.google.common.base.Preconditions;
 import lombok.Getter;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.CommonStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.dialect.doris.DorisAlterStoragePolicyStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.dialect.doris.DorisResumeJobStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.standard.catalog.AlterCatalogStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.tcl.HiveAbortStatementTestCase;
@@ -756,6 +757,9 @@ public final class RootSQLParserTestCases {
     
     @XmlElement(name = "alter-package")
     private final List<AlterPackageStatementTestCase> alterPackageTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "alter-storage-policy")
+    private final List<DorisAlterStoragePolicyStatementTestCase> alterStoragePolicyTestCases = new LinkedList<>();
     
     @XmlElement(name = "drop-package")
     private final List<OracleDropPackageStatementTestCase> dropPackageTestCases = new LinkedList<>();

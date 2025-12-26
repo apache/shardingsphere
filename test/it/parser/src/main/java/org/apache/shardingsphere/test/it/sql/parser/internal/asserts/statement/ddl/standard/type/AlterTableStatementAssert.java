@@ -29,7 +29,9 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.column.al
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.constraint.alter.AddConstraintDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.constraint.alter.ModifyConstraintDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.index.RenameIndexDefinitionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.partition.RenamePartitionDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.primary.DropPrimaryKeyDefinitionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.rollup.RenameRollupDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.table.ConvertTableDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
@@ -43,6 +45,8 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.def
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.definition.ConstraintDefinitionAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.definition.IndexDefinitionAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.expression.ExpressionAssert;
+import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.partition.PartitionAssert;
+import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.rollup.RollupAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.table.TableAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.definition.ExpectedAddColumnDefinition;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.definition.ExpectedChangeColumnDefinition;
@@ -51,6 +55,8 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.s
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.definition.ExpectedModifyColumnDefinition;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.definition.ExpectedRenameColumnDefinition;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.definition.ExpectedRenameIndexDefinition;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.definition.ExpectedRenamePartitionDefinition;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.definition.ExpectedRenameRollupDefinition;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.standard.table.AlterTableStatementTestCase;
 
 import java.util.Collection;
@@ -89,6 +95,8 @@ public final class AlterTableStatementAssert {
         assertDropColumns(assertContext, actual, expected);
         assertRenameIndexDefinitions(assertContext, actual, expected);
         assertRenameColumnDefinitions(assertContext, actual, expected);
+        assertRenameRollupDefinitions(assertContext, actual, expected);
+        assertRenamePartitionDefinitions(assertContext, actual, expected);
         assertConvertTable(assertContext, actual, expected);
         assertModifyCollectionRetrievalDefinitions(assertContext, actual, expected);
         assertDropPrimaryKeyDefinition(assertContext, actual, expected);
@@ -243,6 +251,30 @@ public final class AlterTableStatementAssert {
             ExpectedRenameColumnDefinition expectedRenameColumnDefinition = expected.getRenameColumns().get(count);
             ColumnAssert.assertIs(assertContext, each.getOldColumnName(), expectedRenameColumnDefinition.getOldColumnName());
             ColumnAssert.assertIs(assertContext, each.getColumnName(), expectedRenameColumnDefinition.getColumnName());
+            count++;
+        }
+    }
+    
+    private static void assertRenameRollupDefinitions(final SQLCaseAssertContext assertContext, final AlterTableStatement actual, final AlterTableStatementTestCase expected) {
+        assertThat(assertContext.getText("Rename rollup definitions size assertion error: "), actual.getRenameRollupDefinitions().size(), is(expected.getRenameRollups().size()));
+        int count = 0;
+        for (RenameRollupDefinitionSegment each : actual.getRenameRollupDefinitions()) {
+            ExpectedRenameRollupDefinition expectedRenameRollupDefinition = expected.getRenameRollups().get(count);
+            RollupAssert.assertIs(assertContext, each.getRollupSegment(), expectedRenameRollupDefinition.getOldRollup());
+            RollupAssert.assertIs(assertContext, each.getRenameRollupSegment(), expectedRenameRollupDefinition.getNewRollup());
+            SQLSegmentAssert.assertIs(assertContext, each, expectedRenameRollupDefinition);
+            count++;
+        }
+    }
+    
+    private static void assertRenamePartitionDefinitions(final SQLCaseAssertContext assertContext, final AlterTableStatement actual, final AlterTableStatementTestCase expected) {
+        assertThat(assertContext.getText("Rename partition definitions size assertion error: "), actual.getRenamePartitionDefinitions().size(), is(expected.getRenamePartitions().size()));
+        int count = 0;
+        for (RenamePartitionDefinitionSegment each : actual.getRenamePartitionDefinitions()) {
+            ExpectedRenamePartitionDefinition expectedRenamePartitionDefinition = expected.getRenamePartitions().get(count);
+            PartitionAssert.assertIs(assertContext, each.getPartitionSegment(), expectedRenamePartitionDefinition.getOldPartition());
+            PartitionAssert.assertIs(assertContext, each.getRenamePartitionSegment(), expectedRenamePartitionDefinition.getNewPartition());
+            SQLSegmentAssert.assertIs(assertContext, each, expectedRenamePartitionDefinition);
             count++;
         }
     }

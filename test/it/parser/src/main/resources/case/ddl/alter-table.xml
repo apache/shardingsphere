@@ -2541,4 +2541,33 @@
     <alter-table sql-case-id="alter_drop_tag_if_exists">
         <table name="test" start-index="12" stop-index="15" />
     </alter-table>
+
+    <alter-table sql-case-id="alter_table_rename_table_doris">
+        <table name="table1" start-index="12" stop-index="17" />
+        <rename-table name="table2" start-index="26" stop-index="31" />
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_rename_column_doris">
+        <table name="example_table" start-index="12" stop-index="24" />
+        <rename-column start-index="26" stop-index="44">
+            <old-column-name name="c1" start-index="40" stop-index="41" />
+            <column-name name="c2" start-index="43" stop-index="44" />
+        </rename-column>
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_rename_rollup">
+        <table name="example_table" start-index="12" stop-index="24" />
+        <rename-rollup start-index="26" stop-index="54">
+            <old-rollup name="rollup1" start-index="40" stop-index="46" />
+            <new-rollup name="rollup2" start-index="48" stop-index="54" />
+        </rename-rollup>
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_rename_partition">
+        <table name="example_table" start-index="12" stop-index="24" />
+        <rename-partition start-index="26" stop-index="63">
+            <old-partition name="partition1" start-index="43" stop-index="52" />
+            <new-partition name="partition2" start-index="54" stop-index="63" />
+        </rename-partition>
+    </alter-table>
 </sql-parser-test-cases>

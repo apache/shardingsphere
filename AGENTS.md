@@ -35,6 +35,8 @@ This guide is written **for AI coding agents only**. Follow it literally; improv
 - **Public-Only Tests**: unit tests must exercise behavior via public APIs only; never use reflection to access private members.
 - **Single-Test Naming**: when a production method is covered by only one test case, name that test method `assert<MethodName>` without extra suffixes.
 - **Public Method Isolation**: aim for one public production method per dedicated test method rather than combining multiple public behaviors in a single test.
+- **Test Method Order**: keep unit test method ordering consistent with corresponding production methods when practical to improve traceability.
+- **Test Naming Simplicity**: keep test names concise and scenario-focused (avoid “ReturnsXXX”/overly wordy or AI-like phrasing); describe the scenario directly.
 - **Coverage Pledge**: when 100% coverage is required, enumerate every branch/path and its planned test before coding, then implement once to reach 100% without post-hoc fixes.
 - **Mock/Spy Specification**: Use mock by default; consider spy only when the scenario cannot be adequately represented using a mock. Avoid spy entirely when standard `mock + when` can express behavior, and do not introduce inner classes for testing purposes—prefer plain test classes with mocks.
 - **Strictness and Stub Control**: Enable @MockitoSettings(strictness = Strictness.LENIENT) in the Mockito scenario or apply lenient() to specific stubs to ensure there are no unmatched or redundant stubs; clean up any unused stubs, imports, or local variables before committing.
@@ -249,10 +251,12 @@ Always state which topology, registry, and engine versions (e.g., MySQL 5.7 vs 8
 - Favor Mockito over bespoke fixtures; only add new fixture classes when mocks cannot express the scenario.
 - Use marker interfaces when distinct rule/attribute types are needed; reuse SPI types such as `ShardingSphereRule` where possible.
 - Name tests after the production method under test; never probe private helpers directly—document unreachable branches instead.
-- Mock heavy dependencies (database/cache/registry/network) and prefer mocking over building deep object graphs; avoid `RETURNS_DEEP_STUBS` unless chained interactions demand it.
+- Mock heavy dependencies (database/cache/registry/network) and prefer mocking over building deep object graphs.
+- For static/constructor mocking, use `@ExtendWith(AutoMockExtension.class)` with `@StaticMockSettings`; avoid hand-written `mockStatic`/`mockConstruction` unless you documented why the extension cannot be used.
+- For deep chained interactions, you may use Mockito’s `RETURNS_DEEP_STUBS` to reduce intermediate mocks; this is independent of the static-mock rule above.
 - Before changing how mocks are created, scan the repository for similar tests (e.g., other rule decorators or executor tests) and reuse their proven mocking pattern instead of inventing a new structure.
 - When constructors hide collaborators, use `Plugins.getMemberAccessor()` to inject mocks and document why SPI creation is bypassed.
-- If a test already uses `@ExtendWith(AutoMockExtension.class)`, always declare the needed static collaborators via `@StaticMockSettings` instead of hand-written `mockStatic` blocks; when a class appears in `@StaticMockSettings`, do not call `mockStatic` on it—directly stub via `when(...)` (cast to `TypedSPI` if needed) to avoid ClassCast/duplicate-mock issues; justify any exception explicitly in the plan before coding.
+- When static methods or constructors need mocking, prefer `@ExtendWith(AutoMockExtension.class)` with `@StaticMockSettings` (or the extension’s constructor-mocking support); when a class is listed in `@StaticMockSettings`, do not call `mockStatic`/`mockConstruction` directly—stub via `when(...)` instead. Only if AutoMockExtension cannot be used and the reason is documented in the plan may you fall back to `mockStatic`/`mockConstruction`, wrapped in try-with-resources.
 - Before adding coverage to a utility with multiple return paths, list every branch (no rule, non-Single config, wildcard blocks, missing data node, positive path, collection overload) and map each to a test; update the plan whenever this checklist changes.
 - Prefer imports over fully-qualified class names inside code and tests; if a class is used, add an import rather than using the full package path inline.
 - Before coding tests, prepare a concise branch-and-data checklist (all branches, inputs, expected outputs) and keep the plan in sync when the checklist changes.
