@@ -59,4 +59,9 @@ public final class Range<T> {
     public static <T> Range<T> openClosed(final T lowerBound, final T upperBound) {
         return new Range<T>(lowerBound, false, upperBound);
     }
+    
+    @Override
+    public String toString() {
+        return (lowerInclusive ? "[" : "(") + lowerBound + ", " + upperBound + "]";
+    }
 }
