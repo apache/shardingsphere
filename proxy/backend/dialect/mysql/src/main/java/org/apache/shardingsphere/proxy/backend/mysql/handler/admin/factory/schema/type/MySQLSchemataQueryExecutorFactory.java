@@ -18,33 +18,25 @@
 package org.apache.shardingsphere.proxy.backend.mysql.handler.admin.factory.schema.type;
 
 import org.apache.shardingsphere.infra.binder.context.statement.type.dml.SelectStatementContext;
-import org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager;
 import org.apache.shardingsphere.proxy.backend.handler.admin.executor.DatabaseAdminExecutor;
-import org.apache.shardingsphere.proxy.backend.handler.admin.executor.DatabaseMetaDataExecutor;
 import org.apache.shardingsphere.proxy.backend.mysql.handler.admin.executor.select.SelectInformationSchemataExecutor;
-import org.apache.shardingsphere.proxy.backend.mysql.handler.admin.factory.schema.MySQLSpecialSchemaQueryExecutorFactory;
+import org.apache.shardingsphere.proxy.backend.mysql.handler.admin.factory.schema.MySQLSpecialTableQueryExecutorFactory;
 
 import java.util.List;
 import java.util.Optional;
 
 /**
- * MySQL information query executor factory.
+ * MySQL Schemata query executor factory.
  */
-public final class MySQLInformationQueryExecutorFactory implements MySQLSpecialSchemaQueryExecutorFactory {
+public final class MySQLSchemataQueryExecutorFactory implements MySQLSpecialTableQueryExecutorFactory {
     
     @Override
     public boolean accept(final String schemaName, final String tableName) {
-        return "information_schema".equalsIgnoreCase(schemaName) && SystemSchemaManager.isSystemTable("mysql", "information_schema", tableName);
+        return "information_schema".equalsIgnoreCase(schemaName) && "SCHEMATA".equalsIgnoreCase(tableName);
     }
     
     @Override
     public Optional<DatabaseAdminExecutor> newInstance(final SelectStatementContext selectStatementContext, final String sql, final List<Object> parameters, final String tableName) {
-        if ("SCHEMATA".equalsIgnoreCase(tableName)) {
-            return Optional.of(new SelectInformationSchemataExecutor(selectStatementContext.getSqlStatement(), sql, parameters));
-        }
-        if (SystemSchemaManager.isSystemTable("mysql", "information_schema", tableName)) {
-            return Optional.of(new DatabaseMetaDataExecutor(sql, parameters));
-        }
-        return  Optional.empty();
+        return Optional.of(new SelectInformationSchemataExecutor(selectStatementContext.getSqlStatement(), sql, parameters));
     }
 }

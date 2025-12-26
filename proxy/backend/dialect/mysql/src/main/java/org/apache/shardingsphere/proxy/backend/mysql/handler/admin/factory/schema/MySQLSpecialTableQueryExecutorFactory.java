@@ -24,9 +24,9 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- * MySQL special schema query executor factory.
+ * MySQL special table query executor factory.
  */
-public interface MySQLSpecialSchemaQueryExecutorFactory {
+public interface MySQLSpecialTableQueryExecutorFactory {
     
     /**
      * Whether to be processed special table.
