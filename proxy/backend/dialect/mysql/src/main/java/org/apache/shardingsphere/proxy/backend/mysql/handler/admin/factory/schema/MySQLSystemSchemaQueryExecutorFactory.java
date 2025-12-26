@@ -23,17 +23,26 @@ import org.apache.shardingsphere.infra.binder.context.statement.type.dml.SelectS
 import org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager;
 import org.apache.shardingsphere.proxy.backend.handler.admin.executor.DatabaseAdminExecutor;
 import org.apache.shardingsphere.proxy.backend.handler.admin.executor.DatabaseMetaDataExecutor;
+import org.apache.shardingsphere.proxy.backend.mysql.handler.admin.factory.schema.type.MySQLSchemataQueryExecutorFactory;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.SelectStatement;
 
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 
 /**
- * Construct the performance schema executor's factory.
+ * MySQL system schema query executor factory.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class MySQLPerformanceSchemaExecutorFactory {
+public final class MySQLSystemSchemaQueryExecutorFactory {
+    
+    private static final Collection<MySQLSpecialTableQueryExecutorFactory> SPECIAL_TABLE_EXECUTOR_FACTORIES = new HashSet<>();
+    
+    static {
+        SPECIAL_TABLE_EXECUTOR_FACTORIES.add(new MySQLSchemataQueryExecutorFactory());
+    }
     
     /**
      * Create executor.
@@ -41,16 +50,35 @@ public final class MySQLPerformanceSchemaExecutorFactory {
      * @param selectStatementContext select statement context
      * @param sql SQL being executed
      * @param parameters parameters
+     * @param schemaName schema name
      * @return executor
      */
-    public static Optional<DatabaseAdminExecutor> newInstance(final SelectStatementContext selectStatementContext, final String sql, final List<Object> parameters) {
+    public static Optional<DatabaseAdminExecutor> newInstance(final SelectStatementContext selectStatementContext, final String sql, final List<Object> parameters, final String schemaName) {
         SelectStatement sqlStatement = selectStatementContext.getSqlStatement();
         if (!sqlStatement.getFrom().isPresent() || !(sqlStatement.getFrom().get() instanceof SimpleTableSegment)) {
             return Optional.empty();
         }
         String tableName = ((SimpleTableSegment) sqlStatement.getFrom().get()).getTableName().getIdentifier().getValue();
-        if (SystemSchemaManager.isSystemTable("mysql", "performance_schema", tableName)) {
+        Optional<DatabaseAdminExecutor> specialTableExecutor = findSpecialTableExecutor(selectStatementContext, sql, parameters, schemaName, tableName);
+        if (specialTableExecutor.isPresent()) {
+            return specialTableExecutor;
+        }
+        if (SystemSchemaManager.isSystemTable("mysql", schemaName, tableName)) {
             return Optional.of(new DatabaseMetaDataExecutor(sql, parameters));
+        }
+        return Optional.empty();
+    }
+    
+    private static Optional<DatabaseAdminExecutor> findSpecialTableExecutor(final SelectStatementContext selectStatementContext,
+                                                                            final String sql, final List<Object> parameters, final String schemaName, final String tableName) {
+        for (MySQLSpecialTableQueryExecutorFactory each : SPECIAL_TABLE_EXECUTOR_FACTORIES) {
+            if (!each.accept(schemaName, tableName)) {
+                continue;
+            }
+            Optional<DatabaseAdminExecutor> specialTableExecutor = each.newInstance(selectStatementContext, sql, parameters, tableName);
+            if (specialTableExecutor.isPresent()) {
+                return specialTableExecutor;
+            }
         }
         return Optional.empty();
     }

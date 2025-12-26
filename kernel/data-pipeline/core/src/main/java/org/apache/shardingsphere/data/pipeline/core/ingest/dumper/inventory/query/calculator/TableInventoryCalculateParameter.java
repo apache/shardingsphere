@@ -20,7 +20,7 @@ package org.apache.shardingsphere.data.pipeline.core.ingest.dumper.inventory.que
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSource;
-import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.inventory.query.QueryRange;
+import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.inventory.query.Range;
 import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.inventory.query.QueryType;
 import org.apache.shardingsphere.data.pipeline.core.metadata.model.PipelineColumnMetaData;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
@@ -60,7 +60,7 @@ public final class TableInventoryCalculateParameter {
     
     private final AtomicReference<Collection<Object>> uniqueKeysValues = new AtomicReference<>();
     
-    private final AtomicReference<QueryRange> uniqueKeysValuesRange = new AtomicReference<>();
+    private final AtomicReference<Range> uniqueKeysValuesRange = new AtomicReference<>();
     
     private final AtomicReference<List<String>> shardingColumnsNames = new AtomicReference<>();
     
@@ -134,21 +134,21 @@ public final class TableInventoryCalculateParameter {
     }
     
     /**
-     * Get query range.
+     * Get range.
      *
-     * @return query range
+     * @return range
      */
-    public QueryRange getQueryRange() {
+    public Range getRange() {
         return uniqueKeysValuesRange.get();
     }
     
     /**
-     * Set query range.
+     * Set range.
      *
-     * @param queryRange query range
+     * @param range range
      */
-    public void setQueryRange(final QueryRange queryRange) {
-        uniqueKeysValuesRange.set(queryRange);
+    public void setRange(final Range range) {
+        uniqueKeysValuesRange.set(range);
     }
     
     /**

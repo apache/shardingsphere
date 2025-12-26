@@ -21,7 +21,7 @@ import org.apache.commons.text.RandomStringGenerator;
 import org.apache.shardingsphere.data.pipeline.core.consistencycheck.result.RecordTableInventoryCheckCalculatedResult;
 import org.apache.shardingsphere.data.pipeline.core.consistencycheck.result.TableInventoryCheckCalculatedResult;
 import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSource;
-import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.inventory.query.QueryRange;
+import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.inventory.query.Range;
 import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.inventory.query.QueryType;
 import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.inventory.query.StreamingRangeType;
 import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.inventory.query.calculator.TableInventoryCalculateParameter;
@@ -99,7 +99,7 @@ class RecordTableInventoryCheckCalculatorTest {
         RecordTableInventoryCheckCalculator calculator = new RecordTableInventoryCheckCalculator(4, StreamingRangeType.valueOf(streamingRangeType));
         TableInventoryCalculateParameter param = new TableInventoryCalculateParameter(dataSource, new QualifiedTable(null, "t_order"),
                 Collections.emptyList(), buildOrderIdUniqueKey(), QueryType.RANGE_QUERY, null);
-        assertQueryRangeCalculatedResult(calculator, param, new QueryRange(0, false, null), 4, 4);
+        assertRangeQueryCalculatedResult(calculator, param, new Range(0, false, null), 4, 4);
     }
     
     @ParameterizedTest
@@ -108,7 +108,7 @@ class RecordTableInventoryCheckCalculatorTest {
         RecordTableInventoryCheckCalculator calculator = new RecordTableInventoryCheckCalculator(4, StreamingRangeType.valueOf(streamingRangeType));
         TableInventoryCalculateParameter param = new TableInventoryCalculateParameter(dataSource, new QualifiedTable(null, "t_order"),
                 Collections.emptyList(), buildOrderIdUniqueKey(), QueryType.RANGE_QUERY, null);
-        assertQueryRangeCalculatedResult(calculator, param, new QueryRange(4, false, null), 4, 8);
+        assertRangeQueryCalculatedResult(calculator, param, new Range(4, false, null), 4, 8);
     }
     
     @ParameterizedTest
@@ -117,13 +117,13 @@ class RecordTableInventoryCheckCalculatorTest {
         RecordTableInventoryCheckCalculator calculator = new RecordTableInventoryCheckCalculator(1000, StreamingRangeType.valueOf(streamingRangeType));
         TableInventoryCalculateParameter param = new TableInventoryCalculateParameter(dataSource, new QualifiedTable(null, "t_order"),
                 Collections.emptyList(), buildMultiColumnUniqueKeys(), QueryType.RANGE_QUERY, null);
-        assertQueryRangeCalculatedResult(calculator, param, new QueryRange(3, true, 6), 8, 6);
-        assertQueryRangeCalculatedResult(calculator, param, new QueryRange(3, false, 6), 3, 6);
+        assertRangeQueryCalculatedResult(calculator, param, new Range(3, true, 6), 8, 6);
+        assertRangeQueryCalculatedResult(calculator, param, new Range(3, false, 6), 3, 6);
     }
     
-    private void assertQueryRangeCalculatedResult(final RecordTableInventoryCheckCalculator calculator, final TableInventoryCalculateParameter param, final QueryRange queryRange,
+    private void assertRangeQueryCalculatedResult(final RecordTableInventoryCheckCalculator calculator, final TableInventoryCalculateParameter param, final Range range,
                                                   final int expectedRecordsCount, final int expectedMaxUniqueKeyValue) {
-        param.setQueryRange(queryRange);
+        param.setRange(range);
         Optional<TableInventoryCheckCalculatedResult> calculatedResult = calculator.calculateChunk(param);
         QuietlyCloser.close(param.getCalculationContext());
         assertTrue(calculatedResult.isPresent());
@@ -145,9 +145,9 @@ class RecordTableInventoryCheckCalculatorTest {
         RecordTableInventoryCheckCalculator calculator = new RecordTableInventoryCheckCalculator(1000, StreamingRangeType.valueOf(streamingRangeType));
         TableInventoryCalculateParameter param = new TableInventoryCalculateParameter(dataSource, new QualifiedTable(null, "test3"),
                 Collections.emptyList(), buildMultiColumnUniqueKeys(), QueryType.RANGE_QUERY, null);
-        assertQueryRangeCalculatedResult(calculator, param, new QueryRange(3, true, 4), 4, 4);
-        assertQueryRangeCalculatedResult(calculator, param, new QueryRange(5, true, 6), 4, 6);
-        assertQueryRangeCalculatedResult(calculator, param, new QueryRange(5, true, 7), 5, 7);
+        assertRangeQueryCalculatedResult(calculator, param, new Range(3, true, 4), 4, 4);
+        assertRangeQueryCalculatedResult(calculator, param, new Range(5, true, 6), 4, 6);
+        assertRangeQueryCalculatedResult(calculator, param, new Range(5, true, 7), 5, 7);
     }
     
     @ParameterizedTest
@@ -156,7 +156,7 @@ class RecordTableInventoryCheckCalculatorTest {
         RecordTableInventoryCheckCalculator calculator = new RecordTableInventoryCheckCalculator(1000, StreamingRangeType.valueOf(streamingRangeType));
         TableInventoryCalculateParameter param = new TableInventoryCalculateParameter(dataSource, new QualifiedTable(null, "t_order"),
                 Collections.emptyList(), buildMultiColumnUniqueKeys(), QueryType.RANGE_QUERY, null);
-        param.setQueryRange(new QueryRange(3, true, 2));
+        param.setRange(new Range(3, true, 2));
         Optional<TableInventoryCheckCalculatedResult> calculatedResult = calculator.calculateChunk(param);
         QuietlyCloser.close(param.getCalculationContext());
         assertFalse(calculatedResult.isPresent());
@@ -171,7 +171,7 @@ class RecordTableInventoryCheckCalculatorTest {
         }
         TableInventoryCalculateParameter param = new TableInventoryCalculateParameter(dataSource, new QualifiedTable(null, "test1"),
                 Collections.emptyList(), buildUserIdUniqueKey(), QueryType.RANGE_QUERY, null);
-        param.setQueryRange(new QueryRange(0, false, null));
+        param.setRange(new Range(0, false, null));
         RecordTableInventoryCheckCalculator calculator = new RecordTableInventoryCheckCalculator(5, StreamingRangeType.valueOf(streamingRangeType));
         Optional<TableInventoryCheckCalculatedResult> calculateResult = calculator.calculateChunk(param);
         QuietlyCloser.close(param.getCalculationContext());
@@ -187,7 +187,7 @@ class RecordTableInventoryCheckCalculatorTest {
         }
         TableInventoryCalculateParameter param = new TableInventoryCalculateParameter(dataSource, new QualifiedTable(null, "test2"),
                 Collections.emptyList(), buildMultiColumnUniqueKeys(), QueryType.RANGE_QUERY, null);
-        param.setQueryRange(new QueryRange(null, false, null));
+        param.setRange(new Range(null, false, null));
         RecordTableInventoryCheckCalculator calculator = new RecordTableInventoryCheckCalculator(5, StreamingRangeType.valueOf(streamingRangeType));
         Optional<TableInventoryCheckCalculatedResult> calculateResult = calculator.calculateChunk(param);
         QuietlyCloser.close(param.getCalculationContext());
@@ -200,7 +200,7 @@ class RecordTableInventoryCheckCalculatorTest {
         RecordTableInventoryCheckCalculator calculator = new RecordTableInventoryCheckCalculator(3, streamingChunkCount, StreamingRangeType.valueOf(streamingRangeType));
         TableInventoryCalculateParameter param = new TableInventoryCalculateParameter(dataSource, new QualifiedTable(null, "t_order"),
                 Collections.emptyList(), buildOrderIdUniqueKey(), QueryType.RANGE_QUERY, null);
-        param.setQueryRange(new QueryRange(null, false, null));
+        param.setRange(new Range(null, false, null));
         Iterator<TableInventoryCheckCalculatedResult> resultIterator = calculator.calculate(param).iterator();
         RecordTableInventoryCheckCalculatedResult actual = (RecordTableInventoryCheckCalculatedResult) resultIterator.next();
         assertThat(actual.getRecordsCount(), is(3));
@@ -238,7 +238,7 @@ class RecordTableInventoryCheckCalculatorTest {
         RecordTableInventoryCheckCalculator calculator = new RecordTableInventoryCheckCalculator(50, 100, StreamingRangeType.valueOf(streamingRangeType));
         TableInventoryCalculateParameter param = new TableInventoryCalculateParameter(dataSource, new QualifiedTable(null, "t_order"),
                 Collections.emptyList(), buildMultiColumnUniqueKeys(), QueryType.RANGE_QUERY, null);
-        param.setQueryRange(new QueryRange(null, false, null));
+        param.setRange(new Range(null, false, null));
         Iterator<TableInventoryCheckCalculatedResult> resultIterator = calculator.calculate(param).iterator();
         RecordTableInventoryCheckCalculatedResult actual = (RecordTableInventoryCheckCalculatedResult) resultIterator.next();
         assertThat(actual.getRecordsCount(), is(10));
@@ -264,7 +264,7 @@ class RecordTableInventoryCheckCalculatorTest {
         RecordTableInventoryCheckCalculator calculator = new RecordTableInventoryCheckCalculator(3, streamingChunkCount, StreamingRangeType.valueOf(streamingRangeType));
         TableInventoryCalculateParameter param = new TableInventoryCalculateParameter(dataSource, new QualifiedTable(null, "t_order"),
                 Collections.emptyList(), buildMultiColumnUniqueKeys(), QueryType.RANGE_QUERY, null);
-        param.setQueryRange(new QueryRange(null, false, null));
+        param.setRange(new Range(null, false, null));
         Iterator<TableInventoryCheckCalculatedResult> resultIterator = calculator.calculate(param).iterator();
         RecordTableInventoryCheckCalculatedResult actual = (RecordTableInventoryCheckCalculatedResult) resultIterator.next();
         assertThat(actual.getRecordsCount(), is(3));
@@ -302,7 +302,7 @@ class RecordTableInventoryCheckCalculatorTest {
         RecordTableInventoryCheckCalculator calculator = new RecordTableInventoryCheckCalculator(2, streamingChunkCount, StreamingRangeType.valueOf(streamingRangeType));
         TableInventoryCalculateParameter param = new TableInventoryCalculateParameter(dataSource, new QualifiedTable(null, "t_order"),
                 Collections.emptyList(), buildMultiColumnUniqueKeys(), QueryType.RANGE_QUERY, null);
-        param.setQueryRange(new QueryRange(null, false, null));
+        param.setRange(new Range(null, false, null));
         Iterator<TableInventoryCheckCalculatedResult> resultIterator = calculator.calculate(param).iterator();
         RecordTableInventoryCheckCalculatedResult actual = (RecordTableInventoryCheckCalculatedResult) resultIterator.next();
         assertThat(actual.getRecordsCount(), is(2));

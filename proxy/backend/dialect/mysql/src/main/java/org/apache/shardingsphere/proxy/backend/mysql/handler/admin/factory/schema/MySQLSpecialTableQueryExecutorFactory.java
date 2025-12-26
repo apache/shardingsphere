@@ -17,23 +17,25 @@
 
 package org.apache.shardingsphere.proxy.backend.mysql.handler.admin.factory.schema;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.binder.context.statement.type.dml.SelectStatementContext;
-import org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager;
 import org.apache.shardingsphere.proxy.backend.handler.admin.executor.DatabaseAdminExecutor;
-import org.apache.shardingsphere.proxy.backend.handler.admin.executor.DatabaseMetaDataExecutor;
-import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.SelectStatement;
 
 import java.util.List;
 import java.util.Optional;
 
 /**
- * Construct the mysql schema executor's factory.
+ * MySQL special table query executor factory.
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class MySQLMySQLSchemaExecutorFactory {
+public interface MySQLSpecialTableQueryExecutorFactory {
+    
+    /**
+     * Whether to be processed special table.
+     *
+     * @param schemaName schema name
+     * @param tableName table name
+     * @return to be processed special table or not
+     */
+    boolean accept(String schemaName, String tableName);
     
     /**
      * Create executor.
@@ -41,17 +43,8 @@ public final class MySQLMySQLSchemaExecutorFactory {
      * @param selectStatementContext select statement context
      * @param sql SQL being executed
      * @param parameters parameters
+     * @param tableName table name
      * @return executor
      */
-    public static Optional<DatabaseAdminExecutor> newInstance(final SelectStatementContext selectStatementContext, final String sql, final List<Object> parameters) {
-        SelectStatement sqlStatement = selectStatementContext.getSqlStatement();
-        if (!sqlStatement.getFrom().isPresent() || !(sqlStatement.getFrom().get() instanceof SimpleTableSegment)) {
-            return Optional.empty();
-        }
-        String tableName = ((SimpleTableSegment) sqlStatement.getFrom().get()).getTableName().getIdentifier().getValue();
-        if (SystemSchemaManager.isSystemTable("mysql", "mysql", tableName)) {
-            return Optional.of(new DatabaseMetaDataExecutor(sql, parameters));
-        }
-        return Optional.empty();
-    }
+    Optional<DatabaseAdminExecutor> newInstance(SelectStatementContext selectStatementContext, String sql, List<Object> parameters, String tableName);
 }
