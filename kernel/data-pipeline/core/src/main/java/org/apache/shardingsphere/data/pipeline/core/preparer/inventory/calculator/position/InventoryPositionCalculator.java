@@ -24,7 +24,10 @@ import org.apache.shardingsphere.data.pipeline.core.ingest.position.IngestPositi
 import org.apache.shardingsphere.data.pipeline.core.ingest.position.type.pk.type.StringPrimaryKeyIngestPosition;
 import org.apache.shardingsphere.data.pipeline.core.ingest.position.type.pk.type.UnsupportedKeyIngestPosition;
 import org.apache.shardingsphere.data.pipeline.core.metadata.model.PipelineColumnMetaData;
+import org.apache.shardingsphere.data.pipeline.core.preparer.inventory.calculator.InventoryDataSparsenessCalculator;
 import org.apache.shardingsphere.data.pipeline.core.preparer.inventory.calculator.position.estimated.InventoryPositionEstimatedCalculator;
+import org.apache.shardingsphere.data.pipeline.core.preparer.inventory.calculator.position.exact.IntegerPositionHandler;
+import org.apache.shardingsphere.data.pipeline.core.preparer.inventory.calculator.position.exact.InventoryPositionExactCalculator;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.datatype.DialectDataTypeOption;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.metadata.database.schema.QualifiedTable;
@@ -57,13 +60,20 @@ public final class InventoryPositionCalculator {
         DialectDataTypeOption dataTypeOption = new DatabaseTypeRegistry(dataSource.getDatabaseType()).getDialectDatabaseMetaData().getDataTypeOption();
         int firstColumnDataType = uniqueKeyColumns.get(0).getDataType();
         if (dataTypeOption.isIntegerDataType(firstColumnDataType)) {
-            String uniqueKey = uniqueKeyColumns.get(0).getName();
-            Range<Long> uniqueKeyValuesRange = InventoryPositionEstimatedCalculator.getIntegerUniqueKeyValuesRange(qualifiedTable, uniqueKey, dataSource);
-            return InventoryPositionEstimatedCalculator.getIntegerPositions(tableRecordsCount, uniqueKeyValuesRange, shardingSize);
+            return getIntegerPositions();
         }
         if (1 == uniqueKeyColumns.size() && dataTypeOption.isStringDataType(firstColumnDataType)) {
             return Collections.singletonList(new StringPrimaryKeyIngestPosition(null, null));
         }
         return Collections.singletonList(new UnsupportedKeyIngestPosition());
+    }
+    
+    private List<IngestPosition> getIntegerPositions() {
+        String uniqueKey = uniqueKeyColumns.get(0).getName();
+        Range<Long> uniqueKeyValuesRange = InventoryPositionEstimatedCalculator.getIntegerUniqueKeyValuesRange(qualifiedTable, uniqueKey, dataSource);
+        if (InventoryDataSparsenessCalculator.isIntegerUniqueKeyDataSparse(tableRecordsCount, uniqueKeyValuesRange)) {
+            return InventoryPositionExactCalculator.getPositions(qualifiedTable, uniqueKey, shardingSize, dataSource, new IntegerPositionHandler());
+        }
+        return InventoryPositionEstimatedCalculator.getIntegerPositions(tableRecordsCount, uniqueKeyValuesRange, shardingSize);
     }
 }
