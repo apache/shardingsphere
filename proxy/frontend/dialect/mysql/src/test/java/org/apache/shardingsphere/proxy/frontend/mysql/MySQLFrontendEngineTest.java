@@ -81,46 +81,45 @@ class MySQLFrontendEngineTest {
         verify(channel.pipeline())
                 .addBefore(eq(FrontendChannelInboundHandler.class.getSimpleName()), eq(MySQLSequenceIdInboundHandler.class.getSimpleName()), isA(MySQLSequenceIdInboundHandler.class));
     }
-
+    
     @Test
     void assertRelease() {
         ConnectionSession connectionSession = mock(ConnectionSession.class);
         AttributeMap attributeMap = mock(AttributeMap.class);
         Attribute<Long> attribute = mock(Attribute.class);
-
+        
         when(connectionSession.getConnectionId()).thenReturn(1);
         when(connectionSession.getAttributeMap()).thenReturn(attributeMap);
         when(attributeMap.attr(FrontendConstants.NATIVE_CONNECTION_ID_ATTRIBUTE_KEY))
                 .thenReturn(attribute);
-
+        
         engine.release(connectionSession);
-
+        
         verify(MySQLStatementIdGenerator.getInstance()).unregisterConnection(1);
     }
-
-
+    
     @Test
     void assertReleaseUnregistersConnectionIdMapping() {
         int mysqlConnectionId = 1;
         String processId = "test_process_123";
-
+        
         // registry precondition
         connectionRegistry.register(mysqlConnectionId, processId);
         assertThat(connectionRegistry.getProcessId(mysqlConnectionId), is(processId));
-
+        
         ConnectionSession connectionSession = mock(ConnectionSession.class);
         AttributeMap attributeMap = mock(AttributeMap.class);
         Attribute<Long> attribute = mock(Attribute.class);
-
+        
         when(connectionSession.getConnectionId()).thenReturn(mysqlConnectionId);
         when(connectionSession.getAttributeMap()).thenReturn(attributeMap);
         when(attributeMap.attr(FrontendConstants.NATIVE_CONNECTION_ID_ATTRIBUTE_KEY))
                 .thenReturn(attribute);
         when(attribute.get()).thenReturn((long) mysqlConnectionId);
-
+        
         engine.release(connectionSession);
-
+        
         assertThat(connectionRegistry.getProcessId(mysqlConnectionId), nullValue());
     }
-
+    
 }

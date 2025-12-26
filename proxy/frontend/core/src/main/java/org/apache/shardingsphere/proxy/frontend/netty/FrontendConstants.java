@@ -21,9 +21,9 @@ import io.netty.util.AttributeKey;
 
 public final class FrontendConstants {
     
-    private FrontendConstants() {
-    }
-    
     public static final AttributeKey<Long> NATIVE_CONNECTION_ID_ATTRIBUTE_KEY =
             AttributeKey.valueOf("proxy.native.connection.id");
+    
+    private FrontendConstants() {
+    }
 }

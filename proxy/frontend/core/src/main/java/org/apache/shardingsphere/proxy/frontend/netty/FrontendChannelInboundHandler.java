@@ -96,25 +96,25 @@ public final class FrontendChannelInboundHandler extends ChannelInboundHandlerAd
                         connectionSession.getConnectionContext().getGrantee());
                 connectionSession.setProcessId(processId);
                 
-                // ✅ Delegate protocol-specific binding
                 databaseProtocolFrontendEngine
                         .bindProcessAfterAuthentication(context.channel(), connectionSession);
             }
             return authResult.isFinished();
-        } catch (final Exception ex) {
-            if (ExpectedExceptions.isExpected(ex.getClass())) {
-                log.debug("Exception occur: ", ex);
-            } else {
-                log.error("Exception occur: ", ex);
-            }
-            context.writeAndFlush(
-                    databaseProtocolFrontendEngine.getCommandExecuteEngine()
-                            .getErrorPacket(ex));
-            context.close();
         } finally {
             message.release();
         }
-        return false;
+    }
+    
+    private void handleAuthenticationException(final ChannelHandlerContext context, final Exception ex) {
+        if (ExpectedExceptions.isExpected(ex.getClass())) {
+            log.debug("Exception occur: ", ex);
+        } else {
+            log.error("Exception occur: ", ex);
+        }
+        context.writeAndFlush(
+                databaseProtocolFrontendEngine.getCommandExecuteEngine()
+                        .getErrorPacket(ex));
+        context.close();
     }
     
     @Override
@@ -152,7 +152,9 @@ public final class FrontendChannelInboundHandler extends ChannelInboundHandlerAd
     @Override
     public void channelWritabilityChanged(final ChannelHandlerContext context) {
         if (context.channel().isWritable()) {
-            connectionSession.getDatabaseConnectionManager().getConnectionResourceLock().doNotify();
+            connectionSession.getDatabaseConnectionManager()
+                    .getConnectionResourceLock()
+                    .doNotify();
         }
     }
 }

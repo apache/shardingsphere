@@ -90,6 +90,30 @@ public final class Process {
         interrupted = new AtomicBoolean();
     }
     
+    // Constructor for YAML swapper / deserialization
+    public Process(final String id,
+                   final long startMillis,
+                   final String sql,
+                   final String databaseName,
+                   final String username,
+                   final String hostname,
+                   final AtomicInteger totalUnitCount,
+                   final AtomicInteger completedUnitCount,
+                   final AtomicBoolean idle,
+                   final AtomicBoolean interrupted) {
+        
+        this.id = id;
+        this.startMillis = startMillis;
+        this.sql = sql;
+        this.databaseName = databaseName;
+        this.username = username;
+        this.hostname = hostname;
+        this.totalUnitCount = totalUnitCount;
+        this.completedUnitCount = completedUnitCount;
+        this.idle = idle;
+        this.interrupted = interrupted;
+    }
+    
     private int getTotalUnitCount(final ExecutionGroupContext<? extends SQLExecutionUnit> executionGroupContext) {
         int result = 0;
         for (ExecutionGroup<? extends SQLExecutionUnit> each : executionGroupContext.getInputGroups()) {
@@ -171,10 +195,10 @@ public final class Process {
         for (Statement each : processStatements.values()) {
             try {
                 each.cancel();
-            } catch (SQLException ex) {
+            } catch (final SQLException ex) {
                 try {
                     each.close();
-                } catch (SQLException closeEx) {
+                } catch (final SQLException closeEx) {
                     if (null == exception) {
                         exception = closeEx;
                     } else {
@@ -215,28 +239,4 @@ public final class Process {
         totalUnitCount.addAndGet(getTotalUnitCount(executionGroupContext));
         processStatements.putAll(createProcessStatements(executionGroupContext));
     }
-    // Constructor for YAML swapper / deserialization
-    public Process(final String id,
-                   final long startMillis,
-                   final String sql,
-                   final String databaseName,
-                   final String username,
-                   final String hostname,
-                   final AtomicInteger totalUnitCount,
-                   final AtomicInteger completedUnitCount,
-                   final AtomicBoolean idle,
-                   final AtomicBoolean interrupted) {
-        
-        this.id = id;
-        this.startMillis = startMillis;
-        this.sql = sql;
-        this.databaseName = databaseName;
-        this.username = username;
-        this.hostname = hostname;
-        this.totalUnitCount = totalUnitCount;
-        this.completedUnitCount = completedUnitCount;
-        this.idle = idle;
-        this.interrupted = interrupted;
-    }
-    
 }

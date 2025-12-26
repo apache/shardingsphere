@@ -76,6 +76,9 @@ public interface DatabaseProtocolFrontendEngine extends DatabaseTypedSPI {
     /**
      * Hook for protocol-specific logic after authentication succeeds.
      * Default is no-op.
+     *
+     * @param channel Netty channel
+     * @param session connection session
      */
     default void bindProcessAfterAuthentication(
                                                 final Channel channel, final ConnectionSession session) {

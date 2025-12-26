@@ -73,28 +73,10 @@ public final class MySQLComQueryPacketExecutor implements QueryCommandExecutor {
         SQLStatement sqlStatement = ProxySQLComQueryParser.parse(
                 packet.getSQL(), databaseType, connectionSession);
         
-        // 2. MySQL frontend AST normalization for KILL / KILL QUERY
-        if (sqlStatement instanceof MySQLKillStatement) {
-            MySQLKillStatement kill = (MySQLKillStatement) sqlStatement;
-            
-            String scope = kill.getScope();
-            if (null == scope || "QUERY".equalsIgnoreCase(scope)) {
-                String id = kill.getProcessId();
-                if (null != id && id.chars().allMatch(Character::isDigit)) {
-                    String processId = MySQLConnectionIdRegistry.getInstance()
-                            .getProcessId(Long.parseLong(id));
-                    if (null != processId) {
-                        // ✅ RECREATE statement (AST is immutable)
-                        sqlStatement = new MySQLKillStatement(
-                                kill.getDatabaseType(),
-                                processId,
-                                kill.getScope());
-                    }
-                }
-            }
-        }
+        // 2. Normalize KILL / KILL QUERY
+        sqlStatement = normalizeKillStatement(sqlStatement);
         
-        // 3. Create backend handler using normalized SQLStatement
+        // 3. Create backend handler
         proxyBackendHandler = areMultiStatements(connectionSession, sqlStatement, packet.getSQL())
                 ? new MySQLMultiStatementsProxyBackendHandler(
                         connectionSession, sqlStatement, packet.getSQL())
@@ -110,6 +92,31 @@ public final class MySQLComQueryPacketExecutor implements QueryCommandExecutor {
                 .attr(MySQLConstants.CHARACTER_SET_ATTRIBUTE_KEY)
                 .get()
                 .getId();
+    }
+    
+    private SQLStatement normalizeKillStatement(final SQLStatement sqlStatement) {
+        if (!(sqlStatement instanceof MySQLKillStatement)) {
+            return sqlStatement;
+        }
+        MySQLKillStatement kill = (MySQLKillStatement) sqlStatement;
+        String scope = kill.getScope();
+        if (null != scope && !"QUERY".equalsIgnoreCase(scope)) {
+            return sqlStatement;
+        }
+        String id = kill.getProcessId();
+        if (null == id || !id.chars().allMatch(Character::isDigit)) {
+            return sqlStatement;
+        }
+        String processId = MySQLConnectionIdRegistry.getInstance()
+                .getProcessId(Long.parseLong(id));
+        if (null == processId) {
+            return sqlStatement;
+        }
+        // AST is immutable → recreate
+        return new MySQLKillStatement(
+                kill.getDatabaseType(),
+                processId,
+                kill.getScope());
     }
     
     private boolean areMultiStatements(final ConnectionSession connectionSession, final SQLStatement sqlStatement, final String sql) {

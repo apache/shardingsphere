@@ -72,6 +72,12 @@ public final class MySQLFrontendEngine implements DatabaseProtocolFrontendEngine
         return "MySQL";
     }
     
+    /**
+     * Bind MySQL native connection ID with process ID after authentication.
+     *
+     * @param channel Netty channel
+     * @param session connection session
+     */
     public void bindProcessAfterAuthentication(final Channel channel, final ConnectionSession session) {
         Long nativeConnectionId = channel
                 .attr(FrontendConstants.NATIVE_CONNECTION_ID_ATTRIBUTE_KEY)

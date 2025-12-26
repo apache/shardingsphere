@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.proxy.backend.mysql.handler.admin.executor;
 
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
-import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeFactory;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
@@ -26,36 +25,40 @@ import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLKillStateme
 import org.junit.jupiter.api.Test;
 import org.mockito.MockedStatic;
 
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.mockStatic;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 class MySQLKillProcessExecutorTest {
     
     private static final String PROCESS_ID = "cluster-process-id-001";
-
+    
     @Test
     void assertKillDelegationWithClusterProcessId() throws Exception {
         DatabaseType databaseType = mock(DatabaseType.class);
-
+        
         MySQLKillStatement killStatement =
                 new MySQLKillStatement(databaseType, PROCESS_ID, null);
-
+        
         ProxyContext proxyContext = mock(ProxyContext.class, RETURNS_DEEP_STUBS);
-
+        
         try (MockedStatic<ProxyContext> proxyContextStatic = mockStatic(ProxyContext.class)) {
             proxyContextStatic.when(ProxyContext::getInstance)
                     .thenReturn(proxyContext);
-
+            
             MySQLKillProcessExecutor executor =
                     new MySQLKillProcessExecutor(killStatement);
-
+            
             executor.execute(
                     mock(ConnectionSession.class),
                     mock(ShardingSphereMetaData.class));
-
+            
             verify(proxyContext.getContextManager()
-                            .getPersistServiceFacade()
-                            .getModeFacade()
-                            .getProcessService(),
+                    .getPersistServiceFacade()
+                    .getModeFacade()
+                    .getProcessService(),
                     times(1))
                     .killProcess(PROCESS_ID);
         }

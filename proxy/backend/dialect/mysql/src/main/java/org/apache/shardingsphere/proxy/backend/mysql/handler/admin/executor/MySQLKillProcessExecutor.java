@@ -44,25 +44,25 @@ public final class MySQLKillProcessExecutor implements DatabaseAdminUpdateExecut
     private static final String QUERY_SCOPE = "QUERY";
     
     private final MySQLKillStatement killStatement;
-
+    
     @Override
     public void execute(final ConnectionSession connectionSession,
                         final ShardingSphereMetaData metaData) throws SQLException {
-
+        
         String scope = killStatement.getScope();
-
+        
         // MySQL supports: KILL <id> and KILL QUERY <id>
         ShardingSpherePreconditions.checkState(
                 Strings.isNullOrEmpty(scope) || QUERY_SCOPE.equalsIgnoreCase(scope),
                 () -> new UnsupportedSQLOperationException(
                         "Only `KILL <id>` or `KILL QUERY <id>` SQL syntax is supported"));
-
+        
         String processId = killStatement.getProcessId();
-
+        
         ShardingSpherePreconditions.checkNotNull(
                 processId,
                 () -> new UnsupportedSQLOperationException("Invalid process id"));
-
+        
         ProxyContext.getInstance()
                 .getContextManager()
                 .getPersistServiceFacade()

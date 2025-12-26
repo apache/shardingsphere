@@ -84,6 +84,7 @@ public final class ProcessEngine {
      *
      * @param executionGroupContext execution group context
      * @param queryContext query context
+     * @throws IllegalStateException if process does not exist and connect() was not called
      */
     public void executeSQL(
                            final ExecutionGroupContext<? extends SQLExecutionUnit> executionGroupContext,
