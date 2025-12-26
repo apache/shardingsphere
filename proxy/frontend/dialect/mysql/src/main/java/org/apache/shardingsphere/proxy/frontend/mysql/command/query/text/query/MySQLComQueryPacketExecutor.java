@@ -38,11 +38,13 @@ import org.apache.shardingsphere.proxy.frontend.command.executor.QueryCommandExe
 import org.apache.shardingsphere.proxy.frontend.command.executor.ResponseType;
 import org.apache.shardingsphere.proxy.frontend.mysql.command.ServerStatusFlagCalculator;
 import org.apache.shardingsphere.proxy.frontend.mysql.command.query.builder.ResponsePacketBuilder;
+import org.apache.shardingsphere.proxy.frontend.mysql.connection.MySQLConnectionIdRegistry;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.DeleteStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.InsertStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.UpdateStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.util.MultiSQLSplitter;
+import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLKillStatement;
 
 import java.sql.SQLException;
 import java.util.Collection;
@@ -64,12 +66,50 @@ public final class MySQLComQueryPacketExecutor implements QueryCommandExecutor {
     
     public MySQLComQueryPacketExecutor(final MySQLComQueryPacket packet, final ConnectionSession connectionSession) throws SQLException {
         this.connectionSession = connectionSession;
+        
         DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "MySQL");
-        SQLStatement sqlStatement = ProxySQLComQueryParser.parse(packet.getSQL(), databaseType, connectionSession);
+        
+        // 1. Parse SQL into AST
+        SQLStatement sqlStatement = ProxySQLComQueryParser.parse(
+                packet.getSQL(), databaseType, connectionSession);
+        
+        // 2. MySQL frontend AST normalization for KILL / KILL QUERY
+        if (sqlStatement instanceof MySQLKillStatement) {
+            MySQLKillStatement kill = (MySQLKillStatement) sqlStatement;
+            
+            String scope = kill.getScope();
+            if (null == scope || "QUERY".equalsIgnoreCase(scope)) {
+                String id = kill.getProcessId();
+                if (null != id && id.chars().allMatch(Character::isDigit)) {
+                    String processId = MySQLConnectionIdRegistry.getInstance()
+                            .getProcessId(Long.parseLong(id));
+                    if (null != processId) {
+                        // ✅ RECREATE statement (AST is immutable)
+                        sqlStatement = new MySQLKillStatement(
+                                kill.getDatabaseType(),
+                                processId,
+                                kill.getScope());
+                    }
+                }
+            }
+        }
+        
+        // 3. Create backend handler using normalized SQLStatement
         proxyBackendHandler = areMultiStatements(connectionSession, sqlStatement, packet.getSQL())
-                ? new MySQLMultiStatementsProxyBackendHandler(connectionSession, sqlStatement, packet.getSQL())
-                : ProxyBackendHandlerFactory.newInstance(databaseType, packet.getSQL(), sqlStatement, connectionSession, packet.getHintValueContext());
-        characterSet = connectionSession.getAttributeMap().attr(MySQLConstants.CHARACTER_SET_ATTRIBUTE_KEY).get().getId();
+                ? new MySQLMultiStatementsProxyBackendHandler(
+                        connectionSession, sqlStatement, packet.getSQL())
+                : ProxyBackendHandlerFactory.newInstance(
+                        databaseType,
+                        packet.getSQL(),
+                        sqlStatement,
+                        connectionSession,
+                        packet.getHintValueContext());
+        
+        // 4. Resolve character set
+        characterSet = connectionSession.getAttributeMap()
+                .attr(MySQLConstants.CHARACTER_SET_ATTRIBUTE_KEY)
+                .get()
+                .getId();
     }
     
     private boolean areMultiStatements(final ConnectionSession connectionSession, final SQLStatement sqlStatement, final String sql) {
@@ -84,11 +124,14 @@ public final class MySQLComQueryPacketExecutor implements QueryCommandExecutor {
     }
     
     private boolean isSuitableMultiStatementsSQLStatement(final SQLStatement sqlStatement) {
-        return containsInsertOnDuplicateKey(sqlStatement) || sqlStatement instanceof UpdateStatement || sqlStatement instanceof DeleteStatement;
+        return containsInsertOnDuplicateKey(sqlStatement)
+                || sqlStatement instanceof UpdateStatement
+                || sqlStatement instanceof DeleteStatement;
     }
     
     private boolean containsInsertOnDuplicateKey(final SQLStatement sqlStatement) {
-        return sqlStatement instanceof InsertStatement && ((InsertStatement) sqlStatement).getOnDuplicateKeyColumns().isPresent();
+        return sqlStatement instanceof InsertStatement
+                && ((InsertStatement) sqlStatement).getOnDuplicateKeyColumns().isPresent();
     }
     
     @Override
@@ -106,11 +149,16 @@ public final class MySQLComQueryPacketExecutor implements QueryCommandExecutor {
     
     private Collection<DatabasePacket> processQuery(final QueryResponseHeader queryResponseHeader) {
         responseType = ResponseType.QUERY;
-        return ResponsePacketBuilder.buildQueryResponsePackets(queryResponseHeader, characterSet, ServerStatusFlagCalculator.calculateFor(connectionSession, true));
+        return ResponsePacketBuilder.buildQueryResponsePackets(
+                queryResponseHeader,
+                characterSet,
+                ServerStatusFlagCalculator.calculateFor(connectionSession, true));
     }
     
     private Collection<DatabasePacket> processUpdate(final UpdateResponseHeader updateResponseHeader) {
-        return ResponsePacketBuilder.buildUpdateResponsePackets(updateResponseHeader, ServerStatusFlagCalculator.calculateFor(connectionSession, true));
+        return ResponsePacketBuilder.buildUpdateResponsePackets(
+                updateResponseHeader,
+                ServerStatusFlagCalculator.calculateFor(connectionSession, true));
     }
     
     private Collection<DatabasePacket> processMultiStatementsUpdate(final MultiStatementsUpdateResponseHeader responseHeader) {
@@ -118,7 +166,9 @@ public final class MySQLComQueryPacketExecutor implements QueryCommandExecutor {
         int index = 0;
         for (UpdateResponseHeader each : responseHeader.getUpdateResponseHeaders()) {
             boolean lastPacket = ++index == responseHeader.getUpdateResponseHeaders().size();
-            result.addAll(ResponsePacketBuilder.buildUpdateResponsePackets(each, ServerStatusFlagCalculator.calculateFor(connectionSession, lastPacket)));
+            result.addAll(ResponsePacketBuilder.buildUpdateResponsePackets(
+                    each,
+                    ServerStatusFlagCalculator.calculateFor(connectionSession, lastPacket)));
         }
         return result;
     }

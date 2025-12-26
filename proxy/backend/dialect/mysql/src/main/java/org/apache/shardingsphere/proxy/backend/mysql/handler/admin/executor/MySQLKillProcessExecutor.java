@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.proxy.backend.mysql.handler.admin.executor;
 
+import com.google.common.base.Strings;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.exception.generic.UnsupportedSQLOperationException;
@@ -29,7 +30,13 @@ import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLKillStateme
 import java.sql.SQLException;
 
 /**
- * Kill process executor for MySQL.
+ * MySQL KILL executor.
+ *
+ * <p>
+ * This executor operates strictly on cluster-wide {@code processId}.
+ * MySQL protocol-level connection IDs are resolved in the MySQL frontend layer
+ * before reaching this executor.
+ * </p>
  */
 @RequiredArgsConstructor
 public final class MySQLKillProcessExecutor implements DatabaseAdminUpdateExecutor {
@@ -37,12 +44,30 @@ public final class MySQLKillProcessExecutor implements DatabaseAdminUpdateExecut
     private static final String QUERY_SCOPE = "QUERY";
     
     private final MySQLKillStatement killStatement;
-    
+
     @Override
-    public void execute(final ConnectionSession connectionSession, final ShardingSphereMetaData metaData) throws SQLException {
-        ShardingSpherePreconditions.checkState(QUERY_SCOPE.equalsIgnoreCase(killStatement.getScope()),
-                () -> new UnsupportedSQLOperationException("Only `KILL QUERY <processId>` SQL syntax is supported"));
+    public void execute(final ConnectionSession connectionSession,
+                        final ShardingSphereMetaData metaData) throws SQLException {
+
+        String scope = killStatement.getScope();
+
+        // MySQL supports: KILL <id> and KILL QUERY <id>
+        ShardingSpherePreconditions.checkState(
+                Strings.isNullOrEmpty(scope) || QUERY_SCOPE.equalsIgnoreCase(scope),
+                () -> new UnsupportedSQLOperationException(
+                        "Only `KILL <id>` or `KILL QUERY <id>` SQL syntax is supported"));
+
         String processId = killStatement.getProcessId();
-        ProxyContext.getInstance().getContextManager().getPersistServiceFacade().getModeFacade().getProcessService().killProcess(processId);
+
+        ShardingSpherePreconditions.checkNotNull(
+                processId,
+                () -> new UnsupportedSQLOperationException("Invalid process id"));
+
+        ProxyContext.getInstance()
+                .getContextManager()
+                .getPersistServiceFacade()
+                .getModeFacade()
+                .getProcessService()
+                .killProcess(processId);
     }
 }

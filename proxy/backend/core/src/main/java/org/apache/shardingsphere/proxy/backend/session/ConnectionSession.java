@@ -23,8 +23,6 @@ import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.ExecutorStatementManager;
-import org.apache.shardingsphere.infra.executor.sql.process.Process;
-import org.apache.shardingsphere.infra.executor.sql.process.ProcessRegistry;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.apache.shardingsphere.infra.session.connection.ConnectionContext;
 import org.apache.shardingsphere.infra.session.query.QueryContext;
@@ -91,27 +89,6 @@ public final class ConnectionSession {
      */
     public void setProcessId(final String processId) {
         this.processId = processId;
-    }
-    
-    /**
-     * Bind process to current connection.
-     *
-     * <p>
-     * Only works for MySQL protocol.
-     * Sets MySQL thread ID on {@link Process} using current connection ID.
-     * </p>
-     */
-    public void bindProcessToConnection() {
-        if (!"MySQL".equals(protocolType.getType())) {
-            return;
-        }
-        if (null == processId || connectionId <= 0) {
-            return;
-        }
-        Process process = ProcessRegistry.getInstance().get(processId);
-        if (process != null) {
-            process.setMySQLThreadId((long) connectionId);
-        }
     }
     
     /**

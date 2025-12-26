@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.infra.executor.sql.process;
 
+import com.google.common.base.Strings;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
@@ -44,15 +45,13 @@ import java.util.concurrent.atomic.AtomicInteger;
 @Getter
 public final class Process {
     
-    private volatile Long mysqlThreadId;
-    
-    private final Map<Integer, Statement> processStatements = new ConcurrentHashMap<>();
+    private final Map<ExecutionUnit, Statement> processStatements = new ConcurrentHashMap<>();
     
     private final String id;
     
     private final long startMillis;
     
-    private final String sql;
+    private volatile String sql;
     
     private final String databaseName;
     
@@ -99,25 +98,22 @@ public final class Process {
         return result;
     }
     
-    private Map<Integer, Statement> createProcessStatements(final ExecutionGroupContext<? extends SQLExecutionUnit> executionGroupContext) {
-        Map<Integer, Statement> result = new LinkedHashMap<>();
+    private Map<ExecutionUnit, Statement> createProcessStatements(
+                                                                  final ExecutionGroupContext<? extends SQLExecutionUnit> executionGroupContext) {
+        
+        Map<ExecutionUnit, Statement> result = new LinkedHashMap<>();
         for (ExecutionGroup<? extends SQLExecutionUnit> each : executionGroupContext.getInputGroups()) {
             for (SQLExecutionUnit executionUnit : each.getInputs()) {
                 if (executionUnit instanceof JDBCExecutionUnit) {
                     JDBCExecutionUnit jdbcExecutionUnit = (JDBCExecutionUnit) executionUnit;
-                    result.put(System.identityHashCode(jdbcExecutionUnit.getExecutionUnit()), jdbcExecutionUnit.getStorageResource());
+                    // ✅ SAME object used later for removal
+                    result.put(
+                            jdbcExecutionUnit.getExecutionUnit(),
+                            jdbcExecutionUnit.getStorageResource());
                 }
             }
         }
         return result;
-    }
-    
-    public void setMySQLThreadId(final long threadId) {
-        this.mysqlThreadId = threadId;
-    }
-    
-    public Long getMySQLThreadId() {
-        return mysqlThreadId;
     }
     
     /**
@@ -160,7 +156,7 @@ public final class Process {
      * @param executionUnit execution unit
      */
     public void removeProcessStatement(final ExecutionUnit executionUnit) {
-        processStatements.remove(System.identityHashCode(executionUnit));
+        processStatements.remove(executionUnit);
     }
     
     /**
@@ -170,8 +166,77 @@ public final class Process {
      */
     public void kill() throws SQLException {
         setInterrupted(true);
+        SQLException exception = null;
+        
         for (Statement each : processStatements.values()) {
-            each.cancel();
+            try {
+                each.cancel();
+            } catch (SQLException ex) {
+                try {
+                    each.close();
+                } catch (SQLException closeEx) {
+                    if (null == exception) {
+                        exception = closeEx;
+                    } else {
+                        exception.setNextException(closeEx);
+                    }
+                }
+                if (null == exception) {
+                    exception = ex;
+                } else {
+                    exception.setNextException(ex);
+                }
+            }
+        }
+        
+        if (null != exception) {
+            throw exception;
         }
     }
+    
+    /**
+     * Merge a new execution group context into the current process.
+     * <p>
+     * This method marks the process as active, updates the total execution unit count,
+     * and registers statements from the given execution group context.
+     * </p>
+     *
+     * @param executionGroupContext execution group context to merge
+     * @param sql SQL to be executed
+     */
+    public void mergeExecutionGroupContext(
+                                           final ExecutionGroupContext<? extends SQLExecutionUnit> executionGroupContext,
+                                           final String sql) {
+        idle.set(false);
+        // ✅ FIX: update SQL on execution
+        if (!Strings.isNullOrEmpty(sql)) {
+            this.sql = sql;
+        }
+        totalUnitCount.addAndGet(getTotalUnitCount(executionGroupContext));
+        processStatements.putAll(createProcessStatements(executionGroupContext));
+    }
+    // Constructor for YAML swapper / deserialization
+    public Process(final String id,
+                   final long startMillis,
+                   final String sql,
+                   final String databaseName,
+                   final String username,
+                   final String hostname,
+                   final AtomicInteger totalUnitCount,
+                   final AtomicInteger completedUnitCount,
+                   final AtomicBoolean idle,
+                   final AtomicBoolean interrupted) {
+        
+        this.id = id;
+        this.startMillis = startMillis;
+        this.sql = sql;
+        this.databaseName = databaseName;
+        this.username = username;
+        this.hostname = hostname;
+        this.totalUnitCount = totalUnitCount;
+        this.completedUnitCount = completedUnitCount;
+        this.idle = idle;
+        this.interrupted = interrupted;
+    }
+    
 }

@@ -55,24 +55,30 @@ public final class ProcessRegistry {
      * @param process process
      */
     public void add(final Process process) {
-        if (isSameExecutionProcess(process)) {
-            merge(processes.get(process.getId()), process);
-        } else {
-            processes.put(process.getId(), process);
-        }
-    }
-    
-    private boolean isSameExecutionProcess(final Process process) {
-        return !Strings.isNullOrEmpty(process.getSql()) && processes.containsKey(process.getId()) && processes.get(process.getId()).getSql().equalsIgnoreCase(process.getSql());
-    }
-    
-    private void merge(final Process oldProcess, final Process newProcess) {
-        ShardingSpherePreconditions.checkState(!oldProcess.isInterrupted(), SQLExecutionInterruptedException::new);
-        oldProcess.getTotalUnitCount().addAndGet(newProcess.getTotalUnitCount().get());
-        oldProcess.getCompletedUnitCount().addAndGet(newProcess.getCompletedUnitCount().get());
-        oldProcess.getIdle().set(newProcess.getIdle().get());
-        oldProcess.getInterrupted().compareAndSet(false, newProcess.getInterrupted().get());
-        oldProcess.getProcessStatements().putAll(newProcess.getProcessStatements());
+        processes.merge(
+                process.getId(),
+                process,
+                (oldProcess, newProcess) -> {
+                    ShardingSpherePreconditions.checkState(
+                            !oldProcess.isInterrupted(),
+                            SQLExecutionInterruptedException::new);
+                    
+                    oldProcess.getTotalUnitCount()
+                            .addAndGet(newProcess.getTotalUnitCount().get());
+                    
+                    oldProcess.getCompletedUnitCount()
+                            .addAndGet(newProcess.getCompletedUnitCount().get());
+                    
+                    oldProcess.getIdle().set(newProcess.getIdle().get());
+                    
+                    oldProcess.getInterrupted()
+                            .compareAndSet(false, newProcess.getInterrupted().get());
+                    
+                    oldProcess.getProcessStatements()
+                            .putAll(newProcess.getProcessStatements());
+                    
+                    return oldProcess;
+                });
     }
     
     /**
@@ -82,25 +88,7 @@ public final class ProcessRegistry {
      * @return process
      */
     public Process get(final String id) {
-        Process result = processes.get(id);
-        if (null != result) {
-            return result;
-        }
-        // Support lookup by MySQL thread id (numeric 32-bit id provided by client handshake).
-        if (id != null) {
-            try {
-                long threadId = Long.parseLong(id);
-                for (Process each : processes.values()) {
-                    Long mysqlThreadId = each.getMySQLThreadId();
-                    if (null != mysqlThreadId && mysqlThreadId.longValue() == threadId) {
-                        return each;
-                    }
-                }
-            } catch (final NumberFormatException ignored) {
-                // not numeric, ignore
-            }
-        }
-        return null;
+        return processes.get(id);
     }
     
     /**

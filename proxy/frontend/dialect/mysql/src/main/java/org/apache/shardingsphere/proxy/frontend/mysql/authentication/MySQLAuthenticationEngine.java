@@ -54,6 +54,7 @@ import org.apache.shardingsphere.proxy.frontend.connection.ConnectionIdGenerator
 import org.apache.shardingsphere.proxy.frontend.mysql.authentication.authenticator.MySQLAuthenticatorType;
 import org.apache.shardingsphere.proxy.frontend.mysql.command.query.binary.MySQLStatementIdGenerator;
 import org.apache.shardingsphere.proxy.frontend.mysql.ssl.MySQLSSLRequestHandler;
+import org.apache.shardingsphere.proxy.frontend.netty.FrontendConstants;
 import org.apache.shardingsphere.proxy.frontend.ssl.ProxySSLContext;
 
 import java.net.InetSocketAddress;
@@ -76,15 +77,30 @@ public final class MySQLAuthenticationEngine implements AuthenticationEngine {
     
     @Override
     public int handshake(final ChannelHandlerContext context) {
-        int result = ConnectionIdGenerator.getInstance().nextId();
+        // 1. Generate MySQL protocol connection id (node-local, protocol-defined)
+        int localConnectionId = ConnectionIdGenerator.getInstance().nextId();
+        
         connectionPhase = MySQLConnectionPhase.AUTH_PHASE_FAST_PATH;
+        
         boolean sslEnabled = ProxySSLContext.getInstance().isSSLEnabled();
         if (sslEnabled) {
-            context.pipeline().addFirst(MySQLSSLRequestHandler.class.getSimpleName(), new MySQLSSLRequestHandler());
+            context.pipeline().addFirst(
+                    MySQLSSLRequestHandler.class.getSimpleName(),
+                    new MySQLSSLRequestHandler());
         }
-        context.writeAndFlush(new MySQLHandshakePacket(result, sslEnabled, authPluginData));
-        MySQLStatementIdGenerator.getInstance().registerConnection(result);
-        return result;
+        
+        // 2. Send handshake packet (MySQL protocol requires 32-bit ID)
+        context.writeAndFlush(new MySQLHandshakePacket(localConnectionId, sslEnabled, authPluginData));
+        
+        // 3. Register prepared-statement generator
+        MySQLStatementIdGenerator.getInstance().registerConnection(localConnectionId);
+        
+        // 4. Store MySQL connectionId in channel (NO cluster logic here)
+        context.channel()
+                .attr(FrontendConstants.NATIVE_CONNECTION_ID_ATTRIBUTE_KEY)
+                .set((long) localConnectionId);
+        
+        return localConnectionId;
     }
     
     @Override

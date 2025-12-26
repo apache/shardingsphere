@@ -75,24 +75,41 @@ public final class FrontendChannelInboundHandler extends ChannelInboundHandlerAd
     
     private boolean authenticate(final ChannelHandlerContext context, final ByteBuf message) {
         try {
-            AuthenticationResult authResult = databaseProtocolFrontendEngine.getAuthenticationEngine().authenticate(context,
-                    databaseProtocolFrontendEngine.getCodecEngine().createPacketPayload(message, context.channel().attr(CommonConstants.CHARSET_ATTRIBUTE_KEY).get()));
+            AuthenticationResult authResult = databaseProtocolFrontendEngine
+                    .getAuthenticationEngine()
+                    .authenticate(
+                            context,
+                            databaseProtocolFrontendEngine.getCodecEngine()
+                                    .createPacketPayload(
+                                            message,
+                                            context.channel()
+                                                    .attr(CommonConstants.CHARSET_ATTRIBUTE_KEY)
+                                                    .get()));
+            
             if (authResult.isFinished()) {
-                connectionSession.setGrantee(new Grantee(authResult.getUsername(), authResult.getHostname()));
+                connectionSession.setGrantee(
+                        new Grantee(authResult.getUsername(), authResult.getHostname()));
                 connectionSession.setCurrentDatabaseName(authResult.getDatabase());
-                connectionSession.setProcessId(processEngine.connect(connectionSession.getUsedDatabaseName(), connectionSession.getConnectionContext().getGrantee()));
-                connectionSession.bindProcessToConnection();
+                
+                String processId = processEngine.connect(
+                        connectionSession.getUsedDatabaseName(),
+                        connectionSession.getConnectionContext().getGrantee());
+                connectionSession.setProcessId(processId);
+                
+                // ✅ Delegate protocol-specific binding
+                databaseProtocolFrontendEngine
+                        .bindProcessAfterAuthentication(context.channel(), connectionSession);
             }
             return authResult.isFinished();
-            // CHECKSTYLE:OFF
         } catch (final Exception ex) {
-            // CHECKSTYLE:ON
             if (ExpectedExceptions.isExpected(ex.getClass())) {
                 log.debug("Exception occur: ", ex);
             } else {
                 log.error("Exception occur: ", ex);
             }
-            context.writeAndFlush(databaseProtocolFrontendEngine.getCommandExecuteEngine().getErrorPacket(ex));
+            context.writeAndFlush(
+                    databaseProtocolFrontendEngine.getCommandExecuteEngine()
+                            .getErrorPacket(ex));
             context.close();
         } finally {
             message.release();

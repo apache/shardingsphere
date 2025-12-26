@@ -72,4 +72,12 @@ public interface DatabaseProtocolFrontendEngine extends DatabaseTypedSPI {
      * @param exception exception
      */
     void handleException(ConnectionSession connectionSession, Exception exception);
+    
+    /**
+     * Hook for protocol-specific logic after authentication succeeds.
+     * Default is no-op.
+     */
+    default void bindProcessAfterAuthentication(
+                                                final Channel channel, final ConnectionSession session) {
+    }
 }

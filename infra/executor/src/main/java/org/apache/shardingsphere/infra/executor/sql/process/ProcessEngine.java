@@ -57,13 +57,17 @@ public final class ProcessEngine {
     }
     
     private String connect(final ExecutionGroupReportContext reportContext) {
-        ExecutionGroupContext<? extends SQLExecutionUnit> executionGroupContext = new ExecutionGroupContext<>(Collections.emptyList(), reportContext);
+        ExecutionGroupContext<? extends SQLExecutionUnit> executionGroupContext =
+                new ExecutionGroupContext<>(Collections.emptyList(), reportContext);
+        // Create Process ONCE at connect time (idle state)
         ProcessRegistry.getInstance().add(new Process(executionGroupContext));
-        return executionGroupContext.getReportContext().getProcessId();
+        return reportContext.getProcessId();
     }
     
     private String getProcessId() {
-        return new UUID(ThreadLocalRandom.current().nextLong(), ThreadLocalRandom.current().nextLong()).toString().replace("-", "");
+        return new UUID(
+                ThreadLocalRandom.current().nextLong(),
+                ThreadLocalRandom.current().nextLong()).toString().replace("-", "");
     }
     
     /**
@@ -81,8 +85,19 @@ public final class ProcessEngine {
      * @param executionGroupContext execution group context
      * @param queryContext query context
      */
-    public void executeSQL(final ExecutionGroupContext<? extends SQLExecutionUnit> executionGroupContext, final QueryContext queryContext) {
-        ProcessRegistry.getInstance().add(new Process(queryContext.getSql(), executionGroupContext));
+    public void executeSQL(
+                           final ExecutionGroupContext<? extends SQLExecutionUnit> executionGroupContext,
+                           final QueryContext queryContext) {
+        
+        String processId = executionGroupContext.getReportContext().getProcessId();
+        Process process = ProcessRegistry.getInstance().get(processId);
+        
+        if (null == process) {
+            throw new IllegalStateException(
+                    "Process not found for processId=" + processId + ", connect() must be called first");
+        }
+        
+        process.mergeExecutionGroupContext(executionGroupContext, queryContext.getSql());
     }
     
     /**
@@ -113,11 +128,8 @@ public final class ProcessEngine {
             return;
         }
         Process process = ProcessRegistry.getInstance().get(processId);
-        if (null == process) {
-            return;
+        if (null != process) {
+            process.getIdle().set(true);
         }
-        ExecutionGroupContext<? extends SQLExecutionUnit> executionGroupContext = new ExecutionGroupContext<>(
-                Collections.emptyList(), new ExecutionGroupReportContext(processId, process.getDatabaseName(), new Grantee(process.getUsername(), process.getHostname())));
-        ProcessRegistry.getInstance().add(new Process(executionGroupContext));
     }
 }

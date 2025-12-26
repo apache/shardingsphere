@@ -60,19 +60,127 @@ class ProxyMetaDataInfoExporterTest {
         ((MetricsCollectorFixture) MetricsCollectorRegistry.get(config, "FIXTURE")).reset();
     }
     
+    /**
+     * Assert export returns empty when ProxyContext has no ContextManager.
+     */
     @Test
     void assertExportWithoutContextManager() {
+        // Arrange
         when(ProxyContext.getInstance().getContextManager()).thenReturn(null);
-        assertFalse(new ProxyMetaDataInfoExporter().export("FIXTURE").isPresent());
+        
+        // Act
+        Optional<GaugeMetricFamilyMetricsCollector> result = new ProxyMetaDataInfoExporter().export("FIXTURE");
+        
+        // Assert
+        assertFalse(result.isPresent());
     }
     
+    /**
+     * Assert export returns metrics with correct database and storage unit counts.
+     */
     @Test
     void assertExportWithContextManager() {
+        // Arrange
         ContextManager contextManager = mockContextManager();
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
-        Optional<GaugeMetricFamilyMetricsCollector> collector = new ProxyMetaDataInfoExporter().export("FIXTURE");
-        assertTrue(collector.isPresent());
-        assertThat(collector.get().toString(), is("database_count=1, storage_unit_count=1"));
+        ProxyMetaDataInfoExporter exporter = new ProxyMetaDataInfoExporter();
+        
+        // Act
+        Optional<GaugeMetricFamilyMetricsCollector> result = exporter.export("FIXTURE");
+        
+        // Assert
+        assertTrue(result.isPresent());
+        assertThat(result.get().toString(), is("database_count=1, storage_unit_count=1"));
+    }
+    
+    /**
+     * Assert export correctly calculates storage unit count across multiple databases.
+     */
+    @Test
+    void assertExportWithMultipleDatabases() {
+        // Arrange: Mock multiple databases with different storage unit counts
+        ShardingSphereDatabase database1 = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
+        ShardingSphereDatabase database2 = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
+        
+        when(database1.getResourceMetaData()).thenReturn(mock(ResourceMetaData.class));
+        when(database1.getResourceMetaData().getStorageUnits())
+                .thenReturn(createStorageUnitMap("ds_0", "ds_1"));
+        when(database1.getProtocolType()).thenReturn(TypedSPILoader.getService(DatabaseType.class, "FIXTURE"));
+        
+        when(database2.getResourceMetaData()).thenReturn(mock(ResourceMetaData.class));
+        when(database2.getResourceMetaData().getStorageUnits())
+                .thenReturn(createStorageUnitMap("ds_0", "ds_1", "ds_2"));
+        when(database2.getProtocolType()).thenReturn(TypedSPILoader.getService(DatabaseType.class, "FIXTURE"));
+        
+        ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class);
+        when(metaData.getAllDatabases()).thenReturn(java.util.Arrays.asList(database1, database2));
+        
+        MetaDataContexts metaDataContexts = new MetaDataContexts(metaData, ShardingSphereStatisticsFactory.create(metaData, new ShardingSphereStatistics()));
+        ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
+        when(contextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
+        when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
+        
+        ProxyMetaDataInfoExporter exporter = new ProxyMetaDataInfoExporter();
+        
+        // Act
+        Optional<GaugeMetricFamilyMetricsCollector> result = exporter.export("FIXTURE");
+        
+        // Assert
+        assertTrue(result.isPresent());
+        assertThat(result.get().toString(), is("database_count=2, storage_unit_count=5"));
+    }
+    
+    /**
+     * Assert export correctly handles zero storage units.
+     */
+    @Test
+    void assertExportWithZeroStorageUnits() {
+        // Arrange
+        ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
+        when(database.getResourceMetaData()).thenReturn(mock(ResourceMetaData.class));
+        when(database.getResourceMetaData().getStorageUnits()).thenReturn(Collections.emptyMap());
+        when(database.getProtocolType()).thenReturn(TypedSPILoader.getService(DatabaseType.class, "FIXTURE"));
+        
+        ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class);
+        when(metaData.getAllDatabases()).thenReturn(Collections.singleton(database));
+        
+        MetaDataContexts metaDataContexts = new MetaDataContexts(metaData, ShardingSphereStatisticsFactory.create(metaData, new ShardingSphereStatistics()));
+        ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
+        when(contextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
+        when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
+        
+        ProxyMetaDataInfoExporter exporter = new ProxyMetaDataInfoExporter();
+        
+        // Act
+        Optional<GaugeMetricFamilyMetricsCollector> result = exporter.export("FIXTURE");
+        
+        // Assert
+        assertTrue(result.isPresent());
+        assertThat(result.get().toString(), is("database_count=1, storage_unit_count=0"));
+    }
+    
+    /**
+     * Assert export correctly handles empty database list.
+     */
+    @Test
+    void assertExportWithNoDatabases() {
+        // Arrange
+        ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class);
+        when(metaData.getAllDatabases()).thenReturn(Collections.emptyList());
+        
+        MetaDataContexts metaDataContexts = new MetaDataContexts(metaData, ShardingSphereStatisticsFactory.create(metaData, new ShardingSphereStatistics()));
+        ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
+        when(contextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
+        when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
+        
+        ProxyMetaDataInfoExporter exporter = new ProxyMetaDataInfoExporter();
+        
+        // Act
+        Optional<GaugeMetricFamilyMetricsCollector> result = exporter.export("FIXTURE");
+        
+        // Assert
+        assertTrue(result.isPresent());
+        assertThat(result.get().toString(), is("database_count=0, storage_unit_count=0"));
     }
     
     private ContextManager mockContextManager() {
@@ -85,6 +193,14 @@ class ProxyMetaDataInfoExporterTest {
         MetaDataContexts metaDataContexts = new MetaDataContexts(metaData, ShardingSphereStatisticsFactory.create(metaData, new ShardingSphereStatistics()));
         ContextManager result = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         when(result.getMetaDataContexts()).thenReturn(metaDataContexts);
+        return result;
+    }
+    
+    private java.util.Map<String, StorageUnit> createStorageUnitMap(final String... unitNames) {
+        java.util.Map<String, StorageUnit> result = new java.util.HashMap<>();
+        for (String name : unitNames) {
+            result.put(name, mock(StorageUnit.class));
+        }
         return result;
     }
 }
