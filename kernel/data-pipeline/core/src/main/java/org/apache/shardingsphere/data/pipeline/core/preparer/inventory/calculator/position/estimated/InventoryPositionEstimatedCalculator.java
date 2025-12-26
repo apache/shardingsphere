@@ -46,14 +46,14 @@ public final class InventoryPositionEstimatedCalculator {
     /**
      * Get integer unique key values range.
      *
-     * @param dataSource data source
      * @param schemaName schema name
      * @param tableName table name
      * @param uniqueKey unique key
+     * @param dataSource data source
      * @return unique key values range
      * @throws SplitPipelineJobByUniqueKeyException if an error occurs while getting unique key values range
      */
-    public static QueryRange getIntegerUniqueKeyValuesRange(final PipelineDataSource dataSource, final String schemaName, final String tableName, final String uniqueKey) {
+    public static QueryRange getIntegerUniqueKeyValuesRange(final String schemaName, final String tableName, final String uniqueKey, final PipelineDataSource dataSource) {
         PipelinePrepareSQLBuilder pipelineSQLBuilder = new PipelinePrepareSQLBuilder(dataSource.getDatabaseType());
         String sql = pipelineSQLBuilder.buildUniqueKeyMinMaxValuesSQL(schemaName, tableName, uniqueKey);
         try (

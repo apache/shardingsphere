@@ -37,7 +37,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public final class InventoryPositionCalculator {
     
-    private final PipelineDataSource sourceDataSource;
+    private final PipelineDataSource dataSource;
     
     private final String schemaName;
     
@@ -55,11 +55,11 @@ public final class InventoryPositionCalculator {
      * @return positions
      */
     public List<IngestPosition> getPositions() {
-        DialectDataTypeOption dataTypeOption = new DatabaseTypeRegistry(sourceDataSource.getDatabaseType()).getDialectDatabaseMetaData().getDataTypeOption();
+        DialectDataTypeOption dataTypeOption = new DatabaseTypeRegistry(dataSource.getDatabaseType()).getDialectDatabaseMetaData().getDataTypeOption();
         int firstColumnDataType = uniqueKeyColumns.get(0).getDataType();
         if (dataTypeOption.isIntegerDataType(firstColumnDataType)) {
             String uniqueKey = uniqueKeyColumns.get(0).getName();
-            QueryRange uniqueKeyValuesRange = InventoryPositionEstimatedCalculator.getIntegerUniqueKeyValuesRange(sourceDataSource, schemaName, tableName, uniqueKey);
+            QueryRange uniqueKeyValuesRange = InventoryPositionEstimatedCalculator.getIntegerUniqueKeyValuesRange(schemaName, tableName, uniqueKey, dataSource);
             return InventoryPositionEstimatedCalculator.getIntegerPositions(tableRecordsCount, uniqueKeyValuesRange, shardingSize);
         }
         if (1 == uniqueKeyColumns.size() && dataTypeOption.isStringDataType(firstColumnDataType)) {
