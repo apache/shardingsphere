@@ -15,37 +15,34 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.core.util;
-
-import org.apache.commons.lang3.Range;
+package org.apache.shardingsphere.data.pipeline.core.ingest.dumper.inventory.query;
 
 import java.math.BigInteger;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
 /**
- * Interval to range iterator.
- * <p>
- * It's not thread-safe.
- * </p>
+ * Integer range splitting iterator.
+ *
+ * <p>It's not thread-safe.</p>
  */
-public final class IntervalToRangeIterator implements Iterator<Range<Long>> {
+public final class IntegerRangeSplittingIterator implements Iterator<Range<Long>> {
     
     private final BigInteger maximum;
     
-    private final BigInteger interval;
+    private final BigInteger stepSize;
     
     private BigInteger current;
     
-    public IntervalToRangeIterator(final long minimum, final long maximum, final long interval) {
+    public IntegerRangeSplittingIterator(final long minimum, final long maximum, final long stepSize) {
         if (minimum > maximum) {
             throw new IllegalArgumentException("minimum greater than maximum");
         }
-        if (interval < 0L) {
-            throw new IllegalArgumentException("interval is less than zero");
+        if (stepSize < 0L) {
+            throw new IllegalArgumentException("step size is less than zero");
         }
         this.maximum = BigInteger.valueOf(maximum);
-        this.interval = BigInteger.valueOf(interval);
+        this.stepSize = BigInteger.valueOf(stepSize);
         current = BigInteger.valueOf(minimum);
     }
     
@@ -59,13 +56,13 @@ public final class IntervalToRangeIterator implements Iterator<Range<Long>> {
         if (!hasNext()) {
             throw new NoSuchElementException("");
         }
-        BigInteger upperLimit = min(maximum, current.add(interval));
-        Range<Long> result = Range.of(current.longValue(), upperLimit.longValue());
+        BigInteger upperLimit = min(maximum, current.add(stepSize));
+        Range<Long> result = Range.closed(current.longValue(), upperLimit.longValue());
         current = upperLimit.add(BigInteger.ONE);
         return result;
     }
     
-    private BigInteger min(final BigInteger integer1, final BigInteger integer2) {
-        return integer1.compareTo(integer2) < 0 ? integer1 : integer2;
+    private BigInteger min(final BigInteger one, final BigInteger another) {
+        return one.compareTo(another) < 0 ? one : another;
     }
 }
