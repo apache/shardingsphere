@@ -30,7 +30,7 @@ public interface MySQLSpecialTableQueryExecutorFactory {
     
     /**
      * Whether to be processed special table.
-     * 
+     *
      * @param schemaName schema name
      * @param tableName table name
      * @return to be processed special table or not
