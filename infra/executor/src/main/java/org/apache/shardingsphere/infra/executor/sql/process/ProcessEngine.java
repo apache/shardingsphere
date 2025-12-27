@@ -22,6 +22,7 @@ import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroupContext;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroupReportContext;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.SQLExecutionUnit;
+import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutionUnit;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.apache.shardingsphere.infra.session.query.QueryContext;
 
@@ -95,12 +96,15 @@ public final class ProcessEngine {
                            final QueryContext queryContext) {
         
         String processId = executionGroupContext.getReportContext().getProcessId();
-        Process process = ProcessRegistry.getInstance().get(processId);
+        ProcessRegistry registry = ProcessRegistry.getInstance();
+        Process process = registry.get(processId);
         
-        // Lazy process initialization (backward compatible behavior)
+        // STRICT check first
         if (null == process) {
-            ProcessRegistry.getInstance().add(new Process(executionGroupContext));
-            process = ProcessRegistry.getInstance().get(processId);
+            // Minimal compatibility fallback:
+            // register ONLY using existing reportContext (no new processId)
+            registry.add(new Process(executionGroupContext));
+            process = registry.get(processId);
         }
         
         process.mergeExecutionGroupContext(executionGroupContext, queryContext.getSql());
@@ -121,7 +125,9 @@ public final class ProcessEngine {
             return;
         }
         process.completeExecutionUnit();
-        process.removeProcessStatement(executionUnit.getExecutionUnit());
+        if (executionUnit instanceof JDBCExecutionUnit) {
+            process.removeProcessStatement((JDBCExecutionUnit) executionUnit);
+        }
     }
     
     /**

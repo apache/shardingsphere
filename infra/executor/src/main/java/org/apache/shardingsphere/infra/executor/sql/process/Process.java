@@ -23,7 +23,6 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroup;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroupContext;
-import org.apache.shardingsphere.infra.executor.sql.context.ExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.SQLExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutionUnit;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
@@ -33,7 +32,9 @@ import java.sql.Statement;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Queue;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -45,7 +46,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 @Getter
 public final class Process {
     
-    private final Map<ExecutionUnit, Statement> processStatements = new ConcurrentHashMap<>();
+    private final Map<JDBCExecutionUnit, ConcurrentLinkedQueue<Statement>> processStatements = new ConcurrentHashMap<>();
     
     private final String id;
     
@@ -84,7 +85,13 @@ public final class Process {
         username = grantee.map(Grantee::getUsername).orElse("");
         hostname = grantee.map(Grantee::getHostname).orElse("");
         totalUnitCount = new AtomicInteger(getTotalUnitCount(executionGroupContext));
-        processStatements.putAll(createProcessStatements(executionGroupContext));
+        createProcessStatements(executionGroupContext).forEach((key, newQueue) -> processStatements.merge(
+                key,
+                new ConcurrentLinkedQueue<>(newQueue),
+                (oldQueue, q) -> {
+                    oldQueue.addAll(q);
+                    return oldQueue;
+                }));
         completedUnitCount = new AtomicInteger(0);
         this.idle = new AtomicBoolean(idle);
         interrupted = new AtomicBoolean();
@@ -122,18 +129,18 @@ public final class Process {
         return result;
     }
     
-    private Map<ExecutionUnit, Statement> createProcessStatements(
-                                                                  final ExecutionGroupContext<? extends SQLExecutionUnit> executionGroupContext) {
+    private Map<JDBCExecutionUnit, java.util.concurrent.ConcurrentLinkedQueue<Statement>> createProcessStatements(
+                                                                                                                  final ExecutionGroupContext<? extends SQLExecutionUnit> executionGroupContext) {
         
-        Map<ExecutionUnit, Statement> result = new LinkedHashMap<>();
+        Map<JDBCExecutionUnit, java.util.concurrent.ConcurrentLinkedQueue<Statement>> result = new LinkedHashMap<>();
         for (ExecutionGroup<? extends SQLExecutionUnit> each : executionGroupContext.getInputGroups()) {
             for (SQLExecutionUnit executionUnit : each.getInputs()) {
                 if (executionUnit instanceof JDBCExecutionUnit) {
                     JDBCExecutionUnit jdbcExecutionUnit = (JDBCExecutionUnit) executionUnit;
-                    // ✅ SAME object used later for removal
-                    result.put(
-                            jdbcExecutionUnit.getExecutionUnit(),
-                            jdbcExecutionUnit.getStorageResource());
+                    Statement stmt = jdbcExecutionUnit.getStorageResource();
+                    result.computeIfAbsent(
+                            jdbcExecutionUnit,
+                            k -> new java.util.concurrent.ConcurrentLinkedQueue<>()).add(stmt);
                 }
             }
         }
@@ -179,8 +186,15 @@ public final class Process {
      *
      * @param executionUnit execution unit
      */
-    public void removeProcessStatement(final ExecutionUnit executionUnit) {
-        processStatements.remove(executionUnit);
+    public void removeProcessStatement(final JDBCExecutionUnit executionUnit) {
+        Queue<Statement> queue = processStatements.get(executionUnit);
+        if (null == queue) {
+            return;
+        }
+        queue.poll();
+        if (queue.isEmpty()) {
+            processStatements.remove(executionUnit, queue);
+        }
     }
     
     /**
@@ -192,23 +206,25 @@ public final class Process {
         setInterrupted(true);
         SQLException exception = null;
         
-        for (Statement each : processStatements.values()) {
-            try {
-                each.cancel();
-            } catch (final SQLException ex) {
+        for (java.util.concurrent.ConcurrentLinkedQueue<Statement> queue : processStatements.values()) {
+            for (Statement each : queue) {
                 try {
-                    each.close();
-                } catch (final SQLException closeEx) {
-                    if (null == exception) {
-                        exception = closeEx;
-                    } else {
-                        exception.setNextException(closeEx);
+                    each.cancel();
+                } catch (final SQLException ex) {
+                    try {
+                        each.close();
+                    } catch (final SQLException closeEx) {
+                        if (null == exception) {
+                            exception = closeEx;
+                        } else {
+                            exception.setNextException(closeEx);
+                        }
                     }
-                }
-                if (null == exception) {
-                    exception = ex;
-                } else {
-                    exception.setNextException(ex);
+                    if (null == exception) {
+                        exception = ex;
+                    } else {
+                        exception.setNextException(ex);
+                    }
                 }
             }
         }
@@ -237,6 +253,12 @@ public final class Process {
             this.sql = sql;
         }
         totalUnitCount.addAndGet(getTotalUnitCount(executionGroupContext));
-        processStatements.putAll(createProcessStatements(executionGroupContext));
+        createProcessStatements(executionGroupContext).forEach((key, newQueue) -> processStatements.merge(
+                key,
+                newQueue,
+                (oldQueue, q) -> {
+                    oldQueue.addAll(q);
+                    return oldQueue;
+                }));
     }
 }
