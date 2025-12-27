@@ -27,6 +27,7 @@ import org.apache.shardingsphere.database.protocol.constant.CommonConstants;
 import org.apache.shardingsphere.infra.executor.sql.process.ProcessEngine;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
+import org.apache.shardingsphere.proxy.frontend.connection.ConnectionIdGenerator;
 import org.apache.shardingsphere.proxy.frontend.exception.ExpectedExceptions;
 import org.apache.shardingsphere.proxy.frontend.executor.ConnectionThreadExecutorGroup;
 import org.apache.shardingsphere.proxy.frontend.executor.UserExecutorGroup;
@@ -135,6 +136,7 @@ public final class FrontendChannelInboundHandler extends ChannelInboundHandlerAd
     private void closeAllResources() {
         ConnectionThreadExecutorGroup.getInstance()
                 .unregisterAndAwaitTermination(connectionSession.getConnectionId());
+        ConnectionIdGenerator.getInstance().releaseId(connectionSession.getConnectionId());
         processCloseExceptions(connectionSession.getDatabaseConnectionManager().closeAllResources());
         Optional.ofNullable(connectionSession.getProcessId()).ifPresent(processEngine::disconnect);
         databaseProtocolFrontendEngine.release(connectionSession);

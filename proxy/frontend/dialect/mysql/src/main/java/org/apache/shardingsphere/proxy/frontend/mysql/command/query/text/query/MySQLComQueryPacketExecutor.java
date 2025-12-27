@@ -100,7 +100,9 @@ public final class MySQLComQueryPacketExecutor implements QueryCommandExecutor {
         }
         MySQLKillStatement kill = (MySQLKillStatement) sqlStatement;
         String scope = kill.getScope();
-        if (null != scope && !"QUERY".equalsIgnoreCase(scope)) {
+        // Only normalize KILL QUERY <connectionId>.
+        // KILL <id> without scope is treated as CONNECTION semantics and is not rewritten.
+        if (null == scope || !"QUERY".equalsIgnoreCase(scope)) {
             return sqlStatement;
         }
         String id = kill.getProcessId();

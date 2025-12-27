@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.proxy.backend.mysql.handler.admin.executor;
 
-import com.google.common.base.Strings;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.exception.generic.UnsupportedSQLOperationException;
@@ -51,11 +50,12 @@ public final class MySQLKillProcessExecutor implements DatabaseAdminUpdateExecut
         
         String scope = killStatement.getScope();
         
-        // MySQL supports: KILL <id> and KILL QUERY <id>
+        // ShardingSphere Proxy currently supports cancelling execution only.
+        // Require explicit QUERY scope to avoid diverging from native MySQL semantics of `KILL <id>` (kill connection).
         ShardingSpherePreconditions.checkState(
-                Strings.isNullOrEmpty(scope) || QUERY_SCOPE.equalsIgnoreCase(scope),
+                QUERY_SCOPE.equalsIgnoreCase(scope),
                 () -> new UnsupportedSQLOperationException(
-                        "Only `KILL <id>` or `KILL QUERY <id>` SQL syntax is supported"));
+                        "Only `KILL QUERY <processId>` SQL syntax is supported"));
         
         String processId = killStatement.getProcessId();
         

@@ -19,6 +19,9 @@ package org.apache.shardingsphere.proxy.frontend.mysql.connection;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
+import org.apache.shardingsphere.mode.spi.repository.PersistRepository;
+import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -28,7 +31,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * 
  * <p>
  * Maps MySQL handshake connection IDs (32-bit values from the protocol handshake)
- * to process IDs (cluster-wide unique identifiers used in KILL QUERY).
+ * to process IDs (cluster-wide unique identifiers used for routing process kill in cluster mode).
  * This maintains the stable mapping across the lifecycle of a connection,
  * from handshake through execution to completion.
  * </p>
@@ -43,10 +46,11 @@ import java.util.concurrent.ConcurrentHashMap;
  *       ConnectionSession.setProcessId() stores it (happens BEFORE first command).</li>
  *   <li><b>Command Execution (MySQLCommandExecuteEngine.getCommandExecutor):</b>
  *       During first command, registry.register() binds MySQL connectionId → processId.
- *       This enables correct routing of KILL commands in cluster mode.</li>
+ *       This bridges a node-local MySQL connectionId to a cluster-wide processId.</li>
  *   <li><b>Kill Query (MySQLKillProcessExecutor):</b>
- *       Client sends KILL &lt;processId&gt;; ProcessService.killProcess() routes using cluster-unique processId.
- *       No need to use MySQLConnectionIdRegistry for KILL (uses processId directly).</li>
+ *       Client sends KILL QUERY &lt;processId&gt;; ProcessService.killProcess() routes using cluster-unique processId.
+ *       Note: in cluster mode, this registry also persists the mapping into the cluster repository so any proxy node
+ *       can resolve &lt;connectionId&gt; to a cluster-unique processId for routing.</li>
  *   <li><b>Connection Close (MySQLFrontendEngine.release):</b>
  *       registry.unregister() cleans up mapping to prevent memory leaks in singleton.</li>
  * </ol>
@@ -74,6 +78,8 @@ public final class MySQLConnectionIdRegistry {
     
     private static final MySQLConnectionIdRegistry INSTANCE = new MySQLConnectionIdRegistry();
     
+    private static final String CLUSTER_CONNECTION_ID_MAPPING_PATH = "/nodes/compute_nodes/proxy_connection_id_mapping";
+    
     private final Map<Long, String> connectionIdToProcessId = new ConcurrentHashMap<>();
     
     /**
@@ -100,6 +106,10 @@ public final class MySQLConnectionIdRegistry {
     public void register(final long mysqlConnectionId, final String processId) {
         if (null != processId) {
             connectionIdToProcessId.put(mysqlConnectionId, processId);
+            ClusterPersistRepository repository = getClusterRepository();
+            if (null != repository) {
+                repository.persistEphemeral(getClusterMappingKey(mysqlConnectionId), processId);
+            }
         }
     }
     
@@ -115,6 +125,10 @@ public final class MySQLConnectionIdRegistry {
      */
     public void unregister(final long mysqlConnectionId) {
         connectionIdToProcessId.remove(mysqlConnectionId);
+        ClusterPersistRepository repository = getClusterRepository();
+        if (null != repository) {
+            repository.delete(getClusterMappingKey(mysqlConnectionId));
+        }
     }
     
     /**
@@ -129,6 +143,29 @@ public final class MySQLConnectionIdRegistry {
      * @return cluster-unique process ID if mapping exists, null otherwise
      */
     public String getProcessId(final long mysqlConnectionId) {
-        return connectionIdToProcessId.get(mysqlConnectionId);
+        String processId = connectionIdToProcessId.get(mysqlConnectionId);
+        if (null != processId) {
+            return processId;
+        }
+        ClusterPersistRepository repository = getClusterRepository();
+        return null == repository ? null : repository.query(getClusterMappingKey(mysqlConnectionId));
+    }
+    
+    private ClusterPersistRepository getClusterRepository() {
+        if (null == ProxyContext.getInstance().getContextManager()) {
+            return null;
+        }
+        if (null == ProxyContext.getInstance().getContextManager().getPersistServiceFacade()) {
+            return null;
+        }
+        PersistRepository repository = ProxyContext.getInstance()
+                .getContextManager()
+                .getPersistServiceFacade()
+                .getRepository();
+        return repository instanceof ClusterPersistRepository ? (ClusterPersistRepository) repository : null;
+    }
+    
+    private String getClusterMappingKey(final long mysqlConnectionId) {
+        return CLUSTER_CONNECTION_ID_MAPPING_PATH + PersistRepository.PATH_SEPARATOR + mysqlConnectionId;
     }
 }

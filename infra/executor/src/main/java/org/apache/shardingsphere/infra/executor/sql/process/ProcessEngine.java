@@ -83,11 +83,6 @@ public final class ProcessEngine {
     /**
      * Execute SQL.
      *
-     * <p>
-     * Lazily initializes process if {@code connect()} was not explicitly called,
-     * to keep backward compatibility.
-     * </p>
-     *
      * @param executionGroupContext execution group context
      * @param queryContext query context
      */
@@ -96,17 +91,16 @@ public final class ProcessEngine {
                            final QueryContext queryContext) {
         
         String processId = executionGroupContext.getReportContext().getProcessId();
+        if (Strings.isNullOrEmpty(processId)) {
+            return;
+        }
         ProcessRegistry registry = ProcessRegistry.getInstance();
         Process process = registry.get(processId);
-        
-        // STRICT check first
         if (null == process) {
-            // Minimal compatibility fallback:
-            // register ONLY using existing reportContext (no new processId)
+            // Federation execution: processId is externally managed
             registry.add(new Process(executionGroupContext));
             process = registry.get(processId);
         }
-        
         process.mergeExecutionGroupContext(executionGroupContext, queryContext.getSql());
     }
     

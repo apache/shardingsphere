@@ -25,7 +25,6 @@ import org.apache.shardingsphere.data.pipeline.core.job.PipelineJobRegistry;
 import org.apache.shardingsphere.data.pipeline.core.job.id.PipelineJobIdUtils;
 import org.apache.shardingsphere.data.pipeline.core.job.service.PipelineJobItemManager;
 import org.apache.shardingsphere.data.pipeline.core.job.type.PipelineJobType;
-import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.executor.kernel.thread.ExecutorThreadFactoryBuilder;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 
@@ -122,35 +121,34 @@ public final class PipelineJobProgressPersistService {
                 }
             }
         }
-
+        
         private static void persist0(final String jobId, final int shardingItem, final PipelineJobProgressPersistContext persistContext) {
             long currentUnhandledEventCount = persistContext.getUnhandledEventCount().get();
-
+            
             // Negative count is an error path (tests rely on this)
             if (currentUnhandledEventCount < 0L) {
                 throw new IllegalStateException("Current unhandled event count must be greater than or equal to 0");
             }
-
+            
             if (0L == currentUnhandledEventCount) {
                 return;
             }
-
+            
             Optional<PipelineJobItemContext> jobItemContext = PipelineJobRegistry.getItemContext(jobId, shardingItem);
             if (!jobItemContext.isPresent()) {
                 return;
             }
-
+            
             long startTimeMillis = System.currentTimeMillis();
             new PipelineJobItemManager<>(
                     TypedSPILoader.getService(
                             PipelineJobType.class,
-                            PipelineJobIdUtils.parseJobType(jobId).getType()
-                    ).getOption().getYamlJobItemProgressSwapper()
-            ).updateProgress(jobItemContext.get());
-
+                            PipelineJobIdUtils.parseJobType(jobId).getType()).getOption().getYamlJobItemProgressSwapper())
+                    .updateProgress(jobItemContext.get());
+            
             // Reset ONLY after successful persist
             persistContext.getUnhandledEventCount().set(0L);
-
+            
             if (6 == ThreadLocalRandom.current().nextInt(100)) {
                 log.info("persist, jobId={}, shardingItem={}, cost {} ms",
                         jobId, shardingItem, System.currentTimeMillis() - startTimeMillis);

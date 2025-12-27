@@ -27,7 +27,6 @@ import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentLinkedQueue;
 
 /**
  * Process registry.
@@ -76,14 +75,7 @@ public final class ProcessRegistry {
         
         oldProcess.getInterrupted()
                 .compareAndSet(false, newProcess.getInterrupted().get());
-        // Merge statement queues for identity-based JDBCExecutionUnit keys
-        newProcess.getProcessStatements().forEach((key, newQueue) -> oldProcess.getProcessStatements().merge(
-                key,
-                new ConcurrentLinkedQueue<>(newQueue),
-                (oldQueue, q) -> {
-                    oldQueue.addAll(q);
-                    return oldQueue;
-                }));
+        oldProcess.getProcessStatements().putAll(newProcess.getProcessStatements());
         return oldProcess;
     }
     

@@ -29,12 +29,9 @@ import org.apache.shardingsphere.infra.metadata.user.Grantee;
 
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Queue;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -46,7 +43,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 @Getter
 public final class Process {
     
-    private final Map<JDBCExecutionUnit, ConcurrentLinkedQueue<Statement>> processStatements = new ConcurrentHashMap<>();
+    private final Map<StatementIdentity, Statement> processStatements = new ConcurrentHashMap<>();
     
     private final String id;
     
@@ -85,13 +82,7 @@ public final class Process {
         username = grantee.map(Grantee::getUsername).orElse("");
         hostname = grantee.map(Grantee::getHostname).orElse("");
         totalUnitCount = new AtomicInteger(getTotalUnitCount(executionGroupContext));
-        createProcessStatements(executionGroupContext).forEach((key, newQueue) -> processStatements.merge(
-                key,
-                new ConcurrentLinkedQueue<>(newQueue),
-                (oldQueue, q) -> {
-                    oldQueue.addAll(q);
-                    return oldQueue;
-                }));
+        processStatements.putAll(createProcessStatements(executionGroupContext));
         completedUnitCount = new AtomicInteger(0);
         this.idle = new AtomicBoolean(idle);
         interrupted = new AtomicBoolean();
@@ -129,18 +120,16 @@ public final class Process {
         return result;
     }
     
-    private Map<JDBCExecutionUnit, java.util.concurrent.ConcurrentLinkedQueue<Statement>> createProcessStatements(
-                                                                                                                  final ExecutionGroupContext<? extends SQLExecutionUnit> executionGroupContext) {
-        
-        Map<JDBCExecutionUnit, java.util.concurrent.ConcurrentLinkedQueue<Statement>> result = new LinkedHashMap<>();
+    private Map<StatementIdentity, Statement> createProcessStatements(final ExecutionGroupContext<? extends SQLExecutionUnit> executionGroupContext) {
+        Map<StatementIdentity, Statement> result = new ConcurrentHashMap<>();
         for (ExecutionGroup<? extends SQLExecutionUnit> each : executionGroupContext.getInputGroups()) {
             for (SQLExecutionUnit executionUnit : each.getInputs()) {
                 if (executionUnit instanceof JDBCExecutionUnit) {
                     JDBCExecutionUnit jdbcExecutionUnit = (JDBCExecutionUnit) executionUnit;
-                    Statement stmt = jdbcExecutionUnit.getStorageResource();
-                    result.computeIfAbsent(
-                            jdbcExecutionUnit,
-                            k -> new java.util.concurrent.ConcurrentLinkedQueue<>()).add(stmt);
+                    Statement statement = jdbcExecutionUnit.getStorageResource();
+                    if (null != statement) {
+                        result.put(new StatementIdentity(statement), statement);
+                    }
                 }
             }
         }
@@ -187,13 +176,9 @@ public final class Process {
      * @param executionUnit execution unit
      */
     public void removeProcessStatement(final JDBCExecutionUnit executionUnit) {
-        Queue<Statement> queue = processStatements.get(executionUnit);
-        if (null == queue) {
-            return;
-        }
-        queue.poll();
-        if (queue.isEmpty()) {
-            processStatements.remove(executionUnit, queue);
+        Statement statement = executionUnit.getStorageResource();
+        if (null != statement) {
+            processStatements.remove(new StatementIdentity(statement));
         }
     }
     
@@ -205,26 +190,23 @@ public final class Process {
     public void kill() throws SQLException {
         setInterrupted(true);
         SQLException exception = null;
-        
-        for (java.util.concurrent.ConcurrentLinkedQueue<Statement> queue : processStatements.values()) {
-            for (Statement each : queue) {
+        for (Statement each : processStatements.values()) {
+            try {
+                each.cancel();
+            } catch (final SQLException ex) {
                 try {
-                    each.cancel();
-                } catch (final SQLException ex) {
-                    try {
-                        each.close();
-                    } catch (final SQLException closeEx) {
-                        if (null == exception) {
-                            exception = closeEx;
-                        } else {
-                            exception.setNextException(closeEx);
-                        }
-                    }
+                    each.close();
+                } catch (final SQLException closeEx) {
                     if (null == exception) {
-                        exception = ex;
+                        exception = closeEx;
                     } else {
-                        exception.setNextException(ex);
+                        exception.setNextException(closeEx);
                     }
+                }
+                if (null == exception) {
+                    exception = ex;
+                } else {
+                    exception.setNextException(ex);
                 }
             }
         }
@@ -253,12 +235,35 @@ public final class Process {
             this.sql = sql;
         }
         totalUnitCount.addAndGet(getTotalUnitCount(executionGroupContext));
-        createProcessStatements(executionGroupContext).forEach((key, newQueue) -> processStatements.merge(
-                key,
-                newQueue,
-                (oldQueue, q) -> {
-                    oldQueue.addAll(q);
-                    return oldQueue;
-                }));
+        processStatements.putAll(createProcessStatements(executionGroupContext));
+    }
+    
+    private static final class StatementIdentity {
+        
+        private final Statement statement;
+        
+        private final int hash;
+        
+        StatementIdentity(final Statement statement) {
+            this.statement = statement;
+            hash = System.identityHashCode(statement);
+        }
+        
+        @Override
+        public int hashCode() {
+            return hash;
+        }
+        
+        @Override
+        public boolean equals(final Object obj) {
+            if (this == obj) {
+                return true;
+            }
+            if (!(obj instanceof StatementIdentity)) {
+                return false;
+            }
+            StatementIdentity other = (StatementIdentity) obj;
+            return statement == other.statement;
+        }
     }
 }
