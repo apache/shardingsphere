@@ -1071,6 +1071,28 @@
         </filter>
     </show-columns>
 
+    <show-query-stats sql-case-id="show_query_stats" />
+
+    <show-query-stats sql-case-id="show_query_stats_for_database">
+        <database name="baseall" start-index="21" stop-index="27" />
+    </show-query-stats>
+
+    <show-query-stats sql-case-id="show_query_stats_from_table">
+        <from start-index="17" stop-index="31">
+            <table name="test_table" start-index="22" stop-index="31" />
+        </from>
+    </show-query-stats>
+
+    <show-query-stats sql-case-id="show_query_stats_all" all="true" />
+
+    <show-query-stats sql-case-id="show_query_stats_verbose" verbose="true" />
+
+    <show-query-stats sql-case-id="show_query_stats_from_table_all_verbose" all="true" verbose="true">
+        <from start-index="17" stop-index="31">
+            <table name="test_table" start-index="22" stop-index="31" />
+        </from>
+    </show-query-stats>
+
     <show sql-case-id="show_functions_basic" />
     <show sql-case-id="show_functions_with_like" />
     <show sql-case-id="show_role_grant_basic" />

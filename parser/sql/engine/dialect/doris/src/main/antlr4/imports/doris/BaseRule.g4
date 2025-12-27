@@ -474,6 +474,7 @@ identifierKeywordsUnambiguous
     | SRID
     | STACKED
     | STARTS
+    | STATS
     | STATS_AUTO_RECALC
     | STATS_PERSISTENT
     | STATS_SAMPLE_PAGES
@@ -527,6 +528,7 @@ identifierKeywordsUnambiguous
     | VALUE
     | VARIABLES
     | VCPU
+    | VERBOSE
     | VIEW
     | VISIBLE
     | WAIT
