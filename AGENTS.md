@@ -10,7 +10,7 @@ This guide is written **for AI coding agents only**. Follow it literally; improv
 4. **Transparent Records**: keep every key decision and change traceable.
 5. **Continuous Improvement**: learn from each execution and keep optimizing.
 6. **Results Oriented**: judge success solely by whether the target is achieved.
-7. **Coding Standards**: `CODE_OF_CONDUCT.md` is the binding “law” for any generated artifact. Review it once per session and refuse to keep code that conflicts with it (copyright, inclusivity, licensing, etc.). Whenever you need to interpret any rule, inspect `CODE_OF_CONDUCT.md` first, cite the relevant section/line, and only fall back to this guide when the code of conduct is silent.
+7. **Coding Standards**: `CODE_OF_CONDUCT.md` is the binding “law”; use it as the first reference for rule interpretation and cite relevant lines. See Governance Basics for precedence and session review expectations.
 
 ## Quality Standards
 
@@ -187,7 +187,7 @@ Always state which topology, registry, and engine versions (e.g., MySQL 5.7 vs 8
 - **Success recipe:** explain why the change exists, cite the affected data-flow step, keep public APIs backward compatible, and record defaults/knobs alongside code changes.
 
 ## Execution Loop
-1. **Intake & Clarify** – restate the request, map affected modules, confirm sandbox/network/approval constraints, and capture a constraint checklist (forbidden APIs, output formats, ordering rules, coverage targets). As part of intake, reopen `CODE_OF_CONDUCT.md` sections relevant to the task (e.g., Unit Testing Standards before discussing assertions) and copy their line-specific requirements into the plan checklist; do not start coding until those CODE_OF_CONDUCT items are explicitly listed with line numbers.
+1. **Intake & Clarify** – restate the request, map affected modules, confirm sandbox/network/approval constraints, and capture a constraint checklist (forbidden APIs, output formats, ordering rules, coverage targets). As part of intake, reopen `CODE_OF_CONDUCT.md` sections relevant to the task (e.g., Unit Testing Standards before discussing assertions), copy their line-specific requirements into the plan checklist (this checklist is reused for final verification), and do not start coding until those items are explicitly listed with line numbers.
 2. **Plan & Reason** – craft a multi-step plan (analysis, edits, tests). When a user asks for specific coverage/branch lists, pause coding until you have responded with an explicit bullet list of every path (file + line/branch) you will exercise, as well as the single test that will cover it; this list is a blocking prerequisite for any edits. Add rule-specific constraints (e.g., “no `assertEquals`”) to the plan and re-check them before edits. Before altering tests or mocks, inspect how `AutoMockExtension`, `@StaticMockSettings`, or other helpers already handle static/construction mocks and list every static dependency you will touch so you can confirm whether it is already covered or needs an explicit override. If a user request is scoped (e.g., “replace `anyCollection` with concrete matchers”), confirm that no broader refactor is expected and keep the change surface constrained unless they explicitly expand it. (No production/test code until the branch checklist and constraint review are complete.)
 3. **Implement** – touch only the required files, reuse abstractions, preserve ASF headers, and document major decisions. If you must replace a file wholesale (e.g., rewrite a test), delete the old file first and then add the new version so `apply_patch` does not fight stale context.
 4. **Validate** – run the narrowest meaningful command (e.g., `./mvnw -pl <module> -am test`, `./mvnw -pl <module> -DskipITs -Dspotless.skip=true -Dtest=ClassName test`). Announce intent beforehand and summarize exit codes afterward; when blocked, state the command you intended to run and why it matters.
@@ -198,7 +198,7 @@ Always state which topology, registry, and engine versions (e.g., MySQL 5.7 vs 8
 - Ensure edits are minimal, ASF headers intact, Spotless-ready, and any semantic change has a corresponding test (or explicit rationale).
 - Record exact commands, exit codes, and relevant log snippets.
 - Highlight remaining risks or follow-ups and keep ASCII-only output unless non-ASCII already existed.
-- Reopen the `CODE_OF_CONDUCT.md` sections used at intake, cite line numbers, and re-verify every listed requirement is satisfied or explicitly justified.
+- Using the intake checklist, re-verify every `CODE_OF_CONDUCT.md` item is satisfied or explicitly justified.
 
 ## Tooling & Testing Essentials
 - **Go-to commands:** `./mvnw clean install -B -T1C -Pcheck` (full build), `./mvnw test -pl <module>[-am]` (scoped unit tests), `./mvnw spotless:apply -Pcheck [-pl <module>]` (format), `./mvnw -pl <module> -DskipITs -Dspotless.skip=true -Dtest=ClassName test` (fast verification), and `./mvnw -pl proxy -am -DskipTests package` (proxy packaging/perf smoke).
