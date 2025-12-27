@@ -119,6 +119,7 @@
 1. Pipeline: Fix migration might skip some records on big table after job restarting - [#36878](https://github.com/apache/shardingsphere/pull/36878)
 1. Pipeline: Fix unsigned number column value type inconsistent in inventory and incremental - [#37280](https://github.com/apache/shardingsphere/pull/37280)
 1. Pipeline: Fix PostgreSQL migration create table SQL generation failure caused by locale-formatted sequence values - [#28360](https://github.com/apache/shardingsphere/issues/28360)
+1. DistSQL: Fix load single table with specific schema - [#37535](https://github.com/apache/shardingsphere/pull/37535)
 
 ### Change Logs
 
