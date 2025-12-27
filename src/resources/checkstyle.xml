@@ -41,9 +41,12 @@
     </module>
     <module name="Translation" />
     <module name="UniqueProperties" />
-    
     <module name="TreeWalker">
         <module name="SuppressionCommentFilter" />
+        <module name="SuppressionXpathSingleFilter">
+            <property name="checks" value="FinalClass" />
+            <property name="query" value="//CLASS_DEF[./MODIFIERS/LITERAL_PRIVATE]" />
+        </module>
         
         <!-- Annotations -->
         <module name="AnnotationLocation">
@@ -59,7 +62,9 @@
         <module name="MissingDeprecated" />
         <module name="MissingOverride" />
         <module name="PackageAnnotation" />
-        <module name="SuppressWarnings" />
+        <module name="SuppressWarnings">
+            <property name="format" value="^(?i:all)$" />
+        </module>
         <module name="SuppressWarningsHolder" />
         
         <!-- Block Checks -->

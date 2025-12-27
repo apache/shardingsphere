@@ -175,6 +175,7 @@
         <apache-rat-plugin.version>0.15</apache-rat-plugin.version>
         <spotless-maven-plugin.version>2.46.1</spotless-maven-plugin.version>
         <maven-checkstyle-plugin.version>3.6.0</maven-checkstyle-plugin.version>
+        <checkstyle.version>10.17.0</checkstyle.version>
         <maven-pmd-plugin.version>3.20.0</maven-pmd-plugin.version>
         <spotbugs-maven-plugin.version>4.7.2.1</spotbugs-maven-plugin.version>
         <fb-contrib.version>7.6.0</fb-contrib.version>
@@ -1345,6 +1346,13 @@
                                 <includeTestSourceDirectory>true</includeTestSourceDirectory>
                                 <excludes>**/autogen/**/*</excludes>
                             </configuration>
+                            <dependencies>
+                                <dependency>
+                                    <groupId>com.puppycrawl.tools</groupId>
+                                    <artifactId>checkstyle</artifactId>
+                                    <version>${checkstyle.version}</version>
+                                </dependency>
+                            </dependencies>
                         </plugin>
                         <plugin>
                             <artifactId>maven-pmd-plugin</artifactId>

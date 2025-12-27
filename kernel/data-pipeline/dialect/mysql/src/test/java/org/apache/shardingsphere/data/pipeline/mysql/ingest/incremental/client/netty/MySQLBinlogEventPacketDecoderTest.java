@@ -78,7 +78,7 @@ class MySQLBinlogEventPacketDecoderTest {
     
     @SuppressWarnings("CollectionWithoutInitialCapacity")
     @BeforeEach
-    void setUp() throws NoSuchFieldException, IllegalAccessException {
+    void setUp() throws ReflectiveOperationException {
         binlogEventPacketDecoder = new MySQLBinlogEventPacketDecoder(4, new ConcurrentHashMap<>(), true);
         binlogContext = (MySQLBinlogContext) Plugins.getMemberAccessor().get(MySQLBinlogEventPacketDecoder.class.getDeclaredField("binlogContext"), binlogEventPacketDecoder);
         lenient().when(channelHandlerContext.channel().attr(CommonConstants.CHARSET_ATTRIBUTE_KEY).get()).thenReturn(StandardCharsets.UTF_8);
