@@ -25,6 +25,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.stream.Collectors;
 
 /**
  * Properties segment.
@@ -62,10 +63,7 @@ public final class PropertiesSegment implements SQLSegment {
      * @return map
      */
     public Map<String, String> toMap() {
-        Map<String, String> result = new LinkedHashMap<>();
-        for (PropertySegment each : properties) {
-            result.put(each.getKey(), each.getValue());
-        }
-        return result;
+        return properties.stream()
+                .collect(Collectors.toMap(PropertySegment::getKey, PropertySegment::getValue, (existingValue, newValue) -> newValue, () -> new LinkedHashMap<>(properties.size(), 1F)));
     }
 }
