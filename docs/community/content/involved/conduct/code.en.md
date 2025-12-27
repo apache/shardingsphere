@@ -21,7 +21,7 @@ The following code of conduct is based on full compliance with the [Apache Softw
 - Ensure compliance with coding standards.
 - Ensure all steps in the build process complete successfully, including: Apache license header check, Checkstyle check, compilation, unit tests, etc. Build process command: `./mvnw clean install -B -T1C -Pcheck`.
 - Unify code style through Spotless, execute `./mvnw spotless:apply -Pcheck` to format code.
-- Ensure coverage is not lower than the master branch.
+- Ensure coverage is not lower than the master branch, except for simple `getter /setter` methods, unit tests need full coverage.
 - Try to refine design with fine-grained splitting; achieve small modifications with multiple commits, but ensure the completeness of each commit.
 - If you use IDEA, you can import `src/resources/idea/code-style.xml` to maintain code style consistency.
 - If you use IDEA, you can import `src/resources/idea/inspections.xml` to detect potential code issues.
@@ -64,12 +64,12 @@ The following code of conduct is based on full compliance with the [Apache Softw
 - Private methods used by a method should immediately follow that method. If there are multiple private methods, they should be written in the same order as they appear in the original method.
 - Method parameters and return values are not allowed to be `null`.
 - Prefer using lombok instead of constructors, getter, setter methods and log variables.
+- Do not leave fully-qualified class names inline; add import statements instead.
 - Consider using `LinkedList` first, only use `ArrayList` when you need to get element values from the collection by index.
 - Collection types that may cause expansion like `ArrayList`, `HashMap` must specify initial collection size to avoid expansion.
 - Prefer using ternary operators instead of if else return and assignment statements.
 - Nested use of ternary operators is forbidden.
 - In conditional expressions, prefer positive semantics for easier code logic understanding. For example: `if (null == param) {} else {}`.
-- Use specific `@SuppressWarnings("xxx")` instead of `@SuppressWarnings("all")`.
 - Use `@HighFrequencyInvocation` annotation reasonably to focus on performance optimization of key methods.
     - When to use `@HighFrequencyInvocation` annotation:
         - In frequently called request chains, mark the high-frequency called classes, methods or constructors, with precise matching of scope;
@@ -95,7 +95,11 @@ The following code of conduct is based on full compliance with the [Apache Softw
     - Correctness testing: Get expected results through correct inputs.
     - Reasonable design: Combined with production code design, design high-quality unit tests.
     - Error tolerance testing: Get expected results through incorrect inputs such as illegal data, exception flows, etc.
-- Except for simple `getter /setter` methods, and static code for declaring SPIs, such as: `getType / getOrder`, unit tests need full coverage.
+- Use `assert` prefix for all test method names.
+- Unit tests must exercise behavior through public APIs only; do not use reflection or other means to access private members.
+- Except for simple `getter /setter` methods, unit tests need full coverage.
+- When a production method is covered by only one test case, name that test method `assert<MethodName>` without extra suffixes, and prefer isolating one public production method per dedicated test method; when practical, keep test method ordering aligned with the corresponding production methods.
+- For parameterized tests, provide display names via parameters and prefix each with `{index}:` to include the sequence number.
 - Each test case needs precise assertions, try not to use `not`, `containsString` assertions.
 - Separate environment preparation code from test code.
 - Only Mockito, junit `Assertions`, hamcrest `CoreMatchers` and `MatcherAssert` related can use static import.
@@ -103,6 +107,8 @@ The following code of conduct is based on full compliance with the [Apache Softw
     - Boolean type assertions should use `assertTrue` and `assertFalse`;
     - Null value assertions should use `assertNull` and `assertNotNull`;
     - Other types should use `assertThat(actual, is(expected))` instead of `assertEquals`;
+    - Use `assertThat(..., isA(...))` instead of `instanceOf`;
+    - Do not use `assertSame` / `assertNotSame`; use instead of `assertThat(actual, is(expected))` or `assertThat(actual, not(expected))`;
     - Use Hamcrest matchers like `is()`, `not()` for precise and readable assertions.
 - The actual values in test cases should be named actual XXX, and expected values should be named expected XXX.
 - Test classes and methods marked with `@Test` do not need JAVADOC.
@@ -111,7 +117,7 @@ The following code of conduct is based on full compliance with the [Apache Softw
     - When unit tests contain objects that are not easy to construct, for example: objects with more than two levels of nesting and unrelated to testing, `mock` should be used.
     - For mocking static methods or constructors, consider using `AutoMockExtension` and `StaticMockSettings` provided by the testing framework for automatic resource release; if using Mockito's `mockStatic` and `mockConstruction` methods, must be paired with `try-with-resource` or closed in cleanup methods to avoid leaks.
     - When verifying only one call, there's no need to use `times(1)` parameter, the single-parameter method of `verify` is sufficient.
-- Use `assert` prefix for all test method names.
+- For deep chained interactions, use Mockito’s `RETURNS_DEEP_STUBS` instead of layering intermediate mocks.
 - Test data should use standardized prefixes (e.g., `foo_`/`bar_`) to clearly identify their test purpose
 - Use `PropertiesBuilder` simplify `Properties` building.
 

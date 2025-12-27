@@ -2608,6 +2608,10 @@ STARTS
     : S T A R T S
     ;
 
+STATS
+    : S T A T S
+    ;
+
 STATS_AUTO_RECALC
     : S T A T S UL_ A U T O UL_ R E C A L C
     ;
@@ -3060,6 +3064,10 @@ VARYING
 
 VCPU
     : V C P U
+    ;
+
+VERBOSE
+    : V E R B O S E
     ;
 
 VIEW

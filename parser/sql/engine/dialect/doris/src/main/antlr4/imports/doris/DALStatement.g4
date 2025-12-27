@@ -421,6 +421,10 @@ setResourceGroup
     : SET RESOURCE GROUP groupName (FOR NUMBER_ (COMMA_ NUMBER_)*)?
     ;
 
+showQueryStats
+    : SHOW QUERY STATS (FOR databaseName | fromTable)? ALL? VERBOSE?
+    ;
+
 binlog
     : BINLOG stringLiterals
     ;
@@ -455,7 +459,7 @@ tablesOption
     ;
 
 kill
-    : KILL (CONNECTION | QUERY)? AT_? IDENTIFIER_
+    : KILL (CONNECTION | QUERY)? (AT_? IDENTIFIER_ | NUMBER_)
     ;
 
 loadIndexInfo
@@ -729,6 +733,7 @@ show
     | showProfile
     | showProcedureStatus
     | showProfiles
+    | showQueryStats
     | showSlaveHosts
     | showSlaveStatus
     | showRelaylogEvent
