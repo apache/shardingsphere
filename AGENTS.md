@@ -37,6 +37,8 @@ This guide is written **for AI coding agents only**. Follow it literally; improv
 - **Public Method Isolation**: aim for one public production method per dedicated test method rather than combining multiple public behaviors in a single test.
 - **Test Method Order**: keep unit test method ordering consistent with corresponding production methods when practical to improve traceability.
 - **Test Naming Simplicity**: keep test names concise and scenario-focused (avoid “ReturnsXXX”/overly wordy or AI-like phrasing); describe the scenario directly.
+- **Boolean Assertions**: use `assertTrue` / `assertFalse` for boolean checks; do not use `assertThat(..., is(true/false))`.
+- **Parameterized Test Names**: provide display names through parameters and prefix each name with `{index}:` to include the sequence number.
 - **Coverage Pledge**: when 100% coverage is required, enumerate every branch/path and its planned test before coding, then implement once to reach 100% without post-hoc fixes.
 - **Mock/Spy Specification**: Use mock by default; consider spy only when the scenario cannot be adequately represented using a mock. Avoid spy entirely when standard `mock + when` can express behavior, and do not introduce inner classes for testing purposes—prefer plain test classes with mocks.
 - **Strictness and Stub Control**: Enable @MockitoSettings(strictness = Strictness.LENIENT) in the Mockito scenario or apply lenient() to specific stubs to ensure there are no unmatched or redundant stubs; clean up any unused stubs, imports, or local variables before committing.
@@ -203,6 +205,7 @@ Always state which topology, registry, and engine versions (e.g., MySQL 5.7 vs 8
 - Ensure edits are minimal, ASF headers intact, Spotless-ready, and any semantic change has a corresponding test (or explicit rationale).
 - Record exact commands, exit codes, and relevant log snippets.
 - Highlight remaining risks or follow-ups and keep ASCII-only output unless non-ASCII already existed.
+- Run a quick scan to ensure no inline fully-qualified class names remain in code or tests (e.g., `rg "\\b[A-Za-z_]+\\.[A-Za-z_]+\\.[A-Za-z_]+" src test`); replace any hits with imports.
 
 ## Tooling & Testing Essentials
 - **Go-to commands:** `./mvnw clean install -B -T1C -Pcheck` (full build), `./mvnw test -pl <module>[-am]` (scoped unit tests), `./mvnw spotless:apply -Pcheck [-pl <module>]` (format), `./mvnw -pl <module> -DskipITs -Dspotless.skip=true -Dtest=ClassName test` (fast verification), and `./mvnw -pl proxy -am -DskipTests package` (proxy packaging/perf smoke).
@@ -258,11 +261,10 @@ Always state which topology, registry, and engine versions (e.g., MySQL 5.7 vs 8
 - When constructors hide collaborators, use `Plugins.getMemberAccessor()` to inject mocks and document why SPI creation is bypassed.
 - When static methods or constructors need mocking, prefer `@ExtendWith(AutoMockExtension.class)` with `@StaticMockSettings` (or the extension’s constructor-mocking support); when a class is listed in `@StaticMockSettings`, do not call `mockStatic`/`mockConstruction` directly—stub via `when(...)` instead. Only if AutoMockExtension cannot be used and the reason is documented in the plan may you fall back to `mockStatic`/`mockConstruction`, wrapped in try-with-resources.
 - Before adding coverage to a utility with multiple return paths, list every branch (no rule, non-Single config, wildcard blocks, missing data node, positive path, collection overload) and map each to a test; update the plan whenever this checklist changes.
-- Prefer imports over fully-qualified class names inside code and tests; if a class is used, add an import rather than using the full package path inline.
+- Ban inline fully-qualified class names in production and test code—always add imports instead; before wrapping up, run a search (e.g., `rg "\\b[A-Za-z_]+\\.[A-Za-z_]+\\.[A-Za-z_]+" <paths>`) and fix any occurrences rather than waiving them.
 - Before coding tests, prepare a concise branch-and-data checklist (all branches, inputs, expected outputs) and keep the plan in sync when the checklist changes.
 - When a component is available via SPI (e.g., `TypedSPILoader`, `DatabaseTypedSPILoader`, `PushDownMetaDataRefresher`), obtain the instance through SPI by default; note any exceptions in the plan.
 - Do not mix Mockito matchers with raw arguments; choose a single style per invocation, and ensure the Mockito extension aligns with the mocking approach.
-- Never leave fully-qualified class names in production or test code; if a class is referenced, add an import and verify via a quick scan (`rg "\\." <path>`) before finishing.
 - When the user requires full branch/line coverage, treat 100% coverage as a blocking condition: enumerate branches, map tests, and keep adding cases until all branches are covered or explicitly waived; record the coverage requirement in the plan and self-check before concluding.
 - Compliance is mandatory: before any coding, re-read AGENTS.md and convert all hard requirements (SPI usage, no FQCN, mocking rules, coverage targets, planning steps) into a checklist in the plan; do not proceed or report completion until every item is satisfied or explicitly waived by the user.
 
