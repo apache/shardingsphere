@@ -187,6 +187,8 @@ public enum SQLVisitorRule {
     
     ALTER_SYSTEM("AlterSystem", SQLStatementType.DDL),
     
+    ALTER_STORAGE_POLICY("AlterStoragePolicy", SQLStatementType.DDL),
+    
     DROP_SERVER("DropServer", SQLStatementType.DDL),
     
     CREATE_TRIGGER("CreateTrigger", SQLStatementType.DDL),

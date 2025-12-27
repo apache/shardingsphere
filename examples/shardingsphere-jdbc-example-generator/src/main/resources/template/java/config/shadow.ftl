@@ -25,7 +25,7 @@
     } 
             
     private RuleConfiguration createSQLParserRuleConfiguration() {
-        return new SQLParserRuleConfiguration(true, new CacheOption(128, 1024L), new CacheOption(2000, 65535L));
+        return new SQLParserRuleConfiguration(new CacheOption(128, 1024L), new CacheOption(2000, 65535L));
     }
     
     private Map<String, ShadowTableConfiguration> createShadowTables() {

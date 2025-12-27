@@ -112,9 +112,14 @@ import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.TableNa
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.TruncateTableContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ValidStatementContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.WhileStatementContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.RenameRollupContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.RenamePartitionContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.AlterStoragePolicyContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.PropertiesClauseContext;
 import org.apache.shardingsphere.sql.parser.engine.doris.visitor.statement.DorisStatementVisitor;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.AlgorithmOption;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.LockTableOption;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.PartitionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.AlterDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.CreateDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.charset.CharsetNameSegment;
@@ -137,6 +142,12 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.index.Dro
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.index.IndexNameSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.index.IndexSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.index.RenameIndexDefinitionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.partition.RenamePartitionDefinitionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.policy.PolicyNameSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.property.PropertiesSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.property.PropertySegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.rollup.RenameRollupDefinitionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.rollup.RollupSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.routine.FunctionNameSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.routine.RoutineBodySegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.routine.ValidStatementSegment;
@@ -193,6 +204,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.Up
 import org.apache.shardingsphere.sql.parser.statement.core.util.SQLUtils;
 import org.apache.shardingsphere.sql.parser.statement.core.value.collection.CollectionValue;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
+import org.apache.shardingsphere.sql.parser.statement.doris.ddl.DorisAlterStoragePolicyStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.ddl.DorisCreateFunctionStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.ddl.DorisResumeJobStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.ddl.event.MySQLAlterEventStatement;
@@ -388,6 +400,10 @@ public final class DorisDDLStatementVisitor extends DorisStatementVisitor implem
             alterTableStatement.getRenameIndexDefinitions().add((RenameIndexDefinitionSegment) alterDefinitionSegment);
         } else if (alterDefinitionSegment instanceof RenameColumnSegment) {
             alterTableStatement.getRenameColumnDefinitions().add((RenameColumnSegment) alterDefinitionSegment);
+        } else if (alterDefinitionSegment instanceof RenameRollupDefinitionSegment) {
+            alterTableStatement.getRenameRollupDefinitions().add((RenameRollupDefinitionSegment) alterDefinitionSegment);
+        } else if (alterDefinitionSegment instanceof RenamePartitionDefinitionSegment) {
+            alterTableStatement.getRenamePartitionDefinitions().add((RenamePartitionDefinitionSegment) alterDefinitionSegment);
         } else if (alterDefinitionSegment instanceof AlgorithmTypeSegment) {
             alterTableStatement.setAlgorithmSegment((AlgorithmTypeSegment) alterDefinitionSegment);
         } else if (alterDefinitionSegment instanceof LockTableSegment) {
@@ -469,6 +485,12 @@ public final class DorisDDLStatementVisitor extends DorisStatementVisitor implem
         }
         if (alterListItemContext instanceof RenameIndexContext) {
             return Optional.of((RenameIndexDefinitionSegment) visit(alterListItemContext));
+        }
+        if (alterListItemContext instanceof RenameRollupContext) {
+            return Optional.of((RenameRollupDefinitionSegment) visit(alterListItemContext));
+        }
+        if (alterListItemContext instanceof RenamePartitionContext) {
+            return Optional.of((RenamePartitionDefinitionSegment) visit(alterListItemContext));
         }
         return Optional.empty();
     }
@@ -755,6 +777,47 @@ public final class DorisDDLStatementVisitor extends DorisStatementVisitor implem
         IndexSegment indexNameSegment = (IndexSegment) visitIndexName(ctx.indexName(0));
         IndexSegment renameIndexName = (IndexSegment) visitIndexName(ctx.indexName(1));
         return new RenameIndexDefinitionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), indexNameSegment, renameIndexName);
+    }
+    
+    @Override
+    public ASTNode visitRenameRollup(final RenameRollupContext ctx) {
+        RollupSegment oldRollupSegment = new RollupSegment(ctx.oldRollupName.getStart().getStartIndex(), ctx.oldRollupName.getStop().getStopIndex(),
+                (IdentifierValue) visit(ctx.oldRollupName));
+        RollupSegment newRollupSegment = new RollupSegment(ctx.newRollupName.getStart().getStartIndex(), ctx.newRollupName.getStop().getStopIndex(),
+                (IdentifierValue) visit(ctx.newRollupName));
+        return new RenameRollupDefinitionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), oldRollupSegment, newRollupSegment);
+    }
+    
+    @Override
+    public ASTNode visitRenamePartition(final RenamePartitionContext ctx) {
+        PartitionSegment oldPartitionSegment = new PartitionSegment(ctx.oldPartitionName.getStart().getStartIndex(), ctx.oldPartitionName.getStop().getStopIndex(),
+                (IdentifierValue) visit(ctx.oldPartitionName));
+        PartitionSegment newPartitionSegment = new PartitionSegment(ctx.newPartitionName.getStart().getStartIndex(), ctx.newPartitionName.getStop().getStopIndex(),
+                (IdentifierValue) visit(ctx.newPartitionName));
+        return new RenamePartitionDefinitionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), oldPartitionSegment, newPartitionSegment);
+    }
+    
+    @Override
+    public ASTNode visitAlterStoragePolicy(final AlterStoragePolicyContext ctx) {
+        IdentifierValue identifier = (IdentifierValue) visit(ctx.identifier());
+        PolicyNameSegment policyNameSegment = new PolicyNameSegment(ctx.identifier().getStart().getStartIndex(), ctx.identifier().getStop().getStopIndex(), identifier);
+        PropertiesSegment propertiesSegment = extractPropertiesSegment(ctx.propertiesClause());
+        return new DorisAlterStoragePolicyStatement(getDatabaseType(), policyNameSegment, propertiesSegment);
+    }
+    
+    private PropertiesSegment extractPropertiesSegment(final PropertiesClauseContext ctx) {
+        PropertiesSegment result = new PropertiesSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex());
+        for (PropertyContext each : ctx.properties().property()) {
+            String key = getPropertyKey(each);
+            String value = getPropertyValue(each);
+            PropertySegment propertySegment = new PropertySegment(each.getStart().getStartIndex(), each.getStop().getStopIndex(), key, value);
+            result.getProperties().add(propertySegment);
+        }
+        return result;
+    }
+    
+    private String getPropertyValue(final PropertyContext ctx) {
+        return SQLUtils.getExactlyValue(ctx.literals().getText());
     }
     
     @Override

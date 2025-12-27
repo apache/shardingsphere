@@ -25,7 +25,7 @@
         - shadow_group
       shadowAlgorithmNames:
         - user_id_insert_match_algorithm
-        - sql_hint_algorithm
+        - sql-hint-algorithm
   defaultShadowAlgorithmName: sql-hint-algorithm
   shadowAlgorithms:
     user_id_insert_match_algorithm:

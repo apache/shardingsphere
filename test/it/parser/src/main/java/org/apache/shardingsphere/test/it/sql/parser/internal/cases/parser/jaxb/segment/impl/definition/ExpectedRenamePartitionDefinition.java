@@ -15,26 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.catalog;
+package org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.definition;
 
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.AbstractExpectedSQLSegment;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.index.ExpectedPartition;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
-import java.util.LinkedList;
-import java.util.List;
 
 /**
- * Expected catalog properties.
+ * Expected rename partition definition.
  */
-@XmlAccessorType(XmlAccessType.FIELD)
 @Getter
 @Setter
-public final class ExpectedCatalogProperties extends AbstractExpectedSQLSegment {
+public final class ExpectedRenamePartitionDefinition extends AbstractExpectedSQLSegment {
     
-    @XmlElement(name = "property")
-    private final List<ExpectedCatalogProperty> properties = new LinkedList<>();
+    @XmlElement(name = "old-partition")
+    private ExpectedPartition oldPartition;
+    
+    @XmlElement(name = "new-partition")
+    private ExpectedPartition newPartition;
 }

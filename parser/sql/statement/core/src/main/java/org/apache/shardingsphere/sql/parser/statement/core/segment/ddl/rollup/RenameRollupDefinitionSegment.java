@@ -15,26 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.catalog;
+package org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.rollup;
 
 import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.AbstractExpectedSQLSegment;
-
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlElement;
-import java.util.LinkedList;
-import java.util.List;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.AlterDefinitionSegment;
 
 /**
- * Expected catalog properties.
+ * Rename rollup definition segment.
  */
-@XmlAccessorType(XmlAccessType.FIELD)
+@RequiredArgsConstructor
 @Getter
-@Setter
-public final class ExpectedCatalogProperties extends AbstractExpectedSQLSegment {
+public final class RenameRollupDefinitionSegment implements AlterDefinitionSegment {
     
-    @XmlElement(name = "property")
-    private final List<ExpectedCatalogProperty> properties = new LinkedList<>();
+    private final int startIndex;
+    
+    private final int stopIndex;
+    
+    private final RollupSegment rollupSegment;
+    
+    private final RollupSegment renameRollupSegment;
 }
