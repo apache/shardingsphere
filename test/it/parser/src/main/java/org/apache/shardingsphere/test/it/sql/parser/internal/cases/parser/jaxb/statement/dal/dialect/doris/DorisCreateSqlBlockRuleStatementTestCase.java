@@ -19,23 +19,25 @@ package org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.AbstractExpectedSQLSegment;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.SQLParserTestCase;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
- * Property test case for Doris.
+ * Create SQL block rule statement test case for Doris.
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @Getter
 @Setter
-public final class PropertyTestCase extends AbstractExpectedSQLSegment {
+public final class DorisCreateSqlBlockRuleStatementTestCase extends SQLParserTestCase {
     
-    @XmlAttribute
-    private String key;
+    @XmlElement(name = "rule-name")
+    private String ruleName;
     
-    @XmlAttribute
-    private String value;
+    @XmlElement(name = "property")
+    private final List<PropertyTestCase> properties = new LinkedList<>();
 }

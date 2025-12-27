@@ -23,4 +23,31 @@
     <create-resource-group sql-case-id="create_resource_group_with_system_type_and_thread_priority">
         <group name="rg2" start-index="23" stop-index="25"/>
     </create-resource-group>
+    <create-sql-block-rule sql-case-id="create_sql_block_rule_with_sql">
+        <rule-name start-index="24" stop-index="32">test_rule</rule-name>
+        <property key="sql" value="select \* from order_analysis" start-index="43" stop-index="80" />
+        <property key="global" value="true" start-index="82" stop-index="96" />
+        <property key="enable" value="true" start-index="98" stop-index="112" />
+    </create-sql-block-rule>
+    <create-sql-block-rule sql-case-id="create_sql_block_rule_with_sqlhash">
+        <rule-name start-index="24" stop-index="42">block_rule_sqlhash</rule-name>
+        <property key="sqlHash" value="0e5491b37dbea5e8" start-index="52" stop-index="79" />
+        <property key="enable" value="true" start-index="81" stop-index="95" />
+    </create-sql-block-rule>
+    <create-sql-block-rule sql-case-id="create_sql_block_rule_with_partition_num">
+        <rule-name start-index="24" stop-index="43">limit_partition_rule</rule-name>
+        <property key="partition_num" value="30" start-index="54" stop-index="73" />
+        <property key="global" value="true" start-index="75" stop-index="89" />
+    </create-sql-block-rule>
+    <create-sql-block-rule sql-case-id="create_sql_block_rule_with_cardinality">
+        <rule-name start-index="24" stop-index="47">limit_cardinality_rule</rule-name>
+        <property key="cardinality" value="10000000000" start-index="56" stop-index="82" />
+        <property key="tablet_num" value="100" start-index="84" stop-index="101" />
+    </create-sql-block-rule>
+    <create-sql-block-rule sql-case-id="create_sql_block_rule_mixed_properties">
+        <rule-name start-index="24" stop-index="35">complex_rule</rule-name>
+        <property key="sql" value="\s*select\s*\*\s*from order_\w*\s*" start-index="46" stop-index="93" />
+        <property key="global" value="false" start-index="95" stop-index="110" />
+        <property key="enable" value="true" start-index="112" stop-index="126" />
+    </create-sql-block-rule>
 </sql-parser-test-cases>

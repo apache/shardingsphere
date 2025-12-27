@@ -133,6 +133,8 @@ execute
     | startReplica
     | createMaterializedView
     | resumeJob
+    | dorisAlterSystem
+    | createSqlBlockRule
     // TODO consider refactor following sytax to SEMI_? EOF
     ) (SEMI_ EOF? | EOF)
     | EOF
