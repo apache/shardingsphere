@@ -235,4 +235,10 @@
     <sql-case id="show_compactions_with_limit" value="SHOW COMPACTIONS LIMIT 10;" db-types="Hive" />
     <sql-case id="show_compactions_with_compaction_ID" value="SHOW COMPACTIONS compactionid=1;" db-types="Hive" />
     <sql-case id="show_compactions_all_options" value="SHOW COMPACTIONS db1.tbl0 PARTITION (p=101, day='Monday') POOL 'pool0' TYPE 'minor' STATE 'ready for cleaning' ORDER BY `start` DESC LIMIT 5;" db-types="Hive" />
+    <sql-case id="show_query_stats" value="SHOW QUERY STATS" db-types="Doris" />
+    <sql-case id="show_query_stats_for_database" value="SHOW QUERY STATS FOR baseall" db-types="Doris" />
+    <sql-case id="show_query_stats_from_table" value="SHOW QUERY STATS FROM test_table" db-types="Doris" />
+    <sql-case id="show_query_stats_all" value="SHOW QUERY STATS ALL" db-types="Doris" />
+    <sql-case id="show_query_stats_verbose" value="SHOW QUERY STATS VERBOSE" db-types="Doris" />
+    <sql-case id="show_query_stats_from_table_all_verbose" value="SHOW QUERY STATS FROM test_table ALL VERBOSE" db-types="Doris" />
 </sql-cases>

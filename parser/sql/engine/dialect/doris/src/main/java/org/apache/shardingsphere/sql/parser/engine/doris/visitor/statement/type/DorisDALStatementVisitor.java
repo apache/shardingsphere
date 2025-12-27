@@ -135,6 +135,7 @@ import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.CreateS
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.PropertiesClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.PropertyContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.DorisAlterSystemActionContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ShowQueryStatsContext;
 import org.apache.shardingsphere.sql.parser.engine.doris.visitor.statement.DorisStatementVisitor;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.CacheTableIndexSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.CloneActionSegment;
@@ -180,6 +181,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.value.literal.impl.Te
 import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisAlterResourceStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisAlterSystemStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisCreateSqlBlockRuleStatement;
+import org.apache.shardingsphere.sql.parser.statement.doris.dal.show.DorisShowQueryStatsStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLCloneStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLCreateLoadableFunctionStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLDelimiterStatement;
@@ -466,7 +468,13 @@ public final class DorisDALStatementVisitor extends DorisStatementVisitor implem
     
     @Override
     public ASTNode visitKill(final KillContext ctx) {
-        return new MySQLKillStatement(getDatabaseType(), null == ctx.AT_() ? ctx.IDENTIFIER_().getText() : ctx.AT_().getText() + ctx.IDENTIFIER_().getText(), null);
+        String processId;
+        if (null != ctx.NUMBER_()) {
+            processId = ctx.NUMBER_().getText();
+        } else {
+            processId = null == ctx.AT_() ? ctx.IDENTIFIER_().getText() : ctx.AT_().getText() + ctx.IDENTIFIER_().getText();
+        }
+        return new MySQLKillStatement(getDatabaseType(), processId, null);
     }
     
     @Override
@@ -768,6 +776,8 @@ public final class DorisDALStatementVisitor extends DorisStatementVisitor implem
     @Override
     public ASTNode visitFromTable(final FromTableContext ctx) {
         FromTableSegment result = new FromTableSegment();
+        result.setStartIndex(ctx.getStart().getStartIndex());
+        result.setStopIndex(ctx.getStop().getStopIndex());
         result.setTable((SimpleTableSegment) visit(ctx.tableName()));
         return result;
     }
@@ -929,6 +939,23 @@ public final class DorisDALStatementVisitor extends DorisStatementVisitor implem
     public ASTNode visitShowLike(final ShowLikeContext ctx) {
         StringLiteralValue literalValue = (StringLiteralValue) visit(ctx.stringLiterals());
         return new ShowLikeSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), literalValue.getValue());
+    }
+    
+    @Override
+    public ASTNode visitShowQueryStats(final ShowQueryStatsContext ctx) {
+        DatabaseSegment database = null;
+        FromTableSegment fromTable = null;
+        if (null != ctx.databaseName()) {
+            database = (DatabaseSegment) visit(ctx.databaseName());
+        }
+        if (null != ctx.fromTable()) {
+            fromTable = (FromTableSegment) visit(ctx.fromTable());
+        }
+        boolean all = null != ctx.ALL();
+        boolean verbose = null != ctx.VERBOSE();
+        DorisShowQueryStatsStatement result = new DorisShowQueryStatsStatement(getDatabaseType(), database, fromTable, all, verbose);
+        result.addParameterMarkers(getParameterMarkerSegments());
+        return result;
     }
     
     @Override
