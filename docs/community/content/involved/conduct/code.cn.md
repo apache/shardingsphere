@@ -70,7 +70,6 @@ chapter = true
  - 优先使用三目运算符代替 if else 的返回和赋值语句。
  - 禁止嵌套使用三目运算符。
  - 条件表达式中，优先使用正向语义，以便于理解代码逻辑。例如：`if (null == param) {} else {}`。
- - 使用具体的 `@SuppressWarnings("xxx")` 代替 `@SuppressWarnings("all")`。
  - 合理使用 `@HighFrequencyInvocation` 注解，用于聚焦关键方法性能的优化。
    - 使用 `@HighFrequencyInvocation` 注解的时机：
      - 请求频繁调用的链路，标注其中高频调用的类、方法或构造器，标注范围精确匹配；

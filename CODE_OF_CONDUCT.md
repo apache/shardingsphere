@@ -66,7 +66,6 @@ The following code of conduct is based on full compliance with the [Apache Softw
 - Prefer using ternary operators instead of if else return and assignment statements.
 - Nested use of ternary operators is forbidden.
 - In conditional expressions, prefer positive semantics for easier code logic understanding. For example: `if (null == param) {} else {}`.
-- Use specific `@SuppressWarnings("xxx")` instead of `@SuppressWarnings("all")`.
 - Use `@HighFrequencyInvocation` annotation reasonably to focus on performance optimization of key methods.
    - When to use `@HighFrequencyInvocation` annotation:
       - In frequently called request chains, mark the high-frequency called classes, methods or constructors, with precise matching of scope;
