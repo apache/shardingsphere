@@ -21,6 +21,8 @@ import com.google.common.base.Preconditions;
 import lombok.Getter;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.CommonStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.doris.DorisAlterSystemStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.doris.DorisCreateSqlBlockRuleStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.dialect.doris.DorisAlterStoragePolicyStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.dialect.doris.DorisResumeJobStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.standard.catalog.AlterCatalogStatementTestCase;
@@ -604,6 +606,12 @@ public final class RootSQLParserTestCases {
     
     @XmlElement(name = "drop-role")
     private final List<DropRoleStatementTestCase> dropRoleTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "doris-alter-system")
+    private final List<DorisAlterSystemStatementTestCase> dorisAlterSystemTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "create-sql-block-rule")
+    private final List<DorisCreateSqlBlockRuleStatementTestCase> createSqlBlockRuleTestCases = new LinkedList<>();
     
     @XmlElement(name = "set-default-role")
     private final List<MySQLSetDefaultRoleStatementTestCase> setDefaultRoleTestCases = new LinkedList<>();

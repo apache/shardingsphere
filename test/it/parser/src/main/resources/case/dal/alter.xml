@@ -53,4 +53,20 @@
         <property key="s3.connection.timeout" value="1000" />
         <property key="s3.use_path_style" value="false" />
     </alter-resource>
+    <doris-alter-system sql-case-id="alter_system_add_follower">
+        <action>ADD FOLLOWER</action>
+        <target>192.168.1.100:9010</target>
+    </doris-alter-system>
+    <doris-alter-system sql-case-id="alter_system_add_observer">
+        <action>ADD OBSERVER</action>
+        <target>192.168.1.101:9010</target>
+    </doris-alter-system>
+    <doris-alter-system sql-case-id="alter_system_drop_follower">
+        <action>DROP FOLLOWER</action>
+        <target>192.168.1.100:9010</target>
+    </doris-alter-system>
+    <doris-alter-system sql-case-id="alter_system_drop_observer">
+        <action>DROP OBSERVER</action>
+        <target>192.168.1.101:9010</target>
+    </doris-alter-system>
 </sql-parser-test-cases>
