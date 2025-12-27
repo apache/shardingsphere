@@ -79,13 +79,26 @@ public final class PomTemplateTest {
         result.put("framework", "spring-boot-starter-jdbc");
         result.put("transaction", "local");
         result.put("shardingsphereVersion", "5.5.3-SNAPSHOT");
+        result.put("namespace", "generator-demo");
         return result;
     }
     
     private String renderPomTemplate(final Map<String, Object> dataModel) throws IOException, TemplateException {
-        Template template = templateConfig.getTemplate("pom.ftl");
+        return renderTemplate("pom.ftl", dataModel);
+    }
+    
+    private String renderTemplate(final String templateName, final Map<String, Object> dataModel) throws IOException, TemplateException {
+        Template template = templateConfig.getTemplate(templateName);
         StringWriter writer = new StringWriter();
         template.process(dataModel, writer);
         return writer.toString();
+    }
+    
+    @Test
+    public void assertClusterNamespaceRendered() throws IOException, TemplateException {
+        Map<String, Object> dataModel = new HashMap<>(1, 1F);
+        dataModel.put("namespace", "ns-value");
+        String content = renderTemplate("resources/yaml/mode/cluster-zookeeper.ftl", dataModel);
+        assertThat(content, containsString("namespace: ns-value"));
     }
 }
