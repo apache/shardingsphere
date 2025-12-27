@@ -32,19 +32,9 @@ This guide is written **for AI coding agents only**. Follow it literally; improv
 - **Quality Assurance**: run static checks, formatting, and code reviews.
 - **Checkstyle Gate**: do not hand off code with Checkstyle/Spotless failures—run the relevant module check locally and fix before completion.
 - **Continuous Verification**: rely on automated tests and integration validation.
-- **Public-Only Tests**: unit tests must exercise behavior via public APIs only; never use reflection to access private members.
-- **Single-Test Naming**: when a production method is covered by only one test case, name that test method `assert<MethodName>` without extra suffixes.
-- **Public Method Isolation**: aim for one public production method per dedicated test method rather than combining multiple public behaviors in a single test.
-- **Test Method Order**: keep unit test method ordering consistent with corresponding production methods when practical to improve traceability.
 - **Test Naming Simplicity**: keep test names concise and scenario-focused (avoid “ReturnsXXX”/overly wordy or AI-like phrasing); describe the scenario directly.
-- **Boolean Assertions**: use `assertTrue` / `assertFalse` for boolean checks; do not use `assertThat(..., is(true/false))`.
-- **Null Assertions**: use `assertNull` / `assertNotNull` instead of `assertThat(..., nullValue()/notNullValue())`.
-- **Identity Assertions**: do not use `assertSame` / `assertNotSame`; prefer `assertThat(actual, is(expected))` or `assertThat(actual, not(expected))` as appropriate.
-- **Type Assertions**: do not use `assertThat(..., instanceOf(...))`; prefer `assertThat(..., isA(...))`.
-- **Parameterized Test Names**: provide display names through parameters and prefix each name with `{index}:` to include the sequence number.
 - **Coverage Pledge**: when 100% coverage is required, enumerate every branch/path and its planned test before coding, then implement once to reach 100% without post-hoc fixes.
 - **Mock/Spy Specification**: Use mock by default; consider spy only when the scenario cannot be adequately represented using a mock. Avoid spy entirely when standard `mock + when` can express behavior, and do not introduce inner classes for testing purposes—prefer plain test classes with mocks.
-- **Strictness and Stub Control**: Enable @MockitoSettings(strictness = Strictness.LENIENT) in the Mockito scenario or apply lenient() to specific stubs to ensure there are no unmatched or redundant stubs; clean up any unused stubs, imports, or local variables before committing.
 
 
 
@@ -209,11 +199,6 @@ Always state which topology, registry, and engine versions (e.g., MySQL 5.7 vs 8
 - Record exact commands, exit codes, and relevant log snippets.
 - Highlight remaining risks or follow-ups and keep ASCII-only output unless non-ASCII already existed.
 - Reopen the `CODE_OF_CONDUCT.md` sections used at intake, cite line numbers, and re-verify every listed requirement is satisfied or explicitly justified.
-- Run a quick scan to ensure no inline fully-qualified class names remain in code or tests (e.g., `rg "\\b[A-Za-z_]+\\.[A-Za-z_]+\\.[A-Za-z_]+" src test`); replace any hits with imports.
-- Run a quick scan to ensure no `nullValue()` / `notNullValue()` assertions remain (e.g., `rg "nullValue\\(|notNullValue\\(" src/test`); replace with `assertNull` / `assertNotNull`.
-- Run a quick scan to ensure no `assertThat(..., is(true/false))` remains (e.g., `rg "assertThat\\(.*is\\(true\\)|assertThat\\(.*is\\(false\\)" src/test`); replace with `assertTrue` / `assertFalse`.
-- Run a quick scan to ensure no `assertSame` / `assertNotSame` remain (e.g., `rg "assertNotSame|assertSame" src/test`); replace with `assertThat(..., is(...))` or `assertThat(..., not(...))` as appropriate.
-- Run a quick scan to ensure no `instanceOf(` matchers remain (e.g., `rg "instanceOf\\(" src/test`); replace with `isA(...)`.
 
 ## Tooling & Testing Essentials
 - **Go-to commands:** `./mvnw clean install -B -T1C -Pcheck` (full build), `./mvnw test -pl <module>[-am]` (scoped unit tests), `./mvnw spotless:apply -Pcheck [-pl <module>]` (format), `./mvnw -pl <module> -DskipITs -Dspotless.skip=true -Dtest=ClassName test` (fast verification), and `./mvnw -pl proxy -am -DskipTests package` (proxy packaging/perf smoke).
@@ -264,12 +249,9 @@ Always state which topology, registry, and engine versions (e.g., MySQL 5.7 vs 8
 - Name tests after the production method under test; never probe private helpers directly—document unreachable branches instead.
 - Mock heavy dependencies (database/cache/registry/network) and prefer mocking over building deep object graphs.
 - For static/constructor mocking, use `@ExtendWith(AutoMockExtension.class)` with `@StaticMockSettings`; avoid hand-written `mockStatic`/`mockConstruction` unless you documented why the extension cannot be used.
-- For deep chained interactions, use Mockito’s `RETURNS_DEEP_STUBS` instead of layering intermediate mocks; if you must avoid deep stubs, document the reason in the plan. This remains independent of the static-mock rule above.
-- Before changing how mocks are created, scan the repository for similar tests (e.g., other rule decorators or executor tests) and reuse their proven mocking pattern instead of inventing a new structure.
 - When constructors hide collaborators, use `Plugins.getMemberAccessor()` to inject mocks and document why SPI creation is bypassed.
 - When static methods or constructors need mocking, prefer `@ExtendWith(AutoMockExtension.class)` with `@StaticMockSettings` (or the extension’s constructor-mocking support); when a class is listed in `@StaticMockSettings`, do not call `mockStatic`/`mockConstruction` directly—stub via `when(...)` instead. Only if AutoMockExtension cannot be used and the reason is documented in the plan may you fall back to `mockStatic`/`mockConstruction`, wrapped in try-with-resources.
 - Before adding coverage to a utility with multiple return paths, list every branch (no rule, non-Single config, wildcard blocks, missing data node, positive path, collection overload) and map each to a test; update the plan whenever this checklist changes.
-- Ban inline fully-qualified class names in production and test code—always add imports instead; before wrapping up, run a search (e.g., `rg "\\b[A-Za-z_]+\\.[A-Za-z_]+\\.[A-Za-z_]+" <paths>`) and fix any occurrences rather than waiving them.
 - Before coding tests, prepare a concise branch-and-data checklist (all branches, inputs, expected outputs) and keep the plan in sync when the checklist changes.
 - When a component is available via SPI (e.g., `TypedSPILoader`, `DatabaseTypedSPILoader`, `PushDownMetaDataRefresher`), obtain the instance through SPI by default; note any exceptions in the plan.
 - Do not mix Mockito matchers with raw arguments; choose a single style per invocation, and ensure the Mockito extension aligns with the mocking approach.

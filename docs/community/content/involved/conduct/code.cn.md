@@ -64,6 +64,7 @@ chapter = true
  - 方法所用到的私有方法应紧跟该方法，如果有多个私有方法，书写私有方法应与私有方法在原方法的出现顺序相同。
  - 方法入参和返回值不允许为 `null`。
  - 优先使用 lombok 代替构造器，getter, setter 方法和 log 变量。
+ - 禁止内联全限定类名，必须通过 import 引入。
  - 优先考虑使用 `LinkedList`，只有在需要通过下标获取集合中元素值时再使用 `ArrayList`。
  - `ArrayList`，`HashMap` 等可能产生扩容的集合类型必须指定集合初始大小，避免扩容。
  - 优先使用三目运算符代替 if else 的返回和赋值语句。
@@ -95,7 +96,12 @@ chapter = true
    - 正确性测试（Correct）：通过正确的输入，得到预期结果。
    - 合理性设计（Design）：与生产代码设计相结合，设计高质量的单元测试。
    - 容错性测试（Error）：通过非法数据、异常流程等错误的输入，得到预期结果。
+ - 使用 `assert` 前缀命名所有的测试用例。
+ - 单元测试必须通过公共 API 验证行为，禁止通过反射等手段访问私有成员。
  - 除去简单的 `getter /setter` 方法，以及声明 SPI 的静态代码，如：`getType / getOrder`，单元测试需全覆盖。
+ - 当某个生产方法只由一个测试用例覆盖时，测试方法命名为 `assert<MethodName>`，无额外后缀。
+ - 每个公有方法使用一个独立的测试方法，测试方法顺序在可行时与生产方法保持一致。
+ - 参数化测试需通过参数提供显示名，并以 `{index}:` 前缀标注序号。
  - 每个测试用例需精确断言，尽量不使用 `not`、`containsString` 断言。
  - 准备环境的代码和测试代码分离。
  - 只有 Mockito，junit `Assertions`，hamcrest `CoreMatchers` 和 `MatcherAssert` 相关可以使用 static import。
@@ -103,6 +109,8 @@ chapter = true
     - 布尔类型断言应使用 `assertTrue` 和 `assertFalse`；
     - 空值断言应使用 `assertNull` 和 `assertNotNull`；
     - 其他类型断言应使用 `assertThat(actual, is(expected))` 代替 `assertEquals`；
+    - 类型断言使用 `assertThat(..., isA(...))` 代替 `instanceOf`；
+    - 禁用 `assertSame` / `assertNotSame`，使用 `assertThat(actual, is(expected))` 或 `assertThat(actual, not(expected))`；
     - 使用 Hamcrest 匹配器（如 `is()`、`not()`）来进行精确且可读性高的断言。
  - 测试用例的真实值应名为为 actual XXX，期望值应命名为 expected XXX。
  - 测试类和 `@Test` 标注的方法无需 JAVADOC。
@@ -111,7 +119,7 @@ chapter = true
    - 单元测试包含不容易构建的对象时，例如：超过两层嵌套并且和测试无关的对象，应使用 `mock`。
    - 模拟静态方法或构造器，应优先考虑使用测试框架提供的 `AutoMockExtension` 和 `StaticMockSettings` 自动释放资源；若使用 Mockito `mockStatic` 和 `mockConstruction` 方法，必须搭配 `try-with-resource` 或在清理方法中关闭，避免泄漏。
    - 校验仅有一次调用时，无需使用 `times(1)` 参数，使用 `verify` 的单参数方法即可。
- - 使用 `assert` 前缀命名所有的测试用例。
+ - 深度链式交互使用 Mockito 的 `RETURNS_DEEP_STUBS`，不要层层手动 mock。
  - 测试数据应使用标准化前缀（如 `foo_`/`bar_`）明确标识其测试用途。
  - 使用 `PropertiesBuilder` 简化 `Properties` 构造。
 
