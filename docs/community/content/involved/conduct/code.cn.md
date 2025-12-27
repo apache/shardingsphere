@@ -21,7 +21,7 @@ chapter = true
  - 确保遵守编码规范。
  - 确保构建流程中的各个步骤都成功完成，包括：Apache 协议文件头检查、Checkstyle 检查、编译、单元测试等。构建流程启动命令：`./mvnw clean install -B -T1C -Pcheck`。
  - 通过 Spotless 统一代码风格，执行 `./mvnw spotless:apply -Pcheck` 格式化代码。
- - 确保覆盖率不低于 master 分支。
+ - 确保覆盖率不低于 master 分支，除去简单的 `getter /setter` 方法，单元测试需全覆盖。
  - 应尽量将设计精细化拆分；做到小幅度修改，多次数提交，但应保证提交的完整性。
  - 如果您使用 IDEA，可导入 `src/resources/idea/code-style.xml`，用于保持代码风格一致性。
  - 如果您使用 IDEA，可导入 `src/resources/idea/inspections.xml`，用于检测代码潜在问题。
@@ -98,7 +98,6 @@ chapter = true
    - 容错性测试（Error）：通过非法数据、异常流程等错误的输入，得到预期结果。
  - 使用 `assert` 前缀命名所有的测试用例。
  - 单元测试必须通过公共 API 验证行为，禁止通过反射等手段访问私有成员。
- - 除去简单的 `getter /setter` 方法，单元测试需全覆盖。
  - 当某个生产方法只由一个测试用例覆盖时，测试方法命名为 `assert<MethodName>`，无额外后缀。
  - 每个公有方法使用一个独立的测试方法，测试方法顺序在可行时与生产方法保持一致。
  - 参数化测试需通过参数提供显示名，并以 `{index}:` 前缀标注序号。
