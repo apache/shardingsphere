@@ -94,7 +94,7 @@ The following code of conduct is based on full compliance with the [Apache Softw
    - Error tolerance testing: Get expected results through incorrect inputs such as illegal data, exception flows, etc.
 - Use `assert` prefix for all test method names.
 - Unit tests must exercise behavior through public APIs only; do not use reflection or other means to access private members.
-- Except for simple `getter /setter` methods, and static code for declaring SPIs, such as: `getType / getOrder`, unit tests need full coverage.
+- Except for simple `getter /setter` methods, unit tests need full coverage.
 - When a production method is covered by only one test case, name that test method `assert<MethodName>` without extra suffixes, and prefer isolating one public production method per dedicated test method; when practical, keep test method ordering aligned with the corresponding production methods.
 - For parameterized tests, provide display names via parameters and prefix each with `{index}:` to include the sequence number.
 - Each test case needs precise assertions, try not to use `not`, `containsString` assertions.
