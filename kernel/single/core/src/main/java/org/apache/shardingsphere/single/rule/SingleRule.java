@@ -64,6 +64,7 @@ public final class SingleRule implements DatabaseRule {
     @Getter
     private final Collection<String> dataSourceNames;
     
+    @Getter
     private final Map<String, Collection<DataNode>> singleTableDataNodes;
     
     private final DatabaseType protocolType;

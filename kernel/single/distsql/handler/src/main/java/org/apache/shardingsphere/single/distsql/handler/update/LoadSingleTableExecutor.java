@@ -92,10 +92,10 @@ public final class LoadSingleTableExecutor implements DatabaseRuleCreateExecutor
             return;
         }
         if (isSchemaSupportedDatabaseType) {
-            ShardingSpherePreconditions.checkState(singleTableSegment.containsSchema(),
+            ShardingSpherePreconditions.checkState(singleTableSegment.getSchemaName().isPresent(),
                     () -> new InvalidDataNodeFormatException(singleTableSegment.toString(), "Current database is schema required, please use format `db.schema.table`"));
         } else {
-            ShardingSpherePreconditions.checkState(!singleTableSegment.containsSchema(),
+            ShardingSpherePreconditions.checkState(!singleTableSegment.getSchemaName().isPresent(),
                     () -> new InvalidDataNodeFormatException(singleTableSegment.toString(), "Current database does not support schema, please use format `db.table`"));
         }
     }
@@ -112,7 +112,8 @@ public final class LoadSingleTableExecutor implements DatabaseRuleCreateExecutor
             String tableName = each.getTableName();
             if (!SingleTableConstants.ASTERISK.equals(tableName)) {
                 String storageUnitName = each.getStorageUnitName();
-                ShardingSpherePreconditions.checkState(actualTableNodes.containsKey(storageUnitName) && actualTableNodes.get(storageUnitName).get(defaultSchemaName).contains(tableName),
+                String schemaName = each.getSchemaName().isPresent() ? each.getSchemaName().get() : defaultSchemaName;
+                ShardingSpherePreconditions.checkState(actualTableNodes.containsKey(storageUnitName) && actualTableNodes.get(storageUnitName).get(schemaName).contains(tableName),
                         () -> new TableNotFoundException(tableName, storageUnitName));
             }
         }

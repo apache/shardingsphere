@@ -18,10 +18,13 @@
 package org.apache.shardingsphere.single.distsql.handler.query;
 
 import lombok.Setter;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeRegistry;
+import org.apache.shardingsphere.distsql.handler.aware.DistSQLExecutorDatabaseAware;
 import org.apache.shardingsphere.distsql.handler.aware.DistSQLExecutorRuleAware;
 import org.apache.shardingsphere.distsql.handler.engine.query.DistSQLQueryExecutor;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.rule.attribute.datanode.DataNodeRuleAttribute;
 import org.apache.shardingsphere.infra.util.regex.RegexUtils;
 import org.apache.shardingsphere.mode.manager.ContextManager;
@@ -31,7 +34,9 @@ import org.apache.shardingsphere.single.rule.SingleRule;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Comparator;
+import java.util.LinkedList;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -40,13 +45,17 @@ import java.util.stream.Collectors;
  * Show single tables executor.
  */
 @Setter
-public final class ShowSingleTablesExecutor implements DistSQLQueryExecutor<ShowSingleTablesStatement>, DistSQLExecutorRuleAware<SingleRule> {
+public final class ShowSingleTablesExecutor implements DistSQLQueryExecutor<ShowSingleTablesStatement>, DistSQLExecutorRuleAware<SingleRule>, DistSQLExecutorDatabaseAware {
+    
+    private ShardingSphereDatabase database;
     
     private SingleRule rule;
     
     @Override
     public Collection<String> getColumnNames(final ShowSingleTablesStatement sqlStatement) {
-        return Arrays.asList("table_name", "storage_unit_name");
+        return new DatabaseTypeRegistry(database.getProtocolType()).getDialectDatabaseMetaData().getSchemaOption().isSchemaAvailable()
+                ? Arrays.asList("table_name", "storage_unit_name", "schema_name")
+                : Arrays.asList("table_name", "storage_unit_name");
     }
     
     @Override
@@ -55,7 +64,10 @@ public final class ShowSingleTablesExecutor implements DistSQLQueryExecutor<Show
                 .map(optional -> getDataNodesWithLikePattern(rule.getAttributes().getAttribute(DataNodeRuleAttribute.class).getAllDataNodes(), optional))
                 .orElseGet(() -> getDataNodes(rule.getAttributes().getAttribute(DataNodeRuleAttribute.class).getAllDataNodes()));
         Collection<DataNode> sortedDataNodes = resultDataNodes.stream().sorted(Comparator.comparing(DataNode::getTableName)).collect(Collectors.toList());
-        return sortedDataNodes.stream().map(each -> new LocalDataQueryResultRow(each.getTableName(), each.getDataSourceName())).collect(Collectors.toList());
+        boolean isSchemaAvailable = new DatabaseTypeRegistry(database.getProtocolType()).getDialectDatabaseMetaData().getSchemaOption().isSchemaAvailable();
+        return sortedDataNodes.stream().map(each -> isSchemaAvailable
+                ? new LocalDataQueryResultRow(each.getTableName(), each.getDataSourceName(), each.getSchemaName())
+                : new LocalDataQueryResultRow(each.getTableName(), each.getDataSourceName())).collect(Collectors.toList());
     }
     
     private Optional<Pattern> getPattern(final ShowSingleTablesStatement sqlStatement) {
@@ -65,11 +77,21 @@ public final class ShowSingleTablesExecutor implements DistSQLQueryExecutor<Show
     }
     
     private Collection<DataNode> getDataNodesWithLikePattern(final Map<String, Collection<DataNode>> singleTableNodes, final Pattern pattern) {
-        return singleTableNodes.entrySet().stream().filter(entry -> pattern.matcher(entry.getKey()).matches()).map(entry -> entry.getValue().iterator().next()).collect(Collectors.toList());
+        Collection<DataNode> result = new LinkedList<>();
+        for (Entry<String, Collection<DataNode>> entry : singleTableNodes.entrySet()) {
+            if (pattern.matcher(entry.getKey()).matches()) {
+                result.addAll(entry.getValue());
+            }
+        }
+        return result;
     }
     
     private Collection<DataNode> getDataNodes(final Map<String, Collection<DataNode>> singleTableNodes) {
-        return singleTableNodes.values().stream().map(each -> each.iterator().next()).collect(Collectors.toList());
+        Collection<DataNode> result = new LinkedList<>();
+        for (Collection<DataNode> each : singleTableNodes.values()) {
+            result.addAll(each);
+        }
+        return result;
     }
     
     @Override

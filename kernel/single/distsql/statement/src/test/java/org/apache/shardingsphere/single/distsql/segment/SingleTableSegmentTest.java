@@ -29,12 +29,12 @@ class SingleTableSegmentTest {
     
     @Test
     void assertContainsSchema() {
-        assertTrue(new SingleTableSegment("foo_ds", "foo_schema", "foo_tbl").containsSchema());
+        assertTrue(new SingleTableSegment("foo_ds", "foo_schema", "foo_tbl").getSchemaName().isPresent());
     }
     
     @Test
     void assertDoesNotContainSchema() {
-        assertFalse(new SingleTableSegment("foo_ds", "foo_tbl").containsSchema());
+        assertFalse(new SingleTableSegment("foo_ds", "foo_tbl").getSchemaName().isPresent());
     }
     
     @Test

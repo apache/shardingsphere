@@ -22,6 +22,8 @@ import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.shardingsphere.distsql.segment.DistSQLSegment;
 
+import java.util.Optional;
+
 /**
  * Single table segment.
  */
@@ -41,12 +43,12 @@ public final class SingleTableSegment implements DistSQLSegment {
     }
     
     /**
-     * Whether to contain schema.
+     * Get schema name.
      *
-     * @return contains schema or not
+     * @return schema name
      */
-    public boolean containsSchema() {
-        return null != schemaName;
+    public Optional<String> getSchemaName() {
+        return Optional.ofNullable(schemaName);
     }
     
     @Override

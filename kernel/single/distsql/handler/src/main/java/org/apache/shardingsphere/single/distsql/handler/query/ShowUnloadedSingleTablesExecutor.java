@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.single.distsql.handler.query;
 
 import lombok.Setter;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.distsql.handler.aware.DistSQLExecutorDatabaseAware;
 import org.apache.shardingsphere.distsql.handler.aware.DistSQLExecutorRuleAware;
 import org.apache.shardingsphere.distsql.handler.engine.query.DistSQLQueryExecutor;
@@ -26,7 +27,6 @@ import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryRes
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.PhysicalDataSourceAggregator;
 import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
-import org.apache.shardingsphere.infra.rule.attribute.table.TableMapperRuleAttribute;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.single.datanode.SingleTableDataNodeLoader;
 import org.apache.shardingsphere.single.distsql.statement.rql.ShowUnloadedSingleTablesStatement;
@@ -54,14 +54,23 @@ public final class ShowUnloadedSingleTablesExecutor implements DistSQLQueryExecu
     
     @Override
     public Collection<String> getColumnNames(final ShowUnloadedSingleTablesStatement sqlStatement) {
-        return Arrays.asList("table_name", "storage_unit_name");
+        return new DatabaseTypeRegistry(database.getProtocolType()).getDialectDatabaseMetaData().getSchemaOption().isSchemaAvailable()
+                ? Arrays.asList("table_name", "storage_unit_name", "schema_name")
+                : Arrays.asList("table_name", "storage_unit_name");
     }
     
     @Override
     public Collection<LocalDataQueryResultRow> getRows(final ShowUnloadedSingleTablesStatement sqlStatement, final ContextManager contextManager) {
         Map<String, Collection<DataNode>> actualDataNodes = getActualDataNodes(database);
-        for (String each : rule.getAttributes().getAttribute(TableMapperRuleAttribute.class).getLogicTableNames()) {
-            actualDataNodes.remove(each.toLowerCase());
+        for (Entry<String, Collection<DataNode>> entry : rule.getSingleTableDataNodes().entrySet()) {
+            if (actualDataNodes.containsKey(entry.getKey())) {
+                if (entry.getValue().containsAll(actualDataNodes.get(entry.getKey()))) {
+                    actualDataNodes.remove(entry.getKey().toLowerCase());
+                    continue;
+                }
+                Collection<DataNode> tableNodes = actualDataNodes.get(entry.getKey());
+                tableNodes.removeIf(each -> entry.getValue().contains(each));
+            }
         }
         Collection<LocalDataQueryResultRow> result = new LinkedList<>();
         actualDataNodes.values().stream().map(this::getRows).forEach(result::addAll);
@@ -69,6 +78,9 @@ public final class ShowUnloadedSingleTablesExecutor implements DistSQLQueryExecu
     }
     
     private Collection<LocalDataQueryResultRow> getRows(final Collection<DataNode> dataNodes) {
+        if (new DatabaseTypeRegistry(database.getProtocolType()).getDialectDatabaseMetaData().getSchemaOption().isSchemaAvailable()) {
+            return dataNodes.stream().map(each -> new LocalDataQueryResultRow(each.getTableName(), each.getDataSourceName(), each.getSchemaName())).collect(Collectors.toList());
+        }
         return dataNodes.stream().map(each -> new LocalDataQueryResultRow(each.getTableName(), each.getDataSourceName())).collect(Collectors.toList());
     }
     
