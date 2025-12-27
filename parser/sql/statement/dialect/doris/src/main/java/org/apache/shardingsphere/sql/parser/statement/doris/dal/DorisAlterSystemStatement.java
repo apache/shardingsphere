@@ -15,27 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.doris;
+package org.apache.shardingsphere.sql.parser.statement.doris.dal;
 
 import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.AbstractExpectedSQLSegment;
-
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlAttribute;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.DALStatement;
 
 /**
- * Property test case for Doris.
+ * Alter system statement for Doris.
  */
-@XmlAccessorType(XmlAccessType.FIELD)
 @Getter
-@Setter
-public final class PropertyTestCase extends AbstractExpectedSQLSegment {
+public final class DorisAlterSystemStatement extends DALStatement {
     
-    @XmlAttribute
-    private String key;
+    private final String action;
     
-    @XmlAttribute
-    private String value;
+    private final String target;
+    
+    public DorisAlterSystemStatement(final DatabaseType databaseType, final String action, final String target) {
+        super(databaseType);
+        this.action = action;
+        this.target = target;
+    }
 }

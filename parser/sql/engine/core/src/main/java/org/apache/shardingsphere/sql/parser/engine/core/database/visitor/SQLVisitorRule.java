@@ -481,6 +481,10 @@ public enum SQLVisitorRule {
     
     ALTER_RESOURCE("AlterResource", SQLStatementType.DAL),
     
+    DORIS_ALTER_SYSTEM("DorisAlterSystem", SQLStatementType.DAL),
+    
+    CREATE_SQL_BLOCK_RULE("CreateSqlBlockRule", SQLStatementType.DAL),
+    
     DELIMITER("Delimiter", SQLStatementType.DAL),
     
     CALL("Call", SQLStatementType.DML),

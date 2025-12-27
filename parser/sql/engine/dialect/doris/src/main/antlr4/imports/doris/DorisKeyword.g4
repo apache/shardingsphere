@@ -899,6 +899,10 @@ FOUND
     : F O U N D
     ;
 
+FOLLOWER
+    : F O L L O W E R
+    ;
+
 FROM
     : F R O M
     ;
@@ -1862,6 +1866,10 @@ OWNER
     : O W N E R
     ;
 
+OBSERVER
+    : O B S E R V E R
+    ;
+
 PACK_KEYS
     : P A C K UL_ K E Y S
     ;
@@ -2522,6 +2530,10 @@ SQL_BIG_RESULT
 
 SQL_BUFFER_RESULT
     : S Q L UL_ B U F F E R UL_ R E S U L T
+    ;
+
+SQL_BLOCK_RULE
+    : S Q L UL_ B L O C K UL_ R U L E
     ;
 
 SQL_CALC_FOUND_ROWS

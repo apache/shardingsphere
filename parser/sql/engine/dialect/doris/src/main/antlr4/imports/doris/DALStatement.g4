@@ -373,6 +373,37 @@ propertyValue
     : literals | identifier
     ;
 
+dorisAlterSystem
+    : ALTER SYSTEM dorisAlterSystemAction
+    ;
+
+dorisAlterSystemAction
+    : ADD FOLLOWER string_
+    | ADD OBSERVER string_
+    | DROP FOLLOWER string_
+    | DROP OBSERVER string_
+    ;
+
+createSqlBlockRule
+    : CREATE SQL_BLOCK_RULE ruleName propertiesClause
+    ;
+
+ruleName
+    : identifier
+    ;
+
+propertiesClause
+    : PROPERTIES LP_ properties RP_
+    ;
+
+properties
+    : property (COMMA_ property)*
+    ;
+
+property
+    : (identifier | SINGLE_QUOTED_TEXT | DOUBLE_QUOTED_TEXT) EQ_? literals
+    ;
+
 vcpuSpec
     : NUMBER_ | NUMBER_ MINUS_ NUMBER_
     ;
