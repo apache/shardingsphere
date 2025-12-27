@@ -27,6 +27,7 @@ import org.apache.shardingsphere.database.protocol.constant.CommonConstants;
 import org.apache.shardingsphere.infra.executor.sql.process.ProcessEngine;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
+import org.apache.shardingsphere.proxy.frontend.connection.ConnectionIdGenerator;
 import org.apache.shardingsphere.proxy.frontend.exception.ExpectedExceptions;
 import org.apache.shardingsphere.proxy.frontend.executor.ConnectionThreadExecutorGroup;
 import org.apache.shardingsphere.proxy.frontend.executor.UserExecutorGroup;
@@ -75,28 +76,55 @@ public final class FrontendChannelInboundHandler extends ChannelInboundHandlerAd
     
     private boolean authenticate(final ChannelHandlerContext context, final ByteBuf message) {
         try {
-            AuthenticationResult authResult = databaseProtocolFrontendEngine.getAuthenticationEngine().authenticate(context,
-                    databaseProtocolFrontendEngine.getCodecEngine().createPacketPayload(message, context.channel().attr(CommonConstants.CHARSET_ATTRIBUTE_KEY).get()));
+            AuthenticationResult authResult = databaseProtocolFrontendEngine
+                    .getAuthenticationEngine()
+                    .authenticate(
+                            context,
+                            databaseProtocolFrontendEngine.getCodecEngine()
+                                    .createPacketPayload(
+                                            message,
+                                            context.channel()
+                                                    .attr(CommonConstants.CHARSET_ATTRIBUTE_KEY)
+                                                    .get()));
+            
             if (authResult.isFinished()) {
-                connectionSession.setGrantee(new Grantee(authResult.getUsername(), authResult.getHostname()));
+                connectionSession.setGrantee(
+                        new Grantee(authResult.getUsername(), authResult.getHostname()));
                 connectionSession.setCurrentDatabaseName(authResult.getDatabase());
-                connectionSession.setProcessId(processEngine.connect(connectionSession.getUsedDatabaseName(), connectionSession.getConnectionContext().getGrantee()));
+                
+                String processId = processEngine.connect(
+                        connectionSession.getUsedDatabaseName(),
+                        connectionSession.getConnectionContext().getGrantee());
+                connectionSession.setProcessId(processId);
+                
+                databaseProtocolFrontendEngine
+                        .bindProcessAfterAuthentication(context.channel(), connectionSession);
             }
             return authResult.isFinished();
-            // CHECKSTYLE:OFF
-        } catch (final Exception ex) {
-            // CHECKSTYLE:ON
-            if (ExpectedExceptions.isExpected(ex.getClass())) {
-                log.debug("Exception occur: ", ex);
-            } else {
-                log.error("Exception occur: ", ex);
-            }
-            context.writeAndFlush(databaseProtocolFrontendEngine.getCommandExecuteEngine().getErrorPacket(ex));
-            context.close();
         } finally {
             message.release();
         }
-        return false;
+    }
+    
+    @Override
+    public void exceptionCaught(final ChannelHandlerContext context, final Throwable cause) {
+        handleAuthenticationException(context, cause);
+    }
+    
+    private void handleAuthenticationException(final ChannelHandlerContext context, final Throwable cause) {
+        final Exception exception = cause instanceof Exception
+                ? (Exception) cause
+                : new SQLException(cause);
+        
+        if (ExpectedExceptions.isExpected(exception.getClass())) {
+            log.debug("Exception occur: ", exception);
+        } else {
+            log.error("Exception occur: ", exception);
+        }
+        context.writeAndFlush(
+                databaseProtocolFrontendEngine.getCommandExecuteEngine()
+                        .getErrorPacket(exception));
+        context.close();
     }
     
     @Override
@@ -106,7 +134,9 @@ public final class FrontendChannelInboundHandler extends ChannelInboundHandlerAd
     }
     
     private void closeAllResources() {
-        ConnectionThreadExecutorGroup.getInstance().unregisterAndAwaitTermination(connectionSession.getConnectionId());
+        ConnectionThreadExecutorGroup.getInstance()
+                .unregisterAndAwaitTermination(connectionSession.getConnectionId());
+        ConnectionIdGenerator.getInstance().releaseId(connectionSession.getConnectionId());
         processCloseExceptions(connectionSession.getDatabaseConnectionManager().closeAllResources());
         Optional.ofNullable(connectionSession.getProcessId()).ifPresent(processEngine::disconnect);
         databaseProtocolFrontendEngine.release(connectionSession);
@@ -134,7 +164,9 @@ public final class FrontendChannelInboundHandler extends ChannelInboundHandlerAd
     @Override
     public void channelWritabilityChanged(final ChannelHandlerContext context) {
         if (context.channel().isWritable()) {
-            connectionSession.getDatabaseConnectionManager().getConnectionResourceLock().doNotify();
+            connectionSession.getDatabaseConnectionManager()
+                    .getConnectionResourceLock()
+                    .doNotify();
         }
     }
 }

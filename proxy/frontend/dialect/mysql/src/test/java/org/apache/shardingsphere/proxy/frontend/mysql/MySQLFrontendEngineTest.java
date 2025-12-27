@@ -18,14 +18,19 @@
 package org.apache.shardingsphere.proxy.frontend.mysql;
 
 import io.netty.channel.Channel;
+import io.netty.util.Attribute;
+import io.netty.util.AttributeMap;
 import org.apache.shardingsphere.database.protocol.mysql.constant.MySQLConstants;
 import org.apache.shardingsphere.database.protocol.mysql.netty.MySQLSequenceIdInboundHandler;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.frontend.mysql.command.query.binary.MySQLStatementIdGenerator;
+import org.apache.shardingsphere.proxy.frontend.mysql.connection.MySQLConnectionIdRegistry;
 import org.apache.shardingsphere.proxy.frontend.netty.FrontendChannelInboundHandler;
+import org.apache.shardingsphere.proxy.frontend.netty.FrontendConstants;
 import org.apache.shardingsphere.test.infra.framework.extension.mock.AutoMockExtension;
 import org.apache.shardingsphere.test.infra.framework.extension.mock.StaticMockSettings;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -36,6 +41,9 @@ import org.mockito.quality.Strictness;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.nullValue;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.isA;
@@ -50,12 +58,20 @@ class MySQLFrontendEngineTest {
     
     private MySQLFrontendEngine engine;
     
+    private final MySQLConnectionIdRegistry connectionRegistry = MySQLConnectionIdRegistry.getInstance();
+    
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private Channel channel;
     
     @BeforeEach
     void setUp() {
         engine = new MySQLFrontendEngine();
+    }
+    
+    @AfterEach
+    void tearDown() {
+        // Clean up singleton state after tests
+        connectionRegistry.unregister(1L);
     }
     
     @Test
@@ -69,9 +85,43 @@ class MySQLFrontendEngineTest {
     @Test
     void assertRelease() {
         ConnectionSession connectionSession = mock(ConnectionSession.class);
-        int connectionId = 1;
-        when(connectionSession.getConnectionId()).thenReturn(connectionId);
+        AttributeMap attributeMap = mock(AttributeMap.class);
+        @SuppressWarnings("unchecked")
+        Attribute<Long> attribute = mock(Attribute.class);
+        
+        when(connectionSession.getConnectionId()).thenReturn(1);
+        when(connectionSession.getAttributeMap()).thenReturn(attributeMap);
+        when(attributeMap.attr(FrontendConstants.NATIVE_CONNECTION_ID_ATTRIBUTE_KEY))
+                .thenReturn(attribute);
+        
         engine.release(connectionSession);
-        verify(MySQLStatementIdGenerator.getInstance()).unregisterConnection(connectionId);
+        
+        verify(MySQLStatementIdGenerator.getInstance()).unregisterConnection(1);
     }
+    
+    @Test
+    void assertReleaseUnregistersConnectionIdMapping() {
+        int mysqlConnectionId = 1;
+        String processId = "test_process_123";
+        
+        // registry precondition
+        connectionRegistry.register(mysqlConnectionId, processId);
+        assertThat(connectionRegistry.getProcessId(mysqlConnectionId), is(processId));
+        
+        ConnectionSession connectionSession = mock(ConnectionSession.class);
+        AttributeMap attributeMap = mock(AttributeMap.class);
+        @SuppressWarnings("unchecked")
+        Attribute<Long> attribute = mock(Attribute.class);
+        
+        when(connectionSession.getConnectionId()).thenReturn(mysqlConnectionId);
+        when(connectionSession.getAttributeMap()).thenReturn(attributeMap);
+        when(attributeMap.attr(FrontendConstants.NATIVE_CONNECTION_ID_ATTRIBUTE_KEY))
+                .thenReturn(attribute);
+        when(attribute.get()).thenReturn((long) mysqlConnectionId);
+        
+        engine.release(connectionSession);
+        
+        assertThat(connectionRegistry.getProcessId(mysqlConnectionId), nullValue());
+    }
+    
 }

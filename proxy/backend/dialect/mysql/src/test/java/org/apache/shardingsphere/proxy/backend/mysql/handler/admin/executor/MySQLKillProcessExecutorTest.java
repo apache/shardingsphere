@@ -70,4 +70,10 @@ class MySQLKillProcessExecutorTest {
         assertThrows(UnsupportedSQLOperationException.class, () -> executor.execute(mock(ConnectionSession.class), mock(ShardingSphereMetaData.class)));
         verify(processPersistService, never()).killProcess(any());
     }
+    
+    @Test
+    void assertExecuteKillNoScope() {
+        MySQLKillProcessExecutor executor = new MySQLKillProcessExecutor(new MySQLKillStatement(mock(DatabaseType.class), "foo-pid", null));
+        assertThrows(UnsupportedSQLOperationException.class, () -> executor.execute(mock(ConnectionSession.class), mock(ShardingSphereMetaData.class)));
+    }
 }

@@ -67,12 +67,18 @@ public final class MySQLCommandExecutorFactory {
      * @throws SQLException SQL exception
      */
     @SuppressWarnings("DataFlowIssue")
-    public static CommandExecutor newInstance(final MySQLCommandPacketType commandPacketType, final CommandPacket commandPacket, final ConnectionSession connectionSession) throws SQLException {
+    public static CommandExecutor newInstance(
+                                              final MySQLCommandPacketType commandPacketType,
+                                              final CommandPacket commandPacket,
+                                              final ConnectionSession connectionSession) throws SQLException {
+        
         if (commandPacket instanceof SQLReceivedPacket) {
-            log.debug("Execute packet type: {}, sql: {}", commandPacketType, ((SQLReceivedPacket) commandPacket).getSQL());
+            log.debug("Execute packet type: {}, sql: {}",
+                    commandPacketType, ((SQLReceivedPacket) commandPacket).getSQL());
         } else {
             log.debug("Execute packet type: {}", commandPacketType);
         }
+        
         switch (commandPacketType) {
             case COM_QUIT:
                 return new MySQLComQuitExecutor();

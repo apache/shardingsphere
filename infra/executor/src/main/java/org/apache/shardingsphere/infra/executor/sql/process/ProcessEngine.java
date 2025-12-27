@@ -22,6 +22,7 @@ import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroupContext;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroupReportContext;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.SQLExecutionUnit;
+import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutionUnit;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.apache.shardingsphere.infra.session.query.QueryContext;
 
@@ -42,7 +43,7 @@ public final class ProcessEngine {
      * @return process ID
      */
     public String connect(final String databaseName) {
-        return connect(new ExecutionGroupReportContext(getProcessId(), databaseName));
+        return connect(new ExecutionGroupReportContext(generateProcessId(), databaseName));
     }
     
     /**
@@ -53,17 +54,21 @@ public final class ProcessEngine {
      * @return process ID
      */
     public String connect(final String databaseName, final Grantee grantee) {
-        return connect(new ExecutionGroupReportContext(getProcessId(), databaseName, grantee));
+        return connect(new ExecutionGroupReportContext(generateProcessId(), databaseName, grantee));
     }
     
     private String connect(final ExecutionGroupReportContext reportContext) {
-        ExecutionGroupContext<? extends SQLExecutionUnit> executionGroupContext = new ExecutionGroupContext<>(Collections.emptyList(), reportContext);
+        ExecutionGroupContext<? extends SQLExecutionUnit> executionGroupContext =
+                new ExecutionGroupContext<>(Collections.emptyList(), reportContext);
+        // Create process once at connect time (idle state)
         ProcessRegistry.getInstance().add(new Process(executionGroupContext));
-        return executionGroupContext.getReportContext().getProcessId();
+        return reportContext.getProcessId();
     }
     
-    private String getProcessId() {
-        return new UUID(ThreadLocalRandom.current().nextLong(), ThreadLocalRandom.current().nextLong()).toString().replace("-", "");
+    private String generateProcessId() {
+        return new UUID(
+                ThreadLocalRandom.current().nextLong(),
+                ThreadLocalRandom.current().nextLong()).toString().replace("-", "");
     }
     
     /**
@@ -81,8 +86,22 @@ public final class ProcessEngine {
      * @param executionGroupContext execution group context
      * @param queryContext query context
      */
-    public void executeSQL(final ExecutionGroupContext<? extends SQLExecutionUnit> executionGroupContext, final QueryContext queryContext) {
-        ProcessRegistry.getInstance().add(new Process(queryContext.getSql(), executionGroupContext));
+    public void executeSQL(
+                           final ExecutionGroupContext<? extends SQLExecutionUnit> executionGroupContext,
+                           final QueryContext queryContext) {
+        
+        String processId = executionGroupContext.getReportContext().getProcessId();
+        if (Strings.isNullOrEmpty(processId)) {
+            return;
+        }
+        ProcessRegistry registry = ProcessRegistry.getInstance();
+        Process process = registry.get(processId);
+        if (null == process) {
+            // Federation execution: processId is externally managed
+            registry.add(new Process(executionGroupContext));
+            process = registry.get(processId);
+        }
+        process.mergeExecutionGroupContext(executionGroupContext, queryContext.getSql());
     }
     
     /**
@@ -100,7 +119,9 @@ public final class ProcessEngine {
             return;
         }
         process.completeExecutionUnit();
-        process.removeProcessStatement(executionUnit.getExecutionUnit());
+        if (executionUnit instanceof JDBCExecutionUnit) {
+            process.removeProcessStatement((JDBCExecutionUnit) executionUnit);
+        }
     }
     
     /**
@@ -113,11 +134,8 @@ public final class ProcessEngine {
             return;
         }
         Process process = ProcessRegistry.getInstance().get(processId);
-        if (null == process) {
-            return;
+        if (null != process) {
+            process.getIdle().set(true);
         }
-        ExecutionGroupContext<? extends SQLExecutionUnit> executionGroupContext = new ExecutionGroupContext<>(
-                Collections.emptyList(), new ExecutionGroupReportContext(processId, process.getDatabaseName(), new Grantee(process.getUsername(), process.getHostname())));
-        ProcessRegistry.getInstance().add(new Process(executionGroupContext));
     }
 }

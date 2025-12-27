@@ -39,9 +39,6 @@ import org.apache.shardingsphere.proxy.frontend.mysql.err.MySQLErrorPacketFactor
 
 import java.sql.SQLException;
 
-/**
- * Command execute engine for MySQL.
- */
 public final class MySQLCommandExecuteEngine implements CommandExecuteEngine {
     
     @Override
@@ -50,13 +47,26 @@ public final class MySQLCommandExecuteEngine implements CommandExecuteEngine {
     }
     
     @Override
-    public MySQLCommandPacket getCommandPacket(final PacketPayload payload, final CommandPacketType type, final ConnectionSession connectionSession) {
-        return MySQLCommandPacketFactory.newInstance((MySQLCommandPacketType) type, (MySQLPacketPayload) payload, connectionSession);
+    public MySQLCommandPacket getCommandPacket(
+                                               final PacketPayload payload,
+                                               final CommandPacketType type,
+                                               final ConnectionSession connectionSession) {
+        
+        return MySQLCommandPacketFactory.newInstance(
+                (MySQLCommandPacketType) type,
+                (MySQLPacketPayload) payload,
+                connectionSession);
     }
     
     @Override
-    public CommandExecutor getCommandExecutor(final CommandPacketType type, final CommandPacket packet, final ConnectionSession connectionSession) throws SQLException {
-        return MySQLCommandExecutorFactory.newInstance((MySQLCommandPacketType) type, packet, connectionSession);
+    public CommandExecutor getCommandExecutor(
+                                              final CommandPacketType type,
+                                              final CommandPacket packet,
+                                              final ConnectionSession connectionSession) throws SQLException {
+        return MySQLCommandExecutorFactory.newInstance(
+                (MySQLCommandPacketType) type,
+                packet,
+                connectionSession);
     }
     
     @Override
@@ -65,23 +75,38 @@ public final class MySQLCommandExecuteEngine implements CommandExecuteEngine {
     }
     
     @Override
-    public void writeQueryData(final ChannelHandlerContext context,
-                               final ProxyDatabaseConnectionManager databaseConnectionManager, final QueryCommandExecutor queryCommandExecutor, final int headerPackagesCount) throws SQLException {
-        if (ResponseType.QUERY != queryCommandExecutor.getResponseType() || !context.channel().isActive()) {
+    public void writeQueryData(
+                               final ChannelHandlerContext context,
+                               final ProxyDatabaseConnectionManager databaseConnectionManager,
+                               final QueryCommandExecutor queryCommandExecutor,
+                               final int headerPackagesCount) throws SQLException {
+        
+        if (ResponseType.QUERY != queryCommandExecutor.getResponseType()
+                || !context.channel().isActive()) {
             return;
         }
+        
         int count = 0;
-        int flushThreshold = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getProps().<Integer>getValue(ConfigurationPropertyKey.PROXY_FRONTEND_FLUSH_THRESHOLD);
+        int flushThreshold = ProxyContext.getInstance()
+                .getContextManager()
+                .getMetaDataContexts()
+                .getMetaData()
+                .getProps()
+                .<Integer>getValue(ConfigurationPropertyKey.PROXY_FRONTEND_FLUSH_THRESHOLD);
+        
         while (queryCommandExecutor.next()) {
             count++;
             databaseConnectionManager.getConnectionResourceLock().doAwait(context);
-            DatabasePacket dataValue = queryCommandExecutor.getQueryRowPacket();
-            context.write(dataValue);
+            DatabasePacket row = queryCommandExecutor.getQueryRowPacket();
+            context.write(row);
             if (flushThreshold == count) {
                 context.flush();
                 count = 0;
             }
         }
-        context.write(new MySQLEofPacket(ServerStatusFlagCalculator.calculateFor(databaseConnectionManager.getConnectionSession(), true)));
+        
+        context.write(new MySQLEofPacket(
+                ServerStatusFlagCalculator.calculateFor(
+                        databaseConnectionManager.getConnectionSession(), true)));
     }
 }

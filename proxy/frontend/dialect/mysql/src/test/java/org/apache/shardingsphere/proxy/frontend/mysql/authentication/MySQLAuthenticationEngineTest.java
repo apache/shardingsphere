@@ -54,6 +54,7 @@ import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.frontend.mysql.ssl.MySQLSSLRequestHandler;
+import org.apache.shardingsphere.proxy.frontend.netty.FrontendConstants;
 import org.apache.shardingsphere.proxy.frontend.ssl.ProxySSLContext;
 import org.apache.shardingsphere.test.infra.framework.extension.mock.AutoMockExtension;
 import org.apache.shardingsphere.test.infra.framework.extension.mock.StaticMockSettings;
@@ -306,10 +307,20 @@ class MySQLAuthenticationEngineTest {
     private Channel getChannel() {
         Channel result = mock(Channel.class);
         doReturn(getRemoteAddress()).when(result).remoteAddress();
-        when(result.attr(CommonConstants.CHARSET_ATTRIBUTE_KEY)).thenReturn(mock(Attribute.class));
-        when(result.attr(MySQLConstants.CHARACTER_SET_ATTRIBUTE_KEY)).thenReturn(mock(Attribute.class));
-        when(result.attr(MySQLConstants.SEQUENCE_ID_ATTRIBUTE_KEY)).thenReturn(mock(Attribute.class));
-        when(result.attr(MySQLConstants.OPTION_MULTI_STATEMENTS_ATTRIBUTE_KEY)).thenReturn(mock(Attribute.class));
+        
+        when(result.attr(CommonConstants.CHARSET_ATTRIBUTE_KEY))
+                .thenReturn(mock(Attribute.class));
+        when(result.attr(MySQLConstants.CHARACTER_SET_ATTRIBUTE_KEY))
+                .thenReturn(mock(Attribute.class));
+        when(result.attr(MySQLConstants.SEQUENCE_ID_ATTRIBUTE_KEY))
+                .thenReturn(mock(Attribute.class));
+        when(result.attr(MySQLConstants.OPTION_MULTI_STATEMENTS_ATTRIBUTE_KEY))
+                .thenReturn(mock(Attribute.class));
+        
+        // ✅ ADD THIS
+        when(result.attr(FrontendConstants.NATIVE_CONNECTION_ID_ATTRIBUTE_KEY))
+                .thenReturn(mock(Attribute.class));
+        
         return result;
     }
     
