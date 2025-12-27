@@ -34,6 +34,7 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Properties;
@@ -169,6 +170,15 @@ public final class JDBCExampleGenerator {
         result.put("feature", feature);
         result.put("framework", framework);
         result.put("shardingsphereVersion", ShardingSphereVersion.VERSION);
+        result.put("namespace", buildNamespace(feature, framework, mode, transaction));
         return result;
+    }
+    
+    private String buildNamespace(final String feature, final String framework, final String mode, final String transaction) {
+        return String.format("generator-%s-%s-%s-%s", sanitizeSegment(feature), sanitizeSegment(framework), sanitizeSegment(mode), sanitizeSegment(transaction));
+    }
+    
+    private String sanitizeSegment(final String value) {
+        return value.toLowerCase(Locale.ENGLISH).replaceAll("[^a-z0-9]+", "-");
     }
 }
