@@ -26,8 +26,9 @@ import org.apache.shardingsphere.infra.instance.ComputeNodeInstanceContext;
 import org.apache.shardingsphere.infra.instance.metadata.jdbc.JDBCInstanceMetaData;
 import org.apache.shardingsphere.infra.instance.metadata.proxy.ProxyInstanceMetaData;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
-import org.apache.shardingsphere.infra.state.instance.InstanceStateContext;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
+import org.apache.shardingsphere.infra.state.instance.InstanceStateContext;
+import org.apache.shardingsphere.infra.util.eventbus.EventBusContext;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.cluster.persist.facade.ClusterPersistServiceFacade;
 import org.apache.shardingsphere.mode.manager.standalone.persist.facade.StandalonePersistServiceFacade;
@@ -126,12 +127,11 @@ class ShowComputeNodesExecutorTest {
     @Test
     void assertExecuteWithJdbcInstance() {
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
-        ComputeNodeInstanceContext computeNodeInstanceContext = mock(ComputeNodeInstanceContext.class, RETURNS_DEEP_STUBS);
-        when(computeNodeInstanceContext.getModeConfiguration()).thenReturn(new ModeConfiguration("Cluster", mock(PersistRepositoryConfiguration.class)));
-        when(contextManager.getComputeNodeInstanceContext()).thenReturn(computeNodeInstanceContext);
         ComputeNodeInstance computeNodeInstance = new ComputeNodeInstance(new JDBCInstanceMetaData("jdbc_instance", "192.168.0.1", "jdbc_version", "logic_db"));
         computeNodeInstance.setWorkerId(2);
         computeNodeInstance.getLabels().add("prod");
+        ComputeNodeInstanceContext computeNodeInstanceContext = new ComputeNodeInstanceContext(computeNodeInstance, new ModeConfiguration("Cluster", mock()), new EventBusContext());
+        when(contextManager.getComputeNodeInstanceContext()).thenReturn(computeNodeInstanceContext);
         when(contextManager.getPersistServiceFacade().getModeFacade().getComputeNodeService().loadAllInstances()).thenReturn(Collections.singleton(computeNodeInstance));
         Collection<LocalDataQueryResultRow> actual = executor.getRows(mock(ShowComputeNodesStatement.class), contextManager);
         LocalDataQueryResultRow row = actual.iterator().next();
