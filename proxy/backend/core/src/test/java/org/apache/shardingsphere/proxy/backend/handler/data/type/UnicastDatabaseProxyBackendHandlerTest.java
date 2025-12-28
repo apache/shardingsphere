@@ -17,12 +17,15 @@
 
 package org.apache.shardingsphere.proxy.backend.handler.data.type;
 
+import org.apache.shardingsphere.authority.model.ShardingSpherePrivileges;
+import org.apache.shardingsphere.authority.rule.AuthorityRule;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
+import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereStatistics;
 import org.apache.shardingsphere.infra.metadata.statistics.builder.ShardingSphereStatisticsFactory;
 import org.apache.shardingsphere.infra.session.connection.ConnectionContext;
@@ -43,9 +46,13 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Answers;
 import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 
 import java.sql.SQLException;
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -55,10 +62,13 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(AutoMockExtension.class)
 @StaticMockSettings(DatabaseProxyConnectorFactory.class)
+@MockitoSettings(strictness = Strictness.LENIENT)
 class UnicastDatabaseProxyBackendHandlerTest {
     
     private static final String EXECUTE_SQL = "SELECT 1 FROM user WHERE id = 1";
@@ -113,5 +123,50 @@ class UnicastDatabaseProxyBackendHandlerTest {
         while (unicastDatabaseProxyBackendHandler.next()) {
             assertThat(unicastDatabaseProxyBackendHandler.getRowData().getData().size(), is(1));
         }
+    }
+    
+    @Test
+    void assertExecuteWithNullCurrentDatabaseChoosesFirstAvailable() throws SQLException {
+        ConnectionSession connectionSession = mock(ConnectionSession.class, RETURNS_DEEP_STUBS);
+        when(connectionSession.getConnectionContext().getCurrentDatabaseName()).thenReturn(Optional.empty());
+        AuthorityRule authorityRule = mock(AuthorityRule.class, RETURNS_DEEP_STUBS);
+        ShardingSpherePrivileges privileges = mock(ShardingSpherePrivileges.class);
+        when(privileges.hasPrivileges("bar_db")).thenReturn(true);
+        when(authorityRule.findPrivileges(any())).thenReturn(Optional.of(privileges));
+        ContextManager contextManager = mockContextManagerWithAuthority(authorityRule, Arrays.asList("foo_db", "bar_db"), Collections.singletonList("bar_db"));
+        when(DatabaseProxyConnectorFactory.newInstance(any(QueryContext.class), any(ProxyDatabaseConnectionManager.class), eq(false))).thenReturn(mock(DatabaseProxyConnector.class, RETURNS_DEEP_STUBS));
+        QueryContext queryContext = new QueryContext(mock(SQLStatementContext.class, RETURNS_DEEP_STUBS), EXECUTE_SQL, Collections.emptyList(), new HintValueContext(),
+                connectionSession.getConnectionContext(), contextManager.getMetaDataContexts().getMetaData());
+        new UnicastDatabaseProxyBackendHandler(queryContext, contextManager, connectionSession).execute();
+        verify(connectionSession).setCurrentDatabaseName("bar_db");
+    }
+    
+    @Test
+    void assertCloseWithoutExecute() throws SQLException {
+        AuthorityRule authorityRule = mock(AuthorityRule.class, RETURNS_DEEP_STUBS);
+        ContextManager contextManager = mockContextManagerWithAuthority(authorityRule, Collections.singletonList("foo_db"), Collections.singletonList("foo_db"));
+        ConnectionSession connectionSession = mock(ConnectionSession.class, RETURNS_DEEP_STUBS);
+        QueryContext queryContext = new QueryContext(mock(SQLStatementContext.class, RETURNS_DEEP_STUBS), EXECUTE_SQL, Collections.emptyList(), new HintValueContext(),
+                connectionSession.getConnectionContext(), contextManager.getMetaDataContexts().getMetaData());
+        DatabaseProxyConnector connector = mock(DatabaseProxyConnector.class);
+        when(DatabaseProxyConnectorFactory.newInstance(any(QueryContext.class), any(ProxyDatabaseConnectionManager.class), eq(false))).thenReturn(connector);
+        new UnicastDatabaseProxyBackendHandler(queryContext, contextManager, connectionSession).close();
+        verify(connector, never()).close();
+    }
+    
+    private ContextManager mockContextManagerWithAuthority(final AuthorityRule authorityRule, final List<String> databaseNames, final List<String> databasesWithStorageUnit) {
+        ContextManager result = mock(ContextManager.class, RETURNS_DEEP_STUBS);
+        when(result.getAllDatabaseNames()).thenReturn(databaseNames);
+        databaseNames.forEach(each -> {
+            ShardingSphereDatabase database = mock(ShardingSphereDatabase.class);
+            when(database.containsDataSource()).thenReturn(databasesWithStorageUnit.contains(each));
+            when(result.getDatabase(each)).thenReturn(database);
+        });
+        ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class, RETURNS_DEEP_STUBS);
+        RuleMetaData ruleMetaData = new RuleMetaData(Collections.singleton(authorityRule));
+        when(metaData.getGlobalRuleMetaData()).thenReturn(ruleMetaData);
+        when(result.getMetaDataContexts().getMetaData()).thenReturn(metaData);
+        when(result.getMetaDataContexts().getMetaData().getGlobalRuleMetaData()).thenReturn(ruleMetaData);
+        return result;
     }
 }
