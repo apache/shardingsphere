@@ -35,9 +35,16 @@ import org.mockito.quality.Strictness;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -58,6 +65,9 @@ class LocalTransactionManagerTest {
     
     @Mock
     private Connection connection;
+    
+    @Mock
+    private Connection anotherConnection;
     
     private LocalTransactionManager localTransactionManager;
     
@@ -93,9 +103,52 @@ class LocalTransactionManagerTest {
     }
     
     @Test
+    void assertCommitWithExceptionOccur() throws SQLException {
+        when(connectionContext.getTransactionContext().isExceptionOccur()).thenReturn(true);
+        localTransactionManager.commit();
+        verify(connection).rollback();
+    }
+    
+    @Test
+    void assertCommitWithSQLExceptionChain() throws SQLException {
+        when(connectionContext.getTransactionContext().isExceptionOccur()).thenReturn(false);
+        Multimap<String, Connection> cachedConnections = HashMultimap.create();
+        cachedConnections.put("ds1", connection);
+        cachedConnections.put("ds2", anotherConnection);
+        when(databaseConnectionManager.getCachedConnections()).thenReturn(cachedConnections);
+        SQLException first = new SQLException("first");
+        SQLException second = new SQLException("second");
+        doThrow(first).when(connection).commit();
+        doThrow(second).when(anotherConnection).commit();
+        SQLException actual = assertThrows(SQLException.class, () -> localTransactionManager.commit());
+        assertThat(new HashSet<>(Arrays.asList(actual.getMessage(), actual.getNextException().getMessage())), is(new HashSet<>(Arrays.asList("first", "second"))));
+    }
+    
+    @Test
     void assertRollback() throws SQLException {
         localTransactionManager.rollback();
         verify(transactionStatus).isInTransaction();
         verify(connection).rollback();
+    }
+    
+    @Test
+    void assertRollbackWithoutInTransaction() throws SQLException {
+        when(transactionStatus.isInTransaction()).thenReturn(false);
+        localTransactionManager.rollback();
+        verify(connection, never()).rollback();
+    }
+    
+    @Test
+    void assertRollbackWithSQLExceptionChain() throws SQLException {
+        Multimap<String, Connection> cachedConnections = HashMultimap.create();
+        cachedConnections.put("ds1", connection);
+        cachedConnections.put("ds2", anotherConnection);
+        when(databaseConnectionManager.getCachedConnections()).thenReturn(cachedConnections);
+        SQLException first = new SQLException("first");
+        SQLException second = new SQLException("second");
+        doThrow(first).when(connection).rollback();
+        doThrow(second).when(anotherConnection).rollback();
+        SQLException actual = assertThrows(SQLException.class, () -> localTransactionManager.rollback());
+        assertThat(new HashSet<>(Arrays.asList(actual.getMessage(), actual.getNextException().getMessage())), is(new HashSet<>(Arrays.asList("first", "second"))));
     }
 }
