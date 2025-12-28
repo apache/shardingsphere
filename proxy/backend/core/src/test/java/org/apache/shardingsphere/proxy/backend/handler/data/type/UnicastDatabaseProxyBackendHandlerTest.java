@@ -135,7 +135,8 @@ class UnicastDatabaseProxyBackendHandlerTest {
         when(privileges.hasPrivileges("bar_db")).thenReturn(true);
         when(authorityRule.findPrivileges(any())).thenReturn(Optional.of(privileges));
         ContextManager contextManager = mockContextManagerWithAuthority(authorityRule, Arrays.asList("foo_db", "bar_db"), Collections.singletonList("bar_db"));
-        when(DatabaseProxyConnectorFactory.newInstance(any(QueryContext.class), any(ProxyDatabaseConnectionManager.class), eq(false))).thenReturn(mock(DatabaseProxyConnector.class, RETURNS_DEEP_STUBS));
+        when(DatabaseProxyConnectorFactory.newInstance(any(QueryContext.class), any(ProxyDatabaseConnectionManager.class), eq(false)))
+                .thenReturn(mock(DatabaseProxyConnector.class, RETURNS_DEEP_STUBS));
         QueryContext queryContext = new QueryContext(mock(SQLStatementContext.class, RETURNS_DEEP_STUBS), EXECUTE_SQL, Collections.emptyList(), new HintValueContext(),
                 connectionSession.getConnectionContext(), contextManager.getMetaDataContexts().getMetaData());
         new UnicastDatabaseProxyBackendHandler(queryContext, contextManager, connectionSession).execute();
