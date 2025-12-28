@@ -220,6 +220,7 @@ Always state which topology, registry, and engine versions (e.g., MySQL 5.7 vs 8
 - When static methods or constructors need mocking, prefer `@ExtendWith(AutoMockExtension.class)` with `@StaticMockSettings` (or the extension’s constructor-mocking support); when a class is listed in `@StaticMockSettings`, do not call `mockStatic`/`mockConstruction` directly—stub via `when(...)` instead. Only if AutoMockExtension cannot be used and the reason is documented in the plan may you fall back to `mockStatic`/`mockConstruction`, wrapped in try-with-resources.
 - Before coding tests, follow the Coverage & Branch Checklist to map inputs/branches to planned assertions.
 - When a component is available via SPI (e.g., `TypedSPILoader`, `DatabaseTypedSPILoader`, `PushDownMetaDataRefresher`), obtain the instance through SPI by default; note any exceptions in the plan.
+- If the class under test implements `TypedSPI` or `DatabaseTypedSPI`, instantiate it via `TypedSPILoader` or `DatabaseTypedSPILoader` instead of calling `new` directly.
 - Do not mix Mockito matchers with raw arguments; choose a single style per invocation, and ensure the Mockito extension aligns with the mocking approach.
 - Compliance is mandatory: before any coding, re-read AGENTS.md and convert all hard requirements (SPI usage, no FQCN, mocking rules, coverage targets, planning steps) into a checklist in the plan; do not proceed or report completion until every item is satisfied or explicitly waived by the user.
 

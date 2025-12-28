@@ -51,8 +51,7 @@ class XABeginProxyBackendHandlerTest {
         when(transactionRule.getDefaultType()).thenReturn(TransactionType.XA);
         ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class);
         when(metaData.getGlobalRuleMetaData()).thenReturn(new RuleMetaData(Collections.singleton(transactionRule)));
-        XABeginProxyBackendHandler handler = new XABeginProxyBackendHandler(metaData, connectionSession, databaseProxyConnector);
-        assertThat(handler.execute(), is(expected));
+        assertThat(new XABeginProxyBackendHandler(metaData, connectionSession, databaseProxyConnector).execute(), is(expected));
         assertTrue(transactionContext.isTransactionStarted());
         assertThat(transactionContext.getTransactionType().orElse(""), is(TransactionType.XA.name()));
     }
