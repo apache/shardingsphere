@@ -20,6 +20,7 @@ package org.apache.shardingsphere.proxy.backend.connector;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
+import org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.JDBCDriverType;
 import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
@@ -37,11 +38,18 @@ import org.apache.shardingsphere.test.infra.framework.extension.mock.AutoMockExt
 import org.apache.shardingsphere.test.infra.framework.extension.mock.StaticMockSettings;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
+import org.mockito.internal.configuration.plugins.Plugins;
 
 import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 import java.util.Properties;
+import java.util.stream.Stream;
 
+import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.isA;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
@@ -96,6 +104,23 @@ class DatabaseProxyConnectorFactoryTest {
                 isA(DatabaseProxyConnector.class));
     }
     
+    @ParameterizedTest
+    @MethodSource("driverTypeProvider")
+    void assertDriverTypeSelection(final boolean preferPreparedStatement, final List<Object> parameters, final JDBCDriverType expected) throws ReflectiveOperationException {
+        ProxyDatabaseConnectionManager databaseConnectionManager = mock(ProxyDatabaseConnectionManager.class, RETURNS_DEEP_STUBS);
+        when(databaseConnectionManager.getConnectionSession().getUsedDatabaseName()).thenReturn("foo_db");
+        SQLStatementContext sqlStatementContext = mock(SQLStatementContext.class, RETURNS_DEEP_STUBS);
+        when(sqlStatementContext.getTablesContext().getDatabaseNames()).thenReturn(Collections.emptyList());
+        when(sqlStatementContext.getSqlStatement().getDatabaseType()).thenReturn(databaseType);
+        ShardingSphereDatabase database = mockDatabase();
+        ShardingSphereMetaData metaData = new ShardingSphereMetaData(Collections.singleton(database), mock(), mock(), new ConfigurationProperties(new Properties()));
+        QueryContext queryContext = new QueryContext(sqlStatementContext, "schemaName", parameters, new HintValueContext(), mockConnectionContext(), metaData);
+        ContextManager contextManager = mockContextManager(database);
+        when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
+        DatabaseProxyConnector connector = DatabaseProxyConnectorFactory.newInstance(queryContext, databaseConnectionManager, preferPreparedStatement);
+        assertThat((JDBCDriverType) Plugins.getMemberAccessor().get(connector.getClass().getDeclaredField("driverType"), connector), is(expected));
+    }
+    
     private ContextManager mockContextManager(final ShardingSphereDatabase database) {
         ShardingSphereMetaData metaData = new ShardingSphereMetaData(
                 Collections.singleton(database), mock(ResourceMetaData.class), mock(RuleMetaData.class), new ConfigurationProperties(new Properties()));
@@ -113,5 +138,11 @@ class DatabaseProxyConnectorFactoryTest {
         when(result.isComplete()).thenReturn(true);
         when(result.getProtocolType()).thenReturn(databaseType);
         return result;
+    }
+    
+    private static Stream<Arguments> driverTypeProvider() {
+        return Stream.of(
+                Arguments.of(true, Collections.emptyList(), JDBCDriverType.PREPARED_STATEMENT),
+                Arguments.of(false, Collections.singletonList(1), JDBCDriverType.PREPARED_STATEMENT));
     }
 }

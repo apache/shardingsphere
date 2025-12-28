@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.queryable.export;
 
 import lombok.SneakyThrows;
+import org.apache.shardingsphere.distsql.handler.engine.query.DistSQLQueryExecutor;
 import org.apache.shardingsphere.distsql.statement.type.ral.queryable.export.ExportDatabaseConfigurationStatement;
 import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.datasource.pool.props.creator.DataSourcePoolPropertiesCreator;
@@ -25,6 +26,7 @@ import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePo
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnit;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.infra.util.props.PropertiesBuilder;
 import org.apache.shardingsphere.infra.util.props.PropertiesBuilder.Property;
 import org.apache.shardingsphere.mode.manager.ContextManager;
@@ -38,12 +40,14 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.Datab
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 import org.apache.shardingsphere.test.infra.fixture.jdbc.MockedDataSource;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 
 import javax.sql.DataSource;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Collection;
 import java.util.Collections;
@@ -62,6 +66,19 @@ import static org.mockito.Mockito.when;
 
 class ExportDatabaseConfigurationExecutorTest {
     
+    @TempDir
+    private Path tempDir;
+    
+    private final ExportDatabaseConfigurationExecutor executor = (ExportDatabaseConfigurationExecutor) TypedSPILoader.getService(
+            DistSQLQueryExecutor.class, ExportDatabaseConfigurationStatement.class);
+    
+    @Test
+    void assertGetColumnNames() throws IOException {
+        Path tempFile = Files.createTempFile("export-db-config-", ".yaml");
+        ExportDatabaseConfigurationStatement sqlStatement = new ExportDatabaseConfigurationStatement(tempFile.toString(), mock(FromDatabaseSegment.class));
+        assertThat(executor.getColumnNames(sqlStatement), is(Collections.singleton("result")));
+    }
+    
     @Test
     void assertExecute() {
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
@@ -69,7 +86,6 @@ class ExportDatabaseConfigurationExecutorTest {
         Map<String, StorageUnit> storageUnits = createStorageUnits();
         when(database.getResourceMetaData().getStorageUnits()).thenReturn(storageUnits);
         when(database.getRuleMetaData().getConfigurations()).thenReturn(Collections.singleton(createShardingRuleConfiguration()));
-        ExportDatabaseConfigurationExecutor executor = new ExportDatabaseConfigurationExecutor();
         executor.setDatabase(database);
         Collection<LocalDataQueryResultRow> actual = executor.getRows(new ExportDatabaseConfigurationStatement(null, mock(FromDatabaseSegment.class)), mock(ContextManager.class));
         assertThat(actual.size(), is(1));
@@ -82,42 +98,10 @@ class ExportDatabaseConfigurationExecutorTest {
                 .collect(Collectors.toMap(Entry::getKey, entry -> DataSourcePoolPropertiesCreator.create(entry.getValue()), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
         Map<String, StorageUnit> result = new LinkedHashMap<>(propsMap.size(), 1F);
         for (Entry<String, DataSourcePoolProperties> entry : propsMap.entrySet()) {
-            StorageUnit storageUnit = mock(StorageUnit.class, RETURNS_DEEP_STUBS);
+            StorageUnit storageUnit = mock(StorageUnit.class);
             when(storageUnit.getDataSourcePoolProperties()).thenReturn(entry.getValue());
             result.put(entry.getKey(), storageUnit);
         }
-        return result;
-    }
-    
-    @Test
-    void assertExecuteWithEmptyDatabase() {
-        ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
-        when(database.getName()).thenReturn("empty_db");
-        when(database.getResourceMetaData().getStorageUnits()).thenReturn(Collections.emptyMap());
-        when(database.getRuleMetaData().getConfigurations()).thenReturn(Collections.emptyList());
-        ExportDatabaseConfigurationStatement sqlStatement = new ExportDatabaseConfigurationStatement(null, new FromDatabaseSegment(0, new DatabaseSegment(0, 0, new IdentifierValue("empty_db"))));
-        ExportDatabaseConfigurationExecutor executor = new ExportDatabaseConfigurationExecutor();
-        executor.setDatabase(database);
-        Collection<LocalDataQueryResultRow> actual = executor.getRows(sqlStatement, mock(ContextManager.class));
-        assertThat(actual.size(), is(1));
-        LocalDataQueryResultRow row = actual.iterator().next();
-        assertThat(row.getCell(1), is("databaseName: empty_db" + System.lineSeparator()));
-    }
-    
-    private Map<String, DataSource> createDataSourceMap() {
-        Map<String, DataSource> result = new LinkedHashMap<>(2, 1F);
-        result.put("ds_0", createDataSource("demo_ds_0"));
-        result.put("ds_1", createDataSource("demo_ds_1"));
-        return result;
-    }
-    
-    private DataSource createDataSource(final String name) {
-        MockedDataSource result = new MockedDataSource();
-        result.setUrl(String.format("jdbc:mock://127.0.0.1/%s", name));
-        result.setUsername("root");
-        result.setPassword("");
-        result.setMaxPoolSize(50);
-        result.setMinPoolSize(1);
         return result;
     }
     
@@ -142,5 +126,50 @@ class ExportDatabaseConfigurationExecutorTest {
         URL url = Objects.requireNonNull(ExportDatabaseConfigurationExecutorTest.class.getResource("/expected/export-database-configuration.yaml"));
         return Files.readAllLines(Paths.get(url.toURI())).stream().filter(each -> !each.startsWith("#") && !each.trim().isEmpty()).collect(Collectors.joining(System.lineSeparator()))
                 + System.lineSeparator();
+    }
+    
+    @Test
+    void assertExecuteWithEmptyDatabase() {
+        ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
+        when(database.getName()).thenReturn("empty_db");
+        when(database.getResourceMetaData().getStorageUnits()).thenReturn(Collections.emptyMap());
+        when(database.getRuleMetaData().getConfigurations()).thenReturn(Collections.emptyList());
+        executor.setDatabase(database);
+        Collection<LocalDataQueryResultRow> actual = executor.getRows(
+                new ExportDatabaseConfigurationStatement(null, new FromDatabaseSegment(0, new DatabaseSegment(0, 0, new IdentifierValue("empty_db")))), mock(ContextManager.class));
+        assertThat(actual.size(), is(1));
+        LocalDataQueryResultRow row = actual.iterator().next();
+        assertThat(row.getCell(1), is("databaseName: empty_db" + System.lineSeparator()));
+    }
+    
+    @Test
+    void assertExecuteWithFilePath() throws IOException {
+        ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
+        when(database.getName()).thenReturn("file_db");
+        when(database.getResourceMetaData().getStorageUnits()).thenReturn(Collections.emptyMap());
+        when(database.getRuleMetaData().getConfigurations()).thenReturn(Collections.emptyList());
+        Path tempFile = tempDir.resolve("export-db-config.yaml");
+        executor.setDatabase(database);
+        Collection<LocalDataQueryResultRow> actual = executor.getRows(new ExportDatabaseConfigurationStatement(tempFile.toString(), mock(FromDatabaseSegment.class)), mock(ContextManager.class));
+        LocalDataQueryResultRow row = actual.iterator().next();
+        assertThat(row.getCell(1), is(String.format("Successfully exported to: '%s'", tempFile)));
+        assertThat(new String(Files.readAllBytes(tempFile)), is("databaseName: file_db" + System.lineSeparator()));
+    }
+    
+    private Map<String, DataSource> createDataSourceMap() {
+        Map<String, DataSource> result = new LinkedHashMap<>(2, 1F);
+        result.put("ds_0", createDataSource("demo_ds_0"));
+        result.put("ds_1", createDataSource("demo_ds_1"));
+        return result;
+    }
+    
+    private DataSource createDataSource(final String name) {
+        MockedDataSource result = new MockedDataSource();
+        result.setUrl(String.format("jdbc:mock://127.0.0.1/%s", name));
+        result.setUsername("root");
+        result.setPassword("");
+        result.setMaxPoolSize(50);
+        result.setMinPoolSize(1);
+        return result;
     }
 }
