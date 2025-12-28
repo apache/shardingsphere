@@ -727,6 +727,8 @@ public enum SQLVisitorRule {
     
     SWITCH("Switch", SQLStatementType.DDL),
     
+    SWITCH_CATALOG("SwitchCatalog", SQLStatementType.DAL),
+    
     CREATE_PROFILE("CreateProfile", SQLStatementType.DDL),
     
     UPDATE_STATISTICS("UpdateStatistics", SQLStatementType.DDL),

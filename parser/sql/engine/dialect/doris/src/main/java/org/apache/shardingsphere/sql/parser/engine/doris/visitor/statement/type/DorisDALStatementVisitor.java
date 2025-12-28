@@ -116,6 +116,7 @@ import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ShowWhe
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ShutdownContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.StartSlaveContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.StopSlaveContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.SwitchCatalogContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.TablesOptionContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.UninstallComponentContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.UninstallPluginContext;
@@ -181,6 +182,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.value.literal.impl.Te
 import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisAlterResourceStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisAlterSystemStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisCreateSqlBlockRuleStatement;
+import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisSwitchStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.dal.show.DorisShowQueryStatsStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLCloneStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLCreateLoadableFunctionStatement;
@@ -577,6 +579,11 @@ public final class DorisDALStatementVisitor extends DorisStatementVisitor implem
     @Override
     public ASTNode visitUse(final UseContext ctx) {
         return new MySQLUseStatement(getDatabaseType(), ((DatabaseSegment) visit(ctx.databaseName())).getIdentifier().getValue());
+    }
+    
+    @Override
+    public ASTNode visitSwitchCatalog(final SwitchCatalogContext ctx) {
+        return new DorisSwitchStatement(getDatabaseType(), ((IdentifierValue) visit(ctx.catalogName())).getValue());
     }
     
     @Override

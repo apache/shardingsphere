@@ -99,6 +99,7 @@ execute
     | shutdown
     | begin
     | use
+    | switchCatalog
     | explain
     | doStatement
     | show

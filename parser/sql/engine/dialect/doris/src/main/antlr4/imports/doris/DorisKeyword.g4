@@ -79,6 +79,10 @@ AND
     : A N D
     ;
 
+ANN
+    : A N N
+    ;
+
 ANY
     : A N Y
     ;
@@ -1127,6 +1131,9 @@ INSTR
     ;
 // DORIS ADDED END
 
+INVERTED
+    : I N V E R T E D
+    ;
 
 INT
     : I N T
@@ -1701,6 +1708,11 @@ NEW
 NEXT
     : N E X T
     ;
+
+NGRAM_BF
+    : N G R A M UL_ B F
+    ;
+
 
 NO
     : N O
@@ -2684,6 +2696,10 @@ SUSPEND
 
 SWAPS
     : S W A P S
+    ;
+
+SWITCH
+    : S W I T C H
     ;
 
 SWITCHES
