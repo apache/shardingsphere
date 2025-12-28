@@ -122,7 +122,7 @@ class ShowComputeNodesExecutorTest {
         when(contextManager.getPersistServiceFacade().getModeFacade()).thenReturn(clusterPersistServiceFacade);
         return result;
     }
-
+    
     @Test
     void assertExecuteWithJdbcInstance() {
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);

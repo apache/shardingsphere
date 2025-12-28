@@ -61,7 +61,7 @@ class ShowComputeNodeModeExecutorTest {
         assertThat(row.getCell(2), is("ZooKeeper"));
         assertThat(row.getCell(3), is("{\"key\":\"value1,value2\"}"));
     }
-
+    
     @Test
     void assertExecuteWithNullRepository() {
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
