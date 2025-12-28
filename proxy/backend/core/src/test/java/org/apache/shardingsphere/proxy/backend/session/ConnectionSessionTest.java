@@ -50,6 +50,7 @@ import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(AutoMockExtension.class)
@@ -80,6 +81,15 @@ class ConnectionSessionTest {
         getConnectionContextReference().set(contextMock);
         connectionSession.setCurrentDatabaseName("db");
         verify(contextMock, times(1)).setCurrentDatabaseName("db");
+    }
+    
+    @Test
+    void assertSetCurrentSchemaWithSameNameDoNothing() throws ReflectiveOperationException {
+        connectionSession.setCurrentDatabaseName("db");
+        ConnectionContext contextMock = mock(ConnectionContext.class);
+        getConnectionContextReference().set(contextMock);
+        connectionSession.setCurrentDatabaseName("db");
+        verify(contextMock, never()).setCurrentDatabaseName("db");
     }
     
     @Test
