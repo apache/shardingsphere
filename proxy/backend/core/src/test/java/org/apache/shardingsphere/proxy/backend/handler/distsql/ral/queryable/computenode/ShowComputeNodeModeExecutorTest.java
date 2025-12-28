@@ -17,16 +17,19 @@
 
 package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.queryable.computenode;
 
+import org.apache.shardingsphere.distsql.handler.engine.query.DistSQLQueryExecutor;
 import org.apache.shardingsphere.distsql.statement.type.ral.queryable.show.ShowComputeNodeModeStatement;
 import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstanceContext;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.infra.util.props.PropertiesBuilder;
 import org.apache.shardingsphere.infra.util.props.PropertiesBuilder.Property;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepositoryConfiguration;
 import org.junit.jupiter.api.Test;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
 
@@ -38,9 +41,15 @@ import static org.mockito.Mockito.when;
 
 class ShowComputeNodeModeExecutorTest {
     
+    private final ShowComputeNodeModeExecutor executor = (ShowComputeNodeModeExecutor) TypedSPILoader.getService(DistSQLQueryExecutor.class, ShowComputeNodeModeStatement.class);
+    
+    @Test
+    void assertGetColumnNames() {
+        assertThat(executor.getColumnNames(new ShowComputeNodeModeStatement()), is(Arrays.asList("type", "repository", "props")));
+    }
+    
     @Test
     void assertExecute() {
-        ShowComputeNodeModeExecutor executor = new ShowComputeNodeModeExecutor();
         ContextManager contextManager = mock(ContextManager.class);
         ComputeNodeInstanceContext computeNodeInstanceContext = createInstanceContext();
         when(contextManager.getComputeNodeInstanceContext()).thenReturn(computeNodeInstanceContext);
@@ -51,6 +60,19 @@ class ShowComputeNodeModeExecutorTest {
         assertThat(row.getCell(1), is("Cluster"));
         assertThat(row.getCell(2), is("ZooKeeper"));
         assertThat(row.getCell(3), is("{\"key\":\"value1,value2\"}"));
+    }
+
+    @Test
+    void assertExecuteWithNullRepository() {
+        ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
+        ComputeNodeInstanceContext computeNodeInstanceContext = mock(ComputeNodeInstanceContext.class, RETURNS_DEEP_STUBS);
+        when(computeNodeInstanceContext.getModeConfiguration()).thenReturn(new ModeConfiguration("Standalone", null));
+        when(contextManager.getComputeNodeInstanceContext()).thenReturn(computeNodeInstanceContext);
+        Collection<LocalDataQueryResultRow> actual = executor.getRows(new ShowComputeNodeModeStatement(), contextManager);
+        LocalDataQueryResultRow row = actual.iterator().next();
+        assertThat(row.getCell(1), is("Standalone"));
+        assertThat(row.getCell(2), is(""));
+        assertThat(row.getCell(3), is(""));
     }
     
     private ComputeNodeInstanceContext createInstanceContext() {

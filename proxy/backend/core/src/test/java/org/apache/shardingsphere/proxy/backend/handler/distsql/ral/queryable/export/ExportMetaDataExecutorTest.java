@@ -21,6 +21,7 @@ import org.apache.commons.codec.binary.Base64;
 import org.apache.shardingsphere.authority.rule.AuthorityRule;
 import org.apache.shardingsphere.authority.rule.builder.DefaultAuthorityRuleConfigurationBuilder;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
+import org.apache.shardingsphere.distsql.handler.engine.query.DistSQLQueryExecutor;
 import org.apache.shardingsphere.distsql.statement.type.ral.queryable.export.ExportMetaDataStatement;
 import org.apache.shardingsphere.globalclock.rule.GlobalClockRule;
 import org.apache.shardingsphere.globalclock.rule.builder.DefaultGlobalClockRuleConfigurationBuilder;
@@ -59,8 +60,12 @@ import org.apache.shardingsphere.proxy.backend.distsql.export.ExportedClusterInf
 import org.apache.shardingsphere.proxy.backend.distsql.export.ExportedMetaData;
 import org.apache.shardingsphere.test.infra.fixture.jdbc.MockedDataSource;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 
 import javax.sql.DataSource;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -95,11 +100,21 @@ class ExportMetaDataExecutorTest {
     
     private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "FIXTURE");
     
+    private final ExportMetaDataExecutor executor = (ExportMetaDataExecutor) TypedSPILoader.getService(DistSQLQueryExecutor.class, ExportMetaDataStatement.class);
+    
+    @TempDir
+    private Path tempDir;
+    
+    @Test
+    void assertGetColumnNames() {
+        assertThat(executor.getColumnNames(new ExportMetaDataStatement(null)), is(Arrays.asList("id", "create_time", "cluster_info")));
+    }
+    
     @Test
     void assertExecuteWithEmptyMetaData() {
         ContextManager contextManager = mockEmptyContextManager();
         ExportMetaDataStatement sqlStatement = new ExportMetaDataStatement(null);
-        Collection<LocalDataQueryResultRow> actual = new ExportMetaDataExecutor().getRows(sqlStatement, contextManager);
+        Collection<LocalDataQueryResultRow> actual = executor.getRows(sqlStatement, contextManager);
         assertThat(actual.size(), is(1));
         LocalDataQueryResultRow row = actual.iterator().next();
         assertMetaData(row.getCell(3), Base64.encodeBase64String(EXPECTED_EMPTY_METADATA_VALUE.getBytes()));
@@ -129,10 +144,24 @@ class ExportMetaDataExecutorTest {
     @Test
     void assertExecute() {
         ContextManager contextManager = mockContextManager();
-        Collection<LocalDataQueryResultRow> actual = new ExportMetaDataExecutor().getRows(new ExportMetaDataStatement(null), contextManager);
+        Collection<LocalDataQueryResultRow> actual = executor.getRows(new ExportMetaDataStatement(null), contextManager);
         assertThat(actual.size(), is(1));
         LocalDataQueryResultRow row = actual.iterator().next();
         assertMetaData(row.getCell(3), Base64.encodeBase64String(EXPECTED_NOT_EMPTY_METADATA_VALUE.getBytes()));
+    }
+    
+    @Test
+    void assertExecuteWithFilePath() throws IOException {
+        ContextManager contextManager = mockContextManager();
+        when(contextManager.getComputeNodeInstanceContext().getInstance().getMetaData().getId()).thenReturn("file_instance");
+        Path tempFile = tempDir.resolve("export-metadata.json");
+        ExportMetaDataStatement sqlStatement = new ExportMetaDataStatement(tempFile.toString());
+        Collection<LocalDataQueryResultRow> actual = executor.getRows(sqlStatement, contextManager);
+        LocalDataQueryResultRow row = actual.iterator().next();
+        assertThat(row.getCell(1), is("file_instance"));
+        assertThat(row.getCell(3), is(String.format("Successfully exported to：'%s'", tempFile)));
+        String fileContent = new String(Files.readAllBytes(tempFile));
+        assertMetaData(Base64.encodeBase64String(fileContent.getBytes()), Base64.encodeBase64String(EXPECTED_NOT_EMPTY_METADATA_VALUE.getBytes()));
     }
     
     private ContextManager mockContextManager() {
