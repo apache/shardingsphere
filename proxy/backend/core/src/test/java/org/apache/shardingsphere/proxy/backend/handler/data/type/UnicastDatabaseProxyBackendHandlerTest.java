@@ -38,6 +38,7 @@ import org.apache.shardingsphere.proxy.backend.connector.DatabaseProxyConnectorF
 import org.apache.shardingsphere.proxy.backend.connector.ProxyDatabaseConnectionManager;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
+import org.apache.shardingsphere.proxy.backend.response.data.QueryResponseRow;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.test.infra.framework.extension.mock.AutoMockExtension;
 import org.apache.shardingsphere.test.infra.framework.extension.mock.StaticMockSettings;
@@ -139,6 +140,32 @@ class UnicastDatabaseProxyBackendHandlerTest {
                 connectionSession.getConnectionContext(), contextManager.getMetaDataContexts().getMetaData());
         new UnicastDatabaseProxyBackendHandler(queryContext, contextManager, connectionSession).execute();
         verify(connectionSession).setCurrentDatabaseName("bar_db");
+    }
+    
+    @Test
+    void assertGetRowDataAndCloseAfterExecute() throws SQLException {
+        AuthorityRule authorityRule = mock(AuthorityRule.class, RETURNS_DEEP_STUBS);
+        ShardingSpherePrivileges privileges = mock(ShardingSpherePrivileges.class);
+        when(privileges.hasPrivileges("foo_db")).thenReturn(true);
+        when(authorityRule.findPrivileges(any())).thenReturn(Optional.of(privileges));
+        ContextManager contextManager = mockContextManagerWithAuthority(authorityRule, Collections.singletonList("foo_db"), Collections.singletonList("foo_db"));
+        ConnectionSession connectionSession = mock(ConnectionSession.class, RETURNS_DEEP_STUBS);
+        when(connectionSession.getCurrentDatabaseName()).thenReturn("foo_db");
+        when(connectionSession.getConnectionContext().getCurrentDatabaseName()).thenReturn(Optional.of("foo_db"));
+        DatabaseProxyConnector connector = mock(DatabaseProxyConnector.class);
+        QueryResponseRow row = mock(QueryResponseRow.class);
+        when(connector.execute()).thenReturn(new UpdateResponseHeader(mock()));
+        when(connector.next()).thenReturn(true, false);
+        when(connector.getRowData()).thenReturn(row);
+        when(DatabaseProxyConnectorFactory.newInstance(any(QueryContext.class), any(ProxyDatabaseConnectionManager.class), eq(false))).thenReturn(connector);
+        QueryContext queryContext = new QueryContext(mock(SQLStatementContext.class, RETURNS_DEEP_STUBS), EXECUTE_SQL, Collections.emptyList(), new HintValueContext(),
+                connectionSession.getConnectionContext(), contextManager.getMetaDataContexts().getMetaData());
+        UnicastDatabaseProxyBackendHandler handler = new UnicastDatabaseProxyBackendHandler(queryContext, contextManager, connectionSession);
+        handler.execute();
+        handler.next();
+        assertThat(handler.getRowData(), is(row));
+        handler.close();
+        verify(connector).close();
     }
     
     @Test
