@@ -100,20 +100,30 @@ public final class MySQLComQueryPacketExecutor implements QueryCommandExecutor {
         }
         MySQLKillStatement kill = (MySQLKillStatement) sqlStatement;
         String scope = kill.getScope();
-        // Only normalize KILL QUERY <connectionId>.
-        // KILL <id> without scope is treated as CONNECTION semantics and is not rewritten.
+        
+        // Only normalize KILL QUERY <connectionId>
         if (null == scope || !"QUERY".equalsIgnoreCase(scope)) {
             return sqlStatement;
         }
+        
         String id = kill.getProcessId();
-        if (null == id || !id.chars().allMatch(Character::isDigit)) {
+        if (null == id) {
             return sqlStatement;
         }
-        String processId = MySQLConnectionIdRegistry.getInstance()
-                .getProcessId(Long.parseLong(id));
+        
+        long numericId;
+        try {
+            numericId = Long.parseLong(id);
+        } catch (final NumberFormatException ex) {
+            // invalid or overflowed connection id → skip normalization
+            return sqlStatement;
+        }
+        
+        String processId = MySQLConnectionIdRegistry.getInstance().getProcessId(numericId);
         if (null == processId) {
             return sqlStatement;
         }
+        
         // AST is immutable → recreate
         return new MySQLKillStatement(
                 kill.getDatabaseType(),

@@ -78,6 +78,7 @@ public final class MySQLFrontendEngine implements DatabaseProtocolFrontendEngine
      * @param channel Netty channel
      * @param session connection session
      */
+    @Override
     public void bindProcessAfterAuthentication(final Channel channel, final ConnectionSession session) {
         Long nativeConnectionId = channel
                 .attr(FrontendConstants.NATIVE_CONNECTION_ID_ATTRIBUTE_KEY)

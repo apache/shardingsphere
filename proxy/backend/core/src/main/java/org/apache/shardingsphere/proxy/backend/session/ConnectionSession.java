@@ -85,7 +85,7 @@ public final class ConnectionSession {
     
     /**
      * Set ProcessId.
-     * @param  processId current processId
+     * @param processId current process id
      */
     public void setProcessId(final String processId) {
         this.processId = processId;
