@@ -31,6 +31,7 @@ import org.apache.shardingsphere.infra.util.file.SystemResourceFileUtils;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.junit.jupiter.api.Test;
 
+import java.math.BigInteger;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -84,7 +85,7 @@ class TransmissionJobItemProgressTest {
     @Test
     void assertGetProgressesCorrectly() {
         Map<String, InventoryTaskProgress> progresses = new HashMap<>(4, 1F);
-        progresses.put("ds.order_item#0", new InventoryTaskProgress(new IntegerPrimaryKeyIngestPosition(1L, 100L)));
+        progresses.put("ds.order_item#0", new InventoryTaskProgress(new IntegerPrimaryKeyIngestPosition(BigInteger.ONE, BigInteger.valueOf(100L))));
         progresses.put("ds.order_item#1", new InventoryTaskProgress(new UnsupportedKeyIngestPosition()));
         progresses.put("ds.order#0", new InventoryTaskProgress(new IngestFinishedPosition()));
         progresses.put("ds.test_order#0", new InventoryTaskProgress(new StringPrimaryKeyIngestPosition("1", "100")));

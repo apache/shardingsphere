@@ -19,27 +19,29 @@ package org.apache.shardingsphere.data.pipeline.core.ingest.position.type.pk.typ
 
 import org.apache.shardingsphere.data.pipeline.core.ingest.position.type.pk.PrimaryKeyIngestPosition;
 
+import java.math.BigInteger;
+
 /**
  * Integer primary key ingest position.
  */
-public final class IntegerPrimaryKeyIngestPosition implements PrimaryKeyIngestPosition<Long> {
+public final class IntegerPrimaryKeyIngestPosition implements PrimaryKeyIngestPosition<BigInteger> {
     
-    private final Long beginValue;
+    private final BigInteger beginValue;
     
-    private final Long endValue;
+    private final BigInteger endValue;
     
-    public IntegerPrimaryKeyIngestPosition(final Long beginValue, final Long endValue) {
+    public IntegerPrimaryKeyIngestPosition(final BigInteger beginValue, final BigInteger endValue) {
         this.beginValue = beginValue;
         this.endValue = endValue;
     }
     
     @Override
-    public Long getBeginValue() {
+    public BigInteger getBeginValue() {
         return beginValue;
     }
     
     @Override
-    public Long getEndValue() {
+    public BigInteger getEndValue() {
         return endValue;
     }
     

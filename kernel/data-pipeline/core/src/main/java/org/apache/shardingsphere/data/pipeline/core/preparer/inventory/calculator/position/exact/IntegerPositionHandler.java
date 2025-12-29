@@ -19,6 +19,8 @@ package org.apache.shardingsphere.data.pipeline.core.preparer.inventory.calculat
 
 import org.apache.shardingsphere.data.pipeline.core.ingest.position.type.pk.type.IntegerPrimaryKeyIngestPosition;
 
+import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -26,20 +28,21 @@ import java.sql.SQLException;
 /**
  * Integer position handler.
  */
-public final class IntegerPositionHandler implements DataTypePositionHandler<Long> {
+public final class IntegerPositionHandler implements DataTypePositionHandler<BigInteger> {
     
     @Override
-    public Long readColumnValue(final ResultSet resultSet, final int columnIndex) throws SQLException {
-        return resultSet.getLong(columnIndex);
+    public BigInteger readColumnValue(final ResultSet resultSet, final int columnIndex) throws SQLException {
+        BigDecimal decimal = resultSet.getBigDecimal(columnIndex);
+        return null == decimal ? null : decimal.toBigInteger();
     }
     
     @Override
-    public void setPreparedStatementValue(final PreparedStatement preparedStatement, final int parameterIndex, final Long value) throws SQLException {
-        preparedStatement.setLong(parameterIndex, value);
+    public void setPreparedStatementValue(final PreparedStatement preparedStatement, final int parameterIndex, final BigInteger value) throws SQLException {
+        preparedStatement.setBigDecimal(parameterIndex, new BigDecimal(value));
     }
     
     @Override
-    public IntegerPrimaryKeyIngestPosition createIngestPosition(final Long lowerBound, final Long upperBound) {
+    public IntegerPrimaryKeyIngestPosition createIngestPosition(final BigInteger lowerBound, final BigInteger upperBound) {
         return new IntegerPrimaryKeyIngestPosition(lowerBound, upperBound);
     }
 }

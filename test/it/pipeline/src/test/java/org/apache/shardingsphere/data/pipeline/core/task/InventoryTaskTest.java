@@ -33,6 +33,7 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.math.BigInteger;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -100,7 +101,7 @@ class InventoryTaskTest {
         result.setActualTableName(actualTableName);
         result.setUniqueKeyColumns(Collections.singletonList(PipelineContextUtils.mockOrderIdColumnMetaData()));
         result.getCommonContext().setPosition(null == taskConfig.getDumperContext().getCommonContext().getPosition()
-                ? new IntegerPrimaryKeyIngestPosition(0L, 1000L)
+                ? new IntegerPrimaryKeyIngestPosition(BigInteger.ONE, BigInteger.valueOf(1000L))
                 : taskConfig.getDumperContext().getCommonContext().getPosition());
         return result;
     }
