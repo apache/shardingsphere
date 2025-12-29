@@ -93,7 +93,7 @@ public final class InventoryPositionExactCalculator {
                                                              final int shardingSize, final PrimaryKeyIngestPosition<T> firstPosition,
                                                              final PipelineDataSource dataSource, final DataTypePositionHandler<T> positionHandler) {
         List<IngestPosition> result = new LinkedList<>();
-        T lowerValue = firstPosition.getEndValue();
+        T lowerBound = firstPosition.getEndValue();
         long recordsCount = 0;
         String laterQuerySQL = new PipelinePrepareSQLBuilder(dataSource.getDatabaseType())
                 .buildSplitByUniqueKeyRangedSQL(qualifiedTable.getSchemaName(), qualifiedTable.getTableName(), uniqueKey, true);
@@ -101,7 +101,7 @@ public final class InventoryPositionExactCalculator {
                 Connection connection = dataSource.getConnection();
                 PreparedStatement preparedStatement = connection.prepareStatement(laterQuerySQL)) {
             for (int i = 0; i < Integer.MAX_VALUE; i++) {
-                positionHandler.setPreparedStatementValue(preparedStatement, 1, lowerValue);
+                positionHandler.setPreparedStatementValue(preparedStatement, 1, lowerBound);
                 preparedStatement.setLong(2, shardingSize);
                 try (ResultSet resultSet = preparedStatement.executeQuery()) {
                     if (!resultSet.next()) {
@@ -109,14 +109,14 @@ public final class InventoryPositionExactCalculator {
                     }
                     int count = resultSet.getInt(2);
                     if (0 == count) {
-                        log.info("Done. Later records count: {}, last lower value: {}, sharding size: {}, later query SQL: {}", recordsCount, lowerValue, shardingSize, laterQuerySQL);
+                        log.info("Done. Later records count: {}, last lower bound: {}, sharding size: {}, later query SQL: {}", recordsCount, lowerBound, shardingSize, laterQuerySQL);
                         break;
                     }
                     recordsCount += count;
                     T minValue = positionHandler.readColumnValue(resultSet, 3);
                     T maxValue = positionHandler.readColumnValue(resultSet, 1);
                     result.add(positionHandler.createIngestPosition(minValue, maxValue));
-                    lowerValue = maxValue;
+                    lowerBound = maxValue;
                 }
             }
         } catch (final SQLException ex) {

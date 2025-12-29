@@ -37,7 +37,7 @@ public final class FixturePipelineSQLBuilder implements DialectPipelineSQLBuilde
     }
     
     @Override
-    public String buildSplitByUniqueKeyRangedSubqueryClause(final String qualifiedTableName, final String uniqueKey, final boolean hasLowerValue) {
+    public String buildSplitByUniqueKeyRangedSubqueryClause(final String qualifiedTableName, final String uniqueKey, final boolean hasLowerBound) {
         return "";
     }
     

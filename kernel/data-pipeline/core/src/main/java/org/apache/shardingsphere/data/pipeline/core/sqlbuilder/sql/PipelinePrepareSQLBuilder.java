@@ -112,12 +112,12 @@ public final class PipelinePrepareSQLBuilder {
      * @param schemaName schema name
      * @param tableName table name
      * @param uniqueKey unique key
-     * @param hasLowerValue has lower value
+     * @param hasLowerBound has lower bound
      * @return split SQL
      */
-    public String buildSplitByUniqueKeyRangedSQL(final String schemaName, final String tableName, final String uniqueKey, final boolean hasLowerValue) {
+    public String buildSplitByUniqueKeyRangedSQL(final String schemaName, final String tableName, final String uniqueKey, final boolean hasLowerBound) {
         String escapedUniqueKey = sqlSegmentBuilder.getEscapedIdentifier(uniqueKey);
-        String subQueryClause = dialectSQLBuilder.buildSplitByUniqueKeyRangedSubqueryClause(sqlSegmentBuilder.getQualifiedTableName(schemaName, tableName), escapedUniqueKey, hasLowerValue);
+        String subQueryClause = dialectSQLBuilder.buildSplitByUniqueKeyRangedSubqueryClause(sqlSegmentBuilder.getQualifiedTableName(schemaName, tableName), escapedUniqueKey, hasLowerBound);
         return String.format("SELECT MAX(%s), COUNT(1), MIN(%s) FROM (%s) t", escapedUniqueKey, escapedUniqueKey, subQueryClause);
     }
 }

@@ -45,10 +45,10 @@ public final class InventoryDataSparsenessCalculator {
      */
     public static boolean isIntegerUniqueKeyDataSparse(final long tableRecordsCount, final Range<Long> uniqueKeyValuesRange) {
         boolean result = false;
-        Long lowerValue = uniqueKeyValuesRange.getLowerBound();
-        Long upperValue = uniqueKeyValuesRange.getUpperBound();
-        if (tableRecordsCount >= EXACT_SPLITTING_RECORDS_COUNT_THRESHOLD && null != lowerValue && null != upperValue) {
-            BigDecimal multiple = BigDecimal.valueOf(upperValue).subtract(BigDecimal.valueOf(lowerValue)).add(BigDecimal.ONE)
+        Long lowerBound = uniqueKeyValuesRange.getLowerBound();
+        Long upperBound = uniqueKeyValuesRange.getUpperBound();
+        if (tableRecordsCount >= EXACT_SPLITTING_RECORDS_COUNT_THRESHOLD && null != lowerBound && null != upperBound) {
+            BigDecimal multiple = BigDecimal.valueOf(upperBound).subtract(BigDecimal.valueOf(lowerBound)).add(BigDecimal.ONE)
                     .divide(BigDecimal.valueOf(tableRecordsCount), 2, RoundingMode.HALF_UP);
             if (multiple.compareTo(MULTIPLE_THRESHOLD) >= 0) {
                 log.info("Table is sparse for integer unique key, table records count: {}, unique key values range: {}, multiple: {}", tableRecordsCount, uniqueKeyValuesRange, multiple);
