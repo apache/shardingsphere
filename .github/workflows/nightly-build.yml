@@ -206,7 +206,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 90
     strategy:
-      max-parallel: 20
+      max-parallel: 15
       fail-fast: false
       matrix:
         feature: [ sharding, readwrite-splitting, encrypt, shadow, mask ]

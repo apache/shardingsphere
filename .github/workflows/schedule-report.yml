@@ -19,7 +19,7 @@ name: Schedule - Report
 
 on:
   schedule:
-    - cron: '0 */1 * * *'  # per hour
+    - cron: '0 17 * * *'  # Once a day. UTC time 17:00
   workflow_dispatch:
 
 env:

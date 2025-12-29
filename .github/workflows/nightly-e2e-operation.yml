@@ -41,7 +41,7 @@ jobs:
     runs-on: ${{ needs.global-environment.outputs.GLOBAL_RUNS_ON }}
     timeout-minutes: 150
     strategy:
-      max-parallel: 20
+      max-parallel: 15
       fail-fast: false
       matrix:
         java-version: [ 11, 21 ]

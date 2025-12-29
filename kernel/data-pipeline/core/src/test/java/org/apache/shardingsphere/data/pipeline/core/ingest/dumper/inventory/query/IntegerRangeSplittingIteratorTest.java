@@ -19,6 +19,7 @@ package org.apache.shardingsphere.data.pipeline.core.ingest.dumper.inventory.que
 
 import org.junit.jupiter.api.Test;
 
+import java.math.BigInteger;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -30,18 +31,18 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 class IntegerRangeSplittingIteratorTest {
     
     @Test
-    void assertMinimumGreaterThanMaximum() {
-        assertThrows(IllegalArgumentException.class, () -> new IntegerRangeSplittingIterator(200L, 100L, 10L));
+    void assertLowerGtUpper() {
+        assertThrows(IllegalArgumentException.class, () -> new IntegerRangeSplittingIterator(BigInteger.valueOf(200L), BigInteger.valueOf(100L), BigInteger.valueOf(10L)));
     }
     
     @Test
-    void assertIntervalLessThanZero() {
-        assertThrows(IllegalArgumentException.class, () -> new IntegerRangeSplittingIterator(100L, 200L, -10L));
+    void assertStepSizeLtZero() {
+        assertThrows(IllegalArgumentException.class, () -> new IntegerRangeSplittingIterator(BigInteger.valueOf(100L), BigInteger.valueOf(200L), BigInteger.valueOf(-10L)));
     }
     
     @Test
     void assertInvalidNext() {
-        IntegerRangeSplittingIterator iterator = new IntegerRangeSplittingIterator(200L, 200L, 0L);
+        IntegerRangeSplittingIterator iterator = new IntegerRangeSplittingIterator(BigInteger.valueOf(200L), BigInteger.valueOf(200L), BigInteger.valueOf(0L));
         if (iterator.hasNext()) {
             iterator.next();
         }
@@ -49,28 +50,43 @@ class IntegerRangeSplittingIteratorTest {
     }
     
     @Test
-    void assertSmallRangeCorrect() {
-        IntegerRangeSplittingIterator iterator = new IntegerRangeSplittingIterator(200L, 200L, 0L);
-        List<Range<Long>> actual = new LinkedList<>();
+    void assertStepSizeEqZero() {
+        IntegerRangeSplittingIterator iterator = new IntegerRangeSplittingIterator(BigInteger.valueOf(200L), BigInteger.valueOf(200L), BigInteger.valueOf(0L));
+        List<Range<BigInteger>> actual = new LinkedList<>();
         while (iterator.hasNext()) {
             actual.add(iterator.next());
         }
         assertThat(actual.size(), is(1));
-        assertThat(actual.get(0).getLowerBound(), is(200L));
-        assertThat(actual.get(0).getUpperBound(), is(200L));
+        assertRange(actual.get(0), Range.closed(BigInteger.valueOf(200L), BigInteger.valueOf(200L)));
+    }
+    
+    private void assertRange(final Range<BigInteger> actual, final Range<BigInteger> expected) {
+        assertThat(actual.getLowerBound(), is(expected.getLowerBound()));
+        assertThat(actual.getUpperBound(), is(expected.getUpperBound()));
     }
     
     @Test
-    void assertLargeRangeCorrect() {
-        IntegerRangeSplittingIterator iterator = new IntegerRangeSplittingIterator(200L, 400L, 100L);
-        List<Range<Long>> actual = new LinkedList<>();
+    void assertIntegerRange() {
+        IntegerRangeSplittingIterator iterator = new IntegerRangeSplittingIterator(BigInteger.valueOf(200L), BigInteger.valueOf(400L), BigInteger.valueOf(100L));
+        List<Range<BigInteger>> actual = new LinkedList<>();
         while (iterator.hasNext()) {
             actual.add(iterator.next());
         }
         assertThat(actual.size(), is(2));
-        assertThat(actual.get(0).getLowerBound(), is(200L));
-        assertThat(actual.get(0).getUpperBound(), is(300L));
-        assertThat(actual.get(1).getLowerBound(), is(301L));
-        assertThat(actual.get(1).getUpperBound(), is(400L));
+        assertRange(actual.get(0), Range.closed(BigInteger.valueOf(200L), BigInteger.valueOf(300L)));
+        assertRange(actual.get(1), Range.closed(BigInteger.valueOf(301L), BigInteger.valueOf(400L)));
+    }
+    
+    @Test
+    void assertBigIntegerRange() {
+        IntegerRangeSplittingIterator iterator = new IntegerRangeSplittingIterator(
+                new BigInteger("1234567890123456789012345678"), new BigInteger("1234567890123456789032345678"), new BigInteger("10000000"));
+        List<Range<BigInteger>> actual = new LinkedList<>();
+        while (iterator.hasNext()) {
+            actual.add(iterator.next());
+        }
+        assertThat(actual.size(), is(2));
+        assertRange(actual.get(0), Range.closed(new BigInteger("1234567890123456789012345678"), new BigInteger("1234567890123456789022345678")));
+        assertRange(actual.get(1), Range.closed(new BigInteger("1234567890123456789022345679"), new BigInteger("1234567890123456789032345678")));
     }
 }
