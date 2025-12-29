@@ -20,6 +20,7 @@ package org.apache.shardingsphere.data.pipeline.core.ingest.dumper.inventory.que
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Range.
@@ -30,10 +31,12 @@ import lombok.RequiredArgsConstructor;
 @Getter
 public final class Range<T> {
     
+    @Nullable
     private final T lowerBound;
     
     private final boolean lowerInclusive;
     
+    @Nullable
     private final T upperBound;
     
     /**

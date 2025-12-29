@@ -53,9 +53,9 @@ public interface DataTypePositionHandler<T> {
     /**
      * Create ingest position.
      *
-     * @param lowerValue lower value
-     * @param upperValue upper value
+     * @param lowerBound lower bound
+     * @param upperBound upper bound
      * @return ingest position
      */
-    PrimaryKeyIngestPosition<T> createIngestPosition(T lowerValue, T upperValue);
+    PrimaryKeyIngestPosition<T> createIngestPosition(T lowerBound, T upperBound);
 }
