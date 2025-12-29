@@ -28,6 +28,7 @@ import org.apache.shardingsphere.data.pipeline.core.ingest.position.type.pk.type
 import org.apache.shardingsphere.data.pipeline.core.sqlbuilder.sql.PipelinePrepareSQLBuilder;
 import org.apache.shardingsphere.infra.metadata.database.schema.QualifiedTable;
 
+import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -60,7 +61,9 @@ public final class InventoryPositionEstimatedCalculator {
                 Statement statement = connection.createStatement();
                 ResultSet resultSet = statement.executeQuery(sql)) {
             resultSet.next();
-            return Range.closed(resultSet.getBigDecimal(1).toBigInteger(), resultSet.getBigDecimal(2).toBigInteger());
+            BigDecimal lowerBound = resultSet.getBigDecimal(1);
+            BigDecimal upperBound = resultSet.getBigDecimal(2);
+            return Range.closed(null == lowerBound ? null : lowerBound.toBigInteger(), null == upperBound ? null : upperBound.toBigInteger());
         } catch (final SQLException ex) {
             throw new SplitPipelineJobByUniqueKeyException(qualifiedTable.getTableName(), uniqueKey, ex);
         }
