@@ -26,38 +26,38 @@ import java.util.NoSuchElementException;
  *
  * <p>It's not thread-safe.</p>
  */
-public final class IntegerRangeSplittingIterator implements Iterator<Range<Long>> {
+public final class IntegerRangeSplittingIterator implements Iterator<Range<BigInteger>> {
     
-    private final BigInteger maximum;
+    private final BigInteger upperBound;
     
     private final BigInteger stepSize;
     
     private BigInteger current;
     
-    public IntegerRangeSplittingIterator(final long minimum, final long maximum, final long stepSize) {
-        if (minimum > maximum) {
-            throw new IllegalArgumentException("minimum greater than maximum");
+    public IntegerRangeSplittingIterator(final BigInteger lowerBound, final BigInteger upperBound, final BigInteger stepSize) {
+        if (lowerBound.compareTo(upperBound) > 0) {
+            throw new IllegalArgumentException("lower bounder greater than upper bound");
         }
-        if (stepSize < 0L) {
+        if (stepSize.compareTo(BigInteger.ZERO) < 0) {
             throw new IllegalArgumentException("step size is less than zero");
         }
-        this.maximum = BigInteger.valueOf(maximum);
-        this.stepSize = BigInteger.valueOf(stepSize);
-        current = BigInteger.valueOf(minimum);
+        this.upperBound = upperBound;
+        this.stepSize = stepSize;
+        current = lowerBound;
     }
     
     @Override
     public boolean hasNext() {
-        return current.compareTo(maximum) <= 0;
+        return current.compareTo(upperBound) <= 0;
     }
     
     @Override
-    public Range<Long> next() {
+    public Range<BigInteger> next() {
         if (!hasNext()) {
             throw new NoSuchElementException("");
         }
-        BigInteger upperLimit = min(maximum, current.add(stepSize));
-        Range<Long> result = Range.closed(current.longValue(), upperLimit.longValue());
+        BigInteger upperLimit = min(upperBound, current.add(stepSize));
+        Range<BigInteger> result = Range.closed(current, upperLimit);
         current = upperLimit.add(BigInteger.ONE);
         return result;
     }

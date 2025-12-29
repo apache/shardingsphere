@@ -75,18 +75,18 @@ public final class InventoryPositionEstimatedCalculator {
      * @return positions
      */
     public static List<IngestPosition> getIntegerPositions(final long tableRecordsCount, final Range<Long> uniqueKeyValuesRange, final long shardingSize) {
-        Long minimum = uniqueKeyValuesRange.getLowerBound();
-        Long maximum = uniqueKeyValuesRange.getUpperBound();
-        if (0 == tableRecordsCount || null == minimum || null == maximum) {
+        Long lowerBound = uniqueKeyValuesRange.getLowerBound();
+        Long upperBound = uniqueKeyValuesRange.getUpperBound();
+        if (0 == tableRecordsCount || null == lowerBound || null == upperBound) {
             return Collections.singletonList(new IntegerPrimaryKeyIngestPosition(null, null));
         }
         List<IngestPosition> result = new LinkedList<>();
         long splitCount = tableRecordsCount / shardingSize + (tableRecordsCount % shardingSize > 0 ? 1 : 0);
-        long stepSize = BigInteger.valueOf(maximum).subtract(BigInteger.valueOf(minimum)).divide(BigInteger.valueOf(splitCount)).longValue();
-        IntegerRangeSplittingIterator rangeIterator = new IntegerRangeSplittingIterator(minimum, maximum, stepSize);
+        BigInteger stepSize = BigInteger.valueOf(upperBound).subtract(BigInteger.valueOf(lowerBound)).divide(BigInteger.valueOf(splitCount));
+        IntegerRangeSplittingIterator rangeIterator = new IntegerRangeSplittingIterator(BigInteger.valueOf(lowerBound), BigInteger.valueOf(upperBound), stepSize);
         while (rangeIterator.hasNext()) {
-            Range<Long> range = rangeIterator.next();
-            result.add(new IntegerPrimaryKeyIngestPosition(range.getLowerBound(), range.getUpperBound()));
+            Range<BigInteger> range = rangeIterator.next();
+            result.add(new IntegerPrimaryKeyIngestPosition(range.getLowerBound().longValue(), range.getUpperBound().longValue()));
         }
         return result;
     }
