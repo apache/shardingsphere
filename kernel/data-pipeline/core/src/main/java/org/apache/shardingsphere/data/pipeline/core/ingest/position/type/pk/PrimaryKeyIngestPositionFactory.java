@@ -26,6 +26,7 @@ import org.apache.shardingsphere.data.pipeline.core.ingest.position.type.pk.type
 import org.apache.shardingsphere.data.pipeline.core.ingest.position.type.pk.type.StringPrimaryKeyIngestPosition;
 import org.apache.shardingsphere.data.pipeline.core.ingest.position.type.pk.type.UnsupportedKeyIngestPosition;
 
+import java.math.BigInteger;
 import java.util.List;
 
 /**
@@ -50,7 +51,7 @@ public final class PrimaryKeyIngestPositionFactory {
         String endValue = parts.get(2);
         switch (type) {
             case 'i':
-                return new IntegerPrimaryKeyIngestPosition(Strings.isNullOrEmpty(beginValue) ? null : Long.parseLong(beginValue), Strings.isNullOrEmpty(endValue) ? null : Long.parseLong(endValue));
+                return new IntegerPrimaryKeyIngestPosition(Strings.isNullOrEmpty(beginValue) ? null : new BigInteger(beginValue), Strings.isNullOrEmpty(endValue) ? null : new BigInteger(endValue));
             case 's':
                 return new StringPrimaryKeyIngestPosition(beginValue, endValue);
             case 'u':
@@ -69,12 +70,19 @@ public final class PrimaryKeyIngestPositionFactory {
      */
     public static PrimaryKeyIngestPosition<?> newInstance(final Object beginValue, final Object endValue) {
         if (beginValue instanceof Number) {
-            return new IntegerPrimaryKeyIngestPosition(((Number) beginValue).longValue(), null == endValue ? Long.MAX_VALUE : ((Number) endValue).longValue());
+            return new IntegerPrimaryKeyIngestPosition(convertToBigInteger((Number) beginValue), null == endValue ? null : convertToBigInteger((Number) endValue));
         }
         if (beginValue instanceof CharSequence) {
             return new StringPrimaryKeyIngestPosition(beginValue.toString(), null == endValue ? null : endValue.toString());
         }
         // TODO support more types, e.g. byte[] (MySQL varbinary)
         return new UnsupportedKeyIngestPosition();
+    }
+    
+    private static BigInteger convertToBigInteger(final Number number) {
+        if (number instanceof BigInteger) {
+            return (BigInteger) number;
+        }
+        return BigInteger.valueOf(number.longValue());
     }
 }

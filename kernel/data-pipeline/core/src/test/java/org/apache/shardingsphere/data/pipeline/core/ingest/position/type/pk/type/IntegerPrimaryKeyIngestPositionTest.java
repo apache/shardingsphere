@@ -19,6 +19,8 @@ package org.apache.shardingsphere.data.pipeline.core.ingest.position.type.pk.typ
 
 import org.junit.jupiter.api.Test;
 
+import java.math.BigInteger;
+
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
@@ -26,13 +28,13 @@ class IntegerPrimaryKeyIngestPositionTest {
     
     @Test
     void assertToString() {
-        assertThat(new IntegerPrimaryKeyIngestPosition(1L, 100L).toString(), is("i,1,100"));
+        assertThat(new IntegerPrimaryKeyIngestPosition(BigInteger.ONE, BigInteger.valueOf(100L)).toString(), is("i,1,100"));
     }
     
     @Test
     void assertToStringWithNullValue() {
-        assertThat(new IntegerPrimaryKeyIngestPosition(1L, null).toString(), is("i,1,"));
-        assertThat(new IntegerPrimaryKeyIngestPosition(null, 100L).toString(), is("i,,100"));
+        assertThat(new IntegerPrimaryKeyIngestPosition(BigInteger.ONE, null).toString(), is("i,1,"));
+        assertThat(new IntegerPrimaryKeyIngestPosition(null, BigInteger.valueOf(100L)).toString(), is("i,,100"));
         assertThat(new IntegerPrimaryKeyIngestPosition(null, null).toString(), is("i,,"));
     }
 }

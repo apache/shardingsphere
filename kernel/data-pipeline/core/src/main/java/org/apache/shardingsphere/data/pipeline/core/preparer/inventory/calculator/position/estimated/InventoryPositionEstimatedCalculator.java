@@ -89,7 +89,7 @@ public final class InventoryPositionEstimatedCalculator {
         IntegerRangeSplittingIterator rangeIterator = new IntegerRangeSplittingIterator(lowerBound, upperBound, stepSize);
         while (rangeIterator.hasNext()) {
             Range<BigInteger> range = rangeIterator.next();
-            result.add(new IntegerPrimaryKeyIngestPosition(range.getLowerBound().longValue(), range.getUpperBound().longValue()));
+            result.add(new IntegerPrimaryKeyIngestPosition(range.getLowerBound(), range.getUpperBound()));
         }
         return result;
     }

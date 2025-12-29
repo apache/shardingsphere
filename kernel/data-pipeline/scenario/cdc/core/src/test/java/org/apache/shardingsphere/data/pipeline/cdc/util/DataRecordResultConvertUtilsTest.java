@@ -28,6 +28,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
+import java.math.BigInteger;
 import java.util.stream.Stream;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -38,7 +39,7 @@ class DataRecordResultConvertUtilsTest {
     @ParameterizedTest
     @MethodSource("dataChangeTypeTestCases")
     void assertConvertDataRecordToRecordWithNonInsertTypes(final PipelineSQLOperationType operationType, final Record.DataChangeType expectedDataChangeType) throws InvalidProtocolBufferException {
-        DataRecord dataRecord = new DataRecord(operationType, "test_schema", "t_user", new IntegerPrimaryKeyIngestPosition(5L, 10L), 1);
+        DataRecord dataRecord = new DataRecord(operationType, "test_schema", "t_user", new IntegerPrimaryKeyIngestPosition(BigInteger.valueOf(5L), BigInteger.valueOf(10L)), 1);
         dataRecord.addColumn(new NormalColumn("id", 1L, 2L, true, true));
         dataRecord.setCommitTime(123L);
         Record actualRecord = DataRecordResultConvertUtils.convertDataRecordToRecord("logic_db", "test_schema", dataRecord);
