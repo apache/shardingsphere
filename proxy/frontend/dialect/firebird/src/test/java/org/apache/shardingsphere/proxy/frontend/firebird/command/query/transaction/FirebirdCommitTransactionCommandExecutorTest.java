@@ -32,6 +32,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.sql.SQLException;
 import java.util.Collection;
 
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.isA;
 import static org.mockito.Mockito.mockConstruction;
@@ -49,13 +50,21 @@ class FirebirdCommitTransactionCommandExecutorTest {
     
     @Test
     void assertExecute() throws SQLException {
-        when(connectionSession.isAutoCommit()).thenReturn(false);
         try (MockedConstruction<ProxyBackendTransactionManager> mocked = mockConstruction(ProxyBackendTransactionManager.class, (mock, context) -> {
         })) {
-            FirebirdCommitTransactionCommandExecutor executor = new FirebirdCommitTransactionCommandExecutor(packet, connectionSession);
-            Collection<DatabasePacket> actual = executor.execute();
+            Collection<DatabasePacket> actual = new FirebirdCommitTransactionCommandExecutor(packet, connectionSession).execute();
             assertThat(actual.iterator().next(), isA(FirebirdGenericResponsePacket.class));
             verify(mocked.constructed().get(0)).commit();
+        }
+    }
+    
+    @Test
+    void assertExecuteWithAutoCommit() throws SQLException {
+        when(connectionSession.isAutoCommit()).thenReturn(true);
+        try (MockedConstruction<ProxyBackendTransactionManager> mocked = mockConstruction(ProxyBackendTransactionManager.class)) {
+            Collection<DatabasePacket> actual = new FirebirdCommitTransactionCommandExecutor(packet, connectionSession).execute();
+            assertThat(actual.iterator().next(), isA(FirebirdGenericResponsePacket.class));
+            assertTrue(mocked.constructed().isEmpty());
         }
     }
 }
