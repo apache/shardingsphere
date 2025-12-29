@@ -25,6 +25,7 @@ import org.junit.jupiter.api.Test;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class ProxyFlowControlHandlerTest {
@@ -42,6 +43,23 @@ class ProxyFlowControlHandlerTest {
         channel.config().setAutoRead(false);
         channel.pipeline().fireUserEventTriggered(new WriteCompleteEvent());
         assertTrue(channel.config().isAutoRead());
+        assertTrue(eventReceived.get());
+    }
+    
+    @Test
+    void assertUserEventTriggeredWithoutWriteCompleteEvent() {
+        AtomicBoolean eventReceived = new AtomicBoolean(false);
+        Object otherEvent = new Object();
+        EmbeddedChannel channel = new EmbeddedChannel(new ProxyFlowControlHandler(), new ChannelInboundHandlerAdapter() {
+            
+            @Override
+            public void userEventTriggered(final ChannelHandlerContext ctx, final Object event) {
+                eventReceived.set(otherEvent.equals(event));
+            }
+        });
+        channel.config().setAutoRead(false);
+        channel.pipeline().fireUserEventTriggered(otherEvent);
+        assertFalse(channel.config().isAutoRead());
         assertTrue(eventReceived.get());
     }
 }

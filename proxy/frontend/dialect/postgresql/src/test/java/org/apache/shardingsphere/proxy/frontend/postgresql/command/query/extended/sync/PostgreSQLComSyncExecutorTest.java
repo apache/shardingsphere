@@ -27,7 +27,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.isA;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -40,6 +39,15 @@ class PostgreSQLComSyncExecutorTest {
     void assertNewInstance() {
         when(connectionSession.getTransactionStatus()).thenReturn(new TransactionStatus());
         PostgreSQLComSyncExecutor actual = new PostgreSQLComSyncExecutor(connectionSession);
-        assertThat(actual.execute().iterator().next(), is(isA(PostgreSQLReadyForQueryPacket.class)));
+        assertThat(actual.execute().iterator().next(), is(PostgreSQLReadyForQueryPacket.NOT_IN_TRANSACTION));
+    }
+    
+    @Test
+    void assertExecuteInTransaction() {
+        TransactionStatus transactionStatus = new TransactionStatus();
+        transactionStatus.setInTransaction(true);
+        when(connectionSession.getTransactionStatus()).thenReturn(transactionStatus);
+        PostgreSQLComSyncExecutor actual = new PostgreSQLComSyncExecutor(connectionSession);
+        assertThat(actual.execute().iterator().next(), is(PostgreSQLReadyForQueryPacket.IN_TRANSACTION));
     }
 }

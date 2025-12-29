@@ -43,4 +43,24 @@ class MySQLErrorPacketFactoryTest {
         assertThat(actual.getSqlState(), is(XOpenSQLState.GENERAL_ERROR.getValue()));
         assertThat(actual.getErrorMessage(), is("Unknown exception." + System.lineSeparator() + "More details: java.lang.RuntimeException: No reason"));
     }
+    
+    @Test
+    void assertNewInstanceWithoutErrorMessageUsesNextExceptionMessage() {
+        SQLException cause = new SQLException("");
+        cause.setNextException(new SQLException("Next reason"));
+        MySQLErrPacket actual = MySQLErrorPacketFactory.newInstance(cause);
+        assertThat(actual.getErrorCode(), is(1815));
+        assertThat(actual.getSqlState(), is(XOpenSQLState.GENERAL_ERROR.getValue()));
+        assertThat(actual.getErrorMessage(), is("Internal error: Next reason"));
+    }
+    
+    @Test
+    void assertNewInstanceWithNextExceptionButUsesCurrentMessage() {
+        SQLException cause = new SQLException("Primary reason");
+        cause.setNextException(new SQLException("Next reason"));
+        MySQLErrPacket actual = MySQLErrorPacketFactory.newInstance(cause);
+        assertThat(actual.getErrorCode(), is(1815));
+        assertThat(actual.getSqlState(), is(XOpenSQLState.GENERAL_ERROR.getValue()));
+        assertThat(actual.getErrorMessage(), is("Internal error: Primary reason"));
+    }
 }
