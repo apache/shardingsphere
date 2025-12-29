@@ -20,6 +20,8 @@ package org.apache.shardingsphere.data.pipeline.core.preparer.inventory.calculat
 import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.inventory.query.Range;
 import org.junit.jupiter.api.Test;
 
+import java.math.BigInteger;
+
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -27,11 +29,11 @@ class InventoryDataSparsenessCalculatorTest {
     
     @Test
     void assertIsIntegerUniqueKeyDataSparse() {
-        assertFalse(InventoryDataSparsenessCalculator.isIntegerUniqueKeyDataSparse(1L, Range.closed(1L, 1000000L)));
-        assertFalse(InventoryDataSparsenessCalculator.isIntegerUniqueKeyDataSparse(1000000L, Range.closed(null, 1000000L)));
-        assertFalse(InventoryDataSparsenessCalculator.isIntegerUniqueKeyDataSparse(1000000L, Range.closed(1L, null)));
-        assertFalse(InventoryDataSparsenessCalculator.isIntegerUniqueKeyDataSparse(1000000L, Range.closed(1L, 1494000L)));
-        assertTrue(InventoryDataSparsenessCalculator.isIntegerUniqueKeyDataSparse(1000000L, Range.closed(1L, 1495000L)));
-        assertTrue(InventoryDataSparsenessCalculator.isIntegerUniqueKeyDataSparse(1000000L, Range.closed(1L, 1500000L)));
+        assertFalse(InventoryDataSparsenessCalculator.isIntegerUniqueKeyDataSparse(1L, Range.closed(BigInteger.ONE, BigInteger.valueOf(1000000L))));
+        assertFalse(InventoryDataSparsenessCalculator.isIntegerUniqueKeyDataSparse(1000000L, Range.closed(null, BigInteger.valueOf(1000000L))));
+        assertFalse(InventoryDataSparsenessCalculator.isIntegerUniqueKeyDataSparse(1000000L, Range.closed(BigInteger.ONE, null)));
+        assertFalse(InventoryDataSparsenessCalculator.isIntegerUniqueKeyDataSparse(1000000L, Range.closed(BigInteger.ONE, BigInteger.valueOf(1494000L))));
+        assertTrue(InventoryDataSparsenessCalculator.isIntegerUniqueKeyDataSparse(1000000L, Range.closed(BigInteger.ONE, BigInteger.valueOf(1495000L))));
+        assertTrue(InventoryDataSparsenessCalculator.isIntegerUniqueKeyDataSparse(1000000L, Range.closed(BigInteger.ONE, BigInteger.valueOf(1500000L))));
     }
 }

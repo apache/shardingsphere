@@ -52,7 +52,7 @@ public final class InventoryPositionEstimatedCalculator {
      * @return unique key values range
      * @throws SplitPipelineJobByUniqueKeyException if an error occurs while getting unique key values range
      */
-    public static Range<Long> getIntegerUniqueKeyValuesRange(final QualifiedTable qualifiedTable, final String uniqueKey, final PipelineDataSource dataSource) {
+    public static Range<BigInteger> getIntegerUniqueKeyValuesRange(final QualifiedTable qualifiedTable, final String uniqueKey, final PipelineDataSource dataSource) {
         PipelinePrepareSQLBuilder pipelineSQLBuilder = new PipelinePrepareSQLBuilder(dataSource.getDatabaseType());
         String sql = pipelineSQLBuilder.buildUniqueKeyMinMaxValuesSQL(qualifiedTable.getSchemaName(), qualifiedTable.getTableName(), uniqueKey);
         try (
@@ -60,7 +60,7 @@ public final class InventoryPositionEstimatedCalculator {
                 Statement statement = connection.createStatement();
                 ResultSet resultSet = statement.executeQuery(sql)) {
             resultSet.next();
-            return Range.closed(resultSet.getLong(1), resultSet.getLong(2));
+            return Range.closed(resultSet.getBigDecimal(1).toBigInteger(), resultSet.getBigDecimal(2).toBigInteger());
         } catch (final SQLException ex) {
             throw new SplitPipelineJobByUniqueKeyException(qualifiedTable.getTableName(), uniqueKey, ex);
         }
@@ -74,16 +74,16 @@ public final class InventoryPositionEstimatedCalculator {
      * @param shardingSize sharding size
      * @return positions
      */
-    public static List<IngestPosition> getIntegerPositions(final long tableRecordsCount, final Range<Long> uniqueKeyValuesRange, final long shardingSize) {
-        Long lowerBound = uniqueKeyValuesRange.getLowerBound();
-        Long upperBound = uniqueKeyValuesRange.getUpperBound();
+    public static List<IngestPosition> getIntegerPositions(final long tableRecordsCount, final Range<BigInteger> uniqueKeyValuesRange, final long shardingSize) {
+        BigInteger lowerBound = uniqueKeyValuesRange.getLowerBound();
+        BigInteger upperBound = uniqueKeyValuesRange.getUpperBound();
         if (0 == tableRecordsCount || null == lowerBound || null == upperBound) {
             return Collections.singletonList(new IntegerPrimaryKeyIngestPosition(null, null));
         }
         List<IngestPosition> result = new LinkedList<>();
         long splitCount = tableRecordsCount / shardingSize + (tableRecordsCount % shardingSize > 0 ? 1 : 0);
-        BigInteger stepSize = BigInteger.valueOf(upperBound).subtract(BigInteger.valueOf(lowerBound)).divide(BigInteger.valueOf(splitCount));
-        IntegerRangeSplittingIterator rangeIterator = new IntegerRangeSplittingIterator(BigInteger.valueOf(lowerBound), BigInteger.valueOf(upperBound), stepSize);
+        BigInteger stepSize = upperBound.subtract(lowerBound).divide(BigInteger.valueOf(splitCount));
+        IntegerRangeSplittingIterator rangeIterator = new IntegerRangeSplittingIterator(lowerBound, upperBound, stepSize);
         while (rangeIterator.hasNext()) {
             Range<BigInteger> range = rangeIterator.next();
             result.add(new IntegerPrimaryKeyIngestPosition(range.getLowerBound().longValue(), range.getUpperBound().longValue()));
