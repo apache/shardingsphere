@@ -23,6 +23,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.inventory.query.Range;
 
 import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.math.RoundingMode;
 
 /**
@@ -43,12 +44,12 @@ public final class InventoryDataSparsenessCalculator {
      * @param uniqueKeyValuesRange unique key values range
      * @return true if sparse
      */
-    public static boolean isIntegerUniqueKeyDataSparse(final long tableRecordsCount, final Range<Long> uniqueKeyValuesRange) {
+    public static boolean isIntegerUniqueKeyDataSparse(final long tableRecordsCount, final Range<BigInteger> uniqueKeyValuesRange) {
         boolean result = false;
-        Long lowerBound = uniqueKeyValuesRange.getLowerBound();
-        Long upperBound = uniqueKeyValuesRange.getUpperBound();
+        BigInteger lowerBound = uniqueKeyValuesRange.getLowerBound();
+        BigInteger upperBound = uniqueKeyValuesRange.getUpperBound();
         if (tableRecordsCount >= EXACT_SPLITTING_RECORDS_COUNT_THRESHOLD && null != lowerBound && null != upperBound) {
-            BigDecimal multiple = BigDecimal.valueOf(upperBound).subtract(BigDecimal.valueOf(lowerBound)).add(BigDecimal.ONE)
+            BigDecimal multiple = new BigDecimal(upperBound).subtract(new BigDecimal(lowerBound)).add(BigDecimal.ONE)
                     .divide(BigDecimal.valueOf(tableRecordsCount), 2, RoundingMode.HALF_UP);
             if (multiple.compareTo(MULTIPLE_THRESHOLD) >= 0) {
                 log.info("Table is sparse for integer unique key, table records count: {}, unique key values range: {}, multiple: {}", tableRecordsCount, uniqueKeyValuesRange, multiple);

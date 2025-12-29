@@ -32,6 +32,7 @@ import org.apache.shardingsphere.database.connector.core.metadata.database.metad
 import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.metadata.database.schema.QualifiedTable;
 
+import java.math.BigInteger;
 import java.util.Collections;
 import java.util.List;
 
@@ -70,7 +71,7 @@ public final class InventoryPositionCalculator {
     
     private List<IngestPosition> getIntegerPositions() {
         String uniqueKey = uniqueKeyColumns.get(0).getName();
-        Range<Long> uniqueKeyValuesRange = InventoryPositionEstimatedCalculator.getIntegerUniqueKeyValuesRange(qualifiedTable, uniqueKey, dataSource);
+        Range<BigInteger> uniqueKeyValuesRange = InventoryPositionEstimatedCalculator.getIntegerUniqueKeyValuesRange(qualifiedTable, uniqueKey, dataSource);
         if (InventoryDataSparsenessCalculator.isIntegerUniqueKeyDataSparse(tableRecordsCount, uniqueKeyValuesRange)) {
             return InventoryPositionExactCalculator.getPositions(qualifiedTable, uniqueKey, shardingSize, dataSource, new IntegerPositionHandler());
         }
