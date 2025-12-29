@@ -70,7 +70,7 @@ jobs:
     runs-on: ${{ needs.global-environment.outputs.GLOBAL_RUNS_ON }}
     timeout-minutes: 200
     strategy:
-      max-parallel: 20
+      max-parallel: 15
       fail-fast: false
       matrix:
         adapter: [ proxy, jdbc ]

@@ -37,7 +37,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     timeout-minutes: 90
     strategy:
-      max-parallel: 20
+      max-parallel: 15
       fail-fast: false
       matrix:
         os: [ ubuntu-latest, macos-latest, windows-latest ]
@@ -70,7 +70,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     timeout-minutes: 150
     strategy:
-      max-parallel: 20
+      max-parallel: 15
       fail-fast: false
       matrix:
         os: [ ubuntu-latest, macos-latest, windows-latest ]
@@ -107,7 +107,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     timeout-minutes: 90
     strategy:
-      max-parallel: 20
+      max-parallel: 15
       fail-fast: false
       matrix:
         os: [ ubuntu-latest, windows-latest ]
