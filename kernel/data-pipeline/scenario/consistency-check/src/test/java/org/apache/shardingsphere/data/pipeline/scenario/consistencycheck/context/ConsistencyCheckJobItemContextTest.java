@@ -27,6 +27,8 @@ import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.junit.jupiter.api.Test;
 
+import java.math.BigInteger;
+
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.is;
@@ -50,17 +52,21 @@ class ConsistencyCheckJobItemContextTest {
     @Test
     void assertConstructWithNonEmptyValues() {
         ConsistencyCheckJobItemProgress jobItemProgress = new ConsistencyCheckJobItemProgress(TABLE, null, 0L, 10L, null, null, "H2");
-        jobItemProgress.getTableCheckRangePositions().add(new TableCheckRangePosition(0, DATA_NODE, TABLE, new IntegerPrimaryKeyIngestPosition(1L, 100L),
-                new IntegerPrimaryKeyIngestPosition(1L, 101L), null, 11, 11, false, null));
-        jobItemProgress.getTableCheckRangePositions().add(new TableCheckRangePosition(1, DATA_NODE, TABLE, new IntegerPrimaryKeyIngestPosition(101L, 200L),
-                new IntegerPrimaryKeyIngestPosition(101L, 203L), null, 132, 132, false, null));
+        jobItemProgress.getTableCheckRangePositions().add(new TableCheckRangePosition(0, DATA_NODE, TABLE, createIntegerPosition(1L, 100L),
+                createIntegerPosition(1L, 101L), null, 11, 11, false, null));
+        jobItemProgress.getTableCheckRangePositions().add(new TableCheckRangePosition(1, DATA_NODE, TABLE, createIntegerPosition(101L, 200L),
+                createIntegerPosition(101L, 203L), null, 132, 132, false, null));
         ConsistencyCheckJobItemContext actual = new ConsistencyCheckJobItemContext(new ConsistencyCheckJobConfiguration("", "", "DATA_MATCH", null, databaseType),
                 0, JobStatus.RUNNING, jobItemProgress);
         assertThat(actual.getProgressContext().getTableCheckRangePositions().size(), is(2));
         assertTableCheckRangePosition(actual.getProgressContext().getTableCheckRangePositions().get(0),
-                new TableCheckRangePosition(0, DATA_NODE, TABLE, new IntegerPrimaryKeyIngestPosition(1L, 100L), new IntegerPrimaryKeyIngestPosition(1L, 101L), null, 11, 11, false, null));
+                new TableCheckRangePosition(0, DATA_NODE, TABLE, createIntegerPosition(1L, 100L), createIntegerPosition(1L, 101L), null, 11, 11, false, null));
         assertTableCheckRangePosition(actual.getProgressContext().getTableCheckRangePositions().get(1),
-                new TableCheckRangePosition(1, DATA_NODE, TABLE, new IntegerPrimaryKeyIngestPosition(101L, 200L), new IntegerPrimaryKeyIngestPosition(101L, 203L), null, 132, 132, false, null));
+                new TableCheckRangePosition(1, DATA_NODE, TABLE, createIntegerPosition(101L, 200L), createIntegerPosition(101L, 203L), null, 132, 132, false, null));
+    }
+    
+    private IntegerPrimaryKeyIngestPosition createIntegerPosition(final long beginValue, final long endValue) {
+        return new IntegerPrimaryKeyIngestPosition(BigInteger.valueOf(beginValue), BigInteger.valueOf(endValue));
     }
     
     private void assertTableCheckRangePosition(final TableCheckRangePosition actual, final TableCheckRangePosition expected) {

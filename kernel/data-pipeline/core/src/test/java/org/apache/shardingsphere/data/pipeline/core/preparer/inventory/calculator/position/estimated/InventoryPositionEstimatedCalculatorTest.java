@@ -35,8 +35,12 @@ class InventoryPositionEstimatedCalculatorTest {
     void assertGetIntegerPositions() {
         List<IngestPosition> actualPositions = InventoryPositionEstimatedCalculator.getIntegerPositions(200L, Range.closed(BigInteger.ONE, BigInteger.valueOf(600L)), 100L);
         assertThat(actualPositions.size(), is(2));
-        assertPosition(actualPositions.get(0), new IntegerPrimaryKeyIngestPosition(1L, 300L));
-        assertPosition(actualPositions.get(1), new IntegerPrimaryKeyIngestPosition(301L, 600L));
+        assertPosition(actualPositions.get(0), createIntegerPosition(1L, 300L));
+        assertPosition(actualPositions.get(1), createIntegerPosition(301L, 600L));
+    }
+    
+    private IntegerPrimaryKeyIngestPosition createIntegerPosition(final long beginValue, final long endValue) {
+        return new IntegerPrimaryKeyIngestPosition(BigInteger.valueOf(beginValue), BigInteger.valueOf(endValue));
     }
     
     private void assertPosition(final IngestPosition actual, final IntegerPrimaryKeyIngestPosition expected) {
@@ -63,7 +67,7 @@ class InventoryPositionEstimatedCalculatorTest {
     void assertGetIntegerPositionsWithTheSameMinMax() {
         List<IngestPosition> actualPositions = InventoryPositionEstimatedCalculator.getIntegerPositions(200L, Range.closed(BigInteger.valueOf(5L), BigInteger.valueOf(5L)), 100L);
         assertThat(actualPositions.size(), is(1));
-        assertPosition(actualPositions.get(0), new IntegerPrimaryKeyIngestPosition(5L, 5L));
+        assertPosition(actualPositions.get(0), createIntegerPosition(5L, 5L));
     }
     
     @Test
@@ -74,7 +78,7 @@ class InventoryPositionEstimatedCalculatorTest {
         BigInteger upperBound = BigInteger.valueOf(Long.MAX_VALUE);
         List<IngestPosition> actualPositions = InventoryPositionEstimatedCalculator.getIntegerPositions(tableRecordsCount, Range.closed(lowerBound, upperBound), shardingSize);
         assertThat(actualPositions.size(), is(2));
-        assertPosition(actualPositions.get(0), new IntegerPrimaryKeyIngestPosition(lowerBound.longValue(), 0L));
-        assertPosition(actualPositions.get(1), new IntegerPrimaryKeyIngestPosition(1L, upperBound.longValue()));
+        assertPosition(actualPositions.get(0), createIntegerPosition(lowerBound.longValue(), 0L));
+        assertPosition(actualPositions.get(1), createIntegerPosition(1L, upperBound.longValue()));
     }
 }

@@ -36,6 +36,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import javax.sql.DataSource;
+import java.math.BigInteger;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -99,8 +100,8 @@ class InventoryTaskSplitterTest {
         List<InventoryTask> actual = inventoryTaskSplitter.split(jobItemContext);
         assertThat(actual.size(), is(10));
         InventoryTask task = actual.get(9);
-        assertThat(((IntegerPrimaryKeyIngestPosition) task.getTaskProgress().getPosition()).getBeginValue(), is(91L));
-        assertThat(((IntegerPrimaryKeyIngestPosition) task.getTaskProgress().getPosition()).getEndValue(), is(100L));
+        assertThat(((IntegerPrimaryKeyIngestPosition) task.getTaskProgress().getPosition()).getBeginValue(), is(BigInteger.valueOf(91L)));
+        assertThat(((IntegerPrimaryKeyIngestPosition) task.getTaskProgress().getPosition()).getEndValue(), is(BigInteger.valueOf(100L)));
     }
     
     @Test
@@ -110,8 +111,8 @@ class InventoryTaskSplitterTest {
         assertThat(actual.size(), is(1));
         assertThat(actual.get(0).getTaskId(), is("ds_0.t_order#0"));
         IntegerPrimaryKeyIngestPosition keyPosition = (IntegerPrimaryKeyIngestPosition) actual.get(0).getTaskProgress().getPosition();
-        assertThat(keyPosition.getBeginValue(), is(1L));
-        assertThat(keyPosition.getEndValue(), is(999L));
+        assertThat(keyPosition.getBeginValue(), is(BigInteger.ONE));
+        assertThat(keyPosition.getEndValue(), is(BigInteger.valueOf(999L)));
     }
     
     @Test

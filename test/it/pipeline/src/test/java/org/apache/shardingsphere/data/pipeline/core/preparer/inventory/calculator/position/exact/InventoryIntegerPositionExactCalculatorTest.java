@@ -29,6 +29,7 @@ import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
+import java.math.BigInteger;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
@@ -84,10 +85,14 @@ class InventoryIntegerPositionExactCalculatorTest {
     void assertGetPositionsWithOrderIdUniqueKey() {
         List<IngestPosition> actual = InventoryPositionExactCalculator.getPositions(new QualifiedTable(null, "t_order"), "order_id", 3, dataSource, new IntegerPositionHandler());
         assertThat(actual.size(), is(4));
-        assertIntegerPrimaryKeyIngestPosition0(actual.get(0), new IntegerPrimaryKeyIngestPosition(1L, 3L));
-        assertIntegerPrimaryKeyIngestPosition0(actual.get(1), new IntegerPrimaryKeyIngestPosition(4L, 6L));
-        assertIntegerPrimaryKeyIngestPosition0(actual.get(2), new IntegerPrimaryKeyIngestPosition(7L, 9L));
-        assertIntegerPrimaryKeyIngestPosition0(actual.get(3), new IntegerPrimaryKeyIngestPosition(10L, 11L));
+        assertIntegerPrimaryKeyIngestPosition0(actual.get(0), createIntegerPosition(1L, 3L));
+        assertIntegerPrimaryKeyIngestPosition0(actual.get(1), createIntegerPosition(4L, 6L));
+        assertIntegerPrimaryKeyIngestPosition0(actual.get(2), createIntegerPosition(7L, 9L));
+        assertIntegerPrimaryKeyIngestPosition0(actual.get(3), createIntegerPosition(10L, 11L));
+    }
+    
+    private IntegerPrimaryKeyIngestPosition createIntegerPosition(final long beginValue, final long endValue) {
+        return new IntegerPrimaryKeyIngestPosition(BigInteger.valueOf(beginValue), BigInteger.valueOf(endValue));
     }
     
     private void assertIntegerPrimaryKeyIngestPosition0(final IngestPosition actual, final IntegerPrimaryKeyIngestPosition expected) {
@@ -102,7 +107,7 @@ class InventoryIntegerPositionExactCalculatorTest {
     void assertGetPositionsWithMultiColumnUniqueKeys() {
         List<IngestPosition> actual = InventoryPositionExactCalculator.getPositions(new QualifiedTable(null, "t_order"), "user_id", 3, dataSource, new IntegerPositionHandler());
         assertThat(actual.size(), is(2));
-        assertIntegerPrimaryKeyIngestPosition0(actual.get(0), new IntegerPrimaryKeyIngestPosition(1L, 3L));
-        assertIntegerPrimaryKeyIngestPosition0(actual.get(1), new IntegerPrimaryKeyIngestPosition(4L, 6L));
+        assertIntegerPrimaryKeyIngestPosition0(actual.get(0), createIntegerPosition(1L, 3L));
+        assertIntegerPrimaryKeyIngestPosition0(actual.get(1), createIntegerPosition(4L, 6L));
     }
 }

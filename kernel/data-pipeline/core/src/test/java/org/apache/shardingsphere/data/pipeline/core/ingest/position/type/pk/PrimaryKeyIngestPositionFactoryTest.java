@@ -22,6 +22,7 @@ import org.apache.shardingsphere.data.pipeline.core.ingest.position.type.pk.type
 import org.apache.shardingsphere.data.pipeline.core.ingest.position.type.pk.type.UnsupportedKeyIngestPosition;
 import org.junit.jupiter.api.Test;
 
+import java.math.BigInteger;
 import java.util.Collections;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
@@ -34,9 +35,9 @@ class PrimaryKeyIngestPositionFactoryTest {
     
     @Test
     void assertNewInstanceWithIntegerPrimaryKeyIngestPosition() {
-        assertIntegerPrimaryKeyIngestPosition0(PrimaryKeyIngestPositionFactory.newInstance("i,100,200"), new IntegerPrimaryKeyIngestPosition(100L, 200L));
-        assertIntegerPrimaryKeyIngestPosition0(PrimaryKeyIngestPositionFactory.newInstance("i,100,"), new IntegerPrimaryKeyIngestPosition(100L, null));
-        assertIntegerPrimaryKeyIngestPosition0(PrimaryKeyIngestPositionFactory.newInstance("i,,200"), new IntegerPrimaryKeyIngestPosition(null, 200L));
+        assertIntegerPrimaryKeyIngestPosition0(PrimaryKeyIngestPositionFactory.newInstance("i,100,200"), new IntegerPrimaryKeyIngestPosition(BigInteger.valueOf(100L), BigInteger.valueOf(200L)));
+        assertIntegerPrimaryKeyIngestPosition0(PrimaryKeyIngestPositionFactory.newInstance("i,100,"), new IntegerPrimaryKeyIngestPosition(BigInteger.valueOf(100L), null));
+        assertIntegerPrimaryKeyIngestPosition0(PrimaryKeyIngestPositionFactory.newInstance("i,,200"), new IntegerPrimaryKeyIngestPosition(null, BigInteger.valueOf(200L)));
         assertIntegerPrimaryKeyIngestPosition0(PrimaryKeyIngestPositionFactory.newInstance("i,,"), new IntegerPrimaryKeyIngestPosition(null, null));
     }
     
@@ -74,16 +75,16 @@ class PrimaryKeyIngestPositionFactoryTest {
     void assertNewInstanceWithNumberRange() {
         IntegerPrimaryKeyIngestPosition actual = (IntegerPrimaryKeyIngestPosition) PrimaryKeyIngestPositionFactory.newInstance(100, 200);
         assertThat(actual.getType(), is('i'));
-        assertThat(actual.getBeginValue(), is(100L));
-        assertThat(actual.getEndValue(), is(200L));
+        assertThat(actual.getBeginValue(), is(BigInteger.valueOf(100L)));
+        assertThat(actual.getEndValue(), is(BigInteger.valueOf(200L)));
     }
     
     @Test
     void assertNewInstanceWithNumberNullEndRange() {
         IntegerPrimaryKeyIngestPosition actual = (IntegerPrimaryKeyIngestPosition) PrimaryKeyIngestPositionFactory.newInstance(100, null);
         assertThat(actual.getType(), is('i'));
-        assertThat(actual.getBeginValue(), is(100L));
-        assertThat(actual.getEndValue(), is(Long.MAX_VALUE));
+        assertThat(actual.getBeginValue(), is(BigInteger.valueOf(100L)));
+        assertNull(actual.getEndValue());
     }
     
     @Test
