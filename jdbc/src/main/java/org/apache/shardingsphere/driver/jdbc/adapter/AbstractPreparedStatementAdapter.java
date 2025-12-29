@@ -300,7 +300,7 @@ public abstract class AbstractPreparedStatementAdapter extends AbstractUnsupport
             }
         }
     }
-
+    
     private void handleOracleInputStreamSetBlob(final PreparedStatement preparedStatement, final int index, final Object each) throws SQLException {
         try {
             long length = -1;
