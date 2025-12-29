@@ -283,35 +283,37 @@ public abstract class AbstractPreparedStatementAdapter extends AbstractUnsupport
         } catch (SQLException e) {
             dbProductName = null;
         }
-        addParameters(params,dbProductName);
+        addParameters(params, dbProductName);
         for (PreparedStatementInvocationReplayer each : setParameterMethodInvocations) {
             each.replayOn(preparedStatement);
         }
     }
     
-    private void addParameters(final List<Object> params,String dbProductName) throws SQLException {
+    private void addParameters(final List<Object> params, String dbProductName) throws SQLException {
         int i = 0;
         for (Object each : params) {
             int index = ++i;
-            if("Oracle".equals(dbProductName) && each instanceof InputStream){
-                setParameterMethodInvocations.add(preparedStatement -> {
-                    try {
-                        long length = -1;
-                        if (each instanceof ByteArrayInputStream) {
-                            length = ((ByteArrayInputStream) each).available();
-                        }
-                        if (length > 0) {
-                            preparedStatement.setBlob(index, (InputStream) each, length);
-                        } else {
-                            preparedStatement.setBlob(index, (InputStream) each);
-                        }
-                    } catch (SQLException e) {
-                        preparedStatement.setObject(index, each);
-                    }
-                });
-            }else{
+            if ("Oracle".equals(dbProductName) && each instanceof InputStream) {
+                setParameterMethodInvocations.add(preparedStatement -> handleOracleInputStreamSetBlob(preparedStatement, index, each));
+            } else {
                 setParameterMethodInvocations.add(preparedStatement -> preparedStatement.setObject(index, each));
             }
+        }
+    }
+
+    private void handleOracleInputStreamSetBlob(final PreparedStatement preparedStatement, final int index, final Object each) throws SQLException {
+        try {
+            long length = -1;
+            if (each instanceof ByteArrayInputStream) {
+                length = ((ByteArrayInputStream) each).available();
+            }
+            if (length > 0) {
+                preparedStatement.setBlob(index, (InputStream) each, length);
+            } else {
+                preparedStatement.setBlob(index, (InputStream) each);
+            }
+        } catch (final SQLException ex) {
+            preparedStatement.setObject(index, each);
         }
     }
     
