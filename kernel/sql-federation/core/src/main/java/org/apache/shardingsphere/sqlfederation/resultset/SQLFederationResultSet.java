@@ -98,8 +98,8 @@ public final class SQLFederationResultSet extends AbstractUnsupportedOperationSQ
         for (int columnIndex = 1; columnIndex <= expandProjections.size(); columnIndex++) {
             Projection projection = expandProjections.get(columnIndex - 1);
             String columnLabel = projection.getColumnLabel();
-            columnLabelAndIndexes.put(columnLabel, columnIndex);
-            indexAndColumnLabels.put(columnIndex, columnLabel);
+            columnLabelAndIndexes.putIfAbsent(columnLabel, columnIndex);
+            indexAndColumnLabels.putIfAbsent(columnIndex, columnLabel);
         }
     }
     
