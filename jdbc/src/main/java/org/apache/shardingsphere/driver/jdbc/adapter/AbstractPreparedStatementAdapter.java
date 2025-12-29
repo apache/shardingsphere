@@ -280,7 +280,7 @@ public abstract class AbstractPreparedStatementAdapter extends AbstractUnsupport
         String dbProductName = null;
         try {
             dbProductName = preparedStatement.getConnection().getMetaData().getDatabaseProductName();
-        } catch (SQLException e) {
+        } catch (final SQLException ex) {
             dbProductName = null;
         }
         addParameters(params, dbProductName);
@@ -289,7 +289,7 @@ public abstract class AbstractPreparedStatementAdapter extends AbstractUnsupport
         }
     }
     
-    private void addParameters(final List<Object> params, String dbProductName) throws SQLException {
+    private void addParameters(final List<Object> params, final String dbProductName) throws SQLException {
         int i = 0;
         for (Object each : params) {
             int index = ++i;
