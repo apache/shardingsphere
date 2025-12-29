@@ -39,7 +39,7 @@ public final class IntegerPositionHandler implements DataTypePositionHandler<Lon
     }
     
     @Override
-    public IntegerPrimaryKeyIngestPosition createIngestPosition(final Long lowerValue, final Long upperValue) {
-        return new IntegerPrimaryKeyIngestPosition(lowerValue, upperValue);
+    public IntegerPrimaryKeyIngestPosition createIngestPosition(final Long lowerBound, final Long upperBound) {
+        return new IntegerPrimaryKeyIngestPosition(lowerBound, upperBound);
     }
 }
