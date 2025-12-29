@@ -93,7 +93,6 @@
     <sql-case id="create_index_with_deferred_rebuild_and_in_table" value="CREATE INDEX idx_order_customer ON TABLE orders (customer_id) AS 'org.apache.hadoop.hive.ql.index.compact.CompactIndexHandler' WITH DEFERRED REBUILD IN TABLE idx_orders_customer" db-types="Hive" />
     <sql-case id="create_index_with_location_tblproperties_comment" value="CREATE INDEX idx_product_quantity ON TABLE inventory (quantity) AS 'org.apache.hadoop.hive.ql.index.compact.CompactIndexHandler' LOCATION '/user/hive/indexes/inventory_quantity_idx' TBLPROPERTIES ('storage_policy' = 'hot', 'compression' = 'lzo') COMMENT 'Index on inventory quantity for stock level queries'" db-types="Hive" />
     <sql-case id="create_index_doris_using_inverted" value="CREATE INDEX index1 ON table1 (column1) USING INVERTED" db-types="Doris" />
-    <sql-case id="create_index_doris_using_inverted_without_column" value="CREATE INDEX index1 ON table1 USING INVERTED" db-types="Doris" />
     <sql-case id="create_index_doris_using_ngram_bf" value="CREATE INDEX index1 ON table1 (column1) USING NGRAM_BF" db-types="Doris" />
     <sql-case id="create_index_doris_using_ann" value="CREATE INDEX index1 ON table1 (column1) USING ANN" db-types="Doris" />
     <sql-case id="create_index_doris_if_not_exists" value="CREATE INDEX IF NOT EXISTS index1 ON table1 (column1) USING INVERTED" db-types="Doris" />

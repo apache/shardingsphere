@@ -412,13 +412,6 @@
         <column start-index="31" stop-index="37" name="column1" />
     </create-index>
 
-    <create-index sql-case-id="create_index_doris_using_inverted_without_column" index-type="INVERTED">
-        <index name="index1" start-index="13" stop-index="18" />
-        <table>
-            <simple-table name="table1" start-index="23" stop-index="28" />
-        </table>
-    </create-index>
-
     <create-index sql-case-id="create_index_doris_using_ngram_bf" index-type="NGRAM_BF">
         <index name="index1" start-index="13" stop-index="18" />
         <table>

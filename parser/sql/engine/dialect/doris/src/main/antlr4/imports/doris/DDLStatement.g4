@@ -248,7 +248,7 @@ truncateTable
     ;
 
 createIndex
-    : CREATE createIndexSpecification? INDEX ifNotExists? indexName ON tableName keyListWithExpression? (indexTypeClause | dorisIndexTypeClause)? dorisIndexOption? propertiesClause? commentClause? algorithmOptionAndLockOption?
+    : CREATE createIndexSpecification? INDEX ifNotExists? indexName ON tableName keyListWithExpression (indexTypeClause | dorisIndexTypeClause)? dorisIndexOption? propertiesClause? commentClause? algorithmOptionAndLockOption?
     ;
 
 dorisIndexTypeClause

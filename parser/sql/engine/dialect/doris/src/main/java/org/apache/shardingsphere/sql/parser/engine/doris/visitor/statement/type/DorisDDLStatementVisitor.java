@@ -744,9 +744,7 @@ public final class DorisDDLStatementVisitor extends DorisStatementVisitor implem
         result.setIfNotExists(null != ctx.ifNotExists());
         IndexNameSegment indexName = new IndexNameSegment(ctx.indexName().start.getStartIndex(), ctx.indexName().stop.getStopIndex(), new IdentifierValue(ctx.indexName().getText()));
         result.setIndex(new IndexSegment(ctx.indexName().start.getStartIndex(), ctx.indexName().stop.getStopIndex(), indexName));
-        if (null != ctx.keyListWithExpression()) {
-            result.getColumns().addAll(((CollectionValue) visit(ctx.keyListWithExpression())).getValue());
-        }
+        result.getColumns().addAll(((CollectionValue) visit(ctx.keyListWithExpression())).getValue());
         if (null != ctx.dorisIndexTypeClause()) {
             result.setIndexType(ctx.dorisIndexTypeClause().getStop().getText());
         }
