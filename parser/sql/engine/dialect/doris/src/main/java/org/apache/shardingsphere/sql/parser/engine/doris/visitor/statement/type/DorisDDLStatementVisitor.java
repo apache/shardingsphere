@@ -23,7 +23,6 @@ import org.antlr.v4.runtime.misc.Interval;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.api.ASTNode;
 import org.apache.shardingsphere.sql.parser.api.visitor.statement.type.DDLStatementVisitor;
-import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.AlterCatalogContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ResumeJobContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.AddColumnContext;
@@ -117,6 +116,7 @@ import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.RenameR
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.RenamePartitionContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.AlterStoragePolicyContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.PropertiesClauseContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.CreateEncryptKeyContext;
 import org.apache.shardingsphere.sql.parser.engine.doris.visitor.statement.DorisStatementVisitor;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.AlgorithmOption;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.LockTableOption;
@@ -1263,7 +1263,7 @@ public final class DorisDDLStatementVisitor extends DorisStatementVisitor implem
     }
     
     @Override
-    public ASTNode visitCreateEncryptKey(final DorisStatementParser.CreateEncryptKeyContext ctx) {
+    public ASTNode visitCreateEncryptKey(final CreateEncryptKeyContext ctx) {
         return new CreateEncryptKeyStatement(getDatabaseType());
     }
     
