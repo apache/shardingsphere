@@ -21,13 +21,13 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSource;
 import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.inventory.query.Range;
 import org.apache.shardingsphere.data.pipeline.core.ingest.position.IngestPosition;
-import org.apache.shardingsphere.data.pipeline.core.ingest.position.type.pk.type.StringPrimaryKeyIngestPosition;
 import org.apache.shardingsphere.data.pipeline.core.ingest.position.type.pk.type.UnsupportedKeyIngestPosition;
 import org.apache.shardingsphere.data.pipeline.core.metadata.model.PipelineColumnMetaData;
 import org.apache.shardingsphere.data.pipeline.core.preparer.inventory.calculator.InventoryDataSparsenessCalculator;
 import org.apache.shardingsphere.data.pipeline.core.preparer.inventory.calculator.position.estimated.InventoryPositionEstimatedCalculator;
 import org.apache.shardingsphere.data.pipeline.core.preparer.inventory.calculator.position.exact.IntegerPositionHandler;
 import org.apache.shardingsphere.data.pipeline.core.preparer.inventory.calculator.position.exact.InventoryPositionExactCalculator;
+import org.apache.shardingsphere.data.pipeline.core.preparer.inventory.calculator.position.exact.StringPositionHandler;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.datatype.DialectDataTypeOption;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.metadata.database.schema.QualifiedTable;
@@ -63,8 +63,8 @@ public final class InventoryPositionCalculator {
         if (dataTypeOption.isIntegerDataType(firstColumnDataType)) {
             return getIntegerPositions();
         }
-        if (1 == uniqueKeyColumns.size() && dataTypeOption.isStringDataType(firstColumnDataType)) {
-            return Collections.singletonList(new StringPrimaryKeyIngestPosition(null, null));
+        if (dataTypeOption.isStringDataType(firstColumnDataType)) {
+            return getStringPositions();
         }
         return Collections.singletonList(new UnsupportedKeyIngestPosition());
     }
@@ -76,5 +76,10 @@ public final class InventoryPositionCalculator {
             return InventoryPositionExactCalculator.getPositions(qualifiedTable, uniqueKey, shardingSize, dataSource, new IntegerPositionHandler());
         }
         return InventoryPositionEstimatedCalculator.getIntegerPositions(tableRecordsCount, uniqueKeyValuesRange, shardingSize);
+    }
+    
+    private List<IngestPosition> getStringPositions() {
+        String uniqueKey = uniqueKeyColumns.get(0).getName();
+        return InventoryPositionExactCalculator.getPositions(qualifiedTable, uniqueKey, shardingSize, dataSource, new StringPositionHandler());
     }
 }
