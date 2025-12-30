@@ -248,7 +248,11 @@ truncateTable
     ;
 
 createIndex
-    : CREATE createIndexSpecification? INDEX indexName indexTypeClause? ON tableName keyListWithExpression indexOption? algorithmOptionAndLockOption?
+    : CREATE createIndexSpecification? INDEX ifNotExists? indexName ON tableName keyListWithExpression (indexTypeClause | dorisIndexTypeClause)? propertiesClause? commentClause? algorithmOptionAndLockOption?
+    ;
+
+dorisIndexTypeClause
+    : USING (INVERTED | NGRAM_BF | ANN)
     ;
 
 createDatabase
