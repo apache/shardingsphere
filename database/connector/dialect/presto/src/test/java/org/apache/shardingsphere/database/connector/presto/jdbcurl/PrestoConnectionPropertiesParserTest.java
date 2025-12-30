@@ -25,8 +25,6 @@ import org.apache.shardingsphere.infra.util.props.PropertiesBuilder;
 import org.apache.shardingsphere.infra.util.props.PropertiesBuilder.Property;
 import org.junit.jupiter.api.Test;
 
-import java.util.Properties;
-
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
@@ -38,12 +36,11 @@ class PrestoConnectionPropertiesParserTest {
     
     @Test
     void assertParse() {
-        Properties expectedQueryProps = PropertiesBuilder.build(new Property("schema", "foo_schema"));
         ConnectionProperties actual = parser.parse("jdbc:presto://localhost/foo_catalog?schema=foo_schema", "unused_user", "unused_catalog");
         assertThat(actual.getHostname(), is("localhost"));
         assertThat(actual.getPort(), is(8080));
         assertThat(actual.getCatalog(), is("foo_catalog"));
         assertThat(actual.getSchema(), is("foo_schema"));
-        assertThat(actual.getQueryProperties(), is(expectedQueryProps));
+        assertThat(actual.getQueryProperties(), is(PropertiesBuilder.build(new Property("schema", "foo_schema"))));
     }
 }
