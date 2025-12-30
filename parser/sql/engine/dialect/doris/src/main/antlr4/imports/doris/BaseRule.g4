@@ -141,6 +141,7 @@ identifierKeywordsUnambiguous
     | ALIAS
     // DORIS ADDED END
     | ALWAYS
+    | ANN
     | ANY
     | ARRAY
     | AT
@@ -272,6 +273,7 @@ identifierKeywordsUnambiguous
     // DORIS ADDED BEGIN
     | INSTR
     // DORIS ADDED END
+    | INVERTED
     | INVISIBLE
     | INVOKER
     | IO
@@ -352,6 +354,7 @@ identifierKeywordsUnambiguous
     | NEVER
     | NEW
     | NEXT
+    | NGRAM_BF
     | NODEGROUP
     | NOWAIT
     | NO_WAIT

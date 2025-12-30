@@ -22,10 +22,14 @@ import lombok.Setter;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.SQLParserTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.algorithm.ExpectedAlgorithmClause;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.column.ExpectedColumn;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.distsql.ExpectedProperties;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.index.ExpectedIndex;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.lock.ExpectedLockTypeClause;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.table.ExpectedTable;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import java.util.LinkedList;
 import java.util.List;
@@ -33,6 +37,7 @@ import java.util.List;
 /**
  * Create index statement test case.
  */
+@XmlAccessorType(XmlAccessType.FIELD)
 @Getter
 @Setter
 public final class CreateIndexStatementTestCase extends SQLParserTestCase {
@@ -51,4 +56,13 @@ public final class CreateIndexStatementTestCase extends SQLParserTestCase {
     
     @XmlElement(name = "column")
     private final List<ExpectedColumn> columns = new LinkedList<>();
+    
+    @XmlAttribute(name = "if-not-exists")
+    private Boolean ifNotExists;
+    
+    @XmlAttribute(name = "index-type")
+    private String indexType;
+    
+    @XmlElement(name = "properties")
+    private ExpectedProperties properties;
 }

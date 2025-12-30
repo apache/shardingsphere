@@ -23,6 +23,10 @@ use
     : USE databaseName
     ;
 
+switchCatalog
+    : SWITCH catalogName
+    ;
+
 help
     : HELP textOrIdentifier
     ;

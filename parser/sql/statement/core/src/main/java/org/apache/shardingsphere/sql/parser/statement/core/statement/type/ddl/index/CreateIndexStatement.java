@@ -22,6 +22,7 @@ import lombok.Setter;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.index.IndexNameSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.index.IndexSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.property.PropertiesSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.table.AlgorithmTypeSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.table.LockTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
@@ -58,6 +59,12 @@ public final class CreateIndexStatement extends DDLStatement {
     private LockTableSegment lockTable;
     
     private final Collection<ColumnSegment> columns = new LinkedList<>();
+    
+    private String indexType;
+    
+    private PropertiesSegment properties;
+    
+    private String comment;
     
     public CreateIndexStatement(final DatabaseType databaseType) {
         super(databaseType);
