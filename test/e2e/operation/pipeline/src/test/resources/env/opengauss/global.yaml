@@ -28,6 +28,13 @@ authority:
     - user: proxy
       password: Proxy@123
       admin: true
+      authenticationMethodName: md5
+  authenticators:
+    md5:
+      type: MD5
+    scram_sha256:
+      type: SCRAM_SHA256
+  defaultAuthenticator: scram_sha256
   privilege:
     type: ALL_PERMITTED
 
