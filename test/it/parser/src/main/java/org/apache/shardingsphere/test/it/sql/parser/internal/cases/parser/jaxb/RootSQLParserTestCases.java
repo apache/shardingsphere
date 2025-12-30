@@ -24,6 +24,7 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.s
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.doris.DorisAlterSystemStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.doris.DorisCreateSqlBlockRuleStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.doris.DorisSwitchStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.CreateEncryptKeyStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.dialect.doris.DorisAlterStoragePolicyStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.dialect.doris.DorisResumeJobStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.standard.catalog.AlterCatalogStatementTestCase;
@@ -521,6 +522,9 @@ public final class RootSQLParserTestCases {
     
     @XmlElement(name = "drop-table")
     private final List<DropTableStatementTestCase> dropTableTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "create-encryptkey")
+    private final List<CreateEncryptKeyStatementTestCase> createEncryptKeyTestCases = new LinkedList<>();
     
     @XmlElement(name = "drop-encryptkey")
     private final List<DropEncryptKeyStatementTestCase> dropEncryptKeyTestCases = new LinkedList<>();

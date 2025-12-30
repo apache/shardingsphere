@@ -28,6 +28,7 @@ import org.antlr.v4.runtime.tree.TerminalNode;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.api.ASTNode;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementBaseVisitor;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.AggregationFunctionContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.AliasContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.AssignmentContext;
@@ -156,6 +157,7 @@ import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ViewNam
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.WeightStringFunctionContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.WhereClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.WithClauseContext;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.view.ViewColumnSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.outfile.OutfileColumnsSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.outfile.OutfileLinesSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.outfile.OutfileSegment;
@@ -425,6 +427,22 @@ public abstract class DorisStatementVisitor extends DorisStatementBaseVisitor<AS
         CollectionValue<ColumnSegment> result = new CollectionValue<>();
         for (ColumnNameContext each : ctx.columnName()) {
             result.getValue().add((ColumnSegment) visit(each));
+        }
+        return result;
+    }
+    
+    @Override
+    public final ASTNode visitViewColumnDefinition(final DorisStatementParser.ViewColumnDefinitionContext ctx) {
+        ColumnSegment column = (ColumnSegment) visit(ctx.columnName());
+        String comment = null != ctx.COMMENT() ? SQLUtils.getExactlyValue(ctx.string_().getText()) : null;
+        return new ViewColumnSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), column, comment);
+    }
+    
+    @Override
+    public final ASTNode visitViewColumnDefinitions(final DorisStatementParser.ViewColumnDefinitionsContext ctx) {
+        CollectionValue<ViewColumnSegment> result = new CollectionValue<>();
+        for (DorisStatementParser.ViewColumnDefinitionContext each : ctx.viewColumnDefinition()) {
+            result.getValue().add((ViewColumnSegment) visit(each));
         }
         return result;
     }

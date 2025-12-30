@@ -23,6 +23,7 @@ import org.antlr.v4.runtime.misc.Interval;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.api.ASTNode;
 import org.apache.shardingsphere.sql.parser.api.visitor.statement.type.DDLStatementVisitor;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.AlterCatalogContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ResumeJobContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.AddColumnContext;
@@ -157,6 +158,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.table.Cre
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.table.LockTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.table.RenameTableDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.tablespace.TablespaceSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.view.ViewColumnSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simple.SimpleExpressionSegment;
@@ -165,6 +167,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.DataT
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.OwnerSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.CreateEncryptKeyStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.DeallocateStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.ExecuteStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.PrepareStatement;
@@ -244,6 +247,16 @@ public final class DorisDDLStatementVisitor extends DorisStatementVisitor implem
     public ASTNode visitAlterView(final AlterViewContext ctx) {
         AlterViewStatement result = new AlterViewStatement(getDatabaseType());
         result.setView((SimpleTableSegment) visit(ctx.viewName()));
+        if (null != ctx.columnNames()) {
+            CollectionValue<ColumnSegment> columns = (CollectionValue<ColumnSegment>) visit(ctx.columnNames());
+            for (ColumnSegment each : columns.getValue()) {
+                result.getColumns().add(new ViewColumnSegment(each.getStartIndex(), each.getStopIndex(), each, null));
+            }
+        }
+        if (null != ctx.viewColumnDefinitions()) {
+            CollectionValue<ViewColumnSegment> columns = (CollectionValue<ViewColumnSegment>) visit(ctx.viewColumnDefinitions());
+            result.getColumns().addAll(columns.getValue());
+        }
         result.setViewDefinition(getOriginalText(ctx.select()));
         result.setSelect((SelectStatement) visit(ctx.select()));
         return result;
@@ -265,7 +278,34 @@ public final class DorisDDLStatementVisitor extends DorisStatementVisitor implem
     
     @Override
     public ASTNode visitAlterDatabase(final AlterDatabaseContext ctx) {
-        return new AlterDatabaseStatement(getDatabaseType());
+        AlterDatabaseStatement result = new AlterDatabaseStatement(getDatabaseType());
+        if (null != ctx.databaseName()) {
+            result.setDatabaseName(new IdentifierValue(ctx.databaseName().getText()).getValue());
+        }
+        if (null != ctx.RENAME() && null != ctx.identifier()) {
+            result.setRenameDatabaseName(new IdentifierValue(ctx.identifier().getText()).getValue());
+        }
+        if (null != ctx.QUOTA() && null != ctx.NUMBER_()) {
+            if (null != ctx.DATA()) {
+                result.setQuotaType("DATA");
+            } else if (null != ctx.REPLICA()) {
+                result.setQuotaType("REPLICA");
+            } else if (null != ctx.TRANSACTION()) {
+                result.setQuotaType("TRANSACTION");
+            }
+            result.setQuotaValue(Long.parseLong(ctx.NUMBER_().getText()));
+        }
+        if (null != ctx.PROPERTIES() && null != ctx.properties()) {
+            PropertiesSegment propertiesSegment = new PropertiesSegment(ctx.properties().getStart().getStartIndex(), ctx.properties().getStop().getStopIndex());
+            for (int i = 0; i < ctx.properties().property().size(); i++) {
+                String key = getPropertyKey(ctx.properties().property(i));
+                String value = SQLUtils.getExactlyValue(ctx.properties().property(i).literals().getText());
+                PropertySegment propertySegment = new PropertySegment(ctx.properties().property(i).getStart().getStartIndex(), ctx.properties().property(i).getStop().getStopIndex(), key, value);
+                propertiesSegment.getProperties().add(propertySegment);
+            }
+            result.setProperties(propertiesSegment);
+        }
+        return result;
     }
     
     @Override
@@ -1220,6 +1260,11 @@ public final class DorisDDLStatementVisitor extends DorisStatementVisitor implem
     @Override
     public ASTNode visitCreateMaterializedView(final CreateMaterializedViewContext ctx) {
         return new CreateMaterializedViewStatement(getDatabaseType());
+    }
+    
+    @Override
+    public ASTNode visitCreateEncryptKey(final DorisStatementParser.CreateEncryptKeyContext ctx) {
+        return new CreateEncryptKeyStatement(getDatabaseType());
     }
     
     @Override
