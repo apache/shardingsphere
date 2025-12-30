@@ -93,7 +93,7 @@ public final class InventoryPositionExactCalculator {
                                                              final int shardingSize, final PrimaryKeyIngestPosition<T> firstPosition,
                                                              final PipelineDataSource dataSource, final DataTypePositionHandler<T> positionHandler) {
         List<IngestPosition> result = new LinkedList<>();
-        T lowerBound = firstPosition.getEndValue();
+        T lowerBound = firstPosition.getUpperBound();
         long recordsCount = 0;
         String laterQuerySQL = new PipelinePrepareSQLBuilder(dataSource.getDatabaseType())
                 .buildSplitByUniqueKeyRangedSQL(qualifiedTable.getSchemaName(), qualifiedTable.getTableName(), uniqueKey, true);

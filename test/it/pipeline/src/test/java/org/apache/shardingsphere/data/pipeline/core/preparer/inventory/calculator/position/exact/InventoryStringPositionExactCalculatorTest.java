@@ -94,8 +94,8 @@ class InventoryStringPositionExactCalculatorTest {
         assertThat(actual, isA(StringPrimaryKeyIngestPosition.class));
         StringPrimaryKeyIngestPosition position = (StringPrimaryKeyIngestPosition) actual;
         assertThat(position.getType(), is(expected.getType()));
-        assertThat(position.getBeginValue(), is(expected.getBeginValue()));
-        assertThat(position.getEndValue(), is(expected.getEndValue()));
+        assertThat(position.getLowerBound(), is(expected.getLowerBound()));
+        assertThat(position.getUpperBound(), is(expected.getUpperBound()));
     }
     
     @Test

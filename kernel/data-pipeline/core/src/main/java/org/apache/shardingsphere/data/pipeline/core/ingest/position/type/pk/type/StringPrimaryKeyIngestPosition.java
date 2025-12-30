@@ -27,13 +27,13 @@ import org.apache.shardingsphere.data.pipeline.core.ingest.position.type.pk.Prim
 @Getter
 public final class StringPrimaryKeyIngestPosition implements PrimaryKeyIngestPosition<String> {
     
-    private final String beginValue;
+    private final String lowerBound;
     
-    private final String endValue;
+    private final String upperBound;
     
-    public StringPrimaryKeyIngestPosition(final String beginValue, final String endValue) {
-        this.beginValue = Strings.emptyToNull(beginValue);
-        this.endValue = Strings.emptyToNull(endValue);
+    public StringPrimaryKeyIngestPosition(final String lowerBound, final String upperBound) {
+        this.lowerBound = Strings.emptyToNull(lowerBound);
+        this.upperBound = Strings.emptyToNull(upperBound);
     }
     
     @Override
@@ -43,6 +43,6 @@ public final class StringPrimaryKeyIngestPosition implements PrimaryKeyIngestPos
     
     @Override
     public String toString() {
-        return String.format("%s,%s,%s", getType(), null == beginValue ? "" : beginValue, null == endValue ? "" : endValue);
+        return String.format("%s,%s,%s", getType(), null == lowerBound ? "" : lowerBound, null == upperBound ? "" : upperBound);
     }
 }

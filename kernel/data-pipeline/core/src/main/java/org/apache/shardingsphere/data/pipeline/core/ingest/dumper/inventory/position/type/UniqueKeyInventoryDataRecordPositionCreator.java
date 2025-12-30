@@ -34,6 +34,6 @@ public final class UniqueKeyInventoryDataRecordPositionCreator implements Invent
     @Override
     public IngestPosition create(final InventoryDumperContext dumperContext, final ResultSet resultSet) throws SQLException {
         return PrimaryKeyIngestPositionFactory.newInstance(
-                resultSet.getObject(dumperContext.getUniqueKeyColumns().get(0).getName()), ((PrimaryKeyIngestPosition<?>) dumperContext.getCommonContext().getPosition()).getEndValue());
+                resultSet.getObject(dumperContext.getUniqueKeyColumns().get(0).getName()), ((PrimaryKeyIngestPosition<?>) dumperContext.getCommonContext().getPosition()).getUpperBound());
     }
 }

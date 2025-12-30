@@ -90,8 +90,8 @@ class InventoryTaskSplitterTest {
         List<InventoryTask> actual = inventoryTaskSplitter.split(jobItemContext);
         assertThat(actual.size(), is(1));
         InventoryTask task = actual.get(0);
-        assertNull(((IntegerPrimaryKeyIngestPosition) task.getTaskProgress().getPosition()).getBeginValue());
-        assertNull(((IntegerPrimaryKeyIngestPosition) task.getTaskProgress().getPosition()).getEndValue());
+        assertNull(((IntegerPrimaryKeyIngestPosition) task.getTaskProgress().getPosition()).getLowerBound());
+        assertNull(((IntegerPrimaryKeyIngestPosition) task.getTaskProgress().getPosition()).getUpperBound());
     }
     
     @Test
@@ -100,8 +100,8 @@ class InventoryTaskSplitterTest {
         List<InventoryTask> actual = inventoryTaskSplitter.split(jobItemContext);
         assertThat(actual.size(), is(10));
         InventoryTask task = actual.get(9);
-        assertThat(((IntegerPrimaryKeyIngestPosition) task.getTaskProgress().getPosition()).getBeginValue(), is(BigInteger.valueOf(91L)));
-        assertThat(((IntegerPrimaryKeyIngestPosition) task.getTaskProgress().getPosition()).getEndValue(), is(BigInteger.valueOf(100L)));
+        assertThat(((IntegerPrimaryKeyIngestPosition) task.getTaskProgress().getPosition()).getLowerBound(), is(BigInteger.valueOf(91L)));
+        assertThat(((IntegerPrimaryKeyIngestPosition) task.getTaskProgress().getPosition()).getUpperBound(), is(BigInteger.valueOf(100L)));
     }
     
     @Test
@@ -111,8 +111,8 @@ class InventoryTaskSplitterTest {
         assertThat(actual.size(), is(1));
         assertThat(actual.get(0).getTaskId(), is("ds_0.t_order#0"));
         IntegerPrimaryKeyIngestPosition keyPosition = (IntegerPrimaryKeyIngestPosition) actual.get(0).getTaskProgress().getPosition();
-        assertThat(keyPosition.getBeginValue(), is(BigInteger.ONE));
-        assertThat(keyPosition.getEndValue(), is(BigInteger.valueOf(999L)));
+        assertThat(keyPosition.getLowerBound(), is(BigInteger.ONE));
+        assertThat(keyPosition.getUpperBound(), is(BigInteger.valueOf(999L)));
     }
     
     @Test

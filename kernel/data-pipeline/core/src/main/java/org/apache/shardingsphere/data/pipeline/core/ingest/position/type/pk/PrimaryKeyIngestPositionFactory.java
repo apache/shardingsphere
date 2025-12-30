@@ -47,13 +47,14 @@ public final class PrimaryKeyIngestPositionFactory {
         Preconditions.checkArgument(3 == parts.size(), "Unknown primary key position: " + data);
         Preconditions.checkArgument(1 == parts.get(0).length(), "Invalid primary key position type: " + parts.get(0));
         char type = parts.get(0).charAt(0);
-        String beginValue = parts.get(1);
-        String endValue = parts.get(2);
+        String lowerBound = parts.get(1);
+        String upperBound = parts.get(2);
         switch (type) {
             case 'i':
-                return new IntegerPrimaryKeyIngestPosition(Strings.isNullOrEmpty(beginValue) ? null : new BigInteger(beginValue), Strings.isNullOrEmpty(endValue) ? null : new BigInteger(endValue));
+                return new IntegerPrimaryKeyIngestPosition(
+                        Strings.isNullOrEmpty(lowerBound) ? null : new BigInteger(lowerBound), Strings.isNullOrEmpty(upperBound) ? null : new BigInteger(upperBound));
             case 's':
-                return new StringPrimaryKeyIngestPosition(beginValue, endValue);
+                return new StringPrimaryKeyIngestPosition(lowerBound, upperBound);
             case 'u':
                 return new UnsupportedKeyIngestPosition();
             default:
@@ -62,18 +63,18 @@ public final class PrimaryKeyIngestPositionFactory {
     }
     
     /**
-     * New instance by begin value and end value.
+     * New instance by lower bound and upper bound.
      *
-     * @param beginValue begin value
-     * @param endValue end value
+     * @param lowerBound lower bound
+     * @param upperBound upper bound
      * @return ingest position
      */
-    public static PrimaryKeyIngestPosition<?> newInstance(final Object beginValue, final Object endValue) {
-        if (beginValue instanceof Number) {
-            return new IntegerPrimaryKeyIngestPosition(convertToBigInteger((Number) beginValue), null == endValue ? null : convertToBigInteger((Number) endValue));
+    public static PrimaryKeyIngestPosition<?> newInstance(final Object lowerBound, final Object upperBound) {
+        if (lowerBound instanceof Number) {
+            return new IntegerPrimaryKeyIngestPosition(convertToBigInteger((Number) lowerBound), null == upperBound ? null : convertToBigInteger((Number) upperBound));
         }
-        if (beginValue instanceof CharSequence) {
-            return new StringPrimaryKeyIngestPosition(beginValue.toString(), null == endValue ? null : endValue.toString());
+        if (lowerBound instanceof CharSequence) {
+            return new StringPrimaryKeyIngestPosition(lowerBound.toString(), null == upperBound ? null : upperBound.toString());
         }
         // TODO support more types, e.g. byte[] (MySQL varbinary)
         return new UnsupportedKeyIngestPosition();

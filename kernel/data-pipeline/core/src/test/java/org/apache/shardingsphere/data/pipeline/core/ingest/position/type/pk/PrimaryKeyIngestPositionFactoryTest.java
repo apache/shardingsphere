@@ -44,24 +44,24 @@ class PrimaryKeyIngestPositionFactoryTest {
     private void assertIntegerPrimaryKeyIngestPosition0(final PrimaryKeyIngestPosition<?> actual, final IntegerPrimaryKeyIngestPosition expected) {
         assertThat(actual, instanceOf(IntegerPrimaryKeyIngestPosition.class));
         assertThat(actual.getType(), is(expected.getType()));
-        assertThat(actual.getBeginValue(), is(expected.getBeginValue()));
-        assertThat(actual.getEndValue(), is(expected.getEndValue()));
+        assertThat(actual.getLowerBound(), is(expected.getLowerBound()));
+        assertThat(actual.getUpperBound(), is(expected.getUpperBound()));
     }
     
     @Test
     void assertNewInstanceWithStringPrimaryKeyIngestPosition() {
         StringPrimaryKeyIngestPosition actual = (StringPrimaryKeyIngestPosition) PrimaryKeyIngestPositionFactory.newInstance("s,a,b");
         assertThat(actual.getType(), is('s'));
-        assertThat(actual.getBeginValue(), is("a"));
-        assertThat(actual.getEndValue(), is("b"));
+        assertThat(actual.getLowerBound(), is("a"));
+        assertThat(actual.getUpperBound(), is("b"));
     }
     
     @Test
     void assertNewInstanceWithUnsupportedKeyIngestPosition() {
         UnsupportedKeyIngestPosition actual = (UnsupportedKeyIngestPosition) PrimaryKeyIngestPositionFactory.newInstance("u,a,b");
         assertThat(actual.getType(), is('u'));
-        assertNull(actual.getBeginValue());
-        assertNull(actual.getEndValue());
+        assertNull(actual.getLowerBound());
+        assertNull(actual.getUpperBound());
     }
     
     @Test
@@ -75,39 +75,39 @@ class PrimaryKeyIngestPositionFactoryTest {
     void assertNewInstanceWithNumberRange() {
         IntegerPrimaryKeyIngestPosition actual = (IntegerPrimaryKeyIngestPosition) PrimaryKeyIngestPositionFactory.newInstance(100, 200);
         assertThat(actual.getType(), is('i'));
-        assertThat(actual.getBeginValue(), is(BigInteger.valueOf(100L)));
-        assertThat(actual.getEndValue(), is(BigInteger.valueOf(200L)));
+        assertThat(actual.getLowerBound(), is(BigInteger.valueOf(100L)));
+        assertThat(actual.getUpperBound(), is(BigInteger.valueOf(200L)));
     }
     
     @Test
     void assertNewInstanceWithNumberNullEndRange() {
         IntegerPrimaryKeyIngestPosition actual = (IntegerPrimaryKeyIngestPosition) PrimaryKeyIngestPositionFactory.newInstance(100, null);
         assertThat(actual.getType(), is('i'));
-        assertThat(actual.getBeginValue(), is(BigInteger.valueOf(100L)));
-        assertNull(actual.getEndValue());
+        assertThat(actual.getLowerBound(), is(BigInteger.valueOf(100L)));
+        assertNull(actual.getUpperBound());
     }
     
     @Test
     void assertNewInstanceWithCharRange() {
         StringPrimaryKeyIngestPosition actual = (StringPrimaryKeyIngestPosition) PrimaryKeyIngestPositionFactory.newInstance("a", "b");
         assertThat(actual.getType(), is('s'));
-        assertThat(actual.getBeginValue(), is("a"));
-        assertThat(actual.getEndValue(), is("b"));
+        assertThat(actual.getLowerBound(), is("a"));
+        assertThat(actual.getUpperBound(), is("b"));
     }
     
     @Test
     void assertNewInstanceWithCharNullEndRange() {
         StringPrimaryKeyIngestPosition actual = (StringPrimaryKeyIngestPosition) PrimaryKeyIngestPositionFactory.newInstance("a", null);
         assertThat(actual.getType(), is('s'));
-        assertThat(actual.getBeginValue(), is("a"));
-        assertNull(actual.getEndValue());
+        assertThat(actual.getLowerBound(), is("a"));
+        assertNull(actual.getUpperBound());
     }
     
     @Test
     void assertNewInstanceWithUnsupportedRange() {
         UnsupportedKeyIngestPosition actual = (UnsupportedKeyIngestPosition) PrimaryKeyIngestPositionFactory.newInstance(Collections.emptyList(), Collections.emptyList());
         assertThat(actual.getType(), is('u'));
-        assertNull(actual.getBeginValue());
-        assertNull(actual.getEndValue());
+        assertNull(actual.getLowerBound());
+        assertNull(actual.getUpperBound());
     }
 }

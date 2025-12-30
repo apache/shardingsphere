@@ -42,7 +42,7 @@ class UniqueKeyInventoryDataRecordPositionCreatorTest {
     private InventoryDumperContext mockInventoryDumperContext() {
         InventoryDumperContext result = mock(InventoryDumperContext.class, RETURNS_DEEP_STUBS);
         PrimaryKeyIngestPosition<Object> ingestPosition = mock(PrimaryKeyIngestPosition.class);
-        when(ingestPosition.getEndValue()).thenReturn(new Object());
+        when(ingestPosition.getUpperBound()).thenReturn(new Object());
         when(result.getCommonContext().getPosition()).thenReturn(ingestPosition);
         return result;
     }

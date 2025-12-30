@@ -26,23 +26,23 @@ import java.math.BigInteger;
  */
 public final class IntegerPrimaryKeyIngestPosition implements PrimaryKeyIngestPosition<BigInteger> {
     
-    private final BigInteger beginValue;
+    private final BigInteger lowerBound;
     
-    private final BigInteger endValue;
+    private final BigInteger upperBound;
     
-    public IntegerPrimaryKeyIngestPosition(final BigInteger beginValue, final BigInteger endValue) {
-        this.beginValue = beginValue;
-        this.endValue = endValue;
+    public IntegerPrimaryKeyIngestPosition(final BigInteger lowerBound, final BigInteger upperBound) {
+        this.lowerBound = lowerBound;
+        this.upperBound = upperBound;
     }
     
     @Override
-    public BigInteger getBeginValue() {
-        return beginValue;
+    public BigInteger getLowerBound() {
+        return lowerBound;
     }
     
     @Override
-    public BigInteger getEndValue() {
-        return endValue;
+    public BigInteger getUpperBound() {
+        return upperBound;
     }
     
     @Override
@@ -52,6 +52,6 @@ public final class IntegerPrimaryKeyIngestPosition implements PrimaryKeyIngestPo
     
     @Override
     public String toString() {
-        return String.format("%s,%s,%s", getType(), null == beginValue ? "" : beginValue, null == endValue ? "" : endValue);
+        return String.format("%s,%s,%s", getType(), null == lowerBound ? "" : lowerBound, null == upperBound ? "" : upperBound);
     }
 }

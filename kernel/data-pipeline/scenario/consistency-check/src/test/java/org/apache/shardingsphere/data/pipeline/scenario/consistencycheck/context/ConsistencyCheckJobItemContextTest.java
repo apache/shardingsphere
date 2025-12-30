@@ -65,8 +65,8 @@ class ConsistencyCheckJobItemContextTest {
                 new TableCheckRangePosition(1, DATA_NODE, TABLE, createIntegerPosition(101L, 200L), createIntegerPosition(101L, 203L), null, 132, 132, false, null));
     }
     
-    private IntegerPrimaryKeyIngestPosition createIntegerPosition(final long beginValue, final long endValue) {
-        return new IntegerPrimaryKeyIngestPosition(BigInteger.valueOf(beginValue), BigInteger.valueOf(endValue));
+    private IntegerPrimaryKeyIngestPosition createIntegerPosition(final long lowerBound, final long upperBound) {
+        return new IntegerPrimaryKeyIngestPosition(BigInteger.valueOf(lowerBound), BigInteger.valueOf(upperBound));
     }
     
     private void assertTableCheckRangePosition(final TableCheckRangePosition actual, final TableCheckRangePosition expected) {
@@ -83,7 +83,7 @@ class ConsistencyCheckJobItemContextTest {
     private void assertRange(final PrimaryKeyIngestPosition<?> actual, final PrimaryKeyIngestPosition<?> expected) {
         assertThat(actual.getClass(), is(expected.getClass()));
         assertThat(actual, instanceOf(IntegerPrimaryKeyIngestPosition.class));
-        assertThat(((IntegerPrimaryKeyIngestPosition) actual).getBeginValue(), is(((IntegerPrimaryKeyIngestPosition) expected).getBeginValue()));
-        assertThat(((IntegerPrimaryKeyIngestPosition) actual).getEndValue(), is(((IntegerPrimaryKeyIngestPosition) expected).getEndValue()));
+        assertThat(((IntegerPrimaryKeyIngestPosition) actual).getLowerBound(), is(((IntegerPrimaryKeyIngestPosition) expected).getLowerBound()));
+        assertThat(((IntegerPrimaryKeyIngestPosition) actual).getUpperBound(), is(((IntegerPrimaryKeyIngestPosition) expected).getUpperBound()));
     }
 }

@@ -39,14 +39,14 @@ class InventoryPositionEstimatedCalculatorTest {
         assertPosition(actualPositions.get(1), createIntegerPosition(301L, 600L));
     }
     
-    private IntegerPrimaryKeyIngestPosition createIntegerPosition(final long beginValue, final long endValue) {
-        return new IntegerPrimaryKeyIngestPosition(BigInteger.valueOf(beginValue), BigInteger.valueOf(endValue));
+    private IntegerPrimaryKeyIngestPosition createIntegerPosition(final long lowerBound, final long upperBound) {
+        return new IntegerPrimaryKeyIngestPosition(BigInteger.valueOf(lowerBound), BigInteger.valueOf(upperBound));
     }
     
     private void assertPosition(final IngestPosition actual, final IntegerPrimaryKeyIngestPosition expected) {
         assertThat(actual, isA(IntegerPrimaryKeyIngestPosition.class));
-        assertThat(((IntegerPrimaryKeyIngestPosition) actual).getBeginValue(), is(expected.getBeginValue()));
-        assertThat(((IntegerPrimaryKeyIngestPosition) actual).getEndValue(), is(expected.getEndValue()));
+        assertThat(((IntegerPrimaryKeyIngestPosition) actual).getLowerBound(), is(expected.getLowerBound()));
+        assertThat(((IntegerPrimaryKeyIngestPosition) actual).getUpperBound(), is(expected.getUpperBound()));
     }
     
     @Test

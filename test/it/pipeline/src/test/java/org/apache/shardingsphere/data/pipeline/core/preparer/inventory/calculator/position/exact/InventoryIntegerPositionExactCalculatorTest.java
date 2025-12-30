@@ -91,16 +91,16 @@ class InventoryIntegerPositionExactCalculatorTest {
         assertIntegerPrimaryKeyIngestPosition0(actual.get(3), createIntegerPosition(10L, 11L));
     }
     
-    private IntegerPrimaryKeyIngestPosition createIntegerPosition(final long beginValue, final long endValue) {
-        return new IntegerPrimaryKeyIngestPosition(BigInteger.valueOf(beginValue), BigInteger.valueOf(endValue));
+    private IntegerPrimaryKeyIngestPosition createIntegerPosition(final long lowerBound, final long upperBound) {
+        return new IntegerPrimaryKeyIngestPosition(BigInteger.valueOf(lowerBound), BigInteger.valueOf(upperBound));
     }
     
     private void assertIntegerPrimaryKeyIngestPosition0(final IngestPosition actual, final IntegerPrimaryKeyIngestPosition expected) {
         assertThat(actual, isA(IntegerPrimaryKeyIngestPosition.class));
         IntegerPrimaryKeyIngestPosition position = (IntegerPrimaryKeyIngestPosition) actual;
         assertThat(position.getType(), is(expected.getType()));
-        assertThat(position.getBeginValue(), is(expected.getBeginValue()));
-        assertThat(position.getEndValue(), is(expected.getEndValue()));
+        assertThat(position.getLowerBound(), is(expected.getLowerBound()));
+        assertThat(position.getUpperBound(), is(expected.getUpperBound()));
     }
     
     @Test

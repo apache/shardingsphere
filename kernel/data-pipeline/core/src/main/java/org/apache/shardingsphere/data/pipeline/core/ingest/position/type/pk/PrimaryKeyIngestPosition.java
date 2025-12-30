@@ -27,18 +27,18 @@ import org.apache.shardingsphere.data.pipeline.core.ingest.position.IngestPositi
 public interface PrimaryKeyIngestPosition<T> extends IngestPosition {
     
     /**
-     * Get begin value.
+     * Get lower bound.
      *
-     * @return begin value
+     * @return lower bound
      */
-    T getBeginValue();
+    T getLowerBound();
     
     /**
-     * Get end value.
+     * Get upper bound.
      *
-     * @return end value
+     * @return upper bound
      */
-    T getEndValue();
+    T getUpperBound();
     
     /**
      * Get type.

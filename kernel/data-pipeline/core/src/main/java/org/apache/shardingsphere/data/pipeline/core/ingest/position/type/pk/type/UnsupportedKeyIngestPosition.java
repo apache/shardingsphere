@@ -25,12 +25,12 @@ import org.apache.shardingsphere.data.pipeline.core.ingest.position.type.pk.Prim
 public final class UnsupportedKeyIngestPosition implements PrimaryKeyIngestPosition<Void> {
     
     @Override
-    public Void getBeginValue() {
+    public Void getLowerBound() {
         return null;
     }
     
     @Override
-    public Void getEndValue() {
+    public Void getUpperBound() {
         return null;
     }
     
