@@ -386,6 +386,7 @@ identifierKeywordsUnambiguous
     | PASSWORD
     | PASSWORD_LOCK_TIME
     | PATH
+    | PERCENT
     | PHASE
     | PLUGINS
     | PLUGIN_DIR
@@ -462,6 +463,7 @@ identifierKeywordsUnambiguous
     | SERVER
     | SHARE
     | SIMPLE
+    | SKEW
     | SKIP_SYMBOL
     | SLOW
     | SNAPSHOT

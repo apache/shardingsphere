@@ -137,6 +137,7 @@ execute
     | resumeJob
     | dorisAlterSystem
     | createSqlBlockRule
+    | createWorkloadGroup
     // TODO consider refactor following sytax to SEMI_? EOF
     ) (SEMI_ EOF? | EOF)
     | EOF

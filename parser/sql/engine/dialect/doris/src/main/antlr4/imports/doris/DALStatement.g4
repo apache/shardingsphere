@@ -321,6 +321,20 @@ uninstallPlugin
 
 analyzeTable
     : ANALYZE (NO_WRITE_TO_BINLOG | LOCAL)? tableOrTables tableList histogram?
+    | ANALYZE (TABLE tableName (LP_ columnNames RP_)? | DATABASE databaseName) analyzeOption*
+    ;
+
+analyzeOption
+    : WITH SYNC
+    | WITH SAMPLE (PERCENT | ROWS) numberLiterals
+    ;
+
+showDataSkew
+    : SHOW DATA SKEW fromTable (PARTITION LP_ partitionName (COMMA_ partitionName)* RP_)?
+    ;
+
+createWorkloadGroup
+    : CREATE WORKLOAD GROUP ifNotExists? groupName propertiesClause
     ;
 
 histogram
@@ -747,4 +761,5 @@ show
     | showVariables
     | showReplicas
     | showReplicaStatus
+    | showDataSkew
     ;

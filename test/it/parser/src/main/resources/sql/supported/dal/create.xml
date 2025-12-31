@@ -24,4 +24,6 @@
     <sql-case id="create_sql_block_rule_with_partition_num" value="CREATE SQL_BLOCK_RULE limit_partition_rule PROPERTIES(&quot;partition_num&quot;=&quot;30&quot;,&quot;global&quot;=&quot;true&quot;)" db-types="Doris" />
     <sql-case id="create_sql_block_rule_with_cardinality" value="CREATE SQL_BLOCK_RULE limit_cardinality_rule PROPERTIES(&quot;cardinality&quot;=&quot;10000000000&quot;,&quot;tablet_num&quot;=&quot;100&quot;)" db-types="Doris" />
     <sql-case id="create_sql_block_rule_mixed_properties" value="CREATE SQL_BLOCK_RULE complex_rule PROPERTIES(&quot;sql&quot;=&quot;\\s*select\\s*\\*\\s*from order_\\w*\\s*&quot;,&quot;global&quot;=&quot;false&quot;,&quot;enable&quot;=&quot;true&quot;)" db-types="Doris" />
+    <sql-case id="create_workload_group" value="CREATE WORKLOAD GROUP g1 PROPERTIES(&quot;max_cpu_percent&quot;=&quot;10%&quot;,&quot;max_memory_percent&quot;=&quot;30%&quot;)" db-types="Doris" />
+    <sql-case id="create_workload_group_if_not_exists" value="CREATE WORKLOAD GROUP IF NOT EXISTS g1 PROPERTIES(&quot;max_cpu_percent&quot;=&quot;10%&quot;,&quot;max_memory_percent&quot;=&quot;30%&quot;)" db-types="Doris" />
 </sql-cases>

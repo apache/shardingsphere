@@ -1922,6 +1922,10 @@ PATH
     : P A T H
     ;
 
+PERCENT
+    : P E R C E N T
+    ;
+
 PERCENT_RANK
     : P E R C E N T UL_ R A N K
     ;
@@ -2352,6 +2356,10 @@ SAVEPOINT
     : S A V E P O I N T
     ;
 
+SAMPLE
+    : S A M P L E
+    ;
+
 SCHEDULE
     : S C H E D U L E
     ;
@@ -2466,6 +2474,10 @@ SIMPLE
 
 SKIP_SYMBOL
     : S K I P
+    ;
+
+SKEW
+    : S K E W
     ;
 
 SLAVE
@@ -2822,6 +2834,10 @@ SOURCE_PUBLIC_KEY_PATH
     : S O U R C E UL_ P U B L I C UL_ K E Y UL_ P A T H
     ;
 
+SYNC
+    : S Y N C
+    ;
+
 TABLE
     : T A B L E
     ;
@@ -3144,6 +3160,10 @@ WITHOUT
 
 WORK
     : W O R K
+    ;
+
+WORKLOAD
+    : W O R K L O A D
     ;
 
 WRAPPER

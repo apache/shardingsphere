@@ -241,4 +241,8 @@
     <sql-case id="show_query_stats_all" value="SHOW QUERY STATS ALL" db-types="Doris" />
     <sql-case id="show_query_stats_verbose" value="SHOW QUERY STATS VERBOSE" db-types="Doris" />
     <sql-case id="show_query_stats_from_table_all_verbose" value="SHOW QUERY STATS FROM test_table ALL VERBOSE" db-types="Doris" />
+    <sql-case id="show_data_skew_from_table" value="SHOW DATA SKEW FROM test_show_data_skew" db-types="Doris" />
+    <sql-case id="show_data_skew_from_table_with_db" value="SHOW DATA SKEW FROM test_db.test_table" db-types="Doris" />
+    <sql-case id="show_data_skew_from_table_with_partition" value="SHOW DATA SKEW FROM test_table PARTITION (p1)" db-types="Doris" />
+    <sql-case id="show_data_skew_from_table_with_partitions" value="SHOW DATA SKEW FROM test_table PARTITION (p1, p2, p3)" db-types="Doris" />
 </sql-cases>

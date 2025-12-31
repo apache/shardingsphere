@@ -137,6 +137,8 @@ import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.Propert
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.PropertyContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.DorisAlterSystemActionContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ShowQueryStatsContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ShowDataSkewContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.CreateWorkloadGroupContext;
 import org.apache.shardingsphere.sql.parser.engine.doris.visitor.statement.DorisStatementVisitor;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.CacheTableIndexSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.CloneActionSegment;
@@ -183,6 +185,8 @@ import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisAlterResour
 import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisAlterSystemStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisCreateSqlBlockRuleStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisSwitchStatement;
+import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisAnalyzeTableStatement;
+import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisCreateWorkloadGroupStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.dal.show.DorisShowQueryStatsStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLCloneStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLCreateLoadableFunctionStatement;
@@ -311,6 +315,11 @@ public final class DorisDALStatementVisitor extends DorisStatementVisitor implem
     }
     
     @Override
+    public ASTNode visitShowDataSkew(final ShowDataSkewContext ctx) {
+        return new MySQLShowOtherStatement(getDatabaseType());
+    }
+    
+    @Override
     public ASTNode visitShowEngine(final ShowEngineContext ctx) {
         return new MySQLShowEngineStatement(getDatabaseType(), ctx.engineRef().getText());
     }
@@ -412,7 +421,65 @@ public final class DorisDALStatementVisitor extends DorisStatementVisitor implem
     @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitAnalyzeTable(final AnalyzeTableContext ctx) {
+        if (null != ctx.tableName()) {
+            return createDorisAnalyzeTableStatement(ctx);
+        }
+        if (null != ctx.databaseName()) {
+            return createDorisAnalyzeDatabaseStatement(ctx);
+        }
         return new AnalyzeTableStatement(getDatabaseType(), ((CollectionValue<SimpleTableSegment>) visit(ctx.tableList())).getValue());
+    }
+    
+    private DorisAnalyzeTableStatement createDorisAnalyzeTableStatement(final AnalyzeTableContext ctx) {
+        SimpleTableSegment table = (SimpleTableSegment) visit(ctx.tableName());
+        Collection<ColumnSegment> columns = null != ctx.columnNames() ? getColumns(ctx.columnNames()) : Collections.emptyList();
+        boolean sync = false;
+        String sampleType = null;
+        Number sampleValue = null;
+        if (null != ctx.analyzeOption()) {
+            for (DorisStatementParser.AnalyzeOptionContext each : ctx.analyzeOption()) {
+                if (null != each.SYNC()) {
+                    sync = true;
+                }
+                if (null != each.SAMPLE()) {
+                    sampleType = null != each.PERCENT() ? "PERCENT" : "ROWS";
+                    sampleValue = ((NumberLiteralValue) visit(each.numberLiterals())).getValue();
+                }
+            }
+        }
+        return new DorisAnalyzeTableStatement(getDatabaseType(), table, null, columns, sync, sampleType, sampleValue);
+    }
+    
+    private DorisAnalyzeTableStatement createDorisAnalyzeDatabaseStatement(final AnalyzeTableContext ctx) {
+        DatabaseSegment database = (DatabaseSegment) visit(ctx.databaseName());
+        boolean sync = false;
+        String sampleType = null;
+        Number sampleValue = null;
+        if (null != ctx.analyzeOption()) {
+            for (DorisStatementParser.AnalyzeOptionContext each : ctx.analyzeOption()) {
+                if (null != each.SYNC()) {
+                    sync = true;
+                }
+                if (null != each.SAMPLE()) {
+                    sampleType = null != each.PERCENT() ? "PERCENT" : "ROWS";
+                    sampleValue = ((NumberLiteralValue) visit(each.numberLiterals())).getValue();
+                }
+            }
+        }
+        return new DorisAnalyzeTableStatement(getDatabaseType(), null, database, Collections.emptyList(), sync, sampleType, sampleValue);
+    }
+    
+    private Collection<ColumnSegment> getColumns(final DorisStatementParser.ColumnNamesContext ctx) {
+        return ctx.columnName().stream().map(each -> (ColumnSegment) visit(each)).collect(Collectors.toList());
+    }
+    
+    @Override
+    public ASTNode visitCreateWorkloadGroup(final CreateWorkloadGroupContext ctx) {
+        DorisCreateWorkloadGroupStatement result = new DorisCreateWorkloadGroupStatement(getDatabaseType());
+        result.setGroupName(((IdentifierValue) visit(ctx.groupName())).getValue());
+        result.setIfNotExists(null != ctx.ifNotExists());
+        result.setProperties(extractPropertiesSegment(ctx.propertiesClause()));
+        return result;
     }
     
     @SuppressWarnings("unchecked")
