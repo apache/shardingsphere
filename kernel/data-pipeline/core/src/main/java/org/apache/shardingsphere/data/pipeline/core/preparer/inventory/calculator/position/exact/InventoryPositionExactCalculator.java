@@ -23,7 +23,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSource;
 import org.apache.shardingsphere.data.pipeline.core.exception.job.SplitPipelineJobByUniqueKeyException;
 import org.apache.shardingsphere.data.pipeline.core.ingest.position.IngestPosition;
-import org.apache.shardingsphere.data.pipeline.core.ingest.position.type.pk.PrimaryKeyIngestPosition;
+import org.apache.shardingsphere.data.pipeline.core.ingest.position.type.pk.UniqueKeyIngestPosition;
 import org.apache.shardingsphere.data.pipeline.core.sqlbuilder.sql.PipelinePrepareSQLBuilder;
 import org.apache.shardingsphere.infra.metadata.database.schema.QualifiedTable;
 
@@ -56,13 +56,13 @@ public final class InventoryPositionExactCalculator {
     public static <T> List<IngestPosition> getPositions(final QualifiedTable qualifiedTable, final String uniqueKey, final int shardingSize,
                                                         final PipelineDataSource dataSource, final DataTypePositionHandler<T> positionHandler) {
         List<IngestPosition> result = new LinkedList<>();
-        PrimaryKeyIngestPosition<T> firstPosition = getFirstPosition(qualifiedTable, uniqueKey, shardingSize, dataSource, positionHandler);
+        UniqueKeyIngestPosition<T> firstPosition = getFirstPosition(qualifiedTable, uniqueKey, shardingSize, dataSource, positionHandler);
         result.add(firstPosition);
         result.addAll(getLeftPositions(qualifiedTable, uniqueKey, shardingSize, firstPosition, dataSource, positionHandler));
         return result;
     }
     
-    private static <T> PrimaryKeyIngestPosition<T> getFirstPosition(final QualifiedTable qualifiedTable, final String uniqueKey, final int shardingSize,
+    private static <T> UniqueKeyIngestPosition<T> getFirstPosition(final QualifiedTable qualifiedTable, final String uniqueKey, final int shardingSize,
                                                                     final PipelineDataSource dataSource, final DataTypePositionHandler<T> positionHandler) {
         String firstQuerySQL = new PipelinePrepareSQLBuilder(dataSource.getDatabaseType())
                 .buildSplitByUniqueKeyRangedSQL(qualifiedTable.getSchemaName(), qualifiedTable.getTableName(), uniqueKey, false);
@@ -90,7 +90,7 @@ public final class InventoryPositionExactCalculator {
     }
     
     private static <T> List<IngestPosition> getLeftPositions(final QualifiedTable qualifiedTable, final String uniqueKey,
-                                                             final int shardingSize, final PrimaryKeyIngestPosition<T> firstPosition,
+                                                             final int shardingSize, final UniqueKeyIngestPosition<T> firstPosition,
                                                              final PipelineDataSource dataSource, final DataTypePositionHandler<T> positionHandler) {
         List<IngestPosition> result = new LinkedList<>();
         T lowerBound = firstPosition.getUpperBound();

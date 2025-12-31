@@ -21,7 +21,6 @@ import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.inventory.Inve
 import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.inventory.position.InventoryDataRecordPositionCreator;
 import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.inventory.query.Range;
 import org.apache.shardingsphere.data.pipeline.core.ingest.position.IngestPosition;
-import org.apache.shardingsphere.data.pipeline.core.ingest.position.type.pk.PrimaryKeyIngestPosition;
 import org.apache.shardingsphere.data.pipeline.core.ingest.position.type.pk.UniqueKeyIngestPosition;
 
 import java.sql.ResultSet;
@@ -35,6 +34,6 @@ public final class UniqueKeyInventoryDataRecordPositionCreator implements Invent
     @Override
     public IngestPosition create(final InventoryDumperContext dumperContext, final ResultSet resultSet) throws SQLException {
         return UniqueKeyIngestPosition.newInstance(Range.closed(resultSet.getObject(dumperContext.getUniqueKeyColumns().get(0).getName()),
-                ((PrimaryKeyIngestPosition<?>) dumperContext.getCommonContext().getPosition()).getUpperBound()));
+                ((UniqueKeyIngestPosition<?>) dumperContext.getCommonContext().getPosition()).getUpperBound()));
     }
 }

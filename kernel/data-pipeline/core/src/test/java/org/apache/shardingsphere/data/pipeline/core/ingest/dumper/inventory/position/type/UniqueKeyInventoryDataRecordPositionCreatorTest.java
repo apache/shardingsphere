@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.data.pipeline.core.ingest.dumper.inventory.position.type;
 
 import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.inventory.InventoryDumperContext;
-import org.apache.shardingsphere.data.pipeline.core.ingest.position.type.pk.PrimaryKeyIngestPosition;
 import org.apache.shardingsphere.data.pipeline.core.ingest.position.type.pk.UniqueKeyIngestPosition;
 import org.junit.jupiter.api.Test;
 
@@ -38,11 +37,10 @@ class UniqueKeyInventoryDataRecordPositionCreatorTest {
         assertThat(new UniqueKeyInventoryDataRecordPositionCreator().create(mockInventoryDumperContext(), mock(ResultSet.class)), isA(UniqueKeyIngestPosition.class));
     }
     
-    @SuppressWarnings("unchecked")
     private InventoryDumperContext mockInventoryDumperContext() {
         InventoryDumperContext result = mock(InventoryDumperContext.class, RETURNS_DEEP_STUBS);
-        PrimaryKeyIngestPosition<Object> ingestPosition = mock(PrimaryKeyIngestPosition.class);
-        when(ingestPosition.getUpperBound()).thenReturn(new Object());
+        UniqueKeyIngestPosition<?> ingestPosition = mock(UniqueKeyIngestPosition.class);
+        when(ingestPosition.getUpperBound()).thenReturn(null);
         when(result.getCommonContext().getPosition()).thenReturn(ingestPosition);
         return result;
     }
