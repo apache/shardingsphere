@@ -21,7 +21,6 @@ import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.inventory.quer
 import org.apache.shardingsphere.data.pipeline.core.ingest.position.IngestPosition;
 import org.apache.shardingsphere.data.pipeline.core.ingest.position.type.finished.IngestFinishedPosition;
 import org.apache.shardingsphere.data.pipeline.core.ingest.position.type.pk.UniqueKeyIngestPosition;
-import org.apache.shardingsphere.data.pipeline.core.ingest.position.type.pk.type.UnsupportedKeyIngestPosition;
 import org.apache.shardingsphere.data.pipeline.core.ingest.position.type.placeholder.IngestPlaceholderPosition;
 import org.apache.shardingsphere.data.pipeline.core.job.JobStatus;
 import org.apache.shardingsphere.data.pipeline.core.job.progress.yaml.config.YamlTransmissionJobItemProgress;
@@ -86,7 +85,7 @@ class TransmissionJobItemProgressTest {
     void assertGetProgressesCorrectly() {
         Map<String, InventoryTaskProgress> progresses = new HashMap<>(4, 1F);
         progresses.put("ds.order_item#0", new InventoryTaskProgress(UniqueKeyIngestPosition.ofInteger(Range.closed(BigInteger.ONE, BigInteger.valueOf(100L)))));
-        progresses.put("ds.order_item#1", new InventoryTaskProgress(new UnsupportedKeyIngestPosition()));
+        progresses.put("ds.order_item#1", new InventoryTaskProgress(UniqueKeyIngestPosition.ofUnsplit()));
         progresses.put("ds.order#0", new InventoryTaskProgress(new IngestFinishedPosition()));
         progresses.put("ds.test_order#0", new InventoryTaskProgress(UniqueKeyIngestPosition.ofString(Range.closed("1", "100"))));
         JobItemInventoryTasksProgress progress = new JobItemInventoryTasksProgress(progresses);
@@ -99,7 +98,7 @@ class TransmissionJobItemProgressTest {
         Map<String, IngestPosition> orderItemPosition = progress.getInventoryPosition("order_item");
         assertThat(orderItemPosition.size(), is(2));
         assertThat(orderItemPosition.get("ds.order_item#0"), isA(UniqueKeyIngestPosition.class));
-        assertThat(orderItemPosition.get("ds.order_item#1"), isA(UnsupportedKeyIngestPosition.class));
+        assertThat(orderItemPosition.get("ds.order_item#1"), isA(UniqueKeyIngestPosition.class));
     }
     
     private TransmissionJobItemProgress getJobItemProgress(final String data) {

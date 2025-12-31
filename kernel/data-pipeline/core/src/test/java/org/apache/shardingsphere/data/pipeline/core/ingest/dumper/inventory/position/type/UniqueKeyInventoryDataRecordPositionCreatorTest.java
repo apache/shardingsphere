@@ -19,7 +19,7 @@ package org.apache.shardingsphere.data.pipeline.core.ingest.dumper.inventory.pos
 
 import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.inventory.InventoryDumperContext;
 import org.apache.shardingsphere.data.pipeline.core.ingest.position.type.pk.PrimaryKeyIngestPosition;
-import org.apache.shardingsphere.data.pipeline.core.ingest.position.type.pk.type.UnsupportedKeyIngestPosition;
+import org.apache.shardingsphere.data.pipeline.core.ingest.position.type.pk.UniqueKeyIngestPosition;
 import org.junit.jupiter.api.Test;
 
 import java.sql.ResultSet;
@@ -35,7 +35,7 @@ class UniqueKeyInventoryDataRecordPositionCreatorTest {
     
     @Test
     void assertCreate() throws SQLException {
-        assertThat(new UniqueKeyInventoryDataRecordPositionCreator().create(mockInventoryDumperContext(), mock(ResultSet.class)), isA(UnsupportedKeyIngestPosition.class));
+        assertThat(new UniqueKeyInventoryDataRecordPositionCreator().create(mockInventoryDumperContext(), mock(ResultSet.class)), isA(UniqueKeyIngestPosition.class));
     }
     
     @SuppressWarnings("unchecked")
