@@ -68,96 +68,96 @@ CREATE DATABASE demo_read_ds;
 -- CREATE TABLE t_order_item ("order_item_id" serial4, "order_id" int4 NOT NULL, "user_id" int4 NOT NULL, "status" varchar(50), PRIMARY KEY ("order_item_id"));
 
 USE demo_ds;
-CREATE TABLE IF NOT EXISTS t_order(order_id BIGINT NOT NULL AUTO_INCREMENT, order_type INT(11), user_id INT NOT NULL, address_id BIGINT NOT NULL, status VARCHAR(50), PRIMARY KEY (order_id));
+CREATE TABLE IF NOT EXISTS t_order(order_id BIGINT NOT NULL AUTO_INCREMENT, order_type INT(11), user_id INT NOT NULL, address_id BIGINT NOT NULL, status VARCHAR(50)<#if feature?contains("encrypt")>, status_assisted VARCHAR(50)</#if>, PRIMARY KEY (order_id));
 CREATE TABLE IF NOT EXISTS t_order_item(order_item_id BIGINT NOT NULL AUTO_INCREMENT, order_id BIGINT NOT NULL, user_id INT NOT NULL, phone VARCHAR(50), status VARCHAR(50), PRIMARY KEY (order_item_id));
 CREATE TABLE IF NOT EXISTS t_address (address_id BIGINT NOT NULL, address_name VARCHAR(100) NOT NULL, PRIMARY KEY (address_id));
 
 USE demo_ds_0;
-CREATE TABLE IF NOT EXISTS t_order(order_id BIGINT NOT NULL AUTO_INCREMENT, order_type INT(11), user_id INT NOT NULL, address_id BIGINT NOT NULL, status VARCHAR(50), PRIMARY KEY (order_id));
+CREATE TABLE IF NOT EXISTS t_order(order_id BIGINT NOT NULL AUTO_INCREMENT, order_type INT(11), user_id INT NOT NULL, address_id BIGINT NOT NULL, status VARCHAR(50)<#if feature?contains("encrypt")>, status_assisted VARCHAR(50)</#if>, PRIMARY KEY (order_id));
 CREATE TABLE IF NOT EXISTS t_order_item(order_item_id BIGINT NOT NULL AUTO_INCREMENT, order_id BIGINT NOT NULL, user_id INT NOT NULL, phone VARCHAR(50), status VARCHAR(50), PRIMARY KEY (order_item_id));
 CREATE TABLE IF NOT EXISTS t_address (address_id BIGINT NOT NULL, address_name VARCHAR(100) NOT NULL, PRIMARY KEY (address_id));
 
 USE demo_ds_1;
-CREATE TABLE IF NOT EXISTS t_order(order_id BIGINT NOT NULL AUTO_INCREMENT, order_type INT(11), user_id INT NOT NULL, address_id BIGINT NOT NULL, status VARCHAR(50), PRIMARY KEY (order_id));
+CREATE TABLE IF NOT EXISTS t_order(order_id BIGINT NOT NULL AUTO_INCREMENT, order_type INT(11), user_id INT NOT NULL, address_id BIGINT NOT NULL, status VARCHAR(50)<#if feature?contains("encrypt")>, status_assisted VARCHAR(50)</#if>, PRIMARY KEY (order_id));
 CREATE TABLE IF NOT EXISTS t_order_item(order_item_id BIGINT NOT NULL AUTO_INCREMENT, order_id BIGINT NOT NULL, user_id INT NOT NULL, phone VARCHAR(50), status VARCHAR(50), PRIMARY KEY (order_item_id));
 CREATE TABLE IF NOT EXISTS t_address (address_id BIGINT NOT NULL, address_name VARCHAR(100) NOT NULL, PRIMARY KEY (address_id));
 
 USE demo_ds_2;
-CREATE TABLE IF NOT EXISTS t_order(order_id BIGINT NOT NULL AUTO_INCREMENT, order_type INT(11), user_id INT NOT NULL, address_id BIGINT NOT NULL, status VARCHAR(50), PRIMARY KEY (order_id));
+CREATE TABLE IF NOT EXISTS t_order(order_id BIGINT NOT NULL AUTO_INCREMENT, order_type INT(11), user_id INT NOT NULL, address_id BIGINT NOT NULL, status VARCHAR(50)<#if feature?contains("encrypt")>, status_assisted VARCHAR(50)</#if>, PRIMARY KEY (order_id));
 CREATE TABLE IF NOT EXISTS t_order_item(order_item_id BIGINT NOT NULL AUTO_INCREMENT, order_id BIGINT NOT NULL, user_id INT NOT NULL, phone VARCHAR(50), status VARCHAR(50), PRIMARY KEY (order_item_id));
 CREATE TABLE IF NOT EXISTS t_address (address_id BIGINT NOT NULL, address_name VARCHAR(100) NOT NULL, PRIMARY KEY (address_id));
 
 USE demo_write_ds;
-CREATE TABLE IF NOT EXISTS t_order(order_id BIGINT NOT NULL AUTO_INCREMENT, order_type INT(11), user_id INT NOT NULL, address_id BIGINT NOT NULL, status VARCHAR(50), PRIMARY KEY (order_id));
+CREATE TABLE IF NOT EXISTS t_order(order_id BIGINT NOT NULL AUTO_INCREMENT, order_type INT(11), user_id INT NOT NULL, address_id BIGINT NOT NULL, status VARCHAR(50)<#if feature?contains("encrypt")>, status_assisted VARCHAR(50)</#if>, PRIMARY KEY (order_id));
 CREATE TABLE IF NOT EXISTS t_order_item(order_item_id BIGINT NOT NULL AUTO_INCREMENT, order_id BIGINT NOT NULL, user_id INT NOT NULL, phone VARCHAR(50), status VARCHAR(50), PRIMARY KEY (order_item_id));
 CREATE TABLE IF NOT EXISTS t_address (address_id BIGINT NOT NULL, address_name VARCHAR(100) NOT NULL, PRIMARY KEY (address_id));
 
 USE demo_read_ds_0;
-CREATE TABLE IF NOT EXISTS t_order(order_id BIGINT NOT NULL AUTO_INCREMENT, order_type INT(11), user_id INT NOT NULL, address_id BIGINT NOT NULL, status VARCHAR(50), PRIMARY KEY (order_id));
+CREATE TABLE IF NOT EXISTS t_order(order_id BIGINT NOT NULL AUTO_INCREMENT, order_type INT(11), user_id INT NOT NULL, address_id BIGINT NOT NULL, status VARCHAR(50)<#if feature?contains("encrypt")>, status_assisted VARCHAR(50)</#if>, PRIMARY KEY (order_id));
 CREATE TABLE IF NOT EXISTS t_order_item(order_item_id BIGINT NOT NULL AUTO_INCREMENT, order_id BIGINT NOT NULL, user_id INT NOT NULL, phone VARCHAR(50), status VARCHAR(50), PRIMARY KEY (order_item_id));
 CREATE TABLE IF NOT EXISTS t_address (address_id BIGINT NOT NULL, address_name VARCHAR(100) NOT NULL, PRIMARY KEY (address_id));
 
 USE demo_read_ds_1;
-CREATE TABLE IF NOT EXISTS t_order(order_id BIGINT NOT NULL AUTO_INCREMENT, order_type INT(11), user_id INT NOT NULL, address_id BIGINT NOT NULL, status VARCHAR(50), PRIMARY KEY (order_id));
+CREATE TABLE IF NOT EXISTS t_order(order_id BIGINT NOT NULL AUTO_INCREMENT, order_type INT(11), user_id INT NOT NULL, address_id BIGINT NOT NULL, status VARCHAR(50)<#if feature?contains("encrypt")>, status_assisted VARCHAR(50)</#if>, PRIMARY KEY (order_id));
 CREATE TABLE IF NOT EXISTS t_order_item(order_item_id BIGINT NOT NULL AUTO_INCREMENT, order_id BIGINT NOT NULL, user_id INT NOT NULL, phone VARCHAR(50), status VARCHAR(50), PRIMARY KEY (order_item_id));
 CREATE TABLE IF NOT EXISTS t_address (address_id BIGINT NOT NULL, address_name VARCHAR(100) NOT NULL, PRIMARY KEY (address_id));
 
 USE demo_write_ds_0;
-CREATE TABLE IF NOT EXISTS t_order(order_id BIGINT NOT NULL AUTO_INCREMENT, order_type INT(11), user_id INT NOT NULL, address_id BIGINT NOT NULL, status VARCHAR(50), PRIMARY KEY (order_id));
+CREATE TABLE IF NOT EXISTS t_order(order_id BIGINT NOT NULL AUTO_INCREMENT, order_type INT(11), user_id INT NOT NULL, address_id BIGINT NOT NULL, status VARCHAR(50)<#if feature?contains("encrypt")>, status_assisted VARCHAR(50)</#if>, PRIMARY KEY (order_id));
 CREATE TABLE IF NOT EXISTS t_order_item(order_item_id BIGINT NOT NULL AUTO_INCREMENT, order_id BIGINT NOT NULL, user_id INT NOT NULL, phone VARCHAR(50), status VARCHAR(50), PRIMARY KEY (order_item_id));
 CREATE TABLE IF NOT EXISTS t_address (address_id BIGINT NOT NULL, address_name VARCHAR(100) NOT NULL, PRIMARY KEY (address_id));
 
 USE demo_write_ds_0_read_0;
-CREATE TABLE IF NOT EXISTS t_order(order_id BIGINT NOT NULL AUTO_INCREMENT, order_type INT(11), user_id INT NOT NULL, address_id BIGINT NOT NULL, status VARCHAR(50), PRIMARY KEY (order_id));
+CREATE TABLE IF NOT EXISTS t_order(order_id BIGINT NOT NULL AUTO_INCREMENT, order_type INT(11), user_id INT NOT NULL, address_id BIGINT NOT NULL, status VARCHAR(50)<#if feature?contains("encrypt")>, status_assisted VARCHAR(50)</#if>, PRIMARY KEY (order_id));
 CREATE TABLE IF NOT EXISTS t_order_item(order_item_id BIGINT NOT NULL AUTO_INCREMENT, order_id BIGINT NOT NULL, user_id INT NOT NULL, phone VARCHAR(50), status VARCHAR(50), PRIMARY KEY (order_item_id));
 CREATE TABLE IF NOT EXISTS t_address (address_id BIGINT NOT NULL, address_name VARCHAR(100) NOT NULL, PRIMARY KEY (address_id));
 
 USE demo_write_ds_0_read_1;
-CREATE TABLE IF NOT EXISTS t_order(order_id BIGINT NOT NULL AUTO_INCREMENT, order_type INT(11), user_id INT NOT NULL, address_id BIGINT NOT NULL, status VARCHAR(50), PRIMARY KEY (order_id));
+CREATE TABLE IF NOT EXISTS t_order(order_id BIGINT NOT NULL AUTO_INCREMENT, order_type INT(11), user_id INT NOT NULL, address_id BIGINT NOT NULL, status VARCHAR(50)<#if feature?contains("encrypt")>, status_assisted VARCHAR(50)</#if>, PRIMARY KEY (order_id));
 CREATE TABLE IF NOT EXISTS t_order_item(order_item_id BIGINT NOT NULL AUTO_INCREMENT, order_id BIGINT NOT NULL, user_id INT NOT NULL, phone VARCHAR(50), status VARCHAR(50), PRIMARY KEY (order_item_id));
 CREATE TABLE IF NOT EXISTS t_address (address_id BIGINT NOT NULL, address_name VARCHAR(100) NOT NULL, PRIMARY KEY (address_id));
 
 USE demo_write_ds_1;
-CREATE TABLE IF NOT EXISTS t_order(order_id BIGINT NOT NULL AUTO_INCREMENT, order_type INT(11), user_id INT NOT NULL, address_id BIGINT NOT NULL, status VARCHAR(50), PRIMARY KEY (order_id));
+CREATE TABLE IF NOT EXISTS t_order(order_id BIGINT NOT NULL AUTO_INCREMENT, order_type INT(11), user_id INT NOT NULL, address_id BIGINT NOT NULL, status VARCHAR(50)<#if feature?contains("encrypt")>, status_assisted VARCHAR(50)</#if>, PRIMARY KEY (order_id));
 CREATE TABLE IF NOT EXISTS t_order_item(order_item_id BIGINT NOT NULL AUTO_INCREMENT, order_id BIGINT NOT NULL, user_id INT NOT NULL, phone VARCHAR(50), status VARCHAR(50), PRIMARY KEY (order_item_id));
 CREATE TABLE IF NOT EXISTS t_address (address_id BIGINT NOT NULL, address_name VARCHAR(100) NOT NULL, PRIMARY KEY (address_id));
 
 USE demo_write_ds_1_read_0;
-CREATE TABLE IF NOT EXISTS t_order(order_id BIGINT NOT NULL AUTO_INCREMENT, order_type INT(11), user_id INT NOT NULL, address_id BIGINT NOT NULL, status VARCHAR(50), PRIMARY KEY (order_id));
+CREATE TABLE IF NOT EXISTS t_order(order_id BIGINT NOT NULL AUTO_INCREMENT, order_type INT(11), user_id INT NOT NULL, address_id BIGINT NOT NULL, status VARCHAR(50)<#if feature?contains("encrypt")>, status_assisted VARCHAR(50)</#if>, PRIMARY KEY (order_id));
 CREATE TABLE IF NOT EXISTS t_order_item(order_item_id BIGINT NOT NULL AUTO_INCREMENT, order_id BIGINT NOT NULL, user_id INT NOT NULL, phone VARCHAR(50), status VARCHAR(50), PRIMARY KEY (order_item_id));
 CREATE TABLE IF NOT EXISTS t_address (address_id BIGINT NOT NULL, address_name VARCHAR(100) NOT NULL, PRIMARY KEY (address_id));
 
 USE demo_write_ds_1_read_1;
-CREATE TABLE IF NOT EXISTS t_order(order_id BIGINT NOT NULL AUTO_INCREMENT, order_type INT(11), user_id INT NOT NULL, address_id BIGINT NOT NULL, status VARCHAR(50), PRIMARY KEY (order_id));
+CREATE TABLE IF NOT EXISTS t_order(order_id BIGINT NOT NULL AUTO_INCREMENT, order_type INT(11), user_id INT NOT NULL, address_id BIGINT NOT NULL, status VARCHAR(50)<#if feature?contains("encrypt")>, status_assisted VARCHAR(50)</#if>, PRIMARY KEY (order_id));
 CREATE TABLE IF NOT EXISTS t_order_item(order_item_id BIGINT NOT NULL AUTO_INCREMENT, order_id BIGINT NOT NULL, user_id INT NOT NULL, phone VARCHAR(50), status VARCHAR(50), PRIMARY KEY (order_item_id));
 CREATE TABLE IF NOT EXISTS t_address (address_id BIGINT NOT NULL, address_name VARCHAR(100) NOT NULL, PRIMARY KEY (address_id));
 
 USE shadow_demo_ds;
-CREATE TABLE IF NOT EXISTS t_order(order_id BIGINT NOT NULL AUTO_INCREMENT, order_type INT(11), user_id INT NOT NULL, address_id BIGINT NOT NULL, status VARCHAR(50), PRIMARY KEY (order_id));
+CREATE TABLE IF NOT EXISTS t_order(order_id BIGINT NOT NULL AUTO_INCREMENT, order_type INT(11), user_id INT NOT NULL, address_id BIGINT NOT NULL, status VARCHAR(50)<#if feature?contains("encrypt")>, status_assisted VARCHAR(50)</#if>, PRIMARY KEY (order_id));
 CREATE TABLE IF NOT EXISTS t_order_item(order_item_id BIGINT NOT NULL AUTO_INCREMENT, order_id BIGINT NOT NULL, user_id INT NOT NULL, phone VARCHAR(50), status VARCHAR(50), PRIMARY KEY (order_item_id));
 CREATE TABLE IF NOT EXISTS t_address (address_id BIGINT NOT NULL, address_name VARCHAR(100) NOT NULL, PRIMARY KEY (address_id));
 
 USE shadow_demo_ds_0;
-CREATE TABLE IF NOT EXISTS t_order(order_id BIGINT NOT NULL AUTO_INCREMENT, order_type INT(11), user_id INT NOT NULL, address_id BIGINT NOT NULL, status VARCHAR(50), PRIMARY KEY (order_id));
+CREATE TABLE IF NOT EXISTS t_order(order_id BIGINT NOT NULL AUTO_INCREMENT, order_type INT(11), user_id INT NOT NULL, address_id BIGINT NOT NULL, status VARCHAR(50)<#if feature?contains("encrypt")>, status_assisted VARCHAR(50)</#if>, PRIMARY KEY (order_id));
 CREATE TABLE IF NOT EXISTS t_order_item(order_item_id BIGINT NOT NULL AUTO_INCREMENT, order_id BIGINT NOT NULL, user_id INT NOT NULL, phone VARCHAR(50), status VARCHAR(50), PRIMARY KEY (order_item_id));
 CREATE TABLE IF NOT EXISTS t_address (address_id BIGINT NOT NULL, address_name VARCHAR(100) NOT NULL, PRIMARY KEY (address_id));
 
 USE shadow_demo_ds_1;
-CREATE TABLE IF NOT EXISTS t_order(order_id BIGINT NOT NULL AUTO_INCREMENT, order_type INT(11), user_id INT NOT NULL, address_id BIGINT NOT NULL, status VARCHAR(50), PRIMARY KEY (order_id));
+CREATE TABLE IF NOT EXISTS t_order(order_id BIGINT NOT NULL AUTO_INCREMENT, order_type INT(11), user_id INT NOT NULL, address_id BIGINT NOT NULL, status VARCHAR(50)<#if feature?contains("encrypt")>, status_assisted VARCHAR(50)</#if>, PRIMARY KEY (order_id));
 CREATE TABLE IF NOT EXISTS t_order_item(order_item_id BIGINT NOT NULL AUTO_INCREMENT, order_id BIGINT NOT NULL, user_id INT NOT NULL, phone VARCHAR(50), status VARCHAR(50), PRIMARY KEY (order_item_id));
 CREATE TABLE IF NOT EXISTS t_address (address_id BIGINT NOT NULL, address_name VARCHAR(100) NOT NULL, PRIMARY KEY (address_id));
 
 USE demo_shadow_write_ds;
-CREATE TABLE IF NOT EXISTS t_order(order_id BIGINT NOT NULL AUTO_INCREMENT, order_type INT(11), user_id INT NOT NULL, address_id BIGINT NOT NULL, status VARCHAR(50), PRIMARY KEY (order_id));
+CREATE TABLE IF NOT EXISTS t_order(order_id BIGINT NOT NULL AUTO_INCREMENT, order_type INT(11), user_id INT NOT NULL, address_id BIGINT NOT NULL, status VARCHAR(50)<#if feature?contains("encrypt")>, status_assisted VARCHAR(50)</#if>, PRIMARY KEY (order_id));
 CREATE TABLE IF NOT EXISTS t_order_item(order_item_id BIGINT NOT NULL AUTO_INCREMENT, order_id BIGINT NOT NULL, user_id INT NOT NULL, phone VARCHAR(50), status VARCHAR(50), PRIMARY KEY (order_item_id));
 CREATE TABLE IF NOT EXISTS t_address (address_id BIGINT NOT NULL, address_name VARCHAR(100) NOT NULL, PRIMARY KEY (address_id));
 
 USE demo_shadow_read_ds;
-CREATE TABLE IF NOT EXISTS t_order(order_id BIGINT NOT NULL AUTO_INCREMENT, order_type INT(11), user_id INT NOT NULL, address_id BIGINT NOT NULL, status VARCHAR(50), PRIMARY KEY (order_id));
+CREATE TABLE IF NOT EXISTS t_order(order_id BIGINT NOT NULL AUTO_INCREMENT, order_type INT(11), user_id INT NOT NULL, address_id BIGINT NOT NULL, status VARCHAR(50)<#if feature?contains("encrypt")>, status_assisted VARCHAR(50)</#if>, PRIMARY KEY (order_id));
 CREATE TABLE IF NOT EXISTS t_order_item(order_item_id BIGINT NOT NULL AUTO_INCREMENT, order_id BIGINT NOT NULL, user_id INT NOT NULL, phone VARCHAR(50), status VARCHAR(50), PRIMARY KEY (order_item_id));
 CREATE TABLE IF NOT EXISTS t_address (address_id BIGINT NOT NULL, address_name VARCHAR(100) NOT NULL, PRIMARY KEY (address_id));
 
 USE demo_read_ds;
-CREATE TABLE IF NOT EXISTS t_order(order_id BIGINT NOT NULL AUTO_INCREMENT, order_type INT(11), user_id INT NOT NULL, address_id BIGINT NOT NULL, status VARCHAR(50), PRIMARY KEY (order_id));
+CREATE TABLE IF NOT EXISTS t_order(order_id BIGINT NOT NULL AUTO_INCREMENT, order_type INT(11), user_id INT NOT NULL, address_id BIGINT NOT NULL, status VARCHAR(50)<#if feature?contains("encrypt")>, status_assisted VARCHAR(50)</#if>, PRIMARY KEY (order_id));
 CREATE TABLE IF NOT EXISTS t_order_item(order_item_id BIGINT NOT NULL AUTO_INCREMENT, order_id BIGINT NOT NULL, user_id INT NOT NULL, phone VARCHAR(50), status VARCHAR(50), PRIMARY KEY (order_item_id));
 CREATE TABLE IF NOT EXISTS t_address (address_id BIGINT NOT NULL, address_name VARCHAR(100) NOT NULL, PRIMARY KEY (address_id));

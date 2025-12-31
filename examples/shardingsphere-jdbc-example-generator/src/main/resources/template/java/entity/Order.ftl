@@ -62,6 +62,13 @@ public class Order implements Serializable {
     @Column(name = "status")
     </#if>
     private String status;
+
+    <#if feature?contains("encrypt")>
+    <#if framework?contains("jpa")>
+    @Column(name = "status_assisted")
+    </#if>
+    private String statusAssisted;
+    </#if>
     
     public long getOrderId() {
         return orderId;
@@ -94,6 +101,16 @@ public class Order implements Serializable {
     public void setStatus(final String status) {
         this.status = status;
     }
+
+    <#if feature?contains("encrypt")>
+    public String getStatusAssisted() {
+        return statusAssisted;
+    }
+    
+    public void setStatusAssisted(final String statusAssisted) {
+        this.statusAssisted = statusAssisted;
+    }
+    </#if>
     
     public long getAddressId() {
         return addressId;
@@ -105,6 +122,14 @@ public class Order implements Serializable {
     
     @Override
     public String toString() {
-        return String.format("order_id: %s, order_type: %s, user_id: %s, address_id: %s, status: %s", orderId, orderType, userId, addressId, status);
+        return String.format("order_id: %s, order_type: %s, user_id: %s, address_id: %s, status: %s"
+                <#if feature?contains("encrypt")>
+                + ", status_assisted: %s"
+                </#if>
+                , orderId, orderType, userId, addressId, status
+                <#if feature?contains("encrypt")>
+                , statusAssisted
+                </#if>
+        );
     }
 }
