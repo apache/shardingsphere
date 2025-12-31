@@ -43,7 +43,7 @@ public final class IntegerPositionHandler implements DataTypePositionHandler<Big
     }
     
     @Override
-    public UniqueKeyIngestPosition<BigInteger> createIngestPosition(final BigInteger lowerBound, final BigInteger upperBound) {
-        return UniqueKeyIngestPosition.ofInteger(Range.closed(lowerBound, upperBound));
+    public UniqueKeyIngestPosition<BigInteger> createIngestPosition(final Range<BigInteger> range) {
+        return UniqueKeyIngestPosition.ofInteger(range);
     }
 }

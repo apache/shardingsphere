@@ -40,7 +40,7 @@ public final class StringPositionHandler implements DataTypePositionHandler<Stri
     }
     
     @Override
-    public UniqueKeyIngestPosition<String> createIngestPosition(final String lowerBound, final String upperBound) {
-        return UniqueKeyIngestPosition.ofString(Range.closed(lowerBound, upperBound));
+    public UniqueKeyIngestPosition<String> createIngestPosition(final Range<String> range) {
+        return UniqueKeyIngestPosition.ofString(range);
     }
 }

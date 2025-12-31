@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.data.pipeline.core.preparer.inventory.calculator.position.exact;
 
+import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.inventory.query.Range;
 import org.apache.shardingsphere.data.pipeline.core.ingest.position.type.pk.UniqueKeyIngestPosition;
 
 import java.sql.PreparedStatement;
@@ -53,9 +54,8 @@ public interface DataTypePositionHandler<T> {
     /**
      * Create ingest position.
      *
-     * @param lowerBound lower bound
-     * @param upperBound upper bound
+     * @param range range
      * @return ingest position
      */
-    UniqueKeyIngestPosition<T> createIngestPosition(T lowerBound, T upperBound);
+    UniqueKeyIngestPosition<T> createIngestPosition(Range<T> range);
 }

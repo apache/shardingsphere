@@ -22,6 +22,7 @@ import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSource;
 import org.apache.shardingsphere.data.pipeline.core.exception.job.SplitPipelineJobByUniqueKeyException;
+import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.inventory.query.Range;
 import org.apache.shardingsphere.data.pipeline.core.ingest.position.IngestPosition;
 import org.apache.shardingsphere.data.pipeline.core.ingest.position.type.pk.UniqueKeyIngestPosition;
 import org.apache.shardingsphere.data.pipeline.core.sqlbuilder.sql.PipelinePrepareSQLBuilder;
@@ -73,16 +74,16 @@ public final class InventoryPositionExactCalculator {
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
                 if (!resultSet.next()) {
                     log.info("No any record, return. First query SQL: {}", firstQuerySQL);
-                    return positionHandler.createIngestPosition(null, null);
+                    return positionHandler.createIngestPosition(Range.closed(null, null));
                 }
                 long count = resultSet.getLong(2);
                 T minValue = positionHandler.readColumnValue(resultSet, 3);
                 T maxValue = positionHandler.readColumnValue(resultSet, 1);
                 log.info("First records count: {}, min value: {}, max value: {}, sharding size: {}, first query SQL: {}", count, minValue, maxValue, shardingSize, firstQuerySQL);
                 if (0 == count) {
-                    return positionHandler.createIngestPosition(null, null);
+                    return positionHandler.createIngestPosition(Range.closed(null, null));
                 }
-                return positionHandler.createIngestPosition(minValue, maxValue);
+                return positionHandler.createIngestPosition(Range.closed(minValue, maxValue));
             }
         } catch (final SQLException ex) {
             throw new SplitPipelineJobByUniqueKeyException(qualifiedTable.getTableName(), uniqueKey, ex);
@@ -115,7 +116,7 @@ public final class InventoryPositionExactCalculator {
                     recordsCount += count;
                     T minValue = positionHandler.readColumnValue(resultSet, 3);
                     T maxValue = positionHandler.readColumnValue(resultSet, 1);
-                    result.add(positionHandler.createIngestPosition(minValue, maxValue));
+                    result.add(positionHandler.createIngestPosition(Range.closed(minValue, maxValue)));
                     lowerBound = maxValue;
                 }
             }
