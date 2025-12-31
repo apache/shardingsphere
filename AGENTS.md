@@ -34,7 +34,8 @@ This guide is written **for AI coding agents only**. Follow it literally; improv
 - **Continuous Verification**: rely on automated tests and integration validation.
 - **Test Naming Simplicity**: keep test names concise and scenario-focused (avoid “ReturnsXXX”/overly wordy or AI-like phrasing); describe the scenario directly.
 - **Coverage Discipline**: follow the dedicated coverage & branch checklist before coding when coverage targets are stated.
-- **One public method, one test**: each public production method must be covered by exactly one dedicated test method.
+- **Dedicated and scoped tests**: each public production method must be covered by dedicated test methods; each test method covers only one scenario and invokes the target public method at most once (repeat only when the same scenario needs extra assertions), and different branches/inputs belong in separate test methods.
+- **Parameterized tests naming**: all parameterized tests must set an explicit `name` including the index (e.g., `"[{index}] foo={0}"`) so scenarios are distinguishable in reports.
 - **Mocking Rule**: default to mocks; see Mocking & SPI Guidance for static/constructor mocking and spy avoidance details.
 ## Tool Usage Guide
 
