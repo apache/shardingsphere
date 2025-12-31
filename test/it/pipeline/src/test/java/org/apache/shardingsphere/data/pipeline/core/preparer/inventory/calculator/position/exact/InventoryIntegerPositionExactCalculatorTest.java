@@ -19,8 +19,9 @@ package org.apache.shardingsphere.data.pipeline.core.preparer.inventory.calculat
 
 import org.apache.commons.text.RandomStringGenerator;
 import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSource;
+import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.inventory.query.Range;
 import org.apache.shardingsphere.data.pipeline.core.ingest.position.IngestPosition;
-import org.apache.shardingsphere.data.pipeline.core.ingest.position.type.pk.type.IntegerPrimaryKeyIngestPosition;
+import org.apache.shardingsphere.data.pipeline.core.ingest.position.type.pk.UniqueKeyIngestPosition;
 import org.apache.shardingsphere.data.pipeline.core.util.DataSourceTestUtils;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.database.schema.QualifiedTable;
@@ -85,29 +86,29 @@ class InventoryIntegerPositionExactCalculatorTest {
     void assertGetPositionsWithOrderIdUniqueKey() {
         List<IngestPosition> actual = InventoryPositionExactCalculator.getPositions(new QualifiedTable(null, "t_order"), "order_id", 3, dataSource, new IntegerPositionHandler());
         assertThat(actual.size(), is(4));
-        assertIntegerPrimaryKeyIngestPosition0(actual.get(0), createIntegerPosition(1L, 3L));
-        assertIntegerPrimaryKeyIngestPosition0(actual.get(1), createIntegerPosition(4L, 6L));
-        assertIntegerPrimaryKeyIngestPosition0(actual.get(2), createIntegerPosition(7L, 9L));
-        assertIntegerPrimaryKeyIngestPosition0(actual.get(3), createIntegerPosition(10L, 11L));
+        assertIntegerPosition0(actual.get(0), createIntegerPosition(1L, 3L));
+        assertIntegerPosition0(actual.get(1), createIntegerPosition(4L, 6L));
+        assertIntegerPosition0(actual.get(2), createIntegerPosition(7L, 9L));
+        assertIntegerPosition0(actual.get(3), createIntegerPosition(10L, 11L));
     }
     
-    private IntegerPrimaryKeyIngestPosition createIntegerPosition(final long beginValue, final long endValue) {
-        return new IntegerPrimaryKeyIngestPosition(BigInteger.valueOf(beginValue), BigInteger.valueOf(endValue));
+    private UniqueKeyIngestPosition<BigInteger> createIntegerPosition(final long lowerBound, final long upperBound) {
+        return UniqueKeyIngestPosition.ofInteger(Range.closed(BigInteger.valueOf(lowerBound), BigInteger.valueOf(upperBound)));
     }
     
-    private void assertIntegerPrimaryKeyIngestPosition0(final IngestPosition actual, final IntegerPrimaryKeyIngestPosition expected) {
-        assertThat(actual, isA(IntegerPrimaryKeyIngestPosition.class));
-        IntegerPrimaryKeyIngestPosition position = (IntegerPrimaryKeyIngestPosition) actual;
+    private void assertIntegerPosition0(final IngestPosition actual, final UniqueKeyIngestPosition<BigInteger> expected) {
+        assertThat(actual, isA(UniqueKeyIngestPosition.class));
+        UniqueKeyIngestPosition<?> position = (UniqueKeyIngestPosition<?>) actual;
         assertThat(position.getType(), is(expected.getType()));
-        assertThat(position.getBeginValue(), is(expected.getBeginValue()));
-        assertThat(position.getEndValue(), is(expected.getEndValue()));
+        assertThat(position.getLowerBound(), is(expected.getLowerBound()));
+        assertThat(position.getUpperBound(), is(expected.getUpperBound()));
     }
     
     @Test
     void assertGetPositionsWithMultiColumnUniqueKeys() {
         List<IngestPosition> actual = InventoryPositionExactCalculator.getPositions(new QualifiedTable(null, "t_order"), "user_id", 3, dataSource, new IntegerPositionHandler());
         assertThat(actual.size(), is(2));
-        assertIntegerPrimaryKeyIngestPosition0(actual.get(0), createIntegerPosition(1L, 3L));
-        assertIntegerPrimaryKeyIngestPosition0(actual.get(1), createIntegerPosition(4L, 6L));
+        assertIntegerPosition0(actual.get(0), createIntegerPosition(1L, 3L));
+        assertIntegerPosition0(actual.get(1), createIntegerPosition(4L, 6L));
     }
 }

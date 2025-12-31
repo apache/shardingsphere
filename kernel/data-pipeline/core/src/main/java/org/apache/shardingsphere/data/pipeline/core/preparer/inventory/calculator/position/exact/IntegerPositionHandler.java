@@ -17,7 +17,8 @@
 
 package org.apache.shardingsphere.data.pipeline.core.preparer.inventory.calculator.position.exact;
 
-import org.apache.shardingsphere.data.pipeline.core.ingest.position.type.pk.type.IntegerPrimaryKeyIngestPosition;
+import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.inventory.query.Range;
+import org.apache.shardingsphere.data.pipeline.core.ingest.position.type.pk.UniqueKeyIngestPosition;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -42,7 +43,7 @@ public final class IntegerPositionHandler implements DataTypePositionHandler<Big
     }
     
     @Override
-    public IntegerPrimaryKeyIngestPosition createIngestPosition(final BigInteger lowerBound, final BigInteger upperBound) {
-        return new IntegerPrimaryKeyIngestPosition(lowerBound, upperBound);
+    public UniqueKeyIngestPosition<BigInteger> createIngestPosition(final BigInteger lowerBound, final BigInteger upperBound) {
+        return UniqueKeyIngestPosition.ofInteger(Range.closed(lowerBound, upperBound));
     }
 }

@@ -19,8 +19,8 @@ package org.apache.shardingsphere.data.pipeline.core.job.progress.yaml.swapper;
 
 import com.google.common.base.Strings;
 import org.apache.shardingsphere.data.pipeline.core.ingest.position.type.finished.IngestFinishedPosition;
+import org.apache.shardingsphere.data.pipeline.core.ingest.position.type.pk.UniqueKeyIngestPosition;
 import org.apache.shardingsphere.data.pipeline.core.ingest.position.type.placeholder.IngestPlaceholderPosition;
-import org.apache.shardingsphere.data.pipeline.core.ingest.position.type.pk.PrimaryKeyIngestPositionFactory;
 import org.apache.shardingsphere.data.pipeline.core.job.progress.JobItemInventoryTasksProgress;
 import org.apache.shardingsphere.data.pipeline.core.job.progress.yaml.config.YamlJobItemInventoryTasksProgress;
 import org.apache.shardingsphere.data.pipeline.core.task.progress.InventoryTaskProgress;
@@ -83,6 +83,6 @@ public final class YamlJobItemInventoryTasksProgressSwapper {
     
     private Function<Entry<String, String>, InventoryTaskProgress> getInventoryTaskProgressFunction() {
         return entry -> new InventoryTaskProgress(
-                Strings.isNullOrEmpty(entry.getValue()) ? new IngestPlaceholderPosition() : PrimaryKeyIngestPositionFactory.newInstance(entry.getValue()));
+                Strings.isNullOrEmpty(entry.getValue()) ? new IngestPlaceholderPosition() : UniqueKeyIngestPosition.decode(entry.getValue()));
     }
 }

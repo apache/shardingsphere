@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.data.pipeline.scenario.consistencycheck.context;
 
 import org.apache.shardingsphere.data.pipeline.core.consistencycheck.position.TableCheckRangePosition;
-import org.apache.shardingsphere.data.pipeline.core.ingest.position.type.pk.PrimaryKeyIngestPosition;
-import org.apache.shardingsphere.data.pipeline.core.ingest.position.type.pk.type.IntegerPrimaryKeyIngestPosition;
+import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.inventory.query.Range;
+import org.apache.shardingsphere.data.pipeline.core.ingest.position.type.pk.UniqueKeyIngestPosition;
 import org.apache.shardingsphere.data.pipeline.core.job.JobStatus;
 import org.apache.shardingsphere.data.pipeline.core.job.progress.ConsistencyCheckJobItemProgress;
 import org.apache.shardingsphere.data.pipeline.scenario.consistencycheck.config.ConsistencyCheckJobConfiguration;
@@ -65,8 +65,8 @@ class ConsistencyCheckJobItemContextTest {
                 new TableCheckRangePosition(1, DATA_NODE, TABLE, createIntegerPosition(101L, 200L), createIntegerPosition(101L, 203L), null, 132, 132, false, null));
     }
     
-    private IntegerPrimaryKeyIngestPosition createIntegerPosition(final long beginValue, final long endValue) {
-        return new IntegerPrimaryKeyIngestPosition(BigInteger.valueOf(beginValue), BigInteger.valueOf(endValue));
+    private UniqueKeyIngestPosition<BigInteger> createIntegerPosition(final long lowerBound, final long upperBound) {
+        return UniqueKeyIngestPosition.ofInteger(Range.closed(BigInteger.valueOf(lowerBound), BigInteger.valueOf(upperBound)));
     }
     
     private void assertTableCheckRangePosition(final TableCheckRangePosition actual, final TableCheckRangePosition expected) {
@@ -80,10 +80,10 @@ class ConsistencyCheckJobItemContextTest {
         assertThat(actual.isFinished(), is(expected.isFinished()));
     }
     
-    private void assertRange(final PrimaryKeyIngestPosition<?> actual, final PrimaryKeyIngestPosition<?> expected) {
+    private void assertRange(final UniqueKeyIngestPosition<?> actual, final UniqueKeyIngestPosition<?> expected) {
         assertThat(actual.getClass(), is(expected.getClass()));
-        assertThat(actual, instanceOf(IntegerPrimaryKeyIngestPosition.class));
-        assertThat(((IntegerPrimaryKeyIngestPosition) actual).getBeginValue(), is(((IntegerPrimaryKeyIngestPosition) expected).getBeginValue()));
-        assertThat(((IntegerPrimaryKeyIngestPosition) actual).getEndValue(), is(((IntegerPrimaryKeyIngestPosition) expected).getEndValue()));
+        assertThat(actual, instanceOf(UniqueKeyIngestPosition.class));
+        assertThat(actual.getLowerBound(), is(expected.getLowerBound()));
+        assertThat(actual.getUpperBound(), is(expected.getUpperBound()));
     }
 }

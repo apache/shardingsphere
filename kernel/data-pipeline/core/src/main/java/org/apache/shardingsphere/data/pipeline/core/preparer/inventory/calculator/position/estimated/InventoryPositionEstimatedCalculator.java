@@ -24,7 +24,7 @@ import org.apache.shardingsphere.data.pipeline.core.exception.job.SplitPipelineJ
 import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.inventory.query.IntegerRangeSplittingIterator;
 import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.inventory.query.Range;
 import org.apache.shardingsphere.data.pipeline.core.ingest.position.IngestPosition;
-import org.apache.shardingsphere.data.pipeline.core.ingest.position.type.pk.type.IntegerPrimaryKeyIngestPosition;
+import org.apache.shardingsphere.data.pipeline.core.ingest.position.type.pk.UniqueKeyIngestPosition;
 import org.apache.shardingsphere.data.pipeline.core.sqlbuilder.sql.PipelinePrepareSQLBuilder;
 import org.apache.shardingsphere.infra.metadata.database.schema.QualifiedTable;
 
@@ -81,15 +81,14 @@ public final class InventoryPositionEstimatedCalculator {
         BigInteger lowerBound = uniqueKeyValuesRange.getLowerBound();
         BigInteger upperBound = uniqueKeyValuesRange.getUpperBound();
         if (0 == tableRecordsCount || null == lowerBound || null == upperBound) {
-            return Collections.singletonList(new IntegerPrimaryKeyIngestPosition(null, null));
+            return Collections.singletonList(UniqueKeyIngestPosition.ofInteger(Range.closed(null, null)));
         }
         List<IngestPosition> result = new LinkedList<>();
         long splitCount = tableRecordsCount / shardingSize + (tableRecordsCount % shardingSize > 0 ? 1 : 0);
         BigInteger stepSize = upperBound.subtract(lowerBound).divide(BigInteger.valueOf(splitCount));
         IntegerRangeSplittingIterator rangeIterator = new IntegerRangeSplittingIterator(lowerBound, upperBound, stepSize);
         while (rangeIterator.hasNext()) {
-            Range<BigInteger> range = rangeIterator.next();
-            result.add(new IntegerPrimaryKeyIngestPosition(range.getLowerBound(), range.getUpperBound()));
+            result.add(UniqueKeyIngestPosition.ofInteger(rangeIterator.next()));
         }
         return result;
     }
