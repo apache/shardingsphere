@@ -42,6 +42,7 @@ import javax.transaction.TransactionManager;
 import java.sql.Connection;
 import java.sql.SQLException;
 
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.never;
@@ -105,5 +106,32 @@ class XATransactionDataSourceTest {
         XATransactionDataSource transactionDataSource = new XATransactionDataSource(TypedSPILoader.getService(DatabaseType.class, "H2"), "ds1", dataSource, xaTransactionManagerProvider);
         transactionDataSource.close();
         verify(xaTransactionManagerProvider).removeRecoveryResource(anyString(), any(XADataSource.class));
+    }
+    
+    @Test
+    void assertCloseConnectionWhenEnlistResourceFailedWithSystemException() throws SystemException, RollbackException {
+        DataSource dataSource = DataSourceUtils.build(HikariDataSource.class, TypedSPILoader.getService(DatabaseType.class, "H2"), "ds1");
+        XATransactionDataSource transactionDataSource = new XATransactionDataSource(TypedSPILoader.getService(DatabaseType.class, "H2"), "ds1", dataSource, xaTransactionManagerProvider);
+        when(transaction.enlistResource(any())).thenThrow(new SystemException("enlist resource failed"));
+        assertThrows(SystemException.class, transactionDataSource::getConnection);
+        verify(transaction).enlistResource(any(SingleXAResource.class));
+    }
+    
+    @Test
+    void assertCloseConnectionWhenEnlistResourceFailedWithRollbackException() throws RollbackException, SystemException {
+        DataSource dataSource = DataSourceUtils.build(HikariDataSource.class, TypedSPILoader.getService(DatabaseType.class, "H2"), "ds1");
+        XATransactionDataSource transactionDataSource = new XATransactionDataSource(TypedSPILoader.getService(DatabaseType.class, "H2"), "ds1", dataSource, xaTransactionManagerProvider);
+        when(transaction.enlistResource(any())).thenThrow(new RollbackException("enlist resource failed"));
+        assertThrows(RollbackException.class, transactionDataSource::getConnection);
+        verify(transaction).enlistResource(any(SingleXAResource.class));
+    }
+    
+    @Test
+    void assertCloseConnectionWhenEnlistResourceFailedWithRuntimeException() throws SystemException, RollbackException {
+        DataSource dataSource = DataSourceUtils.build(HikariDataSource.class, TypedSPILoader.getService(DatabaseType.class, "H2"), "ds1");
+        XATransactionDataSource transactionDataSource = new XATransactionDataSource(TypedSPILoader.getService(DatabaseType.class, "H2"), "ds1", dataSource, xaTransactionManagerProvider);
+        when(transaction.enlistResource(any())).thenThrow(new RuntimeException("enlist resource failed"));
+        assertThrows(RuntimeException.class, transactionDataSource::getConnection);
+        verify(transaction).enlistResource(any(SingleXAResource.class));
     }
 }
