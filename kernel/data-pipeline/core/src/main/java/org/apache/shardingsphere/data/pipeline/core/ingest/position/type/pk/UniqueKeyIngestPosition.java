@@ -171,4 +171,10 @@ public final class UniqueKeyIngestPosition<T> implements IngestPosition {
     public T getUpperBound() {
         return range.getUpperBound();
     }
+    
+    @Override
+    public String toString() {
+        // TODO Add encode() method in IngestPosition interface, and remove .toString() invocations.
+        return encode();
+    }
 }
