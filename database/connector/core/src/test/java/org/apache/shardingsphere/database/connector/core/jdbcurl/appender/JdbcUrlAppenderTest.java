@@ -29,7 +29,6 @@ import java.util.stream.Stream;
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.startsWith;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.params.provider.Arguments.arguments;
 
 class JdbcUrlAppenderTest {
     
@@ -45,22 +44,22 @@ class JdbcUrlAppenderTest {
     
     private static Stream<Arguments> appendQueryPropertiesProvider() {
         return Stream.of(
-                arguments(
+                Arguments.arguments(
                         "jdbc:trunk://192.168.0.1:3306/foo_ds?useSSL=false&rewriteBatchedStatements=true",
                         new Properties(),
                         "jdbc:trunk://192.168.0.1:3306/foo_ds",
                         new String[]{"rewriteBatchedStatements=true", "useSSL=false"}),
-                arguments(
+                Arguments.arguments(
                         "jdbc:trunk://192.168.0.1:3306/foo_ds",
                         PropertiesBuilder.build(new Property("useSSL", Boolean.FALSE.toString()), new Property("rewriteBatchedStatements", Boolean.TRUE.toString())),
                         "jdbc:trunk://192.168.0.1:3306/foo_ds?",
                         new String[]{"rewriteBatchedStatements=true", "useSSL=false"}),
-                arguments(
+                Arguments.arguments(
                         "jdbc:trunk://192.168.0.1:3306/foo_ds?useSSL=false&rewriteBatchedStatements=true",
                         PropertiesBuilder.build(new Property("useSSL", Boolean.FALSE.toString()), new Property("rewriteBatchedStatements", Boolean.TRUE.toString())),
                         "jdbc:trunk://192.168.0.1:3306/foo_ds?",
                         new String[]{"rewriteBatchedStatements=true", "useSSL=false"}),
-                arguments(
+                Arguments.arguments(
                         "jdbc:trunk://192.168.0.1:3306/foo_ds?useSSL=false",
                         PropertiesBuilder.build(new Property("rewriteBatchedStatements", Boolean.TRUE.toString())),
                         "jdbc:trunk://192.168.0.1:3306/foo_ds?",
