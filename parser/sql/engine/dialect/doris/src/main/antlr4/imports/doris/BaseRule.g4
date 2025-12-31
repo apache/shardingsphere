@@ -405,6 +405,7 @@ identifierKeywordsUnambiguous
     | QUARTER
     | QUERY
     | QUICK
+    | QUOTA
     | RANDOM
     | RANK
     | READ_ONLY
@@ -761,6 +762,18 @@ procedureName
     ;
 
 viewName
+    : (owner DOT_)? identifier
+    ;
+
+viewColumnDefinition
+    : columnName (COMMENT string_)?
+    ;
+
+viewColumnDefinitions
+    : viewColumnDefinition (COMMA_ viewColumnDefinition)*
+    ;
+
+encryptKeyName
     : (owner DOT_)? identifier
     ;
 
