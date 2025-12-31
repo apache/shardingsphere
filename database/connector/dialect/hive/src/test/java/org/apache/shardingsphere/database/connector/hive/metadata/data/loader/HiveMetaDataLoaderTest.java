@@ -89,9 +89,9 @@ class HiveMetaDataLoaderTest {
     }
     
     @Test
-    void assertLoad() throws SQLException {
-        DataSource dataSourceWithFilter = mockDataSource(mockInformationSchemaConnection(true), mockColumnMetaDataConnectionWithInformationSchemaAndFilter());
-        Collection<SchemaMetaData> filteredSchemas = loader.load(new MetaDataLoaderMaterial(Collections.singleton("target_table"), "ds_0", dataSourceWithFilter, databaseType, "def_schema"));
+    void assertLoadWithInformationSchemaAndFilter() throws SQLException {
+        DataSource dataSource = mockDataSource(mockInformationSchemaConnection(true), mockColumnMetaDataConnectionWithInformationSchemaAndFilter());
+        Collection<SchemaMetaData> filteredSchemas = loader.load(new MetaDataLoaderMaterial(Collections.singleton("target_table"), "ds_0", dataSource, databaseType, "def_schema"));
         SchemaMetaData filteredSchema = filteredSchemas.iterator().next();
         TableMetaData filteredTable = filteredSchema.getTables().iterator().next();
         Iterator<ColumnMetaData> filteredColumns = filteredTable.getColumns().iterator();
@@ -102,18 +102,31 @@ class HiveMetaDataLoaderTest {
         ColumnMetaData secondColumn = filteredColumns.next();
         assertThat(secondColumn.getDataType(), is(Types.OTHER));
         assertFalse(secondColumn.isNullable());
-        DataSource dataSourceWithoutFilter = mockDataSource(mockInformationSchemaConnection(true), mockColumnMetaDataConnectionWithInformationSchemaWithoutFilter());
-        Collection<SchemaMetaData> fullSchemas = loader.load(new MetaDataLoaderMaterial(Collections.emptyList(), "ds_1", dataSourceWithoutFilter, databaseType, "default_db"));
+    }
+    
+    @Test
+    void assertLoadWithInformationSchemaWithoutFilter() throws SQLException {
+        DataSource dataSource = mockDataSource(mockInformationSchemaConnection(true), mockColumnMetaDataConnectionWithInformationSchemaWithoutFilter());
+        Collection<SchemaMetaData> fullSchemas = loader.load(new MetaDataLoaderMaterial(Collections.emptyList(), "ds_1", dataSource, databaseType, "default_db"));
         SchemaMetaData fullSchema = fullSchemas.iterator().next();
         assertThat(fullSchema.getTables().iterator().next().getName(), is("full_table"));
-        DataSource dataSourceWithoutInformationSchema = mockDataSource(mockInformationSchemaConnection(false));
-        TableMetaData presentTable = new TableMetaData("present_table", Collections.emptyList(), Collections.emptyList(), Collections.emptyList());
-        when(TableMetaDataLoader.load(dataSourceWithoutInformationSchema, "missing_table", databaseType)).thenReturn(Optional.empty());
-        when(TableMetaDataLoader.load(dataSourceWithoutInformationSchema, "present_table", databaseType)).thenReturn(Optional.of(presentTable));
-        Collection<SchemaMetaData> fallbackSchemas = loader.load(new MetaDataLoaderMaterial(
-                Arrays.asList("missing_table", "present_table"), "ds_2", dataSourceWithoutInformationSchema, databaseType, "fallback_schema"));
+    }
+    
+    @Test
+    void assertLoadWithoutInformationSchemaFallbackToDefaultLoader() throws SQLException {
+        DataSource dataSource = mockDataSource(mockInformationSchemaConnection(false));
+        TableMetaData tableMetaData = new TableMetaData("present_table", Collections.emptyList(), Collections.emptyList(), Collections.emptyList());
+        when(TableMetaDataLoader.load(dataSource, "missing_table", databaseType)).thenReturn(Optional.empty());
+        when(TableMetaDataLoader.load(dataSource, "present_table", databaseType)).thenReturn(Optional.of(tableMetaData));
+        Collection<SchemaMetaData> fallbackSchemas = loader.load(new MetaDataLoaderMaterial(Arrays.asList("missing_table", "present_table"), "ds_2", dataSource, databaseType, "fallback_schema"));
         TableMetaData defaultLoadedTable = fallbackSchemas.iterator().next().getTables().iterator().next();
         assertThat(defaultLoadedTable.getName(), is("present_table"));
+    }
+    
+    private DataSource mockDataSource(final Connection... connections) throws SQLException {
+        DataSource result = mock(DataSource.class);
+        when(result.getConnection()).thenReturn(connections[0], Arrays.copyOfRange(connections, 1, connections.length));
+        return result;
     }
     
     private Connection mockInformationSchemaConnection(final boolean hasResult) throws SQLException {
@@ -155,12 +168,6 @@ class HiveMetaDataLoaderTest {
         Connection result = mock(Connection.class);
         String sql = "SELECT TABLE_CATALOG,TABLE_NAME,COLUMN_NAME,DATA_TYPE,ORDINAL_POSITION,IS_NULLABLE FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_CATALOG=? ORDER BY ORDINAL_POSITION";
         when(result.prepareStatement(sql)).thenReturn(preparedStatement);
-        return result;
-    }
-    
-    private DataSource mockDataSource(final Connection... connections) throws SQLException {
-        DataSource result = mock(DataSource.class);
-        when(result.getConnection()).thenReturn(connections[0], Arrays.copyOfRange(connections, 1, connections.length));
         return result;
     }
 }
