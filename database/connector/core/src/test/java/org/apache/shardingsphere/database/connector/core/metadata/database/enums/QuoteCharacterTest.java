@@ -43,9 +43,15 @@ class QuoteCharacterTest {
     }
     
     @Test
+    void assertUnwrap() {
+        assertThat(QuoteCharacter.BACK_QUOTE.unwrap("`test`"), is("test"));
+    }
+    
+    @Test
     void assertIsWrapped() {
         assertTrue(QuoteCharacter.SINGLE_QUOTE.isWrapped("'test'"));
         assertFalse(QuoteCharacter.SINGLE_QUOTE.isWrapped("'test\""));
+        assertTrue(QuoteCharacter.NONE.isWrapped("test"));
     }
     
     @Test
