@@ -261,6 +261,9 @@ createDatabase
 
 alterDatabase
     : ALTER (DATABASE | SCHEMA) databaseName? alterDatabaseSpecification_*
+    | ALTER (DATABASE | SCHEMA) databaseName RENAME identifier
+    | ALTER (DATABASE | SCHEMA) databaseName SET (DATA | REPLICA | TRANSACTION) QUOTA NUMBER_
+    | ALTER (DATABASE | SCHEMA) databaseName SET PROPERTIES LP_ properties RP_
     ;
 
 createDatabaseSpecification_
@@ -371,6 +374,10 @@ dropServer
     : DROP SERVER ifExists? serverName
     ;
 
+createEncryptKey
+    : CREATE ENCRYPTKEY encryptKeyName AS string_
+    ;
+
 dropEncryptKey
     : DROP ENCRYPTKEY identifier
     ;
@@ -419,7 +426,7 @@ alterView
     : ALTER (ALGORITHM EQ_ (UNDEFINED | MERGE | TEMPTABLE))?
       ownerStatement?
       (SQL SECURITY (DEFINER | INVOKER))?
-      VIEW viewName (LP_ columnNames RP_)?
+      VIEW viewName (LP_ (columnNames | viewColumnDefinitions) RP_)?
       AS select
       (WITH (CASCADED | LOCAL)? CHECK OPTION)?
     ;

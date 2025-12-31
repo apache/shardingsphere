@@ -21,10 +21,13 @@ import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.constraint.ConstraintDefinitionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.view.ViewColumnSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.DDLStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.SelectStatement;
 
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -43,6 +46,8 @@ public final class AlterViewStatement extends DDLStatement {
     private SelectStatement select;
     
     private String viewDefinition;
+    
+    private List<ViewColumnSegment> columns = new LinkedList<>();
     
     public AlterViewStatement(final DatabaseType databaseType) {
         super(databaseType);

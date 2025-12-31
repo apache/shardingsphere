@@ -45,6 +45,7 @@ execute
     | dropLogfileGroup
     | createServer
     | dropServer
+    | createEncryptKey
     | dropEncryptKey
     | createView
     | dropView

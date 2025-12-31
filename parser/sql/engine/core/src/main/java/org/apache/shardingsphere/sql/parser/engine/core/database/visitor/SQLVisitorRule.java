@@ -715,6 +715,8 @@ public enum SQLVisitorRule {
     
     DROP_ENCRYPT_KEY("DropEncryptKey", SQLStatementType.DDL),
     
+    CREATE_ENCRYPT_KEY("CreateEncryptKey", SQLStatementType.DDL),
+    
     SYSTEM_ACTION("SystemAction", SQLStatementType.DDL),
     
     EMPTY_STATEMENT("EmptyStatement", SQLStatementType.DAL),

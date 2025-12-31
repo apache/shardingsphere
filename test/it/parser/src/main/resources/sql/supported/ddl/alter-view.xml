@@ -34,4 +34,5 @@
     <sql-case id="alter_view_as_select_basic" value="ALTER VIEW sales_summary AS SELECT order_id, amount FROM new_sales" db-types="Hive" />
     <sql-case id="alter_view_set_properties_with_db" value="ALTER VIEW db1.sales_summary SET TBLPROPERTIES ('is_archived' = 'false')" db-types="Hive" />
     <sql-case id="alter_view_as_select_with_db" value="ALTER VIEW db1.sales_summary AS SELECT id, total FROM db2.orders" db-types="Hive" />
+    <sql-case id="alter_view_with_column_comments" value="ALTER VIEW example_db.example_view (c1 COMMENT 'column 1', c2 COMMENT 'column 2', c3 COMMENT 'column 3') AS SELECT k1, k2 FROM example_table GROUP BY k1, k2" db-types="Doris" />
 </sql-cases>

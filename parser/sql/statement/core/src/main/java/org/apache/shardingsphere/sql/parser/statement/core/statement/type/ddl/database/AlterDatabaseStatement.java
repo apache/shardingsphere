@@ -17,15 +17,59 @@
 
 package org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.database;
 
+import lombok.Getter;
+import lombok.Setter;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.property.PropertiesSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.DDLStatement;
+
+import java.util.Optional;
 
 /**
  * Alter database statement.
  */
+@Getter
+@Setter
 public final class AlterDatabaseStatement extends DDLStatement {
+    
+    private String databaseName;
+    
+    private String renameDatabaseName;
+    
+    private String quotaType;
+    
+    private Long quotaValue;
+    
+    private PropertiesSegment properties;
     
     public AlterDatabaseStatement(final DatabaseType databaseType) {
         super(databaseType);
+    }
+    
+    /**
+     * Get rename database name.
+     *
+     * @return rename database name
+     */
+    public Optional<String> getRenameDatabaseName() {
+        return Optional.ofNullable(renameDatabaseName);
+    }
+    
+    /**
+     * Get quota type.
+     *
+     * @return quota type
+     */
+    public Optional<String> getQuotaType() {
+        return Optional.ofNullable(quotaType);
+    }
+    
+    /**
+     * Get quota value.
+     *
+     * @return quota value
+     */
+    public Optional<Long> getQuotaValue() {
+        return Optional.ofNullable(quotaValue);
     }
 }

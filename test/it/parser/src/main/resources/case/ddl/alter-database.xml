@@ -98,4 +98,12 @@
     <alter-database sql-case-id="alter_database_set_managedlocation" />
     <alter-database sql-case-id="alter_schema_set_managedlocation" />
     <alter-database sql-case-id="alter_database_set_lc_messages" />
+    <alter-database sql-case-id="alter_database_set_data_quota" database-name="example_db" quota-type="DATA" quota-value="10995116277760" />
+    <alter-database sql-case-id="alter_database_set_replica_quota" database-name="test_db" quota-type="REPLICA" quota-value="1024" />
+    <alter-database sql-case-id="alter_database_set_transaction_quota" database-name="prod_db" quota-type="TRANSACTION" quota-value="1000" />
+    <alter-database sql-case-id="alter_database_rename_doris" database-name="old_db" rename-database-name="new_db" />
+    <alter-database sql-case-id="alter_database_set_properties" database-name="example_db">
+        <property start-index="42" stop-index="58" key="key1" value="value1" />
+        <property start-index="61" stop-index="77" key="key2" value="value2" />
+    </alter-database>
 </sql-parser-test-cases>

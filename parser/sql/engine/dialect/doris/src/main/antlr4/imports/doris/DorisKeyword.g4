@@ -2052,6 +2052,10 @@ QUICK
     : Q U I C K
     ;
 
+QUOTA
+    : Q U O T A
+    ;
+
 RANDOM
     : R A N D O M
     ;

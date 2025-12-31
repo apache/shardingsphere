@@ -125,4 +125,26 @@
             </from>
         </select>
     </alter-view>
+
+    <alter-view sql-case-id="alter_view_with_column_comments" view-definition="SELECT k1, k2 FROM example_table GROUP BY k1, k2">
+        <view name="example_view" start-index="11" stop-index="33">
+            <owner name="example_db" start-index="11" stop-index="20" />
+        </view>
+        <column name="c1" start-index="36" stop-index="56" comment="column 1" />
+        <column name="c2" start-index="59" stop-index="79" comment="column 2" />
+        <column name="c3" start-index="82" stop-index="102" comment="column 3" />
+        <select>
+            <projections start-index="115" stop-index="120">
+                <column-projection name="k1" start-index="115" stop-index="116" />
+                <column-projection name="k2" start-index="119" stop-index="120" />
+            </projections>
+            <from>
+                <simple-table name="example_table" start-index="127" stop-index="139" />
+            </from>
+            <group-by>
+                <column-item name="k1" start-index="150" stop-index="151" />
+                <column-item name="k2" start-index="154" stop-index="155" />
+            </group-by>
+        </select>
+    </alter-view>
 </sql-parser-test-cases>
