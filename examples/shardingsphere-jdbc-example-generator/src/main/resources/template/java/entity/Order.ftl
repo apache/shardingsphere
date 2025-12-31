@@ -62,7 +62,7 @@ public class Order implements Serializable {
     @Column(name = "status")
     </#if>
     private String status;
-    
+
     public long getOrderId() {
         return orderId;
     }

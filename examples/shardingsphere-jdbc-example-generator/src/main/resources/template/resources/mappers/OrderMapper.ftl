@@ -28,7 +28,7 @@
     </resultMap>
 
     <update id="createTableIfNotExists">
-        CREATE TABLE IF NOT EXISTS t_order (order_id BIGINT AUTO_INCREMENT, order_type INT(11), user_id INT NOT NULL, address_id BIGINT NOT NULL, status VARCHAR(50), PRIMARY KEY (order_id));
+        CREATE TABLE IF NOT EXISTS t_order (order_id BIGINT AUTO_INCREMENT, order_type INT(11), user_id INT NOT NULL, address_id BIGINT NOT NULL, status VARCHAR(50)<#if feature?contains("encrypt")>, status_assisted VARCHAR(50)</#if>, PRIMARY KEY (order_id));
     </update>
     
     <update id="truncateTable">
@@ -41,7 +41,7 @@
  <#if feature?contains("shadow")>
     
     <update id="createTableIfNotExistsShadow">
-        CREATE TABLE IF NOT EXISTS t_order (order_id BIGINT AUTO_INCREMENT, order_type INT(11), user_id INT NOT NULL, address_id BIGINT NOT NULL, status VARCHAR(50), PRIMARY KEY (order_id)); /* SHARDINGSPHERE_HINT:shadow=true,foo=bar*/
+        CREATE TABLE IF NOT EXISTS t_order (order_id BIGINT AUTO_INCREMENT, order_type INT(11), user_id INT NOT NULL, address_id BIGINT NOT NULL, status VARCHAR(50)<#if feature?contains("encrypt")>, status_assisted VARCHAR(50)</#if>, PRIMARY KEY (order_id)); /* SHARDINGSPHERE_HINT:shadow=true,foo=bar*/
     </update>
     
     <update id="truncateTableShadow">
