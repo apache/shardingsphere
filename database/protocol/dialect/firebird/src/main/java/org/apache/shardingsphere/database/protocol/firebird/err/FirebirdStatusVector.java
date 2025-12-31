@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.database.protocol.firebird.err;
 
 import lombok.Getter;
-import lombok.Setter;
 import org.apache.shardingsphere.database.protocol.firebird.packet.FirebirdPacket;
 import org.apache.shardingsphere.database.protocol.firebird.payload.FirebirdPacketPayload;
 import org.firebirdsql.gds.ISCConstants;
@@ -29,12 +28,11 @@ import java.sql.SQLException;
  * Firebird status vector for errors handling.
  */
 @Getter
-@Setter
 public final class FirebirdStatusVector extends FirebirdPacket {
     
     private final int gdsCode;
     
-    private String errorMessage;
+    private final String errorMessage;
     
     public FirebirdStatusVector(final SQLException ex) {
         gdsCode = ex.getErrorCode() >= ISCConstants.isc_arith_except ? ex.getErrorCode() : ISCConstants.isc_random;
