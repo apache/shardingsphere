@@ -34,7 +34,7 @@ import org.apache.shardingsphere.data.pipeline.core.datanode.JobDataNodeLine;
 import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSource;
 import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceManager;
 import org.apache.shardingsphere.data.pipeline.core.exception.data.PipelineTableDataConsistencyCheckLoadingFailedException;
-import org.apache.shardingsphere.data.pipeline.core.ingest.position.type.pk.type.UnsupportedKeyIngestPosition;
+import org.apache.shardingsphere.data.pipeline.core.ingest.position.type.pk.UniqueKeyIngestPosition;
 import org.apache.shardingsphere.data.pipeline.core.job.progress.TransmissionJobItemProgress;
 import org.apache.shardingsphere.data.pipeline.core.job.progress.listener.PipelineJobUpdateProgress;
 import org.apache.shardingsphere.data.pipeline.core.job.service.TransmissionJobManager;
@@ -136,7 +136,7 @@ public final class MigrationDataConsistencyChecker implements PipelineDataConsis
             for (JobDataNodeEntry entry : each.getEntries()) {
                 for (DataNode dataNode : entry.getDataNodes()) {
                     result.add(new TableCheckRangePosition(splittingItem++, dataNode.format(), entry.getLogicTableName(),
-                            new UnsupportedKeyIngestPosition(), new UnsupportedKeyIngestPosition(), null));
+                            UniqueKeyIngestPosition.ofUnsplit(), UniqueKeyIngestPosition.ofUnsplit(), null));
                 }
             }
         }

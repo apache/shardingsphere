@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.data.pipeline.core.consistencycheck.position.yaml;
 
 import org.apache.shardingsphere.data.pipeline.core.consistencycheck.position.TableCheckRangePosition;
-import org.apache.shardingsphere.data.pipeline.core.ingest.position.type.pk.PrimaryKeyIngestPositionFactory;
+import org.apache.shardingsphere.data.pipeline.core.ingest.position.type.pk.UniqueKeyIngestPosition;
 import org.apache.shardingsphere.infra.util.yaml.swapper.YamlConfigurationSwapper;
 
 /**
@@ -45,7 +45,7 @@ public final class YamlTableCheckRangePositionSwapper implements YamlConfigurati
     @Override
     public TableCheckRangePosition swapToObject(final YamlTableCheckRangePosition yamlConfig) {
         return new TableCheckRangePosition(yamlConfig.getSplittingItem(), yamlConfig.getSourceDataNode(), yamlConfig.getLogicTableName(),
-                PrimaryKeyIngestPositionFactory.newInstance(yamlConfig.getSourceRange()), PrimaryKeyIngestPositionFactory.newInstance(yamlConfig.getTargetRange()),
+                UniqueKeyIngestPosition.decode(yamlConfig.getSourceRange()), UniqueKeyIngestPosition.decode(yamlConfig.getTargetRange()),
                 yamlConfig.getQueryCondition(), yamlConfig.getSourcePosition(), yamlConfig.getTargetPosition(), yamlConfig.isFinished(), yamlConfig.getMatched());
     }
 }

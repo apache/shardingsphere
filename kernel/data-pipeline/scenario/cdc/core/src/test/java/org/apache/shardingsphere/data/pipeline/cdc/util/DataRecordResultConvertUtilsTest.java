@@ -21,7 +21,8 @@ import com.google.protobuf.Int64Value;
 import com.google.protobuf.InvalidProtocolBufferException;
 import org.apache.shardingsphere.data.pipeline.cdc.protocol.response.DataRecordResult.Record;
 import org.apache.shardingsphere.data.pipeline.core.constant.PipelineSQLOperationType;
-import org.apache.shardingsphere.data.pipeline.core.ingest.position.type.pk.type.IntegerPrimaryKeyIngestPosition;
+import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.inventory.query.Range;
+import org.apache.shardingsphere.data.pipeline.core.ingest.position.type.pk.UniqueKeyIngestPosition;
 import org.apache.shardingsphere.data.pipeline.core.ingest.record.DataRecord;
 import org.apache.shardingsphere.data.pipeline.core.ingest.record.NormalColumn;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -39,7 +40,7 @@ class DataRecordResultConvertUtilsTest {
     @ParameterizedTest
     @MethodSource("dataChangeTypeTestCases")
     void assertConvertDataRecordToRecordWithNonInsertTypes(final PipelineSQLOperationType operationType, final Record.DataChangeType expectedDataChangeType) throws InvalidProtocolBufferException {
-        DataRecord dataRecord = new DataRecord(operationType, "test_schema", "t_user", new IntegerPrimaryKeyIngestPosition(BigInteger.valueOf(5L), BigInteger.valueOf(10L)), 1);
+        DataRecord dataRecord = new DataRecord(operationType, "test_schema", "t_user", UniqueKeyIngestPosition.ofInteger(Range.closed(BigInteger.valueOf(5L), BigInteger.valueOf(10L))), 1);
         dataRecord.addColumn(new NormalColumn("id", 1L, 2L, true, true));
         dataRecord.setCommitTime(123L);
         Record actualRecord = DataRecordResultConvertUtils.convertDataRecordToRecord("logic_db", "test_schema", dataRecord);

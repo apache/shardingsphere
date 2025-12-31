@@ -20,7 +20,7 @@ package org.apache.shardingsphere.data.pipeline.scenario.consistencycheck;
 import org.apache.shardingsphere.data.pipeline.core.consistencycheck.position.yaml.YamlTableCheckRangePosition;
 import org.apache.shardingsphere.data.pipeline.core.consistencycheck.position.yaml.YamlTableCheckRangePositionSwapper;
 import org.apache.shardingsphere.data.pipeline.core.context.PipelineContextKey;
-import org.apache.shardingsphere.data.pipeline.core.ingest.position.type.pk.type.UnsupportedKeyIngestPosition;
+import org.apache.shardingsphere.data.pipeline.core.ingest.position.type.pk.UniqueKeyIngestPosition;
 import org.apache.shardingsphere.data.pipeline.core.job.JobStatus;
 import org.apache.shardingsphere.data.pipeline.core.job.api.PipelineAPIFactory;
 import org.apache.shardingsphere.data.pipeline.core.job.id.PipelineJobIdUtils;
@@ -49,8 +49,8 @@ import java.util.Properties;
 import java.util.stream.Collectors;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.instanceOf;
+import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.mockito.Mockito.mock;
 
@@ -101,8 +101,8 @@ class ConsistencyCheckJobExecutorCallbackTest {
         result.setSplittingItem(0);
         result.setSourceDataNode("ds_0.t_order");
         result.setLogicTableName("t_order");
-        result.setSourceRange(new UnsupportedKeyIngestPosition().toString());
-        result.setTargetRange(new UnsupportedKeyIngestPosition().toString());
+        result.setSourceRange(UniqueKeyIngestPosition.ofUnsplit().encode());
+        result.setTargetRange(UniqueKeyIngestPosition.ofUnsplit().encode());
         result.setSourcePosition(100);
         result.setTargetPosition(100);
         return result;

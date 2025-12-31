@@ -21,7 +21,7 @@ import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourc
 import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceManager;
 import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.DumperCommonContext;
 import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.inventory.InventoryDumperContext;
-import org.apache.shardingsphere.data.pipeline.core.ingest.position.type.pk.type.IntegerPrimaryKeyIngestPosition;
+import org.apache.shardingsphere.data.pipeline.core.ingest.position.type.pk.UniqueKeyIngestPosition;
 import org.apache.shardingsphere.data.pipeline.core.metadata.loader.PipelineTableMetaDataUtils;
 import org.apache.shardingsphere.data.pipeline.core.metadata.loader.StandardPipelineTableMetaDataLoader;
 import org.apache.shardingsphere.data.pipeline.core.metadata.model.PipelineColumnMetaData;
@@ -90,8 +90,8 @@ class InventoryTaskSplitterTest {
         List<InventoryTask> actual = inventoryTaskSplitter.split(jobItemContext);
         assertThat(actual.size(), is(1));
         InventoryTask task = actual.get(0);
-        assertNull(((IntegerPrimaryKeyIngestPosition) task.getTaskProgress().getPosition()).getBeginValue());
-        assertNull(((IntegerPrimaryKeyIngestPosition) task.getTaskProgress().getPosition()).getEndValue());
+        assertNull(((UniqueKeyIngestPosition<?>) task.getTaskProgress().getPosition()).getLowerBound());
+        assertNull(((UniqueKeyIngestPosition<?>) task.getTaskProgress().getPosition()).getUpperBound());
     }
     
     @Test
@@ -100,8 +100,8 @@ class InventoryTaskSplitterTest {
         List<InventoryTask> actual = inventoryTaskSplitter.split(jobItemContext);
         assertThat(actual.size(), is(10));
         InventoryTask task = actual.get(9);
-        assertThat(((IntegerPrimaryKeyIngestPosition) task.getTaskProgress().getPosition()).getBeginValue(), is(BigInteger.valueOf(91L)));
-        assertThat(((IntegerPrimaryKeyIngestPosition) task.getTaskProgress().getPosition()).getEndValue(), is(BigInteger.valueOf(100L)));
+        assertThat(((UniqueKeyIngestPosition<?>) task.getTaskProgress().getPosition()).getLowerBound(), is(BigInteger.valueOf(91L)));
+        assertThat(((UniqueKeyIngestPosition<?>) task.getTaskProgress().getPosition()).getUpperBound(), is(BigInteger.valueOf(100L)));
     }
     
     @Test
@@ -110,9 +110,9 @@ class InventoryTaskSplitterTest {
         List<InventoryTask> actual = inventoryTaskSplitter.split(jobItemContext);
         assertThat(actual.size(), is(1));
         assertThat(actual.get(0).getTaskId(), is("ds_0.t_order#0"));
-        IntegerPrimaryKeyIngestPosition keyPosition = (IntegerPrimaryKeyIngestPosition) actual.get(0).getTaskProgress().getPosition();
-        assertThat(keyPosition.getBeginValue(), is(BigInteger.ONE));
-        assertThat(keyPosition.getEndValue(), is(BigInteger.valueOf(999L)));
+        UniqueKeyIngestPosition<?> keyPosition = (UniqueKeyIngestPosition<?>) actual.get(0).getTaskProgress().getPosition();
+        assertThat(keyPosition.getLowerBound(), is(BigInteger.ONE));
+        assertThat(keyPosition.getUpperBound(), is(BigInteger.valueOf(999L)));
     }
     
     @Test
