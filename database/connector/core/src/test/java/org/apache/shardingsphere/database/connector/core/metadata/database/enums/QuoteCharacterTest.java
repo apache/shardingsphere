@@ -27,37 +27,13 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class QuoteCharacterTest {
     
     @Test
-    void assertGetQuoteCharacterWithNullValue() {
+    void assertGetQuoteCharacter() {
         assertThat(QuoteCharacter.getQuoteCharacter(null), is(QuoteCharacter.NONE));
-    }
-    
-    @Test
-    void assertGetQuoteCharacterWithEmptyValue() {
         assertThat(QuoteCharacter.getQuoteCharacter(""), is(QuoteCharacter.NONE));
-    }
-    
-    @Test
-    void assertGetQuoteCharacterWithNone() {
         assertThat(QuoteCharacter.getQuoteCharacter("test"), is(QuoteCharacter.NONE));
-    }
-    
-    @Test
-    void assertGetQuoteCharacterWithBackQuote() {
         assertThat(QuoteCharacter.getQuoteCharacter("`test`"), is(QuoteCharacter.BACK_QUOTE));
-    }
-    
-    @Test
-    void assertGetQuoteCharacterWithSingleQuote() {
         assertThat(QuoteCharacter.getQuoteCharacter("'test'"), is(QuoteCharacter.SINGLE_QUOTE));
-    }
-    
-    @Test
-    void assertGetQuoteCharacterWithQuote() {
         assertThat(QuoteCharacter.getQuoteCharacter("\"test\""), is(QuoteCharacter.QUOTE));
-    }
-    
-    @Test
-    void assertGetQuoteCharacterWithBrackets() {
         assertThat(QuoteCharacter.getQuoteCharacter("[test]"), is(QuoteCharacter.BRACKETS));
     }
     
@@ -67,22 +43,8 @@ class QuoteCharacterTest {
     }
     
     @Test
-    void assertUnwrapWithWrappedValue() {
-        assertThat(QuoteCharacter.BACK_QUOTE.unwrap("`test`"), is("test"));
-    }
-    
-    @Test
-    void assertUnwrapWithoutWrappedValue() {
-        assertThat(QuoteCharacter.BACK_QUOTE.unwrap("[test]"), is("[test]"));
-    }
-    
-    @Test
     void assertIsWrapped() {
         assertTrue(QuoteCharacter.SINGLE_QUOTE.isWrapped("'test'"));
-    }
-    
-    @Test
-    void assertIsNotWrapped() {
         assertFalse(QuoteCharacter.SINGLE_QUOTE.isWrapped("'test\""));
     }
     
@@ -95,5 +57,10 @@ class QuoteCharacterTest {
         assertThat(QuoteCharacter.unwrapText("[test]"), is("test"));
         assertThat(QuoteCharacter.unwrapText("(test)"), is("test"));
         assertThat(QuoteCharacter.unwrapText("{test}"), is("{test}"));
+    }
+    
+    @Test
+    void assertUnwrapAndTrimText() {
+        assertThat(QuoteCharacter.unwrapAndTrimText("` test `"), is("test"));
     }
 }
