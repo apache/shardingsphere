@@ -63,7 +63,7 @@ public final class InventoryPositionExactCalculator {
     }
     
     private static <T> UniqueKeyIngestPosition<T> getFirstPosition(final QualifiedTable qualifiedTable, final String uniqueKey, final int shardingSize,
-                                                                    final PipelineDataSource dataSource, final DataTypePositionHandler<T> positionHandler) {
+                                                                   final PipelineDataSource dataSource, final DataTypePositionHandler<T> positionHandler) {
         String firstQuerySQL = new PipelinePrepareSQLBuilder(dataSource.getDatabaseType())
                 .buildSplitByUniqueKeyRangedSQL(qualifiedTable.getSchemaName(), qualifiedTable.getTableName(), uniqueKey, false);
         try (

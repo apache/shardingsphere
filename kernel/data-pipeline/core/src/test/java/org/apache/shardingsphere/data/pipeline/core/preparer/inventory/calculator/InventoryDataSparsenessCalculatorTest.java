@@ -38,6 +38,6 @@ class InventoryDataSparsenessCalculatorTest {
     }
     
     private Range<BigInteger> createRange(final Long lowerBound, final Long upperBound) {
-        return Range.closed(BigInteger.valueOf(lowerBound), BigInteger.valueOf(upperBound));
+        return Range.closed(null == lowerBound ? null : BigInteger.valueOf(lowerBound), null == upperBound ? null : BigInteger.valueOf(upperBound));
     }
 }
