@@ -41,18 +41,20 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 
 import java.util.Collections;
-import java.util.UUID;
 
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+/**
+ * Unit tests for {@link ProcessEngine}.
+ */
 @ExtendWith(AutoMockExtension.class)
 @StaticMockSettings(ProcessRegistry.class)
 class ProcessEngineTest {
     
-    private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "FIXTURE");
+    private final DatabaseType databaseType =
+            TypedSPILoader.getService(DatabaseType.class, "FIXTURE");
     
     @Mock
     private ProcessRegistry processRegistry;
@@ -66,34 +68,66 @@ class ProcessEngineTest {
     void assertExecuteSQL() {
         ConnectionContext connectionContext = mock(ConnectionContext.class);
         ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class);
-        ExecutionGroupContext<? extends SQLExecutionUnit> executionGroupContext = mockExecutionGroupContext();
-        new ProcessEngine().executeSQL(executionGroupContext,
-                new QueryContext(new UpdateStatementContext(getSQLStatement()), null, null, new HintValueContext(), connectionContext, metaData));
-        verify(processRegistry).add(any());
-    }
-    
-    @SuppressWarnings("unchecked")
-    private ExecutionGroupContext<? extends SQLExecutionUnit> mockExecutionGroupContext() {
-        ExecutionGroupContext<? extends SQLExecutionUnit> result = mock(ExecutionGroupContext.class);
-        ExecutionGroupReportContext reportContext = mock(ExecutionGroupReportContext.class);
-        when(reportContext.getProcessId()).thenReturn(UUID.fromString("00000000-000-0000-0000-000000000001").toString());
-        when(result.getReportContext()).thenReturn(reportContext);
-        return result;
-    }
-    
-    private UpdateStatement getSQLStatement() {
-        UpdateStatement result = new UpdateStatement(databaseType);
-        TableNameSegment tableNameSegment = new TableNameSegment(0, 0, new IdentifierValue("foo_tbl"));
-        tableNameSegment.setTableBoundInfo(new TableSegmentBoundInfo(new IdentifierValue("foo_db"), new IdentifierValue("foo_schema")));
-        result.setTable(new SimpleTableSegment(tableNameSegment));
-        result.setSetAssignment(new SetAssignmentSegment(0, 0, Collections.emptyList()));
-        return result;
+        
+        ProcessEngine engine = new ProcessEngine();
+        
+        // 1. connect() must be called first
+        String processId = engine.connect("foo_db");
+        
+        // 2. execution context MUST use the same processId
+        ExecutionGroupContext<? extends SQLExecutionUnit> executionGroupContext =
+                mockExecutionGroupContext(processId);
+        
+        // 3. registry lookup returns an existing process
+        when(processRegistry.get(processId)).thenReturn(mock(Process.class));
+        
+        engine.executeSQL(
+                executionGroupContext,
+                new QueryContext(
+                        new UpdateStatementContext(getSQLStatement()),
+                        null,
+                        null,
+                        new HintValueContext(),
+                        connectionContext,
+                        metaData));
+        
+        verify(processRegistry).get(processId);
     }
     
     @Test
     void assertCompleteSQLUnitExecution() {
         when(processRegistry.get("foo_id")).thenReturn(mock(Process.class));
-        new ProcessEngine().completeSQLUnitExecution(mock(SQLExecutionUnit.class), "foo_id");
+        
+        new ProcessEngine().completeSQLUnitExecution(
+                mock(SQLExecutionUnit.class),
+                "foo_id");
+        
         verify(processRegistry).get("foo_id");
+    }
+    
+    @SuppressWarnings("unchecked")
+    private ExecutionGroupContext<? extends SQLExecutionUnit> mockExecutionGroupContext(final String processId) {
+        ExecutionGroupContext<? extends SQLExecutionUnit> result = mock(ExecutionGroupContext.class);
+        ExecutionGroupReportContext reportContext = mock(ExecutionGroupReportContext.class);
+        
+        when(reportContext.getProcessId()).thenReturn(processId);
+        when(result.getReportContext()).thenReturn(reportContext);
+        
+        return result;
+    }
+    
+    private UpdateStatement getSQLStatement() {
+        UpdateStatement result = new UpdateStatement(databaseType);
+        
+        TableNameSegment tableNameSegment =
+                new TableNameSegment(0, 0, new IdentifierValue("foo_tbl"));
+        tableNameSegment.setTableBoundInfo(
+                new TableSegmentBoundInfo(
+                        new IdentifierValue("foo_db"),
+                        new IdentifierValue("foo_schema")));
+        
+        result.setTable(new SimpleTableSegment(tableNameSegment));
+        result.setSetAssignment(new SetAssignmentSegment(0, 0, Collections.emptyList()));
+        return result;
     }
 }

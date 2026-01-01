@@ -27,7 +27,9 @@ import org.apache.shardingsphere.proxy.frontend.authentication.AuthenticationEng
 import org.apache.shardingsphere.proxy.frontend.mysql.authentication.MySQLAuthenticationEngine;
 import org.apache.shardingsphere.proxy.frontend.mysql.command.MySQLCommandExecuteEngine;
 import org.apache.shardingsphere.proxy.frontend.mysql.command.query.binary.MySQLStatementIdGenerator;
+import org.apache.shardingsphere.proxy.frontend.mysql.connection.MySQLConnectionIdRegistry;
 import org.apache.shardingsphere.proxy.frontend.netty.FrontendChannelInboundHandler;
+import org.apache.shardingsphere.proxy.frontend.netty.FrontendConstants;
 import org.apache.shardingsphere.proxy.frontend.spi.DatabaseProtocolFrontendEngine;
 
 /**
@@ -49,7 +51,16 @@ public final class MySQLFrontendEngine implements DatabaseProtocolFrontendEngine
     
     @Override
     public void release(final ConnectionSession connectionSession) {
-        MySQLStatementIdGenerator.getInstance().unregisterConnection(connectionSession.getConnectionId());
+        MySQLStatementIdGenerator.getInstance()
+                .unregisterConnection(connectionSession.getConnectionId());
+        
+        Long nativeConnectionId = connectionSession.getAttributeMap()
+                .attr(FrontendConstants.NATIVE_CONNECTION_ID_ATTRIBUTE_KEY)
+                .get();
+        
+        if (null != nativeConnectionId) {
+            MySQLConnectionIdRegistry.getInstance().unregister(nativeConnectionId);
+        }
     }
     
     @Override
@@ -60,4 +71,23 @@ public final class MySQLFrontendEngine implements DatabaseProtocolFrontendEngine
     public String getDatabaseType() {
         return "MySQL";
     }
+    
+    /**
+     * Bind MySQL native connection ID with process ID after authentication.
+     *
+     * @param channel Netty channel
+     * @param session connection session
+     */
+    @Override
+    public void bindProcessAfterAuthentication(final Channel channel, final ConnectionSession session) {
+        Long nativeConnectionId = channel
+                .attr(FrontendConstants.NATIVE_CONNECTION_ID_ATTRIBUTE_KEY)
+                .get();
+        
+        if (null != nativeConnectionId && null != session.getProcessId()) {
+            MySQLConnectionIdRegistry.getInstance()
+                    .register(nativeConnectionId, session.getProcessId());
+        }
+    }
+    
 }

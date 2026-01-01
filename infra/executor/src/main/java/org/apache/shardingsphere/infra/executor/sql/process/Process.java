@@ -17,19 +17,18 @@
 
 package org.apache.shardingsphere.infra.executor.sql.process;
 
+import com.google.common.base.Strings;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroup;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroupContext;
-import org.apache.shardingsphere.infra.executor.sql.context.ExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.SQLExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutionUnit;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
 
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
@@ -44,13 +43,13 @@ import java.util.concurrent.atomic.AtomicInteger;
 @Getter
 public final class Process {
     
-    private final Map<Integer, Statement> processStatements = new ConcurrentHashMap<>();
+    private final Map<StatementIdentity, Statement> processStatements = new ConcurrentHashMap<>();
     
     private final String id;
     
     private final long startMillis;
     
-    private final String sql;
+    private volatile String sql;
     
     private final String databaseName;
     
@@ -89,6 +88,30 @@ public final class Process {
         interrupted = new AtomicBoolean();
     }
     
+    // Constructor for YAML swapper / deserialization
+    public Process(final String id,
+                   final long startMillis,
+                   final String sql,
+                   final String databaseName,
+                   final String username,
+                   final String hostname,
+                   final AtomicInteger totalUnitCount,
+                   final AtomicInteger completedUnitCount,
+                   final AtomicBoolean idle,
+                   final AtomicBoolean interrupted) {
+        
+        this.id = id;
+        this.startMillis = startMillis;
+        this.sql = sql;
+        this.databaseName = databaseName;
+        this.username = username;
+        this.hostname = hostname;
+        this.totalUnitCount = totalUnitCount;
+        this.completedUnitCount = completedUnitCount;
+        this.idle = idle;
+        this.interrupted = interrupted;
+    }
+    
     private int getTotalUnitCount(final ExecutionGroupContext<? extends SQLExecutionUnit> executionGroupContext) {
         int result = 0;
         for (ExecutionGroup<? extends SQLExecutionUnit> each : executionGroupContext.getInputGroups()) {
@@ -97,13 +120,16 @@ public final class Process {
         return result;
     }
     
-    private Map<Integer, Statement> createProcessStatements(final ExecutionGroupContext<? extends SQLExecutionUnit> executionGroupContext) {
-        Map<Integer, Statement> result = new LinkedHashMap<>();
+    private Map<StatementIdentity, Statement> createProcessStatements(final ExecutionGroupContext<? extends SQLExecutionUnit> executionGroupContext) {
+        Map<StatementIdentity, Statement> result = new ConcurrentHashMap<>();
         for (ExecutionGroup<? extends SQLExecutionUnit> each : executionGroupContext.getInputGroups()) {
             for (SQLExecutionUnit executionUnit : each.getInputs()) {
                 if (executionUnit instanceof JDBCExecutionUnit) {
                     JDBCExecutionUnit jdbcExecutionUnit = (JDBCExecutionUnit) executionUnit;
-                    result.put(System.identityHashCode(jdbcExecutionUnit.getExecutionUnit()), jdbcExecutionUnit.getStorageResource());
+                    Statement statement = jdbcExecutionUnit.getStorageResource();
+                    if (null != statement) {
+                        result.put(new StatementIdentity(statement), statement);
+                    }
                 }
             }
         }
@@ -149,8 +175,11 @@ public final class Process {
      *
      * @param executionUnit execution unit
      */
-    public void removeProcessStatement(final ExecutionUnit executionUnit) {
-        processStatements.remove(System.identityHashCode(executionUnit));
+    public void removeProcessStatement(final JDBCExecutionUnit executionUnit) {
+        Statement statement = executionUnit.getStorageResource();
+        if (null != statement) {
+            processStatements.remove(new StatementIdentity(statement));
+        }
     }
     
     /**
@@ -160,8 +189,81 @@ public final class Process {
      */
     public void kill() throws SQLException {
         setInterrupted(true);
+        SQLException exception = null;
         for (Statement each : processStatements.values()) {
-            each.cancel();
+            try {
+                each.cancel();
+            } catch (final SQLException ex) {
+                try {
+                    each.close();
+                } catch (final SQLException closeEx) {
+                    if (null == exception) {
+                        exception = closeEx;
+                    } else {
+                        exception.setNextException(closeEx);
+                    }
+                }
+                if (null == exception) {
+                    exception = ex;
+                } else {
+                    exception.setNextException(ex);
+                }
+            }
+        }
+        
+        if (null != exception) {
+            throw exception;
+        }
+    }
+    
+    /**
+     * Merge a new execution group context into the current process.
+     * <p>
+     * This method marks the process as active, updates the total execution unit count,
+     * and registers statements from the given execution group context.
+     * </p>
+     *
+     * @param executionGroupContext execution group context to merge
+     * @param sql SQL to be executed
+     */
+    public void mergeExecutionGroupContext(
+                                           final ExecutionGroupContext<? extends SQLExecutionUnit> executionGroupContext,
+                                           final String sql) {
+        idle.set(false);
+        // ✅ FIX: update SQL on execution
+        if (!Strings.isNullOrEmpty(sql)) {
+            this.sql = sql;
+        }
+        totalUnitCount.addAndGet(getTotalUnitCount(executionGroupContext));
+        processStatements.putAll(createProcessStatements(executionGroupContext));
+    }
+    
+    private static final class StatementIdentity {
+        
+        private final Statement statement;
+        
+        private final int hash;
+        
+        StatementIdentity(final Statement statement) {
+            this.statement = statement;
+            hash = System.identityHashCode(statement);
+        }
+        
+        @Override
+        public int hashCode() {
+            return hash;
+        }
+        
+        @Override
+        public boolean equals(final Object obj) {
+            if (this == obj) {
+                return true;
+            }
+            if (!(obj instanceof StatementIdentity)) {
+                return false;
+            }
+            StatementIdentity other = (StatementIdentity) obj;
+            return statement == other.statement;
         }
     }
 }
