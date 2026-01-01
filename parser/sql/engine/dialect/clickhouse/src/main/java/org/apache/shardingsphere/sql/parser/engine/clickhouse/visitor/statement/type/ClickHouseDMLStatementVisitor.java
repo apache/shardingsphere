@@ -135,7 +135,7 @@ public final class ClickHouseDMLStatementVisitor extends ClickHouseStatementVisi
     public ASTNode visitAssignment(final ClickHouseStatementParser.AssignmentContext ctx) {
         ColumnSegment column = (ColumnSegment) visitColumnName(ctx.columnName());
         ExpressionSegment value = (ExpressionSegment) visit(ctx.assignmentValue());
-        ColumnAssignmentSegment result = new ColumnAssignmentSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), Collections.singletonList(column), value);
+        ColumnAssignmentSegment result = new ColumnAssignmentSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), new LinkedList<>(Collections.singletonList(column)), value);
         result.getColumns().add(column);
         return result;
     }
