@@ -157,6 +157,11 @@
             <artifactId>shardingsphere-parser-sql-engine-doris</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.apache.shardingsphere</groupId>
+            <artifactId>shardingsphere-parser-sql-engine-clickhouse</artifactId>
+            <version>${project.version}</version>
+        </dependency>
         
         <dependency>
             <groupId>org.junit.jupiter</groupId>

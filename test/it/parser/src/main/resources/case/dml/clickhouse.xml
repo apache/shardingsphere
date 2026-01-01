@@ -1,0 +1,290 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Licensed to the Apache Software Foundation (ASF) under one or more
+  ~ contributor license agreements.  See the NOTICE file distributed with
+  ~ this work for additional information regarding copyright ownership.
+  ~ The ASF licenses this file to You under the Apache License, Version 2.0
+  ~ (the "License"); you may not use this file except in compliance with
+  ~ the License.  You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<sql-parser-test-cases>
+    <insert sql-case-id="clickhouse_insert_with_columns" parameters="5">
+        <table name="t_order" start-index="12" stop-index="18" />
+        <columns start-index="20" stop-index="46">
+            <column name="order_id" start-index="21" stop-index="28" />
+            <column name="user_id" start-index="31" stop-index="37" />
+            <column name="status" start-index="40" stop-index="45" />
+        </columns>
+        <values>
+            <value>
+                <assignment-value>
+                    <literal-expression value="1" start-index="56" stop-index="56" />
+                </assignment-value>
+                <assignment-value>
+                    <literal-expression value="10" start-index="59" stop-index="60" />
+                </assignment-value>
+                <assignment-value>
+                    <literal-expression value="0" start-index="63" stop-index="63" />
+                </assignment-value>
+            </value>
+            <value>
+                <assignment-value>
+                    <literal-expression value="2" start-index="68" stop-index="68" />
+                </assignment-value>
+                <assignment-value>
+                    <parameter-marker-expression parameter-index="0" start-index="71" stop-index="71" />
+                    <literal-expression value="5" start-index="71" stop-index="71" />
+                </assignment-value>
+                <assignment-value>
+                    <literal-expression value="1" start-index="74" stop-index="74" />
+                </assignment-value>
+            </value>
+        </values>
+    </insert>
+    
+    <insert sql-case-id="clickhouse_insert_without_columns" parameters="8">
+        <table name="t_order" start-index="12" stop-index="18" />
+        <columns start-index="19" stop-index="19" />
+        <values>
+            <value>
+                <assignment-value>
+                    <literal-expression value="3" start-index="28" stop-index="28" />
+                </assignment-value>
+                <assignment-value>
+                    <literal-expression value="20" start-index="31" stop-index="32" />
+                </assignment-value>
+                <assignment-value>
+                    <parameter-marker-expression parameter-index="0" start-index="35" stop-index="35" />
+                    <literal-expression value="8" start-index="35" stop-index="35" />
+                </assignment-value>
+            </value>
+        </values>
+    </insert>
+    
+    <update sql-case-id="clickhouse_update_left_join" parameters="1, 2">
+        <table start-index="7" stop-index="67">
+            <join-table join-type="LEFT" start-index="7" stop-index="67">
+                <left>
+                    <simple-table name="t_order" alias="o" start-index="7" stop-index="15" />
+                </left>
+                <right>
+                    <simple-table name="t_order_item" alias="i" start-index="27" stop-index="40" />
+                </right>
+                <on-condition>
+                    <binary-operation-expression start-index="45" stop-index="67">
+                        <left>
+                            <column name="order_id" start-index="45" stop-index="54">
+                                <owner name="o" start-index="45" stop-index="45" />
+                            </column>
+                        </left>
+                        <operator>=</operator>
+                        <right>
+                            <column name="order_id" start-index="58" stop-index="67">
+                                <owner name="i" start-index="58" stop-index="58" />
+                            </column>
+                        </right>
+                    </binary-operation-expression>
+                </on-condition>
+            </join-table>
+        </table>
+        <set start-index="69" stop-index="98">
+            <assignment start-index="73" stop-index="84">
+                <column name="status" start-index="73" stop-index="80">
+                    <owner name="o" start-index="73" stop-index="73" />
+                </column>
+                <assignment-value>
+                    <literal-expression value="1" start-index="84" stop-index="84" />
+                </assignment-value>
+            </assignment>
+            <assignment start-index="87" stop-index="98">
+                <column name="status" start-index="87" stop-index="94">
+                    <owner name="i" start-index="87" stop-index="87" />
+                </column>
+                <assignment-value>
+                    <literal-expression value="2" start-index="98" stop-index="98" />
+                </assignment-value>
+            </assignment>
+        </set>
+        <where start-index="100" stop-index="137">
+            <expr>
+                <binary-operation-expression start-index="106" stop-index="137">
+                    <left>
+                        <binary-operation-expression start-index="106" stop-index="119">
+                            <left>
+                                <column name="order_id" start-index="106" stop-index="115">
+                                    <owner name="o" start-index="106" stop-index="106" />
+                                </column>
+                            </left>
+                            <operator>=</operator>
+                            <right>
+                                <literal-expression value="1" start-index="119" stop-index="119" />
+                                <parameter-marker-expression parameter-index="0" start-index="119" stop-index="119" />
+                            </right>
+                        </binary-operation-expression>
+                    </left>
+                    <operator>AND</operator>
+                    <right>
+                        <binary-operation-expression start-index="125" stop-index="137">
+                            <left>
+                                <column name="user_id" start-index="125" stop-index="133">
+                                    <owner name="i" start-index="125" stop-index="125" />
+                                </column>
+                            </left>
+                            <operator>=</operator>
+                            <right>
+                                <literal-expression value="2" start-index="137" stop-index="137" />
+                                <parameter-marker-expression parameter-index="1" start-index="137" stop-index="137" />
+                            </right>
+                        </binary-operation-expression>
+                    </right>
+                </binary-operation-expression>
+            </expr>
+        </where>
+    </update>
+    
+    <delete sql-case-id="clickhouse_delete_with_owner" parameters="3">
+        <table name="t_order" start-index="12" stop-index="22">
+            <owner name="db1" start-index="12" stop-index="14" />
+        </table>
+        <where start-index="31" stop-index="48">
+            <expr>
+                <binary-operation-expression start-index="37" stop-index="48">
+                    <left>
+                        <column name="order_id" start-index="37" stop-index="44" />
+                    </left>
+                    <operator>=</operator>
+                    <right>
+                        <literal-expression value="3" start-index="48" stop-index="48" />
+                        <parameter-marker-expression parameter-index="0" start-index="48" stop-index="48" />
+                    </right>
+                </binary-operation-expression>
+            </expr>
+        </where>
+    </delete>
+    
+    <select sql-case-id="clickhouse_select_distinct_join_using" parameters="1">
+        <projections distinct-row="true" start-index="16" stop-index="150">
+            <shorthand-projection start-index="16" stop-index="16" />
+            <shorthand-projection start-index="19" stop-index="21">
+                <owner name="o" start-index="19" stop-index="19" />
+            </shorthand-projection>
+            <aggregation-projection type="SUM" expression="sum(i.amount)" alias="total_amount" start-index="24" stop-index="36" />
+            <column-projection name="status" alias="status_alias" start-index="55" stop-index="78">
+                <owner name="o" start-index="55" stop-index="55" />
+            </column-projection>
+            <expression-projection text="o.order_id + i.order_id" alias="merged_id" start-index="81" stop-index="116">
+                <expr>
+                    <binary-operation-expression start-index="81" stop-index="103">
+                        <left>
+                            <column name="order_id" start-index="81" stop-index="90">
+                                <owner name="o" start-index="81" stop-index="81" />
+                            </column>
+                        </left>
+                        <operator>+</operator>
+                        <right>
+                            <column name="order_id" start-index="94" stop-index="103">
+                                <owner name="i" start-index="94" stop-index="94" />
+                            </column>
+                        </right>
+                    </binary-operation-expression>
+                </expr>
+            </expression-projection>
+            <expression-projection text="toString(o.user_id)" alias="user_text" start-index="119" stop-index="150">
+                <expr>
+                    <function start-index="119" stop-index="137" text="toString(o.user_id)" function-name="toString">
+                        <parameter>
+                            <column name="user_id" start-index="128" stop-index="136">
+                                <owner name="o" start-index="128" stop-index="128" />
+                            </column>
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+        <from>
+            <join-table join-type="INNER">
+                <left>
+                    <simple-table name="t_order" alias="o" start-index="157" stop-index="165" />
+                </left>
+                <right>
+                    <simple-table name="t_order_item" alias="i" start-index="172" stop-index="185" />
+                </right>
+                <using-columns name="order_id" start-index="194" stop-index="201" />
+            </join-table>
+        </from>
+        <where start-index="204" stop-index="240">
+            <expr>
+                <binary-operation-expression start-index="210" stop-index="240">
+                    <left>
+                        <binary-operation-expression start-index="210" stop-index="221">
+                            <left>
+                                <column name="status" start-index="210" stop-index="217">
+                                    <owner name="o" start-index="210" stop-index="210" />
+                                </column>
+                            </left>
+                            <operator>=</operator>
+                            <right>
+                                <literal-expression value="1" start-index="221" stop-index="221" />
+                                <parameter-marker-expression parameter-index="0" start-index="221" stop-index="221" />
+                            </right>
+                        </binary-operation-expression>
+                    </left>
+                    <operator>AND</operator>
+                    <right>
+                        <binary-operation-expression start-index="227" stop-index="240">
+                            <left>
+                                <column name="amount" start-index="227" stop-index="234">
+                                    <owner name="i" start-index="227" stop-index="227" />
+                                </column>
+                            </left>
+                            <operator>&gt;</operator>
+                            <right>
+                                <literal-expression value="100" start-index="238" stop-index="240" />
+                            </right>
+                        </binary-operation-expression>
+                    </right>
+                </binary-operation-expression>
+            </expr>
+        </where>
+        <group-by>
+            <column-item name="order_id" start-index="251" stop-index="260">
+                <owner name="o" start-index="251" stop-index="251" />
+            </column-item>
+            <column-item name="order_id" start-index="263" stop-index="272">
+                <owner name="i" start-index="263" stop-index="263" />
+            </column-item>
+            <column-item name="status" start-index="275" stop-index="282">
+                <owner name="o" start-index="275" stop-index="275" />
+            </column-item>
+            <column-item name="user_id" start-index="285" stop-index="293">
+                <owner name="o" start-index="285" stop-index="285" />
+            </column-item>
+        </group-by>
+        <having start-index="295" stop-index="321">
+            <expr>
+                <binary-operation-expression start-index="302" stop-index="321">
+                    <left>
+                        <aggregation-projection type="SUM" expression="sum(i.amount)" start-index="302" stop-index="314" />
+                    </left>
+                    <operator>&gt;</operator>
+                    <right>
+                        <literal-expression value="1000" start-index="318" stop-index="321" />
+                    </right>
+                </binary-operation-expression>
+            </expr>
+        </having>
+        <order-by>
+            <column-item name="total_amount" order-direction="DESC" start-index="332" stop-index="343" />
+            <column-item name="merged_id" start-index="351" stop-index="359" />
+        </order-by>
+    </select>
+</sql-parser-test-cases>
