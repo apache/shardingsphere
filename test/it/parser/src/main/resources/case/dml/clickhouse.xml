@@ -482,6 +482,38 @@
         </where>
     </select>
     
+    <select sql-case-id="clickhouse_select_subquery_compare">
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" />
+        </projections>
+        <from>
+            <simple-table name="t_order" start-index="14" stop-index="20" />
+        </from>
+        <where start-index="22" stop-index="46">
+            <expr>
+                <binary-operation-expression start-index="28" stop-index="46">
+                    <left>
+                        <column name="amount" start-index="28" stop-index="33" />
+                    </left>
+                    <operator>=</operator>
+                    <right>
+                        <subquery start-index="37" stop-index="46">
+                            <select>
+                                <projections start-index="45" stop-index="45">
+                                    <expression-projection text="1" start-index="45" stop-index="45">
+                                        <expr>
+                                            <literal-expression value="1" start-index="45" stop-index="45" />
+                                        </expr>
+                                    </expression-projection>
+                                </projections>
+                            </select>
+                        </subquery>
+                    </right>
+                </binary-operation-expression>
+            </expr>
+        </where>
+    </select>
+    
     <select sql-case-id="clickhouse_select_param_projection" parameters="1">
         <projections start-index="7" stop-index="22">
             <expression-projection alias="param_alias" text="?" start-index="7" stop-index="22">
@@ -619,6 +651,31 @@
         </where>
     </select>
     
+    <select sql-case-id="clickhouse_select_between_plain">
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" />
+        </projections>
+        <from>
+            <simple-table name="t_order" start-index="14" stop-index="20" />
+        </from>
+        <where start-index="22" stop-index="49">
+            <expr>
+                <between-expression start-index="28" stop-index="49">
+                    <not>false</not>
+                    <left>
+                        <column name="amount" start-index="28" stop-index="33" />
+                    </left>
+                    <between-expr>
+                        <literal-expression value="1" start-index="43" stop-index="43" />
+                    </between-expr>
+                    <and-expr>
+                        <literal-expression value="5" start-index="49" stop-index="49" />
+                    </and-expr>
+                </between-expression>
+            </expr>
+        </where>
+    </select>
+    
     <select sql-case-id="clickhouse_select_interval_and_cast_decimal">
         <projections start-index="7" stop-index="134">
             <expression-projection alias="interval_added" text="order_time + INTERVAL 2 DAY" start-index="7" stop-index="51">
@@ -714,6 +771,40 @@
                     <simple-table name="t_order_item" alias="i" start-index="25" stop-index="38" />
                 </right>
             </join-table>
+        </from>
+    </select>
+    
+    <select sql-case-id="clickhouse_select_natural_join">
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" />
+        </projections>
+        <from>
+            <join-table join-type="INNER" start-index="14" stop-index="46">
+                <left>
+                    <simple-table name="t_order" start-index="14" stop-index="20" />
+                </left>
+                <right>
+                    <simple-table name="t_order_item" start-index="35" stop-index="46" />
+                </right>
+            </join-table>
+        </from>
+    </select>
+    
+    <select sql-case-id="clickhouse_select_count_star">
+        <projections start-index="7" stop-index="14">
+            <aggregation-projection type="COUNT" expression="COUNT(*)" start-index="7" stop-index="14" />
+        </projections>
+        <from>
+            <simple-table name="t_order" start-index="21" stop-index="27" />
+        </from>
+    </select>
+    
+    <select sql-case-id="clickhouse_select_all_projection">
+        <projections start-index="11" stop-index="16">
+            <column-projection name="amount" start-index="11" stop-index="16" />
+        </projections>
+        <from>
+            <simple-table name="t_order" start-index="23" stop-index="29" />
         </from>
     </select>
     
