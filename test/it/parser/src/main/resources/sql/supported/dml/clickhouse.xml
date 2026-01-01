@@ -50,4 +50,10 @@
     <sql-case id="clickhouse_select_hex_bit_literals" value="SELECT * FROM t_order WHERE hex_col = X'1A' AND bit_col = B'101'" db-types="ClickHouse" />
     <sql-case id="clickhouse_update_set_default" value="UPDATE t_order SET status = DEFAULT WHERE order_id = 1" db-types="ClickHouse" />
     <sql-case id="clickhouse_delete_without_where" value="ALTER TABLE t_order DELETE" db-types="ClickHouse" />
+    <sql-case id="clickhouse_select_is_not_null" value="SELECT * FROM t_order WHERE status IS NOT NULL" db-types="ClickHouse" />
+    <sql-case id="clickhouse_select_safe_eq_subquery" value="SELECT * FROM t_order WHERE status &lt;=&gt; (SELECT 1)" db-types="ClickHouse" />
+    <sql-case id="clickhouse_select_literal_mix" value="SELECT 'abc', 123, TRUE, X'1A', ? FROM t_order" db-types="ClickHouse" case-types="PLACEHOLDER" />
+    <sql-case id="clickhouse_select_interval_plus" value="SELECT order_time + INTERVAL 1 DAY AS next_day FROM t_order" db-types="ClickHouse" />
+    <sql-case id="clickhouse_select_sum_distinct_expr" value="SELECT SUM(DISTINCT amount + 1) FROM t_order" db-types="ClickHouse" />
+    <sql-case id="clickhouse_select_cast_literal" value="SELECT CAST(1 AS INT8) FROM t_order" db-types="ClickHouse" />
 </sql-cases>
