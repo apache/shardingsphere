@@ -25,6 +25,7 @@ import org.apache.shardingsphere.sql.parser.autogen.ClickHouseStatementParser;
 import org.apache.shardingsphere.sql.parser.autogen.ClickHouseStatementParser.AssignmentValuesContext;
 import org.apache.shardingsphere.sql.parser.autogen.ClickHouseStatementParser.ColumnNamesContext;
 import org.apache.shardingsphere.sql.parser.autogen.ClickHouseStatementParser.DeleteContext;
+import org.apache.shardingsphere.sql.parser.autogen.ClickHouseStatementParser.ExprContext;
 import org.apache.shardingsphere.sql.parser.autogen.ClickHouseStatementParser.InsertContext;
 import org.apache.shardingsphere.sql.parser.autogen.ClickHouseStatementParser.InsertValuesClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.ClickHouseStatementParser.SelectClauseContext;
@@ -72,7 +73,6 @@ import org.apache.shardingsphere.sql.parser.statement.core.value.literal.impl.Bo
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.stream.Collectors;
 
 /**
@@ -103,15 +103,7 @@ public final class ClickHouseDMLStatementVisitor extends ClickHouseStatementVisi
         } else {
             result.setInsertColumns(new InsertColumnsSegment(ctx.start.getStartIndex() - 1, ctx.start.getStartIndex() - 1, Collections.emptyList()));
         }
-        result.getValues().addAll(createInsertValuesSegments(ctx.assignmentValues()));
-        return result;
-    }
-    
-    private Collection<InsertValuesSegment> createInsertValuesSegments(final Collection<AssignmentValuesContext> assignmentValuesContexts) {
-        Collection<InsertValuesSegment> result = new LinkedList<>();
-        for (ClickHouseStatementParser.AssignmentValuesContext each : assignmentValuesContexts) {
-            result.add((InsertValuesSegment) visit(each));
-        }
+        result.getValues().addAll(ctx.assignmentValues().stream().map(each -> (InsertValuesSegment) visit(each)).collect(Collectors.toList()));
         return result;
     }
     
@@ -129,40 +121,29 @@ public final class ClickHouseDMLStatementVisitor extends ClickHouseStatementVisi
     
     @Override
     public ASTNode visitSetAssignmentsClause(final ClickHouseStatementParser.SetAssignmentsClauseContext ctx) {
-        Collection<ColumnAssignmentSegment> assignments = new LinkedList<>();
-        for (ClickHouseStatementParser.AssignmentContext each : ctx.assignment()) {
-            assignments.add((ColumnAssignmentSegment) visit(each));
-        }
-        return new SetAssignmentSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), assignments);
+        return new SetAssignmentSegment(
+                ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.assignment().stream().map(each -> (ColumnAssignmentSegment) visit(each)).collect(Collectors.toList()));
     }
     
     @Override
     public ASTNode visitAssignmentValues(final AssignmentValuesContext ctx) {
-        List<ExpressionSegment> segments = new LinkedList<>();
-        for (ClickHouseStatementParser.AssignmentValueContext each : ctx.assignmentValue()) {
-            segments.add((ExpressionSegment) visit(each));
-        }
-        return new InsertValuesSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), segments);
+        return new InsertValuesSegment(
+                ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.assignmentValue().stream().map(each -> (ExpressionSegment) visit(each)).collect(Collectors.toList()));
     }
     
     @Override
     public ASTNode visitAssignment(final ClickHouseStatementParser.AssignmentContext ctx) {
         ColumnSegment column = (ColumnSegment) visitColumnName(ctx.columnName());
-        List<ColumnSegment> columnSegments = new LinkedList<>();
-        columnSegments.add(column);
         ExpressionSegment value = (ExpressionSegment) visit(ctx.assignmentValue());
-        ColumnAssignmentSegment result = new ColumnAssignmentSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), columnSegments, value);
+        ColumnAssignmentSegment result = new ColumnAssignmentSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), Collections.singletonList(column), value);
         result.getColumns().add(column);
         return result;
     }
     
     @Override
     public ASTNode visitAssignmentValue(final ClickHouseStatementParser.AssignmentValueContext ctx) {
-        ClickHouseStatementParser.ExprContext expr = ctx.expr();
-        if (null != expr) {
-            return visit(expr);
-        }
-        return new CommonExpressionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.getText());
+        ExprContext expr = ctx.expr();
+        return null == expr ? new CommonExpressionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.getText()) : visit(expr);
     }
     
     @Override
@@ -227,8 +208,7 @@ public final class ClickHouseDMLStatementVisitor extends ClickHouseStatementVisi
     
     @Override
     public ASTNode visitHavingClause(final ClickHouseStatementParser.HavingClauseContext ctx) {
-        ExpressionSegment expr = (ExpressionSegment) visit(ctx.expr());
-        return new HavingSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), expr);
+        return new HavingSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), (ExpressionSegment) visit(ctx.expr()));
     }
     
     private boolean isDistinct(final ClickHouseStatementParser.SelectSpecificationContext ctx) {
@@ -276,7 +256,8 @@ public final class ClickHouseDMLStatementVisitor extends ClickHouseStatementVisi
     
     @Override
     public ASTNode visitAlias(final ClickHouseStatementParser.AliasContext ctx) {
-        return null == ctx.identifier() ? new AliasSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), new IdentifierValue(ctx.STRING_().getText()))
+        return null == ctx.identifier()
+                ? new AliasSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), new IdentifierValue(ctx.STRING_().getText()))
                 : new AliasSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), (IdentifierValue) visit(ctx.identifier()));
     }
     
@@ -418,11 +399,14 @@ public final class ClickHouseDMLStatementVisitor extends ClickHouseStatementVisi
     private String getJoinType(final ClickHouseStatementParser.JoinedTableContext ctx) {
         if (null != ctx.LEFT()) {
             return JoinType.LEFT.name();
-        } else if (null != ctx.RIGHT()) {
+        }
+        if (null != ctx.RIGHT()) {
             return JoinType.RIGHT.name();
-        } else if (null != ctx.INNER()) {
+        }
+        if (null != ctx.INNER()) {
             return JoinType.INNER.name();
-        } else if (null != ctx.CROSS()) {
+        }
+        if (null != ctx.CROSS()) {
             return JoinType.CROSS.name();
         }
         return JoinType.INNER.name();
@@ -430,8 +414,7 @@ public final class ClickHouseDMLStatementVisitor extends ClickHouseStatementVisi
     
     private void visitJoinSpecification(final ClickHouseStatementParser.JoinSpecificationContext ctx, final JoinTableSegment joinTableSource) {
         if (null != ctx.expr()) {
-            ExpressionSegment condition = (ExpressionSegment) visit(ctx.expr());
-            joinTableSource.setCondition(condition);
+            joinTableSource.setCondition((ExpressionSegment) visit(ctx.expr()));
         }
         if (null != ctx.USING()) {
             joinTableSource.setUsing(ctx.columnNames().columnName().stream().map(each -> (ColumnSegment) visit(each)).collect(Collectors.toList()));
@@ -440,22 +423,16 @@ public final class ClickHouseDMLStatementVisitor extends ClickHouseStatementVisi
     
     @Override
     public ASTNode visitWhereClause(final ClickHouseStatementParser.WhereClauseContext ctx) {
-        ExpressionSegment segment = (ExpressionSegment) visit(ctx.expr());
-        return new WhereSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), segment);
+        return new WhereSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), (ExpressionSegment) visit(ctx.expr()));
     }
     
     @Override
     public ASTNode visitGroupByClause(final ClickHouseStatementParser.GroupByClauseContext ctx) {
-        Collection<OrderByItemSegment> items = new LinkedList<>();
-        for (ClickHouseStatementParser.OrderByItemContext each : ctx.orderByItem()) {
-            items.add((OrderByItemSegment) visit(each));
-        }
-        return new GroupBySegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), items);
+        return new GroupBySegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.orderByItem().stream().map(each -> (OrderByItemSegment) visit(each)).collect(Collectors.toList()));
     }
     
     @Override
     public ASTNode visitSubquery(final SubqueryContext ctx) {
         return visit(ctx.combineClause());
     }
-    
 }
