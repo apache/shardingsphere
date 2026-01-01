@@ -37,6 +37,8 @@ This guide is written **for AI coding agents only**. Follow it literally; improv
 - **Dedicated and scoped tests**: each public production method must be covered by dedicated test methods; each test method covers only one scenario and invokes the target public method at most once (repeat only when the same scenario needs extra assertions), and different branches/inputs belong in separate test methods.
 - **Parameterized tests naming**: all parameterized tests must set an explicit `name` including the index (e.g., `"[{index}] foo={0}"`) so scenarios are distinguishable in reports.
 - **Mocking Rule**: default to mocks; see Mocking & SPI Guidance for static/constructor mocking and spy avoidance details.
+- **Reflection Rule**: when tests must touch fields or methods via reflection, use `Plugins.getMemberAccessor()`—direct reflection APIs are forbidden.
+
 ## Tool Usage Guide
 
 ### Exa - Web Search
@@ -226,7 +228,6 @@ Always state which topology, registry, and engine versions (e.g., MySQL 5.7 vs 8
 - Name tests after the production method under test; never probe private helpers directly—document unreachable branches instead.
 - Mock heavy dependencies (database/cache/registry/network) and prefer mocking over building deep object graphs.
 - For static/constructor mocking, use `@ExtendWith(AutoMockExtension.class)` with `@StaticMockSettings`; avoid hand-written `mockStatic`/`mockConstruction` unless you documented why the extension cannot be used.
-- When constructors hide collaborators, use `Plugins.getMemberAccessor()` to inject mocks and document why SPI creation is bypassed.
 - When static methods or constructors need mocking, prefer `@ExtendWith(AutoMockExtension.class)` with `@StaticMockSettings` (or the extension’s constructor-mocking support); when a class is listed in `@StaticMockSettings`, do not call `mockStatic`/`mockConstruction` directly—stub via `when(...)` instead. Only if AutoMockExtension cannot be used and the reason is documented in the plan may you fall back to `mockStatic`/`mockConstruction`, wrapped in try-with-resources.
 - Before coding tests, follow the Coverage & Branch Checklist to map inputs/branches to planned assertions.
 - When a component is available via SPI (e.g., `TypedSPILoader`, `DatabaseTypedSPILoader`, `PushDownMetaDataRefresher`), obtain the instance through SPI by default; note any exceptions in the plan.
