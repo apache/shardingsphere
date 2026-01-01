@@ -187,6 +187,7 @@ import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisCreateSqlBl
 import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisSwitchStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisAnalyzeTableStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisCreateWorkloadGroupStatement;
+import org.apache.shardingsphere.sql.parser.statement.doris.dal.show.DorisShowDataSkewStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.dal.show.DorisShowQueryStatsStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLCloneStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLCreateLoadableFunctionStatement;
@@ -316,7 +317,12 @@ public final class DorisDALStatementVisitor extends DorisStatementVisitor implem
     
     @Override
     public ASTNode visitShowDataSkew(final ShowDataSkewContext ctx) {
-        return new MySQLShowOtherStatement(getDatabaseType());
+        SimpleTableSegment table = null == ctx.fromTable() ? null : ((FromTableSegment) visit(ctx.fromTable())).getTable();
+        Collection<PartitionSegment> partitions = null == ctx.partitionName() ? Collections.emptyList()
+                : ctx.partitionName().stream().map(each -> (PartitionSegment) visit(each)).collect(Collectors.toList());
+        DorisShowDataSkewStatement result = new DorisShowDataSkewStatement(getDatabaseType(), table, partitions);
+        result.addParameterMarkers(getParameterMarkerSegments());
+        return result;
     }
     
     @Override

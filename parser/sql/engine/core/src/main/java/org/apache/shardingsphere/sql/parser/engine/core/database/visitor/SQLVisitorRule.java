@@ -417,6 +417,8 @@ public enum SQLVisitorRule {
     
     SHOW_TRIGGERS("ShowTriggers", SQLStatementType.DAL),
     
+    SHOW_DATA_SKEW("ShowDataSkew", SQLStatementType.DAL),
+    
     SET_VARIABLE("SetVariable", SQLStatementType.DAL),
     
     SET("Set", SQLStatementType.DAL),
