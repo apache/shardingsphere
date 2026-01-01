@@ -42,7 +42,7 @@ public final class FirebirdStartTransactionPacket extends FirebirdCommandPacket 
     
     /**
      * Is auto commit.
-     * 
+     *
      * @return auto commit or not
      */
     public boolean isAutocommit() {
@@ -51,7 +51,7 @@ public final class FirebirdStartTransactionPacket extends FirebirdCommandPacket 
     
     /**
      * Is read only.
-     * 
+     *
      * @return read only or not
      */
     public boolean isReadOnly() {
