@@ -717,6 +717,104 @@
         </from>
     </select>
     
+    <select sql-case-id="clickhouse_select_or_boolean">
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" />
+        </projections>
+        <from>
+            <simple-table name="t_order" start-index="14" stop-index="20" />
+        </from>
+        <where start-index="22" stop-index="57">
+            <expr>
+                <binary-operation-expression start-index="28" stop-index="57">
+                    <left>
+                        <binary-operation-expression start-index="28" stop-index="41">
+                            <left>
+                                <column name="status" start-index="28" stop-index="33" />
+                            </left>
+                            <operator>IS</operator>
+                            <right>
+                                <literal-expression value="TRUE" start-index="38" stop-index="41" />
+                            </right>
+                        </binary-operation-expression>
+                    </left>
+                    <operator>OR</operator>
+                    <right>
+                        <binary-operation-expression start-index="46" stop-index="57">
+                            <left>
+                                <column name="amount" start-index="46" stop-index="51" />
+                            </left>
+                            <operator>&gt;</operator>
+                            <right>
+                                <literal-expression value="100" start-index="55" stop-index="57" />
+                            </right>
+                        </binary-operation-expression>
+                    </right>
+                </binary-operation-expression>
+            </expr>
+        </where>
+    </select>
+    
+    <select sql-case-id="clickhouse_select_is_false">
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" />
+        </projections>
+        <from>
+            <simple-table name="t_order" start-index="14" stop-index="20" />
+        </from>
+        <where start-index="22" stop-index="46">
+            <expr>
+                <binary-operation-expression start-index="28" stop-index="46">
+                    <left>
+                        <column name="is_deleted" start-index="28" stop-index="37" />
+                    </left>
+                    <operator>IS</operator>
+                    <right>
+                        <literal-expression value="FALSE" start-index="42" stop-index="46" />
+                    </right>
+                </binary-operation-expression>
+            </expr>
+        </where>
+    </select>
+    
+    <select sql-case-id="clickhouse_select_parenthesized_right_cross_join">
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" />
+        </projections>
+        <from>
+            <join-table join-type="CROSS" start-index="15" stop-index="97">
+                <left>
+                    <join-table join-type="RIGHT" start-index="15" stop-index="76">
+                        <left>
+                            <simple-table name="t_order" alias="o" start-index="15" stop-index="23" />
+                        </left>
+                        <right>
+                            <simple-table name="t_order_item" alias="i" start-index="36" stop-index="49" />
+                        </right>
+                        <on-condition>
+                            <binary-operation-expression start-index="54" stop-index="76">
+                                <left>
+                                    <column name="order_id" start-index="54" stop-index="63">
+                                        <owner name="o" start-index="54" stop-index="54" />
+                                    </column>
+                                </left>
+                                <operator>=</operator>
+                                <right>
+                                    <column name="order_id" start-index="67" stop-index="76">
+                                        <owner name="i" start-index="67" stop-index="67" />
+                                    </column>
+                                </right>
+                            </binary-operation-expression>
+                        </on-condition>
+                    </join-table>
+                </left>
+                <right>
+                    <simple-table name="t_user" alias="u" start-index="90" stop-index="97" />
+                </right>
+            </join-table>
+        </from>
+    </select>
+    
     <update sql-case-id="clickhouse_update_set_default">
         <table start-index="7" stop-index="13">
             <simple-table name="t_order" start-index="7" stop-index="13" />
