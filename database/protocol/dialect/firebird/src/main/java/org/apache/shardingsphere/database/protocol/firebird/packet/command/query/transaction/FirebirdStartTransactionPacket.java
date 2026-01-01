@@ -45,7 +45,7 @@ public final class FirebirdStartTransactionPacket extends FirebirdCommandPacket 
      *
      * @return auto commit or not
      */
-    public boolean isAutocommit() {
+    public boolean isAutoCommit() {
         return null != tpb.getValue(FirebirdTransactionParameterBufferType.AUTOCOMMIT);
     }
     

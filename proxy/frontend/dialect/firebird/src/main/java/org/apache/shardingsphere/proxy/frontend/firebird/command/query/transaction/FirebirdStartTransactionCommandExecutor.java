@@ -39,7 +39,7 @@ public final class FirebirdStartTransactionCommandExecutor implements CommandExe
     
     @Override
     public Collection<DatabasePacket> execute() {
-        connectionSession.setAutoCommit(packet.isAutocommit());
+        connectionSession.setAutoCommit(packet.isAutoCommit());
         connectionSession.setReadOnly(packet.isReadOnly());
         connectionSession.setIsolationLevel(packet.getIsolationLevel());
         int transactionId = FirebirdTransactionIdGenerator.getInstance().nextTransactionId(connectionSession.getConnectionId());
