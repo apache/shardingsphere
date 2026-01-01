@@ -906,6 +906,65 @@
         </from>
     </select>
     
+    <select sql-case-id="clickhouse_select_addition_no_alias">
+        <projections start-index="7" stop-index="18">
+            <expression-projection text="order_id + 1" start-index="7" stop-index="18">
+                <expr>
+                    <binary-operation-expression start-index="7" stop-index="18">
+                        <left>
+                            <column name="order_id" start-index="7" stop-index="14" />
+                        </left>
+                        <operator>+</operator>
+                        <right>
+                            <literal-expression value="1" start-index="18" stop-index="18" />
+                        </right>
+                    </binary-operation-expression>
+                </expr>
+            </expression-projection>
+        </projections>
+        <from>
+            <simple-table name="t_order" start-index="25" stop-index="31" />
+        </from>
+    </select>
+    
+    <select sql-case-id="clickhouse_select_hex_bit_literals">
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" />
+        </projections>
+        <from>
+            <simple-table name="t_order" start-index="14" stop-index="20" />
+        </from>
+        <where start-index="22" stop-index="63">
+            <expr>
+                <binary-operation-expression start-index="28" stop-index="63">
+                    <left>
+                        <binary-operation-expression start-index="28" stop-index="42">
+                            <left>
+                                <column name="hex_col" start-index="28" stop-index="34" />
+                            </left>
+                            <operator>=</operator>
+                            <right>
+                                <common-expression text="X'1A'" start-index="38" stop-index="42" />
+                            </right>
+                        </binary-operation-expression>
+                    </left>
+                    <operator>AND</operator>
+                    <right>
+                        <binary-operation-expression start-index="48" stop-index="63">
+                            <left>
+                                <column name="bit_col" start-index="48" stop-index="54" />
+                            </left>
+                            <operator>=</operator>
+                            <right>
+                                <common-expression text="B'101'" start-index="58" stop-index="63" />
+                            </right>
+                        </binary-operation-expression>
+                    </right>
+                </binary-operation-expression>
+            </expr>
+        </where>
+    </select>
+    
     <update sql-case-id="clickhouse_update_set_default">
         <table start-index="7" stop-index="13">
             <simple-table name="t_order" start-index="7" stop-index="13" />
