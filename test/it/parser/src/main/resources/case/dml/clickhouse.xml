@@ -1029,4 +1029,142 @@
     <delete sql-case-id="clickhouse_delete_without_where">
         <table name="t_order" start-index="12" stop-index="18" />
     </delete>
+    
+    <select sql-case-id="clickhouse_select_is_not_null">
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" />
+        </projections>
+        <from>
+            <simple-table name="t_order" start-index="14" stop-index="20" />
+        </from>
+        <where start-index="22" stop-index="45">
+            <expr>
+                <binary-operation-expression start-index="28" stop-index="45">
+                    <left>
+                        <column name="status" start-index="28" stop-index="33" />
+                    </left>
+                    <operator>IS</operator>
+                    <right>
+                        <literal-expression value="NOT NULL" start-index="38" stop-index="45" />
+                    </right>
+                </binary-operation-expression>
+            </expr>
+        </where>
+    </select>
+    
+    <select sql-case-id="clickhouse_select_safe_eq_subquery">
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" />
+        </projections>
+        <from>
+            <simple-table name="t_order" start-index="14" stop-index="20" />
+        </from>
+        <where start-index="22" stop-index="48">
+            <expr>
+                <binary-operation-expression start-index="28" stop-index="48">
+                    <left>
+                        <column name="status" start-index="28" stop-index="33" />
+                    </left>
+                    <operator>&lt;=&gt;</operator>
+                    <right>
+                        <subquery start-index="39" stop-index="48">
+                            <select>
+                                <projections start-index="47" stop-index="47">
+                                    <expression-projection text="1" start-index="47" stop-index="47">
+                                        <expr>
+                                            <literal-expression value="1" start-index="47" stop-index="47" />
+                                        </expr>
+                                    </expression-projection>
+                                </projections>
+                            </select>
+                        </subquery>
+                    </right>
+                </binary-operation-expression>
+            </expr>
+        </where>
+    </select>
+    
+    <select sql-case-id="clickhouse_select_literal_mix" parameters="1">
+        <projections start-index="7" stop-index="32">
+            <expression-projection text="abc" start-index="7" stop-index="11">
+                <expr>
+                    <literal-expression value="abc" start-index="7" stop-index="11" />
+                </expr>
+            </expression-projection>
+            <expression-projection text="123" start-index="14" stop-index="16">
+                <expr>
+                    <literal-expression value="123" start-index="14" stop-index="16" />
+                </expr>
+            </expression-projection>
+            <expression-projection text="true" start-index="19" stop-index="22">
+                <expr>
+                    <literal-expression value="true" start-index="19" stop-index="22" />
+                </expr>
+            </expression-projection>
+            <expression-projection text="X'1A'" start-index="25" stop-index="29">
+                <expr>
+                    <common-expression text="X'1A'" start-index="25" stop-index="29" />
+                </expr>
+            </expression-projection>
+            <expression-projection text="?" start-index="32" stop-index="32">
+                <expr>
+                    <parameter-marker-expression parameter-index="0" start-index="32" stop-index="32" />
+                    <literal-expression value="1" start-index="32" stop-index="32" />
+                </expr>
+            </expression-projection>
+        </projections>
+        <from>
+            <simple-table name="t_order" start-index="39" stop-index="45" />
+        </from>
+    </select>
+    
+    <select sql-case-id="clickhouse_select_interval_plus">
+        <projections start-index="7" stop-index="45">
+            <expression-projection alias="next_day" text="order_time + INTERVAL 1 DAY" start-index="7" stop-index="45">
+                <expr>
+                    <binary-operation-expression start-index="7" stop-index="33">
+                        <left>
+                            <column name="order_time" start-index="7" stop-index="16" />
+                        </left>
+                        <operator>+</operator>
+                        <right>
+                            <common-expression text="INTERVAL1DAY" literal-text="INTERVAL1DAY" start-index="20" stop-index="33" />
+                        </right>
+                    </binary-operation-expression>
+                </expr>
+            </expression-projection>
+        </projections>
+        <from>
+            <simple-table name="t_order" start-index="52" stop-index="58" />
+        </from>
+    </select>
+    
+    <select sql-case-id="clickhouse_select_sum_distinct_expr">
+        <projections start-index="7" stop-index="30">
+            <aggregation-distinct-projection type="SUM" expression="SUM(DISTINCT amount + 1)" distinct-inner-expression="amount+1" start-index="7" stop-index="30" />
+        </projections>
+        <from>
+            <simple-table name="t_order" start-index="37" stop-index="43" />
+        </from>
+    </select>
+    
+    <select sql-case-id="clickhouse_select_cast_literal">
+        <projections start-index="7" stop-index="21">
+            <expression-projection text="CAST(1 AS INT8)" start-index="7" stop-index="21">
+                <expr>
+                    <function function-name="CAST" text="CAST(1 AS INT8)" start-index="7" stop-index="21">
+                        <parameter>
+                            <literal-expression value="1" start-index="12" stop-index="12" />
+                        </parameter>
+                        <parameter>
+                            <data-type value="INT8" start-index="17" stop-index="20" />
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+        <from>
+            <simple-table name="t_order" start-index="28" stop-index="34" />
+        </from>
+    </select>
 </sql-parser-test-cases>

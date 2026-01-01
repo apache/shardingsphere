@@ -32,13 +32,14 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
 import java.sql.SQLException;
-import java.util.Collection;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.startsWith;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -53,7 +54,9 @@ class MySQLShowProcessListExecutorTest {
     void assertExecute() throws SQLException {
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
-        when(contextManager.getPersistServiceFacade().getModeFacade().getProcessService().getProcessList()).thenReturn(mockProcessList());
+        Process process = new Process("f6c2336a-63ba-41bf-941e-2e3504eb2c80", 1617939785160L, "ALTER TABLE t_order ADD COLUMN a varchar(64) AFTER order_id",
+                "foo_db", "root", "127.0.0.1", new AtomicInteger(2), new AtomicInteger(1), new AtomicBoolean(false), new AtomicBoolean());
+        when(contextManager.getPersistServiceFacade().getModeFacade().getProcessService().getProcessList()).thenReturn(Collections.singleton(process));
         MySQLShowProcessListExecutor showProcessListExecutor = new MySQLShowProcessListExecutor(new MySQLShowProcessListStatement(databaseType, false));
         showProcessListExecutor.execute(new ConnectionSession(databaseType, new DefaultAttributeMap()), mock());
         assertThat(showProcessListExecutor.getQueryResultMetaData().getColumnCount(), is(8));
@@ -68,10 +71,49 @@ class MySQLShowProcessListExecutorTest {
         }
     }
     
-    private Collection<Process> mockProcessList() {
-        Process process = new Process("f6c2336a-63ba-41bf-941e-2e3504eb2c80", 1617939785160L,
-                "ALTER TABLE t_order ADD COLUMN a varchar(64) AFTER order_id", "foo_db", "root", "127.0.0.1", new AtomicInteger(2), new AtomicInteger(1), new AtomicBoolean(false),
-                new AtomicBoolean());
-        return Collections.singleton(process);
+    @Test
+    void assertExecuteCoversIdleAndTruncatedProcess() throws SQLException {
+        ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
+        when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
+        String longSql = "SELECT * FROM t_order WHERE user_id = 1 AND status = 'PAID' ORDER BY create_time DESC LIMIT 100 OFFSET 10";
+        String repeatedSql = longSql + longSql;
+        when(contextManager.getPersistServiceFacade().getModeFacade().getProcessService().getProcessList()).thenReturn(Arrays.asList(
+                new Process("idle-id",
+                        System.currentTimeMillis() - 1000L, "", "foo_db", "guest", "192.168.0.1", new AtomicInteger(0), new AtomicInteger(0), new AtomicBoolean(true), new AtomicBoolean()),
+                new Process("busy-id",
+                        System.currentTimeMillis() - 1000L, repeatedSql, "foo_db", "root", "127.0.0.1", new AtomicInteger(4), new AtomicInteger(2), new AtomicBoolean(false), new AtomicBoolean())));
+        MySQLShowProcessListExecutor showProcessListExecutor = new MySQLShowProcessListExecutor(new MySQLShowProcessListStatement(databaseType, false));
+        showProcessListExecutor.execute(new ConnectionSession(databaseType, new DefaultAttributeMap()), mock());
+        MergedResult mergedResult = showProcessListExecutor.getMergedResult();
+        int rowCount = 0;
+        assertThat(mergedResult.next(), is(true));
+        rowCount++;
+        assertThat(mergedResult.getValue(5, String.class), is("Sleep"));
+        assertThat(mergedResult.getValue(7, String.class), is(""));
+        assertThat(mergedResult.getValue(8, String.class), is(""));
+        assertThat(mergedResult.next(), is(true));
+        rowCount++;
+        assertThat(mergedResult.getValue(5, String.class), is("Execute"));
+        assertThat(mergedResult.getValue(7, String.class), is("Executing 2/4"));
+        assertThat(((String) mergedResult.getValue(8, String.class)).length(), is(100));
+        assertThat((String) mergedResult.getValue(8, String.class), startsWith(longSql.substring(0, 50)));
+        assertThat(mergedResult.next(), is(false));
+        assertThat(rowCount, is(2));
+    }
+    
+    @Test
+    void assertExecuteWithFullOutputKeepsLongSql() throws SQLException {
+        ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
+        when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
+        String longSql = String.join("", Collections.nCopies(120, "a"));
+        Process process = new Process("long-sql-id", System.currentTimeMillis(), longSql, "foo_db", "root", "127.0.0.1",
+                new AtomicInteger(3), new AtomicInteger(1), new AtomicBoolean(false), new AtomicBoolean());
+        when(contextManager.getPersistServiceFacade().getModeFacade().getProcessService().getProcessList()).thenReturn(Collections.singleton(process));
+        MySQLShowProcessListExecutor executor = new MySQLShowProcessListExecutor(new MySQLShowProcessListStatement(databaseType, true));
+        executor.execute(new ConnectionSession(databaseType, new DefaultAttributeMap()), mock());
+        MergedResult mergedResult = executor.getMergedResult();
+        assertThat(mergedResult.next(), is(true));
+        assertThat(((String) mergedResult.getValue(8, String.class)).length(), is(120));
+        assertThat(mergedResult.next(), is(false));
     }
 }

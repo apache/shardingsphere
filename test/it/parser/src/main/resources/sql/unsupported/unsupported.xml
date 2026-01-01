@@ -28,6 +28,15 @@
     <sql-case id="select_case_when" value="select relname,c.oid = oldoid as orig_oid,case relfilenode when 0 then 'none' when c.oid then 'own' when oldfilenode then 'orig' else 'OTHER' end as storage, obj_description(c.oid, 'pg_class') as desc from pg_class c left join old_oids using (relname) where relname like 'at_partitioned%' order by relname" db-types="PostgreSQL" />
     <sql-case id="select_like" value="select conname, obj_description(oid, 'pg_constraint') as desc from pg_constraint where conname like 'at_partitioned%' order by conname" db-types="PostgreSQL" />
     <sql-case id="select_keyword" value="select relname,c.oid = oldoid as orig_oid,case relfilenode when 0 then 'none' when c.oid then 'own' when oldfilenode then 'orig' else 'OTHER' end as storage, obj_description(c.oid, 'pg_class') as desc from pg_class c left join old_oids using (relname) where relname like 'at_partitioned%' order by relname" db-types="PostgreSQL" />
+    <sql-case id="unsupported_date_literal_for_clickhouse" value="SELECT DATE '2024-01-01'" db-types="ClickHouse" />
+    <sql-case id="unsupported_merge_for_clickhouse" value="MERGE INTO t_order AS o USING t_order_item AS i ON o.order_id = i.order_id WHEN MATCHED THEN UPDATE SET status = 1" db-types="ClickHouse" />
+    <sql-case id="unsupported_create_table_for_clickhouse" value="CREATE TABLE t_order (order_id INT)" db-types="ClickHouse" />
+    <sql-case id="unsupported_commit_for_clickhouse" value="COMMIT" db-types="ClickHouse" />
+    <sql-case id="unsupported_grant_for_clickhouse" value="GRANT SELECT ON t_order TO user1" db-types="ClickHouse" />
+    <sql-case id="unsupported_show_tables_for_clickhouse" value="SHOW TABLES" db-types="ClickHouse" />
+    <sql-case id="unsupported_function_call_for_clickhouse" value="SELECT FUNCTION()" db-types="ClickHouse" />
+    <sql-case id="unsupported_lock_tables_for_clickhouse" value="LOCK TABLES t_order READ" db-types="ClickHouse" />
+    <sql-case id="unsupported_unlock_tables_for_clickhouse" value="UNLOCK TABLES" db-types="ClickHouse" />
     <sql-case id="unsupported_select_case_for_opengauss_13" value="select count(*) from partition_list_tab01 partition for ('20');" db-types="openGauss" />
     <sql-case id="unsupported_select_case_for_opengauss_14" value="select count(*) from partition_list_tab partition for ('10');" db-types="openGauss" />
     <sql-case id="unsupported_select_case_for_opengauss_15" value="select count(*) from partition_list_tab partition for ('20');" db-types="openGauss" />
