@@ -74,6 +74,7 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 /**
  * ClickHouse Statement visitor.
@@ -138,7 +139,6 @@ public abstract class ClickHouseStatementVisitor extends ClickHouseStatementBase
     
     @Override
     public final ASTNode visitBooleanLiterals(final ClickHouseStatementParser.BooleanLiteralsContext ctx) {
-        
         return new BooleanLiteralValue(ctx.getText());
     }
     
@@ -258,12 +258,7 @@ public abstract class ClickHouseStatementVisitor extends ClickHouseStatementBase
     
     private ASTNode createCompareSegment(final ClickHouseStatementParser.BooleanPrimaryContext ctx) {
         ExpressionSegment left = (ExpressionSegment) visit(ctx.booleanPrimary());
-        ExpressionSegment right;
-        if (null != ctx.predicate()) {
-            right = (ExpressionSegment) visit(ctx.predicate());
-        } else {
-            right = (ExpressionSegment) visit(ctx.subquery());
-        }
+        ExpressionSegment right = null != ctx.predicate() ? (ExpressionSegment) visit(ctx.predicate()) : (ExpressionSegment) visit(ctx.subquery());
         String operator = null == ctx.SAFE_EQ_() ? ctx.comparisonOperator().getText() : ctx.SAFE_EQ_().getText();
         String text = ctx.start.getInputStream().getText(new Interval(ctx.start.getStartIndex(), ctx.stop.getStopIndex()));
         return new BinaryOperationExpression(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), left, right, operator, text);
@@ -298,8 +293,8 @@ public abstract class ClickHouseStatementVisitor extends ClickHouseStatementBase
         ExpressionSegment left = (ExpressionSegment) visit(ctx.bitExpr(0));
         ExpressionSegment right;
         if (null != ctx.subquery()) {
-            right = new SubqueryExpressionSegment(new SubquerySegment(ctx.subquery().start.getStartIndex(), ctx.subquery().stop.getStopIndex(), (SelectStatement) visit(ctx.subquery()),
-                    getOriginalText(ctx.subquery())));
+            right = new SubqueryExpressionSegment(
+                    new SubquerySegment(ctx.subquery().start.getStartIndex(), ctx.subquery().stop.getStopIndex(), (SelectStatement) visit(ctx.subquery()), getOriginalText(ctx.subquery())));
         } else {
             ListExpression listExpression = new ListExpression(ctx.LP_().getSymbol().getStartIndex(), ctx.RP_().getSymbol().getStopIndex());
             for (ClickHouseStatementParser.ExprContext each : ctx.expr()) {
@@ -315,8 +310,7 @@ public abstract class ClickHouseStatementVisitor extends ClickHouseStatementBase
         ExpressionSegment left = (ExpressionSegment) visit(ctx.bitExpr(0));
         ExpressionSegment between = (ExpressionSegment) visit(ctx.bitExpr(1));
         ExpressionSegment and = (ExpressionSegment) visit(ctx.predicate());
-        boolean not = null != ctx.NOT();
-        return new BetweenExpression(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), left, between, and, not);
+        return new BetweenExpression(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), left, between, and, null != ctx.NOT());
     }
     
     @Override
@@ -343,8 +337,8 @@ public abstract class ClickHouseStatementVisitor extends ClickHouseStatementBase
         }
         if (astNode instanceof ParameterMarkerValue) {
             ParameterMarkerValue parameterMarker = (ParameterMarkerValue) astNode;
-            ParameterMarkerExpressionSegment segment = new ParameterMarkerExpressionSegment(context.start.getStartIndex(), context.stop.getStopIndex(),
-                    parameterMarker.getValue(), parameterMarker.getType());
+            ParameterMarkerExpressionSegment segment = new ParameterMarkerExpressionSegment(
+                    context.start.getStartIndex(), context.stop.getStopIndex(), parameterMarker.getValue(), parameterMarker.getType());
             parameterMarkerSegments.add(segment);
             return segment;
         }
@@ -413,8 +407,8 @@ public abstract class ClickHouseStatementVisitor extends ClickHouseStatementBase
     private ASTNode createAggregationSegment(final ClickHouseStatementParser.AggregationFunctionContext ctx, final String aggregationType) {
         AggregationType type = AggregationType.valueOf(aggregationType.toUpperCase());
         if (null != ctx.distinct()) {
-            AggregationDistinctProjectionSegment result =
-                    new AggregationDistinctProjectionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), type, getOriginalText(ctx), getDistinctExpression(ctx));
+            AggregationDistinctProjectionSegment result = new AggregationDistinctProjectionSegment(
+                    ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), type, getOriginalText(ctx), getDistinctExpression(ctx));
             result.getParameters().addAll(getExpressions(ctx));
             return result;
         }
@@ -424,30 +418,18 @@ public abstract class ClickHouseStatementVisitor extends ClickHouseStatementBase
     }
     
     private Collection<ExpressionSegment> getExpressions(final ClickHouseStatementParser.AggregationFunctionContext ctx) {
-        if (null == ctx.expr()) {
-            return Collections.emptyList();
-        }
-        Collection<ExpressionSegment> result = new LinkedList<>();
-        for (ClickHouseStatementParser.ExprContext each : ctx.expr()) {
-            result.add((ExpressionSegment) visit(each));
-        }
-        return result;
+        return null == ctx.expr() ? Collections.emptyList() : ctx.expr().stream().map(each -> (ExpressionSegment) visit(each)).collect(Collectors.toList());
     }
     
     private String getDistinctExpression(final ClickHouseStatementParser.AggregationFunctionContext ctx) {
-        StringBuilder result = new StringBuilder();
-        for (int i = 3; i < ctx.getChildCount() - 1; i++) {
-            result.append(ctx.getChild(i).getText());
-        }
-        return result.toString();
+        return IntStream.range(3, ctx.getChildCount() - 1).mapToObj(i -> ctx.getChild(i).getText()).collect(Collectors.joining());
     }
     
     @Override
     public final ASTNode visitSpecialFunction(final ClickHouseStatementParser.SpecialFunctionContext ctx) {
-        if (null != ctx.castFunction()) {
-            return visit(ctx.castFunction());
-        }
-        return new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.getChild(0).getChild(0).getText(), getOriginalText(ctx));
+        return null != ctx.castFunction()
+                ? visit(ctx.castFunction())
+                : new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.getChild(0).getChild(0).getText(), getOriginalText(ctx));
     }
     
     @Override
@@ -467,18 +449,13 @@ public abstract class ClickHouseStatementVisitor extends ClickHouseStatementBase
     @Override
     public final ASTNode visitRegularFunction(final ClickHouseStatementParser.RegularFunctionContext ctx) {
         FunctionSegment result = new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.regularFunctionName().getText(), getOriginalText(ctx));
-        Collection<ExpressionSegment> expressionSegments = ctx.expr().stream().map(each -> (ExpressionSegment) visit(each)).collect(Collectors.toList());
-        result.getParameters().addAll(expressionSegments);
+        result.getParameters().addAll(ctx.expr().stream().map(each -> (ExpressionSegment) visit(each)).collect(Collectors.toList()));
         return result;
     }
     
     @Override
     public final ASTNode visitDataTypeName(final ClickHouseStatementParser.DataTypeNameContext ctx) {
-        Collection<String> dataTypeNames = new LinkedList<>();
-        for (int i = 0; i < ctx.getChildCount(); i++) {
-            dataTypeNames.add(ctx.getChild(i).getText());
-        }
-        return new KeywordValue(String.join(" ", dataTypeNames));
+        return new KeywordValue(IntStream.range(0, ctx.getChildCount()).mapToObj(i -> ctx.getChild(i).getText()).collect(Collectors.joining(" ")));
     }
     
     // TODO :FIXME, sql case id: insert_with_str_to_date
@@ -490,19 +467,14 @@ public abstract class ClickHouseStatementVisitor extends ClickHouseStatementBase
     
     @Override
     public final ASTNode visitOrderByClause(final ClickHouseStatementParser.OrderByClauseContext ctx) {
-        Collection<OrderByItemSegment> items = new LinkedList<>();
-        for (ClickHouseStatementParser.OrderByItemContext each : ctx.orderByItem()) {
-            items.add((OrderByItemSegment) visit(each));
-        }
-        return new OrderBySegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), items);
+        return new OrderBySegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.orderByItem().stream().map(each -> (OrderByItemSegment) visit(each)).collect(Collectors.toList()));
     }
     
     @Override
     public final ASTNode visitOrderByItem(final ClickHouseStatementParser.OrderByItemContext ctx) {
         OrderDirection orderDirection = null == ctx.DESC() ? OrderDirection.ASC : OrderDirection.DESC;
         if (null != ctx.columnName()) {
-            ColumnSegment column = (ColumnSegment) visit(ctx.columnName());
-            return new ColumnOrderByItemSegment(column, orderDirection, null);
+            return new ColumnOrderByItemSegment((ColumnSegment) visit(ctx.columnName()), orderDirection, null);
         }
         return new IndexOrderByItemSegment(ctx.numberLiterals().getStart().getStartIndex(), ctx.numberLiterals().getStop().getStopIndex(),
                 SQLUtils.getExactlyNumber(ctx.numberLiterals().getText(), 10).intValue(), orderDirection, null);
@@ -515,8 +487,7 @@ public abstract class ClickHouseStatementVisitor extends ClickHouseStatementBase
         result.setStartIndex(ctx.start.getStartIndex());
         result.setStopIndex(ctx.stop.getStopIndex());
         if (null != ctx.dataTypeLength()) {
-            DataTypeLengthSegment dataTypeLengthSegment = (DataTypeLengthSegment) visit(ctx.dataTypeLength());
-            result.setDataLength(dataTypeLengthSegment);
+            result.setDataLength((DataTypeLengthSegment) visit(ctx.dataTypeLength()));
         }
         return result;
     }
@@ -527,10 +498,10 @@ public abstract class ClickHouseStatementVisitor extends ClickHouseStatementBase
         result.setStartIndex(ctx.start.getStartIndex());
         result.setStopIndex(ctx.stop.getStartIndex());
         List<TerminalNode> numbers = ctx.NUMBER_();
-        if (numbers.size() == 1) {
+        if (1 == numbers.size()) {
             result.setPrecision(Integer.parseInt(numbers.get(0).getText()));
         }
-        if (numbers.size() == 2) {
+        if (2 == numbers.size()) {
             result.setPrecision(Integer.parseInt(numbers.get(0).getText()));
             result.setScale(Integer.parseInt(numbers.get(1).getText()));
         }
@@ -546,5 +517,4 @@ public abstract class ClickHouseStatementVisitor extends ClickHouseStatementBase
     protected String getOriginalText(final ParserRuleContext ctx) {
         return ctx.start.getInputStream().getText(new Interval(ctx.start.getStartIndex(), ctx.stop.getStopIndex()));
     }
-    
 }
