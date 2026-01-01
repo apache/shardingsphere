@@ -292,8 +292,16 @@
         <projections start-index="7" stop-index="70">
             <column-projection name="0x1A" alias="hex_lit" start-index="7" stop-index="21" />
             <column-projection name="0b101" alias="bit_lit" start-index="24" stop-index="39" />
-            <column-projection name="TRUE" alias="bool_lit" start-index="42" stop-index="57" />
-            <column-projection name="NULL" alias="nil" start-index="60" stop-index="70" />
+            <expression-projection alias="bool_lit" text="true" start-index="42" stop-index="57">
+                <expr>
+                    <literal-expression value="true" start-index="42" stop-index="45" />
+                </expr>
+            </expression-projection>
+            <expression-projection alias="nil" text="null" start-index="60" stop-index="70">
+                <expr>
+                    <literal-expression value="null" start-index="60" stop-index="63" />
+                </expr>
+            </expression-projection>
         </projections>
         <from>
             <simple-table name="t_order" start-index="77" stop-index="83" />
@@ -490,7 +498,7 @@
             <simple-table name="t_order" start-index="34" stop-index="40" />
         </from>
         <projections start-index="7" stop-index="27">
-            <subquery-projection start-index="7" stop-index="27" alias="sub_val" text="(SELECT 1)" literal-text="(SELECT 1)">
+            <subquery-projection start-index="7" stop-index="16" alias="sub_val" text="(SELECT 1)" literal-text="(SELECT 1)">
                 <subquery>
                     <select>
                         <projections start-index="15" stop-index="15">
@@ -514,5 +522,4 @@
             </assignment>
         </set>
     </update>
-    
 </sql-parser-test-cases>
