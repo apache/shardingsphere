@@ -44,6 +44,8 @@
     <sql-case id="clickhouse_select_or_boolean" value="SELECT * FROM t_order WHERE status IS TRUE OR amount &gt; 100" db-types="ClickHouse" />
     <sql-case id="clickhouse_select_is_false" value="SELECT * FROM t_order WHERE is_deleted IS FALSE" db-types="ClickHouse" />
     <sql-case id="clickhouse_select_parenthesized_right_cross_join" value="SELECT * FROM (t_order o RIGHT JOIN t_order_item i ON o.order_id = i.order_id) CROSS JOIN t_user u" db-types="ClickHouse" />
+    <sql-case id="clickhouse_select_compare_any_subquery_paren" value="SELECT * FROM t_order WHERE (status = 1)" db-types="ClickHouse" />
+    <sql-case id="clickhouse_insert_default_value" value="INSERT INTO t_order VALUES (DEFAULT)" db-types="ClickHouse" />
     <sql-case id="clickhouse_select_addition_no_alias" value="SELECT order_id + 1 FROM t_order" db-types="ClickHouse" />
     <sql-case id="clickhouse_select_hex_bit_literals" value="SELECT * FROM t_order WHERE hex_col = X'1A' AND bit_col = B'101'" db-types="ClickHouse" />
     <sql-case id="clickhouse_update_set_default" value="UPDATE t_order SET status = DEFAULT WHERE order_id = 1" db-types="ClickHouse" />
