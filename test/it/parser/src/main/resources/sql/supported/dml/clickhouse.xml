@@ -36,6 +36,9 @@
     <sql-case id="clickhouse_select_interval_and_cast_decimal" value="SELECT order_time + INTERVAL 2 DAY AS interval_added, CAST(amount AS DATETIME64(10, 2)) AS amount_decimal, (status) AS 'wrapped_status' FROM t_order" db-types="ClickHouse" />
     <sql-case id="clickhouse_select_right_join_subquery" value="SELECT * FROM (SELECT order_id FROM t_order) sub JOIN t_order_item i ON sub.order_id = i.order_id" db-types="ClickHouse" />
     <sql-case id="clickhouse_select_comma_join" value="SELECT * FROM t_order o, t_order_item i" db-types="ClickHouse" />
+    <sql-case id="clickhouse_select_or_boolean" value="SELECT * FROM t_order WHERE status IS TRUE OR amount &gt; 100" db-types="ClickHouse" />
+    <sql-case id="clickhouse_select_is_false" value="SELECT * FROM t_order WHERE is_deleted IS FALSE" db-types="ClickHouse" />
+    <sql-case id="clickhouse_select_parenthesized_right_cross_join" value="SELECT * FROM (t_order o RIGHT JOIN t_order_item i ON o.order_id = i.order_id) CROSS JOIN t_user u" db-types="ClickHouse" />
     <sql-case id="clickhouse_update_set_default" value="UPDATE t_order SET status = DEFAULT WHERE order_id = 1" db-types="ClickHouse" />
     <sql-case id="clickhouse_delete_without_where" value="ALTER TABLE t_order DELETE" db-types="ClickHouse" />
 </sql-cases>
