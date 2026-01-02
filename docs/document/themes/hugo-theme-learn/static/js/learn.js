@@ -462,12 +462,8 @@ jQuery(document).ready(function() {
 
         function tokenize(text) {
             var regex = /::=|\\?|\\*|\\+|\\||\\(|\\)|\\[|\\]|'[^']*'|[A-Za-z_][A-Za-z0-9_-]*|,/g;
-            var tokens = [];
-            var match;
-            while ((match = regex.exec(text)) !== null) {
-                tokens.push(match[0]);
-            }
-            return tokens;
+            var tokens = text.match(regex);
+            return tokens ? tokens : [];
         }
 
         function parseExpression(tokens, indexRef) {
