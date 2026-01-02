@@ -402,56 +402,69 @@ jQuery(document).ready(function() {
 
 
     //railroad diagram
-    
-    if($('.tab-panel').length) {
-        var codeStr = $('.tab-panel code').text()
-        var _h = $('.tab-panel code').height()
-        var diagram = $('#diagram')
+    if ($('.tab-panel').length) {
+        var codeBlock = $('.tab-panel code').first();
+        var diagram = $('#diagram');
+        var grammarText = codeBlock.text() || '';
 
-        function appendFormElement(tagName, type, name, value, parentEl){
-            var el = document.createElement(tagName)
-            el.type = type
-            el.name = name
-            el.value = value,
-            parentEl.appendChild(el)
+        if (grammarText && diagram.length) {
+            var loadingId = 'rr-loading';
+            diagram.before('<p id="' + loadingId + '">Loading ...</p>');
+
+            function baseRailroadPath() {
+                var parts = window.location.pathname.split('/');
+                var docIdx = parts.indexOf('document');
+                if (docIdx === -1) {
+                    return '/railroad/';
+                }
+                // e.g. /document/current/... -> /document/current/railroad/
+                return '/' + parts.slice(1, docIdx + 2).join('/') + '/railroad/';
+            }
+
+            function toHex(buffer) {
+                var bytes = new Uint8Array(buffer);
+                var hex = '';
+                for (var i = 0; i < bytes.length; i++) {
+                    hex += ('00' + bytes[i].toString(16)).slice(-2);
+                }
+                return hex;
+            }
+
+            function sha256(text) {
+                if (!window.crypto || !window.crypto.subtle || !window.TextEncoder) {
+                    return Promise.reject(new Error('SHA-256 unsupported'));
+                }
+                var encoder = new TextEncoder();
+                return window.crypto.subtle.digest('SHA-256', encoder.encode(text)).then(toHex);
+            }
+
+            sha256(grammarText).then(function (hash) {
+                var paths = [baseRailroadPath(), '/railroad/'];
+                var idx = 0;
+
+                function loadNext() {
+                    if (idx >= paths.length) {
+                        $('#' + loadingId).text('Railroad diagram unavailable.');
+                        return;
+                    }
+                    var src = paths[idx] + hash + '.html';
+                    diagram.attr('src', src);
+                }
+
+                diagram.on('load', function () {
+                    $('#' + loadingId).remove();
+                    var codeHeight = codeBlock.height();
+                    diagram.height(codeHeight > 500 ? codeHeight + 'px' : '500px');
+                }).on('error', function () {
+                    idx += 1;
+                    loadNext();
+                });
+
+                loadNext();
+            }).catch(function () {
+                $('#' + loadingId).text('Railroad diagram unavailable.');
+            });
         }
-
-        var form = document.createElement('form')
-        form.name = "data2"
-        form.method = "post"
-        form.action = "https://www.sphere-ex.com/rrdg"
-        form.enctype="multipart/form-data"
-
-        appendFormElement('input', 'hidden', 'task', 'VIEW', form)
-        appendFormElement('input', 'hidden', 'frame', '', form)
-        appendFormElement('input', 'hidden', 'name', 'ui', form)
-        
-        // 可增加
-        appendFormElement('input', 'hidden', 'color', '#FF8B00', form)
-
-        appendFormElement('textarea', 'hidden', 'text', codeStr, form)
-     
-        appendFormElement('input', 'hidden', 'width', '700', form)
-        appendFormElement('input', 'hidden', 'padding', '10', form)
-        appendFormElement('input', 'hidden', 'strokewidth', '1', form)
-
-        document.body.appendChild(form)
-
-        document.forms.data2.target = 'diagram';
-        document.forms.data2.frame.value = 'diagram';
-        // document.forms.data2.time.value = new Date().getTime();
-
-        
-        diagram.before('<p id="testLoading">Loading ...</p>')
-
-        document.forms.data2.submit();
-
-        document.body.removeChild(form)
-
-        diagram.on('load', function(){
-            $('#testLoading').remove()
-            diagram.height(_h > 500 ? _h+'px' : '500px')
-        })
     }
 
 });
