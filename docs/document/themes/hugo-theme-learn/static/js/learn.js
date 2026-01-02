@@ -401,71 +401,213 @@ jQuery(document).ready(function() {
     })(window.document, window.history, window.location);
 
 
-    //railroad diagram
-    if ($('.tab-panel').length) {
-        var codeBlock = $('.tab-panel code').first();
-        var diagram = $('#diagram');
-        var grammarText = codeBlock.text() || '';
-
-        if (grammarText && diagram.length) {
-            var loadingId = 'rr-loading';
-            diagram.before('<p id="' + loadingId + '">Loading ...</p>');
-
-            function baseRailroadPath() {
-                var parts = window.location.pathname.split('/');
-                var docIdx = parts.indexOf('document');
-                if (docIdx === -1) {
-                    return '/railroad/';
-                }
-                // e.g. /document/current/... -> /document/current/railroad/
-                return '/' + parts.slice(1, docIdx + 2).join('/') + '/railroad/';
-            }
-
-            function toHex(buffer) {
-                var bytes = new Uint8Array(buffer);
-                var hex = '';
-                for (var i = 0; i < bytes.length; i++) {
-                    hex += ('00' + bytes[i].toString(16)).slice(-2);
-                }
-                return hex;
-            }
-
-            function sha256(text) {
-                if (!window.crypto || !window.crypto.subtle || !window.TextEncoder) {
-                    return Promise.reject(new Error('SHA-256 unsupported'));
-                }
-                var encoder = new TextEncoder();
-                return window.crypto.subtle.digest('SHA-256', encoder.encode(text)).then(toHex);
-            }
-
-            sha256(grammarText).then(function (hash) {
-                var paths = [baseRailroadPath(), '/railroad/'];
-                var idx = 0;
-
-                function loadNext() {
-                    if (idx >= paths.length) {
-                        $('#' + loadingId).text('Railroad diagram unavailable.');
-                        return;
-                    }
-                    var src = paths[idx] + hash + '.html';
-                    diagram.attr('src', src);
-                }
-
-                diagram.on('load', function () {
-                    $('#' + loadingId).remove();
-                    var codeHeight = codeBlock.height();
-                    diagram.height(codeHeight > 500 ? codeHeight + 'px' : '500px');
-                }).on('error', function () {
-                    idx += 1;
-                    loadNext();
-                });
-
-                loadNext();
-            }).catch(function () {
-                $('#' + loadingId).text('Railroad diagram unavailable.');
-            });
+    // railroad diagram (generate in-browser to avoid cross-domain CSP blocks)
+    (function () {
+        if (!$('.tab-panel').length) {
+            return;
         }
-    }
+        var codeBlock = $('.tab-panel code').first();
+        var grammarText = (codeBlock.text() || '').trim();
+        var diagramFrame = $('#diagram');
+        if (!grammarText || !diagramFrame.length) {
+            return;
+        }
+
+        var loadingId = 'rr-loading';
+        diagramFrame.before('<p id="' + loadingId + '">Loading ...</p>');
+
+        function resolveStaticPath(relPath) {
+            var parts = window.location.pathname.split('/');
+            var docIdx = parts.indexOf('document');
+            if (docIdx === -1) {
+                return '/' + relPath;
+            }
+            return '/' + parts.slice(1, docIdx + 2).join('/') + '/' + relPath;
+        }
+
+        var railroadAssetsPromise;
+        function ensureRailroadAssets() {
+            if (railroadAssetsPromise) {
+                return railroadAssetsPromise;
+            }
+            railroadAssetsPromise = new Promise(function (resolve, reject) {
+                function onReady() {
+                    resolve();
+                }
+
+                // load CSS once
+                if (!document.getElementById('railroad-diagrams-css')) {
+                    var link = document.createElement('link');
+                    link.id = 'railroad-diagrams-css';
+                    link.rel = 'stylesheet';
+                    link.href = resolveStaticPath('css/railroad-diagrams.css');
+                    document.head.appendChild(link);
+                }
+
+                if (window.Diagram && window.NonTerminal && window.Terminal) {
+                    resolve();
+                    return;
+                }
+
+                var script = document.createElement('script');
+                script.src = resolveStaticPath('js/railroad-diagrams.js');
+                script.onload = onReady;
+                script.onerror = function () {
+                    reject(new Error('Railroad script load failed'));
+                };
+                document.head.appendChild(script);
+            });
+            return railroadAssetsPromise;
+        }
+
+        function tokenize(text) {
+            var regex = /::=|\\?|\\*|\\+|\\||\\(|\\)|\\[|\\]|'[^']*'|[A-Za-z_][A-Za-z0-9_-]*|,/g;
+            var tokens = [];
+            var match;
+            while ((match = regex.exec(text)) !== null) {
+                tokens.push(match[0]);
+            }
+            return tokens;
+        }
+
+        function parseExpression(tokens, indexRef) {
+            var terms = [parseTerm(tokens, indexRef)];
+            while (tokens[indexRef.idx] === '|') {
+                indexRef.idx += 1;
+                terms.push(parseTerm(tokens, indexRef));
+            }
+            if (terms.length === 1) {
+                return terms[0];
+            }
+            return { type: 'choice', options: terms };
+        }
+
+        function parseTerm(tokens, indexRef) {
+            var items = [];
+            while (indexRef.idx < tokens.length) {
+                var tok = tokens[indexRef.idx];
+                if (tok === '|' || tok === ')' || tok === ']') {
+                    break;
+                }
+                items.push(parseFactor(tokens, indexRef));
+            }
+            if (items.length === 1) {
+                return items[0];
+            }
+            return { type: 'sequence', items: items };
+        }
+
+        function parseFactor(tokens, indexRef) {
+            var node = parsePrimary(tokens, indexRef);
+            var tok = tokens[indexRef.idx];
+            if (tok === '?' || tok === '*' || tok === '+') {
+                indexRef.idx += 1;
+                if (tok === '?') {
+                    node = { type: 'optional', item: node };
+                } else if (tok === '*') {
+                    node = { type: 'zeroOrMore', item: node };
+                } else if (tok === '+') {
+                    node = { type: 'oneOrMore', item: node };
+                }
+            }
+            return node;
+        }
+
+        function parsePrimary(tokens, indexRef) {
+            var tok = tokens[indexRef.idx];
+            indexRef.idx += 1;
+            if (!tok) {
+                return { type: 'terminal', value: '' };
+            }
+            if (tok === '(') {
+                var expr = parseExpression(tokens, indexRef);
+                indexRef.idx += 1; // skip ')'
+                return expr;
+            }
+            if (tok === '[') {
+                var optExpr = parseExpression(tokens, indexRef);
+                indexRef.idx += 1; // skip ']'
+                return { type: 'optional', item: optExpr };
+            }
+            if (tok[0] === "'" && tok.length >= 2) {
+                return { type: 'terminal', value: tok.slice(1, -1) };
+            }
+            return { type: 'nonterminal', value: tok };
+        }
+
+        function astToRailroad(node) {
+            switch (node.type) {
+                case 'terminal':
+                    return new Terminal(node.value);
+                case 'nonterminal':
+                    return new NonTerminal(node.value);
+                case 'sequence':
+                    return Sequence.apply(null, node.items.map(astToRailroad));
+                case 'choice':
+                    var opts = node.options.map(astToRailroad);
+                    return Choice.apply(null, [0].concat(opts));
+                case 'optional':
+                    return new Optional(astToRailroad(node.item), 'skip');
+                case 'zeroOrMore':
+                    return new ZeroOrMore(astToRailroad(node.item));
+                case 'oneOrMore':
+                    return new OneOrMore(astToRailroad(node.item));
+                default:
+                    return new Terminal('');
+            }
+        }
+
+        function parseDefinitions(text) {
+            var blocks = text.split(/\\n\\s*\\n/);
+            var defs = [];
+            for (var i = 0; i < blocks.length; i++) {
+                var block = blocks[i].trim();
+                if (!block) {
+                    continue;
+                }
+                var parts = block.split('::=');
+                if (parts.length < 2) {
+                    continue;
+                }
+                var name = parts[0].trim().split(/\\s+/)[0];
+                var rhs = parts.slice(1).join('::=').trim();
+                defs.push({ name: name, rhs: rhs });
+            }
+            return defs;
+        }
+
+        function renderRailroad(grammar) {
+            var defs = parseDefinitions(grammar);
+            var htmlParts = ['<style>svg.railroad-diagram{background:#fff;} .rr-title{font:bold 14px Verdana, sans-serif;margin:10px 0 4px;}</style>'];
+            for (var i = 0; i < defs.length; i++) {
+                var def = defs[i];
+                try {
+                    var tokens = tokenize(def.rhs);
+                    var ast = parseExpression(tokens, { idx: 0 });
+                    var diagram = new Diagram(astToRailroad(ast));
+                    htmlParts.push('<p class=\"rr-title\">' + def.name + ':</p>');
+                    htmlParts.push(diagram.toString());
+                } catch (e) {
+                    htmlParts.push('<p class=\"rr-title\">' + def.name + ':</p><p>Railroad diagram unavailable.</p>');
+                }
+            }
+            return htmlParts.join('\\n');
+        }
+
+        ensureRailroadAssets().then(function () {
+            try {
+                var container = $('<div class=\"railroad-diagrams\"></div>');
+                container.html(renderRailroad(grammarText));
+                diagramFrame.replaceWith(container);
+            } catch (e) {
+                $('#' + loadingId).text('Railroad diagram unavailable.');
+            } finally {
+                $('#' + loadingId).remove();
+            }
+        }).catch(function () {
+            $('#' + loadingId).text('Railroad diagram unavailable.');
+        });
+    })();
 
 });
 
