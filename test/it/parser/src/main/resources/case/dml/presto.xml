@@ -371,4 +371,121 @@
             </expr>
         </where>
     </select>
+
+    <select sql-case-id="presto_select_xor">
+        <from>
+            <simple-table name="t_order" start-index="14" stop-index="20" />
+        </from>
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" />
+        </projections>
+        <where start-index="22" stop-index="37">
+            <expr>
+                <binary-operation-expression start-index="28" stop-index="37">
+                    <left>
+                        <column name="flag" start-index="28" stop-index="31" />
+                    </left>
+                    <operator>XOR</operator>
+                    <right>
+                        <literal-expression value="1" start-index="37" stop-index="37" />
+                    </right>
+                </binary-operation-expression>
+            </expr>
+        </where>
+    </select>
+
+    <select sql-case-id="presto_select_safe_equal">
+        <from>
+            <simple-table name="t_order" start-index="14" stop-index="20" />
+        </from>
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" />
+        </projections>
+        <where start-index="22" stop-index="40">
+            <expr>
+                <binary-operation-expression start-index="28" stop-index="40">
+                    <left>
+                        <column name="flag" start-index="28" stop-index="31" />
+                    </left>
+                    <operator>&lt;=&gt;</operator>
+                    <right>
+                        <literal-expression value="true" start-index="37" stop-index="40" />
+                    </right>
+                </binary-operation-expression>
+            </expr>
+        </where>
+    </select>
+
+    <select sql-case-id="presto_select_member_of">
+        <from>
+            <simple-table name="t_order" start-index="14" stop-index="20" />
+        </from>
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" />
+        </projections>
+        <where start-index="22" stop-index="54">
+            <expr>
+                <binary-operation-expression start-index="28" stop-index="54">
+                    <left>
+                        <column name="order_id" start-index="28" stop-index="35" />
+                    </left>
+                    <operator>MEMBER OF</operator>
+                    <right>
+                        <expression-projection text="&quot;[1,2]&quot;" start-index="47" stop-index="53" />
+                    </right>
+                </binary-operation-expression>
+            </expr>
+        </where>
+    </select>
+
+    <select sql-case-id="presto_select_in_params">
+        <from>
+            <simple-table name="t_order" start-index="14" stop-index="20" />
+        </from>
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" />
+        </projections>
+        <where start-index="22" stop-index="45">
+            <expr>
+                <in-expression start-index="28" stop-index="45">
+                    <not>false</not>
+                    <left>
+                        <column name="order_id" start-index="28" stop-index="35" />
+                    </left>
+                    <right>
+                        <list-expression start-index="40" stop-index="45">
+                            <items>
+                                <literal-expression value="1" start-index="41" stop-index="41" />
+                            </items>
+                            <items>
+                                <literal-expression value="2" start-index="44" stop-index="44" />
+                            </items>
+                        </list-expression>
+                    </right>
+                </in-expression>
+            </expr>
+        </where>
+    </select>
+
+    <select sql-case-id="presto_select_sounds_like">
+        <from>
+            <simple-table name="t_order" start-index="14" stop-index="20" />
+        </from>
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" />
+        </projections>
+        <where start-index="22" stop-index="50">
+            <expr>
+                <binary-operation-expression start-index="28" stop-index="50">
+                    <left>
+                        <column name="status" start-index="28" stop-index="33" />
+                    </left>
+                    <operator>SOUNDS LIKE</operator>
+                    <right>
+                        <literal-expression value="ok" start-index="47" stop-index="50" />
+                    </right>
+                </binary-operation-expression>
+            </expr>
+        </where>
+    </select>
 </sql-parser-test-cases>

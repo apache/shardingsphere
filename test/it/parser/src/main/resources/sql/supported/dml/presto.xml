@@ -27,4 +27,9 @@
     <sql-case id="presto_select_case_binary_variable" value="SELECT CASE catalog.schem1.order_id WHEN 1 THEN 'one' ELSE 'other' END, BINARY status, @user_value FROM t_order" db-types="Presto" />
     <sql-case id="presto_select_concat_match_interval" value="SELECT status || 'X', MATCH(status) AGAINST ('kw'), INTERVAL '1' DAY, catalog.fn(order_id) FROM t_order" db-types="Presto" />
     <sql-case id="presto_select_is_true" value="SELECT * FROM t_order WHERE flag IS TRUE" db-types="Presto" />
+    <sql-case id="presto_select_xor" value="SELECT * FROM t_order WHERE flag XOR 1" db-types="Presto" />
+    <sql-case id="presto_select_safe_equal" value="SELECT * FROM t_order WHERE flag &lt;=&gt; TRUE" db-types="Presto" />
+    <sql-case id="presto_select_member_of" value="SELECT * FROM t_order WHERE order_id MEMBER OF(&quot;[1,2]&quot;)" db-types="Presto" />
+    <sql-case id="presto_select_in_params" value="SELECT * FROM t_order WHERE order_id IN (1, 2)" db-types="Presto" />
+    <sql-case id="presto_select_sounds_like" value="SELECT * FROM t_order WHERE status SOUNDS LIKE 'ok'" db-types="Presto" />
 </sql-cases>

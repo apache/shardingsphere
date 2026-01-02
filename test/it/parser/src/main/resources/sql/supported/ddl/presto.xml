@@ -18,4 +18,7 @@
 
 <sql-cases>
     <sql-case id="presto_create_table_decimal" value="CREATE TABLE catalog.schem1.t_price (amount DECIMAL(10,2))" db-types="Presto" />
+    <sql-case id="presto_create_table_varchar" value="CREATE TABLE t_alpha(name VARCHAR(20))" db-types="Presto" />
+    <sql-case id="presto_drop_table_if_exists" value="DROP TABLE IF EXISTS t_price" db-types="Presto" />
+    <sql-case id="presto_drop_view_if_exists" value="DROP VIEW IF EXISTS v_price" db-types="Presto" />
 </sql-cases>

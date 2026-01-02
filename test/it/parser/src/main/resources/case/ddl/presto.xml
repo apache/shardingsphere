@@ -27,4 +27,19 @@
             <column name="amount" />
         </column-definition>
     </create-table>
+
+    <create-table sql-case-id="presto_create_table_varchar">
+        <table name="t_alpha" start-index="13" stop-index="19" />
+        <column-definition type="VARCHAR" start-index="21" stop-index="36">
+            <column name="name" />
+        </column-definition>
+    </create-table>
+
+    <drop-table sql-case-id="presto_drop_table_if_exists">
+        <table name="t_price" start-index="21" stop-index="27" />
+    </drop-table>
+
+    <drop-view sql-case-id="presto_drop_view_if_exists">
+        <view name="v_price" start-index="20" stop-index="26" />
+    </drop-view>
 </sql-parser-test-cases>
