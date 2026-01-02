@@ -78,7 +78,7 @@ public interface CommandExecuteEngine {
      * @param connectionSession connection session
      * @return other packet
      */
-    Optional<DatabasePacket> getOtherPacket(final ConnectionSession connectionSession);
+    Optional<DatabasePacket> getOtherPacket(ConnectionSession connectionSession);
     
     /**
      * Write query data.
