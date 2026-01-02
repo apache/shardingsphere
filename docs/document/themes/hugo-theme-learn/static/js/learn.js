@@ -462,12 +462,8 @@ jQuery(document).ready(function() {
 
         function tokenize(text) {
             var regex = /::=|\\?|\\*|\\+|\\||\\(|\\)|\\[|\\]|'[^']*'|[A-Za-z_][A-Za-z0-9_-]*|,/g;
-            var tokens = [];
-            var match;
-            while ((match = regex.exec(text)) !== null) {
-                tokens.push(match[0]);
-            }
-            return tokens;
+            var tokens = text.match(regex);
+            return tokens ? tokens : [];
         }
 
         function parseExpression(tokens, indexRef) {
@@ -558,7 +554,7 @@ jQuery(document).ready(function() {
         }
 
         function parseDefinitions(text) {
-            var blocks = text.split(/\\n\\s*\\n/);
+            var blocks = text.split(/\n\s*\n/);
             var defs = [];
             for (var i = 0; i < blocks.length; i++) {
                 var block = blocks[i].trim();
@@ -569,7 +565,7 @@ jQuery(document).ready(function() {
                 if (parts.length < 2) {
                     continue;
                 }
-                var name = parts[0].trim().split(/\\s+/)[0];
+                var name = parts[0].trim().split(/\s+/)[0];
                 var rhs = parts.slice(1).join('::=').trim();
                 defs.push({ name: name, rhs: rhs });
             }
@@ -584,7 +580,8 @@ jQuery(document).ready(function() {
                 try {
                     var tokens = tokenize(def.rhs);
                     var ast = parseExpression(tokens, { idx: 0 });
-                    var diagram = new Diagram(astToRailroad(ast));
+                    // Diagram takes items as varargs; call as a factory to wrap arguments correctly
+                    var diagram = Diagram(astToRailroad(ast));
                     htmlParts.push('<p class=\"rr-title\">' + def.name + ':</p>');
                     htmlParts.push(diagram.toString());
                 } catch (e) {
