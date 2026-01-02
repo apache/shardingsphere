@@ -43,7 +43,7 @@
     <sql-case id="select_with_operator_ilike" value="SELECT id from t_order where name !~ '^pg_toast'" db-types="PostgreSQL,openGauss" />
     <sql-case id="select_with_binary_operation_of_aggregation_expr" value="SELECT (count(*)+1) as a" db-types="MySQL" />
     <sql-case id="select_with_schema_func" value="SELECT schema(), database()" db-types="MySQL" />
-    <sql-case id="select_system_variables" value="SELECT @@session.auto_increment_increment auto_increment_increment, @@global.max_connections max_connections, @@autocommit" db-types="MySQL" />
+    <sql-case id="select_system_variables" value="SELECT @@session.auto_increment_increment auto_increment_increment, @@global.max_connections max_connections, @@autocommit" db-types="MySQL,Presto" />
     <sql-case id="select_sqlmode_ansi_quotes" value='select "id" from "t_order" where "t_order"."id"=10' db-types="MySQL" />
     <sql-case id="select_with_function_name" value="SELECT current_timestamp" db-types="MySQL" />
     <sql-case id="select_with_same_table_name_and_alias" value="SELECT t_order.* FROM t_order t_order WHERE user_id = ? AND order_id = ?" />
@@ -235,8 +235,8 @@
     <sql-case id="select_with_corr_function" value="SELECT employee_id, CORR(SYSDATE - hire_date, salary) FROM employees WHERE department_id in (50, 80) ORDER BY employee_id" db-types="Oracle" />
     <sql-case id="select_with_trim_function_multi" value="select TRIM('  derby '), TRIM(BOTH ' ' FROM '  derby '), TRIM(TRAILING ' ' FROM '  derby '), TRIM(cast (null as char(1)) FROM '  derby '), TRIM(' ' FROM cast(null as varchar(30))), TRIM('y' FROM ' derby') FROM employees" db-types="Oracle" />
     <sql-case id="select_with_trim_function_simple" value="SELECT TRIM( '.,! ' FROM '     #     test    .') AS Result" db-types="SQLServer" />
-    <sql-case id="select_with_trim_function_leading" value="SELECT TRIM(LEADING '.,! ' FROM  '     .#     test    .') AS Result" db-types="SQLServer" />
-    <sql-case id="select_with_trim_function_trailing" value="SELECT TRIM(TRAILING '.,! ' FROM '     .#     test    .') AS Result" db-types="SQLServer" />
+    <sql-case id="select_with_trim_function_leading" value="SELECT TRIM(LEADING '.,! ' FROM  '     .#     test    .') AS Result" db-types="SQLServer,Presto" />
+    <sql-case id="select_with_trim_function_trailing" value="SELECT TRIM(TRAILING '.,! ' FROM '     .#     test    .') AS Result" db-types="SQLServer,Presto" />
     <sql-case id="select_with_trim_function_both" value="SELECT TRIM(BOTH '123' FROM '123abc123') AS Result" db-types="SQLServer" />
     <sql-case id="select_with_ratio_to_report_function" value="SELECT TO_CHAR(RATIO_TO_REPORT(amount_sold) OVER (), '9.999') AS RATIO_TO_REPORT FROM sales s GROUP BY s.channel_desc" db-types="Oracle" />
     <sql-case id="select_with_sys_xmlagg_and_xmlgen" value="SELECT SYS_XMLAGG(last_name) a, SYS_XMLGEN(last_name) b FROM employees WHERE last_name LIKE 'R%' ORDER BY xmlagg;" db-types="Oracle" />

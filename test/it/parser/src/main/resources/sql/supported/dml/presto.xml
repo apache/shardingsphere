@@ -44,4 +44,6 @@
     <sql-case id="presto_select_extract_function" value="SELECT EXTRACT(YEAR FROM DATE '2020-01-01')" db-types="Presto" />
     <sql-case id="presto_select_weight_string" value="SELECT WEIGHT_STRING('a')" db-types="Presto" />
     <sql-case id="presto_select_group_concat" value="SELECT GROUP_CONCAT(order_id) FROM t_order" db-types="Presto" />
+    <sql-case id="presto_select_limit_only" value="SELECT * FROM t_order LIMIT 5" db-types="Presto" />
+    <sql-case id="presto_select_current_time_precision" value="SELECT CURRENT_TIME(3)" db-types="Presto" />
 </sql-cases>
