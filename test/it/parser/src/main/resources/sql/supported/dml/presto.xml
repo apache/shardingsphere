@@ -32,4 +32,16 @@
     <sql-case id="presto_select_member_of" value="SELECT * FROM t_order WHERE order_id MEMBER OF(&quot;[1,2]&quot;)" db-types="Presto" />
     <sql-case id="presto_select_in_params" value="SELECT * FROM t_order WHERE order_id IN (1, 2)" db-types="Presto" />
     <sql-case id="presto_select_sounds_like" value="SELECT * FROM t_order WHERE status SOUNDS LIKE 'ok'" db-types="Presto" />
+    <sql-case id="presto_select_searched_case" value="SELECT CASE WHEN flag THEN 1 ELSE 0 END FROM t_order" db-types="Presto" />
+    <sql-case id="presto_select_in_subquery" value="SELECT * FROM t_order WHERE order_id IN (SELECT order_id FROM t_order_item)" db-types="Presto" />
+    <sql-case id="presto_select_convert_function" value="SELECT CONVERT(order_id, CHAR) FROM t_order" db-types="Presto" />
+    <sql-case id="presto_select_position_function" value="SELECT POSITION('a' IN 'abc')" db-types="Presto" />
+    <sql-case id="presto_select_current_user" value="SELECT CURRENT_USER()" db-types="Presto" />
+    <sql-case id="presto_select_limit_offset" value="SELECT * FROM t_order LIMIT 5 OFFSET 2" db-types="Presto" />
+    <sql-case id="presto_select_substring_function" value="SELECT SUBSTRING('abc',1,2)" db-types="Presto" />
+    <sql-case id="presto_select_char_function" value="SELECT CHAR(97,98)" db-types="Presto" />
+    <sql-case id="presto_select_trim_function" value="SELECT TRIM(BOTH 'x' FROM 'xabcx')" db-types="Presto" />
+    <sql-case id="presto_select_extract_function" value="SELECT EXTRACT(YEAR FROM DATE '2020-01-01')" db-types="Presto" />
+    <sql-case id="presto_select_weight_string" value="SELECT WEIGHT_STRING('a')" db-types="Presto" />
+    <sql-case id="presto_select_group_concat" value="SELECT GROUP_CONCAT(order_id) FROM t_order" db-types="Presto" />
 </sql-cases>
