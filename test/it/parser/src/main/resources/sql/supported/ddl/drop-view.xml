@@ -23,6 +23,6 @@
     <sql-case id="drop_view_cascade" value="DROP VIEW kinds, order_view CASCADE" db-types="PostgreSQL, openGauss" />
     <sql-case id="drop_view_basic" value="DROP VIEW sales_summary" db-types="Hive" />
     <sql-case id="drop_view_with_if_exists" value="DROP VIEW IF EXISTS sales_summary" db-types="Hive" />
-    <sql-case id="drop_view_with_db_name" value="DROP VIEW db1.sales_summary" db-types="Hive" />
+    <sql-case id="drop_view_with_db_name" value="DROP VIEW db1.sales_summary" db-types="Hive,Presto" />
     <sql-case id="drop_view_with_if_exists_and_db_name" value="DROP VIEW IF EXISTS db1.sales_summary" db-types="Hive" />
 </sql-cases>
