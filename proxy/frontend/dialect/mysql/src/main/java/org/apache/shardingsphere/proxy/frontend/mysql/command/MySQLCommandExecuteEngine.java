@@ -38,6 +38,7 @@ import org.apache.shardingsphere.proxy.frontend.command.executor.ResponseType;
 import org.apache.shardingsphere.proxy.frontend.mysql.err.MySQLErrorPacketFactory;
 
 import java.sql.SQLException;
+import java.util.Optional;
 
 /**
  * Command execute engine for MySQL.
@@ -62,6 +63,11 @@ public final class MySQLCommandExecuteEngine implements CommandExecuteEngine {
     @Override
     public MySQLPacket getErrorPacket(final Exception cause) {
         return MySQLErrorPacketFactory.newInstance(cause);
+    }
+    
+    @Override
+    public Optional<DatabasePacket> getOtherPacket(final ConnectionSession connectionSession) {
+        return Optional.empty();
     }
     
     @Override
