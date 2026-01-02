@@ -558,7 +558,7 @@ jQuery(document).ready(function() {
         }
 
         function parseDefinitions(text) {
-            var blocks = text.split(/\\n\\s*\\n/);
+            var blocks = text.split(/\n\s*\n/);
             var defs = [];
             for (var i = 0; i < blocks.length; i++) {
                 var block = blocks[i].trim();
@@ -569,7 +569,7 @@ jQuery(document).ready(function() {
                 if (parts.length < 2) {
                     continue;
                 }
-                var name = parts[0].trim().split(/\\s+/)[0];
+                var name = parts[0].trim().split(/\s+/)[0];
                 var rhs = parts.slice(1).join('::=').trim();
                 defs.push({ name: name, rhs: rhs });
             }
