@@ -584,7 +584,8 @@ jQuery(document).ready(function() {
                 try {
                     var tokens = tokenize(def.rhs);
                     var ast = parseExpression(tokens, { idx: 0 });
-                    var diagram = new Diagram(astToRailroad(ast));
+                    // Diagram takes items as varargs; call as a factory to wrap arguments correctly
+                    var diagram = Diagram(astToRailroad(ast));
                     htmlParts.push('<p class=\"rr-title\">' + def.name + ':</p>');
                     htmlParts.push(diagram.toString());
                 } catch (e) {
