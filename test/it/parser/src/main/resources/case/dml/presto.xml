@@ -488,4 +488,217 @@
             </expr>
         </where>
     </select>
+
+    <select sql-case-id="presto_select_searched_case">
+        <from>
+            <simple-table name="t_order" start-index="45" stop-index="51" />
+        </from>
+        <projections start-index="7" stop-index="38">
+            <expression-projection text="CASE WHEN flag THEN 1 ELSE 0 END" start-index="7" stop-index="38">
+                <expr>
+                    <case-when-expression>
+                        <when-exprs>
+                            <column name="flag" start-index="17" stop-index="20" />
+                        </when-exprs>
+                        <then-exprs>
+                            <literal-expression value="1" start-index="27" stop-index="27" />
+                        </then-exprs>
+                        <else-expr>
+                            <literal-expression value="0" start-index="34" stop-index="34" />
+                        </else-expr>
+                    </case-when-expression>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="presto_select_in_subquery">
+        <from>
+            <simple-table name="t_order" start-index="14" stop-index="20" />
+        </from>
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" />
+        </projections>
+        <where start-index="22" stop-index="74">
+            <expr>
+                <in-expression start-index="28" stop-index="74">
+                    <not>false</not>
+                    <left>
+                        <column name="order_id" start-index="28" stop-index="35" />
+                    </left>
+                    <right>
+                        <subquery start-index="40" stop-index="74">
+                            <select>
+                                <projections start-index="48" stop-index="55">
+                                    <column-projection name="order_id" start-index="48" stop-index="55" />
+                                </projections>
+                                <from start-index="57" stop-index="74">
+                                    <simple-table name="t_order_item" start-index="62" stop-index="73" />
+                                </from>
+                            </select>
+                        </subquery>
+                    </right>
+                </in-expression>
+            </expr>
+        </where>
+    </select>
+
+    <select sql-case-id="presto_select_convert_function">
+        <projections start-index="7" stop-index="29">
+            <expression-projection text="CONVERT(order_id, CHAR)" start-index="7" stop-index="29">
+                <expr>
+                    <function function-name="CONVERT" text="CONVERT(order_id, CHAR)" start-index="7" stop-index="29" />
+                </expr>
+            </expression-projection>
+        </projections>
+        <from>
+            <simple-table name="t_order" start-index="36" stop-index="42" />
+        </from>
+    </select>
+
+    <select sql-case-id="presto_select_position_function">
+        <projections start-index="7" stop-index="28">
+            <expression-projection text="POSITION('a' IN 'abc')" start-index="7" stop-index="28">
+                <expr>
+                    <function function-name="POSITION" text="POSITION('a' IN 'abc')" start-index="7" stop-index="28">
+                        <parameter>
+                            <literal-expression value="a" start-index="16" stop-index="18" />
+                        </parameter>
+                        <parameter>
+                            <literal-expression value="abc" start-index="23" stop-index="27" />
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="presto_select_current_user">
+        <projections start-index="7" stop-index="20">
+            <expression-projection text="CURRENT_USER()" start-index="7" stop-index="20">
+                <expr>
+                    <function function-name="CURRENT_USER" text="CURRENT_USER()" start-index="7" stop-index="20" />
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="presto_select_limit_offset">
+        <from>
+            <simple-table name="t_order" start-index="14" stop-index="20" />
+        </from>
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" />
+        </projections>
+        <limit start-index="22" stop-index="37">
+            <row-count value="5" start-index="28" stop-index="28" />
+            <offset value="2" start-index="37" stop-index="37" />
+        </limit>
+    </select>
+
+    <select sql-case-id="presto_select_substring_function">
+        <projections start-index="7" stop-index="26">
+            <expression-projection text="SUBSTRING('abc',1,2)" start-index="7" stop-index="26">
+                <expr>
+                    <function function-name="SUBSTRING" text="SUBSTRING('abc',1,2)" start-index="7" stop-index="26">
+                        <parameter>
+                            <literal-expression value="abc" start-index="17" stop-index="21" />
+                        </parameter>
+                        <parameter>
+                            <literal-expression value="1" start-index="23" stop-index="23" />
+                        </parameter>
+                        <parameter>
+                            <literal-expression value="2" start-index="25" stop-index="25" />
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="presto_select_char_function">
+        <projections start-index="7" stop-index="17">
+            <expression-projection text="CHAR(97,98)" start-index="7" stop-index="17">
+                <expr>
+                    <function function-name="CHAR" text="CHAR(97,98)" start-index="7" stop-index="17">
+                        <parameter>
+                            <literal-expression value="97" start-index="12" stop-index="13" />
+                        </parameter>
+                        <parameter>
+                            <literal-expression value="98" start-index="15" stop-index="16" />
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="presto_select_trim_function">
+        <projections start-index="7" stop-index="33">
+            <expression-projection text="TRIM(BOTH 'x' FROM 'xabcx')" start-index="7" stop-index="33">
+                <expr>
+                    <function function-name="TRIM" text="TRIM(BOTH 'x' FROM 'xabcx')" start-index="7" stop-index="33">
+                        <parameter>
+                            <literal-expression value="BOTH" start-index="12" stop-index="15" />
+                        </parameter>
+                        <parameter>
+                            <literal-expression value="x" start-index="17" stop-index="19" />
+                        </parameter>
+                        <parameter>
+                            <literal-expression value="xabcx" start-index="26" stop-index="32" />
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="presto_select_extract_function">
+        <projections start-index="7" stop-index="42">
+            <expression-projection text="EXTRACT(YEAR FROM DATE '2020-01-01')" start-index="7" stop-index="42">
+                <expr>
+                    <function function-name="EXTRACT" text="EXTRACT(YEAR FROM DATE '2020-01-01')" start-index="7" stop-index="42">
+                        <parameter>
+                            <literal-expression value="YEAR" start-index="15" stop-index="18" />
+                        </parameter>
+                        <parameter>
+                            <literal-expression value="2020-01-01" start-index="25" stop-index="41" />
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="presto_select_weight_string">
+        <projections start-index="7" stop-index="24">
+            <expression-projection text="WEIGHT_STRING('a')" start-index="7" stop-index="24">
+                <expr>
+                    <function function-name="WEIGHT_STRING" text="WEIGHT_STRING('a')" start-index="7" stop-index="24">
+                        <parameter>
+                            <literal-expression value="a" start-index="21" stop-index="23" />
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="presto_select_group_concat">
+        <projections start-index="7" stop-index="28">
+            <expression-projection text="GROUP_CONCAT(order_id)" start-index="7" stop-index="28">
+                <expr>
+                    <function function-name="GROUP_CONCAT" text="GROUP_CONCAT(order_id)" start-index="7" stop-index="28">
+                        <parameter>
+                            <column name="order_id" start-index="20" stop-index="27" />
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+        <from>
+            <simple-table name="t_order" start-index="35" stop-index="41" />
+        </from>
+    </select>
+
 </sql-parser-test-cases>
