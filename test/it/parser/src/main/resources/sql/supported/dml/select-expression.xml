@@ -38,7 +38,7 @@
     <sql-case id="select_where_with_expr_with_and_sign" value="SELECT * FROM t_order WHERE t_order.order_id = ? &amp;&amp; ? = t_order.order_id" db-types="MySQL" />
     <sql-case id="select_where_with_expr_with_not" value="SELECT * FROM t_order WHERE NOT (? = t_order.order_id)" db-types="MySQL" />
     <sql-case id="select_where_with_expr_with_not_sign" value="SELECT * FROM t_order WHERE ! ( ? = t_order.order_id)" db-types="MySQL" />
-    <sql-case id="select_where_with_expr_with_is" value="SELECT * FROM t_order WHERE ? = t_order.order_id IS FALSE" db-types="MySQL" />
+    <sql-case id="select_where_with_expr_with_is" value="SELECT * FROM t_order WHERE ? = t_order.order_id IS FALSE" db-types="MySQL,Presto" />
     <sql-case id="select_where_with_expr_with_is_not" value="SELECT * FROM t_order WHERE ? = t_order.order_id IS NOT FALSE" db-types="MySQL" />
     <sql-case id="select_where_with_boolean_primary_with_is" value="SELECT * FROM t_order WHERE t_order.status IS NULL" db-types="MySQL,Presto" />
     <sql-case id="select_where_with_boolean_primary_with_is_not" value="SELECT * FROM t_order WHERE t_order.status IS NOT NULL" db-types="MySQL,Presto" />
@@ -102,7 +102,7 @@
     <sql-case id="select_with_regular_function" value="SELECT A(1) FROM t_order WHERE A(1) = 1 GROUP BY A(order_id) ORDER BY A(order_id)" db-types="MySQL,Oracle,SQLServer" />
     <sql-case id="select_with_regular_function_for_sql92" value="SELECT A(1) FROM t_order WHERE A(1) = 1" db-types="MySQL,Oracle,SQLServer,H2,SQL92" />
     <sql-case id="select_with_regular_function_utc_timestamp" value="SELECT TIMEDIFF(NOW(), UTC_TIMESTAMP())" db-types="MySQL" />
-    <sql-case id="select_with_collate_with_marker" value="SELECT * FROM t_order WHERE order_id COLLATE ?" db-types="MySQL" />
+    <sql-case id="select_with_collate_with_marker" value="SELECT * FROM t_order WHERE order_id COLLATE ?" db-types="MySQL,Presto" />
     <sql-case id="select_age_for_postgres" value="SELECT * FROM cypher('sharding_test_1', $$ CREATE (n) $$) as (a agtype)" db-types="PostgreSQL" />
     <sql-case id="select_datetime_expression" value="SELECT SYSTIMESTAMP AT TIME ZONE 'UTC' FROM DUAL;" db-types="Oracle" />
     <sql-case id="select_between_expression" value="SELECT item_id BETWEEN 1 AND order_id, status FROM t_order_item;" db-types="MySQL" />

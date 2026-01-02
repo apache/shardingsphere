@@ -27,7 +27,7 @@
     <sql-case id="select_convert_function" value="SELECT CONVERT('2020-10-01', DATE)" db-types="MySQL" />
     <sql-case id="select_position" value="SELECT POSITION('bar' IN 'foobarbar')" db-types="MySQL" />
     <sql-case id="select_substring" value="SELECT SUBSTRING('foobarbar' from -4 for 2)" db-types="MySQL" />
-    <sql-case id="select_substr" value="SELECT SUBSTR('foobarbar' from 4)" db-types="MySQL" />
+    <sql-case id="select_substr" value="SELECT SUBSTR('foobarbar' from 4)" db-types="MySQL,Presto" />
     <sql-case id="select_extract" value="SELECT EXTRACT(YEAR FROM '2019-07-02')" db-types="MySQL" />
     <sql-case id="select_extract_from_column" value="SELECT EXTRACT(YEAR FROM o.creation_date) FROM t_order o" db-types="MySQL" />
     <sql-case id="select_char" value="SELECT CHAR(77,121,83,81,'76')" db-types="MySQL" />
@@ -39,7 +39,7 @@
     <sql-case id="select_with_trim_expr_from_expr" value="SELECT TRIM(remove_name FROM name) FROM t_order" db-types="MySQL" />
     <sql-case id="select_with_trim_expr_from_expr_and_both" value="SELECT TRIM(BOTH `remove_name` FROM `name`) FROM `t_order`" db-types="MySQL" />
     <sql-case id="select_weight_string" value="SELECT WEIGHT_STRING('bar')" db-types="MySQL" />
-    <sql-case id="select_values" value="SELECT VALUES(order_id) FROM t_order" db-types="MySQL" />
+    <sql-case id="select_values" value="SELECT VALUES(order_id) FROM t_order" db-types="MySQL,Presto" />
     <sql-case id="select_current_user_brackets" value="SELECT CURRENT_USER()" db-types="MySQL" />
     <sql-case id="select_extract_function" value="SELECT EXTRACT(YEAR FROM TIMESTAMP '2001-02-16 20:38:40')" db-types="PostgreSQL,openGauss" />
     <sql-case id="select_extract_function_week" value="SELECT EXTRACT(WEEK FROM TIMESTAMP '2001-02-16 20:38:40')" db-types="PostgreSQL,openGauss" />
@@ -136,7 +136,7 @@
     <sql-case id="select_window_with_cume_dist_function" value="SELECT val, CUME_DIST() OVER() FROM numbers" db-types="MySQL" />
     <sql-case id="select_curdate_function" value="SELECT CURDATE()" db-types="MySQL" />
     <sql-case id="select_current_date_function" value="SELECT CURRENT_DATE()" db-types="MySQL" />
-    <sql-case id="select_current_time_function" value="SELECT CURRENT_TIME()" db-types="MySQL" />
+    <sql-case id="select_current_time_function" value="SELECT CURRENT_TIME()" db-types="MySQL,Presto" />
     <sql-case id="select_current_timestamp_function" value="SELECT CURRENT_TIMESTAMP()" db-types="MySQL" />
     <sql-case id="select_curtime_function" value="SELECT CURTIME()" db-types="MySQL" />
     <sql-case id="select_date_function" value="SELECT DATE('2003-12-31 01:02:03')" db-types="MySQL" />
