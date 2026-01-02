@@ -17,5 +17,14 @@
   -->
 
 <sql-cases>
+    <sql-case id="presto_select_literals" value="SELECT DATE '2020-01-01', X'1F', B'1010', TRUE, NULL FROM catalog.schem1.t_order" db-types="Presto" />
+    <sql-case id="presto_select_compare_all_subquery" value="SELECT * FROM t_order WHERE order_id = ALL (SELECT order_id FROM t_order_item)" db-types="Presto" />
+    <sql-case id="presto_select_or_boolean_true" value="SELECT * FROM t_order WHERE flag IS TRUE OR order_id = 1" db-types="Presto" />
+    <sql-case id="presto_select_not_flag" value="SELECT * FROM t_order WHERE NOT flag" db-types="Presto" />
+    <sql-case id="presto_select_not_exists_subquery" value="SELECT * FROM t_order WHERE NOT EXISTS (SELECT 1)" db-types="Presto" />
     <sql-case id="presto_select_assignment_operator" value="SELECT * FROM t_order WHERE order_id := 1" db-types="Presto" />
+    <sql-case id="presto_select_predicate_variants" value="SELECT * FROM t_order WHERE order_id NOT BETWEEN 1 AND 5 AND status REGEXP '[12]' AND status RLIKE '[34]' AND status LIKE 'ok'" db-types="Presto" />
+    <sql-case id="presto_select_case_binary_variable" value="SELECT CASE catalog.schem1.order_id WHEN 1 THEN 'one' ELSE 'other' END, BINARY status, @user_value FROM t_order" db-types="Presto" />
+    <sql-case id="presto_select_concat_match_interval" value="SELECT status || 'X', MATCH(status) AGAINST ('kw'), INTERVAL '1' DAY, catalog.fn(order_id) FROM t_order" db-types="Presto" />
+    <sql-case id="presto_select_is_true" value="SELECT * FROM t_order WHERE flag IS TRUE" db-types="Presto" />
 </sql-cases>
