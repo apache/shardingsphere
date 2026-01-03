@@ -1,16 +1,22 @@
 svg.railroad-diagram {
-    background-color: hsl(30,20%,95%);
+    background-color: transparent;
 }
 svg.railroad-diagram path {
-    stroke-width: 3;
-    stroke: black;
-    fill: rgba(0,0,0,0);
+    stroke-width: 2;
+    stroke: #ff8b00;
+    fill: none;
 }
 svg.railroad-diagram text {
-    font: bold 14px "Helvetica Neue", Arial, sans-serif;
-    fill: #000;
+    font: 13px "Helvetica Neue", Arial, sans-serif;
+    font-weight: 600;
+    fill: #222;
     text-anchor: middle;
     white-space: pre;
+}
+/* Allow horizontal scrolling when diagrams are wide */
+.railroad-diagrams {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
 }
 svg.railroad-diagram text.diagram-text {
     font-size: 12px;
@@ -28,12 +34,12 @@ svg.railroad-diagram g.non-terminal text {
     /*font-style: italic;*/
 }
 svg.railroad-diagram rect {
-    stroke-width: 3;
-    stroke: black;
-    fill: hsl(120,100%,90%);
+    stroke-width: 2;
+    stroke: #ff8b00;
+    fill: rgba(255, 139, 0, 0.08);
 }
 svg.railroad-diagram rect.group-box {
-    stroke: gray;
+    stroke: #ffb866;
     stroke-dasharray: 10 5;
     fill: none;
 }
