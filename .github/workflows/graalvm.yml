@@ -49,7 +49,7 @@ jobs:
         os: [ 'ubuntu-latest', 'windows-latest' ]
         java-version: [ '24.0.2' ]
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6.0.1
       - name: Free Disk Space on Ubuntu
         if: matrix.os == 'ubuntu-latest'
         run: ./test/native/src/test/resources/test-native/sh/free-disk-space.sh
@@ -64,7 +64,7 @@ jobs:
           distribution: 'graalvm-community'
           github-token: ${{ secrets.GITHUB_TOKEN }}
           native-image-job-reports: 'true'
-      - uses: actions/cache@v4
+      - uses: actions/cache@v5.0.1
         with:
           path: ~/.m2/repository
           key: ${{ needs.global-environment.outputs.GLOBAL_CACHE_PREFIX }}-maven-third-party-cache-${{ github.sha }}

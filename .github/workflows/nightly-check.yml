@@ -37,8 +37,8 @@ jobs:
     runs-on: ${{ needs.global-environment.outputs.GLOBAL_RUNS_ON }}
     timeout-minutes: 60
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/cache@v4
+      - uses: actions/checkout@v6.0.1
+      - uses: actions/cache@v5.0.1
         with:
           path: ~/.m2/repository
           key: ${{ needs.global-environment.outputs.GLOBAL_CACHE_PREFIX }}-maven-third-party-${{ hashFiles('**/pom.xml') }}
@@ -53,7 +53,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6.0.1
       - run: sudo npm install -g markdown-link-check@3.10.0
       - name: Check dead link
         run: |
@@ -87,8 +87,8 @@ jobs:
       contents: read
       security-events: write
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-java@v4
+      - uses: actions/checkout@v6.0.1
+      - uses: actions/setup-java@v5.1.0
         with:
           distribution: 'temurin'
           java-version: 11
@@ -96,7 +96,7 @@ jobs:
         uses: github/codeql-action/init@v3
         with:
           languages: java
-      - uses: actions/cache@v4
+      - uses: actions/cache@v5.0.1
         with:
           path: ~/.m2/repository
           key: ${{ needs.global-environment.outputs.GLOBAL_CACHE_PREFIX }}-maven-third-party-${{ hashFiles('**/pom.xml') }}
@@ -140,8 +140,8 @@ jobs:
     runs-on: ${{ needs.global-environment.outputs.GLOBAL_RUNS_ON }}
     timeout-minutes: 60
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/cache@v4
+      - uses: actions/checkout@v6.0.1
+      - uses: actions/cache@v5.0.1
         with:
           path: ~/.m2/repository
           key: ${{ needs.global-environment.outputs.GLOBAL_CACHE_PREFIX }}-maven-third-party-${{ hashFiles('**/pom.xml') }}
@@ -159,8 +159,8 @@ jobs:
     runs-on: ${{ needs.global-environment.outputs.GLOBAL_RUNS_ON }}
     timeout-minutes: 40
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/cache@v4
+      - uses: actions/checkout@v6.0.1
+      - uses: actions/cache@v5.0.1
         with:
           path: ~/.m2/repository
           key: ${{ needs.global-environment.outputs.GLOBAL_CACHE_PREFIX }}-maven-third-party-${{ hashFiles('**/pom.xml') }}
@@ -183,13 +183,13 @@ jobs:
     runs-on: ${{ needs.global-environment.outputs.GLOBAL_RUNS_ON }}
     timeout-minutes: 80
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6.0.1
       - name: Setup JDK 11
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@v5.1.0
         with:
           distribution: temurin
           java-version: 11
-      - uses: actions/cache@v4
+      - uses: actions/cache@v5.0.1
         with:
           path: ~/.m2/repository
           key: shardingsphere-maven-third-party-e2e-cache-${{ github.sha }}
@@ -199,7 +199,7 @@ jobs:
       - name: Install Project
         run: ./mvnw clean install -DskipTests -T1C
       - name: Set up JDK 8 for Jacoco
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@v5.1.0
         with:
           distribution: temurin
           java-version: 8
