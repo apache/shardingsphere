@@ -574,7 +574,7 @@ jQuery(document).ready(function() {
 
         function renderRailroad(grammar) {
             var defs = parseDefinitions(grammar);
-            var htmlParts = ['<style>svg.railroad-diagram{background:#fff;} .rr-title{font:bold 14px Verdana, sans-serif;margin:10px 0 4px;}</style>'];
+            var htmlParts = ['<style>svg.railroad-diagram{background:transparent;} .rr-title{font:bold 14px Verdana, sans-serif;margin:10px 0 4px;}</style>'];
             for (var i = 0; i < defs.length; i++) {
                 var def = defs[i];
                 try {
@@ -583,7 +583,7 @@ jQuery(document).ready(function() {
                     // Diagram takes items as varargs; call as a factory to wrap arguments correctly
                     var diagram = Diagram(astToRailroad(ast));
                     htmlParts.push('<p class=\"rr-title\">' + def.name + ':</p>');
-                    htmlParts.push(diagram.toString());
+                    htmlParts.push('<div class=\"rr-wrapper\">' + diagram.toString() + '</div>');
                 } catch (e) {
                     htmlParts.push('<p class=\"rr-title\">' + def.name + ':</p><p>Railroad diagram unavailable.</p>');
                 }
