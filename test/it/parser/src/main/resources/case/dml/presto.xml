@@ -808,4 +808,272 @@
         </projections>
     </select>
 
+    <select sql-case-id="presto_select_predicate_not_variants">
+        <from>
+            <simple-table name="t_order" start-index="14" stop-index="20" />
+        </from>
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" />
+        </projections>
+        <where start-index="22" stop-index="153">
+            <expr>
+                <binary-operation-expression start-index="28" stop-index="153">
+                    <left>
+                        <binary-operation-expression start-index="28" stop-index="126">
+                            <left>
+                                <binary-operation-expression start-index="28" stop-index="98">
+                                    <left>
+                                        <binary-operation-expression start-index="28" stop-index="69">
+                                            <left>
+                                                <binary-operation-expression start-index="28" stop-index="43">
+                                                    <left>
+                                                        <column name="flag" start-index="28" stop-index="31" />
+                                                    </left>
+                                                    <operator>IS</operator>
+                                                    <right>
+                                                        <literal-expression value="NOT NULL" start-index="36" stop-index="43" />
+                                                    </right>
+                                                </binary-operation-expression>
+                                            </left>
+                                            <operator>AND</operator>
+                                            <right>
+                                                <binary-operation-expression start-index="49" stop-index="69">
+                                                    <left>
+                                                        <column name="status" start-index="49" stop-index="54" />
+                                                    </left>
+                                                    <operator>NOT LIKE</operator>
+                                                    <right>
+                                                        <list-expression start-index="65" stop-index="69">
+                                                            <items>
+                                                                <literal-expression value="%x%" start-index="65" stop-index="69" />
+                                                            </items>
+                                                        </list-expression>
+                                                    </right>
+                                                </binary-operation-expression>
+                                            </right>
+                                        </binary-operation-expression>
+                                    </left>
+                                    <operator>AND</operator>
+                                    <right>
+                                        <binary-operation-expression start-index="75" stop-index="98">
+                                            <left>
+                                                <column name="status" start-index="75" stop-index="80" />
+                                            </left>
+                                            <operator>NOT REGEXP</operator>
+                                            <right>
+                                                <literal-expression value="[12]" start-index="93" stop-index="98" />
+                                            </right>
+                                        </binary-operation-expression>
+                                    </right>
+                                </binary-operation-expression>
+                            </left>
+                            <operator>AND</operator>
+                            <right>
+                                <binary-operation-expression start-index="104" stop-index="126">
+                                    <left>
+                                        <column name="status" start-index="104" stop-index="109" />
+                                    </left>
+                                    <operator>NOT RLIKE</operator>
+                                    <right>
+                                        <literal-expression value="[34]" start-index="121" stop-index="126" />
+                                    </right>
+                                </binary-operation-expression>
+                            </right>
+                        </binary-operation-expression>
+                    </left>
+                    <operator>AND</operator>
+                    <right>
+                        <in-expression start-index="132" stop-index="153">
+                            <not>true</not>
+                            <left>
+                                <column name="order_id" start-index="132" stop-index="139" />
+                            </left>
+                            <right>
+                                <list-expression start-index="148" stop-index="153">
+                                    <items>
+                                        <literal-expression value="1" start-index="149" stop-index="149" />
+                                    </items>
+                                    <items>
+                                        <literal-expression value="2" start-index="152" stop-index="152" />
+                                    </items>
+                                </list-expression>
+                            </right>
+                        </in-expression>
+                    </right>
+                </binary-operation-expression>
+            </expr>
+        </where>
+    </select>
+
+    <select sql-case-id="presto_select_collate_params">
+        <projections start-index="7" stop-index="53">
+            <expression-projection text="utf8mb4_bin" start-index="7" stop-index="29">
+                <expr>
+                    <collate-expression start-index="7" stop-index="29" literal-stop-index="29">
+                        <collate-name>
+                            <literal-expression value="utf8mb4_bin" start-index="11" stop-index="29" />
+                        </collate-name>
+                        <expr>
+                            <literal-expression value="a" start-index="7" stop-index="9" />
+                        </expr>
+                    </collate-expression>
+                </expr>
+            </expression-projection>
+            <expression-projection text="latin1_bin" start-index="32" stop-index="53">
+                <expr>
+                    <collate-expression start-index="32" stop-index="53" literal-stop-index="53">
+                        <collate-name>
+                            <literal-expression value="latin1_bin" start-index="36" stop-index="53" />
+                        </collate-name>
+                        <expr>
+                            <literal-expression value="b" start-index="32" stop-index="34" />
+                        </expr>
+                    </collate-expression>
+                </expr>
+            </expression-projection>
+        </projections>
+        <from>
+            <simple-table name="t_order" start-index="60" stop-index="66" />
+        </from>
+    </select>
+
+    <select sql-case-id="presto_select_agg_group_having_order">
+        <from>
+            <simple-table name="t_order" start-index="61" stop-index="67" />
+        </from>
+        <projections distinct-row="true" start-index="16" stop-index="54">
+            <column-projection name="status" start-index="16" stop-index="21" />
+            <aggregation-distinct-projection type="COUNT" expression="(DISTINCT order_id)" distinct-inner-expression="order_id" alias="cnt" start-index="24" stop-index="47" />
+        </projections>
+        <group-by start-index="69" stop-index="83">
+            <column-item name="status" start-index="78" stop-index="83" />
+        </group-by>
+        <having start-index="85" stop-index="103">
+            <expr>
+                <binary-operation-expression start-index="92" stop-index="103">
+                    <left>
+                        <aggregation-projection type="COUNT" expression="(*)" start-index="92" stop-index="99">
+                            <inner-expression>*</inner-expression>
+                        </aggregation-projection>
+                    </left>
+                    <operator>&gt;</operator>
+                    <right>
+                        <literal-expression value="1" start-index="103" stop-index="103" />
+                    </right>
+                </binary-operation-expression>
+            </expr>
+        </having>
+        <order-by>
+            <index-item index="2" order-direction="DESC" start-index="114" stop-index="114" />
+            <column-item name="status" order-direction="ASC" start-index="122" stop-index="127" />
+        </order-by>
+    </select>
+
+    <select sql-case-id="presto_select_window_clause">
+        <from>
+            <simple-table name="t_order" start-index="34" stop-index="40" />
+        </from>
+        <projections start-index="7" stop-index="27">
+            <expression-projection text="ROW_NUMBER() OVER win" start-index="7" stop-index="27">
+                <expr>
+                    <function function-name="ROW_NUMBER" text="ROW_NUMBER() OVER win" start-index="7" stop-index="27" />
+                </expr>
+            </expression-projection>
+        </projections>
+        <window start-index="42" stop-index="143">
+            <window-item start-index="49" stop-index="143">
+                <window-name>win</window-name>
+                <partition-by>
+                    <expression-projection text="status" start-index="70" stop-index="75">
+                        <expr>
+                            <column name="status" start-index="70" stop-index="75" />
+                        </expr>
+                    </expression-projection>
+                </partition-by>
+                <order-by>
+                    <column-item name="order_id" order-direction="ASC" start-index="86" stop-index="93" />
+                </order-by>
+                <frame>
+                    <common-expression text="ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW" start-index="95" stop-index="142" />
+                </frame>
+            </window-item>
+        </window>
+    </select>
+
+    <select sql-case-id="presto_select_lock_for_update">
+        <from>
+            <simple-table name="t_order" start-index="14" stop-index="20" />
+        </from>
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" />
+        </projections>
+        <lock start-index="22" stop-index="31" />
+    </select>
+
+    <select sql-case-id="presto_values_constructor">
+        <projections start-index="0" stop-index="15">
+            <expression-projection text="VALUES ROW(1, 2)" start-index="0" stop-index="15">
+                <expr>
+                    <values-expression>
+                        <values>
+                            <value>
+                                <assignment-value>
+                                    <literal-expression value="1" start-index="11" stop-index="11" />
+                                </assignment-value>
+                                <assignment-value>
+                                    <literal-expression value="2" start-index="14" stop-index="14" />
+                                </assignment-value>
+                            </value>
+                        </values>
+                    </values-expression>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="presto_table_statement">
+        <from>
+            <simple-table name="t_order" start-index="0" stop-index="12" />
+        </from>
+    </select>
+
+    <select sql-case-id="presto_select_limit_comma">
+        <from>
+            <simple-table name="t_order" start-index="14" stop-index="20" />
+        </from>
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" />
+        </projections>
+        <limit start-index="22" stop-index="31">
+            <offset value="2" start-index="28" stop-index="28" />
+            <row-count value="5" start-index="31" stop-index="31" />
+        </limit>
+    </select>
+
+    <select sql-case-id="presto_select_join_natural_left">
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" />
+        </projections>
+        <from>
+            <join-table join-type="LEFT" natural="true" start-index="14" stop-index="51">
+                <left>
+                    <simple-table name="t_order" start-index="14" stop-index="20" />
+                </left>
+                <right>
+                    <simple-table name="t_order_item" start-index="40" stop-index="51" />
+                </right>
+            </join-table>
+        </from>
+    </select>
+
+    <select sql-case-id="presto_select_system_variable">
+        <projections start-index="7" stop-index="24">
+            <expression-projection text="@@global.time_zone" start-index="7" stop-index="24">
+                <expr>
+                    <variable-segment text="@@global.time_zone" start-index="7" stop-index="24" variable="time_zone" scope="global" />
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
 </sql-parser-test-cases>

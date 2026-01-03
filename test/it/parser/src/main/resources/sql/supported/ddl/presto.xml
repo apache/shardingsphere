@@ -21,4 +21,8 @@
     <sql-case id="presto_create_table_varchar" value="CREATE TABLE t_alpha(name VARCHAR(20))" db-types="Presto" />
     <sql-case id="presto_drop_table_if_exists" value="DROP TABLE IF EXISTS t_price" db-types="Presto" />
     <sql-case id="presto_drop_view_if_exists" value="DROP VIEW IF EXISTS v_price" db-types="Presto" />
+    <sql-case id="presto_drop_view_plain" value="DROP VIEW v_price" db-types="Presto" />
+    <sql-case id="presto_create_table_if_not_exists" value="CREATE TABLE IF NOT EXISTS t_empty" db-types="Presto" />
+    <sql-case id="presto_drop_table_plain" value="DROP TABLE t_price" db-types="Presto" />
+    <sql-case id="presto_create_table_charset" value="CREATE TABLE t_charset(name VARCHAR(10) CHARACTER SET utf8mb4)" db-types="Presto" />
 </sql-cases>
