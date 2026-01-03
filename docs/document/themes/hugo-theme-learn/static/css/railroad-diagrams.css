@@ -15,9 +15,12 @@ svg.railroad-diagram text {
 }
 /* Allow horizontal scrolling when diagrams are wide */
 .railroad-diagrams {
+    overflow: visible;
+    background: transparent;
+}
+.railroad-diagrams .rr-wrapper {
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;
-    background: transparent;
 }
 svg.railroad-diagram text.diagram-text {
     font-size: 12px;
