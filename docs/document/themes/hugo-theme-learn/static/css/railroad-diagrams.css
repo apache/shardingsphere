@@ -8,8 +8,8 @@ svg.railroad-diagram path {
 }
 svg.railroad-diagram text {
     font: 13px "Helvetica Neue", Arial, sans-serif;
-    font-weight: 600;
-    fill: #222;
+    font-weight: 500;
+    fill: #444;
     text-anchor: middle;
     white-space: pre;
 }
@@ -17,6 +17,7 @@ svg.railroad-diagram text {
 .railroad-diagrams {
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;
+    background: transparent;
 }
 svg.railroad-diagram text.diagram-text {
     font-size: 12px;
