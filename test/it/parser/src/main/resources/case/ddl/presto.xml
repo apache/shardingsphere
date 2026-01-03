@@ -42,4 +42,24 @@
     <drop-view sql-case-id="presto_drop_view_if_exists">
         <view name="v_price" start-index="20" stop-index="26" />
     </drop-view>
+
+    <drop-view sql-case-id="presto_drop_view_plain">
+        <view name="v_price" start-index="10" stop-index="16" />
+    </drop-view>
+
+    <create-table sql-case-id="presto_create_table_if_not_exists">
+        <if-not-exists>true</if-not-exists>
+        <table name="t_empty" start-index="27" stop-index="33" />
+    </create-table>
+
+    <drop-table sql-case-id="presto_drop_table_plain">
+        <table name="t_price" start-index="11" stop-index="17" />
+    </drop-table>
+
+    <create-table sql-case-id="presto_create_table_charset">
+        <table name="t_charset" start-index="13" stop-index="21" />
+        <column-definition type="VARCHAR" start-index="23" stop-index="60">
+            <column name="name" start-index="23" stop-index="26" />
+        </column-definition>
+    </create-table>
 </sql-parser-test-cases>
