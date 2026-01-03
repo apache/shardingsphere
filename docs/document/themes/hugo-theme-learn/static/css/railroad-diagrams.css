@@ -7,9 +7,10 @@ svg.railroad-diagram path {
     fill: none;
 }
 svg.railroad-diagram text {
-    font: 13px "Helvetica Neue", Arial, sans-serif;
-    font-weight: 500;
-    fill: #444;
+    font: 14px "Helvetica Neue", Arial, sans-serif;
+    font-weight: 600;
+    fill: #333;
+    text-shadow: 0 0.5px 0 rgba(255, 255, 255, 0.4);
     text-anchor: middle;
     white-space: pre;
 }
