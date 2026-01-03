@@ -461,7 +461,7 @@ jQuery(document).ready(function() {
         }
 
         function tokenize(text) {
-            var regex = /::=|\\?|\\*|\\+|\\||\\(|\\)|\\[|\\]|'[^']*'|[A-Za-z_][A-Za-z0-9_-]*|,/g;
+            var regex = /::=|\?|\*|\+|\||\(|\)|\[|\]|'[^']*'|[A-Za-z_][A-Za-z0-9_-]*|,/g;
             var tokens = text.match(regex);
             return tokens ? tokens : [];
         }
@@ -588,7 +588,7 @@ jQuery(document).ready(function() {
                     htmlParts.push('<p class=\"rr-title\">' + def.name + ':</p><p>Railroad diagram unavailable.</p>');
                 }
             }
-            return htmlParts.join('\\n');
+            return htmlParts.join('\n');
         }
 
         ensureRailroadAssets().then(function () {
