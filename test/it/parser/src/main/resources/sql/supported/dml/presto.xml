@@ -46,4 +46,14 @@
     <sql-case id="presto_select_group_concat" value="SELECT GROUP_CONCAT(order_id) FROM t_order" db-types="Presto" />
     <sql-case id="presto_select_limit_only" value="SELECT * FROM t_order LIMIT 5" db-types="Presto" />
     <sql-case id="presto_select_current_time_precision" value="SELECT CURRENT_TIME(3)" db-types="Presto" />
+    <sql-case id="presto_select_predicate_not_variants" value="SELECT * FROM t_order WHERE flag IS NOT NULL AND status NOT LIKE '%x%' AND status NOT REGEXP '[12]' AND status NOT RLIKE '[34]' AND order_id NOT IN (1, 2)" db-types="Presto" />
+    <sql-case id="presto_select_collate_params" value="SELECT 'a' COLLATE utf8mb4_bin, 'b' COLLATE latin1_bin FROM t_order" db-types="Presto" />
+    <sql-case id="presto_select_agg_group_having_order" value="SELECT DISTINCT status, COUNT(DISTINCT order_id) AS cnt FROM t_order GROUP BY status HAVING COUNT(*) > 1 ORDER BY 2 DESC, status ASC" db-types="Presto" />
+    <sql-case id="presto_select_window_clause" value="SELECT ROW_NUMBER() OVER win FROM t_order WINDOW win AS (PARTITION BY status ORDER BY order_id ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW)" db-types="Presto" />
+    <sql-case id="presto_select_lock_for_update" value="SELECT * FROM t_order FOR UPDATE" db-types="Presto" />
+    <sql-case id="presto_values_constructor" value="VALUES ROW(1, 2)" db-types="Presto" />
+    <sql-case id="presto_table_statement" value="TABLE t_order" db-types="Presto" />
+    <sql-case id="presto_select_limit_comma" value="SELECT * FROM t_order LIMIT 2, 5" db-types="Presto" />
+    <sql-case id="presto_select_join_natural_left" value="SELECT * FROM t_order NATURAL LEFT JOIN t_order_item" db-types="Presto" />
+    <sql-case id="presto_select_system_variable" value="SELECT @@global.time_zone" db-types="Presto" />
 </sql-cases>
