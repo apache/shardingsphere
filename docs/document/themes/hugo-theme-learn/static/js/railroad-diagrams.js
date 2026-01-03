@@ -380,36 +380,30 @@ At runtime, these constants can be found on the Diagram class.
 	function Start(simpleType) {
 		if(!(this instanceof Start)) return new Start();
 		FakeSVG.call(this, 'path');
-		this.width = 20;
-		this.up = 10;
-		this.down = 10;
+		this.width = 14;
+		this.up = 8;
+		this.down = 8;
 		this.simpleType = simpleType;
 	}
 	subclassOf(Start, FakeSVG);
 	Start.prototype.format = function(x,y) {
-		if (this.simpleType === false) {
-			this.attrs.d = 'M '+x+' '+(y-10)+' v 20 m 0 -10 h 20.5';
-		} else {
-			this.attrs.d = 'M '+x+' '+(y-10)+' v 20 m 10 -20 v 20 m -10 -10 h 20.5';
-		}
+		this.attrs['stroke-linecap'] = 'round';
+		this.attrs.d = 'M '+x+' '+y+' h '+this.width;
 		return this;
 	}
 
 	function End(simpleType) {
 		if(!(this instanceof End)) return new End();
 		FakeSVG.call(this, 'path');
-		this.width = 20;
-		this.up = 10;
-		this.down = 10;
+		this.width = 14;
+		this.up = 8;
+		this.down = 8;
 		this.simpleType = simpleType;
 	}
 	subclassOf(End, FakeSVG);
 	End.prototype.format = function(x,y) {
-		if (this.simpleType === false) {
-			this.attrs.d = 'M '+x+' '+y+' h 20 m 0 -10 v 20';
-		} else {
-			this.attrs.d = 'M '+x+' '+y+' h 20 m -10 -10 v 20 m 10 -20 v 20';
-		}
+		this.attrs['stroke-linecap'] = 'round';
+		this.attrs.d = 'M '+x+' '+y+' h '+this.width;
 		return this;
 	}
 
