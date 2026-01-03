@@ -41,12 +41,12 @@ jobs:
     runs-on: ${{ needs.global-environment.outputs.GLOBAL_RUNS_ON }}
     timeout-minutes: 40
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-java@v4
+      - uses: actions/checkout@v6.0.1
+      - uses: actions/setup-java@v5.1.0
         with:
           distribution: 'temurin'
           java-version: 21
-      - uses: actions/cache@v4
+      - uses: actions/cache@v5.0.1
         with:
           path: ~/.m2/repository
           key: ${{ needs.global-environment.outputs.GLOBAL_CACHE_PREFIX }}-maven-third-party-e2e-cache-${{ github.sha }}
@@ -104,12 +104,12 @@ jobs:
             mode: Standalone
             scenario: passthrough
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/cache@v4
+      - uses: actions/checkout@v6.0.1
+      - uses: actions/cache@v5.0.1
         with:
           path: ~/.m2/repository
           key: ${{ needs.global-environment.outputs.GLOBAL_CACHE_PREFIX }}-maven-third-party-e2e-cache-${{ github.sha }}
-      - uses: actions/setup-java@v4
+      - uses: actions/setup-java@v5.1.0
         with:
           distribution: 'temurin'
           java-version: 21

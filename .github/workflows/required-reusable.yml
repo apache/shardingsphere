@@ -31,7 +31,7 @@ jobs:
   init-environment:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6.0.1
         with:
           sparse-checkout: |
             .github/workflows/resources/variables/
