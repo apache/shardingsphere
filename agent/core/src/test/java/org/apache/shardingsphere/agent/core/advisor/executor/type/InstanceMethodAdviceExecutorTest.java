@@ -83,6 +83,34 @@ class InstanceMethodAdviceExecutorTest {
     }
     
     @Test
+    void assertAdviceWhenCallableThrowsWithoutOnThrowingException() throws ReflectiveOperationException {
+        List<String> queue = new LinkedList<>();
+        Map<String, Collection<InstanceMethodAdvice>> advices = new LinkedHashMap<>(1, 1F);
+        advices.put("foo", Collections.singletonList(new RecordingInstanceMethodAdvice(queue, "plain")));
+        InstanceMethodAdviceExecutor executor = new InstanceMethodAdviceExecutor(advices);
+        Method method = TargetObjectFixture.class.getMethod("callWhenExceptionThrown", List.class);
+        Callable<Object> callable = () -> {
+            throw new IllegalStateException("callable error");
+        };
+        assertThrows(IllegalStateException.class, () -> executor.advice(new SimpleTargetAdviceObject(), method, new Object[]{queue}, callable));
+        assertThat(queue, is(Arrays.asList("plain before foo", "plain throw foo", "plain after foo")));
+    }
+    
+    @Test
+    void assertAdviceWhenCallableThrowsWithPluginDisabled() throws ReflectiveOperationException {
+        List<String> queue = new LinkedList<>();
+        Map<String, Collection<InstanceMethodAdvice>> advices = new LinkedHashMap<>(1, 1F);
+        advices.put("foo", Collections.singletonList(new ConfigurableInstanceMethodAdvice(queue, "disabled", false, false, false, false)));
+        InstanceMethodAdviceExecutor executor = new InstanceMethodAdviceExecutor(advices);
+        Method method = TargetObjectFixture.class.getMethod("callWhenExceptionThrown", List.class);
+        Callable<Object> callable = () -> {
+            throw new IllegalStateException("callable error");
+        };
+        assertThrows(IllegalStateException.class, () -> executor.advice(new SimpleTargetAdviceObject(), method, new Object[]{queue}, callable));
+        assertThat(queue, is(Collections.emptyList()));
+    }
+    
+    @Test
     void assertAdviceWhenBeforeThrows() throws ReflectiveOperationException {
         List<String> queue = new LinkedList<>();
         Map<String, Collection<InstanceMethodAdvice>> advices = new LinkedHashMap<>(2, 1F);

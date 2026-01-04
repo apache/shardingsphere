@@ -60,6 +60,15 @@ class AdviceExecutorFactoryTest {
     }
     
     @Test
+    void assertFindMatchedAdviceExecutorWithUnmatchedPointcut() throws NoSuchMethodException {
+        AdvisorConfiguration advisorConfig = new AdvisorConfiguration(TargetObjectFixture.class.getName());
+        MethodDescription.InDefinedShape instanceMethod = new MethodDescription.ForLoadedMethod(TargetObjectFixture.class.getMethod("call", List.class));
+        advisorConfig.getAdvisors().add(new MethodAdvisorConfiguration(ElementMatchers.none(), FooAdvice.class.getName(), "foo"));
+        AdviceExecutorFactory factory = new AdviceExecutorFactory(new ClassLoaderContext(new URLClassLoader(new URL[0], getClass().getClassLoader()), Collections.emptyList()), advisorConfig);
+        assertFalse(factory.findMatchedAdviceExecutor(instanceMethod).isPresent());
+    }
+    
+    @Test
     void assertFindMatchedAdviceExecutorWithConstructor() throws NoSuchMethodException {
         MethodDescription.InDefinedShape constructor = new MethodDescription.ForLoadedConstructor(TargetObjectFixture.class.getDeclaredConstructor(List.class));
         AdvisorConfiguration advisorConfig = new AdvisorConfiguration(TargetObjectFixture.class.getName());
