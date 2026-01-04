@@ -17,9 +17,9 @@
   -->
 
 <sql-cases>
-    <sql-case id="load_data_into_table_from_server_file" value="LOAD DATA INFILE '/temp/test.txt' INTO TABLE t_order" db-types="MySQL" />
-    <sql-case id="load_data_into_table_from_local_file" value="LOAD DATA LOCAL INFILE '/temp/test.txt' INTO TABLE t_order" db-types="MySQL" />
-    <sql-case id="load_data_into_table_with_schema_name" value="LOAD DATA INFILE '/temp/test.txt' INTO TABLE sharding_db.t_order" db-types="MySQL" />
+    <sql-case id="load_data_into_table_from_server_file" value="LOAD DATA INFILE '/temp/test.txt' INTO TABLE t_order" db-types="MySQL,Doris" />
+    <sql-case id="load_data_into_table_from_local_file" value="LOAD DATA LOCAL INFILE '/temp/test.txt' INTO TABLE t_order" db-types="MySQL,Doris" />
+    <sql-case id="load_data_into_table_with_schema_name" value="LOAD DATA INFILE '/temp/test.txt' INTO TABLE sharding_db.t_order" db-types="MySQL,Doris" />
     <sql-case id="load_data_into_table_with_lines_starting" value="LOAD DATA INFILE '/tmp/test.txt' INTO TABLE t_order FIELDS TERMINATED BY ','  LINES STARTING BY 'xxx'" db-types="MySQL" />
     <sql-case id="load_data_into_table_with_ignore_lines" value="LOAD DATA INFILE '/tmp/test.txt' INTO TABLE t_order IGNORE 1 LINES" db-types="MySQL" />
     <sql-case id="load_data_into_table_with_at_01" value="LOAD DATA INFILE 'file.txt' INTO TABLE t1 (column1, @var1) SET column2 = @var1/100;" db-types="MySQL"/>

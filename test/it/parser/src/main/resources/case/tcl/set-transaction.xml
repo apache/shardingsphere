@@ -21,13 +21,16 @@
     <set-transaction sql-case-id="set_global_transaction" />
     <set-transaction sql-case-id="set_session_transaction" />
     <set-transaction sql-case-id="set_transaction_read_only" />
+    <set-transaction sql-case-id="set_transaction_read_write" />
     <set-transaction sql-case-id="set_transaction_read_write_with_name" />
     <set-transaction sql-case-id="set_transaction_isolation_level_serializable" />
     <set-transaction sql-case-id="set_transaction_isolation_level_read_committed" />
+    <set-transaction sql-case-id="set_transaction_isolation_level_read_uncommitted" />
     <set-transaction sql-case-id="set_transaction_isolation_level_snapshot" />
     <set-transaction sql-case-id="set_transaction_use_rollback_segment" />
     <set-transaction sql-case-id="set_transaction_with_name" />
     <set-transaction sql-case-id="set_transaction_snapshot" />
+    <set-transaction sql-case-id="set_session_transaction_doris" />
     <xa sql-case-id="xa_recover" />
     <xa sql-case-id="xa_start" />
     <xa sql-case-id="xa_begin" />

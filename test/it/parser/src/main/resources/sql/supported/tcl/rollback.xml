@@ -17,10 +17,10 @@
   -->
 
 <sql-cases>
-    <sql-case id="rollback" value="ROLLBACK" db-types="MySQL,Oracle,PostgreSQL,openGauss,SQLServer" />
+    <sql-case id="rollback" value="ROLLBACK" db-types="MySQL,Oracle,PostgreSQL,openGauss,SQLServer,Doris" />
     <sql-case id="rollback_transaction" value="ROLLBACK TRAN @TransactionName" db-types="SQLServer" />
     <sql-case id="rollback_with_name" value="ROLLBACK TRANSACTION transaction1" db-types="SQLServer" />
-    <sql-case id="rollback_to_savepoint" value="ROLLBACK TO savepoint1" db-types="MySQL,PostgreSQL,openGauss,Oracle" />
+    <sql-case id="rollback_to_savepoint" value="ROLLBACK TO savepoint1" db-types="MySQL,PostgreSQL,openGauss,Oracle,Doris" />
     <sql-case id="rollback_force" value="ROLLBACK FORCE 'transaction1'" db-types="Oracle" />
     <sql-case id="rollback_prepare" value="ROLLBACK PREPARED 'transaction1'" db-types="PostgreSQL,openGauss" />
     <sql-case id="rollback_in_pg" value="ROLLBACK TRANSACTION AND CHAIN" db-types="PostgreSQL,openGauss" />

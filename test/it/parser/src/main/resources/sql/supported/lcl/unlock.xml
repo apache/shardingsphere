@@ -17,7 +17,7 @@
   -->
 
 <sql-cases>
-    <sql-case id="unlock_table" value="unlock table" db-types="MySQL" />
-    <sql-case id="unlock_tables" value="unlock tables" db-types="MySQL" />
-    <sql-case id="unlock_instance" value="UNLOCK INSTANCE" db-types="MySQL" />
+    <sql-case id="unlock_table" value="unlock table" db-types="MySQL,Doris" />
+    <sql-case id="unlock_tables" value="unlock tables" db-types="MySQL,Doris" />
+    <sql-case id="unlock_instance" value="UNLOCK INSTANCE" db-types="MySQL,Doris" />
 </sql-cases>
