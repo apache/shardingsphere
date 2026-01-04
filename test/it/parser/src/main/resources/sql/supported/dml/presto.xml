@@ -56,4 +56,17 @@
     <sql-case id="presto_select_limit_comma" value="SELECT * FROM t_order LIMIT 2, 5" db-types="Presto" />
     <sql-case id="presto_select_join_natural_left" value="SELECT * FROM t_order NATURAL LEFT JOIN t_order_item" db-types="Presto" />
     <sql-case id="presto_select_system_variable" value="SELECT @@global.time_zone" db-types="Presto" />
+    <sql-case id="presto_select_parameter_marker" value="SELECT ?" db-types="Presto" />
+    <sql-case id="presto_select_all_qualified_shorthand" value="SELECT ALL t_order.* FROM t_order" db-types="Presto" />
+    <sql-case id="presto_select_two_level_order_expr" value="SELECT t_order.order_id FROM t_order ORDER BY order_id + 1" db-types="Presto" />
+    <sql-case id="presto_select_current_time_trim" value="SELECT CURRENT_TIME, TRIM(LEADING 'x' FROM status), TRIM(TRAILING 'y' FROM status) FROM t_order" db-types="Presto" />
+    <sql-case id="presto_select_values_function" value="SELECT VALUES(order_id) FROM t_order" db-types="Presto" />
+    <sql-case id="presto_select_udf_no_args" value="SELECT my_udf() FROM t_order" db-types="Presto" />
+    <sql-case id="presto_select_json_cast_abs" value="SELECT JSON_EXTRACT(order_id, '$.a'), CAST(order_id AS DATETIME(3)), ABS(-1) FROM t_order" db-types="Presto" />
+    <sql-case id="presto_select_paren_lock_dual" value="(SELECT 1 FROM DUAL) FOR UPDATE" db-types="Presto" />
+    <sql-case id="presto_select_paren_union" value="(SELECT 1) UNION SELECT 2" db-types="Presto" />
+    <sql-case id="presto_select_comma_join" value="SELECT * FROM t_order, t_order_item" db-types="Presto" />
+    <sql-case id="presto_select_subquery_table" value="SELECT * FROM (SELECT * FROM t_order) t" db-types="Presto" />
+    <sql-case id="presto_select_system_variable_plain" value="SELECT @@time_zone" db-types="Presto" />
+    <sql-case id="presto_insert_set_assignment" value="INSERT INTO t_order SET status = order_id" db-types="Presto" />
 </sql-cases>
