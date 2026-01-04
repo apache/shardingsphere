@@ -18,12 +18,12 @@
 
 <sql-cases>
     <sql-case id="update_without_alias" value="UPDATE t_order SET status = ? WHERE order_id = ? AND user_id = ?" />
-    <sql-case id="update_with_alias" value="UPDATE t_order AS o SET o.status = ? WHERE o.order_id = ? AND o.user_id = ?" db-types="MySQL,H2,openGauss,Oracle" />
+    <sql-case id="update_with_alias" value="UPDATE t_order AS o SET o.status = ? WHERE o.order_id = ? AND o.user_id = ?" db-types="MySQL,H2,openGauss,Oracle,Doris" />
     <sql-case id="update_with_unicode_escape_alias" value="UPDATE t_order AS u SET status = ? WHERE u.order_id = ? AND u.user_id = ?" db-types="PostgreSQL,openGauss" />
     <sql-case id="update_equal_with_geography" value="UPDATE t_order SET start_time = ?, status = 0, start_point = ST_GeographyFromText('SRID=4326;POINT('||?||' '||?||')'), rule = ?::jsonb, discount_type = ?, order_type = ? WHERE user_id = ? AND order_id = ?" db-types="PostgreSQL,openGauss" />
-    <sql-case id="update_without_condition" value="UPDATE t_order o SET o.status = 'finished'" db-types="MySQL,H2" />
-    <sql-case id="update_with_extra_keywords" value="UPDATE LOW_PRIORITY IGNORE t_order SET status = ? WHERE order_id = ? AND user_id = ?" db-types="MySQL" />
-    <sql-case id="update_with_special_character" value="UPDATE `t_order` SET `status` = ? WHERE `order_id` = ? AND user_id = ?" db-types="MySQL" />
+    <sql-case id="update_without_condition" value="UPDATE t_order o SET o.status = 'finished'" db-types="MySQL,H2,Doris" />
+    <sql-case id="update_with_extra_keywords" value="UPDATE LOW_PRIORITY IGNORE t_order SET status = ? WHERE order_id = ? AND user_id = ?" db-types="MySQL,Doris" />
+    <sql-case id="update_with_special_character" value="UPDATE `t_order` SET `status` = ? WHERE `order_id` = ? AND user_id = ?" db-types="MySQL,Doris" />
     <sql-case id="update_without_parameters" value="UPDATE t_order SET status = 'update' WHERE order_id = 1000 AND user_id = 10" />
     <sql-case id="update_with_or" value="UPDATE t_order SET status = 'update' WHERE (order_id = ? OR order_id = ?) AND user_id = ?" />
     <sql-case id="update_with_set_calculation" value="UPDATE t_order SET status = status - ? WHERE order_id = ? AND user_id = ?" />
@@ -31,7 +31,7 @@
     <sql-case id="update_with_column_equal_column" value="update t_order set order_id = order_id, status = 'init' where order_id = order_id AND order_id = ?" db-types="MySQL" />
     <sql-case id="update_with_case_when" value="update stock_freeze_detail set row_status=case WHEN (id=?) THEN ? WHEN (id=?) THEN ? WHEN (id=?) THEN ? end,
     update_user=case WHEN (id=?) THEN ? WHEN (id=?) THEN ? WHEN (id=?) THEN ? end, update_time=case WHEN (id=?) THEN ? end where  tenant_id = ?" db-types="MySQL,Oracle" />
-    <sql-case id="update_with_order_by_row_count" value="UPDATE t_order SET status = ? WHERE order_id = ? AND user_id = ? ORDER BY order_id LIMIT ?" db-types="MySQL,Presto" />
+    <sql-case id="update_with_order_by_row_count" value="UPDATE t_order SET status = ? WHERE order_id = ? AND user_id = ? ORDER BY order_id LIMIT ?" db-types="MySQL,Presto,Doris" />
     <sql-case id="update_with_number" value="UPDATE t_order SET order_id = ? WHERE user_id = ?" db-types="PostgreSQL,openGauss" />
     <sql-case id="update_with_with_clause" value="WITH cte (order_id, user_id, status) AS (SELECT order_id, user_id, status FROM t_order) UPDATE t_order SET status = ? FROM t_order AS t JOIN cte AS c ON t.order_id = c.order_id WHERE c.order_id = ?" db-types="SQLServer" />
     <sql-case id="update_with_from_clause" value="UPDATE t_order SET status = ? FROM t_order AS t JOIN t_order_item AS i ON t.order_id = i.order_id WHERE i.order_id = ?" db-types="PostgreSQL,openGauss,SQLServer" />
@@ -43,7 +43,7 @@
     <sql-case id="update_with_multiple_set" value="UPDATE employees SET job_id = 'SA_MAN', salary = 1000, department_id = 120 WHERE last_name = 'Douglas Grant'" db-types="Oracle" />
     <sql-case id="update_with_set_value" value="UPDATE people_demo1 p SET VALUE(p) = (SELECT VALUE(q) FROM people_demo2 q WHERE p.department_id = q.department_id) WHERE p.department_id = 10" db-types="Oracle" />
     <sql-case id="update_with_multi_columns" value="UPDATE employees a SET department_id = (SELECT department_id FROM departments WHERE location_id = '2100'), (salary, commission_pct) = (SELECT 1.1*AVG(salary), 1.5*AVG(commission_pct) FROM employees b WHERE a.department_id = b.department_id)" db-types="Oracle" />
-    <sql-case id="update_with_force_index" value="UPDATE t_order FORCE INDEX (PRIMARY) SET status = ? WHERE order_id = ?" db-types="MySQL" />
+    <sql-case id="update_with_force_index" value="UPDATE t_order FORCE INDEX (PRIMARY) SET status = ? WHERE order_id = ?" db-types="MySQL,Doris" />
     <sql-case id="update_with_subquery_using_interval" value="UPDATE employees a SET salary = (SELECT salary FROM employees AS OF TIMESTAMP (SYSTIMESTAMP - INTERVAL '2' MINUTE) WHERE last_name = 'Chung') WHERE last_name = 'Chung'" db-types="Oracle" />
     <sql-case id="update_with_translate_function" value="UPDATE translate_tab SET char_col = TRANSLATE (nchar_col USING CHAR_CS);" db-types="Oracle"/>
     <sql-case id="update_with_dot_column_name" value="UPDATE employees SET salary =.salary + 10  WHERE employee_id BETWEEN 1 and 10; " db-types="Oracle" />
