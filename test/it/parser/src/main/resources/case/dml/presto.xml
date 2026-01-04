@@ -1475,4 +1475,302 @@
         </where>
     </delete>
 
+    <select sql-case-id="presto_select_not_operator_bang">
+        <from>
+            <simple-table name="t_order" start-index="18" stop-index="24" />
+        </from>
+        <projections start-index="7" stop-index="11">
+            <expression-projection text="flag" start-index="7" stop-index="11">
+                <expr>
+                    <not-expression start-index="7" stop-index="11">
+                        <expr>
+                            <column name="flag" start-index="8" stop-index="11" />
+                        </expr>
+                    </not-expression>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="presto_select_cast_as_char">
+        <from>
+            <simple-table name="t_order" start-index="35" stop-index="41" />
+        </from>
+        <projections start-index="7" stop-index="28">
+            <expression-projection text="CAST(order_id AS CHAR)" start-index="7" stop-index="28">
+                <expr>
+                    <function function-name="CAST" text="CAST(order_id AS CHAR)" start-index="7" stop-index="28">
+                        <parameter>
+                            <column name="order_id" start-index="12" stop-index="19" />
+                        </parameter>
+                        <parameter>
+                            <data-type value="CHAR" start-index="24" stop-index="27" />
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="presto_select_subquery_projection">
+        <from>
+            <simple-table name="t_order" start-index="23" stop-index="29" />
+        </from>
+        <projections start-index="7" stop-index="16">
+            <subquery-projection start-index="7" stop-index="16" text="(SELECT 1)" literal-text="(SELECT 1)">
+                <subquery>
+                    <select>
+                        <projections start-index="15" stop-index="15">
+                            <expression-projection text="1" start-index="15" stop-index="15">
+                                <expr>
+                                    <literal-expression value="1" start-index="15" stop-index="15" />
+                                </expr>
+                            </expression-projection>
+                        </projections>
+                    </select>
+                </subquery>
+            </subquery-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="presto_select_exists_projection">
+        <from>
+            <simple-table name="t_order" start-index="30" stop-index="36" />
+        </from>
+        <projections start-index="7" stop-index="23">
+            <subquery-projection start-index="14" stop-index="23" text="EXISTS (SELECT 1)" literal-text="EXISTS (SELECT 1)">
+                <subquery>
+                    <select>
+                        <projections start-index="22" stop-index="22">
+                            <expression-projection text="1" start-index="22" stop-index="22">
+                                <expr>
+                                    <literal-expression value="1" start-index="22" stop-index="22" />
+                                </expr>
+                            </expression-projection>
+                        </projections>
+                    </select>
+                </subquery>
+            </subquery-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="presto_select_in_projection">
+        <from>
+            <simple-table name="t_order" start-index="23" stop-index="29" />
+        </from>
+        <projections start-index="7" stop-index="16">
+            <expression-projection text="1 IN (1,2)" start-index="7" stop-index="16">
+                <expr>
+                    <in-expression start-index="7" stop-index="16">
+                        <not>false</not>
+                        <left>
+                            <literal-expression value="1" start-index="7" stop-index="7" />
+                        </left>
+                        <right>
+                            <list-expression start-index="12" stop-index="16">
+                                <items>
+                                    <literal-expression value="1" start-index="13" stop-index="13" />
+                                </items>
+                                <items>
+                                    <literal-expression value="2" start-index="15" stop-index="15" />
+                                </items>
+                            </list-expression>
+                        </right>
+                    </in-expression>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="presto_select_between_projection">
+        <from>
+            <simple-table name="t_order" start-index="30" stop-index="36" />
+        </from>
+        <projections start-index="7" stop-index="23">
+            <expression-projection text="1 BETWEEN 1 AND 2" start-index="7" stop-index="23">
+                <expr>
+                    <between-expression start-index="7" stop-index="23">
+                        <not>false</not>
+                        <left>
+                            <literal-expression value="1" start-index="7" stop-index="7" />
+                        </left>
+                        <between-expr>
+                            <literal-expression value="1" start-index="17" stop-index="17" />
+                        </between-expr>
+                        <and-expr>
+                            <literal-expression value="2" start-index="23" stop-index="23" />
+                        </and-expr>
+                    </between-expression>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
+
+    <select sql-case-id="presto_select_left_join">
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" />
+        </projections>
+        <from>
+            <join-table join-type="LEFT" start-index="14" stop-index="87">
+                <left>
+                    <simple-table name="t_order" start-index="14" stop-index="20" />
+                </left>
+                <right>
+                    <simple-table name="t_order_item" start-index="32" stop-index="43" />
+                </right>
+                <on-condition start-index="48" stop-index="87">
+                    <binary-operation-expression start-index="48" stop-index="87">
+                        <left>
+                            <column name="order_id" start-index="48" stop-index="63">
+                                <owner name="t_order" start-index="48" stop-index="54" />
+                            </column>
+                        </left>
+                        <operator>=</operator>
+                        <right>
+                            <column name="order_id" start-index="67" stop-index="87">
+                                <owner name="t_order_item" start-index="67" stop-index="78" />
+                            </column>
+                        </right>
+                    </binary-operation-expression>
+                </on-condition>
+            </join-table>
+        </from>
+    </select>
+
+    <select sql-case-id="presto_select_right_join">
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" />
+        </projections>
+        <from>
+            <join-table join-type="RIGHT" start-index="14" stop-index="88">
+                <left>
+                    <simple-table name="t_order" start-index="14" stop-index="20" />
+                </left>
+                <right>
+                    <simple-table name="t_order_item" start-index="33" stop-index="44" />
+                </right>
+                <on-condition start-index="49" stop-index="88">
+                    <binary-operation-expression start-index="49" stop-index="88">
+                        <left>
+                            <column name="order_id" start-index="49" stop-index="64">
+                                <owner name="t_order" start-index="49" stop-index="55" />
+                            </column>
+                        </left>
+                        <operator>=</operator>
+                        <right>
+                            <column name="order_id" start-index="68" stop-index="88">
+                                <owner name="t_order_item" start-index="68" stop-index="79" />
+                            </column>
+                        </right>
+                    </binary-operation-expression>
+                </on-condition>
+            </join-table>
+        </from>
+    </select>
+
+    <select sql-case-id="presto_select_natural_join">
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" />
+        </projections>
+        <from>
+            <join-table join-type="INNER" natural="true" start-index="14" stop-index="46">
+                <left>
+                    <simple-table name="t_order" start-index="14" stop-index="20" />
+                </left>
+                <right>
+                    <simple-table name="t_order_item" start-index="35" stop-index="46" />
+                </right>
+            </join-table>
+        </from>
+    </select>
+
+    <select sql-case-id="presto_select_natural_right_join">
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" />
+        </projections>
+        <from>
+            <join-table join-type="RIGHT" natural="true" start-index="14" stop-index="52">
+                <left>
+                    <simple-table name="t_order" start-index="14" stop-index="20" />
+                </left>
+                <right>
+                    <simple-table name="t_order_item" start-index="41" stop-index="52" />
+                </right>
+            </join-table>
+        </from>
+    </select>
+
+    <select sql-case-id="presto_select_join_using">
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" />
+        </projections>
+        <from>
+            <join-table join-type="INNER" start-index="14" stop-index="54">
+                <left>
+                    <simple-table name="t_order" start-index="14" stop-index="20" />
+                </left>
+                <right>
+                    <simple-table name="t_order_item" start-index="27" stop-index="38" />
+                </right>
+                <using-columns name="order_id" start-index="46" stop-index="53" />
+            </join-table>
+        </from>
+    </select>
+
+    <select sql-case-id="presto_select_json_separator">
+        <from>
+            <simple-table name="t_order" start-index="30" stop-index="36" />
+        </from>
+        <projections start-index="7" stop-index="23">
+            <expression-projection text="order_info-&gt;'$.a'" start-index="7" stop-index="23" />
+        </projections>
+    </select>
+
+    <select sql-case-id="presto_select_json_unquoted_separator">
+        <from>
+            <simple-table name="t_order" start-index="31" stop-index="37" />
+        </from>
+        <projections start-index="7" stop-index="24">
+            <expression-projection text="order_info-&gt;&gt;'$.a'" start-index="7" stop-index="24" />
+        </projections>
+    </select>
+
+    <select sql-case-id="presto_select_udf_with_param">
+        <from>
+            <simple-table name="t_order" start-index="29" stop-index="35" />
+        </from>
+        <projections start-index="7" stop-index="22">
+            <expression-projection text="my_udf(order_id)" start-index="7" stop-index="22">
+                <function function-name="my_udf(order_id)" start-index="7" stop-index="22" text="my_udf(order_id)" />
+            </expression-projection>
+        </projections>
+    </select>
+
+    <insert sql-case-id="presto_insert_select_no_columns">
+        <table name="t_order" start-index="12" stop-index="18" />
+        <columns start-index="19" stop-index="19" />
+        <select>
+            <projections start-index="27" stop-index="27">
+                <expression-projection text="1" start-index="27" stop-index="27">
+                    <expr>
+                        <literal-expression value="1" start-index="27" stop-index="27" />
+                    </expr>
+                </expression-projection>
+            </projections>
+        </select>
+    </insert>
+
+    <insert sql-case-id="presto_insert_values_empty_columns">
+        <table name="t_order" start-index="12" stop-index="18" />
+        <columns start-index="20" stop-index="21" />
+        <values>
+            <value>
+                <assignment-value>
+                    <literal-expression value="1" start-index="31" stop-index="31" />
+                </assignment-value>
+            </value>
+        </values>
+    </insert>
+
 </sql-parser-test-cases>
