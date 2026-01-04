@@ -200,6 +200,6 @@ public final class MySQLIncrementalDumper extends AbstractPipelineLifecycleRunna
     
     @Override
     protected void doStop() {
-        client.closeChannel();
+        client.closeChannel(true);
     }
 }
