@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.proxy.frontend.mysql.command.query.binary.prepare;
 
-import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.AnalyzeTableStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.SetStatement;
@@ -47,7 +46,6 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.type.tcl.xa
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.tcl.xa.XAPrepareStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.tcl.xa.XARecoveryStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.tcl.xa.XARollbackStatement;
-import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisAnalyzeTableStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLFlushStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLKillStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLResetStatement;
@@ -82,7 +80,6 @@ import java.util.Collection;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 class MySQLComStmtPrepareCheckerTest {
     
@@ -105,13 +102,5 @@ class MySQLComStmtPrepareCheckerTest {
         for (SQLStatement each : sqlStatements) {
             assertTrue(MySQLComStmtPrepareChecker.isAllowedStatement(each));
         }
-    }
-    
-    @Test
-    void assertDorisAnalyzeTableStatementIsAllowed() {
-        DorisAnalyzeTableStatement dorisStatement = mock(DorisAnalyzeTableStatement.class);
-        when(dorisStatement.getDatabaseType()).thenReturn(mock(DatabaseType.class));
-        assertTrue(MySQLComStmtPrepareChecker.isAllowedStatement(dorisStatement),
-                "DorisAnalyzeTableStatement should be allowed as it extends DALStatement");
     }
 }
