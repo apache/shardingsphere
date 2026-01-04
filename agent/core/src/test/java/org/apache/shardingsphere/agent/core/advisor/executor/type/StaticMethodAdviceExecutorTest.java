@@ -42,6 +42,7 @@ import java.util.concurrent.Callable;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -78,6 +79,20 @@ class StaticMethodAdviceExecutorTest {
         };
         assertThrows(IllegalStateException.class, () -> executor.advice(TargetObjectFixture.class, method, new Object[]{queue}, callable));
         assertThat(queue, is(Arrays.asList("plain before foo", "config before bar", "plain throw foo", "plain after foo", "config after bar")));
+    }
+    
+    @Test
+    void assertAdviceWhenCallableThrowsWithPluginDisabled() throws ReflectiveOperationException {
+        List<String> queue = new LinkedList<>();
+        Map<String, Collection<StaticMethodAdvice>> advices = Collections.singletonMap(
+                "foo", Collections.singletonList(new ConfigurableStaticMethodAdvice(queue, "disabled", false, false, false, false)));
+        StaticMethodAdviceExecutor executor = new StaticMethodAdviceExecutor(advices);
+        Method method = TargetObjectFixture.class.getMethod("staticCallWhenExceptionThrown", List.class);
+        Callable<Object> callable = () -> {
+            throw new IllegalStateException("callable error");
+        };
+        assertThrows(IllegalStateException.class, () -> executor.advice(TargetObjectFixture.class, method, new Object[]{queue}, callable));
+        assertTrue(queue.isEmpty());
     }
     
     @Test
@@ -124,8 +139,7 @@ class StaticMethodAdviceExecutorTest {
         when(builder.method(any())).thenReturn((ImplementationDefinition) implementationDefinition);
         when(implementationDefinition.intercept(any())).thenReturn((ReceiverTypeDefinition) intercepted);
         AdviceExecutor executor = new StaticMethodAdviceExecutor(Collections.emptyMap());
-        Builder<?> actual = executor.intercept(builder, methodDescription);
-        assertThat(actual, is(intercepted));
+        assertThat(executor.intercept(builder, methodDescription), is(intercepted));
     }
     
     @RequiredArgsConstructor
