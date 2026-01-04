@@ -62,4 +62,5 @@
             <column name="name" start-index="23" stop-index="26" />
         </column-definition>
     </create-table>
+
 </sql-parser-test-cases>
