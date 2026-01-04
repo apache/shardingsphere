@@ -54,6 +54,7 @@
             <owner name="ds_0" start-index="25" stop-index="28" />
         </table>
     </revoke>
+    <revoke sql-case-id="revoke_proxy_on_user" />
     
     <revoke sql-case-id="revoke_role_from_user" />
     <revoke sql-case-id="revoke_roles_from_users" />

@@ -17,9 +17,9 @@
   -->
 
 <sql-cases>
-    <sql-case id="set_auto_commit_on" value="SET AUTOCOMMIT = 1" db-types="MySQL" />
+    <sql-case id="set_auto_commit_on" value="SET AUTOCOMMIT = 1" db-types="MySQL,Doris" />
     <sql-case id="set_auto_commit_on_with_scope" value="SET @@SESSION.AUTOCOMMIT = ON" db-types="MySQL" />
-    <sql-case id="set_auto_commit_off" value="SET AUTOCOMMIT = 0" db-types="MySQL" />
+    <sql-case id="set_auto_commit_off" value="SET AUTOCOMMIT = 0" db-types="MySQL,Doris" />
     <sql-case id="set_auto_commit_off_with_scope" value="SET SESSION AUTOCOMMIT = OFF" db-types="MySQL" />
     <sql-case id="set_implicit_transactions_on" value="SET IMPLICIT_TRANSACTIONS ON" db-types="SQLServer" />
     <sql-case id="set_implicit_transactions_off" value="SET IMPLICIT_TRANSACTIONS OFF" db-types="SQLServer" />

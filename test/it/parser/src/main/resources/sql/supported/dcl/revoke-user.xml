@@ -20,19 +20,20 @@
     <sql-case id="revoke_user_without_hostname" value="REVOKE SELECT, UPDATE on t_order from user_dev" db-types="Oracle,PostgreSQL,openGauss,SQLServer" />
     <sql-case id="revoke_role" value="REVOKE role_dev from user_dev" db-types="Oracle,PostgreSQL,openGauss" />
     <sql-case id="revoke_user_from" value="REVOKE ADVISOR, ALTER DATABASE from user_dev" db-types="Oracle" />
-    <sql-case id="revoke_user_with_hostname_on_db" value="REVOKE select, insert ON * FROM 'user_dev'@'localhost'" db-types="MySQL" />
-    <sql-case id="revoke_user_with_hostname_on_table" value="REVOKE select, insert ON t_order FROM 'user_dev'@'localhost'" db-types="MySQL" />
-    <sql-case id="revoke_user_with_hostname_on_db_and_table" value="REVOKE select, insert ON primary_ds.t_order FROM 'user_dev'@'localhost'" db-types="MySQL" />
-    <sql-case id="revoke_user_with_hostname" value="REVOKE ALL PRIVILEGES, GRANT OPTION FROM 'user_dev'@'localhost'" db-types="MySQL" />
-    <sql-case id="revoke_select" value="REVOKE SELECT ON *.* FROM user1" db-types="MySQL" />
-    <sql-case id="revoke_select_column" value="REVOKE SELECT (order_id) ON ds_0.t_order FROM user1" db-types="MySQL" />
-    <sql-case id="revoke_select_from_local_user" value="REVOKE SELECT ON  *.* FROM 'user1'@'localhost'" db-types="MySQL" />
-    <sql-case id="revoke_crud" value="REVOKE INSERT, SELECT, UPDATE, DELETE ON *.* FROM user1" db-types="MySQL" />
-    <sql-case id="revoke_all" value="REVOKE ALL PRIVILEGES ON *.* FROM user1" db-types="MySQL" />
-    <sql-case id="revoke_all_on_schema" value="REVOKE ALL PRIVILEGES ON ds_0.* FROM user1" db-types="MySQL" />
-    <sql-case id="revoke_all_on_table" value="REVOKE ALL PRIVILEGES ON ds_0.t_order FROM user1" db-types="MySQL,PostgreSQL,openGauss" />
-    <sql-case id="revoke_role_from_user" value="REVOKE role1 FROM user1" db-types="MySQL,Oracle" />
-    <sql-case id="revoke_roles_from_users" value="REVOKE role1, role2 FROM user1, user2" db-types="MySQL" />
+    <sql-case id="revoke_user_with_hostname_on_db" value="REVOKE select, insert ON * FROM 'user_dev'@'localhost'" db-types="MySQL,Doris" />
+    <sql-case id="revoke_user_with_hostname_on_table" value="REVOKE select, insert ON t_order FROM 'user_dev'@'localhost'" db-types="MySQL,Doris" />
+    <sql-case id="revoke_user_with_hostname_on_db_and_table" value="REVOKE select, insert ON primary_ds.t_order FROM 'user_dev'@'localhost'" db-types="MySQL,Doris" />
+    <sql-case id="revoke_user_with_hostname" value="REVOKE ALL PRIVILEGES, GRANT OPTION FROM 'user_dev'@'localhost'" db-types="MySQL,Doris" />
+    <sql-case id="revoke_select" value="REVOKE SELECT ON *.* FROM user1" db-types="MySQL,Doris" />
+    <sql-case id="revoke_select_column" value="REVOKE SELECT (order_id) ON ds_0.t_order FROM user1" db-types="MySQL,Doris" />
+    <sql-case id="revoke_select_from_local_user" value="REVOKE SELECT ON  *.* FROM 'user1'@'localhost'" db-types="MySQL,Doris" />
+    <sql-case id="revoke_crud" value="REVOKE INSERT, SELECT, UPDATE, DELETE ON *.* FROM user1" db-types="MySQL,Doris" />
+    <sql-case id="revoke_all" value="REVOKE ALL PRIVILEGES ON *.* FROM user1" db-types="MySQL,Doris" />
+    <sql-case id="revoke_all_on_schema" value="REVOKE ALL PRIVILEGES ON ds_0.* FROM user1" db-types="MySQL,Doris" />
+    <sql-case id="revoke_all_on_table" value="REVOKE ALL PRIVILEGES ON ds_0.t_order FROM user1" db-types="MySQL,PostgreSQL,openGauss,Doris" />
+    <sql-case id="revoke_role_from_user" value="REVOKE role1 FROM user1" db-types="MySQL,Oracle,Doris" />
+    <sql-case id="revoke_roles_from_users" value="REVOKE role1, role2 FROM user1, user2" db-types="MySQL,Doris" />
+    <sql-case id="revoke_proxy_on_user" value="REVOKE PROXY ON 'user1'@'localhost' FROM 'user2'@'localhost'" db-types="Doris" />
     <sql-case id="revoke_system_privilege" value="REVOKE CREATE SESSION FROM user1" db-types="Oracle" />
     <sql-case id="revoke_system_privileges" value="REVOKE CREATE ANY MATERIALIZED VIEW, ALTER ANY MATERIALIZED VIEW, DROP ANY MATERIALIZED VIEW FROM user1" db-types="Oracle" />
     <sql-case id="revoke_all_system_privileges" value="REVOKE ALL PRIVILEGES FROM user1" db-types="Oracle" />

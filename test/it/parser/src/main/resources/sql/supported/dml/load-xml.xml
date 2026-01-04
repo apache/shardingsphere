@@ -17,8 +17,8 @@
   -->
 
 <sql-cases>
-    <sql-case id="load_xml_into_table_from_server_file" value="LOAD XML INFILE '/temp/test.xml' INTO TABLE t_order" db-types="MySQL" />
-    <sql-case id="load_xml_into_table_from_local_file" value="LOAD XML LOCAL INFILE '/temp/test.xml' INTO TABLE t_order" db-types="MySQL" />
-    <sql-case id="load_xml_into_table_with_schema_name" value="LOAD XML INFILE '/temp/test.xml' INTO TABLE sharding_db.t_order" db-types="MySQL" />
+    <sql-case id="load_xml_into_table_from_server_file" value="LOAD XML INFILE '/temp/test.xml' INTO TABLE t_order" db-types="MySQL,Doris" />
+    <sql-case id="load_xml_into_table_from_local_file" value="LOAD XML LOCAL INFILE '/temp/test.xml' INTO TABLE t_order" db-types="MySQL,Doris" />
+    <sql-case id="load_xml_into_table_with_schema_name" value="LOAD XML INFILE '/temp/test.xml' INTO TABLE sharding_db.t_order" db-types="MySQL,Doris" />
     <sql-case id="load_xml_into_table_with_ignore_lines" value="LOAD XML INFILE '/tmp/test.xml' INTO TABLE t_order IGNORE 1 LINES" db-types="MySQL" />
 </sql-cases>

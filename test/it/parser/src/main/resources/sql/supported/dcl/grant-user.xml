@@ -21,19 +21,19 @@
     <sql-case id="grant_user_with_grant" value="GRANT SELECT, UPDATE, INSERT, DELETE ON t_order to user_dev with GRANT option" db-types="Oracle,PostgreSQL,openGauss,SQLServer" />
     <sql-case id="grant_role" value="GRANT role_dev to user_dev" db-types="Oracle,PostgreSQL,openGauss" />
     <sql-case id="grant_user_with_admin" value="GRANT ADVISOR, ALTER DATABASE to user_dev with admin option" db-types="Oracle" />
-    <sql-case id="grant_user_on_db" value="GRANT ALL ON sharding_db.* TO 'user_dev'@'localhost'" db-types="MySQL" />
-    <sql-case id="grant_user_on_table" value="GRANT ALL ON t_order TO 'user_dev'@'localhost'" db-types="MySQL" />
-    <sql-case id="grant_user_on_db_and_table" value="GRANT ALL ON sharding_db.t_order TO 'user_dev'@'localhost'" db-types="MySQL" />
-    <sql-case id="grant_user_with_hostname" value="GRANT select, update ON t_order TO 'user_dev'@'localhost'" db-types="MySQL" />
-    <sql-case id="grant_select" value="GRANT SELECT ON *.* TO user1" db-types="MySQL" />
-    <sql-case id="grant_select_column" value="GRANT SELECT (order_id) ON ds_0.t_order TO user1" db-types="MySQL,SQLServer" />
-    <sql-case id="grant_select_to_local_user" value="GRANT SELECT ON *.* TO 'user1'@'localhost'" db-types="MySQL" />
-    <sql-case id="grant_create_to_local_user" value="GRANT CREATE ON *.* TO user_name_len_25_01234567@localhost" db-types="MySQL" />
-    <sql-case id="grant_proxy_to_local_user" value="GRANT PROXY ON bug20364862_dest@localhost TO bug20364862_user@localhost" db-types="MySQL" />
-    <sql-case id="grant_crud" value="GRANT INSERT, SELECT, UPDATE, DELETE ON *.* TO user1" db-types="MySQL" />
-    <sql-case id="grant_all" value="GRANT ALL PRIVILEGES ON *.* TO user1" db-types="MySQL" />
-    <sql-case id="grant_all_on_table" value="GRANT ALL PRIVILEGES ON ds_0.t_order TO user1" db-types="MySQL,PostgreSQL,openGauss,SQLServer" />
-    <sql-case id="grant_role_to_user" value="GRANT role1 TO user1" db-types="MySQL" />
+    <sql-case id="grant_user_on_db" value="GRANT ALL ON sharding_db.* TO 'user_dev'@'localhost'" db-types="MySQL,Doris" />
+    <sql-case id="grant_user_on_table" value="GRANT ALL ON t_order TO 'user_dev'@'localhost'" db-types="MySQL,Doris" />
+    <sql-case id="grant_user_on_db_and_table" value="GRANT ALL ON sharding_db.t_order TO 'user_dev'@'localhost'" db-types="MySQL,Doris" />
+    <sql-case id="grant_user_with_hostname" value="GRANT select, update ON t_order TO 'user_dev'@'localhost'" db-types="MySQL,Doris" />
+    <sql-case id="grant_select" value="GRANT SELECT ON *.* TO user1" db-types="MySQL,Doris" />
+    <sql-case id="grant_select_column" value="GRANT SELECT (order_id) ON ds_0.t_order TO user1" db-types="MySQL,SQLServer,Doris" />
+    <sql-case id="grant_select_to_local_user" value="GRANT SELECT ON *.* TO 'user1'@'localhost'" db-types="MySQL,Doris" />
+    <sql-case id="grant_create_to_local_user" value="GRANT CREATE ON *.* TO user_name_len_25_01234567@localhost" db-types="MySQL,Doris" />
+    <sql-case id="grant_proxy_to_local_user" value="GRANT PROXY ON bug20364862_dest@localhost TO bug20364862_user@localhost" db-types="MySQL,Doris" />
+    <sql-case id="grant_crud" value="GRANT INSERT, SELECT, UPDATE, DELETE ON *.* TO user1" db-types="MySQL,Doris" />
+    <sql-case id="grant_all" value="GRANT ALL PRIVILEGES ON *.* TO user1" db-types="MySQL,Doris" />
+    <sql-case id="grant_all_on_table" value="GRANT ALL PRIVILEGES ON ds_0.t_order TO user1" db-types="MySQL,PostgreSQL,openGauss,SQLServer,Doris" />
+    <sql-case id="grant_role_to_user" value="GRANT role1 TO user1" db-types="MySQL,Doris" />
     <sql-case id="grant_roles_to_users" value="GRANT role1, role2 TO user1, user2" db-types="MySQL,Oracle" />
     <sql-case id="grant_system_privilege" value="GRANT CREATE SESSION TO user1" db-types="Oracle" />
     <sql-case id="grant_system_privileges" value="GRANT CREATE ANY MATERIALIZED VIEW, ALTER ANY MATERIALIZED VIEW, DROP ANY MATERIALIZED VIEW TO user1" db-types="Oracle" />
