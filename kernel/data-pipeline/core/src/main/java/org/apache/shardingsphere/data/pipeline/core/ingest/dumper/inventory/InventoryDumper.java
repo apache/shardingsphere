@@ -128,8 +128,12 @@ public final class InventoryDumper extends AbstractPipelineLifecycleRunnable imp
         RecordTableInventoryDumpCalculator dumpCalculator = new RecordTableInventoryDumpCalculator(dumperContext.getBatchSize(), StreamingRangeType.SMALL);
         long rowCount = 0L;
         try {
+            JobRateLimitAlgorithm rateLimitAlgorithm = dumperContext.getRateLimitAlgorithm();
             String firstUniqueKey = calculateParam.getFirstUniqueKey().getName();
             for (List<DataRecord> each : dumpCalculator.calculate(calculateParam)) {
+                if (null != rateLimitAlgorithm) {
+                    rateLimitAlgorithm.intercept(PipelineSQLOperationType.SELECT, 1);
+                }
                 channel.push(Collections.unmodifiableList(each));
                 IngestPosition position = UniqueKeyIngestPosition.newInstance(Range.closed(dumpCalculator.getFirstUniqueKeyValue(each.get(each.size() - 1), firstUniqueKey), range.getUpperBound()));
                 dumperContext.getCommonContext().setPosition(position);
