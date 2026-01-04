@@ -17,24 +17,24 @@
   -->
 
 <sql-cases>
-    <sql-case id="create_user_with_hostname" value="CREATE USER 'user_dev_new'@'localhost' default role role1" db-types="MySQL" />
+    <sql-case id="create_user_with_hostname" value="CREATE USER 'user_dev_new'@'localhost' default role role1" db-types="MySQL,Doris" />
     <sql-case id="create_user_without_hostname" value="CREATE USER user_dev_new" db-types="PostgreSQL,openGauss" />
-    <sql-case id="create_user_identified_by_with_hostname" value="CREATE USER 'user_dev_new'@'localhost' identified by 'passwd_dev' default role role1" db-types="MySQL" />
+    <sql-case id="create_user_identified_by_with_hostname" value="CREATE USER 'user_dev_new'@'localhost' identified by 'passwd_dev' default role role1" db-types="MySQL,Doris" />
     <sql-case id="create_user_identified_by_without_hostname" value="CREATE USER user_dev_new identified by passwd_dev" db-types="Oracle" />
     <sql-case id="create_user_identified_by_for" value="CREATE USER user_dev_new FOR LOGIN login_dev" db-types="SQLServer" />
     <sql-case id="create_user_password" value="CREATE USER user_dev_new PASSWORD 'passwd_dev'" db-types="PostgreSQL,openGauss,Firebird" />
-    <sql-case id="create_user" value="CREATE USER user1 DEFAULT ROLE role1" db-types="MySQL" />
-    <sql-case id="create_users" value="CREATE USER user1, user2 DEFAULT ROLE role1" db-types="MySQL" />
-    <sql-case id="create_user_if_not_exists" value="CREATE USER IF NOT EXISTS user1 DEFAULT ROLE role1" db-types="MySQL" />
-    <sql-case id="create_local_user" value="CREATE USER 'user1'@'localhost' DEFAULT ROLE role1" db-types="MySQL" />
-    <sql-case id="create_user_with_roles" value="CREATE USER user1 DEFAULT ROLE role1, role2" db-types="MySQL" />
-    <sql-case id="create_user_with_password_default_role" value="CREATE USER user1 IDENTIFIED BY RANDOM password DEFAULT ROLE role1" db-types="MySQL" />
-    <sql-case id="create_user_with_resource_option" value="CREATE USER user1 DEFAULT ROLE role1 WITH MAX_QUERIES_PER_HOUR 1" db-types="MySQL" />
-    <sql-case id="create_user_with_resource_options" value="CREATE USER user1 DEFAULT ROLE role1 WITH MAX_QUERIES_PER_HOUR 1 MAX_UPDATES_PER_HOUR 1" db-types="MySQL" />
-    <sql-case id="create_user_with_password_option" value="CREATE USER user1 DEFAULT ROLE role1 PASSWORD EXPIRE DEFAULT" db-types="MySQL" />
-    <sql-case id="create_user_with_password_options" value="CREATE USER user1 DEFAULT ROLE role1 PASSWORD EXPIRE DEFAULT PASSWORD HISTORY DEFAULT" db-types="MySQL" />
-    <sql-case id="create_user_with_lock_option" value="CREATE USER user1 DEFAULT ROLE role1 ACCOUNT LOCK" db-types="MySQL" />
-    <sql-case id="create_user_with_options" value="CREATE USER user1 DEFAULT ROLE role1 WITH MAX_QUERIES_PER_HOUR 1 MAX_UPDATES_PER_HOUR 1 PASSWORD EXPIRE DEFAULT PASSWORD HISTORY DEFAULT ACCOUNT LOCK" db-types="MySQL" />
+    <sql-case id="create_user" value="CREATE USER user1 DEFAULT ROLE role1" db-types="MySQL,Doris" />
+    <sql-case id="create_users" value="CREATE USER user1, user2 DEFAULT ROLE role1" db-types="MySQL,Doris" />
+    <sql-case id="create_user_if_not_exists" value="CREATE USER IF NOT EXISTS user1 DEFAULT ROLE role1" db-types="MySQL,Doris" />
+    <sql-case id="create_local_user" value="CREATE USER 'user1'@'localhost' DEFAULT ROLE role1" db-types="MySQL,Doris" />
+    <sql-case id="create_user_with_roles" value="CREATE USER user1 DEFAULT ROLE role1, role2" db-types="MySQL,Doris" />
+    <sql-case id="create_user_with_password_default_role" value="CREATE USER user1 IDENTIFIED BY RANDOM password DEFAULT ROLE role1" db-types="MySQL,Doris" />
+    <sql-case id="create_user_with_resource_option" value="CREATE USER user1 DEFAULT ROLE role1 WITH MAX_QUERIES_PER_HOUR 1" db-types="MySQL,Doris" />
+    <sql-case id="create_user_with_resource_options" value="CREATE USER user1 DEFAULT ROLE role1 WITH MAX_QUERIES_PER_HOUR 1 MAX_UPDATES_PER_HOUR 1" db-types="MySQL,Doris" />
+    <sql-case id="create_user_with_password_option" value="CREATE USER user1 DEFAULT ROLE role1 PASSWORD EXPIRE DEFAULT" db-types="MySQL,Doris" />
+    <sql-case id="create_user_with_password_options" value="CREATE USER user1 DEFAULT ROLE role1 PASSWORD EXPIRE DEFAULT PASSWORD HISTORY DEFAULT" db-types="MySQL,Doris" />
+    <sql-case id="create_user_with_lock_option" value="CREATE USER user1 DEFAULT ROLE role1 ACCOUNT LOCK" db-types="MySQL,Doris" />
+    <sql-case id="create_user_with_options" value="CREATE USER user1 DEFAULT ROLE role1 WITH MAX_QUERIES_PER_HOUR 1 MAX_UPDATES_PER_HOUR 1 PASSWORD EXPIRE DEFAULT PASSWORD HISTORY DEFAULT ACCOUNT LOCK" db-types="MySQL,Doris" />
     <sql-case id="create_external_user" value="CREATE USER user1 IDENTIFIED EXTERNALLY" db-types="Oracle" />
     <sql-case id="create_global_user" value="CREATE USER user1 IDENTIFIED GLOBALLY" db-types="Oracle" />
     <sql-case id="create_user_with_password" value="CREATE USER user1 IDENTIFIED BY RANDOM password default role role1" db-types="H2,MySQL" />

@@ -17,9 +17,9 @@
   -->
 
 <sql-cases>
-    <sql-case id="create_role" value="CREATE ROLE role1" db-types="MySQL,Oracle,PostgreSQL,openGauss,SQLServer,Firebird" />
-    <sql-case id="create_roles" value="CREATE ROLE role1, role2" db-types="MySQL" />
-    <sql-case id="create_role_if_not_exists" value="CREATE ROLE IF NOT EXISTS role1" db-types="MySQL" />
+    <sql-case id="create_role" value="CREATE ROLE role1" db-types="MySQL,Oracle,PostgreSQL,openGauss,SQLServer,Firebird,Doris" />
+    <sql-case id="create_roles" value="CREATE ROLE role1, role2" db-types="MySQL,Doris" />
+    <sql-case id="create_role_if_not_exists" value="CREATE ROLE IF NOT EXISTS role1" db-types="MySQL,Doris" />
     <sql-case id="create_no_identified_role" value="CREATE ROLE role1 NOT IDENTIFIED" db-types="Oracle" />
     <sql-case id="create_external_role" value="CREATE ROLE role1 IDENTIFIED EXTERNALLY" db-types="Oracle" />
     <sql-case id="create_global_role" value="CREATE ROLE role1 IDENTIFIED GLOBALLY" db-types="Oracle" />
