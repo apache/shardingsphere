@@ -47,8 +47,8 @@ public final class PersistServiceFacade implements AutoCloseable {
     
     public PersistServiceFacade(final PersistRepository repository, final ModeConfiguration modeConfig, final MetaDataContextManager metaDataContextManager) {
         this.repository = repository;
-        metaDataFacade = new MetaDataPersistFacade(repository, metaDataContextManager.getMetaDataContexts().getMetaData()
-                .getProps().getValue(ConfigurationPropertyKey.PERSIST_SCHEMAS_TO_REPOSITORY_ENABLED));
+        metaDataFacade = new MetaDataPersistFacade(repository,
+                metaDataContextManager.getMetaDataContexts().getMetaData().getProps().getValue(ConfigurationPropertyKey.PERSIST_SCHEMAS_TO_REPOSITORY_ENABLED));
         stateService = new StatePersistService(repository);
         qualifiedDataSourceStateService = new QualifiedDataSourceStatePersistService(repository);
         modeFacade = TypedSPILoader.getService(ModePersistServiceFacadeBuilder.class, modeConfig.getType()).build(metaDataContextManager, repository);
