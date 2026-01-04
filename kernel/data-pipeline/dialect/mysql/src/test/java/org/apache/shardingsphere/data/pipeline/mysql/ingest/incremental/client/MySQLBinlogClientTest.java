@@ -32,9 +32,9 @@ import io.netty.util.concurrent.DefaultPromise;
 import io.netty.util.concurrent.Promise;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.data.pipeline.core.exception.PipelineInternalException;
+import org.apache.shardingsphere.data.pipeline.mysql.ingest.incremental.binlog.MySQLBinlogContext;
 import org.apache.shardingsphere.data.pipeline.mysql.ingest.incremental.binlog.event.MySQLBaseBinlogEvent;
 import org.apache.shardingsphere.data.pipeline.mysql.ingest.incremental.binlog.event.PlaceholderBinlogEvent;
-import org.apache.shardingsphere.data.pipeline.mysql.ingest.incremental.binlog.MySQLBinlogContext;
 import org.apache.shardingsphere.data.pipeline.mysql.ingest.incremental.client.netty.MySQLBinlogEventPacketDecoder;
 import org.apache.shardingsphere.database.protocol.mysql.constant.MySQLConstants;
 import org.apache.shardingsphere.database.protocol.mysql.packet.command.binlog.MySQLComBinlogDumpCommandPacket;
@@ -63,10 +63,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
@@ -79,7 +77,6 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.CALLS_REAL_METHODS;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
@@ -154,7 +151,7 @@ class MySQLBinlogClientTest {
         initializer.get().channelRegistered(context);
         MySQLServerVersion actual = (MySQLServerVersion) Plugins.getMemberAccessor().get(MySQLBinlogClient.class.getDeclaredField("serverVersion"), client);
         assertThat(actual, is(expected));
-        client.closeChannel();
+        client.closeChannel(true);
     }
     
     @Test
@@ -306,30 +303,46 @@ class MySQLBinlogClientTest {
         assertThat(getChecksumLength(decoder), is(0));
     }
     
+    @Test
+    void assertPollOnNotRunning() throws ReflectiveOperationException {
+        Plugins.getMemberAccessor().set(MySQLBinlogClient.class.getDeclaredField("channel"), client, channel);
+        setRunning(false);
+        assertThrows(RuntimeException.class, () -> client.poll());
+    }
+    
+    @Test
+    void assertPollOnNotReady() throws ReflectiveOperationException {
+        Plugins.getMemberAccessor().set(MySQLBinlogClient.class.getDeclaredField("channel"), client, channel);
+        setRunning(true);
+        setReady(false);
+        assertThat(client.poll(), is(Collections.emptyList()));
+    }
+    
     @SuppressWarnings("unchecked")
     @Test
     void assertPollBranches() throws InterruptedException, ReflectiveOperationException {
-        setRunning(false);
-        assertThat(client.poll(), is(Collections.emptyList()));
         setRunning(true);
+        setReady(false);
+        assertThat(client.poll(), is(Collections.emptyList()));
+        setReady(true);
         assertThat(client.poll(), is(Collections.emptyList()));
         List<MySQLBaseBinlogEvent> events = Collections.singletonList(new PlaceholderBinlogEvent("binlog", 4L, 1L));
         ((ArrayBlockingQueue<List<MySQLBaseBinlogEvent>>) Plugins.getMemberAccessor().get(MySQLBinlogClient.class.getDeclaredField("blockingEventQueue"), client)).put(events);
         assertThat(client.poll(), is(events));
-        setRunning(true);
+        setReady(true);
         Thread.currentThread().interrupt();
         assertThat(client.poll(), is(Collections.emptyList()));
     }
     
     @Test
     void assertCloseChannelWhenChannelUnavailable() {
-        assertFalse(client.closeChannel().isPresent());
+        assertFalse(client.closeChannel(true).isPresent());
     }
     
     @Test
     void assertCloseChannelWithoutEventLoopGroup() throws Exception {
         Plugins.getMemberAccessor().set(MySQLBinlogClient.class.getDeclaredField("channel"), client, channel);
-        Optional<ChannelFuture> actual = client.closeChannel();
+        Optional<ChannelFuture> actual = client.closeChannel(true);
         assertTrue(actual.isPresent());
         verify(channel).close();
     }
@@ -374,59 +387,7 @@ class MySQLBinlogClientTest {
         setResponseCallback(null);
         handler.channelRead(mock(ChannelHandlerContext.class), new Object());
         handler.exceptionCaught(mock(ChannelHandlerContext.class), new RuntimeException("ex"));
-        client.closeChannel();
-    }
-    
-    @Test
-    void assertMySQLBinlogEventHandlerBranches() throws Exception {
-        client = createClientMock();
-        prepareClientChannel();
-        setServerVersion("5.6.0");
-        doReturn(true).when(client).execute(anyString());
-        doReturn(createResultSet("CRC32")).when(client).executeQuery(anyString());
-        when(channel.writeAndFlush(any(MySQLComRegisterSlaveCommandPacket.class))).thenAnswer(invocation -> {
-            Promise<Object> callback = new DefaultPromise<>(eventLoopGroup.next());
-            callback.setSuccess(new MySQLOKPacket(0));
-            setResponseCallback(callback);
-            return null;
-        });
-        doAnswer(invocation -> null).when(channel).writeAndFlush(any(MySQLComBinlogDumpCommandPacket.class));
-        client.subscribe("binlog-000003", 12L);
-        ArgumentCaptor<ChannelHandler> captor = ArgumentCaptor.forClass(ChannelHandler.class);
-        verify(pipeline, times(2)).addLast(captor.capture());
-        ChannelInboundHandlerAdapter handler = captor.getAllValues().stream()
-                .filter(each -> "MySQLBinlogEventHandler".equals(each.getClass().getSimpleName()))
-                .map(each -> (ChannelInboundHandlerAdapter) each).findFirst().orElseThrow(IllegalStateException::new);
-        setRunning(false);
-        handler.channelRead(mock(ChannelHandlerContext.class), new Object());
-        setRunning(true);
-        handler.channelRead(mock(ChannelHandlerContext.class), Collections.emptyList());
-        PlaceholderBinlogEvent firstEvent = new PlaceholderBinlogEvent("binlog-000003", 12L, 1L);
-        PlaceholderBinlogEvent secondEvent = new PlaceholderBinlogEvent("binlog-000003", 20L, 2L);
-        handler.channelRead(mock(ChannelHandlerContext.class), Arrays.asList(firstEvent, secondEvent));
-        handler.channelRead(mock(ChannelHandlerContext.class), new PlaceholderBinlogEvent("binlog-000003", 30L, 3L));
-        handler.exceptionCaught(mock(ChannelHandlerContext.class), new RuntimeException("binlog"));
-        setRunning(false);
-        handler.channelInactive(mock(ChannelHandlerContext.class));
-        setRunning(true);
-        CountDownLatch latch = new CountDownLatch(1);
-        AtomicInteger connectAttempts = new AtomicInteger();
-        doAnswer(invocation -> {
-            if (connectAttempts.getAndIncrement() == 0) {
-                throw new RuntimeException("fail");
-            }
-            return null;
-        }).when(client).connect();
-        doAnswer(invocation -> {
-            latch.countDown();
-            return null;
-        }).when(client).subscribe(anyString(), anyLong());
-        handler.channelInactive(mock(ChannelHandlerContext.class));
-        handler.channelInactive(mock(ChannelHandlerContext.class));
-        assertTrue(latch.await(3L, TimeUnit.SECONDS));
-        AtomicBoolean reconnectRequested = (AtomicBoolean) Plugins.getMemberAccessor().get(handler.getClass().getDeclaredField("reconnectRequested"), handler);
-        reconnectRequested.set(true);
-        handler.channelInactive(mock(ChannelHandlerContext.class));
+        client.closeChannel(true);
     }
     
     private InternalResultSet createResultSet(final String checksum) {
@@ -458,6 +419,11 @@ class MySQLBinlogClientTest {
     @SneakyThrows(ReflectiveOperationException.class)
     private void setRunning(final boolean value) {
         Plugins.getMemberAccessor().set(MySQLBinlogClient.class.getDeclaredField("running"), client, value);
+    }
+    
+    @SneakyThrows(ReflectiveOperationException.class)
+    private void setReady(final boolean value) {
+        Plugins.getMemberAccessor().set(MySQLBinlogClient.class.getDeclaredField("ready"), client, value);
     }
     
     @SneakyThrows(ReflectiveOperationException.class)

@@ -164,7 +164,7 @@ class MySQLIncrementalDumperTest {
         dumperThread.join(1000L);
         verify(client).connect();
         verify(client).subscribe("binlog-000001", 4L);
-        verify(client, timeout(1000L)).closeChannel();
+        verify(client, timeout(1000L)).closeChannel(true);
         ArgumentCaptor<List<Record>> captor = ArgumentCaptor.forClass(List.class);
         verify(channel, timeout(1000L)).push(captor.capture());
         List<Record> pushed = captor.getValue();
