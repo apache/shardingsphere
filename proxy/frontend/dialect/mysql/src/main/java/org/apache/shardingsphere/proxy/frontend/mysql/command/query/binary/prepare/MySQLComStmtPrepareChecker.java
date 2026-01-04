@@ -103,6 +103,10 @@ public final class MySQLComStmtPrepareChecker {
                 MySQLShowCreateTableStatement.class, MySQLShowCreateViewStatement.class, MySQLShowBinaryLogsStatement.class, MySQLShowStatusStatement.class,
                 MySQLStartSlaveStatement.class, MySQLStopSlaveStatement.class, TruncateStatement.class, MySQLUninstallPluginStatement.class, UpdateStatement.class,
                 XABeginStatement.class, XAPrepareStatement.class, XACommitStatement.class, XARollbackStatement.class, XAEndStatement.class, XARecoveryStatement.class));
+        try {
+            ALLOWED_SQL_STATEMENTS.add(Class.forName("org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisAnalyzeTableStatement"));
+        } catch (final ClassNotFoundException ignored) {
+        }
     }
     
     /**
@@ -112,6 +116,6 @@ public final class MySQLComStmtPrepareChecker {
      * @return SQL statement is allowed or not
      */
     public static boolean isAllowedStatement(final SQLStatement sqlStatement) {
-        return ALLOWED_SQL_STATEMENTS.contains(sqlStatement.getClass());
+        return ALLOWED_SQL_STATEMENTS.stream().anyMatch(each -> each.isAssignableFrom(sqlStatement.getClass()));
     }
 }

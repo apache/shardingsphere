@@ -89,6 +89,12 @@ public final class DorisAnalyzeTableStatement extends DALStatement {
     
     @Override
     public SQLStatementAttributes getAttributes() {
-        return null != table ? new SQLStatementAttributes(new TableSQLStatementAttribute(Collections.singleton(table)), new TableBroadcastRouteSQLStatementAttribute()) : new SQLStatementAttributes();
+        if (null != table) {
+            return new SQLStatementAttributes(new TableSQLStatementAttribute(Collections.singleton(table)), new TableBroadcastRouteSQLStatementAttribute());
+        }
+        if (null != database) {
+            return new SQLStatementAttributes(new TableBroadcastRouteSQLStatementAttribute());
+        }
+        return new SQLStatementAttributes();
     }
 }
