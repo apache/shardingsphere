@@ -25,6 +25,7 @@ import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourc
 import org.apache.shardingsphere.data.pipeline.core.exception.job.SplitPipelineJobByUniqueKeyException;
 import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.inventory.InventoryDumperContext;
 import org.apache.shardingsphere.data.pipeline.core.sqlbuilder.sql.PipelinePrepareSQLBuilder;
+import org.apache.shardingsphere.infra.metadata.database.schema.QualifiedTable;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -63,7 +64,7 @@ public final class InventoryRecordsCountCalculator {
             return getCount(dataSource, sqlBuilder.buildCountSQL(schemaName, actualTableName));
         } catch (final SQLException ex) {
             String uniqueKey = dumperContext.hasUniqueKey() ? dumperContext.getUniqueKeyColumns().get(0).getName() : "";
-            throw new SplitPipelineJobByUniqueKeyException(dumperContext.getActualTableName(), uniqueKey, ex);
+            throw new SplitPipelineJobByUniqueKeyException(new QualifiedTable(schemaName, dumperContext.getActualTableName()), uniqueKey, ex);
         }
     }
     

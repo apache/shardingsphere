@@ -65,7 +65,7 @@ public final class InventoryPositionEstimatedCalculator {
             BigDecimal upperBound = resultSet.getBigDecimal(2);
             return Range.closed(null == lowerBound ? null : lowerBound.toBigInteger(), null == upperBound ? null : upperBound.toBigInteger());
         } catch (final SQLException ex) {
-            throw new SplitPipelineJobByUniqueKeyException(qualifiedTable.getTableName(), uniqueKey, ex);
+            throw new SplitPipelineJobByUniqueKeyException(qualifiedTable, uniqueKey, ex);
         }
     }
     
