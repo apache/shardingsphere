@@ -33,8 +33,8 @@ import org.apache.shardingsphere.mode.node.path.engine.searcher.NodePathPattern;
 import org.apache.shardingsphere.mode.node.path.engine.searcher.NodePathSearchCriteria;
 import org.apache.shardingsphere.mode.node.path.engine.searcher.NodePathSearcher;
 import org.apache.shardingsphere.mode.node.path.type.global.state.coordinator.CoordinatorType;
-import org.apache.shardingsphere.mode.node.path.type.global.state.coordinator.TableCoordinatorNodePath;
-import org.apache.shardingsphere.mode.node.path.type.global.state.coordinator.TableCoordinatorTypeNodePath;
+import org.apache.shardingsphere.mode.node.path.type.global.state.coordinator.table.TableCoordinatorNodePath;
+import org.apache.shardingsphere.mode.node.path.type.global.state.coordinator.table.TableCoordinatorTypeNodePath;
 
 import java.util.Collection;
 import java.util.Collections;

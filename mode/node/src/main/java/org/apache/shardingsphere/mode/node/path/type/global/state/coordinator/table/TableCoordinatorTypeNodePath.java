@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.node.path.type.global.state.coordinator;
+package org.apache.shardingsphere.mode.node.path.type.global.state.coordinator.table;
 
 import lombok.Getter;
 import org.apache.shardingsphere.mode.node.path.NodePath;
