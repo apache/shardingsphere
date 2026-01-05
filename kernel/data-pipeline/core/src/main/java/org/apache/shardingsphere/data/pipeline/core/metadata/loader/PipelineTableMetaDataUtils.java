@@ -55,7 +55,7 @@ public final class PipelineTableMetaDataUtils {
             return primaryKeys.stream().map(tableMetaData::getColumnMetaData).collect(Collectors.toList());
         }
         for (PipelineIndexMetaData each : tableMetaData.getUniqueIndexes()) {
-            if (each.getColumns().stream().anyMatch(PipelineColumnMetaData::isNullable)) {
+            if (each.getColumns().get(0).isNullable()) {
                 continue;
             }
             return each.getColumns();

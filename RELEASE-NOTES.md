@@ -71,6 +71,7 @@
 1. Pipeline: Support unique key first integer column exact or estimated splitting based on data sparseness - [#37542](https://github.com/apache/shardingsphere/pull/37542)
 1. Pipeline: Support unique key first big integer column splitting - [#37574](https://github.com/apache/shardingsphere/pull/37574)
 1. Pipeline: Support unique key first string column exact splitting - [#37543](https://github.com/apache/shardingsphere/pull/37543)
+1. Pipeline: Support multi-columns unique key non-first column nullable - [#37647](https://github.com/apache/shardingsphere/pull/37647)
 1. Encrypt: Support handling show create view result decoration in encrypt - [#37299](https://github.com/apache/shardingsphere/pull/37299)
 1. JDBC: Enhance ResultSetUtils to support flexible string date/time conversions - [37424](https://github.com/apache/shardingsphere/pull/37424)
 
