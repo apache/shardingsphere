@@ -86,7 +86,7 @@ public final class InventoryPositionExactCalculator {
                 return positionHandler.createIngestPosition(Range.closed(minValue, maxValue));
             }
         } catch (final SQLException ex) {
-            throw new SplitPipelineJobByUniqueKeyException(qualifiedTable.getTableName(), uniqueKey, ex);
+            throw new SplitPipelineJobByUniqueKeyException(qualifiedTable, uniqueKey, ex);
         }
     }
     
@@ -121,7 +121,7 @@ public final class InventoryPositionExactCalculator {
                 }
             }
         } catch (final SQLException ex) {
-            throw new SplitPipelineJobByUniqueKeyException(qualifiedTable.getTableName(), uniqueKey, ex);
+            throw new SplitPipelineJobByUniqueKeyException(qualifiedTable, uniqueKey, ex);
         }
         return result;
     }

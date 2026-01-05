@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.data.pipeline.core.preparer.inventory.calculator.position;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSource;
 import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.inventory.query.Range;
 import org.apache.shardingsphere.data.pipeline.core.ingest.position.IngestPosition;
@@ -40,6 +41,7 @@ import java.util.List;
  * Inventory position calculator.
  */
 @RequiredArgsConstructor
+@Slf4j
 public final class InventoryPositionCalculator {
     
     private final PipelineDataSource dataSource;
@@ -66,6 +68,7 @@ public final class InventoryPositionCalculator {
         if (dataTypeOption.isStringDataType(firstColumnDataType)) {
             return getStringPositions();
         }
+        log.info("Unsupported unique key type, unique key columns: {}", uniqueKeyColumns);
         return Collections.singletonList(UniqueKeyIngestPosition.ofUnsplit());
     }
     
