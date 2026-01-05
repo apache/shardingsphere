@@ -1843,4 +1843,101 @@
         </limit>
     </delete>
 
+    <select sql-case-id="presto_select_cast_literal">
+        <projections start-index="7" stop-index="23">
+            <expression-projection text="CAST('1' AS CHAR)" start-index="7" stop-index="23">
+                <expr>
+                    <function function-name="CAST" text="CAST('1' AS CHAR)" start-index="7" stop-index="23">
+                        <parameter>
+                            <literal-expression value="1" start-index="12" stop-index="14" />
+                        </parameter>
+                        <parameter>
+                            <data-type value="CHAR" start-index="19" stop-index="22" />
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+        <from>
+            <simple-table name="t_order" start-index="30" stop-index="36" />
+        </from>
+    </select>
+
+    <select sql-case-id="presto_select_substr_alias">
+        <projections start-index="7" stop-index="24">
+            <expression-projection text="SUBSTR('abcd',2,2)" start-index="7" stop-index="24">
+                <expr>
+                    <function function-name="SUBSTR" text="SUBSTR('abcd',2,2)" start-index="7" stop-index="24">
+                        <parameter>
+                            <literal-expression value="abcd" start-index="14" stop-index="19" />
+                        </parameter>
+                        <parameter>
+                            <literal-expression value="2" start-index="21" stop-index="21" />
+                        </parameter>
+                        <parameter>
+                            <literal-expression value="2" start-index="23" stop-index="23" />
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+        <from>
+            <simple-table name="t_order" start-index="31" stop-index="37" />
+        </from>
+    </select>
+
+    <select sql-case-id="presto_select_schema_shorthand">
+        <from>
+            <simple-table name="t_order" start-index="29" stop-index="35" />
+        </from>
+        <projections start-index="7" stop-index="22">
+            <shorthand-projection start-index="7" stop-index="22">
+                <owner name="t_order" start-index="14" stop-index="20">
+                    <owner name="schem1" start-index="7" stop-index="12" />
+                </owner>
+            </shorthand-projection>
+        </projections>
+    </select>
+
+    <delete sql-case-id="presto_delete_table_alias">
+        <table name="t_order" alias="o" start-index="12" stop-index="23" />
+        <where start-index="25" stop-index="38">
+            <expr>
+                <binary-operation-expression start-index="31" stop-index="38">
+                    <left>
+                        <column name="flag" start-index="31" stop-index="34" />
+                    </left>
+                    <operator>=</operator>
+                    <right>
+                        <literal-expression value="1" start-index="38" stop-index="38" />
+                    </right>
+                </binary-operation-expression>
+            </expr>
+        </where>
+    </delete>
+
+    <select sql-case-id="presto_select_lock_share_of_nowait">
+        <from>
+            <simple-table name="t_order" start-index="14" stop-index="20" />
+        </from>
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" />
+        </projections>
+        <lock start-index="22" stop-index="48">
+            <table name="t_order" start-index="35" stop-index="41" />
+        </lock>
+    </select>
+
+    <select sql-case-id="presto_select_lock_skip_locked">
+        <from>
+            <simple-table name="t_order" start-index="14" stop-index="20" />
+        </from>
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" />
+        </projections>
+        <lock start-index="22" stop-index="54">
+            <table name="t_order" start-index="36" stop-index="42" />
+        </lock>
+    </select>
+
 </sql-parser-test-cases>

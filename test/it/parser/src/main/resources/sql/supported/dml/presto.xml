@@ -91,4 +91,10 @@
     <sql-case id="presto_select_cast_lengths" value="SELECT CAST(order_id AS DECIMAL(10,2)) FROM t_order" db-types="Presto" />
     <sql-case id="presto_select_window_partition_only" value="SELECT ROW_NUMBER() OVER win FROM t_order WINDOW win AS (PARTITION BY status)" db-types="Presto" />
     <sql-case id="presto_delete_order_limit" value="DELETE FROM t_order WHERE flag = 1 ORDER BY order_id LIMIT 1" db-types="Presto" />
+    <sql-case id="presto_select_cast_literal" value="SELECT CAST('1' AS CHAR) FROM t_order" db-types="Presto" />
+    <sql-case id="presto_select_substr_alias" value="SELECT SUBSTR('abcd',2,2) FROM t_order" db-types="Presto" />
+    <sql-case id="presto_select_schema_shorthand" value="SELECT schem1.t_order.* FROM t_order" db-types="Presto" />
+    <sql-case id="presto_delete_table_alias" value="DELETE FROM t_order AS o WHERE flag = 1" db-types="Presto" />
+    <sql-case id="presto_select_lock_share_of_nowait" value="SELECT * FROM t_order FOR SHARE OF t_order NOWAIT" db-types="Presto" />
+    <sql-case id="presto_select_lock_skip_locked" value="SELECT * FROM t_order FOR UPDATE OF t_order SKIP LOCKED" db-types="Presto" />
 </sql-cases>

@@ -51,27 +51,38 @@ sdk use java 24.0.2-graalce
 sudo apt-get install build-essential zlib1g-dev -y
 ```
 
-可在 bash 通过如下命令安装 Rootful 模式的 Docker Engine。本文不讨论更改 `/etc/docker/daemon.json` 的默认 logging driver。
+可在 bash 通过如下命令安装 Rootful 模式的 Docker Engine。
 
 ```shell
-sudo apt update && sudo apt upgrade -y
-sudo apt-get remove docker.io docker-doc docker-compose docker-compose-v2 podman-docker containerd runc
-cd /tmp/
-sudo apt-get install ca-certificates curl
+sudo apt update && sudo apt upgrade --assume-yes
+sudo apt-get remove docker.io docker-compose docker-compose-v2 docker-doc podman-docker containerd runc
+sudo apt install ca-certificates curl --assume-yes
 sudo install -m 0755 -d /etc/apt/keyrings
 sudo curl -fsSL https://download.docker.com/linux/ubuntu/gpg -o /etc/apt/keyrings/docker.asc
 sudo chmod a+r /etc/apt/keyrings/docker.asc
 
-echo \
-  "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/ubuntu \
-  $(. /etc/os-release && echo "$VERSION_CODENAME") stable" | \
-  sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+sudo tee /etc/apt/sources.list.d/docker.sources <<EOF
+Types: deb
+URIs: https://download.docker.com/linux/ubuntu
+Suites: $(. /etc/os-release && echo "${UBUNTU_CODENAME:-$VERSION_CODENAME}")
+Components: stable
+Signed-By: /etc/apt/keyrings/docker.asc
+EOF
 
 sudo apt-get update
-sudo apt-get install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin -y
+sudo apt-get install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin --assume-yes
 sudo groupadd docker
 sudo usermod -aG docker $USER
 newgrp docker
+
+sudo tee /etc/docker/daemon.json <<EOF
+{
+  "log-driver": "local",
+  "min-api-version": "1.24"
+}
+EOF
+
+sudo systemctl restart docker.service
 ```
 
 ### Windows
@@ -113,9 +124,19 @@ wsl --install
 winget install --id SUSE.RancherDesktop --source winget --skip-dependencies
 # 打开新的 PowerShell 7 终端
 rdctl start --application.start-in-background --container-engine.name=moby --kubernetes.enabled=false
-```
 
-本文不讨论更改 Linux 发行版 `rancher-desktop` 的 `/etc/docker/daemon.json` 的默认 logging driver。
+@'
+{
+  "features": {
+    "containerd-snapshotter": true
+  },
+  "log-driver": "local"
+}
+'@ | rdctl shell sudo tee /etc/docker/daemon.json
+
+rdctl shutdown
+rdctl start --application.start-in-background --container-engine.name=moby --kubernetes.enabled=false
+```
 
 ### Windows Server
 
@@ -130,6 +151,18 @@ rdctl start --application.start-in-background --container-engine.name=moby --kub
 iex "& { $(irm https://raw.githubusercontent.com/microsoft/Windows-Containers/refs/heads/Main/helpful_tools/Install-DockerCE/uninstall-docker-ce.ps1) } -Force"
 winget install --id SUSE.RancherDesktop --source winget --skip-dependencies
 # 打开新的 PowerShell 7 终端
+rdctl start --application.start-in-background --container-engine.name=moby --kubernetes.enabled=false
+
+@'
+{
+  "features": {
+    "containerd-snapshotter": true
+  },
+  "log-driver": "local"
+}
+'@ | rdctl shell sudo tee /etc/docker/daemon.json
+
+rdctl shutdown
 rdctl start --application.start-in-background --container-engine.name=moby --kubernetes.enabled=false
 ```
 
