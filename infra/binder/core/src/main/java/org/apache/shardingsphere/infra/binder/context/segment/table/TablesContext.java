@@ -28,8 +28,6 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SubqueryTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableNameSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.OwnerSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -84,15 +82,10 @@ public final class TablesContext {
                         schemaNames.add(optional.getOriginalSchema().getValue());
                         databaseNames.add(optional.getOriginalDatabase().getValue());
                     });
-
                     // Fallback: use table owner as schema when TableBoundInfo is absent (openGauss CREATE INDEX)
-                    if (!tableName.getTableBoundInfo().isPresent()) {
-                        simpleTableSegment.getOwner()
-                                .map(OwnerSegment::getIdentifier)
-                                .map(IdentifierValue::getValue)
-                                .ifPresent(schemaNames::add);
+                    if (!tableName.getTableBoundInfo().isPresent() && simpleTableSegment.getOwner().isPresent()) {
+                        schemaNames.add(simpleTableSegment.getOwner().get().getIdentifier().getValue());
                     }
-
                 }
             }
             if (each instanceof SubqueryTableSegment) {
