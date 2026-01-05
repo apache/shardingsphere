@@ -19,10 +19,6 @@
 
 # This file is only used in the PowerShell 7 of ShardingSphere in GitHub Actions environment and should not be executed manually in a development environment.
 # Background information can be found at https://github.com/apache/shardingsphere/pull/35905 .
-iex "& { $(irm https://raw.githubusercontent.com/microsoft/Windows-Containers/refs/heads/Main/helpful_tools/Install-DockerCE/uninstall-docker-ce.ps1) } -Force"
-winget install --id jazzdelightsme.WingetPathUpdater --source winget
-winget install --id SUSE.RancherDesktop --source winget --skip-dependencies
-rdctl start --application.start-in-background --container-engine.name=moby --kubernetes.enabled=false
 $deadline = (Get-Date).AddMinutes(10)
 $state = "UNKNOWN"
 while ((Get-Date) -lt $deadline)
