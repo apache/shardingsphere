@@ -97,4 +97,9 @@
     <sql-case id="presto_delete_table_alias" value="DELETE FROM t_order AS o WHERE flag = 1" db-types="Presto" />
     <sql-case id="presto_select_lock_share_of_nowait" value="SELECT * FROM t_order FOR SHARE OF t_order NOWAIT" db-types="Presto" />
     <sql-case id="presto_select_lock_skip_locked" value="SELECT * FROM t_order FOR UPDATE OF t_order SKIP LOCKED" db-types="Presto" />
+    <sql-case id="presto_select_is_null" value="SELECT * FROM t_order WHERE flag IS NULL" db-types="Presto" />
+    <sql-case id="presto_select_is_not_true" value="SELECT * FROM t_order WHERE flag IS NOT TRUE" db-types="Presto" />
+    <sql-case id="presto_select_is_false" value="SELECT * FROM t_order WHERE flag IS FALSE" db-types="Presto" />
+    <sql-case id="presto_select_in_param_markers" value="SELECT * FROM t_order WHERE order_id IN (?, ?)" db-types="Presto" />
+    <sql-case id="presto_select_distinctrow" value="SELECT DISTINCTROW * FROM t_order" db-types="Presto" />
 </sql-cases>
