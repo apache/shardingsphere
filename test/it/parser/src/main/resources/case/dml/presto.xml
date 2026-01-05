@@ -1940,4 +1940,110 @@
         </lock>
     </select>
 
+    <select sql-case-id="presto_select_is_null">
+        <from>
+            <simple-table name="t_order" start-index="14" stop-index="20" />
+        </from>
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" />
+        </projections>
+        <where start-index="22" stop-index="39">
+            <expr>
+                <binary-operation-expression start-index="28" stop-index="39">
+                    <left>
+                        <column name="flag" start-index="28" stop-index="31" />
+                    </left>
+                    <operator>IS</operator>
+                    <right>
+                        <literal-expression value="NULL" start-index="36" stop-index="39" />
+                    </right>
+                </binary-operation-expression>
+            </expr>
+        </where>
+    </select>
+
+    <select sql-case-id="presto_select_is_not_true">
+        <from>
+            <simple-table name="t_order" start-index="14" stop-index="20" />
+        </from>
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" />
+        </projections>
+        <where start-index="22" stop-index="43">
+            <expr>
+                <binary-operation-expression start-index="28" stop-index="43">
+                    <left>
+                        <column name="flag" start-index="28" stop-index="31" />
+                    </left>
+                    <operator>IS</operator>
+                    <right>
+                        <literal-expression value="NOT TRUE" start-index="36" stop-index="43" />
+                    </right>
+                </binary-operation-expression>
+            </expr>
+        </where>
+    </select>
+
+    <select sql-case-id="presto_select_is_false">
+        <from>
+            <simple-table name="t_order" start-index="14" stop-index="20" />
+        </from>
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" />
+        </projections>
+        <where start-index="22" stop-index="40">
+            <expr>
+                <binary-operation-expression start-index="28" stop-index="40">
+                    <left>
+                        <column name="flag" start-index="28" stop-index="31" />
+                    </left>
+                    <operator>IS</operator>
+                    <right>
+                        <literal-expression value="FALSE" start-index="36" stop-index="40" />
+                    </right>
+                </binary-operation-expression>
+            </expr>
+        </where>
+    </select>
+
+    <select sql-case-id="presto_select_in_param_markers" parameters="1, 1">
+        <from>
+            <simple-table name="t_order" start-index="14" stop-index="20" />
+        </from>
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" />
+        </projections>
+        <where start-index="22" stop-index="45">
+            <expr>
+                <in-expression start-index="28" stop-index="45">
+                    <not>false</not>
+                    <left>
+                        <column name="order_id" start-index="28" stop-index="35" />
+                    </left>
+                    <right>
+                        <list-expression start-index="40" stop-index="45">
+                            <items>
+                                <literal-expression value="1" start-index="41" stop-index="41" />
+                                <parameter-marker-expression parameter-index="0" start-index="41" stop-index="41" />
+                            </items>
+                            <items>
+                                <literal-expression value="1" start-index="44" stop-index="44" />
+                                <parameter-marker-expression parameter-index="1" start-index="44" stop-index="44" />
+                            </items>
+                        </list-expression>
+                    </right>
+                </in-expression>
+            </expr>
+        </where>
+    </select>
+
+    <select sql-case-id="presto_select_distinctrow">
+        <from>
+            <simple-table name="t_order" start-index="26" stop-index="32" />
+        </from>
+        <projections distinct-row="true" start-index="19" stop-index="19">
+            <shorthand-projection start-index="19" stop-index="19" />
+        </projections>
+    </select>
+
 </sql-parser-test-cases>
