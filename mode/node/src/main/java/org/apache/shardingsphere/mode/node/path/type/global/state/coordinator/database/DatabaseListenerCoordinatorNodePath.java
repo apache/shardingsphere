@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.node.path.type.global.state;
+package org.apache.shardingsphere.mode.node.path.type.global.state.coordinator.database;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
