@@ -58,7 +58,7 @@ public interface DialectResultSetMapper extends DatabaseTypedSPI {
      * @return value for unhandled column type
      * @throws SQLException SQL exception
      */
-    default Object getDefaultValue(ResultSet resultSet, int columnIndex, int columnType) throws SQLException {
+    default Object getDefaultValue(final ResultSet resultSet, final int columnIndex, final int columnType) throws SQLException {
         return resultSet.getObject(columnIndex);
     }
 }
