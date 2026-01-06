@@ -38,7 +38,7 @@ public interface GlobalRuleDefinitionExecutor<T extends GlobalRuleDefinitionStat
      *
      * @param sqlStatement SQL statement
      */
-    default void checkBeforeUpdate(T sqlStatement) {
+    default void checkBeforeUpdate(final T sqlStatement) {
     }
     
     /**
