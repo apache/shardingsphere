@@ -61,4 +61,18 @@
             </window-item>
         </window>
     </select>
+
+    <select sql-case-id="select_window_partition_order_doris">
+        <projections start-index="7" stop-index="51">
+            <expression-projection text="ROW_NUMBER() OVER (PARTITION BY k ORDER BY v)" start-index="7" stop-index="51">
+                <expr>
+                    <function function-name="ROW_NUMBER" start-index="7" stop-index="51" text="ROW_NUMBER() OVER (PARTITION BY k ORDER BY v)">
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+        <from>
+            <simple-table name="t_order" start-index="58" stop-index="64" />
+        </from>
+    </select>
 </sql-parser-test-cases>

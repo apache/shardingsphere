@@ -18,4 +18,5 @@
 
 <sql-cases>
     <sql-case id="select_window" value="SELECT user_id, ROW_NUMBER() OVER w AS 'row_number', RANK() OVER w AS 'rank', DENSE_RANK() OVER w AS 'dense_rank' FROM t_order WHERE order_id = ? WINDOW w AS (ORDER BY user_id)" db-types="MySQL,Doris" />
+    <sql-case id="select_window_partition_order_doris" value="SELECT ROW_NUMBER() OVER (PARTITION BY k ORDER BY v) FROM t_order" db-types="Doris" />
 </sql-cases>
