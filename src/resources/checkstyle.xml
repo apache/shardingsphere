@@ -164,10 +164,6 @@
         </module>
         <module name="JavadocMissingLeadingAsterisk" />
         <module name="JavadocMissingWhitespaceAfterAsterisk" />
-        <module name="JavadocParagraph">
-            <property name="violateExecutionOnNonTightHtml" value="true" />
-            <property name="allowNewlineParagraph" value="false" />
-        </module>
         <module name="JavadocStyle" />
         <module name="JavadocTagContinuationIndentation">
             <property name="violateExecutionOnNonTightHtml" value="true" />

@@ -33,7 +33,7 @@ public interface LoadBalanceAlgorithm extends ShardingSphereAlgorithm {
      * @param databaseName database name
      * @param configuredTargetNames configured target names
      */
-    default void check(String databaseName, Collection<String> configuredTargetNames) {
+    default void check(final String databaseName, final Collection<String> configuredTargetNames) {
     }
     
     /**

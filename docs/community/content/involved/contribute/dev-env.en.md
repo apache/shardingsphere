@@ -81,4 +81,4 @@ These plugins might be useful for you:
 ### CheckStyle Settings
 
 1. Add `Configuration File` : use `src/resources/checkstyle.xml`
-2. Select `Checkstyle version` : use `9.3`
+2. Select `Checkstyle version` : use `12.3.0`

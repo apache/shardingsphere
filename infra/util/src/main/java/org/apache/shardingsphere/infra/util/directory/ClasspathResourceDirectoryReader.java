@@ -86,11 +86,9 @@ public final class ClasspathResourceDirectoryReader {
     
     /**
      * Return a lazily populated Stream that contains the names of resources in the provided directory. The Stream is recursive, meaning it includes resources from all subdirectories as well.
-     * <p>The name of a resource directory is a /-separated path name</p>
-     * <p>When the {@code directory} parameter is a file, the method can still work.</p>
      *
      * @param directory directory
-     * @return resource iterator.
+     * @return resource iterator
      * @apiNote This method must be used within a try-with-resources statement or similar
      *         control structure to ensure that the stream's open resources are closed
      *         promptly after the stream's operations have completed.
@@ -101,12 +99,10 @@ public final class ClasspathResourceDirectoryReader {
     
     /**
      * Return a lazily populated Stream that contains the names of resources in the provided directory. The Stream is recursive, meaning it includes resources from all subdirectories as well.
-     * <p>The name of a resource directory is a /-separated path name</p>
-     * <p>When the {@code directory} parameter is a file, the method can still work.</p>
      *
      * @param classLoader class loader
      * @param directory directory
-     * @return resource iterator.
+     * @return resource iterator
      * @apiNote This method must be used within a try-with-resources statement or similar
      *         control structure to ensure that the stream's open resources are closed
      *         promptly after the stream's operations have completed.
