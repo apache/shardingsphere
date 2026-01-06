@@ -98,7 +98,7 @@
     <sql-case id="show_extended_full_tables" value="SHOW EXTENDED FULL TABLES" db-types="MySQL" />
     <sql-case id="show_tables_from_schema" value="SHOW TABLES FROM `sharding_db`" db-types="MySQL" />
     <sql-case id="show_tables_in_schema" value="SHOW TABLES IN `sharding_db`" db-types="MySQL" />
-    <sql-case id="show_tables_with_like_pattern" value="SHOW TABLES FROM `sharding_db` LIKE 't_order_%'" db-types="MySQL" />
+    <sql-case id="show_tables_with_like_pattern" value="SHOW TABLES FROM `sharding_db` LIKE 't_order_%'" db-types="MySQL,Doris" />
     <sql-case id="show_tables_with_where_expr" value="SHOW EXTENDED FULL TABLES FROM `sharding_db` WHERE `table_type` = ?" db-types="MySQL" />
     <sql-case id="show_tables_with_where_expr_no_parameter" value="SHOW EXTENDED FULL TABLES FROM `sharding_db` WHERE `table_type` = 'BASE TABLE'" db-types="MySQL" />
     <sql-case id="show_character_set" value="SHOW CHARACTER SET" db-types="MySQL" />
@@ -114,7 +114,7 @@
     <sql-case id="show_session_variables" value="SHOW SESSION VARIABLES" db-types="MySQL" />
     <sql-case id="show_variables_with_like_pattern" value="SHOW SESSION VARIABLES LIKE '%size%'" db-types="MySQL" />
     <sql-case id="show_variables_with_where_expr" value="SHOW GLOBAL VARIABLES WHERE variable_name = ?" db-types="MySQL" />
-    <sql-case id="show_variables_with_where_expr_no_parameter" value="SHOW VARIABLES WHERE variable_name = 'max_join_size'" db-types="MySQL" />
+    <sql-case id="show_variables_with_where_expr_no_parameter" value="SHOW VARIABLES WHERE variable_name = 'max_join_size'" db-types="MySQL,Doris" />
     <sql-case id="show_binlog_events_with_log_name" value="SHOW BINLOG EVENTS IN 'log_name'" db-types="MySQL" />
     <sql-case id="show_binlog_events_with_from_pos" value="SHOW BINLOG EVENTS FROM 1" db-types="MySQL" />
     <sql-case id="show_binlog_events_with_limit" value="SHOW BINLOG EVENTS LIMIT 1,2" db-types="MySQL" />

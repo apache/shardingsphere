@@ -3953,6 +3953,49 @@
         </projections>
     </select>
 
+    <select sql-case-id="select_json_extract_cast_abs_doris">
+        <from>
+            <simple-table name="t_order" start-index="82" stop-index="88" />
+        </from>
+        <projections start-index="7" stop-index="75">
+            <expression-projection text="JSON_EXTRACT(order_id, '$.a')" start-index="7" stop-index="35">
+                <expr>
+                    <function function-name="JSON_EXTRACT" text="JSON_EXTRACT(order_id, '$.a')" start-index="7" stop-index="35">
+                        <parameter>
+                            <column name="order_id" start-index="20" stop-index="27" />
+                        </parameter>
+                        <parameter>
+                            <literal-expression value="$.a" start-index="30" stop-index="34" />
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+            <expression-projection text="CAST(order_id AS DATETIME(3))" start-index="38" stop-index="66">
+                <expr>
+                    <function function-name="CAST" text="CAST(order_id AS DATETIME(3))" start-index="38" stop-index="66">
+                        <parameter>
+                            <column name="order_id" start-index="43" stop-index="50" />
+                        </parameter>
+                        <parameter>
+                            <data-type value="DATETIME" start-index="55" stop-index="65">
+                                <data-type-length precision="3" start-index="63" stop-index="65" />
+                            </data-type>
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+            <expression-projection text="ABS(-1)" start-index="69" stop-index="75">
+                <expr>
+                    <function function-name="ABS" text="ABS(-1)" start-index="69" stop-index="75">
+                        <parameter>
+                            <literal-expression value="-1" start-index="73" stop-index="74" />
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
     <select sql-case-id="select_json_remove">
         <projections start-index="7" stop-index="44">
             <expression-projection start-index="7" stop-index="44" text="JSON_REMOVE('[&quot;a&quot;, &quot;b&quot;, &quot;d&quot;]', '$[0]')">

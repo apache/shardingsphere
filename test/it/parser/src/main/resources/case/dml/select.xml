@@ -143,6 +143,20 @@
             </expression-projection>
         </projections>
     </select>
+
+    <select sql-case-id="select_collate_clause_doris">
+        <projections start-index="7" stop-index="29">
+            <expression-projection text="'a' COLLATE utf8mb4_bin" start-index="7" stop-index="29">
+                <expr>
+                    <collate-expression start-index="7" stop-index="29">
+                        <collate-name>
+                            <literal-expression start-index="11" stop-index="29" value="utf8mb4_bin" />
+                        </collate-name>
+                    </collate-expression>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
     
     <select sql-case-id="select_with_default_str">
         <projections start-index="7" stop-index="7">
