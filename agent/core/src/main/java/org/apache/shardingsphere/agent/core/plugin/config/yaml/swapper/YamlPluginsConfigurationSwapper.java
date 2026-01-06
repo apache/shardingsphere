@@ -62,7 +62,8 @@ public final class YamlPluginsConfigurationSwapper {
     }
     
     private static PluginConfiguration swap(final YamlPluginConfiguration yamlConfig) {
-        return null == yamlConfig ? new PluginConfiguration(null, 0, null, new Properties())
+        return null == yamlConfig
+                ? new PluginConfiguration(null, 0, null, new Properties())
                 : new PluginConfiguration(yamlConfig.getHost(), yamlConfig.getPort(), yamlConfig.getPassword(), yamlConfig.getProps());
     }
 }
