@@ -75,4 +75,21 @@
             <simple-table name="t_order" start-index="58" stop-index="64" />
         </from>
     </select>
+
+    <select sql-case-id="select_window_lead_lag_doris">
+        <projections start-index="7" stop-index="46">
+            <expression-projection text="LEAD(v) OVER (PARTITION BY k ORDER BY v)" start-index="7" stop-index="46">
+                <expr>
+                    <function function-name="LEAD" text="LEAD(v) OVER (PARTITION BY k ORDER BY v)" start-index="7" stop-index="46">
+                        <parameter>
+                            <column name="v" start-index="12" stop-index="12" />
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+        <from>
+            <simple-table name="t_order" start-index="53" stop-index="59" />
+        </from>
+    </select>
 </sql-parser-test-cases>
