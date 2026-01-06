@@ -11802,4 +11802,34 @@
             <simple-table alias="T_ORDER" name="T_ORDER" start-index="20" stop-index="68"/>
         </from>
     </select>
+
+    <select sql-case-id="select_date_literal_doris">
+        <projections start-index="7" stop-index="23">
+            <expression-projection text="DATE'2020-01-01'" start-index="7" stop-index="23">
+                <expr>
+                    <common-expression text="DATE'2020-01-01'" start-index="7" stop-index="23" />
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="select_hex_literal_doris">
+        <projections start-index="7" stop-index="11">
+            <expression-projection text="0x1AF" start-index="7" stop-index="11">
+                <expr>
+                    <common-expression text="0x1AF" start-index="7" stop-index="11" />
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="select_bit_literal_doris">
+        <projections start-index="7" stop-index="13">
+            <expression-projection text="b'1010'" start-index="7" stop-index="13">
+                <expr>
+                    <common-expression text="b'1010'" start-index="7" stop-index="13" />
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
 </sql-parser-test-cases>
