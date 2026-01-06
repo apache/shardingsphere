@@ -17,12 +17,12 @@
 
 package org.apache.shardingsphere.infra.executor.sql.process.lock;
 
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import java.time.Duration;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import static org.junit.jupiter.api.Assertions.assertTimeoutPreemptively;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class ProcessOperationLockTest {
@@ -39,7 +39,7 @@ class ProcessOperationLockTest {
         Thread awaitingThread = new Thread(() -> result.set(lock.awaitDefaultTime(() -> false)));
         awaitingThread.start();
         lock.doNotify();
-        assertTimeoutPreemptively(Duration.ofSeconds(1), () -> awaitingThread.join());
+        Assertions.assertTimeoutPreemptively(Duration.ofSeconds(1), () -> awaitingThread.join());
         assertTrue(result.get());
     }
 }
