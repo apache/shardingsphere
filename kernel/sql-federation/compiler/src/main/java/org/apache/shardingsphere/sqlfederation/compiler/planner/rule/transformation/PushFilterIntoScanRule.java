@@ -21,6 +21,7 @@ import com.cedarsoftware.util.CaseInsensitiveSet;
 import org.apache.calcite.plan.RelOptRuleCall;
 import org.apache.calcite.plan.RelRule;
 import org.apache.calcite.rel.logical.LogicalFilter;
+import org.apache.calcite.rel.logical.LogicalValues;
 import org.apache.calcite.rel.rules.TransformationRule;
 import org.apache.calcite.rex.RexCall;
 import org.apache.calcite.rex.RexNode;
@@ -62,18 +63,22 @@ public final class PushFilterIntoScanRule extends RelRule<PushFilterIntoScanRule
     }
     
     private boolean isConditionContainsRexSubQuery(final RexNode condition) {
-        if (condition instanceof RexSubQuery) {
+        if (isNonConstantRexSubQuery(condition)) {
             return true;
         }
         if (!(condition instanceof RexCall)) {
             return false;
         }
         for (RexNode each : ((RexCall) condition).getOperands()) {
-            if (each instanceof RexSubQuery) {
+            if (isNonConstantRexSubQuery(each)) {
                 return true;
             }
         }
         return false;
+    }
+    
+    private boolean isNonConstantRexSubQuery(final RexNode condition) {
+        return condition instanceof RexSubQuery && !(((RexSubQuery) condition).rel instanceof LogicalValues);
     }
     
     private boolean containsCorrelate(final Collection<RexNode> operands) {
