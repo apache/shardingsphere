@@ -233,6 +233,7 @@
     <sql-case id="select_date_literal_doris" value="SELECT DATE '2020-01-01'" db-types="Doris" />
     <sql-case id="select_hex_literal_doris" value="SELECT 0x1AF" db-types="Doris" />
     <sql-case id="select_bit_literal_doris" value="SELECT b'1010'" db-types="Doris" />
+    <sql-case id="select_collate_clause_doris" value="SELECT 'a' COLLATE utf8mb4_bin" db-types="Doris" />
     <sql-case id="select_with_percentile_functions" value="SELECT department_id, PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY salary DESC) 'Median cont', PERCENTILE_DISC(0.5) WITHIN GROUP (ORDER BY salary DESC) 'Median disc' FROM employees GROUP BY department_id" db-types="Oracle" />
     <sql-case id="select_with_keep_clause" value="SELECT salary,MIN(salary) KEEP (DENSE_RANK FIRST ORDER BY commission_pct) OVER (PARTITION BY department_id) 'Worst', MAX(salary) KEEP (DENSE_RANK LAST ORDER BY commission_pct) OVER (PARTITION BY department_id) 'Best' FROM employees ORDER BY department_id" db-types="Oracle" />
     <sql-case id="select_with_corr_function" value="SELECT employee_id, CORR(SYSDATE - hire_date, salary) FROM employees WHERE department_id in (50, 80) ORDER BY employee_id" db-types="Oracle" />

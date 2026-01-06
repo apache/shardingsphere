@@ -424,4 +424,25 @@
             <property key="s3.secret_key" value="yyy" />
         </outfile>
     </select>
+
+    <select sql-case-id="select_into_outfile_doris_with_fields">
+        <from start-index="14" stop-index="20">
+            <simple-table name="t_order" start-index="14" stop-index="20" />
+        </from>
+        <projections distinct-row="false" start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" />
+        </projections>
+        <outfile start-index="22" stop-index="110" file-path="hdfs://path/to/result_" />
+    </select>
+
+    <select sql-case-id="select_into_outfile_doris_with_fields_and_escaped">
+        <from start-index="28" stop-index="34">
+            <simple-table name="t_order" start-index="28" stop-index="34" />
+        </from>
+        <projections distinct-row="false" start-index="7" stop-index="21">
+            <column-projection name="user_id" start-index="7" stop-index="13" />
+            <column-projection name="status" start-index="16" stop-index="21" />
+        </projections>
+        <outfile start-index="36" stop-index="140" file-path="hdfs://path/to/result_" />
+    </select>
 </sql-parser-test-cases>
