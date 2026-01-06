@@ -29,12 +29,15 @@ import org.junit.jupiter.api.Test;
 import org.mockito.MockedStatic;
 
 import java.lang.reflect.Field;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
+import java.util.List;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.hasSize;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mockStatic;
@@ -81,6 +84,56 @@ class YamlRuleConfigurationReflectionEngineTest {
         assertThat(YamlRuleConfigurationReflectionEngine.getRuleNodeItemName(field), is("default_algorithm_name"));
     }
     
+    @Test
+    void assertGetRuleNodeItemNameWithSingleCharacter() throws NoSuchFieldException {
+        Field field = FixtureYamlRuleConfiguration.class.getDeclaredField("x");
+        assertThat(YamlRuleConfigurationReflectionEngine.getRuleNodeItemName(field), is("x"));
+    }
+    
+    @Test
+    void assertGetRuleNodeItemNameWithMultipleWords() throws NoSuchFieldException {
+        Field field = FixtureYamlRuleConfiguration.class.getDeclaredField("dataSourceName");
+        assertThat(YamlRuleConfigurationReflectionEngine.getRuleNodeItemName(field), is("data_source_name"));
+    }
+    
+    @Test
+    void assertGetRuleNodeItemNameWithAbbreviations() throws NoSuchFieldException {
+        Field field = FixtureYamlRuleConfiguration.class.getDeclaredField("urlDataSource");
+        assertThat(YamlRuleConfigurationReflectionEngine.getRuleNodeItemName(field), is("url_data_source"));
+    }
+    
+    @Test
+    void assertFindClassWithMultipleSwappers() {
+        try (MockedStatic<ShardingSphereServiceLoader> ignored = mockStatic(ShardingSphereServiceLoader.class)) {
+            List<YamlRuleConfigurationSwapper> swappers = new ArrayList<>();
+            swappers.add(new FixtureYamlRuleConfigurationSwapper());
+            swappers.add(new AnotherYamlRuleConfigurationSwapper());
+            swappers.add(new NoAnnotationYamlRuleConfigurationSwapper());
+            when(ShardingSphereServiceLoader.getServiceInstances(YamlRuleConfigurationSwapper.class)).thenReturn(swappers);
+            assertThat(YamlRuleConfigurationReflectionEngine.findClass("fixture_rule"), is(FixtureYamlRuleConfiguration.class));
+        }
+    }
+    
+    @Test
+    void assertGetFieldsWithNoAnnotatedFields() {
+        Collection<Field> actual = YamlRuleConfigurationReflectionEngine.getFields(EmptyYamlRuleConfiguration.class);
+        assertThat(actual, empty());
+    }
+    
+    @Test
+    void assertGetFieldsWithAllTypeValues() {
+        Collection<Field> actual = YamlRuleConfigurationReflectionEngine.getFields(CompleteYamlRuleConfiguration.class);
+        assertThat(actual, hasSize(7));
+        Iterator<Field> iterator = actual.iterator();
+        assertThat(iterator.next().getName(), is("algorithm"));
+        assertThat(iterator.next().getName(), is("defaultAlgorithm"));
+        assertThat(iterator.next().getName(), is("strategy"));
+        assertThat(iterator.next().getName(), is("defaultStrategy"));
+        assertThat(iterator.next().getName(), is("dataSource"));
+        assertThat(iterator.next().getName(), is("table"));
+        assertThat(iterator.next().getName(), is("other"));
+    }
+    
     @RuleNodeTupleEntity("fixture_rule")
     @Getter
     @Setter
@@ -96,6 +149,12 @@ class YamlRuleConfigurationReflectionEngineTest {
         
         private String defaultAlgorithmName;
         
+        private String x;
+        
+        private String dataSourceName;
+        
+        private String urlDataSource;
+        
         @Override
         public Class<? extends RuleConfiguration> getRuleConfigurationType() {
             return FixtureRuleConfiguration.class;
@@ -103,6 +162,48 @@ class YamlRuleConfigurationReflectionEngineTest {
     }
     
     private static final class FixtureRuleConfiguration implements RuleConfiguration {
+    }
+    
+    private static final class EmptyYamlRuleConfiguration implements YamlRuleConfiguration {
+        
+        private String fieldWithoutAnnotation;
+        
+        @Override
+        public Class<? extends RuleConfiguration> getRuleConfigurationType() {
+            return FixtureRuleConfiguration.class;
+        }
+    }
+    
+    @RuleNodeTupleEntity("complete_rule")
+    @Getter
+    @Setter
+    private static final class CompleteYamlRuleConfiguration implements YamlRuleConfiguration {
+        
+        @RuleNodeTupleField(type = RuleNodeTupleField.Type.OTHER)
+        private String other;
+        
+        @RuleNodeTupleField(type = RuleNodeTupleField.Type.ALGORITHM)
+        private String algorithm;
+        
+        @RuleNodeTupleField(type = RuleNodeTupleField.Type.DEFAULT_ALGORITHM)
+        private String defaultAlgorithm;
+        
+        @RuleNodeTupleField(type = RuleNodeTupleField.Type.STRATEGY)
+        private String strategy;
+        
+        @RuleNodeTupleField(type = RuleNodeTupleField.Type.DEFAULT_STRATEGY)
+        private String defaultStrategy;
+        
+        @RuleNodeTupleField(type = RuleNodeTupleField.Type.DATA_SOURCE)
+        private String dataSource;
+        
+        @RuleNodeTupleField(type = RuleNodeTupleField.Type.TABLE)
+        private String table;
+        
+        @Override
+        public Class<? extends RuleConfiguration> getRuleConfigurationType() {
+            return FixtureRuleConfiguration.class;
+        }
     }
     
     private static final class FixtureYamlRuleConfigurationSwapper implements YamlRuleConfigurationSwapper<FixtureYamlRuleConfiguration, FixtureRuleConfiguration> {
