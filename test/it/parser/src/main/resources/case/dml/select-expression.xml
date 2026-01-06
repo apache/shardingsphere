@@ -2647,7 +2647,7 @@
             </expr>
         </where>
     </select>
-
+    
     <select sql-case-id="select_age_for_postgres">
         <projections start-index="7" stop-index="7">
             <shorthand-projection start-index="7" stop-index="7" />

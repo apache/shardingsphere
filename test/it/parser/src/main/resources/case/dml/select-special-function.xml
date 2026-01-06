@@ -166,6 +166,23 @@
             <simple-table name="customer" start-index="126" stop-index="133" />
         </from>
     </select>
+
+    <select sql-case-id="select_timestampdiff_doris">
+        <projections start-index="7" stop-index="50">
+            <expression-projection text="TIMESTAMPDIFF(DAY,'2020-01-01','2020-01-03')" start-index="7" stop-index="50">
+                <expr>
+                    <function function-name="TIMESTAMPDIFF" start-index="7" stop-index="50" text="TIMESTAMPDIFF(DAY,'2020-01-01','2020-01-03')">
+                        <parameter>
+                            <literal-expression value="2020-01-01" start-index="25" stop-index="36" />
+                        </parameter>
+                        <parameter>
+                            <literal-expression value="2020-01-03" start-index="38" stop-index="49" />
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
     <select sql-case-id="select_convert_function">
         <projections start-index="7" stop-index="33">
             <expression-projection text="CONVERT('2020-10-01', DATE)" start-index="7" stop-index="33">

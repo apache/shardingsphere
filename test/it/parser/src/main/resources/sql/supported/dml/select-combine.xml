@@ -18,8 +18,8 @@
 
 <sql-cases>
     <sql-case id="select_with_except" value="(SELECT * FROM t1) EXCEPT (SELECT * FROM t2)" db-types="MySQL,Doris" />
-    <sql-case id="select_union" value="SELECT * FROM table1 UNION SELECT * FROM table2" db-types="MySQL,PostgreSQL,openGauss" />
-    <sql-case id="select_union_all" value="SELECT * FROM table1 UNION ALL SELECT * FROM table2" db-types="MySQL,PostgreSQL,openGauss" />
+    <sql-case id="select_union" value="SELECT * FROM table1 UNION SELECT * FROM table2" db-types="MySQL,PostgreSQL,openGauss,Doris" />
+    <sql-case id="select_union_all" value="SELECT * FROM table1 UNION ALL SELECT * FROM table2" db-types="MySQL,PostgreSQL,openGauss,Doris" />
     <sql-case id="select_union_all_order_by" value="SELECT * FROM table1 UNION ALL SELECT * FROM table2 ORDER BY id" db-types="MySQL,PostgreSQL,openGauss" />
     <sql-case id="select_union_all_order_by_limit" value="SELECT * FROM table1 UNION ALL SELECT * FROM table2 ORDER BY id LIMIT 1, 1" db-types="MySQL,openGauss" />
     <sql-case id="select_intersect" value="SELECT * FROM table1 INTERSECT SELECT * FROM table2 INTERSECT SELECT * FROM table3" db-types="MySQL,PostgreSQL,openGauss" />
@@ -31,9 +31,9 @@
     <sql-case id="select_minus" value="SELECT * FROM table1 MINUS SELECT * FROM table2" db-types="openGauss" />
     <sql-case id="select_minus_order_by" value="SELECT * FROM table1 MINUS SELECT * FROM table2 ORDER BY id" db-types="openGauss" />
     <sql-case id="select_minus_order_by_limit" value="SELECT * FROM table1 MINUS SELECT * FROM table2 ORDER BY id LIMIT 1, 1" db-types="openGauss" />
-    <sql-case id="select_union_intersect" value="SELECT * FROM table1 UNION SELECT * FROM table2 INTERSECT SELECT * FROM table3" db-types="PostgreSQL,openGauss" />
-    <sql-case id="select_union_except" value="SELECT * FROM table1 UNION SELECT * FROM table2 EXCEPT SELECT * FROM table3" db-types="PostgreSQL,openGauss" />
-    <sql-case id="select_union_intersect_except" value="SELECT * FROM table1 UNION SELECT * FROM table2 INTERSECT SELECT * FROM table3 EXCEPT SELECT * FROM table4" db-types="PostgreSQL,openGauss" />
+    <sql-case id="select_union_intersect" value="SELECT * FROM table1 UNION SELECT * FROM table2 INTERSECT SELECT * FROM table3" db-types="PostgreSQL,openGauss,Doris" />
+    <sql-case id="select_union_except" value="SELECT * FROM table1 UNION SELECT * FROM table2 EXCEPT SELECT * FROM table3" db-types="PostgreSQL,openGauss,Doris" />
+    <sql-case id="select_union_intersect_except" value="SELECT * FROM table1 UNION SELECT * FROM table2 INTERSECT SELECT * FROM table3 EXCEPT SELECT * FROM table4" db-types="PostgreSQL,openGauss,Doris" />
     <sql-case id="select_except_union" value="SELECT * FROM table1 EXCEPT SELECT * FROM table2 UNION SELECT * FROM table3" db-types="PostgreSQL,openGauss" />
     <sql-case id="select_except_intersect" value="SELECT * FROM table1 EXCEPT SELECT * FROM table2 INTERSECT SELECT * FROM table3" db-types="PostgreSQL,openGauss" />
     <sql-case id="select_except_intersect_union" value="SELECT * FROM table1 EXCEPT SELECT * FROM table2 INTERSECT SELECT * FROM table3 UNION SELECT * FROM table4" db-types="MySQL,PostgreSQL,openGauss" />
