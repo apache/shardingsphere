@@ -40,7 +40,7 @@
     <sql-case id="select_with_trim_expr_from_expr_and_both" value="SELECT TRIM(BOTH `remove_name` FROM `name`) FROM `t_order`" db-types="MySQL" />
     <sql-case id="select_weight_string" value="SELECT WEIGHT_STRING('bar')" db-types="MySQL" />
     <sql-case id="select_values" value="SELECT VALUES(order_id) FROM t_order" db-types="MySQL,Presto" />
-    <sql-case id="select_current_user_brackets" value="SELECT CURRENT_USER()" db-types="MySQL" />
+    <sql-case id="select_current_user_brackets" value="SELECT CURRENT_USER()" db-types="MySQL,Doris" />
     <sql-case id="select_extract_function" value="SELECT EXTRACT(YEAR FROM TIMESTAMP '2001-02-16 20:38:40')" db-types="PostgreSQL,openGauss" />
     <sql-case id="select_extract_function_week" value="SELECT EXTRACT(WEEK FROM TIMESTAMP '2001-02-16 20:38:40')" db-types="PostgreSQL,openGauss" />
     <sql-case id="select_extract_function_quarter" value="SELECT EXTRACT(QUARTER FROM TIMESTAMP '2001-02-16 20:38:40')" db-types="PostgreSQL,openGauss" />
@@ -102,7 +102,7 @@
     <sql-case id="select_with_week_function" value="SELECT WEEK('2018-02-20',1);" db-types="MySQL"/>
     <sql-case id="select_with_weekday_function" value="SELECT WEEKDAY('2017-02-03 22:23:00');" db-types="MySQL"/>
     <sql-case id="select_with_weekofyear_function" value="SELECT WEEKOFYEAR('2019-02-20');" db-types="MySQL"/>
-    <sql-case id="select_with_xor_function" value="SELECT 1 XOR NULL;" db-types="MySQL"/>
+    <sql-case id="select_with_xor_function" value="SELECT 1 XOR NULL;" db-types="MySQL,Doris"/>
     <sql-case id="select_with_year_function" value="SELECT YEAR('1999-09-09');" db-types="MySQL"/>
     <sql-case id="select_with_yearweek_function" value="SELECT YEARWEEK('1988-08-08');" db-types="MySQL"/>
     <sql-case id="select_with_weight_string_function" value="SELECT HEX(WEIGHT_STRING('MySQL'));" db-types="MySQL"/>
