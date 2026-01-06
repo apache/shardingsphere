@@ -65,8 +65,8 @@
     <sql-case id="alter_table_with_space" value="    ALTER TABLE
         t_order" db-types="MySQL,Oracle" />
     <sql-case id="alter_table_with_back_quota" value="ALTER TABLE `t_order` FORCE" db-types="MySQL" />
-    <sql-case id="alter_table_add_column" value="ALTER TABLE t_order ADD column4 VARCHAR(10)" db-types="MySQL, PostgreSQL,openGauss" />
-    <sql-case id="alter_table_add_columns" value="ALTER TABLE t_order ADD column4 VARCHAR(10), ADD column5 VARCHAR(10), ADD column6 VARCHAR(10)" db-types="MySQL,PostgreSQL,openGauss" />
+    <sql-case id="alter_table_add_column" value="ALTER TABLE t_order ADD column4 VARCHAR(10)" db-types="MySQL, PostgreSQL,openGauss,Doris" />
+    <sql-case id="alter_table_add_columns" value="ALTER TABLE t_order ADD column4 VARCHAR(10), ADD column5 VARCHAR(10), ADD column6 VARCHAR(10)" db-types="MySQL,PostgreSQL,openGauss,Doris" />
     <sql-case id="alter_table_add_columns_integer_type_mysql" value="ALTER TABLE t_order ADD column4 INTEGER, ADD column5 TINYINT, ADD column6 MEDIUMINT" db-types="MySQL" />
     <sql-case id="alter_table_add_columns_integer_type_oracle" value="ALTER TABLE t_order ADD (column4 INTEGER, column5 INT, column6 SMALLINT)" db-types="Oracle" />
     <sql-case id="alter_table_add_columns_fixed_point_type" value="ALTER TABLE t_order ADD column4 decimal(10,2), ADD column5 NUMERIC" db-types="MySQL,PostgreSQL,openGauss" />
@@ -91,7 +91,7 @@
     <sql-case id="alter_table_modify_column_with_first_after" value="ALTER TABLE t_order MODIFY status VARCHAR(20) FIRST, MODIFY user_id INT AFTER status" db-types="MySQL" />
     <sql-case id="alter_table_drop_column" value="ALTER TABLE t_order DROP COLUMN user_id" db-types="PostgreSQL" />
     <sql-case id="alter_table_drop_columns" value="ALTER TABLE t_order DROP user_id, DROP column5" db-types="MySQL,PostgreSQL,openGauss" />
-    <sql-case id="alter_table_change_column" value="ALTER TABLE t_order CHANGE user_id column4 VARCHAR(10)" db-types="MySQL" />
+    <sql-case id="alter_table_change_column" value="ALTER TABLE t_order CHANGE user_id column4 VARCHAR(10)" db-types="MySQL,Doris" />
     <sql-case id="alter_table_add_primary_key" value="ALTER TABLE t_order ADD CONSTRAINT pk_user_id PRIMARY KEY (user_id)" />
     <sql-case id="alter_table_add_composite_primary_key" value="ALTER TABLE t_order ADD status int,ADD CONSTRAINT pk_order_id_user_id_status PRIMARY KEY (order_id, user_id, status)" db-types="MySQL,PostgreSQL,openGauss" />
 <!--    TODO support PostgreSQL,openGauss-->
@@ -109,7 +109,7 @@
     <sql-case id="alter_table_drop_index" value="ALTER TABLE t_order DROP INDEX order_index" db-types="MySQL" />
     <sql-case id="alter_table_drop_indexes" value="ALTER TABLE t_order DROP INDEX idx_column1, DROP INDEX idx_column2, DROP INDEX idx_column3" db-types="MySQL" />
     <sql-case id="alter_table_rename_index" value="ALTER TABLE t_order RENAME INDEX idx_column1_bak TO idx_column1" db-types="MySQL" />
-    <sql-case id="alter_table_composite_operate_columns" value="ALTER TABLE t_order ADD column4 VARCHAR(10), ADD column5 VARCHAR(10), ADD column6 VARCHAR(10),MODIFY user_id bigint, drop column status" db-types="MySQL" />
+    <sql-case id="alter_table_composite_operate_columns" value="ALTER TABLE t_order ADD column4 VARCHAR(10), ADD column5 VARCHAR(10), ADD column6 VARCHAR(10),MODIFY user_id bigint, drop column status" db-types="MySQL,Doris" />
     <sql-case id="alter_table_with_quota" value="ALTER TABLE &quot;t_order&quot; PARALLEL" db-types="Oracle" />
 <!--    TODO support PostgreSQL,openGauss-->
     <sql-case id="alter_table_add_check" value="ALTER TABLE t_order ADD CONSTRAINT chk_order_id CHECK (order_id > 0)" db-types="Oracle,SQLServer" />
@@ -172,8 +172,8 @@
     <sql-case id="alter_table_modify_range_partition" value="ALTER TABLE t_order MODIFY PARTITION hash_partition ADD SUBPARTITION P1 VALUES('COMPLETE');" db-types="Oracle" />
     <sql-case id="alter_table_move_partition" value="ALTER TABLE t_order MOVE PARTITION p0 TABLESPACE space0" db-types="Oracle" />
     <sql-case id="alter_table_coalesce_partition" value="ALTER TABLE t_order COALESCE PARTITION" db-types="Oracle" />
-    <sql-case id="alter_table_convert" value="ALTER TABLE t1 CONVERT TO CHARACTER SET DEFAULT" db-types="MySQL" />
-    <sql-case id="alter_table_convert_collate" value="ALTER TABLE t1 CONVERT TO CHARACTER SET DEFAULT COLLATE cp1251_bin;" db-types="MySQL" />
+    <sql-case id="alter_table_convert" value="ALTER TABLE t1 CONVERT TO CHARACTER SET DEFAULT" db-types="MySQL,Doris" />
+    <sql-case id="alter_table_convert_collate" value="ALTER TABLE t1 CONVERT TO CHARACTER SET DEFAULT COLLATE cp1251_bin;" db-types="MySQL,Doris" />
     <sql-case id="alter_table_add_column_with_visible" value="ALTER TABLE t_order ADD COLUMN status VARCHAR(10) VISIBLE" db-types="MySQL" />
     <sql-case id="alter_table_add_column_with_invisible" value="ALTER TABLE t_order ADD COLUMN status VARCHAR(10) INVISIBLE" db-types="MySQL" />
     <sql-case id="alter_table_modify_column_with_visible" value="ALTER TABLE t_order MODIFY COLUMN status VARCHAR(10) VISIBLE" db-types="MySQL" />
