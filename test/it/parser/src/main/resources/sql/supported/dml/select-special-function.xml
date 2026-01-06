@@ -219,6 +219,7 @@
     <sql-case id="select_mod" value="SELECT MOD(234, 10)" db-types="MySQL,Doris" />
     <sql-case id="select_month" value="SELECT MONTH('2008-02-03')" db-types="MySQL,Doris" />
     <sql-case id="select_monthname" value="SELECT MONTHNAME('2008-02-03')" db-types="MySQL,Doris" />
+    <sql-case id="select_timestampdiff_doris" value="SELECT TIMESTAMPDIFF(DAY,'2020-01-01','2020-01-03')" db-types="Doris" />
     <sql-case id="select_multilinestring" value="SELECT MultiLineString(ST_GeomFromText('LineString(1 1, 2 2)'),ST_GeomFromText('LineString(1 1, 2 2)'))" db-types="MySQL" />
     <sql-case id="select_multipoint" value="SELECT MultiPoint(point(1,1),point(1,1))" db-types="MySQL" />
     <sql-case id="select_multipolygon" value="SELECT MultiPolygon(ST_GeomFromText('Polygon((0 0, 1 0, 1 1, 0 1, 0 0))'),ST_GeomFromText('Polygon((0 0, 1 0, 1 1, 0 1, 0 0))'))" db-types="MySQL" />
