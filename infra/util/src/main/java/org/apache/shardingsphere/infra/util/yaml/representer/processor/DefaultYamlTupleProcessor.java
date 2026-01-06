@@ -56,7 +56,7 @@ public final class DefaultYamlTupleProcessor {
     }
     
     private boolean isEmptyMappingNode(final Node valueNode) {
-        return Tag.MAP.equals(valueNode.getTag()) && (((MappingNode) valueNode).getValue().isEmpty()
-                || ((MappingNode) valueNode).getValue().stream().anyMatch(each -> Tag.NULL.equals(each.getValueNode().getTag())));
+        return Tag.MAP.equals(valueNode.getTag()) && (((MappingNode) valueNode).getValue().isEmpty() || ((MappingNode) valueNode).getValue()
+                .stream().anyMatch(each -> Tag.NULL.equals(each.getValueNode().getTag())));
     }
 }

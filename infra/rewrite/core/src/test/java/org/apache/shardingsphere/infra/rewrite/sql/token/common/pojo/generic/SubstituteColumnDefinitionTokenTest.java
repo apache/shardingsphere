@@ -17,39 +17,27 @@
 
 package org.apache.shardingsphere.infra.rewrite.sql.token.common.pojo.generic;
 
-import com.google.common.base.Strings;
-import lombok.Getter;
 import org.apache.shardingsphere.infra.rewrite.sql.token.common.pojo.SQLToken;
+import org.junit.jupiter.api.Test;
 
-/**
- * Column definition token.
- */
-@Getter
-public final class ColumnDefinitionToken extends SQLToken {
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
+
+class SubstituteColumnDefinitionTokenTest {
     
-    private final String columnName;
-    
-    private final String dataType;
-    
-    public ColumnDefinitionToken(final String columnName, final String dataType, final int startIndex) {
-        super(startIndex);
-        this.columnName = columnName;
-        this.dataType = dataType;
+    @Test
+    void assertToStringForRemoveTrailingDelimiterForLastColumn() {
+        Collection<SQLToken> tokens = Arrays.asList(new ColumnDefinitionToken("id", "INT", 0), new ColumnDefinitionToken("name", "VARCHAR", 4));
+        assertThat(new SubstituteColumnDefinitionToken(0, 1, true, tokens).toString(), is("id INT, name VARCHAR"));
     }
     
-    @Override
-    public int getStopIndex() {
-        return getStartIndex();
-    }
-    
-    @Override
-    public String toString() {
-        if (Strings.isNullOrEmpty(dataType)) {
-            return columnName;
-        }
-        if (Strings.isNullOrEmpty(columnName)) {
-            return dataType;
-        }
-        return columnName + " " + dataType;
+    @Test
+    void assertToStringWhenNotLastColumn() {
+        Collection<SQLToken> tokens = Collections.singleton(new ColumnDefinitionToken("id", "INT", 0));
+        assertThat(new SubstituteColumnDefinitionToken(0, 0, false, tokens).toString(), is("id INT, "));
     }
 }

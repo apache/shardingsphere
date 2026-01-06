@@ -17,39 +17,30 @@
 
 package org.apache.shardingsphere.infra.rewrite.sql.token.common.pojo.generic;
 
-import com.google.common.base.Strings;
-import lombok.Getter;
-import org.apache.shardingsphere.infra.rewrite.sql.token.common.pojo.SQLToken;
+import org.junit.jupiter.api.Test;
 
-/**
- * Column definition token.
- */
-@Getter
-public final class ColumnDefinitionToken extends SQLToken {
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
+
+class ColumnDefinitionTokenTest {
     
-    private final String columnName;
-    
-    private final String dataType;
-    
-    public ColumnDefinitionToken(final String columnName, final String dataType, final int startIndex) {
-        super(startIndex);
-        this.columnName = columnName;
-        this.dataType = dataType;
+    @Test
+    void assertGetStopIndex() {
+        assertThat(new ColumnDefinitionToken("id", "VARCHAR", 7).getStopIndex(), is(7));
     }
     
-    @Override
-    public int getStopIndex() {
-        return getStartIndex();
+    @Test
+    void assertToStringWhenDataTypeIsEmpty() {
+        assertThat(new ColumnDefinitionToken("id", "", 5).toString(), is("id"));
     }
     
-    @Override
-    public String toString() {
-        if (Strings.isNullOrEmpty(dataType)) {
-            return columnName;
-        }
-        if (Strings.isNullOrEmpty(columnName)) {
-            return dataType;
-        }
-        return columnName + " " + dataType;
+    @Test
+    void assertToStringWhenColumnNameIsEmpty() {
+        assertThat(new ColumnDefinitionToken("", "VARCHAR", 3).toString(), is("VARCHAR"));
+    }
+    
+    @Test
+    void assertToStringWithFullDefinition() {
+        assertThat(new ColumnDefinitionToken("id", "VARCHAR", 2).toString(), is("id VARCHAR"));
     }
 }
