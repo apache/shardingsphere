@@ -23,6 +23,7 @@ import org.apache.shardingsphere.mode.manager.cluster.dispatch.listener.type.Glo
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 import org.junit.jupiter.api.Test;
 
+import java.util.Arrays;
 import java.util.Collections;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -31,19 +32,44 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 class DataChangedEventListenerRegistryTest {
-    
+
     @Test
-    void assertRegister() {
+    void assertRegisterWithSingleDatabase() {
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         ClusterPersistRepository repository = mock(ClusterPersistRepository.class);
         when(contextManager.getPersistServiceFacade().getRepository()).thenReturn(repository);
         DataChangedEventListenerRegistry registry = new DataChangedEventListenerRegistry(contextManager, Collections.singleton("foo_db"));
         registry.register();
         verify(repository).watch(eq("/metadata/foo_db"), any(DatabaseMetaDataChangedListener.class));
+        verify(repository, atLeastOnce()).watch(anyString(), any(GlobalMetaDataChangedListener.class));
+    }
+
+    @Test
+    void assertRegisterWithMultipleDatabases() {
+        ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
+        ClusterPersistRepository repository = mock(ClusterPersistRepository.class);
+        when(contextManager.getPersistServiceFacade().getRepository()).thenReturn(repository);
+        DataChangedEventListenerRegistry registry = new DataChangedEventListenerRegistry(contextManager, Arrays.asList("db1", "db2", "db3"));
+        registry.register();
+        verify(repository).watch(eq("/metadata/db1"), any(DatabaseMetaDataChangedListener.class));
+        verify(repository).watch(eq("/metadata/db2"), any(DatabaseMetaDataChangedListener.class));
+        verify(repository).watch(eq("/metadata/db3"), any(DatabaseMetaDataChangedListener.class));
+        verify(repository, atLeastOnce()).watch(anyString(), any(GlobalMetaDataChangedListener.class));
+    }
+
+    @Test
+    void assertRegisterWithEmptyDatabases() {
+        ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
+        ClusterPersistRepository repository = mock(ClusterPersistRepository.class);
+        when(contextManager.getPersistServiceFacade().getRepository()).thenReturn(repository);
+        DataChangedEventListenerRegistry registry = new DataChangedEventListenerRegistry(contextManager, Collections.emptyList());
+        registry.register();
+        verify(repository, never()).watch(anyString(), any(DatabaseMetaDataChangedListener.class));
         verify(repository, atLeastOnce()).watch(anyString(), any(GlobalMetaDataChangedListener.class));
     }
 }
