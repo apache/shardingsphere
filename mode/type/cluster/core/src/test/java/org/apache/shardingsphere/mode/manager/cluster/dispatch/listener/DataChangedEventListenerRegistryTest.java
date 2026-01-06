@@ -37,7 +37,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 class DataChangedEventListenerRegistryTest {
-
+    
     @Test
     void assertRegisterWithSingleDatabase() {
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
@@ -48,7 +48,7 @@ class DataChangedEventListenerRegistryTest {
         verify(repository).watch(eq("/metadata/foo_db"), any(DatabaseMetaDataChangedListener.class));
         verify(repository, atLeastOnce()).watch(anyString(), any(GlobalMetaDataChangedListener.class));
     }
-
+    
     @Test
     void assertRegisterWithMultipleDatabases() {
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
@@ -61,7 +61,7 @@ class DataChangedEventListenerRegistryTest {
         verify(repository).watch(eq("/metadata/db3"), any(DatabaseMetaDataChangedListener.class));
         verify(repository, atLeastOnce()).watch(anyString(), any(GlobalMetaDataChangedListener.class));
     }
-
+    
     @Test
     void assertRegisterWithEmptyDatabases() {
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
