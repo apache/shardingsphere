@@ -9916,6 +9916,19 @@
         </group-by>
     </select>
 
+    <select sql-case-id="select_with_force_index_for_join">
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" />
+        </projections>
+        <from>
+            <simple-table name="t1" start-index="14" stop-index="15">
+                <index-hint origin-text="FORCE INDEX FOR JOIN (idx1)" start-index="17" stop-index="43">
+                    <hint-index-name name="idx1" start-index="39" stop-index="42" />
+                </index-hint>
+            </simple-table>
+        </from>
+    </select>
+
     <select sql-case-id="select_with_reserved_word_with_table_ref">
         <projections start-index="7" stop-index="19">
             <column-projection name="condition" start-index="7" stop-index="19" >
@@ -11877,5 +11890,48 @@
                 </expr>
             </expression-projection>
         </projections>
+    </select>
+
+    <select sql-case-id="select_true_literal_doris">
+        <projections start-index="7" stop-index="10">
+            <expression-projection text="true" start-index="7" stop-index="10">
+                <expr>
+                    <literal-expression value="true" start-index="7" stop-index="10" />
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="select_false_literal_doris">
+        <projections start-index="7" stop-index="11">
+            <expression-projection text="false" start-index="7" stop-index="11">
+                <expr>
+                    <literal-expression value="false" start-index="7" stop-index="11" />
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="select_null_literal_doris">
+        <projections start-index="7" stop-index="10">
+            <expression-projection text="null" start-index="7" stop-index="10">
+                <expr>
+                    <literal-expression value="null" start-index="7" stop-index="10" />
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="select_from_dual_doris">
+        <projections start-index="7" stop-index="7">
+            <expression-projection text="1" start-index="7" stop-index="7">
+                <expr>
+                    <literal-expression value="1" start-index="7" stop-index="7" />
+                </expr>
+            </expression-projection>
+        </projections>
+        <from start-index="9" stop-index="17">
+            <simple-table name="DUAL" start-index="14" stop-index="17" />
+        </from>
     </select>
 </sql-parser-test-cases>
