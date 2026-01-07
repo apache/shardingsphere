@@ -39,7 +39,7 @@
     <sql-case id="select_with_trim_expr_from_expr" value="SELECT TRIM(remove_name FROM name) FROM t_order" db-types="MySQL" />
     <sql-case id="select_with_trim_expr_from_expr_and_both" value="SELECT TRIM(BOTH `remove_name` FROM `name`) FROM `t_order`" db-types="MySQL" />
     <sql-case id="select_weight_string" value="SELECT WEIGHT_STRING('bar')" db-types="MySQL" />
-    <sql-case id="select_values" value="SELECT VALUES(order_id) FROM t_order" db-types="MySQL,Presto" />
+    <sql-case id="select_values" value="SELECT VALUES(order_id) FROM t_order" db-types="MySQL,Presto,Doris" />
     <sql-case id="select_current_user_brackets" value="SELECT CURRENT_USER()" db-types="MySQL,Doris" />
     <sql-case id="select_extract_function" value="SELECT EXTRACT(YEAR FROM TIMESTAMP '2001-02-16 20:38:40')" db-types="PostgreSQL,openGauss" />
     <sql-case id="select_extract_function_week" value="SELECT EXTRACT(WEEK FROM TIMESTAMP '2001-02-16 20:38:40')" db-types="PostgreSQL,openGauss" />
@@ -212,7 +212,7 @@
     <sql-case id="select_round" value="SELECT ROUND(1.58)" db-types="MySQL" />
     <sql-case id="select_row_count" value="SELECT ROW_COUNT()" db-types="MySQL" />
     <sql-case id="select_md5" value="SELECT MD5('testing')" db-types="MySQL,Doris" />
-    <sql-case id="select_member_of" value="SELECT 'ab' MEMBER OF('[23, &quot;abc&quot;, 17, &quot;ab&quot;, 10]')" db-types="MySQL" />
+    <sql-case id="select_member_of" value="SELECT 'ab' MEMBER OF('[23, &quot;abc&quot;, 17, &quot;ab&quot;, 10]')" db-types="MySQL,Doris" />
     <sql-case id="select_microsecond" value="SELECT MICROSECOND('12:00:00.123456')" db-types="MySQL" />
     <sql-case id="select_mid" value="SELECT MID('foobarbar' from 4)" db-types="MySQL" />
     <sql-case id="select_minute" value="SELECT MINUTE('2008-02-03 10:05:03')" db-types="MySQL,Doris" />

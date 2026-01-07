@@ -27,8 +27,8 @@
     <sql-case id="select_with_expression_for_postgresql" value="SELECT o.order_id + 1 * 2 as exp FROM t_order AS o ORDER BY o.order_id" db-types="PostgreSQL,openGauss" />
     <sql-case id="select_with_encode_function" value="SELECT ENCODE(test_datetype_col::bytea,'escape') FROM test_bytea" db-types="PostgreSQL,openGauss" />
     <sql-case id="select_with_date_function" value="SELECT DATE(i.creation_date) AS creation_date FROM `t_order_item` AS i ORDER BY DATE(i.creation_date) DESC" db-types="MySQL" />
-    <sql-case id="select_with_regexp" value="SELECT * FROM t_order_item t WHERE t.status REGEXP ? AND t.item_id IN (?, ?)" db-types="MySQL" />
-    <sql-case id="select_with_rlike" value="SELECT * FROM t_order_item t WHERE t.status RLIKE ? AND t.item_id IN (?, ?)" db-types="MySQL" />
+    <sql-case id="select_with_regexp" value="SELECT * FROM t_order_item t WHERE t.status REGEXP ? AND t.item_id IN (?, ?)" db-types="MySQL,Doris" />
+    <sql-case id="select_with_rlike" value="SELECT * FROM t_order_item t WHERE t.status RLIKE ? AND t.item_id IN (?, ?)" db-types="MySQL,Doris" />
     <sql-case id="select_with_case_expression" value="select t.*,o.item_id as item_id,(case when t.status = 'init' then '已启用' when t.status = 'failed' then '已停用' end) as stateName from t_order t left join t_order_item as o on o.order_id =t.order_id where t.order_id=1000 limit 1" db-types="MySQL,H2" />
     <sql-case id="select_where_with_expr_with_or" value="SELECT * FROM t_order WHERE t_order.order_id = ? OR ? = t_order.order_id" db-types="MySQL" />
     <sql-case id="select_where_with_expr_with_or_sign" value="SELECT * FROM t_order WHERE t_order.order_id = ? || ? = t_order.order_id" db-types="MySQL" />
@@ -52,7 +52,7 @@
     <sql-case id="select_where_with_predicate_with_like" value="SELECT * FROM t_order WHERE t_order.order_id NOT LIKE '1%' ESCAPE '$'" db-types="MySQL,Presto" />
     <sql-case id="select_where_with_predicate_with_not_like" value="SELECT * FROM t_order WHERE t_order.status NOT LIKE '1%'" db-types="MySQL,PostgreSQL,openGauss" />
     <sql-case id="select_where_with_predicate_with_regexp" value="SELECT * FROM t_order WHERE t_order.order_id NOT REGEXP '[123]'" db-types="MySQL,Presto" />
-    <sql-case id="select_where_with_predicate_with_rlike" value="SELECT * FROM t_order WHERE t_order.order_id NOT RLIKE '[123]'" db-types="MySQL,Presto" />
+    <sql-case id="select_where_with_predicate_with_rlike" value="SELECT * FROM t_order WHERE t_order.order_id NOT RLIKE '[123]'" db-types="MySQL,Presto,Doris" />
     <sql-case id="select_where_with_bit_expr_with_vertical_bar" value="SELECT * FROM t_order WHERE t_order.order_id | ?" db-types="MySQL" />
     <sql-case id="select_where_with_bit_expr_with_ampersand" value="SELECT * FROM t_order WHERE t_order.order_id &amp; ?" db-types="MySQL" />
     <sql-case id="select_where_with_bit_expr_with_signed_left_shift" value="SELECT * FROM t_order WHERE t_order.order_id &lt;&lt; ?" db-types="MySQL" />
@@ -102,7 +102,10 @@
     <sql-case id="select_with_regular_function" value="SELECT A(1) FROM t_order WHERE A(1) = 1 GROUP BY A(order_id) ORDER BY A(order_id)" db-types="MySQL,Oracle,SQLServer" />
     <sql-case id="select_with_regular_function_for_sql92" value="SELECT A(1) FROM t_order WHERE A(1) = 1" db-types="MySQL,Oracle,SQLServer,H2,SQL92" />
     <sql-case id="select_with_regular_function_utc_timestamp" value="SELECT TIMEDIFF(NOW(), UTC_TIMESTAMP())" db-types="MySQL" />
-    <sql-case id="select_with_collate_with_marker" value="SELECT * FROM t_order WHERE order_id COLLATE ?" db-types="MySQL,Presto" />
+    <sql-case id="select_with_collate_with_marker" value="SELECT * FROM t_order WHERE order_id COLLATE ?" db-types="MySQL,Presto,Doris" />
+
+    <sql-case id="select_safe_equal" value="SELECT 1 &lt;=&gt; 1" db-types="Doris" />
+    <sql-case id="select_string_concat_with_double_bar" value="SELECT 'a' || 'b'" db-types="Doris" />
     <sql-case id="select_age_for_postgres" value="SELECT * FROM cypher('sharding_test_1', $$ CREATE (n) $$) as (a agtype)" db-types="PostgreSQL" />
     <sql-case id="select_datetime_expression" value="SELECT SYSTIMESTAMP AT TIME ZONE 'UTC' FROM DUAL;" db-types="Oracle" />
     <sql-case id="select_between_expression" value="SELECT item_id BETWEEN 1 AND order_id, status FROM t_order_item;" db-types="MySQL" />
