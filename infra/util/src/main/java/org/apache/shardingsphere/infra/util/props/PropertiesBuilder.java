@@ -40,10 +40,9 @@ public final class PropertiesBuilder {
         for (Property each : props) {
             if (each.value instanceof String) {
                 result.setProperty(each.key, each.value.toString());
-            } else {
+            } else if (null != each.value) {
                 result.put(each.key, each.value);
             }
-            
         }
         return result;
     }
