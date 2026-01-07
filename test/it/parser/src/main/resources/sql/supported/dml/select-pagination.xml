@@ -42,6 +42,8 @@
     <sql-case id="select_pagination_with_first_skip" value="SELECT FIRST 1 SKIP 1 1 a FROM t_order" db-types="Firebird" />
     <sql-case id="select_pagination_with_skip" value="SELECT SKIP 1 1 a FROM t_order" db-types="Firebird" />
     <sql-case id="select_limit_offset_doris" value="SELECT * FROM t_order LIMIT 5 OFFSET 2" db-types="Doris" />
+    <sql-case id="select_limit_only_doris" value="SELECT * FROM t_order LIMIT 5" db-types="Doris" />
+    <sql-case id="select_limit_with_params_doris" value="SELECT * FROM t_order LIMIT ?, ?" db-types="Doris" />
 <!--    <sql-case id="select_pagination_with_first_and_expr_value" value="SELECT FIRST (1+1) 1 a FROM t_order" db-types="Firebird" />-->
 <!--    <sql-case id="select_pagination_with_skip_and_expr_value" value="SELECT SKIP (2+2) 1 a FROM t_order" db-types="Firebird" />-->
 </sql-cases>

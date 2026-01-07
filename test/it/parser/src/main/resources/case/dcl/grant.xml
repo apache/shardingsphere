@@ -223,6 +223,8 @@
         <!--<table name="ds_0" start-index="24" stop-index="27" />-->
     </grant>
     
+    <grant sql-case-id="grant_all_on_database_doris" />
+    
     <grant sql-case-id="grant_view_definition_on_availability_group" />
     <grant sql-case-id="grant_take_ownership_on_availability_group" />
     <grant sql-case-id="grant_control_on_availability_group" />

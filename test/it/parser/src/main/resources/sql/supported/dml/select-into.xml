@@ -40,4 +40,5 @@
     <sql-case id="select_into_outfile_doris_with_parquet" value="SELECT * FROM t_order INTO OUTFILE 's3://bucket/result_' FORMAT AS PARQUET PROPERTIES ('s3.endpoint' = 'http://s3.amazonaws.com', 's3.access_key' = 'xxx', 's3.secret_key' = 'yyy')" db-types="Doris"/>
     <sql-case id="select_into_outfile_doris_with_fields" value="SELECT * FROM t_order INTO OUTFILE 'hdfs://path/to/result_' FIELDS TERMINATED BY ',' OPTIONALLY ENCLOSED BY '&quot;'" db-types="Doris"/>
     <sql-case id="select_into_outfile_doris_with_fields_and_escaped" value="SELECT user_id, status FROM t_order INTO OUTFILE 'hdfs://path/to/result_' FIELDS TERMINATED BY ',' OPTIONALLY ENCLOSED BY '&quot;' ESCAPED BY '\\'" db-types="Doris"/>
+    <sql-case id="select_into_table_doris" value="SELECT * FROM t_order INTO t_backup" db-types="Doris"/>
 </sql-cases>

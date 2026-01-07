@@ -23,7 +23,7 @@
     <sql-case id="create_table_with_backtick_engine_myisam" value="create table `t``1`(a int) engine=myisam" db-types="MySQL" />
     <sql-case id="create_table_with_backtick" value="CREATE TABLE ```t_order` (i int)" db-types="MySQL" />
     <sql-case id="create_table_column_with_backtick" value="create table `````t_o``r``d``e``r``` (```i` int)" db-types="MySQL" />
-    <sql-case id="create_table_with_like" value="CREATE TABLE t_log LIKE t_old_log" db-types="MySQL" />
+    <sql-case id="create_table_with_like" value="CREATE TABLE t_log LIKE t_old_log" db-types="MySQL,Doris" />
     <sql-case id="create_table" value="CREATE TABLE t_log(id int PRIMARY KEY, status varchar(10))" />
     <sql-case id="create_table_with_engin_charset" value="CREATE TABLE t_log(id int PRIMARY KEY, status varchar(10)) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4" db-types="MySQL" />
     <sql-case id="create_table_with_keyword" value="CREATE TABLE t_log(id int PRIMARY KEY, status boolean)" db-types="PostgreSQL,openGauss" />
@@ -151,7 +151,7 @@
     <sql-case id="create_table_with_partition_less_than" value="CREATE TABLE t_sales (order_id INTEGER NOT NULL, goods_name CHAR(20) NOT NULL, sales_date DATE NOT NULL, sales_volume INTEGER, sales_store CHAR(20), PRIMARY KEY ( order_id )) PARTITION BY RANGE (sales_date) (PARTITION season1 VALUES LESS THAN('2023-04-01 00:00:00'),PARTITION season2 VALUES LESS THAN('2023-07-01 00:00:00'),PARTITION season3 VALUES LESS THAN('2023-10-01 00:00:00'),PARTITION season4 VALUES LESS THAN(MAXVALUE))" db-types="openGauss"/>
     <sql-case id="create_table_with_negative_data_type" value="CREATE TABLE T(COL1 NUMBER, COL2 NUMBER(3), COL3 NUMBER(3,2), COL4 NUMBER(6,-2))" db-types="Oracle" />
     <sql-case id="create_table_with_ref_data_type" value="CREATE TABLE location_table (location_number NUMBER, building REF warehouse_typ SCOPE IS warehouse_table);" db-types="Oracle" />
-    <sql-case id="create_table_with_select" value="CREATE TABLE t_order_new AS SELECT * FROM t_order" db-types="Oracle"/>
+    <sql-case id="create_table_with_select" value="CREATE TABLE t_order_new AS SELECT * FROM t_order" db-types="Oracle,Doris"/>
     <sql-case id="create_table_organization_index_parallel_with_select" value="CREATE TABLE admin_iot3(i PRIMARY KEY, j, k, l) ORGANIZATION INDEX PARALLEL AS SELECT * FROM hr.jobs" db-types="Oracle" />
     <sql-case id="create_table_partition_by_range" value="CREATE TABLE costs_demo (prod_id NUMBER(6), time_id DATE, unit_cost NUMBER(10,2), unit_price NUMBER(10,2))
     PARTITION BY RANGE (time_id) (PARTITION costs_old VALUES LESS THAN (TO_DATE('01-JAN-2003', 'DD-MON-YYYY')) COMPRESS,

@@ -445,4 +445,14 @@
         </projections>
         <outfile start-index="36" stop-index="140" file-path="hdfs://path/to/result_" />
     </select>
+
+    <select sql-case-id="select_into_table_doris">
+        <from start-index="14" stop-index="20">
+            <simple-table name="t_order" start-index="14" stop-index="20" />
+        </from>
+        <projections distinct-row="false" start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" />
+        </projections>
+        <into-table name="t_backup" start-index="27" stop-index="34" />
+    </select>
 </sql-parser-test-cases>
