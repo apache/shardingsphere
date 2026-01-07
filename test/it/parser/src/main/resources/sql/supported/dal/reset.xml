@@ -19,16 +19,16 @@
 <sql-cases>
     <sql-case id="reset_all" value="RESET ALL" db-types="PostgreSQL,openGauss" />
     <sql-case id="reset_timezone" value="RESET timezone" db-types="PostgreSQL,openGauss" />
-    <sql-case id="reset_master" value="RESET MASTER" db-types="MySQL" />
-    <sql-case id="reset_slave" value="RESET SLAVE" db-types="MySQL" />
+    <sql-case id="reset_master" value="RESET MASTER" db-types="MySQL,Doris" />
+    <sql-case id="reset_slave" value="RESET SLAVE" db-types="MySQL,Doris" />
     <sql-case id="reset_master_slave" value="RESET MASTER, SLAVE" db-types="MySQL" />
     <sql-case id="reset_master_with_binlog" value="RESET MASTER TO 10" db-types="MySQL" />
     <sql-case id="reset_slave_with_all" value="RESET SLAVE ALL" db-types="MySQL" />
     <sql-case id="reset_slave_with_channel" value="RESET SLAVE FOR CHANNEL 'TEST_CHANNEL'" db-types="MySQL" />
     <sql-case id="reset_slave_with_all_channel" value="RESET SLAVE ALL FOR CHANNEL 'TEST_CHANNEL'" db-types="MySQL" />
-    <sql-case id="reset_query_cache" value="RESET QUERY CACHE" db-types="MySQL" />
-    <sql-case id="reset_replica" value="RESET REPLICA" db-types="MySQL" />
-    <sql-case id="reset_persist" value="RESET PERSIST" db-types="MySQL" />
-    <sql-case id="reset_persist_identifier" value="RESET PERSIST TEST_ID" db-types="MySQL" />
-    <sql-case id="reset_persist_exist_identifier" value="RESET PERSIST IF EXISTS TEST_ID" db-types="MySQL" />
+    <sql-case id="reset_query_cache" value="RESET QUERY CACHE" db-types="MySQL,Doris" />
+    <sql-case id="reset_replica" value="RESET REPLICA" db-types="MySQL,Doris" />
+    <sql-case id="reset_persist" value="RESET PERSIST" db-types="MySQL,Doris" />
+    <sql-case id="reset_persist_identifier" value="RESET PERSIST TEST_ID" db-types="MySQL,Doris" />
+    <sql-case id="reset_persist_exist_identifier" value="RESET PERSIST IF EXISTS TEST_ID" db-types="MySQL,Doris" />
 </sql-cases>

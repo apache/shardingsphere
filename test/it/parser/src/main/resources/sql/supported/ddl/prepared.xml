@@ -17,12 +17,12 @@
   -->
 
 <sql-cases>
-    <sql-case id="prepare_with_drop" value="PREPARE drop_stmt FROM @drop" db-types="MySQL" />
-    <sql-case id="prepare_with_statement" value="PREPARE ps1 FROM &apos;SHOW TABLES FROM no_such_schema&apos;" db-types="MySQL" />
-    <sql-case id="prepare_with_var" value="PREPARE ps1 FROM @create" db-types="MySQL" />
-    <sql-case id="execute_with_statement" value="EXECUTE stmt" db-types="MySQL" />
-    <sql-case id="execute_with_statement_and_using" value="EXECUTE stmt USING @a, @b" db-types="MySQL" />
-    <sql-case id="deallocate_statement" value="DEALLOCATE PREPARE stmt1" db-types="MySQL" />
-    <sql-case id="drop_statement" value="DROP PREPARE stmt1" db-types="MySQL" />
-    <sql-case id="execute_stmt_with_using" value="EXECUTE STMT USING @skip, @numrows" db-types="MySQL"/>
+    <sql-case id="prepare_with_drop" value="PREPARE drop_stmt FROM @drop" db-types="MySQL,Doris" />
+    <sql-case id="prepare_with_statement" value="PREPARE ps1 FROM &apos;SHOW TABLES FROM no_such_schema&apos;" db-types="MySQL,Doris" />
+    <sql-case id="prepare_with_var" value="PREPARE ps1 FROM @create" db-types="MySQL,Doris" />
+    <sql-case id="execute_with_statement" value="EXECUTE stmt" db-types="MySQL,Doris" />
+    <sql-case id="execute_with_statement_and_using" value="EXECUTE stmt USING @a, @b" db-types="MySQL,Doris" />
+    <sql-case id="deallocate_statement" value="DEALLOCATE PREPARE stmt1" db-types="MySQL,Doris" />
+    <sql-case id="drop_statement" value="DROP PREPARE stmt1" db-types="MySQL,Doris" />
+    <sql-case id="execute_stmt_with_using" value="EXECUTE STMT USING @skip, @numrows" db-types="MySQL,Doris"/>
 </sql-cases>

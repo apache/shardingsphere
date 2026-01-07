@@ -17,7 +17,7 @@
   -->
 
 <sql-cases>
-    <sql-case id="drop_database_if_exist" value="DROP DATABASE IF EXISTS database1" db-types="PostgreSQL,openGauss,SQLServer" />
+    <sql-case id="drop_database_if_exist" value="DROP DATABASE IF EXISTS database1" db-types="PostgreSQL,openGauss,SQLServer,Doris" />
     <sql-case id="drop_database" value="DROP DATABASE database1" db-types="PostgreSQL,openGauss,SQLServer" />
     <sql-case id="drop_database_without_database_name" value="DROP DATABASE" db-types="Oracle" />
     <sql-case id="drop_database_including_backups_noprompt" value="DROP DATABASE INCLUDING BACKUPS NOPROMPT;" db-types="Oracle" />
