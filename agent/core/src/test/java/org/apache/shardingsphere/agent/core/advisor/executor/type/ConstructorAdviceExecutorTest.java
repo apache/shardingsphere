@@ -17,6 +17,9 @@
 
 package org.apache.shardingsphere.agent.core.advisor.executor.type;
 
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import net.bytebuddy.dynamic.DynamicType.Builder;
 import net.bytebuddy.dynamic.DynamicType.Builder.MethodDefinition.ImplementationDefinition;
 import net.bytebuddy.dynamic.DynamicType.Builder.MethodDefinition.ReceiverTypeDefinition;
@@ -68,16 +71,12 @@ class ConstructorAdviceExecutorTest {
         assertThat(executor.intercept(builder, mock()), is(intercepted));
     }
     
+    @RequiredArgsConstructor
     private static final class RecordingConstructorAdvice implements ConstructorAdvice, AgentPluginEnable {
         
         private final List<String> queue;
         
         private final boolean pluginEnabled;
-        
-        RecordingConstructorAdvice(final List<String> queue, final boolean pluginEnabled) {
-            this.queue = queue;
-            this.pluginEnabled = pluginEnabled;
-        }
         
         @Override
         public boolean isPluginEnabled() {
@@ -90,13 +89,10 @@ class ConstructorAdviceExecutorTest {
         }
     }
     
+    @RequiredArgsConstructor
     private static final class PluginDisabledConstructorAdvice implements ConstructorAdvice, AgentPluginEnable {
         
         private final List<String> queue;
-        
-        PluginDisabledConstructorAdvice(final List<String> queue) {
-            this.queue = queue;
-        }
         
         @Override
         public boolean isPluginEnabled() {
@@ -117,18 +113,10 @@ class ConstructorAdviceExecutorTest {
         }
     }
     
+    @Getter
+    @Setter
     private static final class SimpleTargetAdviceObject implements TargetAdviceObject {
         
         private Object attachment;
-        
-        @Override
-        public Object getAttachment() {
-            return attachment;
-        }
-        
-        @Override
-        public void setAttachment(final Object attachment) {
-            this.attachment = attachment;
-        }
     }
 }
