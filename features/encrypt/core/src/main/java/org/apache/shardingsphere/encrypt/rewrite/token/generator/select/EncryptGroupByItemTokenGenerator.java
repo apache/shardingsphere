@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.encrypt.rewrite.token.generator.select;
 
+import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import org.apache.shardingsphere.database.connector.core.metadata.database.enums.QuoteCharacter;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
@@ -48,14 +49,11 @@ import java.util.Optional;
  * Group by item token generator for encrypt.
  */
 @HighFrequencyInvocation
+@RequiredArgsConstructor
 @Setter
 public final class EncryptGroupByItemTokenGenerator implements CollectionSQLTokenGenerator<SelectStatementContext> {
     
     private final EncryptRule rule;
-    
-    public EncryptGroupByItemTokenGenerator(final EncryptRule rule) {
-        this.rule = rule;
-    }
     
     @Override
     public boolean isGenerateSQLToken(final SQLStatementContext sqlStatementContext) {
