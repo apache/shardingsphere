@@ -17,7 +17,7 @@
   -->
 
 <sql-cases>
-    <sql-case id="set_user_variable" value="SET @drop = IF(@have_ndb = 0, @drop_cmd, 'SET @dummy = 0')" db-types="MySQL" />
+    <sql-case id="set_user_variable" value="SET @drop = IF(@have_ndb = 0, @drop_cmd, 'SET @dummy = 0')" db-types="MySQL,Doris" />
     <sql-case id="set_parameter_equal" value="SET configuration_parameter = 'value'" db-types="PostgreSQL,openGauss, MySQL,Doris" />
     <sql-case id="set_parameter_equal_number" value="SET extra_float_digits = 3" db-types="PostgreSQL,openGauss, MySQL" />
     <sql-case id="set_parameter_equal_session_mysql" value="SET SESSION configuration_parameter = 'value'" db-types="MySQL" />
