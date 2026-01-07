@@ -11908,4 +11908,17 @@
             </expression-projection>
         </projections>
     </select>
+
+    <select sql-case-id="select_from_dual_doris">
+        <projections start-index="7" stop-index="7">
+            <expression-projection text="1" start-index="7" stop-index="7">
+                <expr>
+                    <literal-expression value="1" start-index="7" stop-index="7" />
+                </expr>
+            </expression-projection>
+        </projections>
+        <from start-index="9" stop-index="17">
+            <simple-table name="DUAL" start-index="14" stop-index="17" />
+        </from>
+    </select>
 </sql-parser-test-cases>

@@ -22,8 +22,8 @@
     <sql-case id="select_sub_query_with_table" value="SELECT t.* FROM (SELECT * FROM t_order WHERE order_id IN (?, ?)) t" />
     <sql-case id="select_with_equal_subquery" value="SELECT * FROM t_order WHERE user_id = (SELECT user_id FROM t_order_item WHERE id = 10)" db-types="MySQL, PostgreSQL,openGauss" />
     <sql-case id="select_with_any_subquery" value="SELECT * FROM employees WHERE salary = ANY (SELECT salary FROM employees WHERE department_id = 30) ORDER BY employee_id;" db-types="Oracle" />
-    <sql-case id="select_with_in_subquery" value="SELECT * FROM t_order WHERE user_id IN (SELECT user_id FROM t_order_item WHERE id IN (10, 11))" db-types="MySQL,PostgreSQL,openGauss" />
-    <sql-case id="select_with_between_subquery" value="SELECT * FROM t_order WHERE user_id BETWEEN (SELECT user_id FROM t_order_item WHERE order_id = 10) AND ?" db-types="MySQL, PostgreSQL,openGauss" />
+    <sql-case id="select_with_in_subquery" value="SELECT * FROM t_order WHERE user_id IN (SELECT user_id FROM t_order_item WHERE id IN (10, 11))" db-types="MySQL,PostgreSQL,openGauss,Doris" />
+    <sql-case id="select_with_between_subquery" value="SELECT * FROM t_order WHERE user_id BETWEEN (SELECT user_id FROM t_order_item WHERE order_id = 10) AND ?" db-types="MySQL, PostgreSQL,openGauss,Doris" />
     <sql-case id="select_with_exists_sub_query_with_project" value="SELECT EXISTS (SELECT 1 FROM t_order)" db-types="MySQL,PostgreSQL,openGauss,Doris" />
     <sql-case id="select_with_join_table_subquery" value="SELECT t_order_federate.order_id, t_order_federate.user_id, u.user_id FROM t_order_federate, (SELECT * FROM t_user_info) as u WHERE t_order_federate.user_id = u.user_id" db-types="MySQL, PostgreSQL,openGauss, SQLServer, SQL92" />
     <sql-case id="select_with_projection_subquery" value="SELECT t_order_federate.order_id, t_order_federate.user_id, (SELECT COUNT(user_id) FROM t_user_info) FROM t_order_federate" />
