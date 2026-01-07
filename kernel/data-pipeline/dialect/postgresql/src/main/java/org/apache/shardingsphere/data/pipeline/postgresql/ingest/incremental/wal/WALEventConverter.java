@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.data.pipeline.postgresql.ingest.incremental.wal;
 
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.data.pipeline.core.constant.PipelineSQLOperationType;
 import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.incremental.IncrementalDumperContext;
 import org.apache.shardingsphere.data.pipeline.core.ingest.record.Column;
@@ -40,16 +41,12 @@ import java.util.List;
 /**
  * WAL event converter.
  */
+@RequiredArgsConstructor
 public final class WALEventConverter {
     
     private final IncrementalDumperContext dumperContext;
     
     private final PipelineTableMetaDataLoader metaDataLoader;
-    
-    public WALEventConverter(final IncrementalDumperContext dumperContext, final PipelineTableMetaDataLoader metaDataLoader) {
-        this.dumperContext = dumperContext;
-        this.metaDataLoader = metaDataLoader;
-    }
     
     /**
      * Convert WAL event to {@code Record}.

@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.test.natived.commons.repository;
 
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.test.natived.commons.entity.OrderItem;
 
 import javax.sql.DataSource;
@@ -31,14 +32,11 @@ import java.util.List;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
+@RequiredArgsConstructor
 @SuppressWarnings({"SqlDialectInspection", "SqlNoDataSourceInspection"})
 public final class OrderItemRepository {
     
     private final DataSource dataSource;
-    
-    public OrderItemRepository(final DataSource dataSource) {
-        this.dataSource = dataSource;
-    }
     
     /**
      * create table if not exists in MySQL.

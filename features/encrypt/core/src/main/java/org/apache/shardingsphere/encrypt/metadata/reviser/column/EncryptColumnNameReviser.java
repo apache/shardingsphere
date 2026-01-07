@@ -17,19 +17,17 @@
 
 package org.apache.shardingsphere.encrypt.metadata.reviser.column;
 
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.encrypt.rule.table.EncryptTable;
 import org.apache.shardingsphere.infra.metadata.database.schema.reviser.column.ColumnNameReviser;
 
 /**
  * Encrypt column name reviser.
  */
+@RequiredArgsConstructor
 public final class EncryptColumnNameReviser implements ColumnNameReviser {
     
     private final EncryptTable encryptTable;
-    
-    public EncryptColumnNameReviser(final EncryptTable encryptTable) {
-        this.encryptTable = encryptTable;
-    }
     
     @Override
     public String revise(final String originalName) {

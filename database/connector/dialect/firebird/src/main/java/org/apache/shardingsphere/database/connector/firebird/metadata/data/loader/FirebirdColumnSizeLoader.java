@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.database.connector.firebird.metadata.data.loader;
 
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.database.connector.core.metadata.data.loader.MetaDataLoaderConnection;
 import org.apache.shardingsphere.database.connector.core.metadata.data.loader.MetaDataLoaderMaterial;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeRegistry;
@@ -34,6 +35,7 @@ import java.util.Objects;
 /**
  * Loader for Firebird column sizes.
  */
+@RequiredArgsConstructor
 final class FirebirdColumnSizeLoader {
     
     private static final String LOAD_BLOB_SEGMENT_SIZES_SQL = "SELECT TRIM(rf.RDB$FIELD_NAME) AS COLUMN_NAME, "
@@ -44,10 +46,6 @@ final class FirebirdColumnSizeLoader {
             + "AND f.RDB$FIELD_TYPE = 261";
     
     private final MetaDataLoaderMaterial material;
-    
-    FirebirdColumnSizeLoader(final MetaDataLoaderMaterial material) {
-        this.material = material;
-    }
     
     Map<String, Map<String, Integer>> load() throws SQLException {
         if (material.getActualTableNames().isEmpty()) {
