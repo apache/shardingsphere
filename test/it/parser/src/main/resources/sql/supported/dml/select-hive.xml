@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Licensed to the Apache Software Foundation (ASF) under one or more
+  ~ contributor license agreements.  See the NOTICE file distributed with
+  ~ this work for additional information regarding copyright ownership.
+  ~ The ASF licenses this file to You under the Apache License, Version 2.0
+  ~ (the "License"); you may not use this file except in compliance with
+  ~ the License.  You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<sql-cases>
+    <sql-case id="hive_select_simple" value="SELECT * FROM t_order" db-types="Hive" />
+    <sql-case id="hive_select_with_where" value="SELECT * FROM t_order WHERE order_id = 1" db-types="Hive" />
+    <sql-case id="hive_select_group_by" value="SELECT user_id, COUNT(*) FROM t_order GROUP BY user_id" db-types="Hive" />
+    <sql-case id="hive_select_having" value="SELECT user_id, COUNT(*) FROM t_order GROUP BY user_id HAVING COUNT(*) > 1" db-types="Hive" />
+    <sql-case id="hive_select_order_by" value="SELECT * FROM t_order ORDER BY order_id DESC" db-types="Hive" />
+    <sql-case id="hive_select_limit" value="SELECT * FROM t_order LIMIT 10" db-types="Hive" />
+    <sql-case id="hive_select_limit_offset" value="SELECT * FROM t_order LIMIT 10 OFFSET 5" db-types="Hive" />
+    <sql-case id="hive_select_join" value="SELECT * FROM t_order o JOIN t_item i ON o.order_id = i.order_id" db-types="Hive" />
+    <sql-case id="hive_select_left_join" value="SELECT * FROM t_order o LEFT JOIN t_item i ON o.order_id = i.order_id" db-types="Hive" />
+    <sql-case id="hive_select_right_join" value="SELECT * FROM t_order o RIGHT JOIN t_item i ON o.order_id = i.order_id" db-types="Hive" />
+    <sql-case id="hive_select_cross_join" value="SELECT * FROM t1 CROSS JOIN t2" db-types="Hive" />
+    <sql-case id="hive_select_union" value="SELECT * FROM t1 UNION SELECT * FROM t2" db-types="Hive" />
+    <sql-case id="hive_select_union_all" value="SELECT * FROM t1 UNION ALL SELECT * FROM t2" db-types="Hive" />
+    <sql-case id="hive_select_distinct" value="SELECT DISTINCT user_id FROM t_order" db-types="Hive" />
+    <sql-case id="hive_select_window" value="SELECT user_id, RANK() OVER (PARTITION BY city ORDER BY salary DESC) FROM t_employee" db-types="Hive" />
+    <sql-case id="hive_select_subquery" value="SELECT * FROM (SELECT * FROM t_order) t" db-types="Hive" />
+    <sql-case id="hive_select_substring" value="SELECT SUBSTRING('abc', 1, 2)" db-types="Hive" />
+    <sql-case id="hive_select_trim" value="SELECT TRIM(BOTH ' ' FROM ' a ')" db-types="Hive" />
+    <sql-case id="hive_select_extract" value="SELECT EXTRACT(YEAR FROM '2023-01-01')" db-types="Hive" />
+</sql-cases>
