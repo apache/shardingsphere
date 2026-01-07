@@ -92,4 +92,17 @@
             <simple-table name="t_order" start-index="53" stop-index="59" />
         </from>
     </select>
+
+    <select sql-case-id="select_window_frame_doris">
+        <projections start-index="7" stop-index="86">
+            <aggregation-projection type="SUM" expression="SUM(v) OVER (PARTITION BY k ORDER BY v ROWS BETWEEN 1 PRECEDING AND 1 FOLLOWING)" start-index="7" stop-index="86">
+                <parameter>
+                    <column name="v" start-index="11" stop-index="11" />
+                </parameter>
+            </aggregation-projection>
+        </projections>
+        <from>
+            <simple-table name="t_order" start-index="93" stop-index="99" />
+        </from>
+    </select>
 </sql-parser-test-cases>

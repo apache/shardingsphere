@@ -21,6 +21,7 @@
     <sql-case id="create_view_with_udf_nested_fun" value="CREATE VIEW V_T1_C AS SELECT DB29023216.TESTFUNC(NOW())" db-types="MySQL" />
     <sql-case id="create_view_with_udf_arg" value="CREATE VIEW V_T1_C AS SELECT DB29023216.TESTFUNC(1,2,3,4)" db-types="MySQL" />
     <sql-case id="create_view" value="CREATE VIEW comedies AS SELECT * FROM films WHERE kind = 'Comedy'" db-types="MySQL,PostgreSQL,openGauss,SQLServer,Doris" />
+    <sql-case id="create_view_with_columns_doris" value="CREATE VIEW example_view (c1, c2) AS SELECT k1, k2 FROM example_table" db-types="Doris" />
     <sql-case id="create_view_with_check_option" value="CREATE VIEW universal_comedies AS SELECT * FROM comedies WHERE classification = 'U' WITH LOCAL CHECK OPTION" db-types="PostgreSQL,openGauss" />
     <sql-case id="create_view_with_recursive" value="CREATE RECURSIVE VIEW public.nums_1_100 (n) AS VALUES (1) UNION ALL SELECT n+1 FROM nums_1_100 WHERE n = 100" db-types="PostgreSQL,openGauss" />
     <sql-case id="create_view_with_option" value="CREATE OR REPLACE TEMP view order_view (order_id,user_id) WITH (security_barrier=TRUE) AS SELECT * FROM t_order" db-types="PostgreSQL,openGauss" />

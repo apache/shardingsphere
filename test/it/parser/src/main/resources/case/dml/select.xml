@@ -11878,4 +11878,34 @@
             </expression-projection>
         </projections>
     </select>
+
+    <select sql-case-id="select_true_literal_doris">
+        <projections start-index="7" stop-index="10">
+            <expression-projection text="true" start-index="7" stop-index="10">
+                <expr>
+                    <literal-expression value="true" start-index="7" stop-index="10" />
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="select_false_literal_doris">
+        <projections start-index="7" stop-index="11">
+            <expression-projection text="false" start-index="7" stop-index="11">
+                <expr>
+                    <literal-expression value="false" start-index="7" stop-index="11" />
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="select_null_literal_doris">
+        <projections start-index="7" stop-index="10">
+            <expression-projection text="null" start-index="7" stop-index="10">
+                <expr>
+                    <literal-expression value="null" start-index="7" stop-index="10" />
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
 </sql-parser-test-cases>

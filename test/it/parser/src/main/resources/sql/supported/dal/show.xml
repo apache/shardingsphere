@@ -141,10 +141,10 @@
     <sql-case id="show_profile" value="SHOW PROFILE LIMIT 1, 2" db-types="MySQL" />
     <sql-case id="show_profiles" value="SHOW PROFILES" db-types="MySQL" />
     <sql-case id="show_charset" value="SHOW CHARSET" db-types="MySQL" />
-    <sql-case id="show_warnings_limit" value="SHOW WARNINGS limit 1" db-types="MySQL" />
-    <sql-case id="show_warnings_count" value="SHOW COUNT(*) WARNINGS" db-types="MySQL" />
+    <sql-case id="show_warnings_limit" value="SHOW WARNINGS limit 1" db-types="MySQL,Doris" />
+    <sql-case id="show_warnings_count" value="SHOW COUNT(*) WARNINGS" db-types="MySQL,Doris" />
     <sql-case id="show_search_path" value="SHOW search_path;" db-types="PostgreSQL,openGauss" />
-    <sql-case id="show_errors" value="SHOW ERRORS;" db-types="Oracle"/>
+    <sql-case id="show_errors" value="SHOW ERRORS;" db-types="Oracle,Doris"/>
     <sql-case id="show_parameter_smtp_out_server" value="SHOW PARAMETER SMTP_OUT_SERVER" db-types="Oracle"/>
     <sql-case id="show_databases_basic" value="SHOW DATABASES;" db-types="Hive" />
     <sql-case id="show_schemas_basic" value="SHOW SCHEMAS;" db-types="Hive" />

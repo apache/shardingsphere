@@ -101,6 +101,7 @@
     <sql-case id="grant_all_on_schema" value="GRANT ALL PRIVILEGES ON SCHEMA schema1 TO role1" db-types="PostgreSQL,openGauss" />
     <sql-case id="grant_all_on_schema_to_roles" value="GRANT ALL PRIVILEGES ON SCHEMA schema1 TO role1, role2" db-types="PostgreSQL,openGauss" />
     <sql-case id="grant_all_on_schema_to_current_user" value="GRANT ALL PRIVILEGES ON SCHEMA schema1 TO CURRENT_USER" db-types="PostgreSQL,openGauss" />
+    <sql-case id="grant_all_on_database_doris" value="GRANT ALL PRIVILEGES ON db1.* TO user1" db-types="Doris" />
     <sql-case id="grant_create_on_schema" value="GRANT CREATE ON SCHEMA schema1 TO role1" db-types="PostgreSQL,openGauss" />
     <sql-case id="grant_create_on_schemas" value="GRANT CREATE ON SCHEMA schema1, schema2 TO role1" db-types="PostgreSQL,openGauss" />
     <sql-case id="grant_all_on_tablespace" value="GRANT ALL PRIVILEGES ON TABLESPACE tablespace1 TO role1" db-types="PostgreSQL,openGauss" />
