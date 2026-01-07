@@ -9916,6 +9916,19 @@
         </group-by>
     </select>
 
+    <select sql-case-id="select_with_force_index_for_join">
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" />
+        </projections>
+        <from>
+            <simple-table name="t1" start-index="14" stop-index="15">
+                <index-hint origin-text="FORCE INDEX FOR JOIN (idx1)" start-index="17" stop-index="43">
+                    <hint-index-name name="idx1" start-index="39" stop-index="42" />
+                </index-hint>
+            </simple-table>
+        </from>
+    </select>
+
     <select sql-case-id="select_with_reserved_word_with_table_ref">
         <projections start-index="7" stop-index="19">
             <column-projection name="condition" start-index="7" stop-index="19" >
