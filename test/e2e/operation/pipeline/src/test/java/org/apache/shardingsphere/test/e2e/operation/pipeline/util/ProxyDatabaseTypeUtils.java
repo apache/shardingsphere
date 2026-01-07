@@ -20,6 +20,7 @@ package org.apache.shardingsphere.test.e2e.operation.pipeline.util;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
+import org.apache.shardingsphere.database.connector.oracle.type.OracleDatabaseType;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 
 import java.util.Collection;
@@ -45,5 +46,15 @@ public final class ProxyDatabaseTypeUtils {
     
     private static Collection<String> getUnsupportedProxyDatabaseTypes() {
         return Collections.singleton("Oracle");
+    }
+    
+    /**
+     * Is oracle branch database type.
+     *
+     * @param databaseType database type
+     * @return true if is oracle branch database type, else false
+     */
+    public static boolean isOracleBranch(final DatabaseType databaseType) {
+        return databaseType.getTrunkDatabaseType().orElse(databaseType) instanceof OracleDatabaseType;
     }
 }

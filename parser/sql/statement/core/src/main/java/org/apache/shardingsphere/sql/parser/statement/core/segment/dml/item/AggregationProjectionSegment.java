@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item;
 
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.AggregationType;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExpressionSegment;
@@ -32,6 +33,7 @@ import java.util.Optional;
 /**
  * Aggregation projection segment.
  */
+@RequiredArgsConstructor
 @Getter
 public class AggregationProjectionSegment implements ProjectionSegment, AliasAvailable, ExpressionSegment {
     
@@ -51,19 +53,7 @@ public class AggregationProjectionSegment implements ProjectionSegment, AliasAva
     private AliasSegment alias;
     
     public AggregationProjectionSegment(final int startIndex, final int stopIndex, final AggregationType type, final String expression) {
-        this.startIndex = startIndex;
-        this.stopIndex = stopIndex;
-        this.type = type;
-        this.expression = expression;
-        separator = null;
-    }
-    
-    public AggregationProjectionSegment(final int startIndex, final int stopIndex, final AggregationType type, final String expression, final String separator) {
-        this.startIndex = startIndex;
-        this.stopIndex = stopIndex;
-        this.type = type;
-        this.expression = expression;
-        this.separator = separator;
+        this(startIndex, stopIndex, type, expression, null);
     }
     
     @Override

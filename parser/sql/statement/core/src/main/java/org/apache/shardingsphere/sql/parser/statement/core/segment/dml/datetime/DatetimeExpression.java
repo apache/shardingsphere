@@ -18,14 +18,14 @@
 package org.apache.shardingsphere.sql.parser.statement.core.segment.dml.datetime;
 
 import lombok.Getter;
-import lombok.Setter;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExpressionSegment;
 
 /**
  * Datetime expression.
  */
+@RequiredArgsConstructor
 @Getter
-@Setter
 public final class DatetimeExpression implements ExpressionSegment {
     
     private final int startIndex;
@@ -38,19 +38,7 @@ public final class DatetimeExpression implements ExpressionSegment {
     
     private final String text;
     
-    public DatetimeExpression(final int startIndex, final int stopIndex, final ExpressionSegment left, final ExpressionSegment right, final String text) {
-        this.startIndex = startIndex;
-        this.stopIndex = stopIndex;
-        this.left = left;
-        this.right = right;
-        this.text = text;
-    }
-    
     public DatetimeExpression(final int startIndex, final int stopIndex, final ExpressionSegment left, final String text) {
-        this.startIndex = startIndex;
-        this.stopIndex = stopIndex;
-        this.left = left;
-        right = null;
-        this.text = text;
+        this(startIndex, stopIndex, left, null, text);
     }
 }

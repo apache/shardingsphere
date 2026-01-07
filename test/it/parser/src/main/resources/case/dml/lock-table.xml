@@ -20,4 +20,8 @@
 <sql-parser-test-cases>
     <lock sql-case-id="lock-table" />
     <lock sql-case-id="lock-table-remote" />
+    <lock sql-case-id="lock_table_with_alias_doris">
+        <table name="t1" start-index="12" stop-index="13" />
+        <table name="t1" alias="a" start-index="21" stop-index="27" />
+    </lock>
 </sql-parser-test-cases>

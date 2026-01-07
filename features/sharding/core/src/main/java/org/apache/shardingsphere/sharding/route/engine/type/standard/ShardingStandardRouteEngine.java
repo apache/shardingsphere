@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.sharding.route.engine.type.standard;
 
 import com.cedarsoftware.util.CaseInsensitiveSet;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.datanode.DataNode;
@@ -56,6 +57,7 @@ import java.util.Optional;
 /**
  * Sharding standard route engine.
  */
+@RequiredArgsConstructor
 public final class ShardingStandardRouteEngine implements ShardingRouteEngine {
     
     private final String logicTableName;
@@ -64,20 +66,11 @@ public final class ShardingStandardRouteEngine implements ShardingRouteEngine {
     
     private final SQLStatementContext sqlStatementContext;
     
-    private final ConfigurationProperties props;
-    
     private final Collection<Collection<DataNode>> originalDataNodes = new LinkedList<>();
     
     private final HintValueContext hintValueContext;
     
-    public ShardingStandardRouteEngine(final String logicTableName, final ShardingConditions shardingConditions, final SQLStatementContext sqlStatementContext,
-                                       final HintValueContext hintValueContext, final ConfigurationProperties props) {
-        this.logicTableName = logicTableName;
-        this.shardingConditions = shardingConditions;
-        this.sqlStatementContext = sqlStatementContext;
-        this.props = props;
-        this.hintValueContext = hintValueContext;
-    }
+    private final ConfigurationProperties props;
     
     @Override
     public RouteContext route(final ShardingRule shardingRule) {

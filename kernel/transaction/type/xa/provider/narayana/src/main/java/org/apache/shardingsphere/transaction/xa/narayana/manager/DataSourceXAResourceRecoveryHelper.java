@@ -19,6 +19,7 @@ package org.apache.shardingsphere.transaction.xa.narayana.manager;
 
 import com.arjuna.ats.jta.recovery.XAResourceRecoveryHelper;
 import com.google.common.base.Preconditions;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.sql.XAConnection;
@@ -31,6 +32,7 @@ import java.sql.SQLException;
 /**
  * XAResourceRecoveryHelper implementation which gets XIDs, which needs to be recovered, from the database.
  */
+@RequiredArgsConstructor
 @Slf4j
 public final class DataSourceXAResourceRecoveryHelper implements XAResourceRecoveryHelper, XAResource {
     
@@ -46,26 +48,8 @@ public final class DataSourceXAResourceRecoveryHelper implements XAResourceRecov
     
     private XAResource delegate;
     
-    /**
-     * Create a new {@link DataSourceXAResourceRecoveryHelper} instance.
-     *
-     * @param xaDataSource the XA data source
-     */
     public DataSourceXAResourceRecoveryHelper(final XADataSource xaDataSource) {
         this(xaDataSource, null, null);
-    }
-    
-    /**
-     * Create a new {@link DataSourceXAResourceRecoveryHelper} instance.
-     *
-     * @param xaDataSource the XA data source
-     * @param user the database user or {@code null}
-     * @param password the database password or {@code null}
-     */
-    public DataSourceXAResourceRecoveryHelper(final XADataSource xaDataSource, final String user, final String password) {
-        this.xaDataSource = xaDataSource;
-        this.user = user;
-        this.password = password;
     }
     
     @Override

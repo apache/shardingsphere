@@ -33,7 +33,6 @@ import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.database.connector.mysql.type.MySQLDatabaseType;
 import org.apache.shardingsphere.database.connector.opengauss.type.OpenGaussDatabaseType;
-import org.apache.shardingsphere.database.connector.oracle.type.OracleDatabaseType;
 import org.apache.shardingsphere.database.connector.postgresql.type.PostgreSQLDatabaseType;
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.util.props.PropertiesBuilder;
@@ -53,6 +52,7 @@ import org.apache.shardingsphere.test.e2e.operation.pipeline.framework.container
 import org.apache.shardingsphere.test.e2e.operation.pipeline.framework.container.compose.docker.PipelineDockerContainerComposer;
 import org.apache.shardingsphere.test.e2e.operation.pipeline.framework.container.compose.natived.PipelineNativeContainerComposer;
 import org.apache.shardingsphere.test.e2e.operation.pipeline.framework.param.PipelineTestParameter;
+import org.apache.shardingsphere.test.e2e.operation.pipeline.util.ProxyDatabaseTypeUtils;
 import org.awaitility.Awaitility;
 
 import javax.sql.DataSource;
@@ -249,7 +249,7 @@ public final class PipelineContainerComposer implements AutoCloseable {
      * @throws SQLException SQL exception
      */
     public void registerStorageUnit(final String storageUnitName) throws SQLException {
-        String username = databaseType instanceof OracleDatabaseType ? storageUnitName : getUsername();
+        String username = ProxyDatabaseTypeUtils.isOracleBranch(databaseType) ? storageUnitName : getUsername();
         String registerStorageUnitTemplate = "REGISTER STORAGE UNIT ${ds} ( URL='${url}', USER='${user}', PASSWORD='${password}')".replace("${ds}", storageUnitName)
                 .replace("${user}", username)
                 .replace("${password}", getPassword())
@@ -304,7 +304,7 @@ public final class PipelineContainerComposer implements AutoCloseable {
      * @return actual JDBC URL template
      */
     public String getActualJdbcUrlTemplate(final String databaseName, final boolean isInContainer) {
-        if (databaseType instanceof OracleDatabaseType) {
+        if (ProxyDatabaseTypeUtils.isOracleBranch(databaseType)) {
             return getActualJdbcUrlTemplate(databaseName, isInContainer, 0);
         }
         return appendExtraParameter(getActualJdbcUrlTemplate(databaseName, isInContainer, 0));
