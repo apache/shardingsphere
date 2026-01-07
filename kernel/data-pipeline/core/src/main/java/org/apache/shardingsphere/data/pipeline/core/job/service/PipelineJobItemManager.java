@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.data.pipeline.core.job.service;
 
-import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.data.pipeline.core.context.PipelineJobItemContext;
 import org.apache.shardingsphere.data.pipeline.core.job.JobStatus;
 import org.apache.shardingsphere.data.pipeline.core.job.progress.PipelineJobItemProgress;
@@ -34,10 +33,14 @@ import java.util.Optional;
  * 
  * @param <T> type of pipeline job item progress
  */
-@RequiredArgsConstructor
 public final class PipelineJobItemManager<T extends PipelineJobItemProgress> {
     
     private final YamlPipelineJobItemProgressSwapper<YamlPipelineJobItemProgressConfiguration, T> swapper;
+    
+    @SuppressWarnings({"rawtypes", "unchecked"})
+    public PipelineJobItemManager(final YamlPipelineJobItemProgressSwapper swapper) {
+        this.swapper = swapper;
+    }
     
     /**
      * Update job item status.
