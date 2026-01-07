@@ -16,7 +16,9 @@
   ~ limitations under the License.
   -->
 
-<sql-cases>
-    <sql-case id="use_database" value="USE test_db;" db-types="MySQL,Hive,Doris" />
-    <sql-case id="use_default" value="USE DEFAULT;" db-types="Hive" />
-</sql-cases>
+<sql-parser-test-cases>
+    <change-replication-source-to sql-case-id="change_replication_source_to_doris" />
+    <change-replication-source-to sql-case-id="change_replication_ignore_server_ids_doris"/>
+    <change-replication-source-to sql-case-id="change_master_ignore_server_ids_doris"/>
+    <change-replication-source-to sql-case-id="change_master_basic_doris"/>
+</sql-parser-test-cases>

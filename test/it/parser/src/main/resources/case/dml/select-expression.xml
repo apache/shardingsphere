@@ -2420,6 +2420,18 @@
         </projections>
     </select>
 
+    <select sql-case-id="select_safe_equal">
+        <projections start-index="7" stop-index="13">
+            <expression-projection text="1 &lt;=&gt; 1" start-index="7" stop-index="13" />
+        </projections>
+    </select>
+
+    <select sql-case-id="select_string_concat_with_double_bar">
+        <projections start-index="7" stop-index="16">
+            <expression-projection text="'a' || 'b'" start-index="7" stop-index="16" />
+        </projections>
+    </select>
+
     <select sql-case-id="select_with_abs_function">
         <from>
             <simple-table name="t_order" start-index="19" stop-index="25" />

@@ -17,7 +17,7 @@
   -->
 
 <sql-cases>
-    <sql-case id="drop_view" value="DROP VIEW kinds" db-types="PostgreSQL, openGauss, SQLServer, Oracle" />
+    <sql-case id="drop_view" value="DROP VIEW kinds" db-types="PostgreSQL, openGauss, SQLServer, Oracle,Doris" />
     <sql-case id="drop_view_with_schemaname" value="DROP VIEW schemaName.viewName;" db-types="Oracle" />
     <sql-case id="drop_view_cascade_constraints" value="DROP VIEW schemaName.viewName CASCADE CONSTRAINTS;" db-types="Oracle" />
     <sql-case id="drop_view_cascade" value="DROP VIEW kinds, order_view CASCADE" db-types="PostgreSQL, openGauss" />

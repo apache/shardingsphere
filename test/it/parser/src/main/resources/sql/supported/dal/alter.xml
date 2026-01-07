@@ -31,4 +31,8 @@
     <sql-case id="alter_system_add_observer" value="ALTER SYSTEM ADD OBSERVER &quot;192.168.1.101:9010&quot;" db-types="Doris" />
     <sql-case id="alter_system_drop_follower" value="ALTER SYSTEM DROP FOLLOWER &quot;192.168.1.100:9010&quot;" db-types="Doris" />
     <sql-case id="alter_system_drop_observer" value="ALTER SYSTEM DROP OBSERVER &quot;192.168.1.101:9010&quot;" db-types="Doris" />
+    <sql-case id="change_replication_source_to_doris" value="CHANGE REPLICATION SOURCE TO SOURCE_USER = 'plug_user', SOURCE_PASSWORD = 'plug_user', SOURCE_RETRY_COUNT = 0" db-types="Doris" />
+    <sql-case id="change_replication_ignore_server_ids_doris" value="CHANGE REPLICATION SOURCE TO IGNORE_SERVER_IDS = ()" db-types="Doris"/>
+    <sql-case id="change_master_ignore_server_ids_doris" value="CHANGE MASTER TO IGNORE_SERVER_IDS = ()" db-types="Doris"/>
+    <sql-case id="change_master_basic_doris" value="CHANGE MASTER TO MASTER_HOST='127.0.0.1', MASTER_PORT=3306" db-types="Doris"/>
 </sql-cases>
