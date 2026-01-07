@@ -18,14 +18,14 @@
 package org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item;
 
 import lombok.Getter;
-import lombok.Setter;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExpressionSegment;
 
 /**
  * Datetime projection segment.
  */
+@RequiredArgsConstructor
 @Getter
-@Setter
 public final class DatetimeProjectionSegment implements ProjectionSegment {
     
     private final int startIndex;
@@ -38,20 +38,8 @@ public final class DatetimeProjectionSegment implements ProjectionSegment {
     
     private final String text;
     
-    public DatetimeProjectionSegment(final int startIndex, final int stopIndex, final ExpressionSegment left, final ExpressionSegment right, final String text) {
-        this.startIndex = startIndex;
-        this.stopIndex = stopIndex;
-        this.left = left;
-        this.right = right;
-        this.text = text;
-    }
-    
     public DatetimeProjectionSegment(final int startIndex, final int stopIndex, final ExpressionSegment left, final String text) {
-        this.startIndex = startIndex;
-        this.stopIndex = stopIndex;
-        this.left = left;
-        right = null;
-        this.text = text;
+        this(startIndex, stopIndex, null, left, text);
     }
     
     @Override

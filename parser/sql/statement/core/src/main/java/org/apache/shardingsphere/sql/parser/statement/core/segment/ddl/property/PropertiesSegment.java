@@ -18,18 +18,19 @@
 package org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.property;
 
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.SQLSegment;
 
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
 import java.util.stream.Collectors;
 
 /**
  * Properties segment.
  */
+@RequiredArgsConstructor
 @Getter
 public final class PropertiesSegment implements SQLSegment {
     
@@ -38,24 +39,6 @@ public final class PropertiesSegment implements SQLSegment {
     private final int stopIndex;
     
     private final List<PropertySegment> properties = new LinkedList<>();
-    
-    public PropertiesSegment(final int startIndex, final int stopIndex) {
-        this.startIndex = startIndex;
-        this.stopIndex = stopIndex;
-    }
-    
-    /**
-     * Convert to properties map.
-     *
-     * @return properties map
-     */
-    public Properties toProperties() {
-        Properties result = new Properties();
-        for (PropertySegment each : properties) {
-            result.setProperty(each.getKey(), each.getValue());
-        }
-        return result;
-    }
     
     /**
      * Convert to map.
