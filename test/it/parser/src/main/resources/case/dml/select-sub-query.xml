@@ -354,6 +354,23 @@
         </projections>
     </select>
 
+    <select sql-case-id="select_with_exists_sub_query_with_project_for_doris" db-types="Doris">
+        <projections start-index="7" stop-index="36">
+            <subquery-projection start-index="14" stop-index="36" text="EXISTS (SELECT 1 FROM t_order)" literal-text="EXISTS (SELECT 1 FROM t_order)">
+                <subquery start-index="14" stop-index="36">
+                    <select>
+                        <from>
+                            <simple-table name="t_order" start-index="29" stop-index="35" />
+                        </from>
+                        <projections start-index="22" stop-index="22">
+                            <expression-projection start-index="22" stop-index="22" text="1" />
+                        </projections>
+                    </select>
+                </subquery>
+            </subquery-projection>
+        </projections>
+    </select>
+
     <select sql-case-id="select_with_join_table_subquery">
         <projections start-index="7" stop-index="68">
             <column-projection name="order_id" start-index="7" stop-index="31">
