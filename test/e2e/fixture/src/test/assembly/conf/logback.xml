@@ -22,7 +22,7 @@
             <pattern>[%-5level] %d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %logger{36} - %msg%n</pattern>
         </encoder>
     </appender>
-    <logger name="org.apache.shardingsphere" level="error" additivity="false">
+    <logger name="org.apache.shardingsphere" level="info" additivity="false">
         <appender-ref ref="console" />
     </logger>
     
@@ -33,7 +33,7 @@
     <logger name="io.netty" level="error" />
     
     <root>
-        <level value="error" />
+        <level value="info" />
         <appender-ref ref="console" />
     </root>
 </configuration>
