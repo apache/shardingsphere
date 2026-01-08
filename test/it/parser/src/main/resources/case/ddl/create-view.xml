@@ -95,6 +95,21 @@
         </select>
     </create-view>
 
+    <create-view sql-case-id="create_view_with_owner_doris" view-definition="SELECT order_id, user_id FROM t_order">
+        <view name="v_sales" start-index="12" stop-index="25">
+            <owner name="report" start-index="12" stop-index="17" />
+        </view>
+        <select>
+            <projections start-index="37" stop-index="53">
+                <column-projection name="order_id" start-index="37" stop-index="44" />
+                <column-projection name="user_id" start-index="47" stop-index="53" />
+            </projections>
+            <from>
+                <simple-table name="t_order" start-index="60" stop-index="66" />
+            </from>
+        </select>
+    </create-view>
+
     <create-view sql-case-id="create_view_with_columns_doris" view-definition="SELECT k1, k2 FROM example_table">
         <view name="example_view" start-index="12" stop-index="23">
             <column name="c1" start-index="26" stop-index="27" />

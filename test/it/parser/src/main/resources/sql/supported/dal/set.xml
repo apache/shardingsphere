@@ -45,4 +45,6 @@
     <sql-case id="set_charset_postgresql" value="SET NAMES 'UTF8'" db-types="PostgreSQL" />
     <sql-case id="set_client_encoding" value="SET CLIENT_ENCODING TO 'UTF8'" db-types="PostgreSQL" />
     <sql-case id="set_session_authorization" value="SET SESSION AUTHORIZATION user1 PASSWORD 'password'" db-types="openGauss" />
+    <sql-case id="set_persist_system_variable_doris" value="SET PERSIST max_connections = 200" db-types="Doris" />
+    <sql-case id="set_persist_only_system_variable_doris" value="SET PERSIST_ONLY time_zone = '+08:00'" db-types="Doris" />
 </sql-cases>

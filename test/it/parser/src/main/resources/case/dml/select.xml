@@ -11934,4 +11934,33 @@
             <simple-table name="DUAL" start-index="14" stop-index="17" />
         </from>
     </select>
+
+    <select sql-case-id="select_straight_join_doris">
+        <projections start-index="21" stop-index="21">
+            <shorthand-projection start-index="21" stop-index="21" />
+        </projections>
+        <from>
+            <simple-table name="t_order" start-index="28" stop-index="34" />
+        </from>
+    </select>
+
+    <select sql-case-id="select_for_update_doris">
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" />
+        </projections>
+        <from start-index="14" stop-index="20">
+            <simple-table name="t_order" start-index="14" stop-index="20" />
+        </from>
+        <lock start-index="22" stop-index="31" />
+    </select>
+
+    <select sql-case-id="select_function_with_owner_doris">
+        <projections start-index="7" stop-index="27">
+            <expression-projection text="analytics.custom_fn()" start-index="7" stop-index="27">
+                <expr>
+                    <function function-name="analytics.custom_fn()" text="analytics.custom_fn()" start-index="7" stop-index="27" />
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
 </sql-parser-test-cases>

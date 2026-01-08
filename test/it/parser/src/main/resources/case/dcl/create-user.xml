@@ -63,4 +63,8 @@
     <create-user sql-case-id="create_azure_ad_user_without_login" />
     <create-user sql-case-id="create _user_with_option" />
     <create-user sql-case-id="create_user_with_user_auth_option" />
+    <create-user sql-case-id="create_user_require_ssl_doris" />
+    <create-user sql-case-id="create_user_require_none_doris" />
+    <create-user sql-case-id="create_user_require_x509_doris" />
+    <create-user sql-case-id="create_user_require_tls_specified_doris" />
 </sql-parser-test-cases>

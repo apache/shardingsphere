@@ -71,6 +71,36 @@
         </combine>
     </select>
 
+    <select sql-case-id="select_union_doris">
+        <projections start-index="7" stop-index="7">
+            <expression-projection text="1" start-index="7" stop-index="7">
+                <expr>
+                    <literal-expression value="1" start-index="7" stop-index="7" />
+                </expr>
+            </expression-projection>
+        </projections>
+        <combine combine-type="UNION" start-index="0" stop-index="22">
+            <left>
+                <projections start-index="7" stop-index="7">
+                    <expression-projection text="1" start-index="7" stop-index="7">
+                        <expr>
+                            <literal-expression value="1" start-index="7" stop-index="7" />
+                        </expr>
+                    </expression-projection>
+                </projections>
+            </left>
+            <right>
+                <projections start-index="22" stop-index="22">
+                    <expression-projection text="2" start-index="22" stop-index="22">
+                        <expr>
+                            <literal-expression value="2" start-index="22" stop-index="22" />
+                        </expr>
+                    </expression-projection>
+                </projections>
+            </right>
+        </combine>
+    </select>
+
     <select sql-case-id="select_union_all">
         <projections start-index="7" stop-index="7">
             <shorthand-projection start-index="7" stop-index="7" />

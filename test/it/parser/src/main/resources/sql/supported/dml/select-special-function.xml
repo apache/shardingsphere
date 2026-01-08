@@ -165,6 +165,7 @@
     <sql-case id="select_json_parse" value="SELECT JSON_PARSE('{&quot;k1&quot;:&quot;v31&quot;,&quot;k2&quot;:300}')" db-types="Doris" />
     <sql-case id="select_json_parse_error_to_null" value="SELECT JSON_PARSE('invalid json')" db-types="Doris" />
     <sql-case id="select_json_parse_error_to_value" value="SELECT JSON_PARSE('invalid json', '{}')" db-types="Doris" />
+    <sql-case id="select_json_separator_doris" value="SELECT JSON_SEPARATOR(order_id, '$.a') FROM t_order" db-types="Doris" />
     <sql-case id="select_std" value="SELECT STD(1)" db-types="MySQL" />
     <sql-case id="select_stddev" value="SELECT STDDEV(1)" db-types="MySQL" />
     <sql-case id="select_stddev_pop" value="SELECT STDDEV_POP(1)" db-types="MySQL" />
