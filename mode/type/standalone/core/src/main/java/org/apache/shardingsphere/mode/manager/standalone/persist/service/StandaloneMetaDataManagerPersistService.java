@@ -71,14 +71,14 @@ public final class StandaloneMetaDataManagerPersistService implements MetaDataMa
         metaDataPersistFacade.getDatabaseMetaDataFacade().getDatabase().add(databaseName);
         metaDataContextManager.getDatabaseMetaDataManager().addDatabase(databaseName);
         metaDataPersistFacade.getDatabaseMetaDataFacade().persistCreatedDatabaseSchemas(metaDataContextManager.getMetaDataContexts().getMetaData().getDatabase(databaseName));
-        OrderedServicesCache.clearCache();
+        clearServicesCache();
     }
     
     @Override
     public void dropDatabase(final ShardingSphereDatabase database) {
         metaDataPersistFacade.getDatabaseMetaDataFacade().getDatabase().drop(database.getName());
         metaDataContextManager.getDatabaseMetaDataManager().dropDatabase(database.getName());
-        OrderedServicesCache.clearCache();
+        clearServicesCache();
     }
     
     @Override
@@ -155,7 +155,7 @@ public final class StandaloneMetaDataManagerPersistService implements MetaDataMa
         MetaDataContexts originalMetaDataContexts = new MetaDataContexts(metaDataContextManager.getMetaDataContexts().getMetaData(), metaDataContextManager.getMetaDataContexts().getStatistics());
         metaDataPersistFacade.getDataSourceUnitService().persist(databaseName, toBeRegisteredProps);
         afterStorageUnitsRegistered(databaseName, originalMetaDataContexts, toBeRegisteredProps);
-        OrderedServicesCache.clearCache();
+        clearServicesCache();
     }
     
     private void afterStorageUnitsRegistered(final String databaseName, final MetaDataContexts originalMetaDataContexts,
@@ -172,7 +172,7 @@ public final class StandaloneMetaDataManagerPersistService implements MetaDataMa
         MetaDataContexts originalMetaDataContexts = new MetaDataContexts(metaDataContextManager.getMetaDataContexts().getMetaData(), metaDataContextManager.getMetaDataContexts().getStatistics());
         metaDataPersistFacade.getDataSourceUnitService().persist(database.getName(), toBeUpdatedProps);
         afterStorageUnitsAltered(database.getName(), originalMetaDataContexts, toBeUpdatedProps);
-        OrderedServicesCache.clearCache();
+        clearServicesCache();
     }
     
     private void afterStorageUnitsAltered(final String databaseName, final MetaDataContexts originalMetaDataContexts, final Map<String, DataSourcePoolProperties> toBeRegisteredProps) {
@@ -191,7 +191,7 @@ public final class StandaloneMetaDataManagerPersistService implements MetaDataMa
             MetaDataContexts reloadMetaDataContexts = metaDataContextManager.getMetaDataContexts();
             metaDataPersistFacade.getDatabaseMetaDataFacade().unregisterStorageUnits(database.getName(), reloadMetaDataContexts);
         }
-        OrderedServicesCache.clearCache();
+        clearServicesCache();
     }
     
     private Collection<String> getToBeDroppedResourceNames(final String databaseName, final Collection<String> toBeDroppedResourceNames) {
@@ -208,7 +208,7 @@ public final class StandaloneMetaDataManagerPersistService implements MetaDataMa
         } catch (final SQLException ex) {
             throw new SQLWrapperException(ex);
         }
-        OrderedServicesCache.clearCache();
+        clearServicesCache();
     }
     
     @Override
@@ -222,7 +222,7 @@ public final class StandaloneMetaDataManagerPersistService implements MetaDataMa
         Map<String, Collection<ShardingSphereTable>> schemaAndTablesMap = metaDataPersistFacade.getDatabaseMetaDataFacade().persistAlteredTables(
                 database.getName(), metaDataContextManager.getMetaDataContexts(), needReloadTables);
         alterSchemaTables(database, schemaAndTablesMap);
-        OrderedServicesCache.clearCache();
+        clearServicesCache();
     }
     
     private void alterRuleItem(final String databaseName, final Collection<MetaDataVersion> metaDataVersions) {
@@ -247,7 +247,7 @@ public final class StandaloneMetaDataManagerPersistService implements MetaDataMa
         Map<String, Collection<ShardingSphereTable>> schemaAndTablesMap = metaDataPersistFacade.getDatabaseMetaDataFacade().persistAlteredTables(
                 database.getName(), metaDataContextManager.getMetaDataContexts(), needReloadTables);
         alterSchemaTables(database, schemaAndTablesMap);
-        OrderedServicesCache.clearCache();
+        clearServicesCache();
     }
     
     private void removeRuleItem(final String databaseName, final Collection<MetaDataVersion> metaDataVersions) {
@@ -282,20 +282,24 @@ public final class StandaloneMetaDataManagerPersistService implements MetaDataMa
         Map<String, Collection<ShardingSphereTable>> schemaAndTablesMap = metaDataPersistFacade.getDatabaseMetaDataFacade().persistAlteredTables(
                 database.getName(), metaDataContextManager.getMetaDataContexts(), needReloadTables);
         alterSchemaTables(database, schemaAndTablesMap);
-        OrderedServicesCache.clearCache();
+        clearServicesCache();
     }
     
     @Override
     public void alterGlobalRuleConfiguration(final RuleConfiguration toBeAlteredRuleConfig) {
         metaDataPersistFacade.getGlobalRuleService().persist(Collections.singleton(toBeAlteredRuleConfig));
         metaDataContextManager.getGlobalConfigurationManager().alterGlobalRuleConfiguration(toBeAlteredRuleConfig);
-        OrderedServicesCache.clearCache();
+        clearServicesCache();
     }
     
     @Override
     public void alterProperties(final Properties props) {
         metaDataPersistFacade.getPropsService().persist(props);
         metaDataContextManager.getGlobalConfigurationManager().alterProperties(props);
+        clearServicesCache();
+    }
+    
+    private void clearServicesCache() {
         OrderedServicesCache.clearCache();
     }
 }
