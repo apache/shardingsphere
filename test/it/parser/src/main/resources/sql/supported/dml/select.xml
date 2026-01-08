@@ -236,6 +236,10 @@
     <sql-case id="select_with_lead_and_lag_function" value="SELECT hire_date, LAG(hire_date, 1) OVER (ORDER BY hire_date) AS LAG1, LEAD(hire_date, 1) OVER (ORDER BY hire_date) AS LEAD1 FROM employees WHERE department_id = 30 ORDER BY hire_date;" db-types="Oracle,MySQL" />
     <sql-case id="select_with_connect_by_root" value="SELECT CONNECT_BY_ROOT last_name 'Manager' FROM employees CONNECT BY PRIOR employee_id = manager_id" db-types="Oracle" />
     <sql-case id="select_with_ntile_function" value="SELECT NTILE(4) OVER (ORDER BY salary DESC) AS quartile FROM employees WHERE department_id = 100 ORDER BY last_name" db-types="Oracle,MySQL,Doris" />
+    <sql-case id="select_window_named_partition_doris" value="SELECT SUM(sales) OVER w AS total_sales FROM orders WINDOW w AS (PARTITION BY region ORDER BY order_id)" db-types="Doris" />
+    <sql-case id="select_window_frame_lag_doris" value="SELECT LAG(amount, 1, 0) OVER (PARTITION BY customer_id ORDER BY tx_time ROWS BETWEEN 1 PRECEDING AND 1 FOLLOWING) AS lag_amt FROM payments" db-types="Doris" />
+    <sql-case id="select_first_value_doris" value="SELECT FIRST_VALUE(price) OVER (ORDER BY created_at) AS first_price FROM product_prices" db-types="Doris" />
+    <sql-case id="select_nth_value_doris" value="SELECT NTH_VALUE(score, 2) OVER (ORDER BY score) AS second_score FROM rankings" db-types="Doris" />
     <sql-case id="select_from_dual_doris" value="SELECT 1 FROM DUAL" db-types="Doris" />
     <sql-case id="select_date_literal_doris" value="SELECT DATE '2020-01-01'" db-types="Doris" />
     <sql-case id="select_hex_literal_doris" value="SELECT 0x1AF" db-types="Doris" />
