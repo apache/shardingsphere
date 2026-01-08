@@ -25,7 +25,7 @@
     <sql-case id="create_table_column_with_backtick" value="create table `````t_o``r``d``e``r``` (```i` int)" db-types="MySQL" />
     <sql-case id="create_table_with_like" value="CREATE TABLE t_log LIKE t_old_log" db-types="MySQL,Doris" />
     <sql-case id="create_table" value="CREATE TABLE t_log(id int PRIMARY KEY, status varchar(10))" />
-    <sql-case id="create_table_with_engin_charset" value="CREATE TABLE t_log(id int PRIMARY KEY, status varchar(10)) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4" db-types="MySQL" />
+    <sql-case id="create_table_with_engin_charset" value="CREATE TABLE t_log(id int PRIMARY KEY, status varchar(10)) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4" db-types="MySQL,Doris" />
     <sql-case id="create_table_with_keyword" value="CREATE TABLE t_log(id int PRIMARY KEY, status boolean)" db-types="PostgreSQL,openGauss" />
     <sql-case id="create_table_if_not_exists" value="CREATE TABLE IF NOT EXISTS t_log(id int, status varchar(10))" db-types="MySQL,PostgreSQL,openGauss,Presto" />
     <sql-case id="create_temporary_table_if_not_exists" value="CREATE TEMPORARY TABLE IF NOT EXISTS t_temp_log(id int, status varchar(10))" db-types="MySQL,PostgreSQL,openGauss" />
@@ -123,7 +123,7 @@
     <sql-case id="create_table_with_on_update_current_timestamp" value="CREATE TABLE t_order (order_id INT PRIMARY KEY, create_time DATETIME DEFAULT CURRENT_TIMESTAMP, modify_time DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP)" db-types="MySQL" />
     <sql-case id="create_table_with_on_update_current_timestamp_and_fsp" value="CREATE TABLE t_order (order_id INT PRIMARY KEY, create_time DATETIME DEFAULT CURRENT_TIMESTAMP, modify_time DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6) ON UPDATE CURRENT_TIMESTAMP(6))" db-types="MySQL" />
     <sql-case id="create_table_with_on_other_vendor_data_type" value="CREATE TABLE t_order (order_id INT PRIMARY KEY, num MIDDLEINT(10))" db-types="MySQL" />
-    <sql-case id="create_table_with_enum_and_character_set" value="CREATE TABLE t_order (order_id INT PRIMARY KEY, status ENUM('0', '1') CHARACTER SET UTF8)" db-types="MySQL" />
+    <sql-case id="create_table_with_enum_and_character_set" value="CREATE TABLE t_order (order_id INT PRIMARY KEY, status ENUM('0', '1') CHARACTER SET UTF8)" db-types="MySQL,Doris" />
     <sql-case id="create_table_with_storage_parameter" value="CREATE TABLE t_order (order_id INT DEFAULT 0, user_id INT, status VARCHAR(10), column1 VARCHAR(10), column2 VARCHAR(10), column3 VARCHAR(10)) WITH (FILLFACTOR = 80, ORIENTATION=ROW)" db-types="openGauss" />
     <sql-case id="create_table_as_select" value="CREATE TABLE t_order_new WITH (DISTRIBUTION = HASH(product_key), CLUSTERED COLUMNSTORE INDEX, PARTITION (order_date RANGE RIGHT FOR VALUES (20000101,20010101))) AS SELECT * FROM t_order" db-types="SQLServer" />
     <sql-case id="create_table_as_select_with_explicit_column_names" value="CREATE TABLE t_order_new (order_id_new, user_id_new) WITH (DISTRIBUTION = HASH(product_key), CLUSTERED COLUMNSTORE INDEX, PARTITION (order_date RANGE RIGHT FOR VALUES (20000101,20010101))) AS SELECT order_id, user_id FROM t_order" db-types="SQLServer" />

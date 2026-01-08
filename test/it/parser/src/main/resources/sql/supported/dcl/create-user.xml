@@ -39,6 +39,12 @@
     <sql-case id="create_user_require_none_doris" value="CREATE USER user_no_tls REQUIRE NONE" db-types="Doris" />
     <sql-case id="create_user_require_x509_doris" value="CREATE USER user_x509 REQUIRE X509" db-types="Doris" />
     <sql-case id="create_user_require_tls_specified_doris" value="CREATE USER user_tls REQUIRE SUBJECT 'subj' ISSUER 'issuer' CIPHER 'cipher_name'" db-types="Doris" />
+    <sql-case id="create_user_with_max_connections_per_hour_doris" value="CREATE USER user_conn WITH MAX_CONNECTIONS_PER_HOUR 10" db-types="Doris" />
+    <sql-case id="create_user_with_max_user_connections_doris" value="CREATE USER user_user_conn WITH MAX_USER_CONNECTIONS 5" db-types="Doris" />
+    <sql-case id="create_user_identified_with_plugin_doris" value="CREATE USER user_plugin IDENTIFIED WITH 'ldap'" db-types="Doris" />
+    <sql-case id="create_user_identified_with_plugin_as_doris" value="CREATE USER user_plugin_as IDENTIFIED WITH 'ldap' AS 'pwd'" db-types="Doris" />
+    <sql-case id="create_user_identified_with_plugin_by_doris" value="CREATE USER user_plugin_by IDENTIFIED WITH 'ldap' BY 'pwd'" db-types="Doris" />
+    <sql-case id="create_user_identified_with_plugin_by_random_doris" value="CREATE USER user_plugin_rand IDENTIFIED WITH 'ldap' BY RANDOM PASSWORD" db-types="Doris" />
     <sql-case id="create_external_user" value="CREATE USER user1 IDENTIFIED EXTERNALLY" db-types="Oracle" />
     <sql-case id="create_global_user" value="CREATE USER user1 IDENTIFIED GLOBALLY" db-types="Oracle" />
     <sql-case id="create_user_with_password" value="CREATE USER user1 IDENTIFIED BY RANDOM password default role role1" db-types="H2,MySQL" />

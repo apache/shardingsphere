@@ -19,7 +19,7 @@
 <sql-cases>
     <sql-case id="drop_index_with_algorithm" value="DROP INDEX idx_name ON t_order ALGORITHM=INPLACE" db-types="MySQL" />
     <sql-case id="drop_index_with_lock" value="DROP INDEX idx_name ON t_order LOCK=EXCLUSIVE" db-types="MySQL" />
-    <sql-case id="drop_index_with_algorithm_lock" value="DROP INDEX idx_name ON t_order ALGORITHM=INPLACE LOCK=EXCLUSIVE" db-types="MySQL" />
+    <sql-case id="drop_index_with_algorithm_lock" value="DROP INDEX idx_name ON t_order ALGORITHM=INPLACE LOCK=EXCLUSIVE" db-types="MySQL,Doris" />
     <sql-case id="drop_index_with_lock_algorithm" value="DROP INDEX idx_name ON t_order LOCK=EXCLUSIVE ALGORITHM=INPLACE" db-types="MySQL" />
     <!-- TODO should assert index for all databases (only Oracle can support parse index right now)
     <sql-case id="drop_index" value="DROP INDEX t_log_index ON t_log" db-types="MySQL,SQLServer" />
