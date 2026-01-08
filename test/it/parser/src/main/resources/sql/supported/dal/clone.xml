@@ -18,8 +18,8 @@
 
 <sql-cases>
     <sql-case id="clone_local" value="CLONE LOCAL DATA DIRECTORY = '/path/to/clone_dir'" db-types="MySQL" />
-    <sql-case id="clone_instance" value="CLONE INSTANCE FROM 'donor_clone_user'@'example.donor.host.com':3306 IDENTIFIED BY 'password'" db-types="MySQL" />
-    <sql-case id="clone_instance_with_data_dir" value="CLONE INSTANCE FROM 'donor_clone_user'@'example.donor.host.com':3306 IDENTIFIED BY 'password' DATA DIRECTORY = '/tmp/clone_dir'" db-types="MySQL" />
-    <sql-case id="clone_instance_require_ssl" value="CLONE INSTANCE FROM 'donor_clone_user'@'example.donor.host.com':3306 IDENTIFIED BY 'password' REQUIRE SSL" db-types="MySQL" />
+    <sql-case id="clone_instance" value="CLONE INSTANCE FROM 'donor_clone_user'@'example.donor.host.com':3306 IDENTIFIED BY 'password'" db-types="MySQL,Doris" />
+    <sql-case id="clone_instance_with_data_dir" value="CLONE INSTANCE FROM 'donor_clone_user'@'example.donor.host.com':3306 IDENTIFIED BY 'password' DATA DIRECTORY = '/tmp/clone_dir'" db-types="MySQL,Doris" />
+    <sql-case id="clone_instance_require_ssl" value="CLONE INSTANCE FROM 'donor_clone_user'@'example.donor.host.com':3306 IDENTIFIED BY 'password' REQUIRE SSL" db-types="MySQL,Doris" />
     <sql-case id="clone_instance_require_no_ssl" value="CLONE INSTANCE FROM 'donor_clone_user'@'example.donor.host.com':3306 IDENTIFIED BY 'password' REQUIRE NO SSL" db-types="MySQL" />
 </sql-cases>

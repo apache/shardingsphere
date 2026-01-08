@@ -393,4 +393,5 @@
     <sql-case id="select_force_single_node_plan_hint" value="SELECT * FROM Person OPTION (FORCE SINGLE NODE PLAN);" db-types="SQLServer"/>
     <sql-case id="select_querytraceon_hint" value="SELECT * FROM Person OPTION (QUERYTRACEON 4199, QUERYTRACEON 4137);" db-types="SQLServer"/>
     <sql-case id="select_with_sample_clause" value="SELECT 1 AS C1 FROM T_ORDER SAMPLE BLOCK (1.43302, 8) SEED(9) T_ORDER" db-types="Oracle" />
+    <sql-case id="select_from_function_table_doris" value="SELECT * FROM table_func(1, 2)" db-types="Doris" />
 </sql-cases>

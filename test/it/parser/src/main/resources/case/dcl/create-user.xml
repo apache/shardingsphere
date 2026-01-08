@@ -73,4 +73,14 @@
     <create-user sql-case-id="create_user_require_none_doris" />
     <create-user sql-case-id="create_user_require_x509_doris" />
     <create-user sql-case-id="create_user_require_tls_specified_doris" />
+    <create-user sql-case-id="create_user_account_unlock_password_expire_interval_doris" />
+    <create-user sql-case-id="create_user_password_expire_never_doris" />
+    <create-user sql-case-id="create_user_password_expire_now_doris" />
+    <create-user sql-case-id="create_user_password_history_length_doris" />
+    <create-user sql-case-id="create_user_password_reuse_interval_doris" />
+    <create-user sql-case-id="create_user_password_reuse_interval_default_doris" />
+    <create-user sql-case-id="create_user_password_require_current_optional_doris" />
+    <create-user sql-case-id="create_user_password_require_current_yes_doris" />
+    <create-user sql-case-id="create_user_failed_login_and_lock_time_doris" />
+    <create-user sql-case-id="create_user_password_lock_time_unbounded_doris" />
 </sql-parser-test-cases>

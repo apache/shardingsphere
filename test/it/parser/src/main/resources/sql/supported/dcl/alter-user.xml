@@ -35,6 +35,7 @@
     <sql-case id="alter_user_with_password_options" value="ALTER USER user1 PASSWORD EXPIRE DEFAULT PASSWORD HISTORY DEFAULT" db-types="MySQL" />
     <sql-case id="alter_user_with_lock_option" value="ALTER USER user1 ACCOUNT LOCK" db-types="MySQL" />
     <sql-case id="alter_user_with_options" value="ALTER USER user1 WITH MAX_QUERIES_PER_HOUR 1 MAX_UPDATES_PER_HOUR 1 PASSWORD EXPIRE DEFAULT PASSWORD HISTORY DEFAULT ACCOUNT LOCK" db-types="MySQL" />
+    <sql-case id="alter_user_with_password_doris" value="ALTER USER user1 IDENTIFIED BY 'pwd_doris'" db-types="Doris" />
     <sql-case id="alter_external_user" value="ALTER USER user1 IDENTIFIED EXTERNALLY" db-types="Oracle" />
     <sql-case id="alter_global_user" value="ALTER USER user1 IDENTIFIED GLOBALLY AS 'CN=user1'" db-types="Oracle" />
     <sql-case id="alter_user_with_tablespace_option" value="ALTER USER user1 DEFAULT TABLESPACE tablespace1" db-types="Oracle" />

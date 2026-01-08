@@ -241,4 +241,23 @@
     <sql-case id="show_query_stats_all" value="SHOW QUERY STATS ALL" db-types="Doris" />
     <sql-case id="show_query_stats_verbose" value="SHOW QUERY STATS VERBOSE" db-types="Doris" />
     <sql-case id="show_query_stats_from_table_all_verbose" value="SHOW QUERY STATS FROM test_table ALL VERBOSE" db-types="Doris" />
+    <sql-case id="show_create_database_doris" value="SHOW CREATE DATABASE test_db" db-types="Doris" />
+    <sql-case id="show_create_view_doris" value="SHOW CREATE VIEW v_sales" db-types="Doris" />
+    <sql-case id="show_create_event_doris" value="SHOW CREATE EVENT ev_annual" db-types="Doris" />
+    <sql-case id="show_create_function_doris" value="SHOW CREATE FUNCTION udf_add" db-types="Doris" />
+    <sql-case id="show_create_procedure_doris" value="SHOW CREATE PROCEDURE proc_test" db-types="Doris" />
+    <sql-case id="show_create_trigger_doris" value="SHOW CREATE TRIGGER trg_test" db-types="Doris" />
+    <sql-case id="show_create_user_doris" value="SHOW CREATE USER user1" db-types="Doris" />
+    <sql-case id="show_binary_logs_doris" value="SHOW BINARY LOGS" db-types="Doris" />
+    <sql-case id="show_binlog_events_doris" value="SHOW BINLOG EVENTS" db-types="Doris" />
+    <sql-case id="show_processlist_doris" value="SHOW PROCESSLIST" db-types="Doris" />
+    <sql-case id="show_open_tables_doris" value="SHOW OPEN TABLES" db-types="Doris" />
+    <sql-case id="show_triggers_doris" value="SHOW TRIGGERS" db-types="Doris" />
+    <sql-case id="show_function_status_doris" value="SHOW FUNCTION STATUS" db-types="Doris" />
+    <sql-case id="show_procedure_status_doris" value="SHOW PROCEDURE STATUS" db-types="Doris" />
+    <sql-case id="show_master_status_doris" value="SHOW MASTER STATUS" db-types="Doris" />
+    <sql-case id="show_slave_status_doris" value="SHOW SLAVE STATUS" db-types="Doris" />
+    <sql-case id="show_slave_hosts_doris" value="SHOW SLAVE HOSTS" db-types="Doris" />
+    <sql-case id="show_replica_status_doris" value="SHOW REPLICA STATUS" db-types="Doris" />
+    <sql-case id="show_relaylog_events_doris" value="SHOW RELAYLOG EVENTS" db-types="Doris" />
 </sql-cases>
