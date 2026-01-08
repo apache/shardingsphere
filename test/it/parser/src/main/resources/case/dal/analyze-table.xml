@@ -17,7 +17,5 @@
   -->
 
 <sql-parser-test-cases>
-    <analyze-table sql-case-id="analyze_table_doris">
-        <simple-table name="t_order" start-index="14" stop-index="20" />
-    </analyze-table>
+    <common sql-case-id="analyze_table_doris" />
 </sql-parser-test-cases>

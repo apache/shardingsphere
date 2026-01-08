@@ -17,8 +17,7 @@
   -->
 
 <sql-parser-test-cases>
-    <start-slave sql-case-id="start_slave_doris" />
-    <stop-slave sql-case-id="stop_slave_doris" />
-    <start-replica sql-case-id="start_replica_doris" />
-    <stop-replica sql-case-id="stop_replica_doris" />
+    <common sql-case-id="start_slave_doris" />
+    <common sql-case-id="stop_slave_doris" />
+    <common sql-case-id="start_replica_doris" />
 </sql-parser-test-cases>
