@@ -79,7 +79,6 @@ class SQLParseCountAdviceTest {
                 Arguments.of("RQL", new ShowStorageUnitsStatement(new FromDatabaseSegment(0, new DatabaseSegment(0, 0, null)), null), "RQL=1"),
                 Arguments.of("RDL", new RegisterStorageUnitStatement(false, Collections.emptyList(), Collections.emptySet()), "RDL=1"),
                 Arguments.of("RAL", new ShowMigrationListStatement(), "RAL=1"),
-                Arguments.of("RUL", new ParseStatement("SELECT * FROM tbl"), "RUL=1")
-        );
+                Arguments.of("RUL", new ParseStatement("SELECT * FROM tbl"), "RUL=1"));
     }
 }
