@@ -45,10 +45,8 @@ public final class DatabaseTypedSPILoader {
         if (result.isPresent()) {
             return result;
         }
-        if (databaseType.getTrunkDatabaseType().isPresent()) {
-            return TypedSPILoader.findService(spiClass, databaseType.getTrunkDatabaseType().get());
-        }
-        return result;
+        Optional<DatabaseType> trunkDatabaseType = databaseType.getTrunkDatabaseType();
+        return trunkDatabaseType.isPresent() ? TypedSPILoader.findService(spiClass, trunkDatabaseType.get()) : result;
     }
     
     /**
@@ -65,10 +63,8 @@ public final class DatabaseTypedSPILoader {
         if (result.isPresent()) {
             return result;
         }
-        if (databaseType.getTrunkDatabaseType().isPresent()) {
-            return TypedSPILoader.findService(spiClass, databaseType.getTrunkDatabaseType().get(), props);
-        }
-        return result;
+        Optional<DatabaseType> trunkDatabaseType = databaseType.getTrunkDatabaseType();
+        return trunkDatabaseType.isPresent() ? TypedSPILoader.findService(spiClass, trunkDatabaseType.get(), props) : result;
     }
     
     /**
