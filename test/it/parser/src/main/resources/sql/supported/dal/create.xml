@@ -17,8 +17,9 @@
   -->
 
 <sql-cases>
-    <sql-case id="create_resource_group" value="CREATE RESOURCE GROUP rg type = user" db-types="MySQL" />
-    <sql-case id="create_resource_group_with_system_type_and_thread_priority" value="CREATE RESOURCE GROUP rg2 TYPE = SYSTEM THREAD_PRIORITY = -20 DISABLE" db-types="MySQL"/>
+    <sql-case id="create_resource_group" value="CREATE RESOURCE GROUP rg type = user" db-types="MySQL,Doris" />
+    <sql-case id="create_resource_group_with_system_type_and_thread_priority" value="CREATE RESOURCE GROUP rg2 TYPE = SYSTEM THREAD_PRIORITY = -20 DISABLE" db-types="MySQL,Doris"/>
+    <sql-case id="create_loadable_function_doris" value="CREATE FUNCTION json_valid RETURNS INTEGER SONAME 'json_valid.so'" db-types="Doris" />
     <sql-case id="create_sql_block_rule_with_sql" value="CREATE SQL_BLOCK_RULE test_rule PROPERTIES(&quot;sql&quot;=&quot;select \\* from order_analysis&quot;,&quot;global&quot;=&quot;true&quot;,&quot;enable&quot;=&quot;true&quot;)" db-types="Doris" />
     <sql-case id="create_sql_block_rule_with_sqlhash" value="CREATE SQL_BLOCK_RULE block_rule_sqlhash PROPERTIES(&quot;sqlHash&quot;=&quot;0e5491b37dbea5e8&quot;,&quot;enable&quot;=&quot;true&quot;)" db-types="Doris" />
     <sql-case id="create_sql_block_rule_with_partition_num" value="CREATE SQL_BLOCK_RULE limit_partition_rule PROPERTIES(&quot;partition_num&quot;=&quot;30&quot;,&quot;global&quot;=&quot;true&quot;)" db-types="Doris" />
