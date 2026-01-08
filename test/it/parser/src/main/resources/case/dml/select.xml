@@ -6803,6 +6803,84 @@
         </order-by>
     </select>
 
+    <select sql-case-id="select_window_named_partition_doris">
+        <projections start-index="7" stop-index="38" literal-start-index="7" literal-stop-index="38">
+            <aggregation-projection type="SUM" expression="SUM(sales) OVER w" alias="total_sales" start-index="7" stop-index="23" literal-start-index="7" literal-stop-index="23" />
+        </projections>
+        <from>
+            <simple-table name="orders" start-index="45" stop-index="50" literal-start-index="45" literal-stop-index="50" />
+        </from>
+        <window start-index="52" stop-index="102">
+            <window-item start-index="59" stop-index="102">
+                <window-name>w</window-name>
+                <partition-by>
+                    <expression-projection text="region" start-index="78" stop-index="83" literal-start-index="78" literal-stop-index="83">
+                        <expr>
+                            <column name="region" start-index="78" stop-index="83" literal-start-index="78" literal-stop-index="83" />
+                        </expr>
+                    </expression-projection>
+                </partition-by>
+                <order-by>
+                    <column-item name="order_id" order-direction="ASC" start-index="94" stop-index="101" literal-start-index="94" literal-stop-index="101" />
+                </order-by>
+            </window-item>
+        </window>
+    </select>
+
+    <select sql-case-id="select_window_frame_lag_doris">
+        <projections start-index="7" stop-index="124" literal-start-index="7" literal-stop-index="124">
+            <expression-projection text="LAG(amount, 1, 0) OVER (PARTITION BY customer_id ORDER BY tx_time ROWS BETWEEN 1 PRECEDING AND 1 FOLLOWING)" alias="lag_amt" start-index="7" stop-index="124" literal-start-index="7" literal-stop-index="124">
+                <expr>
+                    <function function-name="LAG" text="LAG(amount, 1, 0) OVER (PARTITION BY customer_id ORDER BY tx_time ROWS BETWEEN 1 PRECEDING AND 1 FOLLOWING)" start-index="7" stop-index="113" literal-start-index="7" literal-stop-index="113">
+                        <parameter>
+                            <column name="amount" start-index="11" stop-index="16" literal-start-index="11" literal-stop-index="16" />
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+        <from>
+            <simple-table name="payments" start-index="131" stop-index="138" literal-start-index="131" literal-stop-index="138" />
+        </from>
+    </select>
+
+    <select sql-case-id="select_first_value_doris">
+        <projections start-index="7" stop-index="66" literal-start-index="7" literal-stop-index="66">
+            <expression-projection text="FIRST_VALUE(price) OVER (ORDER BY created_at)" alias="first_price" start-index="7" stop-index="66" literal-start-index="7" literal-stop-index="66">
+                <expr>
+                    <function function-name="FIRST_VALUE" text="FIRST_VALUE(price) OVER (ORDER BY created_at)" start-index="7" stop-index="51" literal-start-index="7" literal-stop-index="51">
+                        <parameter>
+                            <column name="price" start-index="19" stop-index="23" literal-start-index="19" literal-stop-index="23" />
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+        <from>
+            <simple-table name="product_prices" start-index="73" stop-index="86" literal-start-index="73" literal-stop-index="86" />
+        </from>
+    </select>
+
+    <select sql-case-id="select_nth_value_doris">
+        <projections start-index="7" stop-index="63" literal-start-index="7" literal-stop-index="63">
+            <expression-projection text="NTH_VALUE(score, 2) OVER (ORDER BY score)" alias="second_score" start-index="7" stop-index="63" literal-start-index="7" literal-stop-index="63">
+                <expr>
+                    <function function-name="NTH_VALUE" text="NTH_VALUE(score, 2) OVER (ORDER BY score)" start-index="7" stop-index="47" literal-start-index="7" literal-stop-index="47">
+                        <parameter>
+                            <column name="score" start-index="17" stop-index="21" literal-start-index="17" literal-stop-index="21" />
+                        </parameter>
+                        <parameter>
+                            <literal-expression value="2" start-index="24" stop-index="24" literal-start-index="24" literal-stop-index="24" />
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+        <from>
+            <simple-table name="rankings" start-index="70" stop-index="77" literal-start-index="70" literal-stop-index="77" />
+        </from>
+    </select>
+
     <select sql-case-id="select_with_percentile_functions">
         <projections start-index="7" stop-index="163" literal-start-index="7" literal-stop-index="163">
             <column-projection name="department_id" start-index="7" stop-index="19" literal-start-index="7" literal-stop-index="19" />
