@@ -11963,4 +11963,15 @@
             </expression-projection>
         </projections>
     </select>
+
+    <select sql-case-id="select_from_function_table_doris">
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" />
+        </projections>
+        <from start-index="14" stop-index="29">
+            <function-table start-index="14" stop-index="29">
+                <table-function function-name="table_func" text="table_func(1, 2)" start-index="14" stop-index="29" />
+            </function-table>
+        </from>
+    </select>
 </sql-parser-test-cases>
