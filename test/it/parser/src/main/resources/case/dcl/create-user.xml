@@ -63,6 +63,12 @@
     <create-user sql-case-id="create_azure_ad_user_without_login" />
     <create-user sql-case-id="create _user_with_option" />
     <create-user sql-case-id="create_user_with_user_auth_option" />
+    <create-user sql-case-id="create_user_with_max_connections_per_hour_doris" />
+    <create-user sql-case-id="create_user_with_max_user_connections_doris" />
+    <create-user sql-case-id="create_user_identified_with_plugin_doris" />
+    <create-user sql-case-id="create_user_identified_with_plugin_as_doris" />
+    <create-user sql-case-id="create_user_identified_with_plugin_by_doris" />
+    <create-user sql-case-id="create_user_identified_with_plugin_by_random_doris" />
     <create-user sql-case-id="create_user_require_ssl_doris" />
     <create-user sql-case-id="create_user_require_none_doris" />
     <create-user sql-case-id="create_user_require_x509_doris" />

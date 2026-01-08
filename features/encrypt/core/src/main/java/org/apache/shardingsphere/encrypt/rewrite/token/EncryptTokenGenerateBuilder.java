@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.encrypt.rewrite.token;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.encrypt.rewrite.aware.EncryptConditionsAware;
 import org.apache.shardingsphere.encrypt.rewrite.condition.EncryptCondition;
 import org.apache.shardingsphere.encrypt.rewrite.token.generator.assignment.EncryptInsertAssignmentTokenGenerator;
 import org.apache.shardingsphere.encrypt.rewrite.token.generator.assignment.EncryptUpdateAssignmentTokenGenerator;
@@ -71,8 +70,8 @@ public final class EncryptTokenGenerateBuilder implements SQLTokenGeneratorBuild
         addSQLTokenGenerator(result, new EncryptUpdateAssignmentTokenGenerator(rule, database));
         addSQLTokenGenerator(result, new EncryptPredicateColumnTokenGenerator(rule));
         addSQLTokenGenerator(result, new EncryptInsertPredicateColumnTokenGenerator(rule));
-        addSQLTokenGenerator(result, new EncryptPredicateValueTokenGenerator(rule, database));
-        addSQLTokenGenerator(result, new EncryptInsertPredicateValueTokenGenerator(rule, database));
+        addSQLTokenGenerator(result, new EncryptPredicateValueTokenGenerator(rule, database, encryptConditions));
+        addSQLTokenGenerator(result, new EncryptInsertPredicateValueTokenGenerator(rule, database, encryptConditions));
         addSQLTokenGenerator(result, new EncryptInsertValuesTokenGenerator(rule, database));
         addSQLTokenGenerator(result, new EncryptInsertDefaultColumnsTokenGenerator(rule));
         addSQLTokenGenerator(result, new EncryptInsertCipherNameTokenGenerator(rule));
@@ -86,15 +85,8 @@ public final class EncryptTokenGenerateBuilder implements SQLTokenGeneratorBuild
     }
     
     private void addSQLTokenGenerator(final Collection<SQLTokenGenerator> sqlTokenGenerators, final SQLTokenGenerator toBeAddedSQLTokenGenerator) {
-        setUpSQLTokenGenerator(toBeAddedSQLTokenGenerator);
         if (toBeAddedSQLTokenGenerator.isGenerateSQLToken(sqlStatementContext)) {
             sqlTokenGenerators.add(toBeAddedSQLTokenGenerator);
-        }
-    }
-    
-    private void setUpSQLTokenGenerator(final SQLTokenGenerator toBeAddedSQLTokenGenerator) {
-        if (toBeAddedSQLTokenGenerator instanceof EncryptConditionsAware) {
-            ((EncryptConditionsAware) toBeAddedSQLTokenGenerator).setEncryptConditions(encryptConditions);
         }
     }
 }

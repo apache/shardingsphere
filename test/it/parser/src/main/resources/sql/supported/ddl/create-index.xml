@@ -17,7 +17,7 @@
   -->
 
 <sql-cases>
-    <sql-case id="create_index_with_lock_algorithm" value="CREATE INDEX idx_name ON t_order (name) LOCK=SHARED ALGORITHM=COPY" db-types="MySQL" />
+    <sql-case id="create_index_with_lock_algorithm" value="CREATE INDEX idx_name ON t_order (name) LOCK=SHARED ALGORITHM=COPY" db-types="MySQL,Doris" />
     <sql-case id="create_index_with_lock" value="CREATE INDEX idx_name ON t_order (name) LOCK=SHARED" db-types="MySQL" />
     <sql-case id="create_index_with_algorithm" value="CREATE INDEX idx_name ON t_order (name) ALGORITHM=COPY" db-types="MySQL" />
     <sql-case id="create_index_with_algorithm_lock" value="CREATE INDEX idx_name ON t_order (name) ALGORITHM=COPY LOCK=SHARED" db-types="MySQL" />

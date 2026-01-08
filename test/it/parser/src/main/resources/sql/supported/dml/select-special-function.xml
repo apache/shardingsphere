@@ -38,7 +38,7 @@
     <sql-case id="select_with_trim_expr_and_both" value="SELECT TRIM(BOTH '#' FROM `name`) FROM `t_order`" db-types="MySQL" />
     <sql-case id="select_with_trim_expr_from_expr" value="SELECT TRIM(remove_name FROM name) FROM t_order" db-types="MySQL" />
     <sql-case id="select_with_trim_expr_from_expr_and_both" value="SELECT TRIM(BOTH `remove_name` FROM `name`) FROM `t_order`" db-types="MySQL" />
-    <sql-case id="select_weight_string" value="SELECT WEIGHT_STRING('bar')" db-types="MySQL" />
+    <sql-case id="select_weight_string" value="SELECT WEIGHT_STRING('bar')" db-types="MySQL,Doris" />
     <sql-case id="select_values" value="SELECT VALUES(order_id) FROM t_order" db-types="MySQL,Presto,Doris" />
     <sql-case id="select_current_user_brackets" value="SELECT CURRENT_USER()" db-types="MySQL,Doris" />
     <sql-case id="select_extract_function" value="SELECT EXTRACT(YEAR FROM TIMESTAMP '2001-02-16 20:38:40')" db-types="PostgreSQL,openGauss" />
@@ -105,7 +105,7 @@
     <sql-case id="select_with_xor_function" value="SELECT 1 XOR NULL;" db-types="MySQL,Doris"/>
     <sql-case id="select_with_year_function" value="SELECT YEAR('1999-09-09');" db-types="MySQL"/>
     <sql-case id="select_with_yearweek_function" value="SELECT YEARWEEK('1988-08-08');" db-types="MySQL"/>
-    <sql-case id="select_with_weight_string_function" value="SELECT HEX(WEIGHT_STRING('MySQL'));" db-types="MySQL"/>
+    <sql-case id="select_with_weight_string_function" value="SELECT HEX(WEIGHT_STRING('MySQL'));" db-types="MySQL,Doris"/>
     <sql-case id="select_row_number" value="SELECT ROW_NUMBER() OVER w FROM t_order" db-types="MySQL" />
     <sql-case id="select_rpad" value="SELECT RPAD('Hello', 10, '*')" db-types="MySQL" />
     <sql-case id="select_rtrim" value="SELECT RTRIM('  Hello  ')" db-types="MySQL" />
