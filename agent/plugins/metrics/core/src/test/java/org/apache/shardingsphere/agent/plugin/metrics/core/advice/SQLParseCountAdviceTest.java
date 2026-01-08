@@ -39,9 +39,12 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.Up
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.tcl.CommitStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.dal.show.database.MySQLShowDatabasesStatement;
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
 import java.util.Collections;
+import java.util.stream.Stream;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -56,68 +59,27 @@ class SQLParseCountAdviceTest {
         ((MetricsCollectorFixture) MetricsCollectorRegistry.get(config, "FIXTURE")).reset();
     }
     
-    @Test
-    void assertParseInsertSQL() {
-        assertParse(mock(InsertStatement.class), "INSERT=1");
-    }
-    
-    @Test
-    void assertParseUpdateSQL() {
-        assertParse(mock(UpdateStatement.class), "UPDATE=1");
-    }
-    
-    @Test
-    void assertParseDeleteSQL() {
-        assertParse(mock(DeleteStatement.class), "DELETE=1");
-    }
-    
-    @Test
-    void assertParseSelectSQL() {
-        assertParse(mock(SelectStatement.class), "SELECT=1");
-    }
-    
-    @Test
-    void assertParseDDL() {
-        assertParse(mock(CreateDatabaseStatement.class), "DDL=1");
-    }
-    
-    @Test
-    void assertParseDCL() {
-        assertParse(mock(CreateUserStatement.class), "DCL=1");
-    }
-    
-    @Test
-    void assertParseDAL() {
-        assertParse(mock(MySQLShowDatabasesStatement.class), "DAL=1");
-    }
-    
-    @Test
-    void assertParseTCL() {
-        assertParse(mock(CommitStatement.class), "TCL=1");
-    }
-    
-    @Test
-    void assertParseRQL() {
-        assertParse(new ShowStorageUnitsStatement(new FromDatabaseSegment(0, new DatabaseSegment(0, 0, null)), null), "RQL=1");
-    }
-    
-    @Test
-    void assertParseRDL() {
-        assertParse(new RegisterStorageUnitStatement(false, Collections.emptyList(), Collections.emptySet()), "RDL=1");
-    }
-    
-    @Test
-    void assertParseRAL() {
-        assertParse(new ShowMigrationListStatement(), "RAL=1");
-    }
-    
-    @Test
-    void assertParseRUL() {
-        assertParse(new ParseStatement("SELECT * FROM tbl"), "RUL=1");
-    }
-    
-    private void assertParse(final SQLStatement sqlStatement, final String expected) {
+    @ParameterizedTest(name = "{index}: type={0}")
+    @MethodSource("sqlStatements")
+    void assertParseSQL(final String type, final SQLStatement sqlStatement, final String expected) {
         new SQLParseCountAdvice().afterMethod(new TargetAdviceObjectFixture(), mock(TargetAdviceMethod.class), new Object[]{}, sqlStatement, "FIXTURE");
         assertThat(MetricsCollectorRegistry.get(config, "FIXTURE").toString(), is(expected));
+    }
+    
+    private static Stream<Arguments> sqlStatements() {
+        return Stream.of(
+                Arguments.of("INSERT", mock(InsertStatement.class), "INSERT=1"),
+                Arguments.of("UPDATE", mock(UpdateStatement.class), "UPDATE=1"),
+                Arguments.of("DELETE", mock(DeleteStatement.class), "DELETE=1"),
+                Arguments.of("SELECT", mock(SelectStatement.class), "SELECT=1"),
+                Arguments.of("DDL", mock(CreateDatabaseStatement.class), "DDL=1"),
+                Arguments.of("DCL", mock(CreateUserStatement.class), "DCL=1"),
+                Arguments.of("DAL", mock(MySQLShowDatabasesStatement.class), "DAL=1"),
+                Arguments.of("TCL", mock(CommitStatement.class), "TCL=1"),
+                Arguments.of("RQL", new ShowStorageUnitsStatement(new FromDatabaseSegment(0, new DatabaseSegment(0, 0, null)), null), "RQL=1"),
+                Arguments.of("RDL", new RegisterStorageUnitStatement(false, Collections.emptyList(), Collections.emptySet()), "RDL=1"),
+                Arguments.of("RAL", new ShowMigrationListStatement(), "RAL=1"),
+                Arguments.of("RUL", new ParseStatement("SELECT * FROM tbl"), "RUL=1")
+        );
     }
 }
