@@ -90,6 +90,7 @@
     <sql-case id="select_with_spatial_function" value="SELECT * FROM t_order WHERE ST_DISTANCE_SPHERE(POINT(113.358772, 23.1273723), POINT(user_id,order_id)) != 0" db-types="MySQL" />
     <sql-case id="select_current_user" value="SELECT CURRENT_USER" db-types="PostgreSQL,openGauss" />
     <sql-case id="select_with_match_against" value="SELECT * FROM t_order_item WHERE MATCH(t_order_item.description) AGAINST (? IN NATURAL LANGUAGE MODE) AND user_id = ?" db-types="MySQL,Doris" />
+    <sql-case id="select_not_match_against_doris" value="SELECT * FROM t_order WHERE NOT MATCH(description) AGAINST('abc' IN NATURAL LANGUAGE MODE)" db-types="Doris" />
     <sql-case id="select_straight_join_doris" value="SELECT STRAIGHT_JOIN * FROM t_order" db-types="Doris" />
     <sql-case id="select_for_update_doris" value="SELECT * FROM t_order FOR UPDATE" db-types="Doris" />
     <sql-case id="select_union_doris" value="SELECT 1 UNION SELECT 2" db-types="Doris" />
@@ -317,6 +318,8 @@
     <sql-case id="select_with_index_hints1" value="SELECT * FROM t1 USE INDEX (i1) IGNORE INDEX (i2) USE INDEX (i2);" db-types="MySQL,Doris"/>
     <sql-case id="select_with_index_hints2" value="SELECT * FROM t1 USE INDEX () IGNORE INDEX (i2) USE INDEX (i1) USE INDEX (i2);" db-types="MySQL,Doris"/>
     <sql-case id="select_with_index_hints3" value="SELECT * FROM t1 USE INDEX (i1,i2) IGNORE INDEX (i2);" db-types="MySQL,Doris"/>
+    <sql-case id="select_with_index_hint_for_order_by_doris" value="SELECT * FROM t1 USE INDEX FOR ORDER BY (i1) ORDER BY col1" db-types="Doris"/>
+    <sql-case id="select_with_index_hint_for_group_by_doris" value="SELECT * FROM t1 USE INDEX FOR GROUP BY (i1) GROUP BY col1" db-types="Doris"/>
     <sql-case id="select_with_force_index_for_order_by" value="SELECT * FROM t1 FORCE INDEX FOR ORDER BY (idx1) ORDER BY id" db-types="MySQL,Doris" />
     <sql-case id="select_with_force_index_for_group_by" value="SELECT * FROM t1 FORCE INDEX FOR GROUP BY (idx1) GROUP BY id" db-types="MySQL,Doris" />
     <sql-case id="select_with_force_index_for_join" value="SELECT * FROM t1 FORCE INDEX FOR JOIN (idx1)" db-types="MySQL,Doris" />
