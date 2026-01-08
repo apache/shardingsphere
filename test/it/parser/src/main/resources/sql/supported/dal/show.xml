@@ -55,8 +55,8 @@
     <sql-case id="show_procedure_status_with_where_expr" value="SHOW PROCEDURE STATUS where name = ?" db-types="MySQL" />
     <sql-case id="show_procedure_status_with_where_expr_no_parameter" value="SHOW PROCEDURE STATUS where name = 'procedure1'" db-types="MySQL" />
     <sql-case id="show_replicas" value="SHOW REPLICAS" db-types="MySQL" />
-    <sql-case id="show_procedure_code_func" value="SHOW PROCEDURE CODE TEST_FUNC" db-types="MySQL" />
-    <sql-case id="show_procedure_code_owner_func" value="SHOW PROCEDURE CODE TEST_USER.TEST_FUNC" db-types="MySQL" />
+    <sql-case id="show_procedure_code_func" value="SHOW PROCEDURE CODE TEST_FUNC" db-types="MySQL,Doris" />
+    <sql-case id="show_procedure_code_owner_func" value="SHOW PROCEDURE CODE TEST_USER.TEST_FUNC" db-types="MySQL,Doris" />
     <sql-case id="show_relay-log_events" value="SHOW RELAYLOG EVENTS FOR CHANNEL TEST_CHANNEL" db-types="MySQL" />
     <sql-case id="show_relay-log_events_with_log" value="SHOW RELAYLOG EVENTS IN 'TEST_LOG' FOR CHANNEL TEST_CHANNEL" db-types="MySQL" />
     <sql-case id="show_slave_hosts" value="SHOW SLAVE HOSTS" db-types="MySQL" />
@@ -132,14 +132,15 @@
     <sql-case id="show_create_function" value="SHOW CREATE FUNCTION function_name" db-types="MySQL" />
     <sql-case id="show_create_proc" value="SHOW CREATE PROCEDURE proc_name" db-types="MySQL" />
     <sql-case id="show_create_view" value="SHOW CREATE VIEW view_name" db-types="MySQL" />
-    <sql-case id="show_function_code" value="SHOW FUNCTION CODE function_name" db-types="MySQL" />
+    <sql-case id="show_function_code" value="SHOW FUNCTION CODE function_name" db-types="MySQL,Doris" />
     <sql-case id="show_grants_for" value="SHOW GRANTS FOR 'jeffrey'@'localhost'" db-types="MySQL" />
     <sql-case id="show_grants_for_using" value="SHOW GRANTS FOR 'u1'@'localhost' USING 'r1'" db-types="MySQL" />
     <sql-case id="show_master_status" value="SHOW MASTER STATUS" db-types="MySQL" />
-    <sql-case id="show_plugins" value="SHOW PLUGINS" db-types="MySQL" />
+    <sql-case id="show_plugins" value="SHOW PLUGINS" db-types="MySQL,Doris" />
+    <sql-case id="show_privileges_doris" value="SHOW PRIVILEGES" db-types="Doris" />
     <sql-case id="show_processlist" value="SHOW FULL PROCESSLIST" db-types="MySQL" />
-    <sql-case id="show_profile" value="SHOW PROFILE LIMIT 1, 2" db-types="MySQL" />
-    <sql-case id="show_profiles" value="SHOW PROFILES" db-types="MySQL" />
+    <sql-case id="show_profile" value="SHOW PROFILE LIMIT 1, 2" db-types="MySQL,Doris" />
+    <sql-case id="show_profiles" value="SHOW PROFILES" db-types="MySQL,Doris" />
     <sql-case id="show_charset" value="SHOW CHARSET" db-types="MySQL" />
     <sql-case id="show_warnings_limit" value="SHOW WARNINGS limit 1" db-types="MySQL,Doris" />
     <sql-case id="show_warnings_count" value="SHOW COUNT(*) WARNINGS" db-types="MySQL,Doris" />

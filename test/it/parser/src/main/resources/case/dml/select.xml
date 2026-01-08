@@ -157,6 +157,20 @@
             </expression-projection>
         </projections>
     </select>
+    <select sql-case-id="select_three_part_column_doris">
+        <projections start-index="7" stop-index="15">
+            <column-projection name="c1" start-index="7" stop-index="15">
+                <owner start-index="11" stop-index="12" name="t1">
+                    <owner start-index="7" stop-index="9" name="db1" />
+                </owner>
+            </column-projection>
+        </projections>
+        <from>
+            <simple-table name="t1" start-index="22" stop-index="27">
+                <owner start-index="22" stop-index="24" name="db1" />
+            </simple-table>
+        </from>
+    </select>
     
     <select sql-case-id="select_with_default_str">
         <projections start-index="7" stop-index="7">

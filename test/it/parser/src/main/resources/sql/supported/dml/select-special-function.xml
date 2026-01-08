@@ -25,15 +25,15 @@
     <sql-case id="select_cast" value="SELECT CAST(c AT TIME ZONE 'UTC' AS DATETIME)" db-types="MySQL" />
     <sql-case id="select_cast_multiset" value="select CAST(MULTISET(SELECT cust_address FROM customers c WHERE c.customer_id = cd.customer_id) as cust_address_tab_typ) from customer;" db-types="Oracle" />
     <sql-case id="select_convert_function" value="SELECT CONVERT('2020-10-01', DATE)" db-types="MySQL" />
-    <sql-case id="select_position" value="SELECT POSITION('bar' IN 'foobarbar')" db-types="MySQL" />
+    <sql-case id="select_position" value="SELECT POSITION('bar' IN 'foobarbar')" db-types="MySQL,Doris" />
     <sql-case id="select_substring" value="SELECT SUBSTRING('foobarbar' from -4 for 2)" db-types="MySQL" />
     <sql-case id="select_substr" value="SELECT SUBSTR('foobarbar' from 4)" db-types="MySQL,Presto" />
     <sql-case id="select_extract" value="SELECT EXTRACT(YEAR FROM '2019-07-02')" db-types="MySQL" />
     <sql-case id="select_extract_from_column" value="SELECT EXTRACT(YEAR FROM o.creation_date) FROM t_order o" db-types="MySQL" />
-    <sql-case id="select_char" value="SELECT CHAR(77,121,83,81,'76')" db-types="MySQL" />
+    <sql-case id="select_char" value="SELECT CHAR(77,121,83,81,'76')" db-types="MySQL,Doris" />
     <sql-case id="select_chr_using_nchar_cs" value="SELECT CHR (196 USING NCHAR_CS) FROM DUAL;" db-types="Oracle" />
-    <sql-case id="select_trim" value="SELECT TRIM('  bar   ')" db-types="MySQL" />
-    <sql-case id="select_trim_with_both" value="SELECT TRIM(BOTH ' ' from ' bar ')" db-types="MySQL" />
+    <sql-case id="select_trim" value="SELECT TRIM('  bar   ')" db-types="MySQL,Doris" />
+    <sql-case id="select_trim_with_both" value="SELECT TRIM(BOTH ' ' from ' bar ')" db-types="MySQL,Doris" />
     <sql-case id="select_with_trim_expr" value="SELECT TRIM('#' FROM `name`) FROM t_order" db-types="MySQL" />
     <sql-case id="select_with_trim_expr_and_both" value="SELECT TRIM(BOTH '#' FROM `name`) FROM `t_order`" db-types="MySQL" />
     <sql-case id="select_with_trim_expr_from_expr" value="SELECT TRIM(remove_name FROM name) FROM t_order" db-types="MySQL" />
