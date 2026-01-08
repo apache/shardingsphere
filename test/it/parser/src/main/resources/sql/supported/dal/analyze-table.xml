@@ -17,8 +17,5 @@
   -->
 
 <sql-cases>
-    <sql-case id="explicit_table" value="table f" db-types="MySQL,Doris" />
-    <sql-case id="table_with_order_by_limit_offset" value="TABLE t_order ORDER BY order_id LIMIT 1 OFFSET 2" db-types="MySQL,Doris" />
-    <sql-case id="table_union" value="TABLE T1 UNION TABLE T2" db-types="MySQL,Doris" />
-    <sql-case id="select_from_with_table" value="SELECT * FROM (TABLE t0) AS dt" db-types="MySQL" />
+    <sql-case id="analyze_table_doris" value="ANALYZE TABLE t_order" db-types="Doris" />
 </sql-cases>

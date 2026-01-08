@@ -26,9 +26,9 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.SQLSegment;
 /**
  * Update statistics option segment.
  */
+@NoArgsConstructor
 @Getter
 @Setter
-@NoArgsConstructor
 public final class StatisticsOptionSegment implements SQLSegment {
     
     private int startIndex;

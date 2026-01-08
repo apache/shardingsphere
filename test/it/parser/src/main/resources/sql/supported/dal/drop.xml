@@ -17,5 +17,5 @@
   -->
 
 <sql-cases>
-    <sql-case id="drop_resource_group" value="DROP RESOURCE GROUP rg" db-types="MySQL" />
+    <sql-case id="drop_resource_group" value="DROP RESOURCE GROUP rg" db-types="MySQL,Doris" />
 </sql-cases>

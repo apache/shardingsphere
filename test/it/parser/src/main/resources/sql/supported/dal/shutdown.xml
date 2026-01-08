@@ -17,5 +17,5 @@
   -->
 
 <sql-cases>
-    <sql-case id="shutdown" value="SHUTDOWN" db-types="MySQL" />
+    <sql-case id="shutdown" value="SHUTDOWN" db-types="MySQL,Doris" />
 </sql-cases>

@@ -40,7 +40,7 @@
     <sql-case id="set_parameter_equal_list" value="SET extra_float_digits = 1,2,3" db-types="PostgreSQL,openGauss" />
     <sql-case id="set_parameter_equal_number_with_signal" value="SET extra_float_digits = -10.5" db-types="PostgreSQL,openGauss" />
     <sql-case id="set_names" value="SET NAMES 'utf8' COLLATE 'utf8_general_ci'" db-types="MySQL,Doris" />
-    <sql-case id="set_resource_group" value="SET RESOURCE GROUP rg" db-types="MySQL" />
+    <sql-case id="set_resource_group" value="SET RESOURCE GROUP rg" db-types="MySQL,Doris" />
     <sql-case id="set_charset_mysql" value="SET NAMES 'utf8'" db-types="MySQL" />
     <sql-case id="set_charset_postgresql" value="SET NAMES 'UTF8'" db-types="PostgreSQL" />
     <sql-case id="set_client_encoding" value="SET CLIENT_ENCODING TO 'UTF8'" db-types="PostgreSQL" />
