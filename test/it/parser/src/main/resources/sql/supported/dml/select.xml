@@ -22,6 +22,7 @@
     <sql-case id="select_extract_function_with_day_hour" value="select extract(DAY_HOUR FROM &quot;1999-01-02 10:11:12&quot;)" db-types="MySQL" />
     <sql-case id="select_with_latin1" value="select _latin1'B' collate latin1_bin in (_latin1'a',_latin1'b')" db-types="MySQL" />
     <sql-case id="select_with_default_str" value="select * from t1 where str &lt;&gt; default(str)" db-types="MySQL" />
+    <sql-case id="select_three_part_column_doris" value="SELECT db1.t1.c1 FROM db1.t1" db-types="Doris" />
     <sql-case id="select_subquery_excpet" value="select * from (select * from t1 except all select * from t1 limit 2) a" db-types="MySQL" />
     <sql-case id="select_point_function_with_in" value="SELECT point(1,1) IN ('1',1,'1') AS res" db-types="MySQL" />
     <sql-case id="select_with_in" value="SELECT b, b IN ('20161213'), b in ('20161213', 0) FROM t2" db-types="MySQL" />

@@ -30,15 +30,19 @@ import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.session.connection.ConnectionContext;
 import org.apache.shardingsphere.infra.session.query.QueryContext;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.DeleteStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.InsertStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.UpdateStatement;
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
 import java.util.Collections;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -47,53 +51,39 @@ import static org.mockito.Mockito.when;
 
 class SQLRouteCountAdviceTest {
     
+    private static final DatabaseType DATABASE_TYPE = TypedSPILoader.getService(DatabaseType.class, "FIXTURE");
+    
     private final MetricConfiguration config = new MetricConfiguration("routed_sql_total", MetricCollectorType.COUNTER, null, Collections.singletonList("type"), Collections.emptyMap());
     
     private final SQLRouteCountAdvice advice = new SQLRouteCountAdvice();
-    
-    private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "FIXTURE");
     
     @AfterEach
     void reset() {
         ((MetricsCollectorFixture) MetricsCollectorRegistry.get(config, "FIXTURE")).reset();
     }
     
-    @Test
-    void assertInsertRoute() {
-        QueryContext queryContext = new QueryContext(new CommonSQLStatementContext(
-                new InsertStatement(databaseType)), "", Collections.emptyList(), new HintValueContext(), mockConnectionContext(), mock(ShardingSphereMetaData.class));
-        assertRoute(queryContext, "INSERT=1");
+    @ParameterizedTest(name = "[{index}] type={0}")
+    @MethodSource("routeContexts")
+    void assertRoute(final String type, final QueryContext queryContext) {
+        advice.beforeMethod(new TargetAdviceObjectFixture(), mock(TargetAdviceMethod.class), new Object[]{queryContext, new ConnectionContext(Collections::emptySet)}, "FIXTURE");
+        assertThat(MetricsCollectorRegistry.get(config, "FIXTURE").toString(), is(String.format("%s=1", type)));
     }
     
-    private ConnectionContext mockConnectionContext() {
+    private static Stream<Arguments> routeContexts() {
+        return Stream.of(
+                Arguments.of("INSERT", createQueryContext(new InsertStatement(DATABASE_TYPE))),
+                Arguments.of("UPDATE", createQueryContext(new UpdateStatement(DATABASE_TYPE))),
+                Arguments.of("DELETE", createQueryContext(new DeleteStatement(DATABASE_TYPE))),
+                Arguments.of("SELECT", createQueryContext(new SelectStatement(DATABASE_TYPE))));
+    }
+    
+    private static QueryContext createQueryContext(final SQLStatement sqlStatement) {
+        return new QueryContext(new CommonSQLStatementContext(sqlStatement), "", Collections.emptyList(), new HintValueContext(), mockConnectionContext(), mock(ShardingSphereMetaData.class));
+    }
+    
+    private static ConnectionContext mockConnectionContext() {
         ConnectionContext result = mock(ConnectionContext.class);
         when(result.getCurrentDatabaseName()).thenReturn(Optional.of("foo_db"));
         return result;
-    }
-    
-    @Test
-    void assertUpdateRoute() {
-        QueryContext queryContext = new QueryContext(new CommonSQLStatementContext(
-                new UpdateStatement(databaseType)), "", Collections.emptyList(), new HintValueContext(), mockConnectionContext(), mock(ShardingSphereMetaData.class));
-        assertRoute(queryContext, "UPDATE=1");
-    }
-    
-    @Test
-    void assertDeleteRoute() {
-        QueryContext queryContext = new QueryContext(new CommonSQLStatementContext(
-                new DeleteStatement(databaseType)), "", Collections.emptyList(), new HintValueContext(), mockConnectionContext(), mock(ShardingSphereMetaData.class));
-        assertRoute(queryContext, "DELETE=1");
-    }
-    
-    @Test
-    void assertSelectRoute() {
-        QueryContext queryContext = new QueryContext(new CommonSQLStatementContext(
-                new SelectStatement(databaseType)), "", Collections.emptyList(), new HintValueContext(), mockConnectionContext(), mock(ShardingSphereMetaData.class));
-        assertRoute(queryContext, "SELECT=1");
-    }
-    
-    void assertRoute(final QueryContext queryContext, final String expected) {
-        advice.beforeMethod(new TargetAdviceObjectFixture(), mock(TargetAdviceMethod.class), new Object[]{queryContext, new ConnectionContext(Collections::emptySet)}, "FIXTURE");
-        assertThat(MetricsCollectorRegistry.get(config, "FIXTURE").toString(), is(expected));
     }
 }

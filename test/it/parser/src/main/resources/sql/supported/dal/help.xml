@@ -17,7 +17,7 @@
   -->
 
 <sql-cases>
-    <sql-case id="help_with_text" value="HELP test" db-types="MySQL" />
-    <sql-case id="help_with_quot" value="HELP &quot;test&quot;" db-types="MySQL" />
-    <sql-case id="help_with_apos" value="HELP &apos;test&apos;" db-types="MySQL" />
+    <sql-case id="help_with_text" value="HELP test" db-types="MySQL,Doris" />
+    <sql-case id="help_with_quot" value="HELP &quot;test&quot;" db-types="MySQL,Doris" />
+    <sql-case id="help_with_apos" value="HELP &apos;test&apos;" db-types="MySQL,Doris" />
 </sql-cases>

@@ -863,6 +863,7 @@
     <show sql-case-id="show_processlist" />
     <show sql-case-id="show_profile" />
     <show sql-case-id="show_profiles" />
+    <show sql-case-id="show_privileges_doris" />
     <show sql-case-id="show_charset" />
     <show sql-case-id="show_warnings_limit" />
     <show sql-case-id="show_warnings_count" />
