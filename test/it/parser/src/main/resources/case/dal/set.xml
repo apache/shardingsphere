@@ -119,4 +119,14 @@
         </parameter-assign>
     </set-parameter>
     <set-parameter sql-case-id="set_session_authorization" />
+    <set-parameter sql-case-id="set_persist_system_variable_doris">
+        <parameter-assign value="200">
+            <parameter name="max_connections" scope="PERSIST" />
+        </parameter-assign>
+    </set-parameter>
+    <set-parameter sql-case-id="set_persist_only_system_variable_doris">
+        <parameter-assign value="'+08:00'">
+            <parameter name="time_zone" scope="PERSIST_ONLY" />
+        </parameter-assign>
+    </set-parameter>
 </sql-parser-test-cases>

@@ -153,4 +153,14 @@
             <literal-expression value="member2@localhost" start-index="45" stop-index="63"/>
         </procedure-parameter>
     </call>
+    
+    <call sql-case-id="call_with_owner_doris">
+        <procedure-name name="analytics.proc_demo" start-index="5" stop-index="23"/>
+        <procedure-parameter>
+            <parameter-marker-expression parameter-index="0" start-index="25" stop-index="25"/>
+        </procedure-parameter>
+        <procedure-parameter>
+            <parameter-marker-expression parameter-index="1" start-index="28" stop-index="28"/>
+        </procedure-parameter>
+    </call>
 </sql-parser-test-cases>

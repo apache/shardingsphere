@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item;
 
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.AliasAvailable;
@@ -29,6 +30,7 @@ import java.util.Optional;
 /**
  * Column projection segment.
  */
+@RequiredArgsConstructor
 @Setter
 @Getter
 public final class ColumnProjectionSegment implements ProjectionSegment, AliasAvailable {
@@ -38,10 +40,6 @@ public final class ColumnProjectionSegment implements ProjectionSegment, AliasAv
     private AliasSegment alias;
     
     private boolean visible = true;
-    
-    public ColumnProjectionSegment(final ColumnSegment columnSegment) {
-        column = columnSegment;
-    }
     
     @Override
     public String getColumnLabel() {

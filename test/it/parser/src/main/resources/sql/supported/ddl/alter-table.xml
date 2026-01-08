@@ -84,6 +84,8 @@
     <sql-case id="alter_table_add_column_with_first" value="ALTER TABLE t_order ADD column3 VARCHAR(10) FIRST" db-types="MySQL" />
     <sql-case id="alter_table_add_column_with_after" value="ALTER TABLE t_order ADD column4 VARCHAR(10) AFTER order_id" db-types="MySQL" />
     <sql-case id="alter_table_add_column_with_first_after" value="ALTER TABLE t_order ADD column5 VARCHAR(10) FIRST, ADD column6 VARCHAR(10) FIRST, ADD column7 VARCHAR(10) AFTER column5, ADD column8 VARCHAR(10) AFTER column6" db-types="MySQL" />
+    <sql-case id="alter_table_add_column_first_doris" value="ALTER TABLE t_order ADD column9 INT FIRST" db-types="Doris" />
+    <sql-case id="alter_table_add_column_after_doris" value="ALTER TABLE t_order ADD column10 INT AFTER order_id" db-types="Doris" />
     <sql-case id="alter_table_modify_column" value="ALTER TABLE t_order MODIFY column4 VARCHAR(20)" db-types="MySQL,Oracle" />
     <sql-case id="alter_table_modify_columns" value="ALTER TABLE t_order MODIFY column4 VARCHAR(20), MODIFY column5 VARCHAR(20), MODIFY column6 VARCHAR(20)" db-types="MySQL" />
     <sql-case id="alter_table_modify_column_with_first" value="ALTER TABLE t_order MODIFY status VARCHAR(20) FIRST" db-types="MySQL" />

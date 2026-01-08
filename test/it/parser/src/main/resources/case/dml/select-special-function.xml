@@ -4184,6 +4184,26 @@
         </from>
     </select>
 
+    <select sql-case-id="select_json_separator_doris">
+        <projections start-index="7" stop-index="37">
+            <expression-projection text="JSON_SEPARATOR(order_id, '$.a')" start-index="7" stop-index="37">
+                <expr>
+                    <function function-name="JSON_SEPARATOR" text="JSON_SEPARATOR(order_id, '$.a')" start-index="7" stop-index="37">
+                        <parameter>
+                            <column name="order_id" start-index="22" stop-index="29" />
+                        </parameter>
+                        <parameter>
+                            <literal-expression value="$.a" start-index="32" stop-index="36" />
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+        <from>
+            <simple-table name="t_order" start-index="44" stop-index="50" />
+        </from>
+    </select>
+
     <select sql-case-id="select_json_type">
         <projections start-index="7" stop-index="26">
             <expression-projection start-index="7" stop-index="26" text="JSON_TYPE('[1,2,3]')">

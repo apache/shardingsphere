@@ -93,6 +93,40 @@
         </from>
     </select>
 
+    <select sql-case-id="select_window_first_value_doris">
+        <projections start-index="7" stop-index="53">
+            <expression-projection text="FIRST_VALUE(v) OVER (PARTITION BY k ORDER BY v)" start-index="7" stop-index="53">
+                <expr>
+                    <function function-name="FIRST_VALUE" text="FIRST_VALUE(v) OVER (PARTITION BY k ORDER BY v)" start-index="7" stop-index="53">
+                        <parameter>
+                            <column name="v" start-index="19" stop-index="19" />
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+        <from>
+            <simple-table name="t_order" start-index="60" stop-index="66" />
+        </from>
+    </select>
+
+    <select sql-case-id="select_window_last_value_doris">
+        <projections start-index="7" stop-index="101">
+            <expression-projection text="LAST_VALUE(v) OVER (PARTITION BY k ORDER BY v ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW)" start-index="7" stop-index="101">
+                <expr>
+                    <function function-name="LAST_VALUE" text="LAST_VALUE(v) OVER (PARTITION BY k ORDER BY v ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW)" start-index="7" stop-index="101">
+                        <parameter>
+                            <column name="v" start-index="18" stop-index="18" />
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+        <from>
+            <simple-table name="t_order" start-index="108" stop-index="114" />
+        </from>
+    </select>
+
     <select sql-case-id="select_window_frame_doris">
         <projections start-index="7" stop-index="86">
             <aggregation-projection type="SUM" expression="SUM(v) OVER (PARTITION BY k ORDER BY v ROWS BETWEEN 1 PRECEDING AND 1 FOLLOWING)" start-index="7" stop-index="86">
