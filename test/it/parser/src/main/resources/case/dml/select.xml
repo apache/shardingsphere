@@ -9884,6 +9884,38 @@
         </from>
     </select>
 
+    <select sql-case-id="select_with_index_hint_for_order_by_doris">
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" />
+        </projections>
+        <from>
+            <simple-table name="t1" start-index="14" stop-index="15">
+                <index-hint origin-text="USE INDEX FOR ORDER BY (i1)" start-index="17" stop-index="43">
+                    <hint-index-name name="i1" start-index="41" stop-index="42" />
+                </index-hint>
+            </simple-table>
+        </from>
+        <order-by>
+            <column-item name="col1" start-index="54" stop-index="57" />
+        </order-by>
+    </select>
+
+    <select sql-case-id="select_with_index_hint_for_group_by_doris">
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" />
+        </projections>
+        <from>
+            <simple-table name="t1" start-index="14" stop-index="15">
+                <index-hint origin-text="USE INDEX FOR GROUP BY (i1)" start-index="17" stop-index="43">
+                    <hint-index-name name="i1" start-index="41" stop-index="42" />
+                </index-hint>
+            </simple-table>
+        </from>
+        <group-by>
+            <column-item name="col1" start-index="54" stop-index="57" />
+        </group-by>
+    </select>
+
     <select sql-case-id="select_with_force_index_for_order_by">
         <projections start-index="7" stop-index="7">
             <shorthand-projection start-index="7" stop-index="7" />
@@ -10261,6 +10293,31 @@
                         <literal-expression value="15111111111" start-index="49" stop-index="61"/>
                     </expr>
                 </match-expression>
+            </expr>
+        </where>
+    </select>
+
+    <select sql-case-id="select_not_match_against_doris">
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" />
+        </projections>
+        <from start-index="14" stop-index="20">
+            <simple-table name="t_order" start-index="14" stop-index="20" />
+        </from>
+        <where start-index="22" stop-index="89">
+            <expr start-index="28" stop-index="89">
+                <not-expression start-index="28" stop-index="89">
+                    <expr start-index="32" stop-index="89">
+                        <match-expression start-index="32" stop-index="89">
+                            <columns>
+                                <column name="description" start-index="38" stop-index="48" />
+                            </columns>
+                            <expr start-index="59" stop-index="63">
+                                <literal-expression value="abc" start-index="59" stop-index="63" />
+                            </expr>
+                        </match-expression>
+                    </expr>
+                </not-expression>
             </expr>
         </where>
     </select>

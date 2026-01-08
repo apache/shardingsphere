@@ -105,6 +105,8 @@
     <sql-case id="select_with_collate_with_marker" value="SELECT * FROM t_order WHERE order_id COLLATE ?" db-types="MySQL,Presto,Doris" />
 
     <sql-case id="select_safe_equal" value="SELECT 1 &lt;=&gt; 1" db-types="Doris" />
+    <sql-case id="select_where_is_true_doris" value="SELECT * FROM t_order WHERE flag IS TRUE" db-types="Doris" />
+    <sql-case id="select_where_is_false_doris" value="SELECT * FROM t_order WHERE flag IS FALSE" db-types="Doris" />
     <sql-case id="select_string_concat_with_double_bar" value="SELECT 'a' || 'b'" db-types="Doris" />
     <sql-case id="select_age_for_postgres" value="SELECT * FROM cypher('sharding_test_1', $$ CREATE (n) $$) as (a agtype)" db-types="PostgreSQL" />
     <sql-case id="select_datetime_expression" value="SELECT SYSTIMESTAMP AT TIME ZONE 'UTC' FROM DUAL;" db-types="Oracle" />
