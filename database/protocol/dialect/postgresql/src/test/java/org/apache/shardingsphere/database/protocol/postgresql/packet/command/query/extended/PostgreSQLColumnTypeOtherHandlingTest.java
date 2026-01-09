@@ -25,13 +25,13 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 class PostgreSQLColumnTypeOtherHandlingTest {
-
+    
     @Test
     void assertValueOfJDBCTypeForJson() {
         PostgreSQLColumnType sqlColumnType = PostgreSQLColumnType.valueOfJDBCType(Types.OTHER, "json");
         assertThat(sqlColumnType, is(PostgreSQLColumnType.JSON));
     }
-
+    
     @Test
     void assertValueOfJDBCTypeForJsonb() {
         PostgreSQLColumnType sqlColumnType = PostgreSQLColumnType.valueOfJDBCType(Types.OTHER, "jsonb");

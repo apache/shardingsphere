@@ -52,7 +52,7 @@ public enum ConfigurationPropertyKey implements TypedPropertyKey {
      * Max opened connection size for each query.
      */
     MAX_CONNECTIONS_SIZE_PER_QUERY("max-connections-size-per-query", String.valueOf(1), int.class, false),
-
+    
     /**
      * Max union size per datasource for aggregate rewrite.
      * When route units count for a datasource exceeds this value, they will be split into batches.
@@ -139,7 +139,7 @@ public enum ConfigurationPropertyKey implements TypedPropertyKey {
      * Maximum size of Groovy inline expression parsing cache.
      */
     GROOVY_INLINE_EXPRESSION_PARSING_CACHE_MAX_SIZE("groovy-inline-expression-parsing-cache-max-size", "1000", long.class, false),
-
+    
     /**
      * Whether to enable UDT (User Defined Type) discovery.
      */

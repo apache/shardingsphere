@@ -36,13 +36,13 @@ import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
 
 class PostgreSQLDataTypeOptionTest {
-
+    
     @BeforeEach
     void setUp() {
         // Clear the static cache before each test to prevent test pollution
         PostgreSQLDataTypeOption.clearCache();
     }
-
+    
     @Test
     void assertGetExtraDataTypes() {
         PostgreSQLDataTypeOption option = new PostgreSQLDataTypeOption();
@@ -52,100 +52,100 @@ class PostgreSQLDataTypeOptionTest {
         assertThat(extraDataTypes.get("BIT VARYING"), is(java.sql.Types.OTHER));
         assertThat(extraDataTypes.get("INTEGER"), is(java.sql.Types.INTEGER));
     }
-
+    
     @Test
     void assertLoadUDTTypes() throws SQLException {
         Connection connection = mock(Connection.class);
         PreparedStatement preparedStatement = mock(PreparedStatement.class);
         ResultSet resultSet = mock(ResultSet.class);
-
+        
         // Mock the connection methods needed for cache key generation
         when(connection.getCatalog()).thenReturn("test_catalog");
         when(connection.getSchema()).thenReturn("test_schema");
-
+        
         when(connection.prepareStatement(anyString())).thenReturn(preparedStatement);
         when(preparedStatement.executeQuery()).thenReturn(resultSet);
         when(resultSet.next()).thenReturn(true, true, false); // Two rows then end
         when(resultSet.getString("udt_name")).thenReturn("custom_type1", "custom_type2");
         // Note: setString returns void, so we don't mock the return value
         doNothing().when(preparedStatement).setString(1, "public");
-
+        
         PostgreSQLDataTypeOption option = new PostgreSQLDataTypeOption();
         Map<String, Integer> udtTypes = option.loadUDTTypes(connection);
-
+        
         assertThat(udtTypes.size(), is(2));
         assertThat(udtTypes.get("custom_type1"), is(java.sql.Types.OTHER));
         assertThat(udtTypes.get("custom_type2"), is(java.sql.Types.OTHER));
     }
-
+    
     @Test
     void assertLoadUDTTypesWithSchemaFilter() throws SQLException {
         Connection connection = mock(Connection.class);
         PreparedStatement preparedStatement = mock(PreparedStatement.class);
         ResultSet resultSet = mock(ResultSet.class);
-
+        
         // Mock the connection methods needed for cache key generation
         when(connection.getCatalog()).thenReturn("test_catalog");
         when(connection.getSchema()).thenReturn("test_schema");
-
+        
         when(connection.prepareStatement(anyString())).thenReturn(preparedStatement);
         when(preparedStatement.executeQuery()).thenReturn(resultSet);
         when(resultSet.next()).thenReturn(true, true, false); // Two rows then end
         when(resultSet.getString("udt_name")).thenReturn("custom_type1", "custom_type2");
         // Note: setString returns void, so we don't mock the return value
         doNothing().when(preparedStatement).setString(1, "my_schema");
-
+        
         PostgreSQLDataTypeOption option = new PostgreSQLDataTypeOption();
         Map<String, Integer> udtTypes = option.loadUDTTypesWithSchema(connection, "my_schema");
-
+        
         assertThat(udtTypes.size(), is(2));
         assertThat(udtTypes.get("custom_type1"), is(java.sql.Types.OTHER));
         assertThat(udtTypes.get("custom_type2"), is(java.sql.Types.OTHER));
     }
-
+    
     @Test
     void assertLoadUDTTypesFromAllSchemas() throws SQLException {
         Connection connection = mock(Connection.class);
         PreparedStatement preparedStatement = mock(PreparedStatement.class);
         ResultSet resultSet = mock(ResultSet.class);
-
+        
         // Mock the connection methods needed for cache key generation
         when(connection.getCatalog()).thenReturn("test_catalog");
         when(connection.getSchema()).thenReturn("test_schema");
-
+        
         when(connection.prepareStatement(anyString())).thenReturn(preparedStatement);
         when(preparedStatement.executeQuery()).thenReturn(resultSet);
         when(resultSet.next()).thenReturn(true, true, true, false); // Three rows then end
         when(resultSet.getString("udt_name")).thenReturn("type1", "type2", "type3");
-
+        
         PostgreSQLDataTypeOption option = new PostgreSQLDataTypeOption();
         // Passing null should load from all schemas (no parameter setting happens in this case)
         Map<String, Integer> udtTypes = option.loadUDTTypesWithSchema(connection, null);
-
+        
         assertThat(udtTypes.size(), is(3));
         assertThat(udtTypes.get("type1"), is(java.sql.Types.OTHER));
         assertThat(udtTypes.get("type2"), is(java.sql.Types.OTHER));
         assertThat(udtTypes.get("type3"), is(java.sql.Types.OTHER));
     }
-
+    
     @Test
     void assertLoadUDTTypesEmptyResult() throws SQLException {
         Connection connection = mock(Connection.class);
         PreparedStatement preparedStatement = mock(PreparedStatement.class);
         ResultSet resultSet = mock(ResultSet.class);
-
+        
         // Mock the connection methods needed for cache key generation
         when(connection.getCatalog()).thenReturn("test_catalog");
         when(connection.getSchema()).thenReturn("test_schema");
-
+        
         when(connection.prepareStatement(anyString())).thenReturn(preparedStatement);
         when(preparedStatement.executeQuery()).thenReturn(resultSet);
         when(resultSet.next()).thenReturn(false); // No rows
         doNothing().when(preparedStatement).setString(1, "public");
-
+        
         PostgreSQLDataTypeOption option = new PostgreSQLDataTypeOption();
         Map<String, Integer> udtTypes = option.loadUDTTypes(connection);
-
+        
         assertThat(udtTypes.isEmpty(), is(true));
     }
 }

@@ -32,10 +32,9 @@ import java.util.concurrent.ConcurrentHashMap;
  * Data type loader.
  */
 public final class DataTypeLoader {
-
+    
     private static final Map<String, Map<String, Integer>> UDT_TYPE_CACHE = new ConcurrentHashMap<>();
-
-
+    
     /**
      * Load data type.
      *
@@ -56,7 +55,7 @@ public final class DataTypeLoader {
         Map<String, Integer> result = loadStandardDataTypes(databaseMetaData);
         DialectDataTypeOption dataTypeOption = new DatabaseTypeRegistry(databaseType).getDialectDatabaseMetaData().getDataTypeOption();
         result.putAll(dataTypeOption.getExtraDataTypes());
-
+        
         // Check if UDT discovery is enabled via configuration
         boolean udtDiscoveryEnabled = isUdtDiscoveryEnabled();
         if (udtDiscoveryEnabled) {
@@ -73,10 +72,10 @@ public final class DataTypeLoader {
             });
             result.putAll(udtTypes);
         }
-
+        
         return result;
     }
-
+    
     private boolean isUdtDiscoveryEnabled() {
         // Check if UDT discovery is enabled (default to true for backward compatibility)
         String propertyValue = System.getProperty("shardingsphere.udt.discovery.enabled");

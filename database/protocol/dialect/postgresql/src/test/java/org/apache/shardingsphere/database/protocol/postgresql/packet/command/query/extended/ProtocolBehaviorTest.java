@@ -29,7 +29,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 class ProtocolBehaviorTest {
-
+    
     @Test
     void testJsonProtocolParsing() {
         // Test JSON protocol parsing behavior
@@ -87,16 +87,16 @@ class ProtocolBehaviorTest {
     void testProtocolValueParserConsistency() {
         // Test protocol value parser consistency for complex objects
         String complexJson = "{\n" +
-                           "  \"users\": [\n" +
-                           "    {\"id\": 1, \"name\": \"Alice\"},\n" +
-                           "    {\"id\": 2, \"name\": \"Bob\"}\n" +
-                           "  ],\n" +
-                           "  \"metadata\": {\n" +
-                           "    \"version\": \"1.0\",\n" +
-                           "    \"timestamp\": \"2023-01-01T00:00:00Z\"\n" +
-                           "  }\n" +
-                           "}";
-                           
+                "  \"users\": [\n" +
+                "    {\"id\": 1, \"name\": \"Alice\"},\n" +
+                "    {\"id\": 2, \"name\": \"Bob\"}\n" +
+                "  ],\n" +
+                "  \"metadata\": {\n" +
+                "    \"version\": \"1.0\",\n" +
+                "    \"timestamp\": \"2023-01-01T00:00:00Z\"\n" +
+                "  }\n" +
+                "}";
+        
         PostgreSQLJsonValueParser jsonParser = new PostgreSQLJsonValueParser();
         PGobject jsonResult = jsonParser.parse(complexJson);
         assertThat(jsonResult.getType(), is("json"));

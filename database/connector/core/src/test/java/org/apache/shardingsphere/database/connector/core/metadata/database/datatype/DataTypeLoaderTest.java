@@ -44,7 +44,7 @@ import static org.mockito.Mockito.when;
 class DataTypeLoaderTest {
     
     private final DataTypeLoader dataTypeLoader = new DataTypeLoader();
-
+    
     @BeforeEach
     void setUp() throws Exception {
         Field cacheField = DataTypeLoader.class.getDeclaredField("UDT_TYPE_CACHE");
@@ -74,21 +74,21 @@ class DataTypeLoaderTest {
             assertThat(actual.get("EXTRA_TYPE"), is(Types.OTHER));
         }
     }
-
+    
     @Test
     public void testLoadWithUDTDisabled() throws SQLException {
         // Set system property to disable UDT discovery
         System.setProperty("shardingsphere.udt.discovery.enabled", "false");
-
+        
         try {
             DatabaseMetaData mockDatabaseMetaData = mock(DatabaseMetaData.class);
             when(mockDatabaseMetaData.getTypeInfo()).thenReturn(mock(java.sql.ResultSet.class));
-
+            
             DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "H2");
-
+            
             DataTypeLoader loader = new DataTypeLoader();
             Map<String, Integer> result = loader.load(mockDatabaseMetaData, databaseType);
-
+            
             assertNotNull(result);
             // The result should contain standard types but not UDT types (since UDT discovery is disabled)
         } finally {
@@ -96,22 +96,22 @@ class DataTypeLoaderTest {
             System.clearProperty("shardingsphere.udt.discovery.enabled");
         }
     }
-
+    
     @Test
     public void testLoadWithUDTEnabled() throws SQLException {
         // Set system property to enable UDT discovery (default behavior)
         System.setProperty("shardingsphere.udt.discovery.enabled", "true");
-
+        
         try {
             DatabaseMetaData mockDatabaseMetaData = mock(DatabaseMetaData.class);
             when(mockDatabaseMetaData.getTypeInfo()).thenReturn(mock(java.sql.ResultSet.class));
             when(mockDatabaseMetaData.getConnection()).thenReturn(mock(java.sql.Connection.class));
-
+            
             DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "H2");
-
+            
             DataTypeLoader loader = new DataTypeLoader();
             Map<String, Integer> result = loader.load(mockDatabaseMetaData, databaseType);
-
+            
             assertNotNull(result);
             // The result should contain both standard types and UDT types (if any)
         } finally {
@@ -119,21 +119,21 @@ class DataTypeLoaderTest {
             System.clearProperty("shardingsphere.udt.discovery.enabled");
         }
     }
-
+    
     @Test
     public void testLoadWithDefaultBehavior() throws SQLException {
         // Test with default behavior (should be enabled)
         System.clearProperty("shardingsphere.udt.discovery.enabled");
-
+        
         DatabaseMetaData mockDatabaseMetaData = mock(DatabaseMetaData.class);
         when(mockDatabaseMetaData.getTypeInfo()).thenReturn(mock(java.sql.ResultSet.class));
         when(mockDatabaseMetaData.getConnection()).thenReturn(mock(java.sql.Connection.class));
-
+        
         DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "H2");
-
+        
         DataTypeLoader loader = new DataTypeLoader();
         Map<String, Integer> result = loader.load(mockDatabaseMetaData, databaseType);
-
+        
         assertNotNull(result);
         // Test that it works with default behavior
     }

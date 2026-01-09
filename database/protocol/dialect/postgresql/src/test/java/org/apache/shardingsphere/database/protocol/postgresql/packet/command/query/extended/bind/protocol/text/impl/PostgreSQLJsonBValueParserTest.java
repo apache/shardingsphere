@@ -24,7 +24,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 class PostgreSQLJsonBValueParserTest {
-
+    
     @Test
     void assertParse() {
         PGobject actual = new PostgreSQLJsonBValueParser().parse("{\"key\":\"value\"}");

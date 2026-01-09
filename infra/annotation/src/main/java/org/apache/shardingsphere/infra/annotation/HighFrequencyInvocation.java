@@ -33,7 +33,7 @@ import java.lang.annotation.Target;
 })
 @Retention(RetentionPolicy.SOURCE)
 public @interface HighFrequencyInvocation {
-
+    
     /**
      * Whether invocation of the method can be cached.
      *

@@ -28,7 +28,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 class MinimalReproducibleScenarioTest {
-
+    
     @Test
     void testJsonBindScenario() {
         // Minimal reproducible scenario for JSON type handling
@@ -42,7 +42,7 @@ class MinimalReproducibleScenarioTest {
         PostgreSQLColumnType detectedType = PostgreSQLColumnType.valueOfJDBCType(Types.OTHER, "json");
         assertThat(detectedType, is(PostgreSQLColumnType.JSON));
     }
-
+    
     @Test
     void testJsonBBindScenario() {
         // Minimal reproducible scenario for JSONB type handling

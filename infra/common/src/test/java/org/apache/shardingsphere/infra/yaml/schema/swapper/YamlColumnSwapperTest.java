@@ -32,7 +32,7 @@ class YamlColumnSwapperTest {
     
     @Test
     void assertSwapToYamlConfiguration() {
-        ShardingSphereColumn column = new ShardingSphereColumn("id", 1, true, false,"int", true, true, false, false);
+        ShardingSphereColumn column = new ShardingSphereColumn("id", 1, true, false, "int", true, true, false, false);
         YamlShardingSphereColumn actual = swapper.swapToYamlConfiguration(column);
         assertThat(actual.getName(), is("id"));
         assertThat(actual.getDataType(), is(1));

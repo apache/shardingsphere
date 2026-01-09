@@ -25,7 +25,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 class UDTProtocolBehaviorTest {
-
+    
     @Test
     void testUDTProtocolTextBinding() {
         // Test how UDTs are handled in protocol text binding
@@ -60,9 +60,9 @@ class UDTProtocolBehaviorTest {
     void testUDTProtocolDescribeBehavior() {
         // Test that UDT types are described correctly in protocol
         PostgreSQLColumnType[] udtCompatibleTypes = {
-            PostgreSQLColumnType.JSON,
-            PostgreSQLColumnType.JSONB,
-            PostgreSQLColumnType.UUID
+                PostgreSQLColumnType.JSON,
+                PostgreSQLColumnType.JSONB,
+                PostgreSQLColumnType.UUID
         };
         
         for (PostgreSQLColumnType type : udtCompatibleTypes) {
