@@ -69,11 +69,11 @@ public interface DialectDataTypeOption {
     boolean isBinaryDataType(int sqlType);
     
     /**
-     * Load user-defined data types from the database.
+     * Load UDT types.
      *
      * @param connection database connection
-     * @return mapping of UDT type name to JDBC type
-     * @throws SQLException SQL exception
+     * @return UDT type map
+     * @throws SQLException when SQL Exception occurs
      */
     Map<String, Integer> loadUDTTypes(Connection connection) throws SQLException;
     
