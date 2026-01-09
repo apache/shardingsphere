@@ -16,10 +16,12 @@ chapter = true
 
 ### 2. 确认 Release Note
 
-Release Note 需提供中文/英文两种版本，确认中英文描述是否明确，并按以下标签进行分类：
+确认 Release Note 中仅包含英文描述，内容按以下标签进行分类：
 
-1. 新功能
+1. CVE
+1. 元数据存储变更
 1. API 变更
+1. 新功能
 1. 功能增强
 1. 漏洞修复
 
@@ -47,9 +49,9 @@ Release Note 需提供中文/英文两种版本，确认中英文描述是否明
 
 ### 6. 发起发布讨论
 
-1. 创建 [GitHub Discussion](https://github.com/apache/shardingsphere/discussions) 并在讨论内容中列出 Release Note，并 **明确具体代码冻结日期** ；
+1. 创建 [GitHub Issue](https://github.com/apache/shardingsphere/issues)，在 Issue 内容中列出 Release Note，并 **明确具体代码冻结日期** ；
 1. 发送邮件至 [dev@shardingsphere.apache.org](mailto:dev@shardingsphere.apache.org)，在邮件正文中链接 GitHub Discussion，并 **明确具体代码冻结日期** ；
-1. 关注 Discussion 与邮件列表，确认社区开发者对 Release Note 没有任何疑问。
+1. 关注 Issue 与邮件列表，确认社区开发者对 Release Note 没有任何疑问。
 
 ## GPG 设置
 

@@ -16,9 +16,11 @@ Check and update year in NOTICE.
 
 ### 2. Confirm Release Notes
 
-The release note should be provided in English / Chinese, confirm whether English and Chinese description are clear,
-and shall be classified according to the following labels:
+Ensure that the release note contains only English descriptions and should be categorized according to the following labels:
 
+1. CVE
+1. Metadata Storage Changes
+1. API Change
 1. New Feature
 1. API Change
 1. Enhancement
@@ -48,9 +50,9 @@ Open [GitHub pull requests](https://github.com/apache/shardingsphere/pulls), fil
 
 ### 6. Call for a Discussion
 
-1. Create a [GitHub Discussion](https://github.com/apache/shardingsphere/discussions) contains all the release notes and **release cutting date** ;
+1. Create a [GitHub Issue](https://github.com/apache/shardingsphere/issues) contains all the release notes and **release cutting date** ;
 1. Send email to [dev@shardingsphere.apache.org](mailto:dev@shardingsphere.apache.org) with the GitHub Discussion and **release cutting date** in the message body;
-1. Follow the mailing list and confirm that the community developers have no questions about the release note.
+1. Follow the issue and mailing list and confirm that the community developers have no questions about the release note.
 
 ## GPG Settings
 
