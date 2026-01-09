@@ -66,7 +66,7 @@ class ResourceSwitchManagerTest {
         DataSource newDataSource = mock(DataSource.class);
         try (MockedStatic<DataSourcePoolCreator> mocked = mockStatic(DataSourcePoolCreator.class)) {
             mocked.when(() -> DataSourcePoolCreator.create(any(DataSourcePoolProperties.class))).thenReturn(newDataSource);
-            SwitchingResource actual = resourceSwitchManager.switchByRegisterStorageUnit(resourceMetaData, toBeRegistered);
+            SwitchingResource actual = resourceSwitchManager.switchByRegisterStorageUnit(resourceMetaData, toBeRegistered, false);
             assertThat(actual.getNewDataSources().size(), is(1));
             assertThat(actual.getNewDataSources(), hasKey(new StorageNode("ds_new")));
             verifyNoInteractions(resourceMetaData.getDataSources().get(new StorageNode("ds_existing")));
@@ -81,7 +81,7 @@ class ResourceSwitchManagerTest {
         DataSource newDataSource = mock(DataSource.class);
         try (MockedStatic<DataSourcePoolCreator> mocked = mockStatic(DataSourcePoolCreator.class)) {
             mocked.when(() -> DataSourcePoolCreator.create(any(DataSourcePoolProperties.class))).thenReturn(newDataSource);
-            SwitchingResource actual = resourceSwitchManager.switchByAlterStorageUnit(resourceMetaData, toBeAltered);
+            SwitchingResource actual = resourceSwitchManager.switchByAlterStorageUnit(resourceMetaData, toBeAltered, false);
             assertThat(actual.getNewDataSources().get(existingNode), is(newDataSource));
             assertThat(actual.getStaleDataSources().get(existingNode), is(resourceMetaData.getDataSources().get(existingNode)));
             assertThat(actual.getStaleDataSources(), not(hasKey(new StorageNode("extra_only"))));
@@ -137,7 +137,7 @@ class ResourceSwitchManagerTest {
         DataSource newDataSource = mock(DataSource.class);
         try (MockedStatic<DataSourcePoolCreator> mocked = mockStatic(DataSourcePoolCreator.class)) {
             mocked.when(() -> DataSourcePoolCreator.create(any(DataSourcePoolProperties.class))).thenReturn(newDataSource);
-            SwitchingResource actual = resourceSwitchManager.switchByRegisterStorageUnit(resourceMetaData, toBeRegistered);
+            SwitchingResource actual = resourceSwitchManager.switchByRegisterStorageUnit(resourceMetaData, toBeRegistered, false);
             assertThat(actual.getNewDataSources().size(), is(newUnitsCount));
             assertThat(actual.getNewDataSources().size(), is(newUnitsCount));
             for (int i = 0; i < newUnitsCount; i++) {
@@ -154,7 +154,7 @@ class ResourceSwitchManagerTest {
         DataSource newDataSource = mock(DataSource.class);
         try (MockedStatic<DataSourcePoolCreator> mocked = mockStatic(DataSourcePoolCreator.class)) {
             mocked.when(() -> DataSourcePoolCreator.create(any(DataSourcePoolProperties.class))).thenReturn(newDataSource);
-            SwitchingResource actual = resourceSwitchManager.switchByAlterStorageUnit(resourceMetaData, toBeAltered);
+            SwitchingResource actual = resourceSwitchManager.switchByAlterStorageUnit(resourceMetaData, toBeAltered, false);
             assertThat(actual.getNewDataSources().size(), is(totalUnits));
             assertThat(actual.getStaleDataSources().size(), is(totalUnits));
             assertTrue(actual.getStaleStorageUnitNames().containsAll(toBeAltered.keySet()));
@@ -179,7 +179,7 @@ class ResourceSwitchManagerTest {
     void assertSwitchByRegisterStorageUnitWithEmptyInput() {
         ResourceMetaData resourceMetaData = createResourceMetaDataWithSingleUnit("ds_existing");
         Map<String, DataSourcePoolProperties> toBeRegistered = Collections.emptyMap();
-        SwitchingResource actual = resourceSwitchManager.switchByRegisterStorageUnit(resourceMetaData, toBeRegistered);
+        SwitchingResource actual = resourceSwitchManager.switchByRegisterStorageUnit(resourceMetaData, toBeRegistered, false);
         assertThat(actual.getNewDataSources(), aMapWithSize(0));
         assertThat(actual.getStaleDataSources(), aMapWithSize(0));
         assertThat(actual.getStaleStorageUnitNames().isEmpty(), is(true));
@@ -193,7 +193,7 @@ class ResourceSwitchManagerTest {
         DataSource newDataSource = mock(DataSource.class);
         try (MockedStatic<DataSourcePoolCreator> mocked = mockStatic(DataSourcePoolCreator.class)) {
             mocked.when(() -> DataSourcePoolCreator.create(any(DataSourcePoolProperties.class))).thenReturn(newDataSource);
-            SwitchingResource actual = resourceSwitchManager.switchByAlterStorageUnit(resourceMetaData, toBeAltered);
+            SwitchingResource actual = resourceSwitchManager.switchByAlterStorageUnit(resourceMetaData, toBeAltered, false);
             assertThat(actual.getNewDataSources().size(), is(1));
             assertThat(actual.getStaleDataSources().size(), is(1));
             assertThat(actual.getStaleStorageUnitNames().isEmpty(), is(false));
@@ -228,7 +228,7 @@ class ResourceSwitchManagerTest {
         DataSource newDataSource = mock(DataSource.class);
         try (MockedStatic<DataSourcePoolCreator> mocked = mockStatic(DataSourcePoolCreator.class)) {
             mocked.when(() -> DataSourcePoolCreator.create(any(DataSourcePoolProperties.class))).thenReturn(newDataSource);
-            SwitchingResource actual = resourceSwitchManager.switchByRegisterStorageUnit(resourceMetaData, toBeRegistered);
+            SwitchingResource actual = resourceSwitchManager.switchByRegisterStorageUnit(resourceMetaData, toBeRegistered, false);
             assertThat(actual.getNewDataSources().size(), is(1));
             assertThat(actual.getNewDataSources(), hasKey(new StorageNode("new_0")));
         }
@@ -243,7 +243,7 @@ class ResourceSwitchManagerTest {
         DataSource newDataSource = mock(DataSource.class);
         try (MockedStatic<DataSourcePoolCreator> mocked = mockStatic(DataSourcePoolCreator.class)) {
             mocked.when(() -> DataSourcePoolCreator.create(any(DataSourcePoolProperties.class))).thenReturn(newDataSource);
-            SwitchingResource actual = resourceSwitchManager.switchByAlterStorageUnit(resourceMetaData, toBeAltered);
+            SwitchingResource actual = resourceSwitchManager.switchByAlterStorageUnit(resourceMetaData, toBeAltered, false);
             assertThat(actual.getNewDataSources().size(), is(5));
             assertThat(actual.getStaleDataSources().size(), is(5));
             assertThat(actual.getStaleStorageUnitNames(), containsInAnyOrder("0", "1", "2", "3", "4"));

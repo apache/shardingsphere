@@ -45,7 +45,12 @@ public enum TemporaryConfigurationPropertyKey implements TypedPropertyKey {
     /**
      * Proxy meta data collector cron.
      */
-    PROXY_META_DATA_COLLECTOR_CRON("proxy-meta-data-collector-cron", "0 0/1 * * * ?", String.class, false);
+    PROXY_META_DATA_COLLECTOR_CRON("proxy-meta-data-collector-cron", "0 0/1 * * * ?", String.class, false),
+    
+    /**
+     * Instance connection enabled.
+     */
+    INSTANCE_CONNECTION_ENABLED("instance-connection-enabled", String.valueOf(Boolean.FALSE), boolean.class, false);
     
     private final String key;
     
