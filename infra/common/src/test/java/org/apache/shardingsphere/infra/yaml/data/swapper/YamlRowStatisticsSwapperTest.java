@@ -47,10 +47,10 @@ class YamlRowStatisticsSwapperTest {
     @Test
     void assertConvertSpecialTypesWhenSwappingToYaml() {
         List<ShardingSphereColumn> columns = Arrays.asList(
-                new ShardingSphereColumn("decimal_col", Types.DECIMAL, false, false, false, true, false, true),
-                new ShardingSphereColumn("bigint_col", Types.BIGINT, false, false, false, true, false, true),
-                new ShardingSphereColumn("decimal_null", Types.DECIMAL, false, false, false, true, false, true),
-                new ShardingSphereColumn("varchar_col", Types.VARCHAR, false, false, false, true, false, true));
+                new ShardingSphereColumn("decimal_col", Types.DECIMAL, false, false,"decimal", false, true, false, true),
+                new ShardingSphereColumn("bigint_col", Types.BIGINT, false, false,"bigint", false, true, false, true),
+                new ShardingSphereColumn("decimal_null", Types.DECIMAL, false, false,"decimal", false, true, false, true),
+                new ShardingSphereColumn("varchar_col", Types.VARCHAR, false, false,"varchar", false, true, false, true));
         List<Object> rows = Arrays.asList(null, 5L, new BigDecimal("7.5"), "raw");
         YamlRowStatisticsSwapper swapper = new YamlRowStatisticsSwapper(columns);
         assertThat(swapper.swapToYamlConfiguration(new RowStatistics("uk", rows)).getRows(), contains(nullValue(), is("5"), is("7.5"), is("raw")));
@@ -63,7 +63,7 @@ class YamlRowStatisticsSwapperTest {
     
     @Test
     void assertSwapToObjectWithEmptyRows() {
-        List<ShardingSphereColumn> columns = Collections.singletonList(new ShardingSphereColumn("col", Types.VARCHAR, false, false, false, true, false, true));
+        List<ShardingSphereColumn> columns = Collections.singletonList(new ShardingSphereColumn("col", Types.VARCHAR, false, false,"varchar", false, true, false, true));
         YamlRowStatistics yamlConfig = new YamlRowStatistics();
         yamlConfig.setRows(Collections.emptyList());
         assertThat(new YamlRowStatisticsSwapper(columns).swapToObject(yamlConfig).getRows(), is(empty()));
@@ -72,12 +72,12 @@ class YamlRowStatisticsSwapperTest {
     @Test
     void assertConvertDataTypesWhenSwappingToObject() {
         List<ShardingSphereColumn> columns = Arrays.asList(
-                new ShardingSphereColumn("decimal_col", Types.DECIMAL, false, false, false, true, false, true),
-                new ShardingSphereColumn("bigint_col", Types.BIGINT, false, false, false, true, false, true),
-                new ShardingSphereColumn("real_col", Types.REAL, false, false, false, true, false, true),
-                new ShardingSphereColumn("float_col", Types.FLOAT, false, false, false, true, false, true),
-                new ShardingSphereColumn("varchar_col", Types.VARCHAR, false, false, false, true, false, true),
-                new ShardingSphereColumn("decimal_null", Types.DECIMAL, false, false, false, true, false, true));
+                new ShardingSphereColumn("decimal_col", Types.DECIMAL, false, false,"decimal", false, true, false, true),
+                new ShardingSphereColumn("bigint_col", Types.BIGINT, false, false,"bigint", false, true, false, true),
+                new ShardingSphereColumn("real_col", Types.REAL, false, false,"real", false, true, false, true),
+                new ShardingSphereColumn("float_col", Types.FLOAT, false, false,"float", false, true, false, true),
+                new ShardingSphereColumn("varchar_col", Types.VARCHAR, false, false,"varchar", false, true, false, true),
+                new ShardingSphereColumn("decimal_null", Types.DECIMAL, false, false,"decimal", false, true, false, true));
         YamlRowStatistics yamlConfig = new YamlRowStatistics();
         yamlConfig.setUniqueKey("uk");
         yamlConfig.setRows(Arrays.asList("1.5", "2", "3.3", "4.4", "text", null));

@@ -64,7 +64,7 @@ class SQLFederationTableTest {
     private final ShardingSphereTable table = createTable();
     
     private ShardingSphereTable createTable() {
-        ShardingSphereColumn column = new ShardingSphereColumn("id", Types.INTEGER, true, false, false, true, false, true);
+        ShardingSphereColumn column = new ShardingSphereColumn("id", Types.INTEGER, true, false,"integer", false, true, false, true);
         Collection<ShardingSphereColumn> columns = Collections.singletonList(column);
         return new ShardingSphereTable("foo_tbl", columns, Collections.emptyList(), Collections.emptyList());
     }

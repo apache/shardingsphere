@@ -52,6 +52,12 @@ public enum ConfigurationPropertyKey implements TypedPropertyKey {
      * Max opened connection size for each query.
      */
     MAX_CONNECTIONS_SIZE_PER_QUERY("max-connections-size-per-query", String.valueOf(1), int.class, false),
+
+    /**
+     * Max union size per datasource for aggregate rewrite.
+     * When route units count for a datasource exceeds this value, they will be split into batches.
+     */
+    MAX_UNION_SIZE_PER_DATASOURCE("max-union-size-per-datasource", String.valueOf(Integer.MAX_VALUE), int.class, false),
     
     /**
      * Whether validate table metadata consistency when application startup or updated.

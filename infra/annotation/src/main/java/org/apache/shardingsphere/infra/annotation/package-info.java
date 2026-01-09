@@ -15,29 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.annotation;
-
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
-
 /**
- * The class to which this annotation is applied is high frequency invocation.
+ * Annotations for ShardingSphere infrastructure layer.
  */
-@Target({
-        ElementType.TYPE,
-        ElementType.FIELD,
-        ElementType.METHOD,
-        ElementType.CONSTRUCTOR
-})
-@Retention(RetentionPolicy.SOURCE)
-public @interface HighFrequencyInvocation {
-
-    /**
-     * Whether invocation of the method can be cached.
-     *
-     * @return can be cached or not
-     */
-    boolean canBeCached() default false;
-}
+package org.apache.shardingsphere.infra.annotation;
