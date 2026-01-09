@@ -17,13 +17,13 @@
   -->
 
 <sql-cases>
-    <sql-case id="set_role_default" value="SET ROLE DEFAULT" db-types="MySQL" />
-    <sql-case id="set_role" value="SET ROLE role1" db-types="MySQL,Oracle" />
+    <sql-case id="set_role_default" value="SET ROLE DEFAULT" db-types="MySQL,Doris" />
+    <sql-case id="set_role" value="SET ROLE role1" db-types="MySQL,Oracle,Doris" />
     <sql-case id="set_role_identified_by_password" value="SET ROLE role1 IDENTIFIED BY password1" db-types="Oracle" />
-    <sql-case id="set_roles" value="SET ROLE role1, role2" db-types="MySQL,Oracle" />
+    <sql-case id="set_roles" value="SET ROLE role1, role2" db-types="MySQL,Oracle,Doris" />
     <sql-case id="set_roles_identified_by_passwords" value="SET ROLE role1 IDENTIFIED BY password1, role2 IDENTIFIED BY password2" db-types="Oracle" />
-    <sql-case id="set_none_role" value="SET ROLE NONE" db-types="MySQL,Oracle" />
-    <sql-case id="set_all_role" value="SET ROLE ALL" db-types="MySQL,Oracle" />
-    <sql-case id="set_all_expect_role" value="SET ROLE ALL EXCEPT role1" db-types="MySQL,Oracle" />
-    <sql-case id="set_all_expect_roles" value="SET ROLE ALL EXCEPT role1, role2" db-types="MySQL,Oracle" />
+    <sql-case id="set_none_role" value="SET ROLE NONE" db-types="MySQL,Oracle,Doris" />
+    <sql-case id="set_all_role" value="SET ROLE ALL" db-types="MySQL,Oracle,Doris" />
+    <sql-case id="set_all_expect_role" value="SET ROLE ALL EXCEPT role1" db-types="MySQL,Oracle,Doris" />
+    <sql-case id="set_all_expect_roles" value="SET ROLE ALL EXCEPT role1, role2" db-types="MySQL,Oracle,Doris" />
 </sql-cases>

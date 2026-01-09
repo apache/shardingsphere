@@ -38,7 +38,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6.0.1
       - name: Run CheckStyle
         run: ./mvnw checkstyle:check -Pcheck -T1C
 
@@ -49,7 +49,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6.0.1
       - name: Run Spotless
         run: ./mvnw spotless:check -Pcheck -T1C
 
@@ -60,6 +60,6 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6.0.1
       - name: Run Apache Rat
         run: ./mvnw apache-rat:check -Pcheck -T1C

@@ -17,11 +17,11 @@
   -->
 
 <sql-cases>
-    <sql-case id="cache_index_with_in" value="cache index t1,t2 in default" db-types="MySQL" />
-    <sql-case id="cache_index_single_table" value="CACHE INDEX t_order IN hot_cache_index" db-types="MySQL" />
-    <sql-case id="cache_index_multiple_table" value="CACHE INDEX t_order, t_user IN hot_cache_index" db-types="MySQL" />
-    <sql-case id="cache_index_single_table_multiple_index" value="CACHE INDEX t_order INDEX (idx_a, idx_b) IN hot_cache_index" db-types="MySQL" />
-    <sql-case id="cache_index_multiple_table_multiple_index" value="CACHE INDEX t_order INDEX (idx_order), t_user INDEX (idx_user) IN hot_cache_index" db-types="MySQL" />
-    <sql-case id="cache_index_all_partition" value="CACHE INDEX t_order PARTITION (ALL) IN hot_cache_index" db-types="MySQL" />
-    <sql-case id="cache_index_multiple_partition" value="CACHE INDEX t_order PARTITION (p0, p1) IN hot_cache_index" db-types="MySQL" />
+    <sql-case id="cache_index_with_in" value="cache index t1,t2 in default" db-types="MySQL,Doris" />
+    <sql-case id="cache_index_single_table" value="CACHE INDEX t_order IN hot_cache_index" db-types="MySQL,Doris" />
+    <sql-case id="cache_index_multiple_table" value="CACHE INDEX t_order, t_user IN hot_cache_index" db-types="MySQL,Doris" />
+    <sql-case id="cache_index_single_table_multiple_index" value="CACHE INDEX t_order INDEX (idx_a, idx_b) IN hot_cache_index" db-types="MySQL,Doris" />
+    <sql-case id="cache_index_multiple_table_multiple_index" value="CACHE INDEX t_order INDEX (idx_order), t_user INDEX (idx_user) IN hot_cache_index" db-types="MySQL,Doris" />
+    <sql-case id="cache_index_all_partition" value="CACHE INDEX t_order PARTITION (ALL) IN hot_cache_index" db-types="MySQL,Doris" />
+    <sql-case id="cache_index_multiple_partition" value="CACHE INDEX t_order PARTITION (p0, p1) IN hot_cache_index" db-types="MySQL,Doris" />
 </sql-cases>

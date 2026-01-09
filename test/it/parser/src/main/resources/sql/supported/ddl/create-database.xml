@@ -18,7 +18,7 @@
 
 <sql-cases>
     <sql-case id="create_database" value="CREATE DATABASE lusiadas" db-types="PostgreSQL,openGauss,SQLServer" />
-    <sql-case id="create_database_with_back_quote" value="CREATE DATABASE `lusiadas`" db-types="MySQL" />
+    <sql-case id="create_database_with_back_quote" value="CREATE DATABASE `lusiadas`" db-types="MySQL,Doris" />
     <sql-case id="create_database_owner" value="CREATE DATABASE sales OWNER salesapp TABLESPACE salesspace" db-types="PostgreSQL,openGauss" />
     <sql-case id="create_database_with_location_and_encoding" value="CREATE DATABASE music2
         LC_COLLATE 'sv_SE.iso885915' LC_CTYPE 'sv_SE.iso885915'

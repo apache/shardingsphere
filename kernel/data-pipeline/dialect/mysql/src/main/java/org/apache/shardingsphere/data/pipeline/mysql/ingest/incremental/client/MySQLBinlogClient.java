@@ -64,6 +64,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 
 /**
@@ -88,6 +89,10 @@ public final class MySQLBinlogClient {
     private MySQLServerVersion serverVersion;
     
     private volatile boolean running = true;
+    
+    private volatile boolean ready;
+    
+    private final AtomicInteger continuousFailureCount = new AtomicInteger(0);
     
     /**
      * Connect to MySQL.
@@ -114,7 +119,6 @@ public final class MySQLBinlogClient {
                     }
                 }).connect(connectInfo.getHost(), connectInfo.getPort()).channel();
         serverVersion = waitExpectedResponse(MySQLServerVersion.class).orElse(null);
-        running = true;
     }
     
     /**
@@ -176,6 +180,7 @@ public final class MySQLBinlogClient {
         configureHeartbeat();
         registerSlave();
         dumpBinlog(binlogFileName, binlogPosition, queryChecksumLength());
+        ready = true;
         log.info("subscribe binlog file: {}, position: {}", binlogFileName, binlogPosition);
     }
     
@@ -234,9 +239,11 @@ public final class MySQLBinlogClient {
      * Poll binlog event.
      *
      * @return binlog event
+     * @throws RuntimeException if MySQL binlog client is not running
      */
     public synchronized List<MySQLBaseBinlogEvent> poll() {
-        if (!running) {
+        ShardingSpherePreconditions.checkState(running, () -> new RuntimeException("MySQL binlog client is not running"));
+        if (!ready) {
             return Collections.emptyList();
         }
         try {
@@ -273,13 +280,17 @@ public final class MySQLBinlogClient {
     /**
      * Close netty channel.
      *
+     * @param terminate whether to terminate or not
      * @return channel future
      */
-    public Optional<ChannelFuture> closeChannel() {
+    public Optional<ChannelFuture> closeChannel(final boolean terminate) {
+        ready = false;
+        if (terminate) {
+            running = false;
+        }
         if (null == channel || !channel.isOpen()) {
             return Optional.empty();
         }
-        running = false;
         ChannelFuture future = channel.close();
         if (null != eventLoopGroup) {
             eventLoopGroup.shutdownGracefully();
@@ -321,6 +332,10 @@ public final class MySQLBinlogClient {
             if (!running) {
                 return;
             }
+            if (continuousFailureCount.get() > 0) {
+                log.info("Failure count reset to 0");
+                continuousFailureCount.set(0);
+            }
             if (msg instanceof List) {
                 List<MySQLBaseBinlogEvent> records = (List<MySQLBaseBinlogEvent>) msg;
                 if (records.isEmpty()) {
@@ -349,6 +364,8 @@ public final class MySQLBinlogClient {
         @Override
         public void exceptionCaught(final ChannelHandlerContext ctx, final Throwable cause) {
             log.error("MySQLBinlogEventHandler protocol resolution error, channel: {}, lastBinlogEvent: {}", ctx.channel(), JsonUtils.toJsonString(lastBinlogEvent.get()), cause);
+            continuousFailureCount.incrementAndGet();
+            closeChannel(false);
         }
         
         private void tryReconnect() {
@@ -359,16 +376,37 @@ public final class MySQLBinlogClient {
         
         @SneakyThrows(InterruptedException.class)
         private synchronized void reconnect() {
-            for (int reconnectTimes = 0; reconnectTimes < 3; reconnectTimes++) {
+            log.info("Reconnect failure count: {}", continuousFailureCount.get());
+            if (continuousFailureCount.get() >= 5) {
+                log.error("MySQL binlog client failed permanently, lastBinlogEvent: {}", JsonUtils.toJsonString(lastBinlogEvent.get()));
+                closeChannel(true);
+                return;
+            }
+            wait(2000L * (continuousFailureCount.get() + 1));
+            try {
+                reconnectWithRetry();
+                // CHECKSTYLE:OFF
+            } catch (final RuntimeException ex) {
+                // CHECKSTYLE:ON
+                log.error("Reconnect failed permanently, lastBinlogEvent: {}", JsonUtils.toJsonString(lastBinlogEvent.get()), ex);
+                closeChannel(true);
+                return;
+            }
+            subscribe(lastBinlogEvent.get().getFileName(), lastBinlogEvent.get().getPosition());
+        }
+        
+        private void reconnectWithRetry() throws InterruptedException {
+            for (int reconnectTimes = 1; true; reconnectTimes++) {
                 try {
                     connect();
-                    log.info("Reconnect times {}", reconnectTimes);
-                    subscribe(lastBinlogEvent.get().getFileName(), lastBinlogEvent.get().getPosition());
                     break;
                     // CHECKSTYLE:OFF
                 } catch (final RuntimeException ex) {
                     // CHECKSTYLE:ON
-                    log.error("Reconnect failed, reconnect times: {}, lastBinlogEvent: {}", reconnectTimes, JsonUtils.toJsonString(lastBinlogEvent.get()), ex);
+                    closeChannel(false);
+                    if (reconnectTimes > 3) {
+                        throw ex;
+                    }
                     wait(1000L << reconnectTimes);
                 }
             }

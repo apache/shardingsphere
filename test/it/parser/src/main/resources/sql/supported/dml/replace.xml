@@ -17,24 +17,24 @@
   -->
 
 <sql-cases>
-    <sql-case id="replace_with_all_placeholders" value="REPLACE INTO t_order (order_id, user_id, status) VALUES (?, ?, ?)" db-types="MySQL" />
+    <sql-case id="replace_with_all_placeholders" value="REPLACE INTO t_order (order_id, user_id, status) VALUES (?, ?, ?)" db-types="MySQL,Doris" />
     <sql-case id="replace_with_now_function" value="REPLACE INTO t_order_item (item_id, order_id, user_id, status, creation_date) VALUES (?, ?, ?, 'replace', now())" db-types="MySQL" />
-    <sql-case id="replace_without_parameters" value="REPLACE INTO t_order (order_id, user_id, status) VALUES (1, 1, 'replace')" db-types="MySQL" />
+    <sql-case id="replace_without_parameters" value="REPLACE INTO t_order (order_id, user_id, status) VALUES (1, 1, 'replace')" db-types="MySQL,Doris" />
     <sql-case id="replace_with_special_characters" value="REPLACE INTO `t_order` (`order_id`, `user_id`, `status`) VALUES (1, 1, 'replace')" db-types="MySQL" />
     <sql-case id="replace_with_all_placeholders_for_table_identifier" value="REPLACE INTO t_order (t_order.order_id, t_order.user_id, t_order.status) VALUES (?, ?, ?)" db-types="MySQL" />
     <sql-case id="replace_without_columns_with_all_placeholders" value="REPLACE INTO t_order VALUES (?, ?, ?)" db-types="MySQL" />
-    <sql-case id="replace_set_with_all_placeholders" value="REPLACE INTO t_order SET order_id = ?, user_id = ?, status = ?" db-types="MySQL" />
+    <sql-case id="replace_set_with_all_placeholders" value="REPLACE INTO t_order SET order_id = ?, user_id = ?, status = ?" db-types="MySQL,Doris" />
     <sql-case id="replace_set_with_all_placeholders_for_table_identifier" value="REPLACE INTO t_order SET t_order.order_id = ?, t_order.user_id = ?, t_order.status = ?" db-types="MySQL" />
-    <sql-case id="replace_with_partial_placeholders" value="REPLACE INTO t_order (order_id, user_id, status) VALUES (?, ?, 'replace')" db-types="MySQL" />
-    <sql-case id="replace_set_with_partial_placeholders" value="REPLACE INTO t_order SET order_id = ?, user_id = ?, status = 'replace'" db-types="MySQL" />
+    <sql-case id="replace_with_partial_placeholders" value="REPLACE INTO t_order (order_id, user_id, status) VALUES (?, ?, 'replace')" db-types="MySQL,Doris" />
+    <sql-case id="replace_set_with_partial_placeholders" value="REPLACE INTO t_order SET order_id = ?, user_id = ?, status = 'replace'" db-types="MySQL,Doris" />
     <sql-case id="replace_with_generate_key_column" value="REPLACE INTO t_order_item(item_id, order_id, user_id, status, creation_date) values (?, ?, ?, 'replace', '2017-08-08')" db-types="MySQL" />
     <sql-case id="replace_set_with_generate_key_column" value="REPLACE INTO t_order_item SET item_id = ?, order_id = ?, user_id = ?, status = 'replace', creation_date='2017-08-08'" db-types="MySQL" />
     <sql-case id="replace_without_generate_key_column" value="REPLACE INTO t_order_item(order_id, user_id, status, creation_date) values (?, ?, 'replace', '2017-08-08')" db-types="MySQL" />
     <sql-case id="replace_without_columns_and_with_generate_key_column" value="REPLACE INTO t_order_item values(?, ?, ?, 'replace', '2017-08-08')" db-types="MySQL" />
     <sql-case id="replace_without_columns_and_without_generate_key_column" value="REPLACE INTO t_order_item values(?, ?, 'replace', '2017-08-08')" db-types="MySQL" />
     <sql-case id="replace_set_without_generate_key_column" value="REPLACE INTO t_order_item SET order_id = ?, user_id = ?, status = 'replace', creation_date='2017-08-08'" db-types="MySQL" />
-    <sql-case id="replace_with_batch" value="REPLACE INTO t_order (order_id, user_id, status) VALUES (?, ?, ?), (?, ?, ?)" db-types="MySQL" />
-    <sql-case id="replace_with_batch_and_irregular_parameters" value="REPLACE INTO t_order (order_id, user_id, status) VALUES (?, 1, 'replace'), (?, ?, ?)" db-types="MySQL" />
+    <sql-case id="replace_with_batch" value="REPLACE INTO t_order (order_id, user_id, status) VALUES (?, ?, ?), (?, ?, ?)" db-types="MySQL,Doris" />
+    <sql-case id="replace_with_batch_and_irregular_parameters" value="REPLACE INTO t_order (order_id, user_id, status) VALUES (?, 1, 'replace'), (?, ?, ?)" db-types="MySQL,Doris" />
     <sql-case id="replace_with_batch_and_with_generate_key_column" value="REPLACE INTO t_order_item(item_id, order_id, user_id, status, creation_date) values (?, ?, ?, 'replace', '2017-08-08'), (?, ?, ?, 'replace', '2017-08-08')" db-types="MySQL" />
     <sql-case id="replace_with_batch_and_without_generate_key_column" value="REPLACE INTO t_order_item(order_id, user_id, status, creation_date) values (?, ?, 'replace', '2017-08-08'), (?, ?, 'replace', '2017-08-08')" db-types="MySQL" />
     <sql-case id="replace_with_multiple_values" value="REPLACE INTO t_order (order_id, user_id, status) VALUES (1, 1, 'replace'), (2, 2, 'replace2')" db-types="MySQL" />
@@ -46,8 +46,8 @@
     <sql-case id="replace_with_unix_timestamp_function" value="REPLACE INTO t_order(status, order_id, user_id) VALUES (unix_timestamp(?), ?, ?)" db-types="MySQL" />
     <sql-case id="replace_with_str_to_date" value="REPLACE INTO t_order(present_date, order_id, user_id) VALUES (str_to_date(?, '%Y-%m-%d'), ?, ?)" db-types="MySQL" />
     <sql-case id="replace_with_str_date_add" value="REPLACE INTO t_order(present_date, order_id, user_id) VALUES (date_add(now(),interval ? second), ?, ?)" db-types="MySQL" />
-    <sql-case id="replace_select_with_all_columns" value="REPLACE INTO t_order (order_id, user_id, status) SELECT order_id, user_id, status FROM t_order WHERE order_id = ?" db-types="MySQL" />
-    <sql-case id="replace_select_without_columns" value="REPLACE INTO t_order SELECT order_id, user_id, status FROM t_order WHERE order_id = ?" db-types="MySQL" />
+    <sql-case id="replace_select_with_all_columns" value="REPLACE INTO t_order (order_id, user_id, status) SELECT order_id, user_id, status FROM t_order WHERE order_id = ?" db-types="MySQL,Doris" />
+    <sql-case id="replace_select_without_columns" value="REPLACE INTO t_order SELECT order_id, user_id, status FROM t_order WHERE order_id = ?" db-types="MySQL,Doris" />
     <sql-case id="replace_select_with_generate_key_column" value="REPLACE INTO t_order_item(item_id, order_id, user_id, status, creation_date) SELECT item_id, order_id, user_id, 'insert', '2017-08-08' FROM t_order_item WHERE item_id = ?" db-types="MySQL" />
     <sql-case id="replace_select_without_generate_key_column" value="REPLACE INTO t_order_item(order_id, user_id, status, creation_date) SELECT order_id, user_id, 'insert', '2017-08-08' FROM t_order_item WHERE order_id = ?" db-types="MySQL" />
     <sql-case id="replace_returning_expressions" value="REPLACE INTO t2 (id) VALUES (2),(3) RETURNING id,t&amp;t" db-types="MySQL" />

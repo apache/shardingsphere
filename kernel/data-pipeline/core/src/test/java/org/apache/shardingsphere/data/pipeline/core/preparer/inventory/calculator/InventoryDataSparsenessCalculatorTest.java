@@ -29,11 +29,15 @@ class InventoryDataSparsenessCalculatorTest {
     
     @Test
     void assertIsIntegerUniqueKeyDataSparse() {
-        assertFalse(InventoryDataSparsenessCalculator.isIntegerUniqueKeyDataSparse(1L, Range.closed(BigInteger.ONE, BigInteger.valueOf(1000000L))));
-        assertFalse(InventoryDataSparsenessCalculator.isIntegerUniqueKeyDataSparse(1000000L, Range.closed(null, BigInteger.valueOf(1000000L))));
-        assertFalse(InventoryDataSparsenessCalculator.isIntegerUniqueKeyDataSparse(1000000L, Range.closed(BigInteger.ONE, null)));
-        assertFalse(InventoryDataSparsenessCalculator.isIntegerUniqueKeyDataSparse(1000000L, Range.closed(BigInteger.ONE, BigInteger.valueOf(1494000L))));
-        assertTrue(InventoryDataSparsenessCalculator.isIntegerUniqueKeyDataSparse(1000000L, Range.closed(BigInteger.ONE, BigInteger.valueOf(1495000L))));
-        assertTrue(InventoryDataSparsenessCalculator.isIntegerUniqueKeyDataSparse(1000000L, Range.closed(BigInteger.ONE, BigInteger.valueOf(1500000L))));
+        assertFalse(InventoryDataSparsenessCalculator.isIntegerUniqueKeyDataSparse(1L, createRange(1L, 1000000L)));
+        assertFalse(InventoryDataSparsenessCalculator.isIntegerUniqueKeyDataSparse(1000000L, createRange(null, 1000000L)));
+        assertFalse(InventoryDataSparsenessCalculator.isIntegerUniqueKeyDataSparse(1000000L, createRange(1L, null)));
+        assertFalse(InventoryDataSparsenessCalculator.isIntegerUniqueKeyDataSparse(1000000L, createRange(1L, 1494000L)));
+        assertTrue(InventoryDataSparsenessCalculator.isIntegerUniqueKeyDataSparse(1000000L, createRange(1L, 1495000L)));
+        assertTrue(InventoryDataSparsenessCalculator.isIntegerUniqueKeyDataSparse(1000000L, createRange(1L, 1500000L)));
+    }
+    
+    private Range<BigInteger> createRange(final Long lowerBound, final Long upperBound) {
+        return Range.closed(null == lowerBound ? null : BigInteger.valueOf(lowerBound), null == upperBound ? null : BigInteger.valueOf(upperBound));
     }
 }

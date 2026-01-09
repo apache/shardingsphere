@@ -18,11 +18,11 @@
 
 <sql-cases>
     <sql-case id="drop_user_without_hostname" value="DROP USER user_dev" db-types="Oracle,PostgreSQL,openGauss,SQLServer" />
-    <sql-case id="drop_user_with_hostname" value="DROP USER user_dev@localhost" db-types="MySQL" />
-    <sql-case id="drop_user_with_ip" value="DROP USER u1@120.0.0.1" db-types="MySQL" />
+    <sql-case id="drop_user_with_hostname" value="DROP USER user_dev@localhost" db-types="MySQL,Doris" />
+    <sql-case id="drop_user_with_ip" value="DROP USER u1@120.0.0.1" db-types="MySQL,Doris" />
     <sql-case id="drop_user_cascade" value="DROP USER user_dev CASCADE" db-types="Oracle,openGauss" />
     <sql-case id="drop_user_restrict" value="DROP USER user_name RESTRICT" db-types="openGauss" />
-    <sql-case id="drop_user" value="DROP USER user1" db-types="MySQL,Oracle,PostgreSQL,openGauss,SQLServer" />
-    <sql-case id="drop_users" value="DROP USER user1, user2" db-types="MySQL,PostgreSQL,openGauss" />
-    <sql-case id="drop_user_if_exists" value="DROP USER IF EXISTS user1" db-types="MySQL,PostgreSQL,openGauss,SQLServer" />
+    <sql-case id="drop_user" value="DROP USER user1" db-types="MySQL,Oracle,PostgreSQL,openGauss,SQLServer,Doris" />
+    <sql-case id="drop_users" value="DROP USER user1, user2" db-types="MySQL,PostgreSQL,openGauss,Doris" />
+    <sql-case id="drop_user_if_exists" value="DROP USER IF EXISTS user1" db-types="MySQL,PostgreSQL,openGauss,SQLServer,Doris" />
 </sql-cases>

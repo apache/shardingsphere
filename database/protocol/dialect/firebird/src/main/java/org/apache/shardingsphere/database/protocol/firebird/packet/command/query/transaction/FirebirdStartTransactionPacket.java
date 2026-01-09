@@ -40,11 +40,21 @@ public final class FirebirdStartTransactionPacket extends FirebirdCommandPacket 
         tpb.parseBuffer(payload.readBuffer());
     }
     
-    public boolean getAutocommit() {
+    /**
+     * Is auto commit.
+     *
+     * @return auto commit or not
+     */
+    public boolean isAutoCommit() {
         return null != tpb.getValue(FirebirdTransactionParameterBufferType.AUTOCOMMIT);
     }
     
-    public boolean getReadOnly() {
+    /**
+     * Is read only.
+     *
+     * @return read only or not
+     */
+    public boolean isReadOnly() {
         return null != tpb.getValue(FirebirdTransactionParameterBufferType.READ);
     }
     
@@ -68,7 +78,6 @@ public final class FirebirdStartTransactionPacket extends FirebirdCommandPacket 
     
     @Override
     protected void write(final FirebirdPacketPayload payload) {
-        
     }
     
     /**

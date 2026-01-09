@@ -62,8 +62,8 @@ class FirebirdStartTransactionCommandExecutorTest {
     
     @Test
     void assertExecute() {
-        when(packet.getAutocommit()).thenReturn(true);
-        when(packet.getReadOnly()).thenReturn(true);
+        when(packet.isAutoCommit()).thenReturn(true);
+        when(packet.isReadOnly()).thenReturn(true);
         when(packet.getIsolationLevel()).thenReturn(TransactionIsolationLevel.SERIALIZABLE);
         FirebirdStartTransactionCommandExecutor executor = new FirebirdStartTransactionCommandExecutor(packet, connectionSession);
         Collection<DatabasePacket> actual = executor.execute();

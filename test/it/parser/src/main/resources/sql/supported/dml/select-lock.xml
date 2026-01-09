@@ -17,11 +17,11 @@
   -->
 
 <sql-cases>
-    <sql-case id="select_lock_with_lock_in" value="SELECT * FROM t_order WHERE order_id = ? LOCK IN SHARE MODE" db-types="MySQL" />
-    <sql-case id="select_lock_with_for_update" value="SELECT * FROM t_order WHERE order_id = ? FOR UPDATE" db-types="MySQL,Oracle,PostgreSQL,openGauss" />
-    <sql-case id="select_lock_with_for_share" value="SELECT * FROM t_order WHERE order_id = ? FOR SHARE" db-types="MySQL" />
-    <sql-case id="select_lock_with_nowait" value="SELECT * FROM t_order WHERE order_id = ? FOR UPDATE NOWAIT" db-types="MySQL" />
-    <sql-case id="select_lock_with_skip_locked" value="SELECT * FROM t_order WHERE order_id = ? FOR UPDATE SKIP LOCKED" db-types="MySQL" />
+    <sql-case id="select_lock_with_lock_in" value="SELECT * FROM t_order WHERE order_id = ? LOCK IN SHARE MODE" db-types="MySQL,Doris" />
+    <sql-case id="select_lock_with_for_update" value="SELECT * FROM t_order WHERE order_id = ? FOR UPDATE" db-types="MySQL,Oracle,PostgreSQL,openGauss,Presto,Doris" />
+    <sql-case id="select_lock_with_for_share" value="SELECT * FROM t_order WHERE order_id = ? FOR SHARE" db-types="MySQL,Doris" />
+    <sql-case id="select_lock_with_nowait" value="SELECT * FROM t_order WHERE order_id = ? FOR UPDATE NOWAIT" db-types="MySQL,Doris" />
+    <sql-case id="select_lock_with_skip_locked" value="SELECT * FROM t_order WHERE order_id = ? FOR UPDATE SKIP LOCKED" db-types="MySQL,Doris" />
     <sql-case id="select_lock_with_of" value="SELECT * FROM t_order, t_order_item WHERE t_order.order_id = t_order_item.order_id AND t_order.order_id = ? FOR UPDATE OF t_order FOR SHARE OF t_order_item" db-types="MySQL" />
     <sql-case id="select_lock_with_of_multi_tables" value="SELECT * FROM t_order, t_order_item, t_user WHERE t_order.order_id = t_order_item.order_id AND t_order.user_id = t_user.user_id AND t_order.order_id = ? FOR UPDATE OF t_order, t_order_item FOR SHARE OF t_user" db-types="MySQL" />
     <sql-case id="select_lock_with_for_update_column" value="SELECT order_id FROM t_order FOR UPDATE OF order_id" db-types="Oracle" />

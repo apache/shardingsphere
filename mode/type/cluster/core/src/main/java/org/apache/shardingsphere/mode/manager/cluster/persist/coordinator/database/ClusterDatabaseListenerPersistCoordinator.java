@@ -19,7 +19,7 @@ package org.apache.shardingsphere.mode.manager.cluster.persist.coordinator.datab
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.mode.node.path.engine.generator.NodePathGenerator;
-import org.apache.shardingsphere.mode.node.path.type.global.state.DatabaseListenerCoordinatorNodePath;
+import org.apache.shardingsphere.mode.node.path.type.global.state.coordinator.database.DatabaseListenerCoordinatorNodePath;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 
 /**

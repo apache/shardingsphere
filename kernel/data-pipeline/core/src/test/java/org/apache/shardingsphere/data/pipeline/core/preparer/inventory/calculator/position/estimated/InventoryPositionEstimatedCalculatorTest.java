@@ -19,7 +19,7 @@ package org.apache.shardingsphere.data.pipeline.core.preparer.inventory.calculat
 
 import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.inventory.query.Range;
 import org.apache.shardingsphere.data.pipeline.core.ingest.position.IngestPosition;
-import org.apache.shardingsphere.data.pipeline.core.ingest.position.type.pk.type.IntegerPrimaryKeyIngestPosition;
+import org.apache.shardingsphere.data.pipeline.core.ingest.position.type.pk.UniqueKeyIngestPosition;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigInteger;
@@ -35,39 +35,39 @@ class InventoryPositionEstimatedCalculatorTest {
     void assertGetIntegerPositions() {
         List<IngestPosition> actualPositions = InventoryPositionEstimatedCalculator.getIntegerPositions(200L, Range.closed(BigInteger.ONE, BigInteger.valueOf(600L)), 100L);
         assertThat(actualPositions.size(), is(2));
-        assertPosition(actualPositions.get(0), createIntegerPosition(1L, 300L));
-        assertPosition(actualPositions.get(1), createIntegerPosition(301L, 600L));
+        assertIntegerPosition(actualPositions.get(0), createIntegerPosition(1L, 300L));
+        assertIntegerPosition(actualPositions.get(1), createIntegerPosition(301L, 600L));
     }
     
-    private IntegerPrimaryKeyIngestPosition createIntegerPosition(final long beginValue, final long endValue) {
-        return new IntegerPrimaryKeyIngestPosition(BigInteger.valueOf(beginValue), BigInteger.valueOf(endValue));
+    private UniqueKeyIngestPosition<BigInteger> createIntegerPosition(final long lowerBound, final long upperBound) {
+        return UniqueKeyIngestPosition.ofInteger(Range.closed(BigInteger.valueOf(lowerBound), BigInteger.valueOf(upperBound)));
     }
     
-    private void assertPosition(final IngestPosition actual, final IntegerPrimaryKeyIngestPosition expected) {
-        assertThat(actual, isA(IntegerPrimaryKeyIngestPosition.class));
-        assertThat(((IntegerPrimaryKeyIngestPosition) actual).getBeginValue(), is(expected.getBeginValue()));
-        assertThat(((IntegerPrimaryKeyIngestPosition) actual).getEndValue(), is(expected.getEndValue()));
+    private void assertIntegerPosition(final IngestPosition actual, final UniqueKeyIngestPosition<BigInteger> expected) {
+        assertThat(actual, isA(UniqueKeyIngestPosition.class));
+        assertThat(((UniqueKeyIngestPosition<?>) actual).getLowerBound(), is(expected.getLowerBound()));
+        assertThat(((UniqueKeyIngestPosition<?>) actual).getUpperBound(), is(expected.getUpperBound()));
     }
     
     @Test
     void assertGetIntegerPositionsWithZeroTotalRecordsCount() {
         List<IngestPosition> actualPositions = InventoryPositionEstimatedCalculator.getIntegerPositions(0L, Range.closed(BigInteger.ZERO, BigInteger.ONE), 1L);
         assertThat(actualPositions.size(), is(1));
-        assertPosition(actualPositions.get(0), new IntegerPrimaryKeyIngestPosition(null, null));
+        assertIntegerPosition(actualPositions.get(0), UniqueKeyIngestPosition.ofInteger(Range.closed(null, null)));
     }
     
     @Test
     void assertGetIntegerPositionsWithNullValue() {
         List<IngestPosition> actualPositions = InventoryPositionEstimatedCalculator.getIntegerPositions(200L, Range.closed(null, null), 1L);
         assertThat(actualPositions.size(), is(1));
-        assertPosition(actualPositions.get(0), new IntegerPrimaryKeyIngestPosition(null, null));
+        assertIntegerPosition(actualPositions.get(0), UniqueKeyIngestPosition.ofInteger(Range.closed(null, null)));
     }
     
     @Test
     void assertGetIntegerPositionsWithTheSameMinMax() {
         List<IngestPosition> actualPositions = InventoryPositionEstimatedCalculator.getIntegerPositions(200L, Range.closed(BigInteger.valueOf(5L), BigInteger.valueOf(5L)), 100L);
         assertThat(actualPositions.size(), is(1));
-        assertPosition(actualPositions.get(0), createIntegerPosition(5L, 5L));
+        assertIntegerPosition(actualPositions.get(0), createIntegerPosition(5L, 5L));
     }
     
     @Test
@@ -78,7 +78,7 @@ class InventoryPositionEstimatedCalculatorTest {
         BigInteger upperBound = BigInteger.valueOf(Long.MAX_VALUE);
         List<IngestPosition> actualPositions = InventoryPositionEstimatedCalculator.getIntegerPositions(tableRecordsCount, Range.closed(lowerBound, upperBound), shardingSize);
         assertThat(actualPositions.size(), is(2));
-        assertPosition(actualPositions.get(0), createIntegerPosition(lowerBound.longValue(), 0L));
-        assertPosition(actualPositions.get(1), createIntegerPosition(1L, upperBound.longValue()));
+        assertIntegerPosition(actualPositions.get(0), createIntegerPosition(lowerBound.longValue(), 0L));
+        assertIntegerPosition(actualPositions.get(1), createIntegerPosition(1L, upperBound.longValue()));
     }
 }

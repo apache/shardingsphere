@@ -62,6 +62,29 @@ class PipelineTableMetaDataUtilsTest {
     }
     
     @Test
+    void assertGetUniqueKeyColumnsWithUniqueIndexNullable() {
+        PipelineIndexMetaData pipelineIndexMetaData = mock(PipelineIndexMetaData.class, RETURNS_DEEP_STUBS);
+        PipelineColumnMetaData columnMetaData = mock(PipelineColumnMetaData.class);
+        when(columnMetaData.isNullable()).thenReturn(true);
+        when(pipelineIndexMetaData.getColumns()).thenReturn(Collections.singletonList(columnMetaData));
+        when(tableMetaData.getUniqueIndexes()).thenReturn(Collections.singletonList(pipelineIndexMetaData));
+        List<PipelineColumnMetaData> actual = PipelineTableMetaDataUtils.getUniqueKeyColumns("foo_schema", "foo_tbl", metaDataLoader);
+        assertThat(actual.size(), is(0));
+    }
+    
+    @Test
+    void assertGetUniqueKeyColumnsWithUniqueIndexNotNull() {
+        PipelineIndexMetaData pipelineIndexMetaData = mock(PipelineIndexMetaData.class, RETURNS_DEEP_STUBS);
+        PipelineColumnMetaData columnMetaData = mock(PipelineColumnMetaData.class);
+        when(columnMetaData.isNullable()).thenReturn(false);
+        when(pipelineIndexMetaData.getColumns()).thenReturn(Collections.singletonList(columnMetaData));
+        when(tableMetaData.getUniqueIndexes()).thenReturn(Collections.singletonList(pipelineIndexMetaData));
+        List<PipelineColumnMetaData> actual = PipelineTableMetaDataUtils.getUniqueKeyColumns("foo_schema", "foo_tbl", metaDataLoader);
+        assertThat(actual.size(), is(1));
+        assertThat(actual.get(0), is(columnMetaData));
+    }
+    
+    @Test
     void assertGetUniqueKeyColumnsWithUniqueIndexes() {
         PipelineIndexMetaData pipelineIndexMetaData1 = mock(PipelineIndexMetaData.class, RETURNS_DEEP_STUBS);
         PipelineColumnMetaData columnMetaData1 = mock(PipelineColumnMetaData.class);

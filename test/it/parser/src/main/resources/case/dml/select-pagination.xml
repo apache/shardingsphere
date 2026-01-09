@@ -2084,6 +2084,44 @@
         </from>
     </select>
 
+    <select sql-case-id="select_limit_offset_doris">
+        <from>
+            <simple-table name="t_order" start-index="14" stop-index="20" />
+        </from>
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" />
+        </projections>
+        <limit start-index="22" stop-index="37">
+            <row-count value="5" start-index="28" stop-index="28" />
+            <offset value="2" start-index="37" stop-index="37" />
+        </limit>
+    </select>
+
+    <select sql-case-id="select_limit_only_doris">
+        <from>
+            <simple-table name="t_order" start-index="14" stop-index="20" />
+        </from>
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" />
+        </projections>
+        <limit start-index="22" stop-index="28">
+            <row-count value="5" start-index="28" stop-index="28" />
+        </limit>
+    </select>
+
+    <select sql-case-id="select_limit_with_params_doris" parameters="1, 2">
+        <from>
+            <simple-table name="t_order" start-index="14" stop-index="20" />
+        </from>
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" />
+        </projections>
+        <limit start-index="22" stop-index="31">
+            <row-count value="2" parameter-index="1" start-index="31" stop-index="31" />
+            <offset value="1" parameter-index="0" start-index="28" stop-index="28" />
+        </limit>
+    </select>
+
 <!--        <select sql-case-id="select_pagination_with_first_and_expr_value">-->
 <!--            <limit start-index="7" stop-index="17">-->
 <!--                <row-count value="1" start-index="13" stop-index="17"/>-->

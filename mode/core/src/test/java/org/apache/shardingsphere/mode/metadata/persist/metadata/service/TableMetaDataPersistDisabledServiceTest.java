@@ -23,7 +23,7 @@ import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.infra.yaml.schema.swapper.YamlTableSwapper;
 import org.apache.shardingsphere.mode.node.path.engine.generator.NodePathGenerator;
 import org.apache.shardingsphere.mode.node.path.type.global.state.coordinator.CoordinatorType;
-import org.apache.shardingsphere.mode.node.path.type.global.state.coordinator.TableCoordinatorTypeNodePath;
+import org.apache.shardingsphere.mode.node.path.type.global.state.coordinator.table.TableCoordinatorTypeNodePath;
 import org.apache.shardingsphere.mode.spi.repository.PersistRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

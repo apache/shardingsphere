@@ -36,7 +36,7 @@ public final class IntegerRangeSplittingIterator implements Iterator<Range<BigIn
     
     public IntegerRangeSplittingIterator(final BigInteger lowerBound, final BigInteger upperBound, final BigInteger stepSize) {
         if (lowerBound.compareTo(upperBound) > 0) {
-            throw new IllegalArgumentException("lower bounder greater than upper bound");
+            throw new IllegalArgumentException("lower bound greater than upper bound");
         }
         if (stepSize.compareTo(BigInteger.ZERO) < 0) {
             throw new IllegalArgumentException("step size is less than zero");

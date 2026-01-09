@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.transaction.xa.jta.datasource;
 
+import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.transaction.DialectTransactionOption;
 import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
@@ -48,6 +49,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 /**
  * XA transaction data source.
  */
+@Slf4j
 public final class XATransactionDataSource implements AutoCloseable {
     
     private static final Set<String> CONTAINER_DATASOURCE_NAMES = new HashSet<>(Arrays.asList("AtomikosDataSourceBean", "BasicManagedDataSource"));
@@ -92,7 +94,19 @@ public final class XATransactionDataSource implements AutoCloseable {
         }
         Transaction transaction = xaTransactionManagerProvider.getTransactionManager().getTransaction();
         Connection connection = dataSource.getConnection();
-        enlistResource(connection, transaction);
+        try {
+            enlistResource(connection, transaction);
+            // CHECKSTYLE:OFF
+        } catch (final RuntimeException | SystemException | RollbackException ex) {
+            // CHECKSTYLE:ON
+            closeConnection(connection);
+            throw ex;
+            // CHECKSTYLE:OFF
+        } catch (final Exception ex) {
+            // CHECKSTYLE:ON
+            closeConnection(connection);
+            throw new SQLException(ex);
+        }
         return connection;
     }
     
@@ -102,6 +116,16 @@ public final class XATransactionDataSource implements AutoCloseable {
         registerSynchronization(transaction);
         enlistedTransactions.get().computeIfAbsent(transaction, key -> new LinkedList<>());
         enlistedTransactions.get().get(transaction).add(connection);
+    }
+    
+    private void closeConnection(final Connection connection) {
+        try {
+            connection.close();
+            // CHECKSTYLE:OFF
+        } catch (final Throwable ex) {
+            // CHECKSTYLE:ON
+            log.warn("Failed to close connection after enlist failure. Resource: {}", resourceName, ex);
+        }
     }
     
     private void registerSynchronization(final Transaction transaction) throws RollbackException, SystemException {

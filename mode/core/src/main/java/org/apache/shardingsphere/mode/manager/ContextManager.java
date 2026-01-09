@@ -24,6 +24,7 @@ import org.apache.shardingsphere.database.exception.core.exception.syntax.databa
 import org.apache.shardingsphere.database.exception.core.exception.syntax.database.UnknownDatabaseException;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
+import org.apache.shardingsphere.infra.config.props.temporary.TemporaryConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.database.DatabaseTypeEngine;
 import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePoolProperties;
@@ -152,7 +153,9 @@ public final class ContextManager implements AutoCloseable {
     
     private MetaDataContexts createMetaDataContexts(final ShardingSphereDatabase database) throws SQLException {
         Map<String, DataSourcePoolProperties> dataSourcePoolProps = persistServiceFacade.getMetaDataFacade().getDataSourceUnitService().load(database.getName());
-        SwitchingResource switchingResource = metaDataContextManager.getResourceSwitchManager().switchByAlterStorageUnit(database.getResourceMetaData(), dataSourcePoolProps);
+        boolean isInstanceConnectionEnabled = metaDataContexts.getMetaData().getTemporaryProps().<Boolean>getValue(TemporaryConfigurationPropertyKey.INSTANCE_CONNECTION_ENABLED);
+        SwitchingResource switchingResource =
+                metaDataContextManager.getResourceSwitchManager().switchByAlterStorageUnit(database.getResourceMetaData(), dataSourcePoolProps, isInstanceConnectionEnabled);
         Collection<RuleConfiguration> ruleConfigs = persistServiceFacade.getMetaDataFacade().getDatabaseRuleService().load(database.getName());
         ShardingSphereDatabase changedDatabase = new MetaDataContextsFactory(persistServiceFacade.getMetaDataFacade(), computeNodeInstanceContext)
                 .createChangedDatabase(database.getName(), false, switchingResource, ruleConfigs, metaDataContexts);

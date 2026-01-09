@@ -22,7 +22,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
-import org.apache.shardingsphere.data.pipeline.core.ingest.position.type.pk.PrimaryKeyIngestPosition;
+import org.apache.shardingsphere.data.pipeline.core.ingest.position.type.pk.UniqueKeyIngestPosition;
 
 /**
  * Table check range position.
@@ -40,9 +40,9 @@ public final class TableCheckRangePosition {
     
     private final String logicTableName;
     
-    private final PrimaryKeyIngestPosition<?> sourceRange;
+    private final UniqueKeyIngestPosition<?> sourceRange;
     
-    private final PrimaryKeyIngestPosition<?> targetRange;
+    private final UniqueKeyIngestPosition<?> targetRange;
     
     private final String queryCondition;
     

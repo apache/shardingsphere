@@ -23,7 +23,6 @@ import org.apache.shardingsphere.encrypt.rewrite.token.generator.fixture.Encrypt
 import org.apache.shardingsphere.infra.binder.context.statement.type.dml.UpdateStatementContext;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.rewrite.sql.token.common.pojo.SQLToken;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collection;
@@ -36,23 +35,18 @@ import static org.mockito.Mockito.mock;
 
 class EncryptPredicateValueTokenGeneratorTest {
     
-    private EncryptPredicateValueTokenGenerator generator;
-    
-    @BeforeEach
-    void setup() {
-        generator = new EncryptPredicateValueTokenGenerator(EncryptGeneratorFixtureBuilder.createEncryptRule(),
-                new ShardingSphereDatabase("foo_db", mock(), mock(), mock(), Collections.emptyList()));
-    }
-    
     @Test
     void assertIsGenerateSQLToken() {
+        EncryptPredicateValueTokenGenerator generator = new EncryptPredicateValueTokenGenerator(EncryptGeneratorFixtureBuilder.createEncryptRule(),
+                new ShardingSphereDatabase("foo_db", mock(), mock(), mock(), Collections.emptyList()), Collections.emptyList());
         assertTrue(generator.isGenerateSQLToken(EncryptGeneratorFixtureBuilder.createUpdateStatementContext()));
     }
     
     @Test
     void assertGenerateSQLTokenFromGenerateNewSQLToken() {
         UpdateStatementContext updateStatementContext = EncryptGeneratorFixtureBuilder.createUpdateStatementContext();
-        generator.setEncryptConditions(getEncryptConditions(updateStatementContext));
+        EncryptPredicateValueTokenGenerator generator = new EncryptPredicateValueTokenGenerator(EncryptGeneratorFixtureBuilder.createEncryptRule(),
+                new ShardingSphereDatabase("foo_db", mock(), mock(), mock(), Collections.emptyList()), getEncryptConditions(updateStatementContext));
         Collection<SQLToken> sqlTokens = generator.generateSQLTokens(updateStatementContext);
         assertThat(sqlTokens.size(), is(1));
         assertThat(sqlTokens.iterator().next().toString(), is("'assistedEncryptValue'"));
