@@ -17,5 +17,5 @@
   -->
 
 <sql-cases>
-    <sql-case id="repair_table" value="REPAIR TABLE table1,table2" db-types="MySQL" />
+    <sql-case id="repair_table" value="REPAIR TABLE table1,table2" db-types="MySQL,Doris" />
 </sql-cases>

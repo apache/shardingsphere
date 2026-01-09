@@ -36,7 +36,6 @@ import org.apache.shardingsphere.sqlfederation.compiler.sql.ast.converter.segmen
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Optional;
 
 /**
  * Trim function converter.
@@ -45,16 +44,16 @@ import java.util.Optional;
 public final class TrimFunctionConverter {
     
     /**
-     * Convert function segment to sql node.
+     * Convert function segment to SQL node.
      *
      * @param segment function segment
-     * @return sql node
+     * @return SQL node
      */
-    public static Optional<SqlNode> convert(final FunctionSegment segment) {
+    public static SqlBasicCall convert(final FunctionSegment segment) {
         SqlIdentifier functionName = new SqlIdentifier(segment.getFunctionName(), SqlParserPos.ZERO);
         List<SqlOperator> functions = new LinkedList<>();
         SqlStdOperatorTable.instance().lookupOperatorOverloads(functionName, null, SqlSyntax.FUNCTION, functions, SqlNameMatchers.withCaseSensitive(false));
-        return Optional.of(new SqlBasicCall(functions.iterator().next(), getTrimFunctionParameters(segment.getParameters()), SqlParserPos.ZERO));
+        return new SqlBasicCall(functions.iterator().next(), getTrimFunctionParameters(segment.getParameters()), SqlParserPos.ZERO);
     }
     
     private static List<SqlNode> getTrimFunctionParameters(final Collection<ExpressionSegment> sqlSegments) {

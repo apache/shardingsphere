@@ -17,14 +17,18 @@
 
 package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.queryable.computenode;
 
+import org.apache.shardingsphere.distsql.handler.engine.query.DistSQLQueryExecutor;
 import org.apache.shardingsphere.distsql.statement.type.ral.queryable.show.ShowComputeNodesStatement;
 import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
 import org.apache.shardingsphere.infra.config.mode.PersistRepositoryConfiguration;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstance;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstanceContext;
+import org.apache.shardingsphere.infra.instance.metadata.jdbc.JDBCInstanceMetaData;
 import org.apache.shardingsphere.infra.instance.metadata.proxy.ProxyInstanceMetaData;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.infra.state.instance.InstanceStateContext;
+import org.apache.shardingsphere.infra.util.eventbus.EventBusContext;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.cluster.persist.facade.ClusterPersistServiceFacade;
 import org.apache.shardingsphere.mode.manager.standalone.persist.facade.StandalonePersistServiceFacade;
@@ -32,6 +36,7 @@ import org.apache.shardingsphere.mode.metadata.manager.MetaDataContextManager;
 import org.apache.shardingsphere.mode.repository.standalone.StandalonePersistRepositoryConfiguration;
 import org.junit.jupiter.api.Test;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Properties;
@@ -44,9 +49,16 @@ import static org.mockito.Mockito.when;
 
 class ShowComputeNodesExecutorTest {
     
+    private final ShowComputeNodesExecutor executor = (ShowComputeNodesExecutor) TypedSPILoader.getService(DistSQLQueryExecutor.class, ShowComputeNodesStatement.class);
+    
+    @Test
+    void assertGetColumnNames() {
+        assertThat(executor.getColumnNames(mock(ShowComputeNodesStatement.class)),
+                is(Arrays.asList("instance_id", "instance_type", "host", "port", "status", "mode_type", "worker_id", "labels", "version", "database_name")));
+    }
+    
     @Test
     void assertExecuteWithStandaloneMode() {
-        ShowComputeNodesExecutor executor = new ShowComputeNodesExecutor();
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         ComputeNodeInstanceContext computeNodeInstanceContext = createStandaloneInstanceContext();
         when(contextManager.getComputeNodeInstanceContext()).thenReturn(computeNodeInstanceContext);
@@ -80,7 +92,6 @@ class ShowComputeNodesExecutorTest {
     
     @Test
     void assertExecuteWithClusterMode() {
-        ShowComputeNodesExecutor executor = new ShowComputeNodesExecutor();
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         ComputeNodeInstanceContext computeNodeInstanceContext = createClusterInstanceContext(contextManager);
         when(contextManager.getComputeNodeInstanceContext()).thenReturn(computeNodeInstanceContext);
@@ -111,5 +122,28 @@ class ShowComputeNodesExecutorTest {
         when(clusterPersistServiceFacade.getComputeNodeService().loadAllInstances()).thenReturn(Collections.singleton(computeNodeInstance));
         when(contextManager.getPersistServiceFacade().getModeFacade()).thenReturn(clusterPersistServiceFacade);
         return result;
+    }
+    
+    @Test
+    void assertExecuteWithJdbcInstance() {
+        ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
+        ComputeNodeInstance computeNodeInstance = new ComputeNodeInstance(new JDBCInstanceMetaData("jdbc_instance", "192.168.0.1", "jdbc_version", "logic_db"));
+        computeNodeInstance.setWorkerId(2);
+        computeNodeInstance.getLabels().add("prod");
+        ComputeNodeInstanceContext computeNodeInstanceContext = new ComputeNodeInstanceContext(computeNodeInstance, new ModeConfiguration("Cluster", mock()), new EventBusContext());
+        when(contextManager.getComputeNodeInstanceContext()).thenReturn(computeNodeInstanceContext);
+        when(contextManager.getPersistServiceFacade().getModeFacade().getComputeNodeService().loadAllInstances()).thenReturn(Collections.singleton(computeNodeInstance));
+        Collection<LocalDataQueryResultRow> actual = executor.getRows(mock(ShowComputeNodesStatement.class), contextManager);
+        LocalDataQueryResultRow row = actual.iterator().next();
+        assertThat(row.getCell(1), is("jdbc_instance"));
+        assertThat(row.getCell(2), is("JDBC"));
+        assertThat(row.getCell(3), is("192.168.0.1"));
+        assertThat(row.getCell(4), is("-1"));
+        assertThat(row.getCell(5), is("OK"));
+        assertThat(row.getCell(6), is("Cluster"));
+        assertThat(row.getCell(7), is("2"));
+        assertThat(row.getCell(8), is("prod"));
+        assertThat(row.getCell(9), is("jdbc_version"));
+        assertThat(row.getCell(10), is("logic_db"));
     }
 }

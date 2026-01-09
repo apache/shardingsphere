@@ -28,7 +28,7 @@ ShardingSphere 对 Firebird JDBC Driver 的支持位于可选模块中。
     <dependency>
         <groupId>org.firebirdsql.jdbc</groupId>
         <artifactId>jaybird</artifactId>
-        <version>5.0.6.java8</version>
+        <version>5.0.10.java8</version>
     </dependency>
 </dependencies>
 ```
@@ -58,7 +58,7 @@ services:
 通过第三方工具在 Firebird 内创建业务库。
 
 包括 DBeaver Community 在内的第三方工具无法为 Firebird 创建 databases，
-下以 Maven 模块 `org.firebirdsql.jdbc:jaybird:5.0.6.java8` 的 Java API 为例，
+下以 Maven 模块 `org.firebirdsql.jdbc:jaybird:5.0.10.java8` 的 Java API 为例，
 
 ```java
 import org.firebirdsql.management.FBManager;

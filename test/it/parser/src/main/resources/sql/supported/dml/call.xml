@@ -17,11 +17,12 @@
   -->
 
 <sql-cases>
-    <sql-case id="call_without_parameters" value="CALL p" db-types="MySQL" />
-    <sql-case id="call_with_parameters_all_variable" value="CALL p(@order_id, @user_id)" db-types="MySQL" />
-    <sql-case id="call_with_parameters_all_placeholder" value="CALL p(?, ?) " db-types="MySQL" />
-    <sql-case id="call_with_parameters_all_expression" value="CALL p('user', 'order')" db-types="MySQL" />
-    <sql-case id="call_with_parameters_mix" value="CALL p(@order_id, 'user', ?)" db-types="MySQL" />
+    <sql-case id="call_without_parameters" value="CALL p" db-types="MySQL,Doris" />
+    <sql-case id="call_with_parameters_all_variable" value="CALL p(@order_id, @user_id)" db-types="MySQL,Doris" />
+    <sql-case id="call_with_parameters_all_placeholder" value="CALL p(?, ?) " db-types="MySQL,Doris" />
+    <sql-case id="call_with_parameters_all_expression" value="CALL p('user', 'order')" db-types="MySQL,Doris" />
+    <sql-case id="call_with_parameters_mix" value="CALL p(@order_id, 'user', ?)" db-types="MySQL,Doris" />
+    <sql-case id="call_with_owner_doris" value="CALL analytics.proc_demo(?, ?)" db-types="Doris" />
     <sql-case id="call_with_named_notation_with_null" value="CALL p(a =&gt; null, b =&gt; 8, c =&gt; 2);" db-types="PostgreSQL" />
     <sql-case id="call_with_named_notation" value="CALL p(b =&gt; 8, c =&gt; 2, a =&gt; 0);" db-types="PostgreSQL" />
     <sql-case id="call_with_mixed_notation" value="CALL p(null, 7, c =&gt; 2);" db-types="PostgreSQL" />

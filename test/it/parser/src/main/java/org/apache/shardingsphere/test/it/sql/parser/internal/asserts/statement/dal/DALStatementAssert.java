@@ -24,6 +24,7 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAsse
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.dal.dialect.mysql.MySQLDALStatementAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.dal.dialect.oracle.OracleDALStatementAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.dal.dialect.postgresql.PostgreSQLDALStatementAssert;
+import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.dal.dialect.doris.DorisDALStatementAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.dal.standard.StandardDALStatementAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.SQLParserTestCase;
 
@@ -45,5 +46,6 @@ public final class DALStatementAssert {
         MySQLDALStatementAssert.assertIs(assertContext, actual, expected);
         PostgreSQLDALStatementAssert.assertIs(assertContext, actual, expected);
         OracleDALStatementAssert.assertIs(assertContext, actual, expected);
+        DorisDALStatementAssert.assertIs(assertContext, actual, expected);
     }
 }

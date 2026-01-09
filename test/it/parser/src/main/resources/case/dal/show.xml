@@ -863,6 +863,7 @@
     <show sql-case-id="show_processlist" />
     <show sql-case-id="show_profile" />
     <show sql-case-id="show_profiles" />
+    <show sql-case-id="show_privileges_doris" />
     <show sql-case-id="show_charset" />
     <show sql-case-id="show_warnings_limit" />
     <show sql-case-id="show_warnings_count" />
@@ -1071,6 +1072,28 @@
         </filter>
     </show-columns>
 
+    <show-query-stats sql-case-id="show_query_stats" />
+
+    <show-query-stats sql-case-id="show_query_stats_for_database">
+        <database name="baseall" start-index="21" stop-index="27" />
+    </show-query-stats>
+
+    <show-query-stats sql-case-id="show_query_stats_from_table">
+        <from start-index="17" stop-index="31">
+            <table name="test_table" start-index="22" stop-index="31" />
+        </from>
+    </show-query-stats>
+
+    <show-query-stats sql-case-id="show_query_stats_all" all="true" />
+
+    <show-query-stats sql-case-id="show_query_stats_verbose" verbose="true" />
+
+    <show-query-stats sql-case-id="show_query_stats_from_table_all_verbose" all="true" verbose="true">
+        <from start-index="17" stop-index="31">
+            <table name="test_table" start-index="22" stop-index="31" />
+        </from>
+    </show-query-stats>
+
     <show sql-case-id="show_functions_basic" />
     <show sql-case-id="show_functions_with_like" />
     <show sql-case-id="show_role_grant_basic" />
@@ -1098,4 +1121,27 @@
     <show sql-case-id="show_compactions_with_limit" />
     <show sql-case-id="show_compactions_with_compaction_ID" />
     <show sql-case-id="show_compactions_all_options" />
+    <show sql-case-id="show_create_database_doris" />
+    <show sql-case-id="show_create_view_doris" />
+    <show sql-case-id="show_create_event_doris" />
+    <show sql-case-id="show_create_function_doris" />
+    <show sql-case-id="show_create_procedure_doris" />
+    <show-create-trigger sql-case-id="show_create_trigger_doris">
+        <trigger name="trg_test" start-index="20" stop-index="26" />
+    </show-create-trigger>
+    <show-create-user sql-case-id="show_create_user_doris">
+        <user name="user1" start-index="17" stop-index="21" />
+    </show-create-user>
+    <show sql-case-id="show_binary_logs_doris" />
+    <show-binlog-events sql-case-id="show_binlog_events_doris" />
+    <show sql-case-id="show_processlist_doris" />
+    <show-open-tables sql-case-id="show_open_tables_doris" />
+    <show-triggers sql-case-id="show_triggers_doris" />
+    <show-function-status sql-case-id="show_function_status_doris" />
+    <show-procedure-status sql-case-id="show_procedure_status_doris" />
+    <show sql-case-id="show_master_status_doris" />
+    <show-slave-status sql-case-id="show_slave_status_doris" />
+    <show-slave-hosts sql-case-id="show_slave_hosts_doris" />
+    <show-replica-status sql-case-id="show_replica_status_doris" />
+    <show-relay-log-events sql-case-id="show_relaylog_events_doris" />
 </sql-parser-test-cases>

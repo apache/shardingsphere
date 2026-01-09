@@ -17,10 +17,35 @@
 
 package org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.standard.database;
 
+import lombok.Getter;
+import lombok.Setter;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.SQLParserTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.doris.PropertyTestCase;
+
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * Alter database statement test case.
  */
+@Getter
+@Setter
 public final class AlterDatabaseStatementTestCase extends SQLParserTestCase {
+    
+    @XmlAttribute(name = "database-name")
+    private String databaseName;
+    
+    @XmlAttribute(name = "rename-database-name")
+    private String renameDatabaseName;
+    
+    @XmlAttribute(name = "quota-type")
+    private String quotaType;
+    
+    @XmlAttribute(name = "quota-value")
+    private Long quotaValue;
+    
+    @XmlElement(name = "property")
+    private final List<PropertyTestCase> properties = new LinkedList<>();
 }

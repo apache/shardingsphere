@@ -48,10 +48,10 @@ import java.util.Optional;
 public final class ProjectionsConverter {
     
     /**
-     * Convert projections segment to sql node list.
+     * Convert projections segment to SQL node list.
      *
      * @param segment projections segment
-     * @return sql node list
+     * @return SQL node list
      */
     public static Optional<SqlNodeList> convert(final ProjectionsSegment segment) {
         Collection<SqlNode> projectionSQLNodes = new LinkedList<>();
@@ -63,7 +63,7 @@ public final class ProjectionsConverter {
     
     private static Optional<SqlNode> getProjectionSQLNode(final ProjectionSegment segment) {
         if (segment instanceof ColumnProjectionSegment) {
-            return ColumnProjectionConverter.convert((ColumnProjectionSegment) segment);
+            return Optional.of(ColumnProjectionConverter.convert((ColumnProjectionSegment) segment));
         }
         if (segment instanceof ExpressionProjectionSegment) {
             return ExpressionProjectionConverter.convert((ExpressionProjectionSegment) segment);
@@ -78,7 +78,7 @@ public final class ProjectionsConverter {
             return AggregationProjectionConverter.convert((AggregationProjectionSegment) segment);
         }
         if (segment instanceof ParameterMarkerExpressionSegment) {
-            return ParameterMarkerExpressionConverter.convert((ParameterMarkerExpressionSegment) segment);
+            return Optional.of(ParameterMarkerExpressionConverter.convert((ParameterMarkerExpressionSegment) segment));
         }
         // TODO process other projection
         return Optional.empty();

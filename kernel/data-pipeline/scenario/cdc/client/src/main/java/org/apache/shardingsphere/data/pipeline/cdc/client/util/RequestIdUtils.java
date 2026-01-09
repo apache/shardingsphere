@@ -23,15 +23,15 @@ import lombok.NoArgsConstructor;
 import java.util.UUID;
 
 /**
- * Request id utility class.
+ * Request ID utility class.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class RequestIdUtils {
     
     /**
-     * Generate request id.
+     * Generate request ID.
      *
-     * @return request id.
+     * @return request ID.
      */
     public static String generateRequestId() {
         return UUID.randomUUID().toString();

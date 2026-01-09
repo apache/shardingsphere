@@ -23,6 +23,10 @@ use
     : USE databaseName
     ;
 
+switchCatalog
+    : SWITCH catalogName
+    ;
+
 help
     : HELP textOrIdentifier
     ;
@@ -284,7 +288,27 @@ installComponent
     ;
 
 installPlugin
-    : INSTALL PLUGIN pluginName SONAME shardLibraryName
+    : INSTALL PLUGIN (pluginName SONAME shardLibraryName | FROM pluginSource (PROPERTIES LP_ pluginPropertiesList RP_)?)
+    ;
+
+pluginSource
+    : identifier | string_
+    ;
+
+pluginPropertiesList
+    : pluginProperty (COMMA_ pluginProperty)*
+    ;
+
+pluginProperty
+    : pluginPropertyKey EQ_ pluginPropertyValue
+    ;
+
+pluginPropertyKey
+    : identifier | string_
+    ;
+
+pluginPropertyValue
+    : literals | identifier
     ;
 
 uninstallComponent
@@ -329,6 +353,61 @@ alterResourceGroup
     (ENABLE | DISABLE FORCE?)?
     ;
 
+alterResource
+    : ALTER RESOURCE resourceName PROPERTIES LP_ propertyAssignments RP_
+    ;
+
+resourceName
+    : identifier | string_
+    ;
+
+propertyAssignments
+    : propertyAssignment (COMMA_ propertyAssignment)*
+    ;
+
+propertyAssignment
+    : propertyKey EQ_ propertyValue
+    ;
+
+propertyKey
+    : identifier | string_
+    ;
+
+propertyValue
+    : literals | identifier
+    ;
+
+dorisAlterSystem
+    : ALTER SYSTEM dorisAlterSystemAction
+    ;
+
+dorisAlterSystemAction
+    : ADD FOLLOWER string_
+    | ADD OBSERVER string_
+    | DROP FOLLOWER string_
+    | DROP OBSERVER string_
+    ;
+
+createSqlBlockRule
+    : CREATE SQL_BLOCK_RULE ruleName propertiesClause
+    ;
+
+ruleName
+    : identifier
+    ;
+
+propertiesClause
+    : PROPERTIES LP_ properties RP_
+    ;
+
+properties
+    : property (COMMA_ property)*
+    ;
+
+property
+    : (identifier | SINGLE_QUOTED_TEXT | DOUBLE_QUOTED_TEXT) EQ_? literals
+    ;
+
 vcpuSpec
     : NUMBER_ | NUMBER_ MINUS_ NUMBER_
     ;
@@ -344,6 +423,10 @@ dropResourceGroup
 
 setResourceGroup
     : SET RESOURCE GROUP groupName (FOR NUMBER_ (COMMA_ NUMBER_)*)?
+    ;
+
+showQueryStats
+    : SHOW QUERY STATS (FOR databaseName | fromTable)? ALL? VERBOSE?
     ;
 
 binlog
@@ -380,7 +463,7 @@ tablesOption
     ;
 
 kill
-    : KILL (CONNECTION | QUERY)? AT_? IDENTIFIER_
+    : KILL (CONNECTION | QUERY)? (AT_? IDENTIFIER_ | NUMBER_)
     ;
 
 loadIndexInfo
@@ -654,6 +737,7 @@ show
     | showProfile
     | showProcedureStatus
     | showProfiles
+    | showQueryStats
     | showSlaveHosts
     | showSlaveStatus
     | showRelaylogEvent

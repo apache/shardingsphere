@@ -17,8 +17,8 @@
   -->
 
 <sql-cases>
-    <sql-case id="drop_role" value="DROP ROLE role1" db-types="MySQL,Oracle,PostgreSQL,openGauss,SQLServer" />
-    <sql-case id="drop_roles" value="DROP ROLE role1, role2" db-types="MySQL,PostgreSQL,openGauss" />
-    <sql-case id="drop_role_if_exists" value="DROP ROLE IF EXISTS role1" db-types="MySQL,PostgreSQL,openGauss,SQLServer" />
+    <sql-case id="drop_role" value="DROP ROLE role1" db-types="MySQL,Oracle,PostgreSQL,openGauss,SQLServer,Doris" />
+    <sql-case id="drop_roles" value="DROP ROLE role1, role2" db-types="MySQL,PostgreSQL,openGauss,Doris" />
+    <sql-case id="drop_role_if_exists" value="DROP ROLE IF EXISTS role1" db-types="MySQL,PostgreSQL,openGauss,SQLServer,Doris" />
     <sql-case id="drop_role_appsuser" value="DROP ROLE apps_user" db-types="Oracle" />
 </sql-cases>

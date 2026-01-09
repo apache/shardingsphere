@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.test.it.distsql.handler.engine.update;
 
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.distsql.handler.engine.DistSQLConnectionContext;
 import org.apache.shardingsphere.distsql.handler.engine.update.DistSQLUpdateExecuteEngine;
 import org.apache.shardingsphere.distsql.statement.DistSQLStatement;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
@@ -57,7 +58,7 @@ public final class DistSQLGlobalRuleDefinitionExecutorAssert {
     public void assertExecuteUpdate(final GlobalRuleConfiguration ruleConfig,
                                     final DistSQLStatement sqlStatement, final RuleConfiguration matchedRuleConfig, final Class<? extends Exception> expectedException) throws SQLException {
         ContextManager contextManager = mockContextManager(ruleConfig);
-        DistSQLUpdateExecuteEngine engine = new DistSQLUpdateExecuteEngine(sqlStatement, null, contextManager);
+        DistSQLUpdateExecuteEngine engine = new DistSQLUpdateExecuteEngine(sqlStatement, null, contextManager, mock(DistSQLConnectionContext.class, RETURNS_DEEP_STUBS));
         if (null != expectedException) {
             assertThrows(expectedException, engine::executeUpdate);
             return;

@@ -29,6 +29,8 @@ alterStatement
     | alterLogfileGroup
     | alterInstance
     | alterServer
+    | alterCatalog
+    | alterStoragePolicy
     ;
 
 createTable
@@ -59,7 +61,7 @@ properties
     ;
 
 property
-    : (identifier | SINGLE_QUOTED_TEXT) EQ_? literals
+    : (identifier | SINGLE_QUOTED_TEXT | DOUBLE_QUOTED_TEXT) EQ_? literals
     ;
 // DORIS ADDED END
 
@@ -132,9 +134,11 @@ alterListItem
     | ALTER INDEX indexName visibility  # alterIndex
     | ALTER CHECK constraintName constraintEnforcement  # alterCheck
     | ALTER CONSTRAINT constraintName constraintEnforcement # alterConstraint
-    | RENAME COLUMN oldColumn TO newColumn  # renameColumn
+    | RENAME COLUMN oldColumn TO? newColumn  # renameColumn
     | RENAME (TO | AS)? tableName # alterRenameTable
     | RENAME keyOrIndex indexName TO indexName  # renameIndex
+    | RENAME ROLLUP oldRollupName=identifier newRollupName=identifier  # renameRollup
+    | RENAME PARTITION oldPartitionName=identifier newPartitionName=identifier  # renamePartition
     | CONVERT TO charset charsetName collateClause?  # alterConvert
     | FORCE  # alterTableForce
     | ORDER BY alterOrderList  # alterTableOrder
@@ -142,6 +146,10 @@ alterListItem
 
 alterOrderList
     : columnRef direction? (COMMA_ columnRef direction?)*
+    ;
+
+alterStoragePolicy
+    : ALTER STORAGE POLICY identifier propertiesClause
     ;
 
 tableConstraintDef
@@ -240,7 +248,11 @@ truncateTable
     ;
 
 createIndex
-    : CREATE createIndexSpecification? INDEX indexName indexTypeClause? ON tableName keyListWithExpression indexOption? algorithmOptionAndLockOption?
+    : CREATE createIndexSpecification? INDEX ifNotExists? indexName ON tableName keyListWithExpression (indexTypeClause | dorisIndexTypeClause)? propertiesClause? commentClause? algorithmOptionAndLockOption?
+    ;
+
+dorisIndexTypeClause
+    : USING (INVERTED | NGRAM_BF | ANN)
     ;
 
 createDatabase
@@ -249,6 +261,9 @@ createDatabase
 
 alterDatabase
     : ALTER (DATABASE | SCHEMA) databaseName? alterDatabaseSpecification_*
+    | ALTER (DATABASE | SCHEMA) databaseName RENAME identifier
+    | ALTER (DATABASE | SCHEMA) databaseName SET (DATA | REPLICA | TRANSACTION) QUOTA NUMBER_
+    | ALTER (DATABASE | SCHEMA) databaseName SET PROPERTIES LP_ properties RP_
     ;
 
 createDatabaseSpecification_
@@ -264,6 +279,10 @@ alterDatabaseSpecification_
 
 dropDatabase
     : DROP (DATABASE | SCHEMA) ifExists? databaseName
+    ;
+
+alterCatalog
+    : ALTER CATALOG catalogName (RENAME identifier | SET PROPERTIES LP_ properties RP_ | MODIFY COMMENT string_)
     ;
 
 alterInstance
@@ -304,7 +323,13 @@ dropEvent
     ;
 
 createFunction
-    : CREATE ownerStatement?
+    : CREATE GLOBAL? (AGGREGATE | TABLES | ALIAS)? FUNCTION functionName
+      LP_ (dataType (COMMA_ dataType)*)? RP_
+      (RETURNS dataType)?
+      (INTERMEDIATE dataType)?
+      (WITH PARAMETER LP_ identifier (COMMA_ identifier)* RP_ AS expr)?
+      (PROPERTIES LP_ properties RP_)?
+    | CREATE ownerStatement?
       FUNCTION functionName LP_ (identifier dataType)? (COMMA_ identifier dataType)* RP_
       RETURNS dataType
       routineOption*
@@ -347,6 +372,10 @@ alterServer
 
 dropServer
     : DROP SERVER ifExists? serverName
+    ;
+
+createEncryptKey
+    : CREATE ENCRYPTKEY encryptKeyName AS string_
     ;
 
 dropEncryptKey
@@ -397,7 +426,7 @@ alterView
     : ALTER (ALGORITHM EQ_ (UNDEFINED | MERGE | TEMPTABLE))?
       ownerStatement?
       (SQL SECURITY (DEFINER | INVOKER))?
-      VIEW viewName (LP_ columnNames RP_)?
+      VIEW viewName (LP_ (columnNames | viewColumnDefinitions) RP_)?
       AS select
       (WITH (CASCADED | LOCAL)? CHECK OPTION)?
     ;
@@ -897,6 +926,10 @@ signalStatement
 
 signalInformationItem
     : conditionInformationItemName EQ_ expr
+    ;
+
+resumeJob
+    : RESUME JOB WHERE jobName EQ_ stringLiterals
     ;
 
 prepare

@@ -137,7 +137,11 @@ identifierKeywordsUnambiguous
     | AGAINST
     | AGGREGATE
     | ALGORITHM
+    // DORIS ADDED BEGIN
+    | ALIAS
+    // DORIS ADDED END
     | ALWAYS
+    | ANN
     | ANY
     | ARRAY
     | AT
@@ -269,6 +273,7 @@ identifierKeywordsUnambiguous
     // DORIS ADDED BEGIN
     | INSTR
     // DORIS ADDED END
+    | INVERTED
     | INVISIBLE
     | INVOKER
     | IO
@@ -349,6 +354,7 @@ identifierKeywordsUnambiguous
     | NEVER
     | NEW
     | NEXT
+    | NGRAM_BF
     | NODEGROUP
     | NOWAIT
     | NO_WAIT
@@ -370,6 +376,9 @@ identifierKeywordsUnambiguous
     | OWNER
     | PACK_KEYS
     | PAGE
+    // DORIS ADDED BEGIN
+    | PARAMETER
+    // DORIS ADDED END
     | PARSER
     | PARTIAL
     | PARTITIONING
@@ -392,9 +401,11 @@ identifierKeywordsUnambiguous
     | PROCESSLIST
     | PROFILES
     | PROFILE
+    | POLICY
     | QUARTER
     | QUERY
     | QUICK
+    | QUOTA
     | RANDOM
     | RANK
     | READ_ONLY
@@ -467,6 +478,7 @@ identifierKeywordsUnambiguous
     | SRID
     | STACKED
     | STARTS
+    | STATS
     | STATS_AUTO_RECALC
     | STATS_PERSISTENT
     | STATS_SAMPLE_PAGES
@@ -520,6 +532,7 @@ identifierKeywordsUnambiguous
     | VALUE
     | VARIABLES
     | VCPU
+    | VERBOSE
     | VIEW
     | VISIBLE
     | WAIT
@@ -585,6 +598,7 @@ identifierKeywordsAmbiguous2Labels
 identifierKeywordsAmbiguous3Roles
     : EVENT
     | FILE
+    | JOB
     | NONE
     | PROCESS
     | PROXY
@@ -671,6 +685,14 @@ databaseNames
     : databaseName (COMMA_ databaseName)*
     ;
 
+jobName
+    : identifier
+    ;
+
+catalogName
+    : identifier
+    ;
+
 charsetName
     : textOrIdentifier | BINARY | DEFAULT
     ;
@@ -740,6 +762,18 @@ procedureName
     ;
 
 viewName
+    : (owner DOT_)? identifier
+    ;
+
+viewColumnDefinition
+    : columnName (COMMENT string_)?
+    ;
+
+viewColumnDefinitions
+    : viewColumnDefinition (COMMA_ viewColumnDefinition)*
+    ;
+
+encryptKeyName
     : (owner DOT_)? identifier
     ;
 
@@ -1226,7 +1260,7 @@ indexAlias
 // DORIS ADDED END
 
 regularFunctionName
-    : IF | LOCALTIME | LOCALTIMESTAMP | REPLACE | INSERT | INTERVAL | MOD
+    : IF | LOCALTIME | LOCALTIMESTAMP | REPLACE | REGEXP | INSERT | INTERVAL | MOD
     | DATABASE | SCHEMA | LEFT | RIGHT | DATE | DAY | GEOMETRYCOLLECTION | REPEAT
     | LINESTRING | MULTILINESTRING | MULTIPOINT | MULTIPOLYGON | POINT | POLYGON
     | TIME | TIMESTAMP | TIMESTAMP_ADD | TIMESTAMP_DIFF | DATE | CURRENT_TIMESTAMP 
@@ -1325,6 +1359,8 @@ dataType
     | dataTypeName = ENUM stringList charsetWithOptBinary?
     | dataTypeName = SET stringList charsetWithOptBinary?
     | dataTypeName = (SERIAL | JSON | GEOMETRY | GEOMCOLLECTION | GEOMETRYCOLLECTION | POINT | MULTIPOINT | LINESTRING | MULTILINESTRING | POLYGON | MULTIPOLYGON)
+    | dataTypeName = STRING
+    | dataTypeName = ARRAY
     ;
 
 stringList

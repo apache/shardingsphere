@@ -116,10 +116,27 @@ import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ShowWhe
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ShutdownContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.StartSlaveContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.StopSlaveContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.SwitchCatalogContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.TablesOptionContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.UninstallComponentContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.UninstallPluginContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.UseContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.AlterResourceContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.PropertyAssignmentContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ResourceNameContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.PropertyKeyContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.PropertyValueContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.PluginSourceContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.PluginPropertiesListContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.PluginPropertyContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.PluginPropertyKeyContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.PluginPropertyValueContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.DorisAlterSystemContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.CreateSqlBlockRuleContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.PropertiesClauseContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.PropertyContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.DorisAlterSystemActionContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ShowQueryStatsContext;
 import org.apache.shardingsphere.sql.parser.engine.doris.visitor.statement.DorisStatementVisitor;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.CacheTableIndexSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.CloneActionSegment;
@@ -137,6 +154,8 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.ShowLikeS
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.VariableAssignSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.VariableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.index.IndexSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.property.PropertiesSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.property.PropertySegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.FunctionSegment;
@@ -149,10 +168,22 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.An
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.ExplainStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.RefreshStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.SetStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.util.SQLUtils;
 import org.apache.shardingsphere.sql.parser.statement.core.value.collection.CollectionValue;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 import org.apache.shardingsphere.sql.parser.statement.core.value.literal.impl.NumberLiteralValue;
 import org.apache.shardingsphere.sql.parser.statement.core.value.literal.impl.StringLiteralValue;
+import org.apache.shardingsphere.sql.parser.statement.core.value.literal.LiteralValue;
+import org.apache.shardingsphere.sql.parser.statement.core.value.literal.impl.BooleanLiteralValue;
+import org.apache.shardingsphere.sql.parser.statement.core.value.literal.impl.DateTimeLiteralValue;
+import org.apache.shardingsphere.sql.parser.statement.core.value.literal.impl.NullLiteralValue;
+import org.apache.shardingsphere.sql.parser.statement.core.value.literal.impl.OtherLiteralValue;
+import org.apache.shardingsphere.sql.parser.statement.core.value.literal.impl.TemporalLiteralValue;
+import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisAlterResourceStatement;
+import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisAlterSystemStatement;
+import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisCreateSqlBlockRuleStatement;
+import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisSwitchStatement;
+import org.apache.shardingsphere.sql.parser.statement.doris.dal.show.DorisShowQueryStatsStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLCloneStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLCreateLoadableFunctionStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLDelimiterStatement;
@@ -233,6 +264,9 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
+import java.util.Properties;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -436,7 +470,13 @@ public final class DorisDALStatementVisitor extends DorisStatementVisitor implem
     
     @Override
     public ASTNode visitKill(final KillContext ctx) {
-        return new MySQLKillStatement(getDatabaseType(), null == ctx.AT_() ? ctx.IDENTIFIER_().getText() : ctx.AT_().getText() + ctx.IDENTIFIER_().getText(), null);
+        String processId;
+        if (null != ctx.NUMBER_()) {
+            processId = ctx.NUMBER_().getText();
+        } else {
+            processId = null == ctx.AT_() ? ctx.IDENTIFIER_().getText() : ctx.AT_().getText() + ctx.IDENTIFIER_().getText();
+        }
+        return new MySQLKillStatement(getDatabaseType(), processId, null);
     }
     
     @Override
@@ -461,7 +501,47 @@ public final class DorisDALStatementVisitor extends DorisStatementVisitor implem
     
     @Override
     public ASTNode visitInstallPlugin(final InstallPluginContext ctx) {
-        return new MySQLInstallPluginStatement(getDatabaseType(), ((IdentifierValue) visit(ctx.pluginName())).getValue());
+        if (null != ctx.pluginName()) {
+            return new MySQLInstallPluginStatement(getDatabaseType(), ((IdentifierValue) visit(ctx.pluginName())).getValue());
+        }
+        String source = getPluginSource(ctx.pluginSource());
+        Map<String, String> properties = null == ctx.pluginPropertiesList() ? null : extractPluginProperties(ctx.pluginPropertiesList());
+        return new MySQLInstallPluginStatement(getDatabaseType(), source, properties);
+    }
+    
+    private String getPluginSource(final PluginSourceContext ctx) {
+        if (null != ctx.identifier()) {
+            return ((IdentifierValue) visit(ctx.identifier())).getValue();
+        }
+        return ((StringLiteralValue) visit(ctx.string_())).getValue();
+    }
+    
+    private Map<String, String> extractPluginProperties(final PluginPropertiesListContext ctx) {
+        Map<String, String> result = new LinkedHashMap<>();
+        for (PluginPropertyContext each : ctx.pluginProperty()) {
+            String key = getPluginPropertyKey(each.pluginPropertyKey());
+            String value = getPluginPropertyValue(each.pluginPropertyValue());
+            result.put(key, value);
+        }
+        return result;
+    }
+    
+    private String getPluginPropertyKey(final PluginPropertyKeyContext ctx) {
+        if (null != ctx.identifier()) {
+            return ((IdentifierValue) visit(ctx.identifier())).getValue();
+        }
+        return ((StringLiteralValue) visit(ctx.string_())).getValue();
+    }
+    
+    private String getPluginPropertyValue(final PluginPropertyValueContext ctx) {
+        if (null != ctx.identifier()) {
+            return ((IdentifierValue) visit(ctx.identifier())).getValue();
+        }
+        ASTNode result = visit(ctx.literals());
+        if (result instanceof LiteralValue) {
+            return getLiteralValueAsString((LiteralValue<?>) result);
+        }
+        return result.toString();
     }
     
     @Override
@@ -499,6 +579,11 @@ public final class DorisDALStatementVisitor extends DorisStatementVisitor implem
     @Override
     public ASTNode visitUse(final UseContext ctx) {
         return new MySQLUseStatement(getDatabaseType(), ((DatabaseSegment) visit(ctx.databaseName())).getIdentifier().getValue());
+    }
+    
+    @Override
+    public ASTNode visitSwitchCatalog(final SwitchCatalogContext ctx) {
+        return new DorisSwitchStatement(getDatabaseType(), ((IdentifierValue) visit(ctx.catalogName())).getValue());
     }
     
     @Override
@@ -698,6 +783,8 @@ public final class DorisDALStatementVisitor extends DorisStatementVisitor implem
     @Override
     public ASTNode visitFromTable(final FromTableContext ctx) {
         FromTableSegment result = new FromTableSegment();
+        result.setStartIndex(ctx.getStart().getStartIndex());
+        result.setStopIndex(ctx.getStop().getStopIndex());
         result.setTable((SimpleTableSegment) visit(ctx.tableName()));
         return result;
     }
@@ -862,6 +949,23 @@ public final class DorisDALStatementVisitor extends DorisStatementVisitor implem
     }
     
     @Override
+    public ASTNode visitShowQueryStats(final ShowQueryStatsContext ctx) {
+        DatabaseSegment database = null;
+        FromTableSegment fromTable = null;
+        if (null != ctx.databaseName()) {
+            database = (DatabaseSegment) visit(ctx.databaseName());
+        }
+        if (null != ctx.fromTable()) {
+            fromTable = (FromTableSegment) visit(ctx.fromTable());
+        }
+        boolean all = null != ctx.ALL();
+        boolean verbose = null != ctx.VERBOSE();
+        DorisShowQueryStatsStatement result = new DorisShowQueryStatsStatement(getDatabaseType(), database, fromTable, all, verbose);
+        result.addParameterMarkers(getParameterMarkerSegments());
+        return result;
+    }
+    
+    @Override
     public ASTNode visitCreateLoadableFunction(final CreateLoadableFunctionContext ctx) {
         return new MySQLCreateLoadableFunctionStatement(getDatabaseType());
     }
@@ -900,6 +1004,124 @@ public final class DorisDALStatementVisitor extends DorisStatementVisitor implem
     @Override
     public ASTNode visitAlterResourceGroup(final AlterResourceGroupContext ctx) {
         return new MySQLAlterResourceGroupStatement(getDatabaseType(), ((IdentifierValue) visit(ctx.groupName())).getValue());
+    }
+    
+    @Override
+    public ASTNode visitAlterResource(final AlterResourceContext ctx) {
+        String resourceName = getResourceName(ctx.resourceName());
+        Properties properties = new Properties();
+        for (PropertyAssignmentContext each : ctx.propertyAssignments().propertyAssignment()) {
+            String key = getPropertyKey(each.propertyKey());
+            String value = getPropertyValue(each.propertyValue());
+            properties.setProperty(key, value);
+        }
+        return new DorisAlterResourceStatement(getDatabaseType(), resourceName, properties);
+    }
+    
+    private String getResourceName(final ResourceNameContext ctx) {
+        if (null != ctx.identifier()) {
+            return ((IdentifierValue) visit(ctx.identifier())).getValue();
+        }
+        return ((StringLiteralValue) visit(ctx.string_())).getValue();
+    }
+    
+    private String getPropertyKey(final PropertyKeyContext ctx) {
+        if (null != ctx.identifier()) {
+            return ((IdentifierValue) visit(ctx.identifier())).getValue();
+        }
+        return ((StringLiteralValue) visit(ctx.string_())).getValue();
+    }
+    
+    private String getPropertyValue(final PropertyValueContext ctx) {
+        if (null != ctx.identifier()) {
+            return ((IdentifierValue) visit(ctx.identifier())).getValue();
+        }
+        ASTNode result = visit(ctx.literals());
+        if (result instanceof LiteralValue) {
+            return getLiteralValueAsString((LiteralValue<?>) result);
+        }
+        return result.toString();
+    }
+    
+    private String getLiteralValueAsString(final LiteralValue<?> literalValue) {
+        if (literalValue instanceof StringLiteralValue) {
+            return ((StringLiteralValue) literalValue).getValue();
+        }
+        if (literalValue instanceof NumberLiteralValue) {
+            return ((NumberLiteralValue) literalValue).getValue().toString();
+        }
+        if (literalValue instanceof BooleanLiteralValue) {
+            return String.valueOf(((BooleanLiteralValue) literalValue).getValue());
+        }
+        if (literalValue instanceof NullLiteralValue) {
+            return "NULL";
+        }
+        if (literalValue instanceof DateTimeLiteralValue) {
+            return ((DateTimeLiteralValue) literalValue).getValue();
+        }
+        if (literalValue instanceof TemporalLiteralValue) {
+            return ((TemporalLiteralValue) literalValue).getValue();
+        }
+        if (literalValue instanceof OtherLiteralValue) {
+            return String.valueOf(((OtherLiteralValue) literalValue).getValue());
+        }
+        return String.valueOf(literalValue.getValue());
+    }
+    
+    @Override
+    public ASTNode visitDorisAlterSystem(final DorisAlterSystemContext ctx) {
+        return visit(ctx.dorisAlterSystemAction());
+    }
+    
+    @Override
+    public ASTNode visitDorisAlterSystemAction(final DorisAlterSystemActionContext ctx) {
+        String action = getDorisAlterSystemAction(ctx);
+        String target = SQLUtils.getExactlyValue(ctx.string_().getText());
+        return new DorisAlterSystemStatement(getDatabaseType(), action, target);
+    }
+    
+    private String getDorisAlterSystemAction(final DorisAlterSystemActionContext ctx) {
+        if (null != ctx.FOLLOWER()) {
+            return null != ctx.ADD() ? "ADD FOLLOWER" : "DROP FOLLOWER";
+        }
+        if (null != ctx.OBSERVER()) {
+            return null != ctx.ADD() ? "ADD OBSERVER" : "DROP OBSERVER";
+        }
+        return "";
+    }
+    
+    @Override
+    public ASTNode visitCreateSqlBlockRule(final CreateSqlBlockRuleContext ctx) {
+        DorisCreateSqlBlockRuleStatement result = new DorisCreateSqlBlockRuleStatement(getDatabaseType());
+        result.setRuleName(((IdentifierValue) visit(ctx.ruleName())).getValue());
+        result.setProperties(extractPropertiesSegment(ctx.propertiesClause()));
+        return result;
+    }
+    
+    private PropertiesSegment extractPropertiesSegment(final PropertiesClauseContext ctx) {
+        PropertiesSegment result = new PropertiesSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex());
+        for (PropertyContext each : ctx.properties().property()) {
+            String key = getPropertyKeyFromProperty(each);
+            String value = getPropertyValueFromProperty(each);
+            PropertySegment propertySegment = new PropertySegment(each.getStart().getStartIndex(), each.getStop().getStopIndex(), key, value);
+            result.getProperties().add(propertySegment);
+        }
+        return result;
+    }
+    
+    private String getPropertyKeyFromProperty(final PropertyContext ctx) {
+        if (null != ctx.identifier()) {
+            return ((IdentifierValue) visit(ctx.identifier())).getValue();
+        }
+        if (null != ctx.SINGLE_QUOTED_TEXT()) {
+            return SQLUtils.getExactlyValue(ctx.SINGLE_QUOTED_TEXT().getText());
+        }
+        return SQLUtils.getExactlyValue(ctx.DOUBLE_QUOTED_TEXT().getText());
+    }
+    
+    private String getPropertyValueFromProperty(final PropertyContext ctx) {
+        String exactValue = SQLUtils.getExactlyValue(ctx.literals().getText());
+        return exactValue.replace("\\\\", "\\").replace("\\\"", "\"").replace("\\'", "'");
     }
     
     @Override

@@ -79,6 +79,10 @@ AND
     : A N D
     ;
 
+ANN
+    : A N N
+    ;
+
 ANY
     : A N Y
     ;
@@ -129,6 +133,10 @@ AVG
 
 ASSIGN_GTIDS_TO_ANONYMOUS_TRANSACTIONS
     : A S S I G N UL_ G T I D S UL_ T O UL_ A N O N Y M O U S UL_ T R A N S A C T I O N S
+    ;
+
+ALIAS
+    : A L I A S
     ;
 
 // DORIS ADDED BEGIN
@@ -895,6 +903,10 @@ FOUND
     : F O U N D
     ;
 
+FOLLOWER
+    : F O L L O W E R
+    ;
+
 FROM
     : F R O M
     ;
@@ -1119,6 +1131,9 @@ INSTR
     ;
 // DORIS ADDED END
 
+INVERTED
+    : I N V E R T E D
+    ;
 
 INT
     : I N T
@@ -1204,6 +1219,10 @@ ITERATE
     : I T E R A T E
     ;
 
+INTERMEDIATE
+    : I N T E R M E D I A T E
+    ;
+
 JOIN
     : J O I N
     ;
@@ -1218,6 +1237,10 @@ JSON_TABLE
 
 JSON_VALUE
     : J S O N UL_ V A L U E
+    ;
+
+JOB
+    : J O B
     ;
 
 KEY
@@ -1686,6 +1709,11 @@ NEXT
     : N E X T
     ;
 
+NGRAM_BF
+    : N G R A M UL_ B F
+    ;
+
+
 NO
     : N O
     ;
@@ -1850,6 +1878,10 @@ OWNER
     : O W N E R
     ;
 
+OBSERVER
+    : O B S E R V E R
+    ;
+
 PACK_KEYS
     : P A C K UL_ K E Y S
     ;
@@ -2000,6 +2032,14 @@ PURGE
     : P U R G E
     ;
 
+PARAMETER
+    : P A R A M E T E R
+    ;
+
+POLICY
+    : P O L I C Y
+    ;
+
 QUARTER
     : Q U A R T E R
     ;
@@ -2010,6 +2050,10 @@ QUERY
 
 QUICK
     : Q U I C K
+    ;
+
+QUOTA
+    : Q U O T A
     ;
 
 RANDOM
@@ -2504,6 +2548,10 @@ SQL_BUFFER_RESULT
     : S Q L UL_ B U F F E R UL_ R E S U L T
     ;
 
+SQL_BLOCK_RULE
+    : S Q L UL_ B L O C K UL_ R U L E
+    ;
+
 SQL_CALC_FOUND_ROWS
     : S Q L UL_ C A L C UL_ F O U N D UL_ R O W S
     ;
@@ -2574,6 +2622,10 @@ STARTING
 
 STARTS
     : S T A R T S
+    ;
+
+STATS
+    : S T A T S
     ;
 
 STATS_AUTO_RECALC
@@ -2648,6 +2700,10 @@ SUSPEND
 
 SWAPS
     : S W A P S
+    ;
+
+SWITCH
+    : S W I T C H
     ;
 
 SWITCHES
@@ -3028,6 +3084,10 @@ VARYING
 
 VCPU
     : V C P U
+    ;
+
+VERBOSE
+    : V E R B O S E
     ;
 
 VIEW

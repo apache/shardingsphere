@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.test.e2e.operation.transaction.cases.autocommit;
 
-import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.driver.jdbc.core.connection.ShardingSphereConnection;
 import org.apache.shardingsphere.test.e2e.operation.transaction.cases.base.BaseTransactionTestCase;
 import org.apache.shardingsphere.test.e2e.operation.transaction.engine.base.TransactionContainerComposer;
@@ -35,7 +34,6 @@ import static org.hamcrest.MatcherAssert.assertThat;
  * Transaction rollback only test case.
  */
 @TransactionTestCase(dbTypes = {TransactionTestConstants.POSTGRESQL, TransactionTestConstants.OPENGAUSS})
-@Slf4j
 public class TransactionRollbackOnlyTestCase extends BaseTransactionTestCase {
     
     public TransactionRollbackOnlyTestCase(final TransactionTestCaseParameter testCaseParam) {

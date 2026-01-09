@@ -97,4 +97,10 @@
     <sql-case id="alter_schema_set_location" value="ALTER SCHEMA test_db SET LOCATION 'hdfs://namenode:8020/user/hive/warehouse/another_location';" db-types="Hive" />
     <sql-case id="alter_database_set_managedlocation" value="ALTER DATABASE test_db SET MANAGEDLOCATION 'hdfs://namenode:8020/user/hive/managed/test_db';" db-types="Hive" />
     <sql-case id="alter_schema_set_managedlocation" value="ALTER SCHEMA test_db SET MANAGEDLOCATION 'hdfs://namenode:8020/user/hive/managed/another_test_db';" db-types="Hive" />
+    <sql-case id="alter_database_set_lc_messages" value="ALTER DATABASE &quot;regression&quot; SET lc_messages TO 'C'" db-types="PostgreSQL" />
+    <sql-case id="alter_database_set_data_quota" value="ALTER DATABASE example_db SET DATA QUOTA 10995116277760" db-types="Doris" />
+    <sql-case id="alter_database_set_replica_quota" value="ALTER DATABASE test_db SET REPLICA QUOTA 1024" db-types="Doris" />
+    <sql-case id="alter_database_set_transaction_quota" value="ALTER DATABASE prod_db SET TRANSACTION QUOTA 1000" db-types="Doris" />
+    <sql-case id="alter_database_rename_doris" value="ALTER DATABASE old_db RENAME new_db" db-types="Doris" />
+    <sql-case id="alter_database_set_properties" value="ALTER DATABASE example_db SET PROPERTIES (&quot;key1&quot; = &quot;value1&quot;, &quot;key2&quot; = &quot;value2&quot;)" db-types="Doris" />
 </sql-cases>

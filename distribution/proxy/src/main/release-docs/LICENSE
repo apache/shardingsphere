@@ -241,15 +241,15 @@ The text of each license is the standard Apache 2.0 license.
     failureaccess 1.0.1: https://github.com/google/guava, Apache 2.0
     freemarker 2.3.31: https://freemarker.apache.org/, Apache 2.0
     groovy 4.0.22: https://groovy.apache.org/, Apache 2.0
-    grpc-api 1.65.1: https://github.com/grpc/grpc-java, Apache 2.0
-    grpc-context 1.65.1: https://github.com/grpc/grpc-java, Apache 2.0
-    grpc-core 1.65.1: https://github.com/grpc/grpc-java, Apache 2.0
-    grpc-grpclb 1.65.1: https://github.com/grpc/grpc-java, Apache 2.0
-    grpc-netty 1.65.1: https://github.com/grpc/grpc-java, Apache 2.0
-    grpc-protobuf 1.65.1: https://github.com/grpc/grpc-java, Apache 2.0
-    grpc-protobuf-lite 1.65.1: https://github.com/grpc/grpc-java, Apache 2.0
-    grpc-stub 1.65.1: https://github.com/grpc/grpc-java, Apache 2.0
-    grpc-util 1.65.1: https://github.com/grpc/grpc-java, Apache 2.0
+    grpc-api 1.75.0: https://github.com/grpc/grpc-java, Apache 2.0
+    grpc-context 1.75.0: https://github.com/grpc/grpc-java, Apache 2.0
+    grpc-core 1.75.0: https://github.com/grpc/grpc-java, Apache 2.0
+    grpc-grpclb 1.75.0: https://github.com/grpc/grpc-java, Apache 2.0
+    grpc-netty 1.75.0: https://github.com/grpc/grpc-java, Apache 2.0
+    grpc-protobuf 1.75.0: https://github.com/grpc/grpc-java, Apache 2.0
+    grpc-protobuf-lite 1.75.0: https://github.com/grpc/grpc-java, Apache 2.0
+    grpc-stub 1.75.0: https://github.com/grpc/grpc-java, Apache 2.0
+    grpc-util 1.75.0: https://github.com/grpc/grpc-java, Apache 2.0
     gson 2.10.1: https://github.com/google/gson, Apache 2.0
     guava 33.4.6-jre: https://github.com/google/guava, Apache 2.0
     HikariCP 4.0.3: https://github.com/brettwooldridge/HikariCP, Apache 2.0
@@ -270,27 +270,28 @@ The text of each license is the standard Apache 2.0 license.
     json-simple 1.1.1: https://code.google.com/archive/p/json-simple/, Apache 2.0
     jspecify 1.0.0: https://jspecify.dev/, Apache 2.0
     memory 0.9.0: https://datasketches.github.io/, Apache 2.0
-    netty-buffer 4.1.121.Final: https://github.com/netty, Apache 2.0
-    netty-codec 4.1.121.Final: https://github.com/netty, Apache 2.0
-    netty-codec-http 4.1.121.Final: https://github.com/netty, Apache 2.0
-    netty-codec-http2 4.1.121.Final: https://github.com/netty, Apache 2.0
-    netty-codec-socks 4.1.121.Final: https://github.com/netty, Apache 2.0
-    netty-common 4.1.121.Final: https://github.com/netty, Apache 2.0
-    netty-handler 4.1.121.Final: https://github.com/netty, Apache 2.0
-    netty-handler-proxy 4.1.121.Final: https://github.com/netty, Apache 2.0
-    netty-resolver 4.1.121.Final: https://github.com/netty, Apache 2.0
-    netty-transport 4.1.121.Final: https://github.com/netty, Apache 2.0
-    netty-transport-classes-epoll 4.1.121.Final: https://github.com/netty, Apache 2.0
-    netty-transport-native-epoll 4.1.121.Final-linux-aarch_64: https://github.com/netty, Apache 2.0
-    netty-transport-native-epoll 4.1.121.Final-linux-x86_64: https://github.com/netty, Apache 2.0
-    netty-transport-native-unix-common 4.1.121.Final: https://github.com/netty, Apache 2.0
-    netty-tcnative-boringssl-static 2.0.65.Final: https://github.com/netty/netty-tcnative, Apache 2.0
-    netty-tcnative-boringssl-static 2.0.65.Final-linux-aarch_64: https://github.com/netty/netty-tcnative, Apache 2.0
-    netty-tcnative-boringssl-static 2.0.65.Final-linux-x86_64: https://github.com/netty/netty-tcnative, Apache 2.0
-    netty-tcnative-boringssl-static 2.0.65.Final-osx-aarch_64: https://github.com/netty/netty-tcnative, Apache 2.0
-    netty-tcnative-boringssl-static 2.0.65.Final-osx-x86_64: https://github.com/netty/netty-tcnative, Apache 2.0
-    netty-tcnative-boringssl-static 2.0.65.Final-windows-x86_64: https://github.com/netty/netty-tcnative, Apache 2.0
-    netty-tcnative-classes 2.0.65.Final: https://github.com/netty/netty-tcnative, Apache 2.0
+    netty-buffer 4.2.9.Final: https://github.com/netty, Apache 2.0
+    netty-codec 4.2.9.Final: https://github.com/netty, Apache 2.0
+    netty-codec-http 4.2.9.Final: https://github.com/netty, Apache 2.0
+    netty-codec-http2 4.2.9.Final: https://github.com/netty, Apache 2.0
+    netty-codec-protobuf 4.2.9.Final: https://github.com/netty, Apache 2.0
+    netty-codec-socks 4.2.9.Final: https://github.com/netty, Apache 2.0
+    netty-common 4.2.9.Final: https://github.com/netty, Apache 2.0
+    netty-handler 4.2.9.Final: https://github.com/netty, Apache 2.0
+    netty-handler-proxy 4.2.9.Final: https://github.com/netty, Apache 2.0
+    netty-resolver 4.2.9.Final: https://github.com/netty, Apache 2.0
+    netty-transport 4.2.9.Final: https://github.com/netty, Apache 2.0
+    netty-transport-classes-epoll 4.2.9.Final: https://github.com/netty, Apache 2.0
+    netty-transport-native-epoll 4.2.9.Final-linux-aarch_64: https://github.com/netty, Apache 2.0
+    netty-transport-native-epoll 4.2.9.Final-linux-x86_64: https://github.com/netty, Apache 2.0
+    netty-transport-native-unix-common 4.2.9.Final: https://github.com/netty, Apache 2.0
+    netty-tcnative-boringssl-static 2.0.74.Final: https://github.com/netty/netty-tcnative, Apache 2.0
+    netty-tcnative-boringssl-static 2.0.74.Final-linux-aarch_64: https://github.com/netty/netty-tcnative, Apache 2.0
+    netty-tcnative-boringssl-static 2.0.74.Final-linux-x86_64: https://github.com/netty/netty-tcnative, Apache 2.0
+    netty-tcnative-boringssl-static 2.0.74.Final-osx-aarch_64: https://github.com/netty/netty-tcnative, Apache 2.0
+    netty-tcnative-boringssl-static 2.0.74.Final-osx-x86_64: https://github.com/netty/netty-tcnative, Apache 2.0
+    netty-tcnative-boringssl-static 2.0.74.Final-windows-x86_64: https://github.com/netty/netty-tcnative, Apache 2.0
+    netty-tcnative-classes 2.0.74.Final: https://github.com/netty/netty-tcnative, Apache 2.0
     perfmark-api 0.26.0: https://github.com/perfmark/perfmark, Apache 2.0
     proto-google-common-protos 2.29.0: https://github.com/googleapis/common-protos-java, Apache 2.0
     proj4j 1.2.2: https://github.com/locationtech/proj4j, Apache 2.0
@@ -324,7 +325,7 @@ BSD licenses
 The following components are provided under a BSD license. See project link for details.
 The text of each license is also included at licenses/LICENSE-[project].txt.
 
-    antlr4-runtime 4.10.1: https://github.com/antlr/antlr4, BSD-3-Clause
+    antlr4-runtime 4.13.2: https://github.com/antlr/antlr4, BSD-3-Clause
     asm 9.3: https://github.com/llbit/ow2-asm, BSD-3-Clause
     commons-compiler 3.1.11: https://github.com/janino-compiler/janino, BSD-3-Clause
     janino 3.1.11: https://github.com/janino-compiler/janino, BSD-3-Clause

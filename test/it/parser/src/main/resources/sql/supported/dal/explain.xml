@@ -19,7 +19,7 @@
 <sql-cases>
     <sql-case id="explain_extended_select" value="explain extended select 10 % 7, 10 mod 7, 10 div 3" db-types="MySQL" />
     <sql-case id="explain_partitions_select" value="explain partitions select 1" db-types="MySQL" />
-    <sql-case id="explain_select_constant_without_table" value="EXPLAIN SELECT 1 as a" db-types="PostgreSQL, openGauss, MySQL, SQLServer" />
+    <sql-case id="explain_select_constant_without_table" value="EXPLAIN SELECT 1 as a" db-types="PostgreSQL, openGauss, MySQL, SQLServer,Doris" />
     <sql-case id="explain_update_without_condition" value="EXPLAIN UPDATE t_order SET status = 'finished'" db-types="PostgreSQL, openGauss, MySQL, SQLServer" />
     <sql-case id="explain_insert_without_parameters" value="EXPLAIN INSERT INTO t_order (order_id, user_id, status) VALUES (1, 1, 'insert')" db-types="PostgreSQL, openGauss, MySQL, SQLServer" />
     <sql-case id="explain_delete_without_sharding_value" value="EXPLAIN DELETE FROM t_order WHERE status='init'" db-types="PostgreSQL, openGauss, MySQL, SQLServer" />

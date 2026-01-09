@@ -24,7 +24,7 @@ import org.apache.shardingsphere.data.pipeline.core.exception.PipelineJobCanceli
 import org.apache.shardingsphere.data.pipeline.core.exception.data.PipelineTableDataConsistencyCheckLoadingFailedException;
 import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.inventory.column.InventoryColumnValueReaderEngine;
 import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.inventory.query.PipelineDatabaseResources;
-import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.inventory.query.QueryRange;
+import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.inventory.query.Range;
 import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.inventory.query.QueryType;
 import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.inventory.query.StreamingRangeType;
 import org.apache.shardingsphere.data.pipeline.core.query.JDBCStreamQueryBuilder;
@@ -76,7 +76,7 @@ public abstract class AbstractRecordTableInventoryCalculator<S, C> extends Abstr
         }
         Object maxUniqueKeyValue = getFirstUniqueKeyValue(records.get(records.size() - 1), param.getFirstUniqueKey().getName());
         if (QueryType.RANGE_QUERY == param.getQueryType()) {
-            param.setQueryRange(new QueryRange(maxUniqueKeyValue, false, param.getQueryRange().getUpper()));
+            param.setRange(Range.openClosed(maxUniqueKeyValue, param.getRange().getUpperBound()));
         }
         return Optional.of(convertRecordsToResult(records, maxUniqueKeyValue));
     }
@@ -266,7 +266,7 @@ public abstract class AbstractRecordTableInventoryCalculator<S, C> extends Abstr
         Collection<String> columnNames = param.getColumnNames().isEmpty() ? Collections.singleton("*") : param.getColumnNames();
         switch (param.getQueryType()) {
             case RANGE_QUERY:
-                return pipelineSQLBuilder.buildQueryRangeOrderingSQL(param.getTable(), columnNames, param.getUniqueKeysNames(), param.getQueryRange(),
+                return pipelineSQLBuilder.buildRangeQueryOrderingSQL(param.getTable(), columnNames, param.getUniqueKeysNames(), param.getRange(),
                         StreamingRangeType.SMALL == streamingRangeType, param.getShardingColumnsNames());
             case POINT_QUERY:
                 return pipelineSQLBuilder.buildPointQuerySQL(param.getTable(), columnNames, param.getUniqueKeysNames(), param.getShardingColumnsNames());
@@ -278,15 +278,15 @@ public abstract class AbstractRecordTableInventoryCalculator<S, C> extends Abstr
     private void setParameters(final PreparedStatement preparedStatement, final TableInventoryCalculateParameter param) throws SQLException {
         QueryType queryType = param.getQueryType();
         if (queryType == QueryType.RANGE_QUERY) {
-            QueryRange queryRange = param.getQueryRange();
-            ShardingSpherePreconditions.checkNotNull(queryRange,
+            Range<?> range = param.getRange();
+            ShardingSpherePreconditions.checkNotNull(range,
                     () -> new PipelineTableDataConsistencyCheckLoadingFailedException(param.getTable(), new RuntimeException("Unique keys values range is null.")));
             int parameterIndex = 1;
-            if (null != queryRange.getLower()) {
-                preparedStatement.setObject(parameterIndex++, queryRange.getLower());
+            if (null != range.getLowerBound()) {
+                preparedStatement.setObject(parameterIndex++, range.getLowerBound());
             }
-            if (null != queryRange.getUpper()) {
-                preparedStatement.setObject(parameterIndex++, queryRange.getUpper());
+            if (null != range.getUpperBound()) {
+                preparedStatement.setObject(parameterIndex++, range.getUpperBound());
             }
             if (StreamingRangeType.SMALL == streamingRangeType) {
                 preparedStatement.setObject(parameterIndex, chunkSize * streamingChunkCount);

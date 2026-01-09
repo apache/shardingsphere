@@ -17,7 +17,7 @@
   -->
 
 <sql-cases>
-    <sql-case id="commit" value="COMMIT" db-types="MySQL,Oracle,SQLServer,PostgreSQL,openGauss" />
+    <sql-case id="commit" value="COMMIT" db-types="MySQL,Oracle,SQLServer,PostgreSQL,openGauss,Doris" />
     <sql-case id="commit_transaction" value="COMMIT TRANSACTION" db-types="SQLServer" />
     <sql-case id="commit_with_name" value="COMMIT TRANSACTION transaction1" db-types="SQLServer" />
     <sql-case id="commit_with_comment" value="COMMIT COMMENT 'comment1'" db-types="Oracle" />

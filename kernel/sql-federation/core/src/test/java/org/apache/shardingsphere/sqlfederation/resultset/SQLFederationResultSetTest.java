@@ -37,13 +37,18 @@ import java.sql.Array;
 import java.sql.Blob;
 import java.sql.Clob;
 import java.sql.Date;
+import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.SQLFeatureNotSupportedException;
+import java.sql.SQLWarning;
 import java.sql.SQLXML;
+import java.sql.Statement;
 import java.sql.Time;
 import java.sql.Timestamp;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.List;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -57,6 +62,8 @@ import static org.mockito.Mockito.when;
 
 class SQLFederationResultSetTest {
     
+    private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "FIXTURE");
+    
     private Enumerator<Object> enumerator;
     
     private SQLFederationResultSet federationResultSet;
@@ -64,15 +71,14 @@ class SQLFederationResultSetTest {
     @BeforeEach
     void setUp() {
         enumerator = createEnumerator();
-        federationResultSet =
-                new SQLFederationResultSet(enumerator, mock(SQLFederationSchema.class), createExpandProjections(), TypedSPILoader.getService(DatabaseType.class, "FIXTURE"), mock(RelDataType.class),
-                        "1");
+        federationResultSet = new SQLFederationResultSet(enumerator, mock(SQLFederationSchema.class), createExpandProjections(), databaseType, mock(RelDataType.class), "1");
     }
     
     private List<Projection> createExpandProjections() {
-        return Arrays.asList(new ColumnProjection("o", "order_id", null, mock(DatabaseType.class)), new ColumnProjection("o", "user_id", null, mock(DatabaseType.class)),
-                new ColumnProjection("o", "status", null, mock(DatabaseType.class)),
-                new ColumnProjection("i", "item_id", null, mock(DatabaseType.class)));
+        return Arrays.asList(new ColumnProjection("o", "order_id", null, databaseType),
+                new ColumnProjection("o", "user_id", null, databaseType),
+                new ColumnProjection("o", "status", null, databaseType),
+                new ColumnProjection("i", "item_id", null, databaseType));
     }
     
     @SuppressWarnings("unchecked")
@@ -92,6 +98,49 @@ class SQLFederationResultSetTest {
     @Test
     void assertNext() {
         assertTrue(federationResultSet.next());
+    }
+    
+    @SuppressWarnings("unchecked")
+    @Test
+    void assertNextThrowsWillCloseAndRethrow() {
+        Enumerator<Object> throwingEnumerator = mock(Enumerator.class);
+        when(throwingEnumerator.moveNext()).thenThrow(IllegalStateException.class);
+        SQLFederationResultSet resultSet = new SQLFederationResultSet(throwingEnumerator, mock(SQLFederationSchema.class), createExpandProjections(), databaseType, mock(RelDataType.class), "p");
+        assertThrows(IllegalStateException.class, resultSet::next);
+    }
+    
+    @SuppressWarnings("unchecked")
+    @Test
+    void assertNextReturnsFalseWillCompleteProcess() {
+        enumerator = mock(Enumerator.class);
+        federationResultSet = new SQLFederationResultSet(enumerator, mock(SQLFederationSchema.class), createExpandProjections(), databaseType, mock(RelDataType.class), "p");
+        assertFalse(federationResultSet.next());
+    }
+    
+    @Test
+    void assertNextHandlesNullCurrent() throws SQLException {
+        when(enumerator.current()).thenReturn(null);
+        when(enumerator.moveNext()).thenReturn(true, false);
+        assertTrue(federationResultSet.next());
+        federationResultSet.getObject(1);
+        assertTrue(federationResultSet.wasNull());
+    }
+    
+    @Test
+    void assertNextHandlesSingleNonArrayValue() throws SQLException {
+        when(enumerator.current()).thenReturn("val");
+        when(enumerator.moveNext()).thenReturn(true, false);
+        assertTrue(federationResultSet.next());
+        assertThat(federationResultSet.getString(1), is("val"));
+    }
+    
+    @Test
+    void assertNextHandlesByteArrayValue() throws SQLException {
+        byte[] bytes = new byte[]{1, 2};
+        when(enumerator.current()).thenReturn(bytes);
+        when(enumerator.moveNext()).thenReturn(true, false);
+        assertTrue(federationResultSet.next());
+        assertThat(federationResultSet.getBytes(1), is(bytes));
     }
     
     @Test
@@ -457,6 +506,14 @@ class SQLFederationResultSetTest {
     }
     
     @Test
+    void assertGetArrayNullSetsWasNull() throws SQLException {
+        when(enumerator.current()).thenReturn(new Object[]{null, 1, "OK", 1});
+        federationResultSet.next();
+        federationResultSet.getArray(1);
+        assertTrue(federationResultSet.wasNull());
+    }
+    
+    @Test
     void assertGetURLWithColumnIndex() throws SQLException, MalformedURLException {
         when(enumerator.current()).thenReturn(new Object[]{new URL("http://xxx.xxx"), 1, "OK", 1});
         federationResultSet.next();
@@ -482,5 +539,66 @@ class SQLFederationResultSetTest {
         when(enumerator.current()).thenReturn(new Object[]{mock(SQLXML.class), 1, "OK", 1});
         federationResultSet.next();
         assertThrows(SQLFeatureNotSupportedException.class, () -> federationResultSet.getSQLXML("order_id"));
+    }
+    
+    @Test
+    void assertFindColumnNotFoundThrows() {
+        assertThrows(SQLFeatureNotSupportedException.class, () -> federationResultSet.findColumn("missing"));
+    }
+    
+    @Test
+    void assertClearAndWarningsAndFetch() {
+        federationResultSet.clearWarnings();
+        assertThat(federationResultSet.getWarnings(), is((SQLWarning) null));
+        federationResultSet.setFetchDirection(ResultSet.FETCH_REVERSE);
+        assertThat(federationResultSet.getFetchDirection(), is(ResultSet.FETCH_FORWARD));
+        federationResultSet.setFetchSize(10);
+        assertThat(federationResultSet.getFetchSize(), is(0));
+    }
+    
+    @Test
+    void assertTypeConcurrencyStatementAndClosed() {
+        assertThat(federationResultSet.getType(), is(ResultSet.TYPE_FORWARD_ONLY));
+        assertThat(federationResultSet.getConcurrency(), is(ResultSet.CONCUR_READ_ONLY));
+        assertThat(federationResultSet.getStatement(), is((Statement) null));
+        assertFalse(federationResultSet.isClosed());
+        federationResultSet.close();
+        assertTrue(federationResultSet.isClosed());
+    }
+    
+    @Test
+    void assertGetMetaData() {
+        assertThat(federationResultSet.getMetaData(), isA(ResultSetMetaData.class));
+    }
+    
+    @Test
+    void assertGetObjectWithIndexAndLabel() throws SQLException {
+        when(enumerator.current()).thenReturn(new Object[]{10, 1, "OK", 1});
+        federationResultSet.next();
+        assertThat(federationResultSet.getObject(1), is(10));
+        assertFalse(federationResultSet.wasNull());
+        assertThat(federationResultSet.getObject("order_id"), is(10));
+    }
+    
+    @Test
+    void assertGetCalendarValueNullSetsWasNull() throws SQLException {
+        when(enumerator.current()).thenReturn(new Object[]{null, 1, "OK", 1});
+        federationResultSet.next();
+        assertThat(federationResultSet.getDate(1, Calendar.getInstance()), is((Date) null));
+        assertTrue(federationResultSet.wasNull());
+    }
+    
+    @Test
+    void assertGetValueWithoutColumnTypeConverter() throws SQLException {
+        DatabaseType unknownDatabaseType = mock(DatabaseType.class);
+        Enumerator<Object> singleRowEnumerator = mock(Enumerator.class);
+        when(singleRowEnumerator.moveNext()).thenReturn(true, false);
+        when(singleRowEnumerator.current()).thenReturn(new Object[]{10});
+        SQLFederationResultSet resultSet = new SQLFederationResultSet(singleRowEnumerator, mock(SQLFederationSchema.class),
+                Collections.singletonList(new ColumnProjection("o", "order_id", null, unknownDatabaseType)), unknownDatabaseType, mock(RelDataType.class), "noConverter");
+        assertTrue(resultSet.next());
+        assertThat(resultSet.getInt(1), is(10));
+        assertFalse(resultSet.wasNull());
+        resultSet.close();
     }
 }

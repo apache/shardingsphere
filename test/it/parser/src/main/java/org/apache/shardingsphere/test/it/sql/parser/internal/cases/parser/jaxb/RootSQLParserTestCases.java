@@ -21,6 +21,13 @@ import com.google.common.base.Preconditions;
 import lombok.Getter;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.CommonStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.doris.DorisAlterSystemStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.doris.DorisCreateSqlBlockRuleStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.doris.DorisSwitchStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.CreateEncryptKeyStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.dialect.doris.DorisAlterStoragePolicyStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.dialect.doris.DorisResumeJobStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.standard.catalog.AlterCatalogStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.tcl.HiveAbortStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.mysql.MySQLCloneStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.mysql.MySQLCreateLoadableFunctionTestCase;
@@ -72,6 +79,8 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.s
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.mysql.table.MySQLChecksumTableStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.mysql.table.MySQLOptimizeTableStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.mysql.table.MySQLRepairTableStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.doris.DorisAlterResourceStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.doris.show.DorisShowQueryStatsStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.oracle.OracleSpoolStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.postgresql.PostgreSQLResetParameterStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.standard.EmptyStatementTestCase;
@@ -319,6 +328,7 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.s
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ral.AlterLocalTransactionRuleStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ral.AlterReadwriteSplittingStorageUnitStatusStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ral.AlterSQLParserRuleStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ral.AlterSQLTranslatorRuleStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ral.AlterTransmissionRuleStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ral.AlterXATransactionRuleStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ral.ApplyDistSQLStatementTestCase;
@@ -504,8 +514,17 @@ public final class RootSQLParserTestCases {
     @XmlElement(name = "rename-table")
     private final List<RenameTableStatementTestCase> renameTableTestCases = new LinkedList<>();
     
+    @XmlElement(name = "resume-job")
+    private final List<DorisResumeJobStatementTestCase> resumeJobTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "alter-catalog")
+    private final List<AlterCatalogStatementTestCase> alterCatalogTestCases = new LinkedList<>();
+    
     @XmlElement(name = "drop-table")
     private final List<DropTableStatementTestCase> dropTableTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "create-encryptkey")
+    private final List<CreateEncryptKeyStatementTestCase> createEncryptKeyTestCases = new LinkedList<>();
     
     @XmlElement(name = "drop-encryptkey")
     private final List<DropEncryptKeyStatementTestCase> dropEncryptKeyTestCases = new LinkedList<>();
@@ -594,6 +613,12 @@ public final class RootSQLParserTestCases {
     @XmlElement(name = "drop-role")
     private final List<DropRoleStatementTestCase> dropRoleTestCases = new LinkedList<>();
     
+    @XmlElement(name = "doris-alter-system")
+    private final List<DorisAlterSystemStatementTestCase> dorisAlterSystemTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "create-sql-block-rule")
+    private final List<DorisCreateSqlBlockRuleStatementTestCase> createSqlBlockRuleTestCases = new LinkedList<>();
+    
     @XmlElement(name = "set-default-role")
     private final List<MySQLSetDefaultRoleStatementTestCase> setDefaultRoleTestCases = new LinkedList<>();
     
@@ -605,6 +630,9 @@ public final class RootSQLParserTestCases {
     
     @XmlElement(name = "use")
     private final List<MySQLUseStatementTestCase> useTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "switch-catalog")
+    private final List<DorisSwitchStatementTestCase> switchCatalogTestCases = new LinkedList<>();
     
     @XmlElement(name = "explain")
     private final List<ExplainStatementTestCase> explainTestCases = new LinkedList<>();
@@ -647,6 +675,9 @@ public final class RootSQLParserTestCases {
     
     @XmlElement(name = "alter-resource-group")
     private final List<MySQLAlterResourceGroupStatementTestCase> alterResourceGroupTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "alter-resource")
+    private final List<DorisAlterResourceStatementTestCase> alterResourceTestCases = new LinkedList<>();
     
     @XmlElement(name = "create-resource-group")
     private final List<MySQLCreateResourceGroupStatementTestCase> createResourceGroupTestCases = new LinkedList<>();
@@ -743,6 +774,9 @@ public final class RootSQLParserTestCases {
     
     @XmlElement(name = "alter-package")
     private final List<AlterPackageStatementTestCase> alterPackageTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "alter-storage-policy")
+    private final List<DorisAlterStoragePolicyStatementTestCase> alterStoragePolicyTestCases = new LinkedList<>();
     
     @XmlElement(name = "drop-package")
     private final List<OracleDropPackageStatementTestCase> dropPackageTestCases = new LinkedList<>();
@@ -1251,6 +1285,9 @@ public final class RootSQLParserTestCases {
     @XmlElement(name = "show-open-tables")
     private final List<MySQLShowOpenTablesStatementTestCase> showOpenTablesTestCases = new LinkedList<>();
     
+    @XmlElement(name = "show-query-stats")
+    private final List<DorisShowQueryStatsStatementTestCase> showQueryStatsTestCases = new LinkedList<>();
+    
     @XmlElement(name = "check-table")
     private final List<MySQLCheckTableStatementTestCase> checkTableTestCases = new LinkedList<>();
     
@@ -1301,6 +1338,9 @@ public final class RootSQLParserTestCases {
     
     @XmlElement(name = "alter-sql-parser-rule")
     private final List<AlterSQLParserRuleStatementTestCase> alterSQLParserRuleTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "alter-sql-translator-rule")
+    private final List<AlterSQLTranslatorRuleStatementTestCase> alterSQLTranslatorRuleTestCases = new LinkedList<>();
     
     @XmlElement(name = "alter-local-transaction-rule")
     private final List<AlterLocalTransactionRuleStatementTestCase> alterLocalTransactionRuleTestCases = new LinkedList<>();

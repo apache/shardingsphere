@@ -22,12 +22,13 @@
     <sql-case id="select_extract_function_with_day_hour" value="select extract(DAY_HOUR FROM &quot;1999-01-02 10:11:12&quot;)" db-types="MySQL" />
     <sql-case id="select_with_latin1" value="select _latin1'B' collate latin1_bin in (_latin1'a',_latin1'b')" db-types="MySQL" />
     <sql-case id="select_with_default_str" value="select * from t1 where str &lt;&gt; default(str)" db-types="MySQL" />
+    <sql-case id="select_three_part_column_doris" value="SELECT db1.t1.c1 FROM db1.t1" db-types="Doris" />
     <sql-case id="select_subquery_excpet" value="select * from (select * from t1 except all select * from t1 limit 2) a" db-types="MySQL" />
     <sql-case id="select_point_function_with_in" value="SELECT point(1,1) IN ('1',1,'1') AS res" db-types="MySQL" />
     <sql-case id="select_with_in" value="SELECT b, b IN ('20161213'), b in ('20161213', 0) FROM t2" db-types="MySQL" />
     <sql-case id="select_with_st_geom_from_text" value="SELECT ST_GeomFromText('POINT(0 0)') IN (SELECT b FROM t1) AS result" db-types="MySQL" />
     <sql-case id="select_with_st_aswkb_st_geom_form_text" value="SELECT ST_AsWKB(ST_GeomFromText('POINT(0 0)')) IN (SELECT b FROM t1) AS result" db-types="MySQL" />
-    <sql-case id="select_null_in_subquery" value="SELECT NULL IN(SELECT (f1 between 0 and 1) FROM (SELECT f1 FROM t WHERE (@b:=NULL) - f2) as dt)" db-types="MySQL" />
+    <sql-case id="select_null_in_subquery" value="SELECT NULL IN(SELECT (f1 between 0 and 1) FROM (SELECT f1 FROM t WHERE (@b:=NULL) - f2) as dt)" db-types="MySQL,Doris" />
     <sql-case id="select_with_collate" value="SELECT NAME_CONST('var', 'value') COLLATE latin1_general_cs" db-types="MySQL" />
     <sql-case id="select_with_hex_function" value="SELECT HEX(_binary 0x0003 &lt;&lt; (_binary 0x38 | 0x38))" db-types="MySQL" />
     <sql-case id="select_distinct_with_grouping_function" value="SELECT DISTINCT f1 FROM t1 GROUP BY f1 WITH ROLLUP ORDER BY f1, ANY_VALUE(GROUPING(f1))" db-types="MySQL" />
@@ -43,7 +44,7 @@
     <sql-case id="select_with_operator_ilike" value="SELECT id from t_order where name !~ '^pg_toast'" db-types="PostgreSQL,openGauss" />
     <sql-case id="select_with_binary_operation_of_aggregation_expr" value="SELECT (count(*)+1) as a" db-types="MySQL" />
     <sql-case id="select_with_schema_func" value="SELECT schema(), database()" db-types="MySQL" />
-    <sql-case id="select_system_variables" value="SELECT @@session.auto_increment_increment auto_increment_increment, @@global.max_connections max_connections, @@autocommit" db-types="MySQL" />
+    <sql-case id="select_system_variables" value="SELECT @@session.auto_increment_increment auto_increment_increment, @@global.max_connections max_connections, @@autocommit" db-types="MySQL,Presto" />
     <sql-case id="select_sqlmode_ansi_quotes" value='select "id" from "t_order" where "t_order"."id"=10' db-types="MySQL" />
     <sql-case id="select_with_function_name" value="SELECT current_timestamp" db-types="MySQL" />
     <sql-case id="select_with_same_table_name_and_alias" value="SELECT t_order.* FROM t_order t_order WHERE user_id = ? AND order_id = ?" />
@@ -75,7 +76,7 @@
     <sql-case id="select_keyword_table_name_with_double_quotes" value="SELECT i.* FROM t_order o JOIN t_order_item i ON o.user_id = i.user_id AND o.order_id = i.order_id JOIN &quot;select&quot; c ON o.status = c.status WHERE o.user_id IN (?, ?) AND o.order_id BETWEEN ? AND ? AND c.status = ? ORDER BY i.item_id" db-types="PostgreSQL,openGauss,Oracle" />
     <sql-case id="select_keyword_table_name_with_square_brackets" value="SELECT i.* FROM t_order o JOIN t_order_item i ON o.user_id = i.user_id AND o.order_id = i.order_id JOIN [select] c ON o.status = c.status WHERE o.user_id IN (?, ?) AND o.order_id BETWEEN ? AND ? AND c.status = ? ORDER BY i.item_id" db-types="SQLServer" />
     <sql-case id="select_alias_as_keyword" value="SELECT length.item_id password FROM t_order_item length where length.item_id = ? " db-types="MySQL,H2,SQLServer,Oracle" />
-    <sql-case id="select_with_force_index_join" value="SELECT i.* FROM t_order o FORCE INDEX(order_index) JOIN t_order_item i ON o.order_id=i.order_id WHERE o.order_id = ?" db-types="MySQL" />
+    <sql-case id="select_with_force_index_join" value="SELECT i.* FROM t_order o FORCE INDEX(order_index) JOIN t_order_item i ON o.order_id=i.order_id WHERE o.order_id = ?" db-types="MySQL,Doris" />
     <sql-case id="select_equal_with_geography" value="SELECT * FROM t_order WHERE rule = ?::jsonb AND start_point=ST_GeographyFromText('SRID=4326;POINT('||?||' '||?||')') AND user_id = ? AND order_id = ?" db-types="PostgreSQL,openGauss" />
     <sql-case id="select_in_with_geography" value="SELECT * FROM t_order WHERE rule IN (?::jsonb, ?::jsonb) AND start_point=ST_GeographyFromText('SRID=4326;POINT('||?||' '||?||')') AND user_id = ? AND order_id = ?" db-types="PostgreSQL,openGauss" />
     <sql-case id="select_between_with_geography" value="SELECT * FROM t_order WHERE rule BETWEEN ?::jsonb AND ?::jsonb AND start_point=ST_GeographyFromText('SRID=4326;POINT('||?||' '||?||')') AND order_id = ?" db-types="PostgreSQL,openGauss" />
@@ -89,7 +90,12 @@
     <sql-case id="select_with_date_format_function" value="SELECT * FROM t_order WHERE DATE_FORMAT(current_date, '%Y-%m-%d') = '2019-12-18'" db-types="MySQL" />
     <sql-case id="select_with_spatial_function" value="SELECT * FROM t_order WHERE ST_DISTANCE_SPHERE(POINT(113.358772, 23.1273723), POINT(user_id,order_id)) != 0" db-types="MySQL" />
     <sql-case id="select_current_user" value="SELECT CURRENT_USER" db-types="PostgreSQL,openGauss" />
-    <sql-case id="select_with_match_against" value="SELECT * FROM t_order_item WHERE MATCH(t_order_item.description) AGAINST (? IN NATURAL LANGUAGE MODE) AND user_id = ?" db-types="MySQL" />
+    <sql-case id="select_with_match_against" value="SELECT * FROM t_order_item WHERE MATCH(t_order_item.description) AGAINST (? IN NATURAL LANGUAGE MODE) AND user_id = ?" db-types="MySQL,Doris" />
+    <sql-case id="select_not_match_against_doris" value="SELECT * FROM t_order WHERE NOT MATCH(description) AGAINST('abc' IN NATURAL LANGUAGE MODE)" db-types="Doris" />
+    <sql-case id="select_straight_join_doris" value="SELECT STRAIGHT_JOIN * FROM t_order" db-types="Doris" />
+    <sql-case id="select_for_update_doris" value="SELECT * FROM t_order FOR UPDATE" db-types="Doris" />
+    <sql-case id="select_union_doris" value="SELECT 1 UNION SELECT 2" db-types="Doris" />
+    <sql-case id="select_function_with_owner_doris" value="SELECT analytics.custom_fn()" db-types="Doris" />
     <sql-case id="select_with_json_separator" value="select content_json->>'$.nation' as nation,content_json->>'$.title' as title from tb_content_json b where b.content_id=1" db-types="MySQL" />
     <sql-case id="select_with_json_value_return_type" value="SELECT * FROM t_order WHERE JSON_VALUE(items, '$.name' RETURNING VARCHAR(100)) = 'jack'" db-types="MySQL" />
     <sql-case id="select_with_convert_function1" value="SELECT CONVERT(SUBSTRING(content, 5) , SIGNED) AS signed_content FROM t_order WHERE order_id = 1" db-types="MySQL" />
@@ -118,8 +124,8 @@
     <sql-case id="select_with_jsonb_path_delete" value="SELECT content_json::jsonb#-'{title}' FROM tb_content_json" db-types="PostgreSQL,openGauss" />
     <sql-case id="select_with_jsonb_path_contain_any_value" value="SELECT content_json::jsonb @?'$.keyword[*]?(@==&quot;ss&quot;)' FROM tb_content_json" db-types="PostgreSQL,openGauss" />
     <sql-case id="select_with_jsonb_path_predicate_check" value="SELECT content_json::jsonb@@'$.keyword[*]==&quot;ss&quot;' FROM tb_content_json" db-types="PostgreSQL,openGauss" />
-    <sql-case id="select_with_assignment_operator" value="SELECT @rn := 1, @now_code := '' FROM t_order" db-types="MySQL" />
-    <sql-case id="select_with_assignment_operator_and_keyword" value="SELECT @KEY := '', @num := 123 FROM t_order" db-types="MySQL" />
+    <sql-case id="select_with_assignment_operator" value="SELECT @rn := 1, @now_code := '' FROM t_order" db-types="MySQL,Doris" />
+    <sql-case id="select_with_assignment_operator_and_keyword" value="SELECT @KEY := '', @num := 123 FROM t_order" db-types="MySQL,Doris" />
     <sql-case id="select_from_dual" value="SELECT 1 FROM DUAL" db-types="MySQL" />
     <sql-case id="select_with_cast_as_signed" value="SELECT user_id,CAST(order_id AS SIGNED) FROM t_order" db-types="MySQL" />
     <sql-case id="select_with_cast_as_unsigned" value="SELECT CAST(order_id AS UNSIGNED),user_id FROM t_order" db-types="MySQL" />
@@ -229,14 +235,26 @@
     <sql-case id="select_with_last_value_function" value="SELECT LAST_VALUE(AGE IGNORE NULLS) OVER (PARTITION BY AGE ORDER BY AGE) from TEST;" db-types="Oracle" />
     <sql-case id="select_with_lead_and_lag_function" value="SELECT hire_date, LAG(hire_date, 1) OVER (ORDER BY hire_date) AS LAG1, LEAD(hire_date, 1) OVER (ORDER BY hire_date) AS LEAD1 FROM employees WHERE department_id = 30 ORDER BY hire_date;" db-types="Oracle,MySQL" />
     <sql-case id="select_with_connect_by_root" value="SELECT CONNECT_BY_ROOT last_name 'Manager' FROM employees CONNECT BY PRIOR employee_id = manager_id" db-types="Oracle" />
-    <sql-case id="select_with_ntile_function" value="SELECT NTILE(4) OVER (ORDER BY salary DESC) AS quartile FROM employees WHERE department_id = 100 ORDER BY last_name" db-types="Oracle,MySQL" />
+    <sql-case id="select_with_ntile_function" value="SELECT NTILE(4) OVER (ORDER BY salary DESC) AS quartile FROM employees WHERE department_id = 100 ORDER BY last_name" db-types="Oracle,MySQL,Doris" />
+    <sql-case id="select_window_named_partition_doris" value="SELECT SUM(sales) OVER w AS total_sales FROM orders WINDOW w AS (PARTITION BY region ORDER BY order_id)" db-types="Doris" />
+    <sql-case id="select_window_frame_lag_doris" value="SELECT LAG(amount, 1, 0) OVER (PARTITION BY customer_id ORDER BY tx_time ROWS BETWEEN 1 PRECEDING AND 1 FOLLOWING) AS lag_amt FROM payments" db-types="Doris" />
+    <sql-case id="select_first_value_doris" value="SELECT FIRST_VALUE(price) OVER (ORDER BY created_at) AS first_price FROM product_prices" db-types="Doris" />
+    <sql-case id="select_nth_value_doris" value="SELECT NTH_VALUE(score, 2) OVER (ORDER BY score) AS second_score FROM rankings" db-types="Doris" />
+    <sql-case id="select_from_dual_doris" value="SELECT 1 FROM DUAL" db-types="Doris" />
+    <sql-case id="select_date_literal_doris" value="SELECT DATE '2020-01-01'" db-types="Doris" />
+    <sql-case id="select_hex_literal_doris" value="SELECT 0x1AF" db-types="Doris" />
+    <sql-case id="select_bit_literal_doris" value="SELECT b'1010'" db-types="Doris" />
+    <sql-case id="select_collate_clause_doris" value="SELECT 'a' COLLATE utf8mb4_bin" db-types="Doris" />
+    <sql-case id="select_true_literal_doris" value="SELECT TRUE" db-types="Doris" />
+    <sql-case id="select_false_literal_doris" value="SELECT FALSE" db-types="Doris" />
+    <sql-case id="select_null_literal_doris" value="SELECT NULL" db-types="Doris" />
     <sql-case id="select_with_percentile_functions" value="SELECT department_id, PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY salary DESC) 'Median cont', PERCENTILE_DISC(0.5) WITHIN GROUP (ORDER BY salary DESC) 'Median disc' FROM employees GROUP BY department_id" db-types="Oracle" />
     <sql-case id="select_with_keep_clause" value="SELECT salary,MIN(salary) KEEP (DENSE_RANK FIRST ORDER BY commission_pct) OVER (PARTITION BY department_id) 'Worst', MAX(salary) KEEP (DENSE_RANK LAST ORDER BY commission_pct) OVER (PARTITION BY department_id) 'Best' FROM employees ORDER BY department_id" db-types="Oracle" />
     <sql-case id="select_with_corr_function" value="SELECT employee_id, CORR(SYSDATE - hire_date, salary) FROM employees WHERE department_id in (50, 80) ORDER BY employee_id" db-types="Oracle" />
     <sql-case id="select_with_trim_function_multi" value="select TRIM('  derby '), TRIM(BOTH ' ' FROM '  derby '), TRIM(TRAILING ' ' FROM '  derby '), TRIM(cast (null as char(1)) FROM '  derby '), TRIM(' ' FROM cast(null as varchar(30))), TRIM('y' FROM ' derby') FROM employees" db-types="Oracle" />
     <sql-case id="select_with_trim_function_simple" value="SELECT TRIM( '.,! ' FROM '     #     test    .') AS Result" db-types="SQLServer" />
-    <sql-case id="select_with_trim_function_leading" value="SELECT TRIM(LEADING '.,! ' FROM  '     .#     test    .') AS Result" db-types="SQLServer" />
-    <sql-case id="select_with_trim_function_trailing" value="SELECT TRIM(TRAILING '.,! ' FROM '     .#     test    .') AS Result" db-types="SQLServer" />
+    <sql-case id="select_with_trim_function_leading" value="SELECT TRIM(LEADING '.,! ' FROM  '     .#     test    .') AS Result" db-types="SQLServer,Presto" />
+    <sql-case id="select_with_trim_function_trailing" value="SELECT TRIM(TRAILING '.,! ' FROM '     .#     test    .') AS Result" db-types="SQLServer,Presto" />
     <sql-case id="select_with_trim_function_both" value="SELECT TRIM(BOTH '123' FROM '123abc123') AS Result" db-types="SQLServer" />
     <sql-case id="select_with_ratio_to_report_function" value="SELECT TO_CHAR(RATIO_TO_REPORT(amount_sold) OVER (), '9.999') AS RATIO_TO_REPORT FROM sales s GROUP BY s.channel_desc" db-types="Oracle" />
     <sql-case id="select_with_sys_xmlagg_and_xmlgen" value="SELECT SYS_XMLAGG(last_name) a, SYS_XMLGEN(last_name) b FROM employees WHERE last_name LIKE 'R%' ORDER BY xmlagg;" db-types="Oracle" />
@@ -305,6 +323,11 @@
     <sql-case id="select_with_index_hints1" value="SELECT * FROM t1 USE INDEX (i1) IGNORE INDEX (i2) USE INDEX (i2);" db-types="MySQL,Doris"/>
     <sql-case id="select_with_index_hints2" value="SELECT * FROM t1 USE INDEX () IGNORE INDEX (i2) USE INDEX (i1) USE INDEX (i2);" db-types="MySQL,Doris"/>
     <sql-case id="select_with_index_hints3" value="SELECT * FROM t1 USE INDEX (i1,i2) IGNORE INDEX (i2);" db-types="MySQL,Doris"/>
+    <sql-case id="select_with_index_hint_for_order_by_doris" value="SELECT * FROM t1 USE INDEX FOR ORDER BY (i1) ORDER BY col1" db-types="Doris"/>
+    <sql-case id="select_with_index_hint_for_group_by_doris" value="SELECT * FROM t1 USE INDEX FOR GROUP BY (i1) GROUP BY col1" db-types="Doris"/>
+    <sql-case id="select_with_force_index_for_order_by" value="SELECT * FROM t1 FORCE INDEX FOR ORDER BY (idx1) ORDER BY id" db-types="MySQL,Doris" />
+    <sql-case id="select_with_force_index_for_group_by" value="SELECT * FROM t1 FORCE INDEX FOR GROUP BY (idx1) GROUP BY id" db-types="MySQL,Doris" />
+    <sql-case id="select_with_force_index_for_join" value="SELECT * FROM t1 FORCE INDEX FOR JOIN (idx1)" db-types="MySQL,Doris" />
     <sql-case id="select_with_reserved_word_with_table_ref" value="select xxx.condition from xxx" db-types="MySQL,Doris"/>
     <sql-case id="select_with_reserved_word" value="select describe from xxx" db-types="MySQL,Doris"/>
     <sql-case id="select_with_nvl_function_and_interval_hour" value="SELECT * FROM t_order t WHERE t.CREATE_TIME &lt;= nvl(END_TIME, sysdate) - INTERVAL ? HOUR AND t.STATUS = 'FAILURE'" db-types="Oracle"/>
@@ -378,4 +401,5 @@
     <sql-case id="select_force_single_node_plan_hint" value="SELECT * FROM Person OPTION (FORCE SINGLE NODE PLAN);" db-types="SQLServer"/>
     <sql-case id="select_querytraceon_hint" value="SELECT * FROM Person OPTION (QUERYTRACEON 4199, QUERYTRACEON 4137);" db-types="SQLServer"/>
     <sql-case id="select_with_sample_clause" value="SELECT 1 AS C1 FROM T_ORDER SAMPLE BLOCK (1.43302, 8) SEED(9) T_ORDER" db-types="Oracle" />
+    <sql-case id="select_from_function_table_doris" value="SELECT * FROM table_func(1, 2)" db-types="Doris" />
 </sql-cases>

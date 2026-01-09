@@ -41,9 +41,9 @@ class ClasspathResourceDirectoryReaderTest {
     @Test
     void assertReadTest() {
         List<String> resourceNameList = ClasspathResourceDirectoryReader.read("yaml").collect(Collectors.toList());
-        assertThat(resourceNameList.size(), is(5));
+        assertThat(resourceNameList.size(), is(6));
         assertThat(resourceNameList, hasItems("yaml/accepted-class.yaml", "yaml/customized-obj.yaml", "yaml/empty-config.yaml",
-                "yaml/shortcuts-fixture.yaml", "yaml/fixture/fixture.yaml"));
+                "yaml/shortcuts-fixture.yaml", "yaml/null-collections.yaml", "yaml/fixture/fixture.yaml"));
     }
     
     @Test

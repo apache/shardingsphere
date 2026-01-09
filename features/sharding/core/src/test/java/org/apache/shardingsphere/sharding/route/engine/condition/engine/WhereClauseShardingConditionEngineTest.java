@@ -18,6 +18,10 @@
 package org.apache.shardingsphere.sharding.route.engine.condition.engine;
 
 import org.apache.shardingsphere.infra.binder.context.statement.type.dml.SelectStatementContext;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereColumn;
+import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
+import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
 import org.apache.shardingsphere.sharding.route.engine.condition.ShardingCondition;
 import org.apache.shardingsphere.sharding.route.engine.condition.value.ListShardingConditionValue;
 import org.apache.shardingsphere.sharding.route.engine.condition.value.RangeShardingConditionValue;
@@ -62,10 +66,24 @@ class WhereClauseShardingConditionEngineTest {
     @Mock
     private WhereSegment whereSegment;
     
+    @Mock
+    private ShardingSphereDatabase database;
+    
+    @Mock
+    private ShardingSphereSchema schema;
+    
+    @Mock
+    private ShardingSphereTable table;
+    
     @BeforeEach
     void setUp() {
-        shardingConditionEngine = new WhereClauseShardingConditionEngine(rule, mock(TimestampServiceRule.class));
+        shardingConditionEngine = new WhereClauseShardingConditionEngine(database, rule, mock(TimestampServiceRule.class));
         when(sqlStatementContext.getWhereSegments()).thenReturn(Collections.singleton(whereSegment));
+        when(database.containsSchema("")).thenReturn(true);
+        when(database.getSchema("")).thenReturn(schema);
+        when(schema.containsTable("")).thenReturn(true);
+        when(schema.getTable("")).thenReturn(table);
+        when(table.getColumn("foo_sharding_col")).thenReturn(mock(ShardingSphereColumn.class));
     }
     
     @Test

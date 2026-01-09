@@ -51,27 +51,38 @@ sdk use java 24.0.2-graalce
 sudo apt-get install build-essential zlib1g-dev -y
 ```
 
-可在 bash 通过如下命令安装 Rootful 模式的 Docker Engine。本文不讨论更改 `/etc/docker/daemon.json` 的默认 logging driver。
+可在 bash 通过如下命令安装 Rootful 模式的 Docker Engine。
 
 ```shell
-sudo apt update && sudo apt upgrade -y
-sudo apt-get remove docker.io docker-doc docker-compose docker-compose-v2 podman-docker containerd runc
-cd /tmp/
-sudo apt-get install ca-certificates curl
+sudo apt update && sudo apt upgrade --assume-yes
+sudo apt-get remove docker.io docker-compose docker-compose-v2 docker-doc podman-docker containerd runc
+sudo apt install ca-certificates curl --assume-yes
 sudo install -m 0755 -d /etc/apt/keyrings
 sudo curl -fsSL https://download.docker.com/linux/ubuntu/gpg -o /etc/apt/keyrings/docker.asc
 sudo chmod a+r /etc/apt/keyrings/docker.asc
 
-echo \
-  "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/ubuntu \
-  $(. /etc/os-release && echo "$VERSION_CODENAME") stable" | \
-  sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+sudo tee /etc/apt/sources.list.d/docker.sources <<EOF
+Types: deb
+URIs: https://download.docker.com/linux/ubuntu
+Suites: $(. /etc/os-release && echo "${UBUNTU_CODENAME:-$VERSION_CODENAME}")
+Components: stable
+Signed-By: /etc/apt/keyrings/docker.asc
+EOF
 
 sudo apt-get update
-sudo apt-get install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin -y
+sudo apt-get install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin --assume-yes
 sudo groupadd docker
 sudo usermod -aG docker $USER
 newgrp docker
+
+sudo tee /etc/docker/daemon.json <<EOF
+{
+  "log-driver": "local",
+  "min-api-version": "1.24"
+}
+EOF
+
+sudo systemctl restart docker.service
 ```
 
 ### Windows
@@ -81,7 +92,7 @@ newgrp docker
 可在 Powershell 7 通过如下命令利用 `version-fox/vfox` 安装 GraalVM CE。
 
 ```shell
-winget install version-fox.vfox
+winget install --id version-fox.vfox --source winget --exact
 if (-not (Test-Path -Path $PROFILE)) { New-Item -Type File -Path $PROFILE -Force }; Add-Content -Path $PROFILE -Value 'Invoke-Expression "$(vfox activate pwsh)"'
 # 此时需要打开新的 Powershell 7 终端
 vfox add java
@@ -95,7 +106,7 @@ vfox use --global java@24.0.2-graalce
 可在 Powershell 7 通过如下命令安装编译 GraalVM Native Image 所需要的本地工具链。**特定情况下，开发者可能需要为 Visual Studio 的使用购买许可证。**
 
 ```shell
-winget install --id Microsoft.VisualStudio.2022.Community
+winget install --id Microsoft.VisualStudio.2022.Community --source winget --exact
 ```
 
 打开 `Visual Studio Installer` 以修改 `Visual Studio Community 2022` 的 `工作负荷`，勾选 `桌面应用与移动应用` 的 `使用 C++ 的桌面开发` 后点击`修改`。
@@ -106,8 +117,26 @@ winget install --id Microsoft.VisualStudio.2022.Community
 wsl --install
 ```
 
-完成 WSL2 的启用后，在 https://rancherdesktop.io/ 下载和安装 `rancher-sandbox/rancher-desktop`，并设置使用 `dockerd(moby)` 的 `Container Engine`。
-本文不讨论更改 Linux 发行版 `rancher-desktop` 的 `/etc/docker/daemon.json` 的默认 logging driver。
+完成 WSL2 的启用后，通过如下的 PowerShell 7 命令下载和安装 `rancher-sandbox/rancher-desktop`，
+并设置使用 `dockerd(moby)` 的 `Container Engine`。
+
+```shell
+winget install --id SUSE.RancherDesktop --source winget --skip-dependencies
+# 打开新的 PowerShell 7 终端
+rdctl start --application.start-in-background --container-engine.name=moby --kubernetes.enabled=false
+
+@'
+{
+  "features": {
+    "containerd-snapshotter": true
+  },
+  "log-driver": "local"
+}
+'@ | rdctl shell sudo tee /etc/docker/daemon.json
+
+rdctl shutdown
+rdctl start --application.start-in-background --container-engine.name=moby --kubernetes.enabled=false
+```
 
 ### Windows Server
 
@@ -119,12 +148,25 @@ wsl --install
 可在 PowerShell 7 执行如下命令，
 
 ```shell
-iwr -Uri "https://raw.githubusercontent.com/microsoft/Windows-Containers/refs/heads/Main/helpful_tools/Install-DockerCE/uninstall-docker-ce.ps1" -OutFile uninstall-docker-ce.ps1
-.\uninstall-docker-ce.ps1 -Force
-ri .\uninstall-docker-ce.ps1
+iex "& { $(irm https://raw.githubusercontent.com/microsoft/Windows-Containers/refs/heads/Main/helpful_tools/Install-DockerCE/uninstall-docker-ce.ps1) } -Force"
+winget install --id SUSE.RancherDesktop --source winget --skip-dependencies
+# 打开新的 PowerShell 7 终端
+rdctl start --application.start-in-background --container-engine.name=moby --kubernetes.enabled=false
+
+@'
+{
+  "features": {
+    "containerd-snapshotter": true
+  },
+  "log-driver": "local"
+}
+'@ | rdctl shell sudo tee /etc/docker/daemon.json
+
+rdctl shutdown
+rdctl start --application.start-in-background --container-engine.name=moby --kubernetes.enabled=false
 ```
 
-这类操作常见于 `windows-2025` 的 GitHub Actions Runner 中。
+这类操作常见于 `windows-latest` 的 GitHub Actions Runner 中。
 
 ## 处理单元测试
 
@@ -175,7 +217,7 @@ cd ./shardingsphere/
 而 `META-INF/native-image/org.apache.shardingsphere/generated-reachability-metadata/` 中的条目仅应由 `generateMetadata` 的 Maven Profile 生成。
 
 对于测试类和测试文件独立使用的 GraalVM Reachability Metadata，贡献者应该放置到 `shardingsphere-test-native` 子模块的 classpath 的
-`META-INF/native-image/shardingsphere-test-native-test-metadata/` 下。
+`META-INF/native-image/shardingsphere-test-native/` 下。
 
 ## 已知限制
 
@@ -267,9 +309,6 @@ class SolutionTest {
 ```
 
 ### 单元测试的已知问题
-
-受 https://github.com/apache/shardingsphere/issues/35052 影响，
-`org.apache.shardingsphere.test.natived.jdbc.modes.cluster.EtcdTest` 的单元测试无法在通过 `Windows 11 Home 24H2` 编译的 GraalVM Native Image 下运行。
 
 受 https://github.com/apache/incubator-seata/issues/7523 影响，
 `org.apache.shardingsphere.test.natived.proxy.transactions.base.SeataTest` 已被禁用，

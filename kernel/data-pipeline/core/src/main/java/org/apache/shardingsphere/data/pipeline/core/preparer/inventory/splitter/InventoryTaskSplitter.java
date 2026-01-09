@@ -48,7 +48,7 @@ import java.util.concurrent.atomic.AtomicReference;
 @Slf4j
 public final class InventoryTaskSplitter {
     
-    private final PipelineDataSource sourceDataSource;
+    private final PipelineDataSource dataSource;
     
     private final InventoryDumperContext dumperContext;
     
@@ -64,12 +64,12 @@ public final class InventoryTaskSplitter {
         List<InventoryTask> result = new LinkedList<>();
         long startTimeMillis = System.currentTimeMillis();
         TransmissionProcessContext processContext = jobItemContext.getJobProcessContext();
-        InventoryDumperContextSplitter dumperContextSplitter = new InventoryDumperContextSplitter(sourceDataSource, dumperContext);
+        InventoryDumperContextSplitter dumperContextSplitter = new InventoryDumperContextSplitter(dataSource, dumperContext);
         for (InventoryDumperContext each : dumperContextSplitter.split(jobItemContext)) {
             AtomicReference<IngestPosition> position = new AtomicReference<>(each.getCommonContext().getPosition());
             PipelineChannel channel = InventoryChannelCreator.create(processContext.getProcessConfiguration().getStreamChannel(), importerConfig.getBatchSize(), position);
             InventoryDataRecordPositionCreator positionCreator = each.hasUniqueKey() ? new UniqueKeyInventoryDataRecordPositionCreator() : new PlaceholderInventoryDataRecordPositionCreator();
-            Dumper dumper = new InventoryDumper(each, channel, sourceDataSource, positionCreator);
+            Dumper dumper = new InventoryDumper(each, channel, dataSource, positionCreator);
             Importer importer = new SingleChannelConsumerImporter(channel, importerConfig.getBatchSize(), 3000L, jobItemContext.getSink(), jobItemContext);
             result.add(new InventoryTask(PipelineTaskUtils.generateInventoryTaskId(each),
                     processContext.getInventoryDumperExecuteEngine(), processContext.getInventoryImporterExecuteEngine(), dumper, importer, position));

@@ -33,10 +33,11 @@ databaseName ::=
 
 ### 返回值说明
 
-| 列              | 说明     |
-|----------------|--------|
-| storage_unit   | 存储单元名称 |
-| status         | 存储单元状态 |
+| 列            | 说明       |
+|--------------|----------|
+| name         | 读写分离规则名称 |
+| storage_unit | 存储单元名称   |
+| status       | 存储单元状态   |
 
 ### 示例
 
@@ -48,11 +49,11 @@ SHOW STATUS FROM READWRITE_SPLITTING RULE ms_group_0 FROM sharding_db;
 
 ```sql
 mysql> SHOW STATUS FROM READWRITE_SPLITTING RULE ms_group_0 FROM sharding_db;
-+--------------+----------+
-| storage_unit | status   |
-+--------------+----------+
-| ds_0         | disabled |
-+--------------+----------+
++-------------+--------------+----------+
+| name        | storage_unit | status   |
++-------------+--------------+----------+
+| ms_group_0  | ds_0         | disabled |
++-------------+--------------+----------+
 1 rows in set (0.01 sec)
 ```
 
@@ -64,11 +65,11 @@ SHOW STATUS FROM READWRITE_SPLITTING RULES FROM sharding_db;
 
 ```sql
 mysql> SHOW STATUS FROM READWRITE_SPLITTING RULES FROM sharding_db;
-+--------------+----------+
-| storage_unit | status   |
-+--------------+----------+
-| ds_0         | disabled |
-+--------------+----------+
++-------------+--------------+----------+
+| name        | storage_unit | status   |
++-------------+--------------+----------+
+| ms_group_0  | ds_0         | disabled |
++-------------+--------------+----------+
 1 rows in set (0.00 sec)
 ```
 
@@ -80,11 +81,11 @@ SHOW STATUS FROM READWRITE_SPLITTING RULE ms_group_0;
 
 ```sql
 mysql> SHOW STATUS FROM READWRITE_SPLITTING RULE ms_group_0;
-+--------------+----------+
-| storage_unit | status   |
-+--------------+----------+
-| ds_0         | disabled |
-+--------------+----------+
++-------------+--------------+----------+
+| name        | storage_unit | status   |
++-------------+--------------+----------+
+| ms_group_0  | ds_0         | disabled |
++-------------+--------------+----------+
 1 rows in set (0.01 sec)
 ```
 
@@ -96,11 +97,11 @@ mysql> SHOW STATUS FROM READWRITE_SPLITTING RULES;
 
 ```sql
 mysql> SHOW STATUS FROM READWRITE_SPLITTING RULES;
-+--------------+----------+
-| storage_unit | status   |
-+--------------+----------+
-| ds_0         | disabled |
-+--------------+----------+
++-------------+--------------+----------+
+| name        | storage_unit | status   |
++-------------+--------------+----------+
+| ms_group_0  | ds_0         | disabled |
++-------------+--------------+----------+
 1 rows in set (0.01 sec)
 ```
 

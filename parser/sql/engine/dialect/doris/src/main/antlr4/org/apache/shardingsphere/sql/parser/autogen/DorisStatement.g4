@@ -45,12 +45,14 @@ execute
     | dropLogfileGroup
     | createServer
     | dropServer
+    | createEncryptKey
     | dropEncryptKey
     | createView
     | dropView
     | createTrigger
     | dropTrigger
     | alterResourceGroup
+    | alterResource
     | createResourceGroup
     | dropResourceGroup
     | prepare
@@ -98,6 +100,7 @@ execute
     | shutdown
     | begin
     | use
+    | switchCatalog
     | explain
     | doStatement
     | show
@@ -131,6 +134,9 @@ execute
     | delimiter
     | startReplica
     | createMaterializedView
+    | resumeJob
+    | dorisAlterSystem
+    | createSqlBlockRule
     // TODO consider refactor following sytax to SEMI_? EOF
     ) (SEMI_ EOF? | EOF)
     | EOF

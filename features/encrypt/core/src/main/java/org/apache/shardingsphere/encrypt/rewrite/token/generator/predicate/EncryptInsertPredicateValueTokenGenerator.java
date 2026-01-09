@@ -19,7 +19,6 @@ package org.apache.shardingsphere.encrypt.rewrite.token.generator.predicate;
 
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
-import org.apache.shardingsphere.encrypt.rewrite.aware.EncryptConditionsAware;
 import org.apache.shardingsphere.encrypt.rewrite.condition.EncryptCondition;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
@@ -39,15 +38,15 @@ import java.util.List;
 @HighFrequencyInvocation
 @RequiredArgsConstructor
 @Setter
-public final class EncryptInsertPredicateValueTokenGenerator implements CollectionSQLTokenGenerator<InsertStatementContext>, ParametersAware, EncryptConditionsAware {
+public final class EncryptInsertPredicateValueTokenGenerator implements CollectionSQLTokenGenerator<InsertStatementContext>, ParametersAware {
     
     private final EncryptRule rule;
     
     private final ShardingSphereDatabase database;
     
-    private List<Object> parameters;
+    private final Collection<EncryptCondition> encryptConditions;
     
-    private Collection<EncryptCondition> encryptConditions;
+    private List<Object> parameters;
     
     @Override
     public boolean isGenerateSQLToken(final SQLStatementContext sqlStatementContext) {
@@ -57,9 +56,8 @@ public final class EncryptInsertPredicateValueTokenGenerator implements Collecti
     
     @Override
     public Collection<SQLToken> generateSQLTokens(final InsertStatementContext sqlStatementContext) {
-        EncryptPredicateValueTokenGenerator generator = new EncryptPredicateValueTokenGenerator(rule, database);
+        EncryptPredicateValueTokenGenerator generator = new EncryptPredicateValueTokenGenerator(rule, database, encryptConditions);
         generator.setParameters(parameters);
-        generator.setEncryptConditions(encryptConditions);
         return generator.generateSQLTokens(sqlStatementContext.getInsertSelectContext().getSelectStatementContext());
     }
 }

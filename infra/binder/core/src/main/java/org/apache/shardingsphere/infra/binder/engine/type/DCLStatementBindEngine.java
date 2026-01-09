@@ -19,8 +19,10 @@ package org.apache.shardingsphere.infra.binder.engine.type;
 
 import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementBinderContext;
 import org.apache.shardingsphere.infra.binder.engine.statement.dcl.RevokeStatementBinder;
+import org.apache.shardingsphere.infra.binder.engine.statement.dcl.GrantStatementBinder;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dcl.DCLStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dcl.RevokeStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dcl.GrantStatement;
 
 /**
  * DCL statement bind engine.
@@ -37,6 +39,9 @@ public final class DCLStatementBindEngine {
     public DCLStatement bind(final DCLStatement statement, final SQLStatementBinderContext binderContext) {
         if (statement instanceof RevokeStatement) {
             return new RevokeStatementBinder().bind((RevokeStatement) statement, binderContext);
+        }
+        if (statement instanceof GrantStatement) {
+            return new GrantStatementBinder().bind((GrantStatement) statement, binderContext);
         }
         return statement;
     }

@@ -20,4 +20,6 @@ mode:
   repository:
     type: JDBC
     props:
-      path: demo
+      jdbcUrl: jdbc:mysql://${host}:${port}/demo_ds_0?serverTimezone=UTC&useSSL=false&useUnicode=true&characterEncoding=UTF-8&allowPublicKeyRetrieval=true
+      username: ${username}
+      password: ${(password)?string}

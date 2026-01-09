@@ -33,5 +33,6 @@
         <module>sqlserver</module>
         <module>oracle</module>
         <module>hive</module>
+        <module>doris</module>
     </modules>
 </project>

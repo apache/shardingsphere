@@ -67,7 +67,7 @@ public final class DatabaseTypeRegistry {
      * @return formatted identifier pattern
      */
     public String formatIdentifierPattern(final String identifierPattern) {
-        switch (DatabaseTypedSPILoader.getService(DialectDatabaseMetaData.class, databaseType).getIdentifierPatternType()) {
+        switch (dialectDatabaseMetaData.getIdentifierPatternType()) {
             case UPPER_CASE:
                 return identifierPattern.toUpperCase();
             case LOWER_CASE:

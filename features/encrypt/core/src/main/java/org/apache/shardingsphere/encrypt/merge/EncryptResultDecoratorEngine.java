@@ -44,7 +44,7 @@ public final class EncryptResultDecoratorEngine implements ResultDecoratorEngine
             return Optional.of(new EncryptDQLResultDecorator(database, metaData, (SelectStatementContext) sqlStatementContext));
         }
         if (sqlStatementContext.getSqlStatement() instanceof DALStatement) {
-            return Optional.of(new EncryptDALResultDecorator(metaData.getGlobalRuleMetaData()));
+            return Optional.of(new EncryptDALResultDecorator(metaData));
         }
         return Optional.empty();
     }

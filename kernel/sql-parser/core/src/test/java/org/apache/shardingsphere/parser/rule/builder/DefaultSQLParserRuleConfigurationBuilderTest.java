@@ -17,31 +17,27 @@
 
 package org.apache.shardingsphere.parser.rule.builder;
 
+import org.apache.shardingsphere.infra.rule.builder.global.DefaultGlobalRuleConfigurationBuilder;
+import org.apache.shardingsphere.infra.rule.builder.global.GlobalRuleBuilder;
+import org.apache.shardingsphere.infra.spi.type.ordered.OrderedSPILoader;
 import org.apache.shardingsphere.parser.config.SQLParserRuleConfiguration;
-import org.apache.shardingsphere.parser.constant.SQLParserOrder;
 import org.junit.jupiter.api.Test;
+
+import java.util.Collections;
+import java.util.Map;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 
 class DefaultSQLParserRuleConfigurationBuilderTest {
     
+    @SuppressWarnings("rawtypes")
     @Test
     void assertBuild() {
-        SQLParserRuleConfiguration actual = new DefaultSQLParserRuleConfigurationBuilder().build();
-        assertThat(actual.getParseTreeCache().getInitialCapacity(), is(128));
-        assertThat(actual.getParseTreeCache().getMaximumSize(), is(1024L));
-        assertThat(actual.getSqlStatementCache().getInitialCapacity(), is(2000));
-        assertThat(actual.getSqlStatementCache().getMaximumSize(), is(65535L));
-    }
-    
-    @Test
-    void assertGetOrder() {
-        assertThat(new DefaultSQLParserRuleConfigurationBuilder().getOrder(), is(SQLParserOrder.ORDER));
-    }
-    
-    @Test
-    void assertGetTypeClass() {
-        assertThat(new DefaultSQLParserRuleConfigurationBuilder().getTypeClass().toString(), is(SQLParserRuleBuilder.class.toString()));
+        Map<GlobalRuleBuilder, DefaultGlobalRuleConfigurationBuilder> builders = OrderedSPILoader.getServices(
+                DefaultGlobalRuleConfigurationBuilder.class, Collections.singleton(new SQLParserRuleBuilder()));
+        SQLParserRuleConfiguration actual = (SQLParserRuleConfiguration) builders.values().iterator().next().build();
+        assertThat(actual.getParseTreeCache(), is(DefaultSQLParserRuleConfigurationBuilder.PARSE_TREE_CACHE_OPTION));
+        assertThat(actual.getSqlStatementCache(), is(DefaultSQLParserRuleConfigurationBuilder.SQL_STATEMENT_CACHE_OPTION));
     }
 }

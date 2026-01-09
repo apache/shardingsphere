@@ -490,7 +490,7 @@
     </insert>
     <insert sql-case-id="insert_duplicate_key_update">
         <table name="t_order" start-index="12" stop-index="18" />
-        <set start-index="20" stop-index="34" literal-stop-index="34">
+        <set start-index="20" stop-index="39" literal-stop-index="39">
             <assignment>
                 <column name="b" start-index="24" stop-index="24" />
                 <assignment-value>
@@ -504,7 +504,8 @@
                 </assignment-value>
             </assignment>
         </set>
-        <on-duplicate-key-columns start-index="43" stop-index="76" literal-start-index="36" literal-stop-index="76">
+        <value-reference alias="n" start-index="36" stop-index="39"/>
+        <on-duplicate-key-columns start-index="41" stop-index="76" literal-start-index="41" literal-stop-index="76">
             <assignment start-index="65" stop-index="69">
                 <column name="b" start-index="65" stop-index="65"  />
                 <assignment-value>
@@ -4178,35 +4179,169 @@
         <on-duplicate-key-columns start-index="42" stop-index="73"/>
     </insert>
 
-    <insert sql-case-id="insert_on_duplicate_key_with_column_aliases">
+
+    <insert sql-case-id="insert_values_with_value_reference">
         <table name="t" start-index="12" stop-index="12"/>
-        <set start-index="14" stop-index="24">
-            <assignment>
-                <column name="a" start-index="18" stop-index="18" />
+        <columns start-index="13" stop-index="13"/>
+        <values>
+            <value>
                 <assignment-value>
-                    <literal-expression value="9" literal-start-index="20" literal-stop-index="20" />
+                    <literal-expression value="1" start-index="22" stop-index="22"/>
+                </assignment-value>
+                <assignment-value>
+                    <literal-expression value="2" start-index="24" stop-index="24"/>
+                </assignment-value>
+            </value>
+        </values>
+        <value-reference alias="new_alias" start-index="27" stop-index="38"/>
+    </insert>
+
+    <insert sql-case-id="insert_values_with_column_aliases">
+        <table name="t" start-index="12" stop-index="12"/>
+        <columns start-index="13" stop-index="13"/>
+        <values>
+            <value>
+                <assignment-value>
+                    <literal-expression value="1" start-index="22" stop-index="22"/>
+                </assignment-value>
+                <assignment-value>
+                    <literal-expression value="2" start-index="24" stop-index="24"/>
+                </assignment-value>
+            </value>
+        </values>
+        <value-reference alias="new_alias" start-index="27" stop-index="43">
+            <derived-column name="a" start-index="40" stop-index="40"/>
+            <derived-column name="b" start-index="42" stop-index="42"/>
+        </value-reference>
+    </insert>
+
+    <insert sql-case-id="insert_values_as_on_duplicate_key">
+        <table name="t" start-index="12" stop-index="12"/>
+        <columns start-index="13" stop-index="13"/>
+        <values>
+            <value>
+                <assignment-value>
+                    <literal-expression value="1" start-index="22" stop-index="22"/>
+                </assignment-value>
+                <assignment-value>
+                    <literal-expression value="2" start-index="24" stop-index="24"/>
+                </assignment-value>
+            </value>
+        </values>
+        <value-reference alias="new_alias" start-index="27" stop-index="38"/>
+        <on-duplicate-key-columns start-index="40" stop-index="76">
+            <assignment start-index="64" stop-index="76">
+                <column name="a" start-index="64" stop-index="64"/>
+                <assignment-value>
+                    <column name="a" start-index="66" stop-index="76">
+                        <owner name="new_alias" start-index="66" stop-index="74"/>
+                    </column>
+                </assignment-value>
+            </assignment>
+        </on-duplicate-key-columns>
+    </insert>
+
+    <insert sql-case-id="insert_values_as_with_columns_duplicate">
+        <table name="t" start-index="12" stop-index="12"/>
+        <columns start-index="13" stop-index="13"/>
+        <values>
+            <value>
+                <assignment-value>
+                    <literal-expression value="1" start-index="22" stop-index="22"/>
+                </assignment-value>
+                <assignment-value>
+                    <literal-expression value="2" start-index="24" stop-index="24"/>
+                </assignment-value>
+            </value>
+        </values>
+        <value-reference alias="new_alias" start-index="27" stop-index="43">
+            <derived-column name="a" start-index="40" stop-index="40"/>
+            <derived-column name="b" start-index="42" stop-index="42"/>
+        </value-reference>
+        <on-duplicate-key-columns start-index="45" stop-index="96">
+            <assignment start-index="69" stop-index="81">
+                <column name="a" start-index="69" stop-index="69"/>
+                <assignment-value>
+                    <column name="a" start-index="71" stop-index="81">
+                        <owner name="new_alias" start-index="71" stop-index="79"/>
+                    </column>
+                </assignment-value>
+            </assignment>
+            <assignment start-index="84" stop-index="96">
+                <column name="b" start-index="84" stop-index="84"/>
+                <assignment-value>
+                    <column name="b" start-index="86" stop-index="96">
+                        <owner name="new_alias" start-index="86" stop-index="94"/>
+                    </column>
+                </assignment-value>
+            </assignment>
+        </on-duplicate-key-columns>
+    </insert>
+
+    <insert sql-case-id="insert_set_as_on_duplicate_key">
+        <table name="t" start-index="12" stop-index="12"/>
+        <set start-index="14" stop-index="38">
+            <assignment>
+                <column name="a" start-index="18" stop-index="18"/>
+                <assignment-value>
+                    <literal-expression value="1" start-index="20" stop-index="20"/>
                 </assignment-value>
             </assignment>
             <assignment>
-                <column name="b" start-index="22" stop-index="22"/>
+                <column name="b" start-index="23" stop-index="23"/>
                 <assignment-value>
-                    <literal-expression value="5" start-index="24" stop-index="24"/>
+                    <literal-expression value="2" start-index="25" stop-index="25"/>
                 </assignment-value>
             </assignment>
         </set>
-        <on-duplicate-key-columns start-index="26" stop-index="66">
-            <assignment start-index="62" stop-index="66">
-                <column name="a" start-index="62" stop-index="62"  />
+        <value-reference alias="new_alias" start-index="27" stop-index="38"/>
+        <on-duplicate-key-columns start-index="40" stop-index="76">
+            <assignment start-index="64" stop-index="76">
+                <column name="a" start-index="64" stop-index="64"/>
                 <assignment-value>
-                    <binary-operation-expression start-index="64" stop-index="66">
-                        <operator>+</operator>
-                        <left>
-                            <column name="m" start-index="64" stop-index="64"/>
-                        </left>
-                        <right>
-                            <column name="n" start-index="66" stop-index="66"/>
-                        </right>
-                    </binary-operation-expression>
+                    <column name="a" start-index="66" stop-index="76">
+                        <owner name="new_alias" start-index="66" stop-index="74"/>
+                    </column>
+                </assignment-value>
+            </assignment>
+        </on-duplicate-key-columns>
+    </insert>
+
+    <insert sql-case-id="insert_set_as_with_columns_duplicate">
+        <table name="t" start-index="12" stop-index="12"/>
+        <set start-index="14" stop-index="43">
+            <assignment>
+                <column name="a" start-index="18" stop-index="18"/>
+                <assignment-value>
+                    <literal-expression value="1" start-index="20" stop-index="20"/>
+                </assignment-value>
+            </assignment>
+            <assignment>
+                <column name="b" start-index="23" stop-index="23"/>
+                <assignment-value>
+                    <literal-expression value="2" start-index="25" stop-index="25"/>
+                </assignment-value>
+            </assignment>
+        </set>
+        <value-reference alias="new_alias" start-index="27" stop-index="43">
+            <derived-column name="a" start-index="40" stop-index="40"/>
+            <derived-column name="b" start-index="42" stop-index="42"/>
+        </value-reference>
+        <on-duplicate-key-columns start-index="45" stop-index="96">
+            <assignment start-index="69" stop-index="81">
+                <column name="a" start-index="69" stop-index="69"/>
+                <assignment-value>
+                    <column name="a" start-index="71" stop-index="81">
+                        <owner name="new_alias" start-index="71" stop-index="79"/>
+                    </column>
+                </assignment-value>
+            </assignment>
+            <assignment start-index="84" stop-index="96">
+                <column name="b" start-index="84" stop-index="84"/>
+                <assignment-value>
+                    <column name="b" start-index="86" stop-index="96">
+                        <owner name="new_alias" start-index="86" stop-index="94"/>
+                    </column>
                 </assignment-value>
             </assignment>
         </on-duplicate-key-columns>

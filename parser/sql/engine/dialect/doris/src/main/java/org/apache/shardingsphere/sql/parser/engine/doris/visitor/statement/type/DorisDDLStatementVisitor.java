@@ -23,6 +23,8 @@ import org.antlr.v4.runtime.misc.Interval;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.api.ASTNode;
 import org.apache.shardingsphere.sql.parser.api.visitor.statement.type.DDLStatementVisitor;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.AlterCatalogContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ResumeJobContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.AddColumnContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.AddTableConstraintContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.AlterAlgorithmOptionContext;
@@ -96,6 +98,7 @@ import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.LoopSta
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ModifyColumnContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.PlaceContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.PrepareContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.PropertyContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ReferenceDefinitionContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.RenameColumnContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.RenameIndexContext;
@@ -109,9 +112,15 @@ import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.TableNa
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.TruncateTableContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ValidStatementContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.WhileStatementContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.RenameRollupContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.RenamePartitionContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.AlterStoragePolicyContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.PropertiesClauseContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.CreateEncryptKeyContext;
 import org.apache.shardingsphere.sql.parser.engine.doris.visitor.statement.DorisStatementVisitor;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.AlgorithmOption;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.LockTableOption;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.PartitionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.AlterDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.CreateDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.charset.CharsetNameSegment;
@@ -134,6 +143,12 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.index.Dro
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.index.IndexNameSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.index.IndexSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.index.RenameIndexDefinitionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.partition.RenamePartitionDefinitionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.policy.PolicyNameSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.property.PropertiesSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.property.PropertySegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.rollup.RenameRollupDefinitionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.rollup.RollupSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.routine.FunctionNameSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.routine.RoutineBodySegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.routine.ValidStatementSegment;
@@ -143,22 +158,25 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.table.Cre
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.table.LockTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.table.RenameTableDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.tablespace.TablespaceSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.view.ViewColumnSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simple.SimpleExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.CommentSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.DataTypeSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.OwnerSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.CreateEncryptKeyStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.DeallocateStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.ExecuteStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.PrepareStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.TruncateStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.catalog.AlterCatalogStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.database.AlterDatabaseStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.database.CreateDatabaseStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.database.DropDatabaseStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.function.AlterFunctionStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.function.CreateFunctionStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.function.DropFunctionStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.index.CreateIndexStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.index.DropIndexStatement;
@@ -186,8 +204,12 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.De
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.InsertStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.UpdateStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.util.SQLUtils;
 import org.apache.shardingsphere.sql.parser.statement.core.value.collection.CollectionValue;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
+import org.apache.shardingsphere.sql.parser.statement.doris.ddl.DorisAlterStoragePolicyStatement;
+import org.apache.shardingsphere.sql.parser.statement.doris.ddl.DorisCreateFunctionStatement;
+import org.apache.shardingsphere.sql.parser.statement.doris.ddl.DorisResumeJobStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.ddl.event.MySQLAlterEventStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.ddl.event.MySQLCreateEventStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.ddl.event.MySQLDropEventStatement;
@@ -225,6 +247,16 @@ public final class DorisDDLStatementVisitor extends DorisStatementVisitor implem
     public ASTNode visitAlterView(final AlterViewContext ctx) {
         AlterViewStatement result = new AlterViewStatement(getDatabaseType());
         result.setView((SimpleTableSegment) visit(ctx.viewName()));
+        if (null != ctx.columnNames()) {
+            CollectionValue<ColumnSegment> columns = (CollectionValue<ColumnSegment>) visit(ctx.columnNames());
+            for (ColumnSegment each : columns.getValue()) {
+                result.getColumns().add(new ViewColumnSegment(each.getStartIndex(), each.getStopIndex(), each, null));
+            }
+        }
+        if (null != ctx.viewColumnDefinitions()) {
+            CollectionValue<ViewColumnSegment> columns = (CollectionValue<ViewColumnSegment>) visit(ctx.viewColumnDefinitions());
+            result.getColumns().addAll(columns.getValue());
+        }
         result.setViewDefinition(getOriginalText(ctx.select()));
         result.setSelect((SelectStatement) visit(ctx.select()));
         return result;
@@ -246,12 +278,67 @@ public final class DorisDDLStatementVisitor extends DorisStatementVisitor implem
     
     @Override
     public ASTNode visitAlterDatabase(final AlterDatabaseContext ctx) {
-        return new AlterDatabaseStatement(getDatabaseType());
+        AlterDatabaseStatement result = new AlterDatabaseStatement(getDatabaseType());
+        if (null != ctx.databaseName()) {
+            result.setDatabaseName(new IdentifierValue(ctx.databaseName().getText()).getValue());
+        }
+        if (null != ctx.RENAME() && null != ctx.identifier()) {
+            result.setRenameDatabaseName(new IdentifierValue(ctx.identifier().getText()).getValue());
+        }
+        if (null != ctx.QUOTA() && null != ctx.NUMBER_()) {
+            if (null != ctx.DATA()) {
+                result.setQuotaType("DATA");
+            } else if (null != ctx.REPLICA()) {
+                result.setQuotaType("REPLICA");
+            } else if (null != ctx.TRANSACTION()) {
+                result.setQuotaType("TRANSACTION");
+            }
+            result.setQuotaValue(Long.parseLong(ctx.NUMBER_().getText()));
+        }
+        if (null != ctx.PROPERTIES() && null != ctx.properties()) {
+            PropertiesSegment propertiesSegment = new PropertiesSegment(ctx.properties().getStart().getStartIndex(), ctx.properties().getStop().getStopIndex());
+            for (int i = 0; i < ctx.properties().property().size(); i++) {
+                String key = getPropertyKey(ctx.properties().property(i));
+                String value = SQLUtils.getExactlyValue(ctx.properties().property(i).literals().getText());
+                PropertySegment propertySegment = new PropertySegment(ctx.properties().property(i).getStart().getStartIndex(), ctx.properties().property(i).getStop().getStopIndex(), key, value);
+                propertiesSegment.getProperties().add(propertySegment);
+            }
+            result.setProperties(propertiesSegment);
+        }
+        return result;
     }
     
     @Override
     public ASTNode visitDropDatabase(final DropDatabaseContext ctx) {
         return new DropDatabaseStatement(getDatabaseType(), new IdentifierValue(ctx.databaseName().getText()).getValue(), null != ctx.ifExists());
+    }
+    
+    @Override
+    public ASTNode visitAlterCatalog(final AlterCatalogContext ctx) {
+        AlterCatalogStatement result = new AlterCatalogStatement(getDatabaseType());
+        result.setCatalogName(new IdentifierValue(ctx.catalogName().getText()).getValue());
+        if (null != ctx.RENAME()) {
+            result.setNewCatalogName(new IdentifierValue(ctx.identifier().getText()).getValue());
+        }
+        if (null != ctx.PROPERTIES()) {
+            for (int i = 0; i < ctx.properties().property().size(); i++) {
+                String key = null != ctx.properties().property(i).SINGLE_QUOTED_TEXT()
+                        ? SQLUtils.getExactlyValue(ctx.properties().property(i).SINGLE_QUOTED_TEXT().getText())
+                        : SQLUtils.getExactlyValue(ctx.properties().property(i).identifier().getText());
+                String value = SQLUtils.getExactlyValue(ctx.properties().property(i).literals().getText());
+                result.getProperties().put(key, value);
+            }
+        }
+        if (null != ctx.COMMENT()) {
+            result.setComment(SQLUtils.getExactlyValue(ctx.string_().getText()));
+        }
+        return result;
+    }
+    
+    @Override
+    public ASTNode visitResumeJob(final ResumeJobContext ctx) {
+        String jobName = SQLUtils.getExactlyValue(ctx.stringLiterals().getText());
+        return new DorisResumeJobStatement(getDatabaseType(), jobName);
     }
     
     @SuppressWarnings("unchecked")
@@ -353,6 +440,10 @@ public final class DorisDDLStatementVisitor extends DorisStatementVisitor implem
             alterTableStatement.getRenameIndexDefinitions().add((RenameIndexDefinitionSegment) alterDefinitionSegment);
         } else if (alterDefinitionSegment instanceof RenameColumnSegment) {
             alterTableStatement.getRenameColumnDefinitions().add((RenameColumnSegment) alterDefinitionSegment);
+        } else if (alterDefinitionSegment instanceof RenameRollupDefinitionSegment) {
+            alterTableStatement.getRenameRollupDefinitions().add((RenameRollupDefinitionSegment) alterDefinitionSegment);
+        } else if (alterDefinitionSegment instanceof RenamePartitionDefinitionSegment) {
+            alterTableStatement.getRenamePartitionDefinitions().add((RenamePartitionDefinitionSegment) alterDefinitionSegment);
         } else if (alterDefinitionSegment instanceof AlgorithmTypeSegment) {
             alterTableStatement.setAlgorithmSegment((AlgorithmTypeSegment) alterDefinitionSegment);
         } else if (alterDefinitionSegment instanceof LockTableSegment) {
@@ -434,6 +525,12 @@ public final class DorisDDLStatementVisitor extends DorisStatementVisitor implem
         }
         if (alterListItemContext instanceof RenameIndexContext) {
             return Optional.of((RenameIndexDefinitionSegment) visit(alterListItemContext));
+        }
+        if (alterListItemContext instanceof RenameRollupContext) {
+            return Optional.of((RenameRollupDefinitionSegment) visit(alterListItemContext));
+        }
+        if (alterListItemContext instanceof RenamePartitionContext) {
+            return Optional.of((RenamePartitionDefinitionSegment) visit(alterListItemContext));
         }
         return Optional.empty();
     }
@@ -684,9 +781,22 @@ public final class DorisDDLStatementVisitor extends DorisStatementVisitor implem
     public ASTNode visitCreateIndex(final CreateIndexContext ctx) {
         CreateIndexStatement result = new CreateIndexStatement(getDatabaseType());
         result.setTable((SimpleTableSegment) visit(ctx.tableName()));
+        result.setIfNotExists(null != ctx.ifNotExists());
         IndexNameSegment indexName = new IndexNameSegment(ctx.indexName().start.getStartIndex(), ctx.indexName().stop.getStopIndex(), new IdentifierValue(ctx.indexName().getText()));
         result.setIndex(new IndexSegment(ctx.indexName().start.getStartIndex(), ctx.indexName().stop.getStopIndex(), indexName));
         result.getColumns().addAll(((CollectionValue) visit(ctx.keyListWithExpression())).getValue());
+        if (null != ctx.dorisIndexTypeClause()) {
+            result.setIndexType(ctx.dorisIndexTypeClause().getStop().getText());
+        }
+        if (null != ctx.propertiesClause()) {
+            result.setProperties(extractPropertiesSegment(ctx.propertiesClause()));
+        }
+        if (null != ctx.commentClause() && null != ctx.commentClause().literals()) {
+            String commentText = SQLUtils.getExactlyValue(ctx.commentClause().literals().getText());
+            result.setComment(commentText);
+            CommentSegment commentSegment = new CommentSegment(commentText, ctx.commentClause().literals().getStart().getStartIndex(), ctx.commentClause().literals().getStop().getStopIndex());
+            result.getComments().add(commentSegment);
+        }
         if (null != ctx.algorithmOptionAndLockOption()) {
             if (null != ctx.algorithmOptionAndLockOption().alterAlgorithmOption()) {
                 result.setAlgorithmType((AlgorithmTypeSegment) visit(ctx.algorithmOptionAndLockOption().alterAlgorithmOption()));
@@ -720,6 +830,47 @@ public final class DorisDDLStatementVisitor extends DorisStatementVisitor implem
         IndexSegment indexNameSegment = (IndexSegment) visitIndexName(ctx.indexName(0));
         IndexSegment renameIndexName = (IndexSegment) visitIndexName(ctx.indexName(1));
         return new RenameIndexDefinitionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), indexNameSegment, renameIndexName);
+    }
+    
+    @Override
+    public ASTNode visitRenameRollup(final RenameRollupContext ctx) {
+        RollupSegment oldRollupSegment = new RollupSegment(ctx.oldRollupName.getStart().getStartIndex(), ctx.oldRollupName.getStop().getStopIndex(),
+                (IdentifierValue) visit(ctx.oldRollupName));
+        RollupSegment newRollupSegment = new RollupSegment(ctx.newRollupName.getStart().getStartIndex(), ctx.newRollupName.getStop().getStopIndex(),
+                (IdentifierValue) visit(ctx.newRollupName));
+        return new RenameRollupDefinitionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), oldRollupSegment, newRollupSegment);
+    }
+    
+    @Override
+    public ASTNode visitRenamePartition(final RenamePartitionContext ctx) {
+        PartitionSegment oldPartitionSegment = new PartitionSegment(ctx.oldPartitionName.getStart().getStartIndex(), ctx.oldPartitionName.getStop().getStopIndex(),
+                (IdentifierValue) visit(ctx.oldPartitionName));
+        PartitionSegment newPartitionSegment = new PartitionSegment(ctx.newPartitionName.getStart().getStartIndex(), ctx.newPartitionName.getStop().getStopIndex(),
+                (IdentifierValue) visit(ctx.newPartitionName));
+        return new RenamePartitionDefinitionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), oldPartitionSegment, newPartitionSegment);
+    }
+    
+    @Override
+    public ASTNode visitAlterStoragePolicy(final AlterStoragePolicyContext ctx) {
+        IdentifierValue identifier = (IdentifierValue) visit(ctx.identifier());
+        PolicyNameSegment policyNameSegment = new PolicyNameSegment(ctx.identifier().getStart().getStartIndex(), ctx.identifier().getStop().getStopIndex(), identifier);
+        PropertiesSegment propertiesSegment = extractPropertiesSegment(ctx.propertiesClause());
+        return new DorisAlterStoragePolicyStatement(getDatabaseType(), policyNameSegment, propertiesSegment);
+    }
+    
+    private PropertiesSegment extractPropertiesSegment(final PropertiesClauseContext ctx) {
+        PropertiesSegment result = new PropertiesSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex());
+        for (PropertyContext each : ctx.properties().property()) {
+            String key = getPropertyKey(each);
+            String value = getPropertyValue(each);
+            PropertySegment propertySegment = new PropertySegment(each.getStart().getStartIndex(), each.getStop().getStopIndex(), key, value);
+            result.getProperties().add(propertySegment);
+        }
+        return result;
+    }
+    
+    private String getPropertyValue(final PropertyContext ctx) {
+        return SQLUtils.getExactlyValue(ctx.literals().getText());
     }
     
     @Override
@@ -763,10 +914,81 @@ public final class DorisDDLStatementVisitor extends DorisStatementVisitor implem
     
     @Override
     public ASTNode visitCreateFunction(final CreateFunctionContext ctx) {
-        CreateFunctionStatement result = new CreateFunctionStatement(getDatabaseType());
+        DorisCreateFunctionStatement result = new DorisCreateFunctionStatement(getDatabaseType());
         result.setFunctionName((FunctionNameSegment) visit(ctx.functionName()));
-        result.setRoutineBody((RoutineBodySegment) visit(ctx.routineBody()));
+        if (null != ctx.routineBody()) {
+            int paramIndex = 0;
+            for (int i = 0; i < ctx.dataType().size(); i++) {
+                DataTypeSegment dataType = (DataTypeSegment) visit(ctx.dataType(i));
+                if (i == ctx.dataType().size() - 1 && null != ctx.RETURNS()) {
+                    result.setReturnType(dataType);
+                } else if (paramIndex < ctx.identifier().size()) {
+                    IdentifierValue paramName = (IdentifierValue) visit(ctx.identifier(paramIndex));
+                    result.getNamedParameters().put(paramName, dataType);
+                    paramIndex++;
+                }
+            }
+            result.setRoutineBody((RoutineBodySegment) visit(ctx.routineBody()));
+        } else {
+            if (null != ctx.GLOBAL()) {
+                result.setGlobal(true);
+            }
+            if (null != ctx.AGGREGATE()) {
+                result.setFunctionType(DorisCreateFunctionStatement.FunctionType.AGGREGATE);
+            } else if (null != ctx.TABLES()) {
+                result.setFunctionType(DorisCreateFunctionStatement.FunctionType.TABLES);
+            } else if (null != ctx.ALIAS()) {
+                result.setFunctionType(DorisCreateFunctionStatement.FunctionType.ALIAS);
+            }
+            int dataTypeCount = ctx.dataType().size();
+            int parameterCount = dataTypeCount;
+            if (null != ctx.INTERMEDIATE()) {
+                parameterCount--;
+            }
+            if (null != ctx.RETURNS()) {
+                parameterCount--;
+            }
+            for (int i = 0; i < parameterCount; i++) {
+                result.getParameterDataTypes().add((DataTypeSegment) visit(ctx.dataType(i)));
+            }
+            if (null != ctx.RETURNS()) {
+                result.setReturnType((DataTypeSegment) visit(ctx.dataType(parameterCount)));
+            }
+            if (null != ctx.INTERMEDIATE()) {
+                int intermediateTypeIndex = dataTypeCount - 1;
+                result.setIntermediateType((DataTypeSegment) visit(ctx.dataType(intermediateTypeIndex)));
+            }
+            if (null != ctx.PARAMETER()) {
+                for (int i = 0; i < ctx.identifier().size(); i++) {
+                    result.getWithParameters().add((IdentifierValue) visit(ctx.identifier(i)));
+                }
+            }
+            if (null != ctx.expr()) {
+                result.setAliasExpression((ExpressionSegment) visit(ctx.expr()));
+            }
+            if (null != ctx.PROPERTIES()) {
+                fillCreateFunctionProperties(ctx, result);
+            }
+        }
         return result;
+    }
+    
+    private void fillCreateFunctionProperties(final CreateFunctionContext ctx, final DorisCreateFunctionStatement statement) {
+        for (int i = 0; i < ctx.properties().property().size(); i++) {
+            String key = getPropertyKey(ctx.properties().property(i));
+            String value = SQLUtils.getExactlyValue(ctx.properties().property(i).literals().getText());
+            statement.getProperties().put(key, value);
+        }
+    }
+    
+    private String getPropertyKey(final PropertyContext property) {
+        if (null != property.SINGLE_QUOTED_TEXT()) {
+            return SQLUtils.getExactlyValue(property.SINGLE_QUOTED_TEXT().getText());
+        }
+        if (null != property.DOUBLE_QUOTED_TEXT()) {
+            return SQLUtils.getExactlyValue(property.DOUBLE_QUOTED_TEXT().getText());
+        }
+        return SQLUtils.getExactlyValue(property.identifier().getText());
     }
     
     @SuppressWarnings("unchecked")
@@ -1038,6 +1260,11 @@ public final class DorisDDLStatementVisitor extends DorisStatementVisitor implem
     @Override
     public ASTNode visitCreateMaterializedView(final CreateMaterializedViewContext ctx) {
         return new CreateMaterializedViewStatement(getDatabaseType());
+    }
+    
+    @Override
+    public ASTNode visitCreateEncryptKey(final CreateEncryptKeyContext ctx) {
+        return new CreateEncryptKeyStatement(getDatabaseType());
     }
     
     @Override

@@ -46,8 +46,8 @@ import java.util.stream.Collectors;
 /**
  * No resource show executor.
  */
-@Getter
 @RequiredArgsConstructor
+@Getter
 public final class NoResourceShowExecutor implements DatabaseAdminQueryExecutor {
     
     private MergedResult mergedResult;

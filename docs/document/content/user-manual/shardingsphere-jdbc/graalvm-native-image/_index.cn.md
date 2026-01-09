@@ -52,7 +52,7 @@ java.beans.Introspector was unintentionally initialized at build time. To see wh
             <plugin>
                 <groupId>org.graalvm.buildtools</groupId>
                 <artifactId>native-maven-plugin</artifactId>
-                <version>0.11.0</version>
+                <version>0.11.3</version>
                 <extensions>true</extensions>
                 <configuration>
                     <buildArgs>
@@ -92,12 +92,12 @@ java.beans.Introspector was unintentionally initialized at build time. To see wh
 
 ```groovy
 plugins {
-   id 'org.graalvm.buildtools.native' version '0.11.0'
+   id 'org.graalvm.buildtools.native' version '0.11.3'
 }
 
 dependencies {
    implementation 'org.apache.shardingsphere:shardingsphere-jdbc:${shardingsphere.version}'
-   implementation(group: 'org.graalvm.buildtools', name: 'graalvm-reachability-metadata', version: '0.11.0', classifier: 'repository', ext: 'zip')
+   implementation(group: 'org.graalvm.buildtools', name: 'graalvm-reachability-metadata', version: '0.11.3', classifier: 'repository', ext: 'zip')
 }
 
 graalvmNative {
@@ -280,42 +280,13 @@ Caused by: java.io.UnsupportedEncodingException: Codepage Cp1252 is not supporte
 }
 ```
 
-6. 当需要通过 ShardingSphere JDBC 使用 ClickHouse 方言时，
-用户需要手动引入相关的可选模块和 classifier 为 `http` 的 ClickHouse JDBC 驱动。
-原则上，ShardingSphere 的 GraalVM Native Image 集成不希望使用 classifier 为 `all` 的 `com.clickhouse:clickhouse-jdbc`，
-因为 Uber Jar 会导致采集重复的 GraalVM Reachability Metadata。
-可能的配置例子如下，
-
-```xml
-<project>
-    <dependencies>
-      <dependency>
-         <groupId>org.apache.shardingsphere</groupId>
-         <artifactId>shardingsphere-jdbc</artifactId>
-         <version>${shardingsphere.version}</version>
-      </dependency>
-       <dependency>
-          <groupId>org.apache.shardingsphere</groupId>
-          <artifactId>shardingsphere-jdbc-dialect-clickhouse</artifactId>
-          <version>${shardingsphere.version}</version>
-      </dependency>
-       <dependency>
-          <groupId>com.clickhouse</groupId>
-          <artifactId>clickhouse-jdbc</artifactId>
-          <version>0.6.3</version>
-          <classifier>http</classifier>
-       </dependency>
-    </dependencies>
-</project>
-```
-
-7. ShardingSphere 的单元测试仅使用 Maven 模块 `io.github.linghengqian:hive-server2-jdbc-driver-thin` 来在 GraalVM Native Image 下验证 HiveServer2 集成的可用性。
+6. ShardingSphere 的单元测试仅使用 Maven 模块 `io.github.linghengqian:hive-server2-jdbc-driver-thin` 来在 GraalVM Native Image 下验证 HiveServer2 集成的可用性。
 如果开发者直接使用 `org.apache.hive:hive-jdbc`，则应自行处理依赖冲突和提供额外的 GraalVM Reachability Metadata 。
 
-8. 由于 https://github.com/oracle/graal/issues/7979 的影响，
+7. 由于 https://github.com/oracle/graal/issues/7979 的影响，
 对应 `com.oracle.database.jdbc:ojdbc8` Maven 模块的 Oracle JDBC Driver 无法在 GraalVM Native Image 下使用。
 
-9. 包括但不限于来自第三方依赖的 `com.mysql.cj.LocalizedErrorMessages`,
+8. 包括但不限于来自第三方依赖的 `com.mysql.cj.LocalizedErrorMessages`,
    `com.microsoft.sqlserver.jdbc.SQLServerResource`,
    `org.postgresql.translation.messages`,
    `org.opengauss.translation.messages` 等 `Resource Bundles` 在默认情况下会根据系统的默认语言环境加载 L10N 资源，
@@ -340,6 +311,12 @@ without it being registered as reachable. Add it to the resource metadata to sol
   com.mysql.cj.jdbc.NonRegisteringDriver.connect(NonRegisteringDriver.java:186)
 ```
 
-10. 受 `apache/calcite` 使用的 `janino-compiler/janino` 的影响，
+9. 受 `apache/calcite` 使用的 `janino-compiler/janino` 的影响，
     ShardingSphere 的 `SQL Federation` 功能在 GraalVM Native Image 下不可用。
     这同样导致 ShardingSphere Proxy Native 无法使用 OpenGauss 集成。
+
+10. 受 https://github.com/oracle/graal/issues/11280 影响，
+    Etcd 的 Cluster 模式集成无法在通过 Windows 11 编译的 GraalVM Native Image 下使用，
+    且 Etcd 的 Cluster 模式会与 GraalVM Tracing Agent 产生冲突。
+    若开发者需要在通过 Linux 编译的 GraalVM Native Image 下使用 Etcd 的 Cluster 模式，
+    需要自行提供额外的 GraalVM Reachability Metadata 相关的 JSON。

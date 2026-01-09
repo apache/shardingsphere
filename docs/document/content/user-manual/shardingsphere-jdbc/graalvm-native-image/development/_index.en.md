@@ -54,27 +54,37 @@ sudo apt-get install build-essential zlib1g-dev -y
 ```
 
 Developer can install Docker Engine in rootful mode by running the following command in bash. 
-This article does not discuss changing the default logging driver in `/etc/docker/daemon.json`.
 
 ```shell
-sudo apt update && sudo apt upgrade -y
-sudo apt-get remove docker.io docker-doc docker-compose docker-compose-v2 podman-docker containerd runc
-cd /tmp/
-sudo apt-get install ca-certificates curl
+sudo apt update && sudo apt upgrade --assume-yes
+sudo apt-get remove docker.io docker-compose docker-compose-v2 docker-doc podman-docker containerd runc
+sudo apt install ca-certificates curl --assume-yes
 sudo install -m 0755 -d /etc/apt/keyrings
 sudo curl -fsSL https://download.docker.com/linux/ubuntu/gpg -o /etc/apt/keyrings/docker.asc
 sudo chmod a+r /etc/apt/keyrings/docker.asc
 
-echo \
-  "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/ubuntu \
-  $(. /etc/os-release && echo "$VERSION_CODENAME") stable" | \
-  sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+sudo tee /etc/apt/sources.list.d/docker.sources <<EOF
+Types: deb
+URIs: https://download.docker.com/linux/ubuntu
+Suites: $(. /etc/os-release && echo "${UBUNTU_CODENAME:-$VERSION_CODENAME}")
+Components: stable
+Signed-By: /etc/apt/keyrings/docker.asc
+EOF
 
 sudo apt-get update
-sudo apt-get install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin -y
+sudo apt-get install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin --assume-yes
 sudo groupadd docker
 sudo usermod -aG docker $USER
 newgrp docker
+
+sudo tee /etc/docker/daemon.json <<EOF
+{
+  "log-driver": "local",
+  "min-api-version": "1.24"
+}
+EOF
+
+sudo systemctl restart docker.service
 ```
 
 ### Windows
@@ -84,7 +94,7 @@ It is assumed that the developer is on a fresh Windows 11 Home 24H2 instance wit
 GraalVM CE can be installed using `version-fox/vfox` in Powershell 7 using the following command.
 
 ```shell
-winget install version-fox.vfox
+winget install --id version-fox.vfox --source winget --exact
 if (-not (Test-Path -Path $PROFILE)) { New-Item -Type File -Path $PROFILE -Force }; Add-Content -Path $PROFILE -Value 'Invoke-Expression "$(vfox activate pwsh)"'
 # At this time, developer need to open a new Powershell 7 terminal
 vfox add java
@@ -100,7 +110,7 @@ Developer can install the local toolchain required to compile GraalVM Native Ima
 **In certain cases, developer may need to purchase a license for the use of Visual Studio.**
 
 ```shell
-winget install --id Microsoft.VisualStudio.2022.Community
+winget install --id Microsoft.VisualStudio.2022.Community --source winget --exact
 ```
 
 Open `Visual Studio Installer` to modify `Workloads` of `Visual Studio Community 2022`, 
@@ -112,9 +122,26 @@ Developer can enable WSL2 and set `Ubuntu WSL` as the default Linux distribution
 wsl --install
 ```
 
-After enabling WSL2, 
-download and install `rancher-sandbox/rancher-desktop` from https://rancherdesktop.io/ and set up `Container Engine` using `dockerd(moby)`.
-This article does not discuss changing the default logging driver in `/etc/docker/daemon.json` of the Linux distribution `rancher-desktop`.
+After enabling WSL2, download and install `rancher-sandbox/rancher-desktop` using the following PowerShell 7 command,
+and configure it to use the `dockerd(moby)` `Container Engine`.
+
+```shell
+winget install --id SUSE.RancherDesktop --source winget --skip-dependencies
+# Open a new PowerShell 7 terminal
+rdctl start --application.start-in-background --container-engine.name=moby --kubernetes.enabled=false
+
+@'
+{
+  "features": {
+    "containerd-snapshotter": true
+  },
+  "log-driver": "local"
+}
+'@ | rdctl shell sudo tee /etc/docker/daemon.json
+
+rdctl shutdown
+rdctl start --application.start-in-background --container-engine.name=moby --kubernetes.enabled=false
+```
 
 ### Windows Server
 
@@ -126,12 +153,25 @@ they will need to uninstall Docker Engine using the script provided by Microsoft
 You can execute the following command in PowerShell 7:
 
 ```shell
-iwr -Uri "https://raw.githubusercontent.com/microsoft/Windows-Containers/refs/heads/Main/helpful_tools/Install-DockerCE/uninstall-docker-ce.ps1" -OutFile uninstall-docker-ce.ps1
-.\uninstall-docker-ce.ps1 -Force
-ri .\uninstall-docker-ce.ps1
+iex "& { $(irm https://raw.githubusercontent.com/microsoft/Windows-Containers/refs/heads/Main/helpful_tools/Install-DockerCE/uninstall-docker-ce.ps1) } -Force"
+winget install --id SUSE.RancherDesktop --source winget --skip-dependencies
+# Open a new PowerShell 7 terminal
+rdctl start --application.start-in-background --container-engine.name=moby --kubernetes.enabled=false
+
+@'
+{
+  "features": {
+    "containerd-snapshotter": true
+  },
+  "log-driver": "local"
+}
+'@ | rdctl shell sudo tee /etc/docker/daemon.json
+
+rdctl shutdown
+rdctl start --application.start-in-background --container-engine.name=moby --kubernetes.enabled=false
 ```
 
-This type of operation is commonly found in the GitHub Actions Runner for `windows-2025`.
+This type of operation is commonly found in the GitHub Actions Runner for `windows-latest`.
 
 ## Handling unit tests
 
@@ -184,7 +224,7 @@ and modified JSON entries should be located in the `META-INF/native-image/org.ap
 while the entries in `META-INF/native-image/org.apache.shardingsphere/generated-reachability-metadata/` should only be generated by the Maven Profile of `generateMetadata`.
 
 For GraalVM Reachability Metadata used independently by test classes and test files,
-developer should place it in the classpath of the `shardingsphere-test-native` submodule under `META-INF/native-image/shardingsphere-test-native-test-metadata/`.
+developer should place it in the classpath of the `shardingsphere-test-native` submodule under `META-INF/native-image/shardingsphere-test-native/`.
 
 ## Known limitations
 
@@ -277,9 +317,6 @@ class SolutionTest {
 ```
 
 ### Known issues with unit testing
-
-Affected by https://github.com/apache/shardingsphere/issues/35052 , 
-the unit test of `org.apache.shardingsphere.test.natived.jdbc.modes.cluster.EtcdTest` cannot be run under GraalVM Native Image compiled by `Windows 11 Home 24H2`.
 
 Due to https://github.com/apache/incubator-seata/issues/7523 , 
 `org.apache.shardingsphere.test.natived.proxy.transactions.base.SeataTest` has been disabled.

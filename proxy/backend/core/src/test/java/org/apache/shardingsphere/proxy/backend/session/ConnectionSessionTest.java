@@ -19,11 +19,13 @@ package org.apache.shardingsphere.proxy.backend.session;
 
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
+import org.apache.shardingsphere.infra.session.connection.ConnectionContext;
 import org.apache.shardingsphere.infra.session.query.QueryContext;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.proxy.backend.connector.ProxyDatabaseConnectionManager;
 import org.apache.shardingsphere.proxy.backend.connector.jdbc.transaction.ProxyBackendTransactionManager;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
+import org.apache.shardingsphere.sql.parser.statement.core.enums.TransactionIsolationLevel;
 import org.apache.shardingsphere.test.infra.framework.extension.mock.AutoMockExtension;
 import org.apache.shardingsphere.test.infra.framework.extension.mock.StaticMockSettings;
 import org.apache.shardingsphere.transaction.api.TransactionType;
@@ -32,10 +34,10 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoSettings;
-import org.mockito.quality.Strictness;
+import org.mockito.internal.configuration.plugins.Plugins;
 
 import java.util.Collections;
+import java.util.concurrent.atomic.AtomicReference;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -44,12 +46,15 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
+import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(AutoMockExtension.class)
 @StaticMockSettings(ProxyContext.class)
-@MockitoSettings(strictness = Strictness.LENIENT)
 class ConnectionSessionTest {
     
     @Mock
@@ -61,12 +66,57 @@ class ConnectionSessionTest {
     void setup() {
         connectionSession = new ConnectionSession(mock(), null);
         connectionSession.setGrantee(mock(Grantee.class));
-        when(databaseConnectionManager.getConnectionSession()).thenReturn(connectionSession);
+        lenient().when(databaseConnectionManager.getConnectionSession()).thenReturn(connectionSession);
     }
     
     @Test
     void assertSetCurrentSchema() {
         connectionSession.setCurrentDatabaseName("currentDatabase");
+        assertThat(connectionSession.getUsedDatabaseName(), is("currentDatabase"));
+    }
+    
+    @Test
+    void assertSetCurrentSchemaWithSameName() throws ReflectiveOperationException {
+        ConnectionContext contextMock = mock(ConnectionContext.class);
+        getConnectionContextReference().set(contextMock);
+        connectionSession.setCurrentDatabaseName("db");
+        verify(contextMock, times(1)).setCurrentDatabaseName("db");
+    }
+    
+    @Test
+    void assertSetCurrentSchemaWithSameNameDoNothing() throws ReflectiveOperationException {
+        connectionSession.setCurrentDatabaseName("db");
+        ConnectionContext contextMock = mock(ConnectionContext.class);
+        getConnectionContextReference().set(contextMock);
+        connectionSession.setCurrentDatabaseName("db");
+        verify(contextMock, never()).setCurrentDatabaseName("db");
+    }
+    
+    @Test
+    void assertSetCurrentSchemaWithNull() throws ReflectiveOperationException {
+        connectionSession.setCurrentDatabaseName("db");
+        ConnectionContext contextMock = mock(ConnectionContext.class);
+        getConnectionContextReference().set(contextMock);
+        connectionSession.setCurrentDatabaseName(null);
+        assertNull(connectionSession.getCurrentDatabaseName());
+        verify(contextMock).setCurrentDatabaseName(null);
+    }
+    
+    @Test
+    void assertGetUsedDatabaseNameFromQueryContext() {
+        connectionSession.setCurrentDatabaseName("currentDatabase");
+        QueryContext queryContext = mock(QueryContext.class);
+        when(queryContext.getUsedDatabaseNames()).thenReturn(Collections.singleton("used_db"));
+        connectionSession.setQueryContext(queryContext);
+        assertThat(connectionSession.getUsedDatabaseName(), is("used_db"));
+    }
+    
+    @Test
+    void assertGetUsedDatabaseNameWhenQueryContextEmpty() {
+        connectionSession.setCurrentDatabaseName("currentDatabase");
+        QueryContext queryContext = mock(QueryContext.class);
+        when(queryContext.getUsedDatabaseNames()).thenReturn(Collections.emptySet());
+        connectionSession.setQueryContext(queryContext);
         assertThat(connectionSession.getUsedDatabaseName(), is("currentDatabase"));
     }
     
@@ -89,14 +139,21 @@ class ConnectionSessionTest {
     }
     
     @Test
-    void assertDefaultAutocommit() {
+    void assertDefaultAutoCommit() {
         assertTrue(connectionSession.isAutoCommit());
     }
     
     @Test
-    void assertSetAutocommit() {
+    void assertSetAutoCommit() {
         connectionSession.setAutoCommit(false);
         assertFalse(connectionSession.isAutoCommit());
+    }
+    
+    @Test
+    void assertGetIsolationLevel() {
+        connectionSession.setIsolationLevel(TransactionIsolationLevel.READ_COMMITTED);
+        assertTrue(connectionSession.getIsolationLevel().isPresent());
+        assertThat(connectionSession.getIsolationLevel().get(), is(TransactionIsolationLevel.READ_COMMITTED));
     }
     
     @Test
@@ -105,5 +162,10 @@ class ConnectionSessionTest {
         assertNotNull(connectionSession.getQueryContext());
         connectionSession.clearQueryContext();
         assertNull(connectionSession.getQueryContext());
+    }
+    
+    @SuppressWarnings("unchecked")
+    private AtomicReference<ConnectionContext> getConnectionContextReference() throws ReflectiveOperationException {
+        return (AtomicReference<ConnectionContext>) Plugins.getMemberAccessor().get(ConnectionSession.class.getDeclaredField("connectionContext"), connectionSession);
     }
 }

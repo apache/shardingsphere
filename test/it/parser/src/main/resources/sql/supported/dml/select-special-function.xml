@@ -19,28 +19,28 @@
 <sql-cases>
     <sql-case id="select_group_concat_with_order_by" value="SELECT GROUP_CONCAT(status ORDER BY status) FROM t_order" db-types="MySQL,Doris" />
     <sql-case id="select_group_concat_with_order_by_for_opengauss" value="SELECT GROUP_CONCAT(status ORDER BY status) FROM t_order" db-types="openGauss" />
-    <sql-case id="select_window_function" value="SELECT order_id, ROW_NUMBER() OVER() FROM t_order" db-types="MySQL" />
+    <sql-case id="select_window_function" value="SELECT order_id, ROW_NUMBER() OVER() FROM t_order" db-types="MySQL,Presto" />
     <sql-case id="select_cast_function" value="SELECT CAST('1' AS UNSIGNED)" db-types="MySQL" />
     <sql-case id="select_cast_as_year" value="SELECT CAST(-1.1 AS YEAR)" db-types="MySQL" />
     <sql-case id="select_cast" value="SELECT CAST(c AT TIME ZONE 'UTC' AS DATETIME)" db-types="MySQL" />
     <sql-case id="select_cast_multiset" value="select CAST(MULTISET(SELECT cust_address FROM customers c WHERE c.customer_id = cd.customer_id) as cust_address_tab_typ) from customer;" db-types="Oracle" />
     <sql-case id="select_convert_function" value="SELECT CONVERT('2020-10-01', DATE)" db-types="MySQL" />
-    <sql-case id="select_position" value="SELECT POSITION('bar' IN 'foobarbar')" db-types="MySQL" />
+    <sql-case id="select_position" value="SELECT POSITION('bar' IN 'foobarbar')" db-types="MySQL,Doris" />
     <sql-case id="select_substring" value="SELECT SUBSTRING('foobarbar' from -4 for 2)" db-types="MySQL" />
-    <sql-case id="select_substr" value="SELECT SUBSTR('foobarbar' from 4)" db-types="MySQL" />
+    <sql-case id="select_substr" value="SELECT SUBSTR('foobarbar' from 4)" db-types="MySQL,Presto" />
     <sql-case id="select_extract" value="SELECT EXTRACT(YEAR FROM '2019-07-02')" db-types="MySQL" />
-    <sql-case id="select_extract_from_column" value="SELECT EXTRACT(YEAR FROM o.creation_date) FROM t_order o" db-types="MySQL,Presto" />
-    <sql-case id="select_char" value="SELECT CHAR(77,121,83,81,'76')" db-types="MySQL" />
+    <sql-case id="select_extract_from_column" value="SELECT EXTRACT(YEAR FROM o.creation_date) FROM t_order o" db-types="MySQL" />
+    <sql-case id="select_char" value="SELECT CHAR(77,121,83,81,'76')" db-types="MySQL,Doris" />
     <sql-case id="select_chr_using_nchar_cs" value="SELECT CHR (196 USING NCHAR_CS) FROM DUAL;" db-types="Oracle" />
-    <sql-case id="select_trim" value="SELECT TRIM('  bar   ')" db-types="MySQL" />
-    <sql-case id="select_trim_with_both" value="SELECT TRIM(BOTH ' ' from ' bar ')" db-types="MySQL" />
+    <sql-case id="select_trim" value="SELECT TRIM('  bar   ')" db-types="MySQL,Doris" />
+    <sql-case id="select_trim_with_both" value="SELECT TRIM(BOTH ' ' from ' bar ')" db-types="MySQL,Doris" />
     <sql-case id="select_with_trim_expr" value="SELECT TRIM('#' FROM `name`) FROM t_order" db-types="MySQL" />
     <sql-case id="select_with_trim_expr_and_both" value="SELECT TRIM(BOTH '#' FROM `name`) FROM `t_order`" db-types="MySQL" />
     <sql-case id="select_with_trim_expr_from_expr" value="SELECT TRIM(remove_name FROM name) FROM t_order" db-types="MySQL" />
     <sql-case id="select_with_trim_expr_from_expr_and_both" value="SELECT TRIM(BOTH `remove_name` FROM `name`) FROM `t_order`" db-types="MySQL" />
-    <sql-case id="select_weight_string" value="SELECT WEIGHT_STRING('bar')" db-types="MySQL" />
-    <sql-case id="select_values" value="SELECT VALUES(order_id) FROM t_order" db-types="MySQL" />
-    <sql-case id="select_current_user_brackets" value="SELECT CURRENT_USER()" db-types="MySQL" />
+    <sql-case id="select_weight_string" value="SELECT WEIGHT_STRING('bar')" db-types="MySQL,Doris" />
+    <sql-case id="select_values" value="SELECT VALUES(order_id) FROM t_order" db-types="MySQL,Presto,Doris" />
+    <sql-case id="select_current_user_brackets" value="SELECT CURRENT_USER()" db-types="MySQL,Doris" />
     <sql-case id="select_extract_function" value="SELECT EXTRACT(YEAR FROM TIMESTAMP '2001-02-16 20:38:40')" db-types="PostgreSQL,openGauss" />
     <sql-case id="select_extract_function_week" value="SELECT EXTRACT(WEEK FROM TIMESTAMP '2001-02-16 20:38:40')" db-types="PostgreSQL,openGauss" />
     <sql-case id="select_extract_function_quarter" value="SELECT EXTRACT(QUARTER FROM TIMESTAMP '2001-02-16 20:38:40')" db-types="PostgreSQL,openGauss" />
@@ -102,10 +102,10 @@
     <sql-case id="select_with_week_function" value="SELECT WEEK('2018-02-20',1);" db-types="MySQL"/>
     <sql-case id="select_with_weekday_function" value="SELECT WEEKDAY('2017-02-03 22:23:00');" db-types="MySQL"/>
     <sql-case id="select_with_weekofyear_function" value="SELECT WEEKOFYEAR('2019-02-20');" db-types="MySQL"/>
-    <sql-case id="select_with_xor_function" value="SELECT 1 XOR NULL;" db-types="MySQL"/>
+    <sql-case id="select_with_xor_function" value="SELECT 1 XOR NULL;" db-types="MySQL,Doris"/>
     <sql-case id="select_with_year_function" value="SELECT YEAR('1999-09-09');" db-types="MySQL"/>
     <sql-case id="select_with_yearweek_function" value="SELECT YEARWEEK('1988-08-08');" db-types="MySQL"/>
-    <sql-case id="select_with_weight_string_function" value="SELECT HEX(WEIGHT_STRING('MySQL'));" db-types="MySQL"/>
+    <sql-case id="select_with_weight_string_function" value="SELECT HEX(WEIGHT_STRING('MySQL'));" db-types="MySQL,Doris"/>
     <sql-case id="select_row_number" value="SELECT ROW_NUMBER() OVER w FROM t_order" db-types="MySQL" />
     <sql-case id="select_rpad" value="SELECT RPAD('Hello', 10, '*')" db-types="MySQL" />
     <sql-case id="select_rtrim" value="SELECT RTRIM('  Hello  ')" db-types="MySQL" />
@@ -136,7 +136,7 @@
     <sql-case id="select_window_with_cume_dist_function" value="SELECT val, CUME_DIST() OVER() FROM numbers" db-types="MySQL" />
     <sql-case id="select_curdate_function" value="SELECT CURDATE()" db-types="MySQL" />
     <sql-case id="select_current_date_function" value="SELECT CURRENT_DATE()" db-types="MySQL" />
-    <sql-case id="select_current_time_function" value="SELECT CURRENT_TIME()" db-types="MySQL" />
+    <sql-case id="select_current_time_function" value="SELECT CURRENT_TIME()" db-types="MySQL,Presto" />
     <sql-case id="select_current_timestamp_function" value="SELECT CURRENT_TIMESTAMP()" db-types="MySQL" />
     <sql-case id="select_curtime_function" value="SELECT CURTIME()" db-types="MySQL" />
     <sql-case id="select_date_function" value="SELECT DATE('2003-12-31 01:02:03')" db-types="MySQL" />
@@ -165,6 +165,7 @@
     <sql-case id="select_json_parse" value="SELECT JSON_PARSE('{&quot;k1&quot;:&quot;v31&quot;,&quot;k2&quot;:300}')" db-types="Doris" />
     <sql-case id="select_json_parse_error_to_null" value="SELECT JSON_PARSE('invalid json')" db-types="Doris" />
     <sql-case id="select_json_parse_error_to_value" value="SELECT JSON_PARSE('invalid json', '{}')" db-types="Doris" />
+    <sql-case id="select_json_separator_doris" value="SELECT JSON_SEPARATOR(order_id, '$.a') FROM t_order" db-types="Doris" />
     <sql-case id="select_std" value="SELECT STD(1)" db-types="MySQL" />
     <sql-case id="select_stddev" value="SELECT STDDEV(1)" db-types="MySQL" />
     <sql-case id="select_stddev_pop" value="SELECT STDDEV_POP(1)" db-types="MySQL" />
@@ -212,13 +213,14 @@
     <sql-case id="select_round" value="SELECT ROUND(1.58)" db-types="MySQL" />
     <sql-case id="select_row_count" value="SELECT ROW_COUNT()" db-types="MySQL" />
     <sql-case id="select_md5" value="SELECT MD5('testing')" db-types="MySQL,Doris" />
-    <sql-case id="select_member_of" value="SELECT 'ab' MEMBER OF('[23, &quot;abc&quot;, 17, &quot;ab&quot;, 10]')" db-types="MySQL" />
+    <sql-case id="select_member_of" value="SELECT 'ab' MEMBER OF('[23, &quot;abc&quot;, 17, &quot;ab&quot;, 10]')" db-types="MySQL,Doris" />
     <sql-case id="select_microsecond" value="SELECT MICROSECOND('12:00:00.123456')" db-types="MySQL" />
     <sql-case id="select_mid" value="SELECT MID('foobarbar' from 4)" db-types="MySQL" />
     <sql-case id="select_minute" value="SELECT MINUTE('2008-02-03 10:05:03')" db-types="MySQL,Doris" />
     <sql-case id="select_mod" value="SELECT MOD(234, 10)" db-types="MySQL,Doris" />
     <sql-case id="select_month" value="SELECT MONTH('2008-02-03')" db-types="MySQL,Doris" />
     <sql-case id="select_monthname" value="SELECT MONTHNAME('2008-02-03')" db-types="MySQL,Doris" />
+    <sql-case id="select_timestampdiff_doris" value="SELECT TIMESTAMPDIFF(DAY,'2020-01-01','2020-01-03')" db-types="Doris" />
     <sql-case id="select_multilinestring" value="SELECT MultiLineString(ST_GeomFromText('LineString(1 1, 2 2)'),ST_GeomFromText('LineString(1 1, 2 2)'))" db-types="MySQL" />
     <sql-case id="select_multipoint" value="SELECT MultiPoint(point(1,1),point(1,1))" db-types="MySQL" />
     <sql-case id="select_multipolygon" value="SELECT MultiPolygon(ST_GeomFromText('Polygon((0 0, 1 0, 1 1, 0 1, 0 0))'),ST_GeomFromText('Polygon((0 0, 1 0, 1 1, 0 1, 0 0))'))" db-types="MySQL" />
@@ -232,6 +234,7 @@
     <sql-case id="select_json_overlaps" value="SELECT JSON_OVERLAPS(&quot;[1,3,5,7]&quot;, &quot;[2,5,7]&quot;)" db-types="MySQL" />
     <sql-case id="select_json_pretty" value="SELECT JSON_PRETTY('123')" db-types="MySQL" />
     <sql-case id="select_json_quote" value="SELECT JSON_QUOTE('a')" db-types="MySQL,Doris" />
+    <sql-case id="select_json_extract_cast_abs_doris" value="SELECT JSON_EXTRACT(order_id, '$.a'), CAST(order_id AS DATETIME(3)), ABS(-1) FROM t_order" db-types="Doris" />
     <sql-case id="select_json_remove" value="SELECT JSON_REMOVE('[&quot;a&quot;, &quot;b&quot;, &quot;d&quot;]', '$[0]')" db-types="MySQL" />
     <sql-case id="select_json_replace" value="SELECT JSON_REPLACE('{ &quot;a&quot;: 1, &quot;b&quot;: &quot;2&quot;}', '$.a', 10)" db-types="MySQL" />
     <sql-case id="select_json_schema_valid" value="SELECT JSON_SCHEMA_VALID('{&quot;type&quot;:&quot;object&quot;,&quot;required&quot;:[&quot;name&quot;,&quot;value&quot;]}','{&quot;name&quot;:&quot;a&quot;,&quot;value&quot;:10}')" db-types="MySQL" />
@@ -294,7 +297,7 @@
     <sql-case id="select_not_in" value="SELECT (3,4) NOT IN ((1,2), (3,4))" db-types="MySQL" />
     <sql-case id="select_not_like" value="SELECT 'hello world' NOT LIKE '%test%'" db-types="MySQL" />
     <sql-case id="select_now" value="SELECT NOW()" db-types="MySQL" />
-    <sql-case id="select_nth_value" value="SELECT NTH_VALUE(salary, 3) OVER (ORDER BY salary) AS third_highest_salary FROM employees" db-types="MySQL" />
+    <sql-case id="select_nth_value" value="SELECT NTH_VALUE(salary, 3) OVER (ORDER BY salary) AS third_highest_salary FROM employees" db-types="MySQL,Doris" />
     <sql-case id="select_nullif" value="SELECT NULLIF(1,1)" db-types="MySQL" />
     <sql-case id="select_oct" value="SELECT OCT(12)" db-types="MySQL" />
     <sql-case id="select_octet_length" value="SELECT OCTET_LENGTH('text')" db-types="MySQL" />
@@ -305,4 +308,6 @@
     <sql-case id="select_pi" value="SELECT PI()" db-types="MySQL" />
     <sql-case id="select_regexp" value="SELECT 'a' REGEXP '^[a-d]'" db-types="MySQL" />
     <sql-case id="select_with_json_object_function" value="SELECT JSON_OBJECT('name' VALUE 'John', 'age' VALUE 30) AS json_data FROM DUAL" db-types="Oracle" />
+    <sql-case id="select_regexp_function" value="SELECT REGEXP('billie eillish', '^billie')" db-types="Doris" />
+    <sql-case id="select_regexp_function_with_null" value="SELECT REGEXP(NULL, '^billie')" db-types="Doris" />
 </sql-cases>

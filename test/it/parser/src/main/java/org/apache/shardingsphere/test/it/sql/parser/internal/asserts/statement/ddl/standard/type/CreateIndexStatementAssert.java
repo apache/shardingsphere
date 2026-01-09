@@ -19,11 +19,14 @@ package org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.property.PropertySegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.index.CreateIndexStatement;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAssertContext;
+import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.SQLSegmentAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.column.ColumnAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.index.IndexAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.table.TableAssert;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.distsql.ExpectedProperty;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.standard.index.CreateIndexStatementTestCase;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -52,6 +55,42 @@ public final class CreateIndexStatementAssert {
         assertColumns(assertContext, actual, expected);
         assertLockTable(assertContext, actual, expected);
         assertAlgorithm(assertContext, actual, expected);
+        assertIfNotExists(assertContext, actual, expected);
+        assertIndexType(assertContext, actual, expected);
+        assertProperties(assertContext, actual, expected);
+    }
+    
+    private static void assertIfNotExists(final SQLCaseAssertContext assertContext, final CreateIndexStatement actual, final CreateIndexStatementTestCase expected) {
+        if (null != expected.getIfNotExists()) {
+            assertThat(assertContext.getText(String.format("`%s`'s if not exists assertion error: ", actual.getClass().getSimpleName())),
+                    actual.isIfNotExists(), is(expected.getIfNotExists()));
+        }
+    }
+    
+    private static void assertIndexType(final SQLCaseAssertContext assertContext, final CreateIndexStatement actual, final CreateIndexStatementTestCase expected) {
+        if (null != expected.getIndexType()) {
+            assertNotNull(actual.getIndexType(), assertContext.getText("Index type should not be null"));
+            assertThat(assertContext.getText("Index type assertion error: "),
+                    actual.getIndexType(), is(expected.getIndexType()));
+        }
+    }
+    
+    private static void assertProperties(final SQLCaseAssertContext assertContext, final CreateIndexStatement actual, final CreateIndexStatementTestCase expected) {
+        if (null != expected.getProperties()) {
+            assertNotNull(actual.getProperties(), assertContext.getText("Properties should not be null"));
+            SQLSegmentAssert.assertIs(assertContext, actual.getProperties(), expected.getProperties());
+            assertThat(assertContext.getText("Properties size assertion error: "),
+                    actual.getProperties().getProperties().size(), is(expected.getProperties().getProperties().size()));
+            for (int i = 0; i < expected.getProperties().getProperties().size(); i++) {
+                assertProperty(assertContext, actual.getProperties().getProperties().get(i), expected.getProperties().getProperties().get(i));
+            }
+        }
+    }
+    
+    private static void assertProperty(final SQLCaseAssertContext assertContext, final PropertySegment actual, final ExpectedProperty expected) {
+        assertThat(assertContext.getText(String.format("Property key '%s' assertion error: ", expected.getKey())), actual.getKey(), is(expected.getKey()));
+        assertThat(assertContext.getText(String.format("Property value for key '%s' assertion error: ", expected.getKey())), actual.getValue(), is(expected.getValue()));
+        SQLSegmentAssert.assertIs(assertContext, actual, expected);
     }
     
     private static void assertTable(final SQLCaseAssertContext assertContext, final CreateIndexStatement actual, final CreateIndexStatementTestCase expected) {

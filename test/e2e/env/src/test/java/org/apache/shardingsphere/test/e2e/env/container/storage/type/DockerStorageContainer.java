@@ -132,13 +132,12 @@ public final class DockerStorageContainer extends DockerE2EContainer implements 
                 .orElseGet(() -> option.getConnectOption().getURL("localhost", getFirstMappedPort()));
     }
     
-    @SneakyThrows({SQLException.class, InterruptedException.class})
+    @SneakyThrows(SQLException.class)
     @Override
     protected void containerIsStarted(final InspectContainerResponse containerInfo) {
         if (option.getCreateOption().isSupportDockerEntrypoint()) {
             return;
         }
-        Thread.sleep(10000L);
         try (
                 Connection connection = DriverManager.getConnection(option.getConnectOption().getURL("localhost", getFirstMappedPort()),
                         option.getCreateOption().getDefaultUserWhenUnsupportedDockerEntrypoint().orElse(""),

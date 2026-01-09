@@ -70,4 +70,5 @@
     <alter-user sql-case-id="alter_user_alias_to_existing_azure_id" />
     <alter-user sql-case-id="alter_user_identified_with_single_quoted" />
     <alter-user sql-case-id="alter_user_with_factor" />
+    <alter-user sql-case-id="alter_user_with_password_doris" />
 </sql-parser-test-cases>

@@ -44,6 +44,7 @@
 1. SQL Binder: Add ALTER TABLE metadata check - [#35877](https://github.com/apache/shardingsphere/pull/35877)
 1. SQL Router: Add SELECT with UNION ALL routing to multi data sources check - [#35037](https://github.com/apache/shardingsphere/pull/35037)
 1. SQL Router: Improve support for executing tableless SQL with single data source - [#35659](https://github.com/apache/shardingsphere/pull/35659)
+1. SQL Router: Add `max-union-size-per-datasource` property to batch UNION ALL rewrite per data source and keep parallel execution - [#37405](https://github.com/apache/shardingsphere/pull/37405)
 1. DistSQL: Add job sharding nodes info to the query results of `SHOW MIGRATION LIST` - [#35053](https://github.com/apache/shardingsphere/pull/35053)
 1. DistSQL: Add DistSQL for query storage units which used in single rule - [#35131](https://github.com/apache/shardingsphere/pull/35131)
 1. Proxy: Implement write bool binary data type for PostgreSQL protocol - [#35831](https://github.com/apache/shardingsphere/pull/35831)
@@ -64,7 +65,16 @@
 1. Pipeline: Support pipeline job realtime reflection on proxy global properties after restarting - [#36749](https://github.com/apache/shardingsphere/pull/36749)
 1. Pipeline: InventoryDumper reuse table inventory calculator for better function and performance - [#36830](https://github.com/apache/shardingsphere/pull/36830)
 1. Pipeline: Improve "alter transmission rule": verify STREAM_CHANNEL TYPE NAME - [#36864](https://github.com/apache/shardingsphere/pull/36864)
-1. Pipeline: InventoryDumperContextSplitter supports multi-columns unique key first integer column splitting - [#36935](https://github.com/apache/shardingsphere/pull/36935)
+1. Pipeline: Support multi-columns unique key first integer column splitting - [#36935](https://github.com/apache/shardingsphere/pull/36935)
+1. Pipeline: Support unique key first integer column exact splitting - [#37517](https://github.com/apache/shardingsphere/pull/37517)
+1. Pipeline: Support unique key first integer column possible null value - [#37522](https://github.com/apache/shardingsphere/pull/37522)
+1. Pipeline: Support unique key first integer column exact or estimated splitting based on data sparseness - [#37542](https://github.com/apache/shardingsphere/pull/37542)
+1. Pipeline: Support unique key first big integer column splitting - [#37574](https://github.com/apache/shardingsphere/pull/37574)
+1. Pipeline: Support unique key first string column exact splitting - [#37543](https://github.com/apache/shardingsphere/pull/37543)
+1. Pipeline: Support multi-columns unique key non-first column nullable - [#37647](https://github.com/apache/shardingsphere/pull/37647)
+1. Encrypt: Support handling show create view result decoration in encrypt - [#37299](https://github.com/apache/shardingsphere/pull/37299)
+1. JDBC: Enhance ResultSetUtils to support flexible string date/time conversions - [37424](https://github.com/apache/shardingsphere/pull/37424)
+1. SQL Binder: Support Grant statement SQL bind - [#36207](https://github.com/apache/shardingsphere/pull/36207)
 
 ### Bug Fixes
 
@@ -90,19 +100,31 @@
 1. JDBC: Resolve statement manager leaks when creating multiple statements - [#35665](https://github.com/apache/shardingsphere/pull/35665)
 1. JDBC: Fix the issue where cached connections in DriverDatabaseConnectionManager were not released in time - [35834](https://github.com/apache/shardingsphere/pull/35834)
 1. JDBC: Clear batch generated keys result set when call clearBatch method - [37204](https://github.com/apache/shardingsphere/pull/37204)
+1. JDBC: Fix Oracle TIMESTAMP WITH TIME ZONE ORDER BY exception - [#37181](https://github.com/apache/shardingsphere/pull/37181)
 1. Proxy: Fix `SHOW PROCESSLIST` not wait for all nodes - [#35348](https://github.com/apache/shardingsphere/pull/35348)
 1. Proxy: Fix NoSuchElementException exception when execute MySQL SHOW VARIABLES without current database - [#35550](https://github.com/apache/shardingsphere/pull/35550)
 1. Proxy: Fix column length for PostgreSQL string binary protocol value - [35840](https://github.com/apache/shardingsphere/pull/35840)
 1. Proxy: Fix the connection leak caused by rollback failure in Proxy - [35867](https://github.com/apache/shardingsphere/pull/35867)
 1. Proxy: Fix the behavior difference of select built-in function names with spaces -[#36537](https://github.com/apache/shardingsphere/pull/36537)
+1. Proxy: Fix MySQL text protocol datetime fractional seconds output - [#37410](https://github.com/apache/shardingsphere/pull/37410)
+1. Proxy: Fix IndexOutOfBoundsException for MySQL no-FROM multi-projection SELECT routed to admin path - [#37391](https://github.com/apache/shardingsphere/pull/37391)
+1. Proxy: Fix MySQL binary protocol datetime/time fractional seconds precision - [#37294](https://github.com/apache/shardingsphere/pull/37294)
+1. Proxy: Fix PostgreSQL boolean text output to return `t`/`f` as per protocol - [#37184](https://github.com/apache/shardingsphere/pull/37184)
 1. Mode: Fix issue of drop schema can not work on standalone mode - [#34470](https://github.com/apache/shardingsphere/pull/34470)
 1. Encrypt: Resolve rewrite issue in nested concat function - [#35815](https://github.com/apache/shardingsphere/pull/35815)
 1. Sharding: Fix mod sharding algorithm judgement -[#36386](https://github.com/apache/shardingsphere/pull/36386)
 1. Sharding: Fix check inline sharding algorithms in table rules - [#36999](https://github.com/apache/shardingsphere/pull/36999)
+1. Sharding: Fix wrong sharding condition merge when sharding column in case-sensitive - [#37389](https://github.com/apache/shardingsphere/pull/37389)
+1. Sharding: Fix wrong merge sharding condition logic caused by different type sharding value - [#37528](https://github.com/apache/shardingsphere/pull/37528)
 1. Pipeline: Recover value of migration incremental importer batch size - [#34670](https://github.com/apache/shardingsphere/pull/34670)
 1. Pipeline: Fix InventoryDumper first time dump SQL without ORDER BY on multiple columns unique key table - [#34736](https://github.com/apache/shardingsphere/pull/34736)
 1. Pipeline: Fix MySQL JDBC query properties extension when SSL is required on server - [#36581](https://github.com/apache/shardingsphere/pull/36581)
 1. Pipeline: Fix migration might skip some records on big table after job restarting - [#36878](https://github.com/apache/shardingsphere/pull/36878)
+1. Pipeline: Fix unsigned number column value type inconsistent in inventory and incremental - [#37280](https://github.com/apache/shardingsphere/pull/37280)
+1. Pipeline: Fix PostgreSQL migration create table SQL generation failure caused by locale-formatted sequence values - [#28360](https://github.com/apache/shardingsphere/issues/28360)
+1. Pipeline: MySQLBinlogClient compatible with async exception - [#37631](https://github.com/apache/shardingsphere/issues/37631)
+1. DistSQL: Fix load single table with specific schema - [#37535](https://github.com/apache/shardingsphere/pull/37535)
+1. Transaction: Fix XA data source enlist failure caused connection leaks - [37593](https://github.com/apache/shardingsphere/pull/37593)
 
 ### Change Logs
 
@@ -141,6 +163,7 @@
 1. Sharding: Support GroupConcat function for aggregating multiple shards in MySQL, OpenGauss, Doris - [#33808](https://github.com/apache/shardingsphere/pull/33808)
 1. Encrypt: Add non-support checker for WITH, COMBINE, INSERT SELECT on encrypt feature  - [#34175](https://github.com/apache/shardingsphere/pull/34175)
 1. Encrypt: Support INSERT statement rewrite use quote [#34259](https://github.com/apache/shardingsphere/pull/34259)
+1. SQL Binder: Support Flush statement SQL bind - [#36036](https://github.com/apache/shardingsphere/pull/36036)
 
 ### Bug Fixes
 
@@ -259,6 +282,7 @@
 1. Sharding: Fix Sharding column not tracked through aliases
 1. Sharding: Fix alter view exception when config sharding rule and binding table rule
 1. Sharding: Fix is need accumulate logic
+1. Sharding: Fix NOT IN condition routing being treated as IN causing missing shards - [#32076](https://github.com/apache/shardingsphere/pull/32076)
 1. Encrypt: Fix show create table wrong result with encrypt when data type contains float
 1. Encrypt: Add insert select rewrite for encrypt
 1. Encrypt: Fix the issue where updating a non-encrypted table and using a subquery on an encrypted table

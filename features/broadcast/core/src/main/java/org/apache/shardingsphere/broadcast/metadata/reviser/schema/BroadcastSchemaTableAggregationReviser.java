@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.broadcast.metadata.reviser.schema;
 
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.broadcast.rule.BroadcastRule;
 import org.apache.shardingsphere.database.connector.core.metadata.data.model.TableMetaData;
 import org.apache.shardingsphere.database.connector.core.metadata.data.revise.SchemaTableMetaDataAggregator;
@@ -32,7 +31,6 @@ import java.util.Map;
 /**
  * Broadcast schema table aggregation reviser.
  */
-@Slf4j
 @RequiredArgsConstructor
 public final class BroadcastSchemaTableAggregationReviser implements SchemaTableAggregationReviser<BroadcastRule> {
     

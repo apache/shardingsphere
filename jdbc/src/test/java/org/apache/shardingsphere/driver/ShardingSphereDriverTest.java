@@ -74,6 +74,39 @@ class ShardingSphereDriverTest {
     }
     
     @Test
+    void assertHashModSetLongOnIntColumnWorks() throws SQLException {
+        try (Connection connection = DriverManager.getConnection("jdbc:shardingsphere:classpath:config/driver/foo-driver-fixture.yaml")) {
+            assertThat(connection, isA(ShardingSphereConnection.class));
+            try (Statement statement = connection.createStatement()) {
+                statement.execute("DROP TABLE IF EXISTS t_order");
+                statement.execute("CREATE TABLE t_order (order_id INT PRIMARY KEY, user_id INT)");
+            }
+            // TODO Replace 1 to -1 after HASH_MOD algorithm improved
+            int value = 1;
+            try (PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO t_order (order_id, user_id) VALUES (?, ?)")) {
+                preparedStatement.setObject(1, value);
+                preparedStatement.setObject(2, 101);
+                int updatedCount = preparedStatement.executeUpdate();
+                assertThat(updatedCount, is(1));
+            }
+            try (PreparedStatement preparedStatement = connection.prepareStatement("SELECT * FROM t_order WHERE order_id = ?")) {
+                preparedStatement.setObject(1, value);
+                ResultSet resultSet = preparedStatement.executeQuery();
+                assertTrue(resultSet.next());
+                assertThat(resultSet.getInt(1), is(value));
+                resultSet.close();
+            }
+            try (PreparedStatement preparedStatement = connection.prepareStatement("SELECT * FROM t_order WHERE order_id = ?")) {
+                preparedStatement.setObject(1, (long) value);
+                ResultSet resultSet = preparedStatement.executeQuery();
+                assertTrue(resultSet.next());
+                assertThat(resultSet.getInt(1), is(value));
+                resultSet.close();
+            }
+        }
+    }
+    
+    @Test
     void assertVarbinaryColumnWorks() throws SQLException {
         try (
                 Connection connection = DriverManager.getConnection("jdbc:shardingsphere:classpath:config/driver/foo-driver-fixture.yaml");

@@ -19,5 +19,13 @@
 <sql-cases>
     <sql-case id="install_component" value="INSTALL COMPONENT 'file://component1'" db-types="MySQL" />
     <sql-case id="install_components" value="INSTALL COMPONENT 'file://component1', 'file://component2'" db-types="MySQL" />
-    <sql-case id="install_plugin" value="INSTALL PLUGIN binlog SONAME 'shared_library_name'" db-types="MySQL" />
+    <sql-case id="install_plugin" value="INSTALL PLUGIN binlog SONAME 'shared_library_name'" db-types="MySQL,Doris" />
+    <sql-case id="install_plugin_from" value="INSTALL PLUGIN FROM &quot;/home/users/doris/auditdemo.zip&quot;" db-types="Doris" />
+    <sql-case id="install_plugin_with_properties" value="INSTALL PLUGIN FROM &quot;/home/users/doris/auditdemo.zip&quot; PROPERTIES (&quot;md5sum&quot; = &quot;d41d8cd98f00b204e9800998ecf8427e&quot;)" db-types="Doris" />
+    <sql-case id="install_plugin_with_identifier" value="INSTALL PLUGIN FROM plugin_path PROPERTIES (`timeout` = `30`)" db-types="Doris" />
+    <sql-case id="install_plugin_with_number" value="INSTALL PLUGIN FROM &quot;/path/to/plugin.zip&quot; PROPERTIES (&quot;timeout&quot; = 30)" db-types="Doris" />
+    <sql-case id="install_plugin_with_boolean" value="INSTALL PLUGIN FROM &quot;/path/to/plugin.zip&quot; PROPERTIES (&quot;auto_load&quot; = true)" db-types="Doris" />
+    <sql-case id="install_plugin_with_null" value="INSTALL PLUGIN FROM &quot;/path/to/plugin.zip&quot; PROPERTIES (&quot;description&quot; = NULL)" db-types="Doris" />
+    <sql-case id="install_plugin_multiple_properties" value="INSTALL PLUGIN FROM &quot;/path/to/plugin.zip&quot; PROPERTIES (&quot;md5sum&quot; = &quot;abc123&quot;, &quot;timeout&quot; = 30)" db-types="Doris" />
+    <sql-case id="install_plugin_mixed_types" value="INSTALL PLUGIN FROM &quot;/path/to/plugin.zip&quot; PROPERTIES (&quot;md5sum&quot; = &quot;abc123&quot;, &quot;timeout&quot; = 30, &quot;auto_load&quot; = false)" db-types="Doris" />
 </sql-cases>

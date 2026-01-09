@@ -29,4 +29,12 @@
     <uninstall-plugin sql-case-id="uninstall_plugin">
         <plugin name="binlog" start-index="17" stop-index="27" />
     </uninstall-plugin>
+
+    <uninstall-component sql-case-id="uninstall_component_doris">
+        <component name="file://component_doris" start-index="20" stop-index="43" />
+    </uninstall-component>
+
+    <uninstall-plugin sql-case-id="uninstall_plugin_doris">
+        <plugin name="audit" start-index="17" stop-index="21" />
+    </uninstall-plugin>
 </sql-parser-test-cases>

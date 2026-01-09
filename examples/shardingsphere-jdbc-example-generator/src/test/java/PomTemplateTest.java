@@ -44,32 +44,61 @@ public final class PomTemplateTest {
     }
     
     @Test
+    public void assertStandaloneRepositoryDefaultsToJdbcDependency() throws IOException, TemplateException {
+        String content = renderPomTemplate(createBaseDataModel());
+        assertThat(content, containsString("shardingsphere-standalone-mode-repository-jdbc"));
+    }
+    
+    @Test
     public void assertStandaloneJdbcRepository() throws IOException, TemplateException {
-        Map<String, Object> dataModel = new HashMap<>(6, 1F);
-        dataModel.put("mode", "standalone");
+        Map<String, Object> dataModel = createBaseDataModel();
         dataModel.put("repository", "JDBC");
-        dataModel.put("feature", "sharding");
-        dataModel.put("framework", "spring-boot-starter-jdbc");
-        dataModel.put("transaction", "local");
-        dataModel.put("shardingsphereVersion", "5.5.3-SNAPSHOT");
-        Template template = templateConfig.getTemplate("pom.ftl");
-        StringWriter writer = new StringWriter();
-        template.process(dataModel, writer);
-        assertThat(writer.toString(), containsString("shardingsphere-standalone-mode-repository-jdbc"));
+        String content = renderPomTemplate(dataModel);
+        assertThat(content, containsString("shardingsphere-standalone-mode-repository-jdbc"));
     }
     
     @Test
     public void assertNoStandaloneJdbcRepository() throws IOException, TemplateException {
-        Map<String, Object> dataModel = new HashMap<>(6, 1F);
-        dataModel.put("mode", "standalone");
+        Map<String, Object> dataModel = createBaseDataModel();
         dataModel.put("repository", "File");
-        dataModel.put("feature", "sharding");
-        dataModel.put("framework", "spring-boot-starter-jdbc");
-        dataModel.put("transaction", "local");
-        dataModel.put("shardingsphereVersion", "5.5.3-SNAPSHOT");
-        Template template = templateConfig.getTemplate("pom.ftl");
+        String content = renderPomTemplate(dataModel);
+        assertThat(content, not(containsString("shardingsphere-standalone-mode-repository-jdbc")));
+    }
+    
+    @Test
+    public void assertShardingDependencies() throws IOException, TemplateException {
+        String content = renderPomTemplate(createBaseDataModel());
+        assertThat(content, containsString("shardingsphere-sharding-core"));
+        assertThat(content, containsString("shardingsphere-broadcast-core"));
+    }
+    
+    private Map<String, Object> createBaseDataModel() {
+        Map<String, Object> result = new HashMap<>(6, 1F);
+        result.put("mode", "standalone");
+        result.put("feature", "sharding");
+        result.put("framework", "spring-boot-starter-jdbc");
+        result.put("transaction", "local");
+        result.put("shardingsphereVersion", "5.5.3-SNAPSHOT");
+        result.put("namespace", "generator-demo");
+        return result;
+    }
+    
+    private String renderPomTemplate(final Map<String, Object> dataModel) throws IOException, TemplateException {
+        return renderTemplate("pom.ftl", dataModel);
+    }
+    
+    private String renderTemplate(final String templateName, final Map<String, Object> dataModel) throws IOException, TemplateException {
+        Template template = templateConfig.getTemplate(templateName);
         StringWriter writer = new StringWriter();
         template.process(dataModel, writer);
-        assertThat(writer.toString(), not(containsString("shardingsphere-standalone-mode-repository-jdbc")));
+        return writer.toString();
+    }
+    
+    @Test
+    public void assertClusterNamespaceRendered() throws IOException, TemplateException {
+        Map<String, Object> dataModel = new HashMap<>(1, 1F);
+        dataModel.put("namespace", "ns-value");
+        String content = renderTemplate("resources/yaml/mode/cluster-zookeeper.ftl", dataModel);
+        assertThat(content, containsString("namespace: ns-value"));
     }
 }

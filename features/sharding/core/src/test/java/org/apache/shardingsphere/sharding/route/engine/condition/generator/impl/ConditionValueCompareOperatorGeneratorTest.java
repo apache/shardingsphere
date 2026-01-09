@@ -46,7 +46,7 @@ class ConditionValueCompareOperatorGeneratorTest {
     
     private final ConditionValueCompareOperatorGenerator generator = new ConditionValueCompareOperatorGenerator();
     
-    private final HashColumn column = new HashColumn("id", "tbl");
+    private final HashColumn column = new HashColumn("id", "tbl", false);
     
     @SuppressWarnings("unchecked")
     @Test

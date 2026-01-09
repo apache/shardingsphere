@@ -40,7 +40,6 @@ public final class OpenGaussSelectVersionExecutor implements DatabaseAdminQueryE
     
     private static final String FUNCTION_NAME = "VERSION()";
     
-    @Getter
     private MergedResult mergedResult;
     
     @Override

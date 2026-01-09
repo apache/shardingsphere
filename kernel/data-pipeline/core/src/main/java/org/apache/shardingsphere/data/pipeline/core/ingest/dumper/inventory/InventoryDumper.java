@@ -27,15 +27,14 @@ import org.apache.shardingsphere.data.pipeline.core.execute.AbstractPipelineLife
 import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.Dumper;
 import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.inventory.column.InventoryColumnValueReaderEngine;
 import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.inventory.position.InventoryDataRecordPositionCreator;
-import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.inventory.query.QueryRange;
 import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.inventory.query.QueryType;
+import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.inventory.query.Range;
 import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.inventory.query.StreamingRangeType;
 import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.inventory.query.calculator.AbstractRecordTableInventoryCalculator;
 import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.inventory.query.calculator.TableInventoryCalculateParameter;
 import org.apache.shardingsphere.data.pipeline.core.ingest.position.IngestPosition;
 import org.apache.shardingsphere.data.pipeline.core.ingest.position.type.finished.IngestFinishedPosition;
-import org.apache.shardingsphere.data.pipeline.core.ingest.position.type.pk.PrimaryKeyIngestPosition;
-import org.apache.shardingsphere.data.pipeline.core.ingest.position.type.pk.PrimaryKeyIngestPositionFactory;
+import org.apache.shardingsphere.data.pipeline.core.ingest.position.type.pk.UniqueKeyIngestPosition;
 import org.apache.shardingsphere.data.pipeline.core.ingest.record.Column;
 import org.apache.shardingsphere.data.pipeline.core.ingest.record.DataRecord;
 import org.apache.shardingsphere.data.pipeline.core.ingest.record.FinishedRecord;
@@ -124,15 +123,19 @@ public final class InventoryDumper extends AbstractPipelineLifecycleRunnable imp
         List<String> columnNames = dumperContext.getQueryColumnNames();
         TableInventoryCalculateParameter calculateParam = new TableInventoryCalculateParameter(dataSource, table,
                 columnNames, dumperContext.getUniqueKeyColumns(), QueryType.RANGE_QUERY, null);
-        QueryRange queryRange = new QueryRange(((PrimaryKeyIngestPosition<?>) initialPosition).getBeginValue(), true, ((PrimaryKeyIngestPosition<?>) initialPosition).getEndValue());
-        calculateParam.setQueryRange(queryRange);
+        Range<?> range = Range.closed(((UniqueKeyIngestPosition<?>) initialPosition).getLowerBound(), ((UniqueKeyIngestPosition<?>) initialPosition).getUpperBound());
+        calculateParam.setRange(range);
         RecordTableInventoryDumpCalculator dumpCalculator = new RecordTableInventoryDumpCalculator(dumperContext.getBatchSize(), StreamingRangeType.SMALL);
         long rowCount = 0L;
         try {
+            JobRateLimitAlgorithm rateLimitAlgorithm = dumperContext.getRateLimitAlgorithm();
             String firstUniqueKey = calculateParam.getFirstUniqueKey().getName();
             for (List<DataRecord> each : dumpCalculator.calculate(calculateParam)) {
+                if (null != rateLimitAlgorithm) {
+                    rateLimitAlgorithm.intercept(PipelineSQLOperationType.SELECT, 1);
+                }
                 channel.push(Collections.unmodifiableList(each));
-                IngestPosition position = PrimaryKeyIngestPositionFactory.newInstance(dumpCalculator.getFirstUniqueKeyValue(each.get(each.size() - 1), firstUniqueKey), queryRange.getUpper());
+                IngestPosition position = UniqueKeyIngestPosition.newInstance(Range.closed(dumpCalculator.getFirstUniqueKeyValue(each.get(each.size() - 1), firstUniqueKey), range.getUpperBound()));
                 dumperContext.getCommonContext().setPosition(position);
                 rowCount += each.size();
             }

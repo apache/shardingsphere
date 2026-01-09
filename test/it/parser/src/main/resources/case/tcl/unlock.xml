@@ -20,4 +20,5 @@
     <unlock sql-case-id="unlock_table" />
     <unlock sql-case-id="unlock_tables" />
     <unlock sql-case-id="unlock_instance" />
+    <unlock sql-case-id="unlock_tables_doris" />
 </sql-parser-test-cases>

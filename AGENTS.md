@@ -10,7 +10,7 @@ This guide is written **for AI coding agents only**. Follow it literally; improv
 4. **Transparent Records**: keep every key decision and change traceable.
 5. **Continuous Improvement**: learn from each execution and keep optimizing.
 6. **Results Oriented**: judge success solely by whether the target is achieved.
-7. **Coding Standards**: `CODE_OF_CONDUCT.md` is the binding “law” for any generated artifact. Review it once per session and refuse to keep code that conflicts with it (copyright, inclusivity, licensing, etc.). Whenever you need to interpret any rule, inspect `CODE_OF_CONDUCT.md` first, cite the relevant section/line, and only fall back to this guide when the code of conduct is silent.
+7. **Coding Standards**: `CODE_OF_CONDUCT.md` is the binding “law”; use it as the first reference for rule interpretation and cite relevant lines. See Governance Basics for precedence and session review expectations.
 
 ## Quality Standards
 
@@ -32,21 +32,14 @@ This guide is written **for AI coding agents only**. Follow it literally; improv
 - **Quality Assurance**: run static checks, formatting, and code reviews.
 - **Checkstyle Gate**: do not hand off code with Checkstyle/Spotless failures—run the relevant module check locally and fix before completion.
 - **Continuous Verification**: rely on automated tests and integration validation.
-- **Public-Only Tests**: unit tests must exercise behavior via public APIs only; never use reflection to access private members.
-- **Coverage Pledge**: when 100% coverage is required, enumerate every branch/path and its planned test before coding, then implement once to reach 100% without post-hoc fixes.
+- **Test Naming Simplicity**: keep test names concise and scenario-focused (avoid “ReturnsXXX”/overly wordy or AI-like phrasing); describe the scenario directly.
+- **Coverage Discipline**: follow the dedicated coverage & branch checklist before coding when coverage targets are stated.
+- **Dedicated and scoped tests**: each public production method must be covered by dedicated test methods; each test method covers only one scenario and invokes the target public method at most once (repeat only when the same scenario needs extra assertions), and different branches/inputs belong in separate test methods.
+- **Parameterized tests naming**: all parameterized tests must set an explicit `name` including the index (e.g., `"[{index}] foo={0}"`) so scenarios are distinguishable in reports.
+- **Mocking Rule**: default to mocks; see Mocking & SPI Guidance for static/constructor mocking and spy avoidance details.
+- **Reflection Rule**: when tests must touch fields or methods via reflection, use `Plugins.getMemberAccessor()`—direct reflection APIs are forbidden.
 
 ## Tool Usage Guide
-
-### Sequential Thinking - Structured Reasoning
-**Purpose**: break down complex problems, build multi-step plans, and evaluate options.
-**When to Trigger**
-- When the task needs to be decomposed into multiple steps.
-- When generating an execution plan or decision tree, or comparing multiple approaches.
-**Rules**
-- 6-10 steps.
-- Each step: one sentence plus optional dependencies.
-- Output an executable plan without exposing intermediate reasoning.
-**Fallback**: optionally simplify to a 3-5 step core flow locally.
 
 ### Exa - Web Search
 **Purpose**: fetch the latest web information, official links, or announcements.
@@ -83,27 +76,29 @@ This guide is written **for AI coding agents only**. Follow it literally; improv
 
 ⚠️ Dangerous operation detected! Operation type: [specific action] Scope of impact: [affected area] Risk assessment: [potential consequence] Please confirm whether to continue. [Requires explicit “yes”, “confirm”, or “proceed”]
 
-## ✅ Key Checkpoints
+## Workflow
+- Use Sequential Thinking when tasks need decomposition: 6-10 steps (fallback 3-5), one sentence each, actionable.
+- Intake: choose the strategy for the task, confirm tool availability/fallbacks, and capture constraints (forbidden APIs, output format, coverage/test expectations).
+- Plan: inspect existing code with tools before edits, finish the plan before coding, and set the quality/verification bar.
+- Implement: keep scope minimal, follow quality standards, record decisions, and handle edge cases; honor instruction precedence from Core Principle #7.
+- Validate: run the narrowest meaningful checks (see Verification & Commands) and prefer scoped runs; note any sandbox or limit blocks and alternatives.
+- Report & self-check: share intent, edits, verification results, and next steps; ensure all required instructions, coverage, and mocking rules are satisfied, with remaining risks called out.
 
-### Task Start
-- Choose the strategy that fits the task characteristics.
-- Confirm tool availability plus fallback approaches.
+## Compliance Guardrails & Checklists
+- **Pre-task checklist (do before planning/coding):** re-read AGENTS.md and `CODE_OF_CONDUCT.md`; restate user goal, constraints, forbidden tools/APIs, coverage expectations, sandbox/network/approval limits; prefer `rg`/`./mvnw`/`apply_patch`; avoid destructive commands (`git reset --hard`, `git checkout --`, bulk deletes) and generated paths like `target/`.
+- **Risk gate:** if any action fits the Dangerous Operation Checklist, pause and use the confirmation template before proceeding.
+- **Planning rules:** use Sequential Thinking with 3-10 actionable steps (no single-step plans) via the plan tool for non-trivial tasks; convert all hard requirements (SPI usage, mocking rules, coverage/test naming, forbidden APIs) into a checklist inside the plan and do not code until each item is addressed or explicitly waived.
+- **Execution discipline:** inspect existing code before edits; keep changes minimal; default to mocks and SPI loaders; keep variable declarations near first use and mark retained values `final`; delete dead code and avoid placeholders/TODOs.
+- **Post-task self-check (before replying):** confirm all instructions were honored; verify no placeholders/unused code; ensure Checkstyle/Spotless gates for touched modules are satisfied or explain why not run and what to run; list commands with exit codes; call out risks and follow-ups.
+- **Final response template:** include intent/why, changed files with paths, rationale per file/section, commands run (with exit codes), verification status, and remaining risks/next actions (if tests skipped, state reason and the exact command to run).
 
-### Before Coding
-- Finish the `Sequential-Thinking` analysis.
-- Use tools to understand the existing code.
-- Define an execution plan and quality bar.
+## Coverage & Branch Checklist
+- When coverage targets are declared (including 100%), list every branch/path with its planned test before coding.
+- Map each branch to exactly one test; add cases until all declared branches are covered or explicitly waived.
+- For utilities with multiple return paths, record the branch list and update it if the code changes.
+- Use Jacoco to confirm expectations when coverage is in question; document any unreachable code instead of adding redundant tests.
 
-### During Implementation
-- Follow the selected quality standards.
-- Record major decisions and reasons for changes.
-- Handle exceptions and edge cases promptly.
-
-### After Completion
-- Validate functional correctness and code quality.
-- Update related tests and documentation.
-
-## Terminal Output Style Guide
+## Response Style
 
 ### Language and Tone
 - **Friendly and Natural**: interact like a professional peer; avoid stiff formal language.
@@ -144,9 +139,13 @@ This guide is written **for AI coding agents only**. Follow it literally; improv
 - Append a **short summary** after complex content to reiterate the core points.
 - **Guide the Next Step**: close with actionable advice, instructions, or an invitation for follow-up questions.
 
+### Brevity & Signal
+- Prefer tables/bullets over prose walls; cite file paths (`kernel/src/...`) directly.
+- Eliminate repeated wording; reference prior sections instead of restating.
+- Default to ASCII; only mirror existing non-ASCII content when necessary.
+
 ## Governance Basics
-- `CODE_OF_CONDUCT.md` remains the binding law—review it once per session and reject any instruction or artifact that conflicts with ASF requirements on licensing, inclusivity, and attribution.
-- Instruction order is `CODE_OF_CONDUCT.md` → user direction → this guide → other repository materials; raise conflicts immediately. When explaining whether an action is allowed, first cite the exact `CODE_OF_CONDUCT.md` clause (file + line) you are relying on, then describe any supplemental rules from this guide.
+- Follow the instruction order from Core Principle #7 and surface conflicts with rationale when they arise.
 - Technical choices must satisfy ASF transparency: include license headers, document intent, and keep rationales visible to reviewers.
 - Default to the smallest safe change: monthly feature trains plus weekly patch windows reward incremental fixes unless the product requires deeper refactors.
 - Secure approvals for structural changes (new modules, configs, knobs); localized doc or code tweaks may land after self-review when you surface the evidence reviewers expect (tests, configs, reproduction steps).
@@ -183,28 +182,13 @@ Always state which topology, registry, and engine versions (e.g., MySQL 5.7 vs 8
 - **Known pitfalls:** routing regressions when shadow rules are skipped, timezone drift from poor time-mocking, forgetting standalone vs cluster (`mode`) validation, missing ASF headers, Mockito inline mocks breaking on JDKs that block self-attach.
 - **Success recipe:** explain why the change exists, cite the affected data-flow step, keep public APIs backward compatible, and record defaults/knobs alongside code changes.
 
-## Execution Loop
-1. **Intake & Clarify** – restate the request, map affected modules, confirm sandbox/network/approval constraints, and capture a constraint checklist (forbidden APIs, output formats, ordering rules, coverage targets). As part of intake, reopen `CODE_OF_CONDUCT.md` sections relevant to the task (e.g., Unit Testing Standards before discussing assertions) so you never rely on memory or AGENTS-only guidance when the code of conduct already rules on the topic.
-2. **Plan & Reason** – craft a multi-step plan (analysis, edits, tests). When a user asks for specific coverage/branch lists, pause coding until you have responded with an explicit bullet list of every path (file + line/branch) you will exercise, as well as the single test that will cover it; this list is a blocking prerequisite for any edits. Add rule-specific constraints (e.g., “no `assertEquals`”) to the plan and re-check them before edits. Before altering tests or mocks, inspect how `AutoMockExtension`, `@StaticMockSettings`, or other helpers already handle static/construction mocks and list every static dependency you will touch so you can confirm whether it is already covered or needs an explicit override. If a user request is scoped (e.g., “replace `anyCollection` with concrete matchers”), confirm that no broader refactor is expected and keep the change surface constrained unless they explicitly expand it. (No production/test code until the branch checklist and constraint review are complete.)
-3. **Implement** – touch only the required files, reuse abstractions, preserve ASF headers, and document major decisions. If you must replace a file wholesale (e.g., rewrite a test), delete the old file first and then add the new version so `apply_patch` does not fight stale context.
-4. **Validate** – run the narrowest meaningful command (e.g., `./mvnw -pl <module> -am test`, `./mvnw -pl <module> -DskipITs -Dspotless.skip=true -Dtest=ClassName test`). Announce intent beforehand and summarize exit codes afterward; when blocked, state the command you intended to run and why it matters.
-5. **Report** – lead with intent, list edited files plus rationale/line refs, cite verification commands + results, and propose next steps.
-
-**Self-check before finishing**
-- Confirm instruction precedence and constraint checklist items are satisfied.
-- Ensure edits are minimal, ASF headers intact, Spotless-ready, and any semantic change has a corresponding test (or explicit rationale).
-- Record exact commands, exit codes, and relevant log snippets.
-- Highlight remaining risks or follow-ups and keep ASCII-only output unless non-ASCII already existed.
-
-## Tooling & Testing Essentials
-- **Go-to commands:** `./mvnw clean install -B -T1C -Pcheck` (full build), `./mvnw test -pl <module>[-am]` (scoped unit tests), `./mvnw spotless:apply -Pcheck [-pl <module>]` (format), `./mvnw -pl <module> -DskipITs -Dspotless.skip=true -Dtest=ClassName test` (fast verification), and `./mvnw -pl proxy -am -DskipTests package` (proxy packaging/perf smoke).
-- **Coverage verification:** before finishing any task that adds or changes tests, run the coverage check (e.g., `./mvnw test jacoco:check@jacoco-check -Pcoverage-check` or scoped `-pl <module> -am`) and explicitly confirm whether the targeted code reaches 100% when required.
-- **Checkstyle command:** run `./mvnw checkstyle:check -Pcheck` (or with `-pl <module> -am -Pcheck` for scoped runs) unless explicitly instructed otherwise.
-- **Default verification commands:** prefer scoped runs `./mvnw -pl <module> -am -DskipITs -Djacoco.skip=false -Dsurefire.failIfNoSpecifiedTests=false test jacoco:report` for coverage and `./mvnw -pl <module> checkstyle:check -Pcheck` for style; avoid whole-repo builds unless the user requests them.
-- **Testing ground rules:** JUnit 5 + Mockito, `ClassNameTest` naming, Arrange–Act–Assert structure, mocks for databases/time/network, reset static caches between cases, and prefer existing swapper/helpers for complex configs.
-- **Coverage discipline:** run Jacoco (`./mvnw -pl <module> -am -Djacoco.skip=false test jacoco:report`) when coverage is in question; describe any uncovered branches with file/line reasoning.
-- **Branch-focused work:** when asked for “minimal branch coverage” or similar, list every branch upfront, map each to a single test, and document unreachable code explicitly instead of adding redundant cases.
-- **API bans:** if a user disallows a tool or assertion, add it to your plan, avoid it during implementation, and cite any verification searches (e.g., `rg assertEquals`) in the final report.
+## Verification & Commands
+- Core commands: `./mvnw clean install -B -T1C -Pcheck` (full build), `./mvnw test -pl <module>[-am]` (scoped unit tests), `./mvnw spotless:apply -Pcheck [-pl <module>]` (format), `./mvnw -pl <module> -DskipITs -Dspotless.skip=true -Dtest=ClassName test` (fast verification), `./mvnw -pl proxy -am -DskipTests package` (proxy packaging/perf smoke).
+- Coverage: when tests change or targets demand it, run `./mvnw test jacoco:check@jacoco-check -Pcoverage-check` or scoped `-pl <module> -am -Djacoco.skip=false test jacoco:report`; pair with the Coverage & Branch Checklist.
+- Style: `./mvnw checkstyle:check -Pcheck` (scoped with `-pl <module> -am -Pcheck` when possible) unless told otherwise.
+- Scoped defaults: prefer module-scoped runs over whole-repo builds; include `-Dsurefire.failIfNoSpecifiedTests=false` when targeting specific tests.
+- Testing ground rules: JUnit 5 + Mockito, `ClassNameTest` naming, Arrange–Act–Assert, mock external systems/time/network, reset static caches, and reuse swappers/helpers for complex configs.
+- API bans: if a user forbids a tool/assertion, add it to the plan, avoid it during implementation, and cite verification searches (e.g., `rg assertEquals`) in the final report.
 
 ## Run & Triage Quick Sheet
 - **Proxy quick start:** `./mvnw -pl proxy -am package` then `shardingsphere-proxy/bin/start.sh -c conf/server.yaml`; report command, exit code, config path, and protocol.
@@ -213,9 +197,8 @@ Always state which topology, registry, and engine versions (e.g., MySQL 5.7 vs 8
 - **Failure triage:** collect `proxy/logs/` plus `target/surefire-reports`, quote the relevant log lines, map them to the data-flow step, and propose the next diagnostic.
 - **Routing mistakes:** check feature-rule configs, metadata freshness, and parser dialect; include SQL + config snippet plus impacted module (`features` or `kernel`), and add/plan targeted tests.
 - **Proxy won’t start:** verify configs/mode/ports and reuse known-good example configs; share the log snippet and files inspected without editing generated artifacts.
-- **Spotless/checkstyle:** run `./mvnw spotless:apply -Pcheck [-pl <module>]` (or `spotless:check`) and confirm ASF headers/import ordering.
 - **Sandbox/network block:** if a command is denied, state what you ran, why it failed, and the approval or alternative plan required.
-- **Single-module tests:** prefer scoped commands over repo-wide runs; avoid `-Dtest=Pattern` from repo root unless you know the target exists, otherwise use the module’s suite or `-Dsurefire.failIfNoSpecifiedTests=false`. When you must target a single test class, pass the fully-qualified class name (e.g., `-Dtest=org.example.FooTest`) so Surefire can locate it deterministically. To run multiple tests at once, join multiple FQCNs with commas (example: `-Dtest=a.b.FooTest,a.b.BarTest`) and always append `-Dsurefire.failIfNoSpecifiedTests=false` to avoid premature build failure.
+- **Single-module tests:** prefer scoped commands over repo-wide runs; use fully-qualified test class names and append `-Dsurefire.failIfNoSpecifiedTests=false` when targeting specific tests (see Verification & Commands for flags).
 
 ## Compatibility, Performance & External Systems
 - Specify targeted engines and dialect files (MySQL 5.7/8.0, PostgreSQL 13+, openGauss, etc.) and guarantee backward-compatible behavior.
@@ -243,20 +226,14 @@ Always state which topology, registry, and engine versions (e.g., MySQL 5.7 vs 8
 - Favor Mockito over bespoke fixtures; only add new fixture classes when mocks cannot express the scenario.
 - Use marker interfaces when distinct rule/attribute types are needed; reuse SPI types such as `ShardingSphereRule` where possible.
 - Name tests after the production method under test; never probe private helpers directly—document unreachable branches instead.
-- Mock heavy dependencies (database/cache/registry/network) and prefer mocking over building deep object graphs; avoid `RETURNS_DEEP_STUBS` unless chained interactions demand it.
-- Before changing how mocks are created, scan the repository for similar tests (e.g., other rule decorators or executor tests) and reuse their proven mocking pattern instead of inventing a new structure.
-- When constructors hide collaborators, use `Plugins.getMemberAccessor()` to inject mocks and document why SPI creation is bypassed.
-- If a test already uses `@ExtendWith(AutoMockExtension.class)`, always declare the needed static collaborators via `@StaticMockSettings` instead of hand-written `mockStatic` blocks; when a class appears in `@StaticMockSettings`, do not call `mockStatic` on it—directly stub via `when(...)` (cast to `TypedSPI` if needed) to avoid ClassCast/duplicate-mock issues; justify any exception explicitly in the plan before coding.
-- Before adding coverage to a utility with multiple return paths, list every branch (no rule, non-Single config, wildcard blocks, missing data node, positive path, collection overload) and map each to a test; update the plan whenever this checklist changes.
-- Prefer imports over fully-qualified class names inside code and tests; if a class is used, add an import rather than using the full package path inline.
-- Before coding tests, prepare a concise branch-and-data checklist (all branches, inputs, expected outputs) and keep the plan in sync when the checklist changes.
+- Mock heavy dependencies (database/cache/registry/network) and prefer mocking over building deep object graphs.
+- For static/constructor mocking, use `@ExtendWith(AutoMockExtension.class)` with `@StaticMockSettings`; avoid hand-written `mockStatic`/`mockConstruction` unless you documented why the extension cannot be used.
+- When static methods or constructors need mocking, prefer `@ExtendWith(AutoMockExtension.class)` with `@StaticMockSettings` (or the extension’s constructor-mocking support); when a class is listed in `@StaticMockSettings`, do not call `mockStatic`/`mockConstruction` directly—stub via `when(...)` instead. Only if AutoMockExtension cannot be used and the reason is documented in the plan may you fall back to `mockStatic`/`mockConstruction`, wrapped in try-with-resources.
+- Before coding tests, follow the Coverage & Branch Checklist to map inputs/branches to planned assertions.
 - When a component is available via SPI (e.g., `TypedSPILoader`, `DatabaseTypedSPILoader`, `PushDownMetaDataRefresher`), obtain the instance through SPI by default; note any exceptions in the plan.
+- If the class under test implements `TypedSPI` or `DatabaseTypedSPI`, instantiate it via `TypedSPILoader` or `DatabaseTypedSPILoader` instead of calling `new` directly.
 - Do not mix Mockito matchers with raw arguments; choose a single style per invocation, and ensure the Mockito extension aligns with the mocking approach.
-- Never leave fully-qualified class names in production or test code; if a class is referenced, add an import and verify via a quick scan (`rg "\\." <path>`) before finishing.
-- When the user requires full branch/line coverage, treat 100% coverage as a blocking condition: enumerate branches, map tests, and keep adding cases until all branches are covered or explicitly waived; record the coverage requirement in the plan and self-check before concluding.
 - Compliance is mandatory: before any coding, re-read AGENTS.md and convert all hard requirements (SPI usage, no FQCN, mocking rules, coverage targets, planning steps) into a checklist in the plan; do not proceed or report completion until every item is satisfied or explicitly waived by the user.
 
-## Brevity & Signal
-- Prefer tables/bullets over prose walls; cite file paths (`kernel/src/...`) directly.
-- Eliminate repeated wording; reference prior sections instead of restating.
-- Default to ASCII; only mirror existing non-ASCII content when necessary.
+## Session Notes
+- MySQLSchemataQueryExecutorFactoryTest：public 方法分别测试，`accept` 与 `newInstance` 各自使用独立测试方法。

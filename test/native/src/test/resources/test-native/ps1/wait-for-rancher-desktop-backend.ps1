@@ -18,6 +18,7 @@
 #
 
 # This file is only used in the PowerShell 7 of ShardingSphere in GitHub Actions environment and should not be executed manually in a development environment.
+# Background information can be found at https://github.com/apache/shardingsphere/pull/35905 .
 $deadline = (Get-Date).AddMinutes(10)
 $state = "UNKNOWN"
 while ((Get-Date) -lt $deadline)

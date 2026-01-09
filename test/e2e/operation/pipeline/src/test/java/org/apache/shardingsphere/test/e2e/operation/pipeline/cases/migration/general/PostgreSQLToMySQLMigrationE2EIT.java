@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.test.e2e.operation.pipeline.cases.migration.general;
 
-import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.RandomUtils;
@@ -35,6 +34,7 @@ import org.apache.shardingsphere.test.e2e.operation.pipeline.framework.param.Pip
 import org.apache.shardingsphere.test.e2e.operation.pipeline.framework.param.PipelineE2ETestCaseArgumentsProvider;
 import org.apache.shardingsphere.test.e2e.operation.pipeline.framework.param.PipelineTestParameter;
 import org.awaitility.Awaitility;
+import org.awaitility.core.ConditionTimeoutException;
 import org.junit.jupiter.api.condition.EnabledIf;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ArgumentsSource;
@@ -150,17 +150,13 @@ class PostgreSQLToMySQLMigrationE2EIT extends AbstractMigrationE2EIT {
         }
     }
     
-    @SneakyThrows
     private static boolean waitForTableExistence(final Connection connection, final String tableName) {
-        int elapsedTime = 0;
-        while (elapsedTime < 60) {
-            if (tableExists(connection, tableName)) {
-                return true;
-            }
-            Thread.sleep(3 * 1000L);
-            elapsedTime += 3;
+        try {
+            Awaitility.await().ignoreExceptions().atMost(60L, TimeUnit.SECONDS).pollInterval(3L, TimeUnit.SECONDS).until(() -> tableExists(connection, tableName));
+            return true;
+        } catch (final ConditionTimeoutException ex) {
+            return false;
         }
-        return false;
     }
     
     private static boolean tableExists(final Connection connection, final String tableName) throws SQLException {

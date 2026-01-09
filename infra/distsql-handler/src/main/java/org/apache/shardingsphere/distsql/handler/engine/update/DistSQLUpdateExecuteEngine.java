@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.distsql.handler.engine.update;
 
 import org.apache.shardingsphere.distsql.handler.aware.DistSQLExecutorAwareSetter;
+import org.apache.shardingsphere.distsql.handler.engine.DistSQLConnectionContext;
 import org.apache.shardingsphere.distsql.handler.engine.update.rdl.rule.engine.database.DatabaseRuleDefinitionExecuteEngine;
 import org.apache.shardingsphere.distsql.handler.engine.update.rdl.rule.engine.global.GlobalRuleDefinitionExecuteEngine;
 import org.apache.shardingsphere.distsql.handler.engine.update.rdl.rule.spi.database.DatabaseRuleDefinitionExecutor;
@@ -48,10 +49,14 @@ public final class DistSQLUpdateExecuteEngine {
     
     private final String databaseName;
     
-    public DistSQLUpdateExecuteEngine(final DistSQLStatement sqlStatement, final String currentDatabaseName, final ContextManager contextManager) {
+    private final DistSQLConnectionContext distsqlConnectionContext;
+    
+    public DistSQLUpdateExecuteEngine(final DistSQLStatement sqlStatement, final String currentDatabaseName,
+                                      final ContextManager contextManager, final DistSQLConnectionContext distsqlConnectionContext) {
         this.sqlStatement = sqlStatement;
         this.contextManager = contextManager;
         databaseName = DatabaseNameUtils.getDatabaseName(sqlStatement, currentDatabaseName);
+        this.distsqlConnectionContext = distsqlConnectionContext;
     }
     
     /**
@@ -86,7 +91,7 @@ public final class DistSQLUpdateExecuteEngine {
         Optional<AdvancedDistSQLUpdateExecutor> advancedExecutor = TypedSPILoader.findService(AdvancedDistSQLUpdateExecutor.class, sqlStatement.getClass());
         DistSQLUpdateExecutor executor = advancedExecutor.isPresent() ? advancedExecutor.get() : TypedSPILoader.getService(DistSQLUpdateExecutor.class, sqlStatement.getClass());
         ShardingSphereDatabase database = null == databaseName ? null : contextManager.getDatabase(databaseName);
-        new DistSQLExecutorAwareSetter(executor).set(contextManager, database, null, sqlStatement);
+        new DistSQLExecutorAwareSetter(executor).set(contextManager, database, distsqlConnectionContext, sqlStatement);
         new DistSQLExecutorRequiredChecker(executor).check(sqlStatement, contextManager, database);
         executor.executeUpdate(sqlStatement, contextManager);
     }

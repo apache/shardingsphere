@@ -83,6 +83,16 @@ public interface DialectPipelineSQLBuilder extends DatabaseTypedSPI {
     }
     
     /**
+     * Build split by unique key subquery clause.
+     *
+     * @param qualifiedTableName qualified table name
+     * @param uniqueKey unique key
+     * @param hasLowerBound has lower bound
+     * @return built SQL
+     */
+    String buildSplitByUniqueKeyRangedSubqueryClause(String qualifiedTableName, String uniqueKey, boolean hasLowerBound);
+    
+    /**
      * Build create table SQLs.
      *
      * @param dataSource dataSource

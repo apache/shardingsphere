@@ -84,11 +84,13 @@ import java.util.Optional;
 /**
  * SQL federation engine.
  */
-@Slf4j
 @Getter
+@Slf4j
 public final class SQLFederationEngine implements AutoCloseable {
     
     private static final Collection<Class<?>> NEED_THROW_EXCEPTION_TYPES = Arrays.asList(SQLExecutionInterruptedException.class, SQLIntegrityConstraintViolationException.class);
+    
+    private static final int MAX_ERROR_MESSAGE_LENGTH = 5000;
     
     private final ProcessEngine processEngine = new ProcessEngine();
     
@@ -119,11 +121,11 @@ public final class SQLFederationEngine implements AutoCloseable {
     }
     
     /**
-     * Judge whether SQL federation enabled or not.
+     * Judge whether SQL federation enabled.
      *
-     * @return whether SQL federation enabled or not
+     * @return SQL federation enabled or disabled
      */
-    public boolean isSqlFederationEnabled() {
+    public boolean isSQLFederationEnabled() {
         return sqlFederationRule.getConfiguration().isSqlFederationEnabled();
     }
     
@@ -137,7 +139,7 @@ public final class SQLFederationEngine implements AutoCloseable {
     @SuppressWarnings({"unchecked", "rawtypes"})
     public boolean decide(final QueryContext queryContext, final RuleMetaData globalRuleMetaData) {
         SQLStatementContext sqlStatementContext = queryContext.getSqlStatementContext();
-        if (!sqlFederationRule.getConfiguration().isSqlFederationEnabled() || !isSupportedSQLStatementContext(sqlStatementContext)) {
+        if (!isSQLFederationEnabled() || !isSupportedSQLStatementContext(sqlStatementContext)) {
             return false;
         }
         boolean allQueryUseSQLFederation = sqlFederationRule.getConfiguration().isAllQueryUseSQLFederation();
@@ -160,11 +162,9 @@ public final class SQLFederationEngine implements AutoCloseable {
     }
     
     private boolean isSupportedSQLStatementContext(final SQLStatementContext sqlStatementContext) {
-        if (sqlStatementContext instanceof ExplainStatementContext) {
-            ExplainStatement explainStatement = ((ExplainStatementContext) sqlStatementContext).getSqlStatement();
-            return isSupportedSQLStatement(explainStatement.getExplainableSQLStatement());
-        }
-        return isSupportedSQLStatement(sqlStatementContext.getSqlStatement());
+        return isSupportedSQLStatement(sqlStatementContext instanceof ExplainStatementContext
+                ? ((ExplainStatementContext) sqlStatementContext).getSqlStatement().getExplainableSQLStatement()
+                : sqlStatementContext.getSqlStatement());
     }
     
     private boolean isSupportedSQLStatement(final SQLStatement sqlStatement) {
@@ -179,13 +179,13 @@ public final class SQLFederationEngine implements AutoCloseable {
      * @param federationContext federation context
      * @return result set
      */
-    public ResultSet executeQuery(final DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine, final JDBCExecutorCallback<? extends ExecuteResult> callback,
-                                  final SQLFederationContext federationContext) {
+    public ResultSet executeQuery(final DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine,
+                                  final JDBCExecutorCallback<? extends ExecuteResult> callback, final SQLFederationContext federationContext) {
         return execute0(prepareEngine, callback, federationContext);
     }
     
-    private ResultSet execute0(final DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine, final JDBCExecutorCallback<? extends ExecuteResult> queryCallback,
-                               final SQLFederationContext federationContext) {
+    private ResultSet execute0(final DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine,
+                               final JDBCExecutorCallback<? extends ExecuteResult> queryCallback, final SQLFederationContext federationContext) {
         queryContext = federationContext.getQueryContext();
         logSQL(queryContext, federationContext.getMetaData().getProps());
         try {
@@ -207,22 +207,18 @@ public final class SQLFederationEngine implements AutoCloseable {
             // CHECKSTYLE:OFF
         } catch (final Exception ex) {
             // CHECKSTYLE:ON
-            log.error("SQL Federation execute failed, sql {}, parameters {}", queryContext.getSql(), queryContext.getParameters(), ex);
+            String errorMessage = splitErrorMessage(ex);
+            log.error("SQL Federation execute failed, sql {}, parameters {}, reason {}", queryContext.getSql(), queryContext.getParameters(), errorMessage);
             closeResources(federationContext);
-            if (isNeedThrowException(ex)) {
+            if (NEED_THROW_EXCEPTION_TYPES.stream().anyMatch(each -> each.isAssignableFrom(ex.getClass()))) {
                 throw ex;
             }
-            throw new SQLFederationUnsupportedSQLException(queryContext.getSql(), ex);
+            throw new SQLFederationUnsupportedSQLException(queryContext.getSql(), errorMessage);
         }
     }
     
-    private boolean isNeedThrowException(final Exception ex) {
-        for (Class<?> each : NEED_THROW_EXCEPTION_TYPES) {
-            if (each.isAssignableFrom(ex.getClass())) {
-                return true;
-            }
-        }
-        return false;
+    private String splitErrorMessage(final Exception ex) {
+        return null == ex.getMessage() ? "" : ex.getMessage().substring(0, Math.min(ex.getMessage().length(), MAX_ERROR_MESSAGE_LENGTH));
     }
     
     private void closeResources(final SQLFederationContext federationContext) {
@@ -248,10 +244,9 @@ public final class SQLFederationEngine implements AutoCloseable {
     }
     
     private void logExecutionPlan(final SQLFederationExecutionPlan executionPlan, final ConfigurationProperties props) {
-        if (!props.<Boolean>getValue(ConfigurationPropertyKey.SQL_SHOW)) {
-            return;
+        if (props.<Boolean>getValue(ConfigurationPropertyKey.SQL_SHOW)) {
+            log.info("SQL Federation Execution Plan: {}", RelOptUtil.toString(executionPlan.getPhysicalPlan(), SqlExplainLevel.ALL_ATTRIBUTES).replaceAll(", id = \\d+", ""));
         }
-        log.info("SQL Federation Execution Plan: {}", RelOptUtil.toString(executionPlan.getPhysicalPlan(), SqlExplainLevel.ALL_ATTRIBUTES).replaceAll(", id = \\d+", ""));
     }
     
     private List<String> getSchemaPath(final SQLStatementContext sqlStatementContext) {
@@ -286,6 +281,16 @@ public final class SQLFederationEngine implements AutoCloseable {
         return result;
     }
     
+    /**
+     * Get result set.
+     *
+     * @return result set
+     */
+    public ResultSet getResultSet() {
+        SQLStatement sqlStatement = queryContext.getSqlStatementContext().getSqlStatement();
+        return sqlStatement instanceof SelectStatement || sqlStatement instanceof ExplainStatement ? resultSet : null;
+    }
+    
     @Override
     public void close() throws SQLException {
         Collection<SQLException> result = new LinkedList<>();
@@ -314,15 +319,5 @@ public final class SQLFederationEngine implements AutoCloseable {
         if (null != queryContext && null != schemaPlus) {
             processor.release(currentDatabaseName, currentSchemaName, queryContext, schemaPlus);
         }
-    }
-    
-    /**
-     * Get result set.
-     *
-     * @return result set
-     */
-    public ResultSet getResultSet() {
-        SQLStatement sqlStatement = queryContext.getSqlStatementContext().getSqlStatement();
-        return sqlStatement instanceof SelectStatement || sqlStatement instanceof ExplainStatement ? resultSet : null;
     }
 }

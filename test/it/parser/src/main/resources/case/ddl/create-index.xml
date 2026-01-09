@@ -403,4 +403,68 @@
         </table>
         <column start-index="54" stop-index="61" name="quantity" />
     </create-index>
+
+    <create-index sql-case-id="create_index_doris_using_inverted" index-type="INVERTED">
+        <index name="index1" start-index="13" stop-index="18" />
+        <table>
+            <simple-table name="table1" start-index="23" stop-index="28" />
+        </table>
+        <column start-index="31" stop-index="37" name="column1" />
+    </create-index>
+
+    <create-index sql-case-id="create_index_doris_using_ngram_bf" index-type="NGRAM_BF">
+        <index name="index1" start-index="13" stop-index="18" />
+        <table>
+            <simple-table name="table1" start-index="23" stop-index="28" />
+        </table>
+        <column start-index="31" stop-index="37" name="column1" />
+    </create-index>
+
+    <create-index sql-case-id="create_index_doris_using_ann" index-type="ANN">
+        <index name="index1" start-index="13" stop-index="18" />
+        <table>
+            <simple-table name="table1" start-index="23" stop-index="28" />
+        </table>
+        <column start-index="31" stop-index="37" name="column1" />
+    </create-index>
+
+    <create-index sql-case-id="create_index_doris_if_not_exists" if-not-exists="true" index-type="INVERTED">
+        <index name="index1" start-index="27" stop-index="32" />
+        <table>
+            <simple-table name="table1" start-index="37" stop-index="42" />
+        </table>
+        <column start-index="45" stop-index="51" name="column1" />
+    </create-index>
+
+    <create-index sql-case-id="create_index_doris_with_properties" index-type="INVERTED">
+        <index name="index1" start-index="13" stop-index="18" />
+        <table>
+            <simple-table name="table1" start-index="23" stop-index="28" />
+        </table>
+        <column start-index="31" stop-index="37" name="column1" />
+        <properties start-index="55" stop-index="88">
+            <property key="parser" value="standard" start-index="67" stop-index="87" />
+        </properties>
+    </create-index>
+
+    <create-index sql-case-id="create_index_doris_with_comment" index-type="INVERTED">
+        <index name="index1" start-index="13" stop-index="18" />
+        <table>
+            <simple-table name="table1" start-index="23" stop-index="28" />
+        </table>
+        <column start-index="31" stop-index="37" name="column1" />
+        <comment text="inverted index" start-index="64" stop-index="79" />
+    </create-index>
+
+    <create-index sql-case-id="create_index_doris_full_syntax" if-not-exists="true" index-type="INVERTED">
+        <index name="index1" start-index="27" stop-index="32" />
+        <table>
+            <simple-table name="table1" start-index="37" stop-index="42" />
+        </table>
+        <column start-index="45" stop-index="51" name="column1" />
+        <properties start-index="69" stop-index="102">
+            <property key="parser" value="standard" start-index="81" stop-index="101" />
+        </properties>
+        <comment text="full syntax" start-index="115" stop-index="127" />
+    </create-index>
 </sql-parser-test-cases>

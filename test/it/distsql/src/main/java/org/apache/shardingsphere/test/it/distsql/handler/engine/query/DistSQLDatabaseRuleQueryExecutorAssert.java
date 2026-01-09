@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.test.it.distsql.handler.engine.query;
 
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.distsql.handler.engine.DistSQLConnectionContext;
 import org.apache.shardingsphere.distsql.handler.engine.query.DistSQLQueryExecuteEngine;
 import org.apache.shardingsphere.distsql.statement.DistSQLStatement;
@@ -26,6 +27,7 @@ import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryRes
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.rule.scope.DatabaseRule;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 
 import java.sql.SQLException;
@@ -67,6 +69,7 @@ public final class DistSQLDatabaseRuleQueryExecutorAssert {
         when(mockedRule.getConfiguration()).thenReturn(ruleConfig);
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         when(database.getRuleMetaData()).thenReturn(new RuleMetaData(Collections.singleton(mockedRule)));
+        when(database.getProtocolType()).thenReturn(TypedSPILoader.getService(DatabaseType.class, "MockedDatabaseType"));
         when(result.getDatabase("foo_db")).thenReturn(database);
         return result;
     }

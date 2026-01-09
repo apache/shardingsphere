@@ -2059,7 +2059,19 @@
         </column-definition>
     </create-table>
     
-    <create-table sql-case-id="create_table_with_select">
+    <create-table sql-case-id="create_table_with_select" db-types="Doris">
+        <table name="t_order_new" start-index="13" stop-index="23"/>
+        <select>
+            <projections start-index="35" stop-index="35">
+                <shorthand-projection start-index="35" stop-index="35" />
+            </projections>
+            <from>
+                <simple-table name="t_order" start-index="42" stop-index="48" />
+            </from>
+        </select>
+    </create-table>
+
+    <create-table sql-case-id="create_table_with_select_without_query" db-types="Oracle">
         <table name="t_order_new" start-index="13" stop-index="23"/>
     </create-table>
     
@@ -3699,6 +3711,17 @@
         </column-definition>
         <storage-handler name="ICEBERG" start-index="54" stop-index="61" />
         <storage-format type="ORC" start-index="73" stop-index="76" />
+    </create-table>
+
+    <create-table sql-case-id="create_iceberg_table_as_select">
+        <table name="target" start-index="13" stop-index="18" />
+        <storage-handler name="ICEBERG" start-index="36" stop-index="43" />
+        <as-select query="SELECT * FROM source" start-index="48" stop-index="64" />
+    </create-table>
+
+    <create-table sql-case-id="create_iceberg_table_like_table">
+        <table name="target" like="source" start-index="13" stop-index="18"/>
+        <storage-handler name="ICEBERG" start-index="37" stop-index="44" />
     </create-table>
 
     <create-table sql-case-id="create_table_with_blob">

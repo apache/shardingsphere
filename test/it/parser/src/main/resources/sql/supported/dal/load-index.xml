@@ -17,10 +17,10 @@
   -->
 
 <sql-cases>
-    <sql-case id="load_index_single_table_all_partition" value="LOAD INDEX INTO CACHE t_order PARTITION (ALL)" db-types="MySQL" />
-    <sql-case id="load_index_single_table_multiple_partition" value="LOAD INDEX INTO CACHE t_order PARTITION (p0, p1)" db-types="MySQL" />
-    <sql-case id="load_index_multiple_table_multiple_partition" value="LOAD INDEX INTO CACHE t_order PARTITION (p0, p1), t_user PARTITION (p2, p3)" db-types="MySQL" />
-    <sql-case id="load_index_single_table_multiple_index" value="LOAD INDEX INTO CACHE t_order INDEX (idx_a, idx_b)" db-types="MySQL" />
-    <sql-case id="load_index_multiple_table_multiple_index" value="LOAD INDEX INTO CACHE t_order INDEX (idx_order_1, idx_order_2), t_user INDEX (idx_user_1, idx_user_2)" db-types="MySQL" />
-    <sql-case id="load_index_ignore_leaves" value="LOAD INDEX INTO CACHE t_order IGNORE LEAVES, t_user IGNORE LEAVES" db-types="MySQL" />
+    <sql-case id="load_index_single_table_all_partition" value="LOAD INDEX INTO CACHE t_order PARTITION (ALL)" db-types="MySQL,Doris" />
+    <sql-case id="load_index_single_table_multiple_partition" value="LOAD INDEX INTO CACHE t_order PARTITION (p0, p1)" db-types="MySQL,Doris" />
+    <sql-case id="load_index_multiple_table_multiple_partition" value="LOAD INDEX INTO CACHE t_order PARTITION (p0, p1), t_user PARTITION (p2, p3)" db-types="MySQL,Doris" />
+    <sql-case id="load_index_single_table_multiple_index" value="LOAD INDEX INTO CACHE t_order INDEX (idx_a, idx_b)" db-types="MySQL,Doris" />
+    <sql-case id="load_index_multiple_table_multiple_index" value="LOAD INDEX INTO CACHE t_order INDEX (idx_order_1, idx_order_2), t_user INDEX (idx_user_1, idx_user_2)" db-types="MySQL,Doris" />
+    <sql-case id="load_index_ignore_leaves" value="LOAD INDEX INTO CACHE t_order IGNORE LEAVES, t_user IGNORE LEAVES" db-types="MySQL,Doris" />
 </sql-cases>

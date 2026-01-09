@@ -2493,4 +2493,112 @@
             <restrict start-index="161" stop-index="164" />
         </replace-columns>
     </alter-table>
+    
+    <alter-table sql-case-id="alter_create_branch_default">
+        <table name="test" start-index="12" stop-index="15" />
+    </alter-table>
+    
+    <alter-table sql-case-id="alter_create_branch_snapshot_id">
+        <table name="test" start-index="12" stop-index="15" />
+    </alter-table>
+    
+    <alter-table sql-case-id="alter_create_branch_system_time">
+        <table name="test" start-index="12" stop-index="15" />
+    </alter-table>
+    
+    <alter-table sql-case-id="alter_create_branch_snapshot_retention">
+        <table name="test" start-index="12" stop-index="15" />
+    </alter-table>
+    
+    <alter-table sql-case-id="alter_create_branch_tag">
+        <table name="test" start-index="12" stop-index="15" />
+    </alter-table>
+    
+    <alter-table sql-case-id="alter_create_tag_default">
+        <table name="test" start-index="12" stop-index="15" />
+    </alter-table>
+    
+    <alter-table sql-case-id="alter_create_tag_snapshot_id">
+        <table name="test" start-index="12" stop-index="15" />
+    </alter-table>
+    
+    <alter-table sql-case-id="alter_create_tag_system_time">
+        <table name="test" start-index="12" stop-index="15" />
+    </alter-table>
+    
+    <alter-table sql-case-id="alter_drop_branch_basic">
+        <table name="test" start-index="12" stop-index="15" />
+    </alter-table>
+    
+    <alter-table sql-case-id="alter_drop_branch_if_exists">
+        <table name="test" start-index="12" stop-index="15" />
+    </alter-table>
+    
+    <alter-table sql-case-id="alter_drop_tag_basic">
+        <table name="test" start-index="12" stop-index="15" />
+    </alter-table>
+    
+    <alter-table sql-case-id="alter_drop_tag_if_exists">
+        <table name="test" start-index="12" stop-index="15" />
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_rename_table_doris">
+        <table name="table1" start-index="12" stop-index="17" />
+        <rename-table name="table2" start-index="26" stop-index="31" />
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_rename_column_doris">
+        <table name="example_table" start-index="12" stop-index="24" />
+        <rename-column start-index="26" stop-index="44">
+            <old-column-name name="c1" start-index="40" stop-index="41" />
+            <column-name name="c2" start-index="43" stop-index="44" />
+        </rename-column>
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_rename_rollup">
+        <table name="example_table" start-index="12" stop-index="24" />
+        <rename-rollup start-index="26" stop-index="54">
+            <old-rollup name="rollup1" start-index="40" stop-index="46" />
+            <new-rollup name="rollup2" start-index="48" stop-index="54" />
+        </rename-rollup>
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_rename_partition">
+        <table name="example_table" start-index="12" stop-index="24" />
+        <rename-partition start-index="26" stop-index="63">
+            <old-partition name="partition1" start-index="43" stop-index="52" />
+            <new-partition name="partition2" start-index="54" stop-index="63" />
+        </rename-partition>
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_add_column_first_doris">
+        <table name="t_order" start-index="12" stop-index="18" />
+        <add-column>
+            <column-definition type="INT" start-index="24" stop-index="34">
+                <column name="column9" start-index="24" stop-index="30" />
+            </column-definition>
+            <column-position start-index="36" stop-index="40" />
+        </add-column>
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_add_column_after_doris">
+        <table name="t_order" start-index="12" stop-index="18" />
+        <add-column>
+            <column-definition type="INT" start-index="24" stop-index="35">
+                <column name="column10" start-index="24" stop-index="31" />
+            </column-definition>
+            <column-position start-index="37" stop-index="50">
+                <column name="order_id" start-index="43" stop-index="50" />
+            </column-position>
+        </add-column>
+    </alter-table>
+    
+    <alter-table sql-case-id="alter_table_with_algorithm_lock_doris">
+        <table name="t_order" start-index="12" stop-index="18" />
+        <add-column>
+            <column-definition type="INT" start-index="31" stop-index="41">
+                <column name="col_alg" start-index="31" stop-index="37" />
+            </column-definition>
+        </add-column>
+    </alter-table>
 </sql-parser-test-cases>

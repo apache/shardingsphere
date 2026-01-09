@@ -187,6 +187,8 @@ public enum SQLVisitorRule {
     
     ALTER_SYSTEM("AlterSystem", SQLStatementType.DDL),
     
+    ALTER_STORAGE_POLICY("AlterStoragePolicy", SQLStatementType.DDL),
+    
     DROP_SERVER("DropServer", SQLStatementType.DDL),
     
     CREATE_TRIGGER("CreateTrigger", SQLStatementType.DDL),
@@ -274,6 +276,10 @@ public enum SQLVisitorRule {
     SECURITY_LABEL("SecurityLabelStmt", SQLStatementType.DDL),
     
     UNLISTEN("Unlisten", SQLStatementType.DDL),
+    
+    RESUME_JOB("ResumeJob", SQLStatementType.DDL),
+    
+    ALTER_CATALOG("AlterCatalog", SQLStatementType.DDL),
     
     SET_CONSTRAINTS("SetConstraints", SQLStatementType.TCL),
     
@@ -472,6 +478,12 @@ public enum SQLVisitorRule {
     DROP_RESOURCE_GROUP("DropResourceGroup", SQLStatementType.DAL),
     
     ALTER_RESOURCE_GROUP("AlterResourceGroup", SQLStatementType.DAL),
+    
+    ALTER_RESOURCE("AlterResource", SQLStatementType.DAL),
+    
+    DORIS_ALTER_SYSTEM("DorisAlterSystem", SQLStatementType.DAL),
+    
+    CREATE_SQL_BLOCK_RULE("CreateSqlBlockRule", SQLStatementType.DAL),
     
     DELIMITER("Delimiter", SQLStatementType.DAL),
     
@@ -703,6 +715,8 @@ public enum SQLVisitorRule {
     
     DROP_ENCRYPT_KEY("DropEncryptKey", SQLStatementType.DDL),
     
+    CREATE_ENCRYPT_KEY("CreateEncryptKey", SQLStatementType.DDL),
+    
     SYSTEM_ACTION("SystemAction", SQLStatementType.DDL),
     
     EMPTY_STATEMENT("EmptyStatement", SQLStatementType.DAL),
@@ -714,6 +728,8 @@ public enum SQLVisitorRule {
     CREATE_LIBRARY("CreateLibrary", SQLStatementType.DDL),
     
     SWITCH("Switch", SQLStatementType.DDL),
+    
+    SWITCH_CATALOG("SwitchCatalog", SQLStatementType.DAL),
     
     CREATE_PROFILE("CreateProfile", SQLStatementType.DDL),
     

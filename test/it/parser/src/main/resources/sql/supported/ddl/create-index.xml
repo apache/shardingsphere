@@ -17,7 +17,7 @@
   -->
 
 <sql-cases>
-    <sql-case id="create_index_with_lock_algorithm" value="CREATE INDEX idx_name ON t_order (name) LOCK=SHARED ALGORITHM=COPY" db-types="MySQL" />
+    <sql-case id="create_index_with_lock_algorithm" value="CREATE INDEX idx_name ON t_order (name) LOCK=SHARED ALGORITHM=COPY" db-types="MySQL,Doris" />
     <sql-case id="create_index_with_lock" value="CREATE INDEX idx_name ON t_order (name) LOCK=SHARED" db-types="MySQL" />
     <sql-case id="create_index_with_algorithm" value="CREATE INDEX idx_name ON t_order (name) ALGORITHM=COPY" db-types="MySQL" />
     <sql-case id="create_index_with_algorithm_lock" value="CREATE INDEX idx_name ON t_order (name) ALGORITHM=COPY LOCK=SHARED" db-types="MySQL" />
@@ -92,4 +92,11 @@
     <sql-case id="create_index_full_options_with_stored_by" value="CREATE INDEX idx_products_full ON TABLE products (product_id, category, price) AS 'org.apache.hadoop.hive.ql.index.compact.CompactIndexHandler' WITH DEFERRED REBUILD IDXPROPERTIES ('index_type' = 'secondary') IN TABLE idx_products_data STORED BY 'org.apache.hadoop.hive.hbase.HBaseStorageHandler' WITH SERDEPROPERTIES ('hbase.table.name' = 'products:index') LOCATION '/user/hive/indexes/products_full_idx' TBLPROPERTIES ('hbase.mapred.output.key.class' = 'org.apache.hadoop.hbase.io.ImmutableBytesWritable') COMMENT 'Full index on products table stored in HBase'" db-types="Hive" />
     <sql-case id="create_index_with_deferred_rebuild_and_in_table" value="CREATE INDEX idx_order_customer ON TABLE orders (customer_id) AS 'org.apache.hadoop.hive.ql.index.compact.CompactIndexHandler' WITH DEFERRED REBUILD IN TABLE idx_orders_customer" db-types="Hive" />
     <sql-case id="create_index_with_location_tblproperties_comment" value="CREATE INDEX idx_product_quantity ON TABLE inventory (quantity) AS 'org.apache.hadoop.hive.ql.index.compact.CompactIndexHandler' LOCATION '/user/hive/indexes/inventory_quantity_idx' TBLPROPERTIES ('storage_policy' = 'hot', 'compression' = 'lzo') COMMENT 'Index on inventory quantity for stock level queries'" db-types="Hive" />
+    <sql-case id="create_index_doris_using_inverted" value="CREATE INDEX index1 ON table1 (column1) USING INVERTED" db-types="Doris" />
+    <sql-case id="create_index_doris_using_ngram_bf" value="CREATE INDEX index1 ON table1 (column1) USING NGRAM_BF" db-types="Doris" />
+    <sql-case id="create_index_doris_using_ann" value="CREATE INDEX index1 ON table1 (column1) USING ANN" db-types="Doris" />
+    <sql-case id="create_index_doris_if_not_exists" value="CREATE INDEX IF NOT EXISTS index1 ON table1 (column1) USING INVERTED" db-types="Doris" />
+    <sql-case id="create_index_doris_with_properties" value="CREATE INDEX index1 ON table1 (column1) USING INVERTED PROPERTIES ('parser' = 'standard')" db-types="Doris" />
+    <sql-case id="create_index_doris_with_comment" value="CREATE INDEX index1 ON table1 (column1) USING INVERTED COMMENT 'inverted index'" db-types="Doris" />
+    <sql-case id="create_index_doris_full_syntax" value="CREATE INDEX IF NOT EXISTS index1 ON table1 (column1) USING INVERTED PROPERTIES ('parser' = 'standard') COMMENT 'full syntax'" db-types="Doris" />
 </sql-cases>

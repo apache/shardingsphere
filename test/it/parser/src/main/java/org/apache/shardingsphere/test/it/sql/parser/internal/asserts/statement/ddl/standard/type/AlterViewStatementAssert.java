@@ -20,11 +20,15 @@ package org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.constraint.ConstraintDefinitionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.view.ViewColumnSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.view.AlterViewStatement;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAssertContext;
+import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.SQLSegmentAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.definition.ConstraintDefinitionAssert;
+import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.identifier.IdentifierValueAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.table.TableAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.dml.standard.type.SelectStatementAssert;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.column.ExpectedViewColumn;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.standard.view.AlterViewStatementTestCase;
 
 import java.util.Optional;
@@ -52,6 +56,7 @@ public final class AlterViewStatementAssert {
         assertViewDefinition(assertContext, actual, expected);
         assertSelect(assertContext, actual, expected);
         assertConstraintDefinition(assertContext, actual, expected);
+        assertColumns(assertContext, actual, expected);
     }
     
     private static void assertView(final SQLCaseAssertContext assertContext, final AlterViewStatement actual, final AlterViewStatementTestCase expected) {
@@ -84,6 +89,24 @@ public final class AlterViewStatementAssert {
         } else {
             assertTrue(constraintDefinition.isPresent(), "actual constraint definition should exist");
             ConstraintDefinitionAssert.assertIs(assertContext, constraintDefinition.get(), expected.getConstraintDefinition());
+        }
+    }
+    
+    private static void assertColumns(final SQLCaseAssertContext assertContext, final AlterViewStatement actual, final AlterViewStatementTestCase expected) {
+        assertThat(assertContext.getText("View columns size assertion error: "), actual.getColumns().size(), is(expected.getColumns().size()));
+        int count = 0;
+        for (ViewColumnSegment each : actual.getColumns()) {
+            ExpectedViewColumn expectedColumn = expected.getColumns().get(count);
+            IdentifierValueAssert.assertIs(assertContext, each.getColumn().getIdentifier(), expectedColumn, "View column");
+            SQLSegmentAssert.assertIs(assertContext, each, expectedColumn);
+            if (null != expectedColumn.getComment()) {
+                assertTrue(each.getComment().isPresent(), assertContext.getText(String.format("View column `%s` should have comment", expectedColumn.getName())));
+                assertThat(assertContext.getText(String.format("View column `%s` comment assertion error: ", expectedColumn.getName())),
+                        each.getComment().get(), is(expectedColumn.getComment()));
+            } else {
+                assertFalse(each.getComment().isPresent(), assertContext.getText(String.format("View column `%s` should not have comment", expectedColumn.getName())));
+            }
+            count++;
         }
     }
 }

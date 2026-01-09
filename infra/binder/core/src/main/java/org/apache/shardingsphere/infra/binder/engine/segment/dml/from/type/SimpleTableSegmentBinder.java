@@ -88,15 +88,15 @@ public final class SimpleTableSegmentBinder {
                                           final Multimap<CaseInsensitiveString, TableSegmentBinderContext> tableBinderContexts) {
         binderContext.getPivotColumnNames().addAll(segment.getPivot().map(PivotSegment::getPivotColumnNames).orElse(Collections.emptyList()));
         IdentifierValue databaseName = getDatabaseName(segment, binderContext);
-        IdentifierValue schemaName = getSchemaName(segment, binderContext, databaseName);
+        Optional<IdentifierValue> schemaName = getSchemaName(segment, binderContext, databaseName);
         IdentifierValue tableName = segment.getTableName().getIdentifier();
-        ShardingSphereSchema schema = binderContext.getMetaData().getDatabase(databaseName.getValue()).getSchema(schemaName.getValue());
-        checkTableExists(binderContext, schema, schemaName.getValue(), tableName.getValue());
-        checkTableMetadata(binderContext, schema, schemaName.getValue(), tableName.getValue());
+        Optional<ShardingSphereSchema> schema = schemaName.map(identifierValue -> binderContext.getMetaData().getDatabase(databaseName.getValue()).getSchema(identifierValue.getValue()));
+        checkTableExists(binderContext, schema.orElse(null), tableName.getValue());
+        checkTableMetadata(binderContext, schema.orElse(null), schemaName.map(IdentifierValue::getValue).orElse(null), tableName.getValue());
         tableBinderContexts.put(new CaseInsensitiveString(segment.getAliasName().orElseGet(tableName::getValue)),
-                createSimpleTableBinderContext(segment, schema, databaseName, schemaName, binderContext));
+                createSimpleTableBinderContext(segment, schema.orElse(null), databaseName, schemaName.orElse(null), binderContext));
         TableNameSegment tableNameSegment = new TableNameSegment(segment.getTableName().getStartIndex(), segment.getTableName().getStopIndex(), tableName);
-        tableNameSegment.setTableBoundInfo(new TableSegmentBoundInfo(databaseName, schemaName));
+        tableNameSegment.setTableBoundInfo(new TableSegmentBoundInfo(databaseName, schemaName.orElse(null)));
         SimpleTableSegment result = new SimpleTableSegment(tableNameSegment);
         segment.getOwner().ifPresent(result::setOwner);
         segment.getAliasSegment().ifPresent(result::setAlias);
@@ -112,62 +112,70 @@ public final class SimpleTableSegmentBinder {
         return result;
     }
     
-    private static IdentifierValue getSchemaName(final SimpleTableSegment segment, final SQLStatementBinderContext binderContext, final IdentifierValue databaseName) {
-        IdentifierValue result = getSchemaName(segment, binderContext);
-        ShardingSpherePreconditions.checkState(binderContext.getMetaData().getDatabase(databaseName.getValue()).containsSchema(result.getValue()),
-                () -> new SchemaNotFoundException(result.getValue()));
+    private static Optional<IdentifierValue> getSchemaName(final SimpleTableSegment segment, final SQLStatementBinderContext binderContext, final IdentifierValue databaseName) {
+        Optional<IdentifierValue> result = getSchemaName(segment, binderContext);
+        result.ifPresent(identifierValue -> ShardingSpherePreconditions.checkState(binderContext.getMetaData().getDatabase(databaseName.getValue()).containsSchema(identifierValue.getValue()),
+                () -> new SchemaNotFoundException(identifierValue.getValue())));
         return result;
     }
     
-    private static IdentifierValue getSchemaName(final SimpleTableSegment segment, final SQLStatementBinderContext binderContext) {
+    private static Optional<IdentifierValue> getSchemaName(final SimpleTableSegment segment, final SQLStatementBinderContext binderContext) {
         if (segment.getOwner().isPresent()) {
-            return segment.getOwner().get().getIdentifier();
+            return Optional.ofNullable(segment.getOwner().get().getIdentifier());
         }
-        // TODO getSchemaName according to search path
         DatabaseType databaseType = binderContext.getSqlStatement().getDatabaseType();
         DatabaseTypeRegistry databaseTypeRegistry = new DatabaseTypeRegistry(databaseType);
-        Optional<String> defaultSystemSchema = databaseTypeRegistry.getDialectDatabaseMetaData().getSchemaOption().getDefaultSystemSchema();
-        return defaultSystemSchema.isPresent() && SystemSchemaManager.isSystemTable(databaseType.getType(), defaultSystemSchema.get(), segment.getTableName().getIdentifier().getValue())
-                ? new IdentifierValue(defaultSystemSchema.get())
-                : new IdentifierValue(databaseTypeRegistry.getDefaultSchemaName(binderContext.getCurrentDatabaseName()));
+        DialectDatabaseMetaData dialectDatabaseMetaData = databaseTypeRegistry.getDialectDatabaseMetaData();
+        Optional<String> defaultSystemSchema = dialectDatabaseMetaData.getSchemaOption().getDefaultSystemSchema();
+        if (defaultSystemSchema.isPresent() && SystemSchemaManager.isSystemTable(databaseType.getType(), defaultSystemSchema.get(), segment.getTableName().getIdentifier().getValue())) {
+            return Optional.of(new IdentifierValue(defaultSystemSchema.get()));
+        }
+        return Optional.of(new IdentifierValue(databaseTypeRegistry.getDefaultSchemaName(binderContext.getCurrentDatabaseName())));
     }
     
-    private static void checkTableExists(final SQLStatementBinderContext binderContext, final ShardingSphereSchema schema, final String schemaName, final String tableName) {
+    private static void checkTableExists(final SQLStatementBinderContext binderContext, final ShardingSphereSchema schema, final String tableName) {
         // TODO refactor table exists check with spi @duanzhengqiang
         if (binderContext.getSqlStatement() instanceof CreateTableStatement && isCreateTable(((CreateTableStatement) binderContext.getSqlStatement()).getTable(), tableName)) {
             ShardingSpherePreconditions.checkState(binderContext.getHintValueContext().isSkipMetadataValidate()
-                    || ((CreateTableStatement) binderContext.getSqlStatement()).isIfNotExists() || !schema.containsTable(tableName), () -> new TableExistsException(tableName));
+                    || ((CreateTableStatement) binderContext.getSqlStatement()).isIfNotExists() || null == schema || !schema.containsTable(tableName),
+                    () -> new TableExistsException(tableName));
             return;
         }
         if (binderContext.getSqlStatement() instanceof AlterTableStatement && isRenameTable((AlterTableStatement) binderContext.getSqlStatement(), tableName)) {
-            ShardingSpherePreconditions.checkState(binderContext.getHintValueContext().isSkipMetadataValidate() || !schema.containsTable(tableName), () -> new TableExistsException(tableName));
+            ShardingSpherePreconditions.checkState(binderContext.getHintValueContext().isSkipMetadataValidate() || null == schema || !schema.containsTable(tableName),
+                    () -> new TableExistsException(tableName));
             return;
         }
         if (binderContext.getSqlStatement() instanceof DropTableStatement) {
-            ShardingSpherePreconditions.checkState(((DropTableStatement) binderContext.getSqlStatement()).isIfExists() || schema.containsTable(tableName), () -> new TableNotFoundException(tableName));
+            ShardingSpherePreconditions.checkState(((DropTableStatement) binderContext.getSqlStatement()).isIfExists() || null != schema && schema.containsTable(tableName),
+                    () -> new TableNotFoundException(tableName));
             return;
         }
         if (binderContext.getSqlStatement() instanceof RenameTableStatement && isRenameTable((RenameTableStatement) binderContext.getSqlStatement(), tableName)) {
-            ShardingSpherePreconditions.checkState(binderContext.getHintValueContext().isSkipMetadataValidate() || !schema.containsTable(tableName), () -> new TableExistsException(tableName));
+            ShardingSpherePreconditions.checkState(binderContext.getHintValueContext().isSkipMetadataValidate() || null == schema || !schema.containsTable(tableName),
+                    () -> new TableExistsException(tableName));
             return;
         }
         if (binderContext.getSqlStatement() instanceof CreateViewStatement && isCreateTable(((CreateViewStatement) binderContext.getSqlStatement()).getView(), tableName)) {
             ShardingSpherePreconditions.checkState(binderContext.getHintValueContext().isSkipMetadataValidate()
-                    || ((CreateViewStatement) binderContext.getSqlStatement()).isReplaceView() || !schema.containsTable(tableName), () -> new TableExistsException(tableName));
+                    || ((CreateViewStatement) binderContext.getSqlStatement()).isReplaceView() || null == schema || !schema.containsTable(tableName),
+                    () -> new TableExistsException(tableName));
             return;
         }
         if (binderContext.getSqlStatement() instanceof AlterViewStatement && isRenameView((AlterViewStatement) binderContext.getSqlStatement(), tableName)) {
-            ShardingSpherePreconditions.checkState(binderContext.getHintValueContext().isSkipMetadataValidate() || !schema.containsTable(tableName), () -> new TableExistsException(tableName));
+            ShardingSpherePreconditions.checkState(binderContext.getHintValueContext().isSkipMetadataValidate() || null == schema || !schema.containsTable(tableName),
+                    () -> new TableExistsException(tableName));
             return;
         }
         if (binderContext.getSqlStatement() instanceof DropViewStatement) {
-            ShardingSpherePreconditions.checkState(((DropViewStatement) binderContext.getSqlStatement()).isIfExists() || schema.containsTable(tableName), () -> new TableNotFoundException(tableName));
+            ShardingSpherePreconditions.checkState(((DropViewStatement) binderContext.getSqlStatement()).isIfExists() || null != schema && schema.containsTable(tableName),
+                    () -> new TableNotFoundException(tableName));
             return;
         }
         if ("DUAL".equalsIgnoreCase(tableName)) {
             return;
         }
-        if (SystemSchemaManager.isSystemTable(schemaName, tableName)) {
+        if (null != schema && SystemSchemaManager.isSystemTable(schema.getName(), tableName)) {
             return;
         }
         if (binderContext.getExternalTableBinderContexts().containsKey(new CaseInsensitiveString(tableName))) {
@@ -176,7 +184,7 @@ public final class SimpleTableSegmentBinder {
         if (binderContext.getCommonTableExpressionsSegmentsUniqueAliases().contains(tableName)) {
             return;
         }
-        ShardingSpherePreconditions.checkState(schema.containsTable(tableName), () -> new TableNotFoundException(tableName));
+        ShardingSpherePreconditions.checkState(null != schema && schema.containsTable(tableName), () -> new TableNotFoundException(tableName));
     }
     
     private static boolean isCreateTable(final SimpleTableSegment simpleTableSegment, final String tableName) {
@@ -201,7 +209,7 @@ public final class SimpleTableSegmentBinder {
     }
     
     private static void checkTableMetadata(final SQLStatementBinderContext binderContext, final ShardingSphereSchema schema, final String schemaName, final String tableName) {
-        if (binderContext.getHintValueContext().isSkipMetadataValidate()) {
+        if (binderContext.getHintValueContext().isSkipMetadataValidate() || null == schema) {
             return;
         }
         ShardingSphereTable shardingSphereTable = schema.getTable(tableName);
@@ -231,7 +239,7 @@ public final class SimpleTableSegmentBinder {
     private static SimpleTableSegmentBinderContext createSimpleTableBinderContext(final SimpleTableSegment segment, final ShardingSphereSchema schema, final IdentifierValue databaseName,
                                                                                   final IdentifierValue schemaName, final SQLStatementBinderContext binderContext) {
         IdentifierValue tableName = segment.getTableName().getIdentifier();
-        if (binderContext.getMetaData().getDatabase(databaseName.getValue()).getSchema(schemaName.getValue()).containsTable(tableName.getValue())) {
+        if (null != schema && schema.containsTable(tableName.getValue())) {
             return createSimpleTableSegmentBinderContextWithMetaData(segment, schema, databaseName, schemaName, binderContext, tableName);
         }
         if (binderContext.getSqlStatement() instanceof CreateTableStatement) {

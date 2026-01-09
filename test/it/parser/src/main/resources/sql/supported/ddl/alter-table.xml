@@ -65,8 +65,8 @@
     <sql-case id="alter_table_with_space" value="    ALTER TABLE
         t_order" db-types="MySQL,Oracle" />
     <sql-case id="alter_table_with_back_quota" value="ALTER TABLE `t_order` FORCE" db-types="MySQL" />
-    <sql-case id="alter_table_add_column" value="ALTER TABLE t_order ADD column4 VARCHAR(10)" db-types="MySQL, PostgreSQL,openGauss" />
-    <sql-case id="alter_table_add_columns" value="ALTER TABLE t_order ADD column4 VARCHAR(10), ADD column5 VARCHAR(10), ADD column6 VARCHAR(10)" db-types="MySQL,PostgreSQL,openGauss" />
+    <sql-case id="alter_table_add_column" value="ALTER TABLE t_order ADD column4 VARCHAR(10)" db-types="MySQL, PostgreSQL,openGauss,Doris" />
+    <sql-case id="alter_table_add_columns" value="ALTER TABLE t_order ADD column4 VARCHAR(10), ADD column5 VARCHAR(10), ADD column6 VARCHAR(10)" db-types="MySQL,PostgreSQL,openGauss,Doris" />
     <sql-case id="alter_table_add_columns_integer_type_mysql" value="ALTER TABLE t_order ADD column4 INTEGER, ADD column5 TINYINT, ADD column6 MEDIUMINT" db-types="MySQL" />
     <sql-case id="alter_table_add_columns_integer_type_oracle" value="ALTER TABLE t_order ADD (column4 INTEGER, column5 INT, column6 SMALLINT)" db-types="Oracle" />
     <sql-case id="alter_table_add_columns_fixed_point_type" value="ALTER TABLE t_order ADD column4 decimal(10,2), ADD column5 NUMERIC" db-types="MySQL,PostgreSQL,openGauss" />
@@ -84,6 +84,8 @@
     <sql-case id="alter_table_add_column_with_first" value="ALTER TABLE t_order ADD column3 VARCHAR(10) FIRST" db-types="MySQL" />
     <sql-case id="alter_table_add_column_with_after" value="ALTER TABLE t_order ADD column4 VARCHAR(10) AFTER order_id" db-types="MySQL" />
     <sql-case id="alter_table_add_column_with_first_after" value="ALTER TABLE t_order ADD column5 VARCHAR(10) FIRST, ADD column6 VARCHAR(10) FIRST, ADD column7 VARCHAR(10) AFTER column5, ADD column8 VARCHAR(10) AFTER column6" db-types="MySQL" />
+    <sql-case id="alter_table_add_column_first_doris" value="ALTER TABLE t_order ADD column9 INT FIRST" db-types="Doris" />
+    <sql-case id="alter_table_add_column_after_doris" value="ALTER TABLE t_order ADD column10 INT AFTER order_id" db-types="Doris" />
     <sql-case id="alter_table_modify_column" value="ALTER TABLE t_order MODIFY column4 VARCHAR(20)" db-types="MySQL,Oracle" />
     <sql-case id="alter_table_modify_columns" value="ALTER TABLE t_order MODIFY column4 VARCHAR(20), MODIFY column5 VARCHAR(20), MODIFY column6 VARCHAR(20)" db-types="MySQL" />
     <sql-case id="alter_table_modify_column_with_first" value="ALTER TABLE t_order MODIFY status VARCHAR(20) FIRST" db-types="MySQL" />
@@ -91,7 +93,7 @@
     <sql-case id="alter_table_modify_column_with_first_after" value="ALTER TABLE t_order MODIFY status VARCHAR(20) FIRST, MODIFY user_id INT AFTER status" db-types="MySQL" />
     <sql-case id="alter_table_drop_column" value="ALTER TABLE t_order DROP COLUMN user_id" db-types="PostgreSQL" />
     <sql-case id="alter_table_drop_columns" value="ALTER TABLE t_order DROP user_id, DROP column5" db-types="MySQL,PostgreSQL,openGauss" />
-    <sql-case id="alter_table_change_column" value="ALTER TABLE t_order CHANGE user_id column4 VARCHAR(10)" db-types="MySQL" />
+    <sql-case id="alter_table_change_column" value="ALTER TABLE t_order CHANGE user_id column4 VARCHAR(10)" db-types="MySQL,Doris" />
     <sql-case id="alter_table_add_primary_key" value="ALTER TABLE t_order ADD CONSTRAINT pk_user_id PRIMARY KEY (user_id)" />
     <sql-case id="alter_table_add_composite_primary_key" value="ALTER TABLE t_order ADD status int,ADD CONSTRAINT pk_order_id_user_id_status PRIMARY KEY (order_id, user_id, status)" db-types="MySQL,PostgreSQL,openGauss" />
 <!--    TODO support PostgreSQL,openGauss-->
@@ -109,7 +111,7 @@
     <sql-case id="alter_table_drop_index" value="ALTER TABLE t_order DROP INDEX order_index" db-types="MySQL" />
     <sql-case id="alter_table_drop_indexes" value="ALTER TABLE t_order DROP INDEX idx_column1, DROP INDEX idx_column2, DROP INDEX idx_column3" db-types="MySQL" />
     <sql-case id="alter_table_rename_index" value="ALTER TABLE t_order RENAME INDEX idx_column1_bak TO idx_column1" db-types="MySQL" />
-    <sql-case id="alter_table_composite_operate_columns" value="ALTER TABLE t_order ADD column4 VARCHAR(10), ADD column5 VARCHAR(10), ADD column6 VARCHAR(10),MODIFY user_id bigint, drop column status" db-types="MySQL" />
+    <sql-case id="alter_table_composite_operate_columns" value="ALTER TABLE t_order ADD column4 VARCHAR(10), ADD column5 VARCHAR(10), ADD column6 VARCHAR(10),MODIFY user_id bigint, drop column status" db-types="MySQL,Doris" />
     <sql-case id="alter_table_with_quota" value="ALTER TABLE &quot;t_order&quot; PARALLEL" db-types="Oracle" />
 <!--    TODO support PostgreSQL,openGauss-->
     <sql-case id="alter_table_add_check" value="ALTER TABLE t_order ADD CONSTRAINT chk_order_id CHECK (order_id > 0)" db-types="Oracle,SQLServer" />
@@ -172,8 +174,8 @@
     <sql-case id="alter_table_modify_range_partition" value="ALTER TABLE t_order MODIFY PARTITION hash_partition ADD SUBPARTITION P1 VALUES('COMPLETE');" db-types="Oracle" />
     <sql-case id="alter_table_move_partition" value="ALTER TABLE t_order MOVE PARTITION p0 TABLESPACE space0" db-types="Oracle" />
     <sql-case id="alter_table_coalesce_partition" value="ALTER TABLE t_order COALESCE PARTITION" db-types="Oracle" />
-    <sql-case id="alter_table_convert" value="ALTER TABLE t1 CONVERT TO CHARACTER SET DEFAULT" db-types="MySQL" />
-    <sql-case id="alter_table_convert_collate" value="ALTER TABLE t1 CONVERT TO CHARACTER SET DEFAULT COLLATE cp1251_bin;" db-types="MySQL" />
+    <sql-case id="alter_table_convert" value="ALTER TABLE t1 CONVERT TO CHARACTER SET DEFAULT" db-types="MySQL,Doris" />
+    <sql-case id="alter_table_convert_collate" value="ALTER TABLE t1 CONVERT TO CHARACTER SET DEFAULT COLLATE cp1251_bin;" db-types="MySQL,Doris" />
     <sql-case id="alter_table_add_column_with_visible" value="ALTER TABLE t_order ADD COLUMN status VARCHAR(10) VISIBLE" db-types="MySQL" />
     <sql-case id="alter_table_add_column_with_invisible" value="ALTER TABLE t_order ADD COLUMN status VARCHAR(10) INVISIBLE" db-types="MySQL" />
     <sql-case id="alter_table_modify_column_with_visible" value="ALTER TABLE t_order MODIFY COLUMN status VARCHAR(10) VISIBLE" db-types="MySQL" />
@@ -359,4 +361,21 @@
     <sql-case id="alter_replace_columns_quoted2" value="ALTER TABLE users PARTITION (region='south_america') REPLACE COLUMNS (`user name` STRING COMMENT 'full name of user', `login count` INT COMMENT 'number of logins') RESTRICT" db-types="Hive" />
     <sql-case id="alter_replace_columns_quoted3" value="ALTER TABLE products PARTITION (cat='clothing') REPLACE COLUMNS (`size info` STRING COMMENT 'size specification', `color code` INT COMMENT 'RGB color value') CASCADE" db-types="Hive" />
     <sql-case id="alter_replace_columns_quoted4" value="ALTER TABLE orders PARTITION (status='shipped') REPLACE COLUMNS (`ship date` DATE COMMENT 'actual shipping date', `tracking id` STRING COMMENT 'logistics tracking number') RESTRICT" db-types="Hive" />
+    <sql-case id="alter_create_branch_default" value="ALTER TABLE test CREATE BRANCH branch1;" db-types="Hive" />
+    <sql-case id="alter_create_branch_snapshot_id" value="ALTER TABLE test CREATE BRANCH branch1 FOR SYSTEM_VERSION AS OF 3369973735913135680;" db-types="Hive" />
+    <sql-case id="alter_create_branch_system_time" value="ALTER TABLE test CREATE BRANCH branch1 FOR SYSTEM_TIME AS OF '2023-09-16 09:46:38.939 Etc/UTC';" db-types="Hive" />
+    <sql-case id="alter_create_branch_snapshot_retention" value="ALTER TABLE test CREATE BRANCH branch1 FOR SYSTEM_VERSION AS OF 3369973735913135680 WITH SNAPSHOT RETENTION 5 SNAPSHOTS;" db-types="Hive" />
+    <sql-case id="alter_create_branch_tag" value="ALTER TABLE test CREATE BRANCH branch1 FOR TAG AS OF tag1;" db-types="Hive" />
+    <sql-case id="alter_create_tag_default" value="ALTER TABLE test CREATE TAG tag1;" db-types="Hive" />
+    <sql-case id="alter_create_tag_snapshot_id" value="ALTER TABLE test CREATE TAG tag1 FOR SYSTEM_VERSION AS OF 3369973735913135680;" db-types="Hive" />
+    <sql-case id="alter_create_tag_system_time" value="ALTER TABLE test CREATE TAG tag1 FOR SYSTEM_TIME AS OF '2023-09-16 09:46:38.939 Etc/UTC';" db-types="Hive" />
+    <sql-case id="alter_drop_branch_basic" value="ALTER TABLE test DROP BRANCH branch1;" db-types="Hive" />
+    <sql-case id="alter_drop_branch_if_exists" value="ALTER TABLE test DROP BRANCH IF EXISTS branch1;" db-types="Hive" />
+    <sql-case id="alter_drop_tag_basic" value="ALTER TABLE test DROP TAG tag1;" db-types="Hive" />
+    <sql-case id="alter_drop_tag_if_exists" value="ALTER TABLE test DROP TAG IF EXISTS tag1;" db-types="Hive" />
+    <sql-case id="alter_table_rename_table_doris" value="ALTER TABLE table1 RENAME table2" db-types="Doris" />
+    <sql-case id="alter_table_rename_column_doris" value="ALTER TABLE example_table RENAME COLUMN c1 c2" db-types="Doris" />
+    <sql-case id="alter_table_rename_rollup" value="ALTER TABLE example_table RENAME ROLLUP rollup1 rollup2" db-types="Doris" />
+    <sql-case id="alter_table_rename_partition" value="ALTER TABLE example_table RENAME PARTITION partition1 partition2" db-types="Doris" />
+    <sql-case id="alter_table_with_algorithm_lock_doris" value="ALTER TABLE t_order ADD COLUMN col_alg INT, ALGORITHM=INSTANT, LOCK=NONE" db-types="Doris" />
 </sql-cases>

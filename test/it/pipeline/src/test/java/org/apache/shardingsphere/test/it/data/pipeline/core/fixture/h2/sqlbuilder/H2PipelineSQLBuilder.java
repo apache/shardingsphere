@@ -37,6 +37,13 @@ public final class H2PipelineSQLBuilder implements DialectPipelineSQLBuilder {
     }
     
     @Override
+    public String buildSplitByUniqueKeyRangedSubqueryClause(final String qualifiedTableName, final String uniqueKey, final boolean hasLowerBound) {
+        return hasLowerBound
+                ? String.format("SELECT %s FROM %s WHERE %s>? ORDER BY %s LIMIT ?", uniqueKey, qualifiedTableName, uniqueKey, uniqueKey)
+                : String.format("SELECT %s FROM %s ORDER BY %s LIMIT ?", uniqueKey, qualifiedTableName, uniqueKey);
+    }
+    
+    @Override
     public Collection<String> buildCreateTableSQLs(final DataSource dataSource, final String schemaName, final String tableName) {
         ShardingSpherePreconditions.checkState("t_order".equalsIgnoreCase(tableName), () -> new CreateTableSQLGenerateException(tableName));
         return Collections.singleton(PipelineContextUtils.getCreateOrderTableSchema());

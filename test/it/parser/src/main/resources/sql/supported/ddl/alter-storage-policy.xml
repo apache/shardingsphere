@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Licensed to the Apache Software Foundation (ASF) under one or more
+  ~ contributor license agreements.  See the NOTICE file distributed with
+  ~ this work for additional information regarding copyright ownership.
+  ~ The ASF licenses this file to You under the Apache License, Version 2.0
+  ~ (the "License"); you may not use this file except in compliance with
+  ~ the License.  You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<sql-cases>
+    <sql-case id="alter_storage_policy_with_cooldown_datetime" value="ALTER STORAGE POLICY test_policy PROPERTIES(&quot;cooldown_datetime&quot; = &quot;2023-06-08 00:00:00&quot;)" db-types="Doris" />
+    <sql-case id="alter_storage_policy_with_cooldown_ttl_number" value="ALTER STORAGE POLICY test_policy PROPERTIES(&quot;cooldown_ttl&quot; = &quot;10000&quot;)" db-types="Doris" />
+    <sql-case id="alter_storage_policy_with_cooldown_ttl_hours" value="ALTER STORAGE POLICY test_policy PROPERTIES(&quot;cooldown_ttl&quot; = &quot;1h&quot;)" db-types="Doris" />
+    <sql-case id="alter_storage_policy_with_cooldown_ttl_days" value="ALTER STORAGE POLICY test_policy PROPERTIES(&quot;cooldown_ttl&quot; = &quot;3d&quot;)" db-types="Doris" />
+    <sql-case id="alter_storage_policy_with_retention_days" value="ALTER STORAGE POLICY prod_policy PROPERTIES(&quot;retention_days&quot; = &quot;30&quot;)" db-types="Doris" />
+    <sql-case id="alter_storage_policy_with_redundancy_level" value="ALTER STORAGE POLICY backup_policy PROPERTIES(&quot;redundancy_level&quot; = &quot;2&quot;)" db-types="Doris" />
+    <sql-case id="alter_storage_policy_with_storage_type" value="ALTER STORAGE POLICY archive_policy PROPERTIES(&quot;storage_type&quot; = &quot;S3&quot;)" db-types="Doris" />
+    <sql-case id="alter_storage_policy_with_location_policy" value="ALTER STORAGE POLICY geo_policy PROPERTIES(&quot;location_policy&quot; = &quot;us-west&quot;)" db-types="Doris" />
+    <sql-case id="alter_storage_policy_with_multiple_properties" value="ALTER STORAGE POLICY comprehensive_policy PROPERTIES(&quot;cooldown_ttl&quot; = &quot;7d&quot;, &quot;retention_days&quot; = &quot;90&quot;, &quot;redundancy_level&quot; = &quot;3&quot;)" db-types="Doris" />
+</sql-cases>

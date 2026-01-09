@@ -672,7 +672,7 @@ castType
     | castTypeName = DECIMAL (fieldLength | precision)?
     | castTypeName = JSON
     | castTypeName = REAL
-    | castTypeName = DOUBLE PRECISION
+    | castTypeName = DOUBLE PRECISION?
     | castTypeName = FLOAT precision?
     | castTypeName = YEAR
     ;

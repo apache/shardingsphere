@@ -21,6 +21,7 @@ import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.infra.util.yaml.YamlConfiguration;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -32,5 +33,5 @@ public final class YamlRowStatistics implements YamlConfiguration {
     
     private String uniqueKey;
     
-    private List<Object> rows;
+    private List<Object> rows = new ArrayList<>();
 }
