@@ -22,4 +22,6 @@
     <sql-case id="hive_insert_overwrite_select" value="INSERT OVERWRITE TABLE t_order SELECT * FROM t_source" db-types="Hive" />
     <sql-case id="hive_insert_partition" value="INSERT INTO TABLE t_order PARTITION (ds='2020') VALUES (1, 'a')" db-types="Hive" />
     <sql-case id="hive_from_insert" value="FROM t_source INSERT OVERWRITE TABLE t_target SELECT *" db-types="Hive" />
+    <sql-case id="hive_insert_select_columns" value="INSERT INTO t_target (id, name) SELECT id, name FROM t_source" db-types="Hive" />
+    <sql-case id="hive_insert_dynamic_partition_select" value="INSERT INTO TABLE t_order PARTITION (ds) SELECT * FROM t_source" db-types="Hive" />
 </sql-cases>
