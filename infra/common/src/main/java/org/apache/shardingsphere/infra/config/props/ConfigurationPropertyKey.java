@@ -54,12 +54,6 @@ public enum ConfigurationPropertyKey implements TypedPropertyKey {
     MAX_CONNECTIONS_SIZE_PER_QUERY("max-connections-size-per-query", String.valueOf(1), int.class, false),
     
     /**
-     * Max union size per datasource for aggregate rewrite.
-     * When route units count for a datasource exceeds this value, they will be split into batches.
-     */
-    MAX_UNION_SIZE_PER_DATASOURCE("max-union-size-per-datasource", String.valueOf(Integer.MAX_VALUE), int.class, false),
-    
-    /**
      * Whether validate table metadata consistency when application startup or updated.
      */
     CHECK_TABLE_METADATA_ENABLED("check-table-metadata-enabled", String.valueOf(Boolean.FALSE), boolean.class, false),
@@ -138,7 +132,12 @@ public enum ConfigurationPropertyKey implements TypedPropertyKey {
     /**
      * Maximum size of Groovy inline expression parsing cache.
      */
-    GROOVY_INLINE_EXPRESSION_PARSING_CACHE_MAX_SIZE("groovy-inline-expression-parsing-cache-max-size", "1000", long.class, false);
+    GROOVY_INLINE_EXPRESSION_PARSING_CACHE_MAX_SIZE("groovy-inline-expression-parsing-cache-max-size", "1000", long.class, false),
+
+    /**
+     * Whether to enable UDT (User Defined Type) discovery.
+     */
+    UDT_DISCOVERY_ENABLED("udt-discovery-enabled", String.valueOf(Boolean.TRUE), boolean.class, false);
     
     private final String key;
     

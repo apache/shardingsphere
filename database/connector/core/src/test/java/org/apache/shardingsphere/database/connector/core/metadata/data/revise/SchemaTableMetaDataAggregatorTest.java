@@ -61,7 +61,7 @@ class SchemaTableMetaDataAggregatorTest {
     }
     
     private TableMetaData createTableMetaData(final String tableName, final String columnName) {
-        ColumnMetaData columnMetaData = new ColumnMetaData(columnName, Types.INTEGER, true, false, true, true, false, false);
+        ColumnMetaData columnMetaData = new ColumnMetaData(columnName, Types.INTEGER, true, false,"", true, true, false, false);
         return new TableMetaData(tableName, Collections.singleton(columnMetaData), Collections.emptyList(), Collections.emptyList());
     }
 }
