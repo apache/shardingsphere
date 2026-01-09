@@ -43,3 +43,4 @@ props:
   proxy-frontend-flush-threshold: 128
   sql-show: true
   proxy-frontend-ssl-enabled: true
+  instance-connection-enabled: true

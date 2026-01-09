@@ -77,10 +77,10 @@ class ShowDistVariablesExecutorTest {
         ShowDistVariablesExecutor executor = new ShowDistVariablesExecutor();
         ShowDistVariablesStatement sqlStatement = new ShowDistVariablesStatement(true, null);
         Collection<LocalDataQueryResultRow> actual = executor.getRows(sqlStatement, contextManager);
-        assertThat(actual.size(), is(3));
+        assertThat(actual.size(), is(4));
         LocalDataQueryResultRow row = actual.iterator().next();
-        assertThat(row.getCell(1), is("proxy_meta_data_collector_cron"));
-        assertThat(row.getCell(2), is("0 0/1 * * * ?"));
+        assertThat(row.getCell(1), is("instance_connection_enabled"));
+        assertThat(row.getCell(2), is("false"));
     }
     
     @Test
