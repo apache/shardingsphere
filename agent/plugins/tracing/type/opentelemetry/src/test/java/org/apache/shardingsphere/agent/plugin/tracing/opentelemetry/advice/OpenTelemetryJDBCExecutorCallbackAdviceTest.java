@@ -21,6 +21,7 @@ import io.opentelemetry.api.GlobalOpenTelemetry;
 import io.opentelemetry.api.common.AttributeKey;
 import io.opentelemetry.api.common.Attributes;
 import io.opentelemetry.api.trace.Span;
+import io.opentelemetry.api.trace.SpanId;
 import io.opentelemetry.api.trace.StatusCode;
 import io.opentelemetry.sdk.OpenTelemetrySdk;
 import io.opentelemetry.sdk.testing.exporter.InMemorySpanExporter;
@@ -119,8 +120,18 @@ class OpenTelemetryJDBCExecutorCallbackAdviceTest {
         advice.beforeMethod(targetObject, null, new Object[]{executionUnit, false}, "OpenTelemetry");
         advice.afterMethod(targetObject, null, new Object[]{executionUnit, false}, null, "OpenTelemetry");
         List<SpanData> spanItems = testExporter.getFinishedSpanItems();
-        assertCommonData(spanItems);
+        assertCommonData(spanItems, parentSpan.getSpanContext().getSpanId());
         assertThat(spanItems.iterator().next().getStatus().getStatusCode(), is(StatusCode.OK));
+    }
+    
+    @Test
+    void assertMethodWithoutParentSpan() {
+        RootSpanContext.set(null);
+        OpenTelemetryJDBCExecutorCallbackAdvice advice = new OpenTelemetryJDBCExecutorCallbackAdvice();
+        advice.beforeMethod(targetObject, null, new Object[]{executionUnit, false}, "OpenTelemetry");
+        advice.afterMethod(targetObject, null, new Object[]{executionUnit, false}, null, "OpenTelemetry");
+        List<SpanData> spanItems = testExporter.getFinishedSpanItems();
+        assertCommonData(spanItems, SpanId.getInvalid());
     }
     
     @Test
@@ -129,14 +140,15 @@ class OpenTelemetryJDBCExecutorCallbackAdviceTest {
         advice.beforeMethod(targetObject, null, new Object[]{executionUnit, false}, "OpenTelemetry");
         advice.onThrowing(targetObject, null, new Object[]{executionUnit, false}, new IOException(""), "OpenTelemetry");
         List<SpanData> spanItems = testExporter.getFinishedSpanItems();
-        assertCommonData(spanItems);
+        assertCommonData(spanItems, parentSpan.getSpanContext().getSpanId());
         assertThat(spanItems.iterator().next().getStatus().getStatusCode(), is(StatusCode.ERROR));
     }
     
-    private void assertCommonData(final List<SpanData> spanItems) {
+    private void assertCommonData(final List<SpanData> spanItems, final String expectedParentSpanId) {
         assertThat(spanItems.size(), is(1));
         SpanData spanData = spanItems.iterator().next();
         assertThat(spanData.getName(), is("/ShardingSphere/executeSQL/"));
+        assertThat(spanData.getParentSpanId(), is(expectedParentSpanId));
         Attributes attributes = spanData.getAttributes();
         assertThat(attributes.get(AttributeKey.stringKey(AttributeConstants.COMPONENT)), is(AttributeConstants.COMPONENT_NAME));
         assertThat(attributes.get(AttributeKey.stringKey(AttributeConstants.DB_TYPE)), is(DB_TYPE));

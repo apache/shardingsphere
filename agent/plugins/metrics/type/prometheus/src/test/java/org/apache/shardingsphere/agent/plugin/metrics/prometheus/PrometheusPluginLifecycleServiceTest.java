@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.agent.plugin.metrics.prometheus;
 
+import io.prometheus.client.CollectorRegistry;
 import org.apache.shardingsphere.agent.api.PluginConfiguration;
 import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstance;
@@ -41,6 +42,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
+import java.net.ServerSocket;
 import java.net.Socket;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
@@ -56,15 +58,35 @@ class PrometheusPluginLifecycleServiceTest {
     @AfterEach
     void close() {
         pluginLifecycleService.close();
+        CollectorRegistry.defaultRegistry.clear();
     }
     
     @Test
     void assertStart() throws IOException {
-        ContextManager contextManager = mockContextManager();
+        final ContextManager contextManager = mockContextManager();
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
-        pluginLifecycleService.start(new PluginConfiguration("localhost", 8090, "", PropertiesBuilder.build(new Property("JVM_INFORMATION_COLLECTOR_ENABLED", Boolean.TRUE.toString()))), true);
+        pluginLifecycleService.start(new PluginConfiguration("localhost", 8090, "", PropertiesBuilder.build(new Property("jvm-information-collector-enabled", Boolean.TRUE.toString()))), true);
         try (Socket socket = new Socket()) {
             assertDoesNotThrow(() -> socket.connect(new InetSocketAddress("localhost", 8090)));
+        }
+    }
+    
+    @Test
+    void assertStartForJDBCWithNullHost() throws IOException {
+        int port;
+        try (ServerSocket serverSocket = new ServerSocket(0)) {
+            port = serverSocket.getLocalPort();
+        }
+        pluginLifecycleService.start(new PluginConfiguration(null, port, "", PropertiesBuilder.build()), false);
+        try (Socket socket = new Socket()) {
+            assertDoesNotThrow(() -> socket.connect(new InetSocketAddress("localhost", port)));
+        }
+    }
+    
+    @Test
+    void assertStartWhenPortIsOccupied() throws IOException {
+        try (ServerSocket serverSocket = new ServerSocket(0)) {
+            assertDoesNotThrow(() -> pluginLifecycleService.start(new PluginConfiguration(null, serverSocket.getLocalPort(), "", PropertiesBuilder.build()), false));
         }
     }
     

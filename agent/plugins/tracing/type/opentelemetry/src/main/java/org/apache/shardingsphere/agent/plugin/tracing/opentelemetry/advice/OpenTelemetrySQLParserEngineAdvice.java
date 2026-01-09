@@ -41,7 +41,9 @@ public final class OpenTelemetrySQLParserEngineAdvice extends TracingSQLParserEn
                 .setAttribute(AttributeConstants.COMPONENT, AttributeConstants.COMPONENT_NAME)
                 .setAttribute(AttributeConstants.DB_STATEMENT, sql)
                 .setAttribute(AttributeConstants.SPAN_KIND, AttributeConstants.SPAN_KIND_INTERNAL);
-        spanBuilder.setParent(Context.current().with(parentSpan));
+        if (null != parentSpan) {
+            spanBuilder.setParent(Context.current().with(parentSpan));
+        }
         Span result = spanBuilder.startSpan();
         target.setAttachment(result);
         return result;
@@ -50,14 +52,18 @@ public final class OpenTelemetrySQLParserEngineAdvice extends TracingSQLParserEn
     @Override
     public void afterMethod(final TargetAdviceObject target, final TargetAdviceMethod method, final Object[] args, final Object result, final String pluginType) {
         Span span = (Span) target.getAttachment();
-        span.setStatus(StatusCode.OK);
-        span.end();
+        if (null != span) {
+            span.setStatus(StatusCode.OK);
+            span.end();
+        }
     }
     
     @Override
     public void onThrowing(final TargetAdviceObject target, final TargetAdviceMethod method, final Object[] args, final Throwable throwable, final String pluginType) {
         Span span = (Span) target.getAttachment();
-        span.setStatus(StatusCode.ERROR).recordException(throwable);
-        span.end();
+        if (null != span) {
+            span.setStatus(StatusCode.ERROR).recordException(throwable);
+            span.end();
+        }
     }
 }
