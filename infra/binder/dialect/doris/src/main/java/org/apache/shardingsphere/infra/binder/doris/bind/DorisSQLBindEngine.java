@@ -18,10 +18,12 @@
 package org.apache.shardingsphere.infra.binder.doris.bind;
 
 import org.apache.shardingsphere.infra.binder.doris.bind.type.DorisAnalyzeTableStatementBinder;
+import org.apache.shardingsphere.infra.binder.doris.bind.type.DorisShowDataSkewStatementBinder;
 import org.apache.shardingsphere.infra.binder.engine.DialectSQLBindEngine;
 import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementBinderContext;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisAnalyzeTableStatement;
+import org.apache.shardingsphere.sql.parser.statement.doris.dal.show.DorisShowDataSkewStatement;
 
 import java.util.Optional;
 
@@ -34,6 +36,9 @@ public final class DorisSQLBindEngine implements DialectSQLBindEngine {
     public Optional<SQLStatement> bind(final SQLStatement sqlStatement, final SQLStatementBinderContext binderContext) {
         if (sqlStatement instanceof DorisAnalyzeTableStatement) {
             return Optional.of(new DorisAnalyzeTableStatementBinder().bind((DorisAnalyzeTableStatement) sqlStatement, binderContext));
+        }
+        if (sqlStatement instanceof DorisShowDataSkewStatement) {
+            return Optional.of(new DorisShowDataSkewStatementBinder().bind((DorisShowDataSkewStatement) sqlStatement, binderContext));
         }
         return Optional.empty();
     }
