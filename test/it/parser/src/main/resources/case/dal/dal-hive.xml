@@ -39,4 +39,20 @@
             <like pattern="t_*" start-delimiter="'" end-delimiter="'" start-index="23" stop-index="27" />
         </filter>
     </show-tables>
+
+    <show-databases sql-case-id="hive_show_databases_no_filter" />
+
+    <show-tables sql-case-id="hive_show_tables_simple" />
+
+    <show-columns sql-case-id="hive_show_columns_like">
+        <table name="t_order" start-index="18" stop-index="24" />
+        <filter start-index="26" stop-index="34">
+            <like pattern="p%" start-delimiter="'" end-delimiter="'" start-index="26" stop-index="34" />
+        </filter>
+    </show-columns>
+
+    <describe sql-case-id="hive_describe_table_column">
+        <simple-table name="t_order" start-index="9" stop-index="15" />
+        <column-wild name="id" start-index="17" stop-index="18" />
+    </describe>
 </sql-parser-test-cases>
