@@ -91,4 +91,34 @@
         </select>
     </insert>
 
+    <insert sql-case-id="hive_insert_select_columns">
+        <table name="t_target" start-index="12" stop-index="19" />
+        <columns start-index="21" stop-index="30">
+            <column name="id" start-index="22" stop-index="23" />
+            <column name="name" start-index="26" stop-index="29" />
+        </columns>
+        <select>
+            <projections start-index="39" stop-index="46">
+                <column-projection name="id" start-index="39" stop-index="40" />
+                <column-projection name="name" start-index="43" stop-index="46" />
+            </projections>
+            <from>
+                <simple-table name="t_source" start-index="53" stop-index="60" />
+            </from>
+        </select>
+    </insert>
+
+    <insert sql-case-id="hive_insert_dynamic_partition_select">
+        <table name="t_order" start-index="18" stop-index="24" />
+        <columns start-index="0" stop-index="0" />
+        <select>
+            <projections start-index="48" stop-index="48">
+                <shorthand-projection start-index="48" stop-index="48" />
+            </projections>
+            <from>
+                <simple-table name="t_source" start-index="55" stop-index="62" />
+            </from>
+        </select>
+    </insert>
+
 </sql-parser-test-cases>

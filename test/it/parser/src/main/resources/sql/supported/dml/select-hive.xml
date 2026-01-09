@@ -36,4 +36,11 @@
     <sql-case id="hive_select_substring" value="SELECT SUBSTRING('abc', 1, 2)" db-types="Hive" />
     <sql-case id="hive_select_trim" value="SELECT TRIM(BOTH ' ' FROM ' a ')" db-types="Hive" />
     <sql-case id="hive_select_extract" value="SELECT EXTRACT(YEAR FROM '2023-01-01')" db-types="Hive" />
+    <sql-case id="hive_select_qualified_shorthand" value="SELECT db1.t_order.* FROM db1.t_order" db-types="Hive" />
+    <sql-case id="hive_select_xor" value="SELECT * FROM t_logic WHERE a XOR b" db-types="Hive" />
+    <sql-case id="hive_select_in_list" value="SELECT * FROM t_pred WHERE col IN (1,2)" db-types="Hive" />
+    <sql-case id="hive_select_equal_all_subquery" value="SELECT * FROM t_pred WHERE col = ALL (SELECT 2)" db-types="Hive" />
+    <sql-case id="hive_select_order_limit_param" value="SELECT * FROM t_order ORDER BY 1, price + 1 DESC LIMIT 1 OFFSET 1" db-types="Hive" />
+    <sql-case id="hive_select_case_variables" value="SELECT CASE WHEN a &gt; 1 THEN b ELSE c END, @var, @@global.var FROM t_case" db-types="Hive" />
+    <sql-case id="hive_select_join_using_comma" value="SELECT * FROM t1 JOIN t2 USING (id), t3" db-types="Hive" />
 </sql-cases>
