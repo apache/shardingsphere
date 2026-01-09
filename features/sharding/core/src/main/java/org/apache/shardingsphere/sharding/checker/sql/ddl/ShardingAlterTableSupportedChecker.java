@@ -28,9 +28,7 @@ import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.table.AlterTableStatement;
 
-import java.util.Collection;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 /**
  * Alter table supported checker for sharding.
@@ -45,10 +43,16 @@ public final class ShardingAlterTableSupportedChecker implements SupportedSQLChe
     @Override
     public void check(final ShardingRule rule, final ShardingSphereDatabase database, final ShardingSphereSchema currentSchema, final CommonSQLStatementContext sqlStatementContext) {
         AlterTableStatement sqlStatement = (AlterTableStatement) sqlStatementContext.getSqlStatement();
-        Collection<String> tableNames = sqlStatementContext.getTablesContext().getSimpleTables().stream()
-                .map(each -> each.getTableName().getIdentifier().getValue()).collect(Collectors.toList());
         Optional<SimpleTableSegment> renameTable = sqlStatement.getRenameTable();
-        ShardingSpherePreconditions.checkState(!renameTable.isPresent() || !rule.containsShardingTable(tableNames),
-                () -> new UnsupportedShardingOperationException("ALTER TABLE ... RENAME TO ...", renameTable.map(optional -> optional.getTableName().getIdentifier().getValue()).orElse("")));
+        if (!renameTable.isPresent()) {
+            return;
+        }
+        String newTableName = renameTable.get().getTableName().getIdentifier().getValue();
+        // Validate new table name does not conflict with existing sharding tables
+        ShardingSpherePreconditions.checkState(!rule.isShardingTable(newTableName),
+                () -> new UnsupportedShardingOperationException("ALTER TABLE ... RENAME TO ...", newTableName));
+        // Validate new table name does not exist in current schema
+        ShardingSpherePreconditions.checkState(!currentSchema.containsTable(newTableName),
+                () -> new UnsupportedShardingOperationException("ALTER TABLE ... RENAME TO ...", newTableName));
     }
 }
