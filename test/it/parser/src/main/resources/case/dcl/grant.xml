@@ -223,6 +223,8 @@
         <!--<table name="ds_0" start-index="24" stop-index="27" />-->
     </grant>
     
+    <grant sql-case-id="grant_all_on_database_doris" />
+    
     <grant sql-case-id="grant_view_definition_on_availability_group" />
     <grant sql-case-id="grant_take_ownership_on_availability_group" />
     <grant sql-case-id="grant_control_on_availability_group" />
@@ -276,4 +278,30 @@
     <grant sql-case-id="grant_execute_on_xml_schema_collection" />
     <grant sql-case-id="grant_usage_on_client_master_key" />
     <grant sql-case-id="grant_usage_on_column_encryption_key" />
+    <grant sql-case-id="grant_usage_doris" />
+    <grant sql-case-id="grant_index_doris" />
+    <grant sql-case-id="grant_references_doris" />
+    <grant sql-case-id="grant_alter_doris" />
+    <grant sql-case-id="grant_drop_doris" />
+    <grant sql-case-id="grant_execute_doris" />
+    <grant sql-case-id="grant_reload_doris" />
+    <grant sql-case-id="grant_shutdown_doris" />
+    <grant sql-case-id="grant_process_doris" />
+    <grant sql-case-id="grant_file_doris" />
+    <grant sql-case-id="grant_show_databases_doris" />
+    <grant sql-case-id="grant_super_doris" />
+    <grant sql-case-id="grant_create_tmp_tables_doris" />
+    <grant sql-case-id="grant_lock_tables_doris" />
+    <grant sql-case-id="grant_replication_slave_doris" />
+    <grant sql-case-id="grant_replication_client_doris" />
+    <grant sql-case-id="grant_create_view_doris" />
+    <grant sql-case-id="grant_show_view_doris" />
+    <grant sql-case-id="grant_create_routine_doris" />
+    <grant sql-case-id="grant_alter_routine_doris" />
+    <grant sql-case-id="grant_create_user_doris" />
+    <grant sql-case-id="grant_trigger_doris" />
+    <grant sql-case-id="grant_event_doris" />
+    <grant sql-case-id="grant_create_tablespace_doris" />
+    <grant sql-case-id="grant_create_role_privilege_doris" />
+    <grant sql-case-id="grant_drop_role_privilege_doris" />
 </sql-parser-test-cases>

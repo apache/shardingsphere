@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.data.pipeline.cdc.client.handler;
 
 import io.netty.channel.ChannelHandlerContext;
+import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.cdc.client.CDCClient;
@@ -30,6 +31,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 /**
  * Retry streaming exception handler.
  */
+@RequiredArgsConstructor
 @Slf4j
 public final class RetryStreamingExceptionHandler implements ExceptionHandler {
     
@@ -40,12 +42,6 @@ public final class RetryStreamingExceptionHandler implements ExceptionHandler {
     private final int retryIntervalMillis;
     
     private final AtomicInteger retryTimes = new AtomicInteger(0);
-    
-    public RetryStreamingExceptionHandler(final CDCClient cdcClient, final int maxRetryTimes, final int retryIntervalMillis) {
-        this.cdcClient = cdcClient;
-        this.maxRetryTimes = maxRetryTimes;
-        this.retryIntervalMillis = retryIntervalMillis;
-    }
     
     @Override
     public void handleException(final ChannelHandlerContext ctx, final Throwable throwable) {

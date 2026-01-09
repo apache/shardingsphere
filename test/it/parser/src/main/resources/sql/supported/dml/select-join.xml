@@ -19,16 +19,16 @@
 <sql-cases>
     <sql-case id="select_inner_join_related_with_alias" value="SELECT i.* FROM t_order o INNER JOIN t_order_item i ON o.order_id = i.order_id WHERE o.order_id = ?" />
     <sql-case id="select_inner_join_related_with_name" value="SELECT t_order_item.* FROM t_order JOIN t_order_item ON t_order.order_id = t_order_item.order_id WHERE t_order.order_id = ?" />
-    <sql-case id="select_join_using" value="SELECT i.* FROM t_order o JOIN t_order_item i USING(order_id) WHERE o.order_id = ?" db-types="MySQL,PostgreSQL,openGauss" />
+    <sql-case id="select_join_using" value="SELECT i.* FROM t_order o JOIN t_order_item i USING(order_id) WHERE o.order_id = ?" db-types="MySQL,PostgreSQL,openGauss,Doris" />
     <sql-case id="select_left_outer_join_related_with_alias" value="SELECT d.department_id, e.last_name FROM departments d LEFT OUTER JOIN employees e ON d.department_id = e.department_id ORDER BY d.department_id, e.last_name" db-types="MySQL, Oracle" />
     <sql-case id="select_right_outer_join_related_with_alias" value="SELECT d.department_id, e.last_name FROM departments d RIGHT OUTER JOIN employees e ON d.department_id = e.department_id ORDER BY d.department_id, e.last_name" db-types="MySQL, Oracle" />
     <sql-case id="select_full_outer_join_related_with_alias" value="SELECT d.department_id AS d_dept_id, e.department_id AS e_dept_id, e.last_name FROM departments d FULL OUTER JOIN employees e ON d.department_id = e.department_id ORDER BY d.department_id, e.last_name" db-types="Oracle" />
     <sql-case id="select_full_outer_join_using_related_with_alias" value="SELECT department_id AS d_e_dept_id, e.last_name FROM departments d FULL OUTER JOIN employees e USING (department_id) ORDER BY department_id, e.last_name" db-types="Oracle" />
     <sql-case id="select_cross_apply_join_related_with_alias" value="SELECT d.department_name, v.employee_id, v.last_name FROM departments d CROSS APPLY (SELECT * FROM employees e WHERE e.department_id = d.department_id) v WHERE d.department_name IN ('Marketing', 'Operations', 'Public Relations') ORDER BY d.department_name, v.employee_id" db-types="Oracle" />
-    <sql-case id="select_natural_join" value="SELECT * FROM t_order o NATURAL JOIN t_order_item i WHERE o.order_id = ?" db-types="MySQL,PostgreSQL,openGauss,Oracle" />
+    <sql-case id="select_natural_join" value="SELECT * FROM t_order o NATURAL JOIN t_order_item i WHERE o.order_id = ?" db-types="MySQL,PostgreSQL,openGauss,Oracle,Doris" />
     <sql-case id="select_natural_inner_join" value="SELECT * FROM t_order o NATURAL INNER JOIN t_order_item i WHERE o.order_id = ?" db-types="MySQL,PostgreSQL,openGauss,Oracle" />
-    <sql-case id="select_natural_left_join" value="SELECT * FROM t_order o NATURAL LEFT JOIN t_order_item i WHERE o.order_id = ?" db-types="MySQL,PostgreSQL,openGauss,Oracle" />
-    <sql-case id="select_natural_right_join" value="SELECT * FROM t_order o NATURAL RIGHT JOIN t_order_item i WHERE o.order_id = ?" db-types="MySQL,PostgreSQL,openGauss,Oracle" />
+    <sql-case id="select_natural_left_join" value="SELECT * FROM t_order o NATURAL LEFT JOIN t_order_item i WHERE o.order_id = ?" db-types="MySQL,PostgreSQL,openGauss,Oracle,Doris" />
+    <sql-case id="select_natural_right_join" value="SELECT * FROM t_order o NATURAL RIGHT JOIN t_order_item i WHERE o.order_id = ?" db-types="MySQL,PostgreSQL,openGauss,Oracle,Doris" />
     <sql-case id="select_natural_full_join" value="SELECT * FROM t_order o NATURAL FULL JOIN t_order_item i WHERE o.order_id = ?" db-types="PostgreSQL,openGauss,Oracle" />
     <sql-case id="select_with_join_operator" value="SELECT * FROM t_order o , t_order_item i WHERE o.order_id(+) = i.order_id" db-types="Oracle" />
     <sql-case id="select_join_with_quote" value="SELECT &quot;u&quot;.*, &quot;o&quot;.* FROM t_user &quot;u&quot; INNER JOIN t_order &quot;o&quot; ON &quot;u&quot;.user_id = &quot;o&quot;.user_id WHERE &quot;u&quot;.user_id = ?" db-types="Oracle" />

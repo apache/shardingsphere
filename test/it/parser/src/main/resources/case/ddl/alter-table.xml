@@ -2570,4 +2570,35 @@
             <new-partition name="partition2" start-index="54" stop-index="63" />
         </rename-partition>
     </alter-table>
+
+    <alter-table sql-case-id="alter_table_add_column_first_doris">
+        <table name="t_order" start-index="12" stop-index="18" />
+        <add-column>
+            <column-definition type="INT" start-index="24" stop-index="34">
+                <column name="column9" start-index="24" stop-index="30" />
+            </column-definition>
+            <column-position start-index="36" stop-index="40" />
+        </add-column>
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_add_column_after_doris">
+        <table name="t_order" start-index="12" stop-index="18" />
+        <add-column>
+            <column-definition type="INT" start-index="24" stop-index="35">
+                <column name="column10" start-index="24" stop-index="31" />
+            </column-definition>
+            <column-position start-index="37" stop-index="50">
+                <column name="order_id" start-index="43" stop-index="50" />
+            </column-position>
+        </add-column>
+    </alter-table>
+    
+    <alter-table sql-case-id="alter_table_with_algorithm_lock_doris">
+        <table name="t_order" start-index="12" stop-index="18" />
+        <add-column>
+            <column-definition type="INT" start-index="31" stop-index="41">
+                <column name="col_alg" start-index="31" stop-index="37" />
+            </column-definition>
+        </add-column>
+    </alter-table>
 </sql-parser-test-cases>

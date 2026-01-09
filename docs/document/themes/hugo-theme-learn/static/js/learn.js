@@ -401,58 +401,210 @@ jQuery(document).ready(function() {
     })(window.document, window.history, window.location);
 
 
-    //railroad diagram
-    
-    if($('.tab-panel').length) {
-        var codeStr = $('.tab-panel code').text()
-        var _h = $('.tab-panel code').height()
-        var diagram = $('#diagram')
-
-        function appendFormElement(tagName, type, name, value, parentEl){
-            var el = document.createElement(tagName)
-            el.type = type
-            el.name = name
-            el.value = value,
-            parentEl.appendChild(el)
+    // railroad diagram (generate in-browser to avoid cross-domain CSP blocks)
+    (function () {
+        if (!$('.tab-panel').length) {
+            return;
+        }
+        var codeBlock = $('.tab-panel code').first();
+        var grammarText = (codeBlock.text() || '').trim();
+        var diagramFrame = $('#diagram');
+        if (!grammarText || !diagramFrame.length) {
+            return;
         }
 
-        var form = document.createElement('form')
-        form.name = "data2"
-        form.method = "post"
-        form.action = "https://www.sphere-ex.com/rrdg"
-        form.enctype="multipart/form-data"
+        var loadingId = 'rr-loading';
+        diagramFrame.before('<p id="' + loadingId + '">Loading ...</p>');
 
-        appendFormElement('input', 'hidden', 'task', 'VIEW', form)
-        appendFormElement('input', 'hidden', 'frame', '', form)
-        appendFormElement('input', 'hidden', 'name', 'ui', form)
-        
-        // 可增加
-        appendFormElement('input', 'hidden', 'color', '#FF8B00', form)
+        function resolveStaticPath(relPath) {
+            var parts = window.location.pathname.split('/');
+            var docIdx = parts.indexOf('document');
+            if (docIdx === -1) {
+                return '/' + relPath;
+            }
+            return '/' + parts.slice(1, docIdx + 2).join('/') + '/' + relPath;
+        }
 
-        appendFormElement('textarea', 'hidden', 'text', codeStr, form)
-     
-        appendFormElement('input', 'hidden', 'width', '700', form)
-        appendFormElement('input', 'hidden', 'padding', '10', form)
-        appendFormElement('input', 'hidden', 'strokewidth', '1', form)
+        var railroadAssetsPromise;
+        function ensureRailroadAssets() {
+            if (railroadAssetsPromise) {
+                return railroadAssetsPromise;
+            }
+            railroadAssetsPromise = new Promise(function (resolve, reject) {
+                function onReady() {
+                    resolve();
+                }
 
-        document.body.appendChild(form)
+                // load CSS once
+                if (!document.getElementById('railroad-diagrams-css')) {
+                    var link = document.createElement('link');
+                    link.id = 'railroad-diagrams-css';
+                    link.rel = 'stylesheet';
+                    link.href = resolveStaticPath('css/railroad-diagrams.css');
+                    document.head.appendChild(link);
+                }
 
-        document.forms.data2.target = 'diagram';
-        document.forms.data2.frame.value = 'diagram';
-        // document.forms.data2.time.value = new Date().getTime();
+                if (window.Diagram && window.NonTerminal && window.Terminal) {
+                    resolve();
+                    return;
+                }
 
-        
-        diagram.before('<p id="testLoading">Loading ...</p>')
+                var script = document.createElement('script');
+                script.src = resolveStaticPath('js/railroad-diagrams.js');
+                script.onload = onReady;
+                script.onerror = function () {
+                    reject(new Error('Railroad script load failed'));
+                };
+                document.head.appendChild(script);
+            });
+            return railroadAssetsPromise;
+        }
 
-        document.forms.data2.submit();
+        function tokenize(text) {
+            var regex = /::=|\?|\*|\+|\||\(|\)|\[|\]|'[^']*'|[A-Za-z_][A-Za-z0-9_-]*|,/g;
+            var tokens = text.match(regex);
+            return tokens ? tokens : [];
+        }
 
-        document.body.removeChild(form)
+        function parseExpression(tokens, indexRef) {
+            var terms = [parseTerm(tokens, indexRef)];
+            while (tokens[indexRef.idx] === '|') {
+                indexRef.idx += 1;
+                terms.push(parseTerm(tokens, indexRef));
+            }
+            if (terms.length === 1) {
+                return terms[0];
+            }
+            return { type: 'choice', options: terms };
+        }
 
-        diagram.on('load', function(){
-            $('#testLoading').remove()
-            diagram.height(_h > 500 ? _h+'px' : '500px')
-        })
-    }
+        function parseTerm(tokens, indexRef) {
+            var items = [];
+            while (indexRef.idx < tokens.length) {
+                var tok = tokens[indexRef.idx];
+                if (tok === '|' || tok === ')' || tok === ']') {
+                    break;
+                }
+                items.push(parseFactor(tokens, indexRef));
+            }
+            if (items.length === 1) {
+                return items[0];
+            }
+            return { type: 'sequence', items: items };
+        }
+
+        function parseFactor(tokens, indexRef) {
+            var node = parsePrimary(tokens, indexRef);
+            var tok = tokens[indexRef.idx];
+            if (tok === '?' || tok === '*' || tok === '+') {
+                indexRef.idx += 1;
+                if (tok === '?') {
+                    node = { type: 'optional', item: node };
+                } else if (tok === '*') {
+                    node = { type: 'zeroOrMore', item: node };
+                } else if (tok === '+') {
+                    node = { type: 'oneOrMore', item: node };
+                }
+            }
+            return node;
+        }
+
+        function parsePrimary(tokens, indexRef) {
+            var tok = tokens[indexRef.idx];
+            indexRef.idx += 1;
+            if (!tok) {
+                return { type: 'terminal', value: '' };
+            }
+            if (tok === '(') {
+                var expr = parseExpression(tokens, indexRef);
+                indexRef.idx += 1; // skip ')'
+                return expr;
+            }
+            if (tok === '[') {
+                var optExpr = parseExpression(tokens, indexRef);
+                indexRef.idx += 1; // skip ']'
+                return { type: 'optional', item: optExpr };
+            }
+            if (tok[0] === "'" && tok.length >= 2) {
+                return { type: 'terminal', value: tok.slice(1, -1) };
+            }
+            return { type: 'nonterminal', value: tok };
+        }
+
+        function astToRailroad(node) {
+            switch (node.type) {
+                case 'terminal':
+                    return new Terminal(node.value);
+                case 'nonterminal':
+                    return new NonTerminal(node.value);
+                case 'sequence':
+                    return Sequence.apply(null, node.items.map(astToRailroad));
+                case 'choice':
+                    var opts = node.options.map(astToRailroad);
+                    return Choice.apply(null, [0].concat(opts));
+                case 'optional':
+                    return new Optional(astToRailroad(node.item), 'skip');
+                case 'zeroOrMore':
+                    return new ZeroOrMore(astToRailroad(node.item));
+                case 'oneOrMore':
+                    return new OneOrMore(astToRailroad(node.item));
+                default:
+                    return new Terminal('');
+            }
+        }
+
+        function parseDefinitions(text) {
+            var blocks = text.split(/\n\s*\n/);
+            var defs = [];
+            for (var i = 0; i < blocks.length; i++) {
+                var block = blocks[i].trim();
+                if (!block) {
+                    continue;
+                }
+                var parts = block.split('::=');
+                if (parts.length < 2) {
+                    continue;
+                }
+                var name = parts[0].trim().split(/\s+/)[0];
+                var rhs = parts.slice(1).join('::=').trim();
+                defs.push({ name: name, rhs: rhs });
+            }
+            return defs;
+        }
+
+        function renderRailroad(grammar) {
+            var defs = parseDefinitions(grammar);
+            var htmlParts = ['<style>svg.railroad-diagram{background:transparent;} .rr-title{font:bold 14px Verdana, sans-serif;margin:10px 0 4px;}</style>'];
+            for (var i = 0; i < defs.length; i++) {
+                var def = defs[i];
+                try {
+                    var tokens = tokenize(def.rhs);
+                    var ast = parseExpression(tokens, { idx: 0 });
+                    // Diagram takes items as varargs; call as a factory to wrap arguments correctly
+                    var diagram = Diagram(astToRailroad(ast));
+                    htmlParts.push('<p class=\"rr-title\">' + def.name + ':</p>');
+                    htmlParts.push('<div class=\"rr-wrapper\">' + diagram.toString() + '</div>');
+                } catch (e) {
+                    htmlParts.push('<p class=\"rr-title\">' + def.name + ':</p><p>Railroad diagram unavailable.</p>');
+                }
+            }
+            return htmlParts.join('\n');
+        }
+
+        ensureRailroadAssets().then(function () {
+            try {
+                var container = $('<div class=\"railroad-diagrams\"></div>');
+                container.html(renderRailroad(grammarText));
+                diagramFrame.replaceWith(container);
+            } catch (e) {
+                $('#' + loadingId).text('Railroad diagram unavailable.');
+            } finally {
+                $('#' + loadingId).remove();
+            }
+        }).catch(function () {
+            $('#' + loadingId).text('Railroad diagram unavailable.');
+        });
+    })();
 
 });
 

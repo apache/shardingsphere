@@ -16,6 +16,7 @@
 1. Remove logging rule feature - [#35458](https://github.com/apache/shardingsphere/pull/35458)
 1. Remove configuration property key `system-log-level` - [#35493](https://github.com/apache/shardingsphere/pull/35493)
 1. Change ShardingSphere SQL log topic from `ShardingSphere-SQL` to `org.apache.shardingsphere.sql` - [#37022](https://github.com/apache/shardingsphere/pull/37022)
+1. Add temporary config key `instance-connection-enabled` - [#37694](https://github.com/apache/shardingsphere/pull/37694)
 
 ### New Features
 
@@ -71,8 +72,10 @@
 1. Pipeline: Support unique key first integer column exact or estimated splitting based on data sparseness - [#37542](https://github.com/apache/shardingsphere/pull/37542)
 1. Pipeline: Support unique key first big integer column splitting - [#37574](https://github.com/apache/shardingsphere/pull/37574)
 1. Pipeline: Support unique key first string column exact splitting - [#37543](https://github.com/apache/shardingsphere/pull/37543)
+1. Pipeline: Support multi-columns unique key non-first column nullable - [#37647](https://github.com/apache/shardingsphere/pull/37647)
 1. Encrypt: Support handling show create view result decoration in encrypt - [#37299](https://github.com/apache/shardingsphere/pull/37299)
 1. JDBC: Enhance ResultSetUtils to support flexible string date/time conversions - [37424](https://github.com/apache/shardingsphere/pull/37424)
+1. SQL Binder: Support Grant statement SQL bind - [#36207](https://github.com/apache/shardingsphere/pull/36207)
 
 ### Bug Fixes
 
@@ -120,7 +123,9 @@
 1. Pipeline: Fix migration might skip some records on big table after job restarting - [#36878](https://github.com/apache/shardingsphere/pull/36878)
 1. Pipeline: Fix unsigned number column value type inconsistent in inventory and incremental - [#37280](https://github.com/apache/shardingsphere/pull/37280)
 1. Pipeline: Fix PostgreSQL migration create table SQL generation failure caused by locale-formatted sequence values - [#28360](https://github.com/apache/shardingsphere/issues/28360)
+1. Pipeline: MySQLBinlogClient compatible with async exception - [#37631](https://github.com/apache/shardingsphere/issues/37631)
 1. DistSQL: Fix load single table with specific schema - [#37535](https://github.com/apache/shardingsphere/pull/37535)
+1. Transaction: Fix XA data source enlist failure caused connection leaks - [37593](https://github.com/apache/shardingsphere/pull/37593)
 
 ### Change Logs
 

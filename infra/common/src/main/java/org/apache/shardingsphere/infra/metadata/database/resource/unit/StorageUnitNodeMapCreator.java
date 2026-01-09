@@ -43,20 +43,24 @@ public final class StorageUnitNodeMapCreator {
      * Create storage unit node map.
      *
      * @param propsMap data source pool properties map
+     * @param isInstanceConnectionEnabled is instance connection enabled
      * @return storage unit node map
      */
-    public static Map<String, StorageNode> create(final Map<String, DataSourcePoolProperties> propsMap) {
-        return propsMap.entrySet().stream().collect(Collectors.toMap(Entry::getKey, entry -> create(entry.getKey(), entry.getValue()), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
+    public static Map<String, StorageNode> create(final Map<String, DataSourcePoolProperties> propsMap, final boolean isInstanceConnectionEnabled) {
+        return propsMap.entrySet().stream().collect(Collectors.toMap(Entry::getKey, entry -> create(entry.getKey(), entry.getValue(), isInstanceConnectionEnabled),
+                (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
     }
     
-    private static StorageNode create(final String storageUnitName, final DataSourcePoolProperties props) {
+    private static StorageNode create(final String storageUnitName, final DataSourcePoolProperties props, final boolean isInstanceConnectionEnabled) {
         Map<String, Object> standardProps = props.getConnectionPropertySynonyms().getStandardProperties();
         String url = standardProps.get("url").toString();
         String username = standardProps.get("username").toString();
         boolean isInstanceConnectionAvailable = new DatabaseTypeRegistry(DatabaseTypeFactory.get(url)).getDialectDatabaseMetaData().getConnectionOption().isInstanceConnectionAvailable();
         try {
             ConnectionProperties connectionProps = DatabaseTypedSPILoader.getService(ConnectionPropertiesParser.class, DatabaseTypeFactory.get(url)).parse(url, username, null);
-            return isInstanceConnectionAvailable ? new StorageNode(connectionProps.getHostname(), connectionProps.getPort(), username) : new StorageNode(storageUnitName);
+            return isInstanceConnectionEnabled && isInstanceConnectionAvailable
+                    ? new StorageNode(connectionProps.getHostname(), connectionProps.getPort(), username)
+                    : new StorageNode(storageUnitName);
         } catch (final UnrecognizedDatabaseURLException ex) {
             return new StorageNode(storageUnitName);
         }

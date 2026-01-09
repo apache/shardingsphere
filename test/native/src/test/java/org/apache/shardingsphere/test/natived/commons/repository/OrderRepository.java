@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.test.natived.commons.repository;
 
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.test.natived.commons.entity.Order;
 
 import javax.sql.DataSource;
@@ -28,14 +29,11 @@ import java.sql.Statement;
 import java.util.LinkedList;
 import java.util.List;
 
+@RequiredArgsConstructor
 @SuppressWarnings({"SqlDialectInspection", "SqlNoDataSourceInspection"})
 public final class OrderRepository {
     
     private final DataSource dataSource;
-    
-    public OrderRepository(final DataSource dataSource) {
-        this.dataSource = dataSource;
-    }
     
     /**
      * Create table if not exists in MySQL.

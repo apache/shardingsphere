@@ -17,6 +17,6 @@
   -->
 
 <sql-cases>
-    <sql-case id="handler_table_name_with_close" value="HANDLER t1 CLOSE" db-types="MySQL" />
-    <sql-case id="handler_table_name_read_limit" value="handler a1 read first limit 9" db-types="MySQL" />
+    <sql-case id="handler_table_name_with_close" value="HANDLER t1 CLOSE" db-types="MySQL,Doris" />
+    <sql-case id="handler_table_name_read_limit" value="handler a1 read first limit 9" db-types="MySQL,Doris" />
 </sql-cases>

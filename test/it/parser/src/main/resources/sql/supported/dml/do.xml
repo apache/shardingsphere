@@ -17,7 +17,7 @@
   -->
 
 <sql-cases>
-    <sql-case id="do_constant" value="DO 1" db-types="MySQL" />
+    <sql-case id="do_constant" value="DO 1" db-types="MySQL,Doris" />
     <sql-case id="do_sleep" value="DO SLEEP(1)" db-types="MySQL" />
     <sql-case id="do_multiple_sleep" value="DO SLEEP(1), SLEEP(2)" db-types="MySQL" />
     <sql-case id="do_with_function_1" value="DO FROM_BASE64(CAST((MID(UUID(),20,64)) AS BINARY(55)))" db-types="MySQL" />

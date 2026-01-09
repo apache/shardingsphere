@@ -24,42 +24,31 @@ import org.apache.shardingsphere.agent.plugin.metrics.prometheus.collector.type.
 import org.apache.shardingsphere.agent.plugin.metrics.prometheus.collector.type.PrometheusMetricsGaugeMetricFamilyCollector;
 import org.apache.shardingsphere.agent.plugin.metrics.prometheus.collector.type.PrometheusMetricsHistogramCollector;
 import org.apache.shardingsphere.agent.plugin.metrics.prometheus.collector.type.PrometheusMetricsSummaryCollector;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
 import java.util.Collections;
+import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.isA;
 
 class PrometheusMetricsCollectorFactoryTest {
     
-    @Test
-    void assertCreateCounterCollector() {
-        MetricConfiguration config = new MetricConfiguration("test_counter", MetricCollectorType.COUNTER, null, Collections.emptyList(), Collections.emptyMap());
-        assertThat(new PrometheusMetricsCollectorFactory().create(config), isA(PrometheusMetricsCounterCollector.class));
+    @ParameterizedTest(name = "[{index}] type={1}")
+    @MethodSource("provideMetricCollectorArguments")
+    void assertCreateCollector(final String metricName, final MetricCollectorType collectorType, final Class<?> expectedType) {
+        MetricConfiguration config = new MetricConfiguration(metricName, collectorType, null, Collections.emptyList(), Collections.emptyMap());
+        assertThat(new PrometheusMetricsCollectorFactory().create(config), isA(expectedType));
     }
     
-    @Test
-    void assertCreateGaugeCollector() {
-        MetricConfiguration config = new MetricConfiguration("test_gauge", MetricCollectorType.GAUGE, null, Collections.emptyList(), Collections.emptyMap());
-        assertThat(new PrometheusMetricsCollectorFactory().create(config), isA(PrometheusMetricsGaugeCollector.class));
-    }
-    
-    @Test
-    void assertCreateHistogramCollector() {
-        MetricConfiguration config = new MetricConfiguration("test_histogram", MetricCollectorType.HISTOGRAM, null, Collections.emptyList(), Collections.emptyMap());
-        assertThat(new PrometheusMetricsCollectorFactory().create(config), isA(PrometheusMetricsHistogramCollector.class));
-    }
-    
-    @Test
-    void assertCreateSummaryCollector() {
-        MetricConfiguration config = new MetricConfiguration("test_summary", MetricCollectorType.SUMMARY, null, Collections.emptyList(), Collections.emptyMap());
-        assertThat(new PrometheusMetricsCollectorFactory().create(config), isA(PrometheusMetricsSummaryCollector.class));
-    }
-    
-    @Test
-    void assertCreateGaugeMetricFamilyCollector() {
-        MetricConfiguration config = new MetricConfiguration("test_summary", MetricCollectorType.GAUGE_METRIC_FAMILY, null, Collections.emptyList(), Collections.emptyMap());
-        assertThat(new PrometheusMetricsCollectorFactory().create(config), isA(PrometheusMetricsGaugeMetricFamilyCollector.class));
+    private static Stream<Arguments> provideMetricCollectorArguments() {
+        return Stream.of(
+                Arguments.of("test_counter", MetricCollectorType.COUNTER, PrometheusMetricsCounterCollector.class),
+                Arguments.of("test_gauge", MetricCollectorType.GAUGE, PrometheusMetricsGaugeCollector.class),
+                Arguments.of("test_histogram", MetricCollectorType.HISTOGRAM, PrometheusMetricsHistogramCollector.class),
+                Arguments.of("test_summary", MetricCollectorType.SUMMARY, PrometheusMetricsSummaryCollector.class),
+                Arguments.of("test_gauge_metric_family", MetricCollectorType.GAUGE_METRIC_FAMILY, PrometheusMetricsGaugeMetricFamilyCollector.class));
     }
 }

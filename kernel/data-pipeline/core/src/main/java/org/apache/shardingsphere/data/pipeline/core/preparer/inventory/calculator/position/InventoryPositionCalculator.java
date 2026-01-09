@@ -18,10 +18,11 @@
 package org.apache.shardingsphere.data.pipeline.core.preparer.inventory.calculator.position;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSource;
 import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.inventory.query.Range;
 import org.apache.shardingsphere.data.pipeline.core.ingest.position.IngestPosition;
-import org.apache.shardingsphere.data.pipeline.core.ingest.position.type.pk.type.UnsupportedKeyIngestPosition;
+import org.apache.shardingsphere.data.pipeline.core.ingest.position.type.pk.UniqueKeyIngestPosition;
 import org.apache.shardingsphere.data.pipeline.core.metadata.model.PipelineColumnMetaData;
 import org.apache.shardingsphere.data.pipeline.core.preparer.inventory.calculator.InventoryDataSparsenessCalculator;
 import org.apache.shardingsphere.data.pipeline.core.preparer.inventory.calculator.position.estimated.InventoryPositionEstimatedCalculator;
@@ -40,6 +41,7 @@ import java.util.List;
  * Inventory position calculator.
  */
 @RequiredArgsConstructor
+@Slf4j
 public final class InventoryPositionCalculator {
     
     private final PipelineDataSource dataSource;
@@ -66,7 +68,8 @@ public final class InventoryPositionCalculator {
         if (dataTypeOption.isStringDataType(firstColumnDataType)) {
             return getStringPositions();
         }
-        return Collections.singletonList(new UnsupportedKeyIngestPosition());
+        log.info("Unsupported unique key type, unique key columns: {}", uniqueKeyColumns);
+        return Collections.singletonList(UniqueKeyIngestPosition.ofUnsplit());
     }
     
     private List<IngestPosition> getIntegerPositions() {

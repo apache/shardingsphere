@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Licensed to the Apache Software Foundation (ASF) under one or more
+  ~ contributor license agreements.  See the NOTICE file distributed with
+  ~ this work for additional information regarding copyright ownership.
+  ~ The ASF licenses this file to You under the Apache License, Version 2.0
+  ~ (the "License"); you may not use this file except in compliance with
+  ~ the License.  You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<sql-cases>
+    <sql-case id="presto_select_literals" value="SELECT DATE '2020-01-01', X'1F', B'1010', TRUE, NULL FROM catalog.schem1.t_order" db-types="Presto" />
+    <sql-case id="presto_select_compare_all_subquery" value="SELECT * FROM t_order WHERE order_id = ALL (SELECT order_id FROM t_order_item)" db-types="Presto" />
+    <sql-case id="presto_select_or_boolean_true" value="SELECT * FROM t_order WHERE flag IS TRUE OR order_id = 1" db-types="Presto" />
+    <sql-case id="presto_select_not_flag" value="SELECT * FROM t_order WHERE NOT flag" db-types="Presto" />
+    <sql-case id="presto_select_not_exists_subquery" value="SELECT * FROM t_order WHERE NOT EXISTS (SELECT 1)" db-types="Presto" />
+    <sql-case id="presto_select_assignment_operator" value="SELECT * FROM t_order WHERE order_id := 1" db-types="Presto" />
+    <sql-case id="presto_select_predicate_variants" value="SELECT * FROM t_order WHERE order_id NOT BETWEEN 1 AND 5 AND status REGEXP '[12]' AND status RLIKE '[34]' AND status LIKE 'ok'" db-types="Presto" />
+    <sql-case id="presto_select_case_binary_variable" value="SELECT CASE catalog.schem1.order_id WHEN 1 THEN 'one' ELSE 'other' END, BINARY status, @user_value FROM t_order" db-types="Presto" />
+    <sql-case id="presto_select_concat_match_interval" value="SELECT status || 'X', MATCH(status) AGAINST ('kw'), INTERVAL '1' DAY, catalog.fn(order_id) FROM t_order" db-types="Presto" />
+    <sql-case id="presto_select_is_true" value="SELECT * FROM t_order WHERE flag IS TRUE" db-types="Presto" />
+    <sql-case id="presto_select_xor" value="SELECT * FROM t_order WHERE flag XOR 1" db-types="Presto" />
+    <sql-case id="presto_select_safe_equal" value="SELECT * FROM t_order WHERE flag &lt;=&gt; TRUE" db-types="Presto" />
+    <sql-case id="presto_select_member_of" value="SELECT * FROM t_order WHERE order_id MEMBER OF(&quot;[1,2]&quot;)" db-types="Presto" />
+    <sql-case id="presto_select_in_params" value="SELECT * FROM t_order WHERE order_id IN (1, 2)" db-types="Presto" />
+    <sql-case id="presto_select_sounds_like" value="SELECT * FROM t_order WHERE status SOUNDS LIKE 'ok'" db-types="Presto" />
+    <sql-case id="presto_select_searched_case" value="SELECT CASE WHEN flag THEN 1 ELSE 0 END FROM t_order" db-types="Presto" />
+    <sql-case id="presto_select_in_subquery" value="SELECT * FROM t_order WHERE order_id IN (SELECT order_id FROM t_order_item)" db-types="Presto" />
+    <sql-case id="presto_select_convert_function" value="SELECT CONVERT(order_id, CHAR) FROM t_order" db-types="Presto" />
+    <sql-case id="presto_select_position_function" value="SELECT POSITION('a' IN 'abc')" db-types="Presto" />
+    <sql-case id="presto_select_current_user" value="SELECT CURRENT_USER()" db-types="Presto" />
+    <sql-case id="presto_select_limit_offset" value="SELECT * FROM t_order LIMIT 5 OFFSET 2" db-types="Presto" />
+    <sql-case id="presto_select_substring_function" value="SELECT SUBSTRING('abc',1,2)" db-types="Presto" />
+    <sql-case id="presto_select_char_function" value="SELECT CHAR(97,98)" db-types="Presto" />
+    <sql-case id="presto_select_trim_function" value="SELECT TRIM(BOTH 'x' FROM 'xabcx')" db-types="Presto" />
+    <sql-case id="presto_select_extract_function" value="SELECT EXTRACT(YEAR FROM DATE '2020-01-01')" db-types="Presto" />
+    <sql-case id="presto_select_weight_string" value="SELECT WEIGHT_STRING('a')" db-types="Presto" />
+    <sql-case id="presto_select_group_concat" value="SELECT GROUP_CONCAT(order_id) FROM t_order" db-types="Presto" />
+    <sql-case id="presto_select_limit_only" value="SELECT * FROM t_order LIMIT 5" db-types="Presto" />
+    <sql-case id="presto_select_current_time_precision" value="SELECT CURRENT_TIME(3)" db-types="Presto,Doris" />
+    <sql-case id="presto_select_predicate_not_variants" value="SELECT * FROM t_order WHERE flag IS NOT NULL AND status NOT LIKE '%x%' AND status NOT REGEXP '[12]' AND status NOT RLIKE '[34]' AND order_id NOT IN (1, 2)" db-types="Presto" />
+    <sql-case id="presto_select_collate_params" value="SELECT 'a' COLLATE utf8mb4_bin, 'b' COLLATE latin1_bin FROM t_order" db-types="Presto" />
+    <sql-case id="presto_select_agg_group_having_order" value="SELECT DISTINCT status, COUNT(DISTINCT order_id) AS cnt FROM t_order GROUP BY status HAVING COUNT(*) > 1 ORDER BY 2 DESC, status ASC" db-types="Presto" />
+    <sql-case id="presto_select_window_clause" value="SELECT ROW_NUMBER() OVER win FROM t_order WINDOW win AS (PARTITION BY status ORDER BY order_id ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW)" db-types="Presto" />
+    <sql-case id="presto_select_lock_for_update" value="SELECT * FROM t_order FOR UPDATE" db-types="Presto" />
+    <sql-case id="presto_values_constructor" value="VALUES ROW(1, 2)" db-types="Presto" />
+    <sql-case id="presto_table_statement" value="TABLE t_order" db-types="Presto" />
+    <sql-case id="presto_select_limit_comma" value="SELECT * FROM t_order LIMIT 2, 5" db-types="Presto,Doris" />
+    <sql-case id="presto_select_join_natural_left" value="SELECT * FROM t_order NATURAL LEFT JOIN t_order_item" db-types="Presto" />
+    <sql-case id="presto_select_system_variable" value="SELECT @@global.time_zone" db-types="Presto" />
+    <sql-case id="presto_select_parameter_marker" value="SELECT ?" db-types="Presto" />
+    <sql-case id="presto_select_all_qualified_shorthand" value="SELECT ALL t_order.* FROM t_order" db-types="Presto" />
+    <sql-case id="presto_select_two_level_order_expr" value="SELECT t_order.order_id FROM t_order ORDER BY order_id + 1" db-types="Presto" />
+    <sql-case id="presto_select_current_time_trim" value="SELECT CURRENT_TIME, TRIM(LEADING 'x' FROM status), TRIM(TRAILING 'y' FROM status) FROM t_order" db-types="Presto" />
+    <sql-case id="presto_select_values_function" value="SELECT VALUES(order_id) FROM t_order" db-types="Presto" />
+    <sql-case id="presto_select_udf_no_args" value="SELECT my_udf() FROM t_order" db-types="Presto" />
+    <sql-case id="presto_select_json_cast_abs" value="SELECT JSON_EXTRACT(order_id, '$.a'), CAST(order_id AS DATETIME(3)), ABS(-1) FROM t_order" db-types="Presto" />
+    <sql-case id="presto_select_paren_lock_dual" value="(SELECT 1 FROM DUAL) FOR UPDATE" db-types="Presto" />
+    <sql-case id="presto_select_paren_union" value="(SELECT 1) UNION SELECT 2" db-types="Presto" />
+    <sql-case id="presto_select_comma_join" value="SELECT * FROM t_order, t_order_item" db-types="Presto" />
+    <sql-case id="presto_select_subquery_table" value="SELECT * FROM (SELECT * FROM t_order) t" db-types="Presto" />
+    <sql-case id="presto_select_system_variable_plain" value="SELECT @@time_zone" db-types="Presto" />
+    <sql-case id="presto_insert_set_assignment" value="INSERT INTO t_order SET status = order_id" db-types="Presto" />
+    <sql-case id="presto_select_union" value="SELECT * FROM table1 UNION SELECT * FROM table2" db-types="Presto" />
+    <sql-case id="presto_select_union_all" value="SELECT * FROM table1 UNION ALL SELECT * FROM table2" db-types="Presto" />
+    <sql-case id="presto_select_with_except" value="(SELECT * FROM t1) EXCEPT (SELECT * FROM t2)" db-types="Presto" />
+    <sql-case id="presto_select_not_operator_bang" value="SELECT !flag FROM t_order" db-types="Presto" />
+    <sql-case id="presto_select_cast_as_char" value="SELECT CAST(order_id AS CHAR) FROM t_order" db-types="Presto" />
+    <sql-case id="presto_select_subquery_projection" value="SELECT (SELECT 1) FROM t_order" db-types="Presto" />
+    <sql-case id="presto_select_exists_projection" value="SELECT EXISTS (SELECT 1) FROM t_order" db-types="Presto" />
+    <sql-case id="presto_select_in_projection" value="SELECT 1 IN (1,2) FROM t_order" db-types="Presto" />
+    <sql-case id="presto_select_between_projection" value="SELECT 1 BETWEEN 1 AND 2 FROM t_order" db-types="Presto" />
+    <sql-case id="presto_select_left_join" value="SELECT * FROM t_order LEFT JOIN t_order_item ON t_order.order_id = t_order_item.order_id" db-types="Presto" />
+    <sql-case id="presto_select_right_join" value="SELECT * FROM t_order RIGHT JOIN t_order_item ON t_order.order_id = t_order_item.order_id" db-types="Presto" />
+    <sql-case id="presto_select_natural_join" value="SELECT * FROM t_order NATURAL JOIN t_order_item" db-types="Presto" />
+    <sql-case id="presto_select_natural_right_join" value="SELECT * FROM t_order NATURAL RIGHT JOIN t_order_item" db-types="Presto" />
+    <sql-case id="presto_select_join_using" value="SELECT * FROM t_order JOIN t_order_item USING(order_id)" db-types="Presto" />
+    <sql-case id="presto_select_json_separator" value="SELECT order_info-&gt;'$.a' FROM t_order" db-types="Presto" />
+    <sql-case id="presto_select_json_unquoted_separator" value="SELECT order_info-&gt;&gt;'$.a' FROM t_order" db-types="Presto" />
+    <sql-case id="presto_select_udf_with_param" value="SELECT my_udf(order_id) FROM t_order" db-types="Presto" />
+    <sql-case id="presto_insert_select_no_columns" value="INSERT INTO t_order SELECT 1" db-types="Presto" />
+    <sql-case id="presto_insert_values_empty_columns" value="INSERT INTO t_order () VALUES (1)" db-types="Presto" />
+    <sql-case id="presto_select_cast_lengths" value="SELECT CAST(order_id AS DECIMAL(10,2)) FROM t_order" db-types="Presto" />
+    <sql-case id="presto_select_window_partition_only" value="SELECT ROW_NUMBER() OVER win FROM t_order WINDOW win AS (PARTITION BY status)" db-types="Presto" />
+    <sql-case id="presto_delete_order_limit" value="DELETE FROM t_order WHERE flag = 1 ORDER BY order_id LIMIT 1" db-types="Presto" />
+    <sql-case id="presto_select_cast_literal" value="SELECT CAST('1' AS CHAR) FROM t_order" db-types="Presto" />
+    <sql-case id="presto_select_substr_alias" value="SELECT SUBSTR('abcd',2,2) FROM t_order" db-types="Presto" />
+    <sql-case id="presto_select_schema_shorthand" value="SELECT schem1.t_order.* FROM t_order" db-types="Presto" />
+    <sql-case id="presto_delete_table_alias" value="DELETE FROM t_order AS o WHERE flag = 1" db-types="Presto" />
+    <sql-case id="presto_select_lock_share_of_nowait" value="SELECT * FROM t_order FOR SHARE OF t_order NOWAIT" db-types="Presto" />
+    <sql-case id="presto_select_lock_skip_locked" value="SELECT * FROM t_order FOR UPDATE OF t_order SKIP LOCKED" db-types="Presto" />
+    <sql-case id="presto_select_is_null" value="SELECT * FROM t_order WHERE flag IS NULL" db-types="Presto" />
+    <sql-case id="presto_select_is_not_true" value="SELECT * FROM t_order WHERE flag IS NOT TRUE" db-types="Presto" />
+    <sql-case id="presto_select_is_false" value="SELECT * FROM t_order WHERE flag IS FALSE" db-types="Presto" />
+    <sql-case id="presto_select_in_param_markers" value="SELECT * FROM t_order WHERE order_id IN (?, ?)" db-types="Presto" />
+    <sql-case id="presto_select_distinctrow" value="SELECT DISTINCTROW * FROM t_order" db-types="Presto" />
+</sql-cases>

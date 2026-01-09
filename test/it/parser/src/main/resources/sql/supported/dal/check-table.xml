@@ -17,10 +17,10 @@
   -->
 
 <sql-cases>
-    <sql-case id="check_table" value="CHECK TABLE test_table FAST" db-types="MySQL" />
-    <sql-case id="check_tables" value="CHECK TABLE t_order,t_order_item" db-types="MySQL" />
-    <sql-case id="checksum_table" value="CHECKSUM TABLE t_order" db-types="MySQL" />
-    <sql-case id="checksum_table_quick" value="CHECKSUM TABLE t_order QUICK" db-types="MySQL" />
+    <sql-case id="check_table" value="CHECK TABLE test_table FAST" db-types="MySQL,Doris" />
+    <sql-case id="check_tables" value="CHECK TABLE t_order,t_order_item" db-types="MySQL,Doris" />
+    <sql-case id="checksum_table" value="CHECKSUM TABLE t_order" db-types="MySQL,Doris" />
+    <sql-case id="checksum_table_quick" value="CHECKSUM TABLE t_order QUICK" db-types="MySQL,Doris" />
     <sql-case id="checksum_table_extended" value="CHECKSUM TABLE t_order EXTENDED" db-types="MySQL" />
     <sql-case id="checksum_tables" value="CHECKSUM TABLES t_order,t_order_item" db-types="MySQL" />
     <sql-case id="checksum_tables_quick" value="CHECKSUM TABLES t_order,t_order_item QUICK" db-types="MySQL" />

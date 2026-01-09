@@ -26,9 +26,9 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.sample.Sa
 /**
  * Update statistics strategy segment.
  */
+@NoArgsConstructor
 @Getter
 @Setter
-@NoArgsConstructor
 public final class StatisticsStrategySegment implements SQLSegment {
     
     private int startIndex;

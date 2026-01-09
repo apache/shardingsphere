@@ -55,8 +55,8 @@
     <sql-case id="show_procedure_status_with_where_expr" value="SHOW PROCEDURE STATUS where name = ?" db-types="MySQL" />
     <sql-case id="show_procedure_status_with_where_expr_no_parameter" value="SHOW PROCEDURE STATUS where name = 'procedure1'" db-types="MySQL" />
     <sql-case id="show_replicas" value="SHOW REPLICAS" db-types="MySQL" />
-    <sql-case id="show_procedure_code_func" value="SHOW PROCEDURE CODE TEST_FUNC" db-types="MySQL" />
-    <sql-case id="show_procedure_code_owner_func" value="SHOW PROCEDURE CODE TEST_USER.TEST_FUNC" db-types="MySQL" />
+    <sql-case id="show_procedure_code_func" value="SHOW PROCEDURE CODE TEST_FUNC" db-types="MySQL,Doris" />
+    <sql-case id="show_procedure_code_owner_func" value="SHOW PROCEDURE CODE TEST_USER.TEST_FUNC" db-types="MySQL,Doris" />
     <sql-case id="show_relay-log_events" value="SHOW RELAYLOG EVENTS FOR CHANNEL TEST_CHANNEL" db-types="MySQL" />
     <sql-case id="show_relay-log_events_with_log" value="SHOW RELAYLOG EVENTS IN 'TEST_LOG' FOR CHANNEL TEST_CHANNEL" db-types="MySQL" />
     <sql-case id="show_slave_hosts" value="SHOW SLAVE HOSTS" db-types="MySQL" />
@@ -82,11 +82,11 @@
     <sql-case id="show_table_status_with_like_pattern" value="SHOW TABLE STATUS FROM `sharding_db` LIKE 't_order_%'" db-types="MySQL" />
     <sql-case id="show_table_status_with_where_expr" value="SHOW TABLE STATUS FROM `sharding_db` WHERE `name` = ?" db-types="MySQL" />
     <sql-case id="show_table_status_with_where_expr_no_parameter" value="SHOW TABLE STATUS FROM `sharding_db` WHERE `name` = 't_order'" db-types="MySQL" />
-    <sql-case id="show_global_status" value="SHOW GLOBAL STATUS" db-types="MySQL" />
-    <sql-case id="show_session_status" value="SHOW SESSION STATUS" db-types="MySQL" />
-    <sql-case id="show_status_with_like_pattern" value="SHOW GLOBAL STATUS LIKE 'Key%'" db-types="MySQL" />
-    <sql-case id="show_status_with_where_expr" value="SHOW GLOBAL STATUS WHERE variable_name = ?" db-types="MySQL" />
-    <sql-case id="show_status_with_where_expr_no_parameter" value="SHOW GLOBAL STATUS WHERE variable_name = 'open_tables'" db-types="MySQL" />
+    <sql-case id="show_global_status" value="SHOW GLOBAL STATUS" db-types="MySQL,Doris" />
+    <sql-case id="show_session_status" value="SHOW SESSION STATUS" db-types="MySQL,Doris" />
+    <sql-case id="show_status_with_like_pattern" value="SHOW GLOBAL STATUS LIKE 'Key%'" db-types="MySQL,Doris" />
+    <sql-case id="show_status_with_where_expr" value="SHOW GLOBAL STATUS WHERE variable_name = ?" db-types="MySQL,Doris" />
+    <sql-case id="show_status_with_where_expr_no_parameter" value="SHOW GLOBAL STATUS WHERE variable_name = 'open_tables'" db-types="MySQL,Doris" />
     <sql-case id="show_events" value="SHOW EVENTS" db-types="MySQL" />
     <sql-case id="show_events_from_schema" value="SHOW EVENTS FROM `sharding_db`" db-types="MySQL" />
     <sql-case id="show_events_in_schema" value="SHOW EVENTS IN `sharding_db`" db-types="MySQL" />
@@ -98,23 +98,23 @@
     <sql-case id="show_extended_full_tables" value="SHOW EXTENDED FULL TABLES" db-types="MySQL" />
     <sql-case id="show_tables_from_schema" value="SHOW TABLES FROM `sharding_db`" db-types="MySQL" />
     <sql-case id="show_tables_in_schema" value="SHOW TABLES IN `sharding_db`" db-types="MySQL" />
-    <sql-case id="show_tables_with_like_pattern" value="SHOW TABLES FROM `sharding_db` LIKE 't_order_%'" db-types="MySQL" />
-    <sql-case id="show_tables_with_where_expr" value="SHOW EXTENDED FULL TABLES FROM `sharding_db` WHERE `table_type` = ?" db-types="MySQL" />
-    <sql-case id="show_tables_with_where_expr_no_parameter" value="SHOW EXTENDED FULL TABLES FROM `sharding_db` WHERE `table_type` = 'BASE TABLE'" db-types="MySQL" />
-    <sql-case id="show_character_set" value="SHOW CHARACTER SET" db-types="MySQL" />
-    <sql-case id="show_character_set_with_like_pattern" value="SHOW CHARACTER SET LIKE 'latin%'" db-types="MySQL" />
-    <sql-case id="show_character_set_with_where_expr" value="SHOW CHARACTER SET WHERE `Charset` = ?" db-types="MySQL" />
-    <sql-case id="show_character_set_with_where_expr_no_parameter" value="SHOW CHARACTER SET WHERE `Charset` = 'latin1'" db-types="MySQL" />
-    <sql-case id="show_collation" value="SHOW COLLATION" db-types="MySQL" />
-    <sql-case id="show_collation_with_like_pattern" value="SHOW COLLATION LIKE 'latin%'" db-types="MySQL" />
-    <sql-case id="show_collation_with_where_expr" value="SHOW COLLATION WHERE Charset = ?" db-types="MySQL" />
-    <sql-case id="show_collation_with_where_expr_no_parameter" value="SHOW COLLATION WHERE Charset = 'latin1'" db-types="MySQL" />
-    <sql-case id="show_variables" value="SHOW VARIABLES" db-types="MySQL" />
-    <sql-case id="show_global_variables" value="SHOW GLOBAL VARIABLES" db-types="MySQL" />
-    <sql-case id="show_session_variables" value="SHOW SESSION VARIABLES" db-types="MySQL" />
-    <sql-case id="show_variables_with_like_pattern" value="SHOW SESSION VARIABLES LIKE '%size%'" db-types="MySQL" />
-    <sql-case id="show_variables_with_where_expr" value="SHOW GLOBAL VARIABLES WHERE variable_name = ?" db-types="MySQL" />
-    <sql-case id="show_variables_with_where_expr_no_parameter" value="SHOW VARIABLES WHERE variable_name = 'max_join_size'" db-types="MySQL" />
+    <sql-case id="show_tables_with_like_pattern" value="SHOW TABLES FROM `sharding_db` LIKE 't_order_%'" db-types="MySQL,Doris" />
+    <sql-case id="show_tables_with_where_expr" value="SHOW EXTENDED FULL TABLES FROM `sharding_db` WHERE `table_type` = ?" db-types="MySQL,Doris" />
+    <sql-case id="show_tables_with_where_expr_no_parameter" value="SHOW EXTENDED FULL TABLES FROM `sharding_db` WHERE `table_type` = 'BASE TABLE'" db-types="MySQL,Doris" />
+    <sql-case id="show_character_set" value="SHOW CHARACTER SET" db-types="MySQL,Doris" />
+    <sql-case id="show_character_set_with_like_pattern" value="SHOW CHARACTER SET LIKE 'latin%'" db-types="MySQL,Doris" />
+    <sql-case id="show_character_set_with_where_expr" value="SHOW CHARACTER SET WHERE `Charset` = ?" db-types="MySQL,Doris" />
+    <sql-case id="show_character_set_with_where_expr_no_parameter" value="SHOW CHARACTER SET WHERE `Charset` = 'latin1'" db-types="MySQL,Doris" />
+    <sql-case id="show_collation" value="SHOW COLLATION" db-types="MySQL,Doris" />
+    <sql-case id="show_collation_with_like_pattern" value="SHOW COLLATION LIKE 'latin%'" db-types="MySQL,Doris" />
+    <sql-case id="show_collation_with_where_expr" value="SHOW COLLATION WHERE Charset = ?" db-types="MySQL,Doris" />
+    <sql-case id="show_collation_with_where_expr_no_parameter" value="SHOW COLLATION WHERE Charset = 'latin1'" db-types="MySQL,Doris" />
+    <sql-case id="show_variables" value="SHOW VARIABLES" db-types="MySQL,Doris" />
+    <sql-case id="show_global_variables" value="SHOW GLOBAL VARIABLES" db-types="MySQL,Doris" />
+    <sql-case id="show_session_variables" value="SHOW SESSION VARIABLES" db-types="MySQL,Doris" />
+    <sql-case id="show_variables_with_like_pattern" value="SHOW SESSION VARIABLES LIKE '%size%'" db-types="MySQL,Doris" />
+    <sql-case id="show_variables_with_where_expr" value="SHOW GLOBAL VARIABLES WHERE variable_name = ?" db-types="MySQL,Doris" />
+    <sql-case id="show_variables_with_where_expr_no_parameter" value="SHOW VARIABLES WHERE variable_name = 'max_join_size'" db-types="MySQL,Doris" />
     <sql-case id="show_binlog_events_with_log_name" value="SHOW BINLOG EVENTS IN 'log_name'" db-types="MySQL" />
     <sql-case id="show_binlog_events_with_from_pos" value="SHOW BINLOG EVENTS FROM 1" db-types="MySQL" />
     <sql-case id="show_binlog_events_with_limit" value="SHOW BINLOG EVENTS LIMIT 1,2" db-types="MySQL" />
@@ -122,8 +122,8 @@
     <sql-case id="show_engine_mutex" value="SHOW ENGINE INNODB MUTEX" db-types="MySQL" />
     <sql-case id="show_binary_logs" value="SHOW BINARY LOGS" db-types="MySQL" />
     <sql-case id="show_master_logs" value="SHOW MASTER LOGS" db-types="MySQL" />
-    <sql-case id="show_engines" value="SHOW ENGINES" db-types="MySQL" />
-    <sql-case id="show_storage_engines" value="SHOW STORAGE ENGINES" db-types="MySQL" />
+    <sql-case id="show_engines" value="SHOW ENGINES" db-types="MySQL,Doris" />
+    <sql-case id="show_storage_engines" value="SHOW STORAGE ENGINES" db-types="MySQL,Doris" />
     <sql-case id="show_create_database" value="SHOW CREATE DATABASE schema_name" db-types="MySQL" />
     <sql-case id="show_create_database_if_not_exist" value="SHOW CREATE DATABASE IF NOT EXISTS schema_name" db-types="MySQL" />
     <sql-case id="show_create_schema" value="SHOW CREATE SCHEMA schema_name" db-types="MySQL" />
@@ -132,19 +132,20 @@
     <sql-case id="show_create_function" value="SHOW CREATE FUNCTION function_name" db-types="MySQL" />
     <sql-case id="show_create_proc" value="SHOW CREATE PROCEDURE proc_name" db-types="MySQL" />
     <sql-case id="show_create_view" value="SHOW CREATE VIEW view_name" db-types="MySQL" />
-    <sql-case id="show_function_code" value="SHOW FUNCTION CODE function_name" db-types="MySQL" />
+    <sql-case id="show_function_code" value="SHOW FUNCTION CODE function_name" db-types="MySQL,Doris" />
     <sql-case id="show_grants_for" value="SHOW GRANTS FOR 'jeffrey'@'localhost'" db-types="MySQL" />
     <sql-case id="show_grants_for_using" value="SHOW GRANTS FOR 'u1'@'localhost' USING 'r1'" db-types="MySQL" />
     <sql-case id="show_master_status" value="SHOW MASTER STATUS" db-types="MySQL" />
-    <sql-case id="show_plugins" value="SHOW PLUGINS" db-types="MySQL" />
+    <sql-case id="show_plugins" value="SHOW PLUGINS" db-types="MySQL,Doris" />
+    <sql-case id="show_privileges_doris" value="SHOW PRIVILEGES" db-types="Doris" />
     <sql-case id="show_processlist" value="SHOW FULL PROCESSLIST" db-types="MySQL" />
-    <sql-case id="show_profile" value="SHOW PROFILE LIMIT 1, 2" db-types="MySQL" />
-    <sql-case id="show_profiles" value="SHOW PROFILES" db-types="MySQL" />
+    <sql-case id="show_profile" value="SHOW PROFILE LIMIT 1, 2" db-types="MySQL,Doris" />
+    <sql-case id="show_profiles" value="SHOW PROFILES" db-types="MySQL,Doris" />
     <sql-case id="show_charset" value="SHOW CHARSET" db-types="MySQL" />
-    <sql-case id="show_warnings_limit" value="SHOW WARNINGS limit 1" db-types="MySQL" />
-    <sql-case id="show_warnings_count" value="SHOW COUNT(*) WARNINGS" db-types="MySQL" />
+    <sql-case id="show_warnings_limit" value="SHOW WARNINGS limit 1" db-types="MySQL,Doris" />
+    <sql-case id="show_warnings_count" value="SHOW COUNT(*) WARNINGS" db-types="MySQL,Doris" />
     <sql-case id="show_search_path" value="SHOW search_path;" db-types="PostgreSQL,openGauss" />
-    <sql-case id="show_errors" value="SHOW ERRORS;" db-types="Oracle"/>
+    <sql-case id="show_errors" value="SHOW ERRORS;" db-types="Oracle,Doris"/>
     <sql-case id="show_parameter_smtp_out_server" value="SHOW PARAMETER SMTP_OUT_SERVER" db-types="Oracle"/>
     <sql-case id="show_databases_basic" value="SHOW DATABASES;" db-types="Hive" />
     <sql-case id="show_schemas_basic" value="SHOW SCHEMAS;" db-types="Hive" />
@@ -241,6 +242,25 @@
     <sql-case id="show_query_stats_all" value="SHOW QUERY STATS ALL" db-types="Doris" />
     <sql-case id="show_query_stats_verbose" value="SHOW QUERY STATS VERBOSE" db-types="Doris" />
     <sql-case id="show_query_stats_from_table_all_verbose" value="SHOW QUERY STATS FROM test_table ALL VERBOSE" db-types="Doris" />
+    <sql-case id="show_create_database_doris" value="SHOW CREATE DATABASE test_db" db-types="Doris" />
+    <sql-case id="show_create_view_doris" value="SHOW CREATE VIEW v_sales" db-types="Doris" />
+    <sql-case id="show_create_event_doris" value="SHOW CREATE EVENT ev_annual" db-types="Doris" />
+    <sql-case id="show_create_function_doris" value="SHOW CREATE FUNCTION udf_add" db-types="Doris" />
+    <sql-case id="show_create_procedure_doris" value="SHOW CREATE PROCEDURE proc_test" db-types="Doris" />
+    <sql-case id="show_create_trigger_doris" value="SHOW CREATE TRIGGER trg_test" db-types="Doris" />
+    <sql-case id="show_create_user_doris" value="SHOW CREATE USER user1" db-types="Doris" />
+    <sql-case id="show_binary_logs_doris" value="SHOW BINARY LOGS" db-types="Doris" />
+    <sql-case id="show_binlog_events_doris" value="SHOW BINLOG EVENTS" db-types="Doris" />
+    <sql-case id="show_processlist_doris" value="SHOW PROCESSLIST" db-types="Doris" />
+    <sql-case id="show_open_tables_doris" value="SHOW OPEN TABLES" db-types="Doris" />
+    <sql-case id="show_triggers_doris" value="SHOW TRIGGERS" db-types="Doris" />
+    <sql-case id="show_function_status_doris" value="SHOW FUNCTION STATUS" db-types="Doris" />
+    <sql-case id="show_procedure_status_doris" value="SHOW PROCEDURE STATUS" db-types="Doris" />
+    <sql-case id="show_master_status_doris" value="SHOW MASTER STATUS" db-types="Doris" />
+    <sql-case id="show_slave_status_doris" value="SHOW SLAVE STATUS" db-types="Doris" />
+    <sql-case id="show_slave_hosts_doris" value="SHOW SLAVE HOSTS" db-types="Doris" />
+    <sql-case id="show_replica_status_doris" value="SHOW REPLICA STATUS" db-types="Doris" />
+    <sql-case id="show_relaylog_events_doris" value="SHOW RELAYLOG EVENTS" db-types="Doris" />
     <sql-case id="show_data_skew_from_table" value="SHOW DATA SKEW FROM test_show_data_skew" db-types="Doris" />
     <sql-case id="show_data_skew_from_table_with_db" value="SHOW DATA SKEW FROM test_db.test_table" db-types="Doris" />
     <sql-case id="show_data_skew_from_table_with_partition" value="SHOW DATA SKEW FROM test_table PARTITION (p1)" db-types="Doris" />

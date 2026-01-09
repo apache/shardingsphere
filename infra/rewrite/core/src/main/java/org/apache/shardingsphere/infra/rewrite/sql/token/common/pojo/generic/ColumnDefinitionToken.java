@@ -38,6 +38,11 @@ public final class ColumnDefinitionToken extends SQLToken {
     }
     
     @Override
+    public int getStopIndex() {
+        return getStartIndex();
+    }
+    
+    @Override
     public String toString() {
         if (Strings.isNullOrEmpty(dataType)) {
             return columnName;
@@ -46,10 +51,5 @@ public final class ColumnDefinitionToken extends SQLToken {
             return dataType;
         }
         return columnName + " " + dataType;
-    }
-    
-    @Override
-    public int getStopIndex() {
-        return getStartIndex();
     }
 }

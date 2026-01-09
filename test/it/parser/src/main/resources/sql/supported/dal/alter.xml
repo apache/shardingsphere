@@ -17,7 +17,7 @@
   -->
 
 <sql-cases>
-    <sql-case id="alter_resource_group" value="ALTER RESOURCE GROUP rg" db-types="MySQL" />
+    <sql-case id="alter_resource_group" value="ALTER RESOURCE GROUP rg" db-types="MySQL,Doris" />
     <sql-case id="alter_resource_cost_cpu_time" value="ALTER RESOURCE COST CPU_PER_SESSION 100 CONNECT_TIME 1" db-types="Oracle" />
     <sql-case id="alter_resource_cost_cpu" value="ALTER RESOURCE COST CPU_PER_SESSION 100" db-types="Oracle" />
     <sql-case id="alter_resource_properties" value="ALTER RESOURCE 'remote_s3' PROPERTIES (&quot;s3.connection.maximum&quot; = &quot;100&quot;);" db-types="Doris" />
@@ -31,4 +31,8 @@
     <sql-case id="alter_system_add_observer" value="ALTER SYSTEM ADD OBSERVER &quot;192.168.1.101:9010&quot;" db-types="Doris" />
     <sql-case id="alter_system_drop_follower" value="ALTER SYSTEM DROP FOLLOWER &quot;192.168.1.100:9010&quot;" db-types="Doris" />
     <sql-case id="alter_system_drop_observer" value="ALTER SYSTEM DROP OBSERVER &quot;192.168.1.101:9010&quot;" db-types="Doris" />
+    <sql-case id="change_replication_source_to_doris" value="CHANGE REPLICATION SOURCE TO SOURCE_USER = 'plug_user', SOURCE_PASSWORD = 'plug_user', SOURCE_RETRY_COUNT = 0" db-types="Doris" />
+    <sql-case id="change_replication_ignore_server_ids_doris" value="CHANGE REPLICATION SOURCE TO IGNORE_SERVER_IDS = ()" db-types="Doris"/>
+    <sql-case id="change_master_ignore_server_ids_doris" value="CHANGE MASTER TO IGNORE_SERVER_IDS = ()" db-types="Doris"/>
+    <sql-case id="change_master_basic_doris" value="CHANGE MASTER TO MASTER_HOST='127.0.0.1', MASTER_PORT=3306" db-types="Doris"/>
 </sql-cases>

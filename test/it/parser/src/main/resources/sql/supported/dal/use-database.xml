@@ -17,6 +17,6 @@
   -->
 
 <sql-cases>
-    <sql-case id="use_database" value="USE test_db;" db-types="MySQL,Hive" />
+    <sql-case id="use_database" value="USE test_db;" db-types="MySQL,Hive,Doris" />
     <sql-case id="use_default" value="USE DEFAULT;" db-types="Hive" />
 </sql-cases>

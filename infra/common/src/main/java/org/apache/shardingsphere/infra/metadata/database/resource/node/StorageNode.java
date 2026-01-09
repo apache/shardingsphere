@@ -19,19 +19,25 @@ package org.apache.shardingsphere.infra.metadata.database.resource.node;
 
 import com.google.common.base.Objects;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 
 /**
  * Storage node.
  */
-@RequiredArgsConstructor
 @Getter
 public final class StorageNode {
     
     private final String name;
     
+    private final boolean instanceStorageNode;
+    
+    public StorageNode(final String name) {
+        this.name = name;
+        instanceStorageNode = false;
+    }
+    
     public StorageNode(final String hostname, final int port, final String username) {
         name = String.format("%s_%s_%s", hostname, port, username);
+        instanceStorageNode = true;
     }
     
     @Override

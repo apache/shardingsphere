@@ -46,12 +46,12 @@ jobs:
       - name: Support Long Paths in Windows
         if: matrix.os == 'windows-latest'
         run: git config --global core.longpaths true
-      - uses: actions/checkout@v4
-      - uses: actions/setup-java@v4
+      - uses: actions/checkout@v6.0.1
+      - uses: actions/setup-java@v5.1.0
         with:
           distribution: 'temurin'
           java-version: ${{ matrix.java-version }}
-      - uses: actions/cache@v4
+      - uses: actions/cache@v5.0.1
         with:
           path: ~/.m2/repository
           key: ${{ needs.global-environment.outputs.GLOBAL_CACHE_PREFIX }}-maven-third-party-cache-${{ github.sha }}
@@ -78,12 +78,12 @@ jobs:
       - name: Support Long Paths in Windows
         if: matrix.os == 'windows-latest'
         run: git config --global core.longpaths true
-      - uses: actions/checkout@v4
-      - uses: actions/setup-java@v4
+      - uses: actions/checkout@v6.0.1
+      - uses: actions/setup-java@v5.1.0
         with:
           distribution: 'temurin'
           java-version: 11
-      - uses: actions/cache@v4
+      - uses: actions/cache@v5.0.1
         with:
           path: ~/.m2/repository
           key: ${{ needs.global-environment.outputs.GLOBAL_CACHE_PREFIX }}-maven-third-party-cache-${{ github.sha }}
@@ -93,7 +93,7 @@ jobs:
       - name: Build prod with Maven
         run: ./mvnw clean install -DskipTests -B -ntp -T1C
       - name: Setup JDK 8 for Test
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@v5.1.0
         with:
           distribution: 'zulu'
           java-version: 8
@@ -112,14 +112,14 @@ jobs:
       matrix:
         os: [ ubuntu-latest, windows-latest ]
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6.0.1
       - name: Free Disk Space on Ubuntu
         if: matrix.os == 'ubuntu-latest'
         run: ./test/native/src/test/resources/test-native/sh/free-disk-space.sh
       - name: Setup Rancher Desktop without GUI on Windows Server
         if: matrix.os == 'windows-latest'
         run: |
-          ./test/native/src/test/resources/test-native/ps1/wait-for-rancher-desktop-backend.ps1
+          ./test/native/src/test/resources/test-native/ps1/config-rdctl.ps1
           "PATH=$env:PATH" >> $env:GITHUB_ENV
       - uses: graalvm/setup-graalvm@v1
         with:
@@ -127,7 +127,7 @@ jobs:
           distribution: 'graalvm-community'
           github-token: ${{ secrets.GITHUB_TOKEN }}
           native-image-job-reports: 'true'
-      - uses: actions/cache@v4
+      - uses: actions/cache@v5.0.1
         with:
           path: ~/.m2/repository
           key: ${{ needs.global-environment.outputs.GLOBAL_CACHE_PREFIX }}-maven-third-party-cache-${{ github.sha }}

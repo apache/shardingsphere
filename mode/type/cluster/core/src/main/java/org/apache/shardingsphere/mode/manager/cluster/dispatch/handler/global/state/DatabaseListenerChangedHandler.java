@@ -30,7 +30,7 @@ import org.apache.shardingsphere.mode.node.path.NodePath;
 import org.apache.shardingsphere.mode.node.path.engine.generator.NodePathGenerator;
 import org.apache.shardingsphere.mode.node.path.engine.searcher.NodePathSearcher;
 import org.apache.shardingsphere.mode.node.path.type.database.metadata.DatabaseMetaDataNodePath;
-import org.apache.shardingsphere.mode.node.path.type.global.state.DatabaseListenerCoordinatorNodePath;
+import org.apache.shardingsphere.mode.node.path.type.global.state.coordinator.database.DatabaseListenerCoordinatorNodePath;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 
 import java.util.Arrays;

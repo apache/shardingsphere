@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Licensed to the Apache Software Foundation (ASF) under one or more
+  ~ contributor license agreements.  See the NOTICE file distributed with
+  ~ this work for additional information regarding copyright ownership.
+  ~ The ASF licenses this file to You under the Apache License, Version 2.0
+  ~ (the "License"); you may not use this file except in compliance with
+  ~ the License.  You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<sql-parser-test-cases>
+    <insert sql-case-id="hive_insert_into_values">
+        <table name="t_order" start-index="12" stop-index="18" />
+        <columns start-index="19" stop-index="19" />
+        <values>
+            <value>
+                <assignment-value>
+                    <literal-expression value="1" start-index="28" stop-index="28" />
+                </assignment-value>
+                <assignment-value>
+                    <literal-expression value="a" start-index="31" stop-index="33" />
+                </assignment-value>
+            </value>
+        </values>
+    </insert>
+
+    <insert sql-case-id="hive_insert_into_columns_values">
+        <table name="t_order" start-index="12" stop-index="18" />
+        <columns start-index="20" stop-index="29">
+            <column name="id" start-index="21" stop-index="22" />
+            <column name="name" start-index="25" stop-index="28" />
+        </columns>
+        <values>
+            <value>
+                <assignment-value>
+                    <literal-expression value="1" start-index="39" stop-index="39" />
+                </assignment-value>
+                <assignment-value>
+                    <literal-expression value="a" start-index="42" stop-index="44" />
+                </assignment-value>
+            </value>
+        </values>
+    </insert>
+
+    <insert sql-case-id="hive_insert_overwrite_select">
+        <table name="t_order" start-index="23" stop-index="29" />
+        <columns start-index="0" stop-index="0" />
+        <select>
+            <projections start-index="38" stop-index="38">
+                <shorthand-projection start-index="38" stop-index="38" />
+            </projections>
+            <from>
+                <simple-table name="t_source" start-index="45" stop-index="52" />
+            </from>
+        </select>
+    </insert>
+
+    <insert sql-case-id="hive_insert_partition">
+        <table name="t_order" start-index="18" stop-index="24" />
+        <columns start-index="47" stop-index="47" />
+        <values>
+            <value>
+                <assignment-value>
+                     <literal-expression value="1" start-index="56" stop-index="56" />
+                </assignment-value>
+                <assignment-value>
+                     <literal-expression value="a" start-index="59" stop-index="61" />
+                </assignment-value>
+            </value>
+        </values>
+    </insert>
+
+    <insert sql-case-id="hive_from_insert">
+        <table name="t_target" start-index="37" stop-index="44" />
+        <columns start-index="14" stop-index="14" />
+        <select>
+            <projections start-index="53" stop-index="53">
+                <shorthand-projection start-index="53" stop-index="53" />
+            </projections>
+            <from>
+                <simple-table name="t_source" start-index="5" stop-index="12" />
+            </from>
+        </select>
+    </insert>
+
+    <insert sql-case-id="hive_insert_select_columns">
+        <table name="t_target" start-index="12" stop-index="19" />
+        <columns start-index="21" stop-index="30">
+            <column name="id" start-index="22" stop-index="23" />
+            <column name="name" start-index="26" stop-index="29" />
+        </columns>
+        <select>
+            <projections start-index="39" stop-index="46">
+                <column-projection name="id" start-index="39" stop-index="40" />
+                <column-projection name="name" start-index="43" stop-index="46" />
+            </projections>
+            <from>
+                <simple-table name="t_source" start-index="53" stop-index="60" />
+            </from>
+        </select>
+    </insert>
+
+    <insert sql-case-id="hive_insert_dynamic_partition_select">
+        <table name="t_order" start-index="18" stop-index="24" />
+        <columns start-index="0" stop-index="0" />
+        <select>
+            <projections start-index="48" stop-index="48">
+                <shorthand-projection start-index="48" stop-index="48" />
+            </projections>
+            <from>
+                <simple-table name="t_source" start-index="55" stop-index="62" />
+            </from>
+        </select>
+    </insert>
+
+</sql-parser-test-cases>

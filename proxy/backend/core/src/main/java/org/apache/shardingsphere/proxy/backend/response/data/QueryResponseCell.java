@@ -18,12 +18,14 @@
 package org.apache.shardingsphere.proxy.backend.response.data;
 
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 import java.util.Optional;
 
 /**
  * Query response cell.
  */
+@RequiredArgsConstructor
 @Getter
 public final class QueryResponseCell {
     
@@ -37,12 +39,11 @@ public final class QueryResponseCell {
         this(jdbcType, data, null);
     }
     
-    public QueryResponseCell(final int jdbcType, final Object data, final String columnTypeName) {
-        this.jdbcType = jdbcType;
-        this.data = data;
-        this.columnTypeName = columnTypeName;
-    }
-    
+    /**
+     * Get column type name.
+     *
+     * @return column type name
+     */
     public Optional<String> getColumnTypeName() {
         return Optional.ofNullable(columnTypeName);
     }

@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.data.pipeline.core.preparer.inventory.calculator.position.exact;
 
-import org.apache.shardingsphere.data.pipeline.core.ingest.position.type.pk.PrimaryKeyIngestPosition;
-import org.apache.shardingsphere.data.pipeline.core.ingest.position.type.pk.type.StringPrimaryKeyIngestPosition;
+import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.inventory.query.Range;
+import org.apache.shardingsphere.data.pipeline.core.ingest.position.type.pk.UniqueKeyIngestPosition;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -40,7 +40,7 @@ public final class StringPositionHandler implements DataTypePositionHandler<Stri
     }
     
     @Override
-    public PrimaryKeyIngestPosition<String> createIngestPosition(final String lowerBound, final String upperBound) {
-        return new StringPrimaryKeyIngestPosition(lowerBound, upperBound);
+    public UniqueKeyIngestPosition<String> createIngestPosition(final Range<String> range) {
+        return UniqueKeyIngestPosition.ofString(range);
     }
 }
