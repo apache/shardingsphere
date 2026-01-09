@@ -73,7 +73,7 @@ class StorageUnitNodeMapCreatorTest {
             ConnectionPropertiesParser parser = mock(ConnectionPropertiesParser.class);
             when(parser.parse("jdbc:mock://127.0.0.1/foo_ds", "sa", null)).thenReturn(new ConnectionProperties("127.0.0.1", 3307, null, "foo_schema", new Properties()));
             mockedLoader.when(() -> DatabaseTypedSPILoader.getService(ConnectionPropertiesParser.class, databaseType)).thenReturn(parser);
-            Map<String, StorageNode> actual = StorageUnitNodeMapCreator.create(Collections.singletonMap("foo_ds", dataSourcePoolProps));
+            Map<String, StorageNode> actual = StorageUnitNodeMapCreator.create(Collections.singletonMap("foo_ds", dataSourcePoolProps), true);
             assertThat(actual.size(), is(1));
             assertTrue(actual.containsKey("foo_ds"));
         }
@@ -86,7 +86,7 @@ class StorageUnitNodeMapCreatorTest {
             ConnectionPropertiesParser parser = mock(ConnectionPropertiesParser.class);
             when(parser.parse("jdbc:mock://127.0.0.1/foo_ds", "sa", null)).thenReturn(new ConnectionProperties("127.0.0.1", 3307, null, "foo_schema", new Properties()));
             mockedLoader.when(() -> DatabaseTypedSPILoader.getService(ConnectionPropertiesParser.class, databaseType)).thenReturn(parser);
-            Map<String, StorageNode> actual = StorageUnitNodeMapCreator.create(Collections.singletonMap("foo_ds", dataSourcePoolProps));
+            Map<String, StorageNode> actual = StorageUnitNodeMapCreator.create(Collections.singletonMap("foo_ds", dataSourcePoolProps), true);
             assertThat(actual.size(), is(1));
             assertTrue(actual.containsKey("foo_ds"));
         }
@@ -99,7 +99,7 @@ class StorageUnitNodeMapCreatorTest {
             ConnectionPropertiesParser parser = mock(ConnectionPropertiesParser.class);
             when(parser.parse("jdbc:mock://127.0.0.1/foo_ds", "sa", null)).thenThrow(UnrecognizedDatabaseURLException.class);
             mockedLoader.when(() -> DatabaseTypedSPILoader.getService(ConnectionPropertiesParser.class, databaseType)).thenReturn(parser);
-            Map<String, StorageNode> actual = StorageUnitNodeMapCreator.create(Collections.singletonMap("foo_ds", dataSourcePoolProps));
+            Map<String, StorageNode> actual = StorageUnitNodeMapCreator.create(Collections.singletonMap("foo_ds", dataSourcePoolProps), true);
             assertThat(actual.size(), is(1));
             assertTrue(actual.containsKey("foo_ds"));
         }

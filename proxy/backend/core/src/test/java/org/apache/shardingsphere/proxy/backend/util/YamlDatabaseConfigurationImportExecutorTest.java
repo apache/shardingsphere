@@ -20,6 +20,7 @@ package org.apache.shardingsphere.proxy.backend.util;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.distsql.handler.validate.DistSQLDataSourcePoolPropertiesValidator;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
+import org.apache.shardingsphere.infra.config.props.temporary.TemporaryConfigurationProperties;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.rule.checker.DatabaseRuleConfigurationCheckEngine;
 import org.apache.shardingsphere.infra.config.rule.checker.DatabaseRuleConfigurationChecker;
@@ -29,6 +30,7 @@ import org.apache.shardingsphere.infra.datasource.pool.creator.DataSourcePoolCre
 import org.apache.shardingsphere.infra.datasource.pool.props.creator.DataSourcePoolPropertiesCreator;
 import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePoolProperties;
 import org.apache.shardingsphere.infra.exception.external.sql.ShardingSphereSQLException;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
 import org.apache.shardingsphere.infra.metadata.database.resource.node.StorageNode;
@@ -71,6 +73,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyCollection;
 import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -123,7 +126,7 @@ class YamlDatabaseConfigurationImportExecutorTest {
         when(dataSourceConfigSwapper.swap(any(YamlProxyDataSourceConfiguration.class))).thenReturn(dataSourceConfig);
         DataSourcePoolProperties poolProperties = mock(DataSourcePoolProperties.class, RETURNS_DEEP_STUBS);
         when(DataSourcePoolPropertiesCreator.create(dataSourceConfig)).thenReturn(poolProperties);
-        when(StorageUnitNodeMapCreator.create(anyMap())).thenReturn(Collections.singletonMap("foo_ds", mock(StorageNode.class)));
+        when(StorageUnitNodeMapCreator.create(anyMap(), anyBoolean())).thenReturn(Collections.singletonMap("foo_ds", mock(StorageNode.class)));
         when(DataSourcePoolCreator.create(poolProperties)).thenReturn(mock(DataSource.class));
         when(DatabaseTypeEngine.getProtocolType(anyMap(), any(ConfigurationProperties.class))).thenReturn(mock(DatabaseType.class));
         try (MockedConstruction<StorageUnit> mockedConstruction = mockConstruction(StorageUnit.class, (mock, context) -> {
@@ -148,7 +151,7 @@ class YamlDatabaseConfigurationImportExecutorTest {
         when(dataSourceConfigSwapper.swap(any(YamlProxyDataSourceConfiguration.class))).thenReturn(dataSourceConfig);
         DataSourcePoolProperties poolProperties = mock(DataSourcePoolProperties.class, RETURNS_DEEP_STUBS);
         when(DataSourcePoolPropertiesCreator.create(dataSourceConfig)).thenReturn(poolProperties);
-        when(StorageUnitNodeMapCreator.create(anyMap())).thenReturn(Collections.singletonMap("foo_ds", mock(StorageNode.class)));
+        when(StorageUnitNodeMapCreator.create(anyMap(), anyBoolean())).thenReturn(Collections.singletonMap("foo_ds", mock(StorageNode.class)));
         when(DataSourcePoolCreator.create(poolProperties)).thenReturn(mock(DataSource.class));
         when(DatabaseTypeEngine.getProtocolType(anyMap(), any(ConfigurationProperties.class))).thenReturn(mock(DatabaseType.class));
         try (MockedConstruction<StorageUnit> ignored = mockConstruction(StorageUnit.class)) {
@@ -172,7 +175,7 @@ class YamlDatabaseConfigurationImportExecutorTest {
         when(dataSourceConfigSwapper.swap(any(YamlProxyDataSourceConfiguration.class))).thenReturn(dataSourceConfig);
         DataSourcePoolProperties poolProperties = mock(DataSourcePoolProperties.class, RETURNS_DEEP_STUBS);
         when(DataSourcePoolPropertiesCreator.create(dataSourceConfig)).thenReturn(poolProperties);
-        when(StorageUnitNodeMapCreator.create(anyMap())).thenReturn(Collections.singletonMap("foo_ds", mock(StorageNode.class)));
+        when(StorageUnitNodeMapCreator.create(anyMap(), anyBoolean())).thenReturn(Collections.singletonMap("foo_ds", mock(StorageNode.class)));
         when(DataSourcePoolCreator.create(poolProperties)).thenReturn(mock(DataSource.class));
         when(DatabaseTypeEngine.getProtocolType(anyMap(), any(ConfigurationProperties.class))).thenReturn(mock(DatabaseType.class));
         YamlRuleConfiguration yamlRuleConfig = mock(YamlRuleConfiguration.class);
@@ -235,9 +238,12 @@ class YamlDatabaseConfigurationImportExecutorTest {
     }
     
     private void mockMetaDataContexts(final ShardingSphereDatabase database, final ConfigurationProperties props) {
-        MetaDataContexts metaDataContexts = mock(MetaDataContexts.class, RETURNS_DEEP_STUBS);
-        when(metaDataContexts.getMetaData().getDatabase("foo_db")).thenReturn(database);
-        when(metaDataContexts.getMetaData().getProps()).thenReturn(props);
-        when(contextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
+        MetaDataContexts metaDataContexts = mock(MetaDataContexts.class);
+        ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class);
+        lenient().when(metaData.getDatabase("foo_db")).thenReturn(database);
+        lenient().when(metaData.getProps()).thenReturn(props);
+        lenient().when(metaData.getTemporaryProps()).thenReturn(new TemporaryConfigurationProperties(new Properties()));
+        when(metaDataContexts.getMetaData()).thenReturn(metaData);
+        lenient().when(contextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
     }
 }

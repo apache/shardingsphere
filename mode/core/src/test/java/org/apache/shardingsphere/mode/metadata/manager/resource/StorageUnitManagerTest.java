@@ -18,7 +18,9 @@
 package org.apache.shardingsphere.mode.metadata.manager.resource;
 
 import lombok.SneakyThrows;
+import org.apache.shardingsphere.infra.config.props.temporary.TemporaryConfigurationProperties;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstanceContext;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
@@ -36,9 +38,11 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
+import java.util.Properties;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
@@ -61,7 +65,7 @@ class StorageUnitManagerTest {
         MetaDataContexts metaDataContexts = mockMetaDataContexts();
         ResourceSwitchManager resourceSwitchManager = mock(ResourceSwitchManager.class);
         SwitchingResource switchingResource = new SwitchingResource(Collections.emptyMap(), Collections.emptyMap(), Collections.emptyList(), Collections.emptyMap());
-        when(resourceSwitchManager.switchByRegisterStorageUnit(any(ResourceMetaData.class), any(Map.class))).thenReturn(switchingResource);
+        when(resourceSwitchManager.switchByRegisterStorageUnit(any(ResourceMetaData.class), any(Map.class), anyBoolean())).thenReturn(switchingResource);
         ShardingSphereDatabase reloadDatabase = mock(ShardingSphereDatabase.class);
         when(reloadDatabase.getAllSchemas()).thenReturn(Collections.singleton(new ShardingSphereSchema("foo_schema")));
         MetaDataContexts reloadMetaDataContexts = mock(MetaDataContexts.class, RETURNS_DEEP_STUBS);
@@ -82,7 +86,7 @@ class StorageUnitManagerTest {
         ResourceSwitchManager resourceSwitchManager = mock(ResourceSwitchManager.class);
         doAnswer(invocation -> {
             throw new SQLException("register error");
-        }).when(resourceSwitchManager).switchByRegisterStorageUnit(any(ResourceMetaData.class), any(Map.class));
+        }).when(resourceSwitchManager).switchByRegisterStorageUnit(any(ResourceMetaData.class), any(Map.class), anyBoolean());
         assertDoesNotThrow(() -> createManager(metaDataContexts, resourceSwitchManager).register(DATABASE_NAME, Collections.emptyMap()));
         verify(metaDataContexts, never()).update(any(MetaDataContexts.class));
         verify(metaDataContexts.getMetaData(), never()).putDatabase(any(ShardingSphereDatabase.class));
@@ -93,7 +97,7 @@ class StorageUnitManagerTest {
         MetaDataContexts metaDataContexts = mockMetaDataContexts();
         ResourceSwitchManager resourceSwitchManager = mock(ResourceSwitchManager.class);
         SwitchingResource switchingResource = new SwitchingResource(Collections.emptyMap(), Collections.emptyMap(), Collections.emptyList(), Collections.emptyMap());
-        when(resourceSwitchManager.switchByAlterStorageUnit(any(ResourceMetaData.class), any(Map.class))).thenReturn(switchingResource);
+        when(resourceSwitchManager.switchByAlterStorageUnit(any(ResourceMetaData.class), any(Map.class), anyBoolean())).thenReturn(switchingResource);
         ShardingSphereDatabase reloadDatabase = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         MetaDataContexts reloadMetaDataContexts = mock(MetaDataContexts.class, RETURNS_DEEP_STUBS);
         when(reloadMetaDataContexts.getMetaData().getDatabase(DATABASE_NAME)).thenReturn(reloadDatabase);
@@ -113,7 +117,7 @@ class StorageUnitManagerTest {
         ResourceSwitchManager resourceSwitchManager = mock(ResourceSwitchManager.class);
         doAnswer(invocation -> {
             throw new SQLException("alter error");
-        }).when(resourceSwitchManager).switchByAlterStorageUnit(any(ResourceMetaData.class), any(Map.class));
+        }).when(resourceSwitchManager).switchByAlterStorageUnit(any(ResourceMetaData.class), any(Map.class), anyBoolean());
         assertDoesNotThrow(() -> createManager(metaDataContexts, resourceSwitchManager).alter(DATABASE_NAME, Collections.emptyMap()));
         verify(metaDataContexts, never()).update(any(MetaDataContexts.class));
         verify(metaDataContexts.getMetaData(), never()).putDatabase(any(ShardingSphereDatabase.class));
@@ -151,11 +155,14 @@ class StorageUnitManagerTest {
     }
     
     private MetaDataContexts mockMetaDataContexts() {
-        MetaDataContexts result = mock(MetaDataContexts.class, RETURNS_DEEP_STUBS);
+        MetaDataContexts result = mock(MetaDataContexts.class);
+        ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class);
+        when(result.getMetaData()).thenReturn(metaData);
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         when(database.getResourceMetaData()).thenReturn(new ResourceMetaData(Collections.emptyMap(), Collections.emptyMap()));
         when(database.getRuleMetaData().getRules()).thenReturn(Arrays.asList(mock(ShardingSphereRule.class, withSettings().extraInterfaces(AutoCloseable.class)), mock(ShardingSphereRule.class)));
-        when(result.getMetaData().getDatabase(DATABASE_NAME)).thenReturn(database);
+        when(metaData.getDatabase(DATABASE_NAME)).thenReturn(database);
+        when(metaData.getTemporaryProps()).thenReturn(new TemporaryConfigurationProperties(new Properties()));
         return result;
     }
     

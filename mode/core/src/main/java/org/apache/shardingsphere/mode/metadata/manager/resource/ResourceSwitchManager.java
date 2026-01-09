@@ -45,14 +45,16 @@ public final class ResourceSwitchManager {
      *
      * @param resourceMetaData resource meta data
      * @param toBeRegisteredProps to be registered storage unit grouped data source pool properties map
+     * @param isInstanceConnectionEnabled is instance connection enabled
      * @return created switching resource
      */
-    public SwitchingResource switchByRegisterStorageUnit(final ResourceMetaData resourceMetaData, final Map<String, DataSourcePoolProperties> toBeRegisteredProps) {
+    public SwitchingResource switchByRegisterStorageUnit(final ResourceMetaData resourceMetaData, final Map<String, DataSourcePoolProperties> toBeRegisteredProps,
+                                                         final boolean isInstanceConnectionEnabled) {
         Map<String, DataSourcePoolProperties> mergedPropsMap = new LinkedHashMap<>(resourceMetaData.getStorageUnits().entrySet().stream()
                 .collect(Collectors.toMap(Entry::getKey, entry -> entry.getValue().getDataSourcePoolProperties(), (oldValue, currentValue) -> oldValue, LinkedHashMap::new)));
         mergedPropsMap.putAll(toBeRegisteredProps);
-        Map<String, StorageNode> toBeCreatedStorageUintNodeMap = StorageUnitNodeMapCreator.create(toBeRegisteredProps);
-        Map<StorageNode, DataSourcePoolProperties> dataSourcePoolPropsMap = StorageNodeAggregator.aggregateDataSourcePoolProperties(toBeRegisteredProps);
+        Map<String, StorageNode> toBeCreatedStorageUintNodeMap = StorageUnitNodeMapCreator.create(toBeRegisteredProps, isInstanceConnectionEnabled);
+        Map<StorageNode, DataSourcePoolProperties> dataSourcePoolPropsMap = StorageNodeAggregator.aggregateDataSourcePoolProperties(toBeRegisteredProps, isInstanceConnectionEnabled);
         return new SwitchingResource(getNewDataSources(resourceMetaData, toBeCreatedStorageUintNodeMap, dataSourcePoolPropsMap), Collections.emptyMap(), Collections.emptyList(), mergedPropsMap);
     }
     
@@ -72,14 +74,16 @@ public final class ResourceSwitchManager {
      *
      * @param resourceMetaData resource meta data
      * @param toBeAlteredProps to be altered data source pool properties map
+     * @param isInstanceConnectionEnabled is instance connection enabled
      * @return created switching resource
      */
-    public SwitchingResource switchByAlterStorageUnit(final ResourceMetaData resourceMetaData, final Map<String, DataSourcePoolProperties> toBeAlteredProps) {
+    public SwitchingResource switchByAlterStorageUnit(final ResourceMetaData resourceMetaData, final Map<String, DataSourcePoolProperties> toBeAlteredProps,
+                                                      final boolean isInstanceConnectionEnabled) {
         Map<String, DataSourcePoolProperties> mergedDataSourcePoolPropsMap = new LinkedHashMap<>(resourceMetaData.getStorageUnits().entrySet().stream()
                 .collect(Collectors.toMap(Entry::getKey, entry -> entry.getValue().getDataSourcePoolProperties(), (oldValue, currentValue) -> oldValue, LinkedHashMap::new)));
         mergedDataSourcePoolPropsMap.putAll(toBeAlteredProps);
-        Map<String, StorageNode> toBeAlteredStorageUintNodeMap = StorageUnitNodeMapCreator.create(mergedDataSourcePoolPropsMap);
-        Map<StorageNode, DataSourcePoolProperties> dataSourcePoolPropsMap = StorageNodeAggregator.aggregateDataSourcePoolProperties(mergedDataSourcePoolPropsMap);
+        Map<String, StorageNode> toBeAlteredStorageUintNodeMap = StorageUnitNodeMapCreator.create(mergedDataSourcePoolPropsMap, isInstanceConnectionEnabled);
+        Map<StorageNode, DataSourcePoolProperties> dataSourcePoolPropsMap = StorageNodeAggregator.aggregateDataSourcePoolProperties(mergedDataSourcePoolPropsMap, isInstanceConnectionEnabled);
         return new SwitchingResource(getAlterNewDataSources(toBeAlteredStorageUintNodeMap, dataSourcePoolPropsMap),
                 getStaleDataSources(resourceMetaData, toBeAlteredStorageUintNodeMap.values()), new LinkedHashSet<>(toBeAlteredStorageUintNodeMap.keySet()), mergedDataSourcePoolPropsMap);
     }

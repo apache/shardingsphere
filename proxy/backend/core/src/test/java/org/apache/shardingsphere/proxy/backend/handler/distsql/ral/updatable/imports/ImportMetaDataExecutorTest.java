@@ -28,6 +28,7 @@ import org.apache.shardingsphere.globalclock.rule.builder.DefaultGlobalClockRule
 import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
+import org.apache.shardingsphere.infra.config.props.temporary.TemporaryConfigurationProperties;
 import org.apache.shardingsphere.infra.datasource.pool.props.creator.DataSourcePoolPropertiesCreator;
 import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePoolProperties;
 import org.apache.shardingsphere.infra.exception.kernel.metadata.resource.storageunit.EmptyStorageUnitException;
@@ -60,6 +61,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
+import java.util.Properties;
 import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -92,6 +94,7 @@ class ImportMetaDataExecutorTest {
     void assertImportEmptyMetaData() {
         ImportMetaDataExecutor executor = new ImportMetaDataExecutor();
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
+        when(contextManager.getMetaDataContexts().getMetaData().getTemporaryProps()).thenReturn(new TemporaryConfigurationProperties(new Properties()));
         assertThrows(EmptyStorageUnitException.class, () -> executor.executeUpdate(
                 new ImportMetaDataStatement(null, Objects.requireNonNull(ImportMetaDataExecutorTest.class.getResource(featureMap.get(EMPTY_DATABASE_NAME))).getPath()), contextManager));
     }
@@ -99,6 +102,7 @@ class ImportMetaDataExecutorTest {
     @Test
     void assertImportMetaDataFromJsonValue() {
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
+        when(contextManager.getMetaDataContexts().getMetaData().getTemporaryProps()).thenReturn(new TemporaryConfigurationProperties(new Properties()));
         ImportMetaDataExecutor executor = new ImportMetaDataExecutor();
         executor.executeUpdate(new ImportMetaDataStatement(Base64.encodeBase64String(METADATA_VALUE.getBytes()), null), contextManager);
         assertNotNull(contextManager.getDatabase("normal_db"));

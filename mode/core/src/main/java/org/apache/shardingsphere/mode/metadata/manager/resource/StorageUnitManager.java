@@ -20,6 +20,7 @@ package org.apache.shardingsphere.mode.metadata.manager.resource;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.shardingsphere.infra.config.props.temporary.TemporaryConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePoolProperties;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstanceContext;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
@@ -60,7 +61,8 @@ public final class StorageUnitManager {
         ShardingSphereDatabase database = metaDataContexts.getMetaData().getDatabase(databaseName);
         try {
             closeStaleRules(database);
-            SwitchingResource switchingResource = resourceSwitchManager.switchByRegisterStorageUnit(database.getResourceMetaData(), propsMap);
+            boolean isInstanceConnectionEnabled = metaDataContexts.getMetaData().getTemporaryProps().<Boolean>getValue(TemporaryConfigurationPropertyKey.INSTANCE_CONNECTION_ENABLED);
+            SwitchingResource switchingResource = resourceSwitchManager.switchByRegisterStorageUnit(database.getResourceMetaData(), propsMap, isInstanceConnectionEnabled);
             buildNewMetaDataContext(databaseName, switchingResource, true);
         } catch (final SQLException ex) {
             log.error("Alter database: {} register storage unit failed.", databaseName, ex);
@@ -77,7 +79,8 @@ public final class StorageUnitManager {
         ShardingSphereDatabase database = metaDataContexts.getMetaData().getDatabase(databaseName);
         try {
             closeStaleRules(database);
-            SwitchingResource switchingResource = resourceSwitchManager.switchByAlterStorageUnit(database.getResourceMetaData(), propsMap);
+            boolean isInstanceConnectionEnabled = metaDataContexts.getMetaData().getTemporaryProps().<Boolean>getValue(TemporaryConfigurationPropertyKey.INSTANCE_CONNECTION_ENABLED);
+            SwitchingResource switchingResource = resourceSwitchManager.switchByAlterStorageUnit(database.getResourceMetaData(), propsMap, isInstanceConnectionEnabled);
             buildNewMetaDataContext(databaseName, switchingResource, true);
         } catch (final SQLException ex) {
             log.error("Alter database: {} alter storage unit failed.", databaseName, ex);

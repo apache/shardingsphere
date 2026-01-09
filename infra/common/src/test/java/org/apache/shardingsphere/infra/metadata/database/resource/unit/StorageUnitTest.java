@@ -84,12 +84,9 @@ class StorageUnitTest {
         try (MockedStatic<DatabaseTypedSPILoader> mockedLoader = mockStatic(DatabaseTypedSPILoader.class)) {
             when(dataSourcePoolProperties.getConnectionPropertySynonyms().getStandardProperties()).thenReturn(standardProperties);
             DialectDatabaseMetaData dialectDatabaseMetaData = mock(DialectDatabaseMetaData.class, RETURNS_DEEP_STUBS);
-            when(dialectDatabaseMetaData.getConnectionOption().isInstanceConnectionAvailable()).thenReturn(true);
             mockedLoader.when(() -> DatabaseTypedSPILoader.getService(DialectDatabaseMetaData.class, databaseType)).thenReturn(dialectDatabaseMetaData);
             ConnectionPropertiesParser parser = mock(ConnectionPropertiesParser.class);
             when(parser.parse("jdbc:mock://127.0.0.1/foo_ds", "sa", null))
-                    .thenReturn(new ConnectionProperties("127.0.0.1", 3307, "foo_catalog", "foo_schema", new Properties()));
-            when(parser.parse("jdbc:mock://127.0.0.1/foo_ds", "sa", "foo_catalog"))
                     .thenReturn(new ConnectionProperties("127.0.0.1", 3307, "foo_catalog", "foo_schema", new Properties()));
             mockedLoader.when(() -> DatabaseTypedSPILoader.getService(ConnectionPropertiesParser.class, databaseType)).thenReturn(parser);
             StorageUnit actual = new StorageUnit(mock(), dataSourcePoolProperties, mock());

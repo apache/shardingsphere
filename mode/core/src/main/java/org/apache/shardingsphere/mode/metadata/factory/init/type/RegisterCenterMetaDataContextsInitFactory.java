@@ -24,6 +24,8 @@ import org.apache.shardingsphere.infra.config.database.DatabaseConfiguration;
 import org.apache.shardingsphere.infra.config.database.impl.DataSourceGeneratedDatabaseConfiguration;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
+import org.apache.shardingsphere.infra.config.props.temporary.TemporaryConfigurationProperties;
+import org.apache.shardingsphere.infra.config.props.temporary.TemporaryConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.database.DatabaseTypeEngine;
 import org.apache.shardingsphere.infra.datanode.DataNode;
@@ -75,12 +77,15 @@ public final class RegisterCenterMetaDataContextsInitFactory extends MetaDataCon
     
     @Override
     public MetaDataContexts create(final ContextManagerBuilderParameter param) throws SQLException {
-        Map<String, DatabaseConfiguration> effectiveDatabaseConfigs = createEffectiveDatabaseConfigurations(getDatabaseNames(param.getDatabaseConfigs()), param.getDatabaseConfigs());
+        TemporaryConfigurationProperties tempProps = new TemporaryConfigurationProperties(persistFacade.getPropsService().load());
+        boolean isInstanceConnectionEnabled = tempProps.getValue(TemporaryConfigurationPropertyKey.INSTANCE_CONNECTION_ENABLED);
+        Map<String, DatabaseConfiguration> effectiveDatabaseConfigs =
+                createEffectiveDatabaseConfigurations(getDatabaseNames(param.getDatabaseConfigs()), param.getDatabaseConfigs(), isInstanceConnectionEnabled);
         // TODO load global data sources from persist service
         Map<String, DataSource> globalDataSources = param.getGlobalDataSources();
         ConfigurationProperties props = new ConfigurationProperties(persistFacade.getPropsService().load());
         DatabaseType protocolType = DatabaseTypeEngine.getProtocolType(effectiveDatabaseConfigs, props);
-        Map<String, Collection<ShardingSphereSchema>> schemas = loadSchemas(effectiveDatabaseConfigs, protocolType, props);
+        Map<String, Collection<ShardingSphereSchema>> schemas = loadSchemas(effectiveDatabaseConfigs, protocolType, props, isInstanceConnectionEnabled);
         Collection<ShardingSphereDatabase> databases;
         if (persistSchemasEnabled) {
             // TODO merge schemas with local
@@ -104,15 +109,17 @@ public final class RegisterCenterMetaDataContextsInitFactory extends MetaDataCon
                 : persistFacade.getDatabaseMetaDataFacade().getDatabase().loadAllDatabaseNames();
     }
     
-    private Map<String, DatabaseConfiguration> createEffectiveDatabaseConfigurations(final Collection<String> databaseNames, final Map<String, DatabaseConfiguration> databaseConfigs) {
-        return databaseNames.stream().collect(Collectors.toMap(each -> each, each -> createEffectiveDatabaseConfiguration(each, databaseConfigs)));
+    private Map<String, DatabaseConfiguration> createEffectiveDatabaseConfigurations(final Collection<String> databaseNames, final Map<String, DatabaseConfiguration> databaseConfigs,
+                                                                                     final boolean isInstanceConnectionEnabled) {
+        return databaseNames.stream().collect(Collectors.toMap(each -> each, each -> createEffectiveDatabaseConfiguration(each, databaseConfigs, isInstanceConnectionEnabled)));
     }
     
-    private DatabaseConfiguration createEffectiveDatabaseConfiguration(final String databaseName, final Map<String, DatabaseConfiguration> databaseConfigs) {
+    private DatabaseConfiguration createEffectiveDatabaseConfiguration(final String databaseName, final Map<String, DatabaseConfiguration> databaseConfigs,
+                                                                       final boolean isInstanceConnectionEnabled) {
         closeGeneratedDataSources(databaseName, databaseConfigs);
         Map<String, DataSourceConfiguration> dataSources = persistFacade.loadDataSourceConfigurations(databaseName);
         Collection<RuleConfiguration> databaseRuleConfigs = persistFacade.getDatabaseRuleService().load(databaseName);
-        return new DataSourceGeneratedDatabaseConfiguration(dataSources, databaseRuleConfigs);
+        return new DataSourceGeneratedDatabaseConfiguration(dataSources, databaseRuleConfigs, isInstanceConnectionEnabled);
     }
     
     private void closeGeneratedDataSources(final String databaseName, final Map<String, ? extends DatabaseConfiguration> databaseConfigs) {
@@ -121,8 +128,8 @@ public final class RegisterCenterMetaDataContextsInitFactory extends MetaDataCon
         }
     }
     
-    private Map<String, Collection<ShardingSphereSchema>> loadSchemas(final Map<String, DatabaseConfiguration> effectiveDatabaseConfigs,
-                                                                      final DatabaseType protocolType, final ConfigurationProperties props) {
+    private Map<String, Collection<ShardingSphereSchema>> loadSchemas(final Map<String, DatabaseConfiguration> effectiveDatabaseConfigs, final DatabaseType protocolType,
+                                                                      final ConfigurationProperties props, final boolean isInstanceConnectionEnabled) {
         Collection<String> sysDatabaseNames = new SystemDatabase(protocolType).getSystemDatabases();
         Collection<String> databaseNames = effectiveDatabaseConfigs.keySet();
         Map<String, Collection<ShardingSphereSchema>> result = new HashMap<>(databaseNames.size());
@@ -140,7 +147,7 @@ public final class RegisterCenterMetaDataContextsInitFactory extends MetaDataCon
                 } else {
                     log.info("Repository missed single tables: {} of database: {}, start to reload", missedSingleTables, dbName);
                     DataSourceGeneratedDatabaseConfiguration databaseConfig = new DataSourceGeneratedDatabaseConfiguration(persistFacade.loadDataSourceConfigurations(dbName),
-                            Collections.singleton(new SingleRuleConfiguration(missedSingleTables, null)));
+                            Collections.singleton(new SingleRuleConfiguration(missedSingleTables, null)), isInstanceConnectionEnabled);
                     try {
                         ShardingSphereDatabase database = ShardingSphereDatabaseFactory.createWithoutSystemSchema(dbName, protocolType, databaseConfig, props, instanceContext);
                         database.getAllSchemas().forEach(schema -> persistFacade.getDatabaseMetaDataFacade().getTable().persist(dbName, schema.getName(), schema.getAllTables()));

@@ -19,6 +19,7 @@ package org.apache.shardingsphere.proxy.backend.config.yaml.swapper;
 
 import org.apache.shardingsphere.infra.config.database.DatabaseConfiguration;
 import org.apache.shardingsphere.infra.config.database.impl.DataSourceGeneratedDatabaseConfiguration;
+import org.apache.shardingsphere.infra.config.props.temporary.TemporaryConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.datasource.pool.config.DataSourceConfiguration;
 import org.apache.shardingsphere.infra.datasource.pool.creator.DataSourcePoolCreator;
@@ -57,7 +58,9 @@ public final class YamlProxyConfigurationSwapper {
      * @return proxy configuration
      */
     public ProxyConfiguration swap(final YamlProxyConfiguration yamlConfig) {
-        Map<String, DatabaseConfiguration> databaseConfigs = swapDatabaseConfigurations(yamlConfig.getDatabaseConfigurations());
+        boolean isInstanceConnectionEnabled =
+                (boolean) yamlConfig.getServerConfiguration().getProps().getOrDefault(TemporaryConfigurationPropertyKey.INSTANCE_CONNECTION_ENABLED.getKey(), Boolean.FALSE);
+        Map<String, DatabaseConfiguration> databaseConfigs = swapDatabaseConfigurations(yamlConfig.getDatabaseConfigurations(), isInstanceConnectionEnabled);
         ProxyGlobalConfiguration globalConfig = swapGlobalConfiguration(yamlConfig.getServerConfiguration());
         return new ProxyConfiguration(databaseConfigs, globalConfig);
     }
@@ -76,12 +79,12 @@ public final class YamlProxyConfigurationSwapper {
         return DataSourcePoolCreator.create(propsMap, true);
     }
     
-    private Map<String, DatabaseConfiguration> swapDatabaseConfigurations(final Map<String, YamlProxyDatabaseConfiguration> databaseConfigs) {
+    private Map<String, DatabaseConfiguration> swapDatabaseConfigurations(final Map<String, YamlProxyDatabaseConfiguration> databaseConfigs, final boolean isInstanceConnectionEnabled) {
         Map<String, DatabaseConfiguration> result = new LinkedHashMap<>(databaseConfigs.size(), 1F);
         for (Entry<String, YamlProxyDatabaseConfiguration> entry : databaseConfigs.entrySet()) {
             Map<String, DataSourceConfiguration> databaseDataSourceConfigs = swapDataSourceConfigurations(entry.getValue().getDataSources());
             Collection<RuleConfiguration> databaseRuleConfigs = ruleConfigSwapperEngine.swapToRuleConfigurations(entry.getValue().getRules());
-            result.put(entry.getKey(), new DataSourceGeneratedDatabaseConfiguration(databaseDataSourceConfigs, databaseRuleConfigs));
+            result.put(entry.getKey(), new DataSourceGeneratedDatabaseConfiguration(databaseDataSourceConfigs, databaseRuleConfigs, isInstanceConnectionEnabled));
         }
         return result;
     }

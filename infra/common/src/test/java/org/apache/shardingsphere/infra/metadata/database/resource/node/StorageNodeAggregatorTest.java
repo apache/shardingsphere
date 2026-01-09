@@ -53,7 +53,7 @@ class StorageNodeAggregatorTest {
         standardProps.put("username", "root");
         DataSourcePoolProperties dataSourcePoolProps = mock(DataSourcePoolProperties.class, Answers.RETURNS_DEEP_STUBS);
         when(dataSourcePoolProps.getConnectionPropertySynonyms().getStandardProperties()).thenReturn(standardProps);
-        Map<StorageNode, DataSourcePoolProperties> actual = StorageNodeAggregator.aggregateDataSourcePoolProperties(Collections.singletonMap("foo_ds", dataSourcePoolProps));
+        Map<StorageNode, DataSourcePoolProperties> actual = StorageNodeAggregator.aggregateDataSourcePoolProperties(Collections.singletonMap("foo_ds", dataSourcePoolProps), true);
         assertThat(actual.size(), is(1));
         assertThat(actual.get(actual.keySet().iterator().next()), is(dataSourcePoolProps));
     }
@@ -70,7 +70,7 @@ class StorageNodeAggregatorTest {
             when(dialectDatabaseMetaData.getConnectionOption().isInstanceConnectionAvailable()).thenReturn(true);
             when(mock.getDialectDatabaseMetaData()).thenReturn(dialectDatabaseMetaData);
         })) {
-            Map<StorageNode, DataSourcePoolProperties> actual = StorageNodeAggregator.aggregateDataSourcePoolProperties(Collections.singletonMap("foo_ds", dataSourcePoolProps));
+            Map<StorageNode, DataSourcePoolProperties> actual = StorageNodeAggregator.aggregateDataSourcePoolProperties(Collections.singletonMap("foo_ds", dataSourcePoolProps), true);
             assertThat(actual.size(), is(1));
             assertThat(actual.get(new StorageNode("127.0.0.1_-1_root")), is(dataSourcePoolProps));
         }
@@ -83,7 +83,7 @@ class StorageNodeAggregatorTest {
         standardProps.put("username", "root");
         DataSourcePoolProperties dataSourcePoolProps = mock(DataSourcePoolProperties.class, Answers.RETURNS_DEEP_STUBS);
         when(dataSourcePoolProps.getConnectionPropertySynonyms().getStandardProperties()).thenReturn(standardProps);
-        Map<StorageNode, DataSourcePoolProperties> actual = StorageNodeAggregator.aggregateDataSourcePoolProperties(Collections.singletonMap("foo_ds", dataSourcePoolProps));
+        Map<StorageNode, DataSourcePoolProperties> actual = StorageNodeAggregator.aggregateDataSourcePoolProperties(Collections.singletonMap("foo_ds", dataSourcePoolProps), true);
         assertThat(actual.size(), is(1));
         assertThat(actual.get(new StorageNode("foo_ds")), is(dataSourcePoolProps));
     }

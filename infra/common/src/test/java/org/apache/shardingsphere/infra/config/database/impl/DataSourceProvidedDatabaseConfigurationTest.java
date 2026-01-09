@@ -54,7 +54,7 @@ class DataSourceProvidedDatabaseConfigurationTest {
     void assertNewWithStorageNodeDataSources() {
         Map<String, DataSourcePoolProperties> dataSourcePoolPropsMap = Collections.singletonMap("foo_ds", new DataSourcePoolProperties("foo_ds", createConnectionProps()));
         DataSourceProvidedDatabaseConfiguration actual = new DataSourceProvidedDatabaseConfiguration(
-                Collections.singletonMap(new StorageNode("foo_ds"), new MockedDataSource()), Collections.singleton(new FixtureRuleConfiguration("foo_rule")), dataSourcePoolPropsMap);
+                Collections.singletonMap(new StorageNode("foo_ds"), new MockedDataSource()), Collections.singleton(new FixtureRuleConfiguration("foo_rule")), dataSourcePoolPropsMap, false);
         assertRuleConfigurations(actual);
         assertStorageUnits(actual.getStorageUnits().get("foo_ds"));
         assertDataSources((MockedDataSource) actual.getDataSources().get(new StorageNode("foo_ds")));
