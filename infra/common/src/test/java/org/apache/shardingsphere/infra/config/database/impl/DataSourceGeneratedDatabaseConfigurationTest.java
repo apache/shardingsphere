@@ -93,6 +93,6 @@ class DataSourceGeneratedDatabaseConfigurationTest {
     private DataSourceGeneratedDatabaseConfiguration createDatabaseConfiguration(final String dataSourceClassName) {
         DataSourceConfiguration dataSourceConfig = new DataSourceConfiguration(new ConnectionConfiguration(dataSourceClassName, "jdbc:mock://127.0.0.1/foo_db", "root", ""),
                 new PoolConfiguration(2000L, 1000L, 1000L, 2, 1, false, new Properties()));
-        return new DataSourceGeneratedDatabaseConfiguration(Collections.singletonMap("foo_db", dataSourceConfig), Collections.singleton(new FixtureRuleConfiguration("foo_rule")));
+        return new DataSourceGeneratedDatabaseConfiguration(Collections.singletonMap("foo_db", dataSourceConfig), Collections.singleton(new FixtureRuleConfiguration("foo_rule")), true);
     }
 }
