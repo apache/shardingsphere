@@ -43,4 +43,6 @@
     <sql-case id="hive_select_order_limit_param" value="SELECT * FROM t_order ORDER BY 1, price + 1 DESC LIMIT 1 OFFSET 1" db-types="Hive" />
     <sql-case id="hive_select_case_variables" value="SELECT CASE WHEN a &gt; 1 THEN b ELSE c END, @var, @@global.var FROM t_case" db-types="Hive" />
     <sql-case id="hive_select_join_using_comma" value="SELECT * FROM t1 JOIN t2 USING (id), t3" db-types="Hive" />
+    <sql-case id="hive_select_literals_dual" value="SELECT DATE '2024-01-01', 0x1F, B'101' FROM DUAL" db-types="Hive" />
+    <sql-case id="hive_select_owner_function" value="SELECT analytics.fn(col) FROM t_func_owner" db-types="Hive" />
 </sql-cases>

@@ -22,7 +22,7 @@
     <sql-case id="delete_with_special_character_without_sharding_value" value="DELETE FROM `t_order` WHERE `status`='init'" db-types="MySQL,Doris" />
     <sql-case id="delete_with_alias" value="DELETE FROM t_order AS o WHERE status=?" db-types="MySQL,SQLServer,Doris" />
     <sql-case id="delete_with_alias_without_as" value="DELETE product_price_history pp WHERE (product_id, currency_code, effective_from_date) IN (SELECT product_id, currency_code, MAX(effective_from_date) FROM product_price_history GROUP BY product_id, currency_code)" db-types="Oracle" />
-    <sql-case id="delete_with_order_by_row_count" value="DELETE FROM t_order WHERE order_id = ? AND user_id = ? AND status=? ORDER BY order_id LIMIT ?" db-types="MySQL,Doris" />
+    <sql-case id="delete_with_order_by_row_count" value="DELETE FROM t_order WHERE order_id = ? AND user_id = ? AND status=? ORDER BY order_id LIMIT ?" db-types="MySQL,Doris,Hive" />
     <sql-case id="delete_with_output_clause" value="DELETE FROM t_order OUTPUT DELETED.order_id, DELETED.user_id INTO @MyTableVar (temp_order_id, temp_user_id) WHERE order_id = ?" db-types="SQLServer" />
     <sql-case id="delete_with_output_clause_without_output_table_columns" value="DELETE FROM t_order OUTPUT DELETED.order_id, DELETED.user_id INTO @MyTableVar WHERE order_id = ?" db-types="SQLServer" />
     <sql-case id="delete_with_output_clause_without_output_table" value="DELETE FROM t_order OUTPUT DELETED.order_id, DELETED.user_id WHERE order_id = ?" db-types="SQLServer" />
