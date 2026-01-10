@@ -16,7 +16,7 @@ chapter = true
 
 ### 2. 确认 Release Note
 
-确认 Release Note 中仅包含英文描述，内容按以下标签进行分类：
+确认 Release Note 中的内容完整，描述准确，并按以下标签进行分类：
 
 1. CVE
 1. 元数据存储变更

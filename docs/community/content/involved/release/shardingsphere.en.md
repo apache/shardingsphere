@@ -16,7 +16,7 @@ Check and update year in NOTICE.
 
 ### 2. Confirm Release Notes
 
-Ensure that the release note contains only English descriptions and should be categorized according to the following labels:
+Confirm that the content in the release note is complete and accurate, and categorize it according to the following labels:
 
 1. CVE
 1. Metadata Storage Changes
