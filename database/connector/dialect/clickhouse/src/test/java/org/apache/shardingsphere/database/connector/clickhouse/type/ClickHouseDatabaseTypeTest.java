@@ -28,8 +28,10 @@ import static org.hamcrest.MatcherAssert.assertThat;
 
 class ClickHouseDatabaseTypeTest {
     
+    private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "ClickHouse");
+    
     @Test
     void assertGetJdbcUrlPrefixes() {
-        assertThat(TypedSPILoader.getService(DatabaseType.class, "ClickHouse").getJdbcUrlPrefixes(), is(Arrays.asList("jdbc:ch:", "jdbc:clickhouse:", "jdbc:chdb")));
+        assertThat(databaseType.getJdbcUrlPrefixes(), is(Arrays.asList("jdbc:ch:", "jdbc:clickhouse:", "jdbc:chdb")));
     }
 }

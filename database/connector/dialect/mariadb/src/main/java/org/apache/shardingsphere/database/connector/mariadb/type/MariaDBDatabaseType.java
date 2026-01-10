@@ -31,7 +31,7 @@ public final class MariaDBDatabaseType implements DatabaseType {
     
     @Override
     public Collection<String> getJdbcUrlPrefixes() {
-        return Collections.singletonList(String.format("jdbc:%s:", getType().toLowerCase()));
+        return Collections.singleton("jdbc:mariadb:");
     }
     
     @Override

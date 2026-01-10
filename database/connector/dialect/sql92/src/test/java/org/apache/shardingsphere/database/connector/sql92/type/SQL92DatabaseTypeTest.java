@@ -25,11 +25,19 @@ import java.util.Collections;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class SQL92DatabaseTypeTest {
     
+    private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "SQL92");
+    
     @Test
     void assertGetJdbcUrlPrefixes() {
-        assertThat(TypedSPILoader.getService(DatabaseType.class, "SQL92").getJdbcUrlPrefixes(), is(Collections.emptyList()));
+        assertThat(databaseType.getJdbcUrlPrefixes(), is(Collections.emptyList()));
+    }
+    
+    @Test
+    void assertIsDefault() {
+        assertTrue(databaseType.isDefault());
     }
 }
