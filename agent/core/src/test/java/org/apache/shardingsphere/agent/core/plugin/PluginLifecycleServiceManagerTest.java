@@ -51,10 +51,9 @@ class PluginLifecycleServiceManagerTest {
     @Test
     void assertInitPluginLifecycleServiceWithMockHandler() throws MalformedURLException {
         URLStreamHandlerFactory urlStreamHandlerFactory = mock(URLStreamHandlerFactory.class);
-        PluginLifecycleServiceManager.init(Collections.emptyMap(), Collections.emptyList(),
-                new URLClassLoader(new URL[]{Paths.get(System.getProperty("java.io.tmpdir"), "test.txt").toUri().toURL()},
-                        new MultipleParentClassLoader(Collections.emptyList()), urlStreamHandlerFactory),
-                true);
+        URLClassLoader urlClassLoader = new URLClassLoader(new URL[]{Paths.get(System.getProperty("java.io.tmpdir"), "test.txt").toUri().toURL()},
+                new MultipleParentClassLoader(Collections.emptyList()), urlStreamHandlerFactory);
+        PluginLifecycleServiceManager.init(Collections.emptyMap(), Collections.emptyList(), urlClassLoader, true);
         verify(urlStreamHandlerFactory).createURLStreamHandler(anyString());
     }
 }

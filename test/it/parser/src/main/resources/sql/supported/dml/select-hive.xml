@@ -61,4 +61,18 @@
     <sql-case id="hive_json_array_simple" value="SELECT JSON_ARRAY(1, 'abc', NULL, TRUE, CURTIME())" db-types="Hive" />
     <sql-case id="hive_convert_date" value="SELECT CONVERT('2020-10-01', DATE)" db-types="Hive" />
     <sql-case id="hive_limit_param" value="SELECT * FROM t_order LIMIT ? OFFSET ?" db-types="Hive" />
+    <sql-case id="hive_select_not" value="SELECT * FROM t_pred WHERE NOT status" db-types="Hive" />
+    <sql-case id="hive_select_is_null" value="SELECT * FROM t_pred WHERE status IS NULL" db-types="Hive" />
+    <sql-case id="hive_select_between" value="SELECT * FROM t_pred WHERE age BETWEEN 10 AND 20" db-types="Hive" />
+    <sql-case id="hive_select_regexp" value="SELECT * FROM t_pred WHERE name REGEXP 'a'" db-types="Hive" />
+    <sql-case id="hive_select_rlike" value="SELECT * FROM t_pred WHERE name RLIKE 'a'" db-types="Hive" />
+    <sql-case id="hive_select_or_expr" value="SELECT 1 OR 0" db-types="Hive" />
+    <sql-case id="hive_select_count_distinct" value="SELECT COUNT(DISTINCT user_id) FROM t_order" db-types="Hive" />
+    <sql-case id="hive_select_window_frame" value="SELECT SUM(amount) OVER (PARTITION BY user_id ORDER BY id ROWS BETWEEN 1 PRECEDING AND CURRENT ROW) FROM t_order" db-types="Hive" />
+    <sql-case id="hive_select_position_function" value="SELECT POSITION('b' IN 'abc')" db-types="Hive" />
+    <sql-case id="hive_select_char_function" value="SELECT CHAR(97)" db-types="Hive" />
+    <sql-case id="hive_select_weight_string" value="SELECT WEIGHT_STRING('a')" db-types="Hive" />
+    <sql-case id="hive_select_current_user" value="SELECT CURRENT_USER" db-types="Hive" />
+    <sql-case id="hive_select_cast_datetime_precision" value="SELECT CAST('2024-01-01' AS DATETIME(3))" db-types="Hive" />
+    <sql-case id="hive_select_except" value="SELECT * FROM t1 EXCEPT SELECT * FROM t2" db-types="Hive" />
 </sql-cases>

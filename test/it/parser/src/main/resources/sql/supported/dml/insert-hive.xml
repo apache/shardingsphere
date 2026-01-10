@@ -24,4 +24,5 @@
     <sql-case id="hive_from_insert" value="FROM t_source INSERT OVERWRITE TABLE t_target SELECT *" db-types="Hive" />
     <sql-case id="hive_insert_select_columns" value="INSERT INTO t_target (id, name) SELECT id, name FROM t_source" db-types="Hive" />
     <sql-case id="hive_insert_dynamic_partition_select" value="INSERT INTO TABLE t_order PARTITION (ds) SELECT * FROM t_source" db-types="Hive" />
+    <sql-case id="hive_from_multi_insert" value="FROM src INSERT INTO TABLE dst1 SELECT col1 INSERT INTO TABLE dst2 SELECT col2" db-types="Hive" />
 </sql-cases>
