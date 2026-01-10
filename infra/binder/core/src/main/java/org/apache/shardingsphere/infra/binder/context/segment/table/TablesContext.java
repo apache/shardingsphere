@@ -28,6 +28,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SubqueryTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableNameSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.bound.TableSegmentBoundInfo;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -78,8 +79,14 @@ public final class TablesContext {
                     simpleTables.add(simpleTableSegment);
                     tableNames.add(tableName.getIdentifier().getValue());
                     // TODO support bind with all statement contains table segment @duanzhengqiang
-                    tableName.getTableBoundInfo().ifPresent(optional -> schemaNames.add(optional.getOriginalSchema().getValue()));
-                    tableName.getTableBoundInfo().ifPresent(optional -> databaseNames.add(optional.getOriginalDatabase().getValue()));
+                    Optional<TableSegmentBoundInfo> tableBoundInfo = tableName.getTableBoundInfo();
+                    if (tableBoundInfo.isPresent()) {
+                        schemaNames.add(tableBoundInfo.get().getOriginalSchema().getValue());
+                        databaseNames.add(tableBoundInfo.get().getOriginalDatabase().getValue());
+                    } else if (simpleTableSegment.getOwner().isPresent()) {
+                        // Fallback: use table owner as schema when TableBoundInfo is absent (openGauss CREATE INDEX)
+                        schemaNames.add(simpleTableSegment.getOwner().get().getIdentifier().getValue());
+                    }
                 }
             }
             if (each instanceof SubqueryTableSegment) {
