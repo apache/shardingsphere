@@ -107,7 +107,7 @@ public final class SQLServerMetaDataLoader implements DialectMetaDataLoader {
         boolean caseSensitive = null != collationName && collationName.contains("_CS");
         boolean isVisible = !(versionContainsHiddenColumn(databaseMetaData) && "1".equals(resultSet.getString("IS_HIDDEN")));
         boolean isNullable = "1".equals(resultSet.getString("IS_NULLABLE"));
-        return new ColumnMetaData(columnName, DataTypeRegistry.getDataType(getDatabaseType(), dataType).orElse(Types.OTHER), primaryKey, generated, caseSensitive, isVisible, false, isNullable);
+        return new ColumnMetaData(columnName, DataTypeRegistry.getDataType(getDatabaseType(), dataType).orElse(Types.OTHER), primaryKey, generated, "", caseSensitive, isVisible, false, isNullable);
     }
     
     private String getTableMetaDataSQL(final Collection<String> tables, final DatabaseMetaData databaseMetaData) throws SQLException {

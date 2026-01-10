@@ -89,7 +89,8 @@ public final class PrestoMetaDataLoader implements DialectMetaDataLoader {
         String columnName = resultSet.getString("COLUMN_NAME");
         String dataType = resultSet.getString("DATA_TYPE");
         boolean isNullable = "YES".equals(resultSet.getString("IS_NULLABLE"));
-        return new ColumnMetaData(columnName, DataTypeRegistry.getDataType(getDatabaseType(), dataType).orElse(Types.OTHER), Boolean.FALSE, Boolean.FALSE, false, Boolean.TRUE, false, isNullable);
+        return new ColumnMetaData(columnName, DataTypeRegistry.getDataType(getDatabaseType(), dataType).orElse(Types.OTHER), Boolean.FALSE, Boolean.FALSE, "other", false, Boolean.TRUE, false,
+                isNullable);
     }
     
     @Override

@@ -57,6 +57,7 @@ class PostgreSQLServerPreparedStatementTest {
     
     private PostgreSQLServerPreparedStatement createPreparedStatement() {
         return new PostgreSQLServerPreparedStatement(
-                "INSERT INTO t VALUES ($1, $2)", mock(), new HintValueContext(), Arrays.asList(PostgreSQLColumnType.INT4, PostgreSQLColumnType.VARCHAR), Arrays.asList(1, 0));
+                "INSERT INTO t VALUES ($1, $2)", mock(), new HintValueContext(), Arrays.asList(PostgreSQLColumnType.INT4, PostgreSQLColumnType.VARCHAR), Arrays.asList("int", "varchar"),
+                Arrays.asList(1, 0));
     }
 }

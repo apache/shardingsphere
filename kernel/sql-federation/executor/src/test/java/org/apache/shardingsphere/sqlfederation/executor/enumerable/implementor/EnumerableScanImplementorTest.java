@@ -115,7 +115,7 @@ class EnumerableScanImplementorTest {
         when(queryContext.getConnectionContext()).thenReturn(mock(ConnectionContext.class));
         ShardingSphereTable table = mock(ShardingSphereTable.class);
         when(table.getName()).thenReturn("pg_database");
-        when(table.getAllColumns()).thenReturn(Collections.singleton(new ShardingSphereColumn("datname", Types.VARCHAR, true, false, false, false, true, false)));
+        when(table.getAllColumns()).thenReturn(Collections.singleton(new ShardingSphereColumn("datname", Types.VARCHAR, true, false, "varchar", false, false, true, false)));
         TableStatistics tableStatistics = mock(TableStatistics.class);
         when(tableStatistics.getRows()).thenReturn(Collections.singletonList(new RowStatistics(Collections.singletonList("foo_db"))));
         DialectDriverQuerySystemCatalogOption driverOption = mock(DialectDriverQuerySystemCatalogOption.class);
@@ -154,7 +154,7 @@ class EnumerableScanImplementorTest {
         when(queryContext.getConnectionContext()).thenReturn(mock(ConnectionContext.class));
         ShardingSphereTable table = mock(ShardingSphereTable.class);
         when(table.getName()).thenReturn("custom_stats");
-        when(table.getAllColumns()).thenReturn(Collections.singleton(new ShardingSphereColumn("id", Types.INTEGER, true, false, false, false, true, false)));
+        when(table.getAllColumns()).thenReturn(Collections.singleton(new ShardingSphereColumn("id", Types.INTEGER, true, false, "int", false, false, true, false)));
         ExecutorContext executorContext = mock(ExecutorContext.class);
         when(executorContext.getCurrentDatabaseName()).thenReturn("foo_db");
         when(executorContext.getCurrentSchemaName()).thenReturn("pg_catalog");
@@ -195,7 +195,7 @@ class EnumerableScanImplementorTest {
         when(queryContext.getSqlStatementContext()).thenReturn(sqlStatementContext);
         ShardingSphereTable table = mock(ShardingSphereTable.class);
         when(table.getName()).thenReturn("non_system");
-        when(table.getAllColumns()).thenReturn(Collections.singleton(new ShardingSphereColumn("id", Types.INTEGER, true, false, false, false, true, false)));
+        when(table.getAllColumns()).thenReturn(Collections.singleton(new ShardingSphereColumn("id", Types.INTEGER, true, false, "int", false, false, true, false)));
         ExecutorContext executorContext = mock(ExecutorContext.class);
         when(executorContext.getCurrentDatabaseName()).thenReturn("foo_db");
         when(executorContext.getCurrentSchemaName()).thenReturn("pg_catalog");
@@ -298,7 +298,7 @@ class EnumerableScanImplementorTest {
         ProcessRegistry.getInstance().add(new Process(new ExecutionGroupContext<>(Collections.emptyList(), new ExecutionGroupReportContext("process_id", "foo_db"))));
         ScanImplementorContext scanContext = new ScanImplementorContext(mock(DataContext.class), "SELECT ? FROM tbl", new int[]{0});
         ShardingSphereTable table = mock(ShardingSphereTable.class, RETURNS_DEEP_STUBS);
-        when(table.getAllColumns()).thenReturn(Collections.singleton(new ShardingSphereColumn("id", Types.INTEGER, true, false, false, false, true, false)));
+        when(table.getAllColumns()).thenReturn(Collections.singleton(new ShardingSphereColumn("id", Types.INTEGER, true, false, "int", false, false, true, false)));
         try (
                 MockedConstruction<SQLBindEngine> ignoredSQLBindEngine = mockConstruction(SQLBindEngine.class,
                         (constructed, context) -> when(constructed.bind(sqlStatement)).thenReturn(boundStatementContext));
@@ -349,7 +349,7 @@ class EnumerableScanImplementorTest {
         when(executorContext.getPrepareEngine()).thenReturn(prepareEngine);
         ScanImplementorContext scanContext = new ScanImplementorContext(mock(DataContext.class), "SELECT ? FROM tbl", new int[]{0});
         ShardingSphereTable table = mock(ShardingSphereTable.class, RETURNS_DEEP_STUBS);
-        when(table.getAllColumns()).thenReturn(Collections.singleton(new ShardingSphereColumn("id", Types.INTEGER, true, false, false, false, true, false)));
+        when(table.getAllColumns()).thenReturn(Collections.singleton(new ShardingSphereColumn("id", Types.INTEGER, true, false, "int", false, false, true, false)));
         ProcessRegistry processRegistry = mock(ProcessRegistry.class);
         Process interruptedProcess = new Process(executionGroupContext);
         interruptedProcess.setInterrupted(true);

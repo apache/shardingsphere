@@ -71,7 +71,7 @@ class TableMetadataReviseEngineTest<T extends ShardingSphereRule> {
     @Test
     void assertGetOriginalTableName() {
         Collection<ColumnMetaData> columns = new LinkedList<>();
-        columns.add(new ColumnMetaData("column1", 2, true, true, true, false, false, false));
+        columns.add(new ColumnMetaData("column1", 2, true, true, "", true, false, false, false));
         Collection<IndexMetaData> indexes = new LinkedList<>();
         indexes.add(new IndexMetaData("index1"));
         TableMetaData tableMetaData = new TableMetaData("originalTableName", columns, indexes, null);

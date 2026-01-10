@@ -108,7 +108,7 @@ public final class H2MetaDataLoader implements DialectMetaDataLoader {
         boolean generated = tableGenerated.getOrDefault(columnName, Boolean.FALSE);
         boolean isVisible = resultSet.getBoolean("IS_VISIBLE");
         boolean isNullable = "YES".equals(resultSet.getString("IS_NULLABLE"));
-        return new ColumnMetaData(columnName, DataTypeRegistry.getDataType(getDatabaseType(), dataType).orElse(Types.OTHER), primaryKey, generated, false, isVisible, false, isNullable);
+        return new ColumnMetaData(columnName, DataTypeRegistry.getDataType(getDatabaseType(), dataType).orElse(Types.OTHER), primaryKey, generated, "", false, isVisible, false, isNullable);
     }
     
     private String getTableMetaDataSQL(final Collection<String> tables) {
