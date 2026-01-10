@@ -60,4 +60,5 @@
     <sql-case id="hive_group_concat_order" value="SELECT GROUP_CONCAT(status ORDER BY status) FROM t_order" db-types="Hive" />
     <sql-case id="hive_json_array_simple" value="SELECT JSON_ARRAY(1, 'abc', NULL, TRUE, CURTIME())" db-types="Hive" />
     <sql-case id="hive_convert_date" value="SELECT CONVERT('2020-10-01', DATE)" db-types="Hive" />
+    <sql-case id="hive_limit_param" value="SELECT * FROM t_order LIMIT ? OFFSET ?" db-types="Hive" />
 </sql-cases>

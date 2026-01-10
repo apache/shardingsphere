@@ -846,4 +846,17 @@
         </projections>
     </select>
 
+    <select sql-case-id="hive_limit_param" parameters="1,2">
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" />
+        </projections>
+        <from>
+            <simple-table name="t_order" start-index="14" stop-index="20" />
+        </from>
+        <limit start-index="22" stop-index="37">
+            <row-count value="1" parameter-index="0" start-index="28" stop-index="28" />
+            <offset value="2" parameter-index="1" start-index="37" stop-index="37" />
+        </limit>
+    </select>
+
 </sql-parser-test-cases>
