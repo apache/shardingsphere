@@ -347,6 +347,200 @@
         </projections>
     </select>
     
+    <select sql-case-id="hive_select_safe_eq">
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" />
+        </projections>
+        <from>
+            <simple-table name="t_pred" start-index="14" stop-index="19" />
+        </from>
+        <where start-index="21" stop-index="33">
+            <expr>
+                <binary-operation-expression start-index="27" stop-index="33">
+                    <left>
+                        <column name="a" start-index="27" stop-index="27" />
+                    </left>
+                    <operator>&lt;=&gt;</operator>
+                    <right>
+                        <column name="b" start-index="33" stop-index="33" />
+                    </right>
+                </binary-operation-expression>
+            </expr>
+        </where>
+    </select>
+    
+    <select sql-case-id="hive_select_sounds_like">
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" />
+        </projections>
+        <from>
+            <simple-table name="t_pred" start-index="14" stop-index="19" />
+        </from>
+        <where start-index="21" stop-index="47">
+            <expr>
+                <binary-operation-expression start-index="27" stop-index="47">
+                    <left>
+                        <column name="col" start-index="27" stop-index="29" />
+                    </left>
+                    <operator>SOUNDS LIKE</operator>
+                    <right>
+                        <literal-expression value="abc" start-index="43" stop-index="47" />
+                    </right>
+                </binary-operation-expression>
+            </expr>
+        </where>
+    </select>
+    
+    <select sql-case-id="hive_select_interval">
+        <projections start-index="7" stop-index="20">
+            <expression-projection text="INTERVAL" start-index="7" stop-index="14">
+            </expression-projection>
+        </projections>
+    </select>
+    
+    <select sql-case-id="hive_select_collate_literal">
+        <projections start-index="7" stop-index="22">
+            <expression-projection text="utf8" start-index="7" stop-index="22">
+                <expr>
+                    <collate-expression start-index="7" stop-index="22">
+                        <collate-name>
+                            <literal-expression value="utf8" start-index="11" stop-index="22" />
+                        </collate-name>
+                    </collate-expression>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+    
+    <select sql-case-id="hive_select_binary_prefix">
+        <projections start-index="7" stop-index="16">
+            <expression-projection text="a" start-index="14" stop-index="16">
+                <expr>
+                    <literal-expression value="a" start-index="14" stop-index="16" />
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+    
+    <select sql-case-id="hive_select_three_part_column">
+        <projections start-index="7" stop-index="19">
+            <column-projection name="col1" start-index="7" stop-index="19">
+                <owner name="tbl1" start-index="11" stop-index="14">
+                    <owner name="db1" start-index="7" stop-index="9" />
+                </owner>
+            </column-projection>
+        </projections>
+        <from>
+            <simple-table name="tbl1" start-index="26" stop-index="33">
+                <owner name="db1" start-index="26" stop-index="28" />
+            </simple-table>
+        </from>
+    </select>
+    
+    <select sql-case-id="hive_select_substr">
+        <projections start-index="7" stop-index="23">
+            <expression-projection text="SUBSTR('abc',1,2)" start-index="7" stop-index="23">
+                <expr>
+                    <function function-name="SUBSTR" start-index="7" stop-index="23" text="SUBSTR('abc',1,2)">
+                        <parameter>
+                            <literal-expression value="abc" start-index="14" stop-index="18" />
+                        </parameter>
+                        <parameter>
+                            <literal-expression value="1" start-index="20" stop-index="20" />
+                        </parameter>
+                        <parameter>
+                            <literal-expression value="2" start-index="22" stop-index="22" />
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+    
+    <select sql-case-id="hive_select_trim_leading">
+        <projections start-index="7" stop-index="34">
+            <expression-projection text="TRIM(LEADING 'x' FROM 'xxx')" start-index="7" stop-index="34">
+                <expr>
+                    <function function-name="TRIM" start-index="7" stop-index="34" text="TRIM(LEADING 'x' FROM 'xxx')">
+                        <parameter>
+                            <literal-expression value="LEADING" start-index="12" stop-index="18" />
+                        </parameter>
+                        <parameter>
+                            <literal-expression value="x" start-index="20" stop-index="22" />
+                        </parameter>
+                        <parameter>
+                            <literal-expression value="xxx" start-index="29" stop-index="33" />
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+    
+    <select sql-case-id="hive_select_trim_trailing">
+        <projections start-index="7" stop-index="35">
+            <expression-projection text="TRIM(TRAILING 'y' FROM 'yyy')" start-index="7" stop-index="35">
+                <expr>
+                    <function function-name="TRIM" start-index="7" stop-index="35" text="TRIM(TRAILING 'y' FROM 'yyy')">
+                        <parameter>
+                            <literal-expression value="TRAILING" start-index="12" stop-index="19" />
+                        </parameter>
+                        <parameter>
+                            <literal-expression value="y" start-index="21" stop-index="23" />
+                        </parameter>
+                        <parameter>
+                            <literal-expression value="yyy" start-index="30" stop-index="34" />
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+    
+    <select sql-case-id="hive_select_current_time_precision">
+        <projections start-index="7" stop-index="21">
+            <expression-projection text="CURRENT_TIME(3)" start-index="7" stop-index="21">
+                <expr>
+                    <function function-name="CURRENT_TIME" start-index="7" stop-index="21" text="CURRENT_TIME(3)">
+                        <parameter>
+                            <literal-expression value="3" start-index="20" stop-index="20" />
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+    
+    <select sql-case-id="hive_select_natural_join">
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" />
+        </projections>
+        <from>
+            <join-table join-type="INNER" start-index="14" stop-index="31" natural="true">
+                <left>
+                    <simple-table name="t1" start-index="14" stop-index="15" />
+                </left>
+                <right>
+                    <simple-table name="t2" start-index="30" stop-index="31" />
+                </right>
+            </join-table>
+        </from>
+    </select>
+    
+    <select sql-case-id="hive_select_match">
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" />
+        </projections>
+        <from>
+            <simple-table name="t_doc" start-index="14" stop-index="18" />
+        </from>
+        <where start-index="20" stop-index="53">
+            <expr>
+                <common-expression text="MATCH(title) AGAINST('hive')" start-index="26" stop-index="53" />
+            </expr>
+        </where>
+    </select>
+    
     <select sql-case-id="hive_select_trim">
         <projections start-index="7" stop-index="31">
             <expression-projection text="TRIM(BOTH ' ' FROM ' a ')" start-index="7" stop-index="31">
