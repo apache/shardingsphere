@@ -88,7 +88,7 @@
     <sql-case id="presto_select_udf_with_param" value="SELECT my_udf(order_id) FROM t_order" db-types="Presto" />
     <sql-case id="presto_insert_select_no_columns" value="INSERT INTO t_order SELECT 1" db-types="Presto" />
     <sql-case id="presto_insert_values_empty_columns" value="INSERT INTO t_order () VALUES (1)" db-types="Presto" />
-    <sql-case id="presto_select_cast_lengths" value="SELECT CAST(order_id AS DECIMAL(10,2)) FROM t_order" db-types="Presto" />
+    <sql-case id="presto_select_cast_lengths" value="SELECT CAST(order_id AS DECIMAL(10,2)) FROM t_order" db-types="Presto,Hive" />
     <sql-case id="presto_select_window_partition_only" value="SELECT ROW_NUMBER() OVER win FROM t_order WINDOW win AS (PARTITION BY status)" db-types="Presto" />
     <sql-case id="presto_delete_order_limit" value="DELETE FROM t_order WHERE flag = 1 ORDER BY order_id LIMIT 1" db-types="Presto" />
     <sql-case id="presto_select_cast_literal" value="SELECT CAST('1' AS CHAR) FROM t_order" db-types="Presto" />

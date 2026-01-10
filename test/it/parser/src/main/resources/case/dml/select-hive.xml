@@ -809,4 +809,54 @@
         </from>
     </select>
 
+    <select sql-case-id="hive_group_concat_order">
+        <from>
+            <simple-table name="t_order" start-index="49" stop-index="55" />
+        </from>
+        <projections start-index="7" stop-index="42">
+            <expression-projection text="GROUP_CONCAT(status ORDER BY status)" start-index="7" stop-index="42">
+                <expr>
+                    <function function-name="GROUP_CONCAT" start-index="7" stop-index="42" text="GROUP_CONCAT(status ORDER BY status)">
+                        <parameter>
+                            <column name="status" start-index="20" stop-index="25" />
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="hive_json_array_simple">
+        <projections start-index="7" stop-index="49">
+            <expression-projection text="JSON_ARRAY(1, 'abc', NULL, TRUE, CURTIME())" start-index="7" stop-index="49" >
+                <expr>
+                    <function function-name="JSON_ARRAY" text="JSON_ARRAY(1, 'abc', NULL, TRUE, CURTIME())" start-index="7" stop-index="49" />
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="hive_convert_date">
+        <projections start-index="7" stop-index="33">
+            <expression-projection text="CONVERT('2020-10-01', DATE)" start-index="7" stop-index="33">
+                <expr>
+                    <function function-name="CONVERT" text="CONVERT('2020-10-01', DATE)" start-index="7" stop-index="33" />
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="hive_limit_param" parameters="1,2">
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" />
+        </projections>
+        <from>
+            <simple-table name="t_order" start-index="14" stop-index="20" />
+        </from>
+        <limit start-index="22" stop-index="37">
+            <row-count value="1" parameter-index="0" start-index="28" stop-index="28" />
+            <offset value="2" parameter-index="1" start-index="37" stop-index="37" />
+        </limit>
+    </select>
+
 </sql-parser-test-cases>
