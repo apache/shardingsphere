@@ -575,4 +575,44 @@
         </from>
     </select>
 
+    <select sql-case-id="hive_select_literals_dual">
+        <projections start-index="7" stop-index="37">
+            <expression-projection text="DATE'2024-01-01'" start-index="7" stop-index="23">
+                <expr>
+                    <common-expression text="DATE'2024-01-01'" start-index="7" stop-index="23" />
+                </expr>
+            </expression-projection>
+            <expression-projection text="0x1F" start-index="26" stop-index="29">
+                <expr>
+                    <common-expression text="0x1F" start-index="26" stop-index="29" />
+                </expr>
+            </expression-projection>
+            <expression-projection text="B'101'" start-index="32" stop-index="37">
+                <expr>
+                    <common-expression text="B'101'" start-index="32" stop-index="37" />
+                </expr>
+            </expression-projection>
+        </projections>
+        <from>
+            <simple-table name="DUAL" start-index="44" stop-index="47" />
+        </from>
+    </select>
+
+    <select sql-case-id="hive_select_owner_function">
+        <projections start-index="7" stop-index="23">
+            <expression-projection text="analytics.fn(col)" start-index="7" stop-index="23">
+                <expr>
+                    <function function-name="analytics.fn(col)" text="analytics.fn(col)" start-index="7" stop-index="23">
+                        <parameter>
+                            <column name="col" start-index="20" stop-index="22" />
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+        <from>
+            <simple-table name="t_func_owner" start-index="30" stop-index="41" />
+        </from>
+    </select>
+
 </sql-parser-test-cases>
