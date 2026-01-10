@@ -28,9 +28,10 @@ import static org.hamcrest.MatcherAssert.assertThat;
 
 class FirebirdDatabaseTypeTest {
     
+    private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "Firebird");
+    
     @Test
     void assertGetJdbcUrlPrefixes() {
-        assertThat(TypedSPILoader.getService(DatabaseType.class, "Firebird").getJdbcUrlPrefixes(), is(Arrays.asList("jdbc:firebirdsql:", "jdbc:firebird")));
+        assertThat(databaseType.getJdbcUrlPrefixes(), is(Arrays.asList("jdbc:firebirdsql:", "jdbc:firebird")));
     }
-    
 }

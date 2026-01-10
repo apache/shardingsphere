@@ -28,8 +28,10 @@ import static org.hamcrest.MatcherAssert.assertThat;
 
 class HiveDatabaseTypeTest {
     
+    private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "Hive");
+    
     @Test
     void assertGetJdbcUrlPrefixes() {
-        assertThat(TypedSPILoader.getService(DatabaseType.class, "Hive").getJdbcUrlPrefixes(), is(Collections.singleton("jdbc:hive2:")));
+        assertThat(databaseType.getJdbcUrlPrefixes(), is(Collections.singleton("jdbc:hive2:")));
     }
 }

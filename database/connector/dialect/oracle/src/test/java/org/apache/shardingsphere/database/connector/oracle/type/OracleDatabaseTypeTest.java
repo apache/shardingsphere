@@ -28,8 +28,10 @@ import static org.hamcrest.MatcherAssert.assertThat;
 
 class OracleDatabaseTypeTest {
     
+    private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "Oracle");
+    
     @Test
     void assertGetJdbcUrlPrefixes() {
-        assertThat(TypedSPILoader.getService(DatabaseType.class, "Oracle").getJdbcUrlPrefixes(), is(Collections.singletonList("jdbc:oracle:")));
+        assertThat(databaseType.getJdbcUrlPrefixes(), is(Collections.singleton("jdbc:oracle:")));
     }
 }
