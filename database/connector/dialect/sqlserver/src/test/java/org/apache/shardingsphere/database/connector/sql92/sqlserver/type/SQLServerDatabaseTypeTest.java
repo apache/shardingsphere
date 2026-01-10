@@ -28,9 +28,10 @@ import static org.hamcrest.MatcherAssert.assertThat;
 
 class SQLServerDatabaseTypeTest {
     
+    private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "SQLServer");
+    
     @Test
     void assertGetJdbcUrlPrefixes() {
-        assertThat(TypedSPILoader.getService(DatabaseType.class, "SQLServer").getJdbcUrlPrefixes(),
-                is(Arrays.asList("jdbc:microsoft:sqlserver:", "jdbc:sqlserver:")));
+        assertThat(databaseType.getJdbcUrlPrefixes(), is(Arrays.asList("jdbc:microsoft:sqlserver:", "jdbc:sqlserver:")));
     }
 }

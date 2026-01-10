@@ -29,7 +29,7 @@ public final class OpenGaussDatabaseType implements DatabaseType {
     
     @Override
     public Collection<String> getJdbcUrlPrefixes() {
-        return Collections.singleton(String.format("jdbc:%s:", getType().toLowerCase()));
+        return Collections.singleton("jdbc:opengauss:");
     }
     
     @Override

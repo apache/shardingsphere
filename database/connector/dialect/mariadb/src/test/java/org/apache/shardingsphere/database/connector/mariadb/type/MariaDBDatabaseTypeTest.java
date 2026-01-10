@@ -22,14 +22,25 @@ import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
+import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class MariaDBDatabaseTypeTest {
     
+    private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "MariaDB");
+    
     @Test
     void assertGetJdbcUrlPrefixes() {
-        assertThat(TypedSPILoader.getService(DatabaseType.class, "MariaDB").getJdbcUrlPrefixes(), is(Collections.singletonList("jdbc:mariadb:")));
+        assertThat(databaseType.getJdbcUrlPrefixes(), is(Collections.singleton("jdbc:mariadb:")));
+    }
+    
+    @Test
+    void assertGetTrunkDatabaseType() {
+        Optional<DatabaseType> actual = databaseType.getTrunkDatabaseType();
+        assertTrue(actual.isPresent());
+        assertThat(actual.get().getType(), is("MySQL"));
     }
 }

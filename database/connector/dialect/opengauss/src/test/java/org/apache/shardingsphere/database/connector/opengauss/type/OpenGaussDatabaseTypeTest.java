@@ -28,8 +28,10 @@ import static org.hamcrest.MatcherAssert.assertThat;
 
 class OpenGaussDatabaseTypeTest {
     
+    private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "openGauss");
+    
     @Test
     void assertGetJdbcUrlPrefixes() {
-        assertThat(TypedSPILoader.getService(DatabaseType.class, "openGauss").getJdbcUrlPrefixes(), is(Collections.singleton("jdbc:opengauss:")));
+        assertThat(databaseType.getJdbcUrlPrefixes(), is(Collections.singleton("jdbc:opengauss:")));
     }
 }

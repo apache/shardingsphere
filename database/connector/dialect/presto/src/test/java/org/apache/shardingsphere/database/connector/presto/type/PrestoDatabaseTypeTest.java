@@ -28,8 +28,10 @@ import static org.hamcrest.MatcherAssert.assertThat;
 
 class PrestoDatabaseTypeTest {
     
+    private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "Presto");
+    
     @Test
     void assertGetJdbcUrlPrefixes() {
-        assertThat(TypedSPILoader.getService(DatabaseType.class, "Presto").getJdbcUrlPrefixes(), is(Arrays.asList("jdbc:presto:", "presto:")));
+        assertThat(databaseType.getJdbcUrlPrefixes(), is(Arrays.asList("jdbc:presto:", "presto:")));
     }
 }
