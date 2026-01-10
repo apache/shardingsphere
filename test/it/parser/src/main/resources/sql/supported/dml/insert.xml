@@ -32,12 +32,12 @@
     <sql-case id="insert_with_special_syntax" value="INSERT /*+ index(field1) */ INTO t_order (order_id, user_id, status) VALUES (1, 1, 'insert') RETURNING order_id, *, t_order.*, user_id u, t_order.status as s, 'OK' result" db-types="PostgreSQL,openGauss" />
     <sql-case id="insert_with_all_placeholders_for_table_identifier" value="INSERT INTO t_order (t_order.order_id, t_order.user_id, t_order.status) VALUES (?, ?, ?)" />
     <sql-case id="insert_without_columns_with_all_placeholders" value="INSERT INTO t_order VALUES (?, ?, ?)" />
-    <sql-case id="insert_set_with_all_placeholders" value="INSERT INTO t_order SET order_id = ?, user_id = ?, status = ?" db-types="MySQL,Presto,Doris" />
+    <sql-case id="insert_set_with_all_placeholders" value="INSERT INTO t_order SET order_id = ?, user_id = ?, status = ?" db-types="MySQL,Presto,Doris,Hive" />
     <sql-case id="insert_duplicate_key_update" value="INSERT INTO t_order SET b='11', a=0 AS n ON DUPLICATE KEY UPDATE b=n.a, a=n.b" db-types="MySQL" />
     <sql-case id="insert_with_underscore_charset" value="INSERT INTO t_order VALUES(_utf16 0x1EC2), (_utf16 0x1EC3), (_utf16 0x1EC5), (_utf16 0x1EC0), (_utf16 0x1EC7), (_Utf16 0x1EBF)" db-types="MySQL" />
     <sql-case id="insert_set_with_all_placeholders_for_table_identifier" value="INSERT INTO t_order SET t_order.order_id = ?, t_order.user_id = ?, t_order.status = ?" db-types="MySQL" />
     <sql-case id="insert_with_partial_placeholders" value="INSERT INTO t_order (order_id, user_id, status) VALUES (?, ?, 'insert')" />
-    <sql-case id="insert_set_with_partial_placeholders" value="INSERT INTO t_order SET order_id = ?, user_id = ?, status = 'insert'" db-types="MySQL" />
+    <sql-case id="insert_set_with_partial_placeholders" value="INSERT INTO t_order SET order_id = ?, user_id = ?, status = 'insert'" db-types="MySQL,Hive" />
     <sql-case id="insert_with_generate_key_column" value="INSERT INTO t_order_item(item_id, order_id, user_id, status, creation_date) VALUES (?, ?, ?, 'insert', '2017-08-08')" />
     <sql-case id="insert_set_with_generate_key_column" value="INSERT INTO t_order_item SET item_id = ?, order_id = ?, user_id = ?, status = 'insert', creation_date='2017-08-08'" db-types="MySQL,Doris" />
     <sql-case id="insert_without_generate_key_column" value="INSERT INTO t_order_item(order_id, user_id, status, creation_date) VALUES (?, ?, 'insert', '2017-08-08')" />
@@ -49,8 +49,8 @@
     <sql-case id="insert_with_batch_and_composite_expression" value="INSERT INTO t_order (order_id, user_id, status) VALUES (?, ?, SUBSTR(?, 1)), (?, ?, SUBSTR(?, 1))" db-types="H2,MySQL" />
     <sql-case id="insert_with_batch_and_with_generate_key_column" value="INSERT INTO t_order_item(item_id, order_id, user_id, status, creation_date) values (?, ?, ?, 'insert', '2017-08-08'), (?, ?, ?, 'insert', '2017-08-08')" db-types="MySQL, SQLServer, PostgreSQL,openGauss,Doris" />
     <sql-case id="insert_with_batch_and_without_generate_key_column" value="INSERT INTO t_order_item(order_id, user_id, status, creation_date) values (?, ?, 'insert', '2017-08-08'), (?, ?, 'insert', '2017-08-08')" db-types="MySQL, SQLServer, PostgreSQL,openGauss,Doris" />
-    <sql-case id="insert_on_duplicate_key_update" value="INSERT INTO t_order (order_id, user_id, status) VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE status = VALUES(status)" db-types="MySQL,openGauss,Presto,Doris" />
-    <sql-case id="insert_on_duplicate_key_update_with_placeholders" value="INSERT INTO t_order (order_id, user_id, status) VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE status = ?" db-types="MySQL,openGauss,Presto,Doris" />
+    <sql-case id="insert_on_duplicate_key_update" value="INSERT INTO t_order (order_id, user_id, status) VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE status = VALUES(status)" db-types="MySQL,openGauss,Presto,Doris,Hive" />
+    <sql-case id="insert_on_duplicate_key_update_with_placeholders" value="INSERT INTO t_order (order_id, user_id, status) VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE status = ?" db-types="MySQL,openGauss,Presto,Doris,Hive" />
     <sql-case id="insert_on_duplicate_key_update_with_placeholders_postgres" value="INSERT INTO t_order (order_id, user_id, status) VALUES (?, ?, ?) ON CONFLICT (order_id) DO UPDATE SET status = ?" db-types="PostgreSQL" />
     <sql-case id="insert_on_duplicate_key_update_with_complicated_expression" value="INSERT INTO emp(order_id,emp_id,age,salary) VALUES (?,?,?,?) ON DUPLICATE KEY UPDATE salary = VALUES(salary)+VALUES(salary)*0.2" db-types="MySQL,Doris" />
     <sql-case id="insert_with_multiple_values" value="INSERT INTO t_order (order_id, user_id, status) VALUES (1, 1, 'insert'), (2, 2, 'insert2')" db-types="MySQL" />

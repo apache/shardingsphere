@@ -44,7 +44,7 @@
     <sql-case id="select_with_operator_ilike" value="SELECT id from t_order where name !~ '^pg_toast'" db-types="PostgreSQL,openGauss" />
     <sql-case id="select_with_binary_operation_of_aggregation_expr" value="SELECT (count(*)+1) as a" db-types="MySQL" />
     <sql-case id="select_with_schema_func" value="SELECT schema(), database()" db-types="MySQL" />
-    <sql-case id="select_system_variables" value="SELECT @@session.auto_increment_increment auto_increment_increment, @@global.max_connections max_connections, @@autocommit" db-types="MySQL,Presto" />
+    <sql-case id="select_system_variables" value="SELECT @@session.auto_increment_increment auto_increment_increment, @@global.max_connections max_connections, @@autocommit" db-types="MySQL,Presto,Hive" />
     <sql-case id="select_sqlmode_ansi_quotes" value='select "id" from "t_order" where "t_order"."id"=10' db-types="MySQL" />
     <sql-case id="select_with_function_name" value="SELECT current_timestamp" db-types="MySQL" />
     <sql-case id="select_with_same_table_name_and_alias" value="SELECT t_order.* FROM t_order t_order WHERE user_id = ? AND order_id = ?" />
@@ -124,8 +124,8 @@
     <sql-case id="select_with_jsonb_path_delete" value="SELECT content_json::jsonb#-'{title}' FROM tb_content_json" db-types="PostgreSQL,openGauss" />
     <sql-case id="select_with_jsonb_path_contain_any_value" value="SELECT content_json::jsonb @?'$.keyword[*]?(@==&quot;ss&quot;)' FROM tb_content_json" db-types="PostgreSQL,openGauss" />
     <sql-case id="select_with_jsonb_path_predicate_check" value="SELECT content_json::jsonb@@'$.keyword[*]==&quot;ss&quot;' FROM tb_content_json" db-types="PostgreSQL,openGauss" />
-    <sql-case id="select_with_assignment_operator" value="SELECT @rn := 1, @now_code := '' FROM t_order" db-types="MySQL,Doris" />
-    <sql-case id="select_with_assignment_operator_and_keyword" value="SELECT @KEY := '', @num := 123 FROM t_order" db-types="MySQL,Doris" />
+    <sql-case id="select_with_assignment_operator" value="SELECT @rn := 1, @now_code := '' FROM t_order" db-types="MySQL,Doris,Hive" />
+    <sql-case id="select_with_assignment_operator_and_keyword" value="SELECT @KEY := '', @num := 123 FROM t_order" db-types="MySQL,Doris,Hive" />
     <sql-case id="select_from_dual" value="SELECT 1 FROM DUAL" db-types="MySQL,Hive" />
     <sql-case id="select_with_cast_as_signed" value="SELECT user_id,CAST(order_id AS SIGNED) FROM t_order" db-types="MySQL" />
     <sql-case id="select_with_cast_as_unsigned" value="SELECT CAST(order_id AS UNSIGNED),user_id FROM t_order" db-types="MySQL" />
@@ -245,9 +245,9 @@
     <sql-case id="select_hex_literal_doris" value="SELECT 0x1AF" db-types="Doris" />
     <sql-case id="select_bit_literal_doris" value="SELECT b'1010'" db-types="Doris" />
     <sql-case id="select_collate_clause_doris" value="SELECT 'a' COLLATE utf8mb4_bin" db-types="Doris" />
-    <sql-case id="select_true_literal_doris" value="SELECT TRUE" db-types="Doris" />
+    <sql-case id="select_true_literal_doris" value="SELECT TRUE" db-types="Doris,Hive" />
     <sql-case id="select_false_literal_doris" value="SELECT FALSE" db-types="Doris" />
-    <sql-case id="select_null_literal_doris" value="SELECT NULL" db-types="Doris" />
+    <sql-case id="select_null_literal_doris" value="SELECT NULL" db-types="Doris,Hive" />
     <sql-case id="select_with_percentile_functions" value="SELECT department_id, PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY salary DESC) 'Median cont', PERCENTILE_DISC(0.5) WITHIN GROUP (ORDER BY salary DESC) 'Median disc' FROM employees GROUP BY department_id" db-types="Oracle" />
     <sql-case id="select_with_keep_clause" value="SELECT salary,MIN(salary) KEEP (DENSE_RANK FIRST ORDER BY commission_pct) OVER (PARTITION BY department_id) 'Worst', MAX(salary) KEEP (DENSE_RANK LAST ORDER BY commission_pct) OVER (PARTITION BY department_id) 'Best' FROM employees ORDER BY department_id" db-types="Oracle" />
     <sql-case id="select_with_corr_function" value="SELECT employee_id, CORR(SYSDATE - hire_date, salary) FROM employees WHERE department_id in (50, 80) ORDER BY employee_id" db-types="Oracle" />
