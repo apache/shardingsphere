@@ -64,15 +64,15 @@ class TracingJDBCExecutorCallbackAdviceTest {
     
     @Test
     void assertBeforeMethod() {
-        JDBCExecutionUnit expectedJdbcExecutionUnit = new JDBCExecutionUnit(new ExecutionUnit("ds_0", new SQLUnit("select 1", Collections.emptyList())), ConnectionMode.MEMORY_STRICTLY, mock());
-        ConnectionProperties expectedConnectionProps = new ConnectionProperties("127.0.0.1", 3306, "catalog", "schema", new Properties());
-        ResourceMetaData resourceMetaData = mock(ResourceMetaData.class);
         StorageUnit storageUnit = mock(StorageUnit.class);
         when(storageUnit.getStorageType()).thenReturn(databaseType);
+        ConnectionProperties expectedConnectionProps = new ConnectionProperties("127.0.0.1", 3306, "catalog", "schema", new Properties());
         when(storageUnit.getConnectionProperties()).thenReturn(expectedConnectionProps);
+        ResourceMetaData resourceMetaData = mock(ResourceMetaData.class);
         when(resourceMetaData.getStorageUnits()).thenReturn(Collections.singletonMap("ds_0", storageUnit));
         RecordingTracingJDBCExecutorCallbackAdvice advice = new RecordingTracingJDBCExecutorCallbackAdvice();
         TargetAdviceObject expectedTarget = new ResourceTargetAdviceObject(resourceMetaData);
+        JDBCExecutionUnit expectedJdbcExecutionUnit = new JDBCExecutionUnit(new ExecutionUnit("ds_0", new SQLUnit("select 1", Collections.emptyList())), ConnectionMode.MEMORY_STRICTLY, mock());
         advice.beforeMethod(expectedTarget, new TargetAdviceMethod("execute"), new Object[]{expectedJdbcExecutionUnit, false}, "FIXTURE");
         assertThat(advice.getRecordedParentSpan(), is("root-span"));
         assertThat(advice.getRecordedTarget(), is(expectedTarget));
