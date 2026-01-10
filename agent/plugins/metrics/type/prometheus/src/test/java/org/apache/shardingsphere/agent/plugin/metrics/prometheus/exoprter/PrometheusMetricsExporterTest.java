@@ -17,10 +17,12 @@
 
 package org.apache.shardingsphere.agent.plugin.metrics.prometheus.exoprter;
 
+import io.prometheus.client.GaugeMetricFamily;
 import org.apache.shardingsphere.agent.plugin.metrics.core.collector.type.GaugeMetricFamilyMetricsCollector;
 import org.apache.shardingsphere.agent.plugin.metrics.core.exporter.MetricsExporter;
 import org.junit.jupiter.api.Test;
 
+import java.util.Collections;
 import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -41,7 +43,18 @@ class PrometheusMetricsExporterTest {
     @Test
     void assertCollectWithPresentMetricsExporter() {
         MetricsExporter exporter = mock(MetricsExporter.class);
-        when(exporter.export("Prometheus")).thenReturn(Optional.of(mock(GaugeMetricFamilyMetricsCollector.class)));
-        assertThat(new PrometheusMetricsExporter(exporter).collect().size(), is(1));
+        GaugeMetricFamilyMetricsCollector metricsCollector = mock(GaugeMetricFamilyMetricsCollector.class);
+        GaugeMetricFamily expectedMetricFamily = new GaugeMetricFamily("present_metric", "help", Collections.emptyList());
+        when(metricsCollector.getRawMetricFamilyObject()).thenReturn(expectedMetricFamily);
+        when(exporter.export("Prometheus")).thenReturn(Optional.of(metricsCollector));
+        GaugeMetricFamily actualMetricFamily = (GaugeMetricFamily) new PrometheusMetricsExporter(exporter).collect().get(0);
+        assertThat(actualMetricFamily, is(expectedMetricFamily));
+    }
+    
+    @Test
+    void assertCollectWithException() {
+        MetricsExporter exporter = mock(MetricsExporter.class);
+        when(exporter.export("Prometheus")).thenThrow(IllegalStateException.class);
+        assertTrue(new PrometheusMetricsExporter(exporter).collect().isEmpty());
     }
 }

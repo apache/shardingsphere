@@ -31,11 +31,22 @@ import static org.hamcrest.MatcherAssert.assertThat;
 class PrometheusMetricsCounterCollectorTest {
     
     @Test
-    void assertCreate() throws ReflectiveOperationException {
-        PrometheusMetricsCounterCollector collector = new PrometheusMetricsCounterCollector(new MetricConfiguration("foo_counter",
+    void assertInc() throws ReflectiveOperationException {
+        PrometheusMetricsCounterCollector collector = new PrometheusMetricsCounterCollector(new MetricConfiguration("counter_inc",
                 MetricCollectorType.COUNTER, "foo_help", Collections.emptyList(), Collections.emptyMap()));
         collector.inc();
         Counter counter = (Counter) Plugins.getMemberAccessor().get(PrometheusMetricsCounterCollector.class.getDeclaredField("counter"), collector);
-        assertThat(counter.get(), is(1D));
+        double actualValue = counter.get();
+        double expectedValue = 1D;
+        assertThat(actualValue, is(expectedValue));
+    }
+    
+    @Test
+    void assertIncWithLabels() throws ReflectiveOperationException {
+        PrometheusMetricsCounterCollector collector = new PrometheusMetricsCounterCollector(new MetricConfiguration("counter_inc_label",
+                MetricCollectorType.COUNTER, "foo_help", Collections.singletonList("type"), Collections.emptyMap()));
+        collector.inc("bar");
+        Counter counter = (Counter) Plugins.getMemberAccessor().get(PrometheusMetricsCounterCollector.class.getDeclaredField("counter"), collector);
+        assertThat(counter.labels("bar").get(), is(1D));
     }
 }

@@ -31,13 +31,38 @@ import static org.hamcrest.MatcherAssert.assertThat;
 class PrometheusMetricsGaugeCollectorTest {
     
     @Test
-    void assertCreate() throws ReflectiveOperationException {
-        PrometheusMetricsGaugeCollector collector = new PrometheusMetricsGaugeCollector(new MetricConfiguration("foo_gauge",
+    void assertInc() throws ReflectiveOperationException {
+        PrometheusMetricsGaugeCollector collector = new PrometheusMetricsGaugeCollector(new MetricConfiguration("gauge_inc",
                 MetricCollectorType.GAUGE, "foo_help", Collections.emptyList(), Collections.emptyMap()));
         collector.inc();
         Gauge gauge = (Gauge) Plugins.getMemberAccessor().get(PrometheusMetricsGaugeCollector.class.getDeclaredField("gauge"), collector);
         assertThat(gauge.get(), is(1D));
+    }
+    
+    @Test
+    void assertIncWithLabels() throws ReflectiveOperationException {
+        PrometheusMetricsGaugeCollector collector = new PrometheusMetricsGaugeCollector(new MetricConfiguration("gauge_inc_label",
+                MetricCollectorType.GAUGE, "foo_help", Collections.singletonList("type"), Collections.emptyMap()));
+        collector.inc("bar");
+        Gauge gauge = (Gauge) Plugins.getMemberAccessor().get(PrometheusMetricsGaugeCollector.class.getDeclaredField("gauge"), collector);
+        assertThat(gauge.labels("bar").get(), is(1D));
+    }
+    
+    @Test
+    void assertDec() throws ReflectiveOperationException {
+        PrometheusMetricsGaugeCollector collector = new PrometheusMetricsGaugeCollector(new MetricConfiguration("gauge_dec",
+                MetricCollectorType.GAUGE, "foo_help", Collections.emptyList(), Collections.emptyMap()));
         collector.dec();
-        assertThat(gauge.get(), is(0D));
+        Gauge gauge = (Gauge) Plugins.getMemberAccessor().get(PrometheusMetricsGaugeCollector.class.getDeclaredField("gauge"), collector);
+        assertThat(gauge.get(), is(-1D));
+    }
+    
+    @Test
+    void assertDecWithLabels() throws ReflectiveOperationException {
+        PrometheusMetricsGaugeCollector collector = new PrometheusMetricsGaugeCollector(new MetricConfiguration("gauge_dec_label",
+                MetricCollectorType.GAUGE, "foo_help", Collections.singletonList("type"), Collections.emptyMap()));
+        collector.dec("bar");
+        Gauge gauge = (Gauge) Plugins.getMemberAccessor().get(PrometheusMetricsGaugeCollector.class.getDeclaredField("gauge"), collector);
+        assertThat(gauge.labels("bar").get(), is(-1D));
     }
 }
