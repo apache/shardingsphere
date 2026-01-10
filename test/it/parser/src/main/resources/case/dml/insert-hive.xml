@@ -121,4 +121,34 @@
         </select>
     </insert>
 
+    <insert sql-case-id="hive_from_multi_insert">
+        <multi-table-insert-type value="ALL" />
+        <multi-table-insert-into start-index="9" stop-index="77" literal-start-index="9" literal-stop-index="77">
+            <insert-statement>
+                <table name="dst1" start-index="27" stop-index="30" />
+                <columns start-index="9" stop-index="9" />
+                <select>
+                    <projections start-index="39" stop-index="42">
+                        <column-projection name="col1" start-index="39" stop-index="42" />
+                    </projections>
+                    <from>
+                        <simple-table name="src" start-index="5" stop-index="7" />
+                    </from>
+                </select>
+            </insert-statement>
+            <insert-statement>
+                <table name="dst2" start-index="62" stop-index="65" />
+                <columns start-index="44" stop-index="44" />
+                <select>
+                    <projections start-index="74" stop-index="77">
+                        <column-projection name="col2" start-index="74" stop-index="77" />
+                    </projections>
+                    <from>
+                        <simple-table name="src" start-index="5" stop-index="7" />
+                    </from>
+                </select>
+            </insert-statement>
+        </multi-table-insert-into>
+    </insert>
+
 </sql-parser-test-cases>
