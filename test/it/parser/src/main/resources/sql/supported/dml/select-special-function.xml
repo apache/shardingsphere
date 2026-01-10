@@ -20,17 +20,17 @@
     <sql-case id="select_group_concat_with_order_by" value="SELECT GROUP_CONCAT(status ORDER BY status) FROM t_order" db-types="MySQL,Doris" />
     <sql-case id="select_group_concat_with_order_by_for_opengauss" value="SELECT GROUP_CONCAT(status ORDER BY status) FROM t_order" db-types="openGauss" />
     <sql-case id="select_window_function" value="SELECT order_id, ROW_NUMBER() OVER() FROM t_order" db-types="MySQL,Presto" />
-    <sql-case id="select_cast_function" value="SELECT CAST('1' AS UNSIGNED)" db-types="MySQL" />
+    <sql-case id="select_cast_function" value="SELECT CAST('1' AS UNSIGNED)" db-types="MySQL,Hive" />
     <sql-case id="select_cast_as_year" value="SELECT CAST(-1.1 AS YEAR)" db-types="MySQL" />
     <sql-case id="select_cast" value="SELECT CAST(c AT TIME ZONE 'UTC' AS DATETIME)" db-types="MySQL" />
     <sql-case id="select_cast_multiset" value="select CAST(MULTISET(SELECT cust_address FROM customers c WHERE c.customer_id = cd.customer_id) as cust_address_tab_typ) from customer;" db-types="Oracle" />
     <sql-case id="select_convert_function" value="SELECT CONVERT('2020-10-01', DATE)" db-types="MySQL" />
-    <sql-case id="select_position" value="SELECT POSITION('bar' IN 'foobarbar')" db-types="MySQL,Doris" />
+    <sql-case id="select_position" value="SELECT POSITION('bar' IN 'foobarbar')" db-types="MySQL,Doris,Hive" />
     <sql-case id="select_substring" value="SELECT SUBSTRING('foobarbar' from -4 for 2)" db-types="MySQL" />
     <sql-case id="select_substr" value="SELECT SUBSTR('foobarbar' from 4)" db-types="MySQL,Presto" />
     <sql-case id="select_extract" value="SELECT EXTRACT(YEAR FROM '2019-07-02')" db-types="MySQL" />
     <sql-case id="select_extract_from_column" value="SELECT EXTRACT(YEAR FROM o.creation_date) FROM t_order o" db-types="MySQL" />
-    <sql-case id="select_char" value="SELECT CHAR(77,121,83,81,'76')" db-types="MySQL,Doris" />
+    <sql-case id="select_char" value="SELECT CHAR(77,121,83,81,'76')" db-types="MySQL,Doris,Hive" />
     <sql-case id="select_chr_using_nchar_cs" value="SELECT CHR (196 USING NCHAR_CS) FROM DUAL;" db-types="Oracle" />
     <sql-case id="select_trim" value="SELECT TRIM('  bar   ')" db-types="MySQL,Doris" />
     <sql-case id="select_trim_with_both" value="SELECT TRIM(BOTH ' ' from ' bar ')" db-types="MySQL,Doris" />
@@ -136,7 +136,7 @@
     <sql-case id="select_window_with_cume_dist_function" value="SELECT val, CUME_DIST() OVER() FROM numbers" db-types="MySQL" />
     <sql-case id="select_curdate_function" value="SELECT CURDATE()" db-types="MySQL" />
     <sql-case id="select_current_date_function" value="SELECT CURRENT_DATE()" db-types="MySQL" />
-    <sql-case id="select_current_time_function" value="SELECT CURRENT_TIME()" db-types="MySQL,Presto" />
+    <sql-case id="select_current_time_function" value="SELECT CURRENT_TIME()" db-types="MySQL,Presto,Hive" />
     <sql-case id="select_current_timestamp_function" value="SELECT CURRENT_TIMESTAMP()" db-types="MySQL" />
     <sql-case id="select_curtime_function" value="SELECT CURTIME()" db-types="MySQL" />
     <sql-case id="select_date_function" value="SELECT DATE('2003-12-31 01:02:03')" db-types="MySQL" />
@@ -306,7 +306,7 @@
     <sql-case id="select_period_diff" value="SELECT PERIOD_DIFF(200802,200703)" db-types="MySQL" />
     <sql-case id="select_percent_rank" value="SELECT PERCENT_RANK() OVER (ORDER BY salary) FROM employees;" db-types="MySQL" />
     <sql-case id="select_pi" value="SELECT PI()" db-types="MySQL" />
-    <sql-case id="select_regexp" value="SELECT 'a' REGEXP '^[a-d]'" db-types="MySQL" />
+    <sql-case id="select_regexp" value="SELECT 'a' REGEXP '^[a-d]'" db-types="MySQL,Hive" />
     <sql-case id="select_with_json_object_function" value="SELECT JSON_OBJECT('name' VALUE 'John', 'age' VALUE 30) AS json_data FROM DUAL" db-types="Oracle" />
     <sql-case id="select_regexp_function" value="SELECT REGEXP('billie eillish', '^billie')" db-types="Doris" />
     <sql-case id="select_regexp_function_with_null" value="SELECT REGEXP(NULL, '^billie')" db-types="Doris" />

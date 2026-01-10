@@ -34,7 +34,7 @@
     <sql-case id="select_distinct_with_star" value="SELECT DISTINCT * FROM t_order WHERE order_id > 1100 ORDER BY order_id" />
     <sql-case id="select_distinct_with_owner_star" value="SELECT DISTINCT t_order.*, t_order_item.order_id FROM t_order, t_order_item WHERE t_order.order_id = t_order_item.order_id ORDER BY t_order.order_id" />
     <sql-case id="select_distinct_with_sum" value="SELECT SUM(DISTINCT order_id) s FROM t_order WHERE order_id &lt; 1100" />
-    <sql-case id="select_distinct_with_count" value="SELECT COUNT(DISTINCT order_id) c FROM t_order WHERE order_id &lt; 1100" />
+    <sql-case id="select_distinct_with_count" value="SELECT COUNT(DISTINCT order_id) c FROM t_order WHERE order_id &lt; 1100" db-types="MySQL,PostgreSQL,openGauss,Doris" />
     <sql-case id="select_distinct_with_avg" value="SELECT AVG(DISTINCT order_id) FROM t_order WHERE order_id &lt; 1100" db-types="MySQL" />
     <!--TODO The metadata of MySQL is different from which of H2. For now, we could only specify one db-types from MySQL or H2. We need to support different expected data in one case.-->
     <sql-case id="select_distinct_with_count_sum" value="SELECT COUNT(DISTINCT order_id), SUM(DISTINCT order_id) FROM t_order WHERE order_id &lt; 1100" db-types="MySQL" />

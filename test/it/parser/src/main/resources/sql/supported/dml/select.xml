@@ -126,7 +126,7 @@
     <sql-case id="select_with_jsonb_path_predicate_check" value="SELECT content_json::jsonb@@'$.keyword[*]==&quot;ss&quot;' FROM tb_content_json" db-types="PostgreSQL,openGauss" />
     <sql-case id="select_with_assignment_operator" value="SELECT @rn := 1, @now_code := '' FROM t_order" db-types="MySQL,Doris" />
     <sql-case id="select_with_assignment_operator_and_keyword" value="SELECT @KEY := '', @num := 123 FROM t_order" db-types="MySQL,Doris" />
-    <sql-case id="select_from_dual" value="SELECT 1 FROM DUAL" db-types="MySQL" />
+    <sql-case id="select_from_dual" value="SELECT 1 FROM DUAL" db-types="MySQL,Hive" />
     <sql-case id="select_with_cast_as_signed" value="SELECT user_id,CAST(order_id AS SIGNED) FROM t_order" db-types="MySQL" />
     <sql-case id="select_with_cast_as_unsigned" value="SELECT CAST(order_id AS UNSIGNED),user_id FROM t_order" db-types="MySQL" />
     <sql-case id="select_with_cast_as_signed_int" value="SELECT user_id,CAST(order_id AS SIGNED INT) FROM t_order" db-types="MySQL" />
