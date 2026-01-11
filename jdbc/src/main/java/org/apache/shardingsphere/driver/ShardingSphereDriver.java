@@ -41,7 +41,7 @@ public final class ShardingSphereDriver implements Driver {
     
     private static final int MINOR_DRIVER_VERSION = 5;
     
-    private final DriverDataSourceCache dataSourceCache = new DriverDataSourceCache();
+    private static final DriverDataSourceCache DATA_SOURCE_CACHE = new DriverDataSourceCache();
     
     static {
         try {
@@ -54,7 +54,7 @@ public final class ShardingSphereDriver implements Driver {
     @HighFrequencyInvocation(canBeCached = true)
     @Override
     public Connection connect(final String url, final Properties info) throws SQLException {
-        return acceptsURL(url) ? dataSourceCache.get(url, DRIVER_URL_PREFIX).getConnection() : null;
+        return acceptsURL(url) ? DATA_SOURCE_CACHE.get(url, DRIVER_URL_PREFIX).getConnection() : null;
     }
     
     @Override
