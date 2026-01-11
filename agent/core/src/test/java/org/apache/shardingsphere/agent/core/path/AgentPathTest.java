@@ -49,7 +49,7 @@ class AgentPathTest {
     private static final String AGENT_PATH_RESOURCE = "org/apache/shardingsphere/agent/core/path/AgentPath.class";
     
     @TempDir
-    Path tempDir;
+    private Path tempDir;
     
     @Test
     void assertGetRootPath() throws IOException {
@@ -141,15 +141,16 @@ class AgentPathTest {
             if (javaLangOpened) {
                 return;
             }
-            Instrumentation instrumentation = ByteBuddyAgent.install();
             try {
                 Class<?> moduleClass = Class.forName("java.lang.Module");
                 Method getModuleMethod = Class.class.getMethod("getModule");
                 Object javaBaseModule = getModuleMethod.invoke(Object.class);
                 Object currentModule = getModuleMethod.invoke(AgentPathTest.class);
                 Method redefineModuleMethod = Instrumentation.class.getMethod("redefineModule", moduleClass, Set.class, Map.class, Map.class, Set.class, Map.class);
-                redefineModuleMethod.invoke(instrumentation, javaBaseModule, Collections.emptySet(), Collections.emptyMap(),
+                redefineModuleMethod.invoke(ByteBuddyAgent.install(), javaBaseModule, Collections.emptySet(), Collections.emptyMap(),
                         Collections.singletonMap("java.lang", Collections.singleton(currentModule)), Collections.emptySet(), Collections.emptyMap());
+                javaLangOpened = true;
+            } catch (final ClassNotFoundException | NoSuchMethodException ignored) {
                 javaLangOpened = true;
             } catch (final ReflectiveOperationException ex) {
                 throw new IllegalStateException("Failed to open java.lang module for reflection.", ex);
