@@ -4204,6 +4204,19 @@
         </from>
     </select>
 
+    <select sql-case-id="select_json_unquoted_separator">
+        <projections start-index="7" stop-index="23">
+            <expression-projection text="data ->> '$.name'" start-index="7" stop-index="23">
+                <expr>
+                    <function function-name="->>" text="data ->> '$.name'" start-index="7" stop-index="23" />
+                </expr>
+            </expression-projection>
+        </projections>
+        <from>
+            <simple-table name="t_json" start-index="30" stop-index="35" />
+        </from>
+    </select>
+
     <select sql-case-id="select_json_type">
         <projections start-index="7" stop-index="26">
             <expression-projection start-index="7" stop-index="26" text="JSON_TYPE('[1,2,3]')">
