@@ -263,6 +263,7 @@ class EnumerableScanImplementorTest {
         ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class);
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class);
         when(database.getName()).thenReturn("foo_db");
+        when(metaData.containsDatabase("foo_db")).thenReturn(true);
         when(metaData.getDatabase("foo_db")).thenReturn(database);
         when(metaData.getGlobalRuleMetaData()).thenReturn(mock(RuleMetaData.class));
         when(queryContext.getMetaData()).thenReturn(metaData);

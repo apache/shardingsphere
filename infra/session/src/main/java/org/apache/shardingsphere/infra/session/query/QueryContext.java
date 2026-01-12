@@ -34,6 +34,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.t
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 
@@ -112,6 +113,25 @@ public final class QueryContext {
                 () -> new UnsupportedSQLOperationException(String.format("Can not support multiple logic databases [%s]", Joiner.on(", ").join(usedDatabaseNames))));
         ShardingSpherePreconditions.checkState(usedDatabaseNames.size() == 1, NoDatabaseSelectedException::new);
         String databaseName = usedDatabaseNames.iterator().next();
+        ShardingSpherePreconditions.checkState(metaData.containsDatabase(databaseName), () -> new UnknownDatabaseException(databaseName));
+        return metaData.getDatabase(databaseName);
+    }
+    
+    /**
+     * Get used databases.
+     *
+     * @return used databases
+     */
+    public Collection<ShardingSphereDatabase> getUsedDatabases() {
+        Collection<ShardingSphereDatabase> result = new LinkedList<>();
+        for (String each : usedDatabaseNames) {
+            result.add(getDatabase(each));
+        }
+        return result;
+    }
+    
+    private ShardingSphereDatabase getDatabase(final String databaseName) {
+        ShardingSpherePreconditions.checkNotNull(databaseName, NoDatabaseSelectedException::new);
         ShardingSpherePreconditions.checkState(metaData.containsDatabase(databaseName), () -> new UnknownDatabaseException(databaseName));
         return metaData.getDatabase(databaseName);
     }
