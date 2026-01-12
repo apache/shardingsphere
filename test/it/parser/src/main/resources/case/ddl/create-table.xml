@@ -3754,4 +3754,30 @@
             <column name="payload" />
         </column-definition>
     </create-table>
+
+    <create-table sql-case-id="create_table_firebird_len">
+        <table name="t_firebird_len" start-index="13" stop-index="26" />
+        <column-definition type="INT" primary-key="true" start-index="29" stop-index="46">
+            <column name="id" />
+        </column-definition>
+        <column-definition type="DECIMAL" start-index="49" stop-index="68">
+            <column name="amount" />
+        </column-definition>
+        <column-definition type="CHAR" start-index="71" stop-index="82">
+            <column name="code" />
+        </column-definition>
+    </create-table>
+
+    <create-table sql-case-id="create_table_firebird_constraint">
+        <table name="t_firebird_constraint" start-index="13" stop-index="33" />
+        <column-definition type="INT" start-index="36" stop-index="41">
+            <column name="id" />
+        </column-definition>
+        <constraint-definition constraint-name="pk_t" start-index="44" stop-index="75">
+            <primary-key-column name="id" start-index="73" stop-index="74" />
+        </constraint-definition>
+        <constraint-definition constraint-name="fk_t" start-index="78" stop-index="139">
+            <referenced-table name="t_firebird_len" start-index="122" stop-index="135" />
+        </constraint-definition>
+    </create-table>
 </sql-parser-test-cases>
