@@ -3412,4 +3412,50 @@
             </column-projection>
         </projections>
     </select>
+    <select sql-case-id="select_right_join_firebird">
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" />
+        </projections>
+        <from>
+            <join-table join-type="RIGHT">
+                <left>
+                    <simple-table name="t_order" alias="o" start-index="14" stop-index="22" />
+                </left>
+                <right>
+                    <simple-table name="t_order_item" alias="i" start-index="35" stop-index="48" />
+                </right>
+                <on-condition>
+                    <binary-operation-expression start-index="53" stop-index="75">
+                        <left>
+                            <column name="order_id" start-index="53" stop-index="62">
+                                <owner name="o" start-index="53" stop-index="53" />
+                            </column>
+                        </left>
+                        <operator>=</operator>
+                        <right>
+                            <column name="order_id" start-index="66" stop-index="75">
+                                <owner name="i" start-index="66" stop-index="66" />
+                            </column>
+                        </right>
+                    </binary-operation-expression>
+                </on-condition>
+            </join-table>
+        </from>
+    </select>
+
+    <select sql-case-id="select_cross_join_firebird">
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" />
+        </projections>
+        <from>
+            <join-table join-type="CROSS">
+                <left>
+                    <simple-table name="t_order" start-index="14" stop-index="20" />
+                </left>
+                <right>
+                    <simple-table name="t_order_item" start-index="33" stop-index="44" />
+                </right>
+            </join-table>
+        </from>
+    </select>
 </sql-parser-test-cases>

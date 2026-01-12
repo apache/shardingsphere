@@ -19,7 +19,7 @@
 <sql-cases>
     <sql-case id="select_inner_join_related_with_alias" value="SELECT i.* FROM t_order o INNER JOIN t_order_item i ON o.order_id = i.order_id WHERE o.order_id = ?" />
     <sql-case id="select_inner_join_related_with_name" value="SELECT t_order_item.* FROM t_order JOIN t_order_item ON t_order.order_id = t_order_item.order_id WHERE t_order.order_id = ?" />
-    <sql-case id="select_join_using" value="SELECT i.* FROM t_order o JOIN t_order_item i USING(order_id) WHERE o.order_id = ?" db-types="MySQL,PostgreSQL,openGauss,Doris" />
+    <sql-case id="select_join_using" value="SELECT i.* FROM t_order o JOIN t_order_item i USING(order_id) WHERE o.order_id = ?" db-types="MySQL,PostgreSQL,openGauss,Doris,Firebird" />
     <sql-case id="select_left_outer_join_related_with_alias" value="SELECT d.department_id, e.last_name FROM departments d LEFT OUTER JOIN employees e ON d.department_id = e.department_id ORDER BY d.department_id, e.last_name" db-types="MySQL, Oracle" />
     <sql-case id="select_right_outer_join_related_with_alias" value="SELECT d.department_id, e.last_name FROM departments d RIGHT OUTER JOIN employees e ON d.department_id = e.department_id ORDER BY d.department_id, e.last_name" db-types="MySQL, Oracle" />
     <sql-case id="select_full_outer_join_related_with_alias" value="SELECT d.department_id AS d_dept_id, e.department_id AS e_dept_id, e.last_name FROM departments d FULL OUTER JOIN employees e ON d.department_id = e.department_id ORDER BY d.department_id, e.last_name" db-types="Oracle" />
@@ -32,7 +32,7 @@
     <sql-case id="select_natural_full_join" value="SELECT * FROM t_order o NATURAL FULL JOIN t_order_item i WHERE o.order_id = ?" db-types="PostgreSQL,openGauss,Oracle" />
     <sql-case id="select_with_join_operator" value="SELECT * FROM t_order o , t_order_item i WHERE o.order_id(+) = i.order_id" db-types="Oracle" />
     <sql-case id="select_join_with_quote" value="SELECT &quot;u&quot;.*, &quot;o&quot;.* FROM t_user &quot;u&quot; INNER JOIN t_order &quot;o&quot; ON &quot;u&quot;.user_id = &quot;o&quot;.user_id WHERE &quot;u&quot;.user_id = ?" db-types="Oracle" />
-    <sql-case id="select_outer_left_join_without_alias" value="SELECT * from t1 LEFT JOIN t2 ON t1.id = t2.id" db-types="Oracle"/>
+    <sql-case id="select_outer_left_join_without_alias" value="SELECT * from t1 LEFT JOIN t2 ON t1.id = t2.id" db-types="Oracle,Firebird"/>
     <sql-case id="select_outer_full_join_without_alias" value="SELECT * FROM t1 FULL JOIN t2 ON t1.id = t2.id" db-types="Oracle"/>
     <sql-case id="select_natural_join_with_object_id_function" value="SELECT c.name AS column_name,c.column_id,SCHEMA_NAME(t.schema_id) AS type_schema,t.name AS type_name,t.is_user_defined,t.is_assembly_type,c.max_length,c.precision,c.scale FROM sys.columns AS c JOIN sys.types AS t ON c.user_type_id=t.user_type_id WHERE c.object_id = OBJECT_ID('&lt;schema_name.table_name&gt;') ORDER BY c.column_id" db-types="SQLServer"/>
     <sql-case id="select_inner_join_with_object_id_function" value="SELECT SCHEMA_NAME(schema_id) AS schema_name,o.name AS object_name,o.type_desc,p.parameter_id,p.name AS parameter_name,TYPE_NAME(p.user_type_id) AS parameter_type,p.max_length,p.precision,p.scale,p.is_output FROM sys.objects AS o INNER JOIN sys.parameters AS p ON o.object_id = p.object_id WHERE o.object_id = OBJECT_ID('&lt;schema_name.object_name&gt;') ORDER BY schema_name, object_name, p.parameter_id" db-types="SQLServer"/>
@@ -62,4 +62,6 @@
     <sql-case id="select_cross_join_sys_dm_exec_requests" value="SELECT session_id as SPID, command, a.text AS Query, start_time, percent_complete, dateadd(second,estimated_completion_time/1000, getdate()) as estimated_completion_time FROM sys.dm_exec_requests r CROSS APPLY sys.dm_exec_sql_text(r.sql_handle) a WHERE r.command in ('BACKUP DATABASE','RESTORE DATABASE')" db-types="SQLServer"/>
     <sql-case id="select_from_join_with_json_table" value="SELECT c1, c2, JSON_EXTRACT(c3, '$.*') FROM t1 AS m JOIN JSON_TABLE(m.c3, '$.*' COLUMNS(at VARCHAR(10) PATH '$.a' DEFAULT '1' ON EMPTY, bt VARCHAR(10) PATH '$.b'DEFAULT '2' ON EMPTY, ct VARCHAR(10) PATH '$.c' DEFAULT '3' ON EMPTY)) AS tt ON m.c1 &gt; tt.at;" db-types="MySQL"/>
     <sql-case id="select_join_with_brackets" value="SELECT t.ORDER_ID FROM (t_order t INNER JOIN t_order_item i ON t.ORDER_ID = i.ORDER_ID) LEFT JOIN T_ORDER c ON t.ORDER_ID = c.ORDER_ID" db-types="Oracle"/>
+    <sql-case id="select_right_join_firebird" value="SELECT * FROM t_order o RIGHT JOIN t_order_item i ON o.order_id = i.order_id" db-types="Firebird"/>
+    <sql-case id="select_cross_join_firebird" value="SELECT * FROM t_order CROSS JOIN t_order_item" db-types="Firebird"/>
 </sql-cases>
