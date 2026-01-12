@@ -266,7 +266,7 @@ public final class MySQLDALStatementVisitor extends MySQLStatementVisitor implem
     
     @Override
     public ASTNode visitShowCreateView(final ShowCreateViewContext ctx) {
-        return new MySQLShowCreateViewStatement(getDatabaseType(), ((SimpleTableSegment) visit(ctx.viewName())).getTableName().getIdentifier().getValue());
+        return new MySQLShowCreateViewStatement(getDatabaseType(), (SimpleTableSegment) visit(ctx.viewName()));
     }
     
     @Override

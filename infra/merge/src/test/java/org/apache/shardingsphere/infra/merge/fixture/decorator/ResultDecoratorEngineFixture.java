@@ -30,8 +30,8 @@ import java.util.Optional;
 public final class ResultDecoratorEngineFixture implements ResultDecoratorEngine<DecoratorRuleFixture> {
     
     @Override
-    public Optional<ResultDecorator<DecoratorRuleFixture>> newInstance(final ShardingSphereMetaData metaData,
-                                                                       final ShardingSphereDatabase database, final ConfigurationProperties props, final SQLStatementContext sqlStatementContext) {
+    public Optional<ResultDecorator> newInstance(final ShardingSphereMetaData metaData,
+                                                 final ShardingSphereDatabase database, final ConfigurationProperties props, final SQLStatementContext sqlStatementContext) {
         return Optional.of(new ResultDecoratorFixture());
     }
     

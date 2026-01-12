@@ -37,9 +37,10 @@ import org.apache.shardingsphere.infra.session.query.QueryContext;
 import org.apache.shardingsphere.infra.spi.type.ordered.OrderedSPILoader;
 
 import java.sql.SQLException;
+import java.util.Collection;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Optional;
 
 /**
@@ -55,15 +56,17 @@ public final class MergeEngine {
     private final ConfigurationProperties props;
     
     @SuppressWarnings("rawtypes")
-    private final Map<ShardingSphereRule, ResultProcessEngine> engines;
+    private final Collection<ResultProcessEngine> engines;
     
     private final ConnectionContext connectionContext;
     
-    public MergeEngine(final ShardingSphereMetaData metaData, final ShardingSphereDatabase database, final ConfigurationProperties props, final ConnectionContext connectionContext) {
+    public MergeEngine(final ShardingSphereMetaData metaData, final ShardingSphereDatabase database, final ConfigurationProperties props,
+                       final ConnectionContext connectionContext) {
         this.metaData = metaData;
         this.database = database;
         this.props = props;
-        engines = OrderedSPILoader.getServices(ResultProcessEngine.class, database.getRuleMetaData().getRules());
+        Map<ShardingSphereRule, ResultProcessEngine> ruleEngines = OrderedSPILoader.getServices(ResultProcessEngine.class, database.getRuleMetaData().getRules());
+        engines = new LinkedList<>(ruleEngines.values());
         this.connectionContext = connectionContext;
     }
     
@@ -82,11 +85,14 @@ public final class MergeEngine {
     
     @SuppressWarnings({"unchecked", "rawtypes"})
     private Optional<MergedResult> executeMerge(final List<QueryResult> queryResults, final QueryContext queryContext) throws SQLException {
-        for (Entry<ShardingSphereRule, ResultProcessEngine> entry : engines.entrySet()) {
-            if (entry.getValue() instanceof ResultMergerEngine) {
-                ResultMerger resultMerger =
-                        ((ResultMergerEngine) entry.getValue()).newInstance(database.getName(), database.getProtocolType(), entry.getKey(), props, queryContext.getSqlStatementContext());
-                return Optional.of(resultMerger.merge(queryResults, queryContext.getSqlStatementContext(), database, connectionContext));
+        for (ResultProcessEngine each : engines) {
+            if (each instanceof ResultMergerEngine) {
+                Optional<ShardingSphereRule> rule = database.getRuleMetaData().findSingleRule(each.getTypeClass());
+                if (rule.isPresent()) {
+                    ResultMerger resultMerger =
+                            ((ResultMergerEngine) each).newInstance(database.getName(), database.getProtocolType(), rule.get(), props, queryContext.getSqlStatementContext());
+                    return Optional.of(resultMerger.merge(queryResults, queryContext.getSqlStatementContext(), database, connectionContext));
+                }
             }
         }
         return Optional.empty();
@@ -95,11 +101,10 @@ public final class MergeEngine {
     @SuppressWarnings({"unchecked", "rawtypes"})
     private MergedResult decorate(final MergedResult mergedResult, final QueryContext queryContext) throws SQLException {
         MergedResult result = null;
-        for (Entry<ShardingSphereRule, ResultProcessEngine> entry : engines.entrySet()) {
-            if (entry.getValue() instanceof ResultDecoratorEngine) {
-                ResultDecorator resultDecorator = getResultDecorator(queryContext.getSqlStatementContext(), entry.getValue());
-                result = null == result ? resultDecorator.decorate(mergedResult, queryContext, entry.getKey())
-                        : resultDecorator.decorate(result, queryContext, entry.getKey());
+        for (ResultProcessEngine each : engines) {
+            if (each instanceof ResultDecoratorEngine) {
+                ResultDecorator resultDecorator = getResultDecorator(queryContext.getSqlStatementContext(), each);
+                result = null == result ? resultDecorator.decorate(mergedResult, queryContext) : resultDecorator.decorate(result, queryContext);
             }
         }
         return null == result ? mergedResult : result;
