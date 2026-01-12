@@ -4461,6 +4461,20 @@
         </returning>
     </insert>
 
+    <insert sql-case-id="insert_default_firebird">
+        <table name="t_order" start-index="12" stop-index="18" />
+        <columns start-index="20" stop-index="23">
+            <column name="id" start-index="21" stop-index="22" />
+        </columns>
+        <values>
+            <value>
+                <assignment-value>
+                    <common-expression text="DEFAULT" start-index="33" stop-index="40" />
+                </assignment-value>
+            </value>
+        </values>
+    </insert>
+
     <insert sql-case-id="insert_with_geom_collection_function">
         <table name="t1" start-index="12" stop-index="13" />
         <columns start-index="14" stop-index="14" />
