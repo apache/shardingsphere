@@ -17,7 +17,7 @@
   -->
 
 <sql-cases>
-    <sql-case id="select_into_before_from" value="SELECT status INTO @var1 FROM t_order WHERE order_id = ?" db-types="MySQL" />
+    <sql-case id="select_into_before_from" value="SELECT status INTO @var1 FROM t_order WHERE order_id = ?" db-types="MySQL,Hive" />
     <sql-case id="select_into_after_from" value="SELECT status FROM t_order WHERE order_id = ? INTO @var1" db-types="MySQL" />
     <sql-case id="select_into_multi_variable" value="SELECT user_id, status FROM t_order WHERE order_id = ? INTO @var1, @var2" db-types="MySQL" />
     <sql-case id="select_into_out_file" value="SELECT * FROM t_order LIMIT ? INTO OUTFILE '/tmp/tmp.txt'" db-types="MySQL" />

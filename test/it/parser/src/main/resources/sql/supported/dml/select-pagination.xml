@@ -35,7 +35,7 @@
     <sql-case id="select_pagination_with_row_number_not_at_end" value="SELECT * FROM t_order WHERE ROWNUM &lt;= ? ORDER BY order_id" db-types="Oracle" />
     <sql-case id="select_pagination_with_fetch_first_with_row_number" value="SELECT * FROM t_order ORDER BY order_id FETCH FIRST 5 ROWS ONLY" db-types="Oracle" />
     <sql-case id="select_pagination_with_offset_fetch" value="SELECT * FROM t_order ORDER BY order_id OFFSET 0 ROW FETCH NEXT ? ROWS ONLY" db-types="SQLServer" />
-    <sql-case id="select_pagination_with_limit_offset_and_row_count" value="SELECT order_id, user_id FROM t_order LIMIT 1, 2" db-types="MySQL,openGauss" />
+    <sql-case id="select_pagination_with_limit_offset_and_row_count" value="SELECT order_id, user_id FROM t_order LIMIT 1, 2" db-types="MySQL,openGauss,Hive" />
     <sql-case id="select_pagination_with_limit_row_count" value="SELECT order_id, user_id FROM t_order LIMIT 2" db-types="MySQL" />
     <sql-case id="select_pagination_with_limit_fetch_count" value="SELECT * FROM t_new_order FETCH NEXT 3 ROW ONLY" db-types="openGauss,PostgreSQL" />
     <sql-case id="select_pagination_with_first" value="SELECT FIRST 1 1 a FROM t_order" db-types="Firebird" />
