@@ -56,7 +56,7 @@
     <sql-case id="presto_select_limit_comma" value="SELECT * FROM t_order LIMIT 2, 5" db-types="Presto,Doris" />
     <sql-case id="presto_select_join_natural_left" value="SELECT * FROM t_order NATURAL LEFT JOIN t_order_item" db-types="Presto" />
     <sql-case id="presto_select_system_variable" value="SELECT @@global.time_zone" db-types="Presto" />
-    <sql-case id="presto_select_parameter_marker" value="SELECT ?" db-types="Presto" />
+    <sql-case id="presto_select_parameter_marker" value="SELECT ?" db-types="Presto,Hive" />
     <sql-case id="presto_select_all_qualified_shorthand" value="SELECT ALL t_order.* FROM t_order" db-types="Presto" />
     <sql-case id="presto_select_two_level_order_expr" value="SELECT t_order.order_id FROM t_order ORDER BY order_id + 1" db-types="Presto" />
     <sql-case id="presto_select_current_time_trim" value="SELECT CURRENT_TIME, TRIM(LEADING 'x' FROM status), TRIM(TRAILING 'y' FROM status) FROM t_order" db-types="Presto" />
