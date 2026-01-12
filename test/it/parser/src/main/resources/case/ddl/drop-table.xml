@@ -119,4 +119,8 @@
             <owner name="test_db" start-index="21" stop-index="27" />
         </table>
     </drop-table>
+
+    <drop-table sql-case-id="drop_table_firebird">
+        <table name="t_firebird_drop" start-index="11" stop-index="25" />
+    </drop-table>
 </sql-parser-test-cases>

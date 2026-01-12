@@ -410,4 +410,17 @@
     <sql-case id="select_gen_id_with_parameters_firebird" value="SELECT GEN_ID(?, ?) FROM t_order" db-types="Firebird" case-types="Placeholder"/>
     <sql-case id="select_variable_default_firebird" value="SELECT DEFAULT FROM t_order" db-types="Firebird"/>
     <sql-case id="select_parenthesized_column_firebird" value="SELECT (user_id) FROM t_order" db-types="Firebird"/>
+    <sql-case id="select_schema_table_firebird" value="SELECT * FROM schema1.t_order" db-types="Firebird"/>
+    <sql-case id="select_where_and_like_firebird" value="SELECT * FROM t_order WHERE user_id = 1 AND status LIKE 'A%'" db-types="Firebird"/>
+    <sql-case id="select_safe_eq_firebird" value="SELECT 1 &lt;=&gt; 1" db-types="Firebird"/>
+    <sql-case id="select_in_list_firebird" value="SELECT * FROM t_order WHERE id IN (1,2)" db-types="Firebird"/>
+    <sql-case id="select_not_in_list_firebird" value="SELECT * FROM t_order WHERE id NOT IN (1,2)" db-types="Firebird"/>
+    <sql-case id="select_not_between_firebird" value="SELECT * FROM t_order WHERE id NOT BETWEEN 1 AND 5" db-types="Firebird"/>
+    <sql-case id="select_case_expr_firebird" value="SELECT CASE WHEN 1=1 THEN 1 END FROM t_order" db-types="Firebird"/>
+    <sql-case id="select_cast_literal_firebird" value="SELECT CAST(1 AS VARCHAR(10)) FROM t_order" db-types="Firebird"/>
+    <sql-case id="select_variable_identifier_firebird" value="SELECT LOCAL.var FROM t_order" db-types="Firebird"/>
+    <sql-case id="select_comma_join_firebird" value="SELECT * FROM t_order a, t_order_item b" db-types="Firebird"/>
+    <sql-case id="select_union_firebird" value="SELECT 1 UNION SELECT 2" db-types="Firebird"/>
+    <sql-case id="select_subquery_table_firebird" value="SELECT * FROM (SELECT 1) sub" db-types="Firebird"/>
+    <sql-case id="select_subquery_with_with_firebird" value="SELECT * FROM (WITH t AS (SELECT 1) SELECT * FROM t) sub" db-types="Firebird"/>
 </sql-cases>

@@ -159,6 +159,7 @@
     <sql-case id="insert_with_aes_encrypt" value="INSERT INTO t_order_item(item_id,encrypt) VALUES (1,AES_ENCRYPT('text','key_str'))" db-types="MySQL" />
     <sql-case id="insert_on_duplicate_key_update_with_values" value="INSERT INTO table (a,b,c) VALUES (1,2,3),(4,5,6) ON DUPLICATE KEY UPDATE c=VALUES(a)+VALUES(b);" db-types="MySQL" />
     <sql-case id="insert_returning_expressions" value="INSERT INTO t2 (id) VALUES (2),(3) RETURNING id,t&amp;t" db-types="MySQL,Firebird" />
+    <sql-case id="insert_default_firebird" value="INSERT INTO t_order (id) VALUES (DEFAULT)" db-types="Firebird"/>
     <sql-case id="insert_with_geom_collection_function" value="INSERT INTO t1 VALUES (GEOMCOLLECTION(POINT(0, 0)))" db-types="MySQL" />
     <sql-case id="insert_select_with_brackets" value="insert into t_order (order_id) (select order_id from t_order_item)" db-types="MySQL" />
     <sql-case id="insert_into_four_level_naming" value="INSERT INTO MyLinkServer.AdventureWorks2022.HumanResources.Department (Name, GroupName) VALUES (N'Public Relations', N'Executive General and Administration');" db-types="SQLServer"/>

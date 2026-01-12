@@ -57,4 +57,11 @@
     <comment sql-case-id="comment_on_procedure" />
     <comment sql-case-id="comment_on_tablespace" />
     <comment sql-case-id="comment_on_text_search_template" />
+    <comment sql-case-id="comment_table_firebird">
+        <table name="t_order" start-index="17" stop-index="23" />
+    </comment>
+    <comment sql-case-id="comment_column_firebird">
+        <table name="t_order" start-index="18" stop-index="24" />
+        <column name="status" start-index="26" stop-index="31" />
+    </comment>
 </sql-parser-test-cases>
