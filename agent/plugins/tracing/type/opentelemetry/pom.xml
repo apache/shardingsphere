@@ -27,10 +27,10 @@
     <name>${project.artifactId}</name>
     
     <properties>
-        <opentelemetry.version>1.41.0</opentelemetry.version>
-        <opentelemetry-semconv.version>1.27.0-alpha</opentelemetry-semconv.version>
-        <okhttp.version>4.12.0</okhttp.version>
-        <kotlin-stdlib.version>1.9.10</kotlin-stdlib.version>
+        <opentelemetry.version>1.58.0</opentelemetry.version>
+        <opentelemetry-semconv.version>1.37.0</opentelemetry-semconv.version>
+        <okhttp-bom.version>5.3.2</okhttp-bom.version>
+        <kotlin-bom.version>2.2.21</kotlin-bom.version>
     </properties>
     
     <dependencyManagement>
@@ -43,24 +43,18 @@
                 <scope>import</scope>
             </dependency>
             <dependency>
-                <groupId>org.jetbrains.kotlin</groupId>
-                <artifactId>kotlin-stdlib</artifactId>
-                <version>${kotlin-stdlib.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.jetbrains.kotlin</groupId>
-                <artifactId>kotlin-stdlib-common</artifactId>
-                <version>${kotlin-stdlib.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.jetbrains.kotlin</groupId>
-                <artifactId>kotlin-stdlib-jdk8</artifactId>
-                <version>${kotlin-stdlib.version}</version>
-            </dependency>
-            <dependency>
                 <groupId>com.squareup.okhttp3</groupId>
-                <artifactId>okhttp</artifactId>
-                <version>${okhttp.version}</version>
+                <artifactId>okhttp-bom</artifactId>
+                <version>${okhttp-bom.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.jetbrains.kotlin</groupId>
+                <artifactId>kotlin-bom</artifactId>
+                <version>${kotlin-bom.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
             </dependency>
             <dependency>
                 <groupId>io.opentelemetry.semconv</groupId>
@@ -110,11 +104,11 @@
         </dependency>
         <dependency>
             <groupId>com.squareup.okhttp3</groupId>
-            <artifactId>okhttp</artifactId>
+            <artifactId>okhttp-jvm</artifactId>
             <exclusions>
                 <exclusion>
                     <groupId>org.jetbrains.kotlin</groupId>
-                    <artifactId>kotlin-stdlib-jdk8</artifactId>
+                    <artifactId>kotlin-stdlib</artifactId>
                 </exclusion>
             </exclusions>
         </dependency>
