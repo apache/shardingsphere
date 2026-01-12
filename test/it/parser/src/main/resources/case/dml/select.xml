@@ -12127,24 +12127,17 @@
     <select sql-case-id="select_interval_firebird">
         <projections start-index="7" stop-index="20">
             <expression-projection text="INTERVAL 1 DAY" start-index="7" stop-index="20">
-                <expr>
-                    <expression text="INTERVAL1DAY" start-index="7" stop-index="20" />
-                </expr>
             </expression-projection>
         </projections>
         <from>
-            <simple-table name="t_order" start-index="22" stop-index="33" />
+            <simple-table name="t_order" start-index="27" stop-index="33" />
         </from>
     </select>
 
     <select sql-case-id="select_having_firebird">
         <projections start-index="7" stop-index="30">
             <column-projection name="user_id" start-index="7" stop-index="13" />
-            <aggregation-projection type="COUNT" text="COUNT(*)" start-index="16" stop-index="24" alias="cnt">
-                <inner-expression text="(*)" start-index="16" stop-index="24">
-                    <literal-expression value="*" start-index="22" stop-index="22" />
-                </inner-expression>
-            </aggregation-projection>
+            <aggregation-projection type="COUNT" expression="COUNT(*)" start-index="16" stop-index="23" alias="cnt" />
         </projections>
         <from start-index="32" stop-index="43">
             <simple-table name="t_order" start-index="37" stop-index="43" />
@@ -12156,11 +12149,7 @@
             <expr>
                 <binary-operation-expression start-index="69" stop-index="80">
                     <left>
-                        <aggregation-projection type="COUNT" text="COUNT(*)" start-index="69" stop-index="77">
-                            <inner-expression text="(*)" start-index="69" stop-index="77">
-                                <literal-expression value="*" start-index="75" stop-index="75" />
-                            </inner-expression>
-                        </aggregation-projection>
+                        <aggregation-projection type="COUNT" expression="COUNT(*)" start-index="69" stop-index="76" />
                     </left>
                     <operator>&gt;</operator>
                     <right>
@@ -12175,8 +12164,8 @@
         <projections start-index="7" stop-index="7">
             <shorthand-projection start-index="7" stop-index="7" />
         </projections>
-        <from start-index="14" stop-index="21">
-            <function-table start-index="14" stop-index="21" alias="f">
+        <from start-index="14" stop-index="19">
+            <function-table start-index="14" stop-index="19">
                 <table-function function-name="foo" text="foo(1)" start-index="14" stop-index="19" />
             </function-table>
         </from>
@@ -12228,8 +12217,8 @@
                 <expr>
                     <function function-name="GEN_ID" text="GEN_ID(?, ?)" start-index="7" stop-index="18">
                         <parameter>
-                            <literal-expression value="1" start-index="14" stop-index="14" />
-                            <parameter-marker-expression parameter-index="0" start-index="14" stop-index="14" />
+                            <literal-expression value="1" start-index="7" stop-index="18" />
+                            <parameter-marker-expression parameter-index="0" start-index="7" stop-index="18" />
                         </parameter>
                         <parameter>
                             <literal-expression value="2" start-index="17" stop-index="17" />
@@ -12259,7 +12248,11 @@
 
     <select sql-case-id="select_parenthesized_column_firebird">
         <projections start-index="7" stop-index="15">
-            <column-projection name="user_id" start-index="8" stop-index="14" />
+            <expression-projection text="user_id" start-index="7" stop-index="15">
+                <expr>
+                    <column name="user_id" start-index="8" stop-index="14" />
+                </expr>
+            </expression-projection>
         </projections>
         <from>
             <simple-table name="t_order" start-index="22" stop-index="28" />
