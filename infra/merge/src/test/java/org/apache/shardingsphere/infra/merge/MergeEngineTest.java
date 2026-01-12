@@ -38,10 +38,12 @@ import org.mockito.quality.Strictness;
 import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Optional;
 import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -69,6 +71,7 @@ class MergeEngineTest {
     @Test
     void assertMergeWithMergerRuleOnly() throws SQLException {
         when(database.getRuleMetaData().getRules()).thenReturn(Collections.singleton(new MergerRuleFixture()));
+        when(database.getRuleMetaData().findSingleRule(any())).thenReturn(Optional.of(new MergerRuleFixture()));
         MergedResult actual =
                 new MergeEngine(mock(ShardingSphereMetaData.class), database, new ConfigurationProperties(new Properties()), mock(ConnectionContext.class)).merge(
                         Collections.singletonList(queryResult),

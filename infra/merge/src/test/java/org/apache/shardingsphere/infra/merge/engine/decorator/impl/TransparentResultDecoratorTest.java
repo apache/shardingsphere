@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.infra.merge.engine.decorator.impl;
 
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
-import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.junit.jupiter.api.Test;
 
 import java.sql.SQLException;
@@ -34,6 +33,6 @@ class TransparentResultDecoratorTest {
         MergedResult mergedResult = mock(MergedResult.class);
         when(mergedResult.next()).thenReturn(true);
         TransparentResultDecorator decorator = new TransparentResultDecorator();
-        assertTrue(decorator.decorate(mergedResult, mock(), mock(ShardingSphereRule.class)).next());
+        assertTrue(decorator.decorate(mergedResult, mock()).next());
     }
 }

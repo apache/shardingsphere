@@ -54,7 +54,7 @@ class MaskResultDecoratorEngineTest {
     @Test
     void assertNewInstanceWithSelectStatement() {
         MaskResultDecoratorEngine engine = (MaskResultDecoratorEngine) OrderedSPILoader.getServices(ResultProcessEngine.class, Collections.singleton(rule)).get(rule);
-        Optional<ResultDecorator<MaskRule>> actual =
+        Optional<ResultDecorator> actual =
                 engine.newInstance(mock(ShardingSphereMetaData.class), database, mock(ConfigurationProperties.class), mock(SelectStatementContext.class, RETURNS_DEEP_STUBS));
         assertTrue(actual.isPresent());
         assertThat(actual.get(), isA(MaskDQLResultDecorator.class));
