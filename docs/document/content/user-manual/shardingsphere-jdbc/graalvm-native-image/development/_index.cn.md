@@ -77,8 +77,7 @@ newgrp docker
 
 sudo tee /etc/docker/daemon.json <<EOF
 {
-  "log-driver": "local",
-  "min-api-version": "1.24"
+  "log-driver": "local"
 }
 EOF
 
