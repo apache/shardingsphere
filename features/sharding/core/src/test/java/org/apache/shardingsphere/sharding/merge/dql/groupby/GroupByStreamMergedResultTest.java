@@ -35,6 +35,7 @@ import org.apache.shardingsphere.sharding.merge.dql.ShardingDQLResultMerger;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.AggregationType;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.OrderDirection;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.AggregationProjectionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ExpressionProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ProjectionsSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.order.GroupBySegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.order.OrderBySegment;
@@ -161,6 +162,39 @@ class GroupByStreamMergedResultTest {
         assertThat(actual.getValue(5, Object.class), is(new BigDecimal(4)));
         assertThat(actual.getValue(6, Object.class), is(new BigDecimal(40)));
         assertFalse(actual.next());
+    }
+    @Test
+    void assertNextForNestedAggregation() throws SQLException {
+        QueryResult queryResult1 = mockQueryResult();
+        when(queryResult1.next()).thenReturn(true, false);
+        when(queryResult1.getValue(1, Object.class)).thenReturn(new BigDecimal(0));
+        when(queryResult1.getValue(3, Object.class)).thenReturn(1);
+        QueryResult queryResult2 = mockQueryResult();
+        when(queryResult2.next()).thenReturn(true, false);
+        when(queryResult2.getValue(1, Object.class)).thenReturn(new BigDecimal(100));
+        when(queryResult2.getValue(3, Object.class)).thenReturn(1);
+        ShardingDQLResultMerger resultMerger = new ShardingDQLResultMerger(databaseType);
+        MergedResult actual = resultMerger.merge(Arrays.asList(queryResult1, queryResult2), createSelectStatementContextWithNestedSum(), createDatabase(), mock(ConnectionContext.class));
+        assertTrue(actual.next());
+        assertThat(actual.getValue(1, Object.class), is(new BigDecimal(100)));
+    }
+
+    private SelectStatementContext createSelectStatementContextWithNestedSum() {
+        ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
+        when(database.getName()).thenReturn("foo_db");
+        SelectStatement selectStatement = new SelectStatement(databaseType);
+        SimpleTableSegment tableSegment = new SimpleTableSegment(new TableNameSegment(10, 13, new IdentifierValue("tbl")));
+        selectStatement.setFrom(tableSegment);
+        ProjectionsSegment projectionsSegment = new ProjectionsSegment(0, 0);
+        ExpressionProjectionSegment expressionSegment = new ExpressionProjectionSegment(0, 0, "IFNULL(SUM(amount), 0)");
+        expressionSegment.getAggregationProjectionSegments().add(new AggregationProjectionSegment(0, 0, AggregationType.SUM, "SUM(amount)"));
+        projectionsSegment.getProjections().add(expressionSegment);
+        selectStatement.setProjections(projectionsSegment);
+        selectStatement.setGroupBy(new GroupBySegment(0, 0, Collections.singletonList(new IndexOrderByItemSegment(0, 0, 3, OrderDirection.ASC, NullsOrderType.FIRST))));
+        selectStatement.setOrderBy(new OrderBySegment(0, 0, Collections.singletonList(new IndexOrderByItemSegment(0, 0, 3, OrderDirection.ASC, NullsOrderType.FIRST))));
+
+        return new SelectStatementContext(selectStatement,
+                new ShardingSphereMetaData(Collections.singleton(database), mock(), mock(), mock()), "foo_db", Collections.emptyList());
     }
     
     private SelectStatementContext createSelectStatementContext() {
