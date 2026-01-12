@@ -17,7 +17,7 @@
   -->
 
 <sql-cases>
-    <sql-case id="grant_user_without_hostname" value="GRANT SELECT, UPDATE, INSERT, DELETE ON t_order to user_dev" db-types="Oracle,PostgreSQL,openGauss,SQLServer" />
+    <sql-case id="grant_user_without_hostname" value="GRANT SELECT, UPDATE, INSERT, DELETE ON t_order to user_dev" db-types="Oracle,PostgreSQL,openGauss,SQLServer,Firebird" />
     <sql-case id="grant_user_with_grant" value="GRANT SELECT, UPDATE, INSERT, DELETE ON t_order to user_dev with GRANT option" db-types="Oracle,PostgreSQL,openGauss,SQLServer" />
     <sql-case id="grant_role" value="GRANT role_dev to user_dev" db-types="Oracle,PostgreSQL,openGauss" />
     <sql-case id="grant_user_with_admin" value="GRANT ADVISOR, ALTER DATABASE to user_dev with admin option" db-types="Oracle" />

@@ -19,7 +19,7 @@
 <sql-cases>
     <sql-case id="presto_select_literals" value="SELECT DATE '2020-01-01', X'1F', B'1010', TRUE, NULL FROM catalog.schem1.t_order" db-types="Presto" />
     <sql-case id="presto_select_compare_all_subquery" value="SELECT * FROM t_order WHERE order_id = ALL (SELECT order_id FROM t_order_item)" db-types="Presto" />
-    <sql-case id="presto_select_or_boolean_true" value="SELECT * FROM t_order WHERE flag IS TRUE OR order_id = 1" db-types="Presto" />
+    <sql-case id="presto_select_or_boolean_true" value="SELECT * FROM t_order WHERE flag IS TRUE OR order_id = 1" db-types="Presto,Firebird" />
     <sql-case id="presto_select_not_flag" value="SELECT * FROM t_order WHERE NOT flag" db-types="Presto" />
     <sql-case id="presto_select_not_exists_subquery" value="SELECT * FROM t_order WHERE NOT EXISTS (SELECT 1)" db-types="Presto" />
     <sql-case id="presto_select_assignment_operator" value="SELECT * FROM t_order WHERE order_id := 1" db-types="Presto" />

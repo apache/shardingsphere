@@ -18,5 +18,6 @@
 
 <sql-cases>
     <sql-case id="savepoint" value="SAVEPOINT savepoint1" db-types="MySQL,PostgreSQL,openGauss,Oracle,Doris" />
+    <sql-case id="savepoint_firebird" value="SAVEPOINT savepoint1" db-types="Firebird" />
     <sql-case id="savepoint_transaction" value="SAVE TRANSACTION ProcedureSave" db-types="SQLServer" />
 </sql-cases>
