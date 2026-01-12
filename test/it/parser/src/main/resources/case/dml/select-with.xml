@@ -816,4 +816,29 @@
         </from>
     </select>
 
+    <select sql-case-id="select_with_recursive_firebird">
+        <with start-index="0" stop-index="33">
+            <common-table-expression name="t" start-index="15" stop-index="33">
+                <column name="id" start-index="17" stop-index="18" />
+                <subquery-expression start-index="15" stop-index="33">
+                    <select>
+                        <projections start-index="32" stop-index="32">
+                            <expression-projection text="1" start-index="32" stop-index="32">
+                                <expr>
+                                    <literal-expression value="1" start-index="32" stop-index="32" />
+                                </expr>
+                            </expression-projection>
+                        </projections>
+                    </select>
+                </subquery-expression>
+            </common-table-expression>
+        </with>
+        <projections start-index="42" stop-index="43">
+            <column-projection name="id" start-index="42" stop-index="43" />
+        </projections>
+        <from>
+            <simple-table name="t" start-index="50" stop-index="50" />
+        </from>
+    </select>
+
 </sql-parser-test-cases>

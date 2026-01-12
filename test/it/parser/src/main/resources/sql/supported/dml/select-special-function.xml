@@ -196,7 +196,7 @@
     <sql-case id="select_is_free_lock" value="SELECT IS_FREE_LOCK('lock1')" db-types="MySQL" />
     <sql-case id="select_is_used_lock" value="SELECT IS_USED_LOCK('lock1')" db-types="MySQL" />
     <sql-case id="select_is_null" value="SELECT ISNULL(1+1)" db-types="MySQL" />
-    <sql-case id="select_is_not_null" value="SELECT 1 IS NOT NULL" db-types="MySQL" />
+    <sql-case id="select_is_not_null" value="SELECT 1 IS NOT NULL" db-types="MySQL,Firebird" />
     <sql-case id="select_is_uuid" value="SELECT IS_UUID('6ccd780c-baba-1026-9564-5b8c656024db')" db-types="MySQL" />
     <sql-case id="select_random_bytes" value="SELECT RANDOM_BYTES(16)" db-types="MySQL" />
     <sql-case id="select_rank" value="SELECT RANK() FROM numbers" db-types="MySQL" />

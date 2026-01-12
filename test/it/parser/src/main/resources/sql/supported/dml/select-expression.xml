@@ -47,7 +47,7 @@
     <sql-case id="select_where_with_boolean_primary_with_comparison_subquery" value="SELECT * FROM t_order WHERE t_order.status &gt; ALL (SELECt status FROM t_order_item WHERE status &gt; ?)" db-types="MySQL" />
     <sql-case id="select_where_with_predicate_with_in_subquery" value="SELECT * FROM t_order WHERE t_order.order_id NOT IN (SELECT order_id FROM t_order_item WHERE status &gt; ?)" db-types="MySQL,PostgreSQL,openGauss,Presto" />
     <sql-case id="select_where_with_predicate_with_in_expr" value="SELECT * FROM t_order WHERE t_order.order_id IN (?, ?, ?)" db-types="MySQL,PostgreSQL,openGauss,Presto" />
-    <sql-case id="select_where_with_predicate_with_between" value="SELECT * FROM t_order WHERE t_order.order_id BETWEEN ? AND ?" db-types="MySQL,Presto,Hive" />
+    <sql-case id="select_where_with_predicate_with_between" value="SELECT * FROM t_order WHERE t_order.order_id BETWEEN ? AND ?" db-types="MySQL,Presto,Hive,Firebird" />
     <sql-case id="select_where_with_predicate_with_sounds_like" value="SELECT * FROM t_order WHERE t_order.order_id SOUNDS LIKE '1%'" db-types="MySQL,Presto,Doris" />
     <sql-case id="select_where_with_predicate_with_like" value="SELECT * FROM t_order WHERE t_order.order_id NOT LIKE '1%' ESCAPE '$'" db-types="MySQL,Presto,Hive" />
     <sql-case id="select_where_with_predicate_with_not_like" value="SELECT * FROM t_order WHERE t_order.status NOT LIKE '1%'" db-types="MySQL,PostgreSQL,openGauss,Hive" />

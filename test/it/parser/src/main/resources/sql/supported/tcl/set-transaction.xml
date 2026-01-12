@@ -17,7 +17,7 @@
   -->
 
 <sql-cases>
-    <sql-case id="set_transaction" value="SET TRANSACTION ISOLATION LEVEL REPEATABLE READ" db-types="MySQL,PostgreSQL,openGauss,SQLServer,Doris" />
+    <sql-case id="set_transaction" value="SET TRANSACTION ISOLATION LEVEL REPEATABLE READ" db-types="MySQL,PostgreSQL,openGauss,SQLServer,Doris,Firebird" />
     <sql-case id="set_global_transaction" value="SET GLOBAL TRANSACTION ISOLATION LEVEL REPEATABLE READ" db-types="MySQL,Doris" />
     <sql-case id="set_session_transaction_doris" value="SET SESSION TRANSACTION ISOLATION LEVEL READ COMMITTED" db-types="Doris" />
     <sql-case id="set_transaction_read_only" value="SET TRANSACTION READ ONLY" db-types="MySQL,Oracle,Doris" />

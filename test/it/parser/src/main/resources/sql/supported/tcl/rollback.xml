@@ -17,7 +17,7 @@
   -->
 
 <sql-cases>
-    <sql-case id="rollback" value="ROLLBACK" db-types="MySQL,Oracle,PostgreSQL,openGauss,SQLServer,Doris" />
+    <sql-case id="rollback" value="ROLLBACK" db-types="MySQL,Oracle,PostgreSQL,openGauss,SQLServer,Doris,Firebird" />
     <sql-case id="rollback_transaction" value="ROLLBACK TRAN @TransactionName" db-types="SQLServer" />
     <sql-case id="rollback_with_name" value="ROLLBACK TRANSACTION transaction1" db-types="SQLServer" />
     <sql-case id="rollback_to_savepoint" value="ROLLBACK TO savepoint1" db-types="MySQL,PostgreSQL,openGauss,Oracle,Doris" />
