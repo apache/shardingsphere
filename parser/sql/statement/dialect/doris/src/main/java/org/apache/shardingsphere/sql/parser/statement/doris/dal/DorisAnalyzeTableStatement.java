@@ -23,8 +23,11 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.Co
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.DatabaseSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.SQLStatementAttributes;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.type.AllowNotUseDatabaseSQLStatementAttribute;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.type.DatabaseSelectRequiredSQLStatementAttribute;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.type.TableBroadcastRouteSQLStatementAttribute;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.type.TableSQLStatementAttribute;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.type.TablelessDataSourceBroadcastRouteSQLStatementAttribute;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.DALStatement;
 
 import java.util.Collection;
@@ -93,7 +96,9 @@ public final class DorisAnalyzeTableStatement extends DALStatement {
             return new SQLStatementAttributes(new TableSQLStatementAttribute(Collections.singleton(table)), new TableBroadcastRouteSQLStatementAttribute());
         }
         if (null != database) {
-            return new SQLStatementAttributes(new TableBroadcastRouteSQLStatementAttribute());
+            String databaseName = database.getIdentifier().getValue();
+            return new SQLStatementAttributes(new DatabaseSelectRequiredSQLStatementAttribute(), new TablelessDataSourceBroadcastRouteSQLStatementAttribute(),
+                    new AllowNotUseDatabaseSQLStatementAttribute(true, databaseName));
         }
         return new SQLStatementAttributes();
     }

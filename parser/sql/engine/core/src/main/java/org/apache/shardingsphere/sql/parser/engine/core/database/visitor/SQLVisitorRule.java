@@ -435,8 +435,6 @@ public enum SQLVisitorRule {
     
     ANALYZE_TABLE("AnalyzeTable", SQLStatementType.DAL),
     
-    DORIS_ANALYZE_TABLE("DorisAnalyzeTable", SQLStatementType.DAL),
-    
     CREATE_WORKLOAD_GROUP("CreateWorkloadGroup", SQLStatementType.DAL),
     
     LOAD("Load", SQLStatementType.DAL),
