@@ -14,7 +14,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-FROM eclipse-temurin:23-jdk
+FROM eclipse-temurin:25-jdk
 LABEL org.opencontainers.image.authors="ShardingSphere dev@shardingsphere.apache.org"
 ARG DIRECTORY_NAME
 ARG JAR_NAME
