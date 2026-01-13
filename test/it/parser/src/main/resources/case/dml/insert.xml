@@ -5581,4 +5581,18 @@
             </value>
         </values>
     </insert>
+
+    <insert sql-case-id="insert_with_default_sql92">
+        <table name="t_order" start-index="12" stop-index="18" />
+        <columns start-index="19" stop-index="26">
+            <column name="status" start-index="20" stop-index="25" />
+        </columns>
+        <values>
+            <value>
+                <assignment-value>
+                    <common-expression text="DEFAULT" start-index="36" stop-index="42" />
+                </assignment-value>
+            </value>
+        </values>
+    </insert>
 </sql-parser-test-cases>
