@@ -870,4 +870,8 @@
             </expr>
         </where>
     </delete>
+
+    <delete sql-case-id="delete_without_where_sql92">
+        <table name="t_order" start-index="12" stop-index="18" />
+    </delete>
 </sql-parser-test-cases>

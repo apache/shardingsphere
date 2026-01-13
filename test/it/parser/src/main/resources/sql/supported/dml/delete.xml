@@ -50,4 +50,5 @@
     <sql-case id="delete_rowset_function" value="DELETE FROM OPENDATASOURCE('SQLNCLI', 'Data Source= &lt;server_name&gt;; Integrated Security=SSPI').AdventureWorks2022.HumanResources.Department WHERE DepartmentID = 17;" db-types="SQLServer" />
     <sql-case id="delete_hive_basic" value="DELETE FROM orders" db-types="Hive" />
     <sql-case id="delete_with_where" value="DELETE FROM orders WHERE order_id = 9527;" db-types="Hive" />
+    <sql-case id="delete_without_where_sql92" value="DELETE FROM t_order" db-types="SQL92" />
 </sql-cases>

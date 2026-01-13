@@ -22,6 +22,7 @@
     <sql-case id="update_with_unicode_escape_alias" value="UPDATE t_order AS u SET status = ? WHERE u.order_id = ? AND u.user_id = ?" db-types="PostgreSQL,openGauss" />
     <sql-case id="update_equal_with_geography" value="UPDATE t_order SET start_time = ?, status = 0, start_point = ST_GeographyFromText('SRID=4326;POINT('||?||' '||?||')'), rule = ?::jsonb, discount_type = ?, order_type = ? WHERE user_id = ? AND order_id = ?" db-types="PostgreSQL,openGauss" />
     <sql-case id="update_without_condition" value="UPDATE t_order o SET o.status = 'finished'" db-types="MySQL,H2,Doris" />
+    <sql-case id="update_without_condition_sql92" value="UPDATE t_order o SET o.status = 'finished'" db-types="SQL92" />
     <sql-case id="update_with_extra_keywords" value="UPDATE LOW_PRIORITY IGNORE t_order SET status = ? WHERE order_id = ? AND user_id = ?" db-types="MySQL,Doris" />
     <sql-case id="update_with_special_character" value="UPDATE `t_order` SET `status` = ? WHERE `order_id` = ? AND user_id = ?" db-types="MySQL,Doris" />
     <sql-case id="update_without_parameters" value="UPDATE t_order SET status = 'update' WHERE order_id = 1000 AND user_id = 10" />
