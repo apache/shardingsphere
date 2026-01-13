@@ -45,7 +45,7 @@ The following is an example of a possible configuration,
 <dependencies>
     <dependency>
         <groupId>org.apache.shardingsphere</groupId>
-        <artifactId>shardingsphere-parser-sql-engine-hive</artifactId>
+        <artifactId>shardingsphere-jdbc-dialect-hive</artifactId>
         <version>${shardingsphere.version}</version>
     </dependency>
     <dependency>
@@ -106,7 +106,7 @@ CREATE DATABASE demo_ds_2;
 
 ### Create ShardingSphere data source in business projects
 
-After including the dependencies related to the `prerequisites` in the business project, add the following additional dependencies,
+After including the dependencies related to the `Prerequisites` in the business project, add the following additional dependencies,
 
 ```xml
 <dependency>
@@ -250,7 +250,7 @@ CREATE DATABASE demo_ds_1;
 CREATE DATABASE demo_ds_2;
 ```
 
-After including the dependencies related to the `prerequisites` in the business project, add the following additional dependencies,
+After including the dependencies related to the `Prerequisites` in the business project, add the following additional dependencies,
 
 ```xml
 <dependency>

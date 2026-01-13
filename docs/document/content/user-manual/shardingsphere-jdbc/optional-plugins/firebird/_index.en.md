@@ -79,7 +79,7 @@ class Solution {
 
 ### Create ShardingSphere data source in business project
 
-After including the dependencies related to the `prerequisites` in the business project, add the following additional dependencies,
+After including the dependencies related to the `Prerequisites` in the business project, add the following additional dependencies,
 
 ```xml
 <dependency>

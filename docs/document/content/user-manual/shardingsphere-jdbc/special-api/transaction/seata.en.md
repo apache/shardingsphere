@@ -212,7 +212,7 @@ config {
 
 ### Add JDBC Driver to the business project and create ShardingSphere configuration file
 
-After including the dependencies related to the `prerequisites` in the business project, add the following additional dependencies,
+After including the dependencies listed in the `Prerequisites` section in the business project, add the following additional dependencies,
 
 ```xml
 <dependency>
