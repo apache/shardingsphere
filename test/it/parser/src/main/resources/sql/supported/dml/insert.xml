@@ -202,4 +202,5 @@
     <sql-case id="insert_into_with_null" value="INSERT INTO TABLE user_info VALUES (301, NULL, 'New York'), (302, 'Charlie', NULL);" db-types="Hive" />
     <sql-case id="insert_with_columns_sql92" value="INSERT INTO t_order(order_id, status) VALUES (1, 'ok')" db-types="SQL92" />
     <sql-case id="insert_without_columns_sql92" value="INSERT INTO t_order VALUES (1, 'ok')" db-types="SQL92" />
+    <sql-case id="insert_with_default_sql92" value="INSERT INTO t_order(status) VALUES (DEFAULT)" db-types="SQL92" />
 </sql-cases>

@@ -128,10 +128,10 @@ public final class PipelineDistributedBarrier {
         }
         try {
             boolean result = holder.awaitLatchReleasing(timeout, timeUnit);
-            if (!result) {
-                log.warn("Await timeout, barrier path: {}, timeout: {}, time unit: {}", barrierPath, timeout, timeUnit);
-            } else {
+            if (result) {
                 log.info("Await success, barrier path: {}", barrierPath);
+            } else {
+                log.warn("Await timeout, barrier path: {}, timeout: {}, time unit: {}", barrierPath, timeout, timeUnit);
             }
             return result;
         } catch (final InterruptedException ignored) {

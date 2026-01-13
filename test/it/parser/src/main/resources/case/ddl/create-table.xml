@@ -596,6 +596,31 @@
         </column-definition>
         <constraint-definition start-index="73" stop-index="119" />
     </create-table>
+
+    <create-table sql-case-id="create_table_decimal_scale_sql92">
+        <table name="t_decimal" start-index="13" stop-index="21" />
+        <column-definition type="DECIMAL" start-index="24" stop-index="43">
+            <column name="amount" />
+        </column-definition>
+    </create-table>
+
+    <create-table sql-case-id="create_table_named_pk_sql92">
+        <table name="t_pk" start-index="13" stop-index="16" />
+        <column-definition type="INT" start-index="19" stop-index="24">
+            <column name="id" />
+        </column-definition>
+        <constraint-definition constraint-name="pk_t_pk" start-index="27" stop-index="61">
+            <primary-key-column name="id" start-index="59" stop-index="60" />
+        </constraint-definition>
+    </create-table>
+
+    <create-table sql-case-id="create_table_check_constraint_sql92">
+        <table name="t_chk" start-index="13" stop-index="17" />
+        <column-definition type="INT" start-index="20" stop-index="29">
+            <column name="status" />
+        </column-definition>
+        <constraint-definition start-index="32" stop-index="70" />
+    </create-table>
     
     <create-table sql-case-id="create_table_with_inline_constraints">
         <table name="t_order" start-index="13" stop-index="19" />
