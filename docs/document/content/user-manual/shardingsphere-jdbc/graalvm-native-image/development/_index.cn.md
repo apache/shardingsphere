@@ -346,6 +346,10 @@ without it being registered for runtime reflection. Add com.oracle.svm.core.code
   java.management@24.0.2/javax.management.StandardMBean.<init>(StandardMBean.java:268)
 ```
 
-相关警告在 `GraalVM CE For JDK 24.0.2` 上无法避免。
+相关警告暂时无法避免。
 因为 `com.oracle.svm.core.code.CodeCachePoolMXBean` 的无参构造函数通过 Java 类 `org.graalvm.nativeimage.Platform.HOSTED_ONLY` 被标记为无论实际的 Platform 是什么，
 仅在 Native Image 生成期间可见，且无法在 Runtime 使用的元素。
+
+向上追溯，`org.apache.seata:seata-all:2.5.0` 依赖的 `com.alibaba:druid:1.2.20` 中，
+`com.alibaba.druid.proxy.DruidDriver` 在未确认 JMX 是否在 GraalVM Native Image 下可用的前提下，
+调用了 `java.lang.management.ManagementFactory#getPlatformMBeanServer()`。
