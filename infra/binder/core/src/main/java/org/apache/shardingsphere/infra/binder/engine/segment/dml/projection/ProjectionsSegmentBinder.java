@@ -46,10 +46,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.Subq
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.FunctionSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.complex.ComplexExpressionSegment;
-
 import java.util.Collection;
-import java.util.LinkedList;
 
 /**
  * Projections segment binder.
@@ -158,6 +155,7 @@ public final class ProjectionsSegmentBinder {
         result.put(new CaseInsensitiveString(""), new SimpleTableSegmentBinderContext(subqueryProjections, TableSourceType.TEMPORARY_TABLE));
         return result;
     }
+    
     private static Collection<AggregationProjectionSegment> extractAggregationProjectionSegments(final ExpressionSegment expression) {
         Collection<AggregationProjectionSegment> result = new LinkedList<>();
         if (expression instanceof AggregationProjectionSegment) {

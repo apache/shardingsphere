@@ -45,7 +45,7 @@ public final class ExpressionProjection implements Projection {
     private final IdentifierValue alias;
     
     private final DatabaseType databaseType;
-
+    
     private final Collection<AggregationProjection> aggregationProjections = new LinkedList<>();
     
     @Override

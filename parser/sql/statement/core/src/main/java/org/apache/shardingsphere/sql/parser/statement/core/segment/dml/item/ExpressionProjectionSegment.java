@@ -46,7 +46,7 @@ public final class ExpressionProjectionSegment implements ProjectionSegment, Com
     
     @Setter
     private AliasSegment alias;
-
+    
     private final Collection<AggregationProjectionSegment> aggregationProjectionSegments = new LinkedList<>();
     
     public ExpressionProjectionSegment(final int startIndex, final int stopIndex, final String text) {

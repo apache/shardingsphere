@@ -23,6 +23,7 @@ import org.apache.shardingsphere.infra.binder.context.segment.select.projection.
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.impl.AggregationProjection;
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.impl.ColumnProjection;
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.impl.DerivedProjection;
+import org.apache.shardingsphere.infra.binder.context.segment.select.projection.impl.ExpressionProjection;
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.impl.ShorthandProjection;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.AggregationProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.util.SQLUtils;
@@ -161,6 +162,12 @@ public final class ProjectionsContext {
         }
         return result;
     }
+    
+    /**
+     * Get expand aggregation projections.
+     *
+     * @return expand aggregation projections
+     */
     public List<AggregationProjection> getExpandAggregationProjections() {
         List<AggregationProjection> result = new LinkedList<>();
         int columnIndex = 1;
@@ -169,8 +176,7 @@ public final class ProjectionsContext {
                 AggregationProjection aggregationProjection = (AggregationProjection) each;
                 result.add(aggregationProjection);
                 result.addAll(aggregationProjection.getDerivedAggregationProjections());
-            }
-            else if (each instanceof ExpressionProjection) {
+            } else if (each instanceof ExpressionProjection) {
                 ExpressionProjection expressionProjection = (ExpressionProjection) each;
                 for (AggregationProjectionSegment eachSegment : expressionProjection.getExpressionSegment().getAggregationProjectionSegments()) {
                     AggregationProjection nested = new AggregationProjection(
@@ -185,6 +191,13 @@ public final class ProjectionsContext {
         }
         return result;
     }
+    
+    /**
+     * Check is contains LAST_INSERT_ID() projection.
+     *
+     * @param projections projections
+     * @return is contains LAST_INSERT_ID() projection
+     */
     private boolean isContainsLastInsertIdProjection(final Collection<Projection> projections) {
         for (Projection each : projections) {
             if (LAST_INSERT_ID_FUNCTION_EXPRESSION.equalsIgnoreCase(SQLUtils.getExactlyExpression(each.getExpression()))) {
