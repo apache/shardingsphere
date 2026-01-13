@@ -163,7 +163,7 @@ class GroupByStreamMergedResultTest {
         assertThat(actual.getValue(6, Object.class), is(new BigDecimal(40)));
         assertFalse(actual.next());
     }
-
+    
     @Test
     void assertNextForNestedAggregation() throws SQLException {
         QueryResult queryResult1 = mockQueryResult();
@@ -179,7 +179,7 @@ class GroupByStreamMergedResultTest {
         assertTrue(actual.next());
         assertThat(actual.getValue(2, Object.class), is(new BigDecimal(100)));
     }
-
+    
     private SelectStatementContext createSelectStatementContextWithNestedSum() {
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         when(database.getName()).thenReturn("foo_db");
