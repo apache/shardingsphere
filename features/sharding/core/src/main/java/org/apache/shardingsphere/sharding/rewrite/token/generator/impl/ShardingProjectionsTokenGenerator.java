@@ -63,7 +63,7 @@ public final class ShardingProjectionsTokenGenerator implements OptionalSQLToken
     public boolean isGenerateSQLToken(final SQLStatementContext sqlStatementContext) {
         return sqlStatementContext instanceof SelectStatementContext && containsDerivedProjections((SelectStatementContext) sqlStatementContext);
     }
-
+    
     private boolean containsDerivedProjections(final SelectStatementContext selectStatementContext) {
         for (Projection each : selectStatementContext.getProjectionsContext().getProjections()) {
             if (each instanceof AggregationProjection && !((AggregationProjection) each).getDerivedAggregationProjections().isEmpty() || each instanceof DerivedProjection) {
@@ -90,8 +90,7 @@ public final class ShardingProjectionsTokenGenerator implements OptionalSQLToken
         }
         return result;
     }
-
-
+    
     private Collection<String> getDerivedProjectionTexts(final SelectStatementContext selectStatementContext, final RouteUnit routeUnit) {
         Collection<String> result = new LinkedList<>();
         Collection<String> existingAliases = new LinkedList<>();

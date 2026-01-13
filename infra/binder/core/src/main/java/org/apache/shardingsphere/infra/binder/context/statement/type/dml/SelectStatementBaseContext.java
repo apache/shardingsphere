@@ -285,7 +285,7 @@ public final class SelectStatementBaseContext implements SQLStatementContext {
         setIndexForOrderItem(columnLabelIndexMap, orderByContext.getItems());
         setIndexForOrderItem(columnLabelIndexMap, groupByContext.getItems());
     }
-
+    
     private void setIndexForAggregationProjection(final Map<String, Integer> columnLabelIndexMap) {
         for (AggregationProjection each : projectionsContext.getExpandAggregationProjections()) {
             String columnLabel = SQLUtils.getExactlyValue(each.getAlias().map(IdentifierValue::getValue).orElse(each.getColumnName()));
@@ -293,8 +293,7 @@ public final class SelectStatementBaseContext implements SQLStatementContext {
             each.setIndex(columnLabelIndexMap.get(columnLabel));
             for (AggregationProjection derived : each.getDerivedAggregationProjections()) {
                 String derivedColumnLabel = SQLUtils.getExactlyValue(
-                        derived.getAlias().map(IdentifierValue::getValue).orElse(derived.getColumnName())
-                );
+                        derived.getAlias().map(IdentifierValue::getValue).orElse(derived.getColumnName()));
                 Preconditions.checkState(columnLabelIndexMap.containsKey(derivedColumnLabel), "Can't find index: %s", derived);
                 derived.setIndex(columnLabelIndexMap.get(derivedColumnLabel));
             }

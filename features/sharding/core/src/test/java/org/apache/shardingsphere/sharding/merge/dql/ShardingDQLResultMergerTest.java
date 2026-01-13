@@ -452,7 +452,7 @@ class ShardingDQLResultMergerTest {
         assertThat(actual, isA(TopAndRowNumberDecoratorMergedResult.class));
         assertThat(((TopAndRowNumberDecoratorMergedResult) actual).getMergedResult(), isA(GroupByMemoryMergedResult.class));
     }
-
+    
     @Test
     void assertMergeWithNestedAggregationInExpressionWithoutGroupBy() throws SQLException {
         SelectStatementContext selectStatementContext = mock(SelectStatementContext.class, RETURNS_DEEP_STUBS);
@@ -472,7 +472,7 @@ class ShardingDQLResultMergerTest {
         assertTrue(actual.next());
         assertThat(actual.getValue(1, Object.class), is(new BigDecimal("100")));
     }
-
+    
     private QueryResult mockQueryResultSingleColumn(final Object value) throws SQLException {
         QueryResult result = mock(QueryResult.class, RETURNS_DEEP_STUBS);
         when(result.next()).thenReturn(true, false);

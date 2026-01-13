@@ -188,8 +188,7 @@ public final class ProjectionsContext {
                             eachSegment.getType(),
                             eachSegment,
                             new IdentifierValue(alias),
-                            expressionProjection.getDatabaseType()
-                    );
+                            expressionProjection.getDatabaseType());
                     nested.setIndex(derivedColumnIndex++);
                     if (AggregationType.AVG == eachSegment.getType()) {
                         addDerivedProjectionsForNestedAvg(nested, expressionProjection.getDatabaseType(), derivedColumnIndex);
@@ -247,15 +246,13 @@ public final class ProjectionsContext {
                 AggregationType.SUM,
                 avgProjection.getAggregationSegment(),
                 new IdentifierValue(sumAlias),
-                databaseType
-        );
+                databaseType);
         sumProjection.setIndex(currentDerivedIndex);
         AggregationProjection countProjection = new AggregationProjection(
                 AggregationType.COUNT,
                 avgProjection.getAggregationSegment(),
                 new IdentifierValue(countAlias),
-                databaseType
-        );
+                databaseType);
         countProjection.setIndex(currentDerivedIndex + 1);
         avgProjection.getDerivedAggregationProjections().add(sumProjection);
         avgProjection.getDerivedAggregationProjections().add(countProjection);
