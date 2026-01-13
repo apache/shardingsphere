@@ -12895,6 +12895,101 @@
         </from>
     </select>
 
+    <select sql-case-id="select_null_literal_sql92">
+        <projections start-index="7" stop-index="10">
+            <expression-projection text="null" start-index="7" stop-index="10">
+                <expr>
+                    <literal-expression value="null" start-index="7" stop-index="10" />
+                </expr>
+            </expression-projection>
+        </projections>
+        <from>
+            <simple-table name="t_order" start-index="17" stop-index="23" />
+        </from>
+    </select>
+
+    <select sql-case-id="select_where_is_not_null_sql92">
+        <from>
+            <simple-table name="t_order" start-index="14" stop-index="20" />
+        </from>
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" />
+        </projections>
+        <where start-index="22" stop-index="45">
+            <expr>
+                <binary-operation-expression start-index="28" stop-index="45">
+                    <left>
+                        <column name="status" start-index="28" stop-index="33" />
+                    </left>
+                    <operator>IS</operator>
+                    <right>
+                        <literal-expression value="NOT NULL" start-index="38" stop-index="45" />
+                    </right>
+                </binary-operation-expression>
+            </expr>
+        </where>
+    </select>
+
+    <select sql-case-id="select_compare_subquery_sql92">
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" />
+        </projections>
+        <from>
+            <simple-table name="t_order" start-index="14" stop-index="20" />
+        </from>
+        <where start-index="22" stop-index="48">
+            <expr>
+                <binary-operation-expression start-index="28" stop-index="48">
+                    <left>
+                        <column name="order_id" start-index="28" stop-index="35" />
+                    </left>
+                    <operator>=</operator>
+                    <right>
+                        <subquery start-index="39" stop-index="48">
+                            <select>
+                                <projections start-index="47" stop-index="47">
+                                    <expression-projection text="1" start-index="47" stop-index="47">
+                                        <expr>
+                                            <literal-expression value="1" start-index="47" stop-index="47" />
+                                        </expr>
+                                    </expression-projection>
+                                </projections>
+                            </select>
+                        </subquery>
+                    </right>
+                </binary-operation-expression>
+            </expr>
+        </where>
+    </select>
+
+    <select sql-case-id="select_interval_expression_sql92">
+        <projections start-index="7" stop-index="20">
+            <expression-projection text="INTERVAL1DAY" start-index="7" stop-index="20">
+            </expression-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="select_position_function_sql92">
+        <projections start-index="7" stop-index="28">
+            <expression-projection text="POSITION('a' IN 'aaa')" start-index="7" stop-index="28">
+                <expr>
+                    <function start-index="7" stop-index="28" text="POSITION('a' IN 'aaa')" function-name="POSITION">
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="select_without_from_sql92">
+        <projections start-index="7" stop-index="7">
+            <expression-projection text="1" start-index="7" stop-index="7">
+                <expr>
+                    <literal-expression value="1" start-index="7" stop-index="7" />
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
     <select sql-case-id="select_subquery_with_with_firebird">
         <projections start-index="7" stop-index="7">
             <shorthand-projection start-index="7" stop-index="7" />

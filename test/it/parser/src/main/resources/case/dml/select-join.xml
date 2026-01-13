@@ -185,6 +185,37 @@
         </where>
     </select>
 
+    <select sql-case-id="select_inner_join_sql92">
+        <from>
+            <join-table join-type="INNER">
+                <left>
+                    <simple-table name="t_order" start-index="14" stop-index="20" />
+                </left>
+                <right>
+                    <simple-table name="t_order_item" start-index="33" stop-index="44" />
+                </right>
+                <on-condition>
+                    <binary-operation-expression start-index="49" stop-index="88">
+                        <left>
+                            <column name="order_id" start-index="49" stop-index="64">
+                                <owner name="t_order" start-index="49" stop-index="55" />
+                            </column>
+                        </left>
+                        <operator>=</operator>
+                        <right>
+                            <column name="order_id" start-index="68" stop-index="88">
+                                <owner name="t_order_item" start-index="68" stop-index="79" />
+                            </column>
+                        </right>
+                    </binary-operation-expression>
+                </on-condition>
+            </join-table>
+        </from>
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" />
+        </projections>
+    </select>
+
     <select sql-case-id="select_left_outer_join_related_with_alias">
         <from>
             <join-table join-type="LEFT">
