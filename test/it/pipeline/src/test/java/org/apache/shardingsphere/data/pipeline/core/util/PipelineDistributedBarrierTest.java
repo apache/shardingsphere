@@ -63,7 +63,7 @@ class PipelineDistributedBarrierTest {
         PipelineDistributedBarrier instance = PipelineDistributedBarrier.getInstance(contextKey);
         String barrierEnablePath = PipelineMetaDataNode.getJobBarrierEnablePath(jobId);
         instance.register(barrierEnablePath, 1);
-        instance.persistEphemeralChildrenNode(barrierEnablePath, 1);
+        instance.persistEphemeralChildrenNode(barrierEnablePath, 0);
         boolean actual = instance.await(barrierEnablePath, 1L, TimeUnit.SECONDS);
         assertFalse(actual);
         instance.notifyChildrenNodeCountCheck(barrierEnablePath + "/0");

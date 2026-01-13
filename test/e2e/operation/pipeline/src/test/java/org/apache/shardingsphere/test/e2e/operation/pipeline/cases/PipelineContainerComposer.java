@@ -186,10 +186,12 @@ public final class PipelineContainerComposer implements AutoCloseable {
     }
     
     private List<Map<String, Object>> queryJobs(final Connection connection, final String jobTypeName) {
+        String sql = String.format("SHOW %s LIST", jobTypeName);
         try (Statement statement = connection.createStatement()) {
-            return transformResultSetToList(statement.executeQuery(String.format("SHOW %s LIST", jobTypeName)));
+            log.info("Execute SQL: {}", sql);
+            return transformResultSetToList(statement.executeQuery(sql));
         } catch (final SQLException ex) {
-            log.warn("{} execute failed, message {}", String.format("SHOW %s LIST", jobTypeName), ex.getMessage());
+            log.warn("{} execute failed, message {}", sql, ex.getMessage());
             return Collections.emptyList();
         }
     }
@@ -200,10 +202,10 @@ public final class PipelineContainerComposer implements AutoCloseable {
         }
         try (Statement statement = connection.createStatement()) {
             statement.execute(String.format("DROP DATABASE IF EXISTS %s", PROXY_DATABASE));
-            Awaitility.await().pollDelay(2L, TimeUnit.SECONDS).until(() -> true);
         } catch (final SQLException ex) {
             log.warn("Drop proxy database failed, error={}", ex.getMessage());
         }
+        Awaitility.await().pollDelay(2L, TimeUnit.SECONDS).until(() -> true);
     }
     
     private void createProxyDatabase(final Connection connection) throws SQLException {
