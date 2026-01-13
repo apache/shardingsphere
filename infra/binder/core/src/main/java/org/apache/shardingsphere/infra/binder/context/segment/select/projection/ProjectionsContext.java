@@ -183,10 +183,13 @@ public final class ProjectionsContext {
             } else if (each instanceof ExpressionProjection) {
                 ExpressionProjection expressionProjection = (ExpressionProjection) each;
                 for (AggregationProjectionSegment eachSegment : expressionProjection.getExpressionSegment().getAggregationProjectionSegments()) {
+                    String alias = eachSegment.getAliasName().orElse("__sharding_expr_agg_" + derivedColumnIndex);
                     AggregationProjection nested = new AggregationProjection(
-                            eachSegment.getType(), eachSegment,
-                            eachSegment.getAliasName().map(IdentifierValue::new).orElse(null),
-                            expressionProjection.getDatabaseType());
+                            eachSegment.getType(),
+                            eachSegment,
+                            new IdentifierValue(alias),
+                            expressionProjection.getDatabaseType()
+                    );
                     nested.setIndex(derivedColumnIndex++);
                     if (AggregationType.AVG == eachSegment.getType()) {
                         addDerivedProjectionsForNestedAvg(nested, expressionProjection.getDatabaseType(), derivedColumnIndex);
@@ -238,9 +241,21 @@ public final class ProjectionsContext {
      * @param currentDerivedIndex current derived index
      */
     private void addDerivedProjectionsForNestedAvg(final AggregationProjection avgProjection, final DatabaseType databaseType, final int currentDerivedIndex) {
-        AggregationProjection sumProjection = new AggregationProjection(AggregationType.SUM, avgProjection.getAggregationSegment(), null, databaseType);
+        String sumAlias = "__sharding_agg_sum_" + currentDerivedIndex;
+        String countAlias = "__sharding_agg_cnt_" + (currentDerivedIndex + 1);
+        AggregationProjection sumProjection = new AggregationProjection(
+                AggregationType.SUM,
+                avgProjection.getAggregationSegment(),
+                new IdentifierValue(sumAlias),
+                databaseType
+        );
         sumProjection.setIndex(currentDerivedIndex);
-        AggregationProjection countProjection = new AggregationProjection(AggregationType.COUNT, avgProjection.getAggregationSegment(), null, databaseType);
+        AggregationProjection countProjection = new AggregationProjection(
+                AggregationType.COUNT,
+                avgProjection.getAggregationSegment(),
+                new IdentifierValue(countAlias),
+                databaseType
+        );
         countProjection.setIndex(currentDerivedIndex + 1);
         avgProjection.getDerivedAggregationProjections().add(sumProjection);
         avgProjection.getDerivedAggregationProjections().add(countProjection);

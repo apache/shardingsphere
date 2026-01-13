@@ -19,6 +19,8 @@ package org.apache.shardingsphere.sharding.merge.dql;
 
 import org.apache.shardingsphere.database.connector.core.metadata.database.enums.NullsOrderType;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeFactory;
+import org.apache.shardingsphere.infra.binder.context.segment.select.projection.impl.AggregationProjection;
 import org.apache.shardingsphere.infra.binder.context.statement.type.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
@@ -59,6 +61,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.Se
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 import org.junit.jupiter.api.Test;
 
+import java.math.BigDecimal;
 import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.Collections;
@@ -67,9 +70,9 @@ import java.util.List;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.isA;
-import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.*;
+import static org.hamcrest.CoreMatchers.is;
 
 class ShardingDQLResultMergerTest {
     
@@ -448,6 +451,35 @@ class ShardingDQLResultMergerTest {
         MergedResult actual = resultMerger.merge(createQueryResults(), selectStatementContext, createSQLServerDatabase(), mock(ConnectionContext.class));
         assertThat(actual, isA(TopAndRowNumberDecoratorMergedResult.class));
         assertThat(((TopAndRowNumberDecoratorMergedResult) actual).getMergedResult(), isA(GroupByMemoryMergedResult.class));
+    }
+
+    @Test
+    void assertMergeWithNestedAggregationInExpressionWithoutGroupBy() throws SQLException {
+        SelectStatementContext selectStatementContext = mock(SelectStatementContext.class, RETURNS_DEEP_STUBS);
+        when(selectStatementContext.getSqlStatement().getDatabaseType()).thenReturn(mysqlDatabaseType);
+        when(selectStatementContext.getGroupByContext().getItems()).thenReturn(Collections.emptyList());
+        doNothing().when(selectStatementContext).setIndexes(anyMap());
+        ShardingSphereDatabase database = createDatabase();
+        AggregationProjectionSegment sumSegment = new AggregationProjectionSegment(0, 0, AggregationType.SUM, "SUM(amount)");
+        AggregationProjection nestedSum = new AggregationProjection(AggregationType.SUM, sumSegment, new IdentifierValue("__sharding_expr_agg_1"), mysqlDatabaseType);
+        nestedSum.setIndex(1);
+        when(selectStatementContext.getProjectionsContext().getExpandAggregationProjections()).thenReturn(Collections.singletonList(nestedSum));
+        when(selectStatementContext.getProjectionsContext().getProjections()).thenReturn(Collections.emptyList());
+        QueryResult queryResult1 = mockQueryResultSingleColumn(new BigDecimal("0"));
+        QueryResult queryResult2 = mockQueryResultSingleColumn(new BigDecimal("100"));
+        ShardingDQLResultMerger resultMerger = new ShardingDQLResultMerger(mysqlDatabaseType);
+        MergedResult actual = resultMerger.merge(Arrays.asList(queryResult1, queryResult2), selectStatementContext, database, mock(ConnectionContext.class));
+        assertTrue(actual.next());
+        assertThat(actual.getValue(1, Object.class), is(new BigDecimal("100")));
+    }
+
+    private QueryResult mockQueryResultSingleColumn(final Object value) throws SQLException {
+        QueryResult result = mock(QueryResult.class, RETURNS_DEEP_STUBS);
+        when(result.next()).thenReturn(true, false);
+        when(result.getMetaData().getColumnCount()).thenReturn(1);
+        when(result.getMetaData().getColumnLabel(1)).thenReturn("__sharding_expr_agg_1");
+        when(result.getValue(1, Object.class)).thenReturn(value);
+        return result;
     }
     
     private ShardingSphereMetaData createShardingSphereMetaData(final ShardingSphereDatabase database) {
