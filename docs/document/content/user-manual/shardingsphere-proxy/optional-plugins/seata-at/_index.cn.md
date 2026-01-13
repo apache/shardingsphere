@@ -277,11 +277,11 @@ done
 ### 创建 ShardingSphere 虚拟库
 
 通过第三方工具在 ShardingSphere Proxy 内创建 ShardingSphere 虚拟库。
-以 DBeaver Community 为例，若使用 Ubuntu 22.04.4，可通过 Snapcraft 快速安装，
+以 DBeaver Community 为例，若使用 Ubuntu 24.04，可通过 Snapcraft 快速安装，
 
 ```shell
 sudo apt update && sudo apt upgrade -y
-sudo snap install dbeaver-ce
+sudo snap install dbeaver-ce --classic
 snap run dbeaver-ce
 ```
 
