@@ -9932,7 +9932,7 @@
     },
     {
       "condition": {
-        "typeReached": "org.apache.shardingsphere.proxy.frontend.postgresql.command.query.extended.Portal"
+        "typeReached": "org.apache.shardingsphere.infra.executor.kernel.ExecutorEngine"
       },
       "glob": "META-INF/services/org.apache.shardingsphere.infra.executor.sql.hook.SQLExecutionHook"
     },
@@ -11597,6 +11597,18 @@
         "typeReached": "org.apache.shardingsphere.mode.repository.standalone.jdbc.sql.JDBCRepositorySQLLoader"
       },
       "glob": "sql"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.shardingsphere.mode.repository.standalone.jdbc.sql.JDBCRepositorySQLLoader"
+      },
+      "glob": "sql/DerbyNetworkServer.xml"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.shardingsphere.mode.repository.standalone.jdbc.sql.JDBCRepositorySQLLoader"
+      },
+      "glob": "sql/EmbeddedDerby.xml"
     },
     {
       "condition": {

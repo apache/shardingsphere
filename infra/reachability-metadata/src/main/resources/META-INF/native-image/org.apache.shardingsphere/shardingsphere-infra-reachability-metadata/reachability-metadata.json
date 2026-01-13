@@ -315,6 +315,13 @@
     },
     {
       "condition": {
+        "typeReached": "java.util.Objects"
+      },
+      "type": "java.util.Objects",
+      "allPublicMethods": true
+    },
+    {
+      "condition": {
         "typeReached": "java.util.Properties"
       },
       "type": "java.util.Properties",
@@ -325,6 +332,13 @@
         "typeReached": "java.util.TimeZone"
       },
       "type": "java.util.TimeZone",
+      "allPublicMethods": true
+    },
+    {
+      "condition": {
+        "typeReached": "java.util.UUID"
+      },
+      "type": "java.util.UUID",
       "allPublicMethods": true
     },
     {
