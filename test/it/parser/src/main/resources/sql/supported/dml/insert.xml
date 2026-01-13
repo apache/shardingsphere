@@ -200,4 +200,6 @@
     <sql-case id="insert_into_with_partition" value="INSERT INTO TABLE sales PARTITION (region='Asia') VALUES (1001, 'Laptop', 5999);" db-types="Hive" />
     <sql-case id="insert_into_without_val1" value="INSERT INTO TABLE sales PARTITION (region) VALUES (1001, 'Laptop', 5999);" db-types="Hive" />
     <sql-case id="insert_into_with_null" value="INSERT INTO TABLE user_info VALUES (301, NULL, 'New York'), (302, 'Charlie', NULL);" db-types="Hive" />
+    <sql-case id="insert_with_columns_sql92" value="INSERT INTO t_order(order_id, status) VALUES (1, 'ok')" db-types="SQL92" />
+    <sql-case id="insert_without_columns_sql92" value="INSERT INTO t_order VALUES (1, 'ok')" db-types="SQL92" />
 </sql-cases>

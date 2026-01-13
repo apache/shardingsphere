@@ -972,4 +972,78 @@
             </subquery-table>
         </from>
     </select>
+
+    <select sql-case-id="select_subquery_projection_sql92">
+        <from>
+            <simple-table name="t_order" start-index="27" stop-index="33" />
+        </from>
+        <projections start-index="7" stop-index="20">
+            <subquery-projection start-index="7" stop-index="16" alias="sub" text="(SELECT 1)" literal-text="(SELECT 1)">
+                <subquery>
+                    <select>
+                        <projections start-index="15" stop-index="15">
+                            <expression-projection text="1" start-index="15" stop-index="15">
+                                <expr>
+                                    <literal-expression value="1" start-index="15" stop-index="15" />
+                                </expr>
+                            </expression-projection>
+                        </projections>
+                    </select>
+                </subquery>
+            </subquery-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="select_not_in_subquery_sql92">
+        <projections start-index="7" stop-index="14">
+            <column-projection name="order_id" start-index="7" stop-index="14" />
+        </projections>
+        <from>
+            <simple-table name="t_order" start-index="21" stop-index="27" />
+        </from>
+        <where start-index="29" stop-index="60">
+            <expr>
+                <in-expression start-index="35" stop-index="60">
+                    <not>true</not>
+                    <left>
+                        <column name="order_id" start-index="35" stop-index="42" />
+                    </left>
+                    <right>
+                        <subquery start-index="51" stop-index="60">
+                            <select>
+                                <projections start-index="59" stop-index="59">
+                                    <expression-projection text="1" start-index="59" stop-index="59">
+                                        <expr>
+                                            <literal-expression value="1" start-index="59" stop-index="59" />
+                                        </expr>
+                                    </expression-projection>
+                                </projections>
+                            </select>
+                        </subquery>
+                    </right>
+                </in-expression>
+            </expr>
+        </where>
+    </select>
+
+    <select sql-case-id="select_subquery_table_sql92">
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" />
+        </projections>
+        <from>
+            <subquery-table alias="t" start-index="14" stop-index="25">
+                <subquery start-index="14" stop-index="23">
+                    <select>
+                        <projections start-index="22" stop-index="22">
+                            <expression-projection text="1" start-index="22" stop-index="22">
+                                <expr>
+                                    <literal-expression value="1" start-index="22" stop-index="22" />
+                                </expr>
+                            </expression-projection>
+                        </projections>
+                    </select>
+                </subquery>
+            </subquery-table>
+        </from>
+    </select>
 </sql-parser-test-cases>

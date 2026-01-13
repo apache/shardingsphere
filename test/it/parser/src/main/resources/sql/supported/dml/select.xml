@@ -430,4 +430,19 @@
     <sql-case id="select_distinct_with_count_sql92" value="SELECT COUNT(DISTINCT order_id) c FROM t_order WHERE order_id &lt; 1100" db-types="SQL92" />
     <sql-case id="select_having_sql92" value="SELECT user_id, COUNT(*) AS cnt FROM t_order GROUP BY user_id HAVING COUNT(*) &gt; 1" db-types="SQL92" />
     <sql-case id="select_cast_int_sql92" value="SELECT CAST(user_id AS INT) FROM t_order" db-types="SQL92" />
+    <sql-case id="select_all_param_alias_schema_sql92" value="SELECT ALL ? AS &quot;aid&quot; FROM schema1.t_order WHERE (order_id = 1) OR active IS NULL" db-types="SQL92" />
+    <sql-case id="select_like_between_and_sql92" value="SELECT status FROM t_order WHERE status LIKE '1%' AND order_id BETWEEN 1 AND 10" db-types="SQL92" />
+    <sql-case id="select_safe_eq_sql92" value="SELECT order_id FROM t_order WHERE order_id &lt;=&gt; 1" db-types="SQL92" />
+    <sql-case id="select_in_list_sql92" value="SELECT order_id FROM t_order WHERE order_id IN (1, 2)" db-types="SQL92" />
+    <sql-case id="select_not_in_subquery_sql92" value="SELECT order_id FROM t_order WHERE order_id NOT IN (SELECT 1)" db-types="SQL92" />
+    <sql-case id="select_not_between_sql92" value="SELECT order_id FROM t_order WHERE order_id NOT BETWEEN 1 AND 2" db-types="SQL92" />
+    <sql-case id="select_addition_expr_sql92" value="SELECT order_id + 1 FROM t_order" db-types="SQL92" />
+    <sql-case id="select_subquery_projection_sql92" value="SELECT (SELECT 1) sub FROM t_order" db-types="SQL92" />
+    <sql-case id="select_hex_literal_sql92" value="SELECT 0x1 FROM t_order" db-types="SQL92" />
+    <sql-case id="select_bit_literal_sql92" value="SELECT B'1' FROM t_order" db-types="SQL92" />
+    <sql-case id="select_cast_literal_sql92" value="SELECT CAST(1 AS INT) FROM t_order" db-types="SQL92" />
+    <sql-case id="select_boolean_literal_sql92" value="SELECT TRUE FROM t_order" db-types="SQL92" />
+    <sql-case id="select_subquery_table_sql92" value="SELECT * FROM (SELECT 1) t" db-types="SQL92" />
+    <sql-case id="select_comma_join_sql92" value="SELECT * FROM t_order o, t_order_item i" db-types="SQL92" />
+    <sql-case id="select_cross_join_sql92" value="SELECT * FROM t_order CROSS JOIN t_order_item" db-types="SQL92" />
 </sql-cases>

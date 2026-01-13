@@ -3581,4 +3581,36 @@
             </join-table>
         </from>
     </select>
+
+    <select sql-case-id="select_comma_join_sql92">
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" />
+        </projections>
+        <from>
+            <join-table join-type="COMMA">
+                <left>
+                    <simple-table name="t_order" alias="o" start-index="14" stop-index="22" />
+                </left>
+                <right>
+                    <simple-table name="t_order_item" alias="i" start-index="25" stop-index="38" />
+                </right>
+            </join-table>
+        </from>
+    </select>
+
+    <select sql-case-id="select_cross_join_sql92">
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" />
+        </projections>
+        <from>
+            <join-table join-type="CROSS">
+                <left>
+                    <simple-table name="t_order" start-index="14" stop-index="20" />
+                </left>
+                <right>
+                    <simple-table name="t_order_item" start-index="33" stop-index="44" />
+                </right>
+            </join-table>
+        </from>
+    </select>
 </sql-parser-test-cases>

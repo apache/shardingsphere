@@ -158,4 +158,5 @@
     <sql-case id="revoke_create_tablespace_doris" value="REVOKE CREATE TABLESPACE ON *.* FROM user1" db-types="Doris" />
     <sql-case id="revoke_create_role_privilege_doris" value="REVOKE CREATE ROLE ON *.* FROM user1" db-types="Doris" />
     <sql-case id="revoke_drop_role_privilege_doris" value="REVOKE DROP ROLE ON *.* FROM user1" db-types="Doris" />
+    <sql-case id="revoke_select_sql92" value="REVOKE SELECT (order_id) ON t_order FROM user1" db-types="SQL92" />
 </sql-cases>

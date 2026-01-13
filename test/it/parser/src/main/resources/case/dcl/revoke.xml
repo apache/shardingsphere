@@ -261,4 +261,9 @@
     <revoke sql-case-id="revoke_create_tablespace_doris" />
     <revoke sql-case-id="revoke_create_role_privilege_doris" />
     <revoke sql-case-id="revoke_drop_role_privilege_doris" />
+    
+    <revoke sql-case-id="revoke_select_sql92">
+        <table name="t_order" start-index="28" stop-index="34" />
+        <column name="order_id" start-index="14" stop-index="21" />
+    </revoke>
 </sql-parser-test-cases>

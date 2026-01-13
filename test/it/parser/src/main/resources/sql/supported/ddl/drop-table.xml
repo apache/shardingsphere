@@ -42,4 +42,5 @@
     <sql-case id="drop_table_purge_hive_with_db" value="DROP TABLE test_db.t_log PURGE" db-types="Hive" />
     <sql-case id="drop_table_if_exists_purge_hive_with_db" value="DROP TABLE IF EXISTS test_db.t_log PURGE" db-types="Hive" />
     <sql-case id="drop_table_firebird" value="DROP TABLE t_firebird_drop" db-types="Firebird"/>
+    <sql-case id="drop_table_sql92" value="DROP TABLE t_drop" db-types="SQL92" />
 </sql-cases>

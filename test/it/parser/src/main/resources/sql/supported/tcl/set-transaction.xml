@@ -37,4 +37,5 @@
     <sql-case id="xa_prepare" value="XA prepare 'abcdef7'" db-types="MySQL,Doris" />
     <sql-case id="xa_commit" value="XA commit 'abcdef7'" db-types="MySQL,Doris" />
     <sql-case id="xa_rollback" value="XA rollback 'abcdef7'" db-types="MySQL,Doris" />
+    <sql-case id="set_transaction_sql92" value="SET TRANSACTION ISOLATION LEVEL READ COMMITTED" db-types="SQL92" />
 </sql-cases>
