@@ -264,6 +264,22 @@
         </set>
     </update>
 
+    <update sql-case-id="update_without_condition_sql92">
+        <table start-index="7" stop-index="15">
+            <simple-table name="t_order" alias="o" start-index="7" stop-index="15" />
+        </table>
+        <set start-index="17" stop-index="41">
+            <assignment start-index="21" stop-index="41">
+                <column name="status" start-index="21" stop-index="28">
+                    <owner name="o" start-index="21" stop-index="21" />
+                </column>
+                <assignment-value>
+                    <literal-expression value="finished" start-index="32" stop-index="41" />
+                </assignment-value>
+            </assignment>
+        </set>
+    </update>
+
     <update sql-case-id="update_with_extra_keywords" parameters="'update', 1, 1">
         <table start-index="27" stop-index="33">
             <simple-table name="t_order" start-index="27" stop-index="33" />

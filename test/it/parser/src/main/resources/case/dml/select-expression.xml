@@ -1289,6 +1289,34 @@
         </where>
     </select>
 
+    <select sql-case-id="select_where_with_predicate_with_not_like_sql92">
+        <from start-index="14" stop-index="20">
+            <simple-table name="t_order" start-index="14" stop-index="20" />
+        </from>
+        <projections distinct-row="false" start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" />
+        </projections>
+        <where start-index="22" stop-index="55">
+            <expr>
+                <binary-operation-expression start-index="28" stop-index="55">
+                    <left>
+                        <column name="status" start-index="28" stop-index="41">
+                            <owner name="t_order" start-index="28" stop-index="34" />
+                        </column>
+                    </left>
+                    <operator>NOT LIKE</operator>
+                    <right>
+                        <list-expression start-index="52" stop-index="55">
+                            <items>
+                                <literal-expression value="1%" start-index="52" stop-index="55" />
+                            </items>
+                        </list-expression>
+                    </right>
+                </binary-operation-expression>
+            </expr>
+        </where>
+    </select>
+
     <select sql-case-id="select_where_with_predicate_with_regexp">
         <from start-index="14" stop-index="20">
             <simple-table name="t_order" start-index="14" stop-index="20" />
