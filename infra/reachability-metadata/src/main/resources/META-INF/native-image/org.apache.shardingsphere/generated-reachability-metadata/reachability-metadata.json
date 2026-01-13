@@ -11602,18 +11602,6 @@
       "condition": {
         "typeReached": "org.apache.shardingsphere.mode.repository.standalone.jdbc.sql.JDBCRepositorySQLLoader"
       },
-      "glob": "sql/DerbyNetworkServer.xml"
-    },
-    {
-      "condition": {
-        "typeReached": "org.apache.shardingsphere.mode.repository.standalone.jdbc.sql.JDBCRepositorySQLLoader"
-      },
-      "glob": "sql/EmbeddedDerby.xml"
-    },
-    {
-      "condition": {
-        "typeReached": "org.apache.shardingsphere.mode.repository.standalone.jdbc.sql.JDBCRepositorySQLLoader"
-      },
       "glob": "sql/H2.xml"
     },
     {
