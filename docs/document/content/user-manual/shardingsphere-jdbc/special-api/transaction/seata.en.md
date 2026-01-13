@@ -19,11 +19,6 @@ Introduce Maven dependencies and exclude the outdated Maven dependency of `org.a
     <dependencies>
       <dependency>
          <groupId>org.apache.shardingsphere</groupId>
-         <artifactId>shardingsphere-jdbc</artifactId>
-         <version>${shardingsphere.version}</version>
-      </dependency>
-      <dependency>
-         <groupId>org.apache.shardingsphere</groupId>
          <artifactId>shardingsphere-transaction-base-seata-at</artifactId>
          <version>${shardingsphere.version}</version>
       </dependency>
@@ -217,10 +212,39 @@ config {
 
 ### Add JDBC Driver to the business project and create ShardingSphere configuration file
 
-After the business project introduces the dependencies involved in the prerequisites, 
-add the Maven dependency of MySQL JDBC Driver.
+After including the dependencies related to the `prerequisites` in the business project, add the following additional dependencies,
 
 ```xml
+<dependency>
+    <groupId>org.apache.shardingsphere</groupId>
+    <artifactId>shardingsphere-jdbc</artifactId>
+    <version>${shardingsphere.version}</version>
+</dependency>
+<dependency>
+    <groupId>org.apache.shardingsphere</groupId>
+    <artifactId>shardingsphere-infra-data-source-pool-hikari</artifactId>
+    <version>${shardingsphere.version}</version>
+</dependency>
+<dependency>
+    <groupId>org.apache.shardingsphere</groupId>
+    <artifactId>shardingsphere-infra-url-classpath</artifactId>
+    <version>${shardingsphere.version}</version>
+</dependency>
+<dependency>
+    <groupId>org.apache.shardingsphere</groupId>
+    <artifactId>shardingsphere-standalone-mode-repository-memory</artifactId>
+    <version>${shardingsphere.version}</version>
+</dependency>
+<dependency>
+    <groupId>org.apache.shardingsphere</groupId>
+    <artifactId>shardingsphere-sharding-core</artifactId>
+    <version>${shardingsphere.version}</version>
+</dependency>
+<dependency>
+    <groupId>org.apache.shardingsphere</groupId>
+    <artifactId>shardingsphere-authority-simple</artifactId>
+    <version>${shardingsphere.version}</version>
+</dependency>
 <dependency>
     <groupId>com.mysql</groupId>
     <artifactId>mysql-connector-j</artifactId>
@@ -647,4 +671,4 @@ org.apache.seata.common.loader.EnhancedServiceNotFoundException: not found servi
 ```
 
 According to https://github.com/apache/incubator-seata/issues/6886 , throwing this exception is the expected behavior of Seata Client.
-Users can configure the log of Seata Client by placing `logback.xml` in the classpath of the business project.
+If logback is used as the implementation of SLF4J, users can configure the Seata Client's logging by placing `logback.xml` in the classpath of their business project.

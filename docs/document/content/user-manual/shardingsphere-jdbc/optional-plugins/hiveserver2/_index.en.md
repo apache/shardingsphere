@@ -18,11 +18,6 @@ The possible Maven dependencies are as follows.
 <dependencies>
     <dependency>
         <groupId>org.apache.shardingsphere</groupId>
-        <artifactId>shardingsphere-jdbc</artifactId>
-        <version>${shardingsphere.version}</version>
-    </dependency>
-    <dependency>
-        <groupId>org.apache.shardingsphere</groupId>
         <artifactId>shardingsphere-jdbc-dialect-hive</artifactId>
         <version>${shardingsphere.version}</version>
     </dependency>
@@ -48,11 +43,6 @@ The following is an example of a possible configuration,
 
 ```xml
 <dependencies>
-    <dependency>
-        <groupId>org.apache.shardingsphere</groupId>
-        <artifactId>shardingsphere-jdbc</artifactId>
-        <version>${shardingsphere.version}</version>
-    </dependency>
     <dependency>
         <groupId>org.apache.shardingsphere</groupId>
         <artifactId>shardingsphere-parser-sql-engine-hive</artifactId>
@@ -95,11 +85,11 @@ services:
 ### Create business tables
 
 Use a third-party tool to create some business databases and business tables in HiveServer2.
-Taking DBeaver Community as an example, if you use Ubuntu 22.04.4, you can quickly install it through Snapcraft.
+Taking DBeaver Community as an example, if you use Ubuntu 24.04, you can quickly install it through Snapcraft.
 
 ```shell
 sudo apt update && sudo apt upgrade -y
-sudo snap install dbeaver-ce
+sudo snap install dbeaver-ce --classic
 snap run dbeaver-ce
 ```
 
@@ -116,8 +106,42 @@ CREATE DATABASE demo_ds_2;
 
 ### Create ShardingSphere data source in business projects
 
-After the business project introduces the dependencies involved in `prerequisites`, 
-write the ShardingSphere data source configuration file `demo.yaml` on the classpath of the business project.
+After including the dependencies related to the `prerequisites` in the business project, add the following additional dependencies,
+
+```xml
+<dependency>
+    <groupId>org.apache.shardingsphere</groupId>
+    <artifactId>shardingsphere-jdbc</artifactId>
+    <version>${shardingsphere.version}</version>
+</dependency>
+<dependency>
+    <groupId>org.apache.shardingsphere</groupId>
+    <artifactId>shardingsphere-infra-data-source-pool-hikari</artifactId>
+    <version>${shardingsphere.version}</version>
+</dependency>
+<dependency>
+    <groupId>org.apache.shardingsphere</groupId>
+    <artifactId>shardingsphere-infra-url-classpath</artifactId>
+    <version>${shardingsphere.version}</version>
+</dependency>
+<dependency>
+    <groupId>org.apache.shardingsphere</groupId>
+    <artifactId>shardingsphere-standalone-mode-repository-memory</artifactId>
+    <version>${shardingsphere.version}</version>
+</dependency>
+<dependency>
+    <groupId>org.apache.shardingsphere</groupId>
+    <artifactId>shardingsphere-sharding-core</artifactId>
+    <version>${shardingsphere.version}</version>
+</dependency>
+<dependency>
+    <groupId>org.apache.shardingsphere</groupId>
+    <artifactId>shardingsphere-authority-simple</artifactId>
+    <version>${shardingsphere.version}</version>
+</dependency>
+```
+
+Write the ShardingSphere data source configuration file `demo.yaml` on the classpath of the business project.
 
 ```yaml
 dataSources:
@@ -226,8 +250,42 @@ CREATE DATABASE demo_ds_1;
 CREATE DATABASE demo_ds_2;
 ```
 
-After the business project introduces the dependencies involved in the `prerequisites`,
-write the ShardingSphere data source configuration file `demo.yaml` on the classpath of the business project.
+After including the dependencies related to the `prerequisites` in the business project, add the following additional dependencies,
+
+```xml
+<dependency>
+    <groupId>org.apache.shardingsphere</groupId>
+    <artifactId>shardingsphere-jdbc</artifactId>
+    <version>${shardingsphere.version}</version>
+</dependency>
+<dependency>
+    <groupId>org.apache.shardingsphere</groupId>
+    <artifactId>shardingsphere-infra-data-source-pool-hikari</artifactId>
+    <version>${shardingsphere.version}</version>
+</dependency>
+<dependency>
+    <groupId>org.apache.shardingsphere</groupId>
+    <artifactId>shardingsphere-infra-url-classpath</artifactId>
+    <version>${shardingsphere.version}</version>
+</dependency>
+<dependency>
+    <groupId>org.apache.shardingsphere</groupId>
+    <artifactId>shardingsphere-standalone-mode-repository-memory</artifactId>
+    <version>${shardingsphere.version}</version>
+</dependency>
+<dependency>
+    <groupId>org.apache.shardingsphere</groupId>
+    <artifactId>shardingsphere-sharding-core</artifactId>
+    <version>${shardingsphere.version}</version>
+</dependency>
+<dependency>
+    <groupId>org.apache.shardingsphere</groupId>
+    <artifactId>shardingsphere-authority-simple</artifactId>
+    <version>${shardingsphere.version}</version>
+</dependency>
+```
+
+Write the ShardingSphere data source configuration file `demo.yaml` on the classpath of the business project.
 
 ```yaml
 dataSources:

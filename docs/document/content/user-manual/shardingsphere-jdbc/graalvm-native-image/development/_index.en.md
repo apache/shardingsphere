@@ -354,7 +354,8 @@ without it being registered for runtime reflection. Add com.oracle.svm.core.code
   java.management@24.0.2/javax.management.StandardMBean.<init>(StandardMBean.java:268)
 ```
 
-The relevant warning cannot be avoided on `GraalVM CE For JDK 24.0.2`.
-Because the no-argument constructor of `com.oracle.svm.core.code.CodeCachePoolMXBean` is marked as an element that is only visible during Native Image generation and cannot be used at Runtime, 
-regardless of the actual Platform,
-through the Java class `org.graalvm.nativeimage.Platform.HOSTED_ONLY`.
+The related warnings cannot be avoided at this time.
+This is because the parameterless constructor of `com.oracle.svm.core.code.CodeCachePoolMXBean` is marked via the Java class `org.graalvm.nativeimage.Platform.HOSTED_ONLY` as an element visible only during Native Image generation and unusable at runtime, regardless of the actual Platform.
+
+Tracing upwards, in `com.alibaba:druid:1.2.20`, which `org.apache.seata:seata-all:2.5.0` depends on,
+`com.alibaba.druid.proxy.DruidDriver` calls `java.lang.management.ManagementFactory#getPlatformMBeanServer()` without confirming whether JMX is available under the GraalVM Native Image.

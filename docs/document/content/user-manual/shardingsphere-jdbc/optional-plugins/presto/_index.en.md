@@ -17,11 +17,6 @@ Possible Maven dependencies are as follows,
 <dependencies>
     <dependency>
         <groupId>org.apache.shardingsphere</groupId>
-        <artifactId>shardingsphere-jdbc</artifactId>
-        <version>${shardingsphere.version}</version>
-    </dependency>
-    <dependency>
-        <groupId>org.apache.shardingsphere</groupId>
         <artifactId>shardingsphere-jdbc-dialect-presto</artifactId>
         <version>${shardingsphere.version}</version>
     </dependency>
@@ -67,7 +62,7 @@ Taking DBeaver Community as an example, if you use Ubuntu 24.04, you can quickly
 
 ```shell
 sudo apt update && sudo apt upgrade -y
-sudo snap install dbeaver-ce
+sudo snap install dbeaver-ce --classic
 snap run dbeaver-ce
 ```
 
@@ -98,8 +93,186 @@ truncate table t_order;
 
 ### Create ShardingSphere data source in business project
 
-After the business project introduces the dependencies involved in `Prerequisites`, 
-write the ShardingSphere data source configuration file `demo.yaml` on the classpath of the business project.
+After including the dependencies related to the `prerequisites` in the business project, add the following additional dependencies,
+
+```xml
+<dependency>
+    <groupId>org.apache.shardingsphere</groupId>
+    <artifactId>shardingsphere-jdbc</artifactId>
+    <version>${shardingsphere.version}</version>
+</dependency>
+<dependency>
+    <groupId>org.apache.shardingsphere</groupId>
+    <artifactId>shardingsphere-infra-data-source-pool-hikari</artifactId>
+    <version>${shardingsphere.version}</version>
+</dependency>
+<dependency>
+    <groupId>org.apache.shardingsphere</groupId>
+    <artifactId>shardingsphere-infra-url-classpath</artifactId>
+    <version>${shardingsphere.version}</version>
+</dependency>
+<dependency>
+    <groupId>org.apache.shardingsphere</groupId>
+    <artifactId>shardingsphere-standalone-mode-repository-memory</artifactId>
+    <version>${shardingsphere.version}</version>
+</dependency>
+<dependency>
+    <groupId>org.apache.shardingsphere</groupId>
+    <artifactId>shardingsphere-sharding-core</artifactId>
+    <version>${shardingsphere.version}</version>
+</dependency>
+<dependency>
+    <groupId>org.apache.shardingsphere</groupId>
+    <artifactId>shardingsphere-authority-simple</artifactId>
+    <version>${shardingsphere.version}</version>
+</dependency>
+```
+
+Write the ShardingSphere data source configuration file `demo.yaml` on the classpath of the business project.
+
+```yaml
+dataSources:
+    ds_0:
+        dataSourceClassName: com.zaxxer.hikari.HikariDataSource
+        driverClassName: org.apache.hive.jdbc.HiveDriver
+        standardJdbcUrl: jdbc:hive2://localhost:10000/demo_ds_0
+    ds_1:
+        dataSourceClassName: com.zaxxer.hikari.HikariDataSource
+        driverClassName: org.apache.hive.jdbc.HiveDriver
+        standardJdbcUrl: jdbc:hive2://localhost:10000/demo_ds_1
+    ds_2:
+        dataSourceClassName: com.zaxxer.hikari.HikariDataSource
+        driverClassName: org.apache.hive.jdbc.HiveDriver
+        standardJdbcUrl: jdbc:hive2://localhost:10000/demo_ds_2
+rules:
+- !SHARDING
+    tables:
+      t_order:
+        actualDataNodes: <LITERAL>ds_0.t_order, ds_1.t_order, ds_2.t_order
+        keyGenerateStrategy:
+          column: order_id
+          keyGeneratorName: snowflake
+    defaultDatabaseStrategy:
+      standard:
+        shardingColumn: user_id
+        shardingAlgorithmName: inline
+    shardingAlgorithms:
+      inline:
+        type: INLINE
+        props:
+          algorithm-expression: ds_${user_id % 2}
+    keyGenerators:
+      snowflake:
+        type: SNOWFLAKE
+```
+
+### Enjoy the integration
+
+Create a ShardingSphere data source to enjoy the integration.
+
+```java
+import com.zaxxer.hikari.HikariConfig;
+import com.zaxxer.hikari.HikariDataSource;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.sql.Statement;
+public class ExampleUtils {
+    void test() throws SQLException {
+        HikariConfig config = new HikariConfig();
+        config.setJdbcUrl("jdbc:shardingsphere:classpath:demo.yaml");
+        config.setDriverClassName("org.apache.shardingsphere.driver.ShardingSphereDriver");
+        try (HikariDataSource dataSource = new HikariDataSource(config);
+             Connection connection = dataSource.getConnection();
+             Statement statement = connection.createStatement()) {
+            statement.execute("CREATE TABLE IF NOT EXISTS t_order (order_id BIGINT NOT NULL, order_type INT, user_id INT NOT NULL, address_id BIGINT NOT NULL, status string, PRIMARY KEY (order_id) disable novalidate) STORED BY ICEBERG STORED AS ORC TBLPROPERTIES ('format-version' = '2')");
+            statement.execute("TRUNCATE TABLE t_order");
+            statement.execute("INSERT INTO t_order (user_id, order_type, address_id, status) VALUES (1, 1, 1, 'INSERT_TEST')");
+            statement.executeQuery("SELECT * FROM t_order");
+            statement.execute("DELETE FROM t_order WHERE user_id=1");
+            statement.execute("DROP TABLE IF EXISTS t_order");
+        }
+    }
+}
+```
+
+## External Integration
+
+### Connect to HiveServer2 with ZooKeeper Service Discovery enabled
+
+`standardJdbcUrl` in the ShardingSphere configuration file can be configured to connect to HiveServer2 with ZooKeeper Service Discovery enabled.
+
+For discussion, assume that there is the following Docker Compose file to start HiveServer2 with ZooKeeper Service Discovery.
+
+```yaml
+name: test-1
+services:
+  zookeeper:
+    image: zookeeper:3.9.4-jre-17
+    ports:
+      - "2181:2181"
+  apache-hive-1:
+    image: apache/hive:4.0.1
+    depends_on:
+      - zookeeper
+    environment:
+      SERVICE_NAME: hiveserver2
+      SERVICE_OPTS: >-
+        -Dhive.server2.support.dynamic.service.discovery=true
+        -Dhive.zookeeper.quorum=zookeeper:2181
+        -Dhive.server2.thrift.bind.host=0.0.0.0
+        -Dhive.server2.thrift.port=10000
+    ports:
+      - "10000:10000"
+```
+
+In DBeaver Community,
+use `standardJdbcUrl` of `jdbc:hive2://127.0.0.1:2181/;serviceDiscoveryMode=zooKeeper;zooKeeperNamespace=hiveserver2` to connect to HiveServer2,
+leave `username` and `password` blank.
+Execute the following SQL,
+
+```sql
+-- noinspection SqlNoDataSourceInspectionForFile
+CREATE DATABASE demo_ds_0;
+CREATE DATABASE demo_ds_1;
+CREATE DATABASE demo_ds_2;
+```
+
+After including the dependencies related to the `prerequisites` in the business project, add the following additional dependencies,
+
+```xml
+<dependency>
+    <groupId>org.apache.shardingsphere</groupId>
+    <artifactId>shardingsphere-jdbc</artifactId>
+    <version>${shardingsphere.version}</version>
+</dependency>
+<dependency>
+    <groupId>org.apache.shardingsphere</groupId>
+    <artifactId>shardingsphere-infra-data-source-pool-hikari</artifactId>
+    <version>${shardingsphere.version}</version>
+</dependency>
+<dependency>
+    <groupId>org.apache.shardingsphere</groupId>
+    <artifactId>shardingsphere-infra-url-classpath</artifactId>
+    <version>${shardingsphere.version}</version>
+</dependency>
+<dependency>
+    <groupId>org.apache.shardingsphere</groupId>
+    <artifactId>shardingsphere-standalone-mode-repository-memory</artifactId>
+    <version>${shardingsphere.version}</version>
+</dependency>
+<dependency>
+    <groupId>org.apache.shardingsphere</groupId>
+    <artifactId>shardingsphere-sharding-core</artifactId>
+    <version>${shardingsphere.version}</version>
+</dependency>
+<dependency>
+    <groupId>org.apache.shardingsphere</groupId>
+    <artifactId>shardingsphere-authority-simple</artifactId>
+    <version>${shardingsphere.version}</version>
+</dependency>
+```
+
+Write the ShardingSphere data source configuration file `demo.yaml` on the classpath of the business project.
 
 ```yaml
 dataSources:

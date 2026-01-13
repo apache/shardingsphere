@@ -17,11 +17,6 @@ ShardingSphere 对 HiveServer2 JDBC Driver 的支持位于可选模块中。
 <dependencies>
     <dependency>
         <groupId>org.apache.shardingsphere</groupId>
-        <artifactId>shardingsphere-jdbc</artifactId>
-        <version>${shardingsphere.version}</version>
-    </dependency>
-    <dependency>
-        <groupId>org.apache.shardingsphere</groupId>
         <artifactId>shardingsphere-jdbc-dialect-hive</artifactId>
         <version>${shardingsphere.version}</version>
     </dependency>
@@ -46,11 +41,6 @@ ShardingSphere 对 HiveServer2 JDBC Driver 的支持位于可选模块中。
 
 ```xml
 <dependencies>
-    <dependency>
-        <groupId>org.apache.shardingsphere</groupId>
-        <artifactId>shardingsphere-jdbc</artifactId>
-        <version>${shardingsphere.version}</version>
-    </dependency>
     <dependency>
         <groupId>org.apache.shardingsphere</groupId>
         <artifactId>shardingsphere-parser-engine-sql-hive</artifactId>
@@ -93,11 +83,11 @@ services:
 ### 创建业务表
 
 通过第三方工具在 HiveServer2 内创建业务库与业务表。
-以 DBeaver Community 为例，若使用 Ubuntu 22.04.4，可通过 Snapcraft 快速安装，
+以 DBeaver Community 为例，若使用 Ubuntu 24.04，可通过 Snapcraft 快速安装，
 
 ```shell
 sudo apt update && sudo apt upgrade -y
-sudo snap install dbeaver-ce
+sudo snap install dbeaver-ce --classic
 snap run dbeaver-ce
 ```
 
@@ -113,7 +103,42 @@ CREATE DATABASE demo_ds_2;
 
 ### 在业务项目创建 ShardingSphere 数据源
 
-在业务项目引入`前提条件`涉及的依赖后，在业务项目的 classpath 上编写 ShardingSphere 数据源的配置文件`demo.yaml`，
+在业务项目引入`前提条件`涉及的依赖后，额外引入如下依赖，
+
+```xml
+<dependency>
+    <groupId>org.apache.shardingsphere</groupId>
+    <artifactId>shardingsphere-jdbc</artifactId>
+    <version>${shardingsphere.version}</version>
+</dependency>
+<dependency>
+    <groupId>org.apache.shardingsphere</groupId>
+    <artifactId>shardingsphere-infra-data-source-pool-hikari</artifactId>
+    <version>${shardingsphere.version}</version>
+</dependency>
+<dependency>
+    <groupId>org.apache.shardingsphere</groupId>
+    <artifactId>shardingsphere-infra-url-classpath</artifactId>
+    <version>${shardingsphere.version}</version>
+</dependency>
+<dependency>
+    <groupId>org.apache.shardingsphere</groupId>
+    <artifactId>shardingsphere-standalone-mode-repository-memory</artifactId>
+    <version>${shardingsphere.version}</version>
+</dependency>
+<dependency>
+    <groupId>org.apache.shardingsphere</groupId>
+    <artifactId>shardingsphere-sharding-core</artifactId>
+    <version>${shardingsphere.version}</version>
+</dependency>
+<dependency>
+    <groupId>org.apache.shardingsphere</groupId>
+    <artifactId>shardingsphere-authority-simple</artifactId>
+    <version>${shardingsphere.version}</version>
+</dependency>
+```
+
+在业务项目的 classpath 上编写 ShardingSphere 数据源的配置文件 `demo.yaml`，
 
 ```yaml
 dataSources:
@@ -222,7 +247,42 @@ CREATE DATABASE demo_ds_1;
 CREATE DATABASE demo_ds_2;
 ```
 
-在业务项目引入`前提条件`涉及的依赖后，在业务项目的 classpath 上编写 ShardingSphere 数据源的配置文件`demo.yaml`，
+在业务项目引入`前提条件`涉及的依赖后，额外引入如下依赖，
+
+```xml
+<dependency>
+    <groupId>org.apache.shardingsphere</groupId>
+    <artifactId>shardingsphere-jdbc</artifactId>
+    <version>${shardingsphere.version}</version>
+</dependency>
+<dependency>
+    <groupId>org.apache.shardingsphere</groupId>
+    <artifactId>shardingsphere-infra-data-source-pool-hikari</artifactId>
+    <version>${shardingsphere.version}</version>
+</dependency>
+<dependency>
+    <groupId>org.apache.shardingsphere</groupId>
+    <artifactId>shardingsphere-infra-url-classpath</artifactId>
+    <version>${shardingsphere.version}</version>
+</dependency>
+<dependency>
+    <groupId>org.apache.shardingsphere</groupId>
+    <artifactId>shardingsphere-standalone-mode-repository-memory</artifactId>
+    <version>${shardingsphere.version}</version>
+</dependency>
+<dependency>
+    <groupId>org.apache.shardingsphere</groupId>
+    <artifactId>shardingsphere-sharding-core</artifactId>
+    <version>${shardingsphere.version}</version>
+</dependency>
+<dependency>
+    <groupId>org.apache.shardingsphere</groupId>
+    <artifactId>shardingsphere-authority-simple</artifactId>
+    <version>${shardingsphere.version}</version>
+</dependency>
+```
+
+在业务项目的 classpath 上编写 ShardingSphere 数据源的配置文件 `demo.yaml`，
 
 ```yaml
 dataSources:
