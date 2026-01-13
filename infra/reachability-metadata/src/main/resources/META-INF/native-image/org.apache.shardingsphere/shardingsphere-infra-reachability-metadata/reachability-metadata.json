@@ -121,6 +121,13 @@
     },
     {
       "condition": {
+        "typeReached": "java.lang.Math"
+      },
+      "type": "java.lang.Math",
+      "allPublicMethods": true
+    },
+    {
+      "condition": {
         "typeReached": "com.sun.jmx.mbeanserver.MBeanIntrospector"
       },
       "type": "java.lang.Deprecated",
@@ -128,72 +135,16 @@
     },
     {
       "condition": {
-        "typeReached": "sun.net.www.protocol.http.HttpURLConnection"
-      },
-      "type": "java.net.SocketException",
-      "allPublicConstructors": true
-    },
-    {
-      "condition": {
-        "typeReached": "java.util.Collections"
-      },
-      "type": "java.util.Collections$UnmodifiableMap",
-      "allDeclaredFields": true,
-      "allDeclaredMethods": true,
-      "allDeclaredConstructors": true
-    },
-    {
-      "condition": {
-        "typeReached": "java.util.Collections"
-      },
-      "type": "java.util.Collections$SingletonMap",
-      "allDeclaredFields": true,
-      "allDeclaredMethods": true,
-      "allDeclaredConstructors": true
-    },
-    {
-      "condition": {
-        "typeReached": "java.util.AbstractList"
-      },
-      "type": "java.util.AbstractList",
-      "allDeclaredFields": true
-    },
-    {
-      "condition": {
-        "typeReached": "java.util.Arrays"
-      },
-      "type": "java.util.Arrays$ArrayList",
-      "allDeclaredFields": true,
-      "allDeclaredMethods": true,
-      "allDeclaredConstructors": true
-    },
-    {
-      "condition": {
-        "typeReached": "java.util.RandomAccess"
-      },
-      "type": "java.util.RandomAccess",
-      "allDeclaredMethods": true
-    },
-    {
-      "condition": {
-        "typeReached": "java.util.HashSet"
-      },
-      "type": "java.util.HashSet",
-      "allDeclaredMethods": true,
-      "allDeclaredConstructors": true
-    },
-    {
-      "condition": {
-        "typeReached": "java.util.LinkedHashSet"
-      },
-      "type": "java.util.LinkedHashSet",
-      "allPublicConstructors": true
-    },
-    {
-      "condition": {
         "typeReached": "com.sun.jmx.mbeanserver.DefaultMXBeanMappingFactory"
       },
       "type": "java.lang.StackTraceElement",
+      "allPublicMethods": true
+    },
+    {
+      "condition": {
+        "typeReached": "java.lang.System"
+      },
+      "type": "java.lang.System",
       "allPublicMethods": true
     },
     {
@@ -280,6 +231,13 @@
     },
     {
       "condition": {
+        "typeReached": "sun.net.www.protocol.http.HttpURLConnection"
+      },
+      "type": "java.net.SocketException",
+      "allPublicConstructors": true
+    },
+    {
+      "condition": {
         "typeReached": "java.net.HttpURLConnection"
       },
       "type": "java.net.SocketTimeoutException",
@@ -287,10 +245,129 @@
     },
     {
       "condition": {
+        "typeReached": "java.util.Collections"
+      },
+      "type": "java.util.Collections",
+      "allPublicMethods": true
+    },
+    {
+      "condition": {
+        "typeReached": "java.util.Collections"
+      },
+      "type": "java.util.Collections$UnmodifiableMap",
+      "allDeclaredFields": true,
+      "allDeclaredMethods": true,
+      "allDeclaredConstructors": true
+    },
+    {
+      "condition": {
+        "typeReached": "java.util.Collections"
+      },
+      "type": "java.util.Collections$SingletonMap",
+      "allDeclaredFields": true,
+      "allDeclaredMethods": true,
+      "allDeclaredConstructors": true
+    },
+    {
+      "condition": {
+        "typeReached": "java.util.AbstractList"
+      },
+      "type": "java.util.AbstractList",
+      "allDeclaredFields": true
+    },
+    {
+      "condition": {
+        "typeReached": "java.util.Arrays"
+      },
+      "type": "java.util.Arrays",
+      "allPublicMethods": true
+    },
+    {
+      "condition": {
+        "typeReached": "java.util.Arrays"
+      },
+      "type": "java.util.Arrays$ArrayList",
+      "allDeclaredFields": true,
+      "allDeclaredMethods": true,
+      "allDeclaredConstructors": true
+    },
+    {
+      "condition": {
+        "typeReached": "java.util.RandomAccess"
+      },
+      "type": "java.util.RandomAccess",
+      "allDeclaredMethods": true
+    },
+    {
+      "condition": {
+        "typeReached": "java.util.HashSet"
+      },
+      "type": "java.util.HashSet",
+      "allDeclaredMethods": true,
+      "allDeclaredConstructors": true
+    },
+    {
+      "condition": {
+        "typeReached": "java.util.LinkedHashSet"
+      },
+      "type": "java.util.LinkedHashSet",
+      "allPublicConstructors": true
+    },
+    {
+      "condition": {
+        "typeReached": "java.util.Objects"
+      },
+      "type": "java.util.Objects",
+      "allPublicMethods": true
+    },
+    {
+      "condition": {
         "typeReached": "java.util.Properties"
       },
       "type": "java.util.Properties",
       "allPublicConstructors": true
+    },
+    {
+      "condition": {
+        "typeReached": "java.util.TimeZone"
+      },
+      "type": "java.util.TimeZone",
+      "allPublicMethods": true
+    },
+    {
+      "condition": {
+        "typeReached": "java.util.UUID"
+      },
+      "type": "java.util.UUID",
+      "allPublicMethods": true
+    },
+    {
+      "condition": {
+        "typeReached": "java.util.function.BiPredicate"
+      },
+      "type": "java.util.function.BiPredicate",
+      "allPublicMethods": true
+    },
+    {
+      "condition": {
+        "typeReached": "java.util.function.Consumer"
+      },
+      "type": "java.util.function.Consumer",
+      "allPublicMethods": true
+    },
+    {
+      "condition": {
+        "typeReached": "java.util.function.Predicate"
+      },
+      "type": "java.util.function.Predicate",
+      "allPublicMethods": true
+    },
+    {
+      "condition": {
+        "typeReached": "java.sql.ResultSet"
+      },
+      "type": "java.sql.ResultSet",
+      "allPublicMethods": true
     },
     {
       "condition": {
