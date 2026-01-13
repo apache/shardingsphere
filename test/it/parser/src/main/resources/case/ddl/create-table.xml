@@ -559,6 +559,32 @@
             <column name="column3" />
         </column-definition>
     </create-table>
+
+    <create-table sql-case-id="create_table_with_inline_foreign_key_sql92">
+        <table name="t_order_item" start-index="13" stop-index="24" />
+        <column-definition type="INT" start-index="27" stop-index="37">
+            <column name="item_id" />
+        </column-definition>
+        <column-definition type="INT" start-index="40" stop-index="117">
+            <column name="order_id" />
+            <referenced-table name="t_order" start-index="64" stop-index="70" />
+        </column-definition>
+        <column-definition type="INT" start-index="120" stop-index="130">
+            <column name="user_id" />
+        </column-definition>
+        <column-definition type="VARCHAR" start-index="133" stop-index="150">
+            <column name="status" />
+        </column-definition>
+        <column-definition type="VARCHAR" start-index="153" stop-index="171">
+            <column name="column1" />
+        </column-definition>
+        <column-definition type="VARCHAR" start-index="174" stop-index="192">
+            <column name="column2" />
+        </column-definition>
+        <column-definition type="VARCHAR" start-index="195" stop-index="213">
+            <column name="column3" />
+        </column-definition>
+    </create-table>
     
     <create-table sql-case-id="create_table_with_inline_constraints">
         <table name="t_order" start-index="13" stop-index="19" />

@@ -32,6 +32,21 @@
         </order-by>
     </select>
 
+    <select sql-case-id="select_order_by_asc_and_index_desc_sql92">
+        <from>
+            <simple-table name="t_order" alias="o" start-index="14" stop-index="22" />
+        </from>
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" />
+        </projections>
+        <order-by>
+            <column-item name="order_id" start-index="33" stop-index="42">
+                <owner name="o" start-index="33" stop-index="33" />
+            </column-item>
+            <index-item index="2" order-direction="DESC" start-index="45" stop-index="45" />
+        </order-by>
+    </select>
+
     <select sql-case-id="select_order_by_desc_and_index_asc">
         <from>
             <join-table join-type="COMMA">

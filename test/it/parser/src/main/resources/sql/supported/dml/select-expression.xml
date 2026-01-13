@@ -51,6 +51,7 @@
     <sql-case id="select_where_with_predicate_with_sounds_like" value="SELECT * FROM t_order WHERE t_order.order_id SOUNDS LIKE '1%'" db-types="MySQL,Presto,Doris" />
     <sql-case id="select_where_with_predicate_with_like" value="SELECT * FROM t_order WHERE t_order.order_id NOT LIKE '1%' ESCAPE '$'" db-types="MySQL,Presto,Hive" />
     <sql-case id="select_where_with_predicate_with_not_like" value="SELECT * FROM t_order WHERE t_order.status NOT LIKE '1%'" db-types="MySQL,PostgreSQL,openGauss,Hive" />
+    <sql-case id="select_where_with_predicate_with_not_like_sql92" value="SELECT * FROM t_order WHERE t_order.status NOT LIKE '1%'" db-types="SQL92" />
     <sql-case id="select_where_with_predicate_with_regexp" value="SELECT * FROM t_order WHERE t_order.order_id NOT REGEXP '[123]'" db-types="MySQL,Presto,Hive" />
     <sql-case id="select_where_with_predicate_with_rlike" value="SELECT * FROM t_order WHERE t_order.order_id NOT RLIKE '[123]'" db-types="MySQL,Presto,Doris,Hive" />
     <sql-case id="select_where_with_bit_expr_with_vertical_bar" value="SELECT * FROM t_order WHERE t_order.order_id | ?" db-types="MySQL" />

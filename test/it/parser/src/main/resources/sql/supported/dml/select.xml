@@ -423,4 +423,11 @@
     <sql-case id="select_union_firebird" value="SELECT 1 UNION SELECT 2" db-types="Firebird"/>
     <sql-case id="select_subquery_table_firebird" value="SELECT * FROM (SELECT 1) sub" db-types="Firebird"/>
     <sql-case id="select_subquery_with_with_firebird" value="SELECT * FROM (WITH t AS (SELECT 1) SELECT * FROM t) sub" db-types="Firebird"/>
+    <sql-case id="select_not_expression_sql92" value="SELECT NOT (1=1) FROM t_order" db-types="SQL92" />
+    <sql-case id="select_where_is_true_sql92" value="SELECT * FROM t_order WHERE active IS TRUE" db-types="SQL92" />
+    <sql-case id="select_where_is_false_sql92" value="SELECT * FROM t_order WHERE active IS FALSE" db-types="SQL92" />
+    <sql-case id="select_distinct_simple_sql92" value="SELECT DISTINCT user_id FROM t_order" db-types="SQL92" />
+    <sql-case id="select_distinct_with_count_sql92" value="SELECT COUNT(DISTINCT order_id) c FROM t_order WHERE order_id &lt; 1100" db-types="SQL92" />
+    <sql-case id="select_having_sql92" value="SELECT user_id, COUNT(*) AS cnt FROM t_order GROUP BY user_id HAVING COUNT(*) &gt; 1" db-types="SQL92" />
+    <sql-case id="select_cast_int_sql92" value="SELECT CAST(user_id AS INT) FROM t_order" db-types="SQL92" />
 </sql-cases>
