@@ -12654,6 +12654,247 @@
         </from>
     </select>
 
+    <select sql-case-id="select_all_param_alias_schema_sql92" parameters="1">
+        <projections start-index="11" stop-index="20">
+            <expression-projection text="1" start-index="11" stop-index="20" alias="aid">
+                <expr>
+                    <literal-expression value="1" start-index="11" stop-index="11" />
+                    <parameter-marker-expression parameter-index="0" start-index="11" stop-index="11" />
+                </expr>
+            </expression-projection>
+        </projections>
+        <from>
+            <simple-table name="t_order" start-index="27" stop-index="41">
+                <owner name="schema1" start-index="27" stop-index="33" />
+            </simple-table>
+        </from>
+        <where start-index="43" stop-index="80">
+            <expr>
+                <binary-operation-expression start-index="49" stop-index="80">
+                    <left>
+                        <binary-operation-expression start-index="50" stop-index="61">
+                            <left>
+                                <column name="order_id" start-index="50" stop-index="57" />
+                            </left>
+                            <operator>=</operator>
+                            <right>
+                                <literal-expression value="1" start-index="61" stop-index="61" />
+                            </right>
+                        </binary-operation-expression>
+                    </left>
+                    <operator>OR</operator>
+                    <right>
+                        <binary-operation-expression start-index="67" stop-index="80">
+                            <left>
+                                <column name="active" start-index="67" stop-index="72" />
+                            </left>
+                            <operator>IS</operator>
+                            <right>
+                                <literal-expression value="NULL" start-index="77" stop-index="80" />
+                            </right>
+                        </binary-operation-expression>
+                    </right>
+                </binary-operation-expression>
+            </expr>
+        </where>
+    </select>
+
+    <select sql-case-id="select_like_between_and_sql92">
+        <projections start-index="7" stop-index="12">
+            <column-projection name="status" start-index="7" stop-index="12" />
+        </projections>
+        <from>
+            <simple-table name="t_order" start-index="19" stop-index="25" />
+        </from>
+        <where start-index="27" stop-index="78">
+            <expr>
+                <binary-operation-expression start-index="33" stop-index="78">
+                    <left>
+                        <binary-operation-expression start-index="33" stop-index="48">
+                            <left>
+                                <column name="status" start-index="33" stop-index="38" />
+                            </left>
+                            <operator>LIKE</operator>
+                            <right>
+                                <list-expression start-index="45" stop-index="48">
+                                    <items>
+                                        <literal-expression value="1%" start-index="45" stop-index="48" />
+                                    </items>
+                                </list-expression>
+                            </right>
+                        </binary-operation-expression>
+                    </left>
+                    <operator>AND</operator>
+                    <right>
+                        <between-expression start-index="54" stop-index="78">
+                            <left>
+                                <column name="order_id" start-index="54" stop-index="61" />
+                            </left>
+                            <between-expr>
+                                <literal-expression value="1" start-index="71" stop-index="71" />
+                            </between-expr>
+                            <and-expr>
+                                <literal-expression value="10" start-index="77" stop-index="78" />
+                            </and-expr>
+                        </between-expression>
+                    </right>
+                </binary-operation-expression>
+            </expr>
+        </where>
+    </select>
+
+    <select sql-case-id="select_safe_eq_sql92">
+        <projections start-index="7" stop-index="14">
+            <column-projection name="order_id" start-index="7" stop-index="14" />
+        </projections>
+        <from>
+            <simple-table name="t_order" start-index="21" stop-index="27" />
+        </from>
+        <where start-index="29" stop-index="48">
+            <expr>
+                <binary-operation-expression start-index="35" stop-index="48">
+                    <left>
+                        <column name="order_id" start-index="35" stop-index="42" />
+                    </left>
+                    <operator>&lt;=&gt;</operator>
+                    <right>
+                        <literal-expression value="1" start-index="48" stop-index="48" />
+                    </right>
+                </binary-operation-expression>
+            </expr>
+        </where>
+    </select>
+
+    <select sql-case-id="select_in_list_sql92">
+        <projections start-index="7" stop-index="14">
+            <column-projection name="order_id" start-index="7" stop-index="14" />
+        </projections>
+        <from>
+            <simple-table name="t_order" start-index="21" stop-index="27" />
+        </from>
+        <where start-index="29" stop-index="52">
+            <expr>
+                <in-expression start-index="35" stop-index="52">
+                    <not>false</not>
+                    <left>
+                        <column name="order_id" start-index="35" stop-index="42" />
+                    </left>
+                    <right>
+                        <list-expression start-index="47" stop-index="52">
+                            <items>
+                                <literal-expression value="1" start-index="48" stop-index="48" />
+                            </items>
+                            <items>
+                                <literal-expression value="2" start-index="51" stop-index="51" />
+                            </items>
+                        </list-expression>
+                    </right>
+                </in-expression>
+            </expr>
+        </where>
+    </select>
+
+    <select sql-case-id="select_not_between_sql92">
+        <projections start-index="7" stop-index="14">
+            <column-projection name="order_id" start-index="7" stop-index="14" />
+        </projections>
+        <from>
+            <simple-table name="t_order" start-index="21" stop-index="27" />
+        </from>
+        <where start-index="29" stop-index="62">
+            <expr>
+                <between-expression start-index="35" stop-index="62">
+                    <not>true</not>
+                    <left>
+                        <column name="order_id" start-index="35" stop-index="42" />
+                    </left>
+                    <between-expr>
+                        <literal-expression value="1" start-index="56" stop-index="56" />
+                    </between-expr>
+                    <and-expr>
+                        <literal-expression value="2" start-index="62" stop-index="62" />
+                    </and-expr>
+                </between-expression>
+            </expr>
+        </where>
+    </select>
+
+    <select sql-case-id="select_addition_expr_sql92">
+        <projections start-index="7" stop-index="18">
+            <expression-projection text="order_id + 1" start-index="7" stop-index="18">
+                <expr>
+                    <binary-operation-expression start-index="7" stop-index="18">
+                        <left>
+                            <column name="order_id" start-index="7" stop-index="14" />
+                        </left>
+                        <operator>+</operator>
+                        <right>
+                            <literal-expression value="1" start-index="18" stop-index="18" />
+                        </right>
+                    </binary-operation-expression>
+                </expr>
+            </expression-projection>
+        </projections>
+        <from>
+            <simple-table name="t_order" start-index="25" stop-index="31" />
+        </from>
+    </select>
+
+    <select sql-case-id="select_hex_literal_sql92">
+        <projections start-index="7" stop-index="9">
+            <column-projection name="0x1" start-index="7" stop-index="9" />
+        </projections>
+        <from>
+            <simple-table name="t_order" start-index="16" stop-index="22" />
+        </from>
+    </select>
+
+    <select sql-case-id="select_bit_literal_sql92">
+        <projections start-index="7" stop-index="10">
+            <expression-projection text="B'1'" start-index="7" stop-index="10">
+                <expr>
+                    <common-expression text="B'1'" start-index="7" stop-index="10" />
+                </expr>
+            </expression-projection>
+        </projections>
+        <from>
+            <simple-table name="t_order" start-index="17" stop-index="23" />
+        </from>
+    </select>
+
+    <select sql-case-id="select_cast_literal_sql92">
+        <projections start-index="7" stop-index="20">
+            <expression-projection text="CAST(1 AS INT)" start-index="7" stop-index="20">
+                <expr>
+                    <function function-name="CAST" text="CAST(1 AS INT)" start-index="7" stop-index="20">
+                        <parameter>
+                            <literal-expression value="1" start-index="12" stop-index="12" />
+                        </parameter>
+                        <parameter>
+                            <data-type value="INT" start-index="17" stop-index="19" />
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+        <from>
+            <simple-table name="t_order" start-index="27" stop-index="33" />
+        </from>
+    </select>
+
+    <select sql-case-id="select_boolean_literal_sql92">
+        <projections start-index="7" stop-index="10">
+            <expression-projection text="true" start-index="7" stop-index="10">
+                <expr>
+                    <literal-expression value="true" start-index="7" stop-index="10" />
+                </expr>
+            </expression-projection>
+        </projections>
+        <from>
+            <simple-table name="t_order" start-index="17" stop-index="23" />
+        </from>
+    </select>
+
     <select sql-case-id="select_subquery_with_with_firebird">
         <projections start-index="7" stop-index="7">
             <shorthand-projection start-index="7" stop-index="7" />

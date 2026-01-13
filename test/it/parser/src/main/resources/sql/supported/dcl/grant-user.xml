@@ -179,4 +179,5 @@
     <sql-case id="grant_create_tablespace_doris" value="GRANT CREATE TABLESPACE ON *.* TO user1" db-types="Doris" />
     <sql-case id="grant_create_role_privilege_doris" value="GRANT CREATE ROLE ON *.* TO user1" db-types="Doris" />
     <sql-case id="grant_drop_role_privilege_doris" value="GRANT DROP ROLE ON *.* TO user1" db-types="Doris" />
+    <sql-case id="grant_select_sql92" value="GRANT SELECT (order_id) ON t_order TO user1" db-types="SQL92" />
 </sql-cases>

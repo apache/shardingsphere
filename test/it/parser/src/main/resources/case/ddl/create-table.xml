@@ -586,6 +586,17 @@
         </column-definition>
     </create-table>
     
+    <create-table sql-case-id="create_table_constraint_sql92">
+        <table name="t_constraint" start-index="13" stop-index="24" />
+        <column-definition type="INT" primary-key="true" start-index="27" stop-index="50">
+            <column name="order_id" />
+        </column-definition>
+        <column-definition type="VARCHAR" start-index="53" stop-index="70">
+            <column name="status" />
+        </column-definition>
+        <constraint-definition start-index="73" stop-index="119" />
+    </create-table>
+    
     <create-table sql-case-id="create_table_with_inline_constraints">
         <table name="t_order" start-index="13" stop-index="19" />
         <column-definition type="INT" primary-key="true" start-index="22" stop-index="52">
