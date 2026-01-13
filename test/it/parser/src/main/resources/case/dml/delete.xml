@@ -874,4 +874,21 @@
     <delete sql-case-id="delete_without_where_sql92">
         <table name="t_order" start-index="12" stop-index="18" />
     </delete>
+
+    <delete sql-case-id="delete_with_where_sql92">
+        <table name="t_order" start-index="12" stop-index="18" />
+        <where start-index="20" stop-index="37">
+            <expr>
+                <binary-operation-expression start-index="26" stop-index="37">
+                    <left>
+                        <column name="order_id" start-index="26" stop-index="33" />
+                    </left>
+                    <operator>=</operator>
+                    <right>
+                        <literal-expression value="1" start-index="37" stop-index="37" />
+                    </right>
+                </binary-operation-expression>
+            </expr>
+        </where>
+    </delete>
 </sql-parser-test-cases>

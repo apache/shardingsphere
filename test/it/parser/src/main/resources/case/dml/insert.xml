@@ -5548,4 +5548,37 @@
             </value>
         </values>
     </insert>
+
+    <insert sql-case-id="insert_with_columns_sql92">
+        <table name="t_order" start-index="12" stop-index="18" />
+        <columns start-index="19" stop-index="36">
+            <column name="order_id" start-index="20" stop-index="27" />
+            <column name="status" start-index="30" stop-index="35" />
+        </columns>
+        <values>
+            <value>
+                <assignment-value>
+                    <literal-expression value="1" start-index="46" stop-index="46" />
+                </assignment-value>
+                <assignment-value>
+                    <literal-expression value="ok" start-index="49" stop-index="52" />
+                </assignment-value>
+            </value>
+        </values>
+    </insert>
+
+    <insert sql-case-id="insert_without_columns_sql92">
+        <table name="t_order" start-index="12" stop-index="18" />
+        <columns start-index="19" stop-index="19" />
+        <values>
+            <value>
+                <assignment-value>
+                    <literal-expression value="1" start-index="28" stop-index="28" />
+                </assignment-value>
+                <assignment-value>
+                    <literal-expression value="ok" start-index="31" stop-index="34" />
+                </assignment-value>
+            </value>
+        </values>
+    </insert>
 </sql-parser-test-cases>

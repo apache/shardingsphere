@@ -280,6 +280,33 @@
         </set>
     </update>
 
+    <update sql-case-id="update_with_where_sql92">
+        <table start-index="7" stop-index="13">
+            <simple-table name="t_order" start-index="7" stop-index="13" />
+        </table>
+        <set start-index="15" stop-index="30">
+            <assignment start-index="19" stop-index="30">
+                <column name="status" start-index="19" stop-index="24" />
+                <assignment-value>
+                    <literal-expression value="x" start-index="28" stop-index="30" />
+                </assignment-value>
+            </assignment>
+        </set>
+        <where start-index="32" stop-index="49">
+            <expr>
+                <binary-operation-expression start-index="38" stop-index="49">
+                    <left>
+                        <column name="order_id" start-index="38" stop-index="45" />
+                    </left>
+                    <operator>=</operator>
+                    <right>
+                        <literal-expression value="1" start-index="49" stop-index="49" />
+                    </right>
+                </binary-operation-expression>
+            </expr>
+        </where>
+    </update>
+
     <update sql-case-id="update_with_extra_keywords" parameters="'update', 1, 1">
         <table start-index="27" stop-index="33">
             <simple-table name="t_order" start-index="27" stop-index="33" />
