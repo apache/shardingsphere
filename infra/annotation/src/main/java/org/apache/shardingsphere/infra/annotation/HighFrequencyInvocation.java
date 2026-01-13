@@ -25,12 +25,8 @@ import java.lang.annotation.Target;
 /**
  * The class to which this annotation is applied is high frequency invocation.
  */
-@Target({
-        ElementType.TYPE, ElementType.FIELD, ElementType.METHOD,
-        ElementType.CONSTRUCTOR
-})
+@Target({ElementType.TYPE, ElementType.FIELD, ElementType.METHOD, ElementType.CONSTRUCTOR})
 @Retention(RetentionPolicy.SOURCE)
-
 public @interface HighFrequencyInvocation {
     
     /**

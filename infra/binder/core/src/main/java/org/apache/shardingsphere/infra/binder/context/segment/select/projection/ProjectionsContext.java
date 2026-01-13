@@ -19,12 +19,14 @@ package org.apache.shardingsphere.infra.binder.context.segment.select.projection
 
 import lombok.Getter;
 import lombok.ToString;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.impl.AggregationDistinctProjection;
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.impl.AggregationProjection;
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.impl.ColumnProjection;
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.impl.DerivedProjection;
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.impl.ExpressionProjection;
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.impl.ShorthandProjection;
+import org.apache.shardingsphere.sql.parser.statement.core.enums.AggregationType;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.AggregationProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.util.SQLUtils;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
@@ -170,10 +172,12 @@ public final class ProjectionsContext {
      */
     public List<AggregationProjection> getExpandAggregationProjections() {
         List<AggregationProjection> result = new LinkedList<>();
+        int derivedColumnIndex = getExpandProjections().size() + 1;
         int columnIndex = 1;
         for (Projection each : projections) {
             if (each instanceof AggregationProjection) {
                 AggregationProjection aggregationProjection = (AggregationProjection) each;
+                aggregationProjection.setIndex(columnIndex);
                 result.add(aggregationProjection);
                 result.addAll(aggregationProjection.getDerivedAggregationProjections());
             } else if (each instanceof ExpressionProjection) {
@@ -183,8 +187,13 @@ public final class ProjectionsContext {
                             eachSegment.getType(), eachSegment,
                             eachSegment.getAliasName().map(IdentifierValue::new).orElse(null),
                             expressionProjection.getDatabaseType());
-                    nested.setIndex(columnIndex);
+                    nested.setIndex(derivedColumnIndex++);
+                    if (AggregationType.AVG == eachSegment.getType()) {
+                        addDerivedProjectionsForNestedAvg(nested, expressionProjection.getDatabaseType(), derivedColumnIndex);
+                        derivedColumnIndex += 2;
+                    }
                     result.add(nested);
+                    result.addAll(nested.getDerivedAggregationProjections());
                 }
             }
             columnIndex++;
@@ -219,5 +228,21 @@ public final class ProjectionsContext {
         }
         Projection projection = expandProjections.get(columnIndex - 1);
         return projection instanceof ColumnProjection ? Optional.of((ColumnProjection) projection) : Optional.empty();
+    }
+    
+    /**
+     * Add derived projections for nested AVG.
+     *
+     * @param avgProjection AVG projection
+     * @param databaseType database type
+     * @param currentDerivedIndex current derived index
+     */
+    private void addDerivedProjectionsForNestedAvg(final AggregationProjection avgProjection, final DatabaseType databaseType, final int currentDerivedIndex) {
+        AggregationProjection sumProjection = new AggregationProjection(AggregationType.SUM, avgProjection.getAggregationSegment(), null, databaseType);
+        sumProjection.setIndex(currentDerivedIndex);
+        AggregationProjection countProjection = new AggregationProjection(AggregationType.COUNT, avgProjection.getAggregationSegment(), null, databaseType);
+        countProjection.setIndex(currentDerivedIndex + 1);
+        avgProjection.getDerivedAggregationProjections().add(sumProjection);
+        avgProjection.getDerivedAggregationProjections().add(countProjection);
     }
 }
