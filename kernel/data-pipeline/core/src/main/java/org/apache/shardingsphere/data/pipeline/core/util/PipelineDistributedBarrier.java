@@ -78,7 +78,7 @@ public final class PipelineDistributedBarrier {
     public void register(final String barrierPath, final int totalCount) {
         log.info("Register, barrier path: {}, total count: {}", barrierPath, totalCount);
         getRepository().persist(barrierPath, "");
-        countDownLatchHolders.computeIfAbsent(barrierPath, key -> new InnerCountDownLatchHolder(totalCount, new CountDownLatch(1)));
+        countDownLatchHolders.computeIfAbsent(barrierPath, key -> new InnerCountDownLatchHolder(totalCount));
     }
     
     /**
@@ -108,7 +108,7 @@ public final class PipelineDistributedBarrier {
         getRepository().delete(barrierPath);
         InnerCountDownLatchHolder holder = countDownLatchHolders.remove(barrierPath);
         if (null != holder) {
-            holder.getCountDownLatch().countDown();
+            holder.releaseLatch();
         }
     }
     
@@ -127,7 +127,7 @@ public final class PipelineDistributedBarrier {
             return false;
         }
         try {
-            boolean result = holder.getCountDownLatch().await(timeout, timeUnit);
+            boolean result = holder.awaitLatchReleasing(timeout, timeUnit);
             if (!result) {
                 log.warn("Await timeout, barrier path: {}, timeout: {}, time unit: {}", barrierPath, timeout, timeUnit);
             } else {
@@ -156,18 +156,26 @@ public final class PipelineDistributedBarrier {
             int childrenSize = getRepository().getChildrenKeys(barrierPath).size();
             log.info("Notify children node count check, barrier path: {}, children size: {}, total count: {}", barrierPath, childrenSize, holder.getTotalCount());
             if (childrenSize == holder.getTotalCount()) {
-                holder.getCountDownLatch().countDown();
+                holder.releaseLatch();
             }
         }
     }
     
     @RequiredArgsConstructor
-    @Getter
     private static final class InnerCountDownLatchHolder {
         
+        @Getter
         private final int totalCount;
         
-        private final CountDownLatch countDownLatch;
+        private final CountDownLatch countDownLatch = new CountDownLatch(1);
+        
+        public boolean awaitLatchReleasing(final long timeout, final TimeUnit timeUnit) throws InterruptedException {
+            return countDownLatch.await(timeout, timeUnit);
+        }
+        
+        public void releaseLatch() {
+            countDownLatch.countDown();
+        }
     }
     
     private class PersistRepositoryLazyInitializer extends LazyInitializer<ClusterPersistRepository> {
