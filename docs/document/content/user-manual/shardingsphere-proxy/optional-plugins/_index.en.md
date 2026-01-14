@@ -26,7 +26,7 @@ The following lists all optional plugins in the format of `groupId:artifactId`.
   - `org.apache.shardingsphere:shardingsphere-infra-data-source-pool-hikari`, provides connection pool creation and property adaptation implementation for `dataSources.<data_source_name>.dataSourceClassName=com.zaxxer.hikari.HikariDataSource`
 - Permissions and authentication implementation
   - `org.apache.shardingsphere:shardingsphere-authority-simple`, provides permission and authentication implementation with `authority.privilege.type=ALL_PERMITTED`
-  - `org.apache.shardingsphere:shardingsphere-authority-simple`, provides permission and authentication implementation with `authority.privilege.type=DATABASE_PERMITTED`
+  - `org.apache.shardingsphere:shardingsphere-authority-database`, provides permission and authentication implementation with `authority.privilege.type=DATABASE_PERMITTED`
 - Distributed transactions
   - `org.apache.shardingsphere:shardingsphere-transaction-xa-atomikos`, provides distributed transaction implementation for `transaction.providerType=Atomikos`
   - `org.apache.shardingsphere:shardingsphere-transaction-xa-narayana`, provides distributed transaction implementation for `transaction.providerType=Narayana`

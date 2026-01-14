@@ -27,7 +27,7 @@ ShardingSphere 默认情况下仅包含核心 SPI 的实现，在 Git Source 存
   - `org.apache.shardingsphere:shardingsphere-infra-data-source-pool-hikari`，提供 `dataSources.<data_source_name>.dataSourceClassName=com.zaxxer.hikari.HikariDataSource` 的连接池创建与属性适配实现
 - 权限与认证实现
   - `org.apache.shardingsphere:shardingsphere-authority-simple`，提供 `authority.privilege.type=ALL_PERMITTED` 的权限与认证实现
-  - `org.apache.shardingsphere:shardingsphere-authority-simple`，提供 `authority.privilege.type=DATABASE_PERMITTED` 的权限与认证实现
+  - `org.apache.shardingsphere:shardingsphere-authority-database`，提供 `authority.privilege.type=DATABASE_PERMITTED` 的权限与认证实现
 - 分布式事务
   - `org.apache.shardingsphere:shardingsphere-transaction-xa-atomikos`，提供 `transaction.providerType=Atomikos` 的分布式事务实现
   - `org.apache.shardingsphere:shardingsphere-transaction-xa-narayana`，提供 `transaction.providerType=Narayana` 的分布式事务实现
