@@ -34,9 +34,4 @@ public final class YamlPipelineProcessConfiguration implements YamlConfiguration
     private YamlPipelineWriteConfiguration write = new YamlPipelineWriteConfiguration();
     
     private YamlAlgorithmConfiguration streamChannel;
-    
-    @Override
-    public boolean isEmpty() {
-        return null == streamChannel;
-    }
 }
