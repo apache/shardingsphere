@@ -73,14 +73,24 @@ class DDLE2EIT implements SQLE2EIT {
         }
         SQLE2EITContext context = new SQLE2EITContext(testParam);
         init(context);
-        try (Connection connection = environmentEngine.getTargetDataSource().getConnection()) {
+        Connection connection = environmentEngine.getTargetDataSource().getConnection();
+        try {
+            connection.setAutoCommit(false);
             if (SQLExecuteType.LITERAL == context.getSqlExecuteType()) {
                 executeUpdateForStatement(context, connection);
             } else {
                 executeUpdateForPreparedStatement(context, connection);
             }
             assertTableMetaData(testParam, context);
+            connection.commit();
+        } catch (Exception e) {
+            connection.rollback();
+            throw e;
         } finally {
+            connection.setAutoCommit(true);
+            try {
+                connection.close();
+            } catch (Exception ignored) {}
             tearDown(context);
         }
     }
@@ -109,14 +119,24 @@ class DDLE2EIT implements SQLE2EIT {
         }
         SQLE2EITContext context = new SQLE2EITContext(testParam);
         init(context);
-        try (Connection connection = environmentEngine.getTargetDataSource().getConnection()) {
+        Connection connection = environmentEngine.getTargetDataSource().getConnection();
+        try {
+            connection.setAutoCommit(false);
             if (SQLExecuteType.LITERAL == context.getSqlExecuteType()) {
                 executeForStatement(context, connection);
             } else {
                 executeForPreparedStatement(context, connection);
             }
             assertTableMetaData(testParam, context);
+            connection.commit();
+        } catch (Exception e) {
+            connection.rollback();
+            throw e;
         } finally {
+            connection.setAutoCommit(true);
+            try {
+                connection.close();
+            } catch (Exception ignored) {}
             tearDown(context);
         }
     }
