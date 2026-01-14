@@ -83,14 +83,15 @@ class DDLE2EIT implements SQLE2EIT {
             }
             assertTableMetaData(testParam, context);
             connection.commit();
-        } catch (Exception e) {
+        } catch (final SQLException ex) {
             connection.rollback();
-            throw e;
+            throw ex;
         } finally {
             connection.setAutoCommit(true);
             try {
                 connection.close();
-            } catch (Exception ignored) {}
+            } catch (final SQLException ignored) {
+            }
             tearDown(context);
         }
     }
@@ -129,14 +130,15 @@ class DDLE2EIT implements SQLE2EIT {
             }
             assertTableMetaData(testParam, context);
             connection.commit();
-        } catch (Exception e) {
+        } catch (final SQLException ex) {
             connection.rollback();
-            throw e;
+            throw ex;
         } finally {
             connection.setAutoCommit(true);
             try {
                 connection.close();
-            } catch (Exception ignored) {}
+            } catch (final SQLException ignored) {
+            }
             tearDown(context);
         }
     }
