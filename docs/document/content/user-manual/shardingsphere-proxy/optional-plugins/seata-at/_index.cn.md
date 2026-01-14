@@ -285,7 +285,7 @@ sudo snap install dbeaver-ce --classic
 snap run dbeaver-ce
 ```
 
-在 DBeaver Community 内，使用 `jdbc:postgresql://127.0.0.1:3308/postgres` 的 `standardJdbcUrl` 连接至 ShardingSphere Proxy，
+在 DBeaver Community 内，使用 `jdbc:postgresql://127.0.0.1:3308/postgres` 的 `jdbcUrl` 连接至 ShardingSphere Proxy，
 username 和 password 均为 `root`。所需的 JDBC Driver 与 ShardingSphere Proxy 设置的 `proxy-frontend-database-protocol-type` 对应。
 执行如下 SQL，
 
@@ -294,7 +294,7 @@ username 和 password 均为 `root`。所需的 JDBC Driver 与 ShardingSphere P
 CREATE DATABASE sharding_db;
 ```
 
-在 DBeaver Community 内，使用 `jdbc:postgresql://127.0.0.1:3308/sharding_db` 的 `standardJdbcUrl` 连接至 ShardingSphere Proxy，
+在 DBeaver Community 内，使用 `jdbc:postgresql://127.0.0.1:3308/sharding_db` 的 `jdbcUrl` 连接至 ShardingSphere Proxy，
 username 和 password 均为 `root`。
 执行如下 SQL，
 
