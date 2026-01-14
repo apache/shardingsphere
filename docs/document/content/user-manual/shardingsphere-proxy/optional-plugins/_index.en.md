@@ -48,8 +48,8 @@ The following lists all optional plugins in the format of `groupId:artifactId`.
   - `org.apache.shardingsphere:shardingsphere-encrypt-distsql-handler`, provides execution capabilities for DistSQL related to `!ENCRYPT`
   - `org.apache.shardingsphere:shardingsphere-mask-distsql-handler`, provides execution capabilities for DistSQL related to `!MASK`
 - Enhancement of the feature core
- - `org.apache.shardingsphere:shardingsphere-sharding-mysql`, provides MySQL-oriented enhancements and adaptations for the core functionality of `shardingsphere-sharding-core`
- - `org.apache.shardingsphere:shardingsphere-data-pipeline-feature-sharding`, provides integration capabilities for sharding scenarios in DistSQL related to `MIGRATION`
+  - `org.apache.shardingsphere:shardingsphere-sharding-mysql`, provides MySQL-oriented enhancements and adaptations for the core functionality of `shardingsphere-sharding-core`
+  - `org.apache.shardingsphere:shardingsphere-data-pipeline-feature-sharding`, provides integration capabilities for sharding scenarios in DistSQL related to `MIGRATION`
 - Time service
   - `org.apache.shardingsphere:shardingsphere-database-time-service`, provides a unified timestamp by connecting to the database and executing an SQL query to retrieve the current time, which is used by routing logic such as sharding
 

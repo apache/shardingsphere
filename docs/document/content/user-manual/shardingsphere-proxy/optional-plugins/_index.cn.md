@@ -49,8 +49,8 @@ ShardingSphere 默认情况下仅包含核心 SPI 的实现，在 Git Source 存
   - `org.apache.shardingsphere:shardingsphere-encrypt-distsql-handler`，提供 `!ENCRYPT` 相关 DistSQL 的执行端能力
   - `org.apache.shardingsphere:shardingsphere-mask-distsql-handler`，提供 `!MASK` 相关 DistSQL 的执行端能力
 - 功能核心的增强
- - `org.apache.shardingsphere:shardingsphere-sharding-mysql`，为 `shardingsphere-sharding-core` 提供面向 MySQL 的增强与适配
- - `org.apache.shardingsphere:shardingsphere-data-pipeline-feature-sharding`，为 `MIGRATION` 相关 DistSQL 提供分片场景的集成能力
+  - `org.apache.shardingsphere:shardingsphere-sharding-mysql`，为 `shardingsphere-sharding-core` 提供面向 MySQL 的增强与适配
+  - `org.apache.shardingsphere:shardingsphere-data-pipeline-feature-sharding`，为 `MIGRATION` 相关 DistSQL 提供分片场景的集成能力
 - 时间服务
   - `org.apache.shardingsphere:shardingsphere-database-time-service`，通过连接数据库并执行 “取当前时间” 的 SQL 来提供统一时间戳，供分片等路由逻辑使用
 

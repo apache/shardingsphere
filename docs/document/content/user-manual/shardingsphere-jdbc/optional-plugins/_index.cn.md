@@ -54,7 +54,7 @@ ShardingSphere 默认情况下仅包含核心 SPI 的实现，在 Git Source 存
 - 行表达式
   - `org.apache.shardingsphere:shardingsphere-infra-expr-espresso`，提供 `<ESPRESSO>` 的行表达式实现
 - 功能核心的增强
- - `org.apache.shardingsphere:shardingsphere-sharding-mysql`，为 `shardingsphere-sharding-core` 的功能核心提供面向 MySQL 的增强与适配
+  - `org.apache.shardingsphere:shardingsphere-sharding-mysql`，为 `shardingsphere-sharding-core` 的功能核心提供面向 MySQL 的增强与适配
 - 时间服务
   - `org.apache.shardingsphere:shardingsphere-database-time-service`，通过连接数据库并执行 “取当前时间” 的 SQL 来提供统一时间戳，供分片等路由逻辑使用
 - GraalVM Native Image

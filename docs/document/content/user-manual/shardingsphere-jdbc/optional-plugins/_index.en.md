@@ -55,7 +55,7 @@ The following lists all optional plugins in the format of `groupId:artifactId`.
 - Row Value Expressions
   - `org.apache.shardingsphere:shardingsphere-infra-expr-espresso`, provides row value expression implementation for `<ESPRESSO>`
 - Enhancement of the feature core
- - `org.apache.shardingsphere:shardingsphere-sharding-mysql`, provides MySQL-oriented enhancements and adaptations for the core functionality of `shardingsphere-sharding-core`
+  - `org.apache.shardingsphere:shardingsphere-sharding-mysql`, provides MySQL-oriented enhancements and adaptations for the core functionality of `shardingsphere-sharding-core`
 - Time service
   - `org.apache.shardingsphere:shardingsphere-database-time-service`, provides a unified timestamp by connecting to the database and executing an SQL query to retrieve the current time, which is used by routing logic such as sharding
 - GraalVM Native Image
