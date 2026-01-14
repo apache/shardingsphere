@@ -48,7 +48,6 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 /**
  * Sharding projections token generator.
@@ -96,10 +95,6 @@ public final class ShardingProjectionsTokenGenerator implements OptionalSQLToken
         Collection<String> existingAliases = new LinkedList<>();
         for (Projection p : selectStatementContext.getProjectionsContext().getProjections()) {
             p.getAlias().ifPresent(a -> existingAliases.add(a.getValue()));
-            if (p instanceof AggregationProjection) {
-                ((AggregationProjection) p).getDerivedAggregationProjections()
-                        .forEach(d -> d.getAlias().ifPresent(a -> existingAliases.add(a.getValue())));
-            }
         }
         for (AggregationProjection each : selectStatementContext.getProjectionsContext().getExpandAggregationProjections()) {
             String alias = each.getAlias().map(IdentifierValue::getValue).orElse("");
@@ -126,6 +121,7 @@ public final class ShardingProjectionsTokenGenerator implements OptionalSQLToken
         }
         return result;
     }
+    
     private String getDerivedProjectionText(final Projection projection) {
         Preconditions.checkState(projection.getAlias().isPresent());
         String projectionExpression = projection instanceof AggregationDistinctProjection ? ((AggregationDistinctProjection) projection).getDistinctInnerExpression() : projection.getExpression();

@@ -19,7 +19,6 @@ package org.apache.shardingsphere.sharding.merge.dql;
 
 import org.apache.shardingsphere.database.connector.core.metadata.database.enums.NullsOrderType;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
-import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeFactory;
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.impl.AggregationProjection;
 import org.apache.shardingsphere.infra.binder.context.statement.type.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
@@ -71,7 +70,11 @@ import java.util.List;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.isA;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.anyMap;
+import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.hamcrest.CoreMatchers.is;
 
 class ShardingDQLResultMergerTest {
@@ -459,7 +462,6 @@ class ShardingDQLResultMergerTest {
         when(selectStatementContext.getSqlStatement().getDatabaseType()).thenReturn(mysqlDatabaseType);
         when(selectStatementContext.getGroupByContext().getItems()).thenReturn(Collections.emptyList());
         doNothing().when(selectStatementContext).setIndexes(anyMap());
-        ShardingSphereDatabase database = createDatabase();
         AggregationProjectionSegment sumSegment = new AggregationProjectionSegment(0, 0, AggregationType.SUM, "SUM(amount)");
         AggregationProjection nestedSum = new AggregationProjection(AggregationType.SUM, sumSegment, new IdentifierValue("__sharding_expr_agg_1"), mysqlDatabaseType);
         nestedSum.setIndex(1);
@@ -468,6 +470,7 @@ class ShardingDQLResultMergerTest {
         QueryResult queryResult1 = mockQueryResultSingleColumn(new BigDecimal("0"));
         QueryResult queryResult2 = mockQueryResultSingleColumn(new BigDecimal("100"));
         ShardingDQLResultMerger resultMerger = new ShardingDQLResultMerger(mysqlDatabaseType);
+        ShardingSphereDatabase database = createDatabase();
         MergedResult actual = resultMerger.merge(Arrays.asList(queryResult1, queryResult2), selectStatementContext, database, mock(ConnectionContext.class));
         assertTrue(actual.next());
         assertThat(actual.getValue(1, Object.class), is(new BigDecimal("100")));
