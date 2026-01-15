@@ -127,6 +127,7 @@
 1. Pipeline: Fix SHOW MIGRATION RULE always display default values when ALTER MIGRATION RULE without STREAM_CHANNEL - [#37737](https://github.com/apache/shardingsphere/issues/37737)
 1. DistSQL: Fix load single table with specific schema - [#37535](https://github.com/apache/shardingsphere/pull/37535)
 1. Transaction: Fix XA data source enlist failure caused connection leaks - [37593](https://github.com/apache/shardingsphere/pull/37593)
+1. Proxy: Fix command type error when use openGauss driver to execute statements in transaction - [37749](https://github.com/apache/shardingsphere/pull/37749)
 
 ### Change Logs
 
