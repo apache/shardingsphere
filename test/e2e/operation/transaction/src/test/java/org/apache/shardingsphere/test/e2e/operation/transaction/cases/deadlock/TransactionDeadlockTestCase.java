@@ -80,7 +80,8 @@ public final class TransactionDeadlockTestCase extends BaseTransactionTestCase {
                 // CHECKSTYLE:OFF
             } catch (final Exception ex) {
                 // CHECKSTYLE:ON
-                assertThat(ex.getMessage(), anyOf(containsString("Lock wait timeout exceeded; try restarting transaction"), containsString("Deadlock found when trying to get lock; try restarting transaction")));
+                assertThat(ex.getMessage(),
+                        anyOf(containsString("Lock wait timeout exceeded; try restarting transaction"), containsString("Deadlock found when trying to get lock; try restarting transaction")));
             }
         }
         log.info("The deadlock test case execution time is: {}", System.currentTimeMillis() - startTime);
