@@ -65,6 +65,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.type.tcl.Re
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.tcl.RollbackStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.tcl.SavepointStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.tcl.SetTransactionStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.tcl.StartTransactionStatement;
 import org.apache.shardingsphere.sql.parser.statement.postgresql.dal.PostgreSQLResetParameterStatement;
 import org.apache.shardingsphere.sql.parser.statement.postgresql.dal.PostgreSQLVacuumStatement;
 import org.apache.shardingsphere.sql.parser.statement.postgresql.ddl.PostgreSQLDeclareStatement;
@@ -119,7 +120,7 @@ public enum PostgreSQLCommand {
     DROP_VIEW(DropViewStatement.class),
     TRUNCATE_TABLE(TruncateStatement.class),
     BEGIN(BeginTransactionStatement.class),
-    START_TRANSACTION(BeginTransactionStatement.class),
+    START_TRANSACTION(StartTransactionStatement.class),
     COMMIT(CommitStatement.class),
     SAVEPOINT(SavepointStatement.class),
     ROLLBACK(RollbackStatement.class),

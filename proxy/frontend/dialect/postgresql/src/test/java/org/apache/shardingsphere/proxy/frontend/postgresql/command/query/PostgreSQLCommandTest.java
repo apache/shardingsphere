@@ -60,6 +60,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.type.tcl.Co
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.tcl.ReleaseSavepointStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.tcl.RollbackStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.tcl.SavepointStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.tcl.StartTransactionStatement;
 import org.apache.shardingsphere.sql.parser.statement.postgresql.dal.PostgreSQLResetParameterStatement;
 import org.apache.shardingsphere.sql.parser.statement.postgresql.dal.PostgreSQLVacuumStatement;
 import org.apache.shardingsphere.sql.parser.statement.postgresql.ddl.PostgreSQLDeclareStatement;
@@ -279,6 +280,12 @@ class PostgreSQLCommandTest {
     void assertValueOfBeginStatement() {
         assertThat(PostgreSQLCommand.valueOf(BeginTransactionStatement.class).orElse(null), is(PostgreSQLCommand.BEGIN));
         assertThat(PostgreSQLCommand.BEGIN.getTag(), is("BEGIN"));
+    }
+    
+    @Test
+    void assertValueOfStartTransactionStatement() {
+        assertThat(PostgreSQLCommand.valueOf(StartTransactionStatement.class).orElse(null), is(PostgreSQLCommand.START_TRANSACTION));
+        assertThat(PostgreSQLCommand.START_TRANSACTION.getTag(), is("START TRANSACTION"));
     }
     
     @Test
