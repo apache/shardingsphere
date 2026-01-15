@@ -42,7 +42,7 @@ public final class QualifiedReadwriteSplittingPrimaryDataSourceRouter implements
     
     private boolean isWriteRouteStatement(final SQLStatementContext sqlStatementContext) {
         SQLStatement sqlStatement = sqlStatementContext.getSqlStatement();
-        return containsLockSegment(sqlStatement) || containsLastInsertIdProjection(sqlStatementContext) || !(sqlStatement instanceof SelectStatement);
+        return containsLockSegment(sqlStatement) || containsLastInsertIdProjection(sqlStatementContext) || !isSelectStatement(sqlStatement);
     }
     
     private boolean containsLockSegment(final SQLStatement sqlStatement) {
@@ -51,6 +51,10 @@ public final class QualifiedReadwriteSplittingPrimaryDataSourceRouter implements
     
     private boolean containsLastInsertIdProjection(final SQLStatementContext sqlStatementContext) {
         return sqlStatementContext instanceof SelectStatementContext && ((SelectStatementContext) sqlStatementContext).getProjectionsContext().isContainsLastInsertIdProjection();
+    }
+    
+    private boolean isSelectStatement(final SQLStatement sqlStatement) {
+        return sqlStatement instanceof SelectStatement;
     }
     
     private boolean isHintWriteRouteOnly(final HintValueContext hintValueContext) {
