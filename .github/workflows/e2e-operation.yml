@@ -88,23 +88,12 @@ jobs:
       - name: Checkout Project
         if: (env.skip_current_step == 'false')
         uses: actions/checkout@v6.0.1
-      - name: Retrieve Maven Caches
-        if: (env.skip_current_step == 'false')
-        uses: actions/cache@v5.0.1
-        with:
-          path: |
-            ~/.m2/repository
-            !~/.m2/repository/org/apache/shardingsphere
-            ~/.m2/repository/org/apache/shardingsphere/elasticjob
-          key: apache-shardingsphere-maven-third-party-e2e-cache-${{ github.sha }}
-          restore-keys: |
-            apache-shardingsphere-maven-third-party-e2e-cache-
-            apache-shardingsphere-maven-third-party-
       - if: (env.skip_current_step == 'false')
         uses: actions/setup-java@v5.1.0
         with:
           distribution: 'temurin'
           java-version: 11
+          cache: 'maven'
       - name: Build ${{ matrix.operation }} E2E Image
         if: (env.skip_current_step == 'false')
         run: ./mvnw -B clean install -am -pl test/e2e/operation/${{ matrix.operation }} -Pe2e.env.docker -DskipTests
