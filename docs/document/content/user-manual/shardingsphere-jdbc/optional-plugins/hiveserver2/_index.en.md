@@ -11,7 +11,7 @@ ShardingSphere's support for HiveServer2 JDBC Driver is in the optional module.
 
 ## Prerequisites
 
-To use a `standardJdbcUrl` like `jdbc:hive2://localhost:10000/` for the data node in the ShardingSphere configuration file,
+To use a `jdbcUrl` like `jdbc:hive2://localhost:10000/` for the data node in the ShardingSphere configuration file,
 The possible Maven dependencies are as follows.
 
 ```xml
@@ -82,9 +82,9 @@ services:
       - "10000:10000"
 ```
 
-### Create business tables
+### Creating Business Database
 
-Use a third-party tool to create some business databases and business tables in HiveServer2.
+Create business database within HiveServer2 using a third-party tool.
 Taking DBeaver Community as an example, if you use Ubuntu 24.04, you can quickly install it through Snapcraft.
 
 ```shell
@@ -93,7 +93,7 @@ sudo snap install dbeaver-ce --classic
 snap run dbeaver-ce
 ```
 
-In DBeaver Community, use the `standardJdbcUrl` of `jdbc:hive2://localhost:10000/` to connect to HiveServer2, 
+In DBeaver Community, use the `jdbcUrl` of `jdbc:hive2://localhost:10000/` to connect to HiveServer2, 
 and leave `username` and `password` blank.
 Execute the following SQL,
 
@@ -148,15 +148,15 @@ dataSources:
     ds_0:
         dataSourceClassName: com.zaxxer.hikari.HikariDataSource
         driverClassName: org.apache.hive.jdbc.HiveDriver
-        standardJdbcUrl: jdbc:hive2://localhost:10000/demo_ds_0
+        jdbcUrl: jdbc:hive2://localhost:10000/demo_ds_0
     ds_1:
         dataSourceClassName: com.zaxxer.hikari.HikariDataSource
         driverClassName: org.apache.hive.jdbc.HiveDriver
-        standardJdbcUrl: jdbc:hive2://localhost:10000/demo_ds_1
+        jdbcUrl: jdbc:hive2://localhost:10000/demo_ds_1
     ds_2:
         dataSourceClassName: com.zaxxer.hikari.HikariDataSource
         driverClassName: org.apache.hive.jdbc.HiveDriver
-        standardJdbcUrl: jdbc:hive2://localhost:10000/demo_ds_2
+        jdbcUrl: jdbc:hive2://localhost:10000/demo_ds_2
 rules:
 - !SHARDING
     tables:
@@ -212,7 +212,7 @@ public class ExampleUtils {
 
 ### Connect to HiveServer2 with ZooKeeper Service Discovery enabled
 
-`standardJdbcUrl` in the ShardingSphere configuration file can be configured to connect to HiveServer2 with ZooKeeper Service Discovery enabled.
+`jdbcUrl` in the ShardingSphere configuration file can be configured to connect to HiveServer2 with ZooKeeper Service Discovery enabled.
 
 For discussion, assume that there is the following Docker Compose file to start HiveServer2 with ZooKeeper Service Discovery.
 
@@ -239,7 +239,7 @@ services:
 ```
 
 In DBeaver Community,
-use `standardJdbcUrl` of `jdbc:hive2://127.0.0.1:2181/;serviceDiscoveryMode=zooKeeper;zooKeeperNamespace=hiveserver2` to connect to HiveServer2,
+use `jdbcUrl` of `jdbc:hive2://127.0.0.1:2181/;serviceDiscoveryMode=zooKeeper;zooKeeperNamespace=hiveserver2` to connect to HiveServer2,
 leave `username` and `password` blank.
 Execute the following SQL,
 
@@ -292,15 +292,15 @@ dataSources:
     ds_0:
         dataSourceClassName: com.zaxxer.hikari.HikariDataSource
         driverClassName: org.apache.hive.jdbc.HiveDriver
-        standardJdbcUrl: jdbc:hive2://127.0.0.1:2181/demo_ds_0;serviceDiscoveryMode=zooKeeper;zooKeeperNamespace=hiveserver2
+        jdbcUrl: jdbc:hive2://127.0.0.1:2181/demo_ds_0;serviceDiscoveryMode=zooKeeper;zooKeeperNamespace=hiveserver2
     ds_1:
         dataSourceClassName: com.zaxxer.hikari.HikariDataSource
         driverClassName: org.apache.hive.jdbc.HiveDriver
-        standardJdbcUrl: jdbc:hive2://127.0.0.1:2181/demo_ds_1;serviceDiscoveryMode=zooKeeper;zooKeeperNamespace=hiveserver2
+        jdbcUrl: jdbc:hive2://127.0.0.1:2181/demo_ds_1;serviceDiscoveryMode=zooKeeper;zooKeeperNamespace=hiveserver2
     ds_2:
         dataSourceClassName: com.zaxxer.hikari.HikariDataSource
         driverClassName: org.apache.hive.jdbc.HiveDriver
-        standardJdbcUrl: jdbc:hive2://127.0.0.1:2181/demo_ds_2;serviceDiscoveryMode=zooKeeper;zooKeeperNamespace=hiveserver2
+        jdbcUrl: jdbc:hive2://127.0.0.1:2181/demo_ds_2;serviceDiscoveryMode=zooKeeper;zooKeeperNamespace=hiveserver2
 rules:
 - !SHARDING
     tables:
@@ -374,7 +374,7 @@ networks:
 ```
 
 In DBeaver Community,
-use `standardJdbcUrl` of `jdbc:hive2://127.0.0.1:2181/;serviceDiscoveryMode=zooKeeper;zooKeeperNamespace=hiveserver2` to connect to HiveServer2,
+use `jdbcUrl` of `jdbc:hive2://127.0.0.1:2181/;serviceDiscoveryMode=zooKeeper;zooKeeperNamespace=hiveserver2` to connect to HiveServer2,
 leave `username` and `password` blank.
 Execute the following SQL,
 
@@ -449,15 +449,15 @@ dataSources:
   ds_0:
     dataSourceClassName: com.zaxxer.hikari.HikariDataSource
     driverClassName: org.apache.hive.jdbc.HiveDriver
-    standardJdbcUrl: jdbc:hive2://localhost:10000/demo_ds_0;initFile=/tmp/init.sql
+    jdbcUrl: jdbc:hive2://localhost:10000/demo_ds_0;initFile=/tmp/init.sql
   ds_1:
     dataSourceClassName: com.zaxxer.hikari.HikariDataSource
     driverClassName: org.apache.hive.jdbc.HiveDriver
-    standardJdbcUrl: jdbc:hive2://localhost:10000/demo_ds_0;initFile=/tmp/init.sql
+    jdbcUrl: jdbc:hive2://localhost:10000/demo_ds_0;initFile=/tmp/init.sql
   ds_2:
     dataSourceClassName: com.zaxxer.hikari.HikariDataSource
     driverClassName: org.apache.hive.jdbc.HiveDriver
-    standardJdbcUrl: jdbc:hive2://localhost:10000/demo_ds_0;initFile=/tmp/init.sql
+    jdbcUrl: jdbc:hive2://localhost:10000/demo_ds_0;initFile=/tmp/init.sql
 ```
 
 The possible contents of `/tmp/init.sql` are as follows,
@@ -482,15 +482,15 @@ dataSources:
   ds_0:
     dataSourceClassName: com.zaxxer.hikari.HikariDataSource
     driverClassName: org.apache.hive.jdbc.HiveDriver
-    standardJdbcUrl: $${fixture.hive.ds0.jdbc-url::}
+    jdbcUrl: $${fixture.hive.ds0.jdbc-url::}
   ds_1:
     dataSourceClassName: com.zaxxer.hikari.HikariDataSource
     driverClassName: org.apache.hive.jdbc.HiveDriver
-    standardJdbcUrl: $${fixture.hive.ds1.jdbc-url::}
+    jdbcUrl: $${fixture.hive.ds1.jdbc-url::}
   ds_2:
     dataSourceClassName: com.zaxxer.hikari.HikariDataSource
     driverClassName: org.apache.hive.jdbc.HiveDriver
-    standardJdbcUrl: $${fixture.hive.ds2.jdbc-url::}
+    jdbcUrl: $${fixture.hive.ds2.jdbc-url::}
 ```
 
 When using ShardingSphere JDBC Driver, 

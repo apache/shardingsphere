@@ -1,62 +1,53 @@
 +++
-title = "Presto"
+title = "MS SQL Server"
 weight = 6
 +++
 
 ## 背景信息
 
-ShardingSphere 默认情况下不提供对 `com.facebook.presto.jdbc.PrestoDriver` 的 `driverClassName` 的支持。
-ShardingSphere 对 Presto JDBC Driver 的支持位于可选模块中。
+ShardingSphere 默认情况下不提供对 `com.microsoft.sqlserver.jdbc.SQLServerDriver` 的 `driverClassName` 的支持。
+ShardingSphere 对 MS SQL Server 的支持位于可选模块中。
 
 ## 前提条件
 
-要在 ShardingSphere 的配置文件为数据节点使用类似 `jdbc:presto://localhost:8080/iceberg/demo_ds_0` 的 `jdbcUrl`，
+要在 ShardingSphere 的配置文件为数据节点使用类似 `jdbc:sqlserver://localhost:1433;databaseName=demo_ds_0;encrypt=false;` 的 `jdbcUrl`，
 可能的 Maven 依赖关系如下，
 
 ```xml
 <dependencies>
     <dependency>
         <groupId>org.apache.shardingsphere</groupId>
-        <artifactId>shardingsphere-jdbc-dialect-presto</artifactId>
+        <artifactId>shardingsphere-jdbc-dialect-sqlserver</artifactId>
         <version>${shardingsphere.version}</version>
     </dependency>
     <dependency>
-        <groupId>com.facebook.presto</groupId>
-        <artifactId>presto-jdbc</artifactId>
-        <version>0.296</version>
+        <groupId>com.microsoft.sqlserver</groupId>
+        <artifactId>mssql-jdbc</artifactId>
+        <version>12.10.2.jre8</version>
     </dependency>
 </dependencies>
 ```
 
 ## 配置示例
 
-### 启动 Presto
+### 启动 MS SQL Server
 
-编写 Docker Compose 文件来启动 Presto。这将启动一个既为协调器又为工作节点的 Presto 节点，并为该节点配置 Iceberg 连接器。
-此外，此 Iceberg 连接器将使用本地文件系统目录启动 Hive Metastore Server。
+编写 Docker Compose 文件来启动 MS SQL Server。
 
 ```yaml
 services:
-  presto:
-    image: prestodb/presto:0.296
+  ms-sql-server:
+    image: mcr.microsoft.com/mssql/server:2025-RTM-ubuntu-22.04
+    environment:
+      ACCEPT_EULA: Y
+      MSSQL_SA_PASSWORD: A_Str0ng_Required_Password
     ports:
-      - "8080:8080"
-    volumes:
-      - ./iceberg.properties:/opt/presto-server/etc/catalog/iceberg.properties
+      - "1433:1433"
 ```
 
-同级文件夹包含文件 `iceberg.properties`，内容如下，
+### 创建业务库
 
-```properties
-connector.name=iceberg
-iceberg.catalog.type=hive
-hive.metastore=file
-hive.metastore.catalog.dir=file:/home/iceberg_data
-```
-
-### 创建业务相关的 schema 和表
-
-通过第三方工具在 Presto 内创建业务相关的 schema 和表。
+通过第三方工具在 MS SQL Server 内创建业务库。
 以 DBeaver Community 为例，若使用 Ubuntu 24.04，可通过 Snapcraft 快速安装，
 
 ```shell
@@ -65,30 +56,14 @@ sudo snap install dbeaver-ce --classic
 snap run dbeaver-ce
 ```
 
-在 DBeaver Community 内，使用 `jdbc:presto://localhost:8080/iceberg` 的 `jdbcUrl`，`test` 的`username` 连接至 Presto，
-`password` 留空。
+在 DBeaver Community 内，使用 `jdbc:sqlserver://localhost:1433;encrypt=false;` 的 `jdbcUrl`，`sa` 的`username`，`A_Str0ng_Required_Password` 的 `password` 连接至 MS SQL Server。
 执行如下 SQL，
 
 ```sql
 -- noinspection SqlNoDataSourceInspectionForFile
-CREATE SCHEMA iceberg.demo_ds_0;
-CREATE SCHEMA iceberg.demo_ds_1;
-CREATE SCHEMA iceberg.demo_ds_2;
-```
-
-分别使用 `jdbc:presto://localhost:8080/iceberg/demo_ds_0` ，
-`jdbc:presto://localhost:8080/iceberg/demo_ds_1` 和 `jdbc:presto://localhost:8080/iceberg/demo_ds_2` 的 `jdbcUrl` 连接至 Presto 来执行如下 SQL，
-
-```sql
--- noinspection SqlNoDataSourceInspectionForFile
-CREATE TABLE IF NOT EXISTS t_order (
-    order_id BIGINT NOT NULL,
-    order_type INTEGER,
-    user_id INTEGER NOT NULL,
-    address_id BIGINT NOT NULL,
-    status VARCHAR(50)
-);
-truncate table t_order;
+CREATE DATABASE demo_ds_0;
+CREATE DATABASE demo_ds_1;
+CREATE DATABASE demo_ds_2;
 ```
 
 ### 在业务项目创建 ShardingSphere 数据源
@@ -134,19 +109,22 @@ truncate table t_order;
 dataSources:
   ds_0:
     dataSourceClassName: com.zaxxer.hikari.HikariDataSource
-    driverClassName: com.facebook.presto.jdbc.PrestoDriver
-    jdbcUrl: jdbc:presto://localhost:8080/iceberg/demo_ds_0
-    username: test
+    driverClassName: com.microsoft.sqlserver.jdbc.SQLServerDriver
+    jdbcUrl: jdbc:sqlserver://localhost:1433;databaseName=demo_ds_0;encrypt=false;
+    username: sa
+    password: A_Str0ng_Required_Password
   ds_1:
     dataSourceClassName: com.zaxxer.hikari.HikariDataSource
-    driverClassName: com.facebook.presto.jdbc.PrestoDriver
-    jdbcUrl: jdbc:presto://localhost:8080/iceberg/demo_ds_1
-    username: test
+    driverClassName: com.microsoft.sqlserver.jdbc.SQLServerDriver
+    jdbcUrl: jdbc:sqlserver://localhost:1433;databaseName=demo_ds_1;encrypt=false;
+    username: sa
+    password: A_Str0ng_Required_Password
   ds_2:
     dataSourceClassName: com.zaxxer.hikari.HikariDataSource
-    driverClassName: com.facebook.presto.jdbc.PrestoDriver
-    jdbcUrl: jdbc:presto://localhost:8080/iceberg/demo_ds_2
-    username: test
+    driverClassName: com.microsoft.sqlserver.jdbc.SQLServerDriver
+    jdbcUrl: jdbc:sqlserver://localhost:1433;databaseName=demo_ds_2;encrypt=false;
+    username: sa
+    password: A_Str0ng_Required_Password
 rules:
   - !SHARDING
     tables:
@@ -187,10 +165,12 @@ public class ExampleUtils {
         try (HikariDataSource dataSource = new HikariDataSource(config);
              Connection connection = dataSource.getConnection();
              Statement statement = connection.createStatement()) {
+            statement.execute("CREATE TABLE [t_order] (order_id bigint NOT NULL,order_type int,user_id int NOT NULL,address_id bigint NOT NULL,status varchar(50),PRIMARY KEY (order_id))");
+            statement.execute("TRUNCATE TABLE t_order");
             statement.execute("INSERT INTO t_order (user_id, order_type, address_id, status) VALUES (1, 1, 1, 'INSERT_TEST')");
             statement.executeQuery("SELECT * FROM t_order");
             statement.execute("DELETE FROM t_order WHERE user_id=1");
-            statement.execute("DROP TABLE IF EXISTS t_order");
+            statement.execute("DROP TABLE t_order");
         }
     }
 }
@@ -200,14 +180,5 @@ public class ExampleUtils {
 
 ### SQL 限制
 
-ShardingSphere JDBC DataSource 尚不支持执行 Presto 的 `create table` 和 `truncate table` 语句。
-
-### 事务限制
-
-Presto 不支持 ShardingSphere 集成级别的本地事务，XA 事务或 Seata 的 AT 模式事务。
-Presto 自身的事务支持存在问题，参考 https://github.com/prestodb/presto/issues/25204 。
-
-### 连接器限制
-
-受 https://github.com/prestodb/presto/issues/23226 影响，Presto Memory 连接器的健康检查存在已知问题，
-不应在 ShardingSphere 的配置文件内连接至 Presto Memory 连接器。
+ShardingSphere JDBC DataSource 支持执行 MS SQL Server 的 `DROP TABLE` 语句，
+但尚不支持执行 MS SQL Server 的 `DROP TABLE IF EXISTS` 语句。

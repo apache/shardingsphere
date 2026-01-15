@@ -1,95 +1,34 @@
 +++
-title = "Presto"
+title = "H2"
 weight = 6
 +++
 
 ## 背景信息
 
-ShardingSphere 默认情况下不提供对 `com.facebook.presto.jdbc.PrestoDriver` 的 `driverClassName` 的支持。
-ShardingSphere 对 Presto JDBC Driver 的支持位于可选模块中。
+ShardingSphere 默认情况下不提供对 `org.h2.Driver` 的 `driverClassName` 的支持。
+ShardingSphere 对 H2 JDBC Driver 的支持位于可选模块中。
 
 ## 前提条件
 
-要在 ShardingSphere 的配置文件为数据节点使用类似 `jdbc:presto://localhost:8080/iceberg/demo_ds_0` 的 `jdbcUrl`，
+要在 ShardingSphere 的配置文件为数据节点使用类似 `jdbc:h2:mem:demo_ds_0;MODE=MYSQL;IGNORECASE=TRUE;CASE_INSENSITIVE_IDENTIFIERS=TRUE` 的 `jdbcUrl`，
 可能的 Maven 依赖关系如下，
 
 ```xml
 <dependencies>
     <dependency>
         <groupId>org.apache.shardingsphere</groupId>
-        <artifactId>shardingsphere-jdbc-dialect-presto</artifactId>
+        <artifactId>shardingsphere-jdbc-dialect-mysql</artifactId>
         <version>${shardingsphere.version}</version>
     </dependency>
     <dependency>
-        <groupId>com.facebook.presto</groupId>
-        <artifactId>presto-jdbc</artifactId>
-        <version>0.296</version>
+        <groupId>com.h2database</groupId>
+        <artifactId>h2</artifactId>
+        <version>2.2.224</version>
     </dependency>
 </dependencies>
 ```
 
 ## 配置示例
-
-### 启动 Presto
-
-编写 Docker Compose 文件来启动 Presto。这将启动一个既为协调器又为工作节点的 Presto 节点，并为该节点配置 Iceberg 连接器。
-此外，此 Iceberg 连接器将使用本地文件系统目录启动 Hive Metastore Server。
-
-```yaml
-services:
-  presto:
-    image: prestodb/presto:0.296
-    ports:
-      - "8080:8080"
-    volumes:
-      - ./iceberg.properties:/opt/presto-server/etc/catalog/iceberg.properties
-```
-
-同级文件夹包含文件 `iceberg.properties`，内容如下，
-
-```properties
-connector.name=iceberg
-iceberg.catalog.type=hive
-hive.metastore=file
-hive.metastore.catalog.dir=file:/home/iceberg_data
-```
-
-### 创建业务相关的 schema 和表
-
-通过第三方工具在 Presto 内创建业务相关的 schema 和表。
-以 DBeaver Community 为例，若使用 Ubuntu 24.04，可通过 Snapcraft 快速安装，
-
-```shell
-sudo apt update && sudo apt upgrade -y
-sudo snap install dbeaver-ce --classic
-snap run dbeaver-ce
-```
-
-在 DBeaver Community 内，使用 `jdbc:presto://localhost:8080/iceberg` 的 `jdbcUrl`，`test` 的`username` 连接至 Presto，
-`password` 留空。
-执行如下 SQL，
-
-```sql
--- noinspection SqlNoDataSourceInspectionForFile
-CREATE SCHEMA iceberg.demo_ds_0;
-CREATE SCHEMA iceberg.demo_ds_1;
-CREATE SCHEMA iceberg.demo_ds_2;
-```
-
-分别使用 `jdbc:presto://localhost:8080/iceberg/demo_ds_0` ，
-`jdbc:presto://localhost:8080/iceberg/demo_ds_1` 和 `jdbc:presto://localhost:8080/iceberg/demo_ds_2` 的 `jdbcUrl` 连接至 Presto 来执行如下 SQL，
-
-```sql
--- noinspection SqlNoDataSourceInspectionForFile
-CREATE TABLE IF NOT EXISTS t_order (
-    order_id BIGINT NOT NULL,
-    order_type INTEGER,
-    user_id INTEGER NOT NULL,
-    address_id BIGINT NOT NULL,
-    status VARCHAR(50)
-);
-truncate table t_order;
-```
 
 ### 在业务项目创建 ShardingSphere 数据源
 
@@ -134,19 +73,22 @@ truncate table t_order;
 dataSources:
   ds_0:
     dataSourceClassName: com.zaxxer.hikari.HikariDataSource
-    driverClassName: com.facebook.presto.jdbc.PrestoDriver
-    jdbcUrl: jdbc:presto://localhost:8080/iceberg/demo_ds_0
-    username: test
+    driverClassName: org.h2.Driver
+    jdbcUrl: jdbc:h2:mem:demo_ds_0;MODE=MYSQL;IGNORECASE=TRUE;CASE_INSENSITIVE_IDENTIFIERS=TRUE
+    username: sa
+    password:
   ds_1:
     dataSourceClassName: com.zaxxer.hikari.HikariDataSource
-    driverClassName: com.facebook.presto.jdbc.PrestoDriver
-    jdbcUrl: jdbc:presto://localhost:8080/iceberg/demo_ds_1
-    username: test
+    driverClassName: org.h2.Driver
+    jdbcUrl: jdbc:h2:mem:demo_ds_1;MODE=MYSQL;IGNORECASE=TRUE;CASE_INSENSITIVE_IDENTIFIERS=TRUE
+    username: sa
+    password:
   ds_2:
     dataSourceClassName: com.zaxxer.hikari.HikariDataSource
-    driverClassName: com.facebook.presto.jdbc.PrestoDriver
-    jdbcUrl: jdbc:presto://localhost:8080/iceberg/demo_ds_2
-    username: test
+    driverClassName: org.h2.Driver
+    jdbcUrl: jdbc:h2:mem:demo_ds_2;MODE=MYSQL;IGNORECASE=TRUE;CASE_INSENSITIVE_IDENTIFIERS=TRUE
+    username: sa
+    password:
 rules:
   - !SHARDING
     tables:
@@ -187,6 +129,8 @@ public class ExampleUtils {
         try (HikariDataSource dataSource = new HikariDataSource(config);
              Connection connection = dataSource.getConnection();
              Statement statement = connection.createStatement()) {
+            statement.execute("CREATE TABLE IF NOT EXISTS t_order (order_id BIGINT NOT NULL AUTO_INCREMENT,order_type INT(11),user_id INT NOT NULL,address_id BIGINT NOT NULL,status VARCHAR(50),PRIMARY KEY (order_id))");
+            statement.execute("TRUNCATE TABLE t_order");
             statement.execute("INSERT INTO t_order (user_id, order_type, address_id, status) VALUES (1, 1, 1, 'INSERT_TEST')");
             statement.executeQuery("SELECT * FROM t_order");
             statement.execute("DELETE FROM t_order WHERE user_id=1");
@@ -198,16 +142,14 @@ public class ExampleUtils {
 
 ## 使用限制
 
-### SQL 限制
+### 数据库方言限制
 
-ShardingSphere JDBC DataSource 尚不支持执行 Presto 的 `create table` 和 `truncate table` 语句。
+由于 `org.apache.shardingsphere:shardingsphere-database-connector-h2` 的 SPI 实现将通过 H2 JDBC Driver 执行的 SQL 路由至 MySQL 方言，当前需要为 H2 JDBC Driver 的 JDBC URL 添加参数为 `;MODE=MYSQL;IGNORECASE=TRUE;CASE_INSENSITIVE_IDENTIFIERS=TRUE`，以使用 H2 的 MySQL Compatibility Mode。
 
-### 事务限制
+如果开发者需要使用 H2 的原生 SQL 方言，或使用 H2 针对其他数据库的 Compatibility Mode，则应该排除所有 Maven 依赖中的 `org.apache.shardingsphere:shardingsphere-database-connector-h2`，并自行实现缺少的 SPI。
 
-Presto 不支持 ShardingSphere 集成级别的本地事务，XA 事务或 Seata 的 AT 模式事务。
-Presto 自身的事务支持存在问题，参考 https://github.com/prestodb/presto/issues/25204 。
+### 功能限制
 
-### 连接器限制
+为 H2 的数据库同时使用 ShardingSphere 的 `!SHARDING` 和 `!READWRITE_SPLITTING` 功能，将使 ShardingSphere 解析到错误的数据库元数据，并导致执行部分 SQL 时获得错误的结果。
 
-受 https://github.com/prestodb/presto/issues/23226 影响，Presto Memory 连接器的健康检查存在已知问题，
-不应在 ShardingSphere 的配置文件内连接至 Presto Memory 连接器。
+若需要同时使用 ShardingSphere 的 `!SHARDING` 和 `!READWRITE_SPLITTING` 功能，则应切换使用 MySQL 等数据库。可通过 `testcontainers-java` 以在测试环境启动真实的 MySQL 数据库。

@@ -91,7 +91,7 @@ chapter = true
 ds_1:
   dataSourceClassName: com.zaxxer.hikari.HikariDataSource
   driverClassName: $${FIXTURE_DRIVER_CLASS_NAME::org.h2.Driver}
-  standardJdbcUrl: $${FIXTURE_JDBC_URL::jdbc:h2:mem:foo_ds_do_not_use}
+  jdbcUrl: $${FIXTURE_JDBC_URL::jdbc:h2:mem:foo_ds_do_not_use}
   username: $${FIXTURE_USERNAME::}
   password: $${FIXTURE_PASSWORD::}
 ```
@@ -102,7 +102,7 @@ ds_1:
 ds_1:
   dataSourceClassName: com.zaxxer.hikari.HikariDataSource
   driverClassName: org.h2.Driver
-  standardJdbcUrl: jdbc:h2:mem:foo_ds_1;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL
+  jdbcUrl: jdbc:h2:mem:foo_ds_1;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL
   username: sa
   password:
 ```
@@ -128,7 +128,7 @@ ds_1:
 ds_1:
   dataSourceClassName: com.zaxxer.hikari.HikariDataSource
   driverClassName: $${fixture.config.driver.driver-class-name::org.h2.Driver}
-  standardJdbcUrl: $${fixture.config.driver.jdbc-url::jdbc:h2:mem:foo_ds_do_not_use}
+  jdbcUrl: $${fixture.config.driver.jdbc-url::jdbc:h2:mem:foo_ds_do_not_use}
   username: $${fixture.config.driver.username::}
   password: $${fixture.config.driver.password::}
 ```
@@ -139,7 +139,7 @@ ds_1:
 ds_1:
   dataSourceClassName: com.zaxxer.hikari.HikariDataSource
   driverClassName: org.h2.Driver
-  standardJdbcUrl: jdbc:h2:mem:foo_ds_1;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL
+  jdbcUrl: jdbc:h2:mem:foo_ds_1;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL
   username: sa
   password:
 ```
@@ -195,7 +195,7 @@ public class ExampleUtils {
 ds_1:
   dataSourceClassName: com.zaxxer.hikari.HikariDataSource
   driverClassName: $${FIXTURE_DRIVER_CLASS_NAME::com.mysql.cj.jdbc.Driver}
-  standardJdbcUrl: jdbc:mysql://$${FIXTURE_HOST::}:$${FIXTURE_PORT::}/$${FIXTURE_DATABASE::}?sslMode=REQUIRED
+  jdbcUrl: jdbc:mysql://$${FIXTURE_HOST::}:$${FIXTURE_PORT::}/$${FIXTURE_DATABASE::}?sslMode=REQUIRED
   username: $${FIXTURE_USERNAME::}
   password: $${FIXTURE_PASSWORD::}
 ```
@@ -206,7 +206,7 @@ ds_1:
 ds_1:
   dataSourceClassName: com.zaxxer.hikari.HikariDataSource
   driverClassName: com.mysql.cj.jdbc.Driver
-  standardJdbcUrl: jdbc:mysql://127.0.0.1:3306/test?sslMode=REQUIRED
+  jdbcUrl: jdbc:mysql://127.0.0.1:3306/test?sslMode=REQUIRED
   username: sa
   password:
 ```
