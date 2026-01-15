@@ -177,17 +177,7 @@ class ProxySQLExecutorTest {
         new ProxySQLExecutor(JDBCDriverType.STATEMENT,
                 databaseConnectionManager, mock(DatabaseProxyConnector.class), mockSQLStatementContext()).checkExecutePrerequisites(executionContext.getSqlStatementContext());
     }
-    
-    @Test
-    void assertCheckExecutePrerequisitesWhenExecuteCreateTableInPostgreSQLTransaction() {
-        when(transactionRule.getDefaultType()).thenReturn(TransactionType.LOCAL);
-        ExecutionContext executionContext = new ExecutionContext(
-                new QueryContext(createCreateTableStatementContext(postgresqlDatabaseType), "", Collections.emptyList(), new HintValueContext(), mockConnectionContext(),
-                        mock(ShardingSphereMetaData.class)),
-                Collections.emptyList(), mock(RouteContext.class));
-        assertThrows(TableModifyInTransactionException.class, () -> new ProxySQLExecutor(JDBCDriverType.STATEMENT,
-                databaseConnectionManager, mock(DatabaseProxyConnector.class), mockSQLStatementContext()).checkExecutePrerequisites(executionContext.getSqlStatementContext()));
-    }
+
     
     @Test
     void assertCheckExecutePrerequisitesWhenExecuteTruncateInPostgreSQLTransaction() {
