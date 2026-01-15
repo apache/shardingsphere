@@ -48,7 +48,10 @@ jobs:
           java-version: 21
       - uses: actions/cache@v5.0.1
         with:
-          path: ~/.m2/repository
+          path: |
+            ~/.m2/repository
+            !~/.m2/repository/org/apache/shardingsphere
+            ~/.m2/repository/org/apache/shardingsphere/elasticjob
           key: ${{ needs.global-environment.outputs.GLOBAL_CACHE_PREFIX }}-maven-third-party-e2e-cache-${{ github.sha }}
           restore-keys: |
             ${{ needs.global-environment.outputs.GLOBAL_CACHE_PREFIX }}-maven-third-party-e2e-cache-
@@ -107,7 +110,10 @@ jobs:
       - uses: actions/checkout@v6.0.1
       - uses: actions/cache@v5.0.1
         with:
-          path: ~/.m2/repository
+          path: |
+            ~/.m2/repository
+            !~/.m2/repository/org/apache/shardingsphere
+            ~/.m2/repository/org/apache/shardingsphere/elasticjob
           key: ${{ needs.global-environment.outputs.GLOBAL_CACHE_PREFIX }}-maven-third-party-e2e-cache-${{ github.sha }}
       - uses: actions/setup-java@v5.1.0
         with:

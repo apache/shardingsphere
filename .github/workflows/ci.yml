@@ -61,7 +61,10 @@ jobs:
           java-version: 11
       - uses: actions/cache@v5.0.1
         with:
-          path: ~/.m2/repository
+          path: |
+            ~/.m2/repository
+            !~/.m2/repository/org/apache/shardingsphere
+            ~/.m2/repository/org/apache/shardingsphere/elasticjob
           key: apache-shardingsphere-maven-third-party-${{ hashFiles('**/pom.xml') }}
           restore-keys: |
             apache-shardingsphere-maven-third-party-
