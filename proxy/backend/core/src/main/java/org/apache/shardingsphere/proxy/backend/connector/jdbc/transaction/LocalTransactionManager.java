@@ -38,6 +38,7 @@ public final class LocalTransactionManager {
      * Begin transaction.
      */
     public void begin() {
+        databaseConnectionManager.getConnectionSession().setAutoCommit(false);
         databaseConnectionManager.getConnectionPostProcessors().add(target -> target.setAutoCommit(false));
     }
     
