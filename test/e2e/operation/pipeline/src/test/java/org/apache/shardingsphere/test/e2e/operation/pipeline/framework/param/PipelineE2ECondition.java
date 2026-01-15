@@ -20,10 +20,14 @@ package org.apache.shardingsphere.test.e2e.operation.pipeline.framework.param;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.test.e2e.env.runtime.E2ETestEnvironment;
 import org.apache.shardingsphere.test.e2e.env.runtime.type.RunEnvironment.Type;
+import org.junit.jupiter.api.extension.ExtensionContext;
 
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.stream.Collectors;
 
 /**
  * Pipeline E2E condition.
@@ -34,16 +38,18 @@ public final class PipelineE2ECondition {
     /**
      * Judge whether pipeline E2E is enabled.
      *
-     * @param databaseTypes database types
+     * @param context extension context
      * @return enabled or not
      */
-    public static boolean isEnabled(final DatabaseType... databaseTypes) {
+    public static boolean isEnabled(final ExtensionContext context) {
         if (null == E2ETestEnvironment.getInstance().getRunEnvironment().getType()) {
             return false;
         }
-        if (0 != databaseTypes.length && Type.NATIVE == E2ETestEnvironment.getInstance().getRunEnvironment().getType()) {
+        PipelineE2ESettings settings = context.getRequiredTestClass().getAnnotation(PipelineE2ESettings.class);
+        Collection<DatabaseType> databaseTypes = Arrays.stream(settings.database()).map(each -> TypedSPILoader.getService(DatabaseType.class, each.type())).collect(Collectors.toList());
+        if (!databaseTypes.isEmpty() && Type.NATIVE == E2ETestEnvironment.getInstance().getRunEnvironment().getType()) {
             return true;
         }
-        return 0 == databaseTypes.length || Arrays.stream(databaseTypes).anyMatch(each -> !E2ETestEnvironment.getInstance().getDockerEnvironment().getDatabaseImages(each).isEmpty());
+        return databaseTypes.isEmpty() || databaseTypes.stream().anyMatch(each -> !E2ETestEnvironment.getInstance().getDockerEnvironment().getDatabaseImages(each).isEmpty());
     }
 }
