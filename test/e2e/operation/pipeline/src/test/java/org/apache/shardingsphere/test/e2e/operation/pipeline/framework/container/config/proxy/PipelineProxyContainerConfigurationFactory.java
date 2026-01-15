@@ -53,7 +53,7 @@ public final class PipelineProxyContainerConfigurationFactory {
     
     private static Map<String, String> getMountedResource(final DatabaseType databaseType) {
         Map<String, String> result = new HashMap<>(2, 1F);
-        result.put(String.format("env/%s/global.yaml", databaseType.getType().toLowerCase()), ProxyContainerConstants.CONFIG_PATH_IN_CONTAINER + "global.yaml");
+        result.put(String.format("env/container/proxy/%s/global.yaml", databaseType.getType().toLowerCase()), ProxyContainerConstants.CONFIG_PATH_IN_CONTAINER + "global.yaml");
         result.put("env/logback.xml", ProxyContainerConstants.CONFIG_PATH_IN_CONTAINER + "logback.xml");
         return result;
     }
