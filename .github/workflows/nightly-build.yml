@@ -48,7 +48,10 @@ jobs:
     steps:
       - uses: actions/cache@v5.0.1
         with:
-          path: ~/.m2/repository
+          path: |
+            ~/.m2/repository
+            !~/.m2/repository/org/apache/shardingsphere
+            ~/.m2/repository/org/apache/shardingsphere/elasticjob
           key: ${{ needs.global-environment.outputs.GLOBAL_CACHE_PREFIX }}-maven-third-party-cache-${{ github.sha }}
           restore-keys: |
             ${{ needs.global-environment.outputs.GLOBAL_CACHE_PREFIX }}-maven-third-party-cache-
@@ -88,7 +91,10 @@ jobs:
           java-version: 11
       - uses: actions/cache@v5.0.1
         with:
-          path: ~/.m2/repository
+          path: |
+            ~/.m2/repository
+            !~/.m2/repository/org/apache/shardingsphere
+            ~/.m2/repository/org/apache/shardingsphere/elasticjob
           key: ${{ needs.global-environment.outputs.GLOBAL_CACHE_PREFIX }}-maven-third-party-cache-${{ github.sha }}
           restore-keys: |
             ${{ needs.global-environment.outputs.GLOBAL_CACHE_PREFIX }}-maven-third-party-cache-
@@ -131,7 +137,10 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
       - uses: actions/cache@v5.0.1
         with:
-          path: ~/.m2/repository
+          path: |
+            ~/.m2/repository
+            !~/.m2/repository/org/apache/shardingsphere
+            ~/.m2/repository/org/apache/shardingsphere/elasticjob
           key: ${{ needs.global-environment.outputs.GLOBAL_CACHE_PREFIX }}-maven-third-party-cache-${{ github.sha }}
           restore-keys: |
             ${{ needs.global-environment.outputs.GLOBAL_CACHE_PREFIX }}-maven-third-party-cache-
@@ -169,7 +178,10 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
       - uses: actions/cache@v5.0.1
         with:
-          path: ~/.m2/repository
+          path: |
+            ~/.m2/repository
+            !~/.m2/repository/org/apache/shardingsphere
+            ~/.m2/repository/org/apache/shardingsphere/elasticjob
           key: ${{ needs.global-environment.outputs.GLOBAL_CACHE_PREFIX }}-maven-third-party-cache-${{ github.sha }}
           restore-keys: |
             ${{ needs.global-environment.outputs.GLOBAL_CACHE_PREFIX }}-maven-third-party-cache-
@@ -192,7 +204,10 @@ jobs:
           java-version: 11
       - uses: actions/cache@v5.0.1
         with:
-          path: ~/.m2/repository
+          path: |
+            ~/.m2/repository
+            !~/.m2/repository/org/apache/shardingsphere
+            ~/.m2/repository/org/apache/shardingsphere/elasticjob
           key: ${{ needs.global-environment.outputs.GLOBAL_CACHE_PREFIX }}-maven-third-party-${{ hashFiles('**/pom.xml') }}
           restore-keys: |
             ${{ needs.global-environment.outputs.GLOBAL_CACHE_PREFIX }}-maven-third-party-
@@ -251,7 +266,10 @@ jobs:
           java-version: 11
       - uses: actions/cache@v5.0.1
         with:
-          path: ~/.m2/repository
+          path: |
+            ~/.m2/repository
+            !~/.m2/repository/org/apache/shardingsphere
+            ~/.m2/repository/org/apache/shardingsphere/elasticjob
           key: ${{ needs.global-environment.outputs.GLOBAL_CACHE_PREFIX }}-maven-third-party-${{ hashFiles('**/pom.xml') }}
           restore-keys: |
             ${{ needs.global-environment.outputs.GLOBAL_CACHE_PREFIX }}-maven-third-party-
