@@ -20,6 +20,7 @@ package org.apache.shardingsphere.sharding.checker.sql.ddl;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.binder.context.statement.type.CommonSQLStatementContext;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.sharding.exception.syntax.UnsupportedShardingOperationException;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
@@ -35,8 +36,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 
-import java.util.Arrays;
-
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -54,12 +54,46 @@ class ShardingAlterTableSupportedCheckerTest {
     private ShardingSphereDatabase database;
     
     @Test
-    void assertCheckWithRenameTableWithShardingTable() {
+    void assertCheckWithRenameTableWhenNewTableNameConflictsWithShardingTable() {
+        AlterTableStatement sqlStatement = new AlterTableStatement(databaseType);
+        sqlStatement.setTable(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order"))));
+        sqlStatement.setRenameTable(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_user"))));
+        CommonSQLStatementContext sqlStatementContext = new CommonSQLStatementContext(sqlStatement);
+        ShardingSphereSchema schema = mock(ShardingSphereSchema.class);
+        when(rule.isShardingTable("t_user")).thenReturn(true);
+        when(schema.containsTable("t_user")).thenReturn(false);
+        assertThrows(UnsupportedShardingOperationException.class, () -> new ShardingAlterTableSupportedChecker().check(rule, database, schema, sqlStatementContext));
+    }
+    
+    @Test
+    void assertCheckWithRenameTableWhenNewTableNameConflictsWithExistingTable() {
+        AlterTableStatement sqlStatement = new AlterTableStatement(databaseType);
+        sqlStatement.setTable(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order"))));
+        sqlStatement.setRenameTable(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_existing"))));
+        CommonSQLStatementContext sqlStatementContext = new CommonSQLStatementContext(sqlStatement);
+        ShardingSphereSchema schema = mock(ShardingSphereSchema.class);
+        when(rule.isShardingTable("t_existing")).thenReturn(false);
+        when(schema.containsTable("t_existing")).thenReturn(true);
+        assertThrows(UnsupportedShardingOperationException.class, () -> new ShardingAlterTableSupportedChecker().check(rule, database, schema, sqlStatementContext));
+    }
+    
+    @Test
+    void assertCheckWithRenameTableSuccess() {
         AlterTableStatement sqlStatement = new AlterTableStatement(databaseType);
         sqlStatement.setTable(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order"))));
         sqlStatement.setRenameTable(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order_new"))));
         CommonSQLStatementContext sqlStatementContext = new CommonSQLStatementContext(sqlStatement);
-        when(rule.containsShardingTable(Arrays.asList("t_order", "t_order_new"))).thenReturn(true);
-        assertThrows(UnsupportedShardingOperationException.class, () -> new ShardingAlterTableSupportedChecker().check(rule, database, mock(), sqlStatementContext));
+        ShardingSphereSchema schema = mock(ShardingSphereSchema.class);
+        when(rule.isShardingTable("t_order_new")).thenReturn(false);
+        when(schema.containsTable("t_order_new")).thenReturn(false);
+        assertDoesNotThrow(() -> new ShardingAlterTableSupportedChecker().check(rule, database, schema, sqlStatementContext));
+    }
+    
+    @Test
+    void assertCheckWithoutRenameTable() {
+        AlterTableStatement sqlStatement = new AlterTableStatement(databaseType);
+        sqlStatement.setTable(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order"))));
+        CommonSQLStatementContext sqlStatementContext = new CommonSQLStatementContext(sqlStatement);
+        assertDoesNotThrow(() -> new ShardingAlterTableSupportedChecker().check(rule, database, mock(ShardingSphereSchema.class), sqlStatementContext));
     }
 }

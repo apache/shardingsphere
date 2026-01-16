@@ -91,6 +91,15 @@ public interface MetaDataManagerPersistService {
     void dropTables(ShardingSphereDatabase database, String schemaName, Collection<String> tableNames);
     
     /**
+     * Rename tables.
+     *
+     * @param database database
+     * @param schemaName schema name
+     * @param renameTableMap rename table map, key is old table name, value is new table name
+     */
+    void renameTables(ShardingSphereDatabase database, String schemaName, Map<String, String> renameTableMap);
+    
+    /**
      * Alter tables.
      *
      * @param database database
