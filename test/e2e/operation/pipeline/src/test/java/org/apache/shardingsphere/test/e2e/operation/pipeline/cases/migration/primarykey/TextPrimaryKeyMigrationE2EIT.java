@@ -57,7 +57,7 @@ class TextPrimaryKeyMigrationE2EIT extends AbstractMigrationE2EIT {
                 UUIDKeyGenerateAlgorithm keyGenerateAlgorithm = new UUIDKeyGenerateAlgorithm();
                 PipelineCaseHelper.batchInsertOrderRecordsWithGeneralColumns(connection, keyGenerateAlgorithm, getSourceTableName(containerComposer), PipelineContainerComposer.TABLE_INIT_ROW_COUNT);
             }
-            PipelineE2EDistSQLFacade distSQLFacade = new PipelineE2EDistSQLFacade(containerComposer);
+            PipelineE2EDistSQLFacade distSQLFacade = new PipelineE2EDistSQLFacade(containerComposer, new MigrationJobType());
             distSQLFacade.alterPipelineRule();
             addMigrationSourceResource(containerComposer);
             addMigrationTargetResource(containerComposer);

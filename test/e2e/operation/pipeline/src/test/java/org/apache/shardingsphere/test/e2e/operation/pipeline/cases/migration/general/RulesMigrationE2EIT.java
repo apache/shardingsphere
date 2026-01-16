@@ -86,7 +86,7 @@ class RulesMigrationE2EIT extends AbstractMigrationE2EIT {
             addRuleFn.call();
         }
         startMigration(containerComposer, SOURCE_TABLE_NAME, TARGET_TABLE_NAME);
-        PipelineE2EDistSQLFacade distSQLFacade = new PipelineE2EDistSQLFacade(containerComposer);
+        PipelineE2EDistSQLFacade distSQLFacade = new PipelineE2EDistSQLFacade(containerComposer, new MigrationJobType());
         String jobId = distSQLFacade.listJobIds().get(0);
         containerComposer.waitJobPrepareSuccess(String.format("SHOW MIGRATION STATUS '%s'", jobId));
         containerComposer.waitIncrementTaskFinished(String.format("SHOW MIGRATION STATUS '%s'", jobId));

@@ -19,6 +19,7 @@ package org.apache.shardingsphere.test.e2e.operation.pipeline.util;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.data.pipeline.core.job.type.PipelineJobType;
 import org.apache.shardingsphere.test.e2e.operation.pipeline.cases.PipelineContainerComposer;
 import org.awaitility.Awaitility;
 
@@ -37,12 +38,12 @@ public final class PipelineE2EDistSQLFacade {
             + "WRITE(WORKER_THREAD=20, BATCH_SIZE=1000, RATE_LIMITER (TYPE(NAME='TPS',PROPERTIES('tps'='2000')))),\n"
             + "STREAM_CHANNEL(TYPE(NAME='MEMORY', PROPERTIES('block-queue-size'=1000))))";
     
-    private final String jobTypeName;
-    
     private final PipelineContainerComposer containerComposer;
     
-    public PipelineE2EDistSQLFacade(final PipelineContainerComposer containerComposer) {
-        this(containerComposer.getJobType().getType(), containerComposer);
+    private final String jobTypeName;
+    
+    public PipelineE2EDistSQLFacade(final PipelineContainerComposer containerComposer, final PipelineJobType<?> jobType) {
+        this(containerComposer, jobType.getType());
     }
     
     /**

@@ -65,7 +65,7 @@ class PostgreSQLMigrationGeneralE2EIT extends AbstractMigrationE2EIT {
     @ArgumentsSource(PipelineE2ETestCaseArgumentsProvider.class)
     void assertMigrationSuccess(final PipelineTestParameter testParam) throws SQLException, InterruptedException {
         try (PipelineContainerComposer containerComposer = new PipelineContainerComposer(testParam, new MigrationJobType())) {
-            PipelineE2EDistSQLFacade distSQLFacade = new PipelineE2EDistSQLFacade(containerComposer);
+            PipelineE2EDistSQLFacade distSQLFacade = new PipelineE2EDistSQLFacade(containerComposer, new MigrationJobType());
             distSQLFacade.alterPipelineRule();
             createSourceSchema(containerComposer, PipelineContainerComposer.SCHEMA_NAME);
             containerComposer.createSourceOrderTable(SOURCE_TABLE_NAME);
