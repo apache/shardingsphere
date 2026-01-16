@@ -31,6 +31,7 @@ import org.apache.shardingsphere.test.e2e.operation.pipeline.framework.param.Pip
 import org.apache.shardingsphere.test.e2e.operation.pipeline.framework.param.PipelineE2ESettings.PipelineE2EDatabaseSettings;
 import org.apache.shardingsphere.test.e2e.operation.pipeline.framework.param.PipelineE2ETestCaseArgumentsProvider;
 import org.apache.shardingsphere.test.e2e.operation.pipeline.framework.param.PipelineTestParameter;
+import org.apache.shardingsphere.test.e2e.operation.pipeline.util.PipelineE2EDistSQLFacade;
 import org.awaitility.Awaitility;
 import org.awaitility.core.ConditionTimeoutException;
 import org.junit.jupiter.api.condition.EnabledIf;
@@ -48,7 +49,6 @@ import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -77,8 +77,9 @@ class PostgreSQLToMySQLMigrationE2EIT extends AbstractMigrationE2EIT {
                     + "KEY_GENERATE_STRATEGY(COLUMN=order_id, TYPE(NAME='snowflake')))", 2);
             initTargetTable(containerComposer);
             containerComposer.proxyExecuteWithLog("MIGRATE TABLE source_ds.t_order INTO t_order", 2);
-            Awaitility.await().ignoreExceptions().atMost(10L, TimeUnit.SECONDS).pollInterval(1L, TimeUnit.SECONDS).until(() -> !listJobId(containerComposer).isEmpty());
-            String jobId = listJobId(containerComposer).get(0);
+            PipelineE2EDistSQLFacade distSQLFacade = new PipelineE2EDistSQLFacade(containerComposer);
+            Awaitility.await().ignoreExceptions().atMost(10L, TimeUnit.SECONDS).pollInterval(1L, TimeUnit.SECONDS).until(() -> !distSQLFacade.listJobIds().isEmpty());
+            String jobId = distSQLFacade.listJobIds().get(0);
             containerComposer.waitJobStatusReached(String.format("SHOW MIGRATION STATUS %s", jobId), JobStatus.EXECUTE_INCREMENTAL_TASK, 15);
             try (Connection connection = DriverManager.getConnection(jdbcUrl, "postgres", "postgres")) {
                 connection.createStatement().execute(String.format("INSERT INTO t_order (order_id,user_id,status) VALUES (%s, %s, '%s')", "1000000000", 1, "incremental"));
@@ -86,9 +87,8 @@ class PostgreSQLToMySQLMigrationE2EIT extends AbstractMigrationE2EIT {
             }
             containerComposer.waitIncrementTaskFinished(String.format("SHOW MIGRATION STATUS '%s'", jobId));
             assertCheckMigrationSuccess(containerComposer, jobId, "DATA_MATCH");
-            commitMigrationByJobId(containerComposer, jobId);
-            List<String> lastJobIds = listJobId(containerComposer);
-            assertTrue(lastJobIds.isEmpty());
+            distSQLFacade.commit(jobId);
+            assertTrue(distSQLFacade.listJobIds().isEmpty());
         } finally {
             if (null != postgresqlContainer) {
                 postgresqlContainer.close();

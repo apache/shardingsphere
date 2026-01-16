@@ -24,6 +24,7 @@ import org.apache.shardingsphere.test.e2e.operation.pipeline.framework.param.Pip
 import org.apache.shardingsphere.test.e2e.operation.pipeline.framework.param.PipelineE2ESettings;
 import org.apache.shardingsphere.test.e2e.operation.pipeline.framework.param.PipelineE2ETestCaseArgumentsProvider;
 import org.apache.shardingsphere.test.e2e.operation.pipeline.framework.param.PipelineTestParameter;
+import org.apache.shardingsphere.test.e2e.operation.pipeline.util.PipelineE2EDistSQLFacade;
 import org.junit.jupiter.api.condition.EnabledIf;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -52,11 +53,12 @@ class MySQLTimeTypesMigrationE2EIT extends AbstractMigrationE2EIT {
             addMigrationSourceResource(containerComposer);
             addMigrationTargetResource(containerComposer);
             startMigration(containerComposer, "time_e2e", "time_e2e");
-            String jobId = listJobId(containerComposer).get(0);
+            PipelineE2EDistSQLFacade distSQLFacade = new PipelineE2EDistSQLFacade(containerComposer);
+            String jobId = distSQLFacade.listJobIds().get(0);
             containerComposer.waitJobPrepareSuccess(String.format("SHOW MIGRATION STATUS '%s'", jobId));
             insertOneRecordWithZeroValue(containerComposer, 2);
             containerComposer.waitIncrementTaskFinished(String.format("SHOW MIGRATION STATUS '%s'", jobId));
-            loadAllSingleTables(containerComposer);
+            distSQLFacade.loadAllSingleTables();
             assertCheckMigrationSuccess(containerComposer, jobId, "DATA_MATCH");
         }
     }

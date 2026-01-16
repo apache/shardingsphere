@@ -98,10 +98,6 @@ public abstract class AbstractMigrationE2EIT {
         }
     }
     
-    protected void loadAllSingleTables(final PipelineContainerComposer containerComposer) throws SQLException {
-        containerComposer.proxyExecuteWithLog("LOAD SINGLE TABLE *.*", 5);
-    }
-    
     protected void createTargetOrderTableRule(final PipelineContainerComposer containerComposer) throws SQLException {
         containerComposer.proxyExecuteWithLog(migrationDistSQL.getCreateTargetOrderTableRule(), 0);
         Awaitility.await().atMost(10L, TimeUnit.SECONDS).pollInterval(1L, TimeUnit.SECONDS).until(() -> !containerComposer.queryForListWithLog("SHOW SHARDING TABLE RULE t_order").isEmpty());
@@ -124,32 +120,6 @@ public abstract class AbstractMigrationE2EIT {
         containerComposer.proxyExecuteWithLog(migrationDistSQL.getMigrationSingleTableWithSchema(sourceTableName, targetTableName), 5);
     }
     
-    protected void addMigrationProcessConfig(final PipelineContainerComposer containerComposer) throws SQLException {
-        containerComposer.proxyExecuteWithLog(migrationDistSQL.getAlterMigrationRule(), 0);
-    }
-    
-    protected void stopMigrationByJobId(final PipelineContainerComposer containerComposer, final String jobId) throws SQLException {
-        containerComposer.proxyExecuteWithLog(String.format("STOP MIGRATION '%s'", jobId), 1);
-    }
-    
-    protected void startMigrationByJobId(final PipelineContainerComposer containerComposer, final String jobId) throws SQLException {
-        containerComposer.proxyExecuteWithLog(String.format("START MIGRATION '%s'", jobId), 4);
-    }
-    
-    protected void commitMigrationByJobId(final PipelineContainerComposer containerComposer, final String jobId) throws SQLException {
-        containerComposer.proxyExecuteWithLog(String.format("COMMIT MIGRATION '%s'", jobId), 1);
-    }
-    
-    protected List<String> listJobId(final PipelineContainerComposer containerComposer) {
-        List<Map<String, Object>> jobList = containerComposer.queryForListWithLog("SHOW MIGRATION LIST");
-        return jobList.stream().map(a -> a.get("id").toString()).collect(Collectors.toList());
-    }
-    
-    protected String getJobIdByTableName(final PipelineContainerComposer containerComposer, final String tableName) {
-        List<Map<String, Object>> jobList = containerComposer.queryForListWithLog("SHOW MIGRATION LIST");
-        return jobList.stream().filter(a -> a.get("tables").toString().equals(tableName)).findFirst().orElseThrow(() -> new RuntimeException("not find " + tableName + " table")).get("id").toString();
-    }
-    
     protected void assertCheckMigrationSuccess(final PipelineContainerComposer containerComposer, final String jobId, final String algorithmType) throws SQLException {
         assertCheckMigrationSuccess(containerComposer, jobId, algorithmType, new Properties());
     }
@@ -161,7 +131,7 @@ public abstract class AbstractMigrationE2EIT {
         for (int i = 0; i < 30; i++) {
             resultList = containerComposer.queryForListWithLog(String.format("SHOW MIGRATION CHECK STATUS '%s'", jobId));
             if (resultList.isEmpty()) {
-                Awaitility.await().pollDelay(3L, TimeUnit.SECONDS).until(() -> true);
+                containerComposer.sleepSeconds(3);
                 continue;
             }
             List<String> checkEndTimeList = resultList.stream().map(map -> map.get("check_end_time").toString()).filter(each -> !Strings.isNullOrEmpty(each)).collect(Collectors.toList());
@@ -169,7 +139,7 @@ public abstract class AbstractMigrationE2EIT {
             if (checkEndTimeList.size() == resultList.size() && 1 == finishedPercentages.size() && finishedPercentages.contains("100")) {
                 break;
             } else {
-                Awaitility.await().pollDelay(1L, TimeUnit.SECONDS).until(() -> true);
+                containerComposer.sleepSeconds(1);
             }
         }
         log.info("check job results: {}", resultList);
