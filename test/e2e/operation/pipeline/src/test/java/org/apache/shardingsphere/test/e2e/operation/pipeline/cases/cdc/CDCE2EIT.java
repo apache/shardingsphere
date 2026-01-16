@@ -98,7 +98,7 @@ class CDCE2EIT {
     @ArgumentsSource(PipelineE2ETestCaseArgumentsProvider.class)
     void assertCDCDataImportSuccess(final PipelineTestParameter testParam) throws SQLException {
         TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
-        try (PipelineContainerComposer containerComposer = new PipelineContainerComposer(testParam, new CDCJobType())) {
+        try (PipelineContainerComposer containerComposer = new PipelineContainerComposer(testParam)) {
             PipelineE2EDistSQLFacade distSQLFacade = new PipelineE2EDistSQLFacade(containerComposer, new CDCJobType());
             distSQLFacade.alterPipelineRule();
             for (String each : Arrays.asList(PipelineContainerComposer.DS_0, PipelineContainerComposer.DS_1)) {

@@ -78,7 +78,7 @@ class IndexesMigrationE2EIT extends AbstractMigrationE2EIT {
     @EnabledIf("isEnabled")
     @ArgumentsSource(PipelineE2ETestCaseArgumentsProvider.class)
     void assertNoUniqueKeyMigrationSuccess(final PipelineTestParameter testParam) throws Exception {
-        try (PipelineContainerComposer containerComposer = new PipelineContainerComposer(testParam, new MigrationJobType())) {
+        try (PipelineContainerComposer containerComposer = new PipelineContainerComposer(testParam)) {
             String sql;
             String consistencyCheckAlgorithmType;
             if (containerComposer.getDatabaseType() instanceof MySQLDatabaseType) {
@@ -162,7 +162,7 @@ class IndexesMigrationE2EIT extends AbstractMigrationE2EIT {
     @EnabledIf("isEnabled")
     @ArgumentsSource(PipelineE2ETestCaseArgumentsProvider.class)
     void assertMultiPrimaryKeyMigrationSuccess(final PipelineTestParameter testParam) throws Exception {
-        try (PipelineContainerComposer containerComposer = new PipelineContainerComposer(testParam, new MigrationJobType())) {
+        try (PipelineContainerComposer containerComposer = new PipelineContainerComposer(testParam)) {
             String sql;
             String consistencyCheckAlgorithmType;
             if (containerComposer.getDatabaseType() instanceof MySQLDatabaseType) {
@@ -185,7 +185,7 @@ class IndexesMigrationE2EIT extends AbstractMigrationE2EIT {
     @EnabledIf("isEnabled")
     @ArgumentsSource(PipelineE2ETestCaseArgumentsProvider.class)
     void assertMultiUniqueKeyMigrationSuccess(final PipelineTestParameter testParam) throws Exception {
-        try (PipelineContainerComposer containerComposer = new PipelineContainerComposer(testParam, new MigrationJobType())) {
+        try (PipelineContainerComposer containerComposer = new PipelineContainerComposer(testParam)) {
             String sql;
             String consistencyCheckAlgorithmType;
             if (containerComposer.getDatabaseType() instanceof MySQLDatabaseType) {
@@ -208,7 +208,7 @@ class IndexesMigrationE2EIT extends AbstractMigrationE2EIT {
     @EnabledIf("isEnabled")
     @ArgumentsSource(PipelineE2ETestCaseArgumentsProvider.class)
     void assertSpecialTypeSingleColumnUniqueKeyMigrationSuccess(final PipelineTestParameter testParam) throws Exception {
-        try (PipelineContainerComposer containerComposer = new PipelineContainerComposer(testParam, new MigrationJobType())) {
+        try (PipelineContainerComposer containerComposer = new PipelineContainerComposer(testParam)) {
             String sql;
             String consistencyCheckAlgorithmType;
             if (containerComposer.getDatabaseType() instanceof MySQLDatabaseType) {

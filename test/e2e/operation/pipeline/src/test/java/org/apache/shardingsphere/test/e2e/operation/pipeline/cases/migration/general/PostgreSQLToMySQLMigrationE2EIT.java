@@ -63,7 +63,7 @@ class PostgreSQLToMySQLMigrationE2EIT extends AbstractMigrationE2EIT {
     void assertMigrationSuccess(final PipelineTestParameter testParam) throws SQLException {
         PostgreSQLContainer<?> postgresqlContainer = null;
         Type type = E2ETestEnvironment.getInstance().getRunEnvironment().getType();
-        try (PipelineContainerComposer containerComposer = new PipelineContainerComposer(testParam, new MigrationJobType())) {
+        try (PipelineContainerComposer containerComposer = new PipelineContainerComposer(testParam)) {
             if (Type.DOCKER == type) {
                 postgresqlContainer = new PostgreSQLContainer<>("postgres:13");
                 postgresqlContainer.withNetwork(containerComposer.getContainerComposer().getContainers().getNetwork()).withNetworkAliases("postgresql.host")
