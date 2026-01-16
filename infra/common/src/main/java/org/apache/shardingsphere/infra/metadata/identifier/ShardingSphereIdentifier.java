@@ -19,6 +19,7 @@ package org.apache.shardingsphere.infra.metadata.identifier;
 
 import com.cedarsoftware.util.CaseInsensitiveMap.CaseInsensitiveString;
 import org.apache.shardingsphere.database.connector.core.metadata.database.enums.QuoteCharacter;
+import org.apache.shardingsphere.database.connector.core.metadata.identifier.DatabaseDialectIdentifierHandler;
 import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
