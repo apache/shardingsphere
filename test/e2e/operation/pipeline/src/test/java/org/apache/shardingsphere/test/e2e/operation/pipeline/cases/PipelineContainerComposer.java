@@ -35,6 +35,7 @@ import org.apache.shardingsphere.database.connector.mysql.type.MySQLDatabaseType
 import org.apache.shardingsphere.database.connector.opengauss.type.OpenGaussDatabaseType;
 import org.apache.shardingsphere.database.connector.postgresql.type.PostgreSQLDatabaseType;
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
+import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.util.props.PropertiesBuilder;
 import org.apache.shardingsphere.infra.util.props.PropertiesBuilder.Property;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
@@ -118,11 +119,9 @@ public final class PipelineContainerComposer implements AutoCloseable {
     
     private final DataSource proxyDataSource;
     
-    private final PipelineJobType<?> jobType;
-    
     private Thread increaseTaskThread;
     
-    public PipelineContainerComposer(final PipelineTestParameter testParam, final PipelineJobType<?> jobType) {
+    public PipelineContainerComposer(final PipelineTestParameter testParam) {
         databaseType = testParam.getDatabaseType();
         Type type = E2ETestEnvironment.getInstance().getRunEnvironment().getType();
         containerComposer = Type.DOCKER == type
@@ -140,15 +139,14 @@ public final class PipelineContainerComposer implements AutoCloseable {
         sourceDataSource = StorageContainerUtils.generateDataSource(getActualJdbcUrlTemplate(DS_0, false), username, password, 2);
         proxyDataSource = StorageContainerUtils.generateDataSource(
                 appendExtraParameter(containerComposer.getProxyJdbcUrl(PROXY_DATABASE)), ProxyContainerConstants.USER, ProxyContainerConstants.PASSWORD, 2);
-        this.jobType = jobType;
-        init(jobType);
+        init();
     }
     
     @SneakyThrows(SQLException.class)
-    private void init(final PipelineJobType<?> jobType) {
+    private void init() {
         String jdbcUrl = containerComposer.getProxyJdbcUrl(databaseType instanceof PostgreSQLDatabaseType || databaseType instanceof OpenGaussDatabaseType ? "postgres" : "");
         try (Connection connection = DriverManager.getConnection(jdbcUrl, ProxyContainerConstants.USER, ProxyContainerConstants.PASSWORD)) {
-            cleanUpPipelineJobs(connection, jobType);
+            cleanUpPipelineJobs(connection);
             cleanUpProxyDatabase(connection);
             // Compatible with "drop database if exists sharding_db;" failed for now
             cleanUpProxyDatabase(connection);
@@ -157,10 +155,19 @@ public final class PipelineContainerComposer implements AutoCloseable {
         cleanUpDataSource();
     }
     
-    private void cleanUpPipelineJobs(final Connection connection, final PipelineJobType<?> jobType) throws SQLException {
+    private void cleanUpPipelineJobs(final Connection connection) throws SQLException {
         if (Type.NATIVE != E2ETestEnvironment.getInstance().getRunEnvironment().getType()) {
             return;
         }
+        for (PipelineJobType<?> each : ShardingSphereServiceLoader.getServiceInstances(PipelineJobType.class)) {
+            if (!each.getOption().isTransmissionJob()) {
+                continue;
+            }
+            cleanUpPipelineJobsWithType(connection, each);
+        }
+    }
+    
+    private void cleanUpPipelineJobsWithType(final Connection connection, final PipelineJobType<?> jobType) throws SQLException {
         String jobTypeName = jobType.getType();
         for (Map<String, Object> each : queryJobs(connection, jobTypeName)) {
             String jobId = each.get("id").toString();

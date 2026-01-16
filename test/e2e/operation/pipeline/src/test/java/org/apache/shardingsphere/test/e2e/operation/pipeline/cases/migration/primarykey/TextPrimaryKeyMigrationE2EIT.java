@@ -51,13 +51,13 @@ class TextPrimaryKeyMigrationE2EIT extends AbstractMigrationE2EIT {
     @EnabledIf("isEnabled")
     @ArgumentsSource(PipelineE2ETestCaseArgumentsProvider.class)
     void assertTextPrimaryMigrationSuccess(final PipelineTestParameter testParam) throws SQLException {
-        try (PipelineContainerComposer containerComposer = new PipelineContainerComposer(testParam, new MigrationJobType())) {
+        try (PipelineContainerComposer containerComposer = new PipelineContainerComposer(testParam)) {
             containerComposer.createSourceOrderTable(getSourceTableName(containerComposer));
             try (Connection connection = containerComposer.getSourceDataSource().getConnection()) {
                 UUIDKeyGenerateAlgorithm keyGenerateAlgorithm = new UUIDKeyGenerateAlgorithm();
                 PipelineCaseHelper.batchInsertOrderRecordsWithGeneralColumns(connection, keyGenerateAlgorithm, getSourceTableName(containerComposer), PipelineContainerComposer.TABLE_INIT_ROW_COUNT);
             }
-            PipelineE2EDistSQLFacade distSQLFacade = new PipelineE2EDistSQLFacade(containerComposer);
+            PipelineE2EDistSQLFacade distSQLFacade = new PipelineE2EDistSQLFacade(containerComposer, new MigrationJobType());
             distSQLFacade.alterPipelineRule();
             addMigrationSourceResource(containerComposer);
             addMigrationTargetResource(containerComposer);

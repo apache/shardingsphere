@@ -43,7 +43,7 @@ class RollbackMigrationE2EIT extends AbstractMigrationE2EIT {
     @EnabledIf("isEnabled")
     @ArgumentsSource(PipelineE2ETestCaseArgumentsProvider.class)
     void assertIllegalTimeTypesValueMigrationSuccess(final PipelineTestParameter testParam) throws Exception {
-        try (PipelineContainerComposer containerComposer = new PipelineContainerComposer(testParam, new MigrationJobType())) {
+        try (PipelineContainerComposer containerComposer = new PipelineContainerComposer(testParam)) {
             String sql = "CREATE TABLE t_order (order_id BIGINT PRIMARY KEY, user_id INT, status VARCHAR(50))";
             containerComposer.sourceExecuteWithLog(sql);
             try (Connection connection = containerComposer.getSourceDataSource().getConnection()) {
@@ -52,7 +52,7 @@ class RollbackMigrationE2EIT extends AbstractMigrationE2EIT {
             addMigrationSourceResource(containerComposer);
             addMigrationTargetResource(containerComposer);
             startMigration(containerComposer, "t_order", "t_order");
-            PipelineE2EDistSQLFacade distSQLFacade = new PipelineE2EDistSQLFacade(containerComposer);
+            PipelineE2EDistSQLFacade distSQLFacade = new PipelineE2EDistSQLFacade(containerComposer, new MigrationJobType());
             String jobId = distSQLFacade.listJobIds().get(0);
             distSQLFacade.rollback(jobId);
             assertTrue(distSQLFacade.listJobIds().isEmpty());
