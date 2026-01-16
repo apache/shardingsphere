@@ -19,6 +19,7 @@ package org.apache.shardingsphere.sharding.rule.checker;
 
 import com.google.common.base.Splitter;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
@@ -70,9 +71,9 @@ public class ShardingRuleChecker {
     
     private void checkBindingTableConfiguration(final ShardingRuleConfiguration ruleConfig) {
         checkBindingTablesNumericSuffix(ruleConfig.getBindingTableGroups(), shardingRule.getShardingTables());
-        BindingTableCheckedConfiguration checkedConfig = new BindingTableCheckedConfiguration(shardingRule.getDataSourceNames(), shardingRule.getShardingAlgorithms(),
-                ruleConfig.getBindingTableGroups(), shardingRule.getDefaultDatabaseShardingStrategyConfig(), shardingRule.getDefaultTableShardingStrategyConfig(),
-                shardingRule.getDefaultShardingColumn());
+        BindingTableCheckedConfiguration checkedConfig =
+                new BindingTableCheckedConfiguration(shardingRule.getDataSourceNames(), shardingRule.getShardingAlgorithms(), ruleConfig.getShardingAlgorithms(), ruleConfig.getBindingTableGroups(),
+                        shardingRule.getDefaultDatabaseShardingStrategyConfig(), shardingRule.getDefaultTableShardingStrategyConfig(), shardingRule.getDefaultShardingColumn());
         ShardingSpherePreconditions.checkState(isValidBindingTableConfiguration(shardingRule.getShardingTables(), checkedConfig),
                 () -> new InvalidBindingTablesException("Invalid binding table configuration."));
     }
@@ -105,7 +106,14 @@ public class ShardingRuleChecker {
         return true;
     }
     
-    private boolean isValidBindingTableConfiguration(final Map<String, ShardingTable> shardingTables, final BindingTableCheckedConfiguration checkedConfig) {
+    /**
+     * Judge whether binding table configuration is valid.
+     *
+     * @param shardingTables sharding tables
+     * @param checkedConfig checked configuration
+     * @return is valid binding table configuration
+     */
+    public boolean isValidBindingTableConfiguration(final Map<String, ShardingTable> shardingTables, final BindingTableCheckedConfiguration checkedConfig) {
         for (ShardingTableReferenceRuleConfiguration each : checkedConfig.getBindingTableGroups()) {
             Collection<String> bindingTables = Splitter.on(",").trimResults().splitToList(each.getReference());
             if (bindingTables.size() <= 1) {
@@ -151,7 +159,30 @@ public class ShardingRuleChecker {
     
     private boolean isBindingShardingAlgorithm(final ShardingTable sampleShardingTable, final ShardingTable shardingTable, final boolean databaseAlgorithm,
                                                final BindingTableCheckedConfiguration checkedConfig) {
-        return getAlgorithmExpression(sampleShardingTable, databaseAlgorithm, checkedConfig).equals(getAlgorithmExpression(shardingTable, databaseAlgorithm, checkedConfig));
+        Optional<String> algorithmExpression1 = getAlgorithmExpression(sampleShardingTable, databaseAlgorithm, checkedConfig);
+        Optional<String> algorithmExpression2 = getAlgorithmExpression(shardingTable, databaseAlgorithm, checkedConfig);
+        if (algorithmExpression1.isPresent() && algorithmExpression2.isPresent()) {
+            return algorithmExpression1.equals(algorithmExpression2);
+        }
+        AlgorithmConfiguration algorithmConfiguration1 = getAlgorithmConfiguration(sampleShardingTable, databaseAlgorithm, checkedConfig);
+        AlgorithmConfiguration algorithmConfiguration2 = getAlgorithmConfiguration(shardingTable, databaseAlgorithm, checkedConfig);
+        if (null == algorithmConfiguration1 && null == algorithmConfiguration2) {
+            return true;
+        }
+        if (null == algorithmConfiguration1 || null == algorithmConfiguration2) {
+            return false;
+        }
+        return algorithmConfiguration1.equals(algorithmConfiguration2);
+    }
+    
+    private AlgorithmConfiguration getAlgorithmConfiguration(final ShardingTable shardingTable, final boolean databaseAlgorithm, final BindingTableCheckedConfiguration checkedConfig) {
+        ShardingStrategyConfiguration shardingStrategyConfig = databaseAlgorithm
+                ? shardingRule.getDatabaseShardingStrategyConfiguration(shardingTable)
+                : shardingRule.getTableShardingStrategyConfiguration(shardingTable);
+        if (null == shardingStrategyConfig) {
+            return null;
+        }
+        return checkedConfig.getAlgorithmConfigs().get(shardingStrategyConfig.getShardingAlgorithmName());
     }
     
     private Optional<String> getAlgorithmExpression(final ShardingTable shardingTable, final boolean databaseAlgorithm, final BindingTableCheckedConfiguration checkedConfig) {

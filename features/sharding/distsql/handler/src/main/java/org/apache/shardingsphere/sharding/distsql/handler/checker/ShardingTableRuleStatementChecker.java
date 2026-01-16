@@ -173,8 +173,8 @@ public final class ShardingTableRuleStatementChecker {
         ShardingStrategyConfiguration defaultTableShardingStrategyConfig = null == checkedConfig.getDefaultTableShardingStrategy()
                 ? new NoneShardingStrategyConfiguration()
                 : checkedConfig.getDefaultTableShardingStrategy();
-        return isValidBindingTableConfiguration(shardingTables, new BindingTableCheckedConfiguration(allDataSourceNames, shardingAlgorithms, checkedConfig.getBindingTableGroups(),
-                defaultDatabaseShardingStrategyConfig, defaultTableShardingStrategyConfig, checkedConfig.getDefaultShardingColumn()));
+        return isValidBindingTableConfiguration(shardingTables, new BindingTableCheckedConfiguration(allDataSourceNames, shardingAlgorithms, checkedConfig.getShardingAlgorithms(),
+                checkedConfig.getBindingTableGroups(), defaultDatabaseShardingStrategyConfig, defaultTableShardingStrategyConfig, checkedConfig.getDefaultShardingColumn()));
     }
     
     private static Collection<String> getDataSourceNames(final Collection<ShardingTableRuleConfiguration> tableRuleConfigs,
