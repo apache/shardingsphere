@@ -52,6 +52,7 @@ import org.apache.shardingsphere.test.e2e.operation.pipeline.framework.param.Pip
 import org.apache.shardingsphere.test.e2e.operation.pipeline.framework.param.PipelineE2ETestCaseArgumentsProvider;
 import org.apache.shardingsphere.test.e2e.operation.pipeline.framework.param.PipelineTestParameter;
 import org.apache.shardingsphere.test.e2e.operation.pipeline.util.DataSourceExecuteUtils;
+import org.apache.shardingsphere.test.e2e.operation.pipeline.util.PipelineE2EDistSQLFacade;
 import org.awaitility.Awaitility;
 import org.junit.jupiter.api.condition.EnabledIf;
 import org.junit.jupiter.api.extension.ExtensionContext;
@@ -105,7 +106,8 @@ class CDCE2EIT {
                 containerComposer.registerStorageUnit(each);
             }
             createOrderTableRule(containerComposer);
-            createBroadcastRule(containerComposer);
+            PipelineE2EDistSQLFacade distSQLFacade = new PipelineE2EDistSQLFacade(containerComposer);
+            distSQLFacade.createBroadcastRule("t_address");
             try (Connection connection = containerComposer.getProxyDataSource().getConnection()) {
                 initSchemaAndTable(containerComposer, connection, 3);
             }
@@ -123,8 +125,8 @@ class CDCE2EIT {
             }
             PipelineDataSource targetDataSource = createStandardDataSource(containerComposer, PipelineContainerComposer.DS_4);
             final CDCClient cdcClient = buildCDCClientAndStart(targetDataSource, containerComposer);
-            Awaitility.await().atMost(10L, TimeUnit.SECONDS).pollInterval(1L, TimeUnit.SECONDS).until(() -> !containerComposer.queryForListWithLog("SHOW STREAMING LIST").isEmpty());
-            String jobId = containerComposer.queryForListWithLog("SHOW STREAMING LIST").get(0).get("id").toString();
+            Awaitility.await().atMost(10L, TimeUnit.SECONDS).pollInterval(1L, TimeUnit.SECONDS).until(() -> !distSQLFacade.listJobIds().isEmpty());
+            String jobId = distSQLFacade.listJobIds().get(0);
             containerComposer.waitIncrementTaskFinished(String.format("SHOW STREAMING STATUS '%s'", jobId));
             DialectDatabaseMetaData dialectDatabaseMetaData = new DatabaseTypeRegistry(containerComposer.getDatabaseType()).getDialectDatabaseMetaData();
             String tableName = dialectDatabaseMetaData.getSchemaOption().isSchemaAvailable() ? String.join(".", PipelineContainerComposer.SCHEMA_NAME, SOURCE_TABLE_NAME) : SOURCE_TABLE_NAME;
@@ -142,10 +144,10 @@ class CDCE2EIT {
             assertDataMatched(sourceDataSource, targetDataSource, new QualifiedTable(null, "t_address"));
             assertDataMatched(sourceDataSource, targetDataSource, new QualifiedTable(null, "t_single"));
             cdcClient.close();
-            Awaitility.await().atMost(10L, TimeUnit.SECONDS).pollInterval(500L, TimeUnit.MILLISECONDS).until(() -> containerComposer.queryForListWithLog("SHOW STREAMING LIST")
-                    .stream().noneMatch(each -> Boolean.parseBoolean(each.get("active").toString())));
+            Awaitility.await().atMost(10L, TimeUnit.SECONDS).pollInterval(500L, TimeUnit.MILLISECONDS)
+                    .until(() -> distSQLFacade.listJobs().stream().noneMatch(each -> Boolean.parseBoolean(each.get("active").toString())));
             containerComposer.proxyExecuteWithLog(String.format("DROP STREAMING '%s'", jobId), 0);
-            assertTrue(containerComposer.queryForListWithLog("SHOW STREAMING LIST").isEmpty());
+            assertTrue(distSQLFacade.listJobs().isEmpty());
         }
     }
     
@@ -154,20 +156,14 @@ class CDCE2EIT {
         Awaitility.await().atMost(20L, TimeUnit.SECONDS).pollInterval(2L, TimeUnit.SECONDS).until(() -> !containerComposer.queryForListWithLog("SHOW SHARDING TABLE RULE t_order").isEmpty());
     }
     
-    private void createBroadcastRule(final PipelineContainerComposer containerComposer) throws SQLException {
-        containerComposer.proxyExecuteWithLog("CREATE BROADCAST TABLE RULE t_address", 2);
-    }
-    
-    private void initSchemaAndTable(final PipelineContainerComposer containerComposer, final Connection connection, final int sleepSeconds) throws SQLException {
-        containerComposer.createSchema(connection, sleepSeconds);
+    private void initSchemaAndTable(final PipelineContainerComposer containerComposer, final Connection connection, final int seconds) throws SQLException {
+        containerComposer.createSchema(connection, seconds);
         String sql = containerComposer.getExtraSQLCommand().getCreateTableOrder(SOURCE_TABLE_NAME);
         log.info("Create table sql: {}", sql);
         connection.createStatement().execute(sql);
         connection.createStatement().execute("CREATE TABLE t_address(id integer primary key, address_name varchar(255))");
         connection.createStatement().execute("CREATE TABLE t_single(id integer primary key)");
-        if (sleepSeconds > 0) {
-            Awaitility.await().pollDelay(sleepSeconds, TimeUnit.SECONDS).until(() -> true);
-        }
+        containerComposer.sleepSeconds(seconds);
     }
     
     private PipelineDataSource createStandardDataSource(final PipelineContainerComposer containerComposer, final String storageUnitName) {

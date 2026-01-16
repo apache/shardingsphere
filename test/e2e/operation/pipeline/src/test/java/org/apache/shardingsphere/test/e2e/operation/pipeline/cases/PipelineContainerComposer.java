@@ -118,6 +118,8 @@ public final class PipelineContainerComposer implements AutoCloseable {
     
     private final DataSource proxyDataSource;
     
+    private final PipelineJobType<?> jobType;
+    
     private Thread increaseTaskThread;
     
     public PipelineContainerComposer(final PipelineTestParameter testParam, final PipelineJobType<?> jobType) {
@@ -138,6 +140,7 @@ public final class PipelineContainerComposer implements AutoCloseable {
         sourceDataSource = StorageContainerUtils.generateDataSource(getActualJdbcUrlTemplate(DS_0, false), username, password, 2);
         proxyDataSource = StorageContainerUtils.generateDataSource(
                 appendExtraParameter(containerComposer.getProxyJdbcUrl(PROXY_DATABASE)), ProxyContainerConstants.USER, ProxyContainerConstants.PASSWORD, 2);
+        this.jobType = jobType;
         init(jobType);
     }
     
@@ -205,7 +208,7 @@ public final class PipelineContainerComposer implements AutoCloseable {
         } catch (final SQLException ex) {
             log.warn("Drop proxy database failed, error={}", ex.getMessage());
         }
-        Awaitility.await().pollDelay(2L, TimeUnit.SECONDS).until(() -> true);
+        sleepSeconds(2);
     }
     
     private void createProxyDatabase(final Connection connection) throws SQLException {
@@ -213,7 +216,7 @@ public final class PipelineContainerComposer implements AutoCloseable {
         log.info("Create proxy database {}", PROXY_DATABASE);
         try (Statement statement = connection.createStatement()) {
             statement.execute(sql);
-            Awaitility.await().pollDelay(2L, TimeUnit.SECONDS).until(() -> true);
+            sleepSeconds(2);
         }
     }
     
@@ -225,6 +228,18 @@ public final class PipelineContainerComposer implements AutoCloseable {
         for (String each : Arrays.asList(DS_0, DS_1, DS_2, DS_3, DS_4)) {
             containerComposer.cleanUpDatabase(databaseTypeRegistry.formatIdentifierPattern(each));
         }
+    }
+    
+    /**
+     * Sleep seconds.
+     *
+     * @param seconds seconds
+     */
+    public void sleepSeconds(final int seconds) {
+        if (seconds <= 0) {
+            return;
+        }
+        Awaitility.await().pollDelay(seconds, TimeUnit.SECONDS).until(() -> true);
     }
     
     /**
@@ -316,19 +331,17 @@ public final class PipelineContainerComposer implements AutoCloseable {
      * Create schema.
      *
      * @param connection connection
-     * @param sleepSeconds sleep seconds
+     * @param seconds sleep seconds
      * @throws SQLException SQL exception
      */
-    public void createSchema(final Connection connection, final int sleepSeconds) throws SQLException {
+    public void createSchema(final Connection connection, final int seconds) throws SQLException {
         if (!new DatabaseTypeRegistry(databaseType).getDialectDatabaseMetaData().getSchemaOption().isSchemaAvailable()) {
             return;
         }
         try (Statement statement = connection.createStatement()) {
             statement.execute(String.format("CREATE SCHEMA %s", SCHEMA_NAME));
         }
-        if (sleepSeconds > 0) {
-            Awaitility.await().pollDelay(sleepSeconds, TimeUnit.SECONDS).until(() -> true);
-        }
+        sleepSeconds(seconds);
     }
     
     /**
@@ -432,7 +445,7 @@ public final class PipelineContainerComposer implements AutoCloseable {
             List<Map<String, Object>> jobStatus = queryForListWithLog(distSQL);
             Set<String> statusSet = jobStatus.stream().map(each -> String.valueOf(each.get("status"))).collect(Collectors.toSet());
             if (statusSet.contains(JobStatus.PREPARING.name()) || statusSet.contains(JobStatus.RUNNING.name())) {
-                Awaitility.await().pollDelay(2L, TimeUnit.SECONDS).until(() -> true);
+                sleepSeconds(2);
                 continue;
             }
             break;
@@ -455,7 +468,7 @@ public final class PipelineContainerComposer implements AutoCloseable {
             if (statusSet.stream().allMatch(each -> each.equals(jobStatus.name()))) {
                 return;
             }
-            Awaitility.await().pollDelay(2L, TimeUnit.SECONDS).until(() -> true);
+            sleepSeconds(2);
         }
         throw new IllegalStateException("Job status not reached: " + jobStatus);
     }
@@ -542,7 +555,7 @@ public final class PipelineContainerComposer implements AutoCloseable {
                 incrementalIdleSecondsList.add(Strings.isNullOrEmpty(incrementalIdleSeconds) ? 0 : Integer.parseInt(incrementalIdleSeconds));
             }
             if (Collections.min(incrementalIdleSecondsList) <= 5) {
-                Awaitility.await().pollDelay(3L, TimeUnit.SECONDS).until(() -> true);
+                sleepSeconds(3);
                 continue;
             }
             if (actualStatus.size() == 1 && actualStatus.contains(JobStatus.EXECUTE_INCREMENTAL_TASK.name())) {
@@ -583,7 +596,7 @@ public final class PipelineContainerComposer implements AutoCloseable {
             if (recordExist) {
                 break;
             }
-            Awaitility.await().pollDelay(2L, TimeUnit.SECONDS).until(() -> true);
+            sleepSeconds(2);
         }
         assertTrue(recordExist, "Order record does not exist");
     }

@@ -30,10 +30,6 @@ import javax.xml.bind.annotation.XmlRootElement;
 @Setter
 public final class MigrationDistSQLCommand {
     
-    @XmlElement(name = "alter-migration-rule")
-    @Getter
-    private String alterMigrationRule;
-    
     @XmlElement(name = "create-target-order-table-encrypt-rule")
     @Getter
     private String createTargetOrderTableEncryptRule;

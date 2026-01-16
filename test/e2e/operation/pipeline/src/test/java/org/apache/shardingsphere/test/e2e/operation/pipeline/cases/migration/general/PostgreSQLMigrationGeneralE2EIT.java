@@ -32,6 +32,7 @@ import org.apache.shardingsphere.test.e2e.operation.pipeline.framework.param.Pip
 import org.apache.shardingsphere.test.e2e.operation.pipeline.framework.param.PipelineE2ETestCaseArgumentsProvider;
 import org.apache.shardingsphere.test.e2e.operation.pipeline.framework.param.PipelineTestParameter;
 import org.apache.shardingsphere.test.e2e.operation.pipeline.util.DataSourceExecuteUtils;
+import org.apache.shardingsphere.test.e2e.operation.pipeline.util.PipelineE2EDistSQLFacade;
 import org.awaitility.Awaitility;
 import org.junit.jupiter.api.condition.EnabledIf;
 import org.junit.jupiter.api.extension.ExtensionContext;
@@ -64,7 +65,8 @@ class PostgreSQLMigrationGeneralE2EIT extends AbstractMigrationE2EIT {
     @ArgumentsSource(PipelineE2ETestCaseArgumentsProvider.class)
     void assertMigrationSuccess(final PipelineTestParameter testParam) throws SQLException, InterruptedException {
         try (PipelineContainerComposer containerComposer = new PipelineContainerComposer(testParam, new MigrationJobType())) {
-            addMigrationProcessConfig(containerComposer);
+            PipelineE2EDistSQLFacade distSQLFacade = new PipelineE2EDistSQLFacade(containerComposer);
+            distSQLFacade.alterPipelineRule();
             createSourceSchema(containerComposer, PipelineContainerComposer.SCHEMA_NAME);
             containerComposer.createSourceOrderTable(SOURCE_TABLE_NAME);
             containerComposer.createSourceOrderItemTable();
@@ -81,8 +83,8 @@ class PostgreSQLMigrationGeneralE2EIT extends AbstractMigrationE2EIT {
             int replicationSlotsCount = getReplicationSlotsCount(containerComposer);
             log.info("init data end: {}, replication slots count: {}", LocalDateTime.now(), replicationSlotsCount);
             startMigrationWithSchema(containerComposer, SOURCE_TABLE_NAME, "t_order");
-            Awaitility.await().atMost(10L, TimeUnit.SECONDS).pollInterval(1L, TimeUnit.SECONDS).until(() -> !listJobId(containerComposer).isEmpty());
-            String jobId = getJobIdByTableName(containerComposer, "ds_0.test." + SOURCE_TABLE_NAME);
+            Awaitility.await().atMost(10L, TimeUnit.SECONDS).pollInterval(1L, TimeUnit.SECONDS).until(() -> !distSQLFacade.listJobIds().isEmpty());
+            String jobId = distSQLFacade.getJobIdByTableName("ds_0.test." + SOURCE_TABLE_NAME);
             containerComposer.waitJobPrepareSuccess(String.format("SHOW MIGRATION STATUS '%s'", jobId));
             String qualifiedTableName = String.join(".", PipelineContainerComposer.SCHEMA_NAME, SOURCE_TABLE_NAME);
             containerComposer.startIncrementTask(new E2EIncrementalTask(containerComposer.getSourceDataSource(), qualifiedTableName, new SnowflakeKeyGenerateAlgorithm(),
@@ -91,29 +93,30 @@ class PostgreSQLMigrationGeneralE2EIT extends AbstractMigrationE2EIT {
             containerComposer.sourceExecuteWithLog(String.format("INSERT INTO %s (order_id, user_id, status) VALUES (10000, 1, 'OK')", qualifiedTableName));
             DataSource jdbcDataSource = containerComposer.generateShardingSphereDataSourceFromProxy();
             containerComposer.assertOrderRecordExist(jdbcDataSource, qualifiedTableName, 10000);
-            checkOrderMigration(containerComposer, jobId);
+            checkOrderMigration(distSQLFacade, jobId);
             startMigrationWithSchema(containerComposer, "t_order_item", "t_order_item");
-            checkOrderItemMigration(containerComposer);
-            for (String each : listJobId(containerComposer)) {
-                commitMigrationByJobId(containerComposer, each);
+            checkOrderItemMigration(distSQLFacade);
+            for (String each : distSQLFacade.listJobIds()) {
+                distSQLFacade.commit(each);
             }
-            List<String> lastJobIds = listJobId(containerComposer);
-            assertTrue(lastJobIds.isEmpty());
+            assertTrue(distSQLFacade.listJobIds().isEmpty());
             containerComposer.assertGreaterThanOrderTableInitRows(jdbcDataSource, PipelineContainerComposer.TABLE_INIT_ROW_COUNT + 1, PipelineContainerComposer.SCHEMA_NAME);
             assertThat("Replication slots count doesn't match, it might be not cleaned, run `SELECT * FROM pg_replication_slots;` in PostgreSQL to verify",
                     getReplicationSlotsCount(containerComposer), is(replicationSlotsCount));
         }
     }
     
-    private void checkOrderMigration(final PipelineContainerComposer containerComposer, final String jobId) throws SQLException {
+    private void checkOrderMigration(final PipelineE2EDistSQLFacade distSQLFacade, final String jobId) throws SQLException {
+        PipelineContainerComposer containerComposer = distSQLFacade.getContainerComposer();
         containerComposer.waitIncrementTaskFinished(String.format("SHOW MIGRATION STATUS '%s'", jobId));
-        stopMigrationByJobId(containerComposer, jobId);
-        startMigrationByJobId(containerComposer, jobId);
+        distSQLFacade.pauseJob(jobId);
+        distSQLFacade.resumeJob(jobId);
         assertCheckMigrationSuccess(containerComposer, jobId, "DATA_MATCH");
     }
     
-    private void checkOrderItemMigration(final PipelineContainerComposer containerComposer) throws SQLException {
-        String jobId = getJobIdByTableName(containerComposer, "ds_0.test.t_order_item");
+    private void checkOrderItemMigration(final PipelineE2EDistSQLFacade distSQLFacade) throws SQLException {
+        String jobId = distSQLFacade.getJobIdByTableName("ds_0.test.t_order_item");
+        PipelineContainerComposer containerComposer = distSQLFacade.getContainerComposer();
         containerComposer.waitJobStatusReached(String.format("SHOW MIGRATION STATUS '%s'", jobId), JobStatus.EXECUTE_INCREMENTAL_TASK, 15);
         assertCheckMigrationSuccess(containerComposer, jobId, "DATA_MATCH");
     }
