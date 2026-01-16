@@ -41,8 +41,8 @@ class MemoryDataRowEnumeratorTest {
     @Test
     void assertIterateAndResetState() {
         Collection<ShardingSphereColumn> columns = Arrays.asList(
-                new ShardingSphereColumn("id", Types.INTEGER, true, false, false, true, false, true),
-                new ShardingSphereColumn("name", Types.VARCHAR, false, false, false, true, false, true));
+                new ShardingSphereColumn("id", Types.INTEGER, true, false, "int", false, true, false, true),
+                new ShardingSphereColumn("name", Types.VARCHAR, false, false, "varchar", false, true, false, true));
         Collection<RowStatistics> rows = Arrays.asList(
                 new RowStatistics(Arrays.asList(1, "foo_name")),
                 new RowStatistics(Arrays.asList(2, "bar_name")));

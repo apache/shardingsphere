@@ -137,14 +137,14 @@ public final class PipelineContextUtils {
     private static MetaDataContexts renewMetaDataContexts(final MetaDataContexts old, final MetaDataPersistFacade persistFacade) {
         Collection<ShardingSphereTable> tables = new LinkedList<>();
         tables.add(new ShardingSphereTable("t_order", Arrays.asList(
-                new ShardingSphereColumn("order_id", Types.INTEGER, true, false, false, true, false, false),
-                new ShardingSphereColumn("user_id", Types.INTEGER, false, false, false, true, false, false),
-                new ShardingSphereColumn("status", Types.VARCHAR, false, false, false, true, false, false)), Collections.emptyList(), Collections.emptyList()));
+                new ShardingSphereColumn("order_id", Types.INTEGER, true, false, "int", false, true, false, false),
+                new ShardingSphereColumn("user_id", Types.INTEGER, false, false, "int", false, true, false, false),
+                new ShardingSphereColumn("status", Types.VARCHAR, false, false, "varchar", false, true, false, false)), Collections.emptyList(), Collections.emptyList()));
         tables.add(new ShardingSphereTable("t_order_item", Arrays.asList(
-                new ShardingSphereColumn("item_id", Types.INTEGER, true, false, false, true, false, false),
-                new ShardingSphereColumn("order_id", Types.INTEGER, false, false, false, true, false, false),
-                new ShardingSphereColumn("user_id", Types.INTEGER, false, false, false, true, false, false),
-                new ShardingSphereColumn("status", Types.VARCHAR, false, false, false, true, false, false)),
+                new ShardingSphereColumn("item_id", Types.INTEGER, true, false, "int", false, true, false, false),
+                new ShardingSphereColumn("order_id", Types.INTEGER, false, false, "int", false, true, false, false),
+                new ShardingSphereColumn("user_id", Types.INTEGER, false, false, "int", false, true, false, false),
+                new ShardingSphereColumn("status", Types.VARCHAR, false, false, "varchar", false, true, false, false)),
                 Collections.emptyList(), Collections.emptyList()));
         tables.forEach(each -> old.getMetaData().getDatabase("logic_db").getSchema("logic_db").putTable(each));
         return new MetaDataContexts(old.getMetaData(), ShardingSphereStatisticsFactory.create(old.getMetaData(), persistFacade.getStatisticsService().load(old.getMetaData())));

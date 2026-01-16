@@ -134,20 +134,20 @@ class ShardingSphereSchemaTest {
     @Test
     void assertGetVisibleColumnNamesWhenContainsKey() {
         ShardingSphereTable table = new ShardingSphereTable("foo_tbl", Collections.singletonList(
-                new ShardingSphereColumn("foo_col", 0, false, false, false, true, false, false)), Collections.emptyList(), Collections.emptyList());
+                new ShardingSphereColumn("foo_col", 0, false, false, "", false, true, false, false)), Collections.emptyList(), Collections.emptyList());
         assertThat(new ShardingSphereSchema("foo_db", Collections.singleton(table), Collections.emptyList()).getVisibleColumnNames("foo_tbl"), is(Collections.singletonList("foo_col")));
     }
     
     @Test
     void assertGetVisibleColumnNamesWhenNotContainsKey() {
         ShardingSphereTable table = new ShardingSphereTable("foo_tbl", Collections.singletonList(
-                new ShardingSphereColumn("foo_col", 0, false, false, false, false, true, false)), Collections.emptyList(), Collections.emptyList());
+                new ShardingSphereColumn("foo_col", 0, false, false, "", false, false, true, false)), Collections.emptyList(), Collections.emptyList());
         assertTrue(new ShardingSphereSchema("foo_db", Collections.singleton(table), Collections.emptyList()).getVisibleColumnNames("foo_tbl").isEmpty());
     }
     
     @Test
     void assertGetVisibleColumnAndIndexMapWhenContainsTable() {
-        ShardingSphereColumn column = new ShardingSphereColumn("foo_col", 0, false, false, false, true, false, false);
+        ShardingSphereColumn column = new ShardingSphereColumn("foo_col", 0, false, false, "", false, true, false, false);
         ShardingSphereTable table = new ShardingSphereTable("foo_tbl", Collections.singletonList(column), Collections.emptyList(), Collections.emptyList());
         ShardingSphereSchema schema = new ShardingSphereSchema("foo_db", Collections.singleton(table), Collections.emptyList());
         Map<String, Integer> actual = schema.getVisibleColumnAndIndexMap("foo_tbl");

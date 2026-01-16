@@ -131,26 +131,26 @@ class ExecutionContextBuilderTest {
     
     private Collection<ShardingSphereSchema> buildSchemas() {
         Collection<ShardingSphereTable> tables = new LinkedList<>();
-        tables.add(new ShardingSphereTable("logicName1", Arrays.asList(new ShardingSphereColumn("order_id", Types.INTEGER, true, false, false, true, false, false),
-                new ShardingSphereColumn("user_id", Types.INTEGER, false, false, false, true, false, false),
-                new ShardingSphereColumn("status", Types.INTEGER, false, false, false, true, false, false)), Collections.emptySet(), Collections.emptyList()));
-        tables.add(new ShardingSphereTable("logicName2", Arrays.asList(new ShardingSphereColumn("item_id", Types.INTEGER, true, false, false, true, false, false),
-                new ShardingSphereColumn("order_id", Types.INTEGER, false, false, false, true, false, false),
-                new ShardingSphereColumn("user_id", Types.INTEGER, false, false, false, true, false, false),
-                new ShardingSphereColumn("status", Types.VARCHAR, false, false, false, true, false, false),
-                new ShardingSphereColumn("c_date", Types.TIMESTAMP, false, false, false, true, false, false)), Collections.emptySet(), Collections.emptyList()));
+        tables.add(new ShardingSphereTable("logicName1", Arrays.asList(new ShardingSphereColumn("order_id", Types.INTEGER, true, false, "int", false, true, false, false),
+                new ShardingSphereColumn("user_id", Types.INTEGER, false, false, "int", false, true, false, false),
+                new ShardingSphereColumn("status", Types.INTEGER, false, false, "int", false, true, false, false)), Collections.emptySet(), Collections.emptyList()));
+        tables.add(new ShardingSphereTable("logicName2", Arrays.asList(new ShardingSphereColumn("item_id", Types.INTEGER, true, false, "int", false, true, false, false),
+                new ShardingSphereColumn("order_id", Types.INTEGER, false, false, "int", false, true, false, false),
+                new ShardingSphereColumn("user_id", Types.INTEGER, false, false, "int", false, true, false, false),
+                new ShardingSphereColumn("status", Types.VARCHAR, false, false, "varchar", false, true, false, false),
+                new ShardingSphereColumn("c_date", Types.TIMESTAMP, false, false, "timestamp", false, true, false, false)), Collections.emptySet(), Collections.emptyList()));
         tables.add(new ShardingSphereTable("t_other", Collections.singletonList(
-                new ShardingSphereColumn("order_id", Types.INTEGER, true, false, false, true, false, false)), Collections.emptySet(), Collections.emptyList()));
+                new ShardingSphereColumn("order_id", Types.INTEGER, true, false, "int", false, true, false, false)), Collections.emptySet(), Collections.emptyList()));
         return Collections.singleton(new ShardingSphereSchema("name", tables, Collections.emptyList()));
     }
     
     private Collection<ShardingSphereSchema> buildSchemasWithoutPrimaryKey() {
         List<ShardingSphereTable> tables = new LinkedList<>();
-        tables.add(new ShardingSphereTable("logicName1", Arrays.asList(new ShardingSphereColumn("order_id", Types.INTEGER, true, false, false, true, false, false),
-                new ShardingSphereColumn("user_id", Types.INTEGER, false, false, false, true, false, false),
-                new ShardingSphereColumn("status", Types.INTEGER, false, false, false, true, false, false)), Collections.emptySet(), Collections.emptyList()));
+        tables.add(new ShardingSphereTable("logicName1", Arrays.asList(new ShardingSphereColumn("order_id", Types.INTEGER, true, false, "int", false, true, false, false),
+                new ShardingSphereColumn("user_id", Types.INTEGER, false, false, "int", false, true, false, false),
+                new ShardingSphereColumn("status", Types.INTEGER, false, false, "int", false, true, false, false)), Collections.emptySet(), Collections.emptyList()));
         tables.add(new ShardingSphereTable("t_other", Collections.singletonList(
-                new ShardingSphereColumn("order_id", Types.INTEGER, true, false, false, true, false, false)), Collections.emptySet(), Collections.emptyList()));
+                new ShardingSphereColumn("order_id", Types.INTEGER, true, false, "int", false, true, false, false)), Collections.emptySet(), Collections.emptyList()));
         return Collections.singleton(new ShardingSphereSchema("name", tables, Collections.emptyList()));
     }
 }

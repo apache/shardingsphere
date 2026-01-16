@@ -133,7 +133,7 @@ class DatabaseMetaDataPersistFacadeTest {
     @Test
     void assertRenameSchemaWhenSchemaNotEmpty() {
         ShardingSphereTable table = new ShardingSphereTable("foo_table",
-                Collections.singleton(new ShardingSphereColumn("foo_column", 0, false, false, false, true, false, true)),
+                Collections.singleton(new ShardingSphereColumn("foo_column", 0, false, false, "", false, true, false, true)),
                 Collections.emptyList(), Collections.emptyList());
         ShardingSphereSchema schema = new ShardingSphereSchema("foo_schema", Collections.singleton(table), Collections.singleton(new ShardingSphereView("foo_view", "select 1")));
         ShardingSphereDatabase database = createDatabase("foo_db", Collections.singleton(schema));

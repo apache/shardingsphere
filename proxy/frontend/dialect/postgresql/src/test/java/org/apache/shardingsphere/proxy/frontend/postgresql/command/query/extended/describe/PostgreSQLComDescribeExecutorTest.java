@@ -145,13 +145,18 @@ class PostgreSQLComDescribeExecutorTest {
         for (int i = 0; i < sqlStatement.getParameterCount(); i++) {
             parameterTypes.add(PostgreSQLColumnType.UNSPECIFIED);
         }
+        List<String> parameterTypeNames = new ArrayList<>(sqlStatement.getParameterCount());
+        for (int i = 0; i < sqlStatement.getParameterCount(); i++) {
+            parameterTypeNames.add(null);
+        }
         SQLStatementContext sqlStatementContext = mock(InsertStatementContext.class);
         when(sqlStatementContext.getSqlStatement()).thenReturn(sqlStatement);
         ContextManager contextManager = mockContextManager();
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
         List<Integer> parameterIndexes = IntStream.range(0, sqlStatement.getParameterCount()).boxed().collect(Collectors.toList());
-        connectionSession.getServerPreparedStatementRegistry().addPreparedStatement(statementId, new PostgreSQLServerPreparedStatement(sql, sqlStatementContext, new HintValueContext(), parameterTypes,
-                parameterIndexes));
+        connectionSession.getServerPreparedStatementRegistry().addPreparedStatement(statementId,
+                new PostgreSQLServerPreparedStatement(sql, sqlStatementContext, new HintValueContext(), parameterTypes, parameterTypeNames,
+                        parameterIndexes));
         Collection<DatabasePacket> actualPackets = executor.execute();
         assertThat(actualPackets.size(), is(2));
         Iterator<DatabasePacket> actualPacketsIterator = actualPackets.iterator();
@@ -175,13 +180,18 @@ class PostgreSQLComDescribeExecutorTest {
         for (int i = 0; i < sqlStatement.getParameterCount(); i++) {
             parameterTypes.add(PostgreSQLColumnType.UNSPECIFIED);
         }
+        List<String> parameterTypeNames = new ArrayList<>(sqlStatement.getParameterCount());
+        for (int i = 0; i < sqlStatement.getParameterCount(); i++) {
+            parameterTypeNames.add(null);
+        }
         SQLStatementContext sqlStatementContext = mock(InsertStatementContext.class);
         when(sqlStatementContext.getSqlStatement()).thenReturn(sqlStatement);
         ContextManager contextManager = mockContextManager();
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
         List<Integer> parameterIndexes = IntStream.range(0, sqlStatement.getParameterCount()).boxed().collect(Collectors.toList());
-        connectionSession.getServerPreparedStatementRegistry().addPreparedStatement(statementId, new PostgreSQLServerPreparedStatement(sql, sqlStatementContext, new HintValueContext(), parameterTypes,
-                parameterIndexes));
+        connectionSession.getServerPreparedStatementRegistry().addPreparedStatement(statementId,
+                new PostgreSQLServerPreparedStatement(sql, sqlStatementContext, new HintValueContext(), parameterTypes, parameterTypeNames,
+                        parameterIndexes));
         Collection<DatabasePacket> actualPackets = executor.execute();
         assertThat(actualPackets.size(), is(2));
         Iterator<DatabasePacket> actualPacketsIterator = actualPackets.iterator();
@@ -205,13 +215,18 @@ class PostgreSQLComDescribeExecutorTest {
         for (int i = 0; i < sqlStatement.getParameterCount(); i++) {
             parameterTypes.add(PostgreSQLColumnType.UNSPECIFIED);
         }
+        List<String> parameterTypeNames = new ArrayList<>(sqlStatement.getParameterCount());
+        for (int i = 0; i < sqlStatement.getParameterCount(); i++) {
+            parameterTypeNames.add(null);
+        }
         SQLStatementContext sqlStatementContext = mock(InsertStatementContext.class);
         when(sqlStatementContext.getSqlStatement()).thenReturn(sqlStatement);
         ContextManager contextManager = mockContextManager();
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
         List<Integer> parameterIndexes = IntStream.range(0, sqlStatement.getParameterCount()).boxed().collect(Collectors.toList());
-        connectionSession.getServerPreparedStatementRegistry().addPreparedStatement(statementId, new PostgreSQLServerPreparedStatement(sql, sqlStatementContext, new HintValueContext(), parameterTypes,
-                parameterIndexes));
+        connectionSession.getServerPreparedStatementRegistry().addPreparedStatement(statementId,
+                new PostgreSQLServerPreparedStatement(sql, sqlStatementContext, new HintValueContext(), parameterTypes, parameterTypeNames,
+                        parameterIndexes));
         Collection<DatabasePacket> actualPackets = executor.execute();
         assertThat(actualPackets.size(), is(2));
         Iterator<DatabasePacket> actualPacketsIterator = actualPackets.iterator();
@@ -235,13 +250,17 @@ class PostgreSQLComDescribeExecutorTest {
         for (int i = 0; i < sqlStatement.getParameterCount(); i++) {
             parameterTypes.add(PostgreSQLColumnType.UNSPECIFIED);
         }
+        List<String> parameterTypeNames = new ArrayList<>(sqlStatement.getParameterCount());
+        for (int i = 0; i < sqlStatement.getParameterCount(); i++) {
+            parameterTypeNames.add("other");
+        }
         SQLStatementContext sqlStatementContext = mock(InsertStatementContext.class);
         when(sqlStatementContext.getSqlStatement()).thenReturn(sqlStatement);
         ContextManager contextManager = mockContextManager();
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
         List<Integer> parameterIndexes = IntStream.range(0, sqlStatement.getParameterCount()).boxed().collect(Collectors.toList());
         connectionSession.getServerPreparedStatementRegistry().addPreparedStatement(statementId,
-                new PostgreSQLServerPreparedStatement(sql, sqlStatementContext, new HintValueContext(), parameterTypes, parameterIndexes));
+                new PostgreSQLServerPreparedStatement(sql, sqlStatementContext, new HintValueContext(), parameterTypes, parameterTypeNames, parameterIndexes));
         assertThrows(ColumnNotFoundException.class, () -> executor.execute());
     }
     
@@ -257,13 +276,18 @@ class PostgreSQLComDescribeExecutorTest {
         for (int i = 0; i < sqlStatement.getParameterCount(); i++) {
             parameterTypes.add(PostgreSQLColumnType.UNSPECIFIED);
         }
+        List<String> parameterTypeNames = new ArrayList<>(sqlStatement.getParameterCount());
+        for (int i = 0; i < sqlStatement.getParameterCount(); i++) {
+            parameterTypeNames.add(null);
+        }
         SQLStatementContext sqlStatementContext = mock(InsertStatementContext.class);
         when(sqlStatementContext.getSqlStatement()).thenReturn(sqlStatement);
         ContextManager contextManager = mockContextManager();
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
         List<Integer> parameterIndexes = IntStream.range(0, sqlStatement.getParameterCount()).boxed().collect(Collectors.toList());
-        connectionSession.getServerPreparedStatementRegistry().addPreparedStatement(statementId, new PostgreSQLServerPreparedStatement(sql, sqlStatementContext, new HintValueContext(), parameterTypes,
-                parameterIndexes));
+        connectionSession.getServerPreparedStatementRegistry().addPreparedStatement(statementId,
+                new PostgreSQLServerPreparedStatement(sql, sqlStatementContext, new HintValueContext(), parameterTypes, parameterTypeNames,
+                        parameterIndexes));
         Collection<DatabasePacket> actualPackets = executor.execute();
         assertThat(actualPackets.size(), is(2));
         Iterator<DatabasePacket> actualPacketsIterator = actualPackets.iterator();
@@ -339,13 +363,14 @@ class PostgreSQLComDescribeExecutorTest {
         when(sqlStatementContext.getSqlStatement()).thenReturn(sqlStatement);
         prepareJDBCBackendConnection(sql);
         List<PostgreSQLColumnType> parameterTypes = new ArrayList<>(Collections.singleton(PostgreSQLColumnType.UNSPECIFIED));
+        List<String> parameterTypeNames = new ArrayList<>(Collections.singletonList(null));
         ContextManager contextManager = mockContextManager();
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
         List<Integer> parameterIndexes = IntStream.range(0, sqlStatement.getParameterCount()).boxed().collect(Collectors.toList());
         ConnectionContext connectionContext = mockConnectionContext();
         when(connectionSession.getConnectionContext()).thenReturn(connectionContext);
         connectionSession.getServerPreparedStatementRegistry().addPreparedStatement(
-                statementId, new PostgreSQLServerPreparedStatement(sql, sqlStatementContext, new HintValueContext(), parameterTypes, parameterIndexes));
+                statementId, new PostgreSQLServerPreparedStatement(sql, sqlStatementContext, new HintValueContext(), parameterTypes, parameterTypeNames, parameterIndexes));
         Collection<DatabasePacket> actual = executor.execute();
         assertThat(actual.size(), is(2));
         Iterator<DatabasePacket> actualPacketsIterator = actual.iterator();
@@ -389,10 +414,10 @@ class PostgreSQLComDescribeExecutorTest {
         ShardingSphereSchema schema = mock(ShardingSphereSchema.class);
         when(result.getMetaDataContexts().getMetaData().getDatabase(DATABASE_NAME).getSchema("public")).thenReturn(schema);
         Collection<ShardingSphereColumn> columns = Arrays.asList(
-                new ShardingSphereColumn("id", Types.INTEGER, true, false, false, true, false, false),
-                new ShardingSphereColumn("k", Types.INTEGER, true, false, false, true, false, false),
-                new ShardingSphereColumn("c", Types.CHAR, true, false, false, true, false, false),
-                new ShardingSphereColumn("pad", Types.CHAR, true, false, false, true, false, false));
+                new ShardingSphereColumn("id", Types.INTEGER, true, false, "int", false, true, false, false),
+                new ShardingSphereColumn("k", Types.INTEGER, true, false, "int", false, true, false, false),
+                new ShardingSphereColumn("c", Types.CHAR, true, false, "char", false, true, false, false),
+                new ShardingSphereColumn("pad", Types.CHAR, true, false, "char", false, true, false, false));
         when(schema.getTable(TABLE_NAME)).thenReturn(new ShardingSphereTable(TABLE_NAME, columns, Collections.emptyList(), Collections.emptyList()));
         when(result.getMetaDataContexts().getMetaData().getDatabase(DATABASE_NAME).getProtocolType()).thenReturn(DATABASE_TYPE);
         StorageUnit storageUnit = mock(StorageUnit.class, RETURNS_DEEP_STUBS);

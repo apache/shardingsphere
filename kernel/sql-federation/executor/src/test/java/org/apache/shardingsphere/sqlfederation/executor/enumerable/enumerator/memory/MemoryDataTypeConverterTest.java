@@ -44,8 +44,8 @@ class MemoryDataTypeConverterTest {
     void assertCreateColumnTypes() {
         DatabaseType databaseType = mock(DatabaseType.class);
         List<ShardingSphereColumn> columns = Arrays.asList(
-                new ShardingSphereColumn("skipped", Types.OTHER, false, false, false, true, false, true),
-                new ShardingSphereColumn("id", Types.INTEGER, true, false, false, true, false, true));
+                new ShardingSphereColumn("skipped", Types.OTHER, false, false, "other", false, true, false, true),
+                new ShardingSphereColumn("id", Types.INTEGER, true, false, "int", false, true, false, true));
         try (MockedStatic<SQLFederationDataTypeBuilder> mockedStatic = mockStatic(SQLFederationDataTypeBuilder.class)) {
             mockedStatic.when(() -> SQLFederationDataTypeBuilder.getSqlTypeClass(databaseType, columns.get(0))).thenThrow(new IllegalArgumentException("unsupported"));
             mockedStatic.when(() -> SQLFederationDataTypeBuilder.getSqlTypeClass(databaseType, columns.get(1))).thenReturn(Integer.class);

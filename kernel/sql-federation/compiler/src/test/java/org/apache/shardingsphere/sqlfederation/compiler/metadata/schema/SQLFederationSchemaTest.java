@@ -50,7 +50,7 @@ class SQLFederationSchemaTest {
     }
     
     private ShardingSphereTable createTable(final String tableName) {
-        ShardingSphereColumn column = new ShardingSphereColumn("id", Types.INTEGER, true, false, false, true, false, true);
+        ShardingSphereColumn column = new ShardingSphereColumn("id", Types.INTEGER, true, false, "integer", false, true, false, true);
         return new ShardingSphereTable(tableName, Collections.singletonList(column), Collections.emptyList(), Collections.emptyList());
     }
 }
