@@ -26,8 +26,6 @@ public final class PostgreSQLDatabaseDialectIdentifierHandler implements Databas
     
     @Override
     public boolean isCaseSensitive() {
-        // PostgreSQL identifiers are case-sensitive.
-        // Unquoted identifiers are folded to lower case, while quoted identifiers preserve case.
         return true;
     }
     

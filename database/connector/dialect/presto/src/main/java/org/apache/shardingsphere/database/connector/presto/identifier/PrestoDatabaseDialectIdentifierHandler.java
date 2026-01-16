@@ -26,8 +26,6 @@ public final class PrestoDatabaseDialectIdentifierHandler implements DatabaseDia
     
     @Override
     public boolean isCaseSensitive() {
-        // Presto (Trino) identifiers are case-insensitive by default.
-        // Unquoted identifiers are folded to lower case.
         return false;
     }
     

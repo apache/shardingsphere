@@ -26,7 +26,6 @@ public final class ClickHouseDatabaseDialectIdentifierHandler implements Databas
     
     @Override
     public boolean isCaseSensitive() {
-        // ClickHouse identifiers are case-sensitive.
         return true;
     }
     

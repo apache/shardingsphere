@@ -26,8 +26,6 @@ public final class SQLServerDatabaseDialectIdentifierHandler implements Database
     
     @Override
     public boolean isCaseSensitive() {
-        // SQL Server identifiers are case-insensitive by default.
-        // Can be configured via collation settings (e.g., _CS suffix for case-sensitive).
         return false;
     }
     
