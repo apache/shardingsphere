@@ -18,3 +18,4 @@
 org.apache.shardingsphere.sharding.fixture.CoreComplexKeysShardingAlgorithmFixture
 org.apache.shardingsphere.sharding.fixture.CoreHintShardingAlgorithmFixture
 org.apache.shardingsphere.sharding.fixture.CoreStandardShardingAlgorithmFixture
+org.apache.shardingsphere.sharding.fixture.ModHashShardingAlgorithmFixture
