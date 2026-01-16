@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.database.connector.core.metadata.database.datatype;
 
 import com.cedarsoftware.util.CaseInsensitiveMap;
+import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.datatype.DialectDataTypeOption;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeRegistry;
 
@@ -41,7 +42,10 @@ public final class DataTypeLoader {
      */
     public Map<String, Integer> load(final DatabaseMetaData databaseMetaData, final DatabaseType databaseType) throws SQLException {
         Map<String, Integer> result = loadStandardDataTypes(databaseMetaData);
-        result.putAll(new DatabaseTypeRegistry(databaseType).getDialectDatabaseMetaData().getDataTypeOption().getExtraDataTypes());
+        DialectDataTypeOption dataTypeOption = new DatabaseTypeRegistry(databaseType).getDialectDatabaseMetaData().getDataTypeOption();
+        result.putAll(dataTypeOption.getExtraDataTypes());
+        result.putAll(dataTypeOption.loadUDTTypes(databaseMetaData.getConnection()));
+        
         return result;
     }
     
