@@ -3629,6 +3629,22 @@
         </from>
     </select>
 
+    <select sql-case-id="select_parenthesized_comma_join_sql92">
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" />
+        </projections>
+        <from>
+            <join-table join-type="COMMA">
+                <left>
+                    <simple-table name="t_order" alias="o" start-index="15" stop-index="23" />
+                </left>
+                <right>
+                    <simple-table name="t_order_item" alias="i" start-index="26" stop-index="39" />
+                </right>
+            </join-table>
+        </from>
+    </select>
+
     <select sql-case-id="select_cross_join_sql92">
         <projections start-index="7" stop-index="7">
             <shorthand-projection start-index="7" stop-index="7" />
