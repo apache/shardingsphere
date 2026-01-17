@@ -12908,6 +12908,19 @@
         </from>
     </select>
 
+    <select sql-case-id="select_case_expression_sql92">
+        <projections start-index="7" stop-index="30">
+            <expression-projection text="CASE1WHEN1THEN1END" start-index="7" stop-index="30">
+                <expr>
+                    <common-expression text="CASE1WHEN1THEN1END" start-index="7" stop-index="30" />
+                </expr>
+            </expression-projection>
+        </projections>
+        <from>
+            <simple-table name="t_order" start-index="37" stop-index="43" />
+        </from>
+    </select>
+
     <select sql-case-id="select_where_is_not_null_sql92">
         <from>
             <simple-table name="t_order" start-index="14" stop-index="20" />
@@ -12924,6 +12937,28 @@
                     <operator>IS</operator>
                     <right>
                         <literal-expression value="NOT NULL" start-index="38" stop-index="45" />
+                    </right>
+                </binary-operation-expression>
+            </expr>
+        </where>
+    </select>
+
+    <select sql-case-id="select_where_is_null_sql92">
+        <from>
+            <simple-table name="t_order" start-index="14" stop-index="20" />
+        </from>
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" />
+        </projections>
+        <where start-index="22" stop-index="41">
+            <expr>
+                <binary-operation-expression start-index="28" stop-index="41">
+                    <left>
+                        <column name="status" start-index="28" stop-index="33" />
+                    </left>
+                    <operator>IS</operator>
+                    <right>
+                        <literal-expression value="NULL" start-index="38" stop-index="41" />
                     </right>
                 </binary-operation-expression>
             </expr>
@@ -12979,6 +13014,7 @@
             </expression-projection>
         </projections>
     </select>
+
 
     <select sql-case-id="select_without_from_sql92">
         <projections start-index="7" stop-index="7">
