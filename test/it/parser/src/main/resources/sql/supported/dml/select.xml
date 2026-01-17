@@ -434,14 +434,17 @@
     <sql-case id="select_cast_int_sql92" value="SELECT CAST(user_id AS INT) FROM t_order" db-types="SQL92" />
     <sql-case id="select_all_param_alias_schema_sql92" value="SELECT ALL ? AS &quot;aid&quot; FROM schema1.t_order WHERE (order_id = 1) OR active IS NULL" db-types="SQL92" />
     <sql-case id="select_like_between_and_sql92" value="SELECT status FROM t_order WHERE status LIKE '1%' AND order_id BETWEEN 1 AND 10" db-types="SQL92" />
+    <sql-case id="select_where_is_null_sql92" value="SELECT * FROM t_order WHERE status IS NULL" db-types="SQL92" />
     <sql-case id="select_safe_eq_sql92" value="SELECT order_id FROM t_order WHERE order_id &lt;=&gt; 1" db-types="SQL92" />
     <sql-case id="select_in_list_sql92" value="SELECT order_id FROM t_order WHERE order_id IN (1, 2)" db-types="SQL92" />
     <sql-case id="select_not_in_subquery_sql92" value="SELECT order_id FROM t_order WHERE order_id NOT IN (SELECT 1)" db-types="SQL92" />
+    <sql-case id="select_in_subquery_sql92" value="SELECT order_id FROM t_order WHERE order_id IN (SELECT 1)" db-types="SQL92" />
     <sql-case id="select_not_between_sql92" value="SELECT order_id FROM t_order WHERE order_id NOT BETWEEN 1 AND 2" db-types="SQL92" />
     <sql-case id="select_addition_expr_sql92" value="SELECT order_id + 1 FROM t_order" db-types="SQL92" />
     <sql-case id="select_interval_expression_sql92" value="SELECT INTERVAL 1 DAY" db-types="SQL92" />
     <sql-case id="select_position_function_sql92" value="SELECT POSITION('a' IN 'aaa')" db-types="SQL92" />
     <sql-case id="select_null_literal_sql92" value="SELECT NULL FROM t_order" db-types="SQL92" />
+    <sql-case id="select_case_expression_sql92" value="SELECT CASE 1 WHEN 1 THEN 1 END FROM t_order" db-types="SQL92" />
     <sql-case id="select_without_from_sql92" value="SELECT 1" db-types="SQL92" />
     <sql-case id="select_inner_join_sql92" value="SELECT * FROM t_order INNER JOIN t_order_item ON t_order.order_id = t_order_item.order_id" db-types="SQL92" />
     <sql-case id="select_subquery_projection_sql92" value="SELECT (SELECT 1) sub FROM t_order" db-types="SQL92" />
