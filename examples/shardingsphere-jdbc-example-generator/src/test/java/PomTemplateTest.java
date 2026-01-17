@@ -78,7 +78,7 @@ public final class PomTemplateTest {
         result.put("feature", "sharding");
         result.put("framework", "spring-boot-starter-jdbc");
         result.put("transaction", "local");
-        result.put("shardingsphereVersion", "5.5.3-SNAPSHOT");
+        result.put("shardingsphereVersion", "5.5.3");
         result.put("namespace", "generator-demo");
         return result;
     }

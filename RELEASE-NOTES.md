@@ -1,4 +1,22 @@
-## Release 5.5.3-SNAPSHOT
+## Release 5.5.4-SNAPSHOT
+
+### CVE
+
+### Metadata Storage Changes
+
+### API Changes
+
+### New Features
+
+### Enhancements
+
+### Bug Fixes
+
+### Change Logs
+
+1. [MILESTONE](https://github.com/apache/shardingsphere/milestone/32)
+
+## Release 5.5.3
 
 ### CVE
 
