@@ -162,13 +162,13 @@ We deeply appreciate [community contributors](https://shardingsphere.apache.org/
 
 <hr>
 
-:white_check_mark: **Version 5.5.3-SNAPSHOT**: Actively under development :tada:
+:white_check_mark: **Version 5.5.4-SNAPSHOT**: Actively under development :tada:
 
 🔗 For the release notes, follow this link to the relevant [GitHub page](https://github.com/apache/shardingsphere/blob/master/RELEASE-NOTES.md).
 
-:soon: **Version 5.5.3**
+:soon: **Version 5.5.4**
 
-We are currently developing version 5.5.3, which includes multiple security enhancements and performance optimizations.
+We are currently developing version 5.5.4, which includes multiple security enhancements and performance optimizations.
 Keep an eye on the [milestones page](https://github.com/apache/shardingsphere/milestones) of this repo for the latest development progress.
 
 [comment]: <> (##)
