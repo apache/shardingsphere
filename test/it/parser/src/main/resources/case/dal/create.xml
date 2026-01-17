@@ -50,4 +50,14 @@
         <property key="global" value="false" start-index="95" stop-index="110" />
         <property key="enable" value="true" start-index="112" stop-index="126" />
     </create-sql-block-rule>
+    <create-workload-group sql-case-id="create_workload_group">
+        <group name="g1" start-index="22" stop-index="24" />
+        <property key="max_cpu_percent" value="10%" start-index="36" stop-index="58"/>
+        <property key="max_memory_percent" value="30%" start-index="60" stop-index="85"/>
+    </create-workload-group>
+    <create-workload-group sql-case-id="create_workload_group_if_not_exists" if-not-exists="true">
+        <group name="g1" start-index="36" stop-index="38" />
+        <property key="max_cpu_percent" value="10%" start-index="50" stop-index="72"/>
+        <property key="max_memory_percent" value="30%" start-index="74" stop-index="99"/>
+    </create-workload-group>
 </sql-parser-test-cases>

@@ -261,4 +261,8 @@
     <sql-case id="show_slave_hosts_doris" value="SHOW SLAVE HOSTS" db-types="Doris" />
     <sql-case id="show_replica_status_doris" value="SHOW REPLICA STATUS" db-types="Doris" />
     <sql-case id="show_relaylog_events_doris" value="SHOW RELAYLOG EVENTS" db-types="Doris" />
+    <sql-case id="show_data_skew_from_table" value="SHOW DATA SKEW FROM test_show_data_skew" db-types="Doris" />
+    <sql-case id="show_data_skew_from_table_with_db" value="SHOW DATA SKEW FROM test_db.test_table" db-types="Doris" />
+    <sql-case id="show_data_skew_from_table_with_partition" value="SHOW DATA SKEW FROM test_table PARTITION (p1)" db-types="Doris" />
+    <sql-case id="show_data_skew_from_table_with_partitions" value="SHOW DATA SKEW FROM test_table PARTITION (p1, p2, p3)" db-types="Doris" />
 </sql-cases>

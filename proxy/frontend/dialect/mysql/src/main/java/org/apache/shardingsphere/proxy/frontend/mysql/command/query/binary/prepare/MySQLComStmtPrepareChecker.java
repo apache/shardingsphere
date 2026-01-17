@@ -112,6 +112,10 @@ public final class MySQLComStmtPrepareChecker {
      * @return SQL statement is allowed or not
      */
     public static boolean isAllowedStatement(final SQLStatement sqlStatement) {
-        return ALLOWED_SQL_STATEMENTS.contains(sqlStatement.getClass());
+        Class<?> statementClass = sqlStatement.getClass();
+        if ("org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisAnalyzeTableStatement".equals(statementClass.getName())) {
+            return true;
+        }
+        return ALLOWED_SQL_STATEMENTS.contains(statementClass);
     }
 }

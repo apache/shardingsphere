@@ -417,6 +417,8 @@ public enum SQLVisitorRule {
     
     SHOW_TRIGGERS("ShowTriggers", SQLStatementType.DAL),
     
+    SHOW_DATA_SKEW("ShowDataSkew", SQLStatementType.DAL),
+    
     SET_VARIABLE("SetVariable", SQLStatementType.DAL),
     
     SET("Set", SQLStatementType.DAL),
@@ -432,6 +434,8 @@ public enum SQLVisitorRule {
     CREATE_LOADABLE_FUNCTION("CreateLoadableFunction", SQLStatementType.DAL),
     
     ANALYZE_TABLE("AnalyzeTable", SQLStatementType.DAL),
+    
+    CREATE_WORKLOAD_GROUP("CreateWorkloadGroup", SQLStatementType.DAL),
     
     LOAD("Load", SQLStatementType.DAL),
     

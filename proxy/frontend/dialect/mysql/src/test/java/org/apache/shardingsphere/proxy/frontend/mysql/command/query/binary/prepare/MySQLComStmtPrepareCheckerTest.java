@@ -19,6 +19,7 @@ package org.apache.shardingsphere.proxy.frontend.mysql.command.query.binary.prep
 
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.AnalyzeTableStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.DALStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.SetStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dcl.user.AlterUserStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dcl.user.DropUserStatement;
@@ -73,11 +74,13 @@ import org.apache.shardingsphere.sql.parser.statement.mysql.dcl.MySQLGrantStatem
 import org.apache.shardingsphere.sql.parser.statement.mysql.dcl.MySQLRevokeStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.dcl.user.MySQLCreateUserStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.dcl.user.MySQLRenameUserStatement;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
 import java.util.Collection;
 
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 
@@ -101,6 +104,45 @@ class MySQLComStmtPrepareCheckerTest {
                 mock(XARollbackStatement.class), mock(XAEndStatement.class), mock(XARecoveryStatement.class));
         for (SQLStatement each : sqlStatements) {
             assertTrue(MySQLComStmtPrepareChecker.isAllowedStatement(each));
+        }
+    }
+    
+    @Test
+    void assertDorisAnalyzeTableStatementAllowedByTypeName() {
+        try {
+            Class<?> dorisAnalyzeClass = Class.forName("org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisAnalyzeTableStatement");
+            SQLStatement dorisStatement = (SQLStatement) dorisAnalyzeClass.getDeclaredConstructor(
+                    DatabaseType.class, Class.forName("org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment"),
+                    Class.forName("org.apache.shardingsphere.sql.parser.statement.core.segment.generic.DatabaseSegment"),
+                    Collection.class, boolean.class, String.class, Number.class).newInstance(mock(DatabaseType.class), null, null, null, false, null, null);
+            assertTrue(MySQLComStmtPrepareChecker.isAllowedStatement(dorisStatement), "DorisAnalyzeTableStatement should be allowed by type-based name check");
+        } catch (final ReflectiveOperationException ignored) {
+        }
+    }
+    
+    @Test
+    void assertNotAllowedStatementRejected() {
+        SQLStatement unknownStatement = new UnknownStatement(mock(DatabaseType.class));
+        assertFalse(MySQLComStmtPrepareChecker.isAllowedStatement(unknownStatement), "Unknown statement types should be rejected");
+    }
+    
+    @Test
+    void assertExactTypeMatchingUsed() {
+        SQLStatement dalStatement = new CustomDALStatement(mock(DatabaseType.class));
+        assertFalse(MySQLComStmtPrepareChecker.isAllowedStatement(dalStatement), "Custom DAL statements not in allowlist should be rejected (exact type matching)");
+    }
+    
+    private static class CustomDALStatement extends DALStatement {
+        
+        private CustomDALStatement(final DatabaseType databaseType) {
+            super(databaseType);
+        }
+    }
+    
+    private static class UnknownStatement extends DALStatement {
+        
+        private UnknownStatement(final DatabaseType databaseType) {
+            super(databaseType);
         }
     }
 }
