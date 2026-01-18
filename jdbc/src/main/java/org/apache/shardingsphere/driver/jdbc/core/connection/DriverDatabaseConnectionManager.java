@@ -28,6 +28,7 @@ import org.apache.shardingsphere.driver.jdbc.core.savepoint.ShardingSphereSavepo
 import org.apache.shardingsphere.infra.exception.kernel.connection.OverallConnectionNotEnoughException;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.ConnectionMode;
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.DatabaseConnectionManager;
+import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnit;
 import org.apache.shardingsphere.infra.session.connection.ConnectionContext;
 import org.apache.shardingsphere.infra.session.connection.transaction.TransactionConnectionContext;
 import org.apache.shardingsphere.mode.manager.ContextManager;
@@ -42,9 +43,12 @@ import java.sql.Savepoint;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
 
@@ -57,7 +61,7 @@ public final class DriverDatabaseConnectionManager implements DatabaseConnection
     
     private final ContextManager contextManager;
     
-    private final Map<String, DataSource> dataSourceMap;
+    private final Map<String, DataSource> dataSourceMap = new HashMap<>();
     
     @Getter
     private final ConnectionContext connectionContext;
@@ -71,14 +75,43 @@ public final class DriverDatabaseConnectionManager implements DatabaseConnection
     public DriverDatabaseConnectionManager(final String currentDatabaseName, final ContextManager contextManager) {
         this.currentDatabaseName = currentDatabaseName;
         this.contextManager = contextManager;
-        dataSourceMap = contextManager.getStorageUnits(currentDatabaseName).entrySet()
-                .stream().collect(Collectors.toMap(entry -> getKey(currentDatabaseName, entry.getKey()), entry -> entry.getValue().getDataSource()));
+        reloadDataSourceMap();
         connectionContext = new ConnectionContext(cachedConnections::keySet);
         connectionContext.setCurrentDatabaseName(currentDatabaseName);
     }
     
     private String getKey(final String databaseName, final String dataSourceName) {
         return databaseName.toLowerCase() + "." + dataSourceName;
+    }
+    
+    /**
+     * Reload the cached data source map from the current ContextManager state.
+     *
+     * <p>Must be invoked while holding the {@link #dataSourceMap} monitor.</p>
+     */
+    private void reloadDataSourceMap() {
+        Map<String, StorageUnit> storageUnits = contextManager.getStorageUnits(currentDatabaseName);
+        Map<String, DataSource> reloaded = null == storageUnits ? Collections.emptyMap()
+                : storageUnits.entrySet().stream().collect(Collectors.toMap(entry -> getKey(currentDatabaseName, entry.getKey()), entry -> entry.getValue().getDataSource()));
+        synchronized (dataSourceMap) {
+            dataSourceMap.clear();
+            dataSourceMap.putAll(reloaded);
+        }
+    }
+    
+    /**
+     * Resync the cached data source map and discard cached physical connections after a metadata refresh.
+     *
+     * <p>Called from {@code ShardingSphereStatement#refreshMetadataAfterDistSQL} so that the JDBC-side cache stays in sync
+     * with the {@code ContextManager} state after DistSQL statements such as {@code REGISTER STORAGE UNIT} or
+     * {@code UNREGISTER STORAGE UNIT} are executed.</p>
+     */
+    public void refresh() {
+        try {
+            clearCachedConnections();
+        } catch (final SQLException ignored) {
+        }
+        reloadDataSourceMap();
     }
     
     /**
@@ -310,8 +343,12 @@ public final class DriverDatabaseConnectionManager implements DatabaseConnection
     }
     
     private String[] getRandomPhysicalDatabaseAndDataSourceName() {
-        Collection<String> cachedPhysicalDataSourceNames = Sets.intersection(dataSourceMap.keySet(), cachedConnections.keySet());
-        Collection<String> databaseAndDatasourceNames = cachedPhysicalDataSourceNames.isEmpty() ? dataSourceMap.keySet() : cachedPhysicalDataSourceNames;
+        Set<String> dataSourceKeys;
+        synchronized (dataSourceMap) {
+            dataSourceKeys = new HashSet<>(dataSourceMap.keySet());
+        }
+        Collection<String> cachedPhysicalDataSourceNames = Sets.intersection(dataSourceKeys, cachedConnections.keySet());
+        Collection<String> databaseAndDatasourceNames = cachedPhysicalDataSourceNames.isEmpty() ? dataSourceKeys : cachedPhysicalDataSourceNames;
         return new ArrayList<>(databaseAndDatasourceNames).get(ThreadLocalRandom.current().nextInt(databaseAndDatasourceNames.size())).split("\\.");
     }
     
@@ -335,7 +372,7 @@ public final class DriverDatabaseConnectionManager implements DatabaseConnection
     private List<Connection> getConnections0(final String databaseName, final String dataSourceName, final int connectionOffset, final int connectionSize,
                                              final ConnectionMode connectionMode) throws SQLException {
         String cacheKey = getKey(databaseName, dataSourceName);
-        DataSource dataSource = currentDatabaseName.equals(databaseName) ? dataSourceMap.get(cacheKey) : contextManager.getStorageUnits(databaseName).get(dataSourceName).getDataSource();
+        DataSource dataSource = getDataSource(databaseName, dataSourceName, cacheKey);
         Preconditions.checkNotNull(dataSource, "Missing the data source name: '%s'", dataSourceName);
         Collection<Connection> connections;
         synchronized (cachedConnections) {
@@ -407,6 +444,19 @@ public final class DriverDatabaseConnectionManager implements DatabaseConnection
                                         final TransactionConnectionContext transactionConnectionContext) throws SQLException {
         Optional<Connection> connectionInTransaction = getConnectionTransaction().getConnection(databaseName, dataSourceName, transactionConnectionContext);
         return connectionInTransaction.isPresent() ? connectionInTransaction.get() : dataSource.getConnection();
+    }
+    
+    private DataSource getDataSource(final String databaseName, final String dataSourceName, final String cacheKey) {
+        if (currentDatabaseName.equals(databaseName)) {
+            synchronized (dataSourceMap) {
+                DataSource cachedDataSource = dataSourceMap.get(cacheKey);
+                if (null != cachedDataSource) {
+                    return cachedDataSource;
+                }
+            }
+        }
+        StorageUnit storageUnit = contextManager.getStorageUnits(databaseName).get(dataSourceName);
+        return null == storageUnit ? null : storageUnit.getDataSource();
     }
     
     @Override

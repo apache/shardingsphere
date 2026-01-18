@@ -46,15 +46,19 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 class DriverDatabaseConnectionManagerTest {
     
     private DriverDatabaseConnectionManager databaseConnectionManager;
     
+    private ContextManager contextManager;
+    
     @BeforeEach
     void setUp() throws SQLException {
-        databaseConnectionManager = new DriverDatabaseConnectionManager("foo_db", mockContextManager());
+        contextManager = mockContextManager();
+        databaseConnectionManager = new DriverDatabaseConnectionManager("foo_db", contextManager);
     }
     
     private ContextManager mockContextManager() throws SQLException {
@@ -167,5 +171,19 @@ class DriverDatabaseConnectionManagerTest {
     void assertBeginTransaction() throws SQLException {
         databaseConnectionManager.begin();
         assertTrue(databaseConnectionManager.getConnectionContext().getTransactionContext().isInTransaction());
+    }
+    
+    @Test
+    void assertRefreshClosesCachedConnections() throws SQLException {
+        Connection cached = databaseConnectionManager.getConnections("foo_db", "ds", 0, 1, ConnectionMode.MEMORY_STRICTLY).get(0);
+        databaseConnectionManager.refresh();
+        verify(cached).close();
+    }
+    
+    @Test
+    void assertRefreshReloadsDataSourceMap() {
+        when(contextManager.getStorageUnits("foo_db")).thenReturn(Collections.emptyMap());
+        databaseConnectionManager.refresh();
+        assertThrows(NullPointerException.class, () -> databaseConnectionManager.getConnections("foo_db", "ds", 0, 1, ConnectionMode.MEMORY_STRICTLY));
     }
 }

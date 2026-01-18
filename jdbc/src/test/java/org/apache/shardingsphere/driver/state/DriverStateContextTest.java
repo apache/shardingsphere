@@ -24,6 +24,8 @@ import org.apache.shardingsphere.infra.state.instance.InstanceStateContext;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.junit.jupiter.api.Test;
 
+import java.util.Collections;
+
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.isA;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
@@ -49,6 +51,7 @@ class DriverStateContextTest {
         InstanceStateContext instanceStateContext = new InstanceStateContext();
         instanceStateContext.switchState(instanceState);
         when(result.getComputeNodeInstanceContext().getInstance().getState()).thenReturn(instanceStateContext);
+        when(result.getStorageUnits("foo_db")).thenReturn(Collections.emptyMap());
         return result;
     }
 }
