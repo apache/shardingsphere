@@ -17,6 +17,6 @@
   -->
 
 <sql-cases>
-    <sql-case id="create_loadable_function_return_int" value="CREATE FUNCTION service_get_read_locks RETURNS INT SONAME 'locking_service.so'" db-types="MySQL" />
-    <sql-case id="create_loadable_function_return_dec" value="CREATE FUNCTION version_tokens_lock_exclusive RETURNS DEC SONAME 'version_token.so'" db-types="MySQL"/>
+    <sql-case id="create_loadable_function_return_int" value="CREATE FUNCTION service_get_read_locks RETURNS INT SONAME 'locking_service.so'" db-types="MySQL,Doris" />
+    <sql-case id="create_loadable_function_return_dec" value="CREATE FUNCTION version_tokens_lock_exclusive RETURNS DEC SONAME 'version_token.so'" db-types="MySQL,Doris"/>
 </sql-cases>

@@ -115,11 +115,11 @@
     <sql-case id="show_variables_with_like_pattern" value="SHOW SESSION VARIABLES LIKE '%size%'" db-types="MySQL,Doris" />
     <sql-case id="show_variables_with_where_expr" value="SHOW GLOBAL VARIABLES WHERE variable_name = ?" db-types="MySQL,Doris" />
     <sql-case id="show_variables_with_where_expr_no_parameter" value="SHOW VARIABLES WHERE variable_name = 'max_join_size'" db-types="MySQL,Doris" />
-    <sql-case id="show_binlog_events_with_log_name" value="SHOW BINLOG EVENTS IN 'log_name'" db-types="MySQL" />
-    <sql-case id="show_binlog_events_with_from_pos" value="SHOW BINLOG EVENTS FROM 1" db-types="MySQL" />
-    <sql-case id="show_binlog_events_with_limit" value="SHOW BINLOG EVENTS LIMIT 1,2" db-types="MySQL" />
-    <sql-case id="show_engine_status" value="SHOW ENGINE INNODB STATUS" db-types="MySQL" />
-    <sql-case id="show_engine_mutex" value="SHOW ENGINE INNODB MUTEX" db-types="MySQL" />
+    <sql-case id="show_binlog_events_with_log_name" value="SHOW BINLOG EVENTS IN 'log_name'" db-types="MySQL,Doris" />
+    <sql-case id="show_binlog_events_with_from_pos" value="SHOW BINLOG EVENTS FROM 1" db-types="MySQL,Doris" />
+    <sql-case id="show_binlog_events_with_limit" value="SHOW BINLOG EVENTS LIMIT 1,2" db-types="MySQL,Doris" />
+    <sql-case id="show_engine_status" value="SHOW ENGINE INNODB STATUS" db-types="MySQL,Doris" />
+    <sql-case id="show_engine_mutex" value="SHOW ENGINE INNODB MUTEX" db-types="MySQL,Doris" />
     <sql-case id="show_binary_logs" value="SHOW BINARY LOGS" db-types="MySQL" />
     <sql-case id="show_master_logs" value="SHOW MASTER LOGS" db-types="MySQL" />
     <sql-case id="show_engines" value="SHOW ENGINES" db-types="MySQL,Doris" />
