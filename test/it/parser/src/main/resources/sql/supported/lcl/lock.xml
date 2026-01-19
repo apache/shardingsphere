@@ -25,6 +25,7 @@
     <sql-case id="lock_table_with_write" value="lock tables t1 WRITE" db-types="MySQL,Doris" />
     <sql-case id="lock_table_with_multi_table" value="lock tables t1 write, t1 as a read, t1 as b read" db-types="MySQL,Doris" />
     <sql-case id="lock_instance_for_backup" value="LOCK INSTANCE FOR BACKUP" db-types="MySQL" />
+    <sql-case id="lock_instance_for_backup_doris" value="LOCK INSTANCE FOR BACKUP" db-types="Doris" />
     <sql-case id="lock_table_with_read_local" value="LOCK TABLES t1 READ LOCAL" db-types="MySQL" />
     <sql-case id="lock_table_with_alias" value="LOCK TABLES t1 READ, t1 as TableAlias READ" db-types="MySQL,Doris" />
     <sql-case id="lock_table_with_only" value="LOCK TABLE ONLY lock_tbl1;" db-types="PostgreSQL" />

@@ -378,4 +378,13 @@
     <sql-case id="alter_table_rename_rollup" value="ALTER TABLE example_table RENAME ROLLUP rollup1 rollup2" db-types="Doris" />
     <sql-case id="alter_table_rename_partition" value="ALTER TABLE example_table RENAME PARTITION partition1 partition2" db-types="Doris" />
     <sql-case id="alter_table_with_algorithm_lock_doris" value="ALTER TABLE t_order ADD COLUMN col_alg INT, ALGORITHM=INSTANT, LOCK=NONE" db-types="Doris" />
+    <sql-case id="alter_table_add_check_constraint_doris" value="ALTER TABLE t_order ADD CONSTRAINT ck_order CHECK (order_id &gt; 0)" db-types="Doris" />
+    <sql-case id="alter_table_drop_constraint_doris" value="ALTER TABLE t_order DROP CONSTRAINT ck_order" db-types="Doris" />
+    <sql-case id="alter_table_rename_index_doris" value="ALTER TABLE t_order RENAME INDEX idx_old TO idx_new" db-types="Doris" />
+    <sql-case id="alter_table_with_algorithm_default_doris" value="ALTER TABLE t_order ADD COLUMN col_alg_def INT, ALGORITHM=DEFAULT" db-types="Doris" />
+    <sql-case id="alter_table_with_algorithm_inplace_doris" value="ALTER TABLE t_order ADD COLUMN col_alg_inplace INT, ALGORITHM=INPLACE" db-types="Doris" />
+    <sql-case id="alter_table_with_algorithm_copy_doris" value="ALTER TABLE t_order ADD COLUMN col_alg_copy INT, ALGORITHM=COPY" db-types="Doris" />
+    <sql-case id="alter_table_with_lock_default_doris" value="ALTER TABLE t_order ADD COLUMN col_lock_default INT, LOCK=DEFAULT" db-types="Doris" />
+    <sql-case id="alter_table_with_lock_shared_doris" value="ALTER TABLE t_order ADD COLUMN col_lock_shared INT, LOCK=SHARED" db-types="Doris" />
+    <sql-case id="alter_table_with_lock_exclusive_doris" value="ALTER TABLE t_order ADD COLUMN col_lock_exclusive INT, LOCK=EXCLUSIVE" db-types="Doris" />
 </sql-cases>

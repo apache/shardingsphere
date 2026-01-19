@@ -80,6 +80,82 @@
             </projections>
         </select>
     </explain>
+
+    <explain sql-case-id="explain_insert_doris" db-types="Doris">
+        <insert>
+            <table name="t_order" start-index="20" stop-index="26" />
+            <columns start-index="28" stop-index="46">
+                <column name="order_id" start-index="29" stop-index="36" />
+                <column name="user_id" start-index="39" stop-index="45" />
+            </columns>
+            <values>
+                <value>
+                    <assignment-value>
+                        <literal-expression value="1" start-index="56" stop-index="56" />
+                    </assignment-value>
+                    <assignment-value>
+                        <literal-expression value="1" start-index="59" stop-index="59" />
+                    </assignment-value>
+                </value>
+            </values>
+        </insert>
+    </explain>
+
+    <explain sql-case-id="explain_update_doris" db-types="Doris">
+        <update>
+            <table start-index="15" stop-index="21">
+                <simple-table name="t_order" start-index="15" stop-index="21" />
+            </table>
+            <set start-index="23" stop-index="39">
+                <assignment start-index="23" stop-index="39">
+                    <column name="status" start-index="27" stop-index="32" />
+                    <assignment-value>
+                        <literal-expression value="ok" start-index="36" stop-index="39" />
+                    </assignment-value>
+                </assignment>
+            </set>
+        </update>
+    </explain>
+
+    <explain sql-case-id="explain_delete_doris" db-types="Doris">
+        <delete>
+            <table name="t_order" start-index="20" stop-index="26" />
+            <where start-index="28" stop-index="45" literal-stop-index="45">
+                <expr>
+                    <binary-operation-expression start-index="34" stop-index="45" literal-stop-index="45">
+                        <left>
+                            <column name="order_id" start-index="34" stop-index="41" />
+                        </left>
+                        <operator>=</operator>
+                        <right>
+                            <literal-expression value="1" start-index="45" stop-index="45" />
+                            <parameter-marker-expression parameter-index="0" start-index="45" stop-index="45" />
+                        </right>
+                    </binary-operation-expression>
+                </expr>
+            </where>
+        </delete>
+    </explain>
+
+    <explain sql-case-id="explain_replace_doris" db-types="Doris">
+        <replace>
+            <table name="t_order" start-index="21" stop-index="27" />
+            <columns start-index="31" stop-index="48">
+                <column name="order_id" start-index="31" stop-index="38" />
+                <column name="user_id" start-index="42" stop-index="48" />
+            </columns>
+            <values>
+                <value>
+                    <assignment-value>
+                        <literal-expression value="1" start-index="59" stop-index="59" />
+                    </assignment-value>
+                    <assignment-value>
+                        <literal-expression value="1" start-index="62" stop-index="62" />
+                    </assignment-value>
+                </value>
+            </values>
+        </replace>
+    </explain>
     
     <explain sql-case-id="explain_update_without_condition">
         <update>

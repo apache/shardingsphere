@@ -2133,6 +2133,17 @@
         </select>
     </create-table>
 
+    <create-table sql-case-id="create_table_with_comment_doris" db-types="Doris">
+        <table name="t_comment" start-index="13" stop-index="21" />
+        <column-definition type="INT" start-index="24" stop-index="29">
+            <column name="id" start-index="24" stop-index="25" />
+        </column-definition>
+        <create-table-option start-index="32" stop-index="72">
+            <engine name="olap" start-index="32" stop-index="42" />
+            <comment text="'doris table comment'" start-index="52" stop-index="72" />
+        </create-table-option>
+    </create-table>
+
     <create-table sql-case-id="create_table_with_select_without_query" db-types="Oracle">
         <table name="t_order_new" start-index="13" stop-index="23"/>
     </create-table>

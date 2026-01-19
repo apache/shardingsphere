@@ -2601,4 +2601,79 @@
             </column-definition>
         </add-column>
     </alter-table>
+
+    <alter-table sql-case-id="alter_table_add_check_constraint_doris">
+        <table name="t_order" start-index="12" stop-index="18" />
+        <add-constraint constraint-name="ck_order" start-index="24" stop-index="63" />
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_drop_constraint_doris">
+        <table name="t_order" start-index="12" stop-index="18" />
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_rename_index_doris">
+        <table name="t_order" start-index="12" stop-index="18" />
+        <rename-index>
+            <index-definition start-index="33" stop-index="39">
+                <index name="idx_old" />
+            </index-definition>
+            <rename-index-definition start-index="44" stop-index="50">
+                <index name="idx_new" />
+            </rename-index-definition>
+        </rename-index>
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_with_algorithm_default_doris">
+        <table name="t_order" start-index="12" stop-index="18" />
+        <add-column>
+            <column-definition type="INT" start-index="31" stop-index="45">
+                <column name="col_alg_def" start-index="31" stop-index="41" />
+            </column-definition>
+        </add-column>
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_with_algorithm_inplace_doris">
+        <table name="t_order" start-index="12" stop-index="18" />
+        <add-column>
+            <column-definition type="INT" start-index="31" stop-index="49">
+                <column name="col_alg_inplace" start-index="31" stop-index="45" />
+            </column-definition>
+        </add-column>
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_with_algorithm_copy_doris">
+        <table name="t_order" start-index="12" stop-index="18" />
+        <add-column>
+            <column-definition type="INT" start-index="31" stop-index="46">
+                <column name="col_alg_copy" start-index="31" stop-index="42" />
+            </column-definition>
+        </add-column>
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_with_lock_default_doris">
+        <table name="t_order" start-index="12" stop-index="18" />
+        <add-column>
+            <column-definition type="INT" start-index="31" stop-index="50">
+                <column name="col_lock_default" start-index="31" stop-index="46" />
+            </column-definition>
+        </add-column>
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_with_lock_shared_doris">
+        <table name="t_order" start-index="12" stop-index="18" />
+        <add-column>
+            <column-definition type="INT" start-index="31" stop-index="49">
+                <column name="col_lock_shared" start-index="31" stop-index="45" />
+            </column-definition>
+        </add-column>
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_with_lock_exclusive_doris">
+        <table name="t_order" start-index="12" stop-index="18" />
+        <add-column>
+            <column-definition type="INT" start-index="31" stop-index="52">
+                <column name="col_lock_exclusive" start-index="31" stop-index="48" />
+            </column-definition>
+        </add-column>
+    </alter-table>
 </sql-parser-test-cases>

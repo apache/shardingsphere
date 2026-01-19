@@ -49,6 +49,7 @@
         <table name="t1" alias="b" start-index="36" stop-index="42" />
     </lock>
     <lock sql-case-id="lock_instance_for_backup" />
+    <lock sql-case-id="lock_instance_for_backup_doris" />
     <lock sql-case-id="lock_table_with_read_local">
         <table name="t1" start-index="12" stop-index="13" />
     </lock>
