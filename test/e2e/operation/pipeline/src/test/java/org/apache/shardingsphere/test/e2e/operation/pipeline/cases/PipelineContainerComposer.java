@@ -67,11 +67,8 @@ import java.sql.Statement;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -535,36 +532,6 @@ public final class PipelineContainerComposer implements AutoCloseable {
     public void startIncrementTask(final Runnable task) {
         increaseTaskThread = new Thread(task);
         increaseTaskThread.start();
-    }
-    
-    /**
-     * Wait increment task finished.
-     *
-     * @param distSQL dist SQL
-     * @return result
-     */
-    // TODO use DAO to query via DistSQL
-    public List<Map<String, Object>> waitIncrementTaskFinished(final String distSQL) {
-        for (int i = 0; i < 10; i++) {
-            List<Map<String, Object>> listJobStatus = queryForListWithLog(distSQL);
-            log.info("show status result: {}", listJobStatus);
-            Set<String> actualStatus = new HashSet<>(listJobStatus.size(), 1F);
-            Collection<Integer> incrementalIdleSecondsList = new LinkedList<>();
-            for (Map<String, Object> each : listJobStatus) {
-                assertTrue(Strings.isNullOrEmpty((String) each.get("error_message")), "error_message: `" + each.get("error_message") + "`");
-                actualStatus.add(each.get("status").toString());
-                String incrementalIdleSeconds = (String) each.get("incremental_idle_seconds");
-                incrementalIdleSecondsList.add(Strings.isNullOrEmpty(incrementalIdleSeconds) ? 0 : Integer.parseInt(incrementalIdleSeconds));
-            }
-            if (Collections.min(incrementalIdleSecondsList) <= 5) {
-                sleepSeconds(3);
-                continue;
-            }
-            if (actualStatus.size() == 1 && actualStatus.contains(JobStatus.EXECUTE_INCREMENTAL_TASK.name())) {
-                return listJobStatus;
-            }
-        }
-        return Collections.emptyList();
     }
     
     /**

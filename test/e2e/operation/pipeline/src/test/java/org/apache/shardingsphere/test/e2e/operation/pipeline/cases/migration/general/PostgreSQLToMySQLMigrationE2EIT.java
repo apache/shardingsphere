@@ -85,7 +85,7 @@ class PostgreSQLToMySQLMigrationE2EIT extends AbstractMigrationE2EIT {
                 connection.createStatement().execute(String.format("INSERT INTO t_order (order_id,user_id,status) VALUES (%s, %s, '%s')", "1000000000", 1, "incremental"));
                 connection.createStatement().execute(String.format("UPDATE t_order SET status='%s' WHERE order_id IN (1,2)", RandomStringUtils.randomAlphanumeric(10)));
             }
-            containerComposer.waitIncrementTaskFinished(String.format("SHOW MIGRATION STATUS '%s'", jobId));
+            distSQLFacade.waitIncrementTaskFinished(jobId);
             assertCheckMigrationSuccess(containerComposer, jobId, "DATA_MATCH");
             distSQLFacade.commit(jobId);
             assertTrue(distSQLFacade.listJobIds().isEmpty());
