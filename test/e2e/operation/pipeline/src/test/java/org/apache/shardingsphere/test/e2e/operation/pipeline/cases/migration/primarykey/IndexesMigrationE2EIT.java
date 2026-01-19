@@ -245,7 +245,7 @@ class IndexesMigrationE2EIT extends AbstractMigrationE2EIT {
         containerComposer.waitJobPrepareSuccess(String.format("SHOW MIGRATION STATUS '%s'", jobId));
         DataSource jdbcDataSource = containerComposer.generateShardingSphereDataSourceFromProxy();
         incrementalTaskFn.accept(jdbcDataSource);
-        distSQLFacade.waitIncrementTaskFinished(String.format("SHOW MIGRATION STATUS '%s'", jobId));
+        distSQLFacade.waitIncrementTaskFinished(jobId);
         if (null != consistencyCheckAlgorithmType) {
             assertCheckMigrationSuccess(containerComposer, jobId, consistencyCheckAlgorithmType);
         }

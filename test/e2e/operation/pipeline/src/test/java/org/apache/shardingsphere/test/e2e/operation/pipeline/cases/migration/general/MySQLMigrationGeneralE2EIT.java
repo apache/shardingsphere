@@ -105,7 +105,7 @@ class MySQLMigrationGeneralE2EIT extends AbstractMigrationE2EIT {
     }
     
     private void assertMigrationSuccessById(final PipelineE2EDistSQLFacade distSQLFacade, final String jobId, final String algorithmType, final Properties algorithmProps) throws SQLException {
-        List<Map<String, Object>> jobStatus = distSQLFacade.waitIncrementTaskFinished(String.format("SHOW MIGRATION STATUS '%s'", jobId));
+        List<Map<String, Object>> jobStatus = distSQLFacade.waitIncrementTaskFinished(jobId);
         for (Map<String, Object> each : jobStatus) {
             assertTrue(Integer.parseInt(each.get("processed_records_count").toString()) > 0);
             assertThat(Integer.parseInt(each.get("inventory_finished_percentage").toString()), is(100));

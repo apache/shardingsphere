@@ -168,13 +168,14 @@ public final class PipelineE2EDistSQLFacade {
     /**
      * Wait increment task finished.
      *
-     * @param distSQL dist SQL
+     * @param jobId job id
      * @return result
      */
-    public List<Map<String, Object>> waitIncrementTaskFinished(final String distSQL) {
+    public List<Map<String, Object>> waitIncrementTaskFinished(final String jobId) {
+        String distSQL = String.format("SHOW %s STATUS %s", jobTypeName, jobId);
         for (int i = 0; i < 10; i++) {
             List<Map<String, Object>> listJobStatus = containerComposer.queryForListWithLog(distSQL);
-            log.info("show status result: {}", listJobStatus);
+            log.info("Show status result: {}", listJobStatus);
             Set<String> actualStatus = new HashSet<>(listJobStatus.size(), 1F);
             Collection<Integer> incrementalIdleSecondsList = new LinkedList<>();
             for (Map<String, Object> each : listJobStatus) {

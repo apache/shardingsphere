@@ -107,7 +107,7 @@ class PostgreSQLMigrationGeneralE2EIT extends AbstractMigrationE2EIT {
     }
     
     private void checkOrderMigration(final PipelineE2EDistSQLFacade distSQLFacade, final String jobId) throws SQLException {
-        distSQLFacade.waitIncrementTaskFinished(String.format("SHOW MIGRATION STATUS '%s'", jobId));
+        distSQLFacade.waitIncrementTaskFinished(jobId);
         distSQLFacade.pauseJob(jobId);
         distSQLFacade.resumeJob(jobId);
         assertCheckMigrationSuccess(distSQLFacade.getContainerComposer(), jobId, "DATA_MATCH");

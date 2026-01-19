@@ -57,7 +57,7 @@ class MySQLTimeTypesMigrationE2EIT extends AbstractMigrationE2EIT {
             String jobId = distSQLFacade.listJobIds().get(0);
             containerComposer.waitJobPrepareSuccess(String.format("SHOW MIGRATION STATUS '%s'", jobId));
             insertOneRecordWithZeroValue(containerComposer, 2);
-            distSQLFacade.waitIncrementTaskFinished(String.format("SHOW MIGRATION STATUS '%s'", jobId));
+            distSQLFacade.waitIncrementTaskFinished(jobId);
             distSQLFacade.loadAllSingleTables();
             assertCheckMigrationSuccess(containerComposer, jobId, "DATA_MATCH");
         }
