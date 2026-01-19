@@ -71,4 +71,8 @@
     <alter-user sql-case-id="alter_user_identified_with_single_quoted" />
     <alter-user sql-case-id="alter_user_with_factor" />
     <alter-user sql-case-id="alter_user_with_password_doris" />
+    <alter-user sql-case-id="alter_user_doris_password_policy" />
+    <alter-user sql-case-id="alter_user_doris_account_lock_unlock" />
+    <alter-user sql-case-id="alter_user_doris_require_ssl" />
+    <alter-user sql-case-id="alter_user_doris_resource_limits" />
 </sql-parser-test-cases>

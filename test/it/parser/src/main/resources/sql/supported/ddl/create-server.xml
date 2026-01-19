@@ -16,8 +16,6 @@
   ~ limitations under the License.
   -->
 
-<sql-parser-test-cases>
-    <drop-server sql-case-id="drop_server" />
-    <drop-server sql-case-id="drop_server_if_exists" />
-    <drop-server sql-case-id="drop_server_doris" />
-</sql-parser-test-cases>
+<sql-cases>
+    <sql-case id="create_server_doris_basic" value="CREATE SERVER s0 FOREIGN DATA WRAPPER mysql OPTIONS (USER 'doris_user', HOST '127.0.0.1')" db-types="Doris" />
+</sql-cases>

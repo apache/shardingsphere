@@ -16,8 +16,6 @@
   ~ limitations under the License.
   -->
 
-<sql-parser-test-cases>
-    <drop-server sql-case-id="drop_server" />
-    <drop-server sql-case-id="drop_server_if_exists" />
-    <drop-server sql-case-id="drop_server_doris" />
-</sql-parser-test-cases>
+<sql-cases>
+    <sql-case id="alter_instance_doris_rotate_innodb_master_key" value="ALTER INSTANCE ROTATE INNODB MASTER KEY" db-types="Doris" />
+</sql-cases>
