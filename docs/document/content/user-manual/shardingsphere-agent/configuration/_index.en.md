@@ -3,8 +3,6 @@ title = "Configuration"
 weight = 2
 +++
 
-
-
 `conf/agent.yaml` is used to manage agent configuration.
 Built-in plugins include File, Prometheus, OpenTelemetry.
 

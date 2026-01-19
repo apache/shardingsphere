@@ -19,7 +19,7 @@
 <sql-cases>
     <sql-case id="create_trigger" value="CREATE TRIGGER reminder1 ON Sales.Customer AFTER INSERT, UPDATE AS INSERT INTO SalesPersonQuotaHistory VALUES(t1, 100)" db-types="SQLServer" />
     <sql-case id="create_trigger_with_database_scoped" value="CREATE TRIGGER ddl_trig_database ON ALL SERVER AFTER INSERT AS SELECT EVENTDATA()" db-types="SQLServer" />
-    <sql-case id="create_trigger_with_create_view" value="CREATE TRIGGER tr1 BEFORE INSERT ON t1 FOR EACH ROW BEGIN create view v1 as select 1; END" db-types="MySQL" />
+    <sql-case id="create_trigger_with_create_view" value="CREATE TRIGGER tr1 BEFORE INSERT ON t1 FOR EACH ROW BEGIN create view v1 as select 1; END" db-types="MySQL,Doris" />
     <sql-case id="create_trigger_with_dml_event_clause" value="CREATE TRIGGER scott.emp_permit_changes BEFORE DELETE OR INSERT OR UPDATE ON scott.emp BEGIN IF (IS_SERVERERROR (1017)) THEN NULL; ELSE NULL; END IF; END;" db-types="Oracle" />
     <sql-case id="create_trigger_with_body" value="CREATE TRIGGER log_errors AFTER SERVERERROR ON DATABASE BEGIN IF (IS_SERVERERROR (1017)) THEN NULL; ELSE NULL; END IF; END;" db-types="Oracle" />
     <sql-case id="create_trigger_with_execute_immediate_statement" value="CREATE TRIGGER adg_logon_sync_trigger AFTER LOGON ON user.schema begin if (SYS_CONTEXT('USERENV', 'DATABASE_ROLE')  IN ('PHYSICAL STANDBY')) then execute immediate 'alter session sync with primary'; end if; end;" db-types="Oracle" />

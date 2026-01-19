@@ -5,8 +5,6 @@ weight = 6
 chapter = true
 +++
 
-
-
 该代理程序有助于收集可观测性指标，提供日志记录支持，并与流行的跟踪和监控解决方案集成，例如 JVM 指标、Prometheus 和 OpenTelemetry。
 
 ## 源码编译

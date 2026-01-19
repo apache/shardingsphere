@@ -1,4 +1,9 @@
-## Release 5.5.3-SNAPSHOT
+## Release 5.5.4-SNAPSHOT
+
+### Bug Fixes
+1. Proxy: Fix PostgreSQL text protocol bytea output to use hex encoding and avoid truncation - [#37772](https://github.com/apache/shardingsphere/pull/37772)
+
+## Release 5.5.3
 
 ### CVE
 

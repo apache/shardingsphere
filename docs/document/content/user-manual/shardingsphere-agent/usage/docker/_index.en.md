@@ -3,8 +3,6 @@ title = "Docker"
 weight = 5
 +++
 
-
-
 ## Local Build
 
 ShardingSphere Agent has a `Dockerfile` available for easy distribution. You can execute the following command to build a Docker Image,

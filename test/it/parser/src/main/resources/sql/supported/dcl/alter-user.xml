@@ -36,6 +36,10 @@
     <sql-case id="alter_user_with_lock_option" value="ALTER USER user1 ACCOUNT LOCK" db-types="MySQL" />
     <sql-case id="alter_user_with_options" value="ALTER USER user1 WITH MAX_QUERIES_PER_HOUR 1 MAX_UPDATES_PER_HOUR 1 PASSWORD EXPIRE DEFAULT PASSWORD HISTORY DEFAULT ACCOUNT LOCK" db-types="MySQL" />
     <sql-case id="alter_user_with_password_doris" value="ALTER USER user1 IDENTIFIED BY 'pwd_doris'" db-types="Doris" />
+    <sql-case id="alter_user_doris_password_policy" value="ALTER USER user_history PASSWORD EXPIRE DEFAULT PASSWORD HISTORY 5 PASSWORD REUSE INTERVAL 10 DAY" db-types="Doris" />
+    <sql-case id="alter_user_doris_account_lock_unlock" value="ALTER USER user_lock ACCOUNT LOCK PASSWORD EXPIRE" db-types="Doris" />
+    <sql-case id="alter_user_doris_require_ssl" value="ALTER USER user_ssl REQUIRE SSL" db-types="Doris" />
+    <sql-case id="alter_user_doris_resource_limits" value="ALTER USER user_limits WITH MAX_QUERIES_PER_HOUR 10 MAX_UPDATES_PER_HOUR 5" db-types="Doris" />
     <sql-case id="alter_external_user" value="ALTER USER user1 IDENTIFIED EXTERNALLY" db-types="Oracle" />
     <sql-case id="alter_global_user" value="ALTER USER user1 IDENTIFIED GLOBALLY AS 'CN=user1'" db-types="Oracle" />
     <sql-case id="alter_user_with_tablespace_option" value="ALTER USER user1 DEFAULT TABLESPACE tablespace1" db-types="Oracle" />

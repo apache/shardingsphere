@@ -19,4 +19,5 @@
 <sql-parser-test-cases>
     <create-loadable-function sql-case-id="create_loadable_function_return_int"/>
     <create-loadable-function sql-case-id="create_loadable_function_return_dec"/>
+    <create-loadable-function sql-case-id="create_loadable_function_doris"/>
 </sql-parser-test-cases>

@@ -4,8 +4,6 @@ weight = 1
 chapter = true
 +++
 
-
-
 + 1 The `SpringBoot` project ready to integrate `ShardingSphere-JDBC`, test-project.jar
 + 2 Startup project
 ```shell

@@ -146,6 +146,7 @@
     <sql-case id="create_materialized_view_refresh_on_schedule" value="CREATE MATERIALIZED VIEW mv1 REFRESH ON SCHEDULE EVERY 2 HOUR STARTS '2023-12-13 21:07:09' AS SELECT k1, k2 FROM test_table;" db-types="Doris" />
     <sql-case id="create_materialized_view_refresh_complete" value="CREATE MATERIALIZED VIEW mv1 REFRESH COMPLETE AS SELECT k1, k2 FROM test_table;" db-types="Doris" />
     <sql-case id="create_materialized_view_build_immediate" value="CREATE MATERIALIZED VIEW mv1 BUILD IMMEDIATE AS SELECT k1, k2 FROM test_table;" db-types="Doris" />
+    <sql-case id="create_materialized_view_doris_simple" value="CREATE MATERIALIZED VIEW mv_doris AS SELECT 1" db-types="Doris" />
     <sql-case id="create_materialized_view_basic_hive" value="CREATE MATERIALIZED VIEW sales_mv AS SELECT order_id, sum(amount) FROM sales GROUP BY order_id" db-types="Hive" />
     <sql-case id="create_materialized_view_with_if_not_exists_hive" value="CREATE MATERIALIZED VIEW IF NOT EXISTS sales_mv AS SELECT order_id, sum(amount) FROM sales GROUP BY order_id" db-types="Hive" />
     <sql-case id="create_materialized_view_with_db_name_hive" value="CREATE MATERIALIZED VIEW db1.sales_mv AS SELECT order_id, sum(amount) FROM db2.sales GROUP BY order_id" db-types="Hive" />

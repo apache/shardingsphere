@@ -22,4 +22,5 @@
     <drop-trigger sql-case-id="drop_trigger_if_exists" />
     <drop-trigger sql-case-id="drop_trigger_cascade" />
     <drop-trigger sql-case-id="drop_trigger_restrict" />
+    <drop-trigger sql-case-id="drop_trigger_doris_simple" />
 </sql-parser-test-cases>

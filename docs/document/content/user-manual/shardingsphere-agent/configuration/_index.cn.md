@@ -3,8 +3,6 @@ title = "配置说明"
 weight = 2
 +++
 
-
-
 `conf/agent.yaml` 用于管理 agent 配置。内置插件包括 File、Prometheus、OpenTelemetry。
 
 ```yaml

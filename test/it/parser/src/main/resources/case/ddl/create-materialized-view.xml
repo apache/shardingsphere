@@ -40,6 +40,7 @@
     <create-materialized-view sql-case-id="create_materialized_view_refresh_on_schedule" />
     <create-materialized-view sql-case-id="create_materialized_view_refresh_complete" />
     <create-materialized-view sql-case-id="create_materialized_view_build_immediate" />
+    <create-materialized-view sql-case-id="create_materialized_view_doris_simple" />
     <create-materialized-view sql-case-id="create_materialized_view_basic_hive" />
     <create-materialized-view sql-case-id="create_materialized_view_with_if_not_exists_hive" />
     <create-materialized-view sql-case-id="create_materialized_view_with_db_name_hive" />

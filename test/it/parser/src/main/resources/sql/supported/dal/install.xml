@@ -17,8 +17,8 @@
   -->
 
 <sql-cases>
-    <sql-case id="install_component" value="INSTALL COMPONENT 'file://component1'" db-types="MySQL" />
-    <sql-case id="install_components" value="INSTALL COMPONENT 'file://component1', 'file://component2'" db-types="MySQL" />
+    <sql-case id="install_component" value="INSTALL COMPONENT 'file://component1'" db-types="MySQL,Doris" />
+    <sql-case id="install_components" value="INSTALL COMPONENT 'file://component1', 'file://component2'" db-types="MySQL,Doris" />
     <sql-case id="install_plugin" value="INSTALL PLUGIN binlog SONAME 'shared_library_name'" db-types="MySQL,Doris" />
     <sql-case id="install_plugin_from" value="INSTALL PLUGIN FROM &quot;/home/users/doris/auditdemo.zip&quot;" db-types="Doris" />
     <sql-case id="install_plugin_with_properties" value="INSTALL PLUGIN FROM &quot;/home/users/doris/auditdemo.zip&quot; PROPERTIES (&quot;md5sum&quot; = &quot;d41d8cd98f00b204e9800998ecf8427e&quot;)" db-types="Doris" />
