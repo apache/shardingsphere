@@ -89,7 +89,7 @@ class RulesMigrationE2EIT extends AbstractMigrationE2EIT {
         PipelineE2EDistSQLFacade distSQLFacade = new PipelineE2EDistSQLFacade(containerComposer, new MigrationJobType());
         String jobId = distSQLFacade.listJobIds().get(0);
         containerComposer.waitJobPrepareSuccess(String.format("SHOW MIGRATION STATUS '%s'", jobId));
-        containerComposer.waitIncrementTaskFinished(String.format("SHOW MIGRATION STATUS '%s'", jobId));
+        distSQLFacade.waitIncrementTaskFinished(jobId);
         distSQLFacade.loadAllSingleTables();
         assertCheckMigrationSuccess(containerComposer, jobId, "DATA_MATCH");
         distSQLFacade.commit(jobId);
