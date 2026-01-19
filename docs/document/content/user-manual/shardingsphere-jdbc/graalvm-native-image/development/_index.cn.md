@@ -120,6 +120,7 @@ wsl --install
 并设置使用 `dockerd(moby)` 的 `Container Engine`。
 
 ```shell
+[Environment]::SetEnvironmentVariable('DOCKER_API_VERSION','1.44','Machine')
 winget install --id SUSE.RancherDesktop --source winget --skip-dependencies
 # 打开新的 PowerShell 7 终端
 rdctl start --application.start-in-background --container-engine.name=moby --kubernetes.enabled=false
@@ -147,6 +148,7 @@ rdctl start --application.start-in-background --container-engine.name=moby --kub
 可在 PowerShell 7 执行如下命令，
 
 ```shell
+[Environment]::SetEnvironmentVariable('DOCKER_API_VERSION','1.44','Machine')
 iex "& { $(irm https://raw.githubusercontent.com/microsoft/Windows-Containers/refs/heads/Main/helpful_tools/Install-DockerCE/uninstall-docker-ce.ps1) } -Force"
 winget install --id SUSE.RancherDesktop --source winget --skip-dependencies
 # 打开新的 PowerShell 7 终端
