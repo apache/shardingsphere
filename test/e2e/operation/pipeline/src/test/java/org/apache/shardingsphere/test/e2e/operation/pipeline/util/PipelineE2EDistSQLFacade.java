@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.test.e2e.operation.pipeline.util;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.data.pipeline.core.job.type.PipelineJobType;
 import org.apache.shardingsphere.test.e2e.operation.pipeline.cases.PipelineContainerComposer;
 import org.awaitility.Awaitility;
@@ -29,7 +28,6 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
-@RequiredArgsConstructor
 @Getter
 public final class PipelineE2EDistSQLFacade {
     
@@ -43,7 +41,8 @@ public final class PipelineE2EDistSQLFacade {
     private final String jobTypeName;
     
     public PipelineE2EDistSQLFacade(final PipelineContainerComposer containerComposer, final PipelineJobType<?> jobType) {
-        this(containerComposer, jobType.getType());
+        this.containerComposer = containerComposer;
+        jobTypeName = jobType.getType();
     }
     
     /**
