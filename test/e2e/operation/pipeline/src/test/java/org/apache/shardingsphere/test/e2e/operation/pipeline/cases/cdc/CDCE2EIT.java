@@ -144,7 +144,7 @@ class CDCE2EIT {
             cdcClient.close();
             Awaitility.await().atMost(10L, TimeUnit.SECONDS).pollInterval(500L, TimeUnit.MILLISECONDS)
                     .until(() -> distSQLFacade.listJobs().stream().noneMatch(each -> Boolean.parseBoolean(each.get("active").toString())));
-            containerComposer.proxyExecuteWithLog(String.format("DROP STREAMING '%s'", jobId), 0);
+            distSQLFacade.drop(jobId);
             assertTrue(distSQLFacade.listJobs().isEmpty());
         }
     }

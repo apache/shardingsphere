@@ -143,4 +143,14 @@ public final class PipelineE2EDistSQLFacade {
         containerComposer.proxyExecuteWithLog(sql, 0);
         Awaitility.waitAtMost(10, TimeUnit.SECONDS).until(() -> !listJobIds().contains(jobId));
     }
+    
+    /**
+     * Drop job.
+     *
+     * @param jobId job id
+     * @throws SQLException SQL exception
+     */
+    public void drop(final String jobId) throws SQLException {
+        containerComposer.proxyExecuteWithLog(String.format("DROP %s %s", jobTypeName, jobId), 0);
+    }
 }
