@@ -22,6 +22,8 @@ import lombok.Getter;
 import org.apache.shardingsphere.database.connector.core.metadata.database.enums.QuoteCharacter;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.DialectDatabaseMetaData;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.IdentifierPatternType;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 
 /**
@@ -42,14 +44,16 @@ public final class ShardingSphereIdentifier {
         caseSensitive = false;
     }
     
-    public ShardingSphereIdentifier(final String value, final DialectDatabaseMetaData dialectDatabaseMetaData) {
+    public ShardingSphereIdentifier(final String value, final DatabaseType databaseType) {
         this.value = new CaseInsensitiveString(value);
+        DialectDatabaseMetaData dialectDatabaseMetaData = new DatabaseTypeRegistry(databaseType).getDialectDatabaseMetaData();
         standardizeValue = standardizeValue(value, dialectDatabaseMetaData, false);
         caseSensitive = dialectDatabaseMetaData.isCaseSensitive();
     }
     
-    public ShardingSphereIdentifier(final IdentifierValue identifierValue, final DialectDatabaseMetaData dialectDatabaseMetaData) {
+    public ShardingSphereIdentifier(final IdentifierValue identifierValue, final DatabaseType databaseType) {
         value = new CaseInsensitiveString(identifierValue.getValue());
+        DialectDatabaseMetaData dialectDatabaseMetaData = new DatabaseTypeRegistry(databaseType).getDialectDatabaseMetaData();
         standardizeValue = standardizeValue(identifierValue.getValue(), dialectDatabaseMetaData, QuoteCharacter.NONE != identifierValue.getQuoteCharacter());
         caseSensitive = dialectDatabaseMetaData.isCaseSensitive();
     }
