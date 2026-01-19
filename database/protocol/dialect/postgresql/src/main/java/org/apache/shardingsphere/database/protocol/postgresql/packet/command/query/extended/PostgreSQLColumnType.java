@@ -29,6 +29,7 @@ import org.apache.shardingsphere.database.protocol.postgresql.packet.command.que
 import org.apache.shardingsphere.database.protocol.postgresql.packet.command.query.extended.bind.protocol.text.impl.PostgreSQLDoubleValueParser;
 import org.apache.shardingsphere.database.protocol.postgresql.packet.command.query.extended.bind.protocol.text.impl.PostgreSQLFloatValueParser;
 import org.apache.shardingsphere.database.protocol.postgresql.packet.command.query.extended.bind.protocol.text.impl.PostgreSQLIntValueParser;
+import org.apache.shardingsphere.database.protocol.postgresql.packet.command.query.extended.bind.protocol.text.impl.PostgreSQLJsonBValueParser;
 import org.apache.shardingsphere.database.protocol.postgresql.packet.command.query.extended.bind.protocol.text.impl.PostgreSQLJsonValueParser;
 import org.apache.shardingsphere.database.protocol.postgresql.packet.command.query.extended.bind.protocol.text.impl.PostgreSQLLongValueParser;
 import org.apache.shardingsphere.database.protocol.postgresql.packet.command.query.extended.bind.protocol.text.impl.PostgreSQLNumericValueParser;
@@ -36,6 +37,7 @@ import org.apache.shardingsphere.database.protocol.postgresql.packet.command.que
 import org.apache.shardingsphere.database.protocol.postgresql.packet.command.query.extended.bind.protocol.text.impl.PostgreSQLTimeValueParser;
 import org.apache.shardingsphere.database.protocol.postgresql.packet.command.query.extended.bind.protocol.text.impl.PostgreSQLTimestampValueParser;
 import org.apache.shardingsphere.database.protocol.postgresql.packet.command.query.extended.bind.protocol.text.impl.PostgreSQLUnspecifiedValueParser;
+import org.apache.shardingsphere.database.protocol.postgresql.packet.command.query.extended.bind.protocol.text.impl.PostgreSQLVarBitValueParser;
 import org.apache.shardingsphere.database.protocol.postgresql.packet.command.query.extended.bind.protocol.text.impl.PostgreSQLVarcharArrayValueParser;
 import org.apache.shardingsphere.database.protocol.postgresql.packet.command.query.extended.bind.protocol.text.impl.PostgreSQLVarcharValueParser;
 
@@ -142,7 +144,7 @@ public enum PostgreSQLColumnType implements BinaryColumnType {
     
     CHAR_ARRAY(1002, new PostgreSQLVarcharValueParser()),
     
-    VARBIT(1562, new PostgreSQLVarcharValueParser()),
+    VARBIT(1562, new PostgreSQLVarBitValueParser()),
     
     VARBIT_ARRAY(1563, new PostgreSQLVarcharValueParser()),
     
@@ -159,6 +161,8 @@ public enum PostgreSQLColumnType implements BinaryColumnType {
     POINT_ARRAY(1017, new PostgreSQLVarcharValueParser()),
     
     BOX(603, new PostgreSQLVarcharValueParser()),
+    
+    JSONB(3802, new PostgreSQLJsonBValueParser()),
     
     JSONB_ARRAY(3807, new PostgreSQLVarcharValueParser()),
     
@@ -200,6 +204,10 @@ public enum PostgreSQLColumnType implements BinaryColumnType {
         JDBC_TYPE_AND_COLUMN_TYPE_MAP.put(Types.ARRAY, TEXT_ARRAY);
     }
     
+    private static boolean isVarbit(final int jdbcType, final String columnTypeName) {
+        return Types.OTHER == jdbcType && ("varbit".equalsIgnoreCase(columnTypeName) || "bit varying".equalsIgnoreCase(columnTypeName));
+    }
+    
     /**
      * Value of JDBC type.
      *
@@ -227,6 +235,15 @@ public enum PostgreSQLColumnType implements BinaryColumnType {
         }
         if (isUUID(jdbcType, columnTypeName)) {
             return UUID;
+        }
+        if (isVarbit(jdbcType, columnTypeName)) {
+            return VARBIT;
+        }
+        if (isJSON(jdbcType, columnTypeName)) {
+            return JSON;
+        }
+        if (isJSONB(jdbcType, columnTypeName)) {
+            return JSONB;
         }
         return valueOfJDBCType(jdbcType);
     }
@@ -278,5 +295,13 @@ public enum PostgreSQLColumnType implements BinaryColumnType {
             }
         }
         throw new PostgreSQLProtocolException("Can not find value `%s` in PostgreSQL column type.", value);
+    }
+    
+    private static boolean isJSON(final int jdbcType, final String columnTypeName) {
+        return Types.OTHER == jdbcType && "json".equalsIgnoreCase(columnTypeName);
+    }
+    
+    private static boolean isJSONB(final int jdbcType, final String columnTypeName) {
+        return Types.OTHER == jdbcType && "jsonb".equalsIgnoreCase(columnTypeName);
     }
 }

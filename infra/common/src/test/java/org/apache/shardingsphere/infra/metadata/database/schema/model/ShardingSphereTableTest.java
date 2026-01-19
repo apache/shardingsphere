@@ -36,7 +36,7 @@ class ShardingSphereTableTest {
     
     @Test
     void assertContainsColumn() {
-        ShardingSphereColumn column = new ShardingSphereColumn("foo_col", Types.INTEGER, true, true, false, true, false, false);
+        ShardingSphereColumn column = new ShardingSphereColumn("foo_col", Types.INTEGER, true, true, "", false, true, false, false);
         ShardingSphereTable table = new ShardingSphereTable("foo_tbl", Collections.singleton(column), Collections.emptyList(), Collections.emptyList());
         assertTrue(table.containsColumn("foo_col"));
         assertFalse(table.containsColumn("invalid"));
@@ -45,7 +45,7 @@ class ShardingSphereTableTest {
     
     @Test
     void assertGetColumn() {
-        ShardingSphereColumn column = new ShardingSphereColumn("foo_col", Types.INTEGER, true, true, false, true, false, false);
+        ShardingSphereColumn column = new ShardingSphereColumn("foo_col", Types.INTEGER, true, true, "", false, true, false, false);
         ShardingSphereTable table = new ShardingSphereTable("foo_tbl", Collections.singleton(column), Collections.emptyList(), Collections.emptyList());
         assertThat(table.getColumn("foo_col"), is(column));
         assertThat(table.getColumn("FOO_COL"), is(column));
@@ -54,8 +54,8 @@ class ShardingSphereTableTest {
     
     @Test
     void assertGetColumnWithDuplicateNames() {
-        ShardingSphereColumn column1 = new ShardingSphereColumn("foo_col", Types.INTEGER, true, true, false, true, false, false);
-        ShardingSphereColumn column2 = new ShardingSphereColumn("foo_col", Types.VARCHAR, false, true, false, true, false, false);
+        ShardingSphereColumn column1 = new ShardingSphereColumn("foo_col", Types.INTEGER, true, true, "", false, true, false, false);
+        ShardingSphereColumn column2 = new ShardingSphereColumn("foo_col", Types.VARCHAR, false, true, "", false, true, false, false);
         ShardingSphereTable table = new ShardingSphereTable("foo_tbl", Arrays.asList(column1, column2), Collections.emptyList(), Collections.emptyList());
         assertThat(table.getAllColumns(), hasSize(1));
         assertThat(table.getColumn("foo_col"), is(column1));
@@ -63,8 +63,8 @@ class ShardingSphereTableTest {
     
     @Test
     void assertGetAllColumns() {
-        ShardingSphereColumn column1 = new ShardingSphereColumn("foo_col_1", Types.INTEGER, true, true, false, true, false, false);
-        ShardingSphereColumn column2 = new ShardingSphereColumn("foo_col_2", Types.INTEGER, false, true, false, true, false, false);
+        ShardingSphereColumn column1 = new ShardingSphereColumn("foo_col_1", Types.INTEGER, true, true, "", false, true, false, false);
+        ShardingSphereColumn column2 = new ShardingSphereColumn("foo_col_2", Types.INTEGER, false, true, "", false, true, false, false);
         ShardingSphereTable shardingSphereTable = new ShardingSphereTable("foo_tbl", Arrays.asList(column1, column2), Collections.emptyList(), Collections.emptyList());
         assertThat(shardingSphereTable.getAllColumns(), hasItems(column1, column2));
         assertThat(shardingSphereTable.getAllColumns(), hasSize(2));
@@ -78,8 +78,8 @@ class ShardingSphereTableTest {
     
     @Test
     void assertFindColumnNamesIfNotExistedFromWithDifferentColumnSize() {
-        ShardingSphereColumn column1 = new ShardingSphereColumn("foo_col", Types.INTEGER, true, true, false, true, false, false);
-        ShardingSphereColumn column2 = new ShardingSphereColumn("bar_col", Types.INTEGER, true, true, false, true, false, false);
+        ShardingSphereColumn column1 = new ShardingSphereColumn("foo_col", Types.INTEGER, true, true, "", false, true, false, false);
+        ShardingSphereColumn column2 = new ShardingSphereColumn("bar_col", Types.INTEGER, true, true, "", false, true, false, false);
         ShardingSphereTable table = new ShardingSphereTable("foo_tbl", Arrays.asList(column1, column2), Collections.emptyList(), Collections.emptyList());
         assertThat(table.findColumnNamesIfNotExistedFrom(Collections.singleton("FOO_COL")), is(Collections.singletonList("bar_col")));
     }

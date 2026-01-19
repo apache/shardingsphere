@@ -78,11 +78,12 @@ public final class PostgreSQLComParseExecutor implements CommandExecutor {
             sqlStatement = sqlParserEngine.parse(sql, true);
         }
         List<PostgreSQLColumnType> paddedColumnTypes = paddingColumnTypes(sqlStatement.getParameterCount(), packet.readParameterTypes());
+        List<String> paddingTypeNames = paddingTypeNames(paddedColumnTypes);
         SQLStatementContext sqlStatementContext = sqlStatement instanceof DistSQLStatement
                 ? new DistSQLStatementContext((DistSQLStatement) sqlStatement)
                 : new SQLBindEngine(metaData, connectionSession.getCurrentDatabaseName(), packet.getHintValueContext()).bind(sqlStatement);
         PostgreSQLServerPreparedStatement serverPreparedStatement = new PostgreSQLServerPreparedStatement(
-                sql, sqlStatementContext, packet.getHintValueContext(), paddedColumnTypes, actualParameterMarkerIndexes);
+                sql, sqlStatementContext, packet.getHintValueContext(), paddedColumnTypes, paddingTypeNames, actualParameterMarkerIndexes);
         connectionSession.getServerPreparedStatementRegistry().addPreparedStatement(packet.getStatementId(), serverPreparedStatement);
         return Collections.singleton(PostgreSQLParseCompletePacket.getInstance());
     }
@@ -110,6 +111,14 @@ public final class PostgreSQLComParseExecutor implements CommandExecutor {
         int unspecifiedCount = parameterCount - specifiedColumnTypes.size();
         for (int i = 0; i < unspecifiedCount; i++) {
             result.add(PostgreSQLColumnType.UNSPECIFIED);
+        }
+        return result;
+    }
+    
+    private List<String> paddingTypeNames(final List<PostgreSQLColumnType> paddedColumnTypes) {
+        List<String> result = new ArrayList<>(paddedColumnTypes.size());
+        for (int i = 0; i < paddedColumnTypes.size(); i++) {
+            result.add(null);
         }
         return result;
     }

@@ -274,7 +274,7 @@ class MetaDataContextsFactoryTest {
     }
     
     private ShardingSphereSchema createSchemaWithTable(final String schemaName, final String tableName) {
-        Collection<ShardingSphereColumn> columns = Collections.singletonList(new ShardingSphereColumn("id", 0, true, false, false, true, false, true));
+        Collection<ShardingSphereColumn> columns = Collections.singletonList(new ShardingSphereColumn("id", 0, true, false, "", false, true, false, true));
         ShardingSphereTable table = new ShardingSphereTable(tableName, columns, Collections.emptyList(), Collections.emptyList());
         return new ShardingSphereSchema(schemaName, Collections.singleton(table), Collections.emptyList());
     }

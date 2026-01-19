@@ -20,6 +20,9 @@ package org.apache.shardingsphere.database.connector.opengauss.metadata.database
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.datatype.DialectDataTypeOption;
 import org.apache.shardingsphere.database.connector.postgresql.metadata.database.option.PostgreSQLDataTypeOption;
 
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
@@ -53,5 +56,17 @@ public final class OpenGaussDataTypeOption implements DialectDataTypeOption {
     @Override
     public boolean isBinaryDataType(final int sqlType) {
         return delegate.isBinaryDataType(sqlType);
+    }
+    
+    /**
+     * Load user-defined data types from the database.
+     *
+     * @param connection database connection
+     * @return mapping of UDT type name to JDBC type
+     * @throws SQLException SQL exception
+     */
+    @Override
+    public Map<String, Integer> loadUDTTypes(final Connection connection) throws SQLException {
+        return new HashMap<>();
     }
 }

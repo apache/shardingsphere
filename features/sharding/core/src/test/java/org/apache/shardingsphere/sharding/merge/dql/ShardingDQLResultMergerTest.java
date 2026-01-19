@@ -485,9 +485,9 @@ class ShardingDQLResultMergerTest {
     }
     
     private ShardingSphereTable createTable() {
-        ShardingSphereColumn column1 = new ShardingSphereColumn("col1", 0, false, false, false, true, false, false);
-        ShardingSphereColumn column2 = new ShardingSphereColumn("col2", 0, false, false, false, true, false, false);
-        ShardingSphereColumn column3 = new ShardingSphereColumn("col3", 0, false, false, false, true, false, false);
+        ShardingSphereColumn column1 = new ShardingSphereColumn("col1", 0, false, false, "other", false, true, false, false);
+        ShardingSphereColumn column2 = new ShardingSphereColumn("col2", 0, false, false, "other", false, true, false, false);
+        ShardingSphereColumn column3 = new ShardingSphereColumn("col3", 0, false, false, "other", false, true, false, false);
         return new ShardingSphereTable("tbl", Arrays.asList(column1, column2, column3), Collections.emptyList(), Collections.emptyList());
     }
     

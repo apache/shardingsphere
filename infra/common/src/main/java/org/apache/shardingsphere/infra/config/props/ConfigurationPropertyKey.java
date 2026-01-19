@@ -138,7 +138,12 @@ public enum ConfigurationPropertyKey implements TypedPropertyKey {
     /**
      * Maximum size of Groovy inline expression parsing cache.
      */
-    GROOVY_INLINE_EXPRESSION_PARSING_CACHE_MAX_SIZE("groovy-inline-expression-parsing-cache-max-size", "1000", long.class, false);
+    GROOVY_INLINE_EXPRESSION_PARSING_CACHE_MAX_SIZE("groovy-inline-expression-parsing-cache-max-size", "1000", long.class, false),
+    
+    /**
+     * Whether to enable UDT (User Defined Type) discovery.
+     */
+    UDT_DISCOVERY_ENABLED("udt-discovery-enabled", String.valueOf(Boolean.TRUE), boolean.class, false);
     
     private final String key;
     

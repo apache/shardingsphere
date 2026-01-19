@@ -61,7 +61,9 @@ class ShowTableMetaDataExecutorTest {
         assertThat(row.getCell(3), is("COLUMN"));
         assertThat(row.getCell(4), is("order_id"));
         assertThat(row.getCell(5),
-                is("{\"name\":\"order_id\",\"dataType\":0,\"primaryKey\":false,\"generated\":false,\"caseSensitive\":false,\"visible\":true,\"unsigned\":false,\"nullable\":false}"));
+                is("{\"name\":\"order_id\",\"dataType\":0,\"primaryKey\":false,\"generated\":false,"
+                        + "\"typeName\":\"other\",\"caseSensitive\":false,\"visible\":true,\"unsigned\":false,"
+                        + "\"nullable\":false}"));
         row = iterator.next();
         assertThat(row.getCell(1), is("foo_db"));
         assertThat(row.getCell(2), is("t_order"));
@@ -79,7 +81,7 @@ class ShowTableMetaDataExecutorTest {
     }
     
     private Collection<ShardingSphereTable> createTables() {
-        Collection<ShardingSphereColumn> columns = Collections.singletonList(new ShardingSphereColumn("order_id", 0, false, false, false, true, false, false));
+        Collection<ShardingSphereColumn> columns = Collections.singletonList(new ShardingSphereColumn("order_id", 0, false, false, "other", false, true, false, false));
         Collection<ShardingSphereIndex> indexes = Collections.singletonList(new ShardingSphereIndex("primary", Collections.emptyList(), false));
         return Collections.singleton(new ShardingSphereTable("t_order", columns, indexes, Collections.emptyList()));
     }
