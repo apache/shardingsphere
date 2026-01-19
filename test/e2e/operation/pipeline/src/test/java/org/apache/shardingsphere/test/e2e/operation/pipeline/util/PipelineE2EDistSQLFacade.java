@@ -139,7 +139,8 @@ public final class PipelineE2EDistSQLFacade {
      * @throws SQLException SQL exception
      */
     public void commit(final String jobId) throws SQLException {
-        containerComposer.proxyExecuteWithLog(String.format("COMMIT %s %s", jobTypeName, jobId), 2);
-        Awaitility.await().atMost(3, TimeUnit.SECONDS).until(() -> !listJobIds().contains(jobId));
+        String sql = String.format("COMMIT %s %s", jobTypeName, jobId);
+        containerComposer.proxyExecuteWithLog(sql, 0);
+        Awaitility.waitAtMost(10, TimeUnit.SECONDS).until(() -> !listJobIds().contains(jobId));
     }
 }
