@@ -238,7 +238,6 @@ class ShardingSphereIdentifierTest {
         DialectDatabaseMetaData mysql = mockMySQLMetaData();
         Map<ShardingSphereIdentifier, String> map = new HashMap<>();
         map.put(new ShardingSphereIdentifier(new IdentifierValue("MyTable", QuoteCharacter.BACK_QUOTE), mysql), "value1");
-        // MySQL isCaseSensitive()=false, quoted identifiers still use CaseInsensitiveString
         assertThat(map.get(new ShardingSphereIdentifier(new IdentifierValue("MyTable", QuoteCharacter.BACK_QUOTE), mysql)), is("value1"));
         assertThat(map.get(new ShardingSphereIdentifier(new IdentifierValue("mytable", QuoteCharacter.BACK_QUOTE), mysql)), is("value1"));
     }
