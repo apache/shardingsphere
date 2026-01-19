@@ -17,18 +17,29 @@
 
 package org.apache.shardingsphere.test.e2e.operation.pipeline.util;
 
+import com.google.common.base.Strings;
 import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.shardingsphere.data.pipeline.core.job.JobStatus;
 import org.apache.shardingsphere.data.pipeline.core.job.type.PipelineJobType;
 import org.apache.shardingsphere.test.e2e.operation.pipeline.cases.PipelineContainerComposer;
 import org.awaitility.Awaitility;
 
 import java.sql.SQLException;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 @Getter
+@Slf4j
 public final class PipelineE2EDistSQLFacade {
     
     private static final String PIPELINE_RULE_SQL_TEMPLATE = "ALTER %s RULE(\n"
@@ -152,5 +163,34 @@ public final class PipelineE2EDistSQLFacade {
      */
     public void drop(final String jobId) throws SQLException {
         containerComposer.proxyExecuteWithLog(String.format("DROP %s %s", jobTypeName, jobId), 0);
+    }
+    
+    /**
+     * Wait increment task finished.
+     *
+     * @param distSQL dist SQL
+     * @return result
+     */
+    public List<Map<String, Object>> waitIncrementTaskFinished(final String distSQL) {
+        for (int i = 0; i < 10; i++) {
+            List<Map<String, Object>> listJobStatus = containerComposer.queryForListWithLog(distSQL);
+            log.info("show status result: {}", listJobStatus);
+            Set<String> actualStatus = new HashSet<>(listJobStatus.size(), 1F);
+            Collection<Integer> incrementalIdleSecondsList = new LinkedList<>();
+            for (Map<String, Object> each : listJobStatus) {
+                assertTrue(Strings.isNullOrEmpty((String) each.get("error_message")), "error_message: `" + each.get("error_message") + "`");
+                actualStatus.add(each.get("status").toString());
+                String incrementalIdleSeconds = (String) each.get("incremental_idle_seconds");
+                incrementalIdleSecondsList.add(Strings.isNullOrEmpty(incrementalIdleSeconds) ? 0 : Integer.parseInt(incrementalIdleSeconds));
+            }
+            if (Collections.min(incrementalIdleSecondsList) <= 5) {
+                containerComposer.sleepSeconds(3);
+                continue;
+            }
+            if (actualStatus.size() == 1 && actualStatus.contains(JobStatus.EXECUTE_INCREMENTAL_TASK.name())) {
+                return listJobStatus;
+            }
+        }
+        return Collections.emptyList();
     }
 }
