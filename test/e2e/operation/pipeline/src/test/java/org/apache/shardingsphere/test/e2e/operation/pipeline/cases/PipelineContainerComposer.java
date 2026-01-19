@@ -171,9 +171,10 @@ public final class PipelineContainerComposer implements AutoCloseable {
         String jobTypeName = jobType.getType();
         for (Map<String, Object> each : queryJobs(connection, jobTypeName)) {
             String jobId = each.get("id").toString();
-            Map<String, Object> jobInfo = queryForListWithLog(String.format("SHOW %s STATUS '%s'", jobTypeName, jobId)).get(0);
-            String status = jobInfo.get("status").toString();
+            List<Map<String, Object>> jobInfos = queryForListWithLog(String.format("SHOW %s STATUS '%s'", jobTypeName, jobId));
+            String status = !jobInfos.isEmpty() ? jobInfos.get(0).get("status").toString() : "";
             String sql = String.format("%s %s '%s'", getOperationType(jobType, status), jobTypeName, jobId);
+            log.info("Clean up job, sql: {}", sql);
             try (Statement statement = connection.createStatement()) {
                 statement.execute(sql);
             }
@@ -181,17 +182,10 @@ public final class PipelineContainerComposer implements AutoCloseable {
     }
     
     private String getOperationType(final PipelineJobType<?> jobType, final String status) {
-        if (JobStatus.FINISHED.name().equals(status)) {
-            return isSupportCommit(jobType) ? "COMMIT" : "DROP";
-        }
-        return isSupportRollback(jobType) ? "ROLLBACK" : "DROP";
+        return isSupportCommitRollback(jobType) ? (JobStatus.FINISHED.name().equals(status) ? "COMMIT" : "ROLLBACK") : "DROP";
     }
     
-    private boolean isSupportCommit(final PipelineJobType<?> jobType) {
-        return !(jobType instanceof CDCJobType);
-    }
-    
-    private boolean isSupportRollback(final PipelineJobType<?> jobType) {
+    private boolean isSupportCommitRollback(final PipelineJobType<?> jobType) {
         return !(jobType instanceof CDCJobType);
     }
     
@@ -246,7 +240,8 @@ public final class PipelineContainerComposer implements AutoCloseable {
         if (seconds <= 0) {
             return;
         }
-        Awaitility.await().pollDelay(seconds, TimeUnit.SECONDS).until(() -> true);
+        // Awaitility: WaitConstraint defaultWaitConstraint = AtMostWaitConstraint.TEN_SECONDS
+        Awaitility.waitAtMost(seconds + 1, TimeUnit.SECONDS).pollDelay(seconds, TimeUnit.SECONDS).until(() -> true);
     }
     
     /**
