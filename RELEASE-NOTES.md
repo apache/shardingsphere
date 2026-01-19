@@ -1,4 +1,4 @@
-## Release 5.5.3-SNAPSHOT
+## Release 5.5.3
 
 ### CVE
 

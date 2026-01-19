@@ -160,13 +160,13 @@ ShardingSphere 采用独特的双接入端架构设计，提供 JDBC 和 Proxy �
 
 <hr>
 
-:white_check_mark: **Version 5.5.3-SNAPSHOT**: 正在积极开发中 :tada:
+:white_check_mark: **Version 5.5.4-SNAPSHOT**: 正在积极开发中 :tada:
 
 🔗 请访问 [发布说明](https://github.com/apache/shardingsphere/blob/master/RELEASE-NOTES.md) 获得更详细的信息。
 
-:soon: **Version 5.5.3**
+:soon: **Version 5.5.4**
 
-我们目前正在开发 5.5.3 版本，包含多项安全增强和性能优化。
+我们目前正在开发 5.5.4 版本，包含多项安全增强和性能优化。
 请访问[里程碑](https://github.com/apache/shardingsphere/milestones) 获取最新开发进展。
 
 ##
