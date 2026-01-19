@@ -240,7 +240,8 @@ public final class PipelineContainerComposer implements AutoCloseable {
         if (seconds <= 0) {
             return;
         }
-        Awaitility.await().pollDelay(seconds, TimeUnit.SECONDS).until(() -> true);
+        // Awaitility: WaitConstraint defaultWaitConstraint = AtMostWaitConstraint.TEN_SECONDS
+        Awaitility.waitAtMost(seconds + 1, TimeUnit.SECONDS).pollDelay(seconds, TimeUnit.SECONDS).until(() -> true);
     }
     
     /**
