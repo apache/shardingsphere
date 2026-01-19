@@ -27,6 +27,7 @@ import org.apache.shardingsphere.database.protocol.postgresql.packet.identifier.
 import org.apache.shardingsphere.database.protocol.postgresql.packet.identifier.PostgreSQLMessagePacketType;
 import org.apache.shardingsphere.database.protocol.postgresql.payload.PostgreSQLPacketPayload;
 
+import java.nio.charset.StandardCharsets;
 import java.sql.SQLException;
 import java.sql.SQLXML;
 import java.util.Collection;
@@ -37,6 +38,8 @@ import java.util.Collection;
 @RequiredArgsConstructor
 @Getter
 public final class PostgreSQLDataRowPacket extends PostgreSQLIdentifierPacket {
+    
+    private static final byte[] HEX_DIGITS = "0123456789abcdef".getBytes(StandardCharsets.US_ASCII);
     
     private final Collection<Object> data;
     
@@ -67,8 +70,9 @@ public final class PostgreSQLDataRowPacket extends PostgreSQLIdentifierPacket {
         if (null == each) {
             payload.writeInt4(0xFFFFFFFF);
         } else if (each instanceof byte[]) {
-            payload.writeInt4(((byte[]) each).length);
-            payload.writeBytes((byte[]) each);
+            byte[] columnData = encodeByteaText((byte[]) each);
+            payload.writeInt4(columnData.length);
+            payload.writeBytes(columnData);
         } else if (each instanceof SQLXML) {
             writeSQLXMLData(payload, each);
         } else if (each instanceof Boolean) {
@@ -80,6 +84,18 @@ public final class PostgreSQLDataRowPacket extends PostgreSQLIdentifierPacket {
             payload.writeInt4(columnData.length);
             payload.writeBytes(columnData);
         }
+    }
+    
+    private byte[] encodeByteaText(final byte[] value) {
+        byte[] result = new byte[value.length * 2 + 2];
+        result[0] = '\\';
+        result[1] = 'x';
+        for (int i = 0; i < value.length; i++) {
+            int unsignedByte = value[i] & 0xFF;
+            result[2 + i * 2] = HEX_DIGITS[unsignedByte >>> 4];
+            result[3 + i * 2] = HEX_DIGITS[unsignedByte & 0x0F];
+        }
+        return result;
     }
     
     private void writeSQLXMLData(final PostgreSQLPacketPayload payload, final Object data) {
