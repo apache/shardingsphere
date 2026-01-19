@@ -172,13 +172,13 @@ public final class PipelineE2EDistSQLFacade {
      * @return result
      */
     public List<Map<String, Object>> waitIncrementTaskFinished(final String jobId) {
-        String distSQL = String.format("SHOW %s STATUS %s", jobTypeName, jobId);
+        String distSQL = buildShowJobStatusDistSQL(jobId);
         for (int i = 0; i < 10; i++) {
-            List<Map<String, Object>> listJobStatus = containerComposer.queryForListWithLog(distSQL);
-            log.info("Show status result: {}", listJobStatus);
-            Set<String> actualStatus = new HashSet<>(listJobStatus.size(), 1F);
+            List<Map<String, Object>> jobStatusRecords = containerComposer.queryForListWithLog(distSQL);
+            log.info("Show status result: {}", jobStatusRecords);
+            Set<String> actualStatus = new HashSet<>(jobStatusRecords.size(), 1F);
             Collection<Integer> incrementalIdleSecondsList = new LinkedList<>();
-            for (Map<String, Object> each : listJobStatus) {
+            for (Map<String, Object> each : jobStatusRecords) {
                 assertTrue(Strings.isNullOrEmpty((String) each.get("error_message")), "error_message: `" + each.get("error_message") + "`");
                 actualStatus.add(each.get("status").toString());
                 String incrementalIdleSeconds = (String) each.get("incremental_idle_seconds");
@@ -189,9 +189,13 @@ public final class PipelineE2EDistSQLFacade {
                 continue;
             }
             if (actualStatus.size() == 1 && actualStatus.contains(JobStatus.EXECUTE_INCREMENTAL_TASK.name())) {
-                return listJobStatus;
+                return jobStatusRecords;
             }
         }
         return Collections.emptyList();
+    }
+    
+    private String buildShowJobStatusDistSQL(final String jobId) {
+        return String.format("SHOW %s STATUS %s", jobTypeName, jobId);
     }
 }
