@@ -19,4 +19,5 @@
 <sql-cases>
     <sql-case id="drop_server" value="DROP SERVER s0" db-types="PostgreSQL,openGauss" />
     <sql-case id="drop_server_if_exists" value="DROP SERVER IF EXISTS s0" db-types="PostgreSQL,openGauss" />
+    <sql-case id="drop_server_doris" value="DROP SERVER server_doris" db-types="Doris" />
 </sql-cases>
