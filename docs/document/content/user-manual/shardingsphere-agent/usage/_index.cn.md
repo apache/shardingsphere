@@ -4,8 +4,6 @@ weight = 1
 chapter = true
 +++
 
-
-
 + 1 准备好已集成 `ShardingSphere-JDBC` 的 `SpringBoot` 项目，test-project.jar
 + 2 启动项目
 ```shell
