@@ -35,14 +35,13 @@ The YAML configuration file in 'spring.datasource.url' currently support in mult
 
 Use this data source directly; or configure ShardingSphereDataSource to be used in conjunction with ORM frameworks such as JPA, Hibernate, and MyBatis.
 
-## Handling for Spring Boot OSS 3
+## Handling for Spring Boot 3+
 
-Spring Boot OSS 3 has made a "big bang" upgrade to Jakarta EE and Java 17, with all complications involved.
+ShardingSphere's XA distributed transactions are not yet ready for Spring Boot 3+. 
+This limitation also applies to other Jakarta EE 9+ based web frameworks, 
+such as Quarkus 3, Micronaut Framework 4, and Helidon 3+.
 
-ShardingSphere's XA distributed transactions are not yet ready on Spring Boot OSS 3. This limitation also applies to other 
-Jakarta EE 9+ based Web Frameworks, such as Quarkus 3, Micronaut Framework 4 and Helidon 3.
-
-Users only need to configure as follows.
+Users only need to configure the following.
 
 ```xml
 <project>
@@ -56,38 +55,41 @@ Users only need to configure as follows.
 </project>
 ```
 
-## Special handling for earlier versions of Spring Boot OSS 2
+## Special Handling for Lower Versions of Spring Boot 2
 
-All features of ShardingSphere are available on Spring Boot OSS 2, but earlier versions of Spring Boot OSS may require 
-manually specifying version 2.2 for SnakeYAML.
-This is reflected in Maven's `pom.xml` as follows.
+Aside from ShardingSphere Agent, all ShardingSphere JDBC features are available in Spring Boot 2.
+However, lower versions of Spring Boot may require manually specifying the SnakeYAML version as `2.2`.
+This is reflected in the Maven `pom.xml` as follows.
 
 ```xml
 <project>
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.yaml</groupId>
+                <artifactId>snakeyaml</artifactId>
+                <version>2.2</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
     <dependencies>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
             <artifactId>shardingsphere-jdbc</artifactId>
             <version>${shardingsphere.version}</version>
         </dependency>
-        <dependency>
-            <groupId>org.yaml</groupId>
-            <artifactId>snakeyaml</artifactId>
-            <version>2.2</version>
-        </dependency>
     </dependencies>
 </project>
 ```
 
-If the user created the Spring Boot project from https://start.spring.io/, users can simplify configuration by
-following things.
+If a user created a Spring Boot project via https://start.spring.io/ , 
+the configuration can be simplified as follows.
 
 ```xml
 <project>
     <properties>
         <snakeyaml.version>2.2</snakeyaml.version>
     </properties>
-    
     <dependencies>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
@@ -97,3 +99,7 @@ following things.
     </dependencies>
 </project>
 ```
+
+For Spring Boot 2, if developers are managing logs via SLF4J or Logback,
+they may encounter the issue described in https://github.com/spring-projects/spring-boot/issues/34708 .
+Developers should consider maintaining the Spring Boot 2 source code themselves.
