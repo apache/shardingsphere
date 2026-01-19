@@ -3,8 +3,6 @@ title = "Plugins"
 weight = 4
 +++
 
-
-
 ## File
 
 Currently, the File plugin only outputs the time-consuming log output of building metadata, and has no other log output for the time being.

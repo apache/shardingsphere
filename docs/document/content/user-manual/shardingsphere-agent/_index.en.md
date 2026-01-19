@@ -5,10 +5,7 @@ weight = 6
 chapter = true
 +++
 
-
-
 The agent helps collect observability metrics, provides support for logging, and integrates with popular tracing and monitoring solutions like JVM metrics, Prometheus, and OpenTelemetry.
-
 
 ## Compile source code
 

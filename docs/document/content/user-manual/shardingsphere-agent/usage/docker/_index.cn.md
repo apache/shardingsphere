@@ -3,8 +3,6 @@ title = "Docker"
 weight = 5
 +++
 
-
-
 ##  本地构建
 
 ShardingSphere Agent 存在可用的 `Dockerfile` 用于方便分发。可执行如下命令以构建 Docker Image，
