@@ -19,6 +19,21 @@ name: E2E - Operation
 
 on:
   pull_request:
+    branches: [ master ]
+    paths:
+      - '.github/workflows/e2e-operation.yml'
+      - '**/pom.xml'
+      - '**/src/main/**'
+      - '!examples/**'
+      - '!distribution/**'
+      - 'distribution/proxy/**'
+      - '!distribution/proxy/src/main/release-docs/**'
+      - '!test/**'
+      - 'test/pom.xml'
+      - 'test/e2e/fixture/**'
+      - 'test/e2e/env/**'
+      - 'test/e2e/operation/**'
+      - '!*.md'
   workflow_dispatch:
 
 concurrency:
@@ -50,7 +65,7 @@ jobs:
 
   e2e-operation:
     name: E2E - ${{ matrix.operation }} on ${{ matrix.image.version }}
-    if: github.repository == 'apache/shardingsphere'
+    if: github.repository == 'apache/shardingsphere' && needs.detect-changed-files.outputs.changed_operations != '[]' && needs.detect-changed-files.outputs.changed_operations != '["ignore"]'
     needs: [ detect-changed-files, global-environment ]
     runs-on: ubuntu-latest
     timeout-minutes: 40
