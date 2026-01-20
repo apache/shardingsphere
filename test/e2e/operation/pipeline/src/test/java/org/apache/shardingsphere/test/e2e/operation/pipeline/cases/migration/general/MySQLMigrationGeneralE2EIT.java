@@ -80,7 +80,7 @@ class MySQLMigrationGeneralE2EIT extends AbstractMigrationE2EIT {
             startMigration(containerComposer, SOURCE_TABLE_NAME, TARGET_TABLE_NAME);
             startMigration(containerComposer, "t_order_item", "t_order_item");
             String orderJobId = distSQLFacade.getJobIdByTableName("ds_0." + SOURCE_TABLE_NAME);
-            distSQLFacade.waitJobPrepareSuccess(orderJobId);
+            distSQLFacade.waitJobPreparingStageFinished(orderJobId);
             containerComposer.startIncrementTask(
                     new E2EIncrementalTask(containerComposer.getSourceDataSource(), SOURCE_TABLE_NAME, new SnowflakeKeyGenerateAlgorithm(), containerComposer.getDatabaseType(), 30));
             TimeUnit.SECONDS.timedJoin(containerComposer.getIncreaseTaskThread(), 30L);
@@ -106,7 +106,7 @@ class MySQLMigrationGeneralE2EIT extends AbstractMigrationE2EIT {
     
     private void assertMigrationSuccessById(final PipelineE2EDistSQLFacade distSQLFacade, final String jobId,
                                             final String algorithmType, final Map<String, String> algorithmProps) throws SQLException {
-        List<Map<String, Object>> jobStatus = distSQLFacade.waitIncrementTaskFinished(jobId);
+        List<Map<String, Object>> jobStatus = distSQLFacade.waitJobIncrementalStageFinished(jobId);
         for (Map<String, Object> each : jobStatus) {
             assertTrue(Integer.parseInt(each.get("processed_records_count").toString()) > 0);
             assertThat(Integer.parseInt(each.get("inventory_finished_percentage").toString()), is(100));

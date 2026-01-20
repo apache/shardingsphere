@@ -85,7 +85,7 @@ class PostgreSQLMigrationGeneralE2EIT extends AbstractMigrationE2EIT {
             startMigrationWithSchema(containerComposer, SOURCE_TABLE_NAME, "t_order");
             Awaitility.await().atMost(10L, TimeUnit.SECONDS).pollInterval(1L, TimeUnit.SECONDS).until(() -> !distSQLFacade.listJobIds().isEmpty());
             String jobId = distSQLFacade.getJobIdByTableName("ds_0.test." + SOURCE_TABLE_NAME);
-            distSQLFacade.waitJobPrepareSuccess(jobId);
+            distSQLFacade.waitJobPreparingStageFinished(jobId);
             String qualifiedTableName = String.join(".", PipelineContainerComposer.SCHEMA_NAME, SOURCE_TABLE_NAME);
             containerComposer.startIncrementTask(new E2EIncrementalTask(containerComposer.getSourceDataSource(), qualifiedTableName, new SnowflakeKeyGenerateAlgorithm(),
                     containerComposer.getDatabaseType(), 20));
@@ -107,7 +107,7 @@ class PostgreSQLMigrationGeneralE2EIT extends AbstractMigrationE2EIT {
     }
     
     private void checkOrderMigration(final PipelineE2EDistSQLFacade distSQLFacade, final String jobId) throws SQLException {
-        distSQLFacade.waitIncrementTaskFinished(jobId);
+        distSQLFacade.waitJobIncrementalStageFinished(jobId);
         distSQLFacade.pauseJob(jobId);
         distSQLFacade.resumeJob(jobId);
         startCheckAndVerify(distSQLFacade.getContainerComposer(), jobId, "DATA_MATCH");
@@ -116,7 +116,7 @@ class PostgreSQLMigrationGeneralE2EIT extends AbstractMigrationE2EIT {
     private void checkOrderItemMigration(final PipelineE2EDistSQLFacade distSQLFacade) throws SQLException {
         String jobId = distSQLFacade.getJobIdByTableName("ds_0.test.t_order_item");
         PipelineContainerComposer containerComposer = distSQLFacade.getContainerComposer();
-        distSQLFacade.waitJobStatusReached(jobId, JobStatus.EXECUTE_INCREMENTAL_TASK, 15);
+        distSQLFacade.waitJobIncrementalStageStarted(jobId, JobStatus.EXECUTE_INCREMENTAL_TASK, 15);
         startCheckAndVerify(containerComposer, jobId, "DATA_MATCH");
     }
     

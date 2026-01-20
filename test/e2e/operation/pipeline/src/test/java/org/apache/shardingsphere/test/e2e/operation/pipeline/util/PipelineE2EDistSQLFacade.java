@@ -165,15 +165,15 @@ public final class PipelineE2EDistSQLFacade {
     }
     
     /**
-     * Wait job prepare success.
+     * Wait job preparing stage finished.
      *
      * @param jobId job id
      */
-    public void waitJobPrepareSuccess(final String jobId) {
+    public void waitJobPreparingStageFinished(final String jobId) {
         String sql = buildShowJobStatusDistSQL(jobId);
         for (int i = 0; i < 5; i++) {
             List<Map<String, Object>> jobStatusRecords = containerComposer.queryForListWithLog(sql);
-            log.info("Wait job prepare success, job status records: {}", jobStatusRecords);
+            log.info("Wait job preparing stage finished, job status records: {}", jobStatusRecords);
             Set<String> statusSet = jobStatusRecords.stream().map(each -> String.valueOf(each.get("status"))).collect(Collectors.toSet());
             if (statusSet.contains(JobStatus.PREPARING.name()) || statusSet.contains(JobStatus.RUNNING.name())) {
                 containerComposer.sleepSeconds(2);
@@ -184,18 +184,18 @@ public final class PipelineE2EDistSQLFacade {
     }
     
     /**
-     * Wait job status reached.
+     * Wait job incremental stage started.
      *
      * @param jobId job id
      * @param jobStatus job status
      * @param maxSleepSeconds max sleep seconds
-     * @throws IllegalStateException if job status not reached
+     * @throws IllegalStateException if job status not started
      */
-    public void waitJobStatusReached(final String jobId, final JobStatus jobStatus, final int maxSleepSeconds) {
+    public void waitJobIncrementalStageStarted(final String jobId, final JobStatus jobStatus, final int maxSleepSeconds) {
         String sql = buildShowJobStatusDistSQL(jobId);
         for (int i = 0, count = maxSleepSeconds / 2 + (0 == maxSleepSeconds % 2 ? 0 : 1); i < count; i++) {
             List<Map<String, Object>> jobStatusRecords = containerComposer.queryForListWithLog(sql);
-            log.info("Wait job status reached, job status records: {}", jobStatusRecords);
+            log.info("Wait job Incremental stage started, job status records: {}", jobStatusRecords);
             List<String> statusList = jobStatusRecords.stream().map(each -> String.valueOf(each.get("status"))).collect(Collectors.toList());
             if (statusList.stream().allMatch(each -> each.equals(jobStatus.name()))) {
                 return;
@@ -206,16 +206,16 @@ public final class PipelineE2EDistSQLFacade {
     }
     
     /**
-     * Wait increment task finished.
+     * Wait job incremental stage finished.
      *
      * @param jobId job id
      * @return result
      */
-    public List<Map<String, Object>> waitIncrementTaskFinished(final String jobId) {
+    public List<Map<String, Object>> waitJobIncrementalStageFinished(final String jobId) {
         String sql = buildShowJobStatusDistSQL(jobId);
         for (int i = 0; i < 10; i++) {
             List<Map<String, Object>> jobStatusRecords = containerComposer.queryForListWithLog(sql);
-            log.info("Wait incremental task finished, job status records: {}", jobStatusRecords);
+            log.info("Wait job incremental stage finished, job status records: {}", jobStatusRecords);
             Set<String> statusSet = new HashSet<>(jobStatusRecords.size(), 1F);
             List<Integer> incrementalIdleSecondsList = new LinkedList<>();
             for (Map<String, Object> each : jobStatusRecords) {

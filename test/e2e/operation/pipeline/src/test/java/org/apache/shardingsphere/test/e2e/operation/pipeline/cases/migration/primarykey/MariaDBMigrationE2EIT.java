@@ -70,11 +70,11 @@ class MariaDBMigrationE2EIT extends AbstractMigrationE2EIT {
             createTargetOrderTableRule(containerComposer);
             startMigration(containerComposer, SOURCE_TABLE_NAME, TARGET_TABLE_NAME);
             String jobId = distSQLFacade.listJobIds().get(0);
-            distSQLFacade.waitJobPrepareSuccess(jobId);
+            distSQLFacade.waitJobPreparingStageFinished(jobId);
             containerComposer.sourceExecuteWithLog("INSERT INTO t_order (order_id, user_id, status) VALUES ('a1', 1, 'OK')");
             DataSource jdbcDataSource = containerComposer.generateShardingSphereDataSourceFromProxy();
             containerComposer.assertOrderRecordExist(jdbcDataSource, "t_order", "a1");
-            distSQLFacade.waitIncrementTaskFinished(jobId);
+            distSQLFacade.waitJobIncrementalStageFinished(jobId);
             startCheckAndVerify(containerComposer, jobId, "CRC32_MATCH");
             distSQLFacade.commit(jobId);
             assertThat(containerComposer.getTargetTableRecordsCount(jdbcDataSource, SOURCE_TABLE_NAME), is(PipelineContainerComposer.TABLE_INIT_ROW_COUNT + 1));
