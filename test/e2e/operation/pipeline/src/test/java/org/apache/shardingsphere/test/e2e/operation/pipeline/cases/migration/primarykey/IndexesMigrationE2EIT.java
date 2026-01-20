@@ -242,7 +242,7 @@ class IndexesMigrationE2EIT extends AbstractMigrationE2EIT {
         containerComposer.proxyExecuteWithLog(String.format(ORDER_TABLE_SHARDING_RULE_FORMAT, shardingColumn), 2);
         startMigration(containerComposer, SOURCE_TABLE_NAME, TARGET_TABLE_NAME);
         String jobId = distSQLFacade.listJobIds().get(0);
-        containerComposer.waitJobPrepareSuccess(String.format("SHOW MIGRATION STATUS '%s'", jobId));
+        distSQLFacade.waitJobPrepareSuccess(jobId);
         DataSource jdbcDataSource = containerComposer.generateShardingSphereDataSourceFromProxy();
         incrementalTaskFn.accept(jdbcDataSource);
         distSQLFacade.waitIncrementTaskFinished(jobId);

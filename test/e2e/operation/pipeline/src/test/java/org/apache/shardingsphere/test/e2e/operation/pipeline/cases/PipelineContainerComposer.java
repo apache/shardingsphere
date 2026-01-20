@@ -72,7 +72,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
@@ -432,44 +431,6 @@ public final class PipelineContainerComposer implements AutoCloseable {
             }
         }
         Awaitility.await().timeout(Duration.ofMinutes(1L)).pollDelay(Math.max(sleepSeconds, 0L), TimeUnit.SECONDS).until(() -> true);
-    }
-    
-    /**
-     * Wait job prepare success.
-     *
-     * @param distSQL dist SQL
-     */
-    public void waitJobPrepareSuccess(final String distSQL) {
-        for (int i = 0; i < 5; i++) {
-            List<Map<String, Object>> jobStatus = queryForListWithLog(distSQL);
-            Set<String> statusSet = jobStatus.stream().map(each -> String.valueOf(each.get("status"))).collect(Collectors.toSet());
-            if (statusSet.contains(JobStatus.PREPARING.name()) || statusSet.contains(JobStatus.RUNNING.name())) {
-                sleepSeconds(2);
-                continue;
-            }
-            break;
-        }
-    }
-    
-    /**
-     * Wait job status reached.
-     *
-     * @param distSQL dist SQL
-     * @param jobStatus job status
-     * @param maxSleepSeconds max sleep seconds
-     * @throws IllegalStateException if job status not reached
-     */
-    public void waitJobStatusReached(final String distSQL, final JobStatus jobStatus, final int maxSleepSeconds) {
-        for (int i = 0, count = maxSleepSeconds / 2 + (0 == maxSleepSeconds % 2 ? 0 : 1); i < count; i++) {
-            List<Map<String, Object>> resultList = queryForListWithLog(distSQL);
-            log.info("Job status result: {}", resultList);
-            Set<String> statusSet = resultList.stream().map(each -> String.valueOf(each.get("status"))).collect(Collectors.toSet());
-            if (statusSet.stream().allMatch(each -> each.equals(jobStatus.name()))) {
-                return;
-            }
-            sleepSeconds(2);
-        }
-        throw new IllegalStateException("Job status not reached: " + jobStatus);
     }
     
     /**
