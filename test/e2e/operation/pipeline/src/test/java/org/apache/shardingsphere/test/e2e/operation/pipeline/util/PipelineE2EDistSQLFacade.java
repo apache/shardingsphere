@@ -35,6 +35,9 @@ import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @Getter
@@ -239,14 +242,18 @@ public final class PipelineE2EDistSQLFacade {
     }
     
     /**
-     * Build consistency check DistSQL.
+     * Start check.
      *
      * @param jobId job id
      * @param algorithmType algorithm type
      * @param algorithmProps algorithm properties
-     * @return consistency check DistSQL
+     * @throws SQLException SQL exception
      */
-    public String buildConsistencyCheckDistSQL(final String jobId, final String algorithmType, final Map<String, String> algorithmProps) {
+    public void startCheck(final String jobId, final String algorithmType, final Map<String, String> algorithmProps) throws SQLException {
+        containerComposer.proxyExecuteWithLog(buildConsistencyCheckDistSQL(jobId, algorithmType, algorithmProps), 0);
+    }
+    
+    private String buildConsistencyCheckDistSQL(final String jobId, final String algorithmType, final Map<String, String> algorithmProps) {
         if (null == algorithmProps || algorithmProps.isEmpty()) {
             return String.format("CHECK %s %s BY TYPE (NAME='%s')", jobTypeName, jobId, algorithmType);
         }
@@ -254,5 +261,37 @@ public final class PipelineE2EDistSQLFacade {
                 + algorithmProps.entrySet().stream().map(entry -> String.format("'%s'='%s'", entry.getKey(), entry.getValue())).collect(Collectors.joining(","))
                 + "))";
         return String.format(sqlTemplate, jobTypeName, jobId, algorithmType);
+    }
+    
+    /**
+     * Verify check.
+     *
+     * @param jobId job id
+     */
+    public void verifyCheck(final String jobId) {
+        List<Map<String, Object>> checkStatusRecords = Collections.emptyList();
+        for (int i = 0; i < 10; i++) {
+            checkStatusRecords = containerComposer.queryForListWithLog(buildShowCheckJobStatusDistSQL(jobId));
+            if (checkStatusRecords.isEmpty()) {
+                containerComposer.sleepSeconds(3);
+                continue;
+            }
+            List<String> checkEndTimeList = checkStatusRecords.stream().map(map -> map.get("check_end_time").toString()).filter(each -> !Strings.isNullOrEmpty(each)).collect(Collectors.toList());
+            if (checkEndTimeList.size() == checkStatusRecords.size()) {
+                break;
+            } else {
+                containerComposer.sleepSeconds(3);
+            }
+        }
+        log.info("Verify check, results: {}", checkStatusRecords);
+        assertFalse(checkStatusRecords.isEmpty());
+        for (Map<String, Object> entry : checkStatusRecords) {
+            assertThat(entry.get("inventory_finished_percentage").toString(), is("100"));
+            assertTrue(Boolean.parseBoolean(entry.get("result").toString()));
+        }
+    }
+    
+    private String buildShowCheckJobStatusDistSQL(final String jobId) {
+        return String.format("SHOW %s CHECK STATUS %s", jobTypeName, jobId);
     }
 }

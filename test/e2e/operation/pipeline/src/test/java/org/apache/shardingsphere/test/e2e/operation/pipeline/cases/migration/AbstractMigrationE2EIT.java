@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.test.e2e.operation.pipeline.cases.migration;
 
-import com.google.common.base.Strings;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.database.connector.opengauss.type.OpenGaussDatabaseType;
@@ -33,17 +32,8 @@ import org.opengauss.util.PSQLException;
 import javax.xml.bind.JAXB;
 import java.sql.SQLException;
 import java.util.Collections;
-import java.util.List;
-import java.util.Map;
 import java.util.Objects;
-import java.util.Set;
 import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
-
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @Getter
 @Slf4j
@@ -121,48 +111,7 @@ public abstract class AbstractMigrationE2EIT {
     }
     
     public void startCheckAndVerify(final PipelineE2EDistSQLFacade distSQLFacade, final String jobId, final String algorithmType) throws SQLException {
-        startCheck(distSQLFacade, jobId, algorithmType, Collections.emptyMap());
-        verifyCheck(distSQLFacade, jobId);
-    }
-    
-    /**
-     * Start check.
-     *
-     * @param distSQLFacade dist SQL facade
-     * @param jobId job id
-     * @param algorithmType algorithm type
-     * @param algorithmProps algorithm properties
-     * @throws SQLException SQL exception
-     */
-    public void startCheck(final PipelineE2EDistSQLFacade distSQLFacade, final String jobId,
-                           final String algorithmType, final Map<String, String> algorithmProps) throws SQLException {
-        PipelineContainerComposer containerComposer = distSQLFacade.getContainerComposer();
-        containerComposer.proxyExecuteWithLog(distSQLFacade.buildConsistencyCheckDistSQL(jobId, algorithmType, algorithmProps), 0);
-    }
-    
-    public void verifyCheck(final PipelineE2EDistSQLFacade distSQLFacade, final String jobId) {
-        PipelineContainerComposer containerComposer = distSQLFacade.getContainerComposer();
-        // TODO Need to add after the stop then to start, can continue the consistency check from the previous progress
-        List<Map<String, Object>> resultList = Collections.emptyList();
-        for (int i = 0; i < 30; i++) {
-            resultList = containerComposer.queryForListWithLog(String.format("SHOW MIGRATION CHECK STATUS '%s'", jobId));
-            if (resultList.isEmpty()) {
-                containerComposer.sleepSeconds(3);
-                continue;
-            }
-            List<String> checkEndTimeList = resultList.stream().map(map -> map.get("check_end_time").toString()).filter(each -> !Strings.isNullOrEmpty(each)).collect(Collectors.toList());
-            Set<String> finishedPercentages = resultList.stream().map(map -> map.get("inventory_finished_percentage").toString()).collect(Collectors.toSet());
-            if (checkEndTimeList.size() == resultList.size() && 1 == finishedPercentages.size() && finishedPercentages.contains("100")) {
-                break;
-            } else {
-                containerComposer.sleepSeconds(1);
-            }
-        }
-        log.info("check job results: {}", resultList);
-        assertFalse(resultList.isEmpty());
-        for (Map<String, Object> each : resultList) {
-            assertTrue(Boolean.parseBoolean(each.get("result").toString()), String.format("%s check result is false", each.get("tables")));
-            assertThat("inventory_finished_percentage is not 100", each.get("inventory_finished_percentage").toString(), is("100"));
-        }
+        distSQLFacade.startCheck(jobId, algorithmType, Collections.emptyMap());
+        distSQLFacade.verifyCheck(jobId);
     }
 }

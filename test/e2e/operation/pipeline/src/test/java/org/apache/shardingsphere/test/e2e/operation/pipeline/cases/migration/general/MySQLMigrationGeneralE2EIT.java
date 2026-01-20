@@ -111,8 +111,8 @@ class MySQLMigrationGeneralE2EIT extends AbstractMigrationE2EIT {
             assertTrue(Integer.parseInt(each.get("processed_records_count").toString()) > 0);
             assertThat(Integer.parseInt(each.get("inventory_finished_percentage").toString()), is(100));
         }
-        startCheck(distSQLFacade, jobId, algorithmType, algorithmProps);
-        verifyCheck(distSQLFacade, jobId);
+        distSQLFacade.startCheck(jobId, algorithmType, algorithmProps);
+        distSQLFacade.verifyCheck(jobId);
     }
     
     private static boolean isEnabled(final ExtensionContext context) {
