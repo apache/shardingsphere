@@ -26,7 +26,6 @@ import org.apache.shardingsphere.test.e2e.operation.pipeline.cases.PipelineConta
 import org.awaitility.Awaitility;
 
 import java.sql.SQLException;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -166,21 +165,62 @@ public final class PipelineE2EDistSQLFacade {
     }
     
     /**
+     * Wait job prepare success.
+     *
+     * @param jobId job id
+     */
+    public void waitJobPrepareSuccess(final String jobId) {
+        String sql = buildShowJobStatusDistSQL(jobId);
+        for (int i = 0; i < 5; i++) {
+            List<Map<String, Object>> jobStatusRecords = containerComposer.queryForListWithLog(sql);
+            log.info("Wait job prepare success, job status records: {}", jobStatusRecords);
+            Set<String> statusSet = jobStatusRecords.stream().map(each -> String.valueOf(each.get("status"))).collect(Collectors.toSet());
+            if (statusSet.contains(JobStatus.PREPARING.name()) || statusSet.contains(JobStatus.RUNNING.name())) {
+                containerComposer.sleepSeconds(2);
+                continue;
+            }
+            break;
+        }
+    }
+    
+    /**
+     * Wait job status reached.
+     *
+     * @param jobId job id
+     * @param jobStatus job status
+     * @param maxSleepSeconds max sleep seconds
+     * @throws IllegalStateException if job status not reached
+     */
+    public void waitJobStatusReached(final String jobId, final JobStatus jobStatus, final int maxSleepSeconds) {
+        String sql = buildShowJobStatusDistSQL(jobId);
+        for (int i = 0, count = maxSleepSeconds / 2 + (0 == maxSleepSeconds % 2 ? 0 : 1); i < count; i++) {
+            List<Map<String, Object>> jobStatusRecords = containerComposer.queryForListWithLog(sql);
+            log.info("Wait job status reached, job status records: {}", jobStatusRecords);
+            List<String> statusList = jobStatusRecords.stream().map(each -> String.valueOf(each.get("status"))).collect(Collectors.toList());
+            if (statusList.stream().allMatch(each -> each.equals(jobStatus.name()))) {
+                return;
+            }
+            containerComposer.sleepSeconds(2);
+        }
+        throw new IllegalStateException("Job status not reached: " + jobStatus);
+    }
+    
+    /**
      * Wait increment task finished.
      *
      * @param jobId job id
      * @return result
      */
     public List<Map<String, Object>> waitIncrementTaskFinished(final String jobId) {
-        String distSQL = buildShowJobStatusDistSQL(jobId);
+        String sql = buildShowJobStatusDistSQL(jobId);
         for (int i = 0; i < 10; i++) {
-            List<Map<String, Object>> jobStatusRecords = containerComposer.queryForListWithLog(distSQL);
-            log.info("Show status result: {}", jobStatusRecords);
-            Set<String> actualStatus = new HashSet<>(jobStatusRecords.size(), 1F);
-            Collection<Integer> incrementalIdleSecondsList = new LinkedList<>();
+            List<Map<String, Object>> jobStatusRecords = containerComposer.queryForListWithLog(sql);
+            log.info("Wait incremental task finished, job status records: {}", jobStatusRecords);
+            Set<String> statusSet = new HashSet<>(jobStatusRecords.size(), 1F);
+            List<Integer> incrementalIdleSecondsList = new LinkedList<>();
             for (Map<String, Object> each : jobStatusRecords) {
                 assertTrue(Strings.isNullOrEmpty((String) each.get("error_message")), "error_message: `" + each.get("error_message") + "`");
-                actualStatus.add(each.get("status").toString());
+                statusSet.add(each.get("status").toString());
                 String incrementalIdleSeconds = (String) each.get("incremental_idle_seconds");
                 incrementalIdleSecondsList.add(Strings.isNullOrEmpty(incrementalIdleSeconds) ? 0 : Integer.parseInt(incrementalIdleSeconds));
             }
@@ -188,7 +228,7 @@ public final class PipelineE2EDistSQLFacade {
                 containerComposer.sleepSeconds(3);
                 continue;
             }
-            if (actualStatus.size() == 1 && actualStatus.contains(JobStatus.EXECUTE_INCREMENTAL_TASK.name())) {
+            if (1 == statusSet.size() && statusSet.contains(JobStatus.EXECUTE_INCREMENTAL_TASK.name())) {
                 return jobStatusRecords;
             }
         }
