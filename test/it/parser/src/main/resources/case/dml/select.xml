@@ -12128,11 +12128,67 @@
         <lock start-index="22" stop-index="31" />
     </select>
 
+    <select sql-case-id="select_cte_with_columns_doris">
+        <with start-index="0" stop-index="19">
+            <common-table-expression name="c" start-index="5" stop-index="19">
+                <subquery start-index="11" stop-index="18">
+                    <select>
+                        <projections start-index="18" stop-index="18">
+                            <expression-projection text="1" start-index="18" stop-index="18">
+                                <expr>
+                                    <literal-expression value="1" start-index="18" stop-index="18" />
+                                </expr>
+                            </expression-projection>
+                        </projections>
+                    </select>
+                </subquery>
+            </common-table-expression>
+        </with>
+        <projections start-index="28" stop-index="28">
+            <shorthand-projection start-index="28" stop-index="28" />
+        </projections>
+        <from start-index="30" stop-index="35">
+            <simple-table name="c" start-index="35" stop-index="35" />
+        </from>
+    </select>
+
     <select sql-case-id="select_function_with_owner_doris">
         <projections start-index="7" stop-index="27">
             <expression-projection text="analytics.custom_fn()" start-index="7" stop-index="27">
                 <expr>
                     <function function-name="analytics.custom_fn()" text="analytics.custom_fn()" start-index="7" stop-index="27" />
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="select_udf_call_doris">
+        <projections start-index="7" stop-index="21">
+            <expression-projection text="my_udf(user_id)" start-index="7" stop-index="21">
+                <expr>
+                    <function function-name="my_udf" text="my_udf(user_id)" start-index="7" stop-index="21">
+                        <parameter>
+                            <column name="user_id" start-index="14" stop-index="20" />
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+        <from start-index="23" stop-index="34">
+            <simple-table name="t_order" start-index="28" stop-index="34" />
+        </from>
+    </select>
+
+    <select sql-case-id="select_system_variable_scope_doris">
+        <projections start-index="7" stop-index="46">
+            <expression-projection text="@@GLOBAL.time_zone" start-index="7" stop-index="24">
+                <expr>
+                    <variable-segment start-index="7" stop-index="24" scope="GLOBAL" variable="time_zone" />
+                </expr>
+            </expression-projection>
+            <expression-projection text="@@SESSION.autocommit" start-index="27" stop-index="46">
+                <expr>
+                    <variable-segment start-index="27" stop-index="46" scope="SESSION" variable="autocommit" />
                 </expr>
             </expression-projection>
         </projections>

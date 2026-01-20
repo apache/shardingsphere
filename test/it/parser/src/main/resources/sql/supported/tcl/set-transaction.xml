@@ -20,6 +20,8 @@
     <sql-case id="set_transaction" value="SET TRANSACTION ISOLATION LEVEL REPEATABLE READ" db-types="MySQL,PostgreSQL,openGauss,SQLServer,Doris,Firebird" />
     <sql-case id="set_global_transaction" value="SET GLOBAL TRANSACTION ISOLATION LEVEL REPEATABLE READ" db-types="MySQL,Doris" />
     <sql-case id="set_session_transaction_doris" value="SET SESSION TRANSACTION ISOLATION LEVEL READ COMMITTED" db-types="Doris" />
+    <sql-case id="set_session_transaction_read_only_doris" value="SET SESSION TRANSACTION READ ONLY" db-types="Doris" />
+    <sql-case id="set_global_transaction_read_only_doris" value="SET GLOBAL TRANSACTION READ ONLY" db-types="Doris" />
     <sql-case id="set_transaction_read_only" value="SET TRANSACTION READ ONLY" db-types="MySQL,Oracle,Doris" />
     <sql-case id="set_transaction_read_write" value="SET TRANSACTION READ WRITE" db-types="Doris" />
     <sql-case id="set_transaction_read_write_with_name" value="SET TRANSACTION READ WRITE NAME 'Toronto'" db-types="Oracle" />
