@@ -247,7 +247,7 @@ class IndexesMigrationE2EIT extends AbstractMigrationE2EIT {
         incrementalTaskFn.accept(jdbcDataSource);
         distSQLFacade.waitIncrementTaskFinished(jobId);
         if (null != consistencyCheckAlgorithmType) {
-            assertCheckMigrationSuccess(containerComposer, jobId, consistencyCheckAlgorithmType);
+            startCheckAndVerify(containerComposer, jobId, consistencyCheckAlgorithmType);
         }
         distSQLFacade.commit(jobId);
         assertThat(containerComposer.getTargetTableRecordsCount(jdbcDataSource, SOURCE_TABLE_NAME), is(PipelineContainerComposer.TABLE_INIT_ROW_COUNT + 1));

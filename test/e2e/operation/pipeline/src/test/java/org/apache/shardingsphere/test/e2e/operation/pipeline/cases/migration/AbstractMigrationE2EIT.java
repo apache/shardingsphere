@@ -119,12 +119,12 @@ public abstract class AbstractMigrationE2EIT {
         containerComposer.proxyExecuteWithLog(migrationDistSQL.getMigrationSingleTableWithSchema(sourceTableName, targetTableName), 5);
     }
     
-    protected void assertCheckMigrationSuccess(final PipelineContainerComposer containerComposer, final String jobId, final String algorithmType) throws SQLException {
-        assertCheckMigrationSuccess(containerComposer, jobId, algorithmType, Collections.emptyMap());
+    protected void startCheckAndVerify(final PipelineContainerComposer containerComposer, final String jobId, final String algorithmType) throws SQLException {
+        startCheckAndVerify(containerComposer, jobId, algorithmType, Collections.emptyMap());
     }
     
-    protected void assertCheckMigrationSuccess(final PipelineContainerComposer containerComposer, final String jobId,
-                                               final String algorithmType, final Map<String, String> algorithmProps) throws SQLException {
+    protected void startCheckAndVerify(final PipelineContainerComposer containerComposer, final String jobId,
+                                       final String algorithmType, final Map<String, String> algorithmProps) throws SQLException {
         containerComposer.proxyExecuteWithLog(buildConsistencyCheckDistSQL(jobId, algorithmType, algorithmProps), 0);
         // TODO Need to add after the stop then to start, can continue the consistency check from the previous progress
         List<Map<String, Object>> resultList = Collections.emptyList();
