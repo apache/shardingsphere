@@ -24,4 +24,5 @@
     <sql-case id="alter_function_reset" value="ALTER FUNCTION check_password(text) RESET search_path" db-types="PostgreSQL,openGauss" />
     <sql-case id="alter_function_depend_on" value="ALTER FUNCTION sqrt(integer) DEPENDS ON EXTENSION mathlib" db-types="PostgreSQL,openGauss" />
     <sql-case id="alter_function_compile" value="ALTER FUNCTION oe.get_bal COMPILE;" db-types="Oracle" />
+    <sql-case id="alter_function_doris" value="ALTER FUNCTION udf_add" db-types="Doris" />
 </sql-cases>

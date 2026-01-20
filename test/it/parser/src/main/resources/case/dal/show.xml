@@ -90,6 +90,32 @@
         </filter>
     </show-columns>
     
+    <show-columns sql-case-id="show_columns_with_like_doris">
+        <table name="t_order" start-index="18" stop-index="24" />
+        <filter start-index="26" stop-index="39">
+            <like pattern="order_%" start-delimiter="'" end-delimiter="'" start-index="26" stop-index="39" />
+        </filter>
+    </show-columns>
+    
+    <show-columns sql-case-id="show_columns_with_where_doris">
+        <table name="t_order" start-index="18" stop-index="24" />
+        <filter start-index="26" stop-index="49" literal-stop-index="49">
+            <where start-index="26" stop-index="49" literal-stop-index="49">
+                <expr>
+                    <binary-operation-expression start-index="32" stop-index="49" literal-stop-index="49">
+                        <left>
+                            <column name="field" start-index="32" stop-index="36" />
+                        </left>
+                        <operator>=</operator>
+                        <right>
+                            <literal-expression value="order_id" start-index="40" stop-index="49" />
+                        </right>
+                    </binary-operation-expression>
+                </expr>
+            </where>
+        </filter>
+    </show-columns>
+    
     <show-columns sql-case-id="show_columns_by_fields_from_table">
         <table name="t_order" start-delimiter="`" end-delimiter="`" start-index="17" stop-index="25" />
     </show-columns>

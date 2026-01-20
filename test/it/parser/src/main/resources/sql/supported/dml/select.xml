@@ -95,6 +95,9 @@
     <sql-case id="select_straight_join_doris" value="SELECT STRAIGHT_JOIN * FROM t_order" db-types="Doris" />
     <sql-case id="select_for_update_doris" value="SELECT * FROM t_order FOR UPDATE" db-types="Doris" />
     <sql-case id="select_union_doris" value="SELECT 1 UNION SELECT 2" db-types="Doris" />
+    <sql-case id="select_cte_with_columns_doris" value="WITH c AS (SELECT 1) SELECT * FROM c" db-types="Doris" />
+    <sql-case id="select_udf_call_doris" value="SELECT my_udf(user_id) FROM t_order" db-types="Doris" />
+    <sql-case id="select_system_variable_scope_doris" value="SELECT @@GLOBAL.time_zone, @@SESSION.autocommit" db-types="Doris" />
     <sql-case id="select_function_with_owner_doris" value="SELECT analytics.custom_fn()" db-types="Doris" />
     <sql-case id="select_with_json_separator" value="select content_json->>'$.nation' as nation,content_json->>'$.title' as title from tb_content_json b where b.content_id=1" db-types="MySQL" />
     <sql-case id="select_with_json_value_return_type" value="SELECT * FROM t_order WHERE JSON_VALUE(items, '$.name' RETURNING VARCHAR(100)) = 'jack'" db-types="MySQL" />

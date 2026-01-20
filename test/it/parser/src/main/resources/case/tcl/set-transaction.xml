@@ -31,6 +31,8 @@
     <set-transaction sql-case-id="set_transaction_with_name" />
     <set-transaction sql-case-id="set_transaction_snapshot" />
     <set-transaction sql-case-id="set_session_transaction_doris" />
+    <set-transaction sql-case-id="set_session_transaction_read_only_doris" />
+    <set-transaction sql-case-id="set_global_transaction_read_only_doris" />
     <set-transaction sql-case-id="set_transaction_sql92" />
     <xa sql-case-id="xa_recover" />
     <xa sql-case-id="xa_start" />

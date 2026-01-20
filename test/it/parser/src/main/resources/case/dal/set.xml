@@ -100,6 +100,11 @@
             <parameter name="character_set_client" />
         </parameter-assign>
     </set-parameter>
+    <set-parameter sql-case-id="set_character_set_doris">
+        <parameter-assign value="utf8mb4">
+            <parameter name="character_set_client" />
+        </parameter-assign>
+    </set-parameter>
     <set-resource-group sql-case-id="set_resource_group">
         <group name="rg" />
     </set-resource-group>

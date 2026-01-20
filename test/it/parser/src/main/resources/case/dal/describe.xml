@@ -80,6 +80,10 @@
         <simple-table name="user_table" start-index="19" stop-index="28" />
     </describe>
 
+    <describe sql-case-id="explain_table_doris" db-types="Doris">
+        <simple-table name="t_order" start-index="8" stop-index="14" />
+    </describe>
+
     <describe sql-case-id="describe_table_partition">
         <simple-table name="user_table" start-index="9" stop-index="18" />
     </describe>
