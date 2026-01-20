@@ -120,14 +120,33 @@ public abstract class AbstractMigrationE2EIT {
         containerComposer.proxyExecuteWithLog(migrationDistSQL.getMigrationSingleTableWithSchema(sourceTableName, targetTableName), 5);
     }
     
-    protected void startCheckAndVerify(final PipelineContainerComposer containerComposer, final String jobId, final String algorithmType) throws SQLException {
+    public void startCheckAndVerify(final PipelineContainerComposer containerComposer, final String jobId, final String algorithmType) throws SQLException {
         startCheckAndVerify(containerComposer, jobId, algorithmType, Collections.emptyMap());
     }
     
-    protected void startCheckAndVerify(final PipelineE2EDistSQLFacade distSQLFacade, final String jobId,
+    public void startCheckAndVerify(final PipelineE2EDistSQLFacade distSQLFacade, final String jobId,
                                        final String algorithmType, final Map<String, String> algorithmProps) throws SQLException {
+        startCheck(distSQLFacade, jobId, algorithmType, algorithmProps);
+        verifyCheck(distSQLFacade, jobId);
+    }
+    
+    /**
+     * Start check.
+     *
+     * @param distSQLFacade dist SQL facade
+     * @param jobId job id
+     * @param algorithmType algorithm type
+     * @param algorithmProps algorithm properties
+     * @throws SQLException SQL exception
+     */
+    public void startCheck(final PipelineE2EDistSQLFacade distSQLFacade, final String jobId,
+                           final String algorithmType, final Map<String, String> algorithmProps) throws SQLException {
         PipelineContainerComposer containerComposer = distSQLFacade.getContainerComposer();
         containerComposer.proxyExecuteWithLog(distSQLFacade.buildConsistencyCheckDistSQL(jobId, algorithmType, algorithmProps), 0);
+    }
+    
+    public void verifyCheck(final PipelineE2EDistSQLFacade distSQLFacade, final String jobId) {
+        PipelineContainerComposer containerComposer = distSQLFacade.getContainerComposer();
         // TODO Need to add after the stop then to start, can continue the consistency check from the previous progress
         List<Map<String, Object>> resultList = Collections.emptyList();
         for (int i = 0; i < 30; i++) {
