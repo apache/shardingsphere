@@ -166,4 +166,6 @@
             <property key="type" value="JAVA_UDF" />
         </properties>
     </create-function>
+    <create-function sql-case-id="create_function_doris_routine_body" />
+    <create-function sql-case-id="create_function_doris_aggregate_intermediate" />
 </sql-parser-test-cases>

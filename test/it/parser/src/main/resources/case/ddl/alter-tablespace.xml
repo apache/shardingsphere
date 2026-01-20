@@ -26,6 +26,10 @@
         <tablespace start-index="17" stop-index="22" name="ts_ndb" />
     </alter-tablespace>
     
+    <alter-tablespace sql-case-id="alter_tablespace_innodb_add_datafile_doris" db-types="Doris">
+        <tablespace start-index="17" stop-index="25" name="ts_innodb" />
+    </alter-tablespace>
+    
     
     <alter-tablespace sql-case-id="alter_tablespace_read_only">
         <tablespace start-index="17" stop-index="19" name="ts1" />
