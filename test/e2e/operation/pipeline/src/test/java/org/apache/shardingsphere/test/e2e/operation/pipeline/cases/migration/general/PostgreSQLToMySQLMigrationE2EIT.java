@@ -80,7 +80,7 @@ class PostgreSQLToMySQLMigrationE2EIT extends AbstractMigrationE2EIT {
             PipelineE2EDistSQLFacade distSQLFacade = new PipelineE2EDistSQLFacade(containerComposer, new MigrationJobType());
             Awaitility.await().ignoreExceptions().atMost(10L, TimeUnit.SECONDS).pollInterval(1L, TimeUnit.SECONDS).until(() -> !distSQLFacade.listJobIds().isEmpty());
             String jobId = distSQLFacade.listJobIds().get(0);
-            containerComposer.waitJobStatusReached(String.format("SHOW MIGRATION STATUS %s", jobId), JobStatus.EXECUTE_INCREMENTAL_TASK, 15);
+            distSQLFacade.waitJobStatusReached(String.format("SHOW MIGRATION STATUS %s", jobId), JobStatus.EXECUTE_INCREMENTAL_TASK, 15);
             try (Connection connection = DriverManager.getConnection(jdbcUrl, "postgres", "postgres")) {
                 connection.createStatement().execute(String.format("INSERT INTO t_order (order_id,user_id,status) VALUES (%s, %s, '%s')", "1000000000", 1, "incremental"));
                 connection.createStatement().execute(String.format("UPDATE t_order SET status='%s' WHERE order_id IN (1,2)", RandomStringUtils.randomAlphanumeric(10)));
