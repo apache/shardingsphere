@@ -109,14 +109,13 @@ class PostgreSQLMigrationGeneralE2EIT extends AbstractMigrationE2EIT {
         distSQLFacade.waitJobIncrementalStageFinished(jobId);
         distSQLFacade.pauseJob(jobId);
         distSQLFacade.resumeJob(jobId);
-        startCheckAndVerify(distSQLFacade.getContainerComposer(), jobId, "DATA_MATCH");
+        distSQLFacade.startCheckAndVerify(jobId, "DATA_MATCH");
     }
     
     private void checkOrderItemMigration(final PipelineE2EDistSQLFacade distSQLFacade) throws SQLException {
         String jobId = distSQLFacade.getJobIdByTableName("ds_0.test.t_order_item");
-        PipelineContainerComposer containerComposer = distSQLFacade.getContainerComposer();
         distSQLFacade.waitJobIncrementalStageStarted(jobId);
-        startCheckAndVerify(containerComposer, jobId, "DATA_MATCH");
+        distSQLFacade.startCheckAndVerify(jobId, "DATA_MATCH");
     }
     
     private int getReplicationSlotsCount(final PipelineContainerComposer containerComposer) throws SQLException {

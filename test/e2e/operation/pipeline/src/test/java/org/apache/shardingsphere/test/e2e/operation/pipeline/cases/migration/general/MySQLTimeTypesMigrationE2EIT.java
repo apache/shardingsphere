@@ -59,7 +59,7 @@ class MySQLTimeTypesMigrationE2EIT extends AbstractMigrationE2EIT {
             insertOneRecordWithZeroValue(containerComposer, 2);
             distSQLFacade.waitJobIncrementalStageFinished(jobId);
             distSQLFacade.loadAllSingleTables();
-            startCheckAndVerify(containerComposer, jobId, "DATA_MATCH");
+            distSQLFacade.startCheckAndVerify(jobId, "DATA_MATCH");
         }
     }
     

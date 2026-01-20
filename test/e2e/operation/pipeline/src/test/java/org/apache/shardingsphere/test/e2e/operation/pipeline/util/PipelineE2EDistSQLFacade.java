@@ -242,6 +242,18 @@ public final class PipelineE2EDistSQLFacade {
     }
     
     /**
+     * Start check and verify.
+     *
+     * @param jobId job id
+     * @param algorithmType algorithm type
+     * @throws SQLException SQL exception
+     */
+    public void startCheckAndVerify(final String jobId, final String algorithmType) throws SQLException {
+        startCheck(jobId, algorithmType, Collections.emptyMap());
+        verifyCheck(jobId);
+    }
+    
+    /**
      * Start check.
      *
      * @param jobId job id

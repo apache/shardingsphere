@@ -85,7 +85,7 @@ class PostgreSQLToMySQLMigrationE2EIT extends AbstractMigrationE2EIT {
                 connection.createStatement().execute(String.format("UPDATE t_order SET status='%s' WHERE order_id IN (1,2)", RandomStringUtils.randomAlphanumeric(10)));
             }
             distSQLFacade.waitJobIncrementalStageFinished(jobId);
-            startCheckAndVerify(containerComposer, jobId, "DATA_MATCH");
+            distSQLFacade.startCheckAndVerify(jobId, "DATA_MATCH");
             distSQLFacade.commit(jobId);
             assertTrue(distSQLFacade.listJobIds().isEmpty());
         } finally {

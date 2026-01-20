@@ -25,13 +25,11 @@ import org.apache.shardingsphere.test.e2e.env.runtime.E2ETestEnvironment;
 import org.apache.shardingsphere.test.e2e.env.runtime.type.RunEnvironment.Type;
 import org.apache.shardingsphere.test.e2e.operation.pipeline.cases.PipelineContainerComposer;
 import org.apache.shardingsphere.test.e2e.operation.pipeline.command.MigrationDistSQLCommand;
-import org.apache.shardingsphere.test.e2e.operation.pipeline.util.PipelineE2EDistSQLFacade;
 import org.awaitility.Awaitility;
 import org.opengauss.util.PSQLException;
 
 import javax.xml.bind.JAXB;
 import java.sql.SQLException;
-import java.util.Collections;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
@@ -108,10 +106,5 @@ public abstract class AbstractMigrationE2EIT {
     
     protected void startMigrationWithSchema(final PipelineContainerComposer containerComposer, final String sourceTableName, final String targetTableName) throws SQLException {
         containerComposer.proxyExecuteWithLog(migrationDistSQL.getMigrationSingleTableWithSchema(sourceTableName, targetTableName), 5);
-    }
-    
-    public void startCheckAndVerify(final PipelineE2EDistSQLFacade distSQLFacade, final String jobId, final String algorithmType) throws SQLException {
-        distSQLFacade.startCheck(jobId, algorithmType, Collections.emptyMap());
-        distSQLFacade.verifyCheck(jobId);
     }
 }

@@ -75,7 +75,7 @@ class MariaDBMigrationE2EIT extends AbstractMigrationE2EIT {
             DataSource jdbcDataSource = containerComposer.generateShardingSphereDataSourceFromProxy();
             containerComposer.assertOrderRecordExist(jdbcDataSource, "t_order", "a1");
             distSQLFacade.waitJobIncrementalStageFinished(jobId);
-            startCheckAndVerify(containerComposer, jobId, "CRC32_MATCH");
+            distSQLFacade.startCheckAndVerify(jobId, "CRC32_MATCH");
             distSQLFacade.commit(jobId);
             assertThat(containerComposer.getTargetTableRecordsCount(jdbcDataSource, SOURCE_TABLE_NAME), is(PipelineContainerComposer.TABLE_INIT_ROW_COUNT + 1));
             assertTrue(distSQLFacade.listJobIds().isEmpty());

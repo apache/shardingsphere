@@ -67,7 +67,7 @@ class TextPrimaryKeyMigrationE2EIT extends AbstractMigrationE2EIT {
             containerComposer.sourceExecuteWithLog(
                     String.format("INSERT INTO %s (order_id,user_id,status) VALUES (%s, %s, '%s')", getSourceTableName(containerComposer), "1000000000", 1, "afterStop"));
             distSQLFacade.waitJobIncrementalStageFinished(jobId);
-            startCheckAndVerify(containerComposer, jobId, "DATA_MATCH");
+            distSQLFacade.startCheckAndVerify(jobId, "DATA_MATCH");
             distSQLFacade.commit(jobId);
             assertTrue(distSQLFacade.listJobIds().isEmpty());
         }
