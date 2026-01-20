@@ -67,6 +67,27 @@ public final class ShardingSphereVersion {
         BUILD_DIRTY = Boolean.parseBoolean(gitProps.getProperty("git.dirty", "false"));
     }
     
+    /**
+     * Main method.
+     *
+     * @param args args
+     */
+    public static void main(final String[] args) {
+        System.out.print(getVerboseVersion());
+    }
+    
+    private static String getVerboseVersion() {
+        String result = "";
+        result += String.format("ShardingSphere-%s%n", VERSION);
+        if (IS_SNAPSHOT && !BUILD_COMMIT_ID.isEmpty()) {
+            result += String.format("Commit ID: %s%s%n", BUILD_DIRTY ? "dirty-" : "", BUILD_COMMIT_ID);
+            result += String.format("Commit Message: %s%n", BUILD_COMMIT_MESSAGE_SHORT);
+            result += BUILD_TAG.isEmpty() ? String.format("Branch: %s%n", BUILD_BRANCH) : String.format("Tag: %s%n", BUILD_TAG);
+            result += String.format("Build time: %s%n", BUILD_TIME);
+        }
+        return result;
+    }
+    
     private static String loadVersion() {
         Optional<String> versionFromGeneratedPropsFile = loadVersionFromGeneratedPropertiesFile();
         if (versionFromGeneratedPropsFile.isPresent()) {
