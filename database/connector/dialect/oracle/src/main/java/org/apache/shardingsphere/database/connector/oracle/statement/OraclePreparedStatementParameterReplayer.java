@@ -37,7 +37,7 @@ public final class OraclePreparedStatementParameterReplayer implements DialectPr
         int index = parameter.getIndex();
         Object value = parameter.getValue();
         long length = parameter.getLength();
-
+        
         switch (parameter.getSetterMethodType()) {
             case SET_NULL:
                 preparedStatement.setObject(index, null);
