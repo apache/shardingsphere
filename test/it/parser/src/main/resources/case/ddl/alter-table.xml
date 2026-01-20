@@ -2622,7 +2622,31 @@
             </rename-index-definition>
         </rename-index>
     </alter-table>
-
+    
+    <alter-table sql-case-id="alter_table_drop_column_doris">
+        <table name="t_order" start-index="12" stop-index="18" />
+        <drop-column name="old_col" start-index="32" stop-index="38" />
+    </alter-table>
+    
+    <alter-table sql-case-id="alter_table_drop_index_doris">
+        <table name="t_order" start-index="12" stop-index="18" />
+        <drop-index>
+            <index name="idx_old" start-index="31" stop-index="37" />
+        </drop-index>
+    </alter-table>
+    
+    <alter-table sql-case-id="alter_table_convert_charset_collate_doris">
+        <table name="t_order" start-index="12" stop-index="18" />
+        <convert-table start-index="20" stop-index="71">
+            <charset name="utf8mb4" start-index="45" stop-index="51" />
+            <collate-expression start-index="53" stop-index="71" literal-stop-index="71">
+                <collate-name>
+                    <literal-expression value="utf8mb4_bin" start-index="53" stop-index="71" />
+                </collate-name>
+            </collate-expression>
+        </convert-table>
+    </alter-table>
+    
     <alter-table sql-case-id="alter_table_with_algorithm_default_doris">
         <table name="t_order" start-index="12" stop-index="18" />
         <add-column>

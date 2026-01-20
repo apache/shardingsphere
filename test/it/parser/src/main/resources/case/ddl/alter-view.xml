@@ -147,4 +147,19 @@
             </group-by>
         </select>
     </alter-view>
+    
+    <alter-view sql-case-id="alter_view_with_column_list_doris" view-definition="SELECT c1, c2 FROM t_source">
+        <view name="sales_view" start-index="11" stop-index="20" />
+        <column name="c1" start-index="23" stop-index="24" />
+        <column name="c2" start-index="27" stop-index="28" />
+        <select>
+            <projections start-index="41" stop-index="46">
+                <column-projection name="c1" start-index="41" stop-index="42" />
+                <column-projection name="c2" start-index="45" stop-index="46" />
+            </projections>
+            <from>
+                <simple-table name="t_source" start-index="53" stop-index="60" />
+            </from>
+        </select>
+    </alter-view>
 </sql-parser-test-cases>

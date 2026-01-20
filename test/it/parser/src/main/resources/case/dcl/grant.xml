@@ -110,6 +110,12 @@
         <table name="t_order" start-index="30" stop-index="36" />
     </grant>
     
+    <grant sql-case-id="grant_select_on_table_doris">
+        <table name="t_order" start-index="20" stop-index="26">
+            <owner name="db1" start-index="16" stop-index="18" />
+        </table>
+    </grant>
+    
     <grant sql-case-id="grant_all_on_table_to_current_user">
         <table name="t_order" start-index="30" stop-index="36" />
     </grant>

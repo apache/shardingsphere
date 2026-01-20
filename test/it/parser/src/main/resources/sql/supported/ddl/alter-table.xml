@@ -378,6 +378,9 @@
     <sql-case id="alter_table_rename_rollup" value="ALTER TABLE example_table RENAME ROLLUP rollup1 rollup2" db-types="Doris" />
     <sql-case id="alter_table_rename_partition" value="ALTER TABLE example_table RENAME PARTITION partition1 partition2" db-types="Doris" />
     <sql-case id="alter_table_with_algorithm_lock_doris" value="ALTER TABLE t_order ADD COLUMN col_alg INT, ALGORITHM=INSTANT, LOCK=NONE" db-types="Doris" />
+    <sql-case id="alter_table_drop_column_doris" value="ALTER TABLE t_order DROP COLUMN old_col" db-types="Doris" />
+    <sql-case id="alter_table_drop_index_doris" value="ALTER TABLE t_order DROP INDEX idx_old" db-types="Doris" />
+    <sql-case id="alter_table_convert_charset_collate_doris" value="ALTER TABLE t_order CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_bin" db-types="Doris" />
     <sql-case id="alter_table_add_check_constraint_doris" value="ALTER TABLE t_order ADD CONSTRAINT ck_order CHECK (order_id &gt; 0)" db-types="Doris" />
     <sql-case id="alter_table_drop_constraint_doris" value="ALTER TABLE t_order DROP CONSTRAINT ck_order" db-types="Doris" />
     <sql-case id="alter_table_rename_index_doris" value="ALTER TABLE t_order RENAME INDEX idx_old TO idx_new" db-types="Doris" />
