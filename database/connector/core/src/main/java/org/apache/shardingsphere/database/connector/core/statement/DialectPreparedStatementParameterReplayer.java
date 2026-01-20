@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.database.connector.core.statement;
 
-
 import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPI;
 import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
 
