@@ -28,6 +28,8 @@
     <sql-case id="show_columns_with_schema" value="SHOW COLUMNS FROM `t_order` FROM `sharding_db`" db-types="MySQL" />
     <sql-case id="show_columns_with_like_pattern" value="SHOW COLUMNS FROM `t_order` LIKE 'order_%'" db-types="MySQL" />
     <sql-case id="show_columns_with_where_expr" value="SHOW COLUMNS FROM `t_order` WHERE field = ?" db-types="MySQL" />
+    <sql-case id="show_columns_with_like_doris" value="SHOW COLUMNS FROM t_order LIKE 'order_%'" db-types="Doris" />
+    <sql-case id="show_columns_with_where_doris" value="SHOW COLUMNS FROM t_order WHERE field = 'order_id'" db-types="Doris" />
     <sql-case id="show_columns_by_fields_from_table" value="SHOW FIELDS FROM `t_order`" db-types="MySQL" />
     <sql-case id="show_columns_by_fields_from_table_with_owner" value="SHOW FIELDS FROM `sharding_db`.`t_order`" db-types="MySQL" />
     <sql-case id="show_columns_by_fields_with_schema" value="SHOW FIELDS FROM `t_order` FROM `sharding_db`" db-types="MySQL" />

@@ -88,4 +88,5 @@
     <sql-case id="create_function_doris_table_function" value="CREATE TABLES FUNCTION java_udtf(string, string) RETURNS array PROPERTIES (&quot;file&quot;=&quot;file:///pathTo/java-udaf.jar&quot;, &quot;symbol&quot;=&quot;org.apache.doris.udf.demo.UDTFStringTest&quot;, &quot;always_nullable&quot;=&quot;true&quot;, &quot;type&quot;=&quot;JAVA_UDF&quot;);" db-types="Doris" />
     <sql-case id="create_function_doris_alias" value="CREATE ALIAS FUNCTION id_masking(INT) WITH PARAMETER(id) AS CONCAT(LEFT(id, 3), '****', RIGHT(id, 4));" db-types="Doris" />
     <sql-case id="create_function_doris_global_alias" value="CREATE GLOBAL ALIAS FUNCTION id_masking(INT) WITH PARAMETER(id) AS CONCAT(LEFT(id, 3), '****', RIGHT(id, 4));" db-types="Doris" />
+    <sql-case id="create_function_doris_with_owner" value="CREATE FUNCTION analytics.udf_add(INT) RETURNS INT PROPERTIES ('file'='file:///path/to/lib.so','symbol'='analytics.udf.Add','type'='JAVA_UDF')" db-types="Doris" />
 </sql-cases>
