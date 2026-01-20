@@ -41,9 +41,9 @@ import org.junit.jupiter.params.provider.ArgumentsSource;
 import javax.sql.DataSource;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
 import java.util.concurrent.TimeUnit;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -80,7 +80,7 @@ class MySQLMigrationGeneralE2EIT extends AbstractMigrationE2EIT {
             startMigration(containerComposer, SOURCE_TABLE_NAME, TARGET_TABLE_NAME);
             startMigration(containerComposer, "t_order_item", "t_order_item");
             String orderJobId = distSQLFacade.getJobIdByTableName("ds_0." + SOURCE_TABLE_NAME);
-            distSQLFacade.waitJobPrepareSuccess(orderJobId);
+            distSQLFacade.waitJobPreparingStageFinished(orderJobId);
             containerComposer.startIncrementTask(
                     new E2EIncrementalTask(containerComposer.getSourceDataSource(), SOURCE_TABLE_NAME, new SnowflakeKeyGenerateAlgorithm(), containerComposer.getDatabaseType(), 30));
             TimeUnit.SECONDS.timedJoin(containerComposer.getIncreaseTaskThread(), 30L);
@@ -91,11 +91,11 @@ class MySQLMigrationGeneralE2EIT extends AbstractMigrationE2EIT {
             DataSource jdbcDataSource = containerComposer.generateShardingSphereDataSourceFromProxy();
             containerComposer.assertOrderRecordExist(jdbcDataSource, "t_order", 10000);
             containerComposer.assertOrderRecordExist(jdbcDataSource, "t_order_item", 10000);
-            assertMigrationSuccessById(distSQLFacade, orderJobId, "DATA_MATCH", convertToProperties(ImmutableMap.of("chunk-size", "300", "streaming-range-type", "SMALL")));
+            assertMigrationSuccessById(distSQLFacade, orderJobId, "DATA_MATCH", ImmutableMap.of("chunk-size", "300", "streaming-range-type", "SMALL"));
             String orderItemJobId = distSQLFacade.getJobIdByTableName("ds_0.t_order_item");
-            assertMigrationSuccessById(distSQLFacade, orderItemJobId, "DATA_MATCH", convertToProperties(ImmutableMap.of("chunk-size", "300", "streaming-range-type", "LARGE")));
+            assertMigrationSuccessById(distSQLFacade, orderItemJobId, "DATA_MATCH", ImmutableMap.of("chunk-size", "300", "streaming-range-type", "LARGE"));
             containerComposer.sleepSeconds(2);
-            assertMigrationSuccessById(distSQLFacade, orderItemJobId, "CRC32_MATCH", new Properties());
+            assertMigrationSuccessById(distSQLFacade, orderItemJobId, "CRC32_MATCH", Collections.emptyMap());
             for (String each : distSQLFacade.listJobIds()) {
                 distSQLFacade.commit(each);
             }
@@ -104,13 +104,15 @@ class MySQLMigrationGeneralE2EIT extends AbstractMigrationE2EIT {
         }
     }
     
-    private void assertMigrationSuccessById(final PipelineE2EDistSQLFacade distSQLFacade, final String jobId, final String algorithmType, final Properties algorithmProps) throws SQLException {
-        List<Map<String, Object>> jobStatus = distSQLFacade.waitIncrementTaskFinished(jobId);
+    private void assertMigrationSuccessById(final PipelineE2EDistSQLFacade distSQLFacade, final String jobId,
+                                            final String algorithmType, final Map<String, String> algorithmProps) throws SQLException {
+        List<Map<String, Object>> jobStatus = distSQLFacade.waitJobIncrementalStageFinished(jobId);
         for (Map<String, Object> each : jobStatus) {
             assertTrue(Integer.parseInt(each.get("processed_records_count").toString()) > 0);
             assertThat(Integer.parseInt(each.get("inventory_finished_percentage").toString()), is(100));
         }
-        assertCheckMigrationSuccess(distSQLFacade.getContainerComposer(), jobId, algorithmType, algorithmProps);
+        distSQLFacade.startCheck(jobId, algorithmType, algorithmProps);
+        distSQLFacade.verifyCheck(jobId);
     }
     
     private static boolean isEnabled(final ExtensionContext context) {

@@ -242,12 +242,12 @@ class IndexesMigrationE2EIT extends AbstractMigrationE2EIT {
         containerComposer.proxyExecuteWithLog(String.format(ORDER_TABLE_SHARDING_RULE_FORMAT, shardingColumn), 2);
         startMigration(containerComposer, SOURCE_TABLE_NAME, TARGET_TABLE_NAME);
         String jobId = distSQLFacade.listJobIds().get(0);
-        distSQLFacade.waitJobPrepareSuccess(jobId);
+        distSQLFacade.waitJobPreparingStageFinished(jobId);
         DataSource jdbcDataSource = containerComposer.generateShardingSphereDataSourceFromProxy();
         incrementalTaskFn.accept(jdbcDataSource);
-        distSQLFacade.waitIncrementTaskFinished(jobId);
+        distSQLFacade.waitJobIncrementalStageFinished(jobId);
         if (null != consistencyCheckAlgorithmType) {
-            assertCheckMigrationSuccess(containerComposer, jobId, consistencyCheckAlgorithmType);
+            distSQLFacade.startCheckAndVerify(jobId, consistencyCheckAlgorithmType);
         }
         distSQLFacade.commit(jobId);
         assertThat(containerComposer.getTargetTableRecordsCount(jdbcDataSource, SOURCE_TABLE_NAME), is(PipelineContainerComposer.TABLE_INIT_ROW_COUNT + 1));

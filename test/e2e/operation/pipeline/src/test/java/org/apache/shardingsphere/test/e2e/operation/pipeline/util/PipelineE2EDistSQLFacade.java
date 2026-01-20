@@ -35,6 +35,9 @@ import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @Getter
@@ -165,15 +168,15 @@ public final class PipelineE2EDistSQLFacade {
     }
     
     /**
-     * Wait job prepare success.
+     * Wait job preparing stage finished.
      *
      * @param jobId job id
      */
-    public void waitJobPrepareSuccess(final String jobId) {
+    public void waitJobPreparingStageFinished(final String jobId) {
         String sql = buildShowJobStatusDistSQL(jobId);
         for (int i = 0; i < 5; i++) {
             List<Map<String, Object>> jobStatusRecords = containerComposer.queryForListWithLog(sql);
-            log.info("Wait job prepare success, job status records: {}", jobStatusRecords);
+            log.info("Wait job preparing stage finished, job status records: {}", jobStatusRecords);
             Set<String> statusSet = jobStatusRecords.stream().map(each -> String.valueOf(each.get("status"))).collect(Collectors.toSet());
             if (statusSet.contains(JobStatus.PREPARING.name()) || statusSet.contains(JobStatus.RUNNING.name())) {
                 containerComposer.sleepSeconds(2);
@@ -184,18 +187,17 @@ public final class PipelineE2EDistSQLFacade {
     }
     
     /**
-     * Wait job status reached.
+     * Wait job incremental stage started.
      *
      * @param jobId job id
-     * @param jobStatus job status
-     * @param maxSleepSeconds max sleep seconds
-     * @throws IllegalStateException if job status not reached
+     * @throws IllegalStateException if job incremental stage not started
      */
-    public void waitJobStatusReached(final String jobId, final JobStatus jobStatus, final int maxSleepSeconds) {
+    public void waitJobIncrementalStageStarted(final String jobId) {
         String sql = buildShowJobStatusDistSQL(jobId);
-        for (int i = 0, count = maxSleepSeconds / 2 + (0 == maxSleepSeconds % 2 ? 0 : 1); i < count; i++) {
+        JobStatus jobStatus = JobStatus.EXECUTE_INCREMENTAL_TASK;
+        for (int i = 0; i < 10; i++) {
             List<Map<String, Object>> jobStatusRecords = containerComposer.queryForListWithLog(sql);
-            log.info("Wait job status reached, job status records: {}", jobStatusRecords);
+            log.info("Wait job Incremental stage started, job status records: {}", jobStatusRecords);
             List<String> statusList = jobStatusRecords.stream().map(each -> String.valueOf(each.get("status"))).collect(Collectors.toList());
             if (statusList.stream().allMatch(each -> each.equals(jobStatus.name()))) {
                 return;
@@ -206,16 +208,16 @@ public final class PipelineE2EDistSQLFacade {
     }
     
     /**
-     * Wait increment task finished.
+     * Wait job incremental stage finished.
      *
      * @param jobId job id
      * @return result
      */
-    public List<Map<String, Object>> waitIncrementTaskFinished(final String jobId) {
+    public List<Map<String, Object>> waitJobIncrementalStageFinished(final String jobId) {
         String sql = buildShowJobStatusDistSQL(jobId);
         for (int i = 0; i < 10; i++) {
             List<Map<String, Object>> jobStatusRecords = containerComposer.queryForListWithLog(sql);
-            log.info("Wait incremental task finished, job status records: {}", jobStatusRecords);
+            log.info("Wait job incremental stage finished, job status records: {}", jobStatusRecords);
             Set<String> statusSet = new HashSet<>(jobStatusRecords.size(), 1F);
             List<Integer> incrementalIdleSecondsList = new LinkedList<>();
             for (Map<String, Object> each : jobStatusRecords) {
@@ -237,5 +239,71 @@ public final class PipelineE2EDistSQLFacade {
     
     private String buildShowJobStatusDistSQL(final String jobId) {
         return String.format("SHOW %s STATUS %s", jobTypeName, jobId);
+    }
+    
+    /**
+     * Start check and verify.
+     *
+     * @param jobId job id
+     * @param algorithmType algorithm type
+     * @throws SQLException SQL exception
+     */
+    public void startCheckAndVerify(final String jobId, final String algorithmType) throws SQLException {
+        startCheck(jobId, algorithmType, Collections.emptyMap());
+        verifyCheck(jobId);
+    }
+    
+    /**
+     * Start check.
+     *
+     * @param jobId job id
+     * @param algorithmType algorithm type
+     * @param algorithmProps algorithm properties
+     * @throws SQLException SQL exception
+     */
+    public void startCheck(final String jobId, final String algorithmType, final Map<String, String> algorithmProps) throws SQLException {
+        containerComposer.proxyExecuteWithLog(buildConsistencyCheckDistSQL(jobId, algorithmType, algorithmProps), 0);
+    }
+    
+    private String buildConsistencyCheckDistSQL(final String jobId, final String algorithmType, final Map<String, String> algorithmProps) {
+        if (null == algorithmProps || algorithmProps.isEmpty()) {
+            return String.format("CHECK %s %s BY TYPE (NAME='%s')", jobTypeName, jobId, algorithmType);
+        }
+        String sqlTemplate = "CHECK %s %s BY TYPE (NAME='%s', PROPERTIES("
+                + algorithmProps.entrySet().stream().map(entry -> String.format("'%s'='%s'", entry.getKey(), entry.getValue())).collect(Collectors.joining(","))
+                + "))";
+        return String.format(sqlTemplate, jobTypeName, jobId, algorithmType);
+    }
+    
+    /**
+     * Verify check.
+     *
+     * @param jobId job id
+     */
+    public void verifyCheck(final String jobId) {
+        List<Map<String, Object>> checkStatusRecords = Collections.emptyList();
+        for (int i = 0; i < 10; i++) {
+            checkStatusRecords = containerComposer.queryForListWithLog(buildShowCheckJobStatusDistSQL(jobId));
+            if (checkStatusRecords.isEmpty()) {
+                containerComposer.sleepSeconds(3);
+                continue;
+            }
+            List<String> checkEndTimeList = checkStatusRecords.stream().map(map -> map.get("check_end_time").toString()).filter(each -> !Strings.isNullOrEmpty(each)).collect(Collectors.toList());
+            if (checkEndTimeList.size() == checkStatusRecords.size()) {
+                break;
+            } else {
+                containerComposer.sleepSeconds(3);
+            }
+        }
+        log.info("Verify check, results: {}", checkStatusRecords);
+        assertFalse(checkStatusRecords.isEmpty());
+        for (Map<String, Object> entry : checkStatusRecords) {
+            assertThat(entry.get("inventory_finished_percentage").toString(), is("100"));
+            assertTrue(Boolean.parseBoolean(entry.get("result").toString()));
+        }
+    }
+    
+    private String buildShowCheckJobStatusDistSQL(final String jobId) {
+        return String.format("SHOW %s CHECK STATUS %s", jobTypeName, jobId);
     }
 }
