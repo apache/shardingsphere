@@ -26,6 +26,7 @@ import org.apache.shardingsphere.test.e2e.env.runtime.E2ETestEnvironment;
 import org.apache.shardingsphere.test.e2e.env.runtime.type.RunEnvironment.Type;
 import org.apache.shardingsphere.test.e2e.operation.pipeline.cases.PipelineContainerComposer;
 import org.apache.shardingsphere.test.e2e.operation.pipeline.command.MigrationDistSQLCommand;
+import org.apache.shardingsphere.test.e2e.operation.pipeline.util.PipelineE2EDistSQLFacade;
 import org.awaitility.Awaitility;
 import org.opengauss.util.PSQLException;
 
@@ -123,9 +124,10 @@ public abstract class AbstractMigrationE2EIT {
         startCheckAndVerify(containerComposer, jobId, algorithmType, Collections.emptyMap());
     }
     
-    protected void startCheckAndVerify(final PipelineContainerComposer containerComposer, final String jobId,
+    protected void startCheckAndVerify(final PipelineE2EDistSQLFacade distSQLFacade, final String jobId,
                                        final String algorithmType, final Map<String, String> algorithmProps) throws SQLException {
-        containerComposer.proxyExecuteWithLog(buildConsistencyCheckDistSQL(jobId, algorithmType, algorithmProps), 0);
+        PipelineContainerComposer containerComposer = distSQLFacade.getContainerComposer();
+        containerComposer.proxyExecuteWithLog(distSQLFacade.buildConsistencyCheckDistSQL(jobId, algorithmType, algorithmProps), 0);
         // TODO Need to add after the stop then to start, can continue the consistency check from the previous progress
         List<Map<String, Object>> resultList = Collections.emptyList();
         for (int i = 0; i < 30; i++) {
@@ -148,15 +150,5 @@ public abstract class AbstractMigrationE2EIT {
             assertTrue(Boolean.parseBoolean(each.get("result").toString()), String.format("%s check result is false", each.get("tables")));
             assertThat("inventory_finished_percentage is not 100", each.get("inventory_finished_percentage").toString(), is("100"));
         }
-    }
-    
-    private String buildConsistencyCheckDistSQL(final String jobId, final String algorithmType, final Map<String, String> algorithmProps) {
-        if (null == algorithmProps || algorithmProps.isEmpty()) {
-            return String.format("CHECK MIGRATION '%s' BY TYPE (NAME='%s')", jobId, algorithmType);
-        }
-        String sql = "CHECK MIGRATION '%s' BY TYPE (NAME='%s', PROPERTIES("
-                + algorithmProps.entrySet().stream().map(entry -> String.format("'%s'='%s'", entry.getKey(), entry.getValue())).collect(Collectors.joining(","))
-                + "))";
-        return String.format(sql, jobId, algorithmType);
     }
 }

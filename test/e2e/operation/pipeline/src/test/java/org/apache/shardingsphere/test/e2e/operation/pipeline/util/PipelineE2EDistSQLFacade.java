@@ -238,4 +238,22 @@ public final class PipelineE2EDistSQLFacade {
     private String buildShowJobStatusDistSQL(final String jobId) {
         return String.format("SHOW %s STATUS %s", jobTypeName, jobId);
     }
+    
+    /**
+     * Build consistency check DistSQL.
+     *
+     * @param jobId job id
+     * @param algorithmType algorithm type
+     * @param algorithmProps algorithm properties
+     * @return consistency check DistSQL
+     */
+    public String buildConsistencyCheckDistSQL(final String jobId, final String algorithmType, final Map<String, String> algorithmProps) {
+        if (null == algorithmProps || algorithmProps.isEmpty()) {
+            return String.format("CHECK %s %s BY TYPE (NAME='%s')", jobTypeName, jobId, algorithmType);
+        }
+        String sqlTemplate = "CHECK %s %s BY TYPE (NAME='%s', PROPERTIES("
+                + algorithmProps.entrySet().stream().map(entry -> String.format("'%s'='%s'", entry.getKey(), entry.getValue())).collect(Collectors.joining(","))
+                + "))";
+        return String.format(sqlTemplate, jobTypeName, jobId, algorithmType);
+    }
 }
