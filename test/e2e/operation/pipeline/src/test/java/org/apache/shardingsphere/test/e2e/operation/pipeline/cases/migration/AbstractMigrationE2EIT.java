@@ -120,13 +120,8 @@ public abstract class AbstractMigrationE2EIT {
         containerComposer.proxyExecuteWithLog(migrationDistSQL.getMigrationSingleTableWithSchema(sourceTableName, targetTableName), 5);
     }
     
-    public void startCheckAndVerify(final PipelineContainerComposer containerComposer, final String jobId, final String algorithmType) throws SQLException {
-        startCheckAndVerify(containerComposer, jobId, algorithmType, Collections.emptyMap());
-    }
-    
-    public void startCheckAndVerify(final PipelineE2EDistSQLFacade distSQLFacade, final String jobId,
-                                       final String algorithmType, final Map<String, String> algorithmProps) throws SQLException {
-        startCheck(distSQLFacade, jobId, algorithmType, algorithmProps);
+    public void startCheckAndVerify(final PipelineE2EDistSQLFacade distSQLFacade, final String jobId, final String algorithmType) throws SQLException {
+        startCheck(distSQLFacade, jobId, algorithmType, Collections.emptyMap());
         verifyCheck(distSQLFacade, jobId);
     }
     
