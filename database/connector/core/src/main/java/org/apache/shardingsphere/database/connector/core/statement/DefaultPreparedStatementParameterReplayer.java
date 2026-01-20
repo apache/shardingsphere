@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.database.connector.core.statement;
 
-import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.sql.PreparedStatement;
 
 /**
  * Default prepared statement parameter replayer.
