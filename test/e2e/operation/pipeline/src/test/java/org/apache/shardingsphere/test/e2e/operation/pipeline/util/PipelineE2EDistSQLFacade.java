@@ -166,6 +166,23 @@ public final class PipelineE2EDistSQLFacade {
     }
     
     /**
+     * Wait job prepare success.
+     *
+     * @param distSQL dist SQL
+     */
+    public void waitJobPrepareSuccess(final String distSQL) {
+        for (int i = 0; i < 5; i++) {
+            List<Map<String, Object>> jobStatus = containerComposer.queryForListWithLog(distSQL);
+            Set<String> statusSet = jobStatus.stream().map(each -> String.valueOf(each.get("status"))).collect(Collectors.toSet());
+            if (statusSet.contains(JobStatus.PREPARING.name()) || statusSet.contains(JobStatus.RUNNING.name())) {
+                containerComposer.sleepSeconds(2);
+                continue;
+            }
+            break;
+        }
+    }
+    
+    /**
      * Wait increment task finished.
      *
      * @param jobId job id

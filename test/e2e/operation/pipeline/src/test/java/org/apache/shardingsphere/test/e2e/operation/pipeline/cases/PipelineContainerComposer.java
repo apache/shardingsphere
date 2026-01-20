@@ -435,23 +435,6 @@ public final class PipelineContainerComposer implements AutoCloseable {
     }
     
     /**
-     * Wait job prepare success.
-     *
-     * @param distSQL dist SQL
-     */
-    public void waitJobPrepareSuccess(final String distSQL) {
-        for (int i = 0; i < 5; i++) {
-            List<Map<String, Object>> jobStatus = queryForListWithLog(distSQL);
-            Set<String> statusSet = jobStatus.stream().map(each -> String.valueOf(each.get("status"))).collect(Collectors.toSet());
-            if (statusSet.contains(JobStatus.PREPARING.name()) || statusSet.contains(JobStatus.RUNNING.name())) {
-                sleepSeconds(2);
-                continue;
-            }
-            break;
-        }
-    }
-    
-    /**
      * Wait job status reached.
      *
      * @param distSQL dist SQL
