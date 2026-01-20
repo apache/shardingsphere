@@ -71,8 +71,7 @@ public final class OraclePreparedStatementParameterReplayer implements DialectPr
         }
     }
     
-    private void replayBlobInputStream(final PreparedStatement preparedStatement, final int index,
-                                         final InputStream value, final long length) throws SQLException {
+    private void replayBlobInputStream(final PreparedStatement preparedStatement, final int index, final InputStream value, final long length) throws SQLException {
         if (length > 0) {
             preparedStatement.setBlob(index, value, length);
         } else {
@@ -80,8 +79,7 @@ public final class OraclePreparedStatementParameterReplayer implements DialectPr
         }
     }
     
-    private void replayBinaryStream(final PreparedStatement preparedStatement, final int index,
-                                     final InputStream value, final long length) throws SQLException {
+    private void replayBinaryStream(final PreparedStatement preparedStatement, final int index, final InputStream value, final long length) throws SQLException {
         if (length > 0) {
             preparedStatement.setBinaryStream(index, value, length);
         } else {
@@ -89,8 +87,7 @@ public final class OraclePreparedStatementParameterReplayer implements DialectPr
         }
     }
     
-    private void replayClob(final PreparedStatement preparedStatement, final int index,
-                            final Reader value, final long length) throws SQLException {
+    private void replayClob(final PreparedStatement preparedStatement, final int index, final Reader value, final long length) throws SQLException {
         if (length > 0) {
             preparedStatement.setClob(index, value, length);
         } else {
@@ -98,8 +95,7 @@ public final class OraclePreparedStatementParameterReplayer implements DialectPr
         }
     }
     
-    private void replayAsciiStream(final PreparedStatement preparedStatement, final int index,
-                                    final InputStream value, final long length) throws SQLException {
+    private void replayAsciiStream(final PreparedStatement preparedStatement, final int index, final InputStream value, final long length) throws SQLException {
         if (length > 0) {
             preparedStatement.setAsciiStream(index, value, length);
         } else {
@@ -107,8 +103,7 @@ public final class OraclePreparedStatementParameterReplayer implements DialectPr
         }
     }
     
-    private void replayCharacterStream(final PreparedStatement preparedStatement, final int index,
-                                        final Reader value, final long length) throws SQLException {
+    private void replayCharacterStream(final PreparedStatement preparedStatement, final int index, final Reader value, final long length) throws SQLException {
         if (length > 0) {
             preparedStatement.setCharacterStream(index, value, length);
         } else {

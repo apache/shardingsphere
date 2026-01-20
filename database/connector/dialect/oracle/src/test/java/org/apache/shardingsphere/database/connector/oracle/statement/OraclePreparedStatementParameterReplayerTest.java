@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.database.connector.oracle.statement;
 
-
 import org.apache.shardingsphere.database.connector.core.statement.PreparedStatementParameter;
 import org.apache.shardingsphere.database.connector.core.statement.SetterMethodType;
 import org.junit.jupiter.api.Test;
