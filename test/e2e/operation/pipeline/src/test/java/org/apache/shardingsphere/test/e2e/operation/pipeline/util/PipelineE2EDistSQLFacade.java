@@ -186,12 +186,13 @@ public final class PipelineE2EDistSQLFacade {
     /**
      * Wait job status reached.
      *
-     * @param distSQL dist SQL
+     * @param jobId job id
      * @param jobStatus job status
      * @param maxSleepSeconds max sleep seconds
      * @throws IllegalStateException if job status not reached
      */
-    public void waitJobStatusReached(final String distSQL, final JobStatus jobStatus, final int maxSleepSeconds) {
+    public void waitJobStatusReached(final String jobId, final JobStatus jobStatus, final int maxSleepSeconds) {
+        String distSQL = buildShowJobStatusDistSQL(jobId);
         for (int i = 0, count = maxSleepSeconds / 2 + (0 == maxSleepSeconds % 2 ? 0 : 1); i < count; i++) {
             List<Map<String, Object>> jobStatusRecords = containerComposer.queryForListWithLog(distSQL);
             log.info("Wait job status reached, job status records: {}", jobStatusRecords);
