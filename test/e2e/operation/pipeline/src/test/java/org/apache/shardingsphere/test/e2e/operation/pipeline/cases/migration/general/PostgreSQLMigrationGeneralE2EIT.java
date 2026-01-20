@@ -19,7 +19,6 @@ package org.apache.shardingsphere.test.e2e.operation.pipeline.cases.migration.ge
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.tuple.Pair;
-import org.apache.shardingsphere.data.pipeline.core.job.JobStatus;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.MigrationJobType;
 import org.apache.shardingsphere.infra.algorithm.keygen.snowflake.SnowflakeKeyGenerateAlgorithm;
 import org.apache.shardingsphere.test.e2e.operation.pipeline.cases.PipelineContainerComposer;
@@ -116,7 +115,7 @@ class PostgreSQLMigrationGeneralE2EIT extends AbstractMigrationE2EIT {
     private void checkOrderItemMigration(final PipelineE2EDistSQLFacade distSQLFacade) throws SQLException {
         String jobId = distSQLFacade.getJobIdByTableName("ds_0.test.t_order_item");
         PipelineContainerComposer containerComposer = distSQLFacade.getContainerComposer();
-        distSQLFacade.waitJobIncrementalStageStarted(jobId, JobStatus.EXECUTE_INCREMENTAL_TASK, 15);
+        distSQLFacade.waitJobIncrementalStageStarted(jobId);
         startCheckAndVerify(containerComposer, jobId, "DATA_MATCH");
     }
     

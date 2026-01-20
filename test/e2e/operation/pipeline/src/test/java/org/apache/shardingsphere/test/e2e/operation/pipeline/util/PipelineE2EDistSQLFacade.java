@@ -187,13 +187,12 @@ public final class PipelineE2EDistSQLFacade {
      * Wait job incremental stage started.
      *
      * @param jobId job id
-     * @param jobStatus job status
-     * @param maxSleepSeconds max sleep seconds
-     * @throws IllegalStateException if job status not started
+     * @throws IllegalStateException if job incremental stage not started
      */
-    public void waitJobIncrementalStageStarted(final String jobId, final JobStatus jobStatus, final int maxSleepSeconds) {
+    public void waitJobIncrementalStageStarted(final String jobId) {
         String sql = buildShowJobStatusDistSQL(jobId);
-        for (int i = 0, count = maxSleepSeconds / 2 + (0 == maxSleepSeconds % 2 ? 0 : 1); i < count; i++) {
+        JobStatus jobStatus = JobStatus.EXECUTE_INCREMENTAL_TASK;
+        for (int i = 0; i < 10; i++) {
             List<Map<String, Object>> jobStatusRecords = containerComposer.queryForListWithLog(sql);
             log.info("Wait job Incremental stage started, job status records: {}", jobStatusRecords);
             List<String> statusList = jobStatusRecords.stream().map(each -> String.valueOf(each.get("status"))).collect(Collectors.toList());
