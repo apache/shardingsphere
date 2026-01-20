@@ -63,7 +63,7 @@ public final class ShardingSphereDatabasesFactory {
                                                  final ComputeNodeInstanceContext computeNodeInstanceContext) {
         return databaseConfig.getStorageUnits().isEmpty()
                 ? ShardingSphereDatabaseFactory.create(databaseName, protocolType, props)
-                : ShardingSphereDatabaseFactory.create(databaseName, DatabaseTypeEngine.getProtocolType(databaseConfig, props), databaseConfig, computeNodeInstanceContext, schemas);
+                : ShardingSphereDatabaseFactory.create(databaseName, protocolType, databaseConfig, computeNodeInstanceContext, schemas);
     }
     
     /**
