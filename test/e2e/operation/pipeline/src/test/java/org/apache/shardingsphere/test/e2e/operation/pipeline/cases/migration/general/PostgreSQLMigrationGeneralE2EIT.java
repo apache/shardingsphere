@@ -85,7 +85,7 @@ class PostgreSQLMigrationGeneralE2EIT extends AbstractMigrationE2EIT {
             startMigrationWithSchema(containerComposer, SOURCE_TABLE_NAME, "t_order");
             Awaitility.await().atMost(10L, TimeUnit.SECONDS).pollInterval(1L, TimeUnit.SECONDS).until(() -> !distSQLFacade.listJobIds().isEmpty());
             String jobId = distSQLFacade.getJobIdByTableName("ds_0.test." + SOURCE_TABLE_NAME);
-            distSQLFacade.waitJobPrepareSuccess(String.format("SHOW MIGRATION STATUS '%s'", jobId));
+            distSQLFacade.waitJobPrepareSuccess(jobId);
             String qualifiedTableName = String.join(".", PipelineContainerComposer.SCHEMA_NAME, SOURCE_TABLE_NAME);
             containerComposer.startIncrementTask(new E2EIncrementalTask(containerComposer.getSourceDataSource(), qualifiedTableName, new SnowflakeKeyGenerateAlgorithm(),
                     containerComposer.getDatabaseType(), 20));

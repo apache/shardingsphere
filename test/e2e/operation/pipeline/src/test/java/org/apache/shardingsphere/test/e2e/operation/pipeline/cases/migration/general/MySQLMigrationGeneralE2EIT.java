@@ -80,7 +80,7 @@ class MySQLMigrationGeneralE2EIT extends AbstractMigrationE2EIT {
             startMigration(containerComposer, SOURCE_TABLE_NAME, TARGET_TABLE_NAME);
             startMigration(containerComposer, "t_order_item", "t_order_item");
             String orderJobId = distSQLFacade.getJobIdByTableName("ds_0." + SOURCE_TABLE_NAME);
-            distSQLFacade.waitJobPrepareSuccess(String.format("SHOW MIGRATION STATUS '%s'", orderJobId));
+            distSQLFacade.waitJobPrepareSuccess(orderJobId);
             containerComposer.startIncrementTask(
                     new E2EIncrementalTask(containerComposer.getSourceDataSource(), SOURCE_TABLE_NAME, new SnowflakeKeyGenerateAlgorithm(), containerComposer.getDatabaseType(), 30));
             TimeUnit.SECONDS.timedJoin(containerComposer.getIncreaseTaskThread(), 30L);

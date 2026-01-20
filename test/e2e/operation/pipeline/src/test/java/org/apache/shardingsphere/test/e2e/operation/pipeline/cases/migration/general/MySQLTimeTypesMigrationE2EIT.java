@@ -55,7 +55,7 @@ class MySQLTimeTypesMigrationE2EIT extends AbstractMigrationE2EIT {
             startMigration(containerComposer, "time_e2e", "time_e2e");
             PipelineE2EDistSQLFacade distSQLFacade = new PipelineE2EDistSQLFacade(containerComposer, new MigrationJobType());
             String jobId = distSQLFacade.listJobIds().get(0);
-            distSQLFacade.waitJobPrepareSuccess(String.format("SHOW MIGRATION STATUS '%s'", jobId));
+            distSQLFacade.waitJobPrepareSuccess(jobId);
             insertOneRecordWithZeroValue(containerComposer, 2);
             distSQLFacade.waitIncrementTaskFinished(jobId);
             distSQLFacade.loadAllSingleTables();

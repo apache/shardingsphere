@@ -168,9 +168,10 @@ public final class PipelineE2EDistSQLFacade {
     /**
      * Wait job prepare success.
      *
-     * @param distSQL dist SQL
+     * @param jobId job id
      */
-    public void waitJobPrepareSuccess(final String distSQL) {
+    public void waitJobPrepareSuccess(final String jobId) {
+        String distSQL = buildShowJobStatusDistSQL(jobId);
         for (int i = 0; i < 5; i++) {
             List<Map<String, Object>> jobStatus = containerComposer.queryForListWithLog(distSQL);
             Set<String> statusSet = jobStatus.stream().map(each -> String.valueOf(each.get("status"))).collect(Collectors.toSet());
