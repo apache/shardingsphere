@@ -20,7 +20,6 @@ package org.apache.shardingsphere.test.e2e.operation.pipeline.cases.migration.ge
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.RandomUtils;
-import org.apache.shardingsphere.data.pipeline.core.job.JobStatus;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.MigrationJobType;
 import org.apache.shardingsphere.test.e2e.env.runtime.E2ETestEnvironment;
 import org.apache.shardingsphere.test.e2e.env.runtime.type.RunEnvironment.Type;
@@ -80,13 +79,13 @@ class PostgreSQLToMySQLMigrationE2EIT extends AbstractMigrationE2EIT {
             PipelineE2EDistSQLFacade distSQLFacade = new PipelineE2EDistSQLFacade(containerComposer, new MigrationJobType());
             Awaitility.await().ignoreExceptions().atMost(10L, TimeUnit.SECONDS).pollInterval(1L, TimeUnit.SECONDS).until(() -> !distSQLFacade.listJobIds().isEmpty());
             String jobId = distSQLFacade.listJobIds().get(0);
-            distSQLFacade.waitJobStatusReached(jobId, JobStatus.EXECUTE_INCREMENTAL_TASK, 15);
+            distSQLFacade.waitJobIncrementalStageStarted(jobId);
             try (Connection connection = DriverManager.getConnection(jdbcUrl, "postgres", "postgres")) {
                 connection.createStatement().execute(String.format("INSERT INTO t_order (order_id,user_id,status) VALUES (%s, %s, '%s')", "1000000000", 1, "incremental"));
                 connection.createStatement().execute(String.format("UPDATE t_order SET status='%s' WHERE order_id IN (1,2)", RandomStringUtils.randomAlphanumeric(10)));
             }
-            distSQLFacade.waitIncrementTaskFinished(jobId);
-            assertCheckMigrationSuccess(containerComposer, jobId, "DATA_MATCH");
+            distSQLFacade.waitJobIncrementalStageFinished(jobId);
+            distSQLFacade.startCheckAndVerify(jobId, "DATA_MATCH");
             distSQLFacade.commit(jobId);
             assertTrue(distSQLFacade.listJobIds().isEmpty());
         } finally {

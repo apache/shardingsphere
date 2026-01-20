@@ -88,10 +88,10 @@ class RulesMigrationE2EIT extends AbstractMigrationE2EIT {
         startMigration(containerComposer, SOURCE_TABLE_NAME, TARGET_TABLE_NAME);
         PipelineE2EDistSQLFacade distSQLFacade = new PipelineE2EDistSQLFacade(containerComposer, new MigrationJobType());
         String jobId = distSQLFacade.listJobIds().get(0);
-        distSQLFacade.waitJobPrepareSuccess(jobId);
-        distSQLFacade.waitIncrementTaskFinished(jobId);
+        distSQLFacade.waitJobPreparingStageFinished(jobId);
+        distSQLFacade.waitJobIncrementalStageFinished(jobId);
         distSQLFacade.loadAllSingleTables();
-        assertCheckMigrationSuccess(containerComposer, jobId, "DATA_MATCH");
+        distSQLFacade.startCheckAndVerify(jobId, "DATA_MATCH");
         distSQLFacade.commit(jobId);
         assertThat(containerComposer.getTargetTableRecordsCount(containerComposer.getProxyDataSource(), SOURCE_TABLE_NAME), is(PipelineContainerComposer.TABLE_INIT_ROW_COUNT));
     }

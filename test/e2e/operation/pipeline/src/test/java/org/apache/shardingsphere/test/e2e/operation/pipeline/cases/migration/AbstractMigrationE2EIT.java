@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.test.e2e.operation.pipeline.cases.migration;
 
-import com.google.common.base.Strings;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.database.connector.opengauss.type.OpenGaussDatabaseType;
@@ -31,19 +30,8 @@ import org.opengauss.util.PSQLException;
 
 import javax.xml.bind.JAXB;
 import java.sql.SQLException;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
 import java.util.Objects;
-import java.util.Properties;
-import java.util.Set;
 import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
-
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @Getter
 @Slf4j
@@ -118,56 +106,5 @@ public abstract class AbstractMigrationE2EIT {
     
     protected void startMigrationWithSchema(final PipelineContainerComposer containerComposer, final String sourceTableName, final String targetTableName) throws SQLException {
         containerComposer.proxyExecuteWithLog(migrationDistSQL.getMigrationSingleTableWithSchema(sourceTableName, targetTableName), 5);
-    }
-    
-    protected void assertCheckMigrationSuccess(final PipelineContainerComposer containerComposer, final String jobId, final String algorithmType) throws SQLException {
-        assertCheckMigrationSuccess(containerComposer, jobId, algorithmType, new Properties());
-    }
-    
-    protected void assertCheckMigrationSuccess(final PipelineContainerComposer containerComposer, final String jobId, final String algorithmType, final Properties algorithmProps) throws SQLException {
-        containerComposer.proxyExecuteWithLog(buildConsistencyCheckDistSQL(jobId, algorithmType, algorithmProps), 0);
-        // TODO Need to add after the stop then to start, can continue the consistency check from the previous progress
-        List<Map<String, Object>> resultList = Collections.emptyList();
-        for (int i = 0; i < 30; i++) {
-            resultList = containerComposer.queryForListWithLog(String.format("SHOW MIGRATION CHECK STATUS '%s'", jobId));
-            if (resultList.isEmpty()) {
-                containerComposer.sleepSeconds(3);
-                continue;
-            }
-            List<String> checkEndTimeList = resultList.stream().map(map -> map.get("check_end_time").toString()).filter(each -> !Strings.isNullOrEmpty(each)).collect(Collectors.toList());
-            Set<String> finishedPercentages = resultList.stream().map(map -> map.get("inventory_finished_percentage").toString()).collect(Collectors.toSet());
-            if (checkEndTimeList.size() == resultList.size() && 1 == finishedPercentages.size() && finishedPercentages.contains("100")) {
-                break;
-            } else {
-                containerComposer.sleepSeconds(1);
-            }
-        }
-        log.info("check job results: {}", resultList);
-        assertFalse(resultList.isEmpty());
-        for (Map<String, Object> each : resultList) {
-            assertTrue(Boolean.parseBoolean(each.get("result").toString()), String.format("%s check result is false", each.get("tables")));
-            assertThat("inventory_finished_percentage is not 100", each.get("inventory_finished_percentage").toString(), is("100"));
-        }
-    }
-    
-    private String buildConsistencyCheckDistSQL(final String jobId, final String algorithmType, final Properties algorithmProps) {
-        if (null == algorithmProps || algorithmProps.isEmpty()) {
-            return String.format("CHECK MIGRATION '%s' BY TYPE (NAME='%s')", jobId, algorithmType);
-        }
-        String sql = "CHECK MIGRATION '%s' BY TYPE (NAME='%s', PROPERTIES("
-                + algorithmProps.entrySet().stream().map(entry -> String.format("'%s'='%s'", entry.getKey(), entry.getValue())).collect(Collectors.joining(","))
-                + "))";
-        return String.format(sql, jobId, algorithmType);
-    }
-    
-    protected Properties convertToProperties(final Map<String, String> map) {
-        Properties result = new Properties();
-        if (null == map || map.isEmpty()) {
-            return result;
-        }
-        for (Map.Entry<String, String> entry : map.entrySet()) {
-            result.setProperty(entry.getKey(), entry.getValue());
-        }
-        return result;
     }
 }

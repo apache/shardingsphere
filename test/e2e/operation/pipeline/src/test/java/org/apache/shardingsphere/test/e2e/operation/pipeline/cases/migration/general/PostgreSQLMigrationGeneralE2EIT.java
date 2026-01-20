@@ -19,7 +19,6 @@ package org.apache.shardingsphere.test.e2e.operation.pipeline.cases.migration.ge
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.tuple.Pair;
-import org.apache.shardingsphere.data.pipeline.core.job.JobStatus;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.MigrationJobType;
 import org.apache.shardingsphere.infra.algorithm.keygen.snowflake.SnowflakeKeyGenerateAlgorithm;
 import org.apache.shardingsphere.test.e2e.operation.pipeline.cases.PipelineContainerComposer;
@@ -85,7 +84,7 @@ class PostgreSQLMigrationGeneralE2EIT extends AbstractMigrationE2EIT {
             startMigrationWithSchema(containerComposer, SOURCE_TABLE_NAME, "t_order");
             Awaitility.await().atMost(10L, TimeUnit.SECONDS).pollInterval(1L, TimeUnit.SECONDS).until(() -> !distSQLFacade.listJobIds().isEmpty());
             String jobId = distSQLFacade.getJobIdByTableName("ds_0.test." + SOURCE_TABLE_NAME);
-            distSQLFacade.waitJobPrepareSuccess(jobId);
+            distSQLFacade.waitJobPreparingStageFinished(jobId);
             String qualifiedTableName = String.join(".", PipelineContainerComposer.SCHEMA_NAME, SOURCE_TABLE_NAME);
             containerComposer.startIncrementTask(new E2EIncrementalTask(containerComposer.getSourceDataSource(), qualifiedTableName, new SnowflakeKeyGenerateAlgorithm(),
                     containerComposer.getDatabaseType(), 20));
@@ -107,17 +106,16 @@ class PostgreSQLMigrationGeneralE2EIT extends AbstractMigrationE2EIT {
     }
     
     private void checkOrderMigration(final PipelineE2EDistSQLFacade distSQLFacade, final String jobId) throws SQLException {
-        distSQLFacade.waitIncrementTaskFinished(jobId);
+        distSQLFacade.waitJobIncrementalStageFinished(jobId);
         distSQLFacade.pauseJob(jobId);
         distSQLFacade.resumeJob(jobId);
-        assertCheckMigrationSuccess(distSQLFacade.getContainerComposer(), jobId, "DATA_MATCH");
+        distSQLFacade.startCheckAndVerify(jobId, "DATA_MATCH");
     }
     
     private void checkOrderItemMigration(final PipelineE2EDistSQLFacade distSQLFacade) throws SQLException {
         String jobId = distSQLFacade.getJobIdByTableName("ds_0.test.t_order_item");
-        PipelineContainerComposer containerComposer = distSQLFacade.getContainerComposer();
-        distSQLFacade.waitJobStatusReached(jobId, JobStatus.EXECUTE_INCREMENTAL_TASK, 15);
-        assertCheckMigrationSuccess(containerComposer, jobId, "DATA_MATCH");
+        distSQLFacade.waitJobIncrementalStageStarted(jobId);
+        distSQLFacade.startCheckAndVerify(jobId, "DATA_MATCH");
     }
     
     private int getReplicationSlotsCount(final PipelineContainerComposer containerComposer) throws SQLException {
