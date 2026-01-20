@@ -41,9 +41,9 @@ import org.junit.jupiter.params.provider.ArgumentsSource;
 import javax.sql.DataSource;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
 import java.util.concurrent.TimeUnit;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -91,11 +91,11 @@ class MySQLMigrationGeneralE2EIT extends AbstractMigrationE2EIT {
             DataSource jdbcDataSource = containerComposer.generateShardingSphereDataSourceFromProxy();
             containerComposer.assertOrderRecordExist(jdbcDataSource, "t_order", 10000);
             containerComposer.assertOrderRecordExist(jdbcDataSource, "t_order_item", 10000);
-            assertMigrationSuccessById(distSQLFacade, orderJobId, "DATA_MATCH", convertToProperties(ImmutableMap.of("chunk-size", "300", "streaming-range-type", "SMALL")));
+            assertMigrationSuccessById(distSQLFacade, orderJobId, "DATA_MATCH", ImmutableMap.of("chunk-size", "300", "streaming-range-type", "SMALL"));
             String orderItemJobId = distSQLFacade.getJobIdByTableName("ds_0.t_order_item");
-            assertMigrationSuccessById(distSQLFacade, orderItemJobId, "DATA_MATCH", convertToProperties(ImmutableMap.of("chunk-size", "300", "streaming-range-type", "LARGE")));
+            assertMigrationSuccessById(distSQLFacade, orderItemJobId, "DATA_MATCH", ImmutableMap.of("chunk-size", "300", "streaming-range-type", "LARGE"));
             containerComposer.sleepSeconds(2);
-            assertMigrationSuccessById(distSQLFacade, orderItemJobId, "CRC32_MATCH", new Properties());
+            assertMigrationSuccessById(distSQLFacade, orderItemJobId, "CRC32_MATCH", Collections.emptyMap());
             for (String each : distSQLFacade.listJobIds()) {
                 distSQLFacade.commit(each);
             }
@@ -104,7 +104,8 @@ class MySQLMigrationGeneralE2EIT extends AbstractMigrationE2EIT {
         }
     }
     
-    private void assertMigrationSuccessById(final PipelineE2EDistSQLFacade distSQLFacade, final String jobId, final String algorithmType, final Properties algorithmProps) throws SQLException {
+    private void assertMigrationSuccessById(final PipelineE2EDistSQLFacade distSQLFacade, final String jobId,
+                                            final String algorithmType, final Map<String, String> algorithmProps) throws SQLException {
         List<Map<String, Object>> jobStatus = distSQLFacade.waitIncrementTaskFinished(jobId);
         for (Map<String, Object> each : jobStatus) {
             assertTrue(Integer.parseInt(each.get("processed_records_count").toString()) > 0);

@@ -35,7 +35,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Properties;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
@@ -121,10 +120,11 @@ public abstract class AbstractMigrationE2EIT {
     }
     
     protected void assertCheckMigrationSuccess(final PipelineContainerComposer containerComposer, final String jobId, final String algorithmType) throws SQLException {
-        assertCheckMigrationSuccess(containerComposer, jobId, algorithmType, new Properties());
+        assertCheckMigrationSuccess(containerComposer, jobId, algorithmType, Collections.emptyMap());
     }
     
-    protected void assertCheckMigrationSuccess(final PipelineContainerComposer containerComposer, final String jobId, final String algorithmType, final Properties algorithmProps) throws SQLException {
+    protected void assertCheckMigrationSuccess(final PipelineContainerComposer containerComposer, final String jobId,
+                                               final String algorithmType, final Map<String, String> algorithmProps) throws SQLException {
         containerComposer.proxyExecuteWithLog(buildConsistencyCheckDistSQL(jobId, algorithmType, algorithmProps), 0);
         // TODO Need to add after the stop then to start, can continue the consistency check from the previous progress
         List<Map<String, Object>> resultList = Collections.emptyList();
@@ -150,7 +150,7 @@ public abstract class AbstractMigrationE2EIT {
         }
     }
     
-    private String buildConsistencyCheckDistSQL(final String jobId, final String algorithmType, final Properties algorithmProps) {
+    private String buildConsistencyCheckDistSQL(final String jobId, final String algorithmType, final Map<String, String> algorithmProps) {
         if (null == algorithmProps || algorithmProps.isEmpty()) {
             return String.format("CHECK MIGRATION '%s' BY TYPE (NAME='%s')", jobId, algorithmType);
         }
@@ -158,16 +158,5 @@ public abstract class AbstractMigrationE2EIT {
                 + algorithmProps.entrySet().stream().map(entry -> String.format("'%s'='%s'", entry.getKey(), entry.getValue())).collect(Collectors.joining(","))
                 + "))";
         return String.format(sql, jobId, algorithmType);
-    }
-    
-    protected Properties convertToProperties(final Map<String, String> map) {
-        Properties result = new Properties();
-        if (null == map || map.isEmpty()) {
-            return result;
-        }
-        for (Map.Entry<String, String> entry : map.entrySet()) {
-            result.setProperty(entry.getKey(), entry.getValue());
-        }
-        return result;
     }
 }
