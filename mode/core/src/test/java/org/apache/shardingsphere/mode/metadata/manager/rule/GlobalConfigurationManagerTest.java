@@ -17,11 +17,13 @@
 
 package org.apache.shardingsphere.mode.metadata.manager.rule;
 
+import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.props.temporary.TemporaryConfigurationProperties;
 import org.apache.shardingsphere.infra.config.props.temporary.TemporaryConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
@@ -50,6 +52,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -76,9 +79,9 @@ class GlobalConfigurationManagerTest {
         when(closableRule.getConfiguration()).thenReturn(mock(RuleConfiguration.class, withSettings().extraInterfaces(Serializable.class)));
         ShardingSphereRule remainedRule = mock(ShardingSphereRule.class);
         when(remainedRule.getConfiguration()).thenReturn(mock(RuleConfiguration.class, withSettings().extraInterfaces(Cloneable.class)));
+        ShardingSphereMetaData metaData = createMetaData(new RuleMetaData(new LinkedList<>(Arrays.asList(closableRule, remainedRule))), new TemporaryConfigurationProperties(new Properties()));
         MetaDataContexts metaDataContexts = mock(MetaDataContexts.class);
-        when(metaDataContexts.getMetaData()).thenReturn(
-                createMetaData(new RuleMetaData(new LinkedList<>(Arrays.asList(closableRule, remainedRule))), new TemporaryConfigurationProperties(new Properties())));
+        when(metaDataContexts.getMetaData()).thenReturn(metaData);
         ShardingSphereRule builtRule = mock(ShardingSphereRule.class);
         when(GlobalRulesBuilder.buildSingleRules(eq(newConfig), any(), any(ConfigurationProperties.class))).thenReturn(Collections.singleton(builtRule));
         GlobalConfigurationManager manager = new GlobalConfigurationManager(metaDataContexts, mock(MetaDataPersistFacade.class));
@@ -112,8 +115,9 @@ class GlobalConfigurationManagerTest {
         when(closableRule.getConfiguration()).thenReturn(newConfig);
         doThrow(Exception.class).when((AutoCloseable) closableRule).close();
         RuleMetaData globalRuleMetaData = new RuleMetaData(new LinkedList<>(Collections.singleton(closableRule)));
+        ShardingSphereMetaData metaData = createMetaData(globalRuleMetaData, new TemporaryConfigurationProperties(new Properties()));
         MetaDataContexts metaDataContexts = mock(MetaDataContexts.class, RETURNS_DEEP_STUBS);
-        when(metaDataContexts.getMetaData()).thenReturn(createMetaData(globalRuleMetaData, new TemporaryConfigurationProperties(new Properties())));
+        when(metaDataContexts.getMetaData()).thenReturn(metaData);
         when(GlobalRulesBuilder.buildSingleRules(eq(newConfig), any(), any(ConfigurationProperties.class))).thenReturn(Collections.emptyList());
         assertThrows(Exception.class, () -> new GlobalConfigurationManager(metaDataContexts, mock(MetaDataPersistFacade.class)).alterGlobalRuleConfiguration(newConfig));
     }
@@ -136,7 +140,9 @@ class GlobalConfigurationManagerTest {
     void assertAlterPropertiesWithoutCronChange() {
         MetaDataContexts metaDataContexts = mock(MetaDataContexts.class, RETURNS_DEEP_STUBS);
         when(metaDataContexts.getMetaData().getTemporaryProps().getValue(TemporaryConfigurationPropertyKey.PROXY_META_DATA_COLLECTOR_CRON)).thenReturn("0/10 * * * * ?");
-        when(metaDataContexts.getMetaData().getAllDatabases()).thenReturn(Collections.emptyList());
+        ShardingSphereDatabase database = mock(ShardingSphereDatabase.class);
+        when(database.getProtocolType()).thenReturn(mock(DatabaseType.class));
+        when(metaDataContexts.getMetaData().getAllDatabases()).thenReturn(Collections.singleton(database));
         when(metaDataContexts.getMetaData().getGlobalRuleMetaData()).thenReturn(new RuleMetaData(Collections.emptyList()));
         when(metaDataContexts.getMetaData().getProps()).thenReturn(new ConfigurationProperties(new Properties()));
         GlobalConfigurationManager manager = new GlobalConfigurationManager(metaDataContexts, mock(MetaDataPersistFacade.class));
@@ -145,7 +151,9 @@ class GlobalConfigurationManagerTest {
     }
     
     private ShardingSphereMetaData createMetaData(final RuleMetaData globalRuleMetaData, final TemporaryConfigurationProperties temporaryProps) {
-        ShardingSphereMetaData result = new ShardingSphereMetaData(Collections.emptyList(), mock(ResourceMetaData.class), globalRuleMetaData, new ConfigurationProperties(new Properties()));
+        ShardingSphereDatabase database = mock(ShardingSphereDatabase.class);
+        doReturn(mock(DatabaseType.class)).when(database).getProtocolType();
+        ShardingSphereMetaData result = new ShardingSphereMetaData(Collections.singleton(database), mock(ResourceMetaData.class), globalRuleMetaData, new ConfigurationProperties(new Properties()));
         result.getTemporaryProps().getProps().putAll(temporaryProps.getProps());
         return result;
     }
