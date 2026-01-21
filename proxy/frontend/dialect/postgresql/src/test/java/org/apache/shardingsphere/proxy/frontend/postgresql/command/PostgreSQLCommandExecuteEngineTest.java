@@ -23,8 +23,11 @@ import org.apache.shardingsphere.database.protocol.postgresql.packet.PostgreSQLP
 import org.apache.shardingsphere.database.protocol.postgresql.packet.generic.PostgreSQLCommandCompletePacket;
 import org.apache.shardingsphere.database.protocol.postgresql.packet.generic.PostgreSQLReadyForQueryPacket;
 import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
+import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstanceContext;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
+import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereStatistics;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
@@ -45,6 +48,8 @@ import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 
 import java.sql.SQLException;
+import java.util.Collections;
+import java.util.Properties;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.isA;
@@ -123,7 +128,9 @@ class PostgreSQLCommandExecuteEngineTest {
         ComputeNodeInstanceContext computeNodeInstanceContext = mock(ComputeNodeInstanceContext.class);
         when(computeNodeInstanceContext.getModeConfiguration()).thenReturn(mock(ModeConfiguration.class));
         ContextManager contextManager = new ContextManager(
-                new MetaDataContexts(new ShardingSphereMetaData(), new ShardingSphereStatistics()), computeNodeInstanceContext, mock(), mock());
+                new MetaDataContexts(new ShardingSphereMetaData(Collections.emptyList(), new ResourceMetaData(Collections.emptyMap()),
+                        new RuleMetaData(Collections.emptyList()), new ConfigurationProperties(new Properties())),
+                        new ShardingSphereStatistics()), computeNodeInstanceContext, mock(), mock());
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
         commandExecuteEngine.writeQueryData(channelHandlerContext, databaseConnectionManager, queryCommandExecutor, 0);
         verify(connectionResourceLock).doAwait(channelHandlerContext);
