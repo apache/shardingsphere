@@ -89,6 +89,7 @@ public final class SchemaMetaDataPersistService {
     public Collection<ShardingSphereSchema> load(final String databaseName, final DatabaseType protocolType) {
         return repository.getChildrenKeys(NodePathGenerator.toPath(new SchemaMetaDataNodePath(databaseName, null))).stream()
                 .map(each -> new ShardingSphereSchema(each, tableMetaDataPersistService.load(databaseName, each), viewMetaDataPersistService.load(databaseName, each),
-                        protocolType)).collect(Collectors.toList());
+                        protocolType))
+                .collect(Collectors.toList());
     }
 }
