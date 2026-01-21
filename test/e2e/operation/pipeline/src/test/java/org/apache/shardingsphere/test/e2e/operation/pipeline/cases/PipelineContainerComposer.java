@@ -87,6 +87,7 @@ public final class PipelineContainerComposer implements AutoCloseable {
     
     public static final String SCHEMA_NAME = "test";
     
+    // TODO Refactor: storage unit name and actual data source name are different
     public static final String DS_0 = "pipeline_e2e_0";
     
     public static final String DS_1 = "pipeline_e2e_1";
@@ -255,23 +256,6 @@ public final class PipelineContainerComposer implements AutoCloseable {
                     new Property("bitToString", Boolean.TRUE.toString()), new Property("TimeZone", "UTC")));
         }
         return jdbcUrl;
-    }
-    
-    /**
-     * Register storage unit.
-     *
-     * @param storageUnitName storage unit name
-     * @throws SQLException SQL exception
-     */
-    public void registerStorageUnit(final String storageUnitName) throws SQLException {
-        String username = ProxyDatabaseTypeUtils.isOracleBranch(databaseType) ? storageUnitName : getUsername();
-        String registerStorageUnitTemplate = "REGISTER STORAGE UNIT ${ds} ( URL='${url}', USER='${user}', PASSWORD='${password}')".replace("${ds}", storageUnitName)
-                .replace("${user}", username)
-                .replace("${password}", getPassword())
-                .replace("${url}", getActualJdbcUrlTemplate(storageUnitName, Type.DOCKER == E2ETestEnvironment.getInstance().getRunEnvironment().getType()));
-        proxyExecuteWithLog(registerStorageUnitTemplate, 0);
-        int timeout = databaseType instanceof OpenGaussDatabaseType ? 60 : 10;
-        Awaitility.await().ignoreExceptions().atMost(timeout, TimeUnit.SECONDS).pollInterval(3L, TimeUnit.SECONDS).until(() -> showStorageUnitsName().contains(storageUnitName));
     }
     
     /**
@@ -564,7 +548,7 @@ public final class PipelineContainerComposer implements AutoCloseable {
      */
     // TODO proxy support for some fields still needs to be optimized, such as binary of MySQL, after these problems are optimized, Proxy dataSource can be used.
     public DataSource generateShardingSphereDataSourceFromProxy() {
-        Awaitility.await().atMost(10L, TimeUnit.SECONDS).pollInterval(1L, TimeUnit.SECONDS).until(() -> null != getYamlRootConfig().getRules());
+        Awaitility.waitAtMost(10L, TimeUnit.SECONDS).pollInterval(1L, TimeUnit.SECONDS).until(() -> null != getYamlRootConfig().getRules());
         YamlRootConfiguration rootConfig = getYamlRootConfig();
         ShardingSpherePreconditions.checkNotNull(rootConfig.getDataSources(), () -> new IllegalStateException("dataSources is null"));
         ShardingSpherePreconditions.checkNotNull(rootConfig.getRules(), () -> new IllegalStateException("rules is null"));
