@@ -35,4 +35,9 @@ public final class DefaultPreparedStatementParameterReplayer implements DialectP
     public String getDatabaseType() {
         return null;
     }
+    
+    @Override
+    public boolean isDefault() {
+        return true;
+    }
 }
