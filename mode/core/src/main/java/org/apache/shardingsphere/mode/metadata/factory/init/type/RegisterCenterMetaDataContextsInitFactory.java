@@ -89,9 +89,9 @@ public final class RegisterCenterMetaDataContextsInitFactory extends MetaDataCon
         Collection<ShardingSphereDatabase> databases;
         if (persistSchemasEnabled) {
             // TODO merge schemas with local
-            databases = ShardingSphereDatabasesFactory.create(effectiveDatabaseConfigs, schemas, props, instanceContext);
+            databases = ShardingSphereDatabasesFactory.create(effectiveDatabaseConfigs, schemas, props, instanceContext, protocolType);
         } else {
-            databases = ShardingSphereDatabasesFactory.create(effectiveDatabaseConfigs, props, instanceContext);
+            databases = ShardingSphereDatabasesFactory.create(effectiveDatabaseConfigs, props, instanceContext, protocolType);
             databases.stream().filter(database -> schemas.containsKey(database.getName()))
                     .forEach(database -> schemas.get(database.getName()).stream()
                             .filter(schema -> database.containsSchema(schema.getName()))
