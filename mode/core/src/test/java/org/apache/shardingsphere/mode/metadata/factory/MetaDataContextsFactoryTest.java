@@ -104,8 +104,9 @@ class MetaDataContextsFactoryTest {
     void setUp() throws SQLException {
         ShardingSphereDatabase database = new ShardingSphereDatabase("foo_db",
                 databaseType, new ResourceMetaData(Collections.emptyMap(), Collections.emptyMap()), new RuleMetaData(Collections.emptyList()), Collections.emptyList());
-        when(ShardingSphereDatabasesFactory.create(anyMap(), anyMap(), any(), any())).thenReturn(Collections.singleton(database));
-        when(ShardingSphereDatabasesFactory.create(anyMap(), any(ConfigurationProperties.class), any(ComputeNodeInstanceContext.class))).thenReturn(Collections.singleton(database));
+        when(ShardingSphereDatabasesFactory.create(anyMap(), anyMap(), any(), any(), any())).thenReturn(Collections.singleton(database));
+        when(ShardingSphereDatabasesFactory.create(anyMap(), any(ConfigurationProperties.class), any(ComputeNodeInstanceContext.class),
+                any(DatabaseType.class))).thenReturn(Collections.singleton(database));
         when(ShardingSphereDatabaseFactory.create(anyString(), any(DatabaseType.class), any(DatabaseConfiguration.class), any(ConfigurationProperties.class), any(ComputeNodeInstanceContext.class)))
                 .thenAnswer(invocation -> createDatabaseFromConfiguration(invocation.getArgument(0), invocation.getArgument(1), invocation.getArgument(2), Collections.emptyList()));
         when(GlobalRulesBuilder.buildRules(anyCollection(), anyCollection(), any(ConfigurationProperties.class))).thenReturn(Collections.singleton(new MockedRule()));

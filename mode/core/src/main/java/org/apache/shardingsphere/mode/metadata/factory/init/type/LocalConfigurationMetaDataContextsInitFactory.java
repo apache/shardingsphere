@@ -17,10 +17,12 @@
 
 package org.apache.shardingsphere.mode.metadata.factory.init.type;
 
+import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.config.database.DatabaseConfiguration;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
+import org.apache.shardingsphere.infra.database.DatabaseTypeEngine;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstanceContext;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabasesFactory;
@@ -61,7 +63,8 @@ public final class LocalConfigurationMetaDataContextsInitFactory extends MetaDat
     @Override
     public MetaDataContexts create(final ContextManagerBuilderParameter param) throws SQLException {
         ConfigurationProperties props = new ConfigurationProperties(param.getProps());
-        Collection<ShardingSphereDatabase> databases = ShardingSphereDatabasesFactory.create(param.getDatabaseConfigs(), props, instanceContext);
+        DatabaseType protocolType = DatabaseTypeEngine.getProtocolType(param.getDatabaseConfigs(), props);
+        Collection<ShardingSphereDatabase> databases = ShardingSphereDatabasesFactory.create(param.getDatabaseConfigs(), props, instanceContext, protocolType);
         MetaDataContexts result = create(param.getGlobalRuleConfigs(), param.getGlobalDataSources(), databases, props, persistFacade);
         persistDatabaseConfigurations(result, param);
         persistMetaData(result);

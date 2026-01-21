@@ -90,7 +90,7 @@ class RegisterCenterMetaDataContextsInitFactoryTest {
         when(GlobalRulesBuilder.buildRules(anyCollection(), anyCollection(), any(ConfigurationProperties.class))).thenReturn(Collections.emptyList());
         when(ShardingSphereStatisticsFactory.create(any(), any())).thenReturn(new ShardingSphereStatistics());
         ComputeNodeInstanceContext instanceContext = mockComputeNodeInstanceContext(mock(ProxyInstanceMetaData.class));
-        when(ShardingSphereDatabasesFactory.create(anyMap(), anyMap(), any(ConfigurationProperties.class), eq(instanceContext))).thenReturn(
+        when(ShardingSphereDatabasesFactory.create(anyMap(), anyMap(), any(ConfigurationProperties.class), eq(instanceContext), any(DatabaseType.class))).thenReturn(
                 Arrays.asList(createDatabase("with_units", Collections.emptyList()), createDatabase("without_units", Collections.emptyList())));
         Map<String, DatabaseConfiguration> databaseConfigs = createDatabaseConfigsWithAndWithoutStorageUnits();
         Collection<String> databaseNames = Arrays.asList("with_units", "without_units", "missing_config");
@@ -119,7 +119,7 @@ class RegisterCenterMetaDataContextsInitFactoryTest {
                 Collections.singleton(new ShardingSphereSchema("foo_schema", Collections.emptyList(), Collections.singleton(new ShardingSphereView("local_view", "select 1")))));
         ShardingSphereDatabase barDatabase = createDatabase("bar_db", Collections.emptyList());
         ComputeNodeInstanceContext instanceContext = mockComputeNodeInstanceContext(mock(JDBCInstanceMetaData.class));
-        when(ShardingSphereDatabasesFactory.create(anyMap(), any(ConfigurationProperties.class), eq(instanceContext))).thenReturn(Arrays.asList(fooDatabase, barDatabase));
+        when(ShardingSphereDatabasesFactory.create(anyMap(), any(ConfigurationProperties.class), eq(instanceContext), any(DatabaseType.class))).thenReturn(Arrays.asList(fooDatabase, barDatabase));
         Map<String, DatabaseConfiguration> databaseConfigs = createDatabaseConfigsWithoutStorageUnits();
         Properties props = PropertiesBuilder.build(new Property(ConfigurationPropertyKey.PERSIST_SCHEMAS_TO_REPOSITORY_ENABLED.getKey(), Boolean.FALSE.toString()));
         Collection<ShardingSphereSchema> persistedSchemas = Arrays.asList(
