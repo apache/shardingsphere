@@ -278,6 +278,11 @@ public abstract class AbstractPreparedStatementAdapter extends AbstractUnsupport
         parameterRecords.set(parameterIndex - 1, param);
     }
     
+    /**
+     * Get parameters.
+     *
+     * @return parameters
+     */
     public List<Object> getParameters() {
         List<Object> result = new ArrayList<>(parameterRecords.size());
         for (PreparedStatementParameter each : parameterRecords) {
