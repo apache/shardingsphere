@@ -283,7 +283,7 @@ public final class PipelineE2EDistSQLFacade {
     public void verifyCheck(final String jobId) {
         List<Map<String, Object>> checkStatusRecords = Collections.emptyList();
         for (int i = 0; i < 10; i++) {
-            checkStatusRecords = containerComposer.queryForListWithLog(buildShowCheckJobStatusDistSQL(jobId));
+            checkStatusRecords = queryCheckJobStatus(jobId);
             if (checkStatusRecords.isEmpty()) {
                 containerComposer.sleepSeconds(3);
                 continue;
@@ -308,6 +308,7 @@ public final class PipelineE2EDistSQLFacade {
      *
      * @param jobId job id
      * @return check job status
+     * @throws RuntimeException if there is underlying SQL exception, e.g. job id not found
      */
     public List<Map<String, Object>> queryCheckJobStatus(final String jobId) {
         return containerComposer.queryForListWithLog(buildShowCheckJobStatusDistSQL(jobId));
@@ -315,5 +316,15 @@ public final class PipelineE2EDistSQLFacade {
     
     private String buildShowCheckJobStatusDistSQL(final String jobId) {
         return String.format("SHOW %s CHECK STATUS %s", jobTypeName, jobId);
+    }
+    
+    /**
+     * Drop check.
+     *
+     * @param jobId job id
+     * @throws SQLException SQL exception
+     */
+    public void dropCheck(final String jobId) throws SQLException {
+        containerComposer.proxyExecuteWithLog(String.format("DROP %s CHECK %s", jobTypeName, jobId), 2);
     }
 }
