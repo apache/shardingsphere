@@ -71,13 +71,13 @@ class PostgreSQLToMySQLMigrationE2EIT extends AbstractMigrationE2EIT {
             String jdbcUrl = Type.DOCKER == type ? postgresqlContainer.getJdbcUrl() : "jdbc:postgresql://localhost:5432/postgres";
             initSourceTable(jdbcUrl);
             registerMigrationSourceStorageUnit(containerComposer);
-            containerComposer.registerStorageUnit(PipelineContainerComposer.DS_0);
+            PipelineE2EDistSQLFacade distSQLFacade = new PipelineE2EDistSQLFacade(containerComposer, new MigrationJobType());
+            distSQLFacade.registerStorageUnit(PipelineContainerComposer.DS_0);
             containerComposer.proxyExecuteWithLog("CREATE SHARDING TABLE RULE t_order(STORAGE_UNITS(pipeline_e2e_0),SHARDING_COLUMN=order_id,TYPE(NAME='hash_mod',PROPERTIES('sharding-count'='2')),"
                     + "KEY_GENERATE_STRATEGY(COLUMN=order_id, TYPE(NAME='snowflake')))", 2);
             initTargetTable(containerComposer);
             containerComposer.proxyExecuteWithLog("MIGRATE TABLE source_ds.t_order INTO t_order", 2);
-            PipelineE2EDistSQLFacade distSQLFacade = new PipelineE2EDistSQLFacade(containerComposer, new MigrationJobType());
-            Awaitility.await().ignoreExceptions().atMost(10L, TimeUnit.SECONDS).pollInterval(1L, TimeUnit.SECONDS).until(() -> !distSQLFacade.listJobIds().isEmpty());
+            Awaitility.waitAtMost(10L, TimeUnit.SECONDS).ignoreExceptions().pollInterval(1L, TimeUnit.SECONDS).until(() -> !distSQLFacade.listJobIds().isEmpty());
             String jobId = distSQLFacade.listJobIds().get(0);
             distSQLFacade.waitJobIncrementalStageStarted(jobId);
             try (Connection connection = DriverManager.getConnection(jdbcUrl, "postgres", "postgres")) {
@@ -150,7 +150,7 @@ class PostgreSQLToMySQLMigrationE2EIT extends AbstractMigrationE2EIT {
     
     private static boolean waitForTableExistence(final Connection connection, final String tableName) {
         try {
-            Awaitility.await().ignoreExceptions().atMost(60L, TimeUnit.SECONDS).pollInterval(3L, TimeUnit.SECONDS).until(() -> tableExists(connection, tableName));
+            Awaitility.waitAtMost(60L, TimeUnit.SECONDS).ignoreExceptions().pollInterval(3L, TimeUnit.SECONDS).until(() -> tableExists(connection, tableName));
             return true;
         } catch (final ConditionTimeoutException ex) {
             return false;
