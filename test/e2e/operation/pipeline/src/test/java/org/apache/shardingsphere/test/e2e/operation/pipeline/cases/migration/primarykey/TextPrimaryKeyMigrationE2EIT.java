@@ -29,6 +29,7 @@ import org.apache.shardingsphere.test.e2e.operation.pipeline.framework.param.Pip
 import org.apache.shardingsphere.test.e2e.operation.pipeline.framework.param.PipelineE2ETestCaseArgumentsProvider;
 import org.apache.shardingsphere.test.e2e.operation.pipeline.framework.param.PipelineTestParameter;
 import org.apache.shardingsphere.test.e2e.operation.pipeline.util.PipelineE2EDistSQLFacade;
+import org.awaitility.Awaitility;
 import org.junit.jupiter.api.condition.EnabledIf;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -36,6 +37,10 @@ import org.junit.jupiter.params.provider.ArgumentsSource;
 
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -67,7 +72,13 @@ class TextPrimaryKeyMigrationE2EIT extends AbstractMigrationE2EIT {
             containerComposer.sourceExecuteWithLog(
                     String.format("INSERT INTO %s (order_id,user_id,status) VALUES (%s, %s, '%s')", getSourceTableName(containerComposer), "1000000000", 1, "afterStop"));
             distSQLFacade.waitJobIncrementalStageFinished(jobId);
-            distSQLFacade.startCheckAndVerify(jobId, "DATA_MATCH");
+            distSQLFacade.startCheck(jobId, "DATA_MATCH", Collections.emptyMap());
+            Awaitility.waitAtMost(10, TimeUnit.SECONDS).ignoreExceptions().pollInterval(2L, TimeUnit.SECONDS).until(() -> {
+                List<Map<String, Object>> checkJobStatusRecords = distSQLFacade.queryCheckJobStatus(jobId);
+                return !checkJobStatusRecords.isEmpty() && Boolean.parseBoolean(checkJobStatusRecords.get(0).get("result").toString());
+            });
+            distSQLFacade.startCheck(jobId, "DATA_MATCH", Collections.emptyMap());
+            distSQLFacade.verifyCheck(jobId);
             distSQLFacade.commit(jobId);
             assertTrue(distSQLFacade.listJobIds().isEmpty());
         }

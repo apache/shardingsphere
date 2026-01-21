@@ -303,6 +303,16 @@ public final class PipelineE2EDistSQLFacade {
         }
     }
     
+    /**
+     * Query check job status.
+     *
+     * @param jobId job id
+     * @return check job status
+     */
+    public List<Map<String, Object>> queryCheckJobStatus(final String jobId) {
+        return containerComposer.queryForListWithLog(buildShowCheckJobStatusDistSQL(jobId));
+    }
+    
     private String buildShowCheckJobStatusDistSQL(final String jobId) {
         return String.format("SHOW %s CHECK STATUS %s", jobTypeName, jobId);
     }
