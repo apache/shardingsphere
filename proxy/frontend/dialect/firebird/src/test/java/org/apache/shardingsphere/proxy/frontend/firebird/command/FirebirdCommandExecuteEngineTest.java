@@ -29,7 +29,10 @@ import org.apache.shardingsphere.database.protocol.firebird.packet.command.Fireb
 import org.apache.shardingsphere.database.protocol.firebird.payload.FirebirdPacketPayload;
 import org.apache.shardingsphere.database.protocol.packet.DatabasePacket;
 import org.apache.shardingsphere.database.protocol.packet.command.CommandPacket;
+import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
+import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereStatistics;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
@@ -53,6 +56,8 @@ import org.mockito.quality.Strictness;
 
 import java.nio.charset.StandardCharsets;
 import java.sql.SQLException;
+import java.util.Collections;
+import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -161,7 +166,8 @@ class FirebirdCommandExecuteEngineTest {
         when(queryCommandExecutor.next()).thenReturn(true, false);
         when(queryCommandExecutor.getQueryRowPacket()).thenReturn(rowPacket);
         MetaDataContexts metaDataContexts =
-                new MetaDataContexts(new ShardingSphereMetaData(), new ShardingSphereStatistics());
+                new MetaDataContexts(new ShardingSphereMetaData(Collections.emptyList(), new ResourceMetaData(Collections.emptyMap()),
+                        new RuleMetaData(Collections.emptyList()), new ConfigurationProperties(new Properties())), new ShardingSphereStatistics());
         when(mockContextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
         when(ProxyContext.getInstance().getContextManager()).thenReturn(mockContextManager);
         engine.writeQueryData(context, databaseConnectionManager, queryCommandExecutor, 0);
