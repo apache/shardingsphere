@@ -123,7 +123,7 @@ class CDCE2EIT {
             }
             PipelineDataSource targetDataSource = createStandardDataSource(containerComposer, PipelineContainerComposer.DS_4);
             final CDCClient cdcClient = buildCDCClientAndStart(targetDataSource, containerComposer);
-            Awaitility.await().atMost(10L, TimeUnit.SECONDS).pollInterval(1L, TimeUnit.SECONDS).until(() -> !distSQLFacade.listJobIds().isEmpty());
+            Awaitility.waitAtMost(10L, TimeUnit.SECONDS).pollInterval(1L, TimeUnit.SECONDS).until(() -> !distSQLFacade.listJobIds().isEmpty());
             String jobId = distSQLFacade.listJobIds().get(0);
             distSQLFacade.waitJobIncrementalStageFinished(jobId);
             DialectDatabaseMetaData dialectDatabaseMetaData = new DatabaseTypeRegistry(containerComposer.getDatabaseType()).getDialectDatabaseMetaData();
@@ -142,7 +142,7 @@ class CDCE2EIT {
             assertDataMatched(sourceDataSource, targetDataSource, new QualifiedTable(null, "t_address"));
             assertDataMatched(sourceDataSource, targetDataSource, new QualifiedTable(null, "t_single"));
             cdcClient.close();
-            Awaitility.await().atMost(10L, TimeUnit.SECONDS).pollInterval(500L, TimeUnit.MILLISECONDS)
+            Awaitility.waitAtMost(10L, TimeUnit.SECONDS).pollInterval(500L, TimeUnit.MILLISECONDS)
                     .until(() -> distSQLFacade.listJobs().stream().noneMatch(each -> Boolean.parseBoolean(each.get("active").toString())));
             distSQLFacade.drop(jobId);
             assertTrue(distSQLFacade.listJobs().isEmpty());
@@ -151,7 +151,7 @@ class CDCE2EIT {
     
     private void createOrderTableRule(final PipelineContainerComposer containerComposer) throws SQLException {
         containerComposer.proxyExecuteWithLog(CREATE_SHARDING_RULE_SQL, 0);
-        Awaitility.await().atMost(20L, TimeUnit.SECONDS).pollInterval(2L, TimeUnit.SECONDS).until(() -> !containerComposer.queryForListWithLog("SHOW SHARDING TABLE RULE t_order").isEmpty());
+        Awaitility.waitAtMost(20L, TimeUnit.SECONDS).pollInterval(2L, TimeUnit.SECONDS).until(() -> !containerComposer.queryForListWithLog("SHOW SHARDING TABLE RULE t_order").isEmpty());
     }
     
     private void initSchemaAndTable(final PipelineContainerComposer containerComposer, final Connection connection, final int seconds) throws SQLException {

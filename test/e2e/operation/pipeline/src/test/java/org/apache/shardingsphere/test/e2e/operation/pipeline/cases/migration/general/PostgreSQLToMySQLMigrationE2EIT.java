@@ -77,7 +77,7 @@ class PostgreSQLToMySQLMigrationE2EIT extends AbstractMigrationE2EIT {
             initTargetTable(containerComposer);
             containerComposer.proxyExecuteWithLog("MIGRATE TABLE source_ds.t_order INTO t_order", 2);
             PipelineE2EDistSQLFacade distSQLFacade = new PipelineE2EDistSQLFacade(containerComposer, new MigrationJobType());
-            Awaitility.await().ignoreExceptions().atMost(10L, TimeUnit.SECONDS).pollInterval(1L, TimeUnit.SECONDS).until(() -> !distSQLFacade.listJobIds().isEmpty());
+            Awaitility.waitAtMost(10L, TimeUnit.SECONDS).ignoreExceptions().pollInterval(1L, TimeUnit.SECONDS).until(() -> !distSQLFacade.listJobIds().isEmpty());
             String jobId = distSQLFacade.listJobIds().get(0);
             distSQLFacade.waitJobIncrementalStageStarted(jobId);
             try (Connection connection = DriverManager.getConnection(jdbcUrl, "postgres", "postgres")) {
@@ -150,7 +150,7 @@ class PostgreSQLToMySQLMigrationE2EIT extends AbstractMigrationE2EIT {
     
     private static boolean waitForTableExistence(final Connection connection, final String tableName) {
         try {
-            Awaitility.await().ignoreExceptions().atMost(60L, TimeUnit.SECONDS).pollInterval(3L, TimeUnit.SECONDS).until(() -> tableExists(connection, tableName));
+            Awaitility.waitAtMost(60L, TimeUnit.SECONDS).ignoreExceptions().pollInterval(3L, TimeUnit.SECONDS).until(() -> tableExists(connection, tableName));
             return true;
         } catch (final ConditionTimeoutException ex) {
             return false;

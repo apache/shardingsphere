@@ -142,7 +142,8 @@ public final class PipelineE2EDistSQLFacade {
      * @throws SQLException SQL exception
      */
     public void rollback(final String jobId) throws SQLException {
-        containerComposer.proxyExecuteWithLog(String.format("ROLLBACK %s %s", jobTypeName, jobId), 2);
+        String sql = String.format("ROLLBACK %s %s", jobTypeName, jobId);
+        containerComposer.proxyExecuteWithLog(sql, 2);
     }
     
     /**
