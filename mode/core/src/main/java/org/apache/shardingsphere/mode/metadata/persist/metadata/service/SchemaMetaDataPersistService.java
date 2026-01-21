@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.mode.metadata.persist.metadata.service;
 
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.database.schema.manager.GenericSchemaManager;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.mode.node.path.engine.generator.NodePathGenerator;
@@ -73,7 +74,7 @@ public final class SchemaMetaDataPersistService {
         if (schema.isEmpty()) {
             add(databaseName, schemaName);
         }
-        ShardingSphereSchema currentSchema = new ShardingSphereSchema(schemaName, tableMetaDataPersistService.load(databaseName, schemaName), Collections.emptyList());
+        ShardingSphereSchema currentSchema = new ShardingSphereSchema(schemaName, tableMetaDataPersistService.load(databaseName, schemaName), Collections.emptyList(), schema.getProtocolType());
         tableMetaDataPersistService.persist(databaseName, schemaName, GenericSchemaManager.getToBeAddedTables(schema, currentSchema));
         GenericSchemaManager.getToBeDroppedTables(schema, currentSchema).forEach(each -> tableMetaDataPersistService.drop(databaseName, schemaName, each.getName()));
     }
@@ -82,10 +83,12 @@ public final class SchemaMetaDataPersistService {
      * Load schemas.
      *
      * @param databaseName database name
+     * @param protocolType protocol type
      * @return schemas
      */
-    public Collection<ShardingSphereSchema> load(final String databaseName) {
+    public Collection<ShardingSphereSchema> load(final String databaseName, final DatabaseType protocolType) {
         return repository.getChildrenKeys(NodePathGenerator.toPath(new SchemaMetaDataNodePath(databaseName, null))).stream()
-                .map(each -> new ShardingSphereSchema(each, tableMetaDataPersistService.load(databaseName, each), viewMetaDataPersistService.load(databaseName, each))).collect(Collectors.toList());
+                .map(each -> new ShardingSphereSchema(each, tableMetaDataPersistService.load(databaseName, each), viewMetaDataPersistService.load(databaseName, each),
+                        protocolType)).collect(Collectors.toList());
     }
 }

@@ -51,8 +51,8 @@ class ShardingSphereDatabasesFactoryTest {
         when(connection.getMetaData().getURL()).thenReturn("jdbc:mysql://127.0.0.1/foo_ds");
         databaseConfigs.put("foo_db", new DataSourceProvidedDatabaseConfiguration(Collections.singletonMap("foo_ds", new MockedDataSource(connection)), Collections.emptyList()));
         Map<String, Collection<ShardingSphereSchema>> schemas = new LinkedHashMap<>(2, 1F);
-        schemas.put("empty_db", Collections.singleton(new ShardingSphereSchema("empty_schema")));
-        schemas.put("foo_db", Collections.singleton(new ShardingSphereSchema("foo_schema")));
+        schemas.put("empty_db", Collections.singleton(new ShardingSphereSchema("empty_schema", mock(DatabaseType.class))));
+        schemas.put("foo_db", Collections.singleton(new ShardingSphereSchema("foo_schema", mock(DatabaseType.class))));
         ConfigurationProperties props = new ConfigurationProperties(new Properties());
         DatabaseType protocolType = DatabaseTypeEngine.getProtocolType(databaseConfigs, props);
         Collection<ShardingSphereDatabase> actual = ShardingSphereDatabasesFactory.create(databaseConfigs, schemas, props, mock(), protocolType);

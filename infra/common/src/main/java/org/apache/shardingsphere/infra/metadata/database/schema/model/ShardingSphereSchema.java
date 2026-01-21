@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.infra.metadata.database.schema.model;
 
 import lombok.Getter;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.identifier.ShardingSphereIdentifier;
 
 import java.util.Collection;
@@ -38,19 +39,24 @@ public final class ShardingSphereSchema {
     
     private final Map<ShardingSphereIdentifier, ShardingSphereView> views;
     
+    @Getter
+    private final DatabaseType protocolType;
+    
     @SuppressWarnings("CollectionWithoutInitialCapacity")
-    public ShardingSphereSchema(final String name) {
+    public ShardingSphereSchema(final String name, final DatabaseType protocolType) {
         this.name = name;
         tables = new ConcurrentHashMap<>();
         views = new ConcurrentHashMap<>();
+        this.protocolType = protocolType;
     }
     
-    public ShardingSphereSchema(final String name, final Collection<ShardingSphereTable> tables, final Collection<ShardingSphereView> views) {
+    public ShardingSphereSchema(final String name, final Collection<ShardingSphereTable> tables, final Collection<ShardingSphereView> views, final DatabaseType protocolType) {
         this.name = name;
         this.tables = new ConcurrentHashMap<>(tables.size(), 1F);
         this.views = new ConcurrentHashMap<>(views.size(), 1F);
         tables.forEach(each -> this.tables.put(new ShardingSphereIdentifier(each.getName()), each));
         views.forEach(each -> this.views.put(new ShardingSphereIdentifier(each.getName()), each));
+        this.protocolType = protocolType;
     }
     
     /**

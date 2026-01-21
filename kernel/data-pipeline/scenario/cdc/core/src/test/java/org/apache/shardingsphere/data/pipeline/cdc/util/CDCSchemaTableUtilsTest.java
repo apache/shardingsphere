@@ -120,7 +120,7 @@ class CDCSchemaTableUtilsTest {
         for (String each : tableNames) {
             tables.add(mockTable(each));
         }
-        return new ShardingSphereSchema(schemaName, tables, Collections.emptyList());
+        return new ShardingSphereSchema(schemaName, tables, Collections.emptyList(), databaseType);
     }
     
     private ShardingSphereTable mockTable(final String tableName) {

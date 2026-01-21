@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.infra.metadata.database.schema.reviser;
 
 import org.apache.shardingsphere.database.connector.core.metadata.data.model.SchemaMetaData;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.metadata.database.schema.builder.GenericSchemaBuilderMaterial;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
@@ -30,6 +31,7 @@ import java.util.Properties;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.mock;
 
 class MetaDataReviseEngineTest {
     
@@ -37,7 +39,8 @@ class MetaDataReviseEngineTest {
     
     @Test
     void assertRevise() {
-        Map<String, ShardingSphereSchema> actual = engine.revise(Collections.singletonMap("foo_schema", new SchemaMetaData("foo_schema", Collections.emptyList())), createBuilderMaterial());
+        Map<String, ShardingSphereSchema> actual = engine.revise(Collections.singletonMap("foo_schema", new SchemaMetaData("foo_schema", Collections.emptyList())), createBuilderMaterial(),
+                mock(DatabaseType.class));
         assertThat(actual.size(), is(1));
         ShardingSphereSchema schema = actual.get("foo_schema");
         assertThat(schema.getName(), is("foo_schema"));
@@ -47,7 +50,7 @@ class MetaDataReviseEngineTest {
     
     @Test
     void assertReviseWithEmptySchemaMetaDataMap() {
-        Map<String, ShardingSphereSchema> actual = engine.revise(Collections.emptyMap(), createBuilderMaterial());
+        Map<String, ShardingSphereSchema> actual = engine.revise(Collections.emptyMap(), createBuilderMaterial(), mock(DatabaseType.class));
         assertThat(actual.size(), is(1));
         ShardingSphereSchema schema = actual.get("default_schema");
         assertThat(schema.getName(), is("default_schema"));
