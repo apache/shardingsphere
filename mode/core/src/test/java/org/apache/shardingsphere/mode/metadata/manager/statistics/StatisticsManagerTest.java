@@ -225,7 +225,8 @@ class StatisticsManagerTest {
     @Test
     void assertAlterRowStatisticsWhenMetaDataMissing() {
         ShardingSphereStatistics statistics = createStatisticsWithTable();
-        MetaDataContexts metaDataContexts = new MetaDataContexts(new ShardingSphereMetaData(), statistics);
+        MetaDataContexts metaDataContexts = new MetaDataContexts(new ShardingSphereMetaData(Collections.emptyList(), new ResourceMetaData(Collections.emptyMap()),
+                new RuleMetaData(Collections.emptyList()), new ConfigurationProperties(new Properties())), statistics);
         YamlRowStatistics yamlRowStatistics = new YamlRowStatistics();
         yamlRowStatistics.setUniqueKey("uk_1");
         yamlRowStatistics.setRows(Collections.singletonList("1"));
