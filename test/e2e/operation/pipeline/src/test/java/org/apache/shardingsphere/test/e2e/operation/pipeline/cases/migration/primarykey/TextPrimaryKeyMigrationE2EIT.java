@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.test.e2e.operation.pipeline.cases.migration.primarykey;
 
+import com.google.common.collect.ImmutableMap;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.MigrationJobType;
 import org.apache.shardingsphere.database.connector.mysql.type.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.algorithm.keygen.uuid.UUIDKeyGenerateAlgorithm;
@@ -37,6 +38,7 @@ import org.junit.jupiter.params.provider.ArgumentsSource;
 import java.sql.Connection;
 import java.sql.SQLException;
 
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @PipelineE2ESettings(fetchSingle = true, database = {
@@ -67,7 +69,14 @@ class TextPrimaryKeyMigrationE2EIT extends AbstractMigrationE2EIT {
             containerComposer.sourceExecuteWithLog(
                     String.format("INSERT INTO %s (order_id,user_id,status) VALUES (%s, %s, '%s')", getSourceTableName(containerComposer), "1000000000", 1, "afterStop"));
             distSQLFacade.waitJobIncrementalStageFinished(jobId);
-            distSQLFacade.startCheckAndVerify(jobId, "DATA_MATCH");
+            distSQLFacade.startCheck(jobId, "DATA_MATCH", ImmutableMap.of("chunk-size", "300", "streaming-range-type", "SMALL"));
+            distSQLFacade.verifyCheck(jobId);
+            distSQLFacade.startCheck(jobId, "DATA_MATCH", ImmutableMap.of("chunk-size", "300", "streaming-range-type", "LARGE"));
+            distSQLFacade.verifyCheck(jobId);
+            distSQLFacade.dropCheck(jobId);
+            distSQLFacade.dropCheck(jobId);
+            assertThrows(RuntimeException.class, () -> distSQLFacade.queryCheckJobStatus(jobId));
+            assertThrows(SQLException.class, () -> distSQLFacade.dropCheck(jobId));
             distSQLFacade.commit(jobId);
             assertTrue(distSQLFacade.listJobIds().isEmpty());
         }
