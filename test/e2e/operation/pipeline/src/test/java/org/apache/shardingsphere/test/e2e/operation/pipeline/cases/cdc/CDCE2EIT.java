@@ -102,7 +102,7 @@ class CDCE2EIT {
             PipelineE2EDistSQLFacade distSQLFacade = new PipelineE2EDistSQLFacade(containerComposer, new CDCJobType());
             distSQLFacade.alterPipelineRule();
             for (String each : Arrays.asList(PipelineContainerComposer.DS_0, PipelineContainerComposer.DS_1)) {
-                containerComposer.registerStorageUnit(each);
+                distSQLFacade.registerStorageUnit(each);
             }
             createOrderTableRule(containerComposer);
             distSQLFacade.createBroadcastRule("t_address");

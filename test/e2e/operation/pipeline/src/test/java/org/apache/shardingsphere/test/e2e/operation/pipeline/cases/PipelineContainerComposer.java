@@ -87,6 +87,7 @@ public final class PipelineContainerComposer implements AutoCloseable {
     
     public static final String SCHEMA_NAME = "test";
     
+    // TODO Refactor: storage unit name and actual data source name are different
     public static final String DS_0 = "pipeline_e2e_0";
     
     public static final String DS_1 = "pipeline_e2e_1";
@@ -255,23 +256,6 @@ public final class PipelineContainerComposer implements AutoCloseable {
                     new Property("bitToString", Boolean.TRUE.toString()), new Property("TimeZone", "UTC")));
         }
         return jdbcUrl;
-    }
-    
-    /**
-     * Register storage unit.
-     *
-     * @param storageUnitName storage unit name
-     * @throws SQLException SQL exception
-     */
-    public void registerStorageUnit(final String storageUnitName) throws SQLException {
-        String username = ProxyDatabaseTypeUtils.isOracleBranch(databaseType) ? storageUnitName : getUsername();
-        String registerStorageUnitTemplate = "REGISTER STORAGE UNIT ${ds} ( URL='${url}', USER='${user}', PASSWORD='${password}')".replace("${ds}", storageUnitName)
-                .replace("${user}", username)
-                .replace("${password}", getPassword())
-                .replace("${url}", getActualJdbcUrlTemplate(storageUnitName, Type.DOCKER == E2ETestEnvironment.getInstance().getRunEnvironment().getType()));
-        proxyExecuteWithLog(registerStorageUnitTemplate, 0);
-        int timeout = databaseType instanceof OpenGaussDatabaseType ? 60 : 10;
-        Awaitility.waitAtMost(timeout, TimeUnit.SECONDS).ignoreExceptions().pollInterval(3L, TimeUnit.SECONDS).until(() -> showStorageUnitsName().contains(storageUnitName));
     }
     
     /**
